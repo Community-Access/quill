@@ -38,7 +38,15 @@ GLOBAL_HOTKEY_SAFE_COMMANDS: tuple[tuple[str, str, bool], ...] = (
     ("radio.volume_down", "Radio: Volume Down", False),
     ("podcasts.play_pause", "Podcasts: Play/Pause", False),
     ("podcasts.stop", "Podcasts: Stop", False),
+    ("podcasts.now_playing", "Podcasts: Now Playing window", True),
+    ("podcasts.time_remaining", "Podcasts: Time Remaining", False),
 )
+
+#: QUILL's out-of-the-box system-wide show/hide key. Windows gives a registered
+#: hotkey to its owner before any window sees the keystroke, so no default
+#: editor chord may equal it -- in QUILL or in QUILL Lite, which loses the key
+#: whenever QUILL is running (test_no_editor_chord_is_the_global_show_hide_key).
+DEFAULT_SHOW_HIDE_HOTKEY = "Ctrl+Alt+Shift+Q"
 
 _SAFE_IDS = {command_id for command_id, _label, _needs in GLOBAL_HOTKEY_SAFE_COMMANDS}
 _NEEDS_WINDOW = {command_id for command_id, _label, needs in GLOBAL_HOTKEY_SAFE_COMMANDS if needs}
@@ -62,6 +70,8 @@ class GlobalHotkeysMixin:
         registry = getattr(self, "commands", None)
         command = registry.get(command_id) if registry is not None else None
         gate = getattr(self, "_feature_enabled", None)
+        if command is None and getattr(self, "_global_hotkeys_registered_only", False):
+            return False  # QUILL Cast offers only what it has (qc.md 18.11)
         if command is None or gate is None:
             return True
         return bool(gate(command.feature_id))
@@ -105,7 +115,7 @@ class GlobalHotkeysMixin:
             and not getattr(self, "_tray_hotkey_registered", False)
             and not getattr(self, "_own_tray_hotkey", "")
         ):
-            bindings["view.toggle_window_to_tray"] = "Ctrl+Alt+Shift+Q"
+            bindings["view.toggle_window_to_tray"] = DEFAULT_SHOW_HIDE_HOTKEY
         return bindings
 
     def _global_hotkey_wx_id(self, command_id: str) -> int:

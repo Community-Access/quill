@@ -89,7 +89,14 @@ def apply_lineup(library: PodcastLibrary, playlist: Playlist) -> Counted:
         if not _is_available_unplayed(library, item):
             skipped += 1
             continue
-        wanted.append(item)
+        wanted.append(
+            QueueItem(
+                show_id=item.show_id,
+                episode_guid=item.episode_guid,
+                added_at=item.added_at,
+                reason=f"the lineup {playlist.name}",
+            )
+        )
 
     if not wanted:
         return Counted(

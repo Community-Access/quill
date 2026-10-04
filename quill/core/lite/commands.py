@@ -275,9 +275,9 @@ COMMANDS: list[CommandRow] = [
     # "Remove Quote Marks" rather than "Unquote Lines", which is QUILL's label:
     # a listener hears "unquote" as the start of a quotation, and Edit > Lines
     # had no free mnemonic in the word anyway. The divergence is a label, not a
-    # verb -- both editors run the same `unquote_lines`.
+    # verb -- both editors run the same `unquote_lines`. Alt+Shift+. (keymap.py says why).
     ("&Edit|&Lines", "&Quote Lines", "Ctrl+Shift+Q", "cmd_quote_lines", ""),
-    ("&Edit|&Lines", "Remove Quote &Marks", "Ctrl+Alt+Shift+Q", "cmd_unquote_lines", ""),
+    ("&Edit|&Lines", "Remove Quote &Marks", "Alt+Shift+.", "cmd_unquote_lines", ""),
     ("&Edit|&Lines", "", "", "", "sep"),
     # Log triage and formatting for a narrow display, which are two of the
     # reasons somebody opens a plain-text editor at all (bad.md 4.2, Tier 2).
@@ -836,13 +836,10 @@ COMMANDS: list[CommandRow] = [
     ("&Tools", "C&ustomize Features...", "Ctrl+Alt+F10", "cmd_customize_features", ""),
     # Which keys do what, beside which features exist. Never switchable, for
     # the same reason as its two neighbours: the surface that repairs a key
-    # somebody broke cannot be behind a key.
-    #
-    # Ctrl+Alt+Shift+R rather than anything spelling "keyboard": K is Set
-    # Mark, lowercase and Remove Blank Lines three times over, and moving a
-    # real command out of the way to make room for the dialog that moves
-    # commands would be a poor trade. R is for rebind. The mnemonic is the
-    # K the menu still has free.
+    # somebody broke cannot be behind a key. Ctrl+Alt+Shift+R rather than a
+    # K chord: K is Set Mark, lowercase and Remove Blank Lines three times
+    # over, and moving a real command to make room for the dialog that moves
+    # commands would be a poor trade. R is for rebind; the mnemonic is K.
     ("&Tools", "&Keyboard Manager...", "Ctrl+Alt+Shift+R", "cmd_keyboard_manager", ""),
     # -- Tools > Spelling ----------------------------------------------------
     # A submenu rather than a menu on the bar: neither Notepad nor WordPad has a
@@ -1012,6 +1009,8 @@ COMMANDS: list[CommandRow] = [
     # The family item and key: Lite's users least know where else to write.
     ("&Help", "&Get Help from Support...", "Ctrl+Alt+F2", "cmd_get_help_from_support", ""),
     ("&Help", "Check for &Updates...", "Ctrl+Alt+U", "cmd_check_updates", ""),
+    # No key (rules 4 and 9; keymap.py): Alt+H, C. See KEYLESS_WITH_REASON.
+    ("&Help", "Release &Channel...", "", "cmd_release_channel", ""),
     ("&Help", "&About QUILL Lite", "Shift+F1", "cmd_about", ""),
 ]
 
@@ -1073,7 +1072,7 @@ def shortcut_text(keymap: dict[str, str] | None = None) -> str:
                 if child
                 else f"{_plain(parent)} menu"
             )
-        lines.append(f"  {key}: {_plain(label)}")
+        lines.append(f"  {key}: {_plain(label)}" if key else f"  No key: {_plain(label)}")
     lines += [
         "",
         "Window menu",

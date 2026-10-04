@@ -1,1828 +1,547 @@
-# QUILL Lite — User Guide
+# QUILL Lite User Guide
 
-*For QUILL Lite 1.0, released September 25, 2026.*
+*For QUILL Lite 1.2.0, released October 3, 2026.*
 
-QUILL Lite is a text editor. It opens a file, lets you change it, and saves it
-back exactly as it found it.
+## Introduction
+
+Welcome, and thank you for giving QUILL Lite a try.
+
+QUILL Lite is a text editor for people who use a screen reader. You open a
+file, you change it, and you save it. When you save, the file goes back
+exactly the way it came in. Everything in it has a key, and it tells you how
+each thing you do turned out, so you are never left wondering whether a key
+did anything.
 
 If you have used Notepad or WordPad, almost every key you already know works
-here. Where QUILL Lite does something different, this guide says so, and says
-why.
+here. Where QUILL Lite does something a little differently, this guide tells
+you, and tells you what it means for you.
 
-You do not need to read this guide to use QUILL Lite. Start it, type, press
-**Ctrl+S**. Come back here when you want more.
+If you write letters, notes, stories, web pages or settings files, and you
+find your way around Windows with NVDA or JAWS, QUILL Lite is for you. It is
+free, and it is small on purpose.
 
-<!-- contents:start -->
+### What you will be able to do
 
-## What is in this guide
+By the time you have read this guide you will be able to open any text file
+and save it back without changing a thing you did not mean to change. You
+will move between several documents, find words and jump to headings, and
+select exactly what you want without holding Shift down. You will format in
+plain text, Markdown, HTML or rich text, check your spelling and find a
+better word, write by talking, and, if you choose to, ask AI to help. You will
+have QUILL Lite set up as small or as full as you like. And when something
+puzzles you, you will know where to find help.
 
-Every section, in order. Your screen reader's heading navigation reaches the
-same places; this list is here for reading through, and for the EPUB.
+None of this needs to happen on day one. You do not have to read this guide
+before you start. Open QUILL Lite, type, and press **Ctrl+S**. Chapter 1 gets
+you going in a few minutes, and everything after that is there for when you
+are curious. Read it in order, or jump to the chapter you need.
 
-- [The first minute](#the-first-minute)
-- [Step by step: thirty things, start to finish](#step-by-step-thirty-things-start-to-finish)
-- [Your documents are numbered](#your-documents-are-numbered)
-- [Four kinds of document](#four-kinds-of-document)
-- [Saving](#saving)
-- [Finding things](#finding-things)
-- [The Insert menu](#the-insert-menu)
-- [Going somewhere](#going-somewhere)
-- [Bookmarks](#bookmarks)
-- [Selecting](#selecting)
-- [Formatting](#formatting)
-- [Spell check](#spell-check)
-- [What is this character?](#what-is-this-character)
-- [The status bar](#the-status-bar)
-- [Reading a selection without risking it](#reading-a-selection-without-risking-it)
-- [Copying and pasting more than one thing](#copying-and-pasting-more-than-one-thing)
-- [Links](#links)
-- [Working on lines](#working-on-lines)
-- [Nine lessons, inside the app](#nine-lessons-inside-the-app)
-- [The View menu](#the-view-menu)
-- [Undo, and getting text back](#undo-and-getting-text-back)
-- [Finding a command](#finding-a-command)
-- [The window](#the-window)
-- [Closing a lot of windows at once](#closing-a-lot-of-windows-at-once)
-- [Changing what a key does](#changing-what-a-key-does)
-- [Sounds](#sounds)
-- [Making QUILL Lite smaller (or larger)](#making-quilllite-smaller-or-larger)
-- [Reopening what you had open](#reopening-what-you-had-open)
-- [Settings](#settings)
-- [Printing](#printing)
-- [Speech](#speech)
-- [Dictation](#dictation)
-- [AI help](#ai-help)
-- [Where your files are kept](#where-your-files-are-kept)
-- [Keeping QUILL Lite up to date](#keeping-quilllite-up-to-date)
-- [What QUILL Lite is not](#what-quilllite-is-not)
-- [Every key, in one table](#every-key-in-one-table)
-- [Getting help](#getting-help)
+### How this guide is laid out
 
-<!-- contents:end -->
+The chapters follow the order you are likely to want things.
 
----
+1. **Chapter 1: Your first minutes.** Start, type and save, the four keys
+   that help when you are lost, and thirty short recipes to try with the app
+   open in front of you.
+2. **Chapter 2: Finding your way around.** Your numbered documents, the
+   window, the status bar, the View menu, and finding any command by name.
+3. **Chapter 3: Opening, saving and printing.** The four kinds of document,
+   how saving keeps your file exactly as it was, getting your work back after
+   a crash, reopening last time's documents, and printing.
+4. **Chapter 4: Moving around a document.** Find, Go To, bookmarks, and
+   getting back to where you were.
+5. **Chapter 5: Selecting, copying and changing text.** Better ways to
+   select, more than one thing on the clipboard, working on whole lines, and
+   undo.
+6. **Chapter 6: Formatting, headings and the Insert menu.** Bold, lists and
+   headings for every kind of document, hearing the shape of a document,
+   reshaping it, links, and everything on the Insert menu.
+7. **Chapter 7: Checking your writing.** Spell check, the thesaurus, the
+   dictionary, and finding out exactly which character you are on.
+8. **Chapter 8: What you hear.** What QUILL Lite says and what it leaves to
+   your screen reader, its sounds, and catching up on a message you missed.
+9. **Chapter 9: Writing by voice.** Dictation, from your first sentence to
+   starting and stopping with your voice.
+10. **Chapter 10: AI help.** The AI pad, conversations, QUILL's free AI, and
+    using your own key or your ChatGPT subscription.
+11. **Chapter 11: Making QUILL Lite yours.** Preferences, profiles,
+    switching off what you never use, and changing keys.
+12. **Chapter 12: Your files, updates and QUILL for All.** Where your files
+    are kept, staying up to date, and how QUILL Lite sits beside QUILL.
+13. **Chapter 13: When you need a hand.** The lessons built into the app, and
+    how to reach a real person at support.
 
-## The first minute
+After the chapters comes the **Keyboard reference**: every key QUILL Lite
+comes with, grouped by menu. Keep it handy for the first few weeks.
 
-Start QUILL Lite and you get one window with one empty document in it, called
-**1: Untitled**. Type. Press **Ctrl+S** when you want to keep it.
+QUILL Lite also has guided tutorials: nine short lessons you do with QUILL
+Lite open in front of you, on **Help > Tutorials...** (**Ctrl+Alt+F1**).
+Whenever a lesson covers the same ground as part of this guide, the guide
+gives you its name, so you can choose between reading about something and
+being walked through it.
 
-That is the whole thing. The rest of this guide is optional.
+### Reading this guide with a screen reader
 
-Three keys are worth knowing straight away:
+The guide is built from headings so you can move through it quickly. Each
+chapter is a level 2 heading, and the main topics in a chapter are level 3
+headings. When a topic has parts of its own, those parts sit one level deeper,
+at level 4, and sometimes at level 5. In JAWS or NVDA, press 2 to move from
+chapter to chapter, 3 to move between the main topics, and 4 to step through
+the parts of a topic. Shift with any of those numbers goes back. To see every
+heading at once, press Insert+F6 in JAWS or Insert+F7 in NVDA and choose
+headings.
 
-- **F1** tells you where you are. Press it anywhere — in your document, on a
-  button, in any window — and QUILL Lite says what that window is for and what
-  the thing you are on does.
-- **F6** takes you to the status bar, which is where the useful facts live.
-  Arrow along it, press **Escape** to come back.
+Every chapter ends with a short section called What you learned, and where to
+go next. If you are skimming, those are a quick way to hear what a chapter
+covers before you read it.
+
+Keys are written the way QUILL Lite writes them in its menus. Ctrl+Shift+B
+means hold down Ctrl and Shift together and press B. A menu path such as
+Tools > Preferences means open the Tools menu and choose Preferences.
+
+When a section walks you through something, the steps are numbered. Follow
+them with QUILL Lite open beside the guide and you will learn faster than by
+reading alone. Alt+Tab moves you between the two.
+
+You do not always need this guide to answer a question. Every window in QUILL
+Lite answers **F1** with a short note on what that window is for and what the
+control you are on does. When you wonder what a checkbox will change, F1 is
+often the quickest answer.
+
+## Chapter 1: Your first minutes
+
+This chapter is your first session with QUILL Lite. You will start it, type
+something and save it, and meet the four keys that rescue you whenever you are
+unsure. Then come thirty short recipes, each one a small job from start to
+finish, with what to press and what you should hear when it worked. Have QUILL
+Lite open as you read, and try each one as you meet it. A few minutes is
+plenty to begin.
+
+### The first minute
+
+Start QUILL Lite. You get one window with one empty document in it, called
+**1: Untitled**. Type something. When you want to keep it, press **Ctrl+S**.
+
+That really is all you need. Everything else in this guide is extra.
+
+Four keys are worth learning straight away, because they help you whenever you
+are unsure:
+
+- **F1** tells you where you are. Press it anywhere: in your document, on a
+  button, in any window. QUILL Lite tells you what that window is for, and
+  then what the thing you are on does.
+- **F6** takes you to the status bar, where the useful facts about your
+  document live. Arrow along it to hear them. Press **Escape** to come back.
 - **Ctrl+F1** lists every key QUILL Lite has.
 - **Ctrl+Alt+F1** opens **Tutorials...**: nine short lessons that walk you
-  through the things that are hard to work out by pressing keys.
+  through the things that are hard to discover just by pressing keys.
 
----
+### Step by step: thirty things, start to finish
 
-## Step by step: thirty things, start to finish
+This section is all doing. Each recipe tells you what to press, in order, and
+what you should hear when it worked. The chapters after it explain each idea
+more slowly.
 
-The rest of this guide explains **why**. This section is the other half: what to
-press, in order, and what you should hear when it worked. Every key here is
-QUILL Lite's shipped key — if you have rebound something, **Ctrl+F1** is the list
-of what you actually have.
+Every key here is the one QUILL Lite comes with. If you have changed a key,
+**Ctrl+F1** shows the keys you really have.
 
-Each recipe assumes nothing except that QUILL Lite is open.
+Each recipe assumes only that QUILL Lite is open.
 
-### Getting started
+#### Getting started
 
 **1. Open a file and save it back untouched.**
 
-1. **Ctrl+O**. Choose the file. Enter.
+1. Press **Ctrl+O**. Choose the file and press Enter.
 2. Change nothing.
-3. **Ctrl+S**.
+3. Press **Ctrl+S**.
 
-You hear the file's name on opening and a save cue on saving. The file on disk
-is byte-for-byte what it was — same encoding, same line endings, same final
-line or lack of one.
+You hear the file's name when it opens, and a save sound when it saves. The
+file is exactly what it was before: the same way of storing letters, the same
+line endings, and the same ending, with or without a blank last line.
 
 **2. Find out where you are.**
 
-1. **F6** — you land in the status bar.
+1. Press **F6**. You land in the status bar.
 2. Arrow left and right. Each cell says its name and its value: Line, Column,
    Words, Encoding, Line Endings, Format, Typing Mode, and the rest.
-3. **Escape** — back to your document, in the same place you left it.
+3. Press **Escape**. You are back in your document, in the same spot.
 
 **3. Find out what a window or a control is for.**
 
-Press **F1**. Anywhere. It tells you what window you are in, in a sentence, and
-then what the thing you are focused on does.
+Press **F1**, anywhere. You hear what window you are in, in one sentence, and
+then what the thing you are on does.
 
 **4. Take a lesson.**
 
-1. **Ctrl+Alt+F1**.
-2. Arrow to a lesson in the tree. Enter.
-3. Read the step, press **Try it** if you would rather it did the step for you,
-   then **Next**.
+1. Press **Ctrl+Alt+F1**.
+2. Arrow to a lesson in the tree and press Enter.
+3. Read the step. If you would like the app to do the step for you, press
+   **Try it**. Then press **Next**.
 
 **5. See every key QUILL Lite has.**
 
-**Ctrl+F1**. Type part of a name to narrow it.
+Press **Ctrl+F1**. Type part of a name to narrow the list.
 
-### Writing and editing
+#### Writing and editing
 
 **6. Make a heading.**
 
 1. Put the cursor anywhere on the line.
-2. **Ctrl+Alt+2** for Heading 2 (1 to 6 are **Ctrl+Alt+1** to **Ctrl+Alt+6**).
-3. **Ctrl+Alt+0** puts it back to body text.
+2. Press **Ctrl+Alt+2** for Heading 2. Levels 1 to 6 are **Ctrl+Alt+1** to
+   **Ctrl+Alt+6**.
+3. **Ctrl+Alt+0** turns it back into ordinary text.
 
-In a Markdown file this writes `## `; in HTML it writes `<h2>...</h2>`; in a
-rich text document it applies a real heading style. Arrow off the line and back
-onto it and you hear **"Heading 2"** and the heading's own words.
+In a Markdown file this writes `## `. In HTML it writes `<h2>...</h2>`. In a
+rich text document you get a real heading style. Arrow off the line and back
+onto it, and you hear **"Heading 2"** followed by the heading's words.
 
 **7. Select a whole paragraph without counting.**
 
-**Ctrl+Shift+H**. You hear "Selected paragraph" and a word count.
+Press **Ctrl+Shift+H**. You hear "Selected paragraph" and how many words.
 
-**8. Select something that does not line up with anything.**
+**8. Select something that does not line up neatly.**
 
-1. **F8** where you want the selection to start.
-2. Move however you like — arrows, **Ctrl+End**, a search, **Ctrl+G**, a
-   bookmark. Nothing held down.
-3. **Shift+F8** when you get there.
+1. Press **F8** where you want the selection to start.
+2. Move however you like: arrows, **Ctrl+End**, a search, **Ctrl+G**, a
+   bookmark. You do not hold anything down.
+3. Press **Shift+F8** when you get there.
 
-You hear how many words it took and which lines it spans.
+You hear how many words you selected and which lines it covers.
 
 **9. Get back a selection you just lost.**
 
-**Ctrl+Shift+F8**. It puts back whatever you last had selected, however you
+Press **Ctrl+Shift+F8**. Whatever you last had selected comes back, however you
 selected it.
 
 **10. Move a line up or down.**
 
-**Ctrl+Shift+Up** and **Ctrl+Shift+Down**. It tells you when it did nothing —
-"Already the first line" is a different fact from silence.
+Press **Ctrl+Shift+Up** or **Ctrl+Shift+Down**. If the line cannot move, you
+are told, for example "Already the first line", so you are never left
+wondering.
 
-**11. Move a whole section, heading and subsections and all.**
+**11. Move a whole section, with its heading and everything under it.**
 
-- One place at a time: **Alt+Shift+Up** / **Alt+Shift+Down**.
-- Somewhere far away: **Ctrl+Alt+Shift+F5** (**Move Section To...**) and choose
-  the destination from a list.
-- Rearrange several at once: **Alt+Shift+O** (**Heading Organizer**), Tab and
-  Shift+Tab to demote and promote, then close it.
+- One step at a time: **Alt+Shift+Up** or **Alt+Shift+Down**.
+- Somewhere far away: press **Ctrl+Alt+Shift+F5** (**Move Section To...**)
+  and choose where it goes from a list.
+- Several at once: press **Alt+Shift+O** (**Heading Organizer**). Use Tab and
+  Shift+Tab to make headings smaller or bigger, then close it.
 
-Each of those is **one Ctrl+Z**, not one per line.
+Each of these is undone with a single **Ctrl+Z**.
 
 **12. Change the case of something.**
 
-Select it, then: **Ctrl+Shift+U** upper, **Ctrl+Shift+K** lower,
-**Ctrl+Shift+T** title, **Ctrl+Alt+Shift+U** sentence, **Ctrl+Alt+Shift+N**
-invert.
+Select it, then press **Ctrl+Shift+U** for upper case, **Ctrl+Shift+K** for
+lower case, **Ctrl+Shift+T** for title case, **Ctrl+Alt+Shift+U** for sentence
+case, or **Ctrl+Alt+Shift+N** to invert it.
 
-**13. Put a deleted paragraph somewhere else.**
+**13. Move a deleted paragraph somewhere else.**
 
-1. Put the cursor on it and press **Ctrl+Alt+Shift+Backspace** (Delete
-   Paragraph).
-2. Go where you want it.
-3. **Ctrl+Alt+Shift+Z** (Restore Deleted Text).
+1. Put the cursor on the paragraph and press **Ctrl+Alt+Shift+Backspace**
+   (Delete Paragraph).
+2. Go to where you want it.
+3. Press **Ctrl+Alt+Shift+Z** (Restore Deleted Text).
 
-**Ctrl+Z** would have put it back where it came from. This puts it where you
-are.
+**Ctrl+Z** would put it back where it came from. This puts it where you are
+now.
 
-### Finding things
+#### Finding things
 
-**14. Find a word, and know how many there are.**
+**14. Find a word, and hear how many there are.**
 
-1. **Ctrl+F**.
-2. Type. The count updates as you type — your reader reads it because it is a
-   label, not an announcement.
-3. **Ctrl+Down** and **Ctrl+Up** hear the next and previous match *without
-   leaving the box*. **Enter** commits and puts you in the document.
-4. **F3** and **Shift+F3** carry on afterwards.
+1. Press **Ctrl+F**.
+2. Type what you are looking for. The count changes as you type, and your
+   screen reader reads it for you.
+3. **Ctrl+Down** and **Ctrl+Up** let you hear the next and previous match
+   while you stay in the box. **Enter** takes you to the match in your
+   document.
+4. Afterwards, **F3** and **Shift+F3** keep going forward and back.
 
-**15. See every match before you replace anything.**
+**15. Hear every match before you replace anything.**
 
-**Ctrl+Shift+F3** (**All Matches**). Every one, with its line, its column and
-the words around it. **Ctrl+Alt+Shift+F3** just counts them.
+Press **Ctrl+Shift+F3** (**All Matches**). You get every match, each with its
+line, its column and the words around it. **Ctrl+Alt+Shift+F3** just counts
+them.
 
 **16. Find a character you cannot type.**
 
-1. **Ctrl+F**, then Tab to **Search mode** and choose **Special characters**.
-2. Type `\t` for a tab, `\u2014` for an em dash, `\N{NO-BREAK SPACE}` for
-   exactly that.
+1. Press **Ctrl+F**, then Tab to **Search mode** and choose **Special
+   characters**.
+2. Type `\t` for a tab, `\u2014` for an em dash, or `\N{NO-BREAK SPACE}` for
+   exactly that character.
 
 **17. Go to a line, a bookmark or a heading.**
 
-**Ctrl+G**, then arrow between **Line**, **Bookmark** and **Heading** at the top
-and pick from what appears below.
+Press **Ctrl+G**. Arrow between **Line**, **Bookmark** and **Heading** at the
+top, then pick from the list below.
 
-### Keeping your place
+#### Keeping your place
 
-**18. Drop a bookmark and come back tomorrow.**
+**18. Drop a bookmark and come back to it tomorrow.**
 
-1. **Ctrl+Shift+B** where you are. Or **Ctrl+Shift+1** to **Ctrl+Shift+9** for a
-   numbered one.
-2. **F2** and **Shift+F2** walk between them; **Alt+Shift+G** lists them.
+1. Press **Ctrl+Shift+B** where you are. For a numbered one, press
+   **Ctrl+Shift+1** to **Ctrl+Shift+9**.
+2. **F2** and **Shift+F2** move between your bookmarks. **Alt+Shift+G** lists
+   them.
 
-Bookmarks are kept per file and survive closing the document.
+Bookmarks are kept for each file, and they are still there after you close the
+document.
 
-**19. Nip off to check something and come straight back.**
+**19. Pop off to check something, then come straight back.**
 
-1. **Ctrl+Shift+M** (Set Mark) before you go.
+1. Press **Ctrl+Shift+M** (Set Mark) before you go.
 2. Go anywhere.
-3. **Ctrl+M** (Pop Mark) comes back.
+3. Press **Ctrl+M** (Pop Mark) to come back.
 
-**Alt+Left** undoes the jump either way — it is the undo for navigation.
+**Alt+Left** also takes you back. Think of it as undo for moving around.
 
 **20. Skim a long document.**
 
-1. **Ctrl+Alt+H** and **Ctrl+Alt+Shift+H** step between headings.
-2. **Ctrl+Alt+L** lists them all.
-3. **Ctrl+Shift+F9** folds the section you are in; **Ctrl+Shift+F10** unfolds
-   everything.
+1. **Ctrl+Alt+H** and **Ctrl+Alt+Shift+H** move to the next and previous
+   heading.
+2. **Ctrl+Alt+L** lists all the headings.
+3. **Ctrl+Shift+F9** folds away the section you are in. **Ctrl+Shift+F10**
+   unfolds everything.
 
-### Spelling
+#### Spelling
 
 **21. Check the whole document.**
 
-**F7**. It starts where your cursor is, walks you through one word at a time,
-and carries on from the top when it reaches the end.
+Press **F7**. It starts where your cursor is, takes you through one word at a
+time, and carries on from the top when it reaches the end.
 
-**22. Fix the word you are standing on, with no dialog.**
+**22. Fix the word you are on, without a dialog.**
 
-Press the **Applications key** (or **Shift+F10**). The first **Down** arrow
-lands on a suggestion. **Enter** replaces the word.
+Press the **Applications key** (or **Shift+F10**). Press **Down** once to land
+on the first suggestion. Press **Enter** to replace the word.
 
 **23. Teach QUILL Lite a word.**
 
-**Ctrl+Alt+F9** with the cursor anywhere in the word.
+Press **Ctrl+Alt+F9** with the cursor anywhere in the word.
 
-**24. See every misspelling at once.**
+**24. Hear every misspelling at once.**
 
-**Alt+Shift+L**. Each row carries its line; Enter goes there.
+Press **Alt+Shift+L**. Each row tells you its line. Press Enter to go there.
 
-### Clipboards and reuse
+#### Clipboards and reuse
 
 **25. Keep more than one thing on the clipboard.**
 
-1. **Ctrl+Alt+Y** puts the selection in the next free tray slot (there are
-   twelve). **Alt+Shift+Y** lets you choose the slot.
-2. **Ctrl+Alt+V** pastes from any slot, an hour later if you like.
+1. **Ctrl+Alt+Y** puts what you selected into the next free slot in the tray.
+   There are twelve slots. **Alt+Shift+Y** lets you pick the slot.
+2. **Ctrl+Alt+V** pastes from any slot, even an hour later.
 3. **Ctrl+Alt+Shift+Y** empties the tray.
 
-**26. Gather six things and paste them once.**
+**26. Gather six things and paste them all at once.**
 
-1. **Alt+Shift+S** on each thing you select — it adds to one growing pile.
+1. Select something and press **Alt+Shift+S**. Do that for each piece. They
+   all go onto one growing pile.
 2. **Ctrl+Alt+Shift+G** pastes the whole pile.
 3. **Ctrl+Alt+Shift+C** empties it.
 
-**27. Type a long thing with a short one.**
+**27. Type something long by typing something short.**
 
-1. **Ctrl+Alt+A** (**Manage Abbreviations**), add a trigger and what it writes.
-2. Type the trigger and a space.
-3. Forgotten a trigger? **Alt+Shift+I** (**Snippets**) lists them all with a
-   preview, most used first.
+1. Press **Ctrl+Alt+A** (**Manage Abbreviations**). Add a short trigger and
+   the text it should write.
+2. In your document, type the trigger and a space.
+3. Forgotten a trigger? Press **Alt+Shift+I** (**Snippets**). It lists them
+   all with a preview, the ones you use most at the top.
 
-### Making it yours
+#### Making it yours
 
 **28. Change a key.**
 
-1. **Ctrl+Alt+Shift+R** (**Keyboard Manager**).
-2. Find the command. Press the chord you want. It tells you if something else
-   has it.
-3. **Check for Problems** before you leave. **Save**.
+1. Press **Ctrl+Alt+Shift+R** (**Keyboard Manager**).
+2. Find the command and press the key you want. You are told if another
+   command already uses it.
+3. Press **Check for Problems** before you leave, then **Save**.
 
 **29. Make QUILL Lite smaller.**
 
-1. **Ctrl+Alt+F10** (**Customize Features**).
-2. Choose **Notepad** in the Profile box — every checkbox below moves there and
-   then.
-3. Read the description under it. **Save**.
+1. Press **Ctrl+Alt+F10** (**Customize Features**).
+2. Choose **Notepad** in the Profile box. Every checkbox below changes to
+   match straight away.
+3. Read the description under the box, then press **Save**.
 
-**Recommended** puts the shipped answer back.
+Choosing **Recommended** puts things back the way they came.
 
-**30. Silence everything, right now.**
+**30. Silence every sound, right now.**
 
-**Alt+Shift+M**. Again to bring it back. For one event at a time,
-**Ctrl+Alt+Shift+O** (**Sound Scheme**).
+Press **Alt+Shift+M**. Press it again to bring the sounds back. To change one
+sound at a time, press **Ctrl+Alt+Shift+O** (**Sound Scheme**).
 
----
+### What you learned, and where to go next
 
-## Your documents are numbered
+You can start QUILL Lite, type and save, and you know the four keys that help
+when you are lost: **F1**, **F6**, **Ctrl+F1** and **Ctrl+Alt+F1**. You have
+also tried thirty everyday jobs: opening and saving, moving around, selecting,
+finding, spelling, clipboards and making the app your own. Every recipe is
+explained more slowly later in this guide, so when one catches your interest,
+look for it by name.
 
-QUILL Lite opens your documents **inside one window**, and numbers them. Your
-first is 1, the next is 2, and a number never changes for as long as that
-document is open — even if you close the one before it.
+If you would like to go over this with the app keeping you company, Help >
+Tutorials has two lessons for it: *Open a file, and give it back unchanged*
+and *What to press when you are lost*.
 
-That number is how you get back to it:
+When you are ready, Chapter 2, Finding your way around, shows you how your
+documents share one window and where the facts about them live.
+
+## Chapter 2: Finding your way around
+
+You have typed something, and now you want to know where everything lives.
+QUILL Lite keeps all your documents inside one window and gives each one a
+number, so you can always get back to it. In this chapter we will look at
+that window, close several documents at once, walk along the status bar where
+the facts about your document live, flip the switches on the View menu, and
+find any command just by typing part of its name. Have QUILL Lite open while
+you read, and try each thing as you meet it.
+
+### Your documents are numbered
+
+QUILL Lite opens your documents **inside one window**, and gives each one a
+number. Your first document is 1, the next is 2, and so on. A document keeps
+its number for as long as it is open, even if you close the one before it.
+
+The number is how you get back to it:
 
 | Key | What it does |
 |---|---|
 | **Alt+1** to **Alt+9** | Go straight to that document |
 | **Ctrl+Tab** / **Ctrl+Shift+Tab** | Next / previous document |
-| **Ctrl+F6** | Next document (the usual Windows key; same thing) |
+| **Ctrl+F6** | Next document (the usual Windows key, same thing) |
 | **Window menu** | Every open document, by number, with a mark on the one you are in |
 
-**One thing to know.** Because your documents sit inside one window, they do
-**not** appear in Alt+Tab. Alt+Tab shows you *QUILL Lite*, once. The four ways
-above are how you move between documents. We would rather tell you that here
-than have you hunting for a document you thought you had lost.
+**One thing to know.** Because your documents live inside one window, they do
+**not** appear in Alt+Tab. Alt+Tab shows *QUILL Lite* once. Use the four ways
+above to move between your documents. If a document seems to have
+disappeared, it has not: press **Alt+1** or open the Window menu and it is
+there.
 
 **Ctrl+N** makes a new document. **Ctrl+W** closes the one you are in.
-**Ctrl+Q** closes everything, asking about anything you have not saved.
-
-### Opening a large file, or one on a network drive
-
-A file of a megabyte or more, or any file on a network share, opens without
-freezing the window. A new document window appears at once, titled with its
-number and "Opening" and the file's name, and QUILL Lite says "Opening" and
-the name once. The document is read-only for that moment, so nothing you type
-can be lost when the file arrives; when it does, the text appears and the
-cursor is at the top, ready to read.
-
-To cancel, close that window (Ctrl+W). If the file cannot be read -- the
-share went away, the disk is busy -- QUILL Lite says why and asks whether to
-try again. Yes tries again; No closes the empty window. Smaller files on
-your own computer open the way they always have, all at once.
-
-### Opening a second QUILL Lite
-
-If you open a file from your file manager while QUILL Lite is already running, it
-opens in the QUILL Lite you already have. That is what keeps the numbering
-meaningful.
-
-If you really do want two separate QUILL Lite windows — one per monitor, say —
-start it with the extra option `--new-instance`.
-
-Both share one settings file, and neither undoes the other's preferences. When
-one saves, only the settings *it* changed are written; everything else keeps
-whatever the other one saved. If both changed the same setting, the one that
-saves last wins that setting. A preference changed in one window does not
-change the other window while it is open -- it takes effect there the next
-time QUILL Lite starts -- so nothing about your setup shifts under you.
-
----
-
-## Four kinds of document
-
-Every document is one of four kinds. The title bar names the first two; the
-status bar's **Format** cell names all four.
-
-**Plain text** is like Notepad. One font, no formatting, no markup. Text you
-paste in arrives as plain text. This is what a `.py`, a `.conf` or a log file
-is, and it is what you want when another program is going to read the file.
-
-**Markdown** is plain text that means something: `#` starts a heading, `-`
-starts a bullet, `**` makes a word bold. QUILL Lite writes those for you — see
-[Formatting](#formatting) — and reads them back, so the caret can tell you you
-have arrived at a Heading 2 or walked into a list of five.
-
-**HTML** is the same idea in tags: `<h2>`, `<ul>`, `<strong>`. Everything
-Markdown gets, HTML gets, in HTML's own spelling.
-
-**Rich text** is like WordPad. Bold, italic, headings, alignment, bullet points,
-line spacing. It saves as a Rich Text file, which Word and WordPad both open.
-
-QUILL Lite chooses the kind from the file's name, and it is only ever a first
-guess:
-
-| The file is called | You get |
-|---|---|
-| `notes.rtf` | Rich text |
-| `notes.md`, `.markdown`, `.mdx` — and `.txt` | Markdown |
-| `page.html`, `.htm`, `.xhtml` | HTML |
-| `build.py`, `nginx.conf`, `app.log`, anything else | Plain text |
-| nothing yet — a new, unsaved document | Markdown |
-
-`.txt` and a brand-new document are Markdown because that is what somebody
-typing `## Notes` into one means. A `.py` or a `.conf` is plain text because in
-those a `#` is a **comment** and a `-` is a flag, and an editor that announced
-"Heading 1" on most lines of a build script would be exhausting.
-
-### Saying otherwise
-
-The guess is not binding. Writing HTML in a `.txt` scratch file is an entirely
-reasonable thing to do, and there are three ways to say so:
-
-- **Alt+Shift+F** rings through all four kinds — plain text, Markdown, HTML,
-  rich text, and round again. Each stop says its own name, so you press it until
-  you hear the one you meant. This is the fast way.
-- **Ctrl+Alt+F6** (**Format ▸ Document Language**) goes straight to one, and
-  tells you what each choice will do before you make it.
-- **Enter on the status bar's Format cell** rings on to the next kind, exactly
-  as Alt+Shift+F does — because the bar is where you notice the answer is
-  wrong, and the fix should not mean leaving it.
-
-Moving between plain, Markdown and HTML changes **nothing in your document** —
-it changes what the keys write from now on. Going to or from rich text is a real
-conversion, and it asks first, because it rewrites what is in the window.
-
-### What the conversion keeps
-
-Going **out of rich text** turns the formatting into Markdown rather than
-throwing it away. A Heading 2 becomes `## `, a bold word becomes `**bold**`, a
-bullet list becomes `- ` lines. The document is then a Markdown document, and
-says so in the **Format** cell — so heading navigation, the headings list and
-the outline all still find everything they found a moment ago. If the document
-holds something Markdown cannot carry — a table, a picture, a footnote —
-QUILL Lite names it before it asks.
-
-Until version 1.0 this direction took the letters and left everything else. An
-afternoon of headings and bold became a wall of unmarked text, and the only
-announcement was "Plain text mode".
-
-Going **into rich text** converts in the other direction: a Markdown document's
-`## Title` becomes a real Heading 1, `**bold**` becomes really bold, and an HTML
-document goes through Markdown on the way. A **plain text** document is left as
-characters, deliberately — the asterisks in a shopping list are not bold, and
-there would be no way back from deciding they were.
-
-**What comes with you, in both directions.** Headings, bold, italic, underline,
-strikethrough, superscript and subscript, font family and size, text colour and
-highlight, bullet and numbered lists, links, code, block quotes, alignment, line
-spacing, indents, spacing before and after, named styles, page breaks, tables,
-pictures and horizontal rules. Underline used to be the exception — Markdown has
-no underline syntax, so the tag picker writes `<u>text</u>`, and the rich-text
-writer did not recognise it, which put those four characters on the page beside
-the word they were meant to be formatting. It does now, and so do
-`~~strikethrough~~`, page breaks and tables, all of which used to be lost on the
-way.
-
-**A rich text file opens properly in Word.** Headings carry Word's own heading
-styles, and Quote, Title, Subtitle and Caption are written under the names Word
-knows them by — so the style box says Quote rather than showing text that merely
-happens to be indented and italic.
-
-Your file keeps its name. Because a rich document cannot be written over a
-`.txt`, the next **Ctrl+S** offers you `notes.rtf` instead of `notes.txt` — the
-name filled in, ready to accept. Nothing is written under a name that does not
-match what is in it.
-
-The choice lasts as long as the window. It describes what you are typing, not
-what the file is.
-
----
-
-## Saving
-
-**Ctrl+S** saves. **Ctrl+Shift+S** saves under a new name.
-
-QUILL Lite makes you one promise here: **open a file, change nothing, save it,
-and it is exactly the file you started with.** Nothing is quietly tidied up
-behind your back.
-
-To keep that promise it remembers three things about every file it opens, and
-puts them back the same way:
-
-- **How the text is stored** — different files store letters and accents
-  differently, and QUILL Lite keeps whichever way yours already used.
-- **How the lines end** — files made on Windows and files made on other systems
-  mark the end of a line differently, and QUILL Lite does not change yours.
-- **Whether the file ended with a blank line** — if it did not, it will not
-  suddenly start.
-
-You can see both of the first two in the status bar (**F6**), and you can
-deliberately change them from **Tools ▸ File Encoding and Line Endings**
-(**Ctrl+Alt+E**) when you actually want to — for instance when somebody needs a
-copy of an old file in a newer format. The change takes effect the next time you
-save.
-
-### How this file is written: encoding and line endings
-
-**Tools ▸ File Encoding and Line Endings...** (**Ctrl+Alt+E**) is one window for
-the two facts above, and it is the same window QUILL opens from **File ▸ File
-Format...**. Neither list is applied until you save; the window says so.
-
-**Encoding** offers UTF-8 for anything new, UTF-8 with BOM for the Windows tools
-that expect one, UTF-16, and Windows-1252 for the older `.txt` files that are in
-it. **Line endings** offers CRLF, which is what Windows programs write and what a
-new QUILL Lite document is born with, and LF, which is what Unix, macOS and most
-build tools expect.
-
-A file that arrived in something neither list offers keeps it. A UTF-16
-big-endian file, or a file whose lines end with a single CR the way classic Mac
-OS wrote them, shows a **keep as is** row at the top of the list and starts in
-it — so answering the window with Enter cannot convert a file you only opened to
-read. Until September 2026 the list quietly started on its first row instead: a
-CR file read "CRLF", and confirming the window rewrote every line ending in it.
-A big-endian file had a subtler version of the same problem — both byte orders
-were read through the one codec that always *writes* little-endian, so saving a
-file you had not otherwise touched swapped every pair of bytes in it.
-
-### When a character will not fit
-
-Older files store only a limited set of letters. If you type an em dash, a
-curly quote or an emoji into a file that cannot hold one, QUILL Lite asks before
-it saves rather than after:
-
-> 3 characters cannot be saved as Windows-1252. Save as UTF-8 instead?
-
-- **Yes** saves the file as UTF-8 and keeps every character. The **Encoding**
-  cell in the status bar changes to match, because from now on the file really
-  is UTF-8.
-- **No** saves it the way it already was, and those characters become question
-  marks. Sometimes that is what you want — a file something else has to read
-  back.
-- **Cancel** stops, and nothing is written.
-
-Until version 1.0 there was no question. The characters became question marks,
-QUILL Lite said "Saved", and the only way to find out was to read that line
-again.
-
-### Saving an HTML page as Markdown
-
-**Ctrl+Shift+S** offers **Markdown (*.md)** in its list of types, and in one
-case that is a real conversion rather than a new name: if the document you are
-saving is **HTML**, the tags are turned into Markdown as it saves. A heading
-becomes `#`, bold becomes `**bold**`, a list becomes `-` lines, and links keep
-both their text and their address. QUILL Lite says **"Converted HTML to
-Markdown"** when it happens, and the document in front of you changes to match
-the file -- the window and the file never disagree about what you just saved.
-
-Tags Markdown has no way to write are dropped and their text kept, so nothing
-you typed disappears. If the conversion would produce nothing at all -- a page
-that is only a comment, say -- QUILL Lite keeps your text exactly as it was and
-tells you so, rather than writing an empty file.
-
-The conversion happens **to the file**, and the window follows only once the
-file is safely written. If the save fails — the file is locked, the disk is
-full — the document in front of you is untouched, still HTML, with its undo
-history intact. The same is true of flattening a rich text document to plain:
-QUILL Lite asks, writes the plain file, and only then drops the formatting from
-the window.
-
-Saving a plain text or Markdown document as `.md` changes nothing at all: plain
-text is already what it claims to be, and Markdown already is Markdown. A
-**rich text** document is not offered Markdown, because turning real formatting
-back into `#` and `**` means guessing which bold lines were meant as headings.
-Save it as plain text first -- QUILL Lite asks before it drops the formatting --
-and the Markdown row is waiting.
-
-### If something goes wrong
-
-While a document has changes you have not saved, QUILL Lite keeps a copy of it
-aside, about every thirty seconds. That copy sits **beside** your file and never on top
-of it.
-
-If QUILL Lite or your computer stops unexpectedly, that work is offered back to
-you the next time you start, in its own document. It comes back **the way it
-was**: a file stored in an older encoding, or written with Unix line endings,
-is still that file after a recovery. The copy kept aside is always written in
-one format, because it has to hold whatever you typed — but what it records
-alongside is what *your* document was, and that is what is put back.
-
-If a copy cannot be read back — a damaged disk, a file something else is
-holding — QUILL Lite says so and leaves it exactly where it is. The window does
-not take your file's name, and the copy is offered again next time. It is still
-the only copy of that work.
-
-Save it, or close normally, and the copy is deleted. So there is never anything
-in there except work you actually need.
-
-**What you are offered is tidied first, and you are told.** Before the window
-opens, QUILL Lite drops three kinds of row: copies that are identical to each
-other (a crash can write the same work several times, and that is one
-document, not four), copies nobody has come back for in **thirty days**, and
-untitled documents if you have turned those off in Preferences. If everything
-it found was one of those, no window opens and QUILL Lite **says so** --
-"Tidied up unsaved work from last time" -- because silence there is
-indistinguishable from work having vanished.
-
-The window itself lists what is left, one row each, with a checkbox, and a
-read-only **What this would do** field you can arrow through. Six buttons:
-**Restore Checked**, **Restore All**, **Not Now** (which changes nothing and
-offers the same list next time), **Discard Checked**, **Discard Everything**,
-and **Never Offer Untitled** — that last one for somebody who uses QUILL Lite as
-a scratchpad and does not want yesterday's throwaway notes back. It is a
-preference, not a trapdoor: **Offer untitled unsaved work back after a crash**
-in Preferences turns it on again.
-
-### Going back to an earlier version
-
-There is a separate **timestamped backups** option (**Tools ▸ Customize
-Features**), which keeps a dated copy every time you save. That is for the
-paragraph you deleted an hour ago rather than for a crash. It starts switched
-off, because it does fill up a folder.
-
-Turn it on and **File ▸ Earlier Versions...** (**Ctrl+Alt+Shift+E**) lists them,
-newest first, as "Today at 4:12 PM — 2,341 words". Up to twenty are kept per
-document; after that the oldest go.
-
-The word count is there to be compared rather than read. Two saves a minute
-apart are otherwise almost impossible to tell apart by ear, and the version that
-is suddenly two thousand words shorter is usually the one you are hunting for.
-
-There are two ways to take one:
-
-- **Restore** puts that version into the window you are in. It does **not** save,
-  so the file on disk is untouched until you decide, and **Ctrl+Z** undoes it. A
-  restore chosen by mistake costs you one keystroke.
-- **Open a Copy** puts the old version in a new untitled window and leaves the
-  document you are working on completely alone. Use this one when the question
-  is "what did this say yesterday" rather than "put yesterday back".
-
-Until version 1.0 QUILL Lite wrote these files and gave you no way to read one:
-they were there, correctly dated, and reachable only if you knew where the app
-kept them. If you have had backups switched on, everything from before this
-version is in the list too.
-
----
-
-## Finding things
-
-| Key | What it does |
-|---|---|
-| **Ctrl+F** | Find |
-| **F3** / **Shift+F3** | Find next / previous |
-| **Ctrl+H** | Replace |
-| **Ctrl+G** | Go To: a line, a bookmark or a heading |
-
-When a search runs off the end of the document it starts again at the top, and
-it tells you it has done so. That matters more than it sounds: without it, a
-document with one match sounds exactly like a document with none, every time you
-press F3.
-
-### How many are there?
-
-The Find window keeps a running count of what you have typed so far, before you
-press anything. Type three letters and it says how many matches there are; add a
-fourth and the number changes. Your screen reader reads it as it changes,
-because it is a label rather than an announcement -- a count spoken on every
-keystroke would talk over the typing it is describing.
-
-**Ctrl+Down** and **Ctrl+Up** step through the matches *without leaving the
-search box*, so you can hear the next one and still adjust what you typed.
-Enter is what commits and puts you in the document.
-
-Outside the window, **Ctrl+Alt+Shift+F3** counts the current search anywhere,
-and **Ctrl+Shift+F3** opens **All Matches**: every match in the document, in
-order, each with its line and column and the words around it. That is the list
-you want before a Replace All, because it is the only way to see what you are
-about to change rather than finding out afterwards.
-
-## The Insert menu
-
-Everything that puts something into your document that is not typing.
-
-| Key | What it does |
-|---|---|
-| **F5** | Today's date and the time |
-| **Ctrl+Shift+F2** | Special Character — 357 of them, in 15 groups, searchable by name or code point |
-| **Alt+.** | Emoji — search or browse, with a description of each one |
-| **Shift+Enter** | A line break that does not start a paragraph |
-| **Ctrl+Alt+I** | Markdown Tag — the whole Markdown vocabulary |
-| **Ctrl+Alt+O** | HTML Tag — 111 tags and 20 whole form fields, searchable by what they do |
-
-These were spread through Edit before there were six of them. Insert sits
-**before Format** on the bar for the reason Word puts it there: you insert a
-thing and then you format it, so the menus are in the order the work happens.
-Every key is unchanged.
-
-### Emoji — Alt+.
-
-QUILL's own picker, and the same key. Search by name, by keyword, by what it
-*looks like*, or by a typed smiley — `:)` finds the smiling face and `<3` finds
-the heart. Or browse by category, starting with **Favourites** and **Recent**.
-
-Every emoji comes with a **written description** of what it actually shows,
-which is the whole point: a picture wall is exactly the shape of control that
-cannot be used without sight, so this is a list you arrow through with a
-description pane beside it. What you insert is announced by name, because a bare
-emoji character is read as anything from its own name to silence depending on
-your synthesiser.
-
-It works in every kind of document, rich text included. An emoji is a character,
-not markup.
-
-### The two tag pickers
-
-**Exactly one of them is ever available**, and it is whichever your document's
-language is. The other is **greyed out rather than hidden** — a greyed row tells
-your reader it is unavailable the moment you arrive on it, while a row that has
-vanished leaves you hunting the menus for something you know the app has. Press
-the key anyway and it tells you what the document is, what it would need to be,
-and that **Ctrl+Alt+F6** is how to change that.
-
-**Markdown Tag (Ctrl+Alt+I)** offers bold, italic, inline code, a fenced code
-block, the six heading levels, bullet, numbered and task lists, blockquote,
-link, image, table and footnote. Type to narrow the list. Link and Image ask for
-the address afterwards.
-
-**HTML Tag (Ctrl+Alt+O)** offers **111 tags and 20 whole form fields**, and
-**searches by what they do as well as what they are called**: type "dropdown"
-and find both a finished labelled dropdown and the bare `select`, type
-"glossary" and find `<dl>`, type "acronym" and find `<abbr>`, type "subtitles"
-and find `<track>`. For a bare tag you can then give it attributes —
-`class=note; id=summary; aria-label=Summary` — and Enter on an empty box skips
-that step, because an `<h2>` needs none. A whole form field skips the box
-entirely: it arrives with the attributes that make it work.
-
-Anything selected is wrapped. Otherwise the cursor lands between the tags.
-
-### Whole form fields, wired up
-
-The HTML picker's top rows are not tags — they are **finished controls**. Choose
-**Form field: dropdown** and you get a label, a `for` that matches the field's
-`id`, the `<select>` and three `<option>`s, all at once.
-
-This is where the picker earns its place. Inserting `<select>` on its own is the
-easy half; the half that matters is the wiring, and the wiring is invisible. A
-missing `for` renders identically to a present one. A radio group without a
-shared `name` looks exactly like one with — except every button can be on at
-once. Two fields that share an `id` look perfect until somebody clicks the
-second label and the first field takes focus. None of that is something you can
-check by looking, which is precisely why it should not be left to memory.
-
-So every one of these arrives complete:
-
-| Choose | You get |
-|---|---|
-| **text**, **email**, **password**, **telephone**, **web address**, **number**, **date**, **search**, **file upload** | a labelled input of that type, with `autocomplete` where the browser can help |
-| **long answer (textarea)** | a labelled, five-row text area |
-| **dropdown (select)** | label, select, and an empty first option so it cannot submit an answer nobody gave |
-| **dropdown with groups** | the same, with two `<optgroup>`s |
-| **checkbox** | box first, then its label — the convention, and the label becomes part of the click target |
-| **checkbox group** | a `<fieldset>`, a `<legend>`, and boxes sharing one `name` |
-| **radio group** | the same, with three radios, one shared `name`, and exactly one default |
-| **autocomplete (input + datalist)** | an input joined to its own suggestion list |
-| **required, with hint and error** | a hint and an empty error, both named by `aria-describedby`, plus `aria-invalid` and `role="alert"` |
-| **submit button** | a `<button type="submit">` with real text, not an `<input value="">` |
-| **whole form** | a contact form: fieldset, legend, three labelled fields, and a submit |
-| **grouped fields (fieldset)** | an empty fieldset with a legend, for grouping what you already have |
-
-**Select a word first and it becomes the label** — and the `id` is made from it,
-so the two agree. Select "Postcode", choose **Form field: text**, and you get a
-Postcode field with `id="postcode"` and `for="postcode"` already matching.
-
-**The `id` is checked against your document first.** Insert a second email field
-and it will be `email-2`, not a duplicate of the first. That one line of
-behaviour is the difference between a form that stays accessible when it is
-copied and one that stops being so without anybody noticing.
-
-The bare tags are all still there, one row further down, for when a bare tag is
-what you meant.
-
----
-
-### Typing things there is no key for
-
-**Insert ▸ Special Character...** (**Ctrl+Shift+F2**) opens a picker for
-the 357 characters a keyboard has no key for. Two ways in, and the window opens
-on the first one:
-
-- **Type what you are after.** The search box takes part of a name -- `dash`,
-  `euro`, `acute`, `arrow`, `apostrophe` -- or one of the words Unicode does not
-  use but people do: `gbp`, `sterling`, `copyright`, `eszett`, `micro`. Press
-  **Enter** to move into the results.
-- **Or clear the box and browse a group.** Fifteen of them: Whitespace, Dashes
-  and hyphens, Quotes, Invisible and control, Typography, Legal and reference
-  marks, Currency, Maths and units, Fractions, Superscripts and ordinals,
-  Arrows, Accented letters (small and capital, listed separately), Greek
-  letters, and Punctuation from other languages.
-
-The results list has three columns -- the character, its name, and its code
-point -- and the **Description** pane below updates on every row you arrow onto,
-with the same detail **Character Details...** gives for a character already in
-the document. The code point column is what tells apart rows that sound the
-same: "Thin space" and "Hair space" are U+2009 and U+200A.
-
-**Enter inserts the character you are on**, and QUILL Lite **reads back what it
-put in** -- "Inserted — U+2014 Em dash". That is not a nicety: most of this list
-is invisible on the page, so without the read-back the command would be a
-keystroke after which something you cannot see may or may not have appeared.
-
-**The search box is also a code-point box.** Type `2014`, `U+2014` or `d8212`
-and the em dash is the first result. A code point that is in no group at all
-still finds its character, so the picker reaches everything Unicode has and not
-only the 357 that are grouped.
-
-QUILL has the same picker on the same key, **Ctrl+Shift+F2**, over the same
-list.
-
-### Moving your settings to another computer
-
-**Tools ▸ Back Up Settings...** (**Ctrl+Alt+F11**) writes your configuration
-to a `.qsf` file. **Tools ▸ Restore Settings...** (**Ctrl+Alt+F12**) reads
-one back.
-
-The file holds preferences, not a picture of this computer. Your recent-files
-list, the session QUILL Lite restores at startup, the window size and the last
-time it looked for an update are all **left out on purpose** — carrying them to
-another machine would give you an editor pointing at files that are not there.
-The backup tells you how many locations it left behind.
-
-Restoring tells you what was different: how many settings came across, how many
-have been added to QUILL Lite since the file was written (those keep their
-defaults), and how many the file had that this version does not recognise. If
-the file has nothing QUILL Lite recognises at all, nothing is changed — a wrong
-file should not reset your editor.
-
-QUILL has the same thing, on buttons in its Preferences window. The two products
-use the same file extension but do not read each other's backups: they are
-different editors with different settings.
-
-### Ending a line without starting a paragraph
-
-**Insert ▸ Line Break** (**Shift+Enter**, the same chord Word uses) ends
-the line you are on and starts the next one **without** starting a new
-paragraph.
-
-That distinction matters in Markdown and nowhere else is it visible. A blank
-line between two lines makes them two paragraphs, which most renderers show with
-a gap. A hard break makes them two lines of one paragraph, which is what you
-want for an address, a verse, or a run of scene-break lines that should sit
-tight against each other.
-
-QUILL Lite writes the break in whichever spelling **Markdown line break style**
-names in Settings, and **says which one it used** — the default is a backslash
-at the end of the line, because the alternative is two trailing spaces, which
-are invisible on screen, silent to a screen reader, and stripped by many tools
-when they save a file. If you have ever added two spaces to the end of a line
-and had nothing happen, that is why.
-
-QUILL has the same command on the same key.
-
-### Searching for things you cannot type
-
-The Find and Replace windows have a **Search mode** with three settings.
-
-**Normal text** is the ordinary one: what you type is what is looked for,
-punctuation and all.
-
-**Special characters** lets you write the characters there is no key for. `\t` is a tab,
-`\n` a line break, `\u2014` an em dash, and `\N{NO-BREAK SPACE}` is exactly
-what it says. This is the companion to **Describe Character**: that tells you
-which invisible character you are standing on, and this is how you then find
-every other one like it, or replace them all with an ordinary space.
-
-**Regular expression** treats what you typed as a search pattern -- `.` matches
-any character, `*` repeats the thing before it, `[abc]` matches any one of
-those, `^` and `$` are the start and end of a line. If the pattern is not valid,
-QUILL Lite says which character is wrong rather than quietly finding nothing: a
-search that failed and a search that found nothing are different problems, and
-only one of them is fixed by retyping.
-
-Whole word works with all three. In regular expression mode it wraps the whole
-pattern, so `cat|dog` means "the word cat or the word dog", not "the word cat,
-or dog anywhere".
-
----
-
-## Going somewhere
-
-**Ctrl+G** opens **Go To**, which is Word's rather than Notepad's: one window,
-and a choice of what to go to. Arrow between **Line**, **Bookmark** and
-**Heading** at the top, and what is below follows — a number box for a line, a
-list of places for the other two. Bookmark rows are led by their digit and
-heading rows by their level, so you can pick one out by its first word.
-
-**Alt+Shift+G** and **Ctrl+Alt+L** still go straight to the bookmark list and
-the heading list. Those are faster when you already know which kind you want;
-Ctrl+G is the one to press when you do not.
-
----
-
-## Bookmarks
-
-A bookmark is a place you meant to come back to.
-
-| Key | What it does |
-|---|---|
-| **Ctrl+Shift+B** | Drop a bookmark in the next free slot |
-| **Ctrl+Shift+1** to **Ctrl+Shift+9** | Set that numbered bookmark |
-| **F2** / **Shift+F2** | Next / previous bookmark |
-| **Alt+Shift+G** | The bookmark list — go to one, or remove one |
-| **Ctrl+Alt+B** | Clear them all |
-
-Bookmarks follow the text as you edit around them, so they stay on the right
-words rather than drifting.
-
-### They are still there tomorrow
-
-Close the document and open it again and your bookmarks are where you left them,
-along with the place the cursor was. You do not have to do anything to keep
-them.
-
-This matters more than it sounds. The reason to have bookmarks at all is that
-there is no scrollbar thumb to glance at and no way to see at a glance where you
-are in a long file -- and that does not stop being true when you close the
-window. Marking nine places and losing them on the way out is the same loss as
-never marking them, just later.
-
-Two details worth knowing:
-
-- **A document you have never saved is not remembered.** There is no filename to
-  remember it by. Save it once and its bookmarks are kept from then on.
-- **Nothing is written next to your file.** No stray sidecar file appears in your
-  folder; the list lives in QUILL Lite's own settings folder, keyed by the file's
-  location. If the file has been shortened by something else since you last had
-  it open, bookmarks past the new end are pulled back to the end rather than
-  sending you nowhere.
-
-You can turn all of this off with the rest of bookmarks in **Tools ▸ Customize
-Features**, and then nothing is written at all.
-
-### The one with no number
-
-| Key | What it does |
-|---|---|
-| **Ctrl+Alt+J** | Set Temporary Bookmark — drop a pin where the cursor is |
-| **Ctrl+Shift+J** | Go to Temporary Bookmark — go back to it |
-
-There is one more bookmark, and it is a different kind of thing. Use it when you
-are about to go and look something up and you want to come straight back: press
-Ctrl+Alt+J before you go, Ctrl+Shift+J when you are done.
-
-It has no number, no label and no row in the list, and setting it again simply
-moves it — nothing asks whether you meant to. It is not kept when you close the
-document. That is the point: a place you did not name is a place you did not
-mean to keep, and having to name one is exactly the interruption you were trying
-to avoid.
-
-QUILL has had these two keys for years and they are the same two keys here.
-
-### Going back where you came from
-
-| Key | What it does |
-|---|---|
-| **Alt+Left** | Go back to where you were before the last jump |
-| **Alt+Right** | Go forward again |
-
-They are at the top of the **Navigate** menu, above the headings and the
-bookmarks, and they belong to neither of those — so switching both of those off
-does not take Back and Forward with them. They are always there.
-
-Every jump QUILL Lite makes is remembered: going to a line, following a heading,
-picking something out of the heading list or the bookmark list, and landing on a
-search hit. **Alt+Left** takes you back to where you were standing before it.
-
-It is the undo for moving about, and the keys are the ones every web browser and
-file window has used for thirty years. Without it, pressing F3 to check a word
-somewhere else in the document is a one-way trip: you can find your way back
-only if you happened to know the line number you were on, which is exactly the
-thing you were never told.
-
-Unlike bookmarks, this is only remembered while the window is open. It is about
-where you have been in this sitting, not about the document.
-
----
-
-## Selecting
-
-Holding Shift and tapping an arrow key selects one character at a time. That is
-right for two letters and miserable for four paragraphs — you press, and press,
-and have no idea where you have got to.
-
-So **Edit ▸ Selection** gives you three better ways. Everything in it tells you
-how much it took, which is the part that matters: "Selected paragraph, 412
-characters" is something you can act on, where a silent selection is one you
-have to test by pressing something you might regret.
-
-### Start a selection and walk to the end of it
-
-This is the one to learn first. Press **F8**, then move however you like —
-arrows, Home, End, Page Down, Ctrl and an arrow — and the selection follows you
-from where you started. Press **Shift+F8** when you get there.
-
-No modifier held down the whole way, and no counting. It is the answer whenever
-the thing you want does not line up neatly with a word or a paragraph.
-
-| Key | What it does |
-|---|---|
-| **F8** | Start selecting from here |
-| **Shift+F8** | Finish, and say how much was taken |
-| **Ctrl+Alt+F8** | **Toggle Selection Marker** — drop or pick it up, without moving the cursor |
-| **Ctrl+Shift+F8** | Put back the selection you just had |
-| **Alt+Shift+F8** | Go to the beginning of what is selected |
-
-#### A Shift that stays down — Alt+Shift+F9
-
-**Extend Selection Mode** is the other way to do the same job, and which one
-suits you is a matter of taste rather than of which is better.
-
-Press **Alt+Shift+F9** and QUILL Lite says "Extend selection mode on" and
-tells you where you are. From then on every arrow, Home, End, Page Down and
-Ctrl+arrow *extends* instead of moving — no modifier held, and, the part that
-matters, **no "selected" from your screen reader on every press**. That is what
-makes holding Shift and pressing Down forty times so unpleasant, and it is the
-whole reason this mode exists.
-
-Press it again, or **Escape**, to stop. Typing anything that is not a movement
-key finishes the selection and replaces it, exactly as it would have if you had
-been holding Shift.
-
-The difference from **F8**: F8 marks a spot and computes the span when you press
-Shift+F8, so between the two you can use *anything* — Find, Go To Line, a
-bookmark. This mode is live, so what you have is always what is highlighted.
-Both are here because both are genuinely the better answer sometimes.
-
-**Ctrl+Shift+F8** is worth remembering for the moment an arrow key has just
-thrown away a selection that took six keystrokes to build. It puts back whatever
-you last selected, however you selected it — F8, Select Word, Select Paragraph,
-Grow, or simply clearing one by accident.
-
-#### What you hear when something is selected
-
-Every selection says the same thing in the same order: **what** it took and
-**how many words** — "Selected paragraph, 41 words". A word count is a size you
-can picture; a character count is a number you then have to divide.
-
-The **F8** span is the one exception, and it says more because it has to: it
-reaches between two arbitrary points, so "Selected 120 words, lines 14 to 31"
-is the only way to know how far it went. Everything else is named by its scope
-already.
-
-QUILL says exactly the same sentences. One of the two used to add a character
-count and the other did not, so the same key reported the same fact two ways
-depending on which editor you happened to be in.
-
-### Take a whole word, line or paragraph at once
-
-| Key | What it does |
-|---|---|
-| **Ctrl+Shift+W** | Select the word |
-| **Ctrl+Shift+E** | Select the line |
-| **Ctrl+Shift+H** | Select the paragraph |
-| **Ctrl+Space** | Select the sentence |
-| **Ctrl+Alt+Shift+B** | Select the block — the run between blank lines |
-| **Ctrl+Shift+X** | Grow the selection outwards a step |
-| **Ctrl+Alt+Shift+X** | Shrink it back in a step |
-| **Ctrl+Shift+A** | Clear the selection, staying where you are |
-| **Ctrl+A** | Select everything |
-
-You do not need to know where any of these begin. Growing goes word, line,
-sentence, paragraph, block, whole document, and says which one it took each
-time. Shrinking walks back the other way — so you can over-press **Ctrl+Shift+X**
-without it costing you anything.
-
-### Marks — where you were a moment ago
-
-A mark is not a bookmark. A bookmark is a place you mean to keep. A mark is
-where you were standing before you went off to check something.
-
-| Key | What it does |
-|---|---|
-| **Ctrl+Shift+M** | Set a mark here |
-| **Ctrl+M** | Go back to the last mark |
-| **Alt+M** | List your marks and pick one |
-| **Ctrl+Alt+X** | Swap between the cursor and the mark, selecting what is between |
-
-Twenty marks are kept, and marking the same place twice does not use up two of
-them.
-
-A mark **moves with your text**. Drop one on a paragraph, insert three
-paragraphs above it, and Ctrl+M still takes you to that paragraph — the mark
-remembers the words around it, not a count of characters from the top.
-
-And **Alt+Left comes back**. Every way of reaching a mark — Ctrl+M, choosing one
-from the list, Ctrl+Alt+X — is a jump the Back key can undo, the same as a
-bookmark or a Go To.
-
-### Two more
-
-**Ctrl+Shift+Y** reads back what is currently selected. There is no glance that
-confirms you took what you meant to, and the next key you press might replace
-it. Long selections are summarised rather than read out in full.
-
-**Ctrl+Alt+Q** puts a second copy of the selection right after the first — or
-duplicates the line you are on if nothing is selected.
-
-### The ones Windows gives you anyway
-
-These work in QUILL Lite as they do everywhere, and have no menu row because they
-need none:
-
-| Key | What it does |
-|---|---|
-| **Shift+Home** / **Shift+End** | Select to the start / end of the line |
-| **Ctrl+Shift+Home** / **Ctrl+Shift+End** | Select to the start / end of the document |
-| **Shift** and an arrow | Select one character, or one line, at a time |
-| **Ctrl+Shift** and Left or Right | Select a word at a time |
-
----
-
-## Formatting
-
-These are WordPad's keys, deliberately unchanged.
-
-**The same key, the document's own answer.** Ctrl+B used to say "Not available
-in plain text. Press Alt Shift F to switch to rich text", which is true and
-unhelpful — somebody writing Markdown does not want rich text, they want two
-asterisks, and they know it. So what Ctrl+B writes now depends on what kind of
-document you are in:
-
-| In a | **Ctrl+B** writes | **Ctrl+Alt+2** writes |
-|---|---|---|
-| Markdown document | `**bold**` | `## Heading` |
-| HTML document | `<strong>bold</strong>` | `<h2>Heading</h2>` |
-| Rich text document | real bold | a 16-point bold paragraph |
-| Plain text document | nothing, and says why | nothing, and says why |
-
-Select a word first and it is wrapped. With nothing selected the markup goes in
-empty and **the cursor lands in the middle of it**, ready to type — which
-matters, because otherwise you would be typing after the closing tag with no way
-to see that you were.
-
-In Markdown and HTML the announcement names the *markup* rather than the effect
-— "Bold in Markdown", not "Bold on". Nothing on the screen went bold; two
-asterisks appeared, and you need to know which of the two happened.
-
-HTML gets `<strong>` and `<em>`, never `<b>` and `<i>`. They are not synonyms to
-the thing that reads them out: `<strong>` carries importance into the
-accessibility tree, and `<b>` carries only a typeface.
-
-Applying a heading **rewrites the line** rather than adding to it. Pressing
-Ctrl+Alt+2 on a line that is already `### Notes` gives you `## Notes`, not
-`## ### Notes` — and an `id=` on an HTML heading is carried across, because it
-is very often the anchor somebody else's link points at.
-
-The rest of the Format menu — alignment, line spacing, font — is rich text only,
-and says so when it cannot run. Lists are not: **Ctrl+Shift+L** works in a rich
-text document and in a Markdown one.
-
-**The keys the editing control brings with it.** Every QUILL Lite document is
-built on the same Windows editing control that WordPad uses, because that is what
-gives your screen reader and your braille display a text surface worth reading.
-The cost is that the control has its own keyboard: **Ctrl+U** underlines,
-**Ctrl+E**, **Ctrl+L**, **Ctrl+R** and **Ctrl+J** re-align, **Ctrl+=** and
-**Ctrl+Shift+=** move the baseline, and a few more besides. In a rich text
-document that is exactly right, and they work.
-
-In a Markdown, HTML or plain document they used to *appear* to work. The
-formatting was really applied — it was on the screen and on the undo stack — but
-the document was not marked as changed, nothing was announced, and none of it
-was saved. A document that differs from the file it is about to become, with
-nothing in the app willing to mention it, is the worst version of this bug for
-somebody who cannot see the screen.
-
-Now the key is swallowed in a document that has no formatting, and QUILL Lite says
-so once:
-
-> Underline has no meaning in a plain text document.
-
-Once per effect per document, not once per press: a key that does nothing and
-explains nothing is indistinguishable from a key that is broken, and a key that
-explains itself on every press becomes noise inside a minute. QUILL says the same
-sentence for the same key, from the same place in the shared code.
-
-**Ctrl+Shift+L rings**, the way WordPad's own button does: bulleted list,
-numbered list, no list, round again. Each stop says its own name, so you press it
-until you hear the one you meant. In rich text the control draws the markers and
-renumbers them for you; in Markdown it writes `- ` and `1. ` on the lines you
-have selected — and only on those, never on the rest of the file.
-
-| Key | What it does |
-|---|---|
-| **Ctrl+B**, **Ctrl+I**, **Ctrl+U** | Bold, italic, underline |
-| **Ctrl+Shift+.** / **Ctrl+Shift+,** | Bigger / smaller text |
-| **Ctrl+L**, **Ctrl+E**, **Ctrl+R**, **Ctrl+J** | Left, centre, right, justify |
-| **Ctrl+Shift+L** | Lists: bulleted, numbered, none, round again |
-| **Ctrl+1**, **Ctrl+5**, **Ctrl+2** | Single, one-and-a-half, double spacing |
-| **Ctrl+Alt+1** to **Ctrl+Alt+6** | Heading 1 to 6 |
-| **Ctrl+Alt+0** | Back to ordinary text (removes the heading) |
-| **Ctrl+Shift+N** | Normal Text: take *all* formatting off |
-| **Ctrl+Shift+D** | Describe the formatting where the cursor is |
-
-They are gathered in **Format ▸ Headings**, where the digit in the menu is the
-digit in the shortcut.
-
-A heading is bold text at its own size — 20, 16, 14, 12, 11.5 and 10.5 point for
-levels 1 to 6, with ordinary text at 11 point. These are the same sizes QUILL
-for All uses, chosen so that a document you save here still reads as having
-headings when somebody opens it in Word. Every level has a size of its own on
-purpose: levels 5 and 6 used to share the 11-point body size, which meant
-QUILL Lite could apply them and then could not find them again — heading
-navigation and the headings list both walked straight past them.
-
-**Ctrl+Shift+N** is Normal Text, and it is the way back. Every other command
-in this menu is a toggle or a setting, so each one needs you to already know
-what is applied: turning bold off means knowing bold is on, and a twenty-point
-run means walking the size back down a step at a time. Normal Text does not
-ask. It takes off bold, italic, underline and strikethrough, puts the size back
-to ordinary body text, clears the colour and the highlight, returns the
-paragraph to left aligned and single spaced, and takes it out of any list --
-all in one press, and one **Ctrl+Z** puts it all back. It leaves the *typeface*
-alone, because the face a document is written in is part of the document;
-**Format ▸ Editor Font** is where that is chosen. It is Word's key for the same
-idea. In a Markdown or HTML document the same key takes the heading marks off
-the line instead, which is what "normal" means to a line written in markup.
-
-**Ctrl+Shift+D** is the one worth remembering. It tells you what you are
-standing in — "Arial, 16 point, heading 2, bold" — which is the question a
-formatted document raises and that nothing else can answer for you.
-
-### Moving between headings
-
-| Key | What it does |
-|---|---|
-| **Ctrl+Alt+H** / **Ctrl+Alt+Shift+H** | Next / previous heading |
-| **Ctrl+Alt+L** | The list of every heading |
-
-These work in **every kind of document**. In rich text they walk the point-size
-ladder above; in Markdown they walk the lines that start with `#`; in HTML they
-walk `<h1>` to `<h6>`. They used to refuse in a plain document ("Headings are only available
-in rich text"), which was wrong in the way that matters: plain-text headings are
-real enough for **Alt+Shift+Right** to change their level, and only *navigation*
-pretended the document had no shape. A `#` inside a fenced code block is not
-treated as a heading.
-
-### Skimming a long one — folding
-
-A sighted reader finds out what is in a long document by scrolling and glancing.
-Folding is the same thing for somebody who cannot.
-
-| Key | What it does |
-|---|---|
-| **Ctrl+Shift+F9** | **Fold or Unfold Section** — the one you are in |
-| **Ctrl+Alt+Shift+Down** | **Next Section** |
-| **Ctrl+Alt+Shift+Up** | **Previous Section** |
-| **Ctrl+Shift+F10** | **Unfold Everything** |
-
-Walking between sections says the heading, whether it is folded, and how many
-lines are under it — "Installing, expanded, 34 lines". That sentence is the
-skim: it is what a glance down the page would have told you.
-
-**Nothing is hidden from your cursor.** A folded section reads exactly as it
-reads unfolded, arrow for arrow, and Find still finds things in it. A fold that
-really hid your text would be a document whose contents depend on how you happen
-to be looking at it, and the first thing that breaks is Find. What a fold *is*
-here is a note to yourself that you have dealt with that section, and you hear
-it when you pass by.
-
-Markdown documents, where a `#` heading marks where a section starts.
-
-### Hearing that you have arrived at one
-
-Arrow onto a heading and QUILL Lite says **"Heading 2"**.
-
-It has to, because your screen reader cannot. **No Windows edit control has
-paragraph styles** — the control QUILL Lite hosts can tell JAWS or NVDA the font
-name, the size and the weight, and has no way to say "this paragraph is a
-heading". Word manages it only by shipping an accessibility provider of its own.
-
-The rules are narrow on purpose:
-
-- **The level, not the text.** Your reader is already reading the line. Saying
-  the title here would speak every heading twice.
-- **Once, on arrival.** Moving about inside the heading says nothing further.
-  You hear it again if you leave and come back.
-- **Both modes.** A rich-text heading and a Markdown heading announce alike.
-
-Applying a heading already tells you so, and the two do not double up. Opening a
-document whose first line is its title does not greet you with "Heading 1".
-
-**Turning it off — View ▸ Announce Headings (Ctrl+Alt+F3).** Sometimes you are
-reading a document *as text* and the levels are one sentence too many. The key
-turns the cue off and on where you stand, and says which way it went —
-"Headings will not be announced", or "Headings announced on arrival" — rather
-than "off" and "on", so a key pressed by accident is never a mystery. The
-choice is remembered, but it is meant to be pressed rather than set: it is a
-decision per document.
-
-**A `#` is not always a heading.** In a `.md` or a `.txt`, or a document you
-have not named yet, a line starting with `#` is a heading. In a `.py`, `.sh`,
-`.ini`, `.yml` or `.conf` it is a comment, and QUILL Lite says nothing and lists
-nothing — otherwise a build script would announce "Heading 1" on most of its
-lines. In an HTML document it is neither: there the headings are `<h1>` to
-`<h6>`, and QUILL Lite reads and writes those instead.
-
-### Hearing that you are in a list
-
-Arrow into a list and QUILL Lite says **"Bulleted list, 5 items"**. Go a level
-deeper and it says **"Level 2, 3 items"**. Arrow out and it says **"Out of
-list"**.
-
-This is the one cue in the set your screen reader gives you **everywhere except
-here**. On a web page a list reaches the reader as a list with a count, and NVDA
-says almost exactly this. In an editor a list is not a list — it is characters —
-so the reader has nothing to go on, and a nested outline sounds like a run of
-ordinary lines starting with a dash. The only thing separating level two from
-level three is the number of spaces, counted by ear.
-
-It works in **Markdown and in HTML**, over all three kinds of list:
-
-| | Markdown | HTML |
-|---|---|---|
-| **Bulleted list** | `-`, `*`, `+` | `<ul>` |
-| **Numbered list** | `1.`, `1)` | `<ol>` |
-| **Definition list** | a line, then `: the definition` under it | `<dl>` |
-
-A definition list also says **"Term"** and **"Definition"** as you move between
-the two, because which of them you are standing in decides what the words mean
-— and a definition list written inside out is not something you can see you have
-done.
-
-The counting rule matters and is easy to get wrong: **items are counted at your
-own level, inside your own list.** A three-item list whose second item has four
-sub-items is "3 items" at level one and "4 items" at level two, never "7". Two
-sub-lists under two different bullets are two lists, not one.
-
-What it never says:
-
-- **Nothing as you move down a list.** That is what the caret does nearly all
-  the time, and your reader is already speaking each item.
-- **Nothing about `- - -` or `***`.** Those are horizontal rules, not one-item
-  lists.
-- **Nothing inside a fenced code block.** A `- ` in a code sample is a sample.
-- **Nothing in a plain text document.** A letter is full of hyphens, and a cue
-  that fired on them would be superstition rather than help.
-
-**Turning it off — View ▸ Announce Lists (Ctrl+Alt+F5).** Its own switch, next
-to the heading one and deliberately separate from it: reorganising an outline,
-the level is the work; proof-reading the same file, it is a phrase between you
-and every item. Like its sibling it says which way it went — "Lists will not be
-announced", or "Lists announced as you enter them".
-
-**And the status bar's List cell says something the speech never does:** which
-item you are on. "Bulleted list, 4 of 9, level 2". Saying that aloud on every
-arrow press would be too much; never being able to find out is its own problem,
-and a cell answers on demand and costs nothing until you read it. **Enter** on
-the cell turns the spoken cue off and on.
-
-
-### All of them at once — the Heading Organizer
-
-**Alt+Shift+O** opens **Heading Organizer...**: every heading in the document
-as one list.
-
-Arrow through it and each row says its level and its text — "Heading 2:
-Installing". **Tab** demotes the one you are on, **Shift+Tab** promotes it, and
-**Move Up** and **Move Down** take the heading *and everything under it* past
-its neighbour. **Rename** changes the wording without moving anything, and
-**Validate** checks the result against the rules a screen reader relies on: it
-must start at Heading 1, and it must not skip a level on the way down.
-
-There is a preview beside the list showing the section under whichever heading
-you are on, which is how you tell two similarly named headings apart before you
-move either of them.
-
-Nothing happens to your document until you press **Apply**, and everything that
-does happen is one change — one **Ctrl+Z** puts it all back.
-
-This is the same window QUILL has, and it is here for the reason everything else
-in this section is: restructuring a document with four separate commands means
-holding its shape in your head while you change it, because nothing reads the
-result back to you. In the list, the list *is* the shape.
-
-Markdown and HTML documents only. Rich text headings are a font size rather than
-a marker, so reordering them means moving formatted text rather than lines,
-which is a different job.
-
-### Rearranging them one at a time — Format ▸ Structure
-
-| Key | What it does |
-|---|---|
-| **Alt+Shift+Left** | Promote heading — one level shallower |
-| **Alt+Shift+Right** | Demote heading — one level deeper |
-| **Alt+Shift+Up** | Move this whole section up, past whatever is above it |
-| **Alt+Shift+Down** | Move this whole section down, past whatever is below it |
-| **Alt+Shift+F5** | Select this section, subsections and all |
-| **Ctrl+Alt+Shift+F5** | Move Section To… — pick a destination instead of a direction |
-
-Until now QUILL Lite could make headings and walk between them but never move
-them about, which left cut-and-paste as the only way to reorganise a document —
-and that is the operation it is worst at. Moving a section by hand means
-selecting from one heading to exactly the start of the next: a boundary you
-cannot see, that you have to find by ear, and that takes your place in the
-document with it when you get it wrong. **Alt+Shift+Up** does the same thing in
-one keystroke and tells you it happened.
-
-"Section" means the heading you are in plus everything under it, down to the
-next heading at the same level or higher. Moving a Heading 2 takes its Heading 3s
-with it.
-
-**The keys always move.** They used to look for a heading at the same level under
-the same parent and refuse when there wasn't one, which meant a document whose
-headings step `#`, `##`, `###` never moved at all — in one of those, no heading
-has a sibling anywhere. Now, when there is no sibling that way, the section trades
-places with whatever *is* next to it, exactly as Word's outline Move Up and Move
-Down do on these same keys. A first section inside its parent rises above the
-parent's own heading.
-
-**The moved section keeps its level.** Moving never renumbers your headings: press
-the other key and you are exactly back where you were. A key that said "move" and
-also rewrote `##` as `#` would have edited more than it said. Changing a level is
-what Alt+Shift+Left and Alt+Shift+Right are for, and the two compose — move it,
-then promote it.
-
-**It says where the section landed**, not just what it jumped: *"Section moved
-below Soup. Now 2 of 3 at this level."* That last part is what somebody looking at
-the page gets for free and a listener cannot get any other way — the screen reader
-says the text changed, never where in the outline the thing now sits.
-
-There is one refusal no rule can fix, and it explains itself rather than closing
-the door. In a strictly nested document everything below the heading you are in is
-*inside* it, so there is nothing left for it to move below: *"Bottom of Heading 1.
-Everything below is inside this section. Alt+Shift+Left promotes Heading 3 to make
-it a sibling."* The key named in that sentence is read out of your own keymap, so
-it stays right if you rebind it.
-
-#### Select Section — Alt+Shift+F5
-
-**Alt+Shift+F5** selects the section you are in, including every subsection, and
-stops just before the blank line that separates it from the next one. Then ordinary
-**Ctrl+X** and **Ctrl+V** put it anywhere — somewhere else in this document,
-another document, or another program altogether. No new idea to learn, and it is
-the honest answer to "move it somewhere there is no heading to move past".
-
-It announces how much you now have: *"Selected Bread and 1 section under it, 7
-lines"*, or *"Selected Bread, 4 lines"* when nothing is nested inside. The counts
-are the point. Your screen reader tells you a selection changed; it does not tell
-you how much is in it, and "did that take the sub-headings with it?" is the whole
-question at that moment.
-
-#### Move Section To… — Ctrl+Alt+Shift+F5
-
-Pressing Alt+Shift+Up forty times is not a way to move a section across a long
-document, and it is worse by ear than by eye: every press is a fresh announcement,
-and you have to count them, because there is no page to glance at to see how far
-you have got. **Ctrl+Alt+Shift+F5** asks where instead.
-
-Two questions, both answered from a list you can type into:
-
-1. **Which heading?** Every heading in the document, in the order they appear, one
-   row each: `3 of 7, level 2 - Bread`. The position comes first so that two
-   sections both called "Notes" are two different choices rather than a coin toss,
-   and the level is there because "before Bread" means something different
-   depending on whether Bread is a chapter or a paragraph heading. Type to narrow
-   the list; the order never reshuffles itself as you type, because a list that
-   reorders is one you cannot navigate by position. Focus starts in the search box,
-   and **Enter** there moves you into the results rather than accepting whatever
-   happens to be highlighted.
-2. **Before it, after it, or inside it?** Three rows, because "next to that
-   heading" is genuinely ambiguous and guessing would be worse than asking. **After
-   it** is the one people expect to mean something narrower than it does: it puts
-   your section below that heading *and everything under it*.
-
-The whole move is **one edit and one Ctrl+Z**, and it says where the section
-landed: *"Moved Salad before Bread. Now 1 of 3 at this level."*
-
-**Inside it is the only one that changes a level.** It makes your section the last
-one under the heading you chose, renumbers it and everything under it one step
-deeper, and says the new level out loud: *"Moved Bread inside Soup, now Heading 3.
-Now 1 of 2 at this level."* A renumbering nobody was told about would be a silent
-edit, which is the one thing these keys must never do.
-
-Two things it will not do, and it explains both rather than just declining:
-
-- **A section cannot move inside itself.** Choose a heading that sits under the one
-  you are moving and it says *"Sourdough is inside Bread, so Bread cannot move into
-  it. Promote Sourdough first if you want them side by side."* Those headings are
-  still listed rather than hidden — a heading you can see in your document and
-  cannot find in the list has no way to explain itself.
-- **Nothing goes deeper than Heading 6**, because Markdown cannot write one. It
-  names the limit and offers **After it** instead.
-
-**Escape at either question changes nothing and says nothing.** Nothing happened,
-so there is nothing to announce.
-
-Two more things to know about all six keys:
-
-- **Promoting a Heading 1 leaves it a Heading 1.** It does not turn into ordinary
-  text — losing a heading altogether is not what Alt+Shift+Left is for, and it
-  would quietly drop the paragraph out of your headings list.
-- **Moving and selecting sections need a Markdown or HTML document**, where a
-  heading is written in the text. In a rich text document a heading is a font size
-  rather than something the text says, so there is nothing to find and nothing to
-  move; QUILL Lite says so rather than doing nothing. Promoting and demoting work in
-  both.
-
-These are QUILL for All's own six keys, and all six behave the same in both
-editors. Anything you learn here you have learned in QUILL, and the sentences you
-hear are composed in one place, so the two products cannot describe the same action
-two different ways.
-
----
-
-## Spell check
-
-WordPad never had a spell checker. Notepad only got one recently. QUILL Lite has
-one, and it is the same one QUILL for All uses.
-
-**F7 checks the whole document.** It walks you through it one word at a time
-with suggestions you can arrow through. For each word you can change it, change
-every one like it, skip it, or add it to your dictionary so it is never
-questioned again.
-
-It **starts where your cursor is**, the way F7 has in Word since there was an
-F7, and when it reaches the end it says so and carries on from the beginning.
-Before version 1.0 it always started at the top, which walked you back through
-everything you had already checked to reach the paragraph you were working in.
-You can turn the wrap off in Preferences if you would rather it simply stopped.
-
-| Key | What it does |
-|---|---|
-| **F7** | Check the whole document |
-| **Alt+Shift+F7** | Suggestions for the word you are on |
-| **Ctrl+F7** / **Ctrl+Shift+F7** | Go to the next / previous mistake |
-| **Alt+Shift+L** | List every misspelling, with its line |
-| **Ctrl+Alt+F9** | Add this word to your dictionary |
-| **Ctrl+Alt+F7** | Turn checking-as-you-type on or off here |
-| **Ctrl+Alt+Shift+F7** | Spelling Announcements: how a misspelling is said |
-
-**Ctrl+F7** selects the word it lands on, so your screen reader reads it to you
-when you get there -- and then, after a short pause, **spells it out**. That is
-the part that matters: "receive" and "recieve" are the same sound, so hearing
-the word tells you nothing, and the letters are the answer. Press the next key
-and the spelling is cancelled unheard, so it costs you nothing when you did not
-need it.
-
-**Alt+Shift+L** lists every misspelling at once, with the line each one is on,
-and Enter on a row goes there. That answers a different question from Ctrl+F7:
-that one moves you to the next mistake, and this one tells you how many there
-are and lets you choose which. Words you have chosen to ignore are left out.
-
-**Alt+Shift+F7** and **Ctrl+Alt+F9** work from anywhere in a word, not only from
-its first letter.
-
-### While you type
-
-When you finish a word that is not in the dictionary -- finish it, so a space or
-a comma or a new line, not while you are still in the middle of typing it -- you
-hear a **short falling blip** and the status bar says which word it was. It is a
-sound rather than speech on purpose: speech there would interrupt the sentence
-you are writing, which is the one moment you can least afford it.
-
-You can silence the sound, have the word spoken as well, or change how long it
-waits before repeating itself on the same word. All of that is in **Tools ▸
-Spelling ▸ Announcements** (**Ctrl+Alt+Shift+F7**).
-
-### Spelling Announcements
-
-Twelve settings, in one window, in three groups.
-
-**While you are typing.** Whether the sound plays at all, whether the word is
-spoken too (off by default), and the shortest gap before the same word is
-reported again -- zero means every time.
-
-**Spelling a word out.** Whether words are spelled at all, and how. Plain
-**letters** are fastest. The **phonetic alphabet** -- romeo, echo, charlie -- is
-unambiguous where B, D, E, P, T and V are one sound with a rumour attached: a
-fast voice, a poor speaker, a noisy room. **Both** is for learning a word rather
-than checking one. You can also have capitals named, so "cap M, A, C, cap D"
-tells MacDonald from Macdonald. An example box shows what your choices sound
-like and says it out loud as you change them.
-
-**When the letters follow.** Three pauses, because the right pause is not the
-same in three places: longer in the F7 review, where you are stopped and
-deciding; shorter when moving between misspellings, where you may be travelling;
-and shorter again in a list of suggestions, where you are arrowing. Each can be
-switched off on its own.
-
-QUILL has the same twelve settings under **Spelling** in its Settings window, so
-tuning this once tunes both.
-
-### The word you are on: the Applications key
-
-With the cursor in a word QUILL Lite thinks is misspelled, press the
-**Applications key** (or Shift+F10, or right-click) and **the first Down arrow
-lands on a suggestion**. **Enter** replaces the word. No dialog opens, the
-cursor does not move, and there is nothing to arrow past first.
-
-That is the whole point of this menu. A sighted person finds a misspelling by
-looking for a red squiggle and right-clicking it; you have no squiggle, so the
-Applications key *is* the squiggle, and what it says first should be the answer.
-
-Under the suggestions there is a separator and then **one row** — *Spelling
-Actions for "wrold"* — then the **Thesaurus** and **Dictionary** submenus for
-the word (below), and then the ordinary rows: Undo, Redo, Cut, Copy, Paste,
-Delete, Select All. That order never changes. The part that varies in length is
-at the **top**, so everything below the suggestions is always where you left it,
-and what you learn is not a row number but "after the suggestions, the menu is
-the menu".
-
-Inside **Spelling Actions**:
-
-| Row | What it does |
-|---|---|
-| **Ignore Once** | Skip this one place. Nothing is remembered after you close the window. |
-| **Ignore in This Document** | Stop reporting this word anywhere in this document, until you close it. |
-| **Add "word" to My Dictionary** | Keep it for good, in your own dictionary. |
-| **Add to This Document Only** | Keep it beside this file, so anyone who opens the file gets it too. |
-| **More Suggestions...** | The full list, in a window you can arrow through. |
-| **Check Document...** | The F7 review, from here. |
-| **Next / Previous Misspelling** | Move on without leaving the keyboard. |
-
-### Thesaurus and Dictionary on any word
-
-On **any** word, spelled right or not, the same menu carries two more rows,
-after the spelling rows and before the edit rows. Both are submenus, and both
-name the word they are about, so a menu you reached by keyboard still tells
-you what it is going to do:
-
-- **Thesaurus for "running"** opens on the best replacements, one keystroke
-  away: Enter on *sprinting* puts *sprinting* in place of *running* -- in the
-  form the sentence needs, because QUILL Lite looked the word up as *run* and
-  put the replacements back into the *-ing* form, with the capitals the
-  original had. Under the first sense, each further meaning is a submenu of
-  its own ("As a noun: ..."), then an **Opposites** submenu, then **Say Word
-  Summary** (what the thesaurus knows, spoken, without opening anything) and
-  **More in Thesaurus...**, which is the full two-pane window.
-- **Dictionary for "running"** starts with **Look Up "running"...**, the
-  dictionary without AI (see *Dictionary* below). Then, when AI help is on,
-  the twelve questions the AI dictionary can answer about the word as it is
-  used in *this* sentence: Define in Context, Synonyms That Fit, Simpler Word,
-  More Formal Word, More Vivid Word, Opposites, Is This the Right Word?, Use
-  It in a Sentence, Where It Comes From, How to Say It, Rhymes, and the Word
-  Explorer that answers all of them at once; and **Find the Word For...**,
-  the reverse dictionary. With AI help on but no key or ChatGPT sign-in, the
-  submenu holds one row that says so and opens the account window.
-
-A selected word wins over the word at the cursor, when the selection is a
-single word. There is no Thesaurus row on a number or on empty space.
-
-QUILL's menu is the same menu, in the same order, with one extra dictionary in
-it (it has projects; QUILL Lite opens files).
-
-Every row names the word it is about, so a menu you reached by keyboard still
-tells you what it is going to do. On a word that is spelled correctly there is
-no Spelling submenu at all -- just the ordinary edit rows.
-
-Ignoring is honoured everywhere: a word you have ignored stops being announced
-as you type, stops being a stop for **Ctrl+F7**, and stops being offered by
-**Alt+Shift+F7**. To keep a word for longer than the session, add it to a
-dictionary.
-
-### When it stays quiet
-
-Some files are not writing at all. They hold settings and instructions that
-programs read, and they are full of made-up words, abbreviations and names that
-no dictionary contains. Checking one of those as you type would give you a
-constant stream of warnings that are every one of them wrong.
-
-So **QUILL Lite does not check those files as you type.** It recognises them by
-the kind of file they are, and it tells you once when you open one, so you are
-never left wondering whether something is broken.
-
-If you want checking in one anyway, press **Ctrl+Alt+F7**. It changes only the
-document you are in — a letter and a settings file open at the same time can
-quite happily disagree about this. **Tools ▸ Spelling** shows a tick beside
-**Check While Typing** so you can always see which way it is set.
-
-**F7 always works, in every file.** Staying quiet is only about what happens
-when you have not asked. If you ask for a check, you get one.
-
-### Your dictionary
-
-Words you teach QUILL Lite are yours, kept in QUILL Lite's own folder. If you also
-use QUILL for All, one setting in Preferences makes both share the same list, so
-a word taught in either is known to both.
-
-A single document can also have its own short list of words, kept in a small
-file beside it. That is useful for names that belong to one piece of work and
-nowhere else.
-
----
-
-## Thesaurus
-
-**Tools ▸ Thesaurus...** (**Shift+F7**, the key Word and QUILL use) opens the
-two-pane picker for the word you are on, or the word you select -- or, with
-the cursor on nothing, asks for one. It is QUILL's thesaurus, the same window
-and the same data, which ships inside QUILL Lite: nothing is downloaded and
-nothing is sent anywhere.
-
-**It finds the word you are actually on.** The word list knows headwords --
-*run*, not *running*; *happy*, not *happier* -- so a thesaurus that looked up
-the word as typed failed for most words in running prose. QUILL Lite walks the
-word back to the forms the list knows (running to run, studies to study,
-happier to happy, stopped to stop) and says so in the title ("running (as
-run)") and in each sense's row ("verb, from run: sprinting, dashing, ...").
-
-**Every replacement is already in the right form.** Choose *sprint* for
-*running* and the document gets *sprinting*; choose *glad* for *Happier* and it
-gets *Gladder*... no -- it gets *More glad*, because QUILL Lite also knows
-which adjectives take *-er* and which take *more*. Irregular verbs are known
-(*seek* for *sought* gives *sought*), and a replacement the rules cannot vouch
-for is offered in its plain form rather than invented.
-
-**The window.** Focus lands in the **Senses** list: one row per meaning, the
-part of speech first, so typing **n** jumps to the nouns and **v** to the
-verbs. Tab reaches the words of the selected sense -- replacements, then
-*broader:* terms, then *opposite:* terms, each labelled -- and **Enter** or
-**Replace** puts the selected one in place of your word and collapses the
-selection, so the next keystroke cannot destroy it. **Copy** takes it to the
-clipboard instead, and says so. **Escape** closes with nothing changed. When
-the word was typed rather than in the document, Replace is disabled and Copy
-is the default.
-
-**Say Word Summary** (**Ctrl+Alt+Shift+[**, and in the Thesaurus submenu on
-the word) speaks what the thesaurus knows without opening anything: "running,
-looked up as run: 27 meanings as a verb, 6 as an adjective, 3 as a noun.
-First: sprinting, dashing, ... Opposites: standing, ...". Useful before
-deciding whether the window is worth opening.
-
-**Dictionary Status** (**Tools ▸ Spelling ▸ Dictionary Status...**,
-**Alt+Shift+;**) is QUILL's row: how many words your personal dictionary and
-this document's own list hold, where each file is, and whether the thesaurus
-data is present.
-
-The whole area is one switch in Customize Features, **Dictionary and
-thesaurus**, on by default and off in the WordPad and Notepad profiles, which
-are named after programs that never had one.
-
-## Dictionary
-
-Two dictionaries, one row each, and the second needs AI.
-
-### Look Up: the dictionary without AI
-
-**Tools ▸ Look Up Word...** (**Alt+F10**), or **Look Up "word"...** at the
-top of the Dictionary submenu on any word, opens QUILL's Look Up window --
-the same one, now in both editors. Focus lands in the **Result**, a read-only
-field you can arrow through: the word, then one labelled section per kind of
-answer. Under it, **Words you can use** lists every synonym, opposite,
-related word and rhyme, each saying which it is; **Enter** or **Replace
-Word** puts the selected one in place of your word, **Copy** copies the
-selected word (or the whole result when none is selected), and **Add to
-Dictionary** teaches the word to your spelling dictionary.
-
-**Offline, it is the thesaurus.** Synonyms, opposites and related words from
-the word list that ships with QUILL Lite, and nothing leaves this computer.
-
-**Online, it is a dictionary and an encyclopedia too -- when you say so.** The
-checkbox **Use online sources** is off until you tick it. On, the word -- only
-the word, never the sentence or the document -- goes to three free services
-that need no account and no key: the Free Dictionary for definitions with
-examples, Datamuse for more synonyms, opposites, rhymes and related words,
-and Wikipedia for a short summary with a link back to the article. The
-offline answer appears at once, "Looking up online" is said, and when the
-online answer arrives it replaces the field and says so; a word Wikipedia has
-no real article for simply shows no encyclopedia section. The choice is
-remembered (`dictionary_online_lookups` in the settings file) and shared
-with QUILL when the two share settings vocabulary, so you are never asked
-twice; untick it and you are offline again from the next lookup.
-
-### The AI dictionary
-
-The rest of **Tools ▸ Dictionary** -- and of the Dictionary submenu on a word
--- is the dictionary that reads the sentence. The offline thesaurus knows
-every sense of *bank*; it cannot know which one this sentence means. These
-twelve send **the word and the sentence it sits in** (never the rest of the
-document) and answer in plain prose written to be listened to, with, where
-it helps, a list of choices that each say why:
-
-| Row | Key | What comes back |
-|---|---|---|
-| **Define in Context** | Ctrl+Alt+Shift+' | What the word means *here*, its part of speech, and the meaning you might be confusing it with |
-| **Word Explorer...** | Ctrl+F10 | Everything at once: meaning, how to say it, an example, where it comes from, what it is confused with, and the best replacements |
-| **Synonyms That Fit** | Ctrl+Shift+; | Replacements that keep this sentence's meaning and register, already in the right form |
-| **Simpler Word** | Ctrl+Shift+- | Plainer, more widely known words, and what is lost |
-| **More Formal Word** | Ctrl+Shift+= | Words suited to professional writing |
-| **More Vivid Word** | Ctrl+Shift+' | Livelier or more specific words |
-| **Opposites** | Alt+Shift+- | Antonyms that would fit in the word's place |
-| **Is This the Right Word?** | Ctrl+Alt+Shift+/ | Affect or effect, complement or compliment: a plain yes, or the difference and the right word first |
-| **Use It in a Sentence** | Alt+Shift+= | Three short example sentences in the same sense |
-| **Where It Comes From** | Alt+Shift+, | The word's origin and how its meaning developed |
-| **How to Say It** | Alt+Shift+' | Syllables with the stress in capitals, a plain respelling, the IPA, and the common mispronunciation |
-| **Rhymes** | Ctrl+Alt+Shift+; | Perfect rhymes first, then near rhymes, with syllable counts |
-| **Find the Word For...** | Ctrl+Alt+Shift+] | The reverse dictionary: describe the meaning, get the word, inserted at the cursor |
-
-**The answer window.** Focus lands on the answer, so your screen reader reads
-it; nothing is announced on top of that. Tab reaches **Choices**, one line per
-replacement with its note; **Enter** or **Use This Word** puts the selected
-one in place of the word (or at the cursor, for Find the Word For) and
-**Ctrl+Z** takes it back as one step. **Copy Choice** and **Copy Answer** go
-to the clipboard. **Ask Something Else...** closes the answer and reopens the
-Dictionary submenu on the same word. If you typed over the word while the
-answer was on its way, Use This Word is disabled and says why; Copy still
-works.
-
-**It runs only on your own OpenAI key or your ChatGPT subscription**, never
-on the free service: a dictionary is asked a hundred times a day, and these
-calls would spend somebody's free allowance on synonyms. With neither, every
-row says so and opens the account window. The whole set switches off with
-**AI help** in Customize Features, because every row is a request.
-
----
-
-## What is this character?
-
-**Ctrl+Shift+C** tells you exactly which character the cursor is on — its name,
-and what it does to a search.
-
-This sounds like a small thing and is not. Your screen reader says "space" for
-several different characters that look identical and behave differently, and one
-of them is very often the reason a search is not finding something you can
-plainly see is there.
-
-**Ctrl+Alt+C** opens the full description in a window you can read line by line.
-
----
-
-## The status bar
-
-**F6** takes you into it — it is **Navigate ▸ Status Bar**, because going there
-is a move rather than a setting. The arrow keys and **Home**/**End** move along
-it, **Enter** acts on the part you are on, and **Escape** puts you back in your
-document. Each part says its own name and value.
-
-**View ▸ Status Bar** (**Alt+Shift+B**) takes the bar off the screen
-altogether, the way Notepad's does, and puts it back. Nothing is lost when it is
-away: **Ctrl+Shift+G** speaks the counts, **Ctrl+Alt+W** speaks the line widths
-— the longest line, which line it is, and the average, which is what you want
-when you are formatting for a braille display or a narrow window — and **Ctrl+G**
-asks for the line number
-the Position part would have shown you. F6 with the bar hidden says so rather
-than doing nothing.
+**Ctrl+Q** closes everything, and asks you about anything you have not saved.
+
+If you would like to practise this with the app guiding you, the tutorial
+*Your documents are numbered* opens a second file and walks you between them.
+
+#### Opening a large file, or one on a network drive
+
+A file of a megabyte or more, or any file on a network drive, opens without
+freezing the window. Here is what happens:
+
+1. A new document window appears straight away. Its title has its number,
+   the word "Opening" and the file's name, and QUILL Lite says "Opening" and
+   the name once.
+2. While the file is loading, the window is read-only, so nothing you type
+   can get lost.
+3. When the file arrives, the text appears and your cursor is at the top,
+   ready to read.
+
+To cancel, close that window with **Ctrl+W**. If the file cannot be read, for
+example because the network drive went away or the disk is busy, QUILL Lite
+tells you why and asks whether to try again. Yes tries again. No closes the
+empty window.
+
+Smaller files on your own computer open all at once, as you would expect.
+
+#### Opening a second QUILL Lite
+
+If you open a file from File Explorer while QUILL Lite is already running, it
+opens in the QUILL Lite you already have. That keeps all your documents, and
+their numbers, in one place.
+
+If you really do want two separate QUILL Lite windows, one on each monitor
+for example, start it with the extra option `--new-instance`.
+
+The two share one settings file, and they do not undo each other's choices.
+When one saves its settings, it writes only the settings it changed. If both
+changed the same setting, the one that saves last wins. A setting you change
+in one window does not change the other window while it is open. It takes
+effect there the next time you start QUILL Lite.
+
+### The window
+
+QUILL Lite opens **maximized**, filling the screen, the first time you start
+it. After that, it opens the way you left it. Make it smaller, and it opens at
+that size next time. Make it full screen again, and that is remembered too.
+
+Full screen is the starting point because a small window can cut text off, or
+show only a few rows of a list. You can change it with one key, and QUILL Lite
+will not ask again.
+
+All the QuillVille apps work this way: QUILL, Quill Radio, Cast, Weather, Audio
+Studio, Inkwell, the Converter, the Media Player and Beacon.
+
+### Closing a lot of windows at once
+
+**Window > Close Other Documents** (**Ctrl+Shift+F4**) keeps the document you
+are in and closes all the others. QUILL uses the same key, so you only need to
+learn it once.
+
+#### When some have unsaved changes
+
+If any of those documents has changes you have not saved, QUILL Lite asks you
+about it. The question also tells you how many more documents are waiting, so
+you know right away whether this is one question or sixty-seven. You can
+answer:
+
+- **Save**: save this document, then ask about the next one.
+- **Don't Save**: close this document without saving, then ask about the next
+  one.
+- **Save All**: save this one and every other one waiting, without asking again.
+  A document that has never been saved will still ask where to put it.
+- **Don't Save Any**: close all the rest and lose their changes, without asking
+  again. This cannot be undone.
+- **Cancel**: stop. Whatever is still open stays open, and you hear how many
+  documents closed before you stopped.
+
+**Pressing Enter chooses Save**, so you never lose work by pressing Enter. If a
+save fails, for example because the disk is full or the file has become
+read-only, QUILL Lite stops there and does not close that document. Save All
+also stops, and you will be asked about each one again.
+
+#### Coming back with Alt+Tab, and leaving
+
+When you Alt+Tab back to QUILL Lite, it puts you back in the document you were
+working in, ready to type. If you were in the Find box, another control or an
+open menu, you stay there.
+
+When you close QUILL Lite, it stops taking in new files to open before it
+closes its windows. Any files that were still waiting to open are opened the
+next time you start it. If you press Cancel on a save question while closing,
+QUILL Lite stays open and carries on as normal.
+
+### The status bar
+
+The status bar is a row of small facts about your document: where you are, how
+long it is, what kind of file it is, and whether you have saved. It is the
+first place to go when you want to know something.
+
+Here is how to use it:
+
+1. Press **F6**. You land in the status bar. (In the menus this is **Navigate >
+   Status Bar**.)
+2. Press **Left Arrow** and **Right Arrow** to move along it, or **Home** and
+   **End** to jump to either end. Each part says its name and its value.
+3. Press **Enter** on a part to act on it. What Enter does is in the table
+   below.
+4. Press **Escape** to go back to your document, right where you left it.
+
+#### Hiding the bar
+
+**View > Status Bar** (**Alt+Shift+B**) takes the bar off the screen and puts it
+back, just like Notepad's. You lose nothing while it is hidden. A few keys give
+you the same facts out loud:
+
+- **Ctrl+Shift+G** speaks the counts for the whole document.
+- **Ctrl+Alt+W** speaks the line widths: the longest line, which line that is,
+  and the average. That is handy when you are writing for a braille display or
+  a narrow window.
+- **Ctrl+G** asks for a line number to go to, which is what the Position part
+  would have told you.
+
+If you press F6 while the bar is hidden, QUILL Lite tells you it is hidden.
+
+#### Every part, in order
 
 | Part | What it tells you | Enter does |
 |---|---|---|
@@ -1841,419 +560,98 @@ than doing nothing.
 | **Line Endings** | How this file marks the end of a line | change it |
 | **Saved State** | Whether you have unsaved changes | saves |
 
-Fourteen cells, in that order. Six of them are worth pointing out.
-
-**Typing Mode** is the one you cannot find out any other way. Every Windows
-editor has an overwrite mode, where what you type replaces the letters already
-there instead of pushing them along, and none of them will tell you which mode
-you are in — you find out by typing over a sentence you meant to keep. Press
-**Ctrl+Alt+Shift+W** to switch, or **Enter** on this part of the status bar.
-
-The **Insert** key switches it too, because the editing control answers that key
-whether QUILL Lite asks it to or not. QUILL Lite does not claim the key — it is
-NVDA's and JAWS's own modifier and taking it would fight your screen reader —
-but it does watch for it, so this part of the status bar stays right either way.
-
-**Tab Mode** is the same idea. QUILL Lite starts where Notepad does: the **Tab**
-key types a tab character. Switch it with **Ctrl+Alt+Shift+I** and Tab indents
-the whole line instead, which is what QUILL does by default and what you
-probably want when the file is code. **Shift+Tab** outdents either way, so a tab
-you did not mean to type can always be taken back without switching modes first.
-
-**Encoding** and **Line Endings** are the two things that decide whether your
-file opens properly on somebody else's computer, and almost no other editor
-shows them at all. You will rarely need to change them — but when a file arrives
-looking like nonsense, this is where the answer is.
-
-In a **rich text** document these two read **"RTF (rich text)"** and **"Not
-applicable (rich text)"**, because a rich document has neither: RTF stores an
-accented letter as an escape sequence of its own and marks a paragraph its own
-way. They used to read "UTF-8" and "CRLF" there, which are the two answers a
-plain file gives — a cell stating a fact about a file that has no such fact.
-
-Both cells answer for the file you actually have. A file that arrived in a
-format this window cannot offer — UTF-16 big-endian, say, or the classic-Mac
-single-CR line ending — shows a **keep as is** row and stays in it, so
-pressing Enter and confirming cannot quietly convert a file you only opened to
-read. See [How this file is written](#how-this-file-is-written-encoding-and-line-endings).
-
-**List** answers the question the speech deliberately does not. Entering a list
-you hear "Bulleted list, 5 items"; this cell also tells you **which item you are
-on** — "Bulleted list, 4 of 9, level 2". Saying that aloud on every arrow press
-would be too much to listen to, and having no way at all to find out is its own
-problem when you are halfway through reordering nine things.
-
-**Format** is what decides the rest. It says whether this document is plain text,
-Markdown, HTML or rich text, and that one fact decides what **Ctrl+B** writes,
-what the heading keys write, which of the two tag pickers the Insert menu offers,
-and whether the List part above has anything to say. QUILL Lite reads it from the
-file name; **Enter** here rings on to the next kind and says its name, and
-**Ctrl+Alt+F6** goes straight to one. See [Four kinds of
-document](#four-kinds-of-document).
-
-**Status Message** exists because speech is gone the moment it is spoken. If you
-missed something QUILL Lite said, this is where you go to read it again.
-
----
-
-## Reading a selection without risking it
-
-**Alt+Shift+U** opens the **Review Buffer**: a copy of what you have selected,
-in a window of its own, that cannot be edited.
-
-The point is what you cannot do in it. Reading a long selection back means
-arrowing through it, and arrowing through your own document while a selection is
-live means the next character you type replaces all of it. A copy that refuses
-to be edited removes that whole class of accident. Escape closes it and puts you
-back where you were, with the selection intact.
-
----
-
-## Copying and pasting more than one thing
-
-The Windows clipboard holds one thing at a time. QUILL Lite gives you three ways
-around that, in **Edit ▸ Clipboard**.
-
-**The copy tray** is twelve numbered slots that survive closing the app. Copy
-into a slot with **Ctrl+Alt+Y**, and paste from any of them an hour later with
-**Ctrl+Alt+V**. **Ctrl+Alt+Shift+Y** empties it.
-
-**Ctrl+Alt+Y** takes the next free slot, which is fine until you want to *choose*
-the number — and choosing is the whole point of a numbered slot, because a number
-you picked is one you can remember. **Alt+Shift+Y** offers all twelve, each row
-saying what is in that slot now, so nothing gets overwritten unheard.
-
-**The collector** gathers things up. Each **Alt+Shift+S** adds what you have
-selected to one growing pile, and **Ctrl+Alt+Shift+G** pastes the whole pile.
-This is what you want when you are pulling five quotes out of a long document.
-**Ctrl+Alt+Shift+C** empties the pile.
-
-**The clip library** is where clips you want to keep go. **Ctrl+Alt+M** keeps
-what you have selected, and **Ctrl+Alt+Shift+M** opens the list to paste one back.
-
-It can also fill itself. **Preferences ▸ Keep everything I copy in the clip
-library** turns that on, and then every copy and every cut you make inside a
-QUILL Lite document is added automatically, up to the last two hundred. It is off
-until you ask, and the reason is worth stating plainly: a history of everything
-you copy is a file on your disk holding whatever you last took out of a
-document, a password you had pasted somewhere included. It never sees what you
-copy in other programs.
-
-And **Ctrl+Shift+V** pastes text with none of its formatting, which is what you
-want when something copied from a web page arrives wearing its own fonts and
-colours.
+That is fourteen parts. Most of them explain themselves. A few are worth a
+closer look.
 
-**Ctrl+F8** copies the whole document. Select All then Copy does the same thing
-in two keys and leaves the document selected afterwards, which is a hazard when
-you cannot glance at it: the next character you type replaces everything.
+##### Status Message
 
----
+Speech is gone the moment it is spoken. If QUILL Lite said something and you
+missed it, this is where you go to hear it again.
 
-## Links
+##### Typing Mode
 
-**Ctrl+K** puts a link in, in whatever markup the document is written in —
-`[text](address)` in Markdown, `<a href="address">text</a>` in HTML. Select the
-words first and they arrive in the box already; leave the display box empty and
-the address shows as its own text.
+Every Windows editor has an overwrite mode, where what you type replaces the
+letters already there instead of pushing them along. Most editors never tell
+you which mode you are in, so you find out by typing over a sentence you wanted
+to keep. This part tells you.
 
-Rich text says so instead: a link there is something the control owns, and
-writing brackets into one would just put brackets on the page.
+To switch, press **Ctrl+Alt+Shift+W**, or press **Enter** on this part.
 
----
+The **Insert** key switches it too. QUILL Lite does not take the Insert key for
+itself, because your screen reader uses it. It just notices when you press it,
+so this part always tells you the truth.
 
-## Working on lines
+##### Tab Mode
 
-**Edit ▸ Lines** is everything that happens to whole lines. It is in Edit
-because line work *is* editing — it belongs beside Cut and Paste rather than
-three menus away from the text it changes.
+When you start, the **Tab** key types a tab character, just as it does in
+Notepad. Press **Ctrl+Alt+Shift+I** and Tab indents the whole line instead,
+which is usually what you want when you are working on code. **Shift+Tab**
+outdents in either mode, so you can always take back a tab you did not mean.
 
-The first group works on the line the cursor is already on, which is usually the
-one you want.
+##### Format
 
-**Move Line Up** (**Ctrl+Shift+Up**) and **Move Line Down**
-(**Ctrl+Shift+Down**) move the current line past its neighbour. Reordering two
-lines any other way means selecting one, cutting it, finding the new place and
-pasting -- four steps, each of which leaves the cursor somewhere the last one
-did not. **Duplicate Line** is **Ctrl+D**, and **Join Lines**
-(**Ctrl+Alt+Shift+J**) pulls the line below onto the end of this one.
+This tells you whether the document is plain text, Markdown, HTML or rich text.
+That one fact decides a lot: what **Ctrl+B** writes, what the heading keys
+write, which tag picker the Insert menu offers, and whether the List part has
+anything to say.
 
-**Delete Line** is **Ctrl+Shift+Delete**. **Delete to Start of Line**
-(**Ctrl+Shift+Backspace**) and **Delete to End of Line**
-(**Ctrl+Alt+Shift+Delete**) remove everything to one side of the cursor, and
-**Delete Paragraph** (**Ctrl+Alt+Shift+Backspace**) takes the whole paragraph.
+QUILL Lite guesses the kind from the file's name. Press **Enter** here to move
+on to the next kind; you will hear its name. **Ctrl+Alt+F6** takes you straight
+to the one you want. There is more in [Four kinds of
+document](#four-kinds-of-document), in Chapter 3.
 
-Each of these tells you what it did, and tells you when it did nothing --
-"Already the first line" is a different fact from silence, and you should not
-have to press an arrow key to find out which one you got.
+##### List
 
-### Putting lines in order, and tidying them up
+When you arrive in a list, you hear something like "Bulleted list, 5 items".
+You do not hear more on every arrow press, because that would be a lot to sit
+through. When you want to know exactly where you are, this part tells you which
+item you are on, for example "Bulleted list, 4 of 9, level 2".
 
-The rest of **Edit ▸ Lines** works on what you have selected, or on the whole
-document if you have not selected anything.
+##### Encoding and Line Endings
 
-Sort lines (**Ctrl+Alt+S**, or **Ctrl+Alt+Shift+S** for Z to A), **Reverse
-Lines** (**Alt+Shift+Z**) and **Number Lines** (**Alt+Shift+N**) change the
-order; **Remove Every Blank Line** (**Ctrl+Alt+K**), **Remove Duplicate Lines**
-(**Ctrl+Alt+D**), **Trim Trailing Spaces** (**Ctrl+Alt+T**) and **Tidy
-Whitespace** (**Ctrl+Alt+Shift+T**), which collapses the runs of spaces and tabs
-that arrive with pasted-in text, clean them up.
+These two decide whether your file opens properly on somebody else's computer.
+You will rarely need to change them. But when a file arrives looking like
+nonsense, this is where to look.
 
-**Remove Every Blank Line** means every one, including the blank lines between
-your paragraphs -- it is the cure for text copied out of a web page that arrives
-double-spaced, not a tidy-up you want on prose. A line of nothing but spaces
-counts as blank, because it is blank to everyone reading the document and to
-every tool that will ever open it. QUILL has this command under the same name,
-beside a second one called **Trim Blank Lines at the Ends**, which takes only
-the blank lines before the first line of text and after the last; QUILL Lite has
-just the one.
+In a rich text document they read **"RTF (rich text)"** and **"Not applicable
+(rich text)"**. A rich text file keeps its letters and its line breaks in its
+own way, so these two questions do not apply to it.
 
-Each one counts as a single undo, so **Ctrl+Z** takes back the whole sort rather
-than putting back one line at a time.
+If a file came in a form QUILL Lite cannot write back, such as UTF-16
+big-endian or the old Mac style of line ending, the list you get from Enter
+shows a **keep as is** choice and stays on it. That way you cannot convert a
+file by accident when you only opened it to read. There is more in [How this
+file is written](#how-this-file-is-written-encoding-and-line-endings),
+in Chapter 3.
 
-### Quoting, wrapping, and throwing lines away
+### The View menu
 
-**Ctrl+Shift+Q** puts `> ` in front of the lines you have selected, the way an
-email reply does, and **Ctrl+Alt+Shift+Q** takes the marks off again.
-
-**Alt+Shift+W** is **Hard Wrap Lines**. It asks for a width and re-flows the
-lines so none is longer than that, keeping paragraphs apart and never breaking a
-word. This changes the document, so it is saved -- which is what makes it
-different from **View ▸ Word Wrap**, which only changes what you see.
-
-**Alt+Shift+X** is **Delete Lines Containing**. Type what the lines to go have
-in them -- taken exactly, not as a pattern -- and they are removed. It says how
-many went, and **Ctrl+Z** takes them all back in one step. This is log triage,
-which by ear otherwise means reading the whole file twice.
-
-All three work on what you have selected, or on the whole document if you have
-selected nothing.
-
-### Commenting lines out
-
-**Ctrl+/** comments the lines you have selected out, and pressing it again brings
-them back. The prefix comes from the file's name — `# ` in a `.py`, `.yml`,
-`.ini` or `.conf`, `-- ` in a `.sql`, `<!-- -->` in HTML and Markdown, `// ` in
-anything else — which is the same rule QUILL follows, so a file commented in one
-uncomments in the other. It says how many lines it changed.
-
-An unsaved document gets `// `, because there is nothing else to go on. Save it
-once under the name you mean and the key gets it right from then on.
-
-### Tabs or spaces
-
-**Tools ▸ Indenting** has **Convert to Spaces** (**Alt+F11**) and **Convert to
-Tabs** (**Alt+F12**), which rewrite the indentation at the start of each line
-without touching anything else. Four spaces to a tab. It is the single most
-common change anybody makes to somebody else's file.
-
-### Changing case
-
-**Tools ▸ Change Case** has five. UPPERCASE (**Ctrl+Shift+U**), lowercase
-(**Ctrl+Shift+K**) and Title Case (**Ctrl+Shift+T**) are the ones you would
-expect. **Sentence case** (**Ctrl+Alt+Shift+U**) puts a capital at the start and
-lowers the rest, which is what a heading typed in shouting needs, and **Invert
-Case** (**Ctrl+Alt+Shift+N**) swaps every letter, which is the cure for a
-sentence typed with Caps Lock on.
-
-All five work on what you have selected. **With nothing selected they change the
-word the cursor is in**, which is what Word's Shift+F3 has always done -- and
-which matters here more than it does for a sighted user: a whole document that
-has changed case reads exactly the same out loud, so a chord half-pressed would
-be a change you could not hear.
-
-### Getting deleted text back somewhere else
-
-**Restore Deleted Text** (**Ctrl+Alt+Shift+Z**) puts a recent deletion back **at
-the cursor**, wherever the cursor now is. QUILL Lite remembers the last three, so
-if what you want is not the last thing you deleted it offers a list with a
-preview of each.
-
-That is what makes it different from undo, and it is the reason it exists.
-Ctrl+Z puts text back where it came from; this puts it where you are now, so
-deleting a paragraph and restoring it further down is a way to *move* it that
-never touches the clipboard -- which means whatever you were already carrying on
-the clipboard is still there afterwards.
-
-It remembers your last three deletions, and only the deliberate ones: the delete
-commands above, not every character you backspaced over.
-
-### Indenting
-
-**Tools ▸ Indenting** has **Indent** (**Ctrl+]**) and **Outdent**
-(**Ctrl+[**). They work on every line the selection touches, or on the line the
-cursor is on if nothing is selected, and they say how many lines moved.
-
-These matter more here than they look. QUILL Lite already goes quiet about
-spelling in a `.json` or a `.py` file, which is an admission that people edit
-configuration and code in it -- and for that person, moving a block in or out a
-level is the single most common thing to want and the most tedious to do by
-arrow key.
-
-#### Asking how deep a line is
-
-**Describe Indent Depth** (**Ctrl+Alt+Shift+V**) says how far the line you are on
-is indented: "4 spaces", "1 tab", "1 tab, 3 spaces", or "No indentation".
-
-This is the one question about a line that nothing else will answer. A screen
-reader reads a line's *words*; it does not read the spaces and tabs in front of
-them. So in a YAML file, a Python file or a deeply nested list, the shape of the
-document -- which is most of its meaning -- is simply not there when you listen
-to it, and there has never been a way to ask.
-
-It also tells you something the words cannot: whether this line is indented with
-the same *kind* of whitespace as its neighbours. A file where one line uses a tab
-and the rest use spaces looks identical however carefully you read it, and in a
-Python file it will not run.
-
-#### Making Tab indent instead
-
-By default the **Tab** key types a tab character, the way Notepad's does. **View
-▸ Tab Key Inserts a Tab Character** is ticked to say so. Clear that tick --
-**Ctrl+Alt+Shift+I** -- and Tab indents the whole line instead, announcing the
-new depth as it goes. Working on code, that is usually the one you want.
-
-**Shift+Tab** outdents in *either* mode. That is deliberate: it means a tab you
-typed by accident can always be undone with one keystroke, without first working
-out which mode you were in.
-
-The status bar's **Tab Mode** part always says which one is on.
-
-### Snippets — Alt+Shift+I
-
-**Alt+Shift+I** opens **Snippets...**: every abbreviation you have, most used
-first, with a preview of what each one writes. Choose one, press Enter, and it goes in at the
-cursor.
-
-This is the way in when you cannot remember the trigger. Abbreviations expanding
-as you type is perfect for the six you use every day and no help at all for the
-fortieth one, which you set up in March — and a manager is for *editing* them,
-not for reaching them.
-
-It is the same list either way. Anything here expands from its trigger too, and
-anything you add in Manage Abbreviations appears here.
-
-### Abbreviations
-
-Type a short form, press space, and get the long one. Useful for an address, a
-sign off, or anything you type often and would rather not spell out every time.
-
-**Ctrl+Alt+A** manages your list. It is QUILL Lite's own list to begin with; if
-you also use QUILL for All or Quill Inkwell, Preferences has a switch that makes
-all three share one list.
-
-**Alt+Shift+A** turns expansion off and on again, and **Tools ▸ Expand
-Abbreviations** shows a tick when it is on. This is the one feature that acts
-while you type, so the moment you want it off is usually the moment it has just
-expanded something you meant to keep — which is too late to go looking for a
-dialog. It is the same switch as the Abbreviations box in Customize Features,
-reached in one keystroke.
-
----
-
-## Nine lessons, inside the app
-
-**Ctrl+Alt+F1** (**Help ▸ Tutorials...**) opens the lesson book. Nine lessons
-in two tracks, about forty-two minutes in all if you did every one back to back,
-which nobody does.
-
-**Your first documents**
-
-| Lesson | About |
-|---|---|
-| Open a file, and give it back unchanged | The one promise QUILL Lite makes, and the three things it remembers in order to keep it |
-| Four kinds of document, and how to say which | What a plain, Markdown, HTML or rich document changes about the keys |
-| Your documents are numbered | Getting between the things you have open |
-| What to press when you are lost | F1, F6, Ctrl+F1, and Escape |
-
-**Working in a document**
-
-| Lesson | About |
-|---|---|
-| Selecting more than a few words | F8, extend mode, and taking a whole paragraph in one key |
-| Finding your way back | Bookmarks, marks, and Go Back |
-| Skimming something long | Headings, folding, and the headings list |
-| Spelling, without a red squiggle | F7, the sound, and the Applications key |
-| Asking a question about a document | AI help, from a standing start |
-
-**How a lesson works.** The window has the list of lessons on the left and the
-steps of the one you are on beside it. Each step is three things:
-
-1. **What to press** — and it shows **your** key, not the shipped one, so a
-   lesson stays right after you have rebound something in the Keyboard Manager.
-2. **Why**, in a sentence. Not "press Control F6"; "the status bar is a row of
-   cells you can arrow along, and three of them are the promise".
-3. **What you should hear when it worked.** This is the part a manual never has
-   and the part you most need, because nothing on the screen is going to tell
-   you.
-
-Some steps also carry a **Worth knowing** line for the thing that would
-otherwise bite you later.
-
-**Getting around it.** The window opens on **Contents**: a tree of the two
-tracks with the lessons under them, and a filter box over it -- type part of a
-name, or the word `here` for the lessons about the window you came from. Under
-the tree are **Start**, **Read it all**, **The whole book as a document**, and
-**Forget my progress**. The lesson page is the step in a read-only field you can
-arrow through — and copy from with Ctrl+C — with five buttons under it:
-
-| Button | What it does |
-|---|---|
-| **Try it** | Runs this step's command for you, exactly as its key would |
-| **Next** | The next step, and reads it |
-| **Back** | The previous step, and reads it |
-| **Say it again** | Reads the step out in full |
-| **Contents** | Back to the list, keeping your place |
-
-**Try it** is why this is a window and not a document: a lesson can open the
-thing it is teaching and then talk you through what you are standing in, so
-you are never blocked on a key you have not learned yet.
-
-There is also a **Follow me** tick box, and **in QUILL Lite it is greyed out**.
-In the apps that have it, Follow me watches what changed in the app and moves
-you on by itself. QUILL Lite's lessons have nothing for it to watch: every step
-here ends in a sentence the editor already says out loud, so the step tells you
-it worked and there is no state to poll. It is disabled rather than removed, so
-that arriving on it tells you it is unavailable instead of leaving you hunting
-a window for a control you last used in Quill Radio.
-
-The window is a **peer**, not a dialog: it stays open beside your document,
-Alt+F4 or Escape closes it, and QUILL Lite remembers which lessons you have
-finished and where you had got to in the one you were in.
-
-Every QuillVille app has the same window on the same key. The whole book is
-also a document you can read straight through: **The whole book as a document**
-opens `docs/tutorials.html` from beside the program, in your browser.
-
----
-
-## The View menu
-
-Seven switches and three sizes. Every one of them says its new state out loud
-when you press it, so you never have to go and check.
+The View menu has seven switches and three text sizes. Each switch tells you
+its new setting out loud when you press it, so you never have to go and check.
 
 | Key | Switch | Starts |
 |---|---|---|
-| **Alt+Shift+D** | **Dark Mode** — force dark, whatever Windows is set to | following Windows |
-| **Alt+Z** | **Word Wrap** — long lines fold into the window instead of scrolling | on |
-| **Ctrl+Alt+F3** | **Announce Headings** — say "Heading 2, Installing" on arrival | on |
-| **Ctrl+Alt+F5** | **Announce Lists** — say "Bulleted list, 5 items" on entering one | on |
-| **Ctrl+Alt+Shift+W** | **Overwrite Mode** — typing replaces instead of inserting | off |
-| **Ctrl+Alt+Shift+I** | **Tab Key Inserts a Tab Character** — off means Tab indents the line | on |
-| **Alt+Shift+B** | **Status Bar** — show or hide the bar itself | on |
+| **Alt+Shift+D** | **Dark Mode**: dark colours, whatever Windows is set to | following Windows |
+| **Alt+Z** | **Word Wrap**: long lines fold to fit the window instead of running off the side | on |
+| **Ctrl+Alt+F3** | **Announce Headings**: say "Heading 2, Installing" when you arrive on one | on |
+| **Ctrl+Alt+F5** | **Announce Lists**: say "Bulleted list, 5 items" when you enter one | on |
+| **Ctrl+Alt+Shift+W** | **Overwrite Mode**: what you type replaces what is there | off |
+| **Ctrl+Alt+Shift+I** | **Tab Key Inserts a Tab Character**: when off, Tab indents the line | on |
+| **Alt+Shift+B** | **Status Bar**: show or hide the bar | on |
 
-Each row carries a tick that reads the true state, so arrowing onto it tells you
-which way it is set without changing anything.
+When you arrow onto one of these in the menu, its tick tells you whether it is
+on, without changing it.
 
-**The two announcement switches are per document**, not per app. A settings file
-where every line starts with `#` and a letter with six real headings in it can
-disagree about this, and they should.
+**The two announcement switches belong to each document**, not to the whole
+app. So you can have headings announced in a letter, and switched off in a
+settings file full of lines that start with `#`.
 
-**Overwrite Mode** is also on the status bar's **Typing Mode** cell — press
-**F6**, arrow to it, and **Enter** toggles it. QUILL Lite watches the **Insert**
-key go past and reports what it did, but never claims it: Insert is your screen
-reader's own modifier.
+**Overwrite Mode** can also be changed from the status bar: press **F6**, arrow
+to **Typing Mode**, and press **Enter**. The **Insert** key switches it too, and
+QUILL Lite tells you what happened. It does not take that key for itself,
+because your screen reader uses it.
 
-### Making the text bigger or smaller
+#### Making the text bigger or smaller
 
 | Key | What it does |
 |---|---|
@@ -2261,219 +659,2200 @@ reader's own modifier.
 | **Ctrl+-** | Decrease Text Size |
 | **Ctrl+0** | Reset Text Size |
 
-This is the size on the screen and nothing else. It changes nothing in the file,
-and it changes nothing about what a screen reader says. **Ctrl+Shift+.** and
-**Ctrl+Shift+,** are a different thing entirely — they change the font size of
-the text you have *selected*, in a rich text document, and that does go into the
-file.
+These change only how big the text looks on screen. Your file is not changed,
+and your screen reader says the same things.
 
-### What is in this document, in numbers
+**Ctrl+Shift+.** and **Ctrl+Shift+,** are something else. In a rich text
+document they change the font size of the text you have selected, and that is
+saved in the file.
 
-**Ctrl+Shift+G** (**Document Statistics**) speaks the size of the whole
-document: characters, words, lines and paragraphs. **Ctrl+Alt+W** (**Line
-Statistics**) answers the narrower question for the line you are on, which is
-what you want when you are formatting to a width — a braille display, a narrow
-window, a column limit in a code file.
+#### What is in this document, in numbers
 
----
+- **Document Statistics** (**Ctrl+Shift+G**) tells you the size of the whole
+  document: characters, words, lines and paragraphs.
+- **Line Statistics** (**Ctrl+Alt+W**) tells you about line widths. It is useful
+  when you are writing to fit something, like a braille display, a narrow
+  window, or a line limit in code.
 
-## Undo, and getting text back
+### Finding a command
+
+Cannot remember where something is? Press **Ctrl+Shift+P** to open the
+**Command Palette...**. Type part of what you want, such as "sort",
+"bookmark" or "print", then choose it from the list and press **Enter**. You do
+not need to know which menu it is in.
+
+Each command in the list shows its key beside it. That is a gentle way to learn
+keys as you go. If you have changed a key, the palette shows your key.
+
+#### One box for everything: Go To Anything
+
+**Navigate > Go To Anything...** (**Ctrl+Alt+Shift+A**) is like the Command
+Palette, but it searches more. Type a few letters and the list shows matching
+commands, headings in this document, and bookmarks you have set, all together.
+Press **Enter** to run the command or go to the place.
+
+**It starts switched off.** You can already do each of these with its own key:
+the Command Palette, the headings list (**Ctrl+Alt+L**) and the bookmark list
+(**Alt+Shift+G**). If you would rather have one key for all three, turn it on in
+**Tools > Customize Features** (**Ctrl+Alt+F10**).
+
+Headings only show up here in a **rich text** document. In a Markdown or HTML
+file, use the headings list on Ctrl+Alt+L instead.
+
+### What you learned, and where to go next
+
+Your documents share one window, and each has a number, so **Alt+1** to
+**Alt+9**, **Ctrl+Tab** and the Window menu always find them, even though
+Alt+Tab does not. Big files and files on a network drive open without
+freezing. The window starts maximized and then remembers the size you choose.
+**Ctrl+Shift+F4** closes every document except the one you are in, and Enter
+on its question always means Save.
+
+The status bar is a row of facts you reach with **F6**, walk with the arrow
+keys and leave with **Escape**, and Enter on a part acts on it. The View menu
+turns things on and off and tells you the new setting, **Ctrl+Shift+G** and
+**Ctrl+Alt+W** give you the numbers, and **Ctrl+Shift+P** finds any command by
+name.
+
+If you would like some practice, Help > Tutorials has *Your documents are
+numbered*, which walks you between two documents, and *What to press when you
+are lost*, which starts at the status bar.
+
+Next, Chapter 3, Opening, saving and printing, explains the four kinds of
+document and how QUILL Lite gives your file back exactly as it came.
+
+## Chapter 3: Opening, saving and printing
+
+QUILL Lite makes you one promise: open a file, change nothing, save it, and
+you get exactly the file you started with. This chapter is about that promise
+and everything around it. You will meet the four kinds of document and learn
+how to tell QUILL Lite which one you mean. Then you will see what happens when
+you save, how your work is kept safe if the computer stops, and how to get an
+earlier version back. Last come the documents QUILL Lite offers you when it
+starts, and printing.
+
+### Four kinds of document
+
+Every document is one of four kinds. The title bar names the first two, and
+the status bar's **Format** cell names all four.
+
+**Plain text** is like Notepad. One font, no formatting, no markup. Anything
+you paste in arrives as plain text. Program files, settings files and logs are
+plain text, and plain text is what you want when another program is going to
+read the file.
+
+**Markdown** is plain text with a few simple marks that mean something: `#`
+starts a heading, `-` starts a bullet, and `**` makes a word bold. QUILL Lite
+types those marks for you (see [Formatting](#formatting),
+in Chapter 6) and reads them back,
+so as you move around it can tell you that you have arrived at a Heading 2 or
+walked into a list of five items.
+
+**HTML** is the same idea written as tags: `<h2>`, `<ul>`, `<strong>`.
+Everything you can do in Markdown, you can do in HTML, in HTML's own spelling.
+
+**Rich text** is like WordPad. Bold, italic, headings, alignment, bullet points
+and line spacing. It saves as a Rich Text file, which Word and WordPad both
+open.
+
+QUILL Lite picks the kind from the file's name. That is only a first guess, and
+you can change it:
+
+| The file is called | You get |
+|---|---|
+| `notes.rtf` | Rich text |
+| `notes.md`, `.markdown`, `.mdx`, and `.txt` | Markdown |
+| `page.html`, `.htm`, `.xhtml` | HTML |
+| `build.py`, `nginx.conf`, `app.log`, anything else | Plain text |
+| nothing yet: a new, unsaved document | Markdown |
+
+A `.txt` file and a brand-new document start as Markdown, because if you type
+`## Notes` into one, you almost certainly mean a heading. A program file like
+`.py` or a settings file like `.conf` starts as plain text, because there a `#`
+starts a comment and a `-` is an option. You would not want every other line
+announced as "Heading 1".
+
+#### Saying otherwise
+
+You can always change the guess. Writing HTML in a scratch `.txt` file is a
+perfectly normal thing to do. There are three ways to choose:
+
+- **Alt+Shift+F** steps through all four kinds: plain text, Markdown, HTML,
+  rich text, and round again. Each one says its name, so keep pressing until
+  you hear the one you want. This is the quickest way.
+- **Ctrl+Alt+F6** (**Format > Document Language**) lets you pick one from a
+  list, and tells you what each choice will do before you choose.
+- **Enter on the status bar's Format cell** steps on to the next kind, just
+  like Alt+Shift+F. The status bar is often where you notice the kind is
+  wrong, so you can fix it right there.
+
+Switching between plain text, Markdown and HTML changes **nothing in your
+document**. It only changes what the formatting keys type from now on.
+Switching to or from rich text really converts your document, so QUILL Lite
+asks you first.
+
+Your choice lasts as long as the window is open. It describes what you are
+typing, not the file itself.
+
+The tutorial *Four kinds of document, and how to say which* lets you try each
+of these with the app guiding you.
+
+#### What the conversion keeps
+
+When you go **out of rich text**, your formatting is turned into Markdown, so
+you do not lose it. A Heading 2 becomes `## `, a bold word becomes `**bold**`,
+and a bullet list becomes lines that start with `- `. The **Format** cell then
+says Markdown, and heading navigation, the headings list and the outline still
+find everything they found a moment ago. If your document holds something
+Markdown cannot show, such as a table, a picture or a footnote, QUILL Lite
+names it before it asks.
+
+When you go **into rich text**, it works the other way. A Markdown document's
+`## Title` becomes a real Heading 1, `**bold**` becomes truly bold, and an HTML
+document comes across too. A **plain text** document is left exactly as it is.
+The asterisks in a shopping list are not meant as bold, so QUILL Lite does not
+guess.
+
+##### What comes with you, both ways
+
+Headings, bold, italic, underline, strikethrough, superscript and subscript,
+font and size, text colour and highlight, bullet and numbered lists, links,
+code, block quotes, alignment, line spacing, indents, spacing before and after,
+named styles, page breaks, tables, pictures and horizontal lines.
+
+##### Opening your rich text in Word
+
+A rich text file from QUILL Lite opens properly in Word. Headings use Word's
+own heading styles, and Quote, Title, Subtitle and Caption use the names Word
+knows. So Word's style box says Quote, instead of just showing text that looks
+indented and italic.
+
+##### Your file's name
+
+Your file keeps its name. But rich text cannot be saved into a `.txt` file, so
+the next time you press **Ctrl+S**, QUILL Lite offers `notes.rtf` instead of
+`notes.txt`, with the name already filled in. Just press Enter to accept it.
+That way the name always matches what is inside.
+
+### Saving
+
+**Ctrl+S** saves. **Ctrl+Shift+S** saves under a new name.
+
+QUILL Lite makes you one promise: **open a file, change nothing, save it, and
+you get exactly the file you started with.** Nothing gets quietly tidied up
+behind your back.
+
+To keep that promise, it remembers three things about every file it opens, and
+puts them back the same way:
+
+- **How the text is stored.** Different files store letters and accents in
+  different ways. QUILL Lite keeps whichever way yours already used.
+- **How the lines end.** Files made on Windows and files made on other systems
+  mark the end of a line differently. QUILL Lite keeps yours.
+- **Whether the file ended with a blank line.** If it did not, it will not
+  suddenly start.
+
+You can hear the first two in the status bar (**F6**). When you really do want
+to change them, for instance when somebody needs a copy of an old file in a
+newer format, use **Tools > File Encoding and Line Endings** (**Ctrl+Alt+E**).
+The change takes effect the next time you save.
+
+The tutorial *Open a file, and give it back unchanged* lets you see this
+promise for yourself, with the app guiding you.
+
+#### How this file is written: encoding and line endings
+
+**Tools > File Encoding and Line Endings...** (**Ctrl+Alt+E**) is one window
+for both of those things. It is the same window QUILL opens from **File > File
+Format...**. Nothing in it is applied until you save, and the window tells you
+so.
+
+##### Encoding
+
+This is how the letters are stored. You can choose:
+
+- UTF-8, for anything new.
+- UTF-8 with BOM, for the Windows tools that expect it.
+- UTF-16.
+- Windows-1252, which many older `.txt` files use.
+
+##### Line endings
+
+You can choose:
+
+- CRLF, which Windows programs write. A new QUILL Lite document starts with
+  this.
+- LF, which Unix, macOS and most programming tools expect.
+
+##### A file that is something else
+
+Some files use a way of storing text that neither list offers, such as a UTF-16
+big-endian file, or a file whose lines end the way old Macs did. Such a file
+keeps what it has. You see a **keep as is** row at the top of the list, and it
+is already chosen. So if you open this window and just press Enter, nothing in
+the file changes.
+
+#### When a character will not fit
+
+Older files can only store a limited set of letters. If you type an em dash, a
+curly quote or an emoji into a file that cannot hold it, QUILL Lite asks you
+before it saves:
+
+> 3 characters cannot be saved as Windows-1252. Save as UTF-8 instead?
+
+- **Yes** saves the file as UTF-8 and keeps every character. The **Encoding**
+  cell in the status bar changes to UTF-8, because from now on that is what the
+  file is.
+- **No** saves it the way it already was, and those characters become question
+  marks. Sometimes that is what you want, for instance when another program
+  has to read the file.
+- **Cancel** stops, and nothing is saved.
+
+#### Saving an HTML page as Markdown
+
+When you press **Ctrl+Shift+S**, the list of types includes **Markdown
+(*.md)**. If the document you are saving is **HTML**, choosing Markdown really
+converts it as it saves:
+
+- A heading becomes `#`.
+- Bold becomes `**bold**`.
+- A list becomes lines that start with `-`.
+- Links keep both their words and their address.
+
+QUILL Lite says **"Converted HTML to Markdown"**, and the document in front of
+you changes to match the file you just saved.
+
+Tags that Markdown cannot show are dropped, but their words stay, so nothing
+you typed disappears. If the conversion would leave nothing at all, for
+example a page that is only a comment, QUILL Lite keeps your text exactly as it
+was and tells you, instead of saving an empty file.
+
+If the save fails, say because the file is locked or the disk is full, the
+document in front of you is left alone. It is still HTML, and Ctrl+Z still
+works as before. The same is true when you turn a rich text document into
+plain text: QUILL Lite asks, saves the plain file, and only then removes the
+formatting from the window.
+
+Saving a plain text or Markdown document as `.md` changes nothing at all. A
+**rich text** document is not offered Markdown, because QUILL Lite would have
+to guess which bold lines you meant as headings. Save it as plain text first
+(QUILL Lite asks before it removes the formatting), and then the Markdown
+choice is there.
+
+#### If something goes wrong
+
+While a document has changes you have not saved, QUILL Lite keeps a spare copy
+of it about every thirty seconds. That copy is kept **beside** your file,
+never on top of it.
+
+If QUILL Lite or your computer stops unexpectedly, your work is offered back
+the next time you start, in its own document. It comes back **the way it
+was**. A file stored in an older encoding, or with Unix line endings, is still
+that same kind of file after it is recovered.
+
+If a spare copy cannot be read, for example because of a damaged disk or
+another program holding the file, QUILL Lite tells you and leaves it where it
+is. It is offered again next time, because it is still the only copy of that
+work.
+
+When you save, or close normally, the spare copy is deleted. So you are only
+ever offered work you actually need.
+
+##### What you are offered, and what is tidied away
+
+Before the recovery window opens, QUILL Lite clears out three kinds of copy,
+and tells you it did:
+
+- Copies that are identical to each other. A crash can save the same work
+  several times, and that is still just one document.
+- Copies nobody has come back for in **thirty days**.
+- Untitled documents, if you have turned those off in Preferences.
+
+If everything it found was one of those, no window opens. Instead you hear
+"Tidied up unsaved work from last time", so you know nothing was lost.
+
+##### The recovery window
+
+The window lists what is left, one row each, with a checkbox. There is also a
+read-only **What this would do** field you can arrow through. There are six
+buttons:
+
+- **Restore Checked** brings back the ones you have checked.
+- **Restore All** brings back everything.
+- **Not Now** changes nothing, and offers the same list next time.
+- **Discard Checked** throws away the ones you have checked.
+- **Discard Everything** throws away everything.
+- **Never Offer Untitled** is for you if you use QUILL Lite as a scratchpad
+  and do not want yesterday's throwaway notes back.
+
+You can change your mind about that last one later. In Preferences, turn on
+**Offer untitled unsaved work back after a crash**.
+
+#### Going back to an earlier version
+
+There is also a **timestamped backups** option, in **Tools > Customize
+Features**. When it is on, QUILL Lite keeps a dated copy every time you save.
+This is for getting back the paragraph you deleted an hour ago, not for
+crashes. It starts switched off, because it does fill up a folder over time.
+
+Once it is on, **File > Earlier Versions...** (**Ctrl+Alt+Shift+E**) lists
+your saved copies, newest first, like "Today at 4:12 PM, 2,341 words". Up to
+twenty are kept for each document. After that, the oldest go.
+
+The word count helps you tell copies apart. Two saves a minute apart sound
+almost the same, but a version that is suddenly two thousand words shorter is
+usually the one you are looking for.
+
+You can bring one back in two ways:
+
+- **Restore** puts that version into the window you are in. It does **not**
+  save, so your file is untouched until you decide. **Ctrl+Z** undoes it, so
+  a mistake costs you one keystroke.
+- **Open a Copy** puts the old version in a new untitled window, and leaves
+  the document you are working on alone. Use this when you just want to see
+  what it said yesterday.
+
+If you had backups switched on before version 1.0, those older copies are in
+the list too.
+
+### Reopening what you had open
+
+When you start QUILL Lite, it can offer you back the saved documents you had
+open last time.
+
+#### When it asks, and when it just opens them
+
+If you only had one or two documents open, it simply opens them again. If there
+were more, or a file has moved, it asks you first. That way you are not faced
+with a pile of windows to sort through before you can start.
+
+| Last time you had | What happens |
+|---|---|
+| one or two documents, both still there | they open, as before |
+| three or more | you are asked |
+| any document whose file has moved or gone | you are asked |
+
+#### The Reopen Last Session window
+
+The window lists what you had open, one row each, with a checkbox. Everything
+that can be opened starts ticked. So pressing **Enter** opens all of it, and
+unticking two means "all except those two". If a file has gone, its row says so
+and you cannot tick it.
+
+##### The buttons
+
+- **Open Checked** opens the ticked rows and leaves the list as it is.
+- **Open All** opens everything that is still on your computer, ticked or not.
+- **Not Now** opens nothing and changes nothing. You will be offered the same
+  documents next time. Escape does the same.
+- **Forget Checked** takes the ticked rows off the list, so you are not offered
+  them again. **Clear the List** does that for all of them. **Neither one
+  touches your files.** Forgetting only changes what QUILL Lite offers you, and
+  a line under the buttons reminds you of that.
+- **Never Ask Again** opens the ticked documents and stops asking from now on.
+- **Ask Me Next Time** undoes Never Ask Again. You will be asked again, just like
+  a new install: when there are several documents, or one whose file has moved.
+  The ticked documents open too.
+
+##### Turning the question back on
+
+**Only one of Never Ask Again and Ask Me Next Time can be pressed at a time.**
+The other is greyed out, not hidden, so when you land on it you can tell which
+way the setting is now.
+
+If you pressed Never Ask Again and want the question back, open the window
+yourself with **File > Reopen Last Session...** (**Alt+Shift+F12**) and press
+**Ask Me Next Time**. That is the only place this setting lives. It is not in
+Preferences.
+
+##### What you hear afterwards
+
+QUILL Lite tells you what happened, for example: "Reopened all 3 documents",
+"Reopened 1 of 2", or "Forgot 2 documents. 1 still remembered. The files
+themselves are untouched."
+
+##### Opening it whenever you like
+
+**File > Reopen Last Session...** (**Alt+Shift+F12**) opens the same window any
+time, not just at startup. So Not Now is always safe to press: you can come back
+to the list later, and tidy it without restarting. QUILL has the same window on
+the same key.
+
+### Printing
+
+Press **Ctrl+P** to print. Press **Ctrl+Alt+P** for Page Setup. What you set
+there (paper size, orientation and all four margins) is remembered for next
+time.
+
+Long lines are wrapped to fit the page, whatever your Word Wrap setting says, so
+nothing runs off the edge of the paper.
+
+**Rich text prints as rich text.** A heading comes out as a heading, and a bold
+word comes out bold.
+
+A plain text or Markdown document prints just as it reads. A Markdown heading
+prints with its `#` in front, the same as you hear it.
+
+#### Print Preview (Ctrl+Alt+Shift+P)
+
+Most print previews are a picture of the page, which is no help if you cannot
+see it. QUILL Lite's Print Preview tells you what you actually want to know.
+
+It tells you **how many pages** there will be, on what paper, and with what
+margins. Then it goes page by page and tells you what is at the top of each one.
+"Page 3 of 7: Installing" tells you where that section starts, without printing
+anything.
+
+The page count is worked out for your real printer, so the number you hear is
+the number of pages you will get.
+
+### What you learned, and where to go next
+
+Every document is plain text, Markdown, HTML or rich text. QUILL Lite guesses
+from the file's name, and **Alt+Shift+F** or **Ctrl+Alt+F6** let you change
+it. Only rich text really converts your document, and it asks first.
+
+**Ctrl+S** saves your file back exactly the way it came in, with its encoding,
+line endings and ending kept, and **Ctrl+Alt+E** changes those on purpose. You
+know what happens when a character will not fit, how a spare copy keeps your
+work safe after a crash, and how **File > Earlier Versions...** brings back an
+older copy once backups are on. QUILL Lite offers your last documents back,
+only asks when there are several or something has moved, and
+**Alt+Shift+F12** brings that window back whenever you want it. **Ctrl+P**
+prints, **Ctrl+Alt+P** sets up the page, and **Ctrl+Alt+Shift+P** tells you
+how many pages you will get and what starts each one.
+
+The tutorials *Open a file, and give it back unchanged* and *Four kinds of
+document, and how to say which* let you try all of this with the app guiding
+you.
+
+Next, Chapter 4, Moving around a document, shows you how to search, and how
+to jump straight to the place you want.
+
+## Chapter 4: Moving around a document
+
+A long document is easy to get lost in when you cannot glance down a page.
+This chapter gives you the keys that take you straight to what you want. You
+will search for words and hear how many there are, look for characters you
+cannot type, jump to a line, a bookmark or a heading, and leave bookmarks that
+are still there tomorrow. And whenever you jump somewhere, there is a key that
+takes you back.
+
+### Finding things
+
+These are the keys you will use most when you are looking for something:
+
+| Key | What it does |
+|---|---|
+| **Ctrl+F** | Find |
+| **F3** / **Shift+F3** | Find next / previous |
+| **Ctrl+H** | Replace |
+| **Ctrl+G** | Go To: a line, a bookmark or a heading |
+
+When a search reaches the end of the document, it goes back to the top and
+keeps looking, and it tells you it has done so. That little message is worth
+listening for. It is how you know a document has only one match, and not none.
+
+#### How many are there?
+
+The Find window counts as you type. Type three letters and it tells you how
+many matches there are. Type a fourth and the number changes. Your screen
+reader picks up the new count on its own, so you do not have to ask.
+
+**Ctrl+Down** and **Ctrl+Up** step through the matches while you stay in the
+search box. You can hear each one and still change what you typed. When you
+have the one you want, press **Enter** and you are back in your document,
+right on it.
+
+You do not have to open the window to count. **Count Occurrences**
+(**Ctrl+Alt+Shift+F3**) counts your current search from anywhere in the
+document.
+
+**All Matches** (**Ctrl+Shift+F3**) shows every match in one list, in order,
+each with its line, its column and the words around it. Open it before you
+press Replace All. It lets you see everything you are about to change before
+you change it.
+
+#### Searching for things you cannot type
+
+The Find and Replace windows have a **Search mode** with three choices.
+
+##### Normal text
+
+This is the everyday one. What you type is what it looks for, punctuation and
+all.
+
+##### Special characters
+
+This lets you search for characters that have no key. `\t` is a tab, `\n` is a
+line break, `\u2014` is an em dash, and `\N{NO-BREAK SPACE}` is exactly what it
+says.
+
+It pairs well with **Describe Character**. Say Describe Character tells you
+that you are standing on a no-break space. Special characters mode then lets
+you find every other one, or replace them all with an ordinary space.
+
+##### Regular expression
+
+This treats what you type as a search pattern. A `.` matches any character,
+`*` repeats the thing before it, `[abc]` matches any one of those letters, and
+`^` and `$` are the start and end of a line.
+
+If your pattern has a mistake in it, QUILL Lite tells you which character is
+wrong. That way you know the difference between "my pattern is broken" and
+"there really is nothing to find".
+
+##### Whole word, in every mode
+
+**Whole word** works with all three modes. In regular expression mode it
+applies to the whole pattern, so `cat|dog` finds the word cat or the word dog,
+and does not find "dog" in the middle of "hotdogs".
+
+### Going somewhere
+
+Press **Ctrl+G** to open **Go To**. It works like Word's Go To: one window, and
+you choose what to go to.
+
+1. Press **Ctrl+G**.
+2. At the top, arrow to **Line**, **Bookmark** or **Heading**.
+3. The rest of the window changes to match. For a line you get a number box.
+   For a bookmark or a heading you get a list. Bookmarks start with their
+   number, and headings start with their level, so you can pick one out by its
+   first word.
+4. Press **Enter** to go there.
+
+If you already know which kind you want, there are quicker keys.
+**Alt+Shift+G** goes straight to the bookmark list, and **Ctrl+Alt+L** goes
+straight to the heading list. **Ctrl+G** is the one to press when you are not
+sure.
+
+### Bookmarks
+
+A bookmark is a place you want to come back to.
+
+| Key | What it does |
+|---|---|
+| **Ctrl+Shift+B** | Drop a bookmark in the next free slot |
+| **Ctrl+Shift+1** to **Ctrl+Shift+9** | Set that numbered bookmark |
+| **F2** / **Shift+F2** | Next / previous bookmark |
+| **Alt+Shift+G** | The bookmark list: go to one, or remove one |
+| **Ctrl+Alt+B** | Clear them all |
+
+Bookmarks move with your text as you edit around them, so they stay on the
+right words.
+
+If you would like to try bookmarks with the app guiding you, the tutorial
+*Finding your way back* walks you through them, along with the temporary
+bookmark and Go Back.
+
+#### They are still there tomorrow
+
+Close a document, open it again, and your bookmarks are right where you left
+them. So is the cursor. You do not have to do anything to keep them.
+
+This is a real help in a long file. You cannot glance at a scrollbar to see
+where you are, so marking a few places and finding them again next time saves
+a lot of hunting.
+
+A few things worth knowing:
+
+- **A document you have never saved is not remembered.** It has no file name
+  yet. Save it once and its bookmarks are kept from then on.
+- **Nothing extra is saved next to your file.** No extra files appear in your
+  folder. QUILL Lite keeps the list in its own settings folder.
+- **If the file got shorter while it was closed,** for example because another
+  program edited it, any bookmark past the new end is moved to the end.
+
+If you switch bookmarks off in **Tools > Customize Features**, none of this is
+saved at all.
+
+#### The one with no number
+
+| Key | What it does |
+|---|---|
+| **Ctrl+Alt+J** | Set Temporary Bookmark: drop a pin where the cursor is |
+| **Ctrl+Shift+J** | Go to Temporary Bookmark: go back to it |
+
+There is one more bookmark, and it works differently. Use it when you are
+about to look something up and want to come straight back:
+
+1. Press **Ctrl+Alt+J** where you are.
+2. Go and look at whatever you need.
+3. Press **Ctrl+Shift+J** to come back.
+
+It has no number, no name and no place in the list. Setting it again just moves
+it, without asking. It is forgotten when you close the document. It is meant
+for a quick trip, so it stays out of your way.
+
+These are the same two keys QUILL uses.
+
+#### Going back where you came from
+
+| Key | What it does |
+|---|---|
+| **Alt+Left** | Go back to where you were before the last jump |
+| **Alt+Right** | Go forward again |
+
+These are **Go Back** and **Go Forward**, at the top of the **Navigate** menu.
+They are the same keys a web browser uses.
+
+QUILL Lite remembers every jump you make: going to a line, following a heading,
+choosing something from the heading list or the bookmark list, and landing on a
+search result. **Alt+Left** takes you back to where you were before the jump.
+Think of it as undo for moving around. Press **F3** to check a word somewhere
+else, then **Alt+Left** to come home.
+
+They are always there, even if you switch headings and bookmarks off.
+
+Unlike bookmarks, this history is only kept while the window is open.
+
+### What you learned, and where to go next
+
+You can find text with **Ctrl+F**, hear how many matches there are, see them
+all in one list, and search for characters you cannot type. **Ctrl+G** takes
+you to a line, a bookmark or a heading from one window. Numbered bookmarks
+are still there after you close the document, the temporary bookmark is there
+for a quick trip, and **Alt+Left** takes you back after any jump.
+
+The tutorial *Finding your way back* lets you practise bookmarks, the
+temporary bookmark and Go Back with the app guiding you.
+
+Next, Chapter 5, Selecting, copying and changing text, shows you how to take
+more than a few words at once, and what you can do with them. It also covers
+marks, a lighter kind of bookmark.
+
+## Chapter 5: Selecting, copying and changing text
+
+Holding Shift and pressing an arrow is fine for two letters, and slow for four
+paragraphs. This chapter gives you better ways. You will select from here to
+there without holding anything down, take a whole word, line or paragraph in
+one key, and read a selection without risking it. Then you will keep more than
+one thing on the clipboard, move, sort and tidy whole lines, and get back text
+you deleted. Everything here tells you how much it took or changed, so you
+always know what you have.
+
+### Selecting
+
+Holding Shift and pressing an arrow selects one character at a time. That is
+fine for two letters. For four paragraphs it is slow, and it is easy to lose
+track of how far you have got.
+
+**Edit > Selection** gives you better ways. Each one tells you how much it
+took, for example "Selected paragraph, 41 words". That way you know what you
+have before you press anything that might replace it.
+
+If you would like to try this with the app guiding you, the tutorial
+*Selecting more than a few words* walks through each of these ways.
+
+#### Start a selection and walk to the end of it
+
+This is the one to learn first.
+
+1. Put the cursor where you want the selection to start.
+2. Press **F8**.
+3. Move any way you like: arrows, Home, End, Page Down, or Ctrl with an arrow.
+4. When you reach the end, press **Shift+F8**. QUILL Lite tells you how much
+   you selected.
+
+You do not have to hold anything down, and you do not have to count. Use it
+whenever what you want does not start and end neatly on a word or a paragraph.
+
+| Key | What it does |
+|---|---|
+| **F8** | Start selecting from here |
+| **Shift+F8** | Finish, and say how much was taken |
+| **Ctrl+Alt+F8** | **Toggle Selection Marker**: drop the starting point or pick it up, without moving the cursor |
+| **Ctrl+Shift+F8** | Put back the selection you just had |
+| **Alt+Shift+F8** | Go to the beginning of what is selected |
+
+##### A Shift that stays down (Alt+Shift+F9)
+
+**Extend Selection Mode** is another way to do the same job. Try both and use
+the one you like.
+
+1. Press **Alt+Shift+F9**. QUILL Lite says "Extend selection mode on" and tells
+   you where you are.
+2. Move with the arrows, Home, End, Page Down or Ctrl with an arrow. Each move
+   makes the selection bigger, as if you were holding Shift. Your screen reader
+   does not say "selected" on every key press, so it stays quiet while you
+   work.
+3. Press **Alt+Shift+F9** again, or **Escape**, to stop.
+
+If you type something that is not a movement key, it replaces the selection,
+just as it would if you had been holding Shift.
+
+How is this different from **F8**? With F8, nothing is selected until you press
+**Shift+F8**, so in between you can use anything to get there: Find, Go To, a
+bookmark. Extend Selection Mode selects as you go, so what you hear is always
+what you have.
+
+**Ctrl+Shift+F8** is worth remembering. If an arrow key has just thrown away a
+selection that took you a while to build, press it to get the selection back,
+however you made it.
+
+##### What you hear when something is selected
+
+Every selection tells you two things, in the same order: what it took, and how
+many words. For example, "Selected paragraph, 41 words".
+
+When you finish an **F8** selection, you also hear where it reaches, for
+example "Selected 120 words, lines 14 to 31". It could start and end anywhere,
+so this tells you how far it went.
+
+QUILL says exactly the same things, so you hear the same sentences in both
+editors.
+
+#### Take a whole word, line or paragraph at once
+
+| Key | What it does |
+|---|---|
+| **Ctrl+Shift+W** | Select the word |
+| **Ctrl+Shift+E** | Select the line |
+| **Ctrl+Shift+H** | Select the paragraph |
+| **Ctrl+Space** | Select the sentence |
+| **Ctrl+Alt+Shift+B** | Select the block: the run of lines between blank lines |
+| **Ctrl+Shift+X** | Grow the selection outwards a step |
+| **Ctrl+Alt+Shift+X** | Shrink it back in a step |
+| **Ctrl+Shift+A** | Clear the selection, staying where you are |
+| **Ctrl+A** | Select everything |
+
+You do not need to find where any of these start. Just put the cursor
+somewhere inside.
+
+Growing goes word, line, sentence, paragraph, block, then the whole document,
+and tells you which one it took each time. Shrinking goes back the other way.
+So if you press **Ctrl+Shift+X** once too often, **Ctrl+Alt+Shift+X** puts it
+right.
+
+#### Marks: where you were a moment ago
+
+A mark is lighter than a bookmark. A bookmark is a place you mean to keep. A
+mark is where you were standing before you went off to check something.
+
+| Key | What it does |
+|---|---|
+| **Ctrl+Shift+M** | Set a mark here |
+| **Ctrl+M** | Go back to the last mark |
+| **Alt+M** | List your marks and pick one |
+| **Ctrl+Alt+X** | Swap between the cursor and the mark, selecting what is between |
+
+QUILL Lite keeps your last twenty marks. Marking the same place twice only uses
+one.
+
+A mark moves with your text. Drop one on a paragraph, add three paragraphs
+above it, and **Ctrl+M** still takes you to that paragraph.
+
+Every way of reaching a mark counts as a jump, so **Alt+Left** can take you
+back again, the same as after a bookmark or a Go To.
+
+#### Two more
+
+**Ctrl+Shift+Y** reads back what is selected. Use it to check you took what you
+meant to before your next key replaces it. A long selection is summarised
+instead of read out in full.
+
+**Ctrl+Alt+Q** puts a second copy of the selection right after it. If nothing
+is selected, it copies the line you are on.
+
+#### The ones Windows gives you anyway
+
+These work in QUILL Lite the same way they do everywhere else, so they have no
+place on the menu:
+
+| Key | What it does |
+|---|---|
+| **Shift+Home** / **Shift+End** | Select to the start / end of the line |
+| **Ctrl+Shift+Home** / **Ctrl+Shift+End** | Select to the start / end of the document |
+| **Shift** and an arrow | Select one character, or one line, at a time |
+| **Ctrl+Shift** and Left or Right | Select a word at a time |
+
+### Reading a selection without risking it
+
+When you have a long selection and want to read it through, there is a small
+danger. If you arrow around your document while text is selected, the next key
+you type replaces all of it.
+
+**Alt+Shift+U** opens the **Review Buffer**. It is a copy of what you selected,
+in its own window, and you cannot change it. Read it as slowly as you like. When
+you are done, press **Escape**. You are back where you were, and your selection
+is still there.
+
+You will also find it at **Edit > Selection > Review Buffer...**.
+
+### Copying and pasting more than one thing
+
+The Windows clipboard holds one thing at a time. QUILL Lite gives you three
+more places to keep things, all in **Edit > Clipboard**.
+
+#### The copy tray: twelve numbered slots
+
+The copy tray holds twelve things, each in its own numbered slot. They stay
+there even after you close QUILL Lite.
+
+- **Ctrl+Alt+Y** copies what you selected into the next free slot.
+- **Alt+Shift+Y** lets you choose the slot yourself. Each slot in the list says
+  what is in it now, so you never overwrite something without hearing it first.
+  Picking your own number makes it easier to remember later.
+- **Ctrl+Alt+V** pastes from any slot, even an hour later.
+- **Ctrl+Alt+Shift+Y** empties the tray.
+
+#### The collector: gather now, paste once
+
+The copy tray has twelve numbered slots for things you want to keep. The
+**collector** is for something different: you are reading along and want to
+pick up several pieces as you go, without deciding where each one goes.
+
+1. Select a piece of text and press **Alt+Shift+S** (**Edit > Clipboard >
+   Collect Selection**). It is added to the pile. Do this as often as you like.
+   Each piece goes on the end, and nothing is replaced.
+2. When you are ready, move to where you want it all and use **Paste Everything
+   Collected** (**Ctrl+Alt+Shift+G**). The whole pile goes in, in the order you
+   collected it.
+3. When you are done, press **Ctrl+Alt+Shift+C** (**Clear the Collector**) to
+   empty it.
+
+If you used an older version, Collect Selection used to be on Ctrl+Alt+G. It
+moved because Google Drive for desktop takes that key for itself. If you find a
+key that does nothing, the Keyboard Manager can tell you when another program
+has taken it.
+
+#### The clip library: things you want to keep
+
+Select something and press **Ctrl+Alt+M** to keep it in your clip library.
+**Ctrl+Alt+Shift+M** opens the list so you can paste one back.
+
+The library can also fill itself. In Preferences, tick **Keep everything I copy
+in the clip library**. From then on, every copy and every cut you make in a
+QUILL Lite document is saved there, up to the last two hundred. It only sees
+what you copy in QUILL Lite, never in other programs.
+
+It starts switched off, and here is why you might leave it that way: the
+library is a file on your computer. If you ever copy a password, it will be in
+there too.
+
+#### Two more handy keys
+
+- **Ctrl+Shift+V** pastes text without its formatting. Use it when something
+  copied from a web page arrives with its own fonts and colours.
+- **Ctrl+F8** copies the whole document. You could press Select All and then
+  Copy, but that leaves everything selected, and the next key you type would
+  replace it all. Ctrl+F8 copies without selecting anything.
+
+### Working on lines
+
+**Edit > Lines** holds everything you can do to whole lines. Most of these work
+on the line your cursor is on, so you do not need to select anything first.
+
+#### Moving, copying and joining lines
+
+- **Move Line Up** (**Ctrl+Shift+Up**) and **Move Line Down**
+  (**Ctrl+Shift+Down**) move the current line past the one next to it. It is
+  much quicker than cutting and pasting, and your cursor goes with the line.
+- **Duplicate Line** (**Ctrl+D**) makes a copy of the line just below it.
+- **Join Lines** (**Ctrl+Alt+Shift+J**) pulls the next line up onto the end of
+  this one.
+
+#### Deleting lines
+
+- **Delete Line** (**Ctrl+Shift+Delete**) removes the whole line.
+- **Delete to Start of Line** (**Ctrl+Shift+Backspace**) removes everything
+  before the cursor on this line.
+- **Delete to End of Line** (**Ctrl+Alt+Shift+Delete**) removes everything after
+  the cursor on this line.
+- **Delete Paragraph** (**Ctrl+Alt+Shift+Backspace**) removes the whole
+  paragraph.
+
+Each one tells you what it did. If there was nothing to do, it says that too,
+for example "Already the first line", so you are never left wondering.
+
+#### Putting lines in order, and tidying them up
+
+These work on what you have selected. If nothing is selected, they work on the
+whole document.
+
+To change the order:
+
+- **Sort Lines A to Z** (**Ctrl+Alt+S**), or **Sort Lines Z to A**
+  (**Ctrl+Alt+Shift+S**).
+- **Reverse Lines** (**Alt+Shift+Z**) turns the list upside down.
+- **Number Lines** (**Alt+Shift+N**) puts a number in front of each line.
+
+To clean up:
+
+- **Remove Every Blank Line** (**Ctrl+Alt+K**) removes every empty line,
+  including the ones between your paragraphs. A line with only spaces on it
+  counts as empty. This is great for text from a web page that arrives
+  double-spaced, but you probably do not want it on a letter.
+- **Remove Duplicate Lines** (**Ctrl+Alt+D**) keeps one copy of each line.
+- **Trim Trailing Spaces** (**Ctrl+Alt+T**) removes spaces at the ends of lines.
+- **Tidy Whitespace** (**Ctrl+Alt+Shift+T**) shrinks runs of spaces and tabs,
+  the kind that often come along with pasted text.
+
+If you also use QUILL, it has these same commands, plus one more called **Trim
+Blank Lines at the Ends**. QUILL Lite has just the one blank line command.
+
+Each of these is a single undo. One press of **Ctrl+Z** puts the whole sort
+back, not one line at a time.
+
+#### Quoting, wrapping, and throwing lines away
+
+These also work on what you have selected, or on the whole document if nothing
+is selected.
+
+- **Quote Lines** (**Ctrl+Shift+Q**) puts `> ` in front of each line, the way an
+  email reply does. **Remove Quote Marks** (**Alt+Shift+.**, Alt, Shift and the
+  period) takes them off again.
+- **Hard Wrap Lines...** (**Alt+Shift+W**) asks for a width, then rearranges the
+  lines so none is longer than that. It keeps your paragraphs apart and never
+  breaks a word. This really changes your file. **View > Word Wrap** is
+  different: it only changes how the lines are shown.
+- **Delete Lines Containing** (**Alt+Shift+X**) asks for some text, then
+  removes every line that has it. The text is matched exactly as you type it.
+  You hear how many lines went, and one **Ctrl+Z** brings them all back. This
+  is a big help when you are trimming a long log file by ear.
+
+#### Commenting lines out
+
+**Toggle Line Comment** (**Ctrl+/**) turns the selected lines into comments.
+Press it again to turn them back. It says how many lines it changed.
+
+QUILL Lite picks the comment mark from the file's name:
+
+- `# ` in a `.py`, `.yml`, `.ini` or `.conf` file
+- `-- ` in a `.sql` file
+- `<!-- -->` in HTML and Markdown
+- `// ` in anything else
+
+QUILL uses the same marks, so a file commented in one can be uncommented in the
+other. A document you have not saved yet gets `// `. Once you save it with its
+proper name, the right mark is used from then on.
+
+#### Tabs or spaces
+
+**Tools > Indenting** has **Convert to Spaces** (**Alt+F11**) and **Convert to
+Tabs** (**Alt+F12**). They change only the indentation at the start of each
+line, and count four spaces to a tab. This is a common change to make to a file
+somebody else wrote.
+
+#### Changing case
+
+**Tools > Change Case** has five choices:
+
+- **UPPERCASE** (**Ctrl+Shift+U**)
+- **lowercase** (**Ctrl+Shift+K**)
+- **Title Case** (**Ctrl+Shift+T**)
+- **Sentence case** (**Ctrl+Alt+Shift+U**) puts a capital at the start and makes
+  the rest small. Good for a heading that was typed in capitals.
+- **Invert Case** (**Ctrl+Alt+Shift+N**) swaps every letter. Good for a sentence
+  typed with Caps Lock on by mistake.
+
+They work on what you have selected. **If nothing is selected, they change the
+word your cursor is in**, the same as Shift+F3 in Word. That keeps a slip of the
+finger small: a whole document in the wrong case sounds just the same when it is
+read aloud, so you might not notice.
+
+#### Getting deleted text back somewhere else
+
+**Restore Deleted Text** (**Ctrl+Alt+Shift+Z**) puts something you deleted back
+**where your cursor is now**. QUILL Lite remembers your last three deletions. If
+the one you want is not the most recent, you get a short list with a preview of
+each.
+
+This is different from undo. **Ctrl+Z** puts text back where it came from. This
+puts it where you are. So you can delete a paragraph, move down, and restore it
+there. That is a way to move text without using the clipboard, so whatever you
+had copied is still waiting for you.
+
+It only remembers deletions made with the delete commands above, not every
+letter you backspaced over.
+
+#### Indenting
+
+**Tools > Indenting** has **Indent** (**Ctrl+]**) and **Outdent** (**Ctrl+[**).
+They move every line your selection touches, or just the line you are on if
+nothing is selected. You hear how many lines moved. If you edit code or
+settings files, you will use these a lot.
+
+##### Asking how deep a line is
+
+**Describe Indent Depth** (**Ctrl+Alt+Shift+V**) tells you how far the current
+line is indented: "4 spaces", "1 tab", "1 tab, 3 spaces", or "No indentation".
+
+Your screen reader reads the words on a line, but not the spaces and tabs in
+front of them. In a Python file, a YAML file or a nested list, that indentation
+matters a lot. This command lets you hear it.
+
+It also tells you when a line uses a different kind of space from the lines
+around it, for example a tab where the others use spaces. You cannot hear that
+difference any other way, and in a Python file it stops the program running.
+
+##### Making Tab indent instead
+
+When you start, the **Tab** key types a tab character, the way it does in
+Notepad. You can see this in **View > Tab Key Inserts a Tab Character**, which
+is ticked. Press **Ctrl+Alt+Shift+I** to clear the tick, and Tab indents the
+whole line instead, telling you the new depth as it goes. That is usually what
+you want for code.
+
+**Shift+Tab** outdents in either mode, so one key always takes back a tab you
+typed by accident. The **Tab Mode** part of the status bar tells you which mode
+is on.
+
+#### Snippets (Alt+Shift+I)
+
+**Alt+Shift+I** opens **Snippets...**. It lists every abbreviation you have,
+the ones you use most at the top, with a preview of what each one writes. Pick
+one and press **Enter**, and it goes in at your cursor.
+
+This is the easy way in when you cannot remember a short form. The six you use
+every day you will type from memory. The one you set up months ago, you can find
+here. Anything you add in **Manage Abbreviations...** shows up in this list too.
+
+#### Abbreviations
+
+An abbreviation is a short form that grows into a longer one. Type the short
+form, press **Space**, and the long text appears. It is great for your address,
+how you sign off, or anything else you type often.
+
+- **Ctrl+Alt+A** opens **Manage Abbreviations...**, where you add and change
+  them.
+- **Alt+Shift+A** turns expanding on and off. **Tools > Expand Abbreviations**
+  shows a tick when it is on.
+
+That on and off key is there for the moment an abbreviation has just grown into
+something you did not want. You can turn it off right away, without looking for
+a setting. It is the same switch as the Abbreviations box in Customize Features.
+
+If you also use QUILL or Quill Inkwell, there is a switch in Preferences that
+lets all three share one list of abbreviations.
+
+### Undo, and getting text back
 
 | Key | What it does |
 |---|---|
 | **Ctrl+Z** | Undo |
 | **Ctrl+Y** | Redo |
-| **Ctrl+Alt+Shift+Z** | **Restore Deleted Text** — put a recent deletion back **where the cursor is now** |
+| **Ctrl+Alt+Shift+Z** | **Restore Deleted Text**: put a recent deletion back **where the cursor is now** |
 
-The first two are the ones you know. The third is the one worth learning:
-**Ctrl+Z puts deleted text back where it came from, and Restore Deleted Text
-puts it where you are standing.** That is the difference between undoing a
-mistake and moving a paragraph, and it means a delete is never a one-way trip
-even after you have typed something else.
+You already know the first two. The third one is worth learning. **Ctrl+Z puts
+deleted text back where it came from, and Restore Deleted Text puts it where
+you are standing.** So a deletion is never final, even after you have typed
+more.
 
-The big commands are **one undo each**, deliberately. Sorting nine hundred
-lines, applying a heading, moving a whole section, restoring an earlier version
-of the file, tidying every run of whitespace — each of those is a single
-**Ctrl+Z**, not one per line. A command that took one keystroke should take one
-keystroke back.
+#### Big changes are one undo
 
----
+When a command changes a lot at once, one **Ctrl+Z** takes the whole change
+back. That includes sorting nine hundred lines, applying a heading, moving a
+whole section, going back to an earlier version of the file, or tidying all the
+spaces. One key did it, so one key undoes it.
 
-## Finding a command
+### What you learned, and where to go next
 
-**Ctrl+Shift+P** opens a search box for commands. Type part of what you want —
-"sort", "bookmark", "print" — and pick it from the list. You do not have to
-remember which menu it lives in.
+You can start a selection with **F8** and walk to the end of it, use Extend
+Selection Mode, take a whole word, line or paragraph in one key, and grow or
+shrink what you have. Marks take you back to where you were a moment ago, and
+the Review Buffer on **Alt+Shift+U** lets you read a selection safely.
 
-Each command shows its keyboard shortcut beside it, which is a comfortable way
-to learn the keys over time — and it shows **your** key, so the palette stays
-right after you have rebound something.
+The copy tray holds twelve numbered things, the collector gathers several
+pieces to paste together, and the clip library keeps what you want to keep.
+**Ctrl+Shift+V** pastes plain text, and **Ctrl+F8** copies the whole document
+without selecting it. Edit > Lines moves, sorts, tidies, quotes, wraps and
+deletes lines, Tools > Indenting and Tools > Change Case look after spacing
+and capitals, and snippets and abbreviations save you typing. Every big change
+is one **Ctrl+Z**, and Restore Deleted Text puts a deletion back wherever you
+are now.
 
-### One box for everything — Go To Anything
+The tutorial *Selecting more than a few words* walks you through the
+selecting keys, and finishes with the Review Buffer.
 
-**Ctrl+Alt+Shift+A** (**Navigate ▸ Go To Anything...**) is the palette's
-bigger sibling: one box that searches **commands, headings and bookmarks
-together**. Type three letters and the list has every command whose name
-matches, every heading in this document, and every bookmark you have set.
-Enter runs the command or goes to the place.
+Next, Chapter 6, Formatting, headings and the Insert menu, shows you what to
+do with text once it is in.
 
-**It starts switched off**, and the reason is not that it is a poor feature.
-The Command Palette, the headings list (**Ctrl+Alt+L**) and the bookmark list
-(**Alt+Shift+G**) each already answer their own part of this, so a fourth front
-door is a fourth thing to explain to somebody who has not asked for it. Turn it
-on in **Tools ▸ Customize Features** (**Ctrl+Alt+F10**) if you would rather
-have one key than three.
+## Chapter 6: Formatting, headings and the Insert menu
 
-Headings only appear in it for a **rich text** document, because that is where
-QUILL Lite can ask the control itself what the headings are. In a Markdown or
-HTML file the headings list on Ctrl+Alt+L is the one to use.
+The formatting keys are the ones you know from WordPad, and QUILL Lite makes
+each one write the right thing for the kind of document you are in. This
+chapter covers bold, lists and headings, how to hear that you are on a heading
+or in a list, how to skim a long document by folding it, and how to reshape it
+by moving whole sections. Then come links, and the Insert menu: the date,
+emoji, special characters, line breaks, and the Markdown and HTML tag
+pickers.
 
----
+### Formatting
 
-## The window
+The formatting keys are the ones you know from WordPad. Ctrl+B is still bold,
+Ctrl+I is still italic. What changes is that QUILL Lite gives you the right
+kind of bold for the document you are in.
 
-QUILL Lite opens **maximized**, and after that it opens the way you left it. Make
-it smaller and that size comes back next time; put it back to full screen and so
-does that.
+#### One key, the right answer for your document
 
-Maximized is the default because a small window is where text gets cut off and
-where a list shows four rows on a screen with room for thirty -- and neither
-costs anything to the person who chose the size. It is one keystroke to change
-and QUILL Lite will not ask again.
+In a Markdown document, bold is two asterisks. In HTML it is a tag. In rich
+text it is real bold. So when you press **Ctrl+B**, QUILL Lite writes whatever
+bold means in the document in front of you. Headings work the same way.
 
-Every app in the family behaves the same way now: QUILL, Quill Radio, Cast,
-Weather, Audio Studio, Inkwell, the Converter, the Media Player and Beacon.
+| In a | **Ctrl+B** writes | **Ctrl+Alt+2** writes |
+|---|---|---|
+| Markdown document | `**bold**` | `## Heading` |
+| HTML document | `<strong>bold</strong>` | `<h2>Heading</h2>` |
+| Rich text document | real bold | a 16-point bold paragraph |
+| Plain text document | nothing, and says why | nothing, and says why |
 
----
+Here is how it feels in practice:
 
-## Closing a lot of windows at once
+1. Select a word and press **Ctrl+B**. The word is wrapped in bold.
+2. Or press **Ctrl+B** with nothing selected. The markup goes in empty, and
+   your cursor lands in the middle of it, so you can type the bold words
+   straight away.
 
-When you switch back with Alt+Tab, QUILL Lite repairs focus left on a window
-container so you can type in the active document. A Find field, other control,
-or open menu keeps focus; the app does not pull you away from it.
+In Markdown and HTML you hear what was written, for example "Bold in
+Markdown". That tells you two asterisks appeared, which is what actually
+happened.
 
-When you exit the whole app, incoming requests to open documents stop before
-the windows close. Requests still waiting in the inbox are handled on the next
-launch. Cancelling a save prompt cancels exit and leaves the app working normally.
+In HTML, bold is written as `<strong>` and italic as `<em>`. Screen readers
+can treat those as important text, which plain `<b>` and `<i>` do not give
+them.
 
-**Window > Close Other Documents (Ctrl+Shift+F4)** keeps the document you are in
-and closes every other one. QUILL has had it since 2026-06; QUILL Lite has it now
-too, on the same key, because a key you learn in one editor should work in the
-other.
+Applying a heading replaces the old one. Press **Ctrl+Alt+2** on a line that
+says `### Notes` and you get `## Notes`. If an HTML heading has an `id=`, it
+is kept, so links pointing at that heading still work.
 
-If any of those documents has unsaved changes, you are asked about it -- and the
-question carries two answers that settle the rest at once:
+Alignment, line spacing and font are for rich text only. If you try one in
+another kind of document, QUILL Lite tells you it cannot run there.
 
-- **Save All** saves this document and every other one waiting behind it,
-  without asking again. A document that has never been saved still asks you
-  where to put it.
-- **Don't Save Any** closes the rest and loses their changes, without asking
-  again. There is no undo for that one.
-- **Save** and **Don't Save** apply to the document in front of you only, and
-  you are asked about the next one.
-- **Cancel** stops the whole thing. Whatever is still open stays open, and you
-  are told how many closed before you stopped it.
+#### Lists
 
-The question says how many more documents are waiting, so you know at the first
-prompt whether this is one more keystroke or sixty-seven.
+**Ctrl+Shift+L** works in rich text and in Markdown. It goes round in a
+circle, like WordPad's list button: bulleted list, numbered list, no list,
+then back to the start. Each stop says its name, so keep pressing until you
+hear the one you want.
 
-**Enter answers Save**, never one of the two that lose work. If a save fails --
-a full disk, a file that has gone read-only -- the close stops there rather than
-treating a failed save as permission to throw the document away, and "Save All"
-stops meaning "save all" until you say so again.
+In rich text, the bullets and numbers are drawn for you and renumber
+themselves. In Markdown, QUILL Lite writes `- ` or `1. ` at the start of the
+lines you selected, and only those lines.
 
----
+#### Keys that only work in rich text
 
-## Changing what a key does
+Underneath, every QUILL Lite document uses the same Windows editing box that
+WordPad uses. That box has some keys of its own: **Ctrl+U** underlines,
+**Ctrl+E**, **Ctrl+L**, **Ctrl+R** and **Ctrl+J** change alignment,
+**Ctrl+=** and **Ctrl+Shift+=** raise and lower text, and there are a few
+more. In a rich text document they all work as you would expect.
 
-**Tools ▸ Keyboard Manager** (**Ctrl+Alt+Shift+R**) is where every key in
-QUILL Lite can be changed. The list has every command with the key it answers to;
-type part of a command's name to find it, and press **Enter** on a row to give it
-a different key.
+In a Markdown, HTML or plain document, those keys have nothing to do. So
+QUILL Lite catches them and tells you, once per key in each document:
 
-### Finding out what a key already does
+> Underline has no meaning in a plain text document.
 
-The other question is the harder one: *is this key free?* Press **Record a Key**,
-then press the combination you are thinking of. QUILL Lite says what it does today
--- "Ctrl+S is File ▸ Save" -- or says it is free. That is faster and more
-reliable than reading a list of two hundred rows.
+After that, pressing the same key again stays quiet, so you are not told the
+same thing over and over. Your document is never changed behind your back.
 
-### When a key is taken
+#### The formatting keys at a glance
 
-Assigning a key somebody else already has does not silently steal it and does not
-silently refuse. QUILL Lite names the command that owns it and asks. If you say
-yes, that command is left with **no key** until you give it one -- which is the
-honest outcome, because a key claimed twice means one of the pair never fires and
-nothing tells you which.
+| Key | What it does |
+|---|---|
+| **Ctrl+B**, **Ctrl+I**, **Ctrl+U** | Bold, italic, underline |
+| **Ctrl+Shift+.** / **Ctrl+Shift+,** | Bigger / smaller text |
+| **Ctrl+L**, **Ctrl+E**, **Ctrl+R**, **Ctrl+J** | Left, centre, right, justify |
+| **Ctrl+Shift+L** | Lists: bulleted, numbered, none, round again |
+| **Ctrl+1**, **Ctrl+5**, **Ctrl+2** | Single, one-and-a-half, double spacing |
+| **Ctrl+Alt+1** to **Ctrl+Alt+6** | Heading 1 to 6 |
+| **Ctrl+Alt+0** | Back to ordinary text (removes the heading) |
+| **Ctrl+Shift+N** | Normal Text: take *all* formatting off |
+| **Ctrl+Shift+D** | Describe the formatting where the cursor is |
 
-### When another program has the key
+The heading keys are also in **Format > Headings**. The number in the menu is
+the number you press.
 
-Some programs claim a key across the whole of Windows -- Google Drive takes
-**Ctrl+Alt+G**, and it is not the only one. A key claimed that way never reaches
-QUILL Lite at all: Windows hands it to the program that registered it, even while
-QUILL Lite is the window you are typing in. The command is not broken and the key
-is not misassigned; the keystroke simply goes somewhere else.
+##### How big each heading is
 
-This used to be invisible, which made it look like a bug in the editor. Record a
-Key now says so -- "already claimed by another application running on this
-computer" -- and so does the Keyboard Manager if you assign a key somebody else
-has taken. It is a warning rather than a refusal: the key may be yours again
-tomorrow when that program is not running, and it is not this editor's place to
-forbid a key you chose deliberately.
+In rich text, a heading is bold text at its own size: 20, 16, 14, 12, 11.5
+and 10.5 point for levels 1 to 6. Ordinary text is 11 point. These are the
+same sizes QUILL uses, so when somebody opens your document in Word, the
+headings still look like headings. Every level has its own size, so QUILL
+Lite can always find every heading again.
 
-QUILL Lite cannot say *which* program. Windows does not offer the owner's name,
-and guessing from a list of the usual suspects would be wrong the first time you
-installed something that was not on it.
+##### Taking it all off: Normal Text
 
-### What cannot be changed
+**Ctrl+Shift+N** is Normal Text. It is the quick way back to plain, ordinary
+text when you are not sure what is applied. One press:
 
-**Insert is never bindable.** It is the key NVDA and JAWS use as their own
-modifier, and taking it would take away the key you would need to get it back.
-QUILL Lite watches it go past -- that is what the Typing Mode cell reads -- but
-never claims it. A key on its own with no Ctrl, Alt or Shift is refused too: it
-would type itself instead.
+- takes off bold, italic, underline and strikethrough,
+- puts the size back to ordinary body text,
+- clears the colour and the highlight,
+- sets the paragraph back to left aligned and single spaced,
+- and takes it out of any list.
 
-### Putting things back
+One **Ctrl+Z** puts it all back if you change your mind. The typeface stays
+as it is. To change that, use **Format > Editor Font**. This is the same key
+Word uses for the same job.
 
-**Reset to Default** puts the command you are on back to the key QUILL Lite ships
-with. **Reset Everything** does it for all of them, after asking. Nothing is
-saved until you press **Save**, so Escape leaves your keys exactly as they were.
+In a Markdown or HTML document, **Ctrl+Shift+N** takes the heading marks off
+the line instead.
 
-**Check for Problems** reports anything wrong with the set as a whole: a key
-claimed twice, a key QUILL Lite cannot read, and -- the one you would otherwise
-never find out about -- a key Windows will accept and then never actually send to
-a menu, so it is assigned and inert.
+##### Asking what is here
 
-Your changes live in your own settings folder and only what you changed is
-written down, so a key we improve in a later version still reaches you.
+**Ctrl+Shift+D** is the key worth remembering. It tells you what you are
+standing in, for example "Arial, 16 point, heading 2, bold". When you cannot
+see the page, this is how you find out how your text looks.
 
----
+#### Moving between headings
 
-## Sounds
+| Key | What it does |
+|---|---|
+| **Ctrl+Alt+H** / **Ctrl+Alt+Shift+H** | Next / previous heading |
+| **Ctrl+Alt+L** | The list of every heading |
 
-### Quiet mode
+These work in every kind of document. In rich text they find the heading
+sizes listed above. In Markdown they find lines that start with `#`. In HTML
+they find `<h1>` to `<h6>`. A `#` inside a fenced code block is not treated
+as a heading.
 
-**Alt+Shift+M** silences every sound at once, and pressing it again brings them
-back. One key, because "make it stop" is something you need *while* the noise is
-happening -- on a call, in a quiet room, or having simply had enough of an
-earcon today. A feature you have to go and find is one that does not help at the
-moment you need it.
+#### Skimming a long document with folding
 
-It is the blunt instrument on purpose; the per-event answer is one menu item
-away. It is shared with QUILL, so silencing one editor silences both -- which is
-what somebody who wanted quiet meant. **Tools ▸ Quiet Mode** carries a check
-mark that reads the true state.
+When a sighted person gets a long document, they scroll and glance to see
+what is in it. Folding gives you the same quick overview by ear.
 
-### Every sound, in a list you can hear
+| Key | What it does |
+|---|---|
+| **Ctrl+Shift+F9** | **Fold or Unfold Section** (the one you are in) |
+| **Ctrl+Alt+Shift+Down** | **Next Section** |
+| **Ctrl+Alt+Shift+Up** | **Previous Section** |
+| **Ctrl+Shift+F10** | **Unfold Everything** |
 
-**Tools ▸ Sound Scheme** (**Ctrl+Alt+Shift+O**) is every sound QUILL Lite can
-make, in a list you can hear. Arrow through it and each event plays as you land
-on it -- that is what turns a list of names into a catalogue, and you can turn
-it off with the checkbox under the list if you would rather move in silence.
+Try it like this:
 
-Each row says everything about itself: the event, whether it is switched on,
-which file it plays and how long that file is. The buttons underneath act on
-whichever row you are on:
+1. Open a long Markdown document.
+2. Press **Ctrl+Alt+Shift+Down** to move from section to section.
+3. Each time, you hear the heading, whether it is folded, and how many lines
+   are under it, for example "Installing, expanded, 34 lines".
+
+Folding never hides your text. A folded section reads exactly the same when
+you arrow through it, and Find still finds things inside it. Think of a fold
+as a note to yourself that says "I have dealt with this part". You hear it as
+you pass by.
+
+Folding works in Markdown documents, where a heading line starting with `#`
+marks where each section begins.
+
+If you would like to practise this with the app guiding you, the tutorial
+*Skimming something long* walks through it step by step.
+
+#### Hearing that you are on a heading
+
+When you arrow onto a heading, QUILL Lite says the level, for example
+**"Heading 2"**.
+
+Your screen reader cannot tell you this in an editor, because Windows editing
+boxes have no way to mark a paragraph as a heading. So QUILL Lite says it for
+you, and keeps it short:
+
+- **Just the level.** Your screen reader is already reading the line, so you
+  do not hear the words twice.
+- **Once, when you arrive.** Moving around inside the heading says nothing
+  more. Leave and come back, and you hear it again.
+- **In rich text and in Markdown alike.**
+
+When you apply a heading yourself, you hear that once, not twice. And opening
+a document whose first line is its title does not greet you with
+"Heading 1".
+
+##### Turning heading announcements off
+
+Sometimes you just want to read a document as text. Press **Ctrl+Alt+F3**
+(**View > Announce Headings**) to turn the heading cue off, and press it again
+to turn it back on. You hear which way it went: "Headings will not be
+announced", or "Headings announced on arrival". QUILL Lite remembers your
+choice, but it is meant to be flipped whenever you need it.
+
+##### When a # is not a heading
+
+In a `.md` or `.txt` file, or a new document you have not named yet, a line
+starting with `#` is a heading. In a `.py`, `.sh`, `.ini`, `.yml` or `.conf`
+file, a `#` starts a comment, so QUILL Lite says nothing and lists nothing.
+In an HTML document, headings are `<h1>` to `<h6>`, and those are the ones
+QUILL Lite reads and writes.
+
+#### Hearing that you are in a list
+
+When you arrow into a list, QUILL Lite says something like **"Bulleted list,
+5 items"**. Go a level deeper and you hear **"Level 2, 3 items"**. Arrow out
+and you hear **"Out of list"**.
+
+On a web page, your screen reader tells you about lists. In an editor, a list
+is just lines of text, so without this a nested outline would sound like a
+run of lines starting with a dash. You would be left counting spaces by ear
+to know the level.
+
+It works in Markdown and in HTML, for all three kinds of list:
+
+| | Markdown | HTML |
+|---|---|---|
+| **Bulleted list** | `-`, `*`, `+` | `<ul>` |
+| **Numbered list** | `1.`, `1)` | `<ol>` |
+| **Definition list** | a line, then `: the definition` under it | `<dl>` |
+
+In a definition list you also hear **"Term"** and **"Definition"** as you move
+between them, so you always know which part you are in.
+
+Items are counted at your own level, inside your own list. Say a list has
+three items and the second one has four sub-items. You hear "3 items" at
+level one and "4 items" at level two, never "7". Two sub-lists under two
+different bullets count as two separate lists.
+
+##### What it never says
+
+- **Nothing as you move down a list.** Your screen reader is already reading
+  each item.
+- **Nothing about `- - -` or `***`.** Those are dividing lines, not lists.
+- **Nothing inside a fenced code block.** A `- ` in a code sample is part of
+  the sample.
+- **Nothing in a plain text document.** Ordinary writing is full of hyphens,
+  and you do not want to hear about every one.
+
+##### Turning list announcements off
+
+Press **Ctrl+Alt+F5** (**View > Announce Lists**). It has its own switch,
+separate from headings. When you are reorganising an outline, the levels
+help. When you are proof-reading, you may prefer quiet. You hear which way it
+went: "Lists will not be announced", or "Lists announced as you enter them".
+
+##### Which item you are on
+
+The spoken cue does not tell you which item you are on, because hearing that
+on every arrow press would be too much. The status bar's List cell does. It
+says something like "Bulleted list, 4 of 9, level 2", and you can check it
+whenever you like. Press **Enter** on that cell to turn the spoken list cue
+off and on.
+
+#### All of them at once: the Heading Organizer
+
+**Alt+Shift+O** opens **Heading Organizer...**: every heading in your
+document in one list. It is the easiest way to see and change the shape of a
+document, because the list reads the shape back to you as you work.
+
+1. Arrow through the list. Each row says its level and its text, for example
+   "Heading 2: Installing".
+2. Press **Tab** to demote the heading you are on, or **Shift+Tab** to
+   promote it.
+3. Use **Move Up** and **Move Down** to move a heading, together with
+   everything under it, past its neighbour.
+4. Use **Rename** to change a heading's words without moving it.
+5. Use **Validate** to check the result. It makes sure the document starts at
+   Heading 1 and never skips a level on the way down, which is what screen
+   readers rely on.
+6. Press **Apply** when you are happy.
+
+Beside the list there is a preview of the section under the heading you are
+on, which helps when two headings have similar names.
+
+Nothing changes in your document until you press **Apply**. Everything you
+did counts as one change, so one **Ctrl+Z** puts it all back. QUILL has the
+same window.
+
+The Heading Organizer works in Markdown and HTML documents. In rich text, a
+heading is just a font size, so it cannot be reordered this way.
+
+#### Rearranging headings one at a time (Format > Structure)
+
+| Key | What it does |
+|---|---|
+| **Alt+Shift+Left** | Promote heading: one level shallower |
+| **Alt+Shift+Right** | Demote heading: one level deeper |
+| **Alt+Shift+Up** | Move this whole section up, past whatever is above it |
+| **Alt+Shift+Down** | Move this whole section down, past whatever is below it |
+| **Alt+Shift+F5** | Select this section, subsections and all |
+| **Ctrl+Alt+Shift+F5** | Move Section To...: pick a destination instead of a direction |
+
+These keys save you from cutting and pasting to reorganise a document.
+Selecting a section by hand means finding exactly where it ends by ear, which
+is easy to get wrong. **Alt+Shift+Up** moves the whole section in one press
+and tells you what happened.
+
+A "section" is the heading you are in plus everything under it, down to the
+next heading at the same level or higher. So moving a Heading 2 brings its
+Heading 3s along with it.
+
+##### Where a moved section lands
+
+The move keys always move. If there is no heading at the same level next to
+yours, the section simply trades places with whatever is next to it, the
+same way Word's outline view does on these keys. The first section inside a
+parent moves up above the parent's own heading.
+
+A moved section keeps its level. Press the other key and you are back exactly
+where you started. To change a level, use **Alt+Shift+Left** and
+**Alt+Shift+Right**. You can move a section and then promote it.
+
+You hear where the section ended up, for example *"Section moved below Soup.
+Now 2 of 3 at this level."* That tells you where it sits in the outline, which
+your screen reader cannot tell you.
+
+Sometimes a section has nowhere to go. In a document where every heading sits
+inside the one before it, everything below you is inside your own section.
+QUILL Lite tells you so and suggests what to do: *"Bottom of Heading 1.
+Everything below is inside this section. Alt+Shift+Left promotes Heading 3 to
+make it a sibling."* The key it names is your own, so it is still right if
+you have changed it.
+
+##### Select Section (Alt+Shift+F5)
+
+**Alt+Shift+F5** selects the section you are in, with every subsection,
+stopping just before the blank line that separates it from the next one.
+Then press **Ctrl+X** and **Ctrl+V** to put it anywhere you like: elsewhere
+in this document, in another document, or in another program.
+
+You hear how much you selected, for example *"Selected Bread and 1 section
+under it, 7 lines"*, or *"Selected Bread, 4 lines"* when nothing is nested
+inside. That answers the question "did it take the sub-headings too?"
+
+##### Move Section To... (Ctrl+Alt+Shift+F5)
+
+Pressing **Alt+Shift+Up** forty times is no way to move a section across a
+long document. **Ctrl+Alt+Shift+F5** asks where you want it to go instead.
+It asks two questions, each answered from a list you can type into.
+
+1. **Which heading?** Every heading in the document, in order, one per row,
+   for example `3 of 7, level 2 - Bread`. The position comes first, so two
+   sections both called "Notes" are easy to tell apart. Type to narrow the
+   list; the order stays the same as you type. You start in the search box,
+   and **Enter** there takes you into the results.
+2. **Before it, after it, or inside it?** Pick one of three rows. Note that
+   **After it** puts your section below that heading *and everything under
+   it*.
+
+The whole move is one change, so one **Ctrl+Z** undoes it. You hear where the
+section landed: *"Moved Salad before Bread. Now 1 of 3 at this level."*
+
+**Inside it** is the only choice that changes levels. Your section becomes
+the last one under the heading you picked, and it and everything under it go
+one level deeper. You hear the new level: *"Moved Bread inside Soup, now
+Heading 3. Now 1 of 2 at this level."*
+
+There are two things it will not do, and it tells you why:
+
+- **A section cannot move inside itself.** If you pick a heading that sits
+  under the one you are moving, you hear *"Sourdough is inside Bread, so Bread
+  cannot move into it. Promote Sourdough first if you want them side by
+  side."* Those headings stay in the list, so you are never left wondering
+  where one went.
+- **Nothing goes deeper than Heading 6**, because Markdown has no deeper
+  level. It tells you so and offers **After it** instead.
+
+Press **Escape** at either question to change nothing. Nothing is announced,
+because nothing happened.
+
+##### Good to know about all six keys
+
+- **Promoting a Heading 1 leaves it a Heading 1.** It never turns into
+  ordinary text.
+- **Moving and selecting sections need a Markdown or HTML document**, where
+  the heading is written in the text. In rich text a heading is a font size,
+  so there is nothing to move, and QUILL Lite tells you so. Promoting and
+  demoting work in both.
+- **These keys are the same in QUILL.** Learn them once and they work in both
+  editors, and you hear the same words in each.
+
+The tutorial *Skimming something long* ends with rearranging a document, if
+you would like to try these keys with some guidance.
+
+### Links
+
+To add a link, press **Ctrl+K**. A box opens asking for the address and the
+words to show.
+
+- If you select some words first, they are already filled in for you.
+- If you leave the words empty, the address itself is shown as the link.
+
+QUILL Lite writes the link the right way for your document: `[text](address)`
+in Markdown, and `<a href="address">text</a>` in HTML. In a rich text document,
+the link becomes a real link in the text, with no brackets to see.
+
+### The Insert menu
+
+The Insert menu is for anything you put into your document other than typing.
+
+| Key | What it does |
+|---|---|
+| **F5** | Today's date and the time |
+| **Ctrl+Shift+F2** | Special Character: 357 of them, in 15 groups, searchable by name or code point |
+| **Alt+.** | Emoji: search or browse, with a description of each one |
+| **Shift+Enter** | A line break that does not start a new paragraph |
+| **Ctrl+Alt+I** | Markdown Tag: everything Markdown can write |
+| **Ctrl+Alt+O** | HTML Tag: 111 tags and 20 whole form fields, searchable by what they do |
+
+Insert sits just before Format on the menu bar, the same as in Word. You put
+something in, then you format it.
+
+#### Emoji (Alt+.)
+
+Press **Alt+.** to open the emoji picker. You can search by name, by keyword,
+by what it looks like, or by a typed smiley: `:)` finds the smiling face and
+`<3` finds the heart. Or you can browse by category, starting with
+**Favourites** and **Recent**.
+
+Every emoji has a written description of what it shows. You arrow through a
+list, and the description sits in a pane beside it, so you know exactly what
+you are about to send.
+
+When you insert one, QUILL Lite says its name. Screen readers do not all read
+emoji the same way, and some say nothing at all, so this is how you know it
+went in.
+
+Emoji work in every kind of document, rich text included.
+
+#### The two tag pickers
+
+There are two tag pickers, one for Markdown and one for HTML. Only one of them
+is ever available: the one that matches your document's language. The other
+stays on the menu but is greyed out, and your screen reader tells you so when
+you arrive on it.
+
+If you press the key for the one that is not available, QUILL Lite tells you
+what kind of document you are in, what it would need to be, and that
+**Ctrl+Alt+F6** is how to change it.
+
+In both pickers, if you have text selected, the tags go around it. If you do
+not, the cursor lands between the opening and closing tags, ready for you to
+type.
+
+##### Markdown Tag (Ctrl+Alt+I)
+
+This offers bold, italic, inline code, a fenced code block, the six heading
+levels, bullet, numbered and task lists, blockquote, link, image, table and
+footnote. Type a few letters to narrow the list. If you choose Link or Image,
+it asks you for the address next.
+
+##### HTML Tag (Ctrl+Alt+O)
+
+This offers 111 tags and 20 whole form fields. You can search by what a tag
+does as well as by its name. Type "dropdown" and you find both a finished,
+labelled dropdown and the bare `select` tag. Type "glossary" and you find
+`<dl>`. Type "acronym" and you find `<abbr>`. Type "subtitles" and you find
+`<track>`.
+
+When you choose a bare tag, QUILL Lite asks if you want to add attributes, for
+example `class=note; id=summary; aria-label=Summary`. If you do not need any,
+just press **Enter** on the empty box to skip it.
+
+##### Whole form fields, wired up
+
+The first rows in the HTML picker are not single tags. They are finished form
+controls. Choose **Form field: dropdown** and you get the label, a `for` that
+matches the field's `id`, the `<select>`, and three `<option>`s, all at once.
+
+This saves you the fiddly part. The connections between a label and its field
+are invisible on the page. A missing `for`, a radio group without a shared
+`name`, or two fields with the same `id` all look fine until somebody tries to
+use the form. These fields arrive with all of that already done.
+
+| Choose | You get |
+|---|---|
+| **text**, **email**, **password**, **telephone**, **web address**, **number**, **date**, **search**, **file upload** | a labelled input of that type, with `autocomplete` where the browser can help |
+| **long answer (textarea)** | a labelled, five-row text area |
+| **dropdown (select)** | label, select, and an empty first option, so nobody can send an answer they did not choose |
+| **dropdown with groups** | the same, with two `<optgroup>`s |
+| **checkbox** | the box first, then its label, so the label can be pressed too |
+| **checkbox group** | a `<fieldset>`, a `<legend>`, and boxes sharing one `name` |
+| **radio group** | the same, with three radio buttons, one shared `name`, and exactly one chosen to start with |
+| **autocomplete (input + datalist)** | an input joined to its own list of suggestions |
+| **required, with hint and error** | a hint and an empty error, both named by `aria-describedby`, plus `aria-invalid` and `role="alert"` |
+| **submit button** | a `<button type="submit">` with real text, not an `<input value="">` |
+| **whole form** | a contact form: fieldset, legend, three labelled fields, and a submit button |
+| **grouped fields (fieldset)** | an empty fieldset with a legend, for grouping fields you already have |
+
+Two things make this even easier:
+
+- **Select a word first and it becomes the label.** The `id` is made from the
+  same word, so the two match. Select "Postcode", choose **Form field: text**,
+  and you get a Postcode field with `id="postcode"` and `for="postcode"`.
+- **It never repeats an `id`.** QUILL Lite checks your document first. If you
+  insert a second email field, its `id` is `email-2`, so the two fields never
+  get mixed up.
+
+The bare tags are all still in the list, just below the form fields, for when
+a single tag is what you want.
+
+#### Typing things there is no key for
+
+**Insert > Special Character...** (**Ctrl+Shift+F2**) opens a picker with 357
+characters that your keyboard has no key for. There are two ways to find one.
+
+##### Search for it
+
+The window opens in the search box. Type part of a name, such as `dash`,
+`euro`, `acute`, `arrow` or `apostrophe`. Everyday words work too, even when
+they are not the official name: `gbp`, `sterling`, `copyright`, `eszett`,
+`micro`. Press **Enter** to move into the results.
+
+You can also type a code point. `2014`, `U+2014` or `d8212` all bring up the
+em dash first. This works for any character at all, even one that is not in
+the 357.
+
+##### Browse a group
+
+Clear the search box and you can browse fifteen groups: Whitespace, Dashes and
+hyphens, Quotes, Invisible and control, Typography, Legal and reference marks,
+Currency, Maths and units, Fractions, Superscripts and ordinals, Arrows,
+Accented letters (small and capital, listed separately), Greek letters, and
+Punctuation from other languages.
+
+##### Choosing and inserting
+
+The results list has three columns: the character, its name and its code
+point. As you arrow, the **Description** pane below shows the same detail
+**Character Details...** gives for a character already in your document. The
+code point is handy when two names sound alike: "Thin space" is U+2009 and
+"Hair space" is U+200A.
+
+Press **Enter** to insert the character you are on. QUILL Lite then tells you
+what it put in, for example "Inserted, U+2014 Em dash". Many of these
+characters are invisible on the page, so hearing it is how you know it worked.
+
+QUILL has the same picker, on the same key.
+
+#### Ending a line without starting a paragraph
+
+**Insert > Line Break** (**Shift+Enter**, the same key as in Word) ends the
+line you are on and starts a new one, without starting a new paragraph.
+
+This matters mostly in Markdown. A blank line between two lines makes two
+paragraphs, usually with a gap between them. A line break keeps them in the
+same paragraph, one under the other. That is what you want for an address, a
+poem, or a few short lines that belong together.
+
+QUILL Lite writes the break the way the **Markdown line break style** setting
+says, and tells you which one it used. The standard choice is a backslash at
+the end of the line. The other choice is two spaces at the end of the line,
+which you cannot see or hear, and which some programs remove when they save.
+If you have ever added two spaces to the end of a line and nothing happened,
+that is probably why.
+
+QUILL has the same command on the same key.
+
+### What you learned, and where to go next
+
+The formatting keys write the right thing for each kind of document.
+**Ctrl+Shift+N** takes all formatting off, and **Ctrl+Shift+D** tells you
+what formatting you are standing in. You can move between headings, hear when
+you arrive on a heading or walk into a list, skim with folding, and reshape a
+document with the Heading Organizer and the Structure keys. **Ctrl+K** adds a
+link written the right way for your document. The Insert menu puts in the
+date, emoji, special characters, line breaks and Markdown or HTML tags, and
+tells you what went in each time.
+
+For a guided walk through headings, folding and rearranging, try the tutorial
+*Skimming something long*. To see how the kind of document changes what these
+keys write, try *Four kinds of document, and how to say which*.
+
+Next, Chapter 7, Checking your writing, covers spelling, the thesaurus and the
+dictionary.
+
+## Chapter 7: Checking your writing
+
+WordPad never had a spell checker. QUILL Lite has the same one QUILL uses, and
+it is made to be heard rather than seen: a short sound when you finish a word
+it does not know, the letters spelled out when you want them, and the
+Applications key to fix the word you are on. This chapter covers all of that,
+then the thesaurus and the dictionary for finding a better word, and finally
+how to find out exactly which character your cursor is on.
+
+### Spell check
+
+QUILL Lite has a spell checker, the same one QUILL uses. WordPad never had
+one. You can check as you type, check the whole document, or fix one word at
+a time.
+
+#### Checking the whole document
+
+Press **F7** to check the whole document. Here is what happens:
+
+1. QUILL Lite finds the next misspelled word and shows you suggestions.
+2. Arrow through the suggestions.
+3. Choose what to do: change this word, change every one like it, skip it, or
+   add it to your dictionary so it is never questioned again.
+
+The check starts where your cursor is, just as in Word. When it reaches the
+end of the document, it tells you, then carries on from the beginning. If
+you would rather it simply stopped at the end, you can turn that off in
+Preferences.
+
+#### The spelling keys
+
+| Key | What it does |
+|---|---|
+| **F7** | Check the whole document |
+| **Alt+Shift+F7** | Suggestions for the word you are on |
+| **Ctrl+F7** / **Ctrl+Shift+F7** | Go to the next / previous mistake |
+| **Alt+Shift+L** | List every misspelling, with its line |
+| **Ctrl+Alt+F9** | Add this word to your dictionary |
+| **Ctrl+Alt+F7** | Turn checking-as-you-type on or off here |
+| **Ctrl+Alt+Shift+F7** | Spelling Announcements: how a misspelling is said |
+
+**Alt+Shift+F7** and **Ctrl+Alt+F9** work from anywhere in a word, not only
+from its first letter.
+
+##### Hearing the letters
+
+**Ctrl+F7** takes you to the next mistake and selects it, so your screen
+reader reads the word. Then, after a short pause, QUILL Lite spells it out.
+That matters because "receive" and "recieve" sound exactly the same. The
+letters tell you what is wrong. If you do not need the spelling, just press
+your next key and it stops.
+
+##### Every misspelling in one list
+
+**Alt+Shift+L** lists every misspelling at once, with the line each one is
+on. Press **Enter** on a row to go there. This is handy when you want to know
+how many mistakes there are, or pick which one to fix first. Words you have
+chosen to ignore are left out.
+
+#### While you type
+
+When you finish a word that is not in the dictionary, you hear a short
+falling blip, and the status bar shows which word it was. "Finish" means you
+typed a space, a comma or a new line after it, so you are never interrupted
+in the middle of a word. It is a sound rather than speech, so it does not
+talk over the sentence you are writing.
+
+You can silence the sound, have the word spoken as well, or change how long
+it waits before mentioning the same word again. All of that is in
+**Tools > Spelling > Announcements...** (**Ctrl+Alt+Shift+F7**).
+
+If you would like to try spelling with the app guiding you, the tutorial
+*Spelling, without a red squiggle* walks through typing a mistake, fixing it,
+teaching a word and checking the whole document.
+
+#### Spelling Announcements
+
+The Spelling Announcements window has twelve settings in three groups. QUILL
+has the same twelve settings under **Spelling** in its Settings window, so
+setting them up once sets up both.
+
+##### While you are typing
+
+Whether the sound plays at all, whether the word is spoken too (off to begin
+with), and how long to wait before the same word is mentioned again. Zero
+means every time.
+
+##### Spelling a word out
+
+Whether words are spelled out at all, and how:
+
+- **Letters** are the fastest.
+- **The phonetic alphabet** (romeo, echo, charlie) is clearer when B, D, E, P,
+  T and V all sound alike, such as with a fast voice, a poor speaker or a
+  noisy room.
+- **Both** is good for learning a new word.
+
+You can also have capitals named, so "cap M, A, C, cap D" tells MacDonald
+from Macdonald. An example box shows what your choices sound like, and says
+it out loud as you change them.
+
+##### When the letters follow
+
+There are three pauses before a word is spelled out, one for each place it
+happens:
+
+- in the **F7** check, where you have stopped to decide, the pause is longer;
+- when moving between misspellings, it is shorter;
+- in a list of suggestions, where you are arrowing, it is shorter again.
+
+You can switch each one off on its own.
+
+#### The word you are on: the Applications key
+
+This is the quickest way to fix a word as you go:
+
+1. Put your cursor in a word QUILL Lite thinks is misspelled.
+2. Press the **Applications key** (or **Shift+F10**).
+3. Press **Down Arrow** once. You land on the first suggestion.
+4. Press **Enter** to use it.
+
+No window opens and your cursor stays where it was. A sighted person spots a
+red squiggle and right-clicks it. For you, the Applications key is the
+squiggle, and the first thing it offers is the answer.
+
+The menu is always laid out the same way:
+
+1. The suggestions, at the top.
+2. A separator, then one row called *Spelling Actions for "wrold"* (with your
+   word in it).
+3. The **Thesaurus** and **Dictionary** submenus for the word (see below).
+4. The everyday rows: Undo, Redo, Cut, Copy, Paste, Delete, Select All.
+
+Only the number of suggestions changes. Everything after them stays in the
+same order, so you can learn it once.
+
+##### Inside Spelling Actions
+
+| Row | What it does |
+|---|---|
+| **Ignore Once** | Skip this one place. Nothing is remembered after you close the window. |
+| **Ignore in This Document** | Stop reporting this word anywhere in this document, until you close it. |
+| **Add "word" to My Dictionary** | Keep it for good, in your own dictionary. |
+| **Add to This Document Only** | Keep it beside this file, so anyone who opens the file gets it too. |
+| **More Suggestions...** | The full list, in a window you can arrow through. |
+| **Check Document...** | The F7 check, from here. |
+| **Next / Previous Misspelling** | Move on without leaving the keyboard. |
+
+A word you ignore is ignored everywhere: you stop hearing about it as you
+type, **Ctrl+F7** stops going to it, and **Alt+Shift+F7** stops offering
+suggestions for it. Ignoring lasts until you close the document. To keep a
+word for good, add it to a dictionary.
+
+#### Thesaurus and Dictionary on any word
+
+The Applications key menu has two more submenus on **any** word, spelled
+right or not. They come after the spelling rows and before the everyday rows,
+and both name the word they are about, so you always know what they will do.
+
+- **Thesaurus for "running"** opens on the best replacements. Press **Enter**
+  on *sprinting* and it replaces *running*. QUILL Lite looks the word up as
+  *run*, then gives you the replacement back in the *-ing* form, with the
+  same capitals as your word. Below the first meaning, each other meaning has
+  its own submenu (for example "As a noun: ..."), then an **Opposites**
+  submenu, then **Say Word Summary**, which tells you what the thesaurus knows
+  without opening anything, and **More in Thesaurus...**, which opens the full
+  thesaurus window.
+- **Dictionary for "running"** starts with **Look Up "running"...**, the
+  dictionary that works without AI (see *Dictionary*,
+  later in this chapter). When AI
+  help is on, it then offers the twelve questions the AI dictionary can
+  answer about the word as it is used in *this* sentence: Define in Context,
+  Synonyms That Fit, Simpler Word, More Formal Word, More Vivid Word,
+  Opposites, Is This the Right Word?, Use It in a Sentence, Where It Comes
+  From, How to Say It, Rhymes, and the Word Explorer, which answers all of
+  them at once. Last comes **Find the Word For...**, the reverse dictionary.
+  If AI help is on but you have no key and no ChatGPT sign-in, the submenu
+  has one row that tells you so and opens the account window.
+
+If you have selected a single word, that word is used instead of the one at
+the cursor. There is no Thesaurus row on a number or on empty space.
+
+On a word that is spelled correctly, there is no Spelling Actions row at all,
+just the thesaurus, the dictionary and the everyday rows.
+
+QUILL has the same menu in the same order, with one extra dictionary for its
+projects.
+
+#### When it stays quiet
+
+Some files are not writing at all. They hold settings and instructions for
+programs, full of made-up words and abbreviations that no dictionary knows.
+Checking those as you type would give you a stream of warnings that are all
+wrong.
+
+So QUILL Lite does not check those files as you type. It recognises them by
+the kind of file they are, and tells you once when you open one, so you know
+nothing is broken.
+
+If you do want checking in one of them, press **Ctrl+Alt+F7**. It changes
+only the document you are in. **Tools > Spelling** shows a tick beside
+**Check While Typing** so you can always see which way it is set.
+
+**F7** always works, in every file. If you ask for a check, you get one.
+
+#### Your dictionary
+
+Words you teach QUILL Lite are kept in your own dictionary, in QUILL Lite's
+folder. If you also use QUILL, one setting in Preferences lets both share the
+same list, so a word you teach either one is known to both.
+
+A single document can also have its own short word list, kept in a small file
+beside it. That is useful for names that belong to one piece of work and
+nowhere else.
+
+### Thesaurus
+
+The thesaurus helps you find a different word for the one you have. Press
+**Shift+F7**, the same key as in Word and QUILL, or choose
+**Tools > Thesaurus...**. It opens on the word you are on, or the word you
+selected. If your cursor is not on a word, it asks you for one.
+
+It is the same thesaurus QUILL uses, and it comes inside QUILL Lite. Nothing
+is downloaded and nothing is sent anywhere.
+
+#### It finds the word you mean
+
+A thesaurus lists plain forms of words: *run*, not *running*; *happy*, not
+*happier*. QUILL Lite works your word back to its plain form for you
+(running to run, studies to study, happier to happy, stopped to stop) and
+tells you so in the title, for example "running (as run)", and in each
+meaning's row, for example "verb, from run: sprinting, dashing, ...".
+
+#### Replacements come back in the right form
+
+Choose *sprint* for *running* and your document gets *sprinting*. Choose
+*glad* for *Happier* and you get *More glad*, because QUILL Lite knows which
+words take *-er* and which take *more*. It knows irregular verbs too:
+replacing *sought* with *seek* gives you *sought*. If it is not sure of a
+form, it gives you the plain word rather than guess.
+
+#### Using the thesaurus window
+
+1. You start in the **Senses** list. There is one row per meaning, with the
+   part of speech first. Type **n** to jump to the nouns, or **v** to the
+   verbs.
+2. Press **Tab** to reach the words for the meaning you picked. You get
+   replacements first, then *broader:* words, then *opposite:* words, each
+   labelled.
+3. Press **Enter**, or choose **Replace**, to put the word in place of yours.
+   The selection is then cleared, so your next keystroke cannot type over it.
+
+Other choices:
+
+- **Copy** puts the word on the clipboard instead, and tells you so.
+- **Escape** closes the window and changes nothing.
+- If you typed the word into the thesaurus rather than starting from your
+  document, Replace is not available and Copy is the default.
+
+#### A quick summary without opening anything
+
+**Say Word Summary** (**Ctrl+Alt+Shift+[**) tells you what the thesaurus
+knows about a word, without opening a window. You hear something like:
+"running, looked up as run: 27 meanings as a verb, 6 as an adjective, 3 as a
+noun. First: sprinting, dashing, ... Opposites: standing, ...". It is also in
+the Thesaurus submenu of the Applications key menu. It is a good way to
+decide whether the full window is worth opening.
+
+#### Checking your word lists
+
+**Tools > Spelling > Dictionary Status...** (**Alt+Shift+;**) tells you
+how many words are in your personal dictionary and in this document's own
+list, where each file is kept, and whether the thesaurus is there.
+
+#### Turning it off
+
+The thesaurus and dictionary are one switch in Customize Features, called
+**Dictionary and thesaurus**. It is on to begin with, and off in the WordPad
+and Notepad profiles.
+
+### Dictionary
+
+QUILL Lite has two dictionaries. The first, Look Up, works without AI. The
+second uses AI to answer questions about a word as it is used in your
+sentence.
+
+#### Look Up: the dictionary without AI
+
+To open it, press **Alt+F10** (**Tools > Look Up Word...**), or choose
+**Look Up "word"...** at the top of the Dictionary submenu on any word. It is
+the same Look Up window QUILL has.
+
+1. You start in the **Result**, a read-only box you can arrow through. It
+   gives the word, then a labelled section for each kind of answer.
+2. Under it, **Words you can use** lists every synonym, opposite, related
+   word and rhyme, each saying which it is.
+3. Press **Enter**, or choose **Replace Word**, to put the selected word in
+   place of yours.
+
+You can also choose **Copy** to copy the selected word (or the whole result,
+if nothing is selected), or **Add to Dictionary** to teach the word to your
+spelling dictionary.
+
+##### Without the internet
+
+When you are offline, Look Up gives you synonyms, opposites and related words
+from the word list inside QUILL Lite. Nothing leaves your computer.
+
+##### With the internet, when you say so
+
+There is a checkbox called **Use online sources**. It is off until you tick
+it. When it is on, the word, and only the word, never your sentence or your
+document, is sent to three free services that need no account and no key:
+
+- the Free Dictionary, for definitions with examples,
+- Datamuse, for more synonyms, opposites, rhymes and related words,
+- and Wikipedia, for a short summary with a link to the article.
+
+You see the offline answer straight away and hear "Looking up online". When
+the online answer arrives, it replaces the result and you are told. If
+Wikipedia has no real article for the word, there is simply no encyclopedia
+section.
+
+QUILL Lite remembers your choice, and so does QUILL if the two share
+settings, so you are not asked again. Untick the box and you are offline
+again from the next lookup.
+
+#### The AI dictionary
+
+The rest of **Tools > Dictionary**, and of the Dictionary submenu on a word,
+uses AI to read the sentence your word is in. The offline thesaurus knows
+every meaning of *bank*, but it cannot tell which one your sentence means.
+These twelve questions send **the word and the sentence it is in** (never the
+rest of your document) and answer in plain words written to be listened to.
+Where it helps, you also get a list of choices, each with a reason.
+
+| Row | Key | What comes back |
+|---|---|---|
+| **Define in Context** | Ctrl+Alt+Shift+' | What the word means *here*, its part of speech, and the meaning you might be confusing it with |
+| **Word Explorer...** | Ctrl+F10 | Everything at once: meaning, how to say it, an example, where it comes from, what it is confused with, and the best replacements |
+| **Synonyms That Fit** | Ctrl+Shift+; | Replacements that keep this sentence's meaning and tone, already in the right form |
+| **Simpler Word** | Ctrl+Shift+- | Plainer, more widely known words, and what is lost |
+| **More Formal Word** | Ctrl+Shift+= | Words suited to professional writing |
+| **More Vivid Word** | Ctrl+Shift+' | Livelier or more specific words |
+| **Opposites** | Alt+Shift+- | Opposites that would fit in the word's place |
+| **Is This the Right Word?** | Ctrl+Alt+Shift+/ | Affect or effect, complement or compliment: a plain yes, or the difference and the right word first |
+| **Use It in a Sentence** | Alt+Shift+= | Three short example sentences in the same sense |
+| **Where It Comes From** | Alt+Shift+, | The word's origin and how its meaning developed |
+| **How to Say It** | Alt+Shift+' | Syllables with the stress in capitals, a plain respelling, the IPA, and the common mispronunciation |
+| **Rhymes** | Ctrl+Alt+Shift+; | Perfect rhymes first, then near rhymes, with syllable counts |
+| **Find the Word For...** | Ctrl+Alt+Shift+] | The reverse dictionary: describe the meaning, get the word, inserted at the cursor |
+
+##### The answer window
+
+1. You start on the answer, so your screen reader reads it to you.
+2. Press **Tab** to reach **Choices**: one line per replacement, with a note.
+3. Press **Enter**, or choose **Use This Word**, to put the selected word in
+   place of yours (or at the cursor, for Find the Word For). One **Ctrl+Z**
+   takes it back.
+
+Other buttons:
+
+- **Copy Choice** and **Copy Answer** copy to the clipboard.
+- **Ask Something Else...** closes the answer and opens the Dictionary
+  submenu again on the same word.
+
+If you typed over the word while the answer was on its way, Use This Word is
+not available and tells you why. Copy still works.
+
+##### What you need for it
+
+The AI dictionary works with your ChatGPT subscription or your own AI
+key, from OpenAI or Google Gemini. It does not use QUILL's free AI service, because a dictionary
+gets asked many times a day and would use up the free allowance quickly. If
+you have neither, every row tells you so and opens the account window. All
+of these rows switch off together when you turn off **AI help** in Customize
+Features. Chapter 10, AI help, explains how to connect a key or sign in.
+
+### What is this character?
+
+Press **Ctrl+Shift+C** to hear exactly which character your cursor is on: its
+name, and how it behaves when you search.
+
+This helps more than you might think. Your screen reader says "space" for
+several different characters that sound the same but act differently. One of
+them is often the reason a search will not find text that is plainly there.
+
+For the full details, press **Ctrl+Alt+C**. It opens a window you can read
+line by line.
+
+### What you learned, and where to go next
+
+**F7** checks the whole document, **Ctrl+F7** hops between mistakes and spells
+each one out, and the Applications key fixes the word you are on. You can
+quiet or tune the spelling sounds, and teach QUILL Lite your own words.
+**Shift+F7** opens the thesaurus and puts a better word in place, already in
+the right form, and **Say Word Summary** tells you what it knows without
+opening anything. **Alt+F10** looks a word up, offline or online as you
+choose, and the AI dictionary answers questions about a word as it is used in
+your sentence. **Ctrl+Shift+C** names the character under your cursor, which
+helps when a search will not find something you know is there.
+
+To practise spelling with the app guiding you, try the tutorial *Spelling,
+without a red squiggle*.
+
+Next, Chapter 8, What you hear, explains what QUILL Lite says out loud, the
+sounds it plays, and how to catch a message you missed.
+
+## Chapter 8: What you hear
+
+QUILL Lite talks to you through your screen reader, and plays small sounds
+when things happen. This chapter explains what it says and what it leaves to
+your screen reader, how to make it say less, a few keys that answer quick
+questions, how to silence or change its sounds, and how to catch up on
+something you missed while your attention was elsewhere.
+
+### Speech
+
+QUILL Lite talks through your screen reader, **NVDA or JAWS**. It has no voice
+of its own, so you never get two voices talking over each other.
+
+#### What it says, and what it leaves to your screen reader
+
+QUILL Lite tries to say as little as it can. Your screen reader already tells
+you window titles, where focus has moved, the names of buttons and what you have
+selected. QUILL Lite only tells you the things only it knows: that a save
+happened, that a search went back to the top, that bold went on, that four
+things were replaced.
+
+#### Hearing a message again
+
+Everything QUILL Lite says also goes into the first part of the status bar. If
+you missed something, press **F6** to hear it again. The guided tutorial *What
+to press when you are lost* shows you this.
+
+If no screen reader is running, QUILL Lite does not speak at all, but every
+message is still in the status bar.
+
+#### If it says too much
+
+If you hold a key down, QUILL Lite can talk faster than anybody can listen. To
+calm it down, go to **Preferences > Shortest gap between spoken messages**. It
+is a number of milliseconds. Anything QUILL Lite would say sooner than that
+after its last message is skipped. Zero, the default, says everything as it
+happens. You do not lose anything by raising it: the status bar still gets
+every message, and **F6** reads it back.
+
+#### What formatting is here?
+
+Press **Ctrl+Shift+D** (**Format > Describe Formatting at Cursor**) to hear the
+formatting where your cursor is. It is a quick way to check what a sighted
+reader would see at a glance.
+
+What you hear depends on the kind of document:
+
+- In a **rich text** document you hear the real formatting, for example
+  *"Arial, 14 point, bold, centred."*
+- In a **Markdown** document it reads the markup around your cursor. Inside
+  `**bold**` it says bold, and on a `##` line it says Heading 2.
+- In a **plain text** document it tells you it is plain text, because there is
+  no formatting to describe.
+
+##### Two smaller questions
+
+- **Ctrl+Shift+C** (**Describe Character**) names the character under the
+  cursor. Use it to tell a hyphen from a dash or a minus sign, which most
+  screen readers read the same way.
+- **Ctrl+Alt+Shift+V** (**Describe Indent Depth**) tells you how far the
+  current line is indented, and whether with tabs or spaces.
+
+#### How big is this document?
+
+Press **Ctrl+Shift+G** (**View > Document Statistics**) to hear the size of the
+whole document, for example *"1,240 words, 7,315 characters, 96 lines."*
+
+The same numbers are in the status bar, but this is quicker than going there to
+find them.
+
+**Ctrl+Alt+W** (**Line Statistics**) does the same for just the line you are on,
+or for what you have selected.
+
+### Sounds
+
+QUILL Lite plays small sounds to let you know things happened. You can silence
+them all at once, or change them one by one.
+
+#### Quiet mode
+
+**Alt+Shift+M** turns every sound off at once. Press it again to bring them
+back. It is one key so you can reach it in a hurry: on a phone call, in a quiet
+room, or when you have simply heard enough beeps for today.
+
+**Tools > Quiet Mode** has a tick that shows whether it is on. QUILL shares the
+same setting, so making one quiet makes both quiet.
+
+If you only want to change one sound, use the Sound Scheme instead.
+
+#### Every sound, in a list you can hear
+
+**Tools > Sound Scheme...** (**Ctrl+Alt+Shift+O**) lists every sound QUILL Lite
+can make. As you arrow through the list, each one plays, so you can hear what it
+is. If you would rather move through the list quietly, clear the checkbox under
+the list.
+
+Each row tells you the event, whether it is on, which sound file it plays, and
+how long the sound is. The buttons work on the row you are on:
 
 | Button | What it does |
 |---|---|
@@ -2483,640 +2862,128 @@ whichever row you are on:
 | **No Sound** | Remove the sound from this event entirely |
 | **Use Default** | Put this one event back to the sound the scheme ships |
 
-**Save As Scheme** saves the whole set under a name of your own. A scheme is an
-ordinary folder with the sounds in it, so you can copy it, back it up, or send
-it to somebody. **Restore All Defaults** puts every event back and switches them
-all on, and it cannot half-succeed -- the sounds QUILL Lite ships are never
-overwritten, so getting back to them is always one press.
+##### Saving and sharing your sounds
 
-QUILL opens the same window over the same schemes, so a scheme you build in one
-is offered in the other.
+**Save As Scheme** saves your whole set of sounds under a name you choose. A
+scheme is just a folder of sound files, so you can copy it, back it up, or give
+it to a friend.
 
----
-
-## Making QUILL Lite smaller (or larger)
-
-**Tools ▸ Customize Features** (**Ctrl+Alt+F10**) lets you switch whole parts
-of QUILL Lite off. Turning something off removes it from the menus **and**
-unhooks its keys, so it is properly gone rather than just hidden.
-
-That is how QUILL Lite stays small without being poor: you take out what you do
-not want, rather than learning to ignore it.
-
-### Profiles: four ways to say it in one word
-
-The **Profile** box at the top is the short way. **Choosing one sets every
-checkbox below, there and then** -- there is no second button to find. Nothing
-is saved until you press **Save**, so you can look at what a profile would do
-and change your mind.
-
-Under the box is a **read-only description you can read line by line**, and it
-answers two different questions. First, what the profile *is*, in its own words.
-Then what it would actually *do* to the app in front of you: how many of the
-21 areas it keeps and which, which ones it removes, and anything else it
-changes -- Notepad, for instance, also makes **Ctrl+N** create a plain text
-document. **F1** on the Profile box reads the same thing.
-
-What is spoken when you choose a profile is the short version -- "Notepad
-profile: 2 of 21 features on. New documents will be plain text. Nothing is saved
-until you press Save." -- because your screen reader is already reading the name
-and the description is there to be read at your own pace.
-
-**Custom puts everything back.** Arrow onto a profile you did not mean and
-select **Custom**: every checkbox returns to how you found it when the window
-opened. Custom is also what the box reads back as soon as you tick or untick
-anything yourself, which is not a warning -- picking your own is what the list
-is for.
-
-Afterwards the boxes are just boxes again: change any one of them without having
-to leave the profile first. **Use Profile** is still there for when you have
-hand-edited a profile and want to start it over.
-
-**The same four profiles are in Preferences**, at the top, with the same
-description box. "Make this Notepad" is a preference like any other, and you
-should not have to know that a dialog called Customize Features is where it
-lives. Preferences offers the whole answers; the 21 individual
-checkboxes stay in Customize Features.
-
-Here is what each one is, at a glance and then in full.
-
-| Profile | Areas on | Ctrl+N makes |
-|---|---|---|
-| **Recommended** | 17 of 21 | plain text (unchanged) |
-| **Everything** | 21 of 21 | plain text (unchanged) |
-| **WordPad** | 5 of 21 | **rich text** |
-| **Notepad** | 2 of 21 | **plain text** |
-
-#### Recommended
-
-**What a new install is.** Seventeen of the 21 areas: rich text, headings, Markdown and
-HTML, bookmarks, the line tools, the clipboard history, printing, abbreviations,
-the Selection submenu, spell check, the dictionary and thesaurus, Matches, Go
-Back and Go Forward, the Command Palette, Describe Character, text size and
-dictation.
-
-**Off:** autocorrect, timestamped backups, Go To Anything and AI help. Those four
-are not missing features; they are the ones that would be *wrong* on by default
-rather than merely unused. Autocorrect rewrites a configuration file's quotes.
-Backups quietly fill a folder. Go To Anything is a fourth way to jump when the
-command palette, the headings list and the bookmark list already cover it. And AI
-help sends what you ask about over the internet, which is not something a default
-gets to decide for you.
-
-**Choose this** to get back to the shipped answer after experimenting.
-
-#### Everything
-
-**All 21 areas on**, including those four -- and that includes **AI help**, which
-is the one area here that sends anything off this computer, so choose this profile
-only if that is what you meant. Autocorrect will straighten your quotes and turn
-two hyphens into a dash (and nothing else -- it does not capitalise sentences),
-every save keeps a dated copy under your data folder, and Go To Anything joins the
-palette and the two lists.
-
-**Choose this** if you would rather turn things off as they annoy you than find
-them one at a time.
-
-#### WordPad
-
-**What WordPad was.** Rich text you can format, print, and check the spelling
-of: bold, italic, underline, headings, alignment, bullets, indenting and line
-spacing, plus Find and Replace, printing and text size. Five of the 21
-areas.
-
-**Off**, all sixteen of them: the writing tools behind the formatting. No
-line tools (Edit ▸ Lines) and no Change Case, no clipboard history or Copy
-Tray, no bookmarks, no abbreviations, no Selection submenu, no Matches list, no
-Back and Forward, no Command Palette, no Go To Anything, no Describe Character,
-no dictation, no dictionary or thesaurus (WordPad never had one), no
-autocorrect, no backups, **no Markdown or HTML** (Ctrl+B in a `.md` goes back
-to meaning rich text and saying so), and **no AI help**.
-
-**Ctrl+N makes a rich text document.** That is the half of this name a list of
-menus cannot say, and it is why choosing WordPad changes a setting as well as a
-set of checkboxes.
-
-**Not in real WordPad:** the spell checker. It is kept because a word processor
-without one in 2026 is a surprise rather than a simplification.
-
-**Choose this** for letters, notes and anything you want to look like something.
-
-#### Notepad
-
-**The smallest QUILL Lite gets**, and the one most people arriving here are
-replacing something with. Two of the 21 areas: **printing** and **text
-size**.
-
-**Off**, all nineteen of them: the Format menu and everything under it,
-headings, Markdown and HTML, bookmarks, the line tools, Change Case, the
-clipboard history, abbreviations, the Selection submenu, spell check, the
-dictionary and thesaurus, Matches,
-Back and Forward, the Command Palette, Go To Anything, Describe Character,
-dictation, autocorrect, backups and AI help. Nothing Notepad does not have -- which is the
-point of choosing it.
-
-**Ctrl+N makes a plain text document**, and the Save As dialog stops offering
-you formats you have turned off.
-
-**What stays that you might not expect**, because Notepad has always had them:
-Find, Find Next, Replace, Go To Line, Select All, Insert Date and Time, Word
-Wrap, the font picker, the status bar and Undo. And **Tools ▸ File Encoding and
-Line Endings**, which Notepad only grew recently and which is most of what a
-Notepad replacement is *for*: getting a file to save back exactly as it arrived.
-
-**Choose this** for configuration files, logs, quick notes, and anything where a
-document that secretly carries formatting would be a problem.
-
-#### Moving between them
-
-Nothing is one-way. Choosing **Notepad** and then **Everything** puts it all
-back, including the Format menu and the keys that go with it. The one thing a
-profile does *not* put back is a setting you changed by hand afterwards --
-profiles only ever set what they claim.
-
-Two things are never switchable whatever you choose: **Tools ▸ Preferences** and
-**Customize Features** themselves, because switching off the menu that holds the
-switch is a door that locks from the inside.
-
-### Searching the list
-
-Twenty checkboxes is a long way to Tab through, so the box below the profile
-row filters them as you type. It matches what an area **does** as well as what it
-is called, so typing "curly quotes" finds Autocorrect and typing "dictionary"
-finds Spell check. The line under the box says how many are left, and **Down**
-from the box moves straight into the list.
-
-### The 21 areas
-
-| Area | What goes | Starts |
-|---|---|---|
-| **Rich text and the Format menu** | Bold, headings, alignment, bullets, spacing | on |
-| **Heading navigation** | Next and previous heading, the headings list | on |
-| **Markdown and HTML** | The two tag pickers, Document Language, and markup Bold | on |
-| **Bookmarks** | All nine, and the list | on |
-| **Line tools and change case** | Edit ▸ Lines, Tools ▸ Change Case | on |
-| **Copy Tray and the clip library** | Edit ▸ Clipboard (Cut, Copy, Paste and Copy All stay) | on |
-| **Printing** | Print and Page Setup | on |
-| **Abbreviations** | Short forms, and the list that manages them | on |
-| **Spell check** | Tools ▸ Spelling, and checking as you type | on |
-| **Dictionary and thesaurus** | Look Up, Thesaurus, Say Word Summary, and the two submenus on any word | on |
-| **The Selection submenu** | F8 selecting, whole-structure selecting, marks | on |
-| **The Matches submenu** | All Matches and Count Occurrences (Find itself stays) | on |
-| **Go Back and Go Forward** | The trail of places you jumped from | on |
-| **The Command Palette** | Ctrl+Shift+P, the search box for commands | on |
-| **Describe Character** | What the character under the cursor actually is | on |
-| **Text size** | Bigger, smaller, and reset | on |
-| **Dictation** | Tools ▸ Dictation: speaking into the document, and choosing the microphone | on |
-| **Autocorrect while typing** | Curly quotes and em dashes (see below -- it does not capitalise sentences) | **off** |
-| **Timestamped backups** | A dated copy kept every time you save | **off** |
-| **Go To Anything** | One box that searches everything at once | **off** |
-| **AI help (sends your text to QUILL's servers)** | Tools ▸ AI: summarize, rewrite, proofread, explain, and questions about a document | **off** |
-
-The last four start switched off, and they sit in this same list rather than
-being hidden away, because something you cannot find might as well not exist.
-
-**AI help is off for a different reason from the other three.** Those would be
-*wrong* on -- autocorrect rewriting a configuration file's quotes, backups
-quietly filling a folder. This one is off because using it sends the passage
-you ask about over the internet, and that is not a choice anybody else gets to
-make for you. Its row in Customize Features spells out the whole trade before
-you switch it on, and an area that is off owns nothing: no menu, no keys, no
-sign-in stored on disk, and no connection of any kind.
-
-**And switching it on is not enough.** Before anything is sent, QUILL Lite shows
-you the whole agreement -- what is sent, what QUILL keeps, what it does not
-keep, what OpenAI does with it, and how to say no -- and nothing happens until
-you accept it. Turning the area on and declining the agreement leaves the menu
-there and the feature unusable, which is deliberate: you did turn it on, and
-what you declined was the sending. The switch does not flip itself back behind
-you.
-
-There are **three ways to the same agreement**, because the place you look for
-it depends on which part of the app you already know:
-
-- **Tools ▸ AI ▸ Privacy Agreement...** (**Ctrl+Alt+Shift+K**) -- read it, accept
-  it, or take it back. Taking it back also signs this computer out, because
-  keeping the sign-in for a service you have just withdrawn from would be
-  keeping the key to the thing you declined.
-- **Preferences**, where a tick box says *Use QUILL's free AI help*. Ticking it
-  shows the agreement; unticking it withdraws.
-- **Customize Features**, where switching the area on asks you straight away.
-
-All three read and write the same answer, so none of them can disagree with the
-others. If the agreement ever changes in a way that matters -- what is sent, or
-what is kept -- you will be asked again rather than the old answer being taken
-to cover the new thing.
-
-Autocorrect is off because curly quotes are lovely in a letter and unhelpful in
-a settings file. Backups are off because they quietly fill a folder. Go To
-Anything is off because the command search, the headings list and the bookmark
-list already each do their own part of the job.
-
-**Autocorrect is two rules, and switching the area on does not switch either of
-them on.** The area decides whether QUILL Lite has the feature at all; two tick
-boxes in **Tools ▸ Preferences** decide which rules run -- **Curl quotes as I
-type** and **Turn two hyphens into an em dash** -- and both start off, so turning
-the area on and typing a quote correctly does nothing until you tick one. They
-are separate because they are different opinions: plenty of people want the long
-dash and not the curly quotes. Neither runs in a plain text, source or
-configuration document whatever the boxes say, because a curly quote in a `.json`
-is a syntax error and no setting can express "except in code".
-
-And there is no third rule: QUILL Lite does **not** capitalise the start of a
-sentence, has never done so, and will not start doing it behind you.
-
-Two things are never switchable, on purpose. **Tools ▸ Preferences** and
-**Customize Features** stay, because switching off the menu that holds the switch
-is a door that locks from the inside. And **File Encoding and Line Endings**
-stays, because getting a file to save back byte-for-byte the way it arrived is
-most of what a Notepad replacement is for.
-
----
-
-## Reopening what you had open
-
-QUILL Lite remembers the saved documents you had open and offers them back next
-time. Until September 2026 it simply opened all of them without asking, and
-skipped any whose file had gone without saying so. That is right for one document
-and wrong for four: four windows appearing unbidden is four things to identify
-before you can start, and the one you wanted is not necessarily the first.
-
-So it asks — **when it matters**:
-
-| Last time you had | What happens |
-|---|---|
-| one or two documents, both still there | they open, as before |
-| three or more | you are asked |
-| any document whose file has moved or gone | you are asked |
-
-The window lists what was open, one row each, with a checkbox. Everything that
-can be opened starts ticked, so **Enter** is "all of it" and unticking two is
-"not those two". A row whose file has gone says so and cannot be ticked.
-
-- **Open Checked** opens the ticked rows and leaves the list alone.
-- **Open All** opens everything still on disk, ticked or not.
-- **Not Now** opens nothing and changes nothing. The same documents are offered
-  next time. Escape does the same.
-- **Forget Checked** takes the ticked rows off the list so they stop being
-  offered, and **Clear the List** does it to all of them. **Neither touches a
-  file.** Forgetting is about what QUILL Lite offers you, not about what is on
-  your disk, and the window says so in a line under the buttons.
-- **Never Ask Again** opens the ticked documents and stops asking from then on.
-- **Ask Me Next Time** is its twin, and undoes it: you are asked again the way
-  a new install asks — when there are several documents, or one whose file has
-  moved. The ticked documents open as well.
-
-**Exactly one of that pair is ever available**, and the other is greyed rather
-than hidden, so arriving on it tells you which way the setting currently is.
-If you have pressed Never Ask Again and want the window back, open it yourself
-with **File ▸ Reopen Last Session...** (**Alt+Shift+F12**) and press **Ask Me
-Next Time**. That is the only place the setting lives — it is deliberately not
-in Preferences, because the window that asks the question is the obvious place
-to answer it, and until this release it was the one answer in here that could
-not be taken back at all.
-
-Then it tells you what happened — "Reopened all 3 documents", "Reopened 1 of 2",
-"Forgot 2 documents. 1 still remembered. The files themselves are untouched." A
-count is the one thing you cannot go and read off the screen.
-
-**File ▸ Reopen Last Session...** (**Alt+Shift+F12**) opens the same window
-whenever you want it. That is what makes Not Now safe to press: the answer is
-put off rather than lost, and a list that needs tidying can be tidied without
-waiting for a restart. QUILL has the same window on the same key.
-
-## Settings
-
-In the next maintenance update, **Find a setting** searches the Preferences
-labels, accessible names, and help text. Type a term, press Down to reach
-Matching settings, then Enter on a result to focus its control. **Ctrl+F**
-returns to search. Enter here navigates rather than saving; Escape clears a
-nonempty search before closing. Search never reads field values or changes a
-setting for you. The existing OK and Cancel actions still apply.
-
-**Tools ▸ Preferences** (**Ctrl+,**) is one window, one long column of
-controls, and an **OK** and a **Cancel** at the bottom. Tab moves down it,
-Shift+Tab moves back up, **F1** on anything reads what that one control does,
-and **new changes are not written until you press OK** — so Escape is always safe.
-
-If settings could not be saved, they remain active for this session. QUILL Lite
-says so, and the status bar's Message cell keeps the warning available to read
-with **F6**. Free space or restore access to the settings folder, then reopen
-Preferences to retry the settings you already accepted. That retry does not
-require another edit or pressing OK. A successful retry clears the warning;
-Cancel still discards new changes made inside the dialog. Settings changes and
-normal exit also attempt a save. This warning is about preferences, not whether
-your document itself has been saved.
-
-Here is every control in it, in the order you meet them.
-
-**Profile** is the same four-answer chooser Customize Features has, with the
-same read-only description under it. It is here as well as there because "make
-this Notepad" is a preference like any other. See [Making QUILL Lite smaller (or
-larger)](#making-quilllite-smaller-or-larger).
-
-**New documents are:** — **Plain text** or **Rich text**. This is what
-**Ctrl+N** creates, and nothing else. **New Plain Text Document**
-(**Ctrl+Alt+N**) and **New Rich Text Document** (**Alt+Shift+T**) ignore it and
-always make what their names say. Choosing the **Notepad** or **WordPad**
-profile moves this control in front of you rather than behind your back, so you
-can see what the profile claimed and overrule it before you press OK.
-
-**Theme:** — **Dark** or **Follow the system**. **Follow the system is the
-default**, and it is the one that does not guess. QUILL Lite shipped dark,
-because the people this editor is for are disproportionately light-sensitive
-and a first launch that is bright white is one some of them cannot read — but
-light-sensitive does not mean *dark*: somebody who depends on high-contrast
-black on white is harmed by a dark default in exactly the same way. Anybody
-with a strong requirement has already told Windows about it, in the one place
-every other program on the machine reads, so QUILL Lite reads that instead.
-Choose **Dark** to have it dark whatever Windows says. Either way it changes
-what is on the screen and nothing else: the colours are never written into your
-files, so a theme can never leave grey text in a document you send somebody.
-The View menu has the same switch on **Alt+Shift+D** for when you want it now,
-and it says "Dark mode on" or "Dark mode off" so you never have to look.
-
-If you chose dark in an earlier version, you keep dark. Only somebody who never
-chose comes with the new default.
-
-**Reopen the documents I had open last time** — on. Off means QUILL Lite starts
-with whatever you open yourself. This is a different question from recovering
-unsaved work, which happens either way.
-
-**Offer untitled unsaved work back after a crash** — on. An untitled document
-is the one with no file to fall back on, so this is the copy you would miss
-most. Off if you use QUILL Lite as a scratchpad and would rather it forgot.
-
-**Start with a blank document** — on, the way Notepad and WordPad do it. Turn it
-off if you always open an existing file: without it you are handed an empty
-Untitled to close on every launch. Files you open by double-clicking, last
-session's documents and recovered work all still appear either way. QUILL has
-the same setting under **General**.
-
-**Share QUILL's abbreviation library** — off. On, QUILL Lite reads and writes
-QUILL for All's list instead of its own, so a short form added in either is
-there in both. It does nothing if you do not have QUILL installed.
-
-**Share QUILL's dictionary of taught words** — off, and the same idea for
-spelling: a word you teach in either editor is known to both.
-
-**Keep everything I copy in the clip library** — off. On, every Ctrl+C is kept
-in the clip library automatically instead of only the ones you press
-**Ctrl+Alt+M** on. Useful, and it does mean the library fills up by itself.
-
-**Look for updates when QUILL Lite starts** — on. It looks once a day and says
-nothing unless there is something. **Ctrl+Alt+U** asks on demand either way.
-
-**Check spelling as I type** — on. This is the same switch as **Tools ▸
-Spelling ▸ Check While Typing** (**Ctrl+Alt+F7**), which is the quick way to
-reach it while you are in a document.
-
-**Curl quotes as I type** — off. Turns a straight quote into a matching curly
-one. **Turn two hyphens into an em dash** — off. Typing the second hyphen of
-`--` replaces both with a single long dash. Both need **Autocorrect while
-typing** switched on in Customize Features as well, and neither ever runs in a
-plain text, source or configuration document however they are set.
-
-**When a command does something, give me:** — **a sound**, **the action
-spoken**, **both**, or **nothing**. This is what a cut, a copy, a paste, an undo
-or a started selection reports back with. A sound is what the app has always
-done; speech says the word instead, which is what you want before you have
-learned the tones. Two things are outside this setting on purpose: a command
-that has no tone in your sound pack **speaks** rather than falling silent, and a
-command that could not do what you asked **always says so in words**, because no
-tone has ever carried "it did not work".
-
-**When a search misses:** — the same four answers, asked separately. F3 is
-pressed in runs, and hearing "Not found" spoken on every press is the fastest
-way to end up turning speech off altogether. The status bar carries the words
-whichever you pick, so nothing is lost by choosing the tone.
-
-**Say a heading's level:** — **before the text** or **after the text**. Before
-is one sentence QUILL Lite says on its own — "Heading 2, Installing" — and it is
-the one that survives a jump, because pressing Ctrl+Home or landing on a search
-hit makes a screen reader cancel whatever it was about to say, and a level
-waiting its turn behind that is never heard. After lets your reader read the
-line and adds the level behind it, which is quieter on ordinary line-by-line
-reading.
-
-**Searching carries on from the other end** — on. Find Next reaching the end
-starts again at the top and tells you it has. Off, it stops and says which end
-you are at, so you know the word is not absent — you are just at the bottom.
-
-**Wrap long lines to the window** — on. Off, long lines run past the right edge
-and scroll. **Alt+Z** is the same switch on the View menu.
-
-**Shortest gap between spoken messages (ms):** — 0 to 2000, and 0 is the
-default, meaning say everything as it happens. A larger number drops anything
-QUILL Lite would say too soon after the last thing it said, which is what you
-want if holding a key down floods your screen reader. Nothing is lost by it: the
-status bar is written either way and **F6** reads it back.
-
-**Copy unsaved work aside every (seconds):** — 15 to 600, 30 by default. How
-often a changed document is copied to the recovery folder. The copy is *beside*
-your file, never over it, and is removed the moment you save.
-
-**Editor font:** — a read-only box saying the face and size, and a **Change
-Font...** button that opens the chooser. The box reads back whatever you pick,
-and QUILL Lite says it out loud as well, because a box you are not focused on is
-exactly what a screen reader does not announce. The same chooser is on
-**Ctrl+Alt+F** (**Format ▸ Editor Font**), which is where Notepad has always
-kept it and which is the one row the Format menu keeps if you switch rich text
-off.
-
-**Use QUILL's free AI help** — off. This one is **not** held until OK. Ticking
-it shows you the whole agreement there and then and records your answer
-immediately; unticking it withdraws immediately. Consent recorded because
-somebody pressed OK on an unrelated window would be consent of a worse kind. If
-you decline the agreement the tick goes back by itself, and QUILL Lite says so
-out loud, because a checkbox changed in code is not a checkbox your reader
-announces. See [AI help](#ai-help).
-
-### What is not in here, and where it is instead
-
-Some switches are a keystroke away rather than a window away, because they are
-the ones you change *while* you are working:
-
-| Not in Preferences | Where it is |
-|---|---|
-| Dark mode | **View ▸ Dark Mode** (**Alt+Shift+D**) |
-| Word wrap | **View ▸ Word Wrap** (**Alt+Z**) |
-| Announce Headings, Announce Lists | **View** (**Ctrl+Alt+F3**, **Ctrl+Alt+F5**) |
-| Overwrite mode, Tab key behaviour, the status bar | **View** |
-| Quiet mode | **Tools ▸ Quiet Mode** (**Alt+Shift+M**) |
-| Which sound each event makes | **Tools ▸ Sound Scheme** (**Ctrl+Alt+Shift+O**) |
-| Which of the 20 areas exist at all | **Tools ▸ Customize Features** (**Ctrl+Alt+F10**) |
-| What any key does | **Tools ▸ Keyboard Manager** (**Ctrl+Alt+Shift+R**) |
-| The twelve spelling announcement settings | **Tools ▸ Spelling ▸ Announcements** (**Ctrl+Alt+Shift+F7**) |
-| Whether you are asked about last session | The **Reopen Last Session** window itself (**Alt+Shift+F12**) |
-
-That last one is worth saying out loud, because it is the one people go looking
-for in Preferences and do not find. See [Reopening what you had
-open](#reopening-what-you-had-open).
-
-### Taking your settings with you
-
-**Tools ▸ Back Up Settings...** (**Ctrl+Alt+F11**) and **Tools ▸ Restore
-Settings...** (**Ctrl+Alt+F12**) are described under [Moving your settings to
-another computer](#moving-your-settings-to-another-computer).
-
----
-
-## Printing
-
-**Ctrl+P** prints. **Ctrl+Alt+P** is Page Setup, and what you set there — paper
-size, orientation and all four margins — is remembered for next time.
-
-Long lines are wrapped to fit the page whatever your Word Wrap setting says,
-because a printed line that runs off the edge of the paper is simply gone.
-
-**Rich text prints as rich text.** A rich document is printed by the editor
-itself, so a heading arrives on paper as a heading and a bold word arrives bold.
-This was not true before version 1.0: everything printed flat, in one size.
-
-A plain text or Markdown document prints as it reads, which is the right answer
-— a Markdown heading already carries its own `#` onto the page.
-
-### Print Preview... — Ctrl+Alt+Shift+P
-
-Not a picture of a page. A picture of a page is the one kind of preview that
-answers nothing at all if you cannot see it, which is why WordPad's and Word's
-have never been much use here.
-
-This one answers the questions you actually have: **how many pages**, on what
-paper, with what margins — and then, page by page, what is at the top of each
-one. "Page 3 of 7: Installing" is how you find out whether the section you care
-about starts where you wanted it to, without printing anything.
-
-The page count is worked out against your real printer, using the same
-measurements the print itself uses, so the number here is the number that comes
-out.
-
----
-
-## Speech
-
-QUILL Lite talks through **NVDA or JAWS**, and nothing else. There is no built-in
-voice, and that is on purpose: a second voice talking over your screen reader is
-worse than silence.
-
-It also says as little as it can. Your screen reader already announces window
-titles, where your focus has moved, the names of buttons and what you have
-selected. QUILL Lite only tells you things it alone knows — that a save happened,
-that a search wrapped around, that bold went on, that four things were replaced.
-
-Everything it says also goes into the first part of the status bar, so **F6**
-will bring back a message you missed.
-
-If you have no screen reader running, QUILL Lite says nothing out loud — but
-every message is still there in the status bar.
-
-### If it says too much
-
-Holding a key down can make QUILL Lite speak faster than anybody can listen.
-**Preferences ▸ Shortest gap between spoken messages** sets a floor, in
-milliseconds: anything it would say too soon after the last thing it said is
-dropped. Zero, the default, says everything as it happens. Nothing is lost by
-turning it up — the status bar is written either way, and **F6** reads it
-back.
-
----
-
-### What formatting is here?
-
-**Ctrl+Shift+D** (**Format ▸ Describe Formatting at Cursor**) says what the
-formatting is where your cursor is standing. It is the answer to the question a
-sighted reader settles with a glance and a listener otherwise cannot ask at all.
-
-It gives a different kind of answer in each kind of document, because there is a
-different kind of truth to tell:
-
-- In a **rich text** document it asks the control itself, and reads back the
-  real thing: *"Arial, 14 point, bold, centred."*
-- In a **Markdown** document it reads the markup around your cursor: standing
-  inside `**bold**` it says bold, and on a `##` line it says Heading 2.
-- In a **plain text** document it says so, because that is the honest answer
-  rather than a denial.
-
-There are two narrower questions beside it, for when the answer you want is
-smaller:
-
-- **Ctrl+Shift+C** (**Describe Character**) names the character under the
-  cursor, which is how you tell a hyphen from an en dash from a minus sign —
-  three characters a screen reader reads identically.
-- **Ctrl+Alt+Shift+V** (**Describe Indent Depth**) says how far the current line
-  is indented, and whether with tabs or spaces.
-
-### How big is this document?
-
-**Ctrl+Shift+G** (**View ▸ Document Statistics**) speaks the size of the whole
-document: *"1,240 words, 7,315 characters, 96 lines."*
-
-The same three numbers live in the status bar, and this command exists because
-a listener is not watching the status bar. Pressing it is quicker than going to
-find the cell and reading it.
-
-**Ctrl+Alt+W** (**Line Statistics**) answers the narrower question for the line
-you are on, or for what you have selected.
-
-### The collector: gather now, paste once
-
-The copy tray holds twelve numbered slots you put things into deliberately. The
-**collector** is the other half of that idea, for when you are reading through
-something and want several pieces of it without stopping to decide where each
-one goes.
-
-1. **Alt+Shift+S** (**Edit ▸ Clipboard ▸ Collect Selection**) adds the
-   selection to the pile. Press it as often as you like; each one is added to
-   the end, and nothing is overwritten.
-2. **Paste Everything Collected** puts the whole pile into your document in the
-   order you collected it.
-3. **Ctrl+Alt+Shift+C** (**Clear the Collector**) empties it when you are done.
-
-The collector used to be on Ctrl+Alt+G. It moved to Alt+Shift+S in September
-2026 because Google Drive for desktop claims Ctrl+Alt+G across the whole of
-Windows — and a key claimed system-wide never reaches the application at all,
-so the command looked broken on any machine with Drive installed. If you find
-another key that does nothing, the Keyboard Manager will now tell you when
-something outside QUILL Lite has taken it.
-
-## Dictation
-
-Press **Ctrl+F11**, talk, and pause. Each time you pause, what you said is
-written into the document at the cursor, you hear a short soft tone, and QUILL
-Lite reads the words back so you know they are right. Then it keeps listening,
-so you can go straight on to the next sentence. Press **Ctrl+F11** again, or say
-"stop dictation", to stop.
-
-You do not need to say punctuation. The built-in speech engines put in full
-stops, commas, question marks and capitals by themselves, the way you would
-write them. When you want a particular mark, say it -- "comma", "new
-paragraph" -- and your word always wins.
-
-Everything happens on this computer. The speech engines come with QUILL Lite,
-nothing is downloaded, nothing you say is sent anywhere, and no recording is
-kept: the words are recognised, written into your document, and forgotten.
-
-### Your first dictation, step by step
-
-1. Put the cursor where you want the words. If you select some text first, the
-   first phrase you say replaces it.
-2. Press **Ctrl+F11**. The first time after opening QUILL Lite it takes a second
-   or two while the speech engine loads. Then you hear two rising tones and
-   "Dictation on".
-3. Say a sentence the way you would say it to a person, and pause.
-4. A moment later the sentence is in the document, you hear the soft tone, and
-   the words are read back to you.
-5. Keep going. There is no need to press anything between sentences.
-6. When you are done, press **Ctrl+F11** or say "stop dictation". You hear two
-   falling tones and "Dictation off".
-
-A phrase is written when you have been quiet for a little under a second, so a
-breath in the middle of a sentence does not cut it in two. If a pause does
-split a sentence and the next part starts with a word like *and*, *but*,
-*which* or *to*, the full stop the pause put in is taken back out and the
-sentence carries on.
-
-### What you hear
+**Restore All Defaults** puts every sound back as it was and turns them all on.
+The original sounds are never changed, so you can always get back to them with
+one press.
+
+QUILL uses the same Sound Scheme window and the same schemes, so a scheme you
+make in one shows up in the other.
+
+### Activity and Repeat Last Result
+
+Sometimes QUILL Lite tells you something while your attention is elsewhere, and
+you miss it. These two commands let you catch up.
+
+#### Activity (Shift+F9)
+
+**Help > Activity...** (Shift+F9) is a list of everything QUILL Lite has told
+you about in this session, newest first. That includes things like a settings
+file that could not be saved, a save that worked after an earlier one failed,
+or work that finished after you closed the window that started it. Each row is
+one sentence: whether it worked, what it was, and when.
+
+Press **Enter** on a row to take its first action. The buttons below the list
+say what the selected row offers, and are dimmed when it offers nothing:
+
+- **Retry** tries the same thing again. For a settings file that could not be
+  saved, that means saving it again, so if your disk was full and you have since
+  made room, one key fixes it.
+- **Open Folder** opens the folder in File Explorer with the file selected, so
+  you can check whether the disk is full or the folder is read only.
+- **Copy Details** copies the selected result as text, ready to paste into a
+  message to support.
+- **Clear List** empties the list for this session.
+
+Opening a large file, or one on a network drive, shows up here too. You see it
+while it is still opening, and then as Opened or Could not open. So if a slow
+file finished opening while you were busy elsewhere, you can find out how it
+went.
+
+All your document windows share one list. If a save failed while you were in a
+different document, you will still find it in Activity from any window. The
+list stays on your computer, and it never contains any of your document text.
+
+#### Repeat Last Result (F9)
+
+**Help > Repeat Last Result** (F9) says the most recent important thing again.
+That is the last thing QUILL Lite itself told you, not the last thing your
+screen reader read. It also tells you what Activity can do about it. If nothing
+has happened yet, it says so.
+
+#### When a settings file cannot be saved
+
+QUILL Lite tells you once, and keeps your changes for the rest of the session.
+In Activity, that row offers Retry and Open Folder. When a later save of the
+same file works, QUILL Lite tells you that too, so you know the problem is
+over.
+
+### What you learned, and where to go next
+
+QUILL Lite speaks through NVDA or JAWS and only tells you what your screen
+reader cannot. Every message is kept in the status bar, so **F6** brings back
+anything you missed. A few keys answer quick questions about formatting, a
+character, indent depth and the size of your document. **Alt+Shift+M**
+silences every sound, and Sound Scheme on **Ctrl+Alt+Shift+O** lets you hear,
+change or switch off each one and save your own set. **Shift+F9** opens
+Activity, the list of everything QUILL Lite has told you this session, with
+buttons to retry or look into a problem, and **F9** repeats the last important
+message.
+
+The tutorial *What to press when you are lost* shows you how to hear a
+message again.
+
+Next, Chapter 9, Writing by voice, shows you how to dictate instead of typing.
+
+## Chapter 9: Writing by voice
+
+Dictation lets you write by talking. Press **Ctrl+F11**, say a sentence, and
+pause. When you pause, your words appear in the document at the cursor. You
+hear a short, soft tone, and QUILL Lite reads the words back so you know they
+came out right. Then it keeps listening, so you can go straight on to the next
+sentence. To stop, press **Ctrl+F11** again or say "stop dictation".
+
+You do not have to say punctuation. The speech engines that come with QUILL
+Lite put in full stops, commas, question marks and capital letters for you.
+When you want a particular mark, just say it, like "comma" or "new paragraph".
+What you say always wins.
+
+It all happens on your own computer. Nothing is downloaded, nothing you say is
+sent anywhere, and no recording is kept. Your words are recognised, written
+into your document, and then forgotten.
+
+This chapter starts with your first dictation. Then it covers what you can
+say, starting and stopping with your voice, making dictation fit you, and
+what to do when something goes wrong.
+
+### Getting started
+
+#### Your first dictation, step by step
+
+1. Put the cursor where you want the words to go. If you select some text
+   first, the first thing you say replaces it.
+2. Press **Ctrl+F11**. The first time after you open QUILL Lite, it takes a
+   second or two to get ready. Then you hear two rising tones and "Dictation
+   on".
+3. Say a sentence the way you would say it to a friend, and pause.
+4. A moment later the sentence is in your document. You hear the soft tone,
+   and the words are read back to you.
+5. Keep going. You do not need to press anything between sentences.
+6. When you are finished, press **Ctrl+F11** or say "stop dictation". You hear
+   two falling tones and "Dictation off".
+
+Your words are written once you have been quiet for a little under a second.
+That means taking a breath in the middle of a sentence will not cut it in two.
+If a pause does split a sentence, and the next part starts with a word like
+*and*, *but*, *which* or *to*, QUILL Lite takes out the full stop the pause put
+in, and the sentence carries on.
+
+#### What you hear
 
 | When | Tones | Words |
 |---|---|---|
@@ -3125,38 +2992,36 @@ sentence carries on.
 | Dictation stops | two falling tones | "Dictation off" |
 | Something goes wrong | a low double tone | what happened, and what to do |
 
-Every row can be changed in **Dictation Settings**, and every tone can be
-changed or silenced in **Tools ▸ Sound Scheme**. Two things are never silenced:
-a failure is always spoken, and so is the answer to a command, because both
-answer a question.
+You can change any of these in **Dictation Settings**, and you can change or
+silence any tone in **Tools > Sound Scheme**. Two things always speak, though:
+a problem, and the answer to a command you gave.
 
-The soft tone plays only once the words are really in the document, so hearing
-it means they arrived. If you choose speech for each phrase, the words are
-read back a quarter of a second after they are written, so they are not cut
-off by your screen reader's own reaction to the new text.
+The soft tone plays only once your words are really in the document, so when
+you hear it, you know they arrived. If you have the words read back, they come
+a quarter of a second after they are written, so your screen reader does not
+talk over them.
 
-**Use headphones if the read-back is on.** Read back through speakers, the
-microphone can hear it and write it down a second time. With speakers, set
-"After each phrase is written, give me" to a sound only.
+**Use headphones if you have the read-back on.** Through speakers, the
+microphone can hear the read-back and write it down a second time. If you use
+speakers, set "After each phrase is written, give me" to a sound only.
 
-### The speech engines
+#### Choosing a speech engine
 
-Choose one in **Dictation Settings**. The first two come with QUILL Lite.
+You choose the engine in **Dictation Settings**. The first two come with QUILL
+Lite.
 
 | Engine | What it is like |
 |---|---|
-| **Moonshine** (the one it starts with) | Fast even on a modest computer, and punctuates by itself. English. |
-| **Whisper** | Punctuates by itself, a little slower. Try it if Moonshine often mishears your voice or your microphone. English. |
-| **Windows speech recognition** | Windows' own recogniser. Does not punctuate by itself -- say every mark -- and mishears an untrained voice often. Can use any speech language installed in Windows. |
-| **Windows voice typing (Windows+H)** | Hands over to Windows' own voice typing panel. Windows does the recognising and the typing, so none of the commands, tones, read-back or wake phrase apply here. |
+| **Moonshine** (the one it starts with) | Quick even on a modest computer, and puts in punctuation for you. For most voices it is the most accurate. English. |
+| **Whisper** | Also puts in punctuation for you, and is a little slower. Try it if Moonshine often mishears your voice or your microphone. English. |
+| **Windows speech recognition** | Windows' own recogniser. It does not add punctuation, so you say every mark, and it often mishears a voice it has not been trained on. It can use any speech language you have installed in Windows. |
+| **Windows voice typing (Windows+H)** | Hands you over to Windows' own voice typing panel. Windows does the listening and the typing, so the commands, tones, read-back and wake phrase in this chapter do not apply. |
 
-Moonshine and Whisper were chosen after measuring eight candidates on the same
-sentences for accuracy, punctuation, speed on one processor core, and size;
-Moonshine was the most accurate and by far the fastest.
+### Saying things
 
-### Saying punctuation and layout
+#### Punctuation and layout
 
-You can say these anywhere in a phrase:
+You can say these anywhere in a sentence:
 
 - **Punctuation:** "period" or "full stop", "comma", "question mark",
   "exclamation point", "colon", "semicolon", "ellipsis", "apostrophe", "open
@@ -3169,21 +3034,21 @@ You can say these anywhere in a phrase:
 - **Layout:** "new line" ends the line, "new paragraph" leaves a blank line,
   and "tab" or "tab key" types a tab.
 
-Spaces go where they belong -- none before a comma, one after a full stop, none
-at the start of a line -- and the first word of each sentence gets its capital.
-What "dash" writes is your choice in Dictation Settings: an em dash, a spaced en
-dash, or two hyphens.
+QUILL Lite puts the spaces where they belong. There is no space before a
+comma, one after a full stop, and none at the start of a line. The first word
+of each sentence gets its capital letter. You decide what "dash" writes in
+Dictation Settings: an em dash, a spaced en dash, or two hyphens.
 
-To write one of these words as a word, say **"literal"** first: "literal new
-line" writes *new line*, and "literal comma" writes *comma*.
+Sometimes you want the word itself. Say **"literal"** first: "literal new line"
+writes *new line*, and "literal comma" writes *comma*.
 
-### Commands
+#### Commands
 
 A command works only when it is **the whole phrase**, said on its own after a
-pause. "Delete that line of text" inside a longer sentence is just words, and
-is written as words.
+pause. If you say "delete that line of text" in the middle of a longer
+sentence, it is just written as words.
 
-**Correcting what you said:**
+**Fixing what you just said:**
 
 | Say | What happens |
 |---|---|
@@ -3200,166 +3065,176 @@ is written as words.
 **Moving the cursor:** "go to beginning of line", "go to end of line", "go to
 top", "go to end of document".
 
-**Dictation itself:** "start spelling" and "stop spelling" (below), "what can I
-say" (opens the full list), and "stop dictation".
+**Dictation itself:** "start spelling" and "stop spelling" (see the next
+section), "what can I say" (opens the full list), and "stop dictation".
 
-The commands that change the last phrase only change it while it is still
-exactly as it was written. If you have typed into it since, it is left alone
-and QUILL Lite says so, because changing it would change your typing too.
+The commands that change your last phrase only work while it is still exactly
+as it was written. If you have typed into it since, QUILL Lite leaves it alone
+and tells you, so your own typing is never changed by mistake.
 
-### Spelling a word
+#### Spelling a word
 
-For a name the engine will never get right, say **"start spelling"**. Until you
-say **"stop spelling"**, everything you say is written as letters:
+Some names the engine will never get right. For those, say **"start
+spelling"**. Until you say **"stop spelling"**, everything you say is written
+as letters:
 
-- Say letters by name ("bee", "see") or, far more reliably, with the phonetic
-  alphabet: alpha, bravo, charlie, delta, echo, foxtrot, golf, hotel, india,
-  juliet, kilo, lima, mike, november, oscar, papa, quebec, romeo, sierra,
-  tango, uniform, victor, whiskey, x-ray, yankee, zulu.
+- Say letters by name, like "bee" or "see". The phonetic alphabet works much
+  better, though: alpha, bravo, charlie, delta, echo, foxtrot, golf, hotel,
+  india, juliet, kilo, lima, mike, november, oscar, papa, quebec, romeo,
+  sierra, tango, uniform, victor, whiskey, x-ray, yankee, zulu.
 - Say "capital" before a letter for a capital, and "space" for a space.
 - Numbers are written as digits: "one", "two" and so on.
 
-"Start spelling", then "capital bravo alpha delta", then "stop spelling" writes
-*Bad*. The letters are read back as they are written, so a wrong one is heard at
-once -- say "scratch that" to take the last run back.
+For example, say "start spelling", then "capital bravo alpha delta", then
+"stop spelling", and you get *Bad*. Each letter is read back as it is written,
+so you hear a wrong one straight away. Say "scratch that" to take back the
+last run of letters.
 
-### The full list
+#### The full list of what you can say
 
-Say **"what can I say"** while dictating, or press **Dictation Commands...** in
-Dictation Settings, and QUILL Lite opens a window listing every phrase it acts
-on, with your own phrases and your wake phrase included. Read it with the arrow
-keys; Escape closes it. The same list is published as its own page,
-**Dictation commands**, next to this guide.
+While you are dictating, say **"what can I say"**. You can also press
+**Dictation Commands...** in Dictation Settings. A window opens with every
+phrase dictation understands, including your own phrases and your wake phrase.
+Read it with the arrow keys, and press Escape to close it. The same list is
+also its own document, **Dictation commands**, next to this guide.
 
-### Starting with your voice: the wake phrase
+### Starting and stopping with your voice
 
-Switch on **Listen for the wake phrase while dictation is off** in Dictation
-Settings, and you can start dictation by saying the wake phrase instead of
-pressing a key. It is **"Quill dictate"** unless you choose another.
+#### The wake phrase
 
-- Say the wake phrase, pause, and start talking -- or say it and carry straight
-  on: "Quill dictate, dear Sam, thank you for your letter" wakes dictation and
+If you would rather not reach for the keyboard, you can start dictation by
+voice. In Dictation Settings, turn on **Listen for the wake phrase while
+dictation is off**. Then say the wake phrase to start. It is **"Quill
+dictate"** unless you choose something else.
+
+- Say the wake phrase, pause, and start talking. Or say it and carry straight
+  on: "Quill dictate, dear Sam, thank you for your letter" starts dictation and
   writes *Dear Sam, thank you for your letter.*
 - "Stop dictation" (or Ctrl+F11) stops writing and goes back to waiting for the
   wake phrase.
-- The wake phrase only counts at the start of what you say. "I told Quill to
-  dictate this" in a conversation does not start anything.
-- A near miss still works: "Quil dictate" wakes it.
+- The wake phrase only counts at the start of what you say. If you say "I told
+  Quill to dictate this" while chatting, nothing starts.
+- It forgives a near miss. "Quil dictate" still works.
 
-**Choosing your own.** Type any phrase in the **Wake phrase** box. It needs at
-least two words, and should be something you would not say in passing -- a
-name and a verb works well. A single word is refused, because it would start
-dictation by accident.
+**Choosing your own wake phrase.** Type any phrase in the **Wake phrase** box.
+It needs at least two words. Pick something you would not say in passing; a
+name and a verb works well. QUILL Lite will not accept a single word, so
+dictation does not start by accident.
 
-**What it means for the microphone.** While the wake phrase is on, the
-microphone is open whenever QUILL Lite is the window in front. Nothing it hears
-is written, kept or sent anywhere unless it begins with the wake phrase; what
-does not is dropped the moment it has been checked. When another program comes
-to the front, the microphone closes, and dictation stops if it was running.
-When QUILL Lite comes back to the front, it listens for the wake phrase again.
-It does not listen while QUILL Lite is in the background: waking up would mean
-taking the focus from whatever you were doing, and that is not a surprise
-anyone should have to deal with. The wake phrase is off until you turn it on.
+**What happens with your microphone.** While the wake phrase is on, the
+microphone is open whenever QUILL Lite is the window in front. Anything it
+hears that does not start with the wake phrase is dropped straight away. It is
+never written, kept or sent anywhere. When you switch to another program, the
+microphone closes, and dictation stops if it was running. When you come back
+to QUILL Lite, it listens for the wake phrase again. It never listens while
+QUILL Lite is in the background, so it will not pull you away from whatever
+else you are doing. The wake phrase is off until you turn it on.
 
-The wake phrase works with Moonshine, Whisper and Windows speech recognition,
-but not with Windows voice typing, which Windows runs itself.
+The wake phrase works with Moonshine, Whisper and Windows speech recognition.
+It does not work with Windows voice typing, because Windows runs that itself.
 
-### Stopping with your voice: the stop phrase
+#### The stop phrase
 
-Say **"stop dictation"** on its own, after a pause, and dictation stops. You can
-choose your own words as well: type them in the **Stop phrase** box in Dictation
-Settings, and saying them stops dictation just the same. "Stop dictation" keeps
-working either way.
+Say **"stop dictation"** on its own, after a pause, and dictation stops. You
+can add your own words too. Type them in the **Stop phrase** box in Dictation
+Settings, and saying them stops dictation just the same. "Stop dictation"
+keeps working either way.
 
-- The stop phrase counts only when it is **everything you said** in that breath.
-  "I will stop dictation for today" in the middle of a paragraph is written, not
-  obeyed.
-- Like the wake phrase, it forgives a near miss, and it needs at least two words
-  so ordinary talk does not stop you by accident.
-- With the wake phrase on, stopping goes back to listening for the wake phrase,
-  so you can start and stop without touching the keyboard at all.
+- The stop phrase counts only when it is **everything you said** in that
+  breath. If you say "I will stop dictation for today" in the middle of a
+  paragraph, it is written down, not obeyed.
+- Like the wake phrase, it forgives a near miss, and it needs at least two
+  words so ordinary talk does not stop you by accident.
+- With the wake phrase on, stopping takes you back to listening for the wake
+  phrase. That way you can start and stop without touching the keyboard at
+  all.
 
-### Your own words and phrases
+### Making dictation fit you
 
-Press **Alt+Shift+F10** (**Tools > Dictation > My Words and Phrases...**), or the
-**My Words and Phrases...** button in Dictation Settings. A window lists
-everything dictation has been taught, one line each, and the next phrase you
-dictate uses whatever you change. There are three kinds:
+#### Your own words and phrases
 
-- **Words** -- names, jargon and acronyms, spelled the way you want them. When
-  the engine writes something that sounds or looks close, it is corrected to
-  your spelling: add *Tucson* and "tuxon" becomes *Tucson*. **Add Word...**
-  asks for the word.
-- **Phrases** -- words you say that write something longer. **Add Phrase...**
-  asks what you will say (*my email address*) and what it writes (your
-  address). Press Enter in the second box for a new line, so a signature can be
-  two lines.
-- **Corrections** -- what the engine keeps hearing wrong, and what to write
+You can teach dictation the words you use. Press **Alt+Shift+F10**
+(**Tools > Dictation > My Words and Phrases...**), or press the **My Words and
+Phrases...** button in Dictation Settings. A window lists everything you have
+taught it, one line each. Whatever you change is used from your very next
+phrase. There are three kinds:
+
+- **Words.** Names, jargon and acronyms, spelled the way you want them. When
+  the engine writes something that sounds or looks close, it is fixed to your
+  spelling. Add *Tucson*, and "tuxon" becomes *Tucson*. **Add Word...** asks
+  for the word.
+- **Phrases.** Something short you say that writes something longer. **Add
+  Phrase...** asks what you will say (*my email address*) and what it should
+  write (your address). Press Enter in the second box for a new line, so a
+  signature can be two lines.
+- **Corrections.** Something the engine keeps getting wrong, and what to write
   instead. **Add Correction...** asks what it writes now (*quill light*) and
-  what it should write (*QUILL Lite*). Applied to every phrase, whatever the
-  capitals, on every engine.
+  what it should write (*QUILL Lite*). Corrections work on every phrase, with
+  any capitals, on every engine.
 
-**Edit...** (or Enter on a line) changes the one you are on and **Remove** takes
-it out; each change is saved at once and said back to you. **Open the File...**
-opens the same list as a plain text file, `dictation.md`, for anyone who
-prefers a file; it has always been one, and still is.
+**Edit...** (or Enter on a line) changes the one you are on, and **Remove**
+takes it out. Each change is saved straight away and read back to you. If you
+like working in a file, **Open the File...** opens the same list as a plain
+text file called `dictation.md`.
 
-Your own phrases appear in the "what can I say" list with everything else.
+Your own phrases show up in the "what can I say" list along with everything
+else.
 
-### Choosing the microphone
+#### Choosing the microphone
 
-**Dictation Settings** lists every microphone by name. The first choice follows
-whatever Windows is using as the default recording device; choose a named
-microphone to keep using that one whatever the default becomes. If the
-microphone you chose is unplugged, starting dictation tells you so, rather than
-quietly listening on another one.
+**Dictation Settings** lists every microphone by name. The first choice uses
+whatever Windows is using as the default recording device. Choose a named
+microphone if you always want that one, whatever the default becomes. If the
+microphone you chose is unplugged, QUILL Lite tells you when you start
+dictation. It never quietly listens on a different one.
 
-### Talking in one long run: Just write what I say
+#### Talking in one long run: Just write what I say
 
 Some people think out loud in one long run and pause wherever the thought
-pauses. Normally each pause is where a phrase ends: it is written with a full
-stop, a tone plays, and the words are read back. Switch on **Just write what I
-say: nothing happens at a pause** in Dictation Settings, and a pause does
-nothing at all:
+pauses. Normally, each pause ends a phrase: it gets a full stop, a tone plays,
+and the words are read back. If that gets in your way, turn on **Just write
+what I say: nothing happens at a pause** in Dictation Settings. Then a pause
+does nothing at all:
 
-- **No full stop because you paused.** The words carry on as one sentence until
-  you say "period", "question mark" or another mark yourself. Marks inside what
-  you say are still put in by Moonshine and Whisper.
+- **No full stop just because you paused.** Your words carry on as one
+  sentence until you say "period", "question mark" or another mark. Moonshine
+  and Whisper still put in marks inside what you say.
 - **No tone and no read-back** after each phrase, so nothing talks over you.
 - **No voice commands.** "Scratch that" or "select that" said on its own is
-  written as words. Punctuation and layout you say -- "comma", "new paragraph"
-  -- still work, and so does the **stop phrase**, so there is always a way out
+  written as words. Punctuation and layout you say, like "comma" or "new
+  paragraph", still work. So does the **stop phrase**, so you can always stop
   by voice.
 
-Everything is still written as you go, and **Ctrl+Z** still takes back a phrase
-at a time. Turn it off again when you want the commands back.
+Your words are still written as you go, and **Ctrl+Z** still takes back one
+phrase at a time. Turn it off again when you want the commands back.
 
-### The finer choices
+#### The finer choices
 
-- **Automatic punctuation (Moonshine and Whisper).** On, the engine puts in full
-  stops, commas and question marks by itself. Off, it adds none, and you say
-  every mark, exactly as with Windows speech recognition.
+- **Automatic punctuation (Moonshine and Whisper).** When it is on, the engine
+  puts in full stops, commas and question marks for you. When it is off, it
+  adds none, and you say every mark, just as with Windows speech recognition.
 - **Pause before a phrase is written.** Short (half a second), Normal (under a
   second) or Long (about a second and a half). If dictation cuts you off while
-  you are still thinking, choose Long. Windows speech recognition is asked for
-  the same length.
-- **Remove filler words like um and uh.** Hesitations -- um, uh, erm, hmm -- are
-  left out instead of written. Real words are never removed.
-- **Stop dictation after silence.** Never, or after 1, 5 or 10 minutes of hearing
-  nothing, so dictation is not left writing in an empty room. With the wake
-  phrase on, it goes back to waiting for the wake phrase instead. You hear why:
-  "Dictation off after 5 minutes of silence."
-- **Test Microphone.** Beside the microphone list. Press it, wait for "Speak
-  now", and talk for four seconds. You hear how loud the microphone was --
-  almost nothing, quiet, working, or very loud -- and, with Moonshine or Whisper,
-  exactly what the engine heard. Nothing is kept. The result also stays in the
-  box beside the button, to read again.
+  you are still thinking, choose Long. Windows speech recognition uses the same
+  length.
+- **Remove filler words like um and uh.** Hesitations like um, uh, erm and hmm
+  are left out. Real words are never removed.
+- **Stop dictation after silence.** Never, or after 1, 5 or 10 minutes of
+  hearing nothing, so dictation is not left writing in an empty room. With the
+  wake phrase on, it goes back to waiting for the wake phrase instead. You hear
+  why it stopped, for example "Dictation off after 5 minutes of silence."
+- **Test Microphone.** This button is beside the microphone list. Press it,
+  wait for "Speak now", and talk for four seconds. You hear how loud the
+  microphone was (almost nothing, quiet, working, or very loud). With Moonshine
+  or Whisper, you also hear exactly what the engine understood. Nothing is
+  kept. The result stays in the box beside the button, so you can read it
+  again.
 
-### Dictation Settings, every option
+#### Dictation Settings, every option
 
-**Tools ▸ Dictation ▸ Dictation Settings...** (**Alt+Shift+F6**). The
-window has two columns: what is heard and written on the left, starting and
-stopping on the right.
+Open **Tools > Dictation > Dictation Settings...** (**Alt+Shift+F6**). The
+window has two columns. The left side is about what is heard and written. The
+right side is about starting and stopping.
 
 | Option | What it does | Starts as |
 |---|---|---|
@@ -3367,7 +3242,7 @@ stopping on the right.
 | Automatic punctuation (Moonshine and Whisper) | The engine puts in the marks you do not say | On |
 | Language for Windows speech recognition | Which installed Windows speech language to use; the other engines understand English | Windows default |
 | Microphone | Which microphone to listen on | Windows default |
-| Test Microphone (button) | Four seconds of listening: how loud, and what was heard | -- |
+| Test Microphone (button) | Four seconds of listening: how loud, and what was heard | (a button) |
 | After each phrase is written, give me | A sound, speech (the words read back), both, or neither | Both |
 | Saying "dash" writes | Em dash, spaced en dash, or two hyphens | Em dash |
 | Pause before a phrase is written | Short, Normal or Long | Normal |
@@ -3380,126 +3255,165 @@ stopping on the right.
 | Stop phrase | The words that stop it, said on their own | stop dictation |
 | Stop dictation after silence | Never, or after 1, 5 or 10 minutes | Never |
 
-Two buttons sit below them: **Dictation Commands...** opens the full list, and
-**My Words and Phrases...** saves these settings and opens the window described
-under "Your own words and phrases".
+Two buttons sit below the options. **Dictation Commands...** opens the full
+list of what you can say. **My Words and Phrases...** saves your settings and
+opens the window described in "Your own words and phrases" above.
 
-### Knowing what dictation is doing
+### While you dictate
 
-- **The status bar** has a **Dictation** part: Off, Listening, Hearing you,
-  Writing, Spelling, or Waiting for wake phrase. Press F6 to reach the status
-  bar and move to it; Enter there starts or stops dictation.
-- **Tools ▸ Dictation ▸ Dictation On** is checked while dictation is writing.
-- **The tones and the words** say when it starts and stops.
+#### Knowing what dictation is doing
 
-### Where the words go
+- **The status bar** has a **Dictation** part. It says Off, Listening, Hearing
+  you, Writing, Spelling, or Waiting for wake phrase. Press F6 to reach the
+  status bar and arrow to it. Press Enter there to start or stop dictation.
+- **Tools > Dictation > Dictation On** is checked while dictation is writing.
+- **The tones and the words** tell you when it starts and stops.
 
-Into the document you started dictation in, at the cursor. Each phrase is one
-step for **Ctrl+Z**, with its punctuation and capitals, so "scratch that" and
-Ctrl+Z always agree, even when the phrase replaced a selection. With the wake
-phrase, into whichever document is in front when you say it.
+#### Where the words go
 
-Dictation stops by itself when that document closes, when you switch it between
-plain and rich text, or when you move to another program or a dialog and speak.
-What you said then is not written anywhere, and QUILL Lite tells you why it
-stopped. There is one microphone, so pressing **Ctrl+F11 in a second document**
-while dictation runs in the first moves dictation there and says so:
-"Dictation moved to Letter.txt".
+Your words go into the document you started dictation in, at the cursor. Each
+phrase, with its punctuation and capitals, is one step for **Ctrl+Z**. So
+"scratch that" and Ctrl+Z always take back the same thing, even when the
+phrase replaced a selection. With the wake phrase, the words go into whichever
+document is in front when you say it.
 
-Dictation will not start in a document that is read-only, such as the read-only
-copy Compare opens: "This document is read-only, so dictation cannot write
-here." No microphone is opened.
+Dictation stops by itself if you close that document, switch it between plain
+and rich text, or move to another program or a dialog and speak. Anything you
+said then is not written anywhere, and QUILL Lite tells you why it stopped.
 
-### Cancelling a phrase: Escape
+There is only one microphone. So if dictation is running in one document and
+you press **Ctrl+F11** in a second document, dictation moves there and tells
+you: "Dictation moved to Letter.txt".
 
-While a phrase is being heard -- the status cell says "hearing you" -- press
-**Escape** and it is thrown away: nothing is written, and you hear "Cancelled".
-Ctrl+F11 still stops dictation and keeps what you said. When nothing is being
-heard, Escape does whatever it always did.
+Dictation will not start in a document you cannot change, such as the
+read-only copy Compare opens. You hear "This document is read-only, so
+dictation cannot write here." and the microphone stays closed.
 
-### If the microphone drops
+#### Cancelling a phrase with Escape
 
-If the microphone is unplugged, a Bluetooth headset drops, or the input goes
-completely silent for a few seconds, dictation says "The microphone stopped.
-Dictation is paused and will resume when it comes back." It stays on, writes
-nothing, and watches for the device; when it is back you hear "Microphone back.
-Listening." and carry on. The status cell says "paused, microphone lost"
-meanwhile.
+While a phrase is being heard (the Dictation part of the status bar says
+"hearing you"), press **Escape** to throw it away. Nothing is written, and you
+hear "Cancelled". Ctrl+F11 still stops dictation and keeps what you said. When
+nothing is being heard, Escape does what it always does.
 
-If the speech engine itself stops answering, it is restarted once, silently,
-and you notice nothing. If it fails again, dictation stops and names it:
-"Moonshine stopped working. Try Whisper in Dictation Settings."
+#### Dictating into Find, Replace and the AI question box
 
-### Dictating into Find, Replace and the AI question box
-
-**Ctrl+F11** in the Find box, either Replace box, or the question box of the AI
-pad dictates into that box: the same engine, the same words, and Escape still
+You can dictate into more than your document. Press **Ctrl+F11** in the Find
+box, either Replace box, or the question box of the AI pad, and you dictate
+into that box. It uses the same engine and the same words, and Escape still
 cancels a phrase. "New line" and "new paragraph" become a space in a one-line
-box, and the commands that move around a document do nothing there. Press
-Ctrl+F11 again to stop.
+box, and commands that move around a document do nothing there. Press Ctrl+F11
+again to stop.
 
-### Recent phrases
+#### Recent phrases
 
-Press **Shift+F11** (**Tools > Dictation > Recent Phrases...**) for the last
-twenty phrases you dictated this session, newest first. Arrow to one and press
-**Enter** (Insert Again) to write it at the cursor, as one undo step, or press
-**Copy** to put it on the clipboard. It is the rescue for a "scratch that" that
-went one too far. The list is kept in memory only and is gone when QUILL Lite
-closes.
+Press **Shift+F11** (**Tools > Dictation > Recent Phrases...**) to see the last
+twenty phrases you dictated, newest first. Arrow to one and press **Enter**
+(Insert Again) to write it at the cursor as one undo step, or press **Copy** to
+put it on the clipboard. This is your rescue if "scratch that" took away one
+phrase too many. The list lasts only until you close QUILL Lite.
 
-### If something goes wrong
+### When something goes wrong
 
-Dictation always says what happened and what to do. The usual reasons:
+#### If the microphone drops
+
+If the microphone is unplugged, a Bluetooth headset drops out, or the sound
+goes completely silent for a few seconds, you hear "The microphone stopped.
+Dictation is paused and will resume when it comes back." Dictation stays on,
+writes nothing, and waits for the microphone. When it comes back you hear
+"Microphone back. Listening." and you carry on. Meanwhile, the Dictation part
+of the status bar says "paused, microphone lost".
+
+If the speech engine itself stops answering, QUILL Lite quietly restarts it
+once, and you will not notice. If it fails again, dictation stops and tells
+you, for example "Moonshine stopped working. Try Whisper in Dictation
+Settings."
+
+#### Messages you might hear
+
+Dictation always tells you what happened and what to do. These are the usual
+ones:
 
 - **No microphone was found.** Connect one and press Ctrl+F11 again.
 - **The microphone you chose is not connected.** Plug it in, or choose another
-  in Dictation Settings.
-- **The microphone could not be opened.** In Windows Settings, go to Privacy and
-  security, Microphone, and make sure desktop apps are allowed to use it.
+  one in Dictation Settings.
+- **The microphone could not be opened.** In Windows Settings, go to Privacy
+  and security, then Microphone, and make sure desktop apps are allowed to use
+  it.
 - **A speech engine is not included in this copy.** Choose another engine in
-  Dictation Settings; reinstalling QUILL Lite puts the missing one back.
-- **With Windows speech recognition: no speech recogniser is installed.** Add a
-  speech language in Windows Settings, Time and language, Speech.
+  Dictation Settings. Reinstalling QUILL Lite puts the missing one back.
+- **With Windows speech recognition: no speech recogniser is installed.** Add
+  a speech language in Windows Settings, under Time and language, then Speech.
 - **"This document is read-only, so dictation cannot write here."** Dictate
   into a document you can type in.
-- **"Moonshine stopped working. Try Whisper in Dictation Settings."** The engine
-  failed twice in one session; the first time it was restarted for you without
-  a word. Choose the other engine, and if it keeps happening, write to support.
+- **"Moonshine stopped working. Try Whisper in Dictation Settings."** The
+  engine failed twice in one session. The first time, QUILL Lite restarted it
+  for you without a word. Choose the other engine, and if it keeps happening,
+  write to support.
 
-**If it keeps mishearing you:** try Whisper instead of Moonshine, or the other
-way round; use a headset microphone rather than a laptop's built-in one; turn
-the read-back to a sound only if you are using speakers; and add names you use
-often to your own vocabulary.
+#### If it keeps mishearing you
 
-Dictation is on in every profile except WordPad and Notepad, and can be
-switched off in **Customize Features** like any other area; switching it off
-removes the menu, the keys and the wake phrase.
+- Try Whisper instead of Moonshine, or the other way round.
+- Use a headset microphone instead of a laptop's built-in one.
+- If you are using speakers, set the read-back to a sound only.
+- Add names you use often to **My Words and Phrases**.
 
-## AI help
+#### Turning dictation off completely
 
-AI help is **off until you turn it on and accept the agreement** — both, not
-either. See *AI help* under Customize Features for the reason the switch and the
-agreement are two separate things, and for the three doors to the agreement.
+Dictation is on in every profile except WordPad and Notepad. You can switch it
+off in **Customize Features** like any other area. That removes the menu, the
+keys and the wake phrase.
 
-Once it is on, there is **one pad**, seventeen things it can do, and two keys
-into it -- and, under **Tools ▸ Dictionary**, twelve questions about the word
-you are on, which have their own section (*Dictionary*, above).
+### What you learned, and where to go next
 
-**AI Assistant** (**Ctrl+Alt+G**) opens the pad where you are. **Ask About
-This Document** (**Ctrl+Alt+Z**) opens the same pad with **Ask a question about
-the document** already chosen, because that one takes a question rather than a
-selection and is worth a chord instead of one more row to arrow past.
+You can now dictate with **Ctrl+F11**, fix what you said with "scratch that",
+spell a hard name, and start and stop by voice with the wake and stop phrases.
+You also know where to teach dictation your own words, and what to do when
+the microphone or the engine has trouble.
 
-### What the pad looks like, top to bottom
+There is no guided tutorial for dictation yet, so keep the **Dictation
+commands** document handy, or say "what can I say" while you dictate. To
+change the tones you hear, see *Sounds* in Chapter 8.
 
-1. **What will be sent** — a read-only box holding *exactly* the text that
-   will go, and nothing else from your document. Arrow through it before you
-   press anything.
-2. **Send this much** — a chooser, when there is more than one sensible
-   answer: what you selected, the paragraph you are in, or the whole section.
-   The box above rewrites itself as you change it.
-3. **What do you want done?** — a list of the seventeen. Arrow through it,
-   or press a letter to jump:
+Next, Chapter 10, AI help, covers the AI pad, including Tidy Dictated Text,
+which cleans up a long dictated passage.
+
+## Chapter 10: AI help
+
+AI help can summarize a passage, tidy your wording, answer a question about
+your document, translate, and more. It is off when you first install QUILL
+Lite. To use it you do two things: switch it on, and accept the privacy
+agreement. Doing only one of them is not enough. *Switching on AI help*, in
+Chapter 11, explains why there are two steps, and the three places you can
+find the agreement.
+
+If you would like the app to walk you through it, the tutorial *Asking a
+question about a document* covers turning it on, connecting, asking and
+checking what you have left.
+
+Once it is on, you have one window to work in, called the pad. It can do
+seventeen things, and two keys open it:
+
+- **AI Assistant** (**Ctrl+Alt+G**) opens the pad where you are.
+- **Ask About This Document** (**Ctrl+Alt+Z**) opens the same pad with **Ask a
+  question about the document** already chosen, so you can go straight to
+  typing your question.
+
+There are also twelve questions you can ask about the word you are on, under
+**Tools > Dictionary**. They are explained in *Dictionary*, in Chapter 7.
+
+### Using the AI pad
+
+#### What the pad looks like, top to bottom
+
+1. **What will be sent.** A read-only box holding exactly the text that will
+   go, and nothing else from your document. It is worth arrowing through it
+   before you press anything.
+2. **Send this much.** A chooser that appears when there is more than one
+   sensible choice: what you selected, the paragraph you are in, or the whole
+   section. The box above changes to match as you choose.
+3. **What do you want done?** A list of the seventeen things the pad can do.
+   Arrow through it, or press a letter to jump:
 
 | Choose | You get |
 |---|---|
@@ -3521,163 +3435,181 @@ selection and is worth a chord instead of one more row to arrow past.
 | **Ask a general question** | You type any question; only the question is sent, nothing from your document |
 | **Have a conversation** | A window where you talk back and forth; each reply remembers what was said before |
 
-4. **Your question** — which appears only for the three choices that take
-   typing. For **Have a conversation** it is your first message, and it is
-   optional: leave it empty and the conversation window opens ready for you.
-   For **Translate**, a **Translate into** list appears instead, with twenty
-   languages; Spanish is chosen until you pick another.
+4. **Your question.** This box appears only for the three choices where you
+   type something. For **Have a conversation** it is your first message, and
+   you can leave it empty: the conversation window then opens ready for you.
+   For **Translate**, you get a **Translate into** list instead, with twenty
+   languages. Spanish is chosen until you pick another.
+5. **Send.** Nothing leaves your computer until you press it.
 
-A general question is one question and one answer: the next question does not
-remember the last. When you want it to remember, choose **Have a conversation**
-instead — see *Having a conversation*, below. A general answer and a
-conversation reply may be longer than the others — about 1,000 tokens, roughly
-750 words — because a useful answer needs the room.
+A few things worth knowing about the choices:
 
-Each of the seventeen can be switched off on QUILL's service without a new version
-of QUILL Lite. If one is off, the pad says so when you press Send, and nothing
-is used.
-5. **Send** — and nothing at all has left this computer until you press it.
+- A general question is one question and one answer. The next question does
+  not remember the last one. If you want it to remember, choose **Have a
+  conversation** instead (see *Having a conversation*, below).
+- Answers to a general question and conversation replies can be longer than
+  the others: about 1,000 tokens, which is roughly 750 words.
+- Any of the seventeen can be switched off on QUILL's service from time to
+  time. If the one you chose is off, the pad tells you when you press Send,
+  and nothing is used.
 
-### What comes back, and what you can do with it
+#### What comes back, and what you can do with it
 
-The answer arrives in a read-only box of its own, with buttons under it:
-**Replace My Selection**, **Insert Below**, **Copy**, **Try Again** and **Follow
-Up**, which carries on from this answer in a conversation. The
-first two appear only when they make sense — there is nothing to replace if
-you selected nothing.
+The answer arrives in a read-only box of its own. Under it are these buttons:
 
-**Nothing is applied for you.** Proofread in particular reports what it found
-and changes not one character until you press Replace My Selection. An AI that
-edits your document behind you is one you have to proofread twice.
+- **Replace My Selection**
+- **Insert Below**
+- **Copy**
+- **Try Again**
+- **Follow Up**, which carries on from this answer as a conversation.
 
-**What is sent, and when.** Nothing goes anywhere until you run one of those two
-commands. When you do, the text you asked about — the selection, or the document
-— is sent to QUILL's own service and the answer comes back. Nothing is sent as
-you type, nothing is sent in the background, and closing the pad without asking
-sends nothing at all.
+The first two only appear when they make sense. For example, if you did not
+select anything, there is nothing to replace.
+
+Nothing is changed in your document for you. Proofread, for instance, tells
+you what it found and leaves every character alone until you press Replace My
+Selection. You always get to read it first.
+
+#### What is sent, and when
+
+Text is only sent when you press Send in the pad, or send a message in a
+conversation. Then the text you asked about, either the selection or the
+document, goes to QUILL's own service and the answer comes back. Nothing is
+sent while you type, nothing is sent in the background, and closing the pad
+without asking sends nothing at all.
 
 ### Having a conversation
 
-**Have a conversation** opens the **AI Conversation** window: talk back and
-forth, and each reply knows what was said before it. Choose it in the pad, or
-press **Follow Up** in any answer window to carry on from that answer — a
-follow-up to a question about your document keeps sending the same passages,
-so you can keep asking about them.
+**Have a conversation** opens the **AI Conversation** window. You talk back and
+forth, and each reply knows what was said before it.
 
-What the window holds, top to bottom:
+There are two ways in:
 
-1. **About this conversation** — what goes with each message and what it uses.
-2. **Conversation** — everything said so far, newest at the end, as "You:" and
-   "AI:" paragraphs. Read-only; Shift+Tab reaches it from the message box.
-3. **Your message** — where focus lives. Type and press **Enter** to send.
-4. **Send**, **New Conversation**, **Copy Last Reply**, **Insert Last Reply
-   Below**, and Close.
-5. **Status** — working, what was used, or what went wrong.
+- Choose **Have a conversation** in the pad.
+- Press **Follow Up** in any answer window to carry on from that answer. If
+  the answer was about your document, the follow-up keeps sending the same
+  passages, so you can keep asking about them.
 
-**The reply is read aloud** when it arrives, and added to the conversation. You
-stay in the message box, so you can answer straight away.
+#### What is in the conversation window
 
-**What a conversation costs on the free AI.** Each message is one request —
-nothing more — and conversations have a monthly share of their own (40 of the
-100). To stay inside the ordinary size limit, the conversation so far goes with
-each message only as far as it fits, newest first. So a long conversation
-gradually forgets its beginning. The window **says so the first time it
-happens** — "The beginning of this conversation is no longer sent, to stay
-within the free limit" — and **New Conversation** starts fresh.
+From top to bottom:
 
-**With your own OpenAI key there is no such limit.** The whole conversation goes
-with every message, billed to your OpenAI account, so a long conversation costs
-more per reply. It is only shortened if it grows past what the model can read at
-once, and the window says so if that happens.
+1. **About this conversation.** What goes with each message, and which service
+   answers it.
+2. **Conversation.** Everything said so far, newest at the end, as "You:" and
+   "AI:" paragraphs. It is read-only. Press Shift+Tab from the message box to
+   reach it.
+3. **Your message.** This is where you start. Type, then press **Enter** to
+   send.
+4. The buttons: **Send**, **New Conversation**, **Copy Last Reply**, **Insert
+   Last Reply Below**, and Close.
+5. **Status.** Whether it is working, what answered, or what went wrong.
 
-**Nothing goes into your document** unless you press **Insert Last Reply Below**,
+When a reply arrives, it is read aloud and added to the conversation. You stay
+in the message box, so you can answer straight away.
+
+Nothing goes into your document unless you press **Insert Last Reply Below**,
 and **Ctrl+Z** takes that back like any other edit.
 
-### Connecting this computer
+#### Long conversations on the free AI
 
-Before anything can be sent, this computer has to be connected once. There is
-**no account, no password and no email address**.
+Each message you send is one request, and conversations have their own monthly
+share: 40 of your 100 requests.
 
-1. **Tools ▸ AI ▸ Connect or Sign Out** (**Ctrl+Alt+Shift+F10**). Accepting
-   the agreement brings you here too, straight away, if this computer is not
-   connected yet.
-2. The window asks QUILL for an **eight-character code** as it opens, puts it in
-   a read-only box you can arrow through one character at a time, and **says it
-   out loud**. **Say the Code Again** repeats it; **Copy the Code** puts it on
-   the clipboard.
-3. Press **Open the Connect Page**. Your browser opens the page with the code
-   already filled in; press **Confirm** there. Or type the code into the web
-   address the window names on any other device — a phone, anything with a
-   browser.
-4. The window confirms **in place**, and says so, because the content changing
-   under a window you already have open is exactly what your screen reader will
-   not tell you. Focus does not jump to a window you did not open.
+To stay within the size limit, each message carries as much of the
+conversation so far as will fit, newest first. That means a very long
+conversation slowly forgets how it began. The first time that happens, the
+window tells you: "The beginning of this conversation is no longer sent, to
+stay within the free limit." Press **New Conversation** whenever you want a
+fresh start.
 
-The same window afterwards holds **Sign Out This Computer** and **Copy Support
-ID**, which is the identifier to quote if you ever write to support about AI.
+With your own AI key there is no such limit. The whole conversation goes
+with every message and is billed to your OpenAI account, so a long
+conversation costs more per reply. It is only shortened if it grows past what
+the model can read at once, and the window tells you if that happens.
 
-Each computer connects separately, and signing one out does not sign out the
+### QUILL's free AI
+
+Unless you choose otherwise, AI help runs on QUILL's own free service. There
+is no account, no password and no email address to give. You connect each
+computer once, and then you have a monthly allowance.
+
+#### Connecting this computer
+
+1. Open **Tools > AI > Connect or Sign Out** (**Ctrl+Alt+Shift+F10**). If you
+   have just accepted the agreement and this computer is not connected yet,
+   you are brought here automatically.
+2. The window gets an eight-character code from QUILL and reads it out to
+   you. The code is also in a read-only box, where you can arrow through it one
+   character at a time. **Say the Code Again** repeats it, and **Copy the
+   Code** puts it on the clipboard.
+3. Press **Open the Connect Page**. Your browser opens with the code already
+   filled in. Press **Confirm** on that page. If you prefer, you can type the
+   code into the web address the window names on any other device with a
+   browser, such as your phone.
+4. Come back to QUILL Lite. The window changes to say you are connected, and
+   you will hear that it worked. Your focus stays where it was.
+
+Afterwards, the same window has **Sign Out This Computer** and **Copy Support
+ID**. Your support ID is what to give if you ever write to support about AI.
+
+Each computer connects separately. Signing one out does not sign out the
 others.
 
-**What is recorded.** When you use AI, the text you asked about is sent to QUILL
-and on to the model that writes the answer. QUILL records **how many requests you
-make and how big they were**. QUILL does **not** record what you wrote or what
-came back.
+**What is recorded.** When you use AI, the text you asked about goes to QUILL
+and on to the model that writes the answer. QUILL records how many requests you
+make and how big they were. It does not record what you wrote or what came
+back.
 
-### How much you can send, and how often
+#### How much you can send at once
 
-The service is free, so it has limits. They are read from the service rather than
-built into the program, which means a limit can be raised without you installing
-anything.
+One request can be about **3,000 tokens**. That is roughly **2,250 words** or
+**12,000 characters**, counting your document text, your question and the
+instructions together.
 
-**How much in one question:** about **3,000 tokens**, which is roughly **2,250
-words** or **12,000 characters**, counting the document text, your question and
-the instructions together. If what you asked about is bigger than that, the pad
-says so *before* sending, in words rather than tokens — "that is about 4,000
-words, and the free limit is about 2,250" — so you can select less and try again.
-Nothing is sent in the meantime. The answer itself is capped at about 500 tokens,
-a few hundred words, or about 1,000 for a general question.
+If what you chose is bigger than that, the pad tells you before anything is
+sent, in words rather than tokens: "that is about 4,000 words, and the free
+limit is about 2,250". Select less and try again. Nothing is sent in the
+meantime.
 
-**A long document still works.** Ask About This Document does not send the whole
-file. It picks the **three passages most likely to answer your question**, each
-about 180 words and carrying the heading it sits under, and sends those. So a
-hundred-page document is a fair thing to ask about — what the limit bounds is how
-much goes in one request, not how big your document may be. The pad shows you
-which passages were chosen before anything is sent.
+The answer is capped at about 500 tokens, which is a few hundred words. For a
+general question it is about 1,000.
 
-**How often:** there is a monthly, a daily and an hourly allowance, and a
-smaller one for a computer's first 48 hours. *Limits, and when they start
-again*, just below, has every number and every rule.
+A long document still works. **Ask About This Document** does not send the
+whole file. It picks the **three passages most likely to answer your
+question**, each about 180 words and labeled with the heading it sits under,
+and sends those. So you can ask about a hundred-page document; the limit is on
+how much goes in one request, not on how long your document is. The pad shows
+you which passages it chose before anything is sent.
 
-**Usage** (**Ctrl+Alt+Shift+F9**) shows what you have used and what is left. The
-service is free and has a fair-use ceiling; this is where you find out where you
-stand, before you are told by being refused. **Help ▸ About QUILL Lite** shows the
-same allowance, and this computer's **support ID**, under **QUILL's free AI** —
-the numbers are asked for fresh each time, so give it a moment after About opens.
+#### Checking what you have left
 
-**Connect or Sign Out** (**Ctrl+Alt+Shift+F10**) connects *this computer* to the
-service, or disconnects it. Signing out does not withdraw your agreement, and
-withdrawing your agreement does sign you out — keeping the key to a service you
-have just declined would be the wrong way round.
+- **Usage** (**Ctrl+Alt+Shift+F9**) shows what you have used and what is left.
+  Look here before you run out, rather than finding out when a request is
+  turned down.
+- **Help > About QUILL Lite** shows the same allowance, and this computer's
+  **support ID**, under **QUILL's free AI**. The numbers are fetched fresh each
+  time, so give it a moment after About opens.
+- **Connect or Sign Out** (**Ctrl+Alt+Shift+F10**) connects this computer, or
+  disconnects it. Signing out does not take back your agreement. Taking back
+  your agreement does sign you out.
+- **Privacy Agreement** (**Ctrl+Alt+Shift+K**) always opens, whether AI help
+  is switched on or not, and whether you have accepted or not. You can always
+  read what you are agreeing to.
 
-**Privacy Agreement** (**Ctrl+Alt+Shift+K**) is always reachable, whether or not
-the area is switched on and whether or not you have accepted. It is the one
-command in this menu that never needs permission to open, because a door you can
-only reach by agreeing to something is not a door.
+All of these keys are listed again in *Every key, in one table*, under
+**Tools > AI**.
 
-Every key named here is listed again in *Every key, in one table*, under
-**Tools ▸ AI**.
+#### Limits, and when they start again
 
-### Limits, and when they start again
+The free AI is shared by everyone who uses it, so it has limits. Here is every
+one of them in one place.
 
-QUILL's free AI is free because it is shared, so it has limits. This is every
-one of them, in one place.
+##### Your allowance at a glance
 
-#### Your allowance at a glance
-
-These are the service's current settings. They are read from the service every
-time, never built into the program, so one can change without an update — and
-**Usage** always shows the numbers that actually apply to you right now.
+These are the service's current settings. They can change without an update
+to QUILL Lite, and **Usage** always shows the numbers that apply to you right
+now.
 
 | Limit | How many | Starts again |
 |---|---|---|
@@ -3687,466 +3619,1592 @@ time, never built into the program, so one can change without an update — and
 | Any one kind of request a month | 60 | The 1st of the month |
 | A new connection's first 48 hours | 15 | Rises to 100 on its own |
 
-"Any one kind" means Summarize, Rewrite, Proofread, Explain and Ask About This
-Document each have a monthly share of 60, so one of them cannot use up the whole
-month. The daily and hourly numbers are there to stop a runaway loop spending a
-month's worth in an afternoon, not to ration ordinary work.
+"Any one kind" means that Summarize, Rewrite, Proofread, Explain and Ask About
+This Document each have a monthly share of 60, so no single one can use up
+your whole month. The daily and hourly limits are there to catch something
+running away by mistake. Ordinary work stays well inside them.
 
-#### When the counts start again
+##### When the counts start again
 
-The service keeps time in **UTC**, not in your time zone:
+The service keeps time in **UTC**, not in your own time zone:
 
 - **The hour** starts again on the hour.
 - **The day** starts again at **midnight UTC**. That is **8 PM Eastern** or
-  **5 PM Pacific** in summer, an hour earlier in winter — so in North America
-  the new day's requests arrive in the evening, not at midnight.
+  **5 PM Pacific** in summer, and an hour earlier in winter. So in North
+  America, your new day's requests arrive in the evening.
 - **The month** starts again at **midnight UTC on the 1st**. Usage shows the
   exact date.
 
-#### What counts as a request
+##### What counts as a request
 
 One request is one press of **Send** that comes back with an answer. **Try
-Again** is another request. A request that does not produce an answer is **not
-counted**: if it was too long, if there was no connection, if the service had a
-problem, or if a limit had already been reached, nothing is used. Showing Usage
-or About never uses anything.
+Again** is another request.
 
-#### When you reach a limit
+A request that does not produce an answer is **not counted**. That includes
+one that was too long, one sent with no internet connection, one that hit a
+problem on the service, and one sent after a limit was already reached.
+Opening Usage or About never uses anything.
 
-The AI window says **which** limit you reached and **when it starts again**, and
-focus moves to that message so you can read it again with the arrow keys. It
-ends with an error code — `QUILL-AI-GATEWAY-QUOTA` for a limit — which is worth
-including if you write to support. Nothing is used, nothing in your document
-changes, and everything else in the editor carries on as normal. Wait until the
-time it names, or ask for more (below).
+##### When you reach a limit
 
-If the message says QUILL's free AI is **paused**, that is not about you: the
-service has a spending ceiling for everybody together, and when it is reached
-the free AI pauses for everyone until the 1st. This is rare, and it is announced
-rather than silent.
+The AI window tells you **which** limit you reached and **when it starts
+again**. Your focus moves to that message, so you can read it again with the
+arrow keys. It ends with an error code, `QUILL-AI-GATEWAY-QUOTA`, which is
+useful to include if you write to support.
 
-#### A new connection starts smaller
+Nothing is used, nothing in your document changes, and the rest of the editor
+carries on as normal. Wait until the time it names, or ask for more (see
+*Asking for more*, below).
 
-For its **first 48 hours**, a computer that has just connected gets **15
-requests** instead of the full monthly allowance, and then the full allowance
-applies **on its own** — there is nothing to do. It is how a free service with no
-accounts and no passwords stops somebody scripting connection after connection
-for a fresh allowance each time; somebody trying the feature out rarely reaches
-15 on the first day. While it applies, **Usage** and **About** say so and name
-the exact time it ends. Signing out and connecting again starts a new
-connection, so it is never a way to get more.
+If the message says QUILL's free AI is **paused**, it is not about you. The
+service has a spending limit for everyone together, and when that is reached,
+the free AI pauses for everyone until the 1st. This is rare, and you are told
+when it happens.
 
-#### Computers that share an internet connection
+##### A new connection starts smaller
 
-A household, a classroom or a library usually reaches the internet through one
-address, and a few limits apply to that address as a whole: how many computers
-can be connected from it at once, how many new connections it can make in an
-hour, and a monthly total shared by every computer on it. They are generous for
-a home and are there to stop one address minting connections by the hundred;
-the exact numbers are not published, for the same reason. Signing a computer out
-gives its place back.
+For its **first 48 hours**, a newly connected computer gets **15 requests**.
+After that, the full allowance applies **on its own**. You do not need to do
+anything. This keeps people from connecting over and over to get a fresh
+allowance each time, and most people trying it out do not reach 15 on the
+first day.
 
-If a class or a lab runs into these, write to support — this is exactly the
-situation they can help with.
+While it applies, **Usage** and **About** say so and tell you exactly when it
+ends. Signing out and connecting again starts a new connection, so it never
+gets you more.
 
-#### Asking for more
+##### Computers that share an internet connection
 
-Choose **Get Help from Support** in the Help menu and say what you need and why:
-a course, a deadline, a book. When this computer is connected, its **support ID**
-goes into the message automatically, and that is all support needs to find your
-account — there is no account name or password to give. Support can raise your
-monthly allowance, including lifting the new-connection allowance early. The
-change applies from your next request; you do not need to sign out, reconnect
-or update anything, and Usage shows the new number the next time you open it.
+A household, a classroom or a library usually shares one internet address.
+A few limits apply to that address as a whole: how many computers can be
+connected from it at once, how many new connections it can make in an hour,
+and a monthly total shared by every computer on it. They are generous for a
+home, and the exact numbers are not published. Signing a computer out frees up
+its place.
 
-Your support ID is also on **Help ▸ About** and in **Usage**, with a **Copy
+If a class or a computer lab runs into these limits, write to support. This
+is exactly the kind of thing they can help with.
+
+##### Asking for more
+
+1. Choose **Get Help from Support** in the Help menu (**Ctrl+Alt+F2**).
+2. Say what you need and why: a course, a deadline, a book.
+3. Send it. If this computer is connected, its **support ID** is added to the
+   message for you, and that is all support needs to find you. There is no
+   account name or password to give.
+
+Support can raise your monthly allowance, and can end the smaller
+new-connection allowance early. The change applies from your next request. You
+do not need to sign out, reconnect or update anything, and Usage shows the new
+number the next time you open it.
+
+Your support ID is also in **Help > About** and in **Usage**, with a **Copy
 Support ID** button, if you would rather write from somewhere else.
 
-### Using your own OpenAI or Google Gemini key: no limits
+### Using your own OpenAI or Google Gemini key
 
 If you have an OpenAI account or a Google Gemini key, you can use **your own
-key** instead of QUILL's free service, and **every limit goes away**: no monthly, daily or hourly
-allowance, no 2,250-word ceiling, no smaller first 48 hours.
+key** instead of QUILL's free service. Then **every limit goes away**: no
+monthly, daily or hourly allowance, no 2,250-word ceiling, and no smaller first
+48 hours. You pay the provider for what you use.
 
-**Tools ▸ AI ▸ Use My Own AI Key** (**Alt+F2**) opens one window:
+#### Setting it up
 
-1. **Provider** — **OpenAI**, or **Google Gemini**. Everything below follows
-   the choice: where your text goes, which key, which models and whose
-   prices. AI help uses the key saved for the provider chosen here and never
-   the other one; the choice is yours, saved with your settings
-   (`ai_own_key_provider`), and QUILL never guesses it from a key or a model
-   name.
-1. **About this** — a read-only box saying exactly where your text goes.
+Open **Tools > AI > Use My Own AI Key** (**Alt+F2**). The window has these
+parts, from top to bottom:
+
+1. **Provider.** Choose **OpenAI** or **Google Gemini**. Everything else in
+   the window follows this choice: where your text goes, which key, which
+   models and whose prices. AI help uses the key saved for the provider you
+   choose here, and never the other one. QUILL never guesses the provider from
+   a key or a model name.
+2. **About this.** A read-only box that says exactly where your text goes.
    Arrow through it once.
-2. **API key** — paste the key for the provider you chose. An OpenAI key
-   comes from platform.openai.com, under API keys, and starts with `sk-`; a
-   Gemini key comes from Google AI Studio at aistudio.google.com/apikey.
-3. **Model** — a list of every model your key can use for text, filled
-   from your account once the key is checked: for OpenAI, **Luna 6 first,
-   then the other GPT-6 models**; for Gemini, **2.5 Flash first, then 2.5
-   Pro**; then the rest by name. Each row says roughly what it
-   costs, for example "gpt-6-luna, about $0.57 per 100 requests (estimate)", so
-   arrowing down the list is enough to compare them. Models that cannot answer
-   text — speech, transcription, images, embeddings — are left out.
-4. **Cost estimate** — the chosen model's estimate per request and per 100
-   requests, at the chosen provider's prices. **These are estimates to help
-   you compare, not the provider's prices.** A typical request here is about a
-   page in and a paragraph back; the real prices are at openai.com/api/pricing
-   and ai.google.dev/pricing.
-5. **Status** — whether a key is saved for the chosen provider, what the last
-   test said, and whether the other provider's key is saved too.
-6. **Test the Key** — checks the key with the provider you chose, fills the
-   model list,
-   then sends one tiny request to the chosen model and says whether it
-   answered. The request costs a fraction of a cent.
-7. **Remove the Saved Key** — forgets the chosen provider's key **at once**
-   and puts AI help straight back on QUILL's free service.
+3. **API key.** Paste the key for the provider you chose. An OpenAI key comes
+   from platform.openai.com, under API keys, and starts with `sk-`. A Gemini
+   key comes from Google AI Studio at aistudio.google.com/apikey.
+4. **Model.** A list of every model your key can use for text, filled in from
+   your account once the key is checked. For OpenAI, **Luna 6 comes first,
+   then the other GPT-6 models**. For Gemini, **2.5 Flash comes first, then 2.5
+   Pro**. The rest follow by name. Each row says roughly what it costs, for
+   example "gpt-6-luna, about $0.57 per 100 requests (estimate)", so you can
+   compare them just by arrowing down. Models that cannot answer in text, such
+   as speech, transcription, image and embedding models, are left out.
+5. **Cost estimate.** What the chosen model costs per request and per 100
+   requests, at the chosen provider's prices. **These are estimates to help you
+   compare, not the provider's actual prices.** A typical request is about a
+   page of text in and a paragraph back. The real prices are at
+   openai.com/api/pricing and ai.google.dev/pricing.
+6. **Status.** Whether a key is saved for the chosen provider, what the last
+   test said, and whether a key for the other provider is saved too.
+7. **Test the Key.** Checks the key with your provider, fills in the model
+   list, then sends one tiny request to the chosen model and tells you whether
+   it answered. That request costs a fraction of a cent.
+8. **Remove the Saved Key.** Forgets the chosen provider's key **straight
+   away**, and AI help goes back to QUILL's free service.
 
-Press **OK** and the key is saved. QUILL Lite says "AI help uses your own OpenAI
-key, with no limits" -- or "your own Google Gemini key".
+Press **OK** to save. QUILL Lite says "AI help uses your own OpenAI key, with no
+limits", or "your own Google Gemini key".
 
-**Change the model at any time.** With a key saved, opening this window
-lists your models straight away: press **Alt+F2**, pick another, press OK.
+**To change the model later**, press **Alt+F2** again. With a key saved, your
+models are listed straight away. Pick another and press OK.
 
-**There is no separate switch.** While a key is saved for the chosen
-provider, AI help uses it; remove the key and AI help is back on the free
-service, with its free allowance, the moment you do. Nothing else to find and
-turn off.
+**There is no separate on or off switch.** While a key is saved for the chosen
+provider, AI help uses it. Remove the key and AI help goes back to the free
+service, with its free allowance, at that moment.
 
-**Both keys can be saved.** The Provider list decides which one runs. Choose
-OpenAI and a saved Gemini key is simply not used -- the status line says it is
-there, and choosing Google Gemini is how it is used. Nothing is ever inferred
-from which key exists or from a model's name, so a request never quietly goes
-to a company you did not choose.
+**You can save both keys.** The Provider list decides which one is used. If
+you choose OpenAI, a saved Gemini key just sits there unused. The status line
+tells you it is there, and choosing Google Gemini is how you use it. Your text
+only ever goes to the company you chose.
 
-**With a Gemini key, Ask About an Image works too.** Gemini's models read
-pictures, which the free service and an OpenAI key here do not, so Ctrl+F5
-answers on a Gemini key as it does on a ChatGPT subscription.
+**With a Gemini key, Ask About an Image works too.** Gemini's models can read
+pictures. The free service and an OpenAI key cannot, so with a Gemini key,
+**Ctrl+F5** works just as it does with a ChatGPT subscription.
 
-**What changes with your own key:**
+#### What changes with your own key
 
-- Your text goes **straight from this computer to the provider you chose**,
-  OpenAI or Google, on your account.
-  Nothing passes through QUILL's servers, so QUILL records nothing at all —
-  not even the count it keeps for the free service.
-- **OpenAI or Google bills you** for each request, under that company's own
-  terms and privacy policy.
-- **Usage** (**Ctrl+Alt+Shift+F9**) opens a different window: which model is
-  answering, that no allowance applies, and an **Open My Usage** button that
-  takes you to your OpenAI or Google AI Studio account's usage page, which is where your
-  requests and charges are. There is no Sign Out and no support ID in it,
-  because neither applies. **Help ▸ About** likewise shows the model and that
-  page's address instead of the free allowance.
-- You do not need to connect this computer, and the free service's agreement
-  is not asked for: it is about QUILL's servers, which this route never touches.
-- The pad, the six things it can do, and what comes back are the same, down
-  to the instructions sent with your text.
-- **There are no limits.** Nothing is refused for being too long, the answer is
-  not capped, and **Ask a question about the document** sends the whole
-  document rather than the three best-matching passages, so nothing is missed.
-- **Warnings instead of limits.** The *About to send* line says how many words
-  are going and roughly what they cost on your OpenAI account with the model
-  you chose — an estimate, not OpenAI's bill — and that the answer is extra.
-  It adds that the text is more than the free service would accept when that
-  is true, and, for something very large, that it may be more than the model
-  can read at once; OpenAI then refuses it and charges nothing.
+- Your text goes **straight from your computer to the provider you chose**,
+  OpenAI or Google, on your account. Nothing passes through QUILL's servers,
+  so QUILL records nothing at all, not even the request count it keeps for the
+  free service.
+- **OpenAI or Google bills you** for each request, under their own terms and
+  privacy policy.
+- **Usage** (**Ctrl+Alt+Shift+F9**) opens a different window. It shows which
+  model is answering, that no allowance applies, and an **Open My Usage**
+  button that takes you to the usage page of your OpenAI or Google AI Studio
+  account, where your requests and charges are listed. There is no Sign Out
+  and no support ID, because you do not need them. **Help > About** likewise
+  shows the model and that page's address instead of the free allowance.
+- You do not need to connect this computer, and you are not asked to accept
+  the free service's agreement. That agreement is about QUILL's servers, and
+  your text never goes there.
+- The pad, its seventeen choices, and what comes back are all the same, down
+  to the instructions sent along with your text.
+- **There are no limits.** Nothing is turned down for being too long, the
+  answer is not capped, and **Ask a question about the document** sends the
+  whole document instead of the three best passages, so nothing is missed.
+- **You get warnings instead of limits.** The *About to send* line tells you
+  how many words are going and roughly what they will cost with the model you
+  chose. That is an estimate, not your actual bill, and the answer costs
+  extra. It also tells you when the text is more than the free service would
+  accept, and, for something very large, that it may be more than the model
+  can read at once. In that case, OpenAI turns the request down and charges
+  nothing.
 
-**Where the key is kept.** In Windows' own credential store, not in a settings
-file, and it is never shown again once saved — the box stays empty and says
-a key is saved. A portable copy keeps it in an encrypted file instead. QUILL and
-QUILL Lite share it: a key saved in either works in both, and removing it in
-either removes it from both.
+#### Where the key is kept
 
-**If a request fails**, you hear why, followed by error code
-`QUILL-AI-OWN-KEY-FAILED`, and the sentence names the provider. The usual
-causes are a mistyped key, a model your account cannot use, an account with
-no credit, or the wrong provider chosen for the key you saved. **Test the Key** tells
-you which.
+Your key is kept in Windows' own credential store, not in a settings file.
+Once saved, it is never shown again: the box stays empty and says a key is
+saved. A portable copy of QUILL Lite keeps it in an encrypted file instead.
 
-### Using your ChatGPT subscription: no key, no bill, and two things the free service cannot do
+QUILL and QUILL Lite share the key. A key saved in either one works in both,
+and removing it in either removes it from both.
 
-If you already pay for ChatGPT -- Plus, Pro, Team or Enterprise -- QUILL Lite can
-use that plan for every AI command, and you never touch a key. You sign in once,
-in your browser, the way you sign in to ChatGPT itself. From then on the pad,
-the seventeen writing tools, Ask About This Document and conversations all run
-on your plan: **no monthly allowance, no size limit, no per-request bill**, and
-nothing passing through QUILL's servers. Two things arrive with it that neither
-the free service nor an API key can offer: **descriptions of pictures**, and
-**web search** when you want an answer about something current.
+#### If a request fails
 
-**Tools ▸ AI ▸ Use My ChatGPT Subscription** (**Alt+F5**) opens one window:
+You hear what went wrong, followed by the error code
+`QUILL-AI-OWN-KEY-FAILED`, and the message names the provider. The usual
+causes are a mistyped key, a model your account cannot use, an account with no
+credit, or the wrong provider chosen for the key you saved. **Test the Key**
+tells you which one it is.
 
-1. **About this** -- a read-only box saying where your text goes and what it
-   costs. Arrow through it once.
-2. **Status** -- "QUILL Lite is not signed in with ChatGPT" the first time.
-3. **Continue with ChatGPT** -- press it. Your browser opens on OpenAI's own
-   sign-in page. Sign in as you would to ChatGPT, and on the page that asks
-   whether **QUILL Lite** may use your plan, allow it. Come back to QUILL Lite;
-   the window says "Signed in with ChatGPT as" your email address, and you are
-   done. If the browser did not open, **Copy the Sign-In Address** puts the
-   address on the clipboard for any browser on this computer, and **Stop
-   Waiting** gives up without changing anything.
+### Using your ChatGPT subscription
 
-Once signed in, the same window has:
+If you already pay for ChatGPT (Plus, Pro, Team or Enterprise), QUILL Lite can
+use that plan for every AI command, and you never handle a key. You sign in
+once, in your browser, just as you sign in to ChatGPT itself.
 
-1. **Account** -- who you are signed in as, and what that means.
-2. **Model** -- a list of every model your plan offers, read from your account
-   the moment you sign in. The first one is chosen for you, so your next AI
-   request works without another visit; arrow to another and it is saved as
-   you land on it. **Refresh Models** reads the list again.
-3. **Allow web search** -- off until you check it. When it is on, the model may
-   look things up on the web through OpenAI to answer a question; when it is
-   off, only what you send is used. Saved as soon as you change it.
-4. **Open ChatGPT Usage** -- opens ChatGPT's own usage page in your browser,
-   which is the one place your plan's limits and what is left are shown.
-5. **Sign Out** -- press twice. It asks OpenAI to revoke QUILL Lite's sign-in
-   and forgets it here; AI help goes back to QUILL's free service, or to a
-   saved OpenAI key if you have one.
-6. **Forget on This Computer** -- forgets the sign-in here without telling
-   OpenAI, for a computer that is offline or a sign-in you already removed in
-   ChatGPT's settings. QUILL Lite stays listed under Apps in ChatGPT's settings
-   until you remove it there.
+From then on, the pad, its seventeen choices, Ask About This Document and
+conversations all run on your plan. There is **no monthly allowance, no size
+limit and no per-request bill**, and nothing passes through QUILL's servers.
 
-**Sign Out and Forget are only there while you are signed in.** Before that
-the window offers Continue with ChatGPT and nothing else, so there is never a
-button that could only tell you it has nothing to do.
+You also get two things the free service cannot do: **descriptions of
+pictures**, and **web search** when you want an answer about something
+current. Both are described later in this chapter.
 
-**There is no separate switch.** While QUILL Lite is signed in with ChatGPT,
-every AI command uses the plan; Sign Out is how you stop. A ChatGPT sign-in is
-used ahead of a saved OpenAI key, because the plan is already paid for where a
-key is billed per request. Remove one, and the other takes over at once.
+#### Signing in
 
-**What changes on your plan:**
+1. Open **Tools > AI > Use My ChatGPT Subscription** (**Alt+F5**).
+2. Arrow through **About this** once. It says where your text goes and what it
+   costs.
+3. **Status** says "QUILL Lite is not signed in with ChatGPT" the first time.
+4. Press **Continue with ChatGPT**. Your browser opens on OpenAI's own sign-in
+   page. Sign in as you would to ChatGPT. When the page asks whether **QUILL
+   Lite** may use your plan, allow it.
+5. Come back to QUILL Lite. The window says "Signed in with ChatGPT as" and
+   your email address. You are done.
 
-- Your text goes **straight from this computer to OpenAI**, on your account,
+If the browser did not open, press **Copy the Sign-In Address** and paste it
+into any browser on this computer. **Stop Waiting** gives up without changing
+anything.
+
+#### Once you are signed in
+
+The same window then has:
+
+1. **Account.** Who you are signed in as, and what that means.
+2. **Model.** Every model your plan offers, read from your account when you
+   sign in. The first one is chosen for you, so your next AI request works
+   without coming back here. Arrow to another and it is saved as you land on
+   it. **Refresh Models** reads the list again.
+3. **Allow web search.** Off until you check it. When it is on, the model may
+   look things up on the web through OpenAI to answer a question. When it is
+   off, only what you send is used. It is saved as soon as you change it.
+4. **Open ChatGPT Usage.** Opens ChatGPT's own usage page in your browser.
+   That is the place to see your plan's limits and what you have left.
+5. **Sign Out.** Press it twice. It asks OpenAI to cancel QUILL Lite's sign-in
+   and forgets it on this computer. AI help goes back to QUILL's free service,
+   or to your saved OpenAI key if you have one.
+6. **Forget on This Computer.** Forgets the sign-in here without telling
+   OpenAI. Use it on a computer that is offline, or when you have already
+   removed QUILL Lite in ChatGPT's settings. Otherwise QUILL Lite stays listed
+   under Apps in ChatGPT's settings until you remove it there.
+
+Sign Out and Forget on This Computer only appear while you are signed in.
+Before that, the window just offers Continue with ChatGPT.
+
+**There is no separate on or off switch.** While you are signed in with
+ChatGPT, every AI command uses your plan. Sign Out is how you stop. If you
+have both a ChatGPT sign-in and a saved OpenAI key, the ChatGPT plan is used
+first, since you have already paid for it. Remove either one and the other
+takes over straight away.
+
+#### What changes on your plan
+
+- Your text goes **straight from your computer to OpenAI**, on your account,
   under OpenAI's terms and privacy policy. Nothing passes through QUILL's
-  servers and QUILL keeps no copy.
-- **What you use counts toward your plan's own usage**, which OpenAI enforces.
-  When a limit is reached QUILL Lite says so in plain words, with error code
-  `QUILL-AI-CHATGPT-LIMIT`, and Open ChatGPT Usage shows when it resets.
-- **Usage** (**Ctrl+Alt+Shift+F9**) opens this same window rather than the
-  free allowance: there is no QUILL count to show, and the plan's page is one
-  button away. **Help ▸ About** names the account and the model in place of the
+  servers, and QUILL keeps no copy.
+- **What you use counts toward your plan's own usage limits**, which OpenAI
+  sets. When you reach one, QUILL Lite tells you in plain words, with the
+  error code `QUILL-AI-CHATGPT-LIMIT`. Open ChatGPT Usage shows when it
+  resets.
+- **Usage** (**Ctrl+Alt+Shift+F9**) opens this same window instead of the free
+  allowance, since there is no QUILL count to show and your plan's page is one
+  button away. **Help > About** shows the account and the model instead of the
   free allowance.
-- You do not need to connect this computer to the free service, and the free
-  service's agreement is not asked for: it is about QUILL's servers, which this
-  route never touches. This window says where the text does go.
-- The pad, the seventeen things it can do, and what comes back are **exactly
-  the same**, down to the instructions sent with your text. There is no size
-  limit, so the *About to send* line says how many words are going and that
-  they count toward your plan, rather than refusing.
+- You do not need to connect this computer to the free service, and you are
+  not asked to accept the free service's agreement, because your text never
+  goes to QUILL's servers. This window tells you where it does go.
+- The pad, its seventeen choices, and what comes back are **exactly the
+  same**, down to the instructions sent with your text. There is no size
+  limit, so instead of turning anything down, the *About to send* line tells
+  you how many words are going and that they count toward your plan.
 - **Conversations send the whole conversation** with each message, so a long
-  one keeps its beginning for as long as the model can read it.
+  one remembers its beginning for as long as the model can read it.
 
-**Where the sign-in is kept.** Only a refresh token, in Windows' credential
-store (an encrypted file in a portable copy), under QUILL Lite's own name. Your
-ChatGPT password is never seen by QUILL Lite, and the access token that does
-the work lives in memory only. **Each QUILL app signs in on its own**: QUILL
-Lite, QUILL and Quill Radio each appear as themselves under Apps in ChatGPT's
-settings, and signing one out leaves the others as they were.
+#### Where the sign-in is kept
 
-**If a request fails**, you hear why, followed by an error code:
-`QUILL-AI-CHATGPT-SIGNED-OUT` means OpenAI no longer accepts this computer's
-sign-in (choose Continue with ChatGPT again); `QUILL-AI-CHATGPT-LIMIT` means the
-plan's usage is used up for now; `QUILL-AI-CHATGPT-UNAVAILABLE` means OpenAI is
-not letting other apps use plans just now; anything else is
-`QUILL-AI-CHATGPT-FAILED`, and the sentence before the code says what to check.
+QUILL Lite keeps only a sign-in token, in Windows' credential store (or an
+encrypted file in a portable copy), under QUILL Lite's own name. QUILL Lite
+never sees your ChatGPT password.
 
-### Ask About an Image: a picture, described
+**Each QUILL app signs in on its own.** QUILL Lite, QUILL and Quill Radio each
+appear separately under Apps in ChatGPT's settings, and signing one out leaves
+the others as they were.
 
-**Tools ▸ AI ▸ Ask About an Image** (**Ctrl+F5**) is the one AI command that
-takes a file rather than a passage, and the first time QUILL Lite has been able
-to tell you what is *in* a picture. A screenshot somebody sent you, a photo of
-a letter, a chart in a report, the menu from a restaurant's website -- choose
-the file, ask a question or ask nothing, and hear what the model sees. It needs
-your ChatGPT subscription; with no sign-in it says so and opens the account
-window instead of failing later.
+#### If a request fails
 
-1. Press **Ctrl+F5**. The Ask About an Image window opens with focus in
+You hear what went wrong, followed by an error code:
+
+- `QUILL-AI-CHATGPT-SIGNED-OUT`: OpenAI no longer accepts this computer's
+  sign-in. Choose Continue with ChatGPT again.
+- `QUILL-AI-CHATGPT-LIMIT`: your plan's usage is used up for now.
+- `QUILL-AI-CHATGPT-UNAVAILABLE`: OpenAI is not letting other apps use plans
+  just now.
+- `QUILL-AI-CHATGPT-FAILED`: anything else. The sentence before the code says
+  what to check.
+
+### Extras on a subscription or your own key
+
+#### Ask About an Image
+
+**Tools > AI > Ask About an Image** (**Ctrl+F5**) tells you what is in a
+picture. It could be a screenshot someone sent you, a photo of a letter, a
+chart in a report, or a restaurant's menu from its website. Choose the file,
+ask a question or ask nothing, and hear what the model sees.
+
+It needs your ChatGPT subscription, or a Google Gemini key as described above.
+Without one, it tells you so and opens the account window.
+
+1. Press **Ctrl+F5**. The Ask About an Image window opens, with focus in
    **Image file**.
 2. Type or paste the file's full path, or press **Browse** (Alt+B) to pick it.
-   JPEG, PNG, WebP and GIF are accepted.
-3. **Your question** (Alt+Q) is optional. Leave it empty for a plain
+   JPEG, PNG, WebP and GIF pictures all work.
+3. **Your question** (Alt+Q) is optional. Leave it empty to get a plain
    description written for a blind reader: what the picture is, what matters
-   most in it, and every word of any text in it, transcribed exactly. Or ask
-   something -- "what does the sign say", "is anyone smiling", "what is the
-   total on this receipt" -- and the answer comes first, then only the
+   most in it, and every word of any text in it, written out exactly. Or ask
+   something, such as "what does the sign say", "is anyone smiling" or "what
+   is the total on this receipt". You get the answer first, then just the
    description that helps.
-4. Press **Enter** for **Ask**. You hear "Working."; the picture is checked
-   (a file that is not really an image, or one over 20 MB, is refused here
-   with a sentence rather than sent), then it goes to OpenAI on your plan.
-5. The answer opens in the **Image Description** window, read-only, with
-   focus on the text so your screen reader reads it. **Insert Below** puts it
-   into your document under the paragraph you are in -- the way to caption a
-   picture in a document you are writing -- **Copy** puts it on the clipboard,
+4. Press **Enter** for **Ask**. You hear "Working." If the file is not really
+   a picture, or is over 20 MB, you are told so here and nothing is sent.
+   Otherwise the picture goes to the model.
+5. The answer opens in the **Image Description** window, with focus on the
+   text so your screen reader reads it. **Insert Below** puts it into your
+   document under the paragraph you are in, which is handy for captioning a
+   picture in something you are writing. **Copy** puts it on the clipboard,
    and **Ctrl+Z** takes an insert back.
 
 Only the picture and your question are sent. Nothing from your document goes
 with them.
 
-### Tidy Dictated Text: dictation, corrected by AI
+#### Tidy Dictated Text
 
-Speech recognition writes what it heard, and what it heard is not always the
-word you meant: "their" for "there", a name it has never met, two words run
-together, a comma where a full stop belonged, and every "um" you did not know
-you said. **Tools ▸ AI ▸ Tidy Dictated Text** (**Ctrl+F3**) fixes exactly that
-and nothing else. It works on a ChatGPT subscription or your own OpenAI key
--- the free service has no such tool, and a page of dictation should not spend
-an allowance -- and with neither it says so and opens the account window.
+Speech recognition writes what it heard, and that is not always what you
+meant: "their" for "there", a name it has never met, two words run together, a
+comma where a period belonged, and every "um" you did not know you said.
+**Tools > AI > Tidy Dictated Text** (**Ctrl+F3**) fixes exactly those things
+and nothing else.
+
+It works with a ChatGPT subscription or your own AI key, from OpenAI or
+Google Gemini. It is not
+available on the free service. Without either, it tells you so and opens the
+account window.
 
 1. Dictate as usual (**Ctrl+F11**, talk, pause). When the paragraph is done,
-   leave the cursor in it, or select exactly the stretch you want tidied.
-2. Press **Ctrl+F3**. You hear "Working." The selection, or else the whole
-   paragraph the cursor is in, goes to the model with an instruction to
-   correct misheard words, punctuation and capitalisation, remove fillers and
-   false starts, and keep your meaning, wording and order otherwise.
+   leave the cursor in it, or select exactly the part you want tidied.
+2. Press **Ctrl+F3**. You hear "Working." The selection, or the whole
+   paragraph the cursor is in, goes to the model. It is asked to fix misheard
+   words, punctuation and capital letters, and to remove fillers and false
+   starts, while keeping your meaning, your wording and your order.
 3. The **Tidied Dictation** window opens with focus on the corrected text, so
    you hear it first. **Replace My Selection** puts it where the dictated text
-   was; **Copy** puts it on the clipboard; **Escape** keeps what you had. If you
-   typed in that paragraph while the answer was on its way, Replace is not
-   offered and the window says so.
-4. **Ctrl+Z** takes a replacement back, as one step.
+   was. **Copy** puts it on the clipboard. **Escape** keeps what you had. If
+   you typed in that paragraph while waiting for the answer, Replace is not
+   offered, and the window tells you why.
+4. **Ctrl+Z** takes a replacement back in one step.
 
-Nothing is changed until you press Replace, and the model is told to add
-nothing: a tidied paragraph says what you said, spelled the way you meant it.
+Nothing changes until you press Replace, and the model is told not to add
+anything. A tidied paragraph says what you said, spelled the way you meant it.
 
-### Web search: an answer about now
+#### Web search
 
-Everything the AI pad does works from what you send it. Sometimes what you need
-is an answer about the world as it is today -- whether an event has been
-announced, what a word has come to mean this year, what a page says right now.
-With **Allow web search** checked in Use My ChatGPT Subscription, the model may
-search the web through OpenAI when a question calls for it, and say what it
-found. It applies to **Ask a general question**, to **Ask a question about the
-document** and to conversations, and it is off until you turn it on: a search
-is a second thing sent somewhere, and it is yours to allow.
+Most of what the AI does works only from what you send it. Sometimes, though,
+you need an answer about the world today: whether an event has been announced,
+what a word has come to mean this year, what a web page says right now.
 
-To turn it on: press **Alt+F5**, press **Alt+W** (or Tab to **Allow web
-search**), press **Space**, and hear "Web search is allowed." It is saved at
-once. Press Space on the same checkbox to turn it off again.
+With **Allow web search** checked in Use My ChatGPT Subscription, the model
+may search the web through OpenAI when a question needs it, and tell you what
+it found. This works for **Ask a general question**, **Ask a question about the
+document** and conversations. It is off until you turn it on, because a search
+sends your question somewhere else too, and that is your choice to make.
 
-## Where your files are kept
+To turn it on:
 
-Your settings, recent files, copy tray and any recovered work are kept in a
-QUILL Lite folder inside your own Windows user folder. **Help ▸ About QUILL Lite**
-shows you the exact location.
+1. Press **Alt+F5**.
+2. Press **Alt+W**, or Tab to **Allow web search**.
+3. Press **Space**. You hear "Web search is allowed." It is saved straight
+   away.
 
-It is deliberately **not** inside QUILL for All's folder. QUILL Lite is offered
-as an alternative to QUILL, not as part of it, and installing or removing one
-should never affect the other.
+Press Space on the same checkbox to turn it off again.
 
-Uninstalling QUILL Lite does not delete that folder. Recovered work is the one
-thing you might not have finished with, and an uninstaller is the worst possible
-moment to discover that.
+### What you learned, and where to go next
 
-### The portable copy keeps everything on the stick
+You now know how to open the AI pad, pick one of its seventeen choices, and
+decide whether to use what comes back. You know how to connect to QUILL's
+free service and keep an eye on your allowance, and how to switch to your own
+key or your ChatGPT subscription when you want no limits, picture
+descriptions or web search.
 
-If you are running the **portable** QUILL Lite -- the `.zip` you unpack rather
-than the installer -- then none of the above applies. Everything goes into the
-`data\QuillLite` folder inside the bundle, right next to `QuillLite.exe`, and
-nothing at all is written to the computer you are plugged into. That is what
-portable means, and QUILL Lite does it from the very first launch: there is no
-setting to find first.
+If you would like to practise with the app guiding you, open **Help >
+Tutorials...** (**Ctrl+Alt+F1**) and choose *Asking a question about a
+document*. For the twelve word questions, see *Dictionary* in Chapter 7, and
+to get the most out of Tidy Dictated Text, read Chapter 9, Writing by voice.
 
-Until version 1.0 it did not. A portable QUILL Lite quietly used
-`%LOCALAPPDATA%\QuillLite` on the host machine instead, and said nothing about
-it -- so settings did not travel with the stick, and, worse, recovered copies of
-documents you had not saved were left behind on someone else's computer. If you
-have been carrying a portable QUILL Lite, that folder is where anything you seem
-to have lost will be, and it is worth deleting once you have what you want out
-of it.
+Next, Chapter 11, Making QUILL Lite yours, shows you how to shape the app
+around you, including where AI help is switched on and off.
 
-Delete the `data` folder from the bundle and QUILL Lite goes back to using this
-computer's own profile -- that folder is what marks the copy as portable.
+## Chapter 11: Making QUILL Lite yours
 
----
+QUILL Lite comes ready to use, and you never have to change a thing. But it is
+yours, and this chapter shows you how to shape it. You will find every
+everyday setting in one window, make QUILL Lite as small as Notepad or as full
+as you like with a profile, and change the key for any command. Nothing here
+is one-way, and you can always put things back.
 
-## Keeping QUILL Lite up to date
+### Settings
 
-**Help > Check for Updates...** (**Ctrl+Alt+U**) asks whether a newer QUILL Lite
-has been published. It is the same key, and the same window, in every app in the
-family.
+All of QUILL Lite's everyday settings are in one window.
 
-If there is nothing newer you are told so in a dialog, which is deliberate: a
-key that answers with silence is indistinguishable from a key that is not bound.
+#### Opening Preferences
 
-If there **is** something newer, the window opens on **what changed** -- the
-release notes for that version, in a read-only box you can arrow through like a
-document. Tab from there reaches two buttons:
+Press **Ctrl+,** to open **Tools > Preferences**. It is one long column of
+controls, with **OK** and **Cancel** at the bottom.
+
+- **Tab** moves down the column, and **Shift+Tab** moves back up.
+- **F1** on any control tells you what that one control does.
+- **Nothing you change is saved until you press OK.** So Escape is always safe.
+
+#### Finding a setting
+
+A **Find a setting** box at the top searches the
+names of the settings, what your screen reader calls them, and their help text.
+
+1. Type a word, such as "spelling".
+2. Press **Down** to reach Matching settings.
+3. Arrow to the one you want and press **Enter**. Focus moves to that control.
+
+**Ctrl+F** takes you back to the search box. In the search, Enter moves you to a
+setting; it does not save. Escape clears what you typed first, and closes the
+window if the box is already empty. Searching never changes a setting for you,
+and OK and Cancel work just as before.
+
+#### If your settings could not be saved
+
+Sometimes Windows will not let QUILL Lite save your settings, for example if the
+disk is full. If that happens:
+
+- Your new settings still work until you close QUILL Lite.
+- QUILL Lite tells you, and the warning stays in the status bar's Message cell.
+  Press **F6** to read it again.
+- Free up some space, or fix access to the settings folder, then open
+  Preferences again. QUILL Lite tries again by itself. You do not need to change
+  anything or press OK.
+
+When it works, the warning goes away. QUILL Lite also tries to save whenever you
+change a setting and when you exit normally. This warning is only about your
+settings. It does not mean your document was not saved.
+
+#### Every setting, in order
+
+Here is each control in the order you meet it.
+
+##### Profile
+
+**Profile** is the same four-choice box that Customize Features has, with the
+same description underneath. See [Making QUILL Lite smaller (or
+larger)](#making-quill-lite-smaller-or-larger), later in this chapter.
+
+##### New documents are
+
+**New documents are:** **Plain text** or **Rich text**. This only decides what
+**Ctrl+N** makes. **New Plain Text Document** (**Ctrl+Alt+N**) and **New Rich
+Text Document** (**Alt+Shift+T**) always make what their names say.
+
+If you choose the **Notepad** or **WordPad** profile, this control changes to
+match, right in front of you. So you can see what the profile chose and change
+it before you press OK.
+
+##### Theme
+
+**Theme:** **Dark** or **Follow the system**. **Follow the system is the
+default.** It uses the colours you have already chosen in Windows, so if you
+have a high-contrast or dark setting there, QUILL Lite follows it. Choose
+**Dark** if you want QUILL Lite dark whatever Windows is set to.
+
+The theme only changes the screen. The colours never go into your files, so
+nobody you send a document to will get grey text.
+
+You can also switch dark mode straight from the View menu with **Alt+Shift+D**.
+It says "Dark mode on" or "Dark mode off".
+
+If you chose dark in an earlier version, you keep dark.
+
+##### Startup and recovery
+
+**Reopen the documents I had open last time** is on. Turn it off and QUILL Lite
+starts with only what you open yourself. This is not the same as recovering
+unsaved work after a crash, which happens either way.
+
+**Offer untitled unsaved work back after a crash** is on. An untitled document
+has never been saved to a file, so this copy is the only one there is. Turn it
+off if you use QUILL Lite as a scratchpad and would rather it forgot.
+
+**Start with a blank document** is on, just like Notepad and WordPad. If you
+always open an existing file, turn it off, so you are not handed an empty
+Untitled to close every time. Files you open by double-clicking, last session's
+documents and recovered work all still appear. QUILL has the same setting under
+**General**.
+
+##### Sharing with QUILL
+
+**Share QUILL's abbreviation library** is off. Turn it on and QUILL Lite uses
+QUILL for All's list of short forms instead of its own, so a short form you add
+in either program works in both. It does nothing if QUILL is not installed.
+
+**Share QUILL's dictionary of taught words** is off. It works the same way for
+spelling: a word you teach in either editor is known to both.
+
+##### Clipboard and updates
+
+**Keep everything I copy in the clip library** is off. Turn it on and every
+Ctrl+C is saved in the clip library by itself, not just the ones you keep with
+**Ctrl+Alt+M**. It is handy, but the library will fill up on its own.
+
+**Look for updates when QUILL Lite starts** is on. It looks once a day and only
+speaks up if there is something new. **Ctrl+Alt+U** checks whenever you like.
+
+##### Spelling and autocorrect
+
+**Check spelling as I type** is on. It is the same switch as **Tools > Spelling >
+Check While Typing** (**Ctrl+Alt+F7**), which is quicker to reach while you are
+writing.
+
+**Curl quotes as I type** is off. It turns a straight quote into a matching
+curly one.
+
+**Turn two hyphens into an em dash** is off. When you type the second hyphen of
+`--`, both become one long dash.
+
+Both of these also need **Autocorrect while typing** switched on in Customize
+Features. Neither ever runs in a plain text, source code or settings document.
+
+##### What you hear
+
+**When a command does something, give me:** **a sound**, **the action spoken**,
+**both**, or **nothing**. This is how QUILL Lite tells you that a cut, copy,
+paste, undo or new selection worked. A sound is the default. Spoken words are
+easier while you are still learning the sounds.
+
+Two things happen whatever you choose. If your sound pack has no sound for a
+command, QUILL Lite speaks instead of staying silent. And if a command could not
+do what you asked, QUILL Lite **always says so in words**.
+
+**When a search misses:** has the same four choices, set separately. You often
+press F3 several times in a row, and hearing "Not found" spoken each time gets
+tiring fast, so many people pick the sound here. The words are always in the
+status bar too.
+
+**Say a heading's level:** **before the text** or **after the text**. Before
+means QUILL Lite says it all in one go, like "Heading 2, Installing". You will
+still hear it after a jump, such as Ctrl+Home or landing on a search result.
+After means your screen reader reads the line and QUILL Lite adds the level
+afterwards, which is quieter when you are reading line by line.
+
+##### Searching and wrapping
+
+**Searching carries on from the other end** is on. When Find Next reaches the
+end, it starts again at the top and tells you so. Turn it off and it stops and
+tells you which end you are at. Then you know the word is not missing, you are
+just at the bottom.
+
+**Wrap long lines to the window** is on. Turn it off and long lines run past the
+right edge of the window. **Alt+Z** on the View menu is the same switch.
+
+##### Timing
+
+**Shortest gap between spoken messages (ms):** from 0 to 2000. The default is 0,
+which says everything as it happens. A bigger number skips anything QUILL Lite
+would say too soon after the last thing. That helps if holding a key down makes
+your screen reader talk too much. You do not lose anything: every message still
+goes to the status bar, and **F6** reads it back.
+
+**Copy unsaved work aside every (seconds):** from 15 to 600, and 30 by default.
+This is how often a changed document is copied to the recovery folder. The copy
+is kept beside your file, never on top of it, and it is removed as soon as you
+save.
+
+##### Editor font
+
+**Editor font:** a read-only box showing the font and size, and a **Change
+Font...** button that opens the font chooser. When you pick a font, the box
+updates and QUILL Lite says the new font out loud. The same chooser is on
+**Ctrl+Alt+F** (**Format > Editor Font**), where Notepad has always kept it. It
+stays on the Format menu even if you switch rich text off.
+
+##### AI help
+
+**Use QUILL's free AI help** is off. This one works straight away, without
+waiting for OK. Ticking it shows you the whole agreement right then and saves
+your answer. Unticking it takes your agreement back right then. If you decline
+the agreement, the tick goes away again and QUILL Lite tells you so. See
+[Chapter 10, AI help](#chapter-10-ai-help).
+
+#### What is not in here, and where it is instead
+
+Some switches are on a key instead, because you change them while you are
+working:
+
+| Not in Preferences | Where it is |
+|---|---|
+| Dark mode | **View > Dark Mode** (**Alt+Shift+D**) |
+| Word wrap | **View > Word Wrap** (**Alt+Z**) |
+| Announce Headings, Announce Lists | **View** (**Ctrl+Alt+F3**, **Ctrl+Alt+F5**) |
+| Overwrite mode, Tab key behaviour, the status bar | **View** |
+| Quiet mode | **Tools > Quiet Mode** (**Alt+Shift+M**) |
+| Which sound each event makes | **Tools > Sound Scheme** (**Ctrl+Alt+Shift+O**) |
+| Which of the 21 areas exist at all | **Tools > Customize Features** (**Ctrl+Alt+F10**) |
+| What any key does | **Tools > Keyboard Manager** (**Ctrl+Alt+Shift+R**) |
+| The twelve spelling announcement settings | **Tools > Spelling > Announcements** (**Ctrl+Alt+Shift+F7**) |
+| Whether you are asked about last session | The **Reopen Last Session** window itself (**Alt+Shift+F12**) |
+
+People often look for that last one in Preferences. It lives in the window that
+asks the question. See [Reopening what you had
+open](#reopening-what-you-had-open), in Chapter 3.
+
+#### Taking your settings with you
+
+**Tools > Back Up Settings...** (**Ctrl+Alt+F11**) saves your settings to a
+`.qsf` file. **Tools > Restore Settings...** (**Ctrl+Alt+F12**) reads one back,
+for example on a new computer.
+
+The backup holds your preferences. It leaves out the things that only make
+sense on this computer: your recent files, the documents QUILL Lite reopens at
+startup, the window size, and when it last checked for an update. The backup
+tells you how many file locations it left out.
+
+When you restore, QUILL Lite tells you what happened: how many settings came
+across, how many are new since the backup was made (those keep their usual
+values), and how many it did not recognise. If the file has nothing QUILL Lite
+recognises at all, nothing is changed, so picking the wrong file cannot reset
+your editor.
+
+QUILL has the same thing, as buttons in its Preferences window. The two use
+the same kind of file, but each one only reads its own backups.
+
+### Making QUILL Lite smaller (or larger)
+
+QUILL Lite has a lot in it. You may not want all of it, and you do not have to
+keep it. **Tools > Customize Features** (**Ctrl+Alt+F10**) lets you switch whole
+parts of the app off.
+
+When you switch something off, it leaves the menus and its keys stop working.
+It is really gone, not just hidden. So a smaller QUILL Lite is one with fewer
+things to arrow past and fewer keys to press by accident.
+
+#### Profiles: four ways to say it in one word
+
+You do not have to go through the checkboxes one by one. The **Profile** box at
+the top of the window offers four ready-made choices. **Choosing one sets every
+checkbox below it straight away.** There is no second button to press.
+
+Nothing is saved until you press **Save**. So you can try a profile, look at
+what it would do, and change your mind.
+
+##### Hearing what a profile does
+
+Under the Profile box is a **read-only description you can read line by line**.
+It tells you two things. First, what the profile is. Then what it would do to
+your copy of QUILL Lite: how many of the 21 areas it keeps and which ones, which
+ones it removes, and anything else it changes. Notepad, for example, also makes
+**Ctrl+N** create a plain text document. Press **F1** on the Profile box to hear
+the same thing.
+
+When you choose a profile, QUILL Lite says a short version, like this: "Notepad
+profile: 2 of 21 features on. New documents will be plain text. Nothing is saved
+until you press Save." Your screen reader already reads the profile's name, and
+the longer description is there for you to read at your own pace.
+
+##### Changing your mind
+
+**Custom puts everything back.** If you arrow onto a profile you did not mean,
+choose **Custom**. Every checkbox goes back to how it was when you opened the
+window.
+
+You will also hear the box say Custom as soon as you tick or untick anything
+yourself. That is not a warning. Picking your own is exactly what the list is
+for.
+
+After you choose a profile, the checkboxes are still ordinary checkboxes. You
+can change any of them. If you have changed a few and want to start the profile
+over, press **Use Profile**.
+
+##### The same profiles in Preferences
+
+**The same four profiles are in Preferences** too, at the top, with the same
+description underneath. So if you think of "make this like Notepad" as a
+setting, you will find it where your other settings are. The 21 separate
+checkboxes are only in Customize Features.
+
+##### The four profiles at a glance
+
+Here is each one at a glance, and then in more detail.
+
+| Profile | Areas on | Ctrl+N makes |
+|---|---|---|
+| **Recommended** | 17 of 21 | plain text (unchanged) |
+| **Everything** | 21 of 21 | plain text (unchanged) |
+| **WordPad** | 5 of 21 | **rich text** |
+| **Notepad** | 2 of 21 | **plain text** |
+
+##### Recommended
+
+**This is what you get when you first install QUILL Lite.** It keeps seventeen
+of the 21 areas: rich text, headings, Markdown and HTML, bookmarks, the line
+tools, the clipboard history, printing, abbreviations, the Selection submenu,
+spell check, the dictionary and thesaurus, Matches, Go Back and Go Forward, the
+Command Palette, Describe Character, text size and dictation.
+
+**Off:** autocorrect, timestamped backups, Go To Anything and AI help. These
+four are not switched off because they are poor. They are off because you
+should choose them yourself:
+
+- Autocorrect can change the quotes in a settings file and break it.
+- Backups slowly fill a folder on your computer.
+- Go To Anything is one more way to jump around, and the command palette, the
+  headings list and the bookmark list already do that.
+- AI help sends the text you ask about over the internet, and only you should
+  decide to do that.
+
+**Choose this** when you have been experimenting and want to get back to where
+you started.
+
+##### Everything
+
+**All 21 areas on**, including the four above. That includes **AI help**, which
+is the one area that sends anything off your computer, so only choose this
+profile if you are happy with that.
+
+With Everything on:
+
+- Autocorrect can straighten your quotes and turn two hyphens into a long dash.
+  It does nothing else. It never capitalises sentences.
+- Every save keeps a dated copy in your data folder.
+- Go To Anything joins the command palette and the two lists.
+
+**Choose this** if you would rather have it all and switch things off as they
+get in your way.
+
+##### WordPad
+
+**Everything WordPad could do.** Rich text you can format, print and spell
+check: bold, italic, underline, headings, alignment, bullets, indenting and line
+spacing, plus Find and Replace, printing and text size. Five of the 21 areas.
+
+**Off**, all sixteen of the others. These are the writing tools around the
+formatting:
+
+- No line tools (Edit > Lines) and no Change Case.
+- No clipboard history or Copy Tray.
+- No bookmarks, no abbreviations, and no Selection submenu.
+- No Matches list, no Back and Forward, no Command Palette, and no Go To
+  Anything.
+- No Describe Character and no dictation.
+- No dictionary or thesaurus (WordPad never had one).
+- No autocorrect and no backups.
+- **No Markdown or HTML.** Ctrl+B in a `.md` file goes back to meaning rich text
+  bold, and QUILL Lite tells you so.
+- **No AI help.**
+
+**Ctrl+N makes a rich text document.** So choosing WordPad changes a setting as
+well as the checkboxes: new documents start as rich text.
+
+**One thing real WordPad did not have:** the spell checker. It stays, because a
+word processor without one would just be a nuisance.
+
+**Choose this** for letters, notes and anything you want to look nice.
+
+##### Notepad
+
+**The smallest QUILL Lite can be.** Many people come to QUILL Lite to replace
+Notepad, and this is the profile for them. It keeps two of the 21 areas:
+**printing** and **text size**.
+
+**Off**, all nineteen of the others: the Format menu and everything under it,
+headings, Markdown and HTML, bookmarks, the line tools, Change Case, the
+clipboard history, abbreviations, the Selection submenu, spell check, the
+dictionary and thesaurus, Matches, Back and Forward, the Command Palette, Go To
+Anything, Describe Character, dictation, autocorrect, backups and AI help.
+Nothing that Notepad does not have.
+
+**Ctrl+N makes a plain text document**, and the Save As dialog stops offering
+you formats you have switched off.
+
+**Some things stay, because Notepad has always had them:** Find, Find Next,
+Replace, Go To Line, Select All, Insert Date and Time, Word Wrap, the font
+picker, the status bar and Undo. **Tools > File Encoding and Line Endings**
+stays too. That is a big part of why people replace Notepad: so a file saves
+back exactly the way it arrived.
+
+**Choose this** for settings files, logs, quick notes, and anything that must
+stay plain text with no hidden formatting.
+
+##### Moving between them
+
+You can always go back. Choose **Notepad** and then **Everything**, and it all
+comes back, including the Format menu and its keys. The only thing a profile
+does not undo is a setting you changed by hand afterwards. A profile only
+changes the things it says it changes.
+
+Two things stay whichever profile you choose: **Tools > Preferences** and
+**Customize Features** itself. Otherwise you could switch off the very window
+you need to switch things back on.
+
+#### Searching the list
+
+There are 21 checkboxes, which is a lot to Tab through. Type in the search box
+below the Profile box and the list narrows as you type.
+
+It searches what an area does as well as its name. Type "curly quotes" and you
+find Autocorrect. Type "dictionary" and you find Spell check. The line under the
+box tells you how many are left. Press **Down** from the box to go straight into
+the list.
+
+#### The 21 areas
+
+| Area | What goes | Starts |
+|---|---|---|
+| **Rich text and the Format menu** | Bold, headings, alignment, bullets, spacing | on |
+| **Heading navigation** | Next and previous heading, the headings list | on |
+| **Markdown and HTML** | The two tag pickers, Document Language, and markup Bold | on |
+| **Bookmarks** | All nine, and the list | on |
+| **Line tools and change case** | Edit > Lines, Tools > Change Case | on |
+| **Copy Tray and the clip library** | Edit > Clipboard (Cut, Copy, Paste and Copy All stay) | on |
+| **Printing** | Print and Page Setup | on |
+| **Abbreviations** | Short forms, and the list that manages them | on |
+| **Spell check** | Tools > Spelling, and checking as you type | on |
+| **Dictionary and thesaurus** | Look Up, Thesaurus, Say Word Summary, and the two submenus on any word | on |
+| **The Selection submenu** | F8 selecting, whole-structure selecting, marks | on |
+| **The Matches submenu** | All Matches and Count Occurrences (Find itself stays) | on |
+| **Go Back and Go Forward** | The trail of places you jumped from | on |
+| **The Command Palette** | Ctrl+Shift+P, the search box for commands | on |
+| **Describe Character** | What the character under the cursor actually is | on |
+| **Text size** | Bigger, smaller, and reset | on |
+| **Dictation** | Tools > Dictation: speaking into the document, and choosing the microphone | on |
+| **Autocorrect while typing** | Curly quotes and long dashes (it does not capitalise sentences) | **off** |
+| **Timestamped backups** | A dated copy kept every time you save | **off** |
+| **Go To Anything** | One box that searches everything at once | **off** |
+| **AI help (sends your text to QUILL's servers)** | Tools > AI: summarize, rewrite, proofread, explain, and questions about a document | **off** |
+
+The last four start switched off. They are still in this list, so you can find
+them and switch them on whenever you like.
+
+##### Why autocorrect, backups and Go To Anything start off
+
+Curly quotes look lovely in a letter but can break a settings file. Backups
+slowly fill a folder. And Go To Anything does a job that the command search,
+the headings list and the bookmark list already share between them.
+
+##### Switching on AI help
+
+**AI help is off for a different reason.** Using it sends the passage you ask
+about over the internet, and that is your choice to make, nobody else's. Its row
+in Customize Features tells you exactly what you are agreeing to before you
+switch it on. While the area is off, it has no menu, no keys, no sign-in saved
+on your computer, and makes no connection of any kind.
+
+**Switching it on is only the first step.** Before anything is sent, QUILL Lite
+shows you the whole agreement: what is sent, what QUILL keeps, what it does not
+keep, what OpenAI does with it, and how to say no. Nothing happens until you
+accept.
+
+If you switch the area on and then decline the agreement, the AI menu stays but
+nothing in it will send anything. QUILL Lite does not quietly switch the area
+back off for you.
+
+You can reach the same agreement in **three places**. Use whichever you find
+first:
+
+- **Tools > AI > Privacy Agreement...** (**Ctrl+Alt+Shift+K**). Read it, accept
+  it, or take it back. Taking it back also signs this computer out.
+- **Preferences**, where a tick box says *Use QUILL's free AI help*. Ticking it
+  shows the agreement. Unticking it takes your agreement back.
+- **Customize Features**, where switching the area on asks you straight away.
+
+All three share one answer, so they always agree. If the agreement ever changes
+in a way that matters, such as what is sent or what is kept, you will be asked
+again.
+
+##### How autocorrect works
+
+**Autocorrect has two rules, and switching the area on does not turn either of
+them on.** The area decides whether autocorrect exists at all. Two tick boxes in
+**Tools > Preferences** decide which rules run:
+
+- **Curl quotes as I type**
+- **Turn two hyphens into an em dash**
+
+Both start off. So after you switch the area on, you also need to tick the rule
+you want. They are separate because plenty of people want the long dash but not
+the curly quotes.
+
+Neither rule ever runs in a plain text, source code or settings document,
+whatever the boxes say. A curly quote in a `.json` file would break it.
+
+There is no third rule. QUILL Lite does **not** capitalise the start of a
+sentence, and never has.
+
+##### What can never be switched off
+
+Three things always stay. **Tools > Preferences** and **Customize Features**
+stay, so you can always get back to your settings. And **File Encoding and Line
+Endings** stays, because saving a file back exactly as it arrived is at the
+heart of QUILL Lite.
+
+### Changing what a key does
+
+You can change the key for any command in QUILL Lite. Open **Tools > Keyboard
+Manager...** (**Ctrl+Alt+Shift+R**).
+
+1. The list shows every command and its key. Type part of a command's name to
+   find it.
+2. Press **Enter** on the command you want.
+3. Press the new key.
+4. Press **Save** when you are done.
+
+#### Finding out what a key already does
+
+Want to know whether a key is free? Press **Record a Key**, then press the key.
+QUILL Lite tells you what it does now, for example "Ctrl+S is File > Save", or
+tells you it is free. That is much quicker than reading through two hundred
+rows.
+
+#### When a key is taken
+
+If you choose a key another command already uses, QUILL Lite tells you which
+command has it and asks if you want to take it. If you say yes, that other
+command is left with no key until you give it one. That way two commands never
+share a key, which would leave one of them never working.
+
+#### When another program has the key
+
+Some programs take a key for the whole of Windows. Google Drive takes
+**Ctrl+Alt+G**, for example, and there are others. When that happens, the key
+never reaches QUILL Lite, even while you are typing in it. The command is fine;
+the key just goes to the other program.
+
+QUILL Lite warns you about this. Record a Key says the key is "already claimed
+by another application running on this computer", and the Keyboard Manager says
+so if you pick one. It is only a warning, so you can keep the key if you want
+it. It may work again when that other program is closed.
+
+Windows does not tell QUILL Lite which program has the key, so it cannot tell
+you either.
+
+#### What cannot be changed
+
+- **The Insert key cannot be used.** Your screen reader needs it, and you would
+  need it to get your key back.
+- **A key on its own**, without Ctrl, Alt or Shift, cannot be used either. It
+  would just type itself.
+
+#### Putting things back
+
+- **Reset to Default** puts the command you are on back to its original key.
+- **Reset Everything** does that for every command, after asking you first.
+- Nothing is saved until you press **Save**. Press **Escape** to leave with your
+  keys just as they were.
+
+**Check for Problems** looks over all your keys at once. It tells you about a
+key used twice, a key QUILL Lite cannot read, or a key Windows will accept but
+never actually send to a menu, which would leave it doing nothing.
+
+Only the keys you changed are saved. That way, if a later version of QUILL Lite
+improves a key you never touched, you still get the improvement.
+
+### Making QUILL Lite your text editor
+
+When you open a text file from File Explorer or your desktop, Windows opens it
+in Notepad. You can have it open in QUILL Lite instead. There are two ways, and
+you can use either one or both. Both are in Preferences (**Ctrl+,**), under
+**Windows and your files**, with a line that tells you which program opens in
+place of Notepad right now.
+
+#### Choosing QUILL Lite in Default apps
+
+Windows lets you choose which app opens each kind of file. QUILL Lite cannot
+make that choice for you, but it can take you straight to the right place.
+
+1. Open Preferences (**Ctrl+,**) and, under **Windows and your files**, press
+   **Make QUILL Lite My Text Editor...**.
+2. Read the short message, then press **OK**.
+3. Windows Settings opens on the Default apps page for QUILL Lite. It lists
+   file types such as .txt, .md and .rtf, each with the app that opens it now.
+4. Choose **.txt**, pick **QUILL Lite** in the list that appears, and choose
+   **Set default**.
+5. Do the same for any other type you want QUILL Lite to open. Leave the rest
+   as they are.
+6. Close Settings with **Alt+F4**.
+
+From now on, pressing Enter on a .txt file opens it in QUILL Lite. QUILL Lite
+is also in the **Open with** list when you press the Applications key on a
+file.
+
+On Windows 10, Settings opens on the general Default apps page instead. Choose
+**Choose default apps by file type**, find .txt, and pick QUILL Lite.
+
+To change your mind, go back to the same page and pick Notepad, or any other
+app, for that type.
+
+#### Opening QUILL Lite instead of Notepad
+
+Some programs open Notepad by name, and so does typing "notepad" in the Run
+box. Default apps does not change those. If you would like QUILL Lite to open
+every time anything asks for Notepad, check **Open QUILL Lite instead of
+Notepad** in Preferences, under **Windows and your files**. It is off until you
+turn it on.
+
+Three things to know first:
+
+- It changes Notepad for everyone who uses this computer, not just for you.
+- Windows asks for administrator approval. If your account is not an
+  administrator, somebody with an administrator password will need to approve
+  it.
+- To undo it, clear the same checkbox and press OK. The checkbox always shows
+  whether it is on right now.
+
+To turn it on:
+
+1. Open Preferences (**Ctrl+,**) and, under **Windows and your files**, check
+   **Open QUILL Lite instead of Notepad**. Then press **OK**.
+2. Read the message and choose **Yes**.
+3. Approve the Windows prompt that follows.
+4. QUILL Lite tells you when it is done.
+
+On Windows 11 there is one more step. The newer Notepad has a shortcut of its
+own, called an app execution alias, that can still open it. QUILL Lite offers
+to open the page where you turn that off. Choose **Yes**, find **Notepad** in
+the list, and turn it off. To get there yourself, open Settings, then Apps,
+then Advanced app settings, then App execution aliases.
+
+When QUILL Lite opens in place of Notepad, you get the file Notepad was asked
+to open, or a new blank plain text document if there was none. If a program
+asked Notepad to print a file, QUILL Lite opens it instead, and **Ctrl+P**
+prints it.
+
+If you uninstall QUILL Lite while this is on, the uninstaller puts Notepad back
+for you. If you use a portable copy, turn it off before you delete the folder.
+
+### What you learned, and where to go next
+
+Preferences (**Ctrl+,**) holds your everyday settings in one column, and
+nothing is saved until you press OK. Press F1 on any control when you are
+unsure what it does. A few quick switches live on the View and Tools menus
+instead, and **Ctrl+Alt+F11** and **Ctrl+Alt+F12** back up and restore your
+settings.
+
+Customize Features (**Ctrl+Alt+F10**) makes QUILL Lite as small as Notepad or
+as full as you like, in one step with a profile or one checkbox at a time.
+Nothing is saved until you press Save, and nothing is one-way. The Keyboard
+Manager (**Ctrl+Alt+Shift+R**) changes any key, Record a Key tells you what a
+key does now, you are warned when a key is taken, and you can always put
+things back. The Keyboard reference at the end of this guide lists every key
+QUILL Lite ships with.
+
+In Preferences, under Windows and your files, Make QUILL Lite My Text Editor
+takes you to the Windows page where you choose QUILL Lite for .txt and other
+types, and Open QUILL Lite instead of Notepad catches everything that still asks
+for Notepad by name.
+
+If you are curious about AI help, the tutorial *Asking a question about a
+document* walks you through switching it on.
+
+Next, Chapter 12, Your files, updates and QUILL for All, explains where QUILL
+Lite keeps things and how to get new versions.
+
+## Chapter 12: Your files, updates and QUILL for All
+
+This chapter is about QUILL Lite's place on your computer. You will learn
+where it keeps your settings and recovered work, how a portable copy keeps
+everything on the stick, and how to get a new version when one comes out.
+Then we will look at how QUILL Lite sits beside its bigger sibling, QUILL for
+All, and how to share what you have built up between them.
+
+### Where your files are kept
+
+QUILL Lite keeps your settings, your recent files, your copy tray and any
+recovered work in a QUILL Lite folder inside your own Windows user folder. To
+find out exactly where, open **Help > About QUILL Lite**. It tells you.
+
+This folder is separate from QUILL for All's folder. QUILL Lite and QUILL are two
+different programs, so you can install or remove one without touching the other.
+
+When you uninstall QUILL Lite, this folder stays. That way, if there is a
+recovered document you have not finished with, it is still there for you.
+
+#### The portable copy keeps everything on the stick
+
+The portable QUILL Lite is the `.zip` you unpack instead of installing. If that
+is the one you use, everything above works differently: all your settings and
+recovered work go into the `data\QuillLite` folder inside the bundle, right next
+to `QuillLite.exe`. Nothing at all is written to the computer you are plugged
+into. This happens from the very first time you start it. There is nothing to
+switch on.
+
+##### If you used a portable copy before version 1.0
+
+Older portable copies did not work this way. They kept their files in
+`%LOCALAPPDATA%\QuillLite` on whichever computer you were using, and they did
+not tell you. So if you have been carrying a portable QUILL Lite around, and
+something you were working on seems to be missing, look in that folder on the
+computer you used. Once you have what you need out of it, it is a good idea to
+delete that folder, especially if the computer is not yours.
+
+##### Turning a portable copy back into an ordinary one
+
+The `data` folder is what makes a copy portable. Delete the `data` folder from
+the bundle, and QUILL Lite goes back to keeping its files in your Windows user
+folder on this computer.
+
+### Keeping QUILL Lite up to date
+
+To find out whether there is a newer QUILL Lite, open
+**Help > Check for Updates...** (**Ctrl+Alt+U**). Every app in the QUILL family
+uses this same key and the same window, so once you know it here, you know it
+everywhere.
+
+If you already have the newest version, a small window tells you so. You always
+get an answer.
+
+#### When there is a new version
+
+If there is something newer, the window opens on the release notes for that
+version, so you can read what changed. They are in a read-only box you can
+arrow through like a document. Press **Tab** to reach two buttons:
 
 - **Update** downloads the new version and then offers to install it. Your
-  settings, your recent files and your recovered work are kept either way:
+  settings, recent files and recovered work are kept whichever you choose:
   - **Install and restart now** (Enter) closes QUILL Lite, installs the update
     and opens QUILL Lite again.
-  - **Install when I close** (Alt+C) lets you keep writing; the update is
-    installed the next time you close QUILL Lite, and the next time you open
-    it, it is the new version.
+  - **Install when I close** (Alt+C) lets you keep writing. The update goes in
+    the next time you close QUILL Lite, and the next time you open it, you have
+    the new version.
 
-  A portable copy updates itself in place: the new files replace the old ones
-  in its folder, and its `data` folder is never touched.
-- **Close** does nothing at all. Nothing is downloaded until you press Update.
+  A portable copy updates itself where it is. The new files replace the old
+  ones in its folder, and its `data` folder is never touched.
+- **Close** leaves everything as it is. Nothing is downloaded until you press
+  Update.
 
-While the download runs you hear it reach a quarter, a half and three quarters,
-and then that it has finished.
+While it downloads, you hear when it is a quarter done, half done and three
+quarters done, and then when it has finished.
 
-QUILL Lite also looks once a day when it starts, and says **nothing** unless
-there is something -- not while it checks, not when there is nothing, and not
-when the network is down. Only a genuine new version speaks, and even then it
-only offers. Turn the daily look off in **Settings** ("Look for updates when
-QUILL Lite starts"); Ctrl+Alt+U still works either way.
+#### The daily check
 
----
+QUILL Lite also looks for a new version once a day, when it starts. It stays
+quiet while it looks, quiet if there is nothing new, and quiet if you are not
+online. You only hear from it when there really is a new version, and even then
+it just offers. Nothing changes until you say so.
 
-## What QUILL Lite is not
+If you would rather it did not look at all, turn off "Look for updates when
+QUILL Lite starts" in **Settings**. **Ctrl+Alt+U** still works whenever you
+want to check yourself.
 
-QUILL Lite is a companion to **QUILL for All**, not a replacement for it.
+### Release channels
 
-If you want document conversion, comparing two documents, publishing or braille
-tools, those are QUILL, and QUILL Lite is built so that it will not slowly grow
-into them.
+QUILL Lite comes in three flavours, and you choose which one your copy follows.
+They are called release channels.
 
-**Dictation moved in 1.1.** QUILL Lite has [Dictation](#dictation) -- built-in
-speech recognition that writes each phrase as you pause -- and QUILL has the very same
-feature on the same keys, in Tools ▸ Speech ▸ Live Dictation. QUILL's offline
-Locked Dictation, which records a passage and transcribes it with a model you
-download, stays QUILL's.
+- **Stable** is the version we recommend. It has been checked with JAWS and
+  NVDA, and it is what most people use. Every copy starts here.
+- **Beta** gets new features a few weeks early. It is mostly finished, but some
+  things may not work right yet.
+- **Dev** is the work in progress, sometimes several builds a week. Things will
+  break. Only choose it if a developer asked you to, or you enjoy testing.
 
-**AI is the one line that moved**, and only a little. QUILL Lite has the five
-free commands described under [AI help](#ai-help) -- summarize, rewrite,
-proofread, explain, and a question about the document you have open -- because
-an editor that can only be used by somebody who can read a screen quickly is not
-much of an accessible editor. What it does **not** have is the rest of QUILL's
-AI: bringing your own key, choosing a provider, running a model on your own
-machine, the agents, the conversation, the alt-text work. Five commands behind
-one pad, on one free service, and nothing else.
+#### Choosing a channel
 
-Both are free, both are built for screen reader users, and they install
-perfectly happily side by side.
+Open the **Help** menu, then choose **Release Channel...** (press **Alt+H**,
+then **C**). You can also get there
+from **Settings**, with the **Change release channel...** button under "Look
+for updates when QUILL Lite starts".
 
-**And they can share what you have built up.** QUILL Lite keeps its own settings
-folder on purpose --- an editor this size should not quietly adopt a writing
-environment's preferences, and uninstalling it should never cost you something
-QUILL owns. But the things you *accumulate* are worth having in one place, so
-each is an opt-in switch rather than a default:
+Arrow through Stable, Beta and Dev. As you move, the box below tells you what
+each one means and what choosing it would do. Nothing changes yet. Press
+**Switch** to move, or **Close** (Escape) to leave everything as it was.
 
-- **Preferences ▸ Share QUILL's abbreviations** and **Share QUILL's personal
-  dictionary** point QUILL Lite at QUILL's copy, so a short form you add or a word
-  you teach in either editor is there in both.
-- From QUILL's side, **Tools ▸ Customize and Support ▸ Bring My QUILL Lite
-  Settings...** does the whole thing in one step: it merges your QUILL Lite
-  abbreviations, dictionary, copy tray, clip library and bookmarks into QUILL,
-  turns those switches on for you, and copies your preferences and rebound keys
-  across once. Nothing already in QUILL is replaced, and nothing in QUILL Lite is
-  removed.
+If you choose Beta or Dev, a short warning comes first: what could go wrong,
+how your settings are protected, and how to come back. Read it, tick the **I
+understand** box, then choose **Move to Beta** (or **Move to Dev**). **Stay on
+Stable**, or Escape, changes nothing.
 
-QUILL also has a **QUILL Lite profile** now (Preferences ▸ Profiles and Features),
-which makes QUILL show these nine menus and nothing else --- including making
-Ctrl+N a plain text document, the way it does here. It is there for the day you
-want one of QUILL's tools without giving up the shape you are used to.
+Before it moves, QUILL Lite saves a copy of your settings, keys and recent
+files list. If it cannot, it stays where it is and tells you why. Your
+documents are not copied, and updates do not change them. Then it checks for
+updates on the new channel straight away, and offers you the newest version
+there if there is one. Nothing is installed unless you say so.
 
----
+#### When Quill Radio or QUILL Cast is installed too
 
-## Every key, in one table
+QUILL Lite, Quill Radio and QUILL Cast run on one shared engine on your
+computer. When an app moves to Beta or Dev, it gets its own copy of that
+engine, so the apps you leave on Stable are never touched. You can still move
+several at once: tick them under "Also move my other QuillVille apps on this
+computer" and choose **Switch**.
+
+That second copy of the engine takes about 335 MB of disk space. It goes away
+by itself when your last app comes back to Stable. A portable copy carries its
+own engine, so it needs no extra space.
+
+#### Updates on Beta and Dev
+
+On Beta and Dev, QUILL Lite downloads a new version quietly when its daily check
+finds one, so it is ready when you are. It never installs anything without
+asking: when the download is done, it says so and shows you what's new, and you
+choose when to install.
+
+It waits instead of downloading on a metered connection, during Quiet Hours,
+and while Quill Radio is recording. Update History tells you why it waited. On Stable nothing
+changes.
+
+#### If an update doesn't start
+
+After an update, QUILL Lite checks that the new version really opens. If it doesn't
+open within two minutes, the update undoes itself and puts back the version you
+had. The next time QUILL Lite starts, it tells you so. Nothing of yours is changed,
+and Update History has the details.
+
+To make this possible, QUILL Lite keeps a copy of the installer for the version you
+have. After an update, the previous one is kept until the new version has
+started three times, or for a week, and then it is deleted.
+
+#### Coming back to Stable
+
+Open **Release Channel** again and choose **Stable**.
+
+- If the version you have is already a Stable one, you're back straight away,
+  and nothing is installed.
+- If you have a newer Beta or Dev version, QUILL Lite checks whether Stable can read
+  everything you have saved. If it can, choose **Go back to** (the Stable
+  version) **now**, and QUILL Lite downloads Stable and offers to install it. Your
+  settings come with you. If a few settings were only in Beta, they go back to their usual values,
+  and the window tells you which.
+- If Stable can't read something yet, QUILL Lite says so and gives you two safe
+  choices. **Wait for Stable** keeps the version you have, stops test versions,
+  and moves you to Stable by itself as soon as Stable catches up. It tells you
+  when that happens. **Use the copy from** (the day you joined) puts back the
+  copy of your settings saved when you joined, then installs Stable.
+  Anything you changed since then won't be in it, but a copy of how things are
+  right now is saved first, so nothing is thrown away.
+- If there's no saved copy, waiting is the only choice, and the window says so.
+
+The **Update History** button in the same window shows what the updater has
+done for QUILL Lite. And switching sends nothing about you: the only thing QUILL
+Lite ever sends when it checks for updates is a request for the list of
+versions.
+
+### What QUILL Lite is not
+
+QUILL Lite is a companion to **QUILL for All**. It is not meant to replace it.
+
+If you want to convert documents, compare two documents, publish, or use braille
+tools, those are in QUILL. QUILL Lite stays a small, focused text editor on
+purpose.
+
+#### Dictation
+
+**Dictation came to QUILL Lite in 1.1.** QUILL Lite has
+[dictation](#chapter-9-writing-by-voice):
+built-in speech recognition that writes each phrase when you pause. QUILL has
+the very same feature on the same keys, under Tools > Speech > Live Dictation.
+QUILL's offline Locked Dictation, which records a passage and then transcribes
+it with a model you download, is only in QUILL.
+
+#### AI
+
+QUILL Lite has AI help, described in
+[Chapter 10, AI help](#chapter-10-ai-help). It can summarize,
+rewrite, proofread and explain, answer a question about the document you have
+open, and a few more things that chapter walks you through. It is there so you
+can get through a long document, or check your writing, without having to read
+every line yourself.
+
+Some of QUILL's AI stays in QUILL: running a model on your own computer, the
+agents, and the picture description work. If you want those, QUILL has them.
+
+Both programs are free, both are made for people who use a screen reader, and
+you can install them side by side.
+
+#### Sharing what you have built up between them
+
+QUILL Lite keeps its own settings, separate from QUILL's. That way it starts
+small and simple, and removing it never takes anything away from QUILL. But the
+things you collect over time, like abbreviations and words you have taught the
+spell checker, are nice to have in both. So you can choose to share them:
+
+- In Preferences, **Share QUILL's abbreviations** and **Share QUILL's personal
+  dictionary** make QUILL Lite use QUILL's copies. A short form you add, or a
+  word you teach, in either editor is then there in both.
+- In QUILL, **Tools > Customize and Support > Bring My QUILL Lite Settings...**
+  does it all in one step. It adds your QUILL Lite abbreviations, dictionary,
+  copy tray, clip library and bookmarks into QUILL, turns those sharing
+  switches on for you, and copies your preferences and any keys you changed
+  across once. Nothing already in QUILL is replaced, and nothing is removed
+  from QUILL Lite.
+
+#### A QUILL that feels like QUILL Lite
+
+QUILL also has a **QUILL Lite profile** (in QUILL, Preferences > Profiles and
+Features). It makes QUILL show just these nine menus, and makes Ctrl+N create a
+plain text document, the way QUILL Lite does. It is there for the day you want
+one of QUILL's extra tools but would like everything to still feel familiar.
+
+### What you learned, and where to go next
+
+Your settings and recovered work live in your own user folder, and **Help >
+About QUILL Lite** tells you where. A portable copy keeps everything on the
+stick instead. **Ctrl+Alt+U** checks for a new version, shows you what
+changed, and lets you install now or when you close. QUILL Lite also checks
+quietly once a day, and you can turn that off in Preferences.
+
+QUILL Lite is the small editor, and QUILL for All is the big one. They work
+side by side, and you can share your abbreviations, dictionary and more
+between them. If you are setting up a new computer, *Taking your settings
+with you*, in Chapter 11, shows you how to bring your settings along.
+
+Next, Chapter 13, When you need a hand, tells you what to do when you are
+stuck.
+
+## Chapter 13: When you need a hand
+
+Everyone gets stuck sometimes, and this chapter is about what to do then. You
+will meet the nine guided lessons built into QUILL Lite, then learn what to do
+if QUILL Lite will not start, how to write to a real person at support, and
+the one thing worth attaching when you do. And remember that **F1** works
+everywhere, and tells you where you are and what the thing you are on does.
+
+### Nine lessons, inside the app
+
+QUILL Lite has nine short guided lessons built in. They walk you through the
+things that are hard to work out just by pressing keys. Each one takes a few
+minutes, and you can stop whenever you like.
+
+To open them, press **Ctrl+Alt+F1**, or choose **Help > Tutorials...**.
+
+#### The lessons
+
+The lessons come in two groups, called tracks.
+
+##### Your first documents
+
+| Lesson | What it covers |
+|---|---|
+| Open a file, and give it back unchanged | Opening a file, the three facts QUILL Lite keeps about it, and saving it back just as it was |
+| Four kinds of document, and how to say which | Plain text, Markdown, HTML and rich text, and what each one changes |
+| Your documents are numbered | Moving between the documents you have open |
+| What to press when you are lost | F1, F6, Ctrl+F1, and Escape |
+
+##### Working in a document
+
+| Lesson | What it covers |
+|---|---|
+| Selecting more than a few words | F8, extend mode, and taking a whole paragraph in one key |
+| Finding your way back | Bookmarks, marks, and Go Back |
+| Skimming something long | Headings, folding, and the headings list |
+| Spelling, without a red squiggle | F7, the misspelling sound, and the Applications key |
+| Asking a question about a document | AI help, from the very beginning |
+
+If you are new, start with the first lesson and go in order. All nine together
+take about forty-two minutes, but there is no need to do them in one sitting.
+
+#### How a lesson works
+
+Each lesson is a few steps. Every step tells you three things:
+
+1. **What to press.** It always shows **your** key. If you have changed a key in
+   the Keyboard Manager, the lesson knows.
+2. **Why you would want to**, in a sentence.
+3. **What you should hear when it worked.** That way you can tell for yourself
+   that you got it right.
+
+Some steps also have a **Worth knowing** line, a small tip that will save you
+trouble later.
+
+#### Finding your way around the window
+
+The window opens on **Contents**. This is a tree with the two tracks and the
+lessons under them. There is a filter box above it: type part of a lesson's
+name to find it, or type the word `here` to see the lessons about the window you
+just came from.
+
+Under the tree are four buttons: **Start**, **Read it all**, **The whole book as
+a document**, and **Forget my progress**.
+
+When you start a lesson, the step appears in a box you can arrow through and
+copy from with **Ctrl+C**. Under it are five buttons:
+
+| Button | What it does |
+|---|---|
+| **Try it** | Does this step for you, just as its key would |
+| **Next** | Goes to the next step and reads it |
+| **Back** | Goes to the previous step and reads it |
+| **Say it again** | Reads the step out in full |
+| **Contents** | Back to the list, keeping your place |
+
+**Try it** is there for when you have not learned a key yet. The lesson can do
+the step for you, then tell you about the place you have landed in.
+
+You will also find a **Follow me** tick box. In QUILL Lite it is greyed out. In
+some other QuillVille apps it moves you on to the next step by itself. Here,
+every step already ends with QUILL Lite saying something out loud, so you will
+know when it worked, and you press **Next** when you are ready.
+
+#### Coming and going
+
+The lessons window stays open beside your document, so you can go back and
+forth between them. Press **Escape** or **Alt+F4** to close it. QUILL Lite
+remembers which lessons you have finished, and where you were in the one you
+were working on.
+
+Every QuillVille app has lessons in the same kind of window, on the same key.
+If you would rather read all the lessons straight through, press **The whole
+book as a document**. It opens the full set in your web browser.
+
+### Getting help
+
+There is always a way to get help. This part starts with what to do if
+QUILL Lite will not start, then shows you how to write to support.
+
+#### If QUILL Lite does not start
+
+If QUILL Lite cannot start, it does not just disappear. A plain message opens,
+and your screen reader reads it by itself. It says "QUILL Lite did not start",
+gives the reason in words, tells you where the launch log is, and gives you the
+support address.
+
+What to do depends on the reason:
+
+- **It says the zip was opened from inside.** Extract the whole zip first. Press
+  the Applications key on the zip, choose **Extract All...**, then open
+  `QuillLite.exe` from the folder you extracted.
+- **It names a missing file or DLL.** Extract the zip again into an empty
+  folder, and check whether your antivirus program has put a file into
+  quarantine.
+- **It says Windows refused to run its files.** Move the folder somewhere that
+  belongs to you, such as Documents or a USB stick.
+- **It says "Python reported".** Send the launch log to support. For a portable
+  copy it is `data\logs\launch.log` inside the QUILL Lite folder. For an
+  installed copy it is `%APPDATA%\Quill\logs\QuillLite-launch.log`. Each start
+  replaces the log, so send it before you try again.
+- **Nothing happens at all, and there is no message.** QUILL Lite is probably
+  already running, and your new start simply handed over to it. Check the
+  taskbar, and Task Manager.
+
+#### Support by email
+
+Support is run by **Community Access**. The address is
+**support@community-access.org**. A real person reads every message and replies
+by email.
+
+Every message from QUILL Lite goes to that one address. Nothing is posted on
+GitHub or on any other public site.
+
+#### Get Help from Support, step by step
+
+The quickest way to write to support is **Help > Get Help from Support...**
+(Ctrl+Alt+F2). Every app in the QUILL family opens the same window with this
+key.
+
+##### Filling in the window
+
+1. Press **Ctrl+Alt+F2**. The Get Help from Support window opens. Its first line
+   says the message goes to support@community-access.org, and that nothing is
+   sent until you send it from your mail program.
+2. **What kind of message** (Alt+W) is a list: Something is broken, A question,
+   An accessibility problem, or An idea or request. Use the Up and Down arrows.
+   This only helps your message reach the right person, so do not worry about
+   picking exactly right.
+3. **Subject** (Alt+U) is a short line saying what the message is about, just
+   like an email subject. For example, "Spelling stops after I paste". You have
+   to fill this in.
+4. **What happened** (Alt+H) is where you describe the problem, in as much or as
+   little detail as you like. This is what a person reads first. You have to
+   fill this in too. Enter starts a new line here, so press **Tab** to move on.
+5. **What you expected** (Alt+X) is what you thought would happen instead. You
+   can leave it empty.
+6. **Steps to reproduce** (Alt+R) is how someone else could make it happen, for
+   example "Open a .docx, press F7, press Ctrl+V". You can leave it empty, but
+   if you can fill it in, it helps more than anything else.
+7. **Your email address** (Alt+E) is where support should reply. You can leave
+   it empty. The message goes from your own mail account, so support can reply
+   there anyway. Only fill this in if you want the answer to go somewhere else.
+8. **Screen reader** (Alt+A) is which one you use, if any. It is already filled
+   in with the screen reader that is running, so usually you can leave it.
+9. A line under the fields tells you what else is included, for example "Also
+   included: QUILL Lite 1.1.0, your QUILL AI support ID (...), and your Windows
+   version."
+
+##### Sending it
+
+1. Press **Enter**, or Tab to **Send** and press **Space**.
+2. If the subject or What happened is empty, or the email address does not look
+   right, you hear the first problem and the whole list is shown. Press
+   **Enter** to close it, fix the field, and send again.
+3. Otherwise your **own mail program opens with the whole message already
+   written**, addressed to support@community-access.org, with a subject such as
+   "[QUILL Lite 1.1.0] Spelling stops after I paste". You hear "Your mail
+   program is opening with the message ready. Nothing is sent until you send it
+   there." The Get Help window closes.
+4. **Press Send in your mail program.** Nothing leaves your computer until you
+   do, so you can read it over, add anything, or change your mind.
+
+##### If you have no mail program
+
+If you only use webmail, there is no mail program to open. QUILL Lite says "No
+mail program answered. Write to support@community-access.org." Your message is
+not lost. The whole message, with the address and subject at the top, is on
+your clipboard. Start a new email to **support@community-access.org** in your
+webmail and paste it with **Ctrl+V**. The Get Help window stays open with
+everything you typed.
+
+If your message is very long, the email holds a shortened copy with a line
+saying so, and the complete text goes on your clipboard. QUILL Lite tells you
+when this happens. Paste the full text over the shortened one with **Ctrl+V**.
+
+##### What is included, and what is not
+
+- Included: what you typed, the kind of message, QUILL Lite's name and version,
+  your Windows version, and the screen reader you chose. If this computer is
+  connected to QUILL's free AI, its **support ID** is included too. That lets
+  support look up your AI allowance without needing a name or password.
+- Not included: your documents, your file names, your settings, or anything you
+  did not type. If support needs more, they will ask you.
+- It is an ordinary email from your own account to Community Access. Nothing is
+  posted in public, and QUILL Lite itself does not send anything.
+
+##### What happens next
+
+A person at Community Access reads your message and replies by email, usually
+to the address you sent it from. If you open the window and change your mind,
+press **Escape** or choose **Cancel** to close it without sending anything.
+
+You never have to use the window. Writing to **support@community-access.org**
+yourself, from any email account, works just as well. Just say which app you
+were using and what happened.
+
+#### The one thing worth attaching
+
+Sometimes QUILL Lite starts but behaves oddly. Maybe there is no formatting,
+every word is called a misspelling, or nothing is spoken. When that happens,
+run it once with **`--check`**:
+
+```
+QuillLite.exe --check
+```
+
+No window opens. Instead it writes about a dozen lines to **`check.log`** in
+your data folder (**Help > About QUILL Lite** tells you where that is), and
+prints the same lines. They say which version you have, whether it is a frozen
+build, whether rich text started properly, which text mode it is in, which
+screen reader it can reach, whether the spelling dictionary loaded, and where
+your data is kept.
+
+Paste those lines into your email to support. They answer the first questions
+support would ask, so you get help faster.
+
+##### Other ways to start QUILL Lite
+
+There are three more options for the same command line. **`--rich`** and
+**`--plain`** start with a new document of that kind, whatever your setting
+says. **`--new-instance`** starts a second, separate QUILL Lite instead of
+handing the file to the one that is already open.
+
+### What you learned, and where to go next
+
+**Ctrl+Alt+F1** opens nine guided lessons in two tracks. Each step tells you
+what to press and what you should hear, **Try it** can do a step for you, and
+your place is remembered. If QUILL Lite will not start, the message tells you
+why and what to try. To reach a person, press **Ctrl+Alt+F2**, fill in the
+form, and send it from your own mail program, or just write to
+support@community-access.org. If QUILL Lite starts but seems wrong, `--check`
+gives support the facts they need.
+
+A good first lesson is *Open a file, and give it back unchanged*. For help
+inside the app any time, *What to press when you are lost* teaches the three
+keys that explain where you are: **F1**, **F6** and **Ctrl+F1**.
+
+After this chapter comes the Keyboard reference: every key QUILL Lite has,
+menu by menu.
+
+## Keyboard reference
+
+This is every key QUILL Lite has, grouped by menu, the same way the menus are
+laid out. You do not need to learn them all. Skim for the ones you use most,
+and come back when you wonder whether there is a key for something.
+
+**Ctrl+F1** shows this same list inside the app, and you can type part of a
+name to narrow it. If a key does not suit you, *Changing what a key does*, in
+Chapter 11, shows you how to pick another.
 
 <!-- keys:start -->
 
@@ -4193,14 +5251,14 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Shift+C** | Describe Character |
 | **Ctrl+Alt+C** | Character Details... |
 
-### Edit ▸ Matches
+#### Matches (in Edit)
 
 | Key | Command |
 |---|---|
 | **Ctrl+Shift+F3** | All Matches... |
 | **Ctrl+Alt+Shift+F3** | Count Occurrences |
 
-### Edit ▸ Lines
+#### Lines (in Edit)
 
 | Key | Command |
 |---|---|
@@ -4222,12 +5280,12 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Alt+T** | Trim Trailing Spaces |
 | **Ctrl+/** | Toggle Line Comment |
 | **Ctrl+Shift+Q** | Quote Lines |
-| **Ctrl+Alt+Shift+Q** | Remove Quote Marks |
+| **Alt+Shift+.** | Remove Quote Marks |
 | **Alt+Shift+X** | Delete Lines Containing... |
 | **Alt+Shift+W** | Hard Wrap Lines... |
 | **Ctrl+Alt+Shift+T** | Tidy Whitespace |
 
-### Edit ▸ Selection
+#### Selection (in Edit)
 
 | Key | Command |
 |---|---|
@@ -4253,7 +5311,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Alt+Shift+U** | Review Buffer... |
 | **Ctrl+Alt+Q** | Duplicate Selection |
 
-### Edit ▸ Clipboard
+#### Clipboard (in Edit)
 
 | Key | Command |
 |---|---|
@@ -4318,7 +5376,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Alt+Shift+F** | Switch Document Mode |
 | **Ctrl+Alt+F6** | Document Language... |
 
-### Format ▸ Line Spacing
+#### Line Spacing (in Format)
 
 | Key | Command |
 |---|---|
@@ -4326,7 +5384,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+5** | One and a Half Spacing |
 | **Ctrl+2** | Double Spacing |
 
-### Format ▸ Headings
+#### Headings (in Format)
 
 | Key | Command |
 |---|---|
@@ -4338,7 +5396,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Alt+6** | Heading 6 |
 | **Ctrl+Alt+0** | Body Text |
 
-### Format ▸ Structure
+#### Structure (in Format)
 
 | Key | Command |
 |---|---|
@@ -4366,7 +5424,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **F6** | Status Bar |
 | **Ctrl+Alt+Shift+A** | Go To Anything... |
 
-### Navigate ▸ Bookmarks
+#### Bookmarks (in Navigate)
 
 | Key | Command |
 |---|---|
@@ -4406,7 +5464,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Alt+Shift+M** | Quiet Mode |
 | **Ctrl+Alt+Shift+O** | Sound Scheme... |
 
-### Tools ▸ Spelling
+#### Spelling (in Tools)
 
 | Key | Command |
 |---|---|
@@ -4420,7 +5478,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Alt+Shift+;** | Dictionary Status... |
 | **Ctrl+Alt+Shift+F7** | Announcements... |
 
-### Tools ▸ AI
+#### AI (in Tools)
 
 | Key | Command |
 |---|---|
@@ -4434,7 +5492,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+F5** | Ask About an Image... |
 | **Ctrl+F3** | Tidy Dictated Text... |
 
-### Tools ▸ Dictionary
+#### Dictionary (in Tools)
 
 | Key | Command |
 |---|---|
@@ -4452,7 +5510,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Alt+Shift+;** | Rhymes |
 | **Ctrl+Alt+Shift+]** | Find the Word For... |
 
-### Tools ▸ Dictation
+#### Dictation (in Tools)
 
 | Key | Command |
 |---|---|
@@ -4461,7 +5519,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Shift+F11** | Recent Phrases... |
 | **Alt+Shift+F10** | My Words and Phrases... |
 
-### Tools ▸ Change Case
+#### Change Case (in Tools)
 
 | Key | Command |
 |---|---|
@@ -4471,7 +5529,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Alt+Shift+U** | Sentence case |
 | **Ctrl+Alt+Shift+N** | Invert Case |
 
-### Tools ▸ Indenting
+#### Indenting (in Tools)
 
 | Key | Command |
 |---|---|
@@ -4532,173 +5590,3 @@ as `Ctrl+Shift+.` and `Ctrl+Shift+,` because that is the same physical key and
 the spelling wx understands.
 
 <!-- keys:end -->
-
-## Activity and Repeat Last Result
-
-**Help > Activity...** (Shift+F9) lists everything QUILL Lite reported in this
-session -- a settings file that could not be written, a save that worked after
-an earlier failure, background work that finished after you closed the window
-that started it -- newest first, one sentence per row: whether it worked, what
-it was, and when. Enter on a row takes its first action; the buttons say what
-the selected row offers and are dimmed otherwise.
-
-- **Retry** does the action again the same way. For a settings file that could
-  not be saved, that is the save itself, so a full disk you have since cleared
-  is one keystroke from fixed.
-- **Open Folder** opens the folder in File Explorer with the file selected, so
-  you can see whether the disk is full or the folder is read only.
-- **Copy Details** copies the selected result as text, for a support message.
-  **Clear List** empties the list for this session.
-
-**Help > Repeat Last Result** (F9) says the newest result that mattered again
--- the last thing QUILL Lite itself told you, not the last thing your screen
-reader read -- and names what Activity offers for it. With nothing yet, it says
-so.
-
-Every document window shares one list, so a save that failed while you were in
-another document is in every window's Activity. Nothing in the list leaves this
-computer, and no document text is ever in it.
-
-**When a settings file cannot be saved.** QUILL Lite says so once and keeps
-your changes for the session. The Activity row carries Retry and Open Folder,
-and when a later save of the same file works, that is said too, so a failure
-you were told about is never left standing.
-
-## Getting help
-
-### If QUILL Lite does not start
-
-`QuillLite.exe` never fails silently. If the app's engine cannot start, a
-plain message opens that your screen reader reads on its own: "QUILL Lite did
-not start", the reason in words, the launch log that holds the details, and
-the support address.
-
-- If it says the zip was opened from inside, extract the whole zip first
-  (Applications key on the zip, then **Extract All...**) and open
-  `QuillLite.exe` from the extracted folder.
-- If it names a missing file or DLL, extract the zip again into an empty
-  folder and check your antivirus quarantine.
-- If it says Windows refused to run its files, move the folder somewhere you
-  own, such as Documents or a USB stick.
-- If it says "Python reported", send the launch log to support:
-  `data\logs\launch.log` beside a portable copy, or
-  `%APPDATA%\Quill\logs\QuillLite-launch.log` for an installed one. Each start
-  replaces it, so send it before you try again.
-- If nothing at all happens and there is no message, a QUILL Lite is probably
-  already running and the new launch handed over to it. Check the taskbar and
-  Task Manager.
-
-### Support by email
-
-Support is run by **Community Access**, and the address is
-**support@community-access.org**. A person reads it, and replies come back by
-email.
-
-Every message from QUILL Lite goes to that one address. Nothing is filed on
-GitHub or posted on any other public site, and QUILL Lite carries no GitHub
-token. (Stated here on 2026-09-26, when Quill Radio's feedback moved to the
-same address; QUILL Lite's always has.)
-
-### Get Help from Support, step by step
-
-The quickest way there is **Help > Get Help from Support...** (Ctrl+Alt+F2).
-Every app in the family answers it with the same window.
-
-**What the window asks**
-
-1. Press **Ctrl+Alt+F2**. The Get Help from Support window opens. Its first line
-   says the message goes to support@community-access.org and that nothing is
-   sent until you send it from your mail program.
-2. **What kind of message** (Alt+W) is a list: Something is broken, A question,
-   An accessibility problem, or An idea or request. Use the Up and Down arrows.
-   It only helps route your message; say anything you like below.
-3. **Subject** (Alt+U): a short line saying what the message is about, the way
-   an email subject does, such as "Spelling stops after I paste". Required.
-4. **What happened** (Alt+H): describe it in as much or as little detail as you
-   like. This is the part a person reads first. Required. Enter starts a new
-   line here, so press **Tab** to move on.
-5. **What you expected** (Alt+X): what you thought would happen instead.
-   Optional.
-6. **Steps to reproduce** (Alt+R): how somebody else could make it happen, such
-   as "Open a .docx, press F7, press Ctrl+V". Optional, and worth more than
-   anything else when you can give it.
-7. **Your email address** (Alt+E): where support should reply. Optional. The
-   message goes from your own mail account, so support can answer that address
-   anyway; fill this in only if you want the answer somewhere else.
-8. **Screen reader** (Alt+A): which one you use, if any. It is filled in from
-   the screen reader that is running, so usually you can leave it.
-9. A line below the fields says what else goes in, such as "Also included:
-   QUILL Lite 1.1.0, your QUILL AI support ID (...), and your Windows version."
-
-**Sending it**
-
-1. Press **Enter**, or Tab to **Send** and press **Space**.
-2. If the subject or What happened is empty, or the email address does not look
-   right, the first problem is spoken and the whole list is shown. Press
-   **Enter** to close it, fix the field, and send again.
-3. Otherwise your **own mail program opens with the whole message already
-   written**, addressed to support@community-access.org, with a subject such as
-   "[QUILL Lite 1.1.0] Spelling stops after I paste". You hear "Your mail
-   program is opening with the message ready. Nothing is sent until you send it
-   there." The Get Help window closes.
-4. **Press Send in your mail program.** Nothing leaves your computer until you
-   do, so you can read it over, add anything, or change your mind.
-
-**If you have no mail program**
-
-On a computer with webmail only, nothing can open, and QUILL Lite says "No mail
-program answered. Write to support@community-access.org." The whole message,
-with the address and the subject at the top, is on your clipboard. Start a new
-email to **support@community-access.org** in your webmail and paste it with
-**Ctrl+V**. The Get Help window stays open with what you typed, so nothing is
-lost.
-
-A very long message is shortened in the email, with a line saying so, and the
-complete text is put on your clipboard. QUILL Lite says when this happens;
-paste the full text over the shortened one with **Ctrl+V**.
-
-**What is included, and what is not**
-
-- Included: what you typed, the kind of message, QUILL Lite's name and version,
-  your Windows version, the screen reader you chose, and -- when this computer
-  is connected to QUILL's free AI -- its **support ID**, which is how support
-  finds your AI allowance without an account name or password.
-- Not included: your documents, your file names, your settings, or anything
-  you did not type. If support needs more, they will ask.
-- It is an ordinary email from your own account to Community Access. Nothing is
-  posted publicly, and QUILL Lite itself makes no connection to send it.
-
-**What happens next**
-
-A person at Community Access reads it and replies by email, usually to the
-address you sent from. To close the window without writing anything, press
-**Escape** or choose **Cancel**.
-
-Writing to **support@community-access.org** yourself, from any email account,
-always works just as well: there is no form you have to use. Say which app you
-were using and what happened.
-
-### The one thing worth attaching
-
-If QUILL Lite is starting but behaving oddly -- no formatting, every word called
-a misspelling, nothing spoken -- run it once with **`--check`**:
-
-```
-QuillLite.exe --check
-```
-
-It opens no window. It writes a dozen lines to **`check.log`** in your data
-folder (**Help ▸ About QUILL Lite** says where that is) and prints the same
-lines, saying which version this is, whether it is a frozen build, whether the
-native rich-text surface came up, which text mode it is in, which screen reader
-it can reach, whether the spelling dictionary actually loaded, and where your
-data lives.
-
-Those are the failures that make an app **start and then be quietly wrong**,
-which is the worst shape a fault can take when you cannot see the window. Paste
-that into your email and the first three questions are already answered.
-
-There are three other options on the same command line: **`--rich`** and
-**`--plain`** open with a new document of that kind whatever your setting says,
-and **`--new-instance`** starts a second, separate QUILL Lite instead of handing
-the file to the one you already have.

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.12" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Quill Converter User Guide: Converting Audio and Video on Your
 Own Computer</title>
@@ -12,7 +12,10 @@ Own Computer</title>
     */
     html {
       color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
       background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
     }
     body {
       margin: 0 auto;
@@ -37,11 +40,16 @@ Own Computer</title>
     }
     @media print {
       html {
-        background-color: white;
+        color-scheme: light only;
       }
-      body {
+      html, body, pre, code {
         background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
         color: black;
+      }
+      pre, code {
+        padding: 0;
       }
       p, h2, h3 {
         orphans: 3;
@@ -54,11 +62,8 @@ Own Computer</title>
     p {
       margin: 1em 0;
     }
-    a {
-      color: #1a1a1a;
-    }
-    a:visited {
-      color: #1a1a1a;
+    a, a:visited {
+      color: inherit;
     }
     img {
       max-width: 100%;
@@ -87,8 +92,11 @@ Own Computer</title>
     blockquote {
       margin: 1em 0 1em 1.7em;
       padding-left: 1em;
-      border-left: 2px solid #e6e6e6;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
       color: #606060;
+      color: light-dark(#606060, #b6b6b6);
     }
     code {
       white-space: pre-wrap;
@@ -112,7 +120,7 @@ Own Computer</title>
     }
     hr {
       border: none;
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       height: 1px;
       margin: 1em 0;
     }
@@ -129,11 +137,11 @@ Own Computer</title>
     }
     tbody {
       margin-top: 0.5em;
-      border-top: 1px solid #1a1a1a;
-      border-bottom: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
     }
     th {
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       padding: 0.25em 0.5em 0.25em 0.5em;
     }
     td {
@@ -172,7 +180,6 @@ Own Computer</title>
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <style>
     /* Accessible skip link: off-screen until it receives keyboard focus. */
@@ -1003,6 +1010,23 @@ Quill Converter leaves it alone.</li>
 <li><strong>Exit</strong> (File &gt; Exit, Ctrl+Q) really exits. Alt+F4
 closes the window.</li>
 </ul>
+<h2 id="finding-a-setting-or-a-command">Finding a setting or a
+command</h2>
+<p>Quill Converter keeps its options in its menus, so there is no
+settings window to search. Instead, <strong>Help &gt; Find a Setting or
+Command</strong> (<strong>Ctrl+Alt+Shift+S</strong>) searches every menu
+at once.</p>
+<ol type="1">
+<li>Press <strong>Ctrl+Alt+Shift+S</strong>.</li>
+<li>Type part of what you are looking for, such as “tags”. The list
+below narrows as you type, and each row says which menu the command is
+in. An option also says whether it is on or off.</li>
+<li>Press <strong>Down</strong> to move into the list, and
+<strong>Enter</strong> on the one you want.</li>
+</ol>
+<p>Enter does exactly what choosing that row from its menu would do. For
+an option, it switches it and tells you whether it is now on or off.
+Escape closes the window without doing anything.</p>
 <h2 id="keyboard-reference">Keyboard reference</h2>
 <p>The same list is in the app: Help &gt; Keyboard Shortcuts…
 (Ctrl+Alt+K) shows every key in a read-only window you can arrow
@@ -1155,6 +1179,10 @@ through.</p>
 <tr>
 <td>Help for This Window</td>
 <td>F1</td>
+</tr>
+<tr>
+<td>Find a Setting or Command…</td>
+<td>Ctrl+Alt+Shift+S</td>
 </tr>
 <tr>
 <td>User Guide</td>

@@ -23,16 +23,16 @@ TUTORIALS: tuple[Tutorial, ...] = (
         minutes=6,
         surfaces=("QUILL Lite",),
         summary=(
-            "Three genuinely different answers to the same problem, and when "
-            "each one is the right one."
+            "Three different ways to select a stretch of text without seeing it, "
+            "and when each one is the easiest."
         ),
         steps=(
             Step(
                 title="Take a whole thing in one key",
                 body=(
-                    "When what you want lines up with a word, a line, a "
-                    "paragraph, a sentence or a block, there is a key for it and "
-                    "you do not have to know where it starts."
+                    "If what you want is a whole word, line, sentence, paragraph "
+                    "or block, there is a key for it. You do not need to find "
+                    "where it starts. Try it now on the paragraph you are in."
                 ),
                 command="cmd_select_paragraph",
                 hear='"Selected paragraph", and how many words that was.',
@@ -40,9 +40,10 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Grow and shrink",
                 body=(
-                    "From whatever you have, step outwards a level at a time -- "
-                    "word, line, sentence, paragraph, block, everything -- and "
-                    "back in again. Each step says the scope it took."
+                    "Starting from whatever you have, you can grow the selection "
+                    "one step at a time: word, line, sentence, paragraph, block, "
+                    "then everything. You can shrink it back the same way. Each "
+                    "step tells you what it took."
                 ),
                 command="cmd_expand_selection",
                 hear="The new scope, and its word count.",
@@ -50,10 +51,10 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Mark a spot and walk to the end of it",
                 body=(
-                    "For anything that does not line up with a structure. Drop a "
-                    "marker, then move however you like -- arrows, Find, Go To "
-                    "Line, a bookmark -- and take everything between. No modifier "
-                    "held the whole way."
+                    "For anything that is not a neat word, line or paragraph. Drop "
+                    "a marker where the selection should start. Then move any way "
+                    "you like, with the arrows, Find, Go To Line or a bookmark. "
+                    "You do not have to hold any key down while you go."
                 ),
                 command="cmd_start_selection",
                 hear="The line and column where the marker went down.",
@@ -61,24 +62,24 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Finish it, and hear how far it reached",
                 body=(
-                    "The span is worked out now, from the marker and where you "
-                    "actually are. That is why you can use Find in between: its "
-                    "own selection does not get in the way."
+                    "When you reach the end, finish the selection. Everything "
+                    "between the marker and where you are now is selected. You "
+                    "can even use Find on the way, and it will not spoil it."
                 ),
                 command="cmd_complete_selection",
                 hear="How many words, and the lines it ran between.",
                 note=(
-                    "That line range is the only selection that carries one, "
-                    "because it is the only one whose reach you cannot work out "
-                    "from its name."
+                    "Hearing the line numbers is a quick way to check you caught "
+                    "the stretch you meant."
                 ),
             ),
             Step(
                 title="Or hold the Shift down without holding it",
                 body=(
-                    "Extend Selection Mode is the third answer: turn it on and "
-                    "every arrow extends instead of moving, with no modifier and "
-                    'no "selected" from your screen reader on every press.'
+                    "Here is a third way. Turn on Extend Selection Mode, and every "
+                    "arrow key selects as it moves, just as if you were holding "
+                    'Shift. Your screen reader does not say "selected" on every '
+                    "press, either. Turn it off the same way when you are done."
                 ),
                 command="cmd_toggle_extend_selection_mode",
                 hear='"Extend selection mode on", and where it started.',
@@ -86,18 +87,18 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Check what you have before you replace it",
                 body=(
-                    "There is no glance that confirms a selection is the one you "
-                    "meant, and the next character you type replaces it. Say "
-                    "Selection reads it back; long ones are summarised rather "
-                    "than read in full."
+                    "Before you type over a selection, it is worth checking it is "
+                    "the one you meant, because the next key you type replaces it. "
+                    "Say Selection reads it back to you. A long one is summed up "
+                    "instead of read in full."
                 ),
                 command="cmd_say_selection",
                 hear="The selection, or a summary of it with its size.",
             ),
         ),
         closing=(
-            "Put back the one you just lost with Reselect. It remembers every "
-            "way of selecting, not only the marker."
+            "Lost a selection by accident? Reselect Last Selection puts it back, "
+            "however you made it."
         ),
         then=("finding-your-way-back",),
     ),
@@ -108,17 +109,17 @@ TUTORIALS: tuple[Tutorial, ...] = (
         minutes=5,
         surfaces=("QUILL Lite",),
         summary=(
-            "Bookmarks, marks and the Back key -- three things that sound alike "
-            "and answer different questions."
+            "Bookmarks, marks and Go Back. They sound alike, but each one helps "
+            "you in a different moment."
         ),
         steps=(
             Step(
                 title="Keep a place you mean to come back to",
                 body=(
-                    "Nine numbered bookmarks, per file, and they are still there "
-                    "tomorrow. A bookmark survives editing: it remembers the words "
-                    "around it, so inserting three paragraphs above one does not "
-                    "move it off its line."
+                    "You have nine numbered bookmarks in every file, and they are "
+                    "still there tomorrow. A bookmark stays with its words, so if "
+                    "you add three paragraphs above it, it is still on the right "
+                    "line."
                 ),
                 command="cmd_set_bookmark_1",
                 hear="The bookmark's number, and the line it went on.",
@@ -126,34 +127,41 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Drop a pin you will forget",
                 body=(
-                    "A mark is different: it is where you were standing before you "
-                    "went to look something up. No number, no label, no list. Pop "
-                    "Mark uses it up getting back."
+                    "A mark is quicker and lighter. It just remembers where you "
+                    "were before you went to look something up. There is no number "
+                    "and no list. Pop Mark takes you back and then forgets it."
                 ),
                 command="cmd_set_mark",
                 hear="The line, and how many marks you now have.",
             ),
             Step(
                 title="Go and look something up, then come back",
-                body=("Move a long way off -- Ctrl+End will do -- and pop the mark."),
+                body=(
+                    "Move a long way off. Ctrl+End, the end of the document, will "
+                    "do. Now pop the mark, and you are back where you were."
+                ),
                 command="cmd_pop_mark",
                 hear="The line you came back to, and how many marks are left.",
             ),
             Step(
                 title="Undo the jump",
                 body=(
-                    "Back is the undo for navigation. Every jump in QUILL Lite "
-                    "goes through it -- bookmarks, marks, headings, Go To, search "
-                    "results -- so there is no jump it cannot take you back from."
+                    "Go Back works like the Back button in a web browser. Every "
+                    "jump in QUILL Lite can be undone with it: bookmarks, marks, "
+                    "headings, Go To and search results. So you can always get "
+                    "back to where you were."
                 ),
                 command="cmd_back_location",
                 hear="Where you were before the jump.",
                 note=(
-                    "Without this, every jump is one-way: you followed a heading "
-                    "and have no way back to the paragraph you were writing except "
-                    "a line number nobody told you."
+                    "This is handy after following a heading. One key brings you "
+                    "back to the paragraph you were writing."
                 ),
             ),
+        ),
+        closing=(
+            "Bookmarks are for places you will come back to tomorrow. A mark is "
+            "for right now. Go Back is for any jump you did not mean."
         ),
         then=("skimming-something-long",),
     ),
@@ -164,15 +172,16 @@ TUTORIALS: tuple[Tutorial, ...] = (
         minutes=5,
         surfaces=("QUILL Lite",),
         summary=(
-            "What a sighted reader gets from scrolling and glancing, and the "
-            "three ways to get it without one."
+            "Get a feel for a long document the way a sighted reader does by "
+            "scrolling, using its headings instead."
         ),
         steps=(
             Step(
                 title="Ask for the shape",
                 body=(
-                    "The headings list is every heading in the document, in order, "
-                    "each reading its level and its text. Enter goes there."
+                    "The headings list shows every heading in the document, in "
+                    "order. Each one tells you its level and its words. Press "
+                    "Enter on one to go there."
                 ),
                 command="cmd_list_headings",
                 hear="Each heading, with its level.",
@@ -180,8 +189,9 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Walk it instead",
                 body=(
-                    "Next and Previous Heading move by structure rather than by "
-                    "line, and each arrival says the level and the text."
+                    "Next Heading and Previous Heading move from heading to "
+                    "heading instead of line by line. Each time you arrive, you "
+                    "hear the level and the words."
                 ),
                 command="cmd_next_heading",
                 hear='"Heading 2", and the heading\'s words.',
@@ -189,10 +199,10 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Skim by section",
                 body=(
-                    "Walking sections says the heading, whether it is folded, and "
-                    "**how many lines are under it**. That last part is the glance: "
-                    "it is how you find out a section is enormous without reading "
-                    "any of it."
+                    "Moving by section tells you the heading, whether it is "
+                    "folded, and **how many lines are under it**. That last part "
+                    "is your glance. It tells you a section is huge without "
+                    "reading any of it."
                 ),
                 command="cmd_next_fold",
                 hear="The heading, its state, and its size in lines.",
@@ -200,9 +210,10 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Mark one as dealt with",
                 body=(
-                    "Folding a section is a note to yourself. Nothing is hidden "
-                    "from the cursor and Find still finds things inside it -- you "
-                    "simply hear that it is folded when you pass by."
+                    "Folding a section is a note to yourself that you are done "
+                    "with it. Nothing is hidden: your cursor still goes in and "
+                    "Find still finds things there. You just hear that it is "
+                    "folded as you pass."
                 ),
                 command="cmd_toggle_fold",
                 hear="How many lines went with it.",
@@ -210,14 +221,19 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Rearrange it, if the shape is wrong",
                 body=(
-                    "The Heading Organizer is every heading as one list. Tab "
-                    "demotes, Shift+Tab promotes, and Move Up and Move Down take "
-                    "the heading and everything under it."
+                    "The Heading Organizer shows every heading as one list. Tab "
+                    "makes a heading one level lower, Shift+Tab one level higher, "
+                    "and Move Up and Move Down carry the heading along with "
+                    "everything under it."
                 ),
                 command="cmd_heading_organizer",
                 hear="Each heading as you arrow, with a preview of its section.",
-                note="Nothing changes until Apply, and one Ctrl+Z puts it all back.",
+                note="Nothing changes until you press Apply, and one Ctrl+Z puts it all back.",
             ),
+        ),
+        closing=(
+            "With headings, a long document becomes something you can move around "
+            "in quickly, a section at a time."
         ),
     ),
     Tutorial(
@@ -227,60 +243,61 @@ TUTORIALS: tuple[Tutorial, ...] = (
         minutes=5,
         surfaces=("QUILL Lite",),
         summary=(
-            "How QUILL Lite tells you a word is wrong without interrupting the "
-            "sentence you are writing, and the one key that fixes it."
+            "How QUILL Lite lets you know a word looks wrong without breaking "
+            "into your sentence, and the one key that fixes it."
         ),
         steps=(
             Step(
                 title="Type something wrong, and keep going",
                 body=(
-                    "A moment after you finish the word, the status bar says it "
-                    "may be misspelled. It is not spoken over your typing, because "
-                    "a spell checker that interrupts the sentence you are writing "
-                    "is one people switch off."
+                    "Type a word wrong on purpose and carry on. A moment after you "
+                    "finish the word, the status bar notes that it may be "
+                    "misspelled. Nothing is spoken over your typing, so you can "
+                    "finish your thought first."
                 ),
                 hear="Nothing, unless you asked for a sound or a sentence in Preferences.",
             ),
             Step(
                 title="Fix the word you are standing in",
                 body=(
-                    "The Applications key is your squiggle. Press it with the "
-                    "cursor in the word, and **the first Down arrow lands on a "
-                    "suggestion**. Enter replaces it; the cursor does not move and "
+                    "The Applications key is your red squiggle. Put the cursor in "
+                    "the word and press it. **The first Down arrow lands on a "
+                    "suggestion**. Press Enter to use it. Your cursor stays put and "
                     "no dialog opens."
                 ),
                 keys=("Applications", "Shift+F10"),
                 hear="The suggestions, in order, as you arrow.",
                 note=(
-                    "Everything else about the word -- ignore, teach, next, "
-                    "previous -- is one row below the suggestions, in the same "
-                    "place every time."
+                    "Everything else you can do with the word, like ignore it, "
+                    "add it, or go to the next or previous one, is in the same "
+                    "menu just below the suggestions."
                 ),
             ),
             Step(
                 title="Teach it a word",
                 body=(
-                    "Your own dictionary keeps it for good. The document's own "
-                    "keeps it beside the file, so anybody who opens that file gets "
-                    "it too -- which is the right home for a product name and the "
-                    "wrong one for your surname."
+                    "You can add a word to your own dictionary, and it is known "
+                    "for good. Or add it to the document's dictionary, which "
+                    "travels with that file, so anyone who opens it gets the word "
+                    "too. That suits a product name better than your surname."
                 ),
                 hear="Which of the two it was added to, by name.",
             ),
             Step(
                 title="Check the whole thing",
                 body=(
-                    "F7 walks the document one word at a time. It starts where "
-                    "your cursor is and offers to carry on from the beginning when "
-                    "it reaches the end."
+                    "F7 goes through the document one word at a time. It starts "
+                    "where your cursor is, and when it reaches the end it offers "
+                    "to carry on from the beginning."
                 ),
                 command="cmd_spell_review",
                 hear="Each word, its suggestions, and a summary of what changed at the end.",
             ),
         ),
         closing=(
-            "Spelling stays quiet in source and configuration files whatever the "
-            "settings say -- every identifier in one would be a false alarm."
+            "One more thing: spelling stays quiet in program code and settings "
+            "files, whatever your settings say, so you are not told about every "
+            "made-up name in them."
         ),
     ),
     Tutorial(
@@ -290,38 +307,36 @@ TUTORIALS: tuple[Tutorial, ...] = (
         minutes=6,
         surfaces=("QUILL Lite",),
         summary=(
-            "The one feature that sends anything off this computer: how to turn "
-            "it on, what goes when you use it, and what it will not do."
+            "AI help is the one feature that sends anything off your computer. "
+            "Here is how to turn it on, what is sent when you use it, and what "
+            "it will not do."
         ),
         steps=(
             Step(
                 title="Turn it on, and agree to it separately",
                 body=(
-                    "AI help is off until two different things are true: the "
-                    "feature is switched on, and you have accepted the agreement. "
-                    "They are separate on purpose. Switching a feature on answers "
-                    "'does this exist in my copy'. It does not answer 'have I "
-                    "agreed to what it does' -- and an area turned on by a "
-                    "profile, by a settings import, or by somebody else using "
-                    "this machine is not you agreeing to anything."
+                    "AI help stays off until two things are true: the feature is "
+                    "switched on, and you have said yes to the privacy agreement. "
+                    "These are two separate steps, so nothing is ever sent just "
+                    "because a profile, a settings file or someone else switched "
+                    "the feature on. Only your own yes counts."
                 ),
                 command="cmd_ai_privacy",
                 hear="The agreement, read out in full before you are asked.",
                 note=(
-                    "Three doors reach the same answer: this command, a tick box "
-                    "in Preferences, and switching the area on in Customize "
-                    "Features. It opens whether or not you have accepted, "
-                    "because a door you can only reach by first agreeing to "
-                    "something is not a door."
+                    "You can reach the agreement three ways: this command, a "
+                    "check box in Preferences, or switching AI help on in "
+                    "Customize Features. You can always open it to read it, "
+                    "whether or not you have agreed."
                 ),
             ),
             Step(
                 title="Connect this computer, once",
                 body=(
                     "There is no account, no password and no email address. You "
-                    "are shown an eight-character code; you open the web page on "
-                    "anything with a browser -- this machine, a phone -- and type "
-                    "the code in. Asking for that code is the first moment "
+                    "are given an eight-character code. Open the web page on "
+                    "anything with a browser, this computer or your phone, and "
+                    "type the code in. Asking for the code is the first moment "
                     "anything is sent."
                 ),
                 command="cmd_ai_sign_in",
@@ -330,37 +345,36 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "in place rather than opening another one."
                 ),
                 note=(
-                    "Each computer connects on its own, and signing one out "
-                    "leaves the others connected."
+                    "Each computer connects on its own. Signing one out leaves "
+                    "the others connected."
                 ),
             ),
             Step(
                 title="Ask about what is in front of you",
                 body=(
-                    "Type a question about the open document -- 'what does this "
-                    "say about the deadline' -- and the answer comes back with "
-                    "the part of the document it came from, so you can go and "
-                    "read that part yourself."
+                    "Type a question about the open document, like 'what does "
+                    "this say about the deadline'. The answer comes back along "
+                    "with the part of the document it came from, so you can go "
+                    "and read that part yourself."
                 ),
                 command="cmd_ai_ask_document",
                 hear=("The passages it chose, before anything is sent, and then the answer."),
                 note=(
-                    "A long document is a fair thing to ask about. It does not "
-                    "send the file -- it picks the three passages most likely to "
-                    "answer you and sends those."
+                    "Long documents are fine. It does not send the whole file. It "
+                    "picks the three passages most likely to answer you and sends "
+                    "only those."
                 ),
             ),
             Step(
                 title="Or hand it a job",
                 body=(
-                    "It is one pad with five rows. Four of them act on what you "
-                    "have selected, or on the paragraph or section you choose "
-                    "with Send this much: summarize it, rewrite it clearer and "
-                    "shorter, proofread it, or explain a passage that will not "
-                    "sit still. The fifth is the question you just asked. "
-                    "Nothing is applied for you -- the answer arrives with "
-                    "Replace My Selection, Insert Below and Copy under it, and "
-                    "proofreading changes not one character until you press one."
+                    "The AI pad has five rows. Four of them work on what you have "
+                    "selected, or on the paragraph or section you pick with Send "
+                    "this much: summarize it, rewrite it clearer and shorter, "
+                    "proofread it, or explain a tricky passage. The fifth is the "
+                    "question you just asked. Nothing changes in your document by "
+                    "itself. The answer comes with Replace My Selection, Insert "
+                    "Below and Copy underneath, and you choose."
                 ),
                 command="cmd_ai_assistant",
                 hear="What is about to be sent, before it goes.",
@@ -368,25 +382,23 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Know what you have left",
                 body=(
-                    "The service is free, so it has a ceiling. One question can "
-                    "carry about two thousand two hundred and fifty words of document, "
-                    "and "
-                    "you get a hundred requests a month. If what you asked about "
-                    "is too big, you are told in words before anything is sent, "
-                    "so you can select less and ask again."
+                    "The service is free, so it has limits. One question can carry "
+                    "about two thousand two hundred and fifty words of your "
+                    "document, and you get a hundred requests a month. If what you "
+                    "asked about is too big, you are told in plain words before "
+                    "anything is sent, so you can select less and try again."
                 ),
                 command="cmd_ai_usage",
                 hear="What you have used and what is left.",
                 note=(
-                    "The limits are read from the service rather than built into "
-                    "the program, so they can be raised without you installing "
-                    "anything."
+                    "The limits can change from time to time. Usage always shows "
+                    "the numbers that apply to you right now."
                 ),
             ),
         ),
         closing=(
-            "What is recorded is how many requests you made and how big they "
-            "were. What you wrote, and what came back, is not."
+            "What is kept is how many requests you made and how big they were. "
+            "What you wrote, and what came back, is not kept."
         ),
     ),
 )

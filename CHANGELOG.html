@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.12" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Changelog</title>
   <style>
@@ -11,7 +11,10 @@
     */
     html {
       color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
       background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
     }
     body {
       margin: 0 auto;
@@ -36,11 +39,16 @@
     }
     @media print {
       html {
-        background-color: white;
+        color-scheme: light only;
       }
-      body {
+      html, body, pre, code {
         background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
         color: black;
+      }
+      pre, code {
+        padding: 0;
       }
       p, h2, h3 {
         orphans: 3;
@@ -53,11 +61,8 @@
     p {
       margin: 1em 0;
     }
-    a {
-      color: #1a1a1a;
-    }
-    a:visited {
-      color: #1a1a1a;
+    a, a:visited {
+      color: inherit;
     }
     img {
       max-width: 100%;
@@ -86,8 +91,11 @@
     blockquote {
       margin: 1em 0 1em 1.7em;
       padding-left: 1em;
-      border-left: 2px solid #e6e6e6;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
       color: #606060;
+      color: light-dark(#606060, #b6b6b6);
     }
     code {
       white-space: pre-wrap;
@@ -111,7 +119,7 @@
     }
     hr {
       border: none;
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       height: 1px;
       margin: 1em 0;
     }
@@ -128,11 +136,11 @@
     }
     tbody {
       margin-top: 0.5em;
-      border-top: 1px solid #1a1a1a;
-      border-bottom: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
     }
     th {
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       padding: 0.25em 0.5em 0.25em 0.5em;
     }
     td {
@@ -171,7 +179,6 @@
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <style>
     /* Accessible skip link: off-screen until it receives keyboard focus. */
@@ -237,13 +244,1025 @@
 <main id="main-content" tabindex="-1">
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
-<h3 id="qc-reliability-pass-2026-09-30">QC reliability pass
+<h3
+id="keys-that-did-nothing-and-equations-that-did-not-export-2026-10-03">Keys
+that did nothing, and equations that did not export (2026-10-03)</h3>
+<ul>
+<li><strong>QUILL key, then G now opens Open From Favorite
+Folder</strong>, as the keyboard reference has said all along. The QUILL
+key used to catch G itself and open Quick Nav, which has its own key
+(Ctrl+Shift+Z).</li>
+<li><strong>Radio Play/Pause is QUILL key, then 2.</strong> It was on
+QUILL key, then N, which the QUILL key keeps for browse mode, so it
+never played anything. It now sits with Stop (0) and Mute (9).</li>
+<li><strong>Unquote Lines is Alt+Shift+.</strong> (Alt, Shift and the
+period), in QUILL and in QUILL Lite, where it is called Remove Quote
+Marks. Its old key, Ctrl+Alt+Shift+Q, is QUILL’s show-and-hide key for
+the whole of Windows, so Windows handed it to that instead.</li>
+<li><strong>The language suggestion names the right key.</strong> “This
+looks like Python” used to say press Ctrl+Shift+L, which starts a bullet
+list. It now names whatever Set Document Language is on (Ctrl+Alt+F6
+unless you changed it).</li>
+<li><strong>Insert Equation writes <code>\(...\)</code> and
+<code>$$...$$</code></strong>, the same as the Math Equations Quillin.
+It used to write single $ signs, which neither the preview nor Word
+export recognised, so the equation stayed as plain text. Select an old
+one and insert it again to update it.</li>
+</ul>
+<h3
+id="quill-radio-local-media-your-own-files-in-playlists-2026-10-03">Quill
+Radio: Local Media, your own files in playlists (2026-10-03)</h3>
+<ul>
+<li><strong>Station &gt; Local Media… (Ctrl+O in Quill Radio)</strong>
+opens a peer window of playlists of local audio and video files, and
+Browse Stations gains a Local Media branch under Favorites. Files or a
+whole folder (recursive, natural order, followed for new files),
+M3U/M3U8/PLS in and out, an empty state whose focused control is Add
+Media Files, playing/paused/missing marked in the row text, shuffle as
+one stable permutation, repeat off/all/one, Play Next, Up Next, Stop
+After This Item and Continue Where I Left Off. Keyboard editing with
+spoken positions: Alt+Shift+Up/Down/Home/End, Move to Position (Ctrl+J),
+cut and paste as a move, Insert/Shift+Insert, Delete (never the file),
+sort once, and undo through the shared undo slot. Playback is the
+ordinary radio player on a file station; <code>track_end</code> hands a
+natural end to the playlist, and the chapter keys move by item when
+there are no chapters left. The shared <code>PlayQueue</code> gains
+<code>follow()</code> so an edited list keeps its shuffled order. Store:
+<code>radio-local-media.json</code>, schema-stamped and loaded through
+<code>versioned_store</code>. No network
+(<code>quill/core/radio/local_media.py</code>,
+<code>local_media_files.py</code>, <code>local_media_edit.py</code>,
+<code>browse_local_media.py</code>,
+<code>quill/ui/radio/local_media_*.py</code>, a Radio tutorial, and the
+guide section “Your own music and audiobooks: Local Media”).</li>
+</ul>
+<h3
+id="release-channels-phases-2-to-4-a-signed-list-per-app-runtime-slots-and-safe-ways-back-2026-10-03">Release
+channels, Phases 2 to 4: a signed list per app, runtime slots, and safe
+ways back (2026-10-03)</h3>
+<ul>
+<li><strong>A signed release list per app</strong>
+(<code>docs/site/updates/v2/&lt;app&gt;.json</code> and its
+<code>.sig</code>, <code>quill/core/updater/feed.py</code>,
+<code>feed_fetch.py</code>): the signature is over the exact bytes
+against the bundled feed key(s), a lower <code>sequence</code> than one
+already seen is refused, a list past its 90-day <code>expires_at</code>
+is “couldn’t check”, and the last good list is cached for offline
+answers. QUILL, QUILL Lite, Quill Radio and QUILL Cast read it first;
+only a 404 (no list published yet) falls back to the GitHub path, and a
+list that exists but cannot be trusted never does. Downloads named by
+the list resume and are checked against its SHA-256
+(<code>download.py</code>).</li>
+<li><strong>Background downloads on Beta and Dev</strong>
+(<code>background.py</code>,
+<code>quill/ui/updates/background.py</code>): the silent check fetches
+first and offers after, never installing without asking; held on a
+metered connection, in Quiet Hours and while Quill Radio records, each
+hold written to Update History. Stable is unchanged.</li>
+<li><strong>Publishing and promotion tooling</strong>
+(<code>scripts/publish_release.py</code>,
+<code>promote_release.py</code>, <code>feed_tool.py</code>,
+<code>dev_build_plan.py</code> over
+<code>quill/tools/release_feed.py</code>): Beta and Dev listings,
+promotion as the same files with checks P1-P12 (final-numbered builds on
+Beta first, 7 days on Beta or a written reason kept in the list,
+screen-reader sign-off for Stable), the 30-release page budget
+(GATE-RELEASE-PAGE), withdrawal, and 90-day refresh. The signing key
+stays on the owner’s computer; <code>promote-release.yml</code> (GitHub
+Environment <code>stable-promotion</code>) writes unsigned and opens a
+pull request, and <code>dev-builds.yml</code> publishes daily unsigned
+Dev builds to <code>Community-Access/quillville-dev-builds</code>.
+GATE-FEED and the release-feeds row in <code>platform_report</code>
+(with a 14-day expiry warning) guard the lists.</li>
+<li><strong>Runtime slots</strong> (<code>runtime_slots.py</code>,
+<code>installer/shared-runtime.iss</code>,
+<code>runtime_resolve.c</code>): Beta and Dev apps get their own
+shared-runtime folder (<code>Runtime\3.13-beta</code>,
+<code>3.13-dev</code>), chosen by <code>/CHANNEL=</code> and recorded as
+<code>[runtime] slot=</code> beside the launcher; runtime refs count by
+slot; a Beta runtime repairs from <code>runtime-beta</code> and a Dev
+one asks to be reinstalled; GATE-SIBVER is channel-aware. With a slot,
+an app moves channel on its own. The risk window states the extra 335
+MB.</li>
+<li><strong>Safe ways back to Stable</strong>
+(<code>going_back.py</code>, the Go back to Stable windows): going back
+is offered only when Stable can read every data format this computer has
+written (<code>downgrade_verdict</code>); otherwise Wait for Stable, or
+put back the copy saved when the app joined Beta (a copy of now first,
+shared files a sibling on Beta wrote left alone, the ledger lowered to
+match). <code>UnsafeDowngradeError</code>
+(QUILL-UPDATE-CHANNEL-UNSAFE-DOWNGRADE) refuses anything else.</li>
+<li><strong>An update that does not start undoes itself</strong>
+(<code>apply.py</code>, <code>apply_script.py</code>,
+<code>self_update.py</code>): the helper waits two minutes for the new
+version to say it started, then runs the kept installer of the previous
+version, or swaps a portable copy’s <code>.previous</code> folder back;
+the app says so once and Update History records it. The previous
+installer is kept until 3 successful starts or 7 days.</li>
+</ul>
+<h3
+id="release-channels-phases-0-and-1-stable-beta-and-dev-in-quill-quill-lite-quill-radio-and-quill-cast-2026-10-03">Release
+channels, Phases 0 and 1: Stable, Beta and Dev in QUILL, QUILL Lite,
+Quill Radio and QUILL Cast (2026-10-03)</h3>
+<ul>
+<li><strong>Help &gt; Release Channel… in all four apps</strong>, plus a
+row in each app’s Preferences, opens one shared window
+(<code>quill/ui/updates/</code>): Stable, Beta and Dev as a radio group
+that only <em>explains</em> as you arrow (nothing changes until Switch),
+a read-only “What this means” box, and unticked “Also move my other
+QuillVille apps” checkboxes. Beta and Dev go through a risk window in
+plain words (what could go wrong, how your settings are protected, how
+to come back) that does nothing until “I understand” is ticked; Stay on
+Stable is the default and Escape. Joining saves a
+<code>joined-beta</code>/<code>joined-dev</code> copy first through each
+app’s own backup (<code>.qrbackup</code>, <code>.qcbackup</code>, or a
+zip of QUILL’s and QUILL Lite’s settings files) and aborts with the
+reason if it cannot. Coming back to Stable is a same-version flip on a
+final build, otherwise “Wait for Stable”: no downgrade is ever
+installed, Beta offers stop, and the check moves you back and says so
+once Stable reaches the installed version. A read-only Update History
+(<code>update-history.jsonl</code>) is one button away. No chord in any
+of the four: the Alt+Shift+F4 first given to it closed the window
+wherever Windows read it as Alt+F4 (a dialog, a separate Quill Radio
+window), so it was dropped under family rules 4 and 9. The route is the
+Help menu’s access letter (Alt+H, I in QUILL; Alt+H, C in QUILL Lite;
+Alt+H, N in Radio; Alt+H, L in Cast) and the Preferences row
+(<code>UNBOUND_WITH_REASON</code> in
+<code>test_family_rules_and_gates.py</code>,
+<code>KEYLESS_WITH_REASON</code> in <code>test_lite_commands.py</code>,
+the Alt path in <code>quill/ui/updates/shell.py</code>’s labels).</li>
+<li><strong>The channel lives in one family file</strong>,
+<code>%LOCALAPPDATA%\QuillVille\channels.json</code> (a portable copy’s
+<code>data</code> folder; <code>quill/core/updater/channels.py</code>),
+written atomically and classified in <code>persistence_audit</code>; an
+unreadable file is set aside and read as everything on Stable. QUILL’s
+old Get beta updates setting carries across once and is kept in step for
+one cycle; its Preferences row is now the channel and a button.</li>
+<li><strong>Every update check honours the channel</strong>
+(<code>quill/core/updater/policy.py</code>, <code>check.py</code>):
+Stable never sees a pre-release, by GitHub’s flag or by version; Beta
+sees Beta and candidates; Dev sees everything; newest by version always
+wins. A build that starts as a pre-release with nothing stored is put on
+its own channel once and says so – this replaces QUILL’s silent
+auto-enrol and its “switch to beta?” offer on an up-to-date check. The
+v1 manifest’s version is offered only to Beta and Dev when it is a
+pre-release.</li>
+<li><strong>The interim shared-runtime rule</strong>
+(<code>quill/core/updater/runtime_rule.py</code>): QUILL Lite, Quill
+Radio and QUILL Cast may join Beta only alone on the runtime, or by
+moving together; an installed runtime app with no channel support yet
+keeps them on Stable. Portable copies and QUILL itself move freely.</li>
+<li><strong>Phase 0 hazards fixed.</strong> One version parser,
+<code>quill/core/versioning.py</code> (PEP 440 order with semver
+spelling: dev &lt; alpha &lt; beta &lt; rc &lt; final, two Dev builds on
+one day ordered, <code>+sha</code> ignored, tags understood), behind
+<code>updates._version_tuple</code> and GATE-SIBVER’s
+<code>parse_version</code>; <code>select_latest</code> replaces the
+“first stable in GitHub’s list” shortcuts in the sibling and QUILL Lite
+checks; the GitHub release list asks for 100 a page and follows up to
+two “next” links (one reviewed egress site,
+<code>_fetch_release_json</code>); QUILL’s own list now skips
+sibling-app tags explicitly. QUILL Cast passes the installer’s version
+to its check and both Cast installers write
+<code>quill-app-version.ini</code>; Cast joins GATE-APPVER and
+GATE-SIBVER. <code>quill/core/data_formats.py</code> and the per-machine
+<code>data-format-ledger.json</code>
+(<code>data_format_ledger.py</code>) start recording what each app
+writes, at every launch (recording only). <code>release_tags</code>
+grandfathers QUILL Lite’s <code>quill-lite-v</code> tag key.
+<code>windows-release.yml</code> reads the channel from the tag:
+<code>v1.0.0</code> is Stable and not a prerelease,
+<code>-beta</code>/<code>-rc</code>/<code>-dev</code> tags are, and from
+1.0.0 only Stable tags refresh the v1 feed.</li>
+</ul>
+<h3
+id="version-numbers-quill-radio-320-quill-lite-120-quill-cast-200-2026-10-03">Version
+numbers: Quill Radio 3.2.0, QUILL Lite 1.2.0, QUILL Cast 2.0.0
+(2026-10-03)</h3>
+<ul>
+<li>Quill Radio goes from 3.0.4 to 3.2.0. The release written up as
+3.1.1 was never published, so there is no public 3.1; its notes are now
+<code>standalone/radio/docs/release-notes-3.2.md</code> (Help &gt;
+Release Notes opens them, and the site sync points there).</li>
+<li>QUILL Lite 1.2.0 follows 1.1.2 and delivers everything the 1.1 notes
+promised for 1.2.0; its notes are
+<code>standalone/quilllite/docs/release-notes-1.2.md</code>.</li>
+<li>QUILL Cast is 2.0.0 everywhere: its menus, README, changelog, PRD
+and release notes.</li>
+</ul>
+<h3
+id="quill-radio-youtube-live-chat-sponsor-skipping-and-filtered-search-2026-10-03">Quill
+Radio: YouTube live chat, sponsor skipping and filtered search
+(2026-10-03)</h3>
+<ul>
+<li><strong>Live Chat</strong> (Video &gt; YouTube, Ctrl+Alt+Shift+7,
+and on a video’s row):
+<code>quill/core/radio/youtube_live_chat.py</code> (rows, emoji and link
+words, rate-limited coalescing announcer, pause feed) and
+<code>youtube_live_chat_reader.py</code> (chat-downloader on a daemon
+thread, polite reconnects, one spoken failure, clean stop); the window
+(<code>quill/ui/radio/youtube_live_chat_window.py</code>) appends
+without moving the selection or focus, follows only on request from the
+last row, and has Ctrl+Up/Down by author, Ctrl+J/L/T, Space to pause,
+Ctrl+S for speech and F6. <code>chat-downloader==0.2.8</code> joins the
+<code>youtube</code> extra, both PyInstaller specs and the runtime and
+portable inventories.</li>
+<li><strong>YouTube Video window</strong> (Ctrl+Alt+Shift+8):
+description, timestamped moments that jump playback, premiere countdown
+with a reminder, Save Audio. <strong>Skip Sponsor Segments</strong>
+(Ctrl+Alt+Shift+9): SponsorBlock, off by default, k-anonymous
+hash-prefix requests. <strong>Search YouTube with Filters</strong>
+(Ctrl+Alt+Shift+0): YouTube’s combined <code>sp</code> filter (type,
+date, length, sort) and YouTube Music songs. Channels gain Shorts and
+About This Channel; My YouTube gains History.</li>
+<li>Gates: three new egress sites reviewed (<code>ChatDownloader</code>
+added as an egress marker), the SponsorBlock store classified,
+dialog/help/accessible-name/ reachability snapshots extended with only
+the new keys, keyboard and F1 references regenerated.</li>
+</ul>
+<h3
+id="quill-radio-find-a-station-by-the-team-it-carries-and-your-own-station-tags-2026-10-03">Quill
+Radio: find a station by the team it carries, and your own station tags
+(2026-10-03)</h3>
+<ul>
+<li><strong>Edit Station Tags…</strong> on every live station’s row menu
+(Browse/Search rows, Search Stations results, the main window’s
+favorites, the Favorites Manager) and <strong>Edit Tags for the Playing
+Station</strong> on the Command Palette: your own comma-separated tags,
+with the directory’s shown read-only. Kept with the favorite
+(<code>FavoriteStation.user_tags</code>), or for any other station in
+<code>radio-station-tags.json</code>; both are in backups and Export My
+Setup, and Station Details reads them beside the directory’s tags
+(<code>quill/core/radio/station_tags.py</code>,
+<code>quill/ui/radio/station_tags_dialog.py</code>).</li>
+<li>A hand-checked list of English-language radio flagships for MLB,
+NFL, NBA, WNBA, NHL and MLS teams ships as
+<code>quill/data/sports_flagships.json</code>, with a public source per
+team and call signs rather than stream addresses; loaded lazily, cached,
+and an empty list when missing or broken
+(<code>quill/core/radio/sports_flagships.py</code>).</li>
+<li>Search Stations, Search All Sources and the Favorites filter match
+names, directory tags, your tags and the flagship list (team, aliases,
+league, sport), so <code>Tigers</code>, <code>Detroit baseball</code>
+and <code>MLB</code> find WXYT, and the row says why (“carries the
+Detroit Tigers”). Flagships resolve against the local catalog first and
+Radio Browser’s existing name search only as a capped fallback
+(<code>quill/core/radio/station_lookup.py</code>,
+<code>quill/ui/radio/station_lookup_lane.py</code>).</li>
+</ul>
+<h3
+id="quill-radio-youtube-search-comments-following-the-bell-and-my-youtube-2026-10-03">Quill
+Radio: YouTube search, comments, following, the bell, and My YouTube
+(2026-10-03)</h3>
+<ul>
+<li><strong>Station &gt; Search YouTube… (Ctrl+Shift+6)</strong>
+searches YouTube’s results page once per type (videos, playlists,
+channels, with YouTube’s own <code>sp</code> filters) through yt-dlp,
+flatly, and answers in Browse Stations’ Search Results branch; every row
+says what it is first, and the count is said once. Channels open into
+Uploads, Live and their playlists. Also the first row under YouTube in
+Browse Stations and on the Command Palette.</li>
+<li><strong>Video &gt; Read Comments… (Ctrl+Shift+7)</strong>, and Read
+Comments… on every YouTube video row: a peer window of comments with
+replies threaded under their parent, full text, filter-as-you-type, Top
+or Newest, Load More (100 at a time, up to 1000) and Copy Comment.</li>
+<li>Channel rows offer <strong>Follow This Channel in Quill
+Radio</strong> / <strong>Stop Following</strong>, <strong>Subscribe on
+YouTube…</strong> (YouTube’s own <code>?sub_confirmation=1</code> page
+in the browser; nothing is subscribed for you), and, on a followed
+channel, <strong>Notify Me About New Videos</strong>, checked on the
+podcast schedule with one Notifications entry per new upload.</li>
+<li><strong>Use my YouTube sign-in from my web browser</strong>
+(Preferences, off by default; Edge, Chrome, Firefox, Brave, Opera,
+Vivaldi or a cookies.txt file) adds <strong>My YouTube</strong> (Home,
+Subscriptions, Watch Later, Liked Videos, Your Playlists). Only the
+browser name or file path is passed to yt-dlp; no cookie value is ever
+stored or logged, and <code>quill/stability/redaction.py</code> drops
+cookie-shaped lines from logs and crash bundles.</li>
+<li>One reviewed egress site for all of it,
+<code>core/radio/youtube_requests.py::extract</code>.</li>
+</ul>
+<h3
+id="quill-make-quill-my-text-editor-and-open-quill-instead-of-notepad-2026-10-03">QUILL:
+Make QUILL My Text Editor, and Open QUILL instead of Notepad
+(2026-10-03)</h3>
+<ul>
+<li>QUILL Lite had these two first, and the family rule says QUILL Lite
+may never be ahead of QUILL (rule 10). They now live in code both
+editors share, and QUILL reaches them without a second copy of its
+own.</li>
+<li>Both live only in Settings &gt; General &gt; <strong>Windows and
+your files</strong>, in both editors: no menu item and no key, because
+this is something you do once when you set up a computer (rule 9).</li>
+<li><strong>Make QUILL My Text Editor…</strong> registers QUILL for the
+current user for .txt .text .log .md .markdown .rtf .html .htm .csv .rst
+.json .docx .odt .epub and opens Windows Default apps on QUILL’s page.
+It never writes the file-type choice Windows keeps for you
+(<code>UserChoice</code>).</li>
+<li><strong>Open QUILL instead of Notepad</strong>, off by default: a
+checkbox that reads the current state from Windows each time Settings
+opens, and is applied when you choose OK or Apply.
+<code>quill --notepad</code> opens the file Notepad was given, exactly
+as QUILL Lite does.</li>
+<li>Only one program can open in place of Notepad. When QUILL Lite
+already does, QUILL says so by name before taking over, and the other
+way round; turning one off never removes the other’s setting.</li>
+<li>The QUILL installer always registers QUILL as a text editor that can
+open these files (all of it removed on uninstall), and its uninstaller
+removes only QUILL’s own Notepad redirect. The optional Open With
+checkbox in the installer is unchanged.</li>
+<li>Both editors’ preferences (QUILL: Settings &gt; General; QUILL Lite:
+Preferences) carry <strong>Windows and your files</strong>: a line
+saying which program opens in place of Notepad, a Make My Text Editor
+button, and an Open instead of Notepad checkbox. Both are read from
+Windows and applied on OK; they are not stored in QUILL’s own
+settings.</li>
+</ul>
+<h3
+id="quill-lite-your-windows-text-editor-and-optionally-notepads-replacement-2026-10-03">QUILL
+Lite: your Windows text editor, and optionally Notepad’s replacement
+(2026-10-03)</h3>
+<ul>
+<li>The QUILL Lite installer always registers QUILL Lite as a capable
+text editor (ProgID <code>QuillLite.Document</code>,
+<code>OpenWithProgids</code> for .txt .text .log .md .markdown .rtf
+.html .htm .csv, <code>Applications\QuillLite.exe</code>, Capabilities +
+RegisteredApplications, HKA, all removed on uninstall,
+<code>ChangesAssociations=yes</code>) and takes nothing over; the
+Custom-only “assoc” component is gone. Never a <code>UserChoice</code>
+key.</li>
+<li><strong>Make QUILL Lite My Text Editor…</strong> (Preferences &gt;
+Windows and your files; no menu row, no key) writes the same keys for
+the current user against the running launcher, so a portable copy works,
+then opens Default apps on QUILL Lite’s page and says what to pick
+there.</li>
+<li><strong>Open QUILL Lite instead of Notepad</strong> (the checkbox
+beside it), off by default: the Image File Execution Options
+<code>Debugger</code> for notepad.exe, including the Windows 11 per-path
+subkeys, set through one <code>reg.exe</code> run as administrator after
+a confirmation; the mark is read back from HKLM, and the uninstaller
+removes it. QUILL Lite takes <code>--notepad</code> and opens the file
+Notepad was given. QUILL has both too (the entry above); the code is
+shared (<code>quill/core/windows_editor.py</code>,
+<code>quill/ui/text_editor_commands.py</code>), and QUILL Lite binds its
+profile in <code>quill/core/lite/windows_editor.py</code> and
+<code>quill/apps/lite_window_text_editor.py</code>.</li>
+</ul>
+<h3
+id="quill-radio-podcast-categories-that-fill-up-and-say-why-when-they-cannot-2026-10-03">Quill
+Radio: podcast categories that fill up, and say why when they cannot
+(2026-10-03)</h3>
+<ul>
+<li>Apple Podcasts categories and subcategories in Browse Stations now
+list Apple’s own top shows for that category, up to 200, instead of
+filtering the storefront’s overall chart, which left History with four
+shows and most subcategories with none. History and Comedy Fiction are
+full lists now
+(<code>quill/core/podcasts/apple_genre_charts.py</code>).</li>
+<li>A Podcast Index folder that cannot load says why instead of “Nothing
+in here” (<code>quill/core/radio/browse_failure.py</code>). With no
+Podcast Index key the branch shows one row, <strong>Add a Podcast Index
+Key…</strong>, which opens the Podcast Index Credentials window; a free
+key comes from api.podcastindex.org/signup, and a key entered in Quill
+Radio or QUILL Cast works in both. A key the service rejects is reported
+as not accepted, not as “could not be reached”
+(<code>quill/core/podcasts/podcast_index.py</code>).</li>
+<li>Smoother browsing: arrowing through a long list such as Top Podcasts
+no longer loads every show passed. Radio waits until the cursor stops on
+one, so the list stays responsive with a screen reader, and big folders
+fill in one go (<code>quill/ui/radio/browse_prefetch.py</code>).</li>
+<li>Docs: Quill Radio 3.2 release notes, both Radio changelogs, and the
+user guide’s Browse Stations and Chapter 9 podcast sections.</li>
+</ul>
+<h3
+id="quill-radio-the-stations-website-beside-play-and-stop-2026-10-03">Quill
+Radio: the station’s website, beside Play and Stop (2026-10-03)</h3>
+<ul>
+<li>A <strong>Website</strong> button (<code>We&amp;bsite</code>, Alt+B)
+on the main window, right after Play/Stop in Tab order, opens the
+website of the station that is playing, or of the selected favorite when
+nothing plays, in the browser. A listener asked for it to reach Double
+Tap Live’s schedule.</li>
+<li>A station that gave no website is said so and nothing opens; with
+nothing playing and nothing selected it says how to get one
+(<code>tests/unit/ui/radio/test_station_website_button.py</code>).</li>
+</ul>
+<h3
+id="family-the-biggest-parts-of-the-code-split-into-smaller-pieces-2026-10-03">Family:
+the biggest parts of the code split into smaller pieces
+(2026-10-03)</h3>
+<ul>
+<li>Internal only; nothing changes for you. The code for QUILL’s main
+window (19,157 -&gt; 16,060 lines) and Quill Radio’s (2,301 -&gt; 1,265)
+was split so each of these features now lives on its own: watch folders,
+Convert File, remote files, diagnostics, crash recovery, previews, the
+List Manager, voice previews, onboarding, GLOW; Radio’s menu bar and
+Favorites tree. Two dialogs that stayed in memory after they closed are
+now cleaned up.</li>
+</ul>
+<h3
+id="quill-cast-the-library-and-the-inbox-laid-out-your-way-2026-10-03">QUILL
+Cast: the library and the Inbox, laid out your way (2026-10-03)</h3>
+<ul>
+<li>View &gt; Rearrange Library and Inbox (Ctrl+Shift+R): show the
+library folders first, folders only, podcasts only, or together by name;
+sort podcasts and folders five ways each; folders open or closed; choose
+what the counts say; leave out empty folders. Each choice takes effect
+as you make it.</li>
+<li>The Inbox can list your folders first, or only your folders; Enter
+opens a folder’s episodes and Backspace comes back.</li>
+<li>Preferences has a new section, The library, with the same
+choices.</li>
+</ul>
+<h3
+id="quill-cast-refresh-episode-audio-and-the-inbox-frees-space-earshot-parity-r3-r4-2026-10-03">QUILL
+Cast: Refresh Episode Audio, and the Inbox frees space (Earshot parity
+R3, R4; 2026-10-03)</h3>
+<ul>
+<li>An episode’s menu has Refresh Episode Audio…: Cast reads the feed
+again, says whether the audio moved, asks once, and downloads a fresh
+copy. Your place, played mark and notes are kept. Also in the Command
+Palette.</li>
+<li>With “Delete its downloaded file” on, Delete in the Inbox deletes
+the episode’s download too (never for an episode you chose to
+keep).</li>
+<li>Earshot parity is complete; the Jump List is not planned.</li>
+</ul>
+<h3 id="quill-cast-earshot-parity-b1-b3-2026-10-03">QUILL Cast: Earshot
+parity B1-B3 (2026-10-03)</h3>
+<ul>
+<li>Continue Listening says where a place came from: “last played on
+Kitchen laptop”, or “last played on Earshot”.</li>
+<li>Carry My Place Between Machines: Also share the podcasts I follow,
+and their folders. Off by default; private feeds never shared; every
+podcast added or removed is named; unfollowing elsewhere removes the
+subscription only. Follows the shared Listening Places proposal, section
+6.7.</li>
+<li>Tests: an Earshot 1.2.3 device file written to Earshot’s own
+encoder.</li>
+</ul>
+<h3
+id="quill-cast-windows-that-stay-open-beside-the-library-qcmd-phase-4-2026-10-03">QUILL
+Cast: windows that stay open beside the library (qc.md Phase 4,
+2026-10-03)</h3>
+<ul>
+<li>Listening Statistics, Year in Review, About This Episode and Sound
+Enhancements for podcasts are windows of their own: a menu bar, a row in
+the Window menu, Escape or Ctrl+W back to where you opened them, and
+opening one again brings the same window forward, refreshed. QUILL opens
+them the same way.</li>
+<li>Sound Enhancements for podcasts has Apply and Close and stays open
+after Apply. About This Episode stays open after a button, and Go There
+says “Playing from …”. Year in Review’s Close no longer takes
+Alt+L.</li>
+<li>Feed Check, Episode Filters, Smart Playlist rules, Settings for This
+Podcast, Add Podcast, Show Notes, the Transcript, Notifications and
+Watched Folders work the same way. Windows that change settings say Save
+(Ctrl+S) and Close, and stay open after Save; a new smart playlist is
+made by its first Save. Quill Radio’s Sound Enhancements and Transcript
+are unchanged.</li>
+<li>Every New Folder and Rename Folder prompt is one box, “Folder
+name:”.</li>
+<li>Internals: <code>quill/ui/podcasts/peer_window.py</code>
+(<code>open_peer</code>), <code>sound_enhance_window.py</code>,
+<code>transcript_window.py</code>; tests in
+<code>test_cast_peer_windows.py</code>. QUILL’s main window:
+watch-folder runtime, in-editor GLOW, Convert File and diagnostics moved
+to mixins (F-08).</li>
+</ul>
+<h3
+id="family-settings-search-everywhere-task-recipes-working-modes-shared-choices-2026-10-03">Family:
+settings search everywhere, task recipes, working modes, shared choices
+(2026-10-03)</h3>
+<ul>
+<li>Settings search reaches every section of QUILL Cast’s Preferences,
+not only the one open; choosing a match shows its section first.</li>
+<li>Quill Converter, the Media Player and Quill Inkwell: Help &gt; Find
+a Setting or Command (Ctrl+Alt+Shift+S) searches every menu option and
+command.</li>
+<li>Settings web forms (such as GLOW Accessibility) have a Find a
+setting box.</li>
+<li>QUILL: Preferences &gt; Task Recipes and Working Modes. Four recipes
+that preview what they change and can be put back; Focus and Review
+modes that restore every setting when turned off, optionally for this
+session only.</li>
+<li>Activity lists work still running beside what finished.</li>
+<li>QUILL Cast’s Play Queue says why Cast queued an episode (“queued by
+Auto-Queue”, a lineup, a listening run, a watched folder).</li>
+<li>QUILL Cast and Quill Radio: Share these choices with my other Quill
+apps – off until turned on in each app; it shares only whether dialog
+changes are announced and the one-key action feedback, and says so when
+a shared choice is taken up.</li>
+<li>Tests: a speed limit on Cast library search and feed merging, and a
+check that every file read at launch survives being damaged or
+missing.</li>
+</ul>
+<h3
+id="family-f-10-adoptions--progress-kept-results-the-cursor-2026-10-03">Family:
+F-10 adoptions – progress, kept results, the cursor (2026-10-03)</h3>
+<ul>
+<li>QUILL Cast: Refresh All Now and Download All say progress every
+quarter and finish in one result kept in Activity (Retry, Open Folder);
+follows and exports are kept too; after Delete the cursor lands on the
+next row; a selected row no longer stays selected when the cursor moves
+to another.</li>
+<li>Quill Radio: finished and failed recordings and exports are kept in
+Activity.</li>
+<li>QUILL Lite: a background open is listed in Activity while it runs
+and after.</li>
+<li>QUILL Cast First Run is one screen: where to land, and Add Your
+First Podcast.</li>
+<li>Watched-folder defaults in Preferences &gt; Data, and an Inbox
+switch for them.</li>
+</ul>
+<h3
+id="quill-cast-its-own-ai-verbs-and-tidy-the-podcasts-i-follow-earmd-a2-a10-2026-10-03">QUILL
+Cast: its own AI verbs, and Tidy the Podcasts I Follow (ear.md A2-A10,
+2026-10-03)</h3>
+<ul>
+<li>Help &gt; AI Features gains Organise My Podcasts, What Is This
+Podcast About, Is This Episode for Me, Summarise This Episode, Build Me
+a Listening Run, Smart Playlist from a Sentence and Name These Chapters,
+all through the family’s shared AI and switch, all reviewed before
+anything changes (<code>core/podcasts/ai_listening.py</code>,
+<code>ui/podcasts/cast_ai_features.py</code>,
+<code>ai_review_dialog.py</code>,
+<code>ai_answer_dialog.py</code>).</li>
+<li>Tidy the Podcasts I Follow: dormant, duplicate and failing podcasts,
+no AI.</li>
+<li>A10 written as a test (<code>test_ai_not_allowed.py</code>).</li>
+</ul>
+<h3 id="quill-cast-earshot-parity-r8-r10-2026-10-03">QUILL Cast: Earshot
+parity R8-R10 (2026-10-03)</h3>
+<ul>
+<li>A renamed podcast or episode keeps your name through every refresh;
+the feed’s own name is kept beside it, and renaming to nothing restores
+it.</li>
+<li>Ctrl+Enter plays and Space queues a new-episode notice, in the
+Notifications place and window.</li>
+<li>Delete All Podcast Data is Clear All Podcast Data from This
+Computer, and says plainly that nothing anywhere else is touched.</li>
+<li>Three new earcons in the ink pack: added to queue, removed, marked
+as played.</li>
+</ul>
+<h3 id="quill-cast-nothing-silent-qcmd-phase-3-2026-10-03">QUILL Cast:
+nothing silent (qc.md Phase 3, 2026-10-03)</h3>
+<ul>
+<li>Every Cast status line is set and spoken through one helper
+(<code>ui/podcasts/say_status.py</code>); Add Podcast’s Find failure,
+follow failure, sign-in prompt and empty-field refusals were silent and
+now speak.</li>
+<li>Every Cast background failure is spoken (or, for Cast’s own optional
+work, recorded) and written to Recent Problems through one helper
+(<code>ui/podcasts/failure_report.py</code>); two handlers that
+discarded failures outright now report them.</li>
+<li>GATE-CAST-SILENT (<code>quill/tools/check_cast_silence.py</code>)
+keeps it that way.</li>
+</ul>
+<h3
+id="quill-cast-the-listening-extensions-qcmd-section-18-phase-7-2026-10-03">QUILL
+Cast: the listening extensions (qc.md section 18, Phase 7,
+2026-10-03)</h3>
+<ul>
+<li><strong>Time Remaining</strong> (Ctrl+Shift+T),
+<strong>Ctrl+Home</strong> back to the launch place,
+<strong>Shift+Space</strong> to play an episode next, and <strong>up
+next</strong> spoken about ten seconds before an episode ends
+(Preferences &gt; Telling you).</li>
+<li><strong>Ctrl+N</strong> fills Add Podcast with a web address from
+the clipboard.</li>
+<li><strong>Bookmark with a Note</strong> (Ctrl+Shift+D),
+<strong>Bookmarks in This Episode</strong> (Ctrl+Shift+J), a Bookmarks
+button in Now Playing and a Bookmarks tab in About This Episode.</li>
+<li><strong>Earcons</strong> for added to queue, removed and marked
+played, under Cast’s own “When a one-key action works” choice (default
+both).</li>
+<li><strong>What I care about in this podcast</strong>, a per-podcast
+note for AI features.</li>
+<li><strong>Global hotkeys</strong> for the Now Playing window and Time
+Remaining; Cast’s Global Hotkeys window lists only Cast’s commands.</li>
+<li><strong>Undo History</strong> in Quill Radio and QUILL Cast: ten
+steps, each with its own Undo; Ctrl+Z steps back one at a time.</li>
+</ul>
+<h3
+id="quill-cast-watched-folders-its-own-showhide-key-and-two-menu-rows-qcmd-c2-01-to-c2-03-2026-10-03">QUILL
+Cast: watched folders, its own show/hide key, and two menu rows (qc.md
+C2-01 to C2-03, 2026-10-03)</h3>
+<ul>
+<li><strong>Watched Folders</strong> (Podcasts &gt; Watched Folders…,
+Ctrl+Alt+W): a peer window that adds, configures, scans, pauses and
+removes watched folders; live watching with
+<code>wx.FileSystemWatcher</code> and a five-second settled-file rule, a
+network-drive poll every ten minutes, a full look at launch and on
+resume, content-hash deduplication, per-folder settings (name,
+subfolders, one group per subfolder, file types, keep/move/play in
+place, add/queue/play, Tell me, minimum length, speed), arrivals in
+Notifications, problems in Recent Problems. The old per-show
+<code>watched_folder</code> string migrates to a
+<code>WatchedFolder</code> record.
+<code>core/podcasts/watched_folders.py</code>,
+<code>watched_folder_words.py</code>,
+<code>ui/podcasts/folder_watch.py</code>,
+<code>watched_folders_window.py</code>,
+<code>watched_folder_settings.py</code>.</li>
+<li><strong>Cast’s own show/hide key</strong>, Ctrl+Alt+Shift+F12. The
+shared default had taken Ctrl+Alt+Shift+Q system-wide, which is Cast’s
+Mark as Played and Next, so that row never fired while Cast ran.</li>
+<li><strong>Episode &gt; Player Information… (Ctrl+I)</strong> and
+<strong>Podcasts &gt; Carry My Place Between Machines…</strong>, both
+previously reachable only from the Command Palette; <strong>Bookmark
+This Moment</strong> (Ctrl+Alt+A) and <strong>Skip Silence</strong>
+(Ctrl+Shift+9) gain Episode rows so their keys fire in Cast.</li>
+<li><strong>Preferences</strong> gives every control in a section its
+own access key at build time (six sections had collisions).</li>
+</ul>
+<h3
+id="quill-cast-one-window-and-preferences-in-eight-sections-with-refresh-schedules-qcmd-phases-2-and-5-2026-10-02">QUILL
+Cast: one window, and Preferences in eight sections with refresh
+schedules (qc.md Phases 2 and 5, 2026-10-02)</h3>
+<ul>
+<li><strong>One window.</strong> The Places list (Inbox, New Episodes,
+Continue Listening, Favorites, Playlists, Personal Audio, Play Queue,
+Recently Expired – hidden by default – Downloads, Notifications,
+Podcasts) beside a content pane whose kind follows the place; the
+Podcast Manager, the Play Queue, Downloads and Continue Listening
+windows are places in Cast. Reorder (Alt+Shift+Up/Down), hide (Delete,
+Ctrl+Z), rename (F2) and View &gt; Places… (Ctrl+Shift+G).
+<code>core/podcasts/places.py</code>,
+<code>ui/podcasts/places_list.py</code>, <code>content_pane.py</code>,
+<code>places_host.py</code>, <code>episode_list.py</code>,
+<code>context_menus.py</code>, <code>places_chooser.py</code>,
+<code>folder_prompt.py</code>, <code>apps/podcasts_routes.py</code>; the
+Manager’s verbs moved to the shared
+<code>ui/podcasts/manager_verbs.py</code>.</li>
+<li><strong>Notifications</strong> as a place, a status-bar cell and a
+peer window with Play Now / Add to Queue / Go to the Podcast / Mark
+Read; Cast writes its own notices, six kinds each switchable, and a
+launch digest sentence (<code>core/podcasts/notices.py</code>,
+<code>ui/podcasts/notifications_window.py</code>).</li>
+<li><strong>Every feature has a switch</strong>: 47 areas in eight
+groups with three profiles; switched-off features are absent from
+places, menus, cells and Go To and marked “(off in Customize Features)”
+in the palette (<code>core/podcasts/cast_features.py</code>).</li>
+<li><strong>Preferences</strong> in eight scrolling sections absorbing
+Podcast Settings and Skip Settings
+(<code>ui/podcasts/preferences_window.py</code>); <strong>refresh
+schedules</strong> with five kinds, a learned publish time and the
+publisher’s hint (<code>core/podcasts/refresh_schedule.py</code>,
+<code>schedule_policy.py</code>, <code>settings_defs_fetching.py</code>,
+<code>ui/podcasts/schedule_dialog.py</code>); Feed Check gains Schedule
+and Next check; <strong>GATE-CAST-WORDS</strong>
+(<code>quill/tools/cast_words_audit.py</code>,
+<code>core/podcasts/words.py</code>) and its sweep.</li>
+<li>Tests: <code>tests/unit/apps/test_cast_one_window.py</code> drives
+the real frame;
+<code>tests/unit/core/podcasts/test_places_model.py</code>,
+<code>test_refresh_schedule.py</code>,
+<code>tests/unit/tools/test_cast_words_audit.py</code>; the Preferences,
+status bar, Find, folder picker and refresh-menu tests follow the new
+shape.</li>
+</ul>
+<h3
+id="quill-cast-ai-help-through-the-familys-shared-ai-and-one-chatgpt-sign-in-per-app-2026-10-02">QUILL
+Cast: AI help through the family’s shared AI, and one ChatGPT sign-in
+per app (2026-10-02)</h3>
+<ul>
+<li><strong>Help &gt; AI Features</strong> in QUILL Cast: the hosted AI
+QUILL and QUILL Lite share, on the show notes of the episode you are on
+– Free AI Assistant (Ctrl+Alt+G), Ask About These Show Notes
+(Ctrl+Alt+Z), Ask About an Image (Ctrl+F5), Free AI Usage
+(Ctrl+Alt+Shift+F2), Connect or Sign Out (Ctrl+Alt+Shift+F4), Privacy
+Agreement (Alt+Shift+F2), Use My Own AI Key (Alt+F2), Use My ChatGPT
+Subscription (Alt+F5). Off until <strong>AI help</strong> in Preferences
+is checked; the agreement is still asked for; the notes are read only so
+answers go to the clipboard.
+<code>quill/ui/podcasts/cast_ai_host.py</code> is an adapter
+(<code>CastAiHost</code>, <code>CastAiMixin</code>) with no command of
+its own, asserted by <code>tests/unit/apps/test_cast_ai_host.py</code>;
+the switch and the agreement live in <code>PodcastHistory</code> (ear.md
+A1, A11, A12).</li>
+<li><strong>One ChatGPT sign-in per app</strong>
+(<code>quill/core/ai/chatgpt_state.py</code>): the apps share one data
+folder and shared one <code>chatgpt.json</code>, so the second app to
+sign in overwrote the first’s client id while each kept its own refresh
+token. The state is <code>chatgpt-&lt;slug&gt;.json</code> per app, the
+legacy file is read until the app writes its own,
+<code>sibling_sign_ins</code> names the other apps signed in, and the
+account window’s signed-out status says so.</li>
+</ul>
+<h3
+id="quill-and-quill-lite-an-own-key-for-google-gemini-chosen-explicitly-2026-10-02">QUILL
+and QUILL Lite: an own key for Google Gemini, chosen explicitly
+(2026-10-02)</h3>
+<ul>
+<li><strong>Use My Own AI Key</strong> (it was Use My Own OpenAI Key;
+Alt+F2 in both editors) opens on a <strong>Provider</strong> list,
+OpenAI or Google Gemini, and everything under it follows your choice:
+the About text names the company and where its keys are made, the key
+field names the company, the model list is that account’s own with that
+company’s prices, Test the Key tests that company, and Remove forgets
+that company’s key. The provider is saved in both editors’ settings
+(<code>ai_own_key_provider</code>, shared) and is always the one you
+chose: QUILL never guesses it from a model name and never falls back to
+whichever key happens to exist. A key saved for the other provider is
+mentioned in the status line and never used.</li>
+<li><strong>Ask About an Image works on a Gemini key</strong>, through
+the same shared image service, when the model you chose can see
+images.</li>
+<li>Behind the scenes: the own-key code moved into its own file to keep
+files small. Tests run the real Gemini client against a stand-in Gemini
+server on this computer: requests go to the right address, a model from
+Gemini’s own list works, a bad key gives a plain sentence naming the
+provider, and nothing falls back to another key.</li>
+</ul>
+<h3
+id="quill-cast-now-playing-the-notes-reader-and-links-in-these-notes-2026-10-02">QUILL
+Cast: Now Playing, the Notes reader, and Links in These Notes
+(2026-10-02)</h3>
+<ul>
+<li><strong>Now Playing (Ctrl+2)</strong>: window 2 of QUILL Cast, made
+at start-up and hidden on close so its number never moves. The podcast,
+the episode and where it is playing from; the position as a
+<code>wx.Slider</code> whose keys seek and say the time (and which is
+never written while it has focus); Pause/Resume, Stop, Back and Forward
+30 Seconds, Previous and Next Chapter; speed as nine choices plus Custom
+through <code>speed.apply_speed</code>; volume and Mute; the sleep timer
+readout with Set, At End of Episode and Extend by 5 Minutes; the
+chapters as a report list whose playing row says so without moving the
+cursor; the Notes reader; Your note (one <code>EpisodeNote</code> at
+position 0 under an <code>about:</code> id, saved on blur); Add
+to/Remove from Favorites, Mark as Played, Share and About This Episode.
+Episode &gt; Now Playing (Ctrl+Alt+2), the Play cell’s first row, and
+Preferences &gt; “Switch to Now Playing when playback starts”
+(<code>PodcastHistory.switch_to_now_playing</code>, off)
+(<code>quill/ui/podcasts/now_playing_window.py</code>,
+<code>now_playing_layout.py</code>,
+<code>quill/apps/podcasts_now_playing.py</code>; qc.md section 5).</li>
+<li><strong>The Notes reader</strong>
+(<code>quill/ui/notes_reader.py</code>): a native read-only rich field
+over <code>core/podcasts/notes_render.py</code> – headings (H / Shift+H
+with the level said), links and timestamps on one Tab circuit with the
+title said, Enter opens or seeks, Ctrl+F with the count and F3 – and
+<code>core/podcasts/notes_export.py</code>, the one home of the four
+copy formats (plain, plain with links, Markdown, formatted HTML+RTF),
+the spoken copy with its word count, and the scriptless browser page.
+<code>PodcastHistory</code> keeps <code>notes_copy_format</code> (qc.md
+5c).</li>
+<li><strong>The show notes one Tab from the episode.</strong> The main
+window gets the Notes reader under the library tree, following the
+cursor (an episode’s notes, a podcast’s description, else a placeholder;
+Enter on a timestamp starts the episode there), and the Show Notes
+window in the Episode List is the same reader with Send to Editor and
+Save As (<code>quill/ui/podcasts/main_panel.py</code>,
+<code>show_notes_dialog.py</code>).</li>
+<li><strong>Links in These Notes</strong>: the shared link list reads
+title then address, folds duplicate addresses, and gains Copy Title and
+Address and Copy All Addresses
+(<code>quill/ui/link_list_dialog.py</code>).</li>
+<li>Cast’s <code>surface_help</code> gains Now Playing, Links in These
+Notes and Find; the Cast help, dialog, accessible-name and reachability
+inventories and the keyboard and F1 references are regenerated.</li>
+</ul>
+<h3
+id="quill-and-quill-lite-a-thesaurus-that-finds-the-word-you-are-on-look-up-on-a-key-and-an-ai-dictionary-2026-10-02">QUILL
+and QUILL Lite: a thesaurus that finds the word you are on, Look Up on a
+key, and an AI dictionary (2026-10-02)</h3>
+<ul>
+<li><strong>Thesaurus (Shift+F7) finds the word you are on and puts in
+the right form.</strong> The MyThes data only knows base words, so
+“running” found nothing and “sprint” was offered where “sprinting” was
+needed. QUILL now walks a word back to the base words the data knows
+(running to run, happier to happy, irregular pasts) and puts every
+replacement back in the same form, with the original’s capitals; the
+picker’s title and rows say which base word a meaning came through. Both
+editors now share one thesaurus, and QUILL Lite, which had no thesaurus
+at all, gets Tools &gt; Thesaurus on the same key with the data it
+already shipped.</li>
+<li><strong>Two submenus on any word in the editor’s context
+menu</strong>: <em>Thesaurus for “word”</em> (the best replacements one
+keystroke away, every other sense as a submenu, Opposites, Say Word
+Summary, More in Thesaurus) and <em>Dictionary for “word”</em> (Look Up,
+then the AI dictionary when AI is on). QUILL’s single “Look Up in
+Thesaurus” row is replaced by them.</li>
+<li><strong>Look Up Word (Alt+F10)</strong>: the Look Up window is now
+on Tools &gt; Writing and on the Dictionary submenu in QUILL, and in
+QUILL Lite. Before, you could reach it only when the thesaurus data was
+missing, and it went online whenever the dictionary feature was on,
+without asking. Going online is now behind <strong>Use online
+sources</strong> in the window (<code>dictionary_online_lookups</code>,
+the same setting in both editors). The online answer arrives in the
+background and replaces the offline one, with a sentence when it lands,
+and Enter in the list replaces the word.</li>
+<li><strong>The AI dictionary</strong>, a Dictionary submenu of the AI
+menu in QUILL and Tools &gt; Dictionary in QUILL Lite: Define in
+Context, Synonyms That Fit, Simpler, More Formal and More Vivid Word,
+Opposites, Is This the Right Word?, Use It in a Sentence, Where It Comes
+From, How to Say It, Rhymes, the Word Explorer and Find the Word For.
+Only the word and its sentence are sent, never the document. The answer
+window offers Choices that replace the word as one undo step, only while
+the word is still there. It uses your own key or ChatGPT only, never the
+free allowance. The same thirteen keys in both editors, chosen to avoid
+bare Ctrl+Alt chords.</li>
+<li><strong>Say Word Summary (Ctrl+Alt+Shift+[)</strong> speaks the
+headword, the meanings per part of speech, the first replacements and
+the opposites. <strong>Dictionary Status</strong> gains a key
+(Alt+Shift+;) and a QUILL Lite menu item.</li>
+<li>Behind the scenes: a <code>dictionary</code> area in QUILL Lite’s
+Customize Features (profiles 17, 21, 5 and 2 of 21); QUILL Lite’s word
+commands moved to their own file to keep files small; each of the
+sixteen new QUILL Lite commands has its own test; the internal
+checklists were regenerated. Also: each help line for Cast’s filter
+rules now says what the rule does not do (that check had been
+failing).</li>
+</ul>
+<h3
+id="every-app-activity-repeat-last-result-and-saves-that-tell-the-truth-2026-10-02">Every
+app: Activity, Repeat Last Result, and saves that tell the truth
+(2026-10-02)</h3>
+<ul>
+<li><strong>Help &gt; Activity… (Shift+F9)</strong> lists every result
+this session, newest first, each with what you can do about it – Retry,
+Open Folder, Copy Details, Clear List – and <strong>Help &gt; Repeat
+Last Result (F9)</strong> says the newest result that mattered again,
+the app’s own last result rather than the screen reader’s last
+utterance. The same window and the same pair of keys in QUILL, QUILL
+Lite, Quill Radio and QUILL Cast.</li>
+<li><strong>A settings or history save that fails is said once, with a
+way back.</strong> QUILL’s and QUILL Lite’s settings, Quill Radio’s and
+QUILL Cast’s history and the podcast library are all saved the same
+careful way, and a failure is reported with a fixed reason. The app says
+it once per file per minute, offers Retry and Open Folder in Activity,
+and says when a later save of the same file works.</li>
+<li><strong>A background result that outlives its window goes to
+Activity</strong>, as a review row that is never spoken, instead of
+being dropped without trace.</li>
+<li>Shared progress reporting (phases and milestones) and a focus memory
+that brings you back to the same item ship in the same release, ready
+for the windows that adopt them next.</li>
+</ul>
+<h3
+id="quill-cast-episode-filters-ask-far-more-and-write-a-rule-for-you-2026-10-01">QUILL
+Cast: Episode Filters ask far more, and write a rule for you
+(2026-10-01)</h3>
+<ul>
+<li><strong>Episode Filters ask far more, and write a rule for
+you.</strong> A rule can hold any number of tests – the title, the show
+notes or the people on an episode (contains, starts or ends with, is, a
+wildcard, a regular expression, or their negations); the publisher’s
+episode type; length (finally a maximum), age in days, season and
+episode number – and can say that any one test is enough. Try It on
+Recent Episodes says what a rule catches before it is saved, and Filter
+Episodes Like This… on any episode’s menu drafts the rule from that
+episode: its trailer or bonus type, a series name it shares, or an
+unusual length, each checked against the 50 newest. Missing facts never
+match a number test, an unreadable test makes its rule match nothing,
+and a filter that uses none of this is still stored exactly as older
+builds read it (<code>core/podcasts/filter_conditions.py</code>,
+<code>filter_suggestions.py</code>,
+<code>ui/podcasts/episode_filter_test_dialog.py</code>).</li>
+</ul>
+<h3 id="audio-description-project-leftovers-removed-2026-10-01">Audio
+Description Project leftovers removed (2026-10-01)</h3>
+<ul>
+<li>The Audio Description Project integration and its Community-menu
+rows were removed in fef27b3. What remained: the macOS test-build
+workflow still ran the deleted ADP client-key generator (a step that
+could only fail), and comments in Radio and Cast still described its
+menus. Both are gone. Audio description itself – Quill Radio’s
+described-audio tracks, Audio and Described Audio (Ctrl+Shift+A) and
+Play Described Audio (Ctrl+Alt+D) – is unchanged.</li>
+</ul>
+<h3 id="a-windows-background-work-stops-at-the-window-2026-10-01">A
+window’s background work stops at the window (2026-10-01)</h3>
+<ul>
+<li>Work a window starts in the background now ends with that window:
+close it and nothing it started can report back into a window that is
+gone. This covers QUILL’s publishing browser as well as the windows
+listed below. In detail: new <code>quill/ui/surface_lifetime.py</code>.
+<code>surface_tasks(manager, lambda: window)</code> wraps the app’s task
+manager for a short-lived surface: every task it starts carries the
+window’s <code>UiLifetimeToken</code> (invalidated by the window’s own
+<code>EVT_WINDOW_DESTROY</code>), and every callback checks at delivery
+that the window is not destroyed or scheduled for destruction. Adopted
+by Cast’s Add Podcast (and its Preview), OPML import and Podcast
+Manager; Radio’s Browse, Station Browser, Link Finder and ACB Media
+schedule; Weather’s Center and Add Location; and Publishing’s browse
+dialog. A gate fails if any short-lived surface stores the raw task
+manager. The Weather Center’s text helpers moved to
+<code>quill/ui/weather/center_text.py</code> and the schedule choice to
+<code>quill/core/publishing_schedule.py</code> to stay within
+GATE-11.</li>
+</ul>
+<h3
+id="every-kept-timer-has-a-stop-the-player-keeps-its-place-on-close-2026-10-01">Every
+kept timer has a stop; the Player keeps its place on close
+(2026-10-01)</h3>
+<ul>
+<li>F-12, in part: new
+<code>tests/unit/ui/test_timer_ownership.py</code> requires every
+<code>self.&lt;x&gt; = wx.Timer(...)</code> in <code>quill/apps</code>
+and <code>quill/ui</code> to have a stop somewhere (direct, fetched by
+name, or a loop over names), with an allowlist that is empty. Its first
+run found Quill Player’s resume, status and sleep timers and Quill
+Converter’s IPC timer with no stop at all; the Player also saved its
+resume position only on its fifteen-second timer, so closing lost up to
+fifteen seconds of a listener’s place. New
+<code>quill/apps/player_close.py</code> saves the place and stops the
+clocks on close; the Converter stops its IPC timer on close.</li>
+</ul>
+<h3 id="a-gemini-model-picked-from-geminis-own-list-works-2026-10-01">A
+Gemini model picked from Gemini’s own list works (2026-10-01)</h3>
+<ul>
+<li>In QUILL and QUILL Lite, a model chosen from Google Gemini’s own
+model list failed with “not found”: Gemini names its models
+<code>models/&lt;id&gt;</code>, and QUILL sent that prefix twice. QUILL
+now drops the prefix when it builds a request, for chat, streaming
+answers, Gemini’s read-aloud voices and the model list. (Taken from a
+community pull request, which was not merged as a whole because it also
+rewrote unrelated code.) Eight tests run the shipped client against a
+stand-in Gemini server on this computer with made-up keys: listing
+models, an answer, a streamed answer, a wrong key (never repeated back)
+and a missing key.</li>
+</ul>
+<h3
+id="radio-and-cast-report-a-failed-save-while-closing-2026-10-01">Radio
+and Cast report a failed save while closing (2026-10-01)</h3>
+<ul>
+<li>F-06: new wx-free <code>quill/core/shutdown_report.py</code>. Each
+teardown step runs through <code>ShutdownReport.step</code> as
+must-record, best-effort or background; close always completes.
+Must-record failures (Cast’s library and stats flush; Radio’s last-seen
+stamp and recording-marker clear) leave a pending sentence said once at
+next launch (<code>quill/ui/shutdown_notice.py</code>) and a
+<code>KIND_SHUTDOWN</code> (“Closing”) row in Recent Problems with a
+per-app Retry. Only a step id, its class and the exception’s class name
+are kept – no message text, paths or addresses. Radio’s teardown moved
+to <code>quill/apps/radio_shutdown.py</code>.</li>
+</ul>
+<h3 id="quill-lite-opens-large-files-off-the-ui-thread-2026-10-01">QUILL
+Lite opens large files off the UI thread (2026-10-01)</h3>
+<ul>
+<li>F-05: <code>quill/core/lite/open_prepare.py</code> (wx-free prepare)
+and <code>quill/apps/lite_window_open.py</code> (generation- and
+lifetime-guarded commit on the UI thread, busy state, Try Again). Large
+(1 MiB+) and networked files use it; <code>load()</code> keeps its
+synchronous contract for everything else. Sixteen tests, one through the
+real <code>TaskManager</code> and wx event loop.</li>
+</ul>
+<h3
+id="quill-lite-instances-stop-undoing-each-others-preferences-2026-10-01">QUILL
+Lite instances stop undoing each other’s preferences (2026-10-01)</h3>
+<ul>
+<li>F-11: with <code>--new-instance</code>, a settings save is a
+per-field three-way merge against the file on disk
+(<code>quill/core/lite/settings_merge.py</code>), so the last instance
+to close no longer reverts the other’s changes. In-memory settings are
+never replaced mid-session. Seven tests, two of them with two real
+persistence objects against one real file.</li>
+</ul>
+<h3 id="three-windows-that-could-not-open-2026-10-01">Three windows that
+could not open (2026-10-01)</h3>
+<ul>
+<li>QUILL Cast’s Play Queue (and QUILL’s own podcast Play Queue),
+QUILL’s Sticky Notes Browser, and one way of opening the Global Hotkeys
+manager failed the moment they were opened: nothing appeared and nothing
+was said. All three open again, with their titles. A new test checks
+every window QUILL opens this way, so the same mistake cannot slip back
+in.</li>
+</ul>
+<h3
+id="the-transport-button-says-its-object-in-radio-and-cast-2026-10-01">The
+transport button says its object, in Radio and Cast (2026-10-01)</h3>
+<ul>
+<li>Quill Radio’s main-window Stop button is the one transport control
+again, and its label carries its object: Play <selected favorite>
+(Alt+L), Stop <what is playing> (Alt+T), Resume <it> (Alt+U), or “Play –
+nothing selected”, which explains itself when pressed. The Playback &gt;
+Play row reads the same word. The Volume slider’s access key moved to
+Alt+O to free U (<code>quill/ui/radio/main_transport_button.py</code>;
+<code>stop_button.py</code> removed).</li>
+<li>QUILL Cast’s Play/Pause/Resume button names its object in its label
+rather than in an accessible name, which wxMSW never reads on a button;
+Unfollow names the selected podcast or the selected episode’s podcast;
+the row keeps fixed shares so it never reflows.
+<code>set_accessible_name</code> no longer targets any Cast button, and
+a test keeps it that way.</li>
+<li>Shared <code>quill/core/transport_button.py</code>: one wx-free face
+builder for both apps (verb, object, elision at 40 characters, ampersand
+escaping, per-app mnemonics). GATE-15 now reads every label the buttons
+can produce, not only the resting literal. Resolves QC X-06 and Cast
+Phase 1 item 1.</li>
+</ul>
+<h3
+id="a-reliability-pass-settings-search-and-quieter-shutdowns-2026-09-30">A
+reliability pass: settings search, and quieter shutdowns
 (2026-09-30)</h3>
 <ul>
-<li>Native Preferences/Settings surfaces gain a shared label/help search
-field, keyboard result navigation, hidden-page reveal, and cleanup on
-close. Search does not read values or apply changes. Beacon uses the
-same helper through its local dialog setup. Unified entry points for
+<li>Preferences and Settings windows gain a search field: type a word
+and the matching settings are listed by their label and help text, you
+move through the results from the keyboard, and the page a result lives
+on opens for you. Searching never reads or changes a value. Beacon uses
+the same helper through its local dialog setup. Unified entry points for
 Converter, Player, and Inkwell and web-form indexing remain outstanding;
 all-app support is not claimed.</li>
 <li>CommandRegistry is confined to its creating thread. Worker access
@@ -272,6 +1291,11 @@ queued for UI delivery. Individual windows can invalidate a
 <code>UiLifetimeToken</code> before destruction. Workers may finish
 without holding close open, and their futures retain results. A
 persistent Activity/Problems history remains future work.</li>
+<li>QUILL Lite no longer raises from the status bar’s refresh timer on
+exit. Stopping the bar’s timers is one-way: a late
+<code>_touch_status</code> from the closing window’s own events arms
+nothing, and a refresh that reaches a destroyed panel returns (reported
+2026-10-01).</li>
 </ul>
 <h3
 id="your-chatgpt-subscription-in-every-quill-app-that-has-ai-2026-09-29">Your
@@ -292,18 +1316,14 @@ through the <code>SecretsManager</code>, one entry per app. The model is
 the plan’s own list; <strong>Allow web search</strong> is off until
 checked; <strong>Sign Out</strong> and <strong>Forget on This
 Computer</strong> exist only while signed in. A sign-in is used ahead of
-a saved OpenAI key (<code>quill/core/ai/chatgpt_account.py</code>,
-<code>chatgpt_http.py</code>, <code>chatgpt_client.py</code>,
-<code>chatgpt_ai_help.py</code>,
-<code>quill/ui/hosted_ai_chatgpt.py</code>; the two commands are a base
-of <code>HostedAiMixin</code>, so neither editor wrote a line of
-them).</li>
+a saved OpenAI key. The two editors share one implementation of both
+commands.</li>
 <li><strong>Ask About an Image</strong> (<strong>Ctrl+F5</strong>, both
 editors): the first AI command that takes a file. A JPEG, PNG, WebP or
 GIF, checked and re-encoded before it goes, and a question or none; the
 description is written for a blind reader with any text transcribed
 exactly, and opens in an Image Description window with Insert Below,
-Copy and Ctrl+Z (<code>quill/ui/hosted_ai_image.py</code>).</li>
+Copy and Ctrl+Z.</li>
 <li><strong>Ask QUILL Radio</strong> (Community,
 <strong>Ctrl+Shift+8</strong>): Quill Radio’s first AI, a conversation
 on the listener’s plan that already knows the station and the title

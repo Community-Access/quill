@@ -11,7 +11,10 @@ from __future__ import annotations
 from pathlib import Path
 
 _APPS = Path(__file__).resolve().parents[3] / "quill" / "apps"
-_RADIO = (_APPS / "radio.py").read_text(encoding="utf-8")
+# The menu bar moved to radio_menu_bar.py under F-08 (2026-10-03).
+_RADIO = (_APPS / "radio.py").read_text(encoding="utf-8") + (_APPS / "radio_menu_bar.py").read_text(
+    encoding="utf-8"
+)
 _VIDEO = (_APPS / "radio_video_menu.py").read_text(encoding="utf-8")
 
 

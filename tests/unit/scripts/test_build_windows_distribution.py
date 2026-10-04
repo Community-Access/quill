@@ -314,8 +314,12 @@ def test_build_inno_setup_script_mentions_portable_bundle() -> None:
     assert "StaleShortcut" in script
     assert "CurStep = ssInstall" in script
     # File-association registry entries use HKCU only (never overwrite defaults).
+    # The always-on text-editor block is HKA (HKCU unless an administrator
+    # installs); the only HKLM in the script is the uninstall step that takes
+    # QUILL's own Notepad Debugger value back out.
     assert "HKCU" in script
-    assert "HKLM" not in script
+    assert "Root: HKLM" not in script
+    assert "HKLM" not in script.split("// -- Uninstall: put Notepad back", 1)[0]
     # The script parses as plain ASCII text (catches stray bad characters).
     script.encode("ascii")
 

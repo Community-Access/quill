@@ -26,6 +26,7 @@ from collections.abc import Callable
 
 from quill.core.podcasts.filtering import SearchResult
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.podcasts.say_status import say_status
 
 
 class SearchEverywhereDialog:
@@ -133,7 +134,7 @@ class SearchEverywhereDialog:
             return
         self._results = []
         self._list.Clear()
-        self._status.SetLabel("")
+        say_status(self._status, "", speak=False)
         self._announce("Search cleared.")
 
     def show(self) -> SearchResult | None:
@@ -165,8 +166,10 @@ class SearchEverywhereDialog:
         count = len(self._results)
         if query:
             self._remember(query)
-        self._status.SetLabel(f'{count} result(s) for "{query}".' if query else "")
-        self._announce(self._status.GetLabel() or "Type something to search.")
+        text = f'{count} result(s) for "{query}".' if query else ""
+        say_status(self._status, text, speak=False)
+        # Always spoken, even when the count is the same as last time.
+        self._announce(text or "Type something to search.")
 
     def _on_recent_picked(self, event: object) -> None:
         """Run a search the listener has run before."""

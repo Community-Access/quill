@@ -108,22 +108,15 @@ class QuillKeyMixin:
                     self._refresh_statusbar()
                     self.quill_key_selection_actions()
                     return True
-                # NAV-4: the QUILL key then G opens Quick Nav / Go to Anything.
-                if (
-                    not event.ControlDown()
-                    and not event.AltDown()
-                    and not event.ShiftDown()
-                    and key_code in (ord("G"), ord("g"))
-                ):
-                    self._quill_key_prefix_pending = False
-                    self._quill_key_prefix_started_at = 0.0
-                    self._refresh_statusbar()
-                    self.open_quick_nav()
-                    return True
+                # G is NOT a mode gate any more. It opened Quick Nav here
+                # (NAV-4) after the keymap gave leader G to Open From Favorite
+                # Folder, so that binding never fired (2026-10-03). Quick Nav
+                # is Ctrl+Shift+Z and Go to Anything Ctrl+Alt+Shift+A; G goes
+                # through the keymap like every other chord key.
                 # Data-driven chord dispatch: scan the keymap for any command
                 # whose binding matches "<prefix>, <second-key>". Mode gates
-                # (N, G, A+selection, QUILL+QUILL, Escape, ?) are handled
-                # above and are never reached here.
+                # (N, A+selection, QUILL+QUILL, Escape, ?) are handled above
+                # and are never reached here; RESERVED_LEADER_KEYS names them.
                 chord_command = self._chord_command_for_event(event)
                 if chord_command is not None:
                     self._quill_key_prefix_pending = False
@@ -145,13 +138,13 @@ class QuillKeyMixin:
                 self._quill_key_prefix_started_at = time.monotonic()
                 message = (
                     f"{QUILL_KEY_LABEL} prefix active. N for browse mode, press "
-                    f"{QUILL_KEY_LABEL} again for sticky mode, G for quick nav, "
+                    f"{QUILL_KEY_LABEL} again for sticky mode, "
                     "then any configured chord key, ? for help"
                 )
                 if self._has_active_selection():
                     message = (
                         f"{QUILL_KEY_LABEL} prefix active. N for browse mode, press "
-                        f"{QUILL_KEY_LABEL} again for sticky mode, G for quick nav, "
+                        f"{QUILL_KEY_LABEL} again for sticky mode, "
                         "A for selection actions, then any configured chord key, ? for help"
                     )
                 self._set_status_quiet(message)
@@ -562,7 +555,7 @@ class QuillKeyMixin:
 
         Scans the live keymap for bindings of the form ``<prefix>, <second-key>``
         and returns the first command_id whose second key matches the event.
-        Mode-gate keys (N, G, A+selection, QUILL+QUILL, Escape, ?) are consumed
+        Mode-gate keys (N, A+selection, QUILL+QUILL, Escape, ?) are consumed
         before this is called and will never be returned here.
         """
         prefix = str(getattr(self.settings, "quill_key_binding", "Ctrl+Shift+Grave")).strip()

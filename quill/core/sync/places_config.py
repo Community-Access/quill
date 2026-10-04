@@ -79,6 +79,11 @@ class PlacesConfig:
     #: worth far more than one that reads out a hash -- and off is there for
     #: anybody who would rather the folder learned less.
     include_labels: bool = True
+    #: Also share the podcasts this device follows, and their folders, in the
+    #: plain file (ear.md B3; sync.md 6.7). Off by default and separate:
+    #: a plain list of what somebody follows is readable by anybody who can
+    #: see the folder, which sharing a place does not imply agreeing to.
+    share_subscriptions: bool = False
 
     @property
     def is_ready(self) -> bool:
@@ -124,6 +129,7 @@ class PlacesConfig:
             "interchange": self.interchange,
             "device_id": self.device_id,
             "include_labels": self.include_labels,
+            "share_subscriptions": self.share_subscriptions,
         }
 
     @classmethod
@@ -142,6 +148,7 @@ class PlacesConfig:
             interchange=bool(data.get("interchange", False)),
             device_id=str(data.get("device_id", "")),
             include_labels=bool(data.get("include_labels", True)),
+            share_subscriptions=bool(data.get("share_subscriptions", False)),
         )
 
 

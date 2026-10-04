@@ -243,8 +243,127 @@
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content" tabindex="-1">
 <h1 id="quill-lite-changelog">QUILL Lite changelog</h1>
-<h2 id="unreleased--the-next-release-quill-lite-120">Unreleased – the
-next release, QUILL Lite 1.2.0</h2>
+<h2 id="120--2026-10-03">1.2.0 – 2026-10-03</h2>
+<h3 id="remove-quote-marks-has-a-key-that-works-2026-10-03">Remove Quote
+Marks has a key that works (2026-10-03)</h3>
+<ul>
+<li><strong>Remove Quote Marks</strong> is now
+<strong>Alt+Shift+.</strong> (Alt, Shift and the period). Its old key,
+Ctrl+Alt+Shift+Q, is the key that shows and hides QUILL from anywhere in
+Windows, so whenever QUILL was running it got the keystroke and QUILL
+Lite never did. QUILL moved its Unquote Lines to the same new key.</li>
+</ul>
+<h3
+id="release-channels-safe-ways-back-background-downloads-and-updates-that-undo-themselves-2026-10-03">Release
+channels: safe ways back, background downloads, and updates that undo
+themselves (2026-10-03)</h3>
+<ul>
+<li><strong>Coming back to Stable can now go straight back</strong> when
+Stable can read everything QUILL Lite has saved. When it can’t, the
+window says so and offers to wait for Stable or to put back the copy
+saved when you joined Beta (a copy of how things are now is saved
+first).</li>
+<li><strong>Beta and Dev download updates in the background</strong> and
+never install without asking; they wait on a metered connection, during
+Quiet Hours and while Quill Radio records.</li>
+<li><strong>Beta and Dev get their own copy of the shared
+engine</strong> (about 335 MB, gone when the last app returns to
+Stable), so moving one app never touches the others. The “move together”
+rule is lifted for installs that have it.</li>
+<li><strong>A failed update undoes itself</strong> and says so the next
+time QUILL Lite starts; Update History records it.</li>
+<li>Updates come from a signed list of versions, with downloads checked
+against it and resumed when interrupted.</li>
+</ul>
+<h3 id="release-channels-stable-beta-and-dev-2026-10-03">Release
+channels: Stable, Beta and Dev (2026-10-03)</h3>
+<ul>
+<li><strong>Help &gt; Release Channel…</strong> (no key), and a Change
+release channel… button in Settings, open the family’s shared window
+(<code>quill/ui/updates/</code>). The choices only explain as you arrow;
+Beta and Dev ask first in plain words and need “I understand” ticked; a
+zip of QUILL Lite’s settings, keys and recent files is saved to
+<code>channel-snapshots</code> before anything moves. QUILL Lite shares
+the QuillVille engine with Quill Radio and QUILL Cast, so for now they
+join Beta together. Coming back never installs an older version; QUILL
+Lite waits for Stable to catch up and says so.</li>
+<li>Check for Updates honours the channel and picks the newest release
+by version, not by GitHub’s list order (it used to take the first stable
+one listed), and asks for 100 releases a page. Each launch records the
+data formats QUILL Lite writes in <code>data-format-ledger.json</code>
+(recording only).</li>
+<li>No chord, the same as QUILL, Quill Radio and QUILL Cast:
+Alt+Shift+F4 was tried and dropped, because in a dialog Windows reads it
+as Alt+F4 and closes the window (family rules 4 and 9;
+<code>KEYLESS_WITH_REASON</code> in
+<code>tests/unit/core/lite/test_lite_commands.py</code>,
+<code>cmd_release_channel</code> -&gt; <code>help.release_channel</code>
+in the parity table).</li>
+</ul>
+<h3 id="quill-lite-as-your-windows-text-editor-2026-10-03">QUILL Lite as
+your Windows text editor (2026-10-03)</h3>
+<ul>
+<li><strong>The installer always registers QUILL Lite as a capable text
+editor and takes nothing over.</strong> A
+<code>QuillLite.Document</code> ProgID (DefaultIcon,
+<code>shell\open\command</code> =
+<code>"{app}\QuillLite.exe" "%1"</code>), a
+<code>QuillLite.Document</code> value in <code>OpenWithProgids</code>
+for .txt .text .log .md .markdown .rtf .html .htm .csv,
+<code>Applications\QuillLite.exe</code> (FriendlyAppName,
+SupportedTypes), and <code>Software\QuillLite\Capabilities</code> +
+<code>RegisteredApplications</code>, so QUILL Lite is listed in Settings
+&gt; Apps &gt; Default apps. HKA: HKCU for a per-user install, HKLM for
+an administrator one; every key and value goes on uninstall, and a
+type’s own key never does. <code>ChangesAssociations=yes</code>. The
+optional “assoc” component, Custom installs only and drawn as a check
+list a screen reader reads as unchecked, is gone. No
+<code>UserChoice</code> key is ever written.</li>
+<li><strong>Make QUILL Lite My Text Editor…</strong>, a button in
+Preferences under Windows and your files (no menu row and no key, in
+either editor), explains what Windows lets an app do and what the user
+chooses, writes the same keys for the current user pointing at the
+running <code>QuillLite.exe</code> (so a portable copy works), and opens
+Default apps on QUILL Lite’s own page
+(<code>ms-settings:defaultapps?registeredAppUser=QUILL%20Lite</code> on
+Windows 11, the general page on Windows 10). When an administrator
+install already registered this copy for everyone, it writes nothing and
+opens the <code>registeredAppMachine</code> page instead, so no
+uninstaller-orphaned copy is left in the profile.</li>
+<li><strong>Open QUILL Lite instead of Notepad</strong>, a checkbox
+beside it, off by default. It sets <code>Debugger</code> =
+<code>"&lt;launcher&gt;" --notepad</code> under
+<code>Image File Execution Options\notepad.exe</code> (HKLM, every
+user), on the parent key and on each Windows 11 <code>UseFilter</code>
+subkey whose <code>FilterFullPath</code> is a Notepad, through one
+<code>cmd.exe /c reg.exe ...</code> run with the <code>runas</code> verb
+after a confirmation that names the scope, the administrator prompt, and
+the undo. Turning it off removes only QUILL Lite’s own values; another
+program’s replacement is named before it is replaced and never removed.
+The checkbox is read back from HKLM each time Preferences opens. On
+Windows 11 it then explains the Notepad app execution alias and offers
+<code>ms-settings:advanced-apps</code>. The uninstaller removes any
+value naming its own <code>QuillLite.exe</code>, asking for approval
+when it is not elevated.</li>
+<li><strong><code>--notepad</code> on the command line</strong>:
+Windows’ own Notepad path is dropped, Notepad’s switches (/A /W /P /PT)
+are dropped, an unquoted path with spaces is joined back into one file,
+and no file means a new plain text document. /P opens the file rather
+than printing it. The handover to a running copy is unchanged.</li>
+<li>Code, shared with QUILL, which has the same two settings:
+<code>quill/core/windows_editor.py</code> (what to write, wx- and
+registry-free, one profile per app),
+<code>quill/platform/windows/editor_registration.py</code> (winreg,
+<code>ShellExecuteEx</code> runas, Settings),
+<code>quill/ui/text_editor_commands.py</code> (the flows) and
+<code>quill/ui/text_editor_prefs.py</code> (the Preferences group, the
+only door). QUILL Lite binds its profile in
+<code>quill/core/lite/windows_editor.py</code> and
+<code>quill/apps/lite_window_text_editor.py</code>. Tests:
+<code>tests/unit/core/lite/test_lite_windows_editor.py</code>,
+<code>tests/unit/apps/test_lite_text_editor_commands.py</code>,
+<code>tests/unit/scripts/test_quilllite_text_editor_installer.py</code>.</li>
+</ul>
 <h3 id="each-app-keeps-its-own-chatgpt-sign-in-2026-10-02">Each app
 keeps its own ChatGPT sign-in (2026-10-02)</h3>
 <ul>
@@ -261,8 +380,8 @@ Continue is one Allow.</li>
 <h3 id="your-own-key-can-be-a-google-gemini-key-x-07">Your own key can
 be a Google Gemini key (X-07)</h3>
 <ul>
-<li><p><strong>Use My Own AI Key (Alt+F2)</strong> – the row was Use My
-Own OpenAI Key – opens on a <strong>Provider</strong> list: OpenAI, or
+<li><strong>Use My Own AI Key (Alt+F2)</strong> – the row was Use My Own
+OpenAI Key – opens on a <strong>Provider</strong> list: OpenAI, or
 Google Gemini. Everything under it follows the choice: where the text
 goes, which key, that account’s own models with that company’s prices,
 Test the Key against that company. The choice is explicit and saved
@@ -276,31 +395,36 @@ key (<code>quill/core/ai/own_key.py</code>,
 <code>quill/ui/hosted_ai_own_key.py</code>,
 <code>hosted_ai_own_key_route.py</code>;
 <code>tests/unit/core/ai/test_own_key_gemini.py</code> drives a
-Gemini-shaped loopback server with a synthetic key).</p></li>
-<li><p><strong>Tools &gt; Thesaurus… (Shift+F7)</strong>, QUILL’s
-two-pane picker and QUILL’s data, which ships inside QUILL Lite. It
-looks up the word you are <em>on</em>: “running” reaches “run”,
-“happier” reaches “happy”, irregular verbs are known, and every
-replacement comes back in the form the sentence needs, with the
-original’s capitals (“sprinting” for “running”, “More glad” for
-“Happier”). QUILL’s own Thesaurus now does the same, from the same code
+Gemini-shaped loopback server with a synthetic key).</li>
+</ul>
+<h3
+id="a-thesaurus-that-finds-the-word-you-are-on-look-up-and-an-ai-dictionary-2026-10-02">A
+thesaurus that finds the word you are on, Look Up, and an AI dictionary
+(2026-10-02)</h3>
+<ul>
+<li><strong>Tools &gt; Thesaurus… (Shift+F7)</strong>, QUILL’s two-pane
+picker and QUILL’s data, which ships inside QUILL Lite. It looks up the
+word you are <em>on</em>: “running” reaches “run”, “happier” reaches
+“happy”, irregular verbs are known, and every replacement comes back in
+the form the sentence needs, with the original’s capitals (“sprinting”
+for “running”, “More glad” for “Happier”). QUILL’s own Thesaurus now
+does the same, from the same code
 (<code>quill/core/word_lookup.py</code>,
-<code>quill/ui/word_tools_commands.py</code>).</p></li>
-<li><p><strong>Two submenus on any word in the context menu.</strong>
+<code>quill/ui/word_tools_commands.py</code>).</li>
+<li><strong>Two submenus on any word in the context menu.</strong>
 <em>Thesaurus for “word”</em>: the best replacements one keystroke away,
 each further sense as a submenu, Opposites, Say Word Summary and More in
 Thesaurus. <em>Dictionary for “word”</em>: Look Up, then the AI
 dictionary’s twelve questions when AI help is on, or one row that says
 what it needs. The same two submenus in QUILL
 (<code>quill/apps/lite_window_context_menu.py</code>,
-<code>quill/ui/main_frame.py</code>).</p></li>
-<li><p><strong>Say Word Summary (Ctrl+Alt+Shift+[)</strong> speaks what
-the thesaurus knows – the headword, the meanings per part of speech, the
-first replacements and the opposites – without opening
-anything.</p></li>
-<li><p><strong>Tools &gt; Look Up Word… (Alt+F10)</strong>: QUILL’s Look
-Up window, the dictionary without AI, shared by both editors. Offline it
-is the thesaurus; with <strong>Use online sources</strong> ticked – off
+<code>quill/ui/main_frame.py</code>).</li>
+<li><strong>Say Word Summary (Ctrl+Alt+Shift+[)</strong> speaks what the
+thesaurus knows – the headword, the meanings per part of speech, the
+first replacements and the opposites – without opening anything.</li>
+<li><strong>Tools &gt; Look Up Word… (Alt+F10)</strong>: QUILL’s Look Up
+window, the dictionary without AI, shared by both editors. Offline it is
+the thesaurus; with <strong>Use online sources</strong> ticked – off
 until you tick it, remembered as <code>dictionary_online_lookups</code>
 – the word alone goes to the Free Dictionary, Datamuse and Wikipedia for
 definitions, more words and a summary, arriving in the background. Words
@@ -309,28 +433,28 @@ you can use replace the word on Enter; Add to Dictionary teaches it
 <code>quill/core/lexical.py</code>). In QUILL this window had been
 reachable only when the thesaurus data was missing, and went online
 whenever the dictionary feature was on; now it is on the Tools &gt;
-Writing menu and asks first.</p></li>
-<li><p><strong>Tools &gt; Dictionary</strong>, the AI dictionary: Define
-in Context, Synonyms That Fit, Simpler, More Formal and More Vivid Word,
+Writing menu and asks first.</li>
+<li><strong>Tools &gt; Dictionary</strong>, the AI dictionary: Define in
+Context, Synonyms That Fit, Simpler, More Formal and More Vivid Word,
 Opposites, Is This the Right Word?, Use It in a Sentence, Where It Comes
 From, How to Say It, Rhymes, the Word Explorer (everything at once) and
 Find the Word For (the reverse dictionary). Each sends the word and its
 sentence, never the document, and answers in prose for listening plus
 choices that each say why; Use This Word replaces the word (or inserts,
 for Find the Word For) as one undo step, and only while the word is
-still where it was. On your own OpenAI key or ChatGPT subscription only
-– never the free allowance – and the same rows, keys and window in
-QUILL’s AI menu (<code>quill/core/ai/word_tools.py</code>,
+still where it was. On your own key (OpenAI or Google Gemini) or ChatGPT
+subscription only – never the free allowance – and the same rows, keys
+and window in QUILL’s AI menu (<code>quill/core/ai/word_tools.py</code>,
 <code>quill/ui/word_tools_window.py</code>,
-<code>quill/ui/main_frame_hosted_ai.py</code>).</p></li>
-<li><p><strong>Tools &gt; Spelling &gt; Dictionary Status…
+<code>quill/ui/main_frame_hosted_ai.py</code>).</li>
+<li><strong>Tools &gt; Spelling &gt; Dictionary Status…
 (Alt+Shift+;)</strong>, QUILL’s row: the word counts and file paths of
 your dictionaries, and whether the thesaurus data is present
-(<code>quill/apps/lite_window_words.py</code>).</p></li>
-<li><p>A new Customize Features area, <strong>Dictionary and
+(<code>quill/apps/lite_window_words.py</code>).</li>
+<li>A new Customize Features area, <strong>Dictionary and
 thesaurus</strong>, on by default and off in the WordPad and Notepad
 profiles; the AI rows switch with AI help. The profiles’ counts are 17,
-21, 5 and 2 of 21.</p></li>
+21, 5 and 2 of 21.</li>
 </ul>
 <h3
 id="activity-repeat-last-result-and-saves-that-tell-the-truth-f-01-f-02-f-10">Activity,
@@ -342,8 +466,8 @@ this session, newest first, each with what you can do about it: Retry,
 Open Folder, Copy Details, Clear List. <strong>Help &gt; Repeat Last
 Result (F9)</strong> says the newest result that mattered again. The
 same two keys and the same window in QUILL, Quill Radio and QUILL Cast;
-every document window shares one list
-(<code>quill/core/activity.py</code>,
+every document window shares one list, and work still running is listed
+beside what finished (<code>quill/core/activity.py</code>,
 <code>quill/ui/activity_window.py</code>,
 <code>quill/apps/lite_window_activity.py</code>).</li>
 <li><strong>A settings save that fails is said once, with a way
@@ -376,6 +500,40 @@ cancels, and a failed read offers Try Again
 (<code>quill/core/lite/open_prepare.py</code>,
 <code>quill/apps/lite_window_open.py</code>,
 <code>tests/unit/apps/test_lite_background_open.py</code>).</li>
+<li><strong>A background open is listed in Activity.</strong> While it
+runs it is an in-progress row; afterwards it is kept as Opened, or Could
+not open with the reason, so a slow file that finished while you were
+elsewhere can be checked (<code>quill/apps/lite_window_open.py</code>,
+qc.md F-10).</li>
+</ul>
+<h3
+id="find-a-setting-a-focus-repair-with-limits-and-a-tidier-close-2026-09-30">Find
+a setting, a focus repair with limits, and a tidier close
+(2026-09-30)</h3>
+<ul>
+<li><strong>Preferences has a Find a setting box.</strong> It searches
+each setting’s name, what the screen reader calls it and its help text;
+Down reaches Matching settings and Enter moves focus to the control.
+Ctrl+F returns to the box, Escape clears it first, and searching never
+changes or saves a setting (<code>quill/ui/preferences_search.py</code>,
+shared with every app’s Preferences: Quill Radio and QUILL Cast have the
+same box).</li>
+<li><strong>Alt+Tab back into QUILL Lite puts focus in the
+document.</strong> The activation repair runs once with one bounded
+follow-up check; menus, real fields such as Find, hidden windows,
+deactivation and shutdown are left alone, and a stale callback from an
+earlier activation does nothing.</li>
+<li><strong>A settings save that fails is reported, not
+discarded.</strong> Your choices stay active for the session, the
+warning stays reviewable in the status bar’s Message cell, reopening
+Preferences retries the save, and Preferences no longer says “saved”
+when it was not. Diagnostics carry no raw file-system errors or
+paths.</li>
+<li><strong>Closing is tidier.</strong> The inbox that receives
+documents from a second launch stops before the documents are destroyed;
+a cancelled close keeps it running; documents sent while QUILL Lite
+closes are opened next time; and a deferred update check never starts
+once closing has begun.</li>
 </ul>
 <h3 id="a-focus-repair-that-does-not-take-leaves-a-trace-f-04">A focus
 repair that does not take leaves a trace (F-04)</h3>
@@ -1195,8 +1353,9 @@ none of its formatting.</p></li>
 <h4 id="lines-and-text-tools">Lines and text tools</h4>
 <ul>
 <li><p><strong>Quote Lines (Ctrl+Shift+Q)</strong> and <strong>Remove
-Quote Marks (Ctrl+Alt+Shift+Q)</strong>, for replying to email and
-quoting a log excerpt.</p></li>
+Quote Marks (Alt+Shift+.)</strong>, for replying to email and quoting a
+log excerpt. (Remove Quote Marks was on Ctrl+Alt+Shift+Q until
+1.2.0.)</p></li>
 <li><p><strong>Hard Wrap Lines (Alt+Shift+W)</strong> asks for a width
 and re-flows to it, keeping paragraphs apart and never breaking a word.
 This changes the document, unlike View, Word Wrap.</p></li>

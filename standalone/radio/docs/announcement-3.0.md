@@ -1,163 +1,167 @@
 # Quill Radio 3.0
 
-**A radio that answers the questions people actually arrive with.**
+**A radio that answers the questions you open it with.**
 
-Version 3.1.1, released 2026-09-30.
+Version 3.2.0, released 2026-10-03.
 
-Community Access has released **Quill Radio 3.0** for Windows. It
-is free, it is part of the QuillVille family, and it is built for people who
-listen to their computer rather than look at it.
+Community Access has released **Quill Radio 3.0** for Windows. It is free, it
+is part of the QuillVille family, and it is made for people who listen to
+their computer rather than look at it.
 
-Quill Radio plays internet radio, podcasts, audiobooks and archive recordings,
-records what is on, and schedules what is coming. Everything it does, it does
-from the keyboard, and it says what it did.
-
----
+Quill Radio plays internet radio, podcasts, audiobooks and archive
+recordings. It records what is on, and it can record what is coming later.
+You do everything from the keyboard, and it tells you how each thing turned
+out.
 
 ## What 3.0 is about
 
-Version 2.1 opened on an empty favorites tree. That is an accurate picture of
-having no favorites, and an answer to none of the questions anybody actually
-opens a radio app with. Almost everything in 3.0 follows from taking those
-questions seriously.
+Version 2.1 opened on an empty list of favorites. That is true when you have
+no favorites yet, but it does not help you find anything to listen to. Most of
+what is new in 3.0 starts from the questions people really have when they
+open a radio app: what can I hear, how do I find it, and how do I keep it?
 
-### You are somewhere, from the first second
+### You are somewhere from the very first moment
 
-The first run is three short screens, not seven, and every one of them names
-the real key for what it describes. From the second screen, one button takes
-you straight into Browse Stations. The main window shows whichever surface you choose --
-favorites, the browse tree, search, recordings or the player -- rather than
-opening a second window on top of the one you were in.
+The welcome is three short screens, and each one tells you the real key for
+what it describes. On the second screen, one button takes you straight into
+Browse Stations. And the main window can show whichever part of the radio you
+like best, your favorites, the browse tree, search, recordings or the player,
+instead of opening another window on top.
 
-### More than thirty branches you can wander without searching for anything
+### More than thirty places to wander, without searching
 
-The station directory by country, by language, by what is trending today.
-Podcasts by country and genre, with no account anywhere. Whole libraries --
-the Internet Archive, LibriVox, Project Gutenberg, Audius, Mixcloud, ccMixter.
+Stations by country, by language, and by what is popular today. Podcasts by
+country and by subject, with no account anywhere. Whole libraries: the
+Internet Archive, LibriVox, Project Gutenberg, Audius, Mixcloud and ccMixter.
 NOAA Weather Radio by state, county or SAME code. Radio reading services.
-Television from the iptv.org catalogue. None of it needs a key or a sign-in.
+Television from the iptv.org list. None of it needs a key or a sign-in.
 
-### It works before the internet does
+### It works even when the internet does not
 
-A catalogue of stations lives on your own computer, so a search answers the
-instant you press Enter -- and still answers when the connection does not. The
-live directories layer in behind the local answers rather than holding them up.
+A list of stations is kept on your own computer, so a search answers the
+moment you press Enter, and still answers when your connection is down. The
+online directories add their answers as they arrive, without holding you up.
 
-### Search now finds the station you meant
+### Search finds the station you meant
 
-This is the newest thing in 3.0, and it came from three listeners who could not
-find five stations between them. A query is not a string: "Sunny 105.7 Gulf
-Shores Alabama" is a brand, a frequency, a city and a state, and the
-directories index two of those.
+This came from three listeners who could not find five stations between them.
+When you type "Sunny 105.7 Gulf Shores Alabama", you are giving a station's
+name, its frequency, a town and a state, all at once. The directories only
+know some of those.
 
-So the query is taken apart and each directory is asked several narrower
-questions instead of one wide one. `14.90 AM` finds 1490 and `1009` finds
-100.9. A trailing `FM` no longer loses the station. And naming the state does
-real work: Radio Browser knows Sunny 105.7 only as "WCSN 105.7 FM Orange
-Beach", so no spelling of "Sunny" could reach it -- but `105.7` inside Alabama
-has exactly one answer, and now it arrives first, misspelled city and all.
+So Quill Radio now picks your search apart and asks each directory several
+more exact questions. "14.90 AM" finds 1490, and "1009" finds 100.9. Putting
+"FM" on the end no longer loses the station. And naming the state really
+helps. One directory only knows Sunny 105.7 as "WCSN 105.7 FM Orange Beach",
+so no spelling of "Sunny" could ever find it. But there is only one 105.7 in
+Alabama, so now it comes first, even if you misspell the town.
 
-The merged results are then ordered by which one you most likely wanted: name
-*and* frequency above frequency alone, the station in the place you named above
-one that merely shares a word, and -- between two equally good matches -- the
-one whose stream is known to play, then the one more people listen to.
+Results are put in the order you most likely want. A match on the name and
+the frequency comes before a match on the frequency alone. A station in the
+place you named comes before one that just shares a word. And between two
+equally good matches, the one known to play comes first, then the one more
+people listen to.
 
-Typing a station's **web address** works too, in every search box. A site is
-scanned for its stream, which is how you reach the stations no directory
-carries at all -- and there are more of those than people expect.
+You can also type a station's **web address** into any search box. Quill
+Radio looks on the website for the stream. That is how you reach stations no
+directory lists at all, and there are more of those than you might think.
 
-### Recording that behaves like a recorder
+### Recording that works like a recorder
 
-Record what is playing, or schedule it, and record several stations at once. A
-scheduled recording can wake the computer for itself rather than silently
-missing the show. A dropped connection reconnects and the parts are joined back
-into one file; a recording cut off by a crash is offered for resuming at the
-next launch. The Recordings player answers Winamp's keys.
+Record what is playing, or schedule it, and record several stations at once.
+A scheduled recording can wake the computer up for itself, instead of
+quietly missing the show. If the connection drops, Quill Radio reconnects and
+joins the pieces back into one file. If Quill Radio closes unexpectedly in the
+middle of a recording, it offers to carry on the next time you open it. And
+the Recordings player answers to Winamp's keys.
 
 ### Live radio you can rewind
 
-Missed what the announcer just said? **Ctrl+Shift+Left** goes back 30 seconds
-into a rolling buffer of the live stream, and **Ctrl+Shift+L** catches up
-again. Podcasts, recordings and files pause and resume with **Ctrl+Space**.
+Missed what the announcer just said? **Ctrl+Shift+Left** goes back 30
+seconds, and **Ctrl+Shift+L** brings you back to live. Podcasts, recordings and
+files pause and resume with **Ctrl+Space**.
 
-### Every window can reach the player
+### The player is never far away
 
-The player, browse, search, recordings, favorites and scheduling are **windows**
--- peers, not overlays -- with one menu bar each, one now-playing line, and a
-status bar whose cells are actions rather than decoration.
+The player, Browse, Search, Recordings, Favorites and Schedule Recording are
+each a window of their own, side by side, not stacked on top of each other.
+Each has its own menu bar and the same now-playing line, and the keys for the
+player work in all of them. Every part of the status bar does something when
+you press Enter on it.
 
-### The app teaches itself
+### The app teaches you itself
 
-**Help > Tutorials...** (Ctrl+Alt+F1) opens 41 guided tutorials, 281 steps
-in all, in six tracks. A lesson runs one step at a time, tells you what you should *hear*
-when it worked, and can run the step for you. Tick **Follow me** and it watches
-the app and moves on when you have done the thing. The keys a tutorial shows
-are read from your own keymap, so they cannot go stale -- and if you rebind a
-command, every lesson that mentions it says your key from then on.
+**Help > Tutorials...** (Ctrl+Alt+F1) opens 41 guided tutorials, 281 steps in
+all, in six groups. A lesson goes one step at a time and tells you what you
+should *hear* when the step worked. It can even do the step for you. Tick
+**Follow me** and it notices when you have done the step, and moves on. The
+keys a tutorial teaches are your own keys, so if you change a key, every
+lesson that mentions it tells you your new key.
 
 ### F1 answers, everywhere
 
-Every window states its purpose and then describes the control you are standing
-on. Every menu item shows its keyboard route, and no two items in a menu bar
-claim the same key -- a rule now enforced by an automated gate rather than by
-anybody remembering.
+Press F1 in any window and you hear what the window is for, then what the
+control you are on does. Every menu item shows its key, and no two items in a
+menu bar share the same one.
 
----
+## Made for screen reader users from the start
 
-## Accessibility is the design, not a feature of it
+Quill Radio is built by and for people who use screen readers. Here is some of
+what that means:
 
-Quill Radio is built by and for screen-reader users. Some of what that means in
-practice:
+- **It only says what your screen reader does not.** Your screen reader
+  already tells you window names, control names and where focus went. Quill
+  Radio tells you the things only it knows: a result that arrived in the
+  background, a change somewhere you are not, and how something you did
+  turned out. Saying everything twice is how an app gets its speech turned
+  off.
+- **Sizes follow your text size**, so a readout grows when you make Windows'
+  text bigger, rather than getting cramped.
+- **Nothing depends on looking.** Every list tells you how many items it has,
+  anything that takes a while tells you it is working, and a source that is
+  having a bad day says so, instead of pretending there were "no matches".
 
-- **It says what the screen reader will not.** Window titles, control names and
-  focus moves are the reader's job; a background result, a state change on a
-  control you are not standing on, and the outcome of an action are the app's.
-  Saying both is how an app becomes something people turn the speech off for.
-- **Sizes are measured in characters, not pixels**, so a readout grows with the
-  system font instead of shrinking against it.
-- **Nothing is discovered by looking.** Every list says how many rows it has,
-  every long operation says it is running, and a source having a bad day says
-  so rather than posing as "no matches".
+## Getting it
 
----
+Quill Radio 3.0 is a free download for Windows 10 and 11. It came out on
+2026-09-27 as version 3.0.1, which replaced the withdrawn 3.0.0. The current
+version is 3.2.0, released 2026-10-03. It follows 3.0.4 directly: there was
+never a public 3.1. Both downloads are on the QUILL Releases page at
+github.com/Community-Access/quill, under Quill Radio 3.2.0:
 
-## Availability
+- **Quill-Radio-Setup-Shared-3.2.0.exe** is the installer, and the one most
+  people want. It sets up the shared QuillVille Runtime if you do not already
+  have it, then Quill Radio, with a Start Menu entry and an uninstaller.
+- **Quill-Radio-Portable-3.2.0.zip** is the portable copy. Unpack it
+  anywhere, even a USB stick. It writes nothing to the computer it runs on.
+  Your settings, favorites and history are kept in a data folder next to the
+  app, from the very first time you open it.
 
-Quill Radio 3.0 is a free download for Windows 10 and 11, released on
-2026-09-27 as version 3.0.1, which replaced the withdrawn 3.0.0; the current
-version is 3.1.1, released 2026-09-30. Both
-downloads are on the QUILL Releases page on GitHub
-(github.com/Community-Access/quill), under the tag `quill-radio-v3.1.1`:
-
-- **`Quill-Radio-Setup-Shared-3.1.1.exe`**, the installer, is the one most
-  people want. It sets up the shared QuillVille Runtime if it is not already
-  there, then the app, with a Start Menu entry and an uninstaller.
-- **`Quill-Radio-Portable-3.1.1.zip`**, the portable copy, unpacks anywhere, a
-  USB stick included, and writes nothing to the computer it runs on. Settings,
-  favorites and history live in a `data` folder beside the app, from the very
-  first launch.
-
-Both are code-signed. **Help > Check for Updates** (Ctrl+Alt+U) offers
-whichever of the two you are running, with the release's What's New notes to
-read first.
+Both are signed, so Windows can check that nobody has changed them. **Help >
+Check for Updates** (Ctrl+Alt+U) offers
+whichever one you are using, and shows you what is new before you update.
 
 Quill Radio shares its engine with **QUILL**, the full accessible word
-processor, and sits beside **Quill Cast** (podcasts), **Quill Weather**,
+processor. It sits alongside **Quill Cast** (podcasts), **Quill Weather**,
 **Audio Studio**, **Quill Media Player**, **Quill Inkwell**, **Quill
-Converter**, **Quill Beacon** and **QUILL Lite** -- one family, one set of
-keys, one way of speaking.
+Converter**, **Quill Beacon** and **QUILL Lite**: one family, with the same
+keys and the same way of talking to you.
 
-Upgrading from 2.x keeps your favorites, your settings and your keymap.
-
----
+If you are upgrading from 2.x, your favorites, settings and keys all come with
+you.
 
 ## About Community Access
 
-Community Access builds software for blind and low-vision users
-that does not ask them to work around it. Everything in the QuillVille family
-is free, keyboard-first, and designed with a screen reader running.
+Community Access makes software for blind and low-vision people that does not
+make them work around it. Everything in the QuillVille family is free, works
+from the keyboard, and is designed with a screen reader running.
 
-Support: support@community-access.org, or **Help > Get Help from Support...**
-(Ctrl+Alt+F2) inside the app. A person reads every message.
+## Where to learn more
 
-The user guide (Ctrl+F1 in the app) walks through every feature step by step.
+- **Help > User Guide** (Ctrl+F1) walks you through every feature, one
+  chapter at a time. Start with Chapter 2, Your first half hour.
+- **Help > Tutorials** (Ctrl+Alt+F1) opens the guided lessons. Begin with Play
+  your first station, then Wander the browse tree.
+- **Help > Release Notes** (Shift+F1) says what is new in each version.
+- For help, choose **Help > Get Help from Support** (Ctrl+Alt+F2), or write
+  to support@community-access.org. A person reads every message.

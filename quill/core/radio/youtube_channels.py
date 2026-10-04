@@ -178,6 +178,11 @@ def _flat_entries(url: str, *, limit: int, offset: int) -> tuple[str, list[dict]
         "playliststart": offset + 1,
         "playlistend": offset + limit,
     }
+    from quill.core.js_runtime import yt_dlp_js_options
+    from quill.core.radio.youtube_signin import cookie_options
+
+    options.update(yt_dlp_js_options())  # the bundled deno solves YouTube's JS
+    options.update(cookie_options())  # the listener's sign-in, only if on
     try:
         with yt_dlp.YoutubeDL(options) as ydl:
             info = ydl.extract_info(url, download=False)

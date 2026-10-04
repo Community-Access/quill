@@ -95,6 +95,14 @@ Name: "runtime"; Description: "Shared QuillVille runtime (Python) -- installed o
 Name: "main"; Description: "{#AppName} (required)"; Types: full compact custom; Flags: fixed
 Name: "docs"; Description: "Documentation (User Guide, Release Notes, Product Requirements)"; Types: full custom
 
+[INI]
+; The version THIS installer installed, read by quill.core.app_version for
+; Check for Updates and About. The shared runtime carries every app's code, so
+; the code's own constant says which runtime is here, not which app installer
+; ran (the same marker Quill Radio and QUILL Lite write; release-channels plan,
+; Phase 0).
+Filename: "{app}\quill-app-version.ini"; Section: "app"; Key: "version"; String: "{#AppVersion}"
+
 [Files]
 Source: "..\assets\quill-cast.ico"; DestDir: "{app}"; Components: main; Flags: ignoreversion
 Source: "..\dist\QuillCast-shared\QuillCast.exe"; DestDir: "{app}"; Components: main; Flags: ignoreversion

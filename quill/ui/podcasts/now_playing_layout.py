@@ -181,7 +181,12 @@ def build_controls(self: Any, host: Any) -> None:
         "Abou&t This Episode...",
         "Everything the feed says about this episode, as a reviewable report.",
     )
-    for button in (self._favorite, self._played, self._share, self._about):
+    self._bookmarks = _button(
+        panel,
+        "B&ookmarks...",
+        "The places you marked in this episode. Enter on one plays it from there.",
+    )
+    for button in (self._favorite, self._played, self._share, self._about, self._bookmarks):
         bottom.Add(button, 0, wx.RIGHT, 6)
     root.Add(bottom, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 

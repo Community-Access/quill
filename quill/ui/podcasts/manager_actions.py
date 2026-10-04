@@ -340,17 +340,20 @@ class ManagerActionsMixin:
     def _on_show_settings(self, show: PodcastShow) -> None:
         """Per-show overrides: auto-download, queue expiry, Inbox caps, and
         the rest -- the settings that only make sense one podcast at a time."""
-        from quill.ui.podcasts.show_settings_dialog import ShowSettingsDialog
+        from quill.ui.podcasts.show_settings_dialog import open_show_settings
 
-        dialog = ShowSettingsDialog(
-            self.dialog,
+        open_show_settings(
+            self,
+            show,
             library=self._library,
-            show=show,
-            announce_cb=self._announce,
+            parent=self.dialog,
+            on_saved=self._after_show_settings_saved,
         )
-        if dialog.show():
-            self._on_library_changed()
-            self.refresh_tree()
+
+    def _after_show_settings_saved(self) -> None:
+        """Settings for This Podcast saved (its window stays open): redraw."""
+        self._on_library_changed()
+        self.refresh_tree()
 
     def _on_episode_filters(self, show: PodcastShow) -> None:
         """Episode Filters: the rules that decide where new episodes go.
@@ -361,39 +364,39 @@ class ManagerActionsMixin:
         dozen controls would put it behind a lot of arrowing for somebody who
         opened the menu already knowing what they wanted.
         """
-        from quill.ui.podcasts.episode_filters_dialog import EpisodeFiltersDialog
+        from quill.ui.podcasts.episode_filters_dialog import open_episode_filters
 
-        dialog = EpisodeFiltersDialog(
-            self.dialog,
+        open_episode_filters(
+            self,
+            show,
             library=self._library,
-            show=show,
-            announce_cb=self._announce,
+            parent=self.dialog,
             playing=self._currently_playing(),
+            on_saved=self._after_filters_saved,
         )
-        if dialog.show():
-            self._on_library_changed()
-            self.refresh_tree()
-            self._fill_episodes(self._current_show)
+
+    def _after_filters_saved(self) -> None:
+        """Episode Filters saved (its window stays open): redraw what it changed."""
+        self._on_library_changed()
+        self.refresh_tree()
+        self._fill_episodes(self._current_show)
 
     def _on_filter_like_this(self, show: PodcastShow, episode: PodcastEpisode) -> None:
         """Filter Episodes Like This: Episode Filters, opened on a drafted rule."""
         from quill.core.podcasts.episode_filters import newest_episodes
         from quill.core.podcasts.filter_suggestions import suggest_rule
-        from quill.ui.podcasts.episode_filters_dialog import EpisodeFiltersDialog
+        from quill.ui.podcasts.episode_filters_dialog import open_episode_filters
 
         suggestion = suggest_rule(episode, show.episodes, newest=newest_episodes)
-        dialog = EpisodeFiltersDialog(
-            self.dialog,
+        open_episode_filters(
+            self,
+            show,
             library=self._library,
-            show=show,
-            announce_cb=self._announce,
+            parent=self.dialog,
             playing=self._currently_playing(),
             suggestion=suggestion,
+            on_saved=self._after_filters_saved,
         )
-        if dialog.show():
-            self._on_library_changed()
-            self.refresh_tree()
-            self._fill_episodes(self._current_show)
 
     def _on_toggle_filter_exempt(self, show: PodcastShow, episode: PodcastEpisode) -> None:
         """Exempt one episode from its podcast's Episode Filter, or put it back.
@@ -471,3 +474,9 @@ class ManagerActionsMixin:
             self._announce("You follow no podcast with a feed to check.")
             return
         self._announce(f"Checking {started} feed{'' if started == 1 else 's'}...")
+        from quill.ui.podcasts import check_run
+
+        check_run.start(
+            getattr(self, "_transport_host", None) or self,
+            list(getattr(monitor, "last_started_ids", [])),
+        )

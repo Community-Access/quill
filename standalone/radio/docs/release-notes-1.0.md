@@ -1,78 +1,192 @@
-# Quill Radio 1.0 -- Release Notes
+# Quill Radio 1.0
 
-The radio, on its own -- and finished. Quill Radio takes the internet radio QUILL users already know, gives it a window, a menu bar, a tray icon, and its own icon, and then goes further than the embedded radio ever has. Everything below also landed in QUILL itself: the two share one codebase and one data store, so features arrive everywhere at once.
+Welcome to Quill Radio, the internet radio from QUILL in a window of its own.
+It opens on your favorites, plays with one key, and tells you what it is doing
+as it goes.
 
-The recordings-reliability overhaul and resume-across-restart that once sat here as "unreleased" shipped in Quill Radio 2.0 -- see `release-notes-2.0.md` for that story.
+Quill Radio has its own menu bar, tray icon and app icon, and it goes further
+than the radio inside QUILL ever did. The two share the same radio and the
+same saved favorites and settings, so anything new arrives in both at once.
 
-## What's new in 1.1.0
+These notes cover 1.0 and the updates up to 1.1.0, newest first. The more
+reliable recordings that were once promised here came in Quill Radio 2.0,
+which has its own notes.
 
-- **A new heart: the mpv playback engine.** Quill Radio 1.1.0 ships a second audio engine -- mpv, the same engine trusted by media players everywhere -- and uses it automatically. You don't have to know or care, but it's the reason almost everything else on this list exists. The classic Windows Media engine is still right there: Preferences (Ctrl+,) > Playback engine > "Windows Media (classic)" is exactly the pre-1.1 behavior, byte for byte. Best of both: whichever engine is playing, a station it can't open is quietly retried once on the other before you ever hear an error.
-- **Every stream format, finally.** This is the consequence you'll feel immediately: Quill Radio now plays effectively every station format in real-world use -- **MP3, AAC and HE-AAC (AAC+), Ogg Vorbis, Opus, FLAC streams, and HLS (m3u8)**. Ogg Vorbis, Opus, and HLS were simply undecodable before (Windows Media cannot play them), and they're everywhere among community, independent, and international stations: a whole class of "found it in the directory but it won't play" stations just started working. Raw recording keeps pace -- each format is captured to its natural file type (`.ogg`, `.opus`, `.aac`, and so on).
-- **Send the radio to a second sound card.** The classic radio setup, finally: Preferences (Ctrl+,) gained **Radio output device**. Route the radio to a USB headset or a second sound card and keep your screen reader, and Quill Radio's own sounds, on the main one. Unplug that USB card and your choice is remembered, not silently reset; if the device can't be used the radio plays through the default and says so.
-- **Pause live radio. Rewind it.** Quill Radio now keeps a rolling buffer of the live stream -- roughly 45 minutes at typical bitrates. Pause for the doorbell and resume where you left off. Missed a sentence? **Rewind 30 Seconds** (Ctrl+Shift+Left). Catch back up with **Forward 30 Seconds** (Ctrl+Shift+Right) or jump straight to **Back to Live** (Ctrl+Shift+L). Every move tells you how far behind live you are.
-- **Volume Boost.** Some stations just broadcast quiet. Ctrl+Shift+B amplifies up to 50% past full volume -- and your normal volume scale, per-station volume memories, and mute all behave exactly as before.
-- **Sound, shaped your way -- instantly.** Sound Enhancements grew from an EQ-and-compressor into a proper listening toolkit. New: **Combine channels into mono** -- with single-sided hearing or one earbud, a station that hard-pans a voice to the other channel simply loses it; mono blends both channels so nothing disappears. New: **Night mode** -- real-time loudness evening that lifts quiet passages, the natural partner to Even Out Volume taming loud ones; late-night listening without riding the volume keys. Two new quick presets, **Small Speakers** and **Late Night**, join the family, the three-band EQ and per-station memories are untouched -- and on the mpv engine, every change now applies *live*, mid-song, with no reconnect at all. Recordings with "Apply Sound Enhancements" capture the new options too.
-- **What's Playing, on more stations.** When a station refuses the usual title request -- or streams over HLS, which has no title channel at all -- Quill Radio now reads the track title straight out of the playback engine, so Ctrl+T has an answer far more often.
-- **"Buffering..." instead of silence.** When the network hiccups mid-song, Quill Radio now says what's happening while the engine rides it out.
-- **Alt+F4, your way.** For some of us Alt+F4 is muscle memory -- and half the time you didn't mean to kill the radio, just get it out of the way. A new Preferences checkbox, **Alt+F4 minimizes to the system tray** (off by default), does exactly that: the window tucks away, the music keeps playing, and the tray icon has everything. The titlebar X and Station > Exit still follow your "When closing the window" choice, so a deliberate exit is still one keystroke away.
-- **Record the raw stream, exactly as sent.** Recording Settings' Format list gained **Raw stream -- exactly as sent, no re-encoding (lossless)** next to MP3, OGG, FLAC, and WAV. Those four decode the incoming audio and re-encode it to the format you picked; the raw option does neither -- it copies the station's own audio packets straight to disk, so the file that lands is bit-for-bit what the server broadcast. It's the cleanest possible starting point if you want to do your own editing or convert it yourself, with nothing lost to a second pass through an encoder. Quill Radio names the file from the stream's own format for you -- an MP3 stream becomes a `.mp3`, AAC a `.aac`, Ogg Vorbis a `.ogg`, Opus a `.opus`, FLAC a `.flac`; anything out of the ordinary is tucked into a Matroska `.mka` file, which holds any audio losslessly and opens in players like VLC. Bitrate and Sound Enhancements don't touch a raw recording -- there's nothing being re-encoded for them to shape -- so they're quietly skipped, and if a recording rides out a dropped connection into a "(part 2)" file, that part keeps the same file type. Straight from a listener request: a recording mode that saves the raw stream as captured, as losslessly as possible.
-- **Stations that used to fail now heal themselves.** Here's the one that started it: Magic 104.1 (KMGL) in Oklahoma City turns up in the directory, you press play, and... nothing. The real stream lives behind a JavaScript player on the station's site, so the listed address is a dead end, and the only way through was to open the website, find the "Listen Live" link, follow it, and dig the actual stream out of the player by hand. Quill Radio now does that digging for you. When a stream won't play it works down a ladder: re-resolve the address if it's a StreamTheWorld player that just moved servers, refresh the address from the directory, and -- if you leave it on -- scan the station's own website, following its "Listen Live"/"Play"/"Tune In" link into the player page and reading a Triton player straight off it. Find one clear stream and it just plays it (and remembers it for that favorite); find several and it tells you and sends you to Find Streams to pick. The website step is one checkbox in Preferences (on by default, off in Safe Mode); the quick re-resolves always run. It tries once per station per session, so a truly dead station never spins. A dead station is no longer a dead end.
-- **What's Playing, the way you'd actually say it.** Some stations don't send a clean "Artist - Title" -- their broadcast systems cram a pile of catalog codes into the track name, and What's Playing (Ctrl+T) read the whole thing aloud: `title="YOUR SONG",artist="Elton John",url="song_spot="F" MediaBaseId="0"...`. Now Quill Radio finds the title and the artist in that noise and just says "Now playing: YOUR SONG by Elton John." Better still, you decide the wording: Preferences (Ctrl+,) has a "What's Playing announcement" box where you write a short template with `{title}` and `{artist}` -- wrap optional words in `[square brackets]` so they disappear when there's nothing to fill them (the default `{title}[ by {artist}]` quietly drops the " by" when a stream sends no artist). Prefer "Elton John: YOUR SONG"? Type `{artist}: {title}`. Want the raw feed for a station you're curious about? `{raw}` gives you everything. Blank restores the default.
-- **The whole dial, not just the first 50.** Browse Stations used to stop at 50 results -- so a search for "news," with hundreds of stations out there, looked like it only had 50 in the world. Now you get up to 200 at once, most-listened first, and when there are still more a **More Stations** button loads the next page and drops your cursor right on the first new arrival. The summary even tells you when there's more to reach for, and nudges you to add a tag or country when you'd rather narrow than page. Under the hood this pages the RadioBrowser directory properly, so the long tail is finally within reach.
-- **Volume keys, fixed again -- this time in Browse Stations.** Search for a station, press Enter to play it, then reach for Ctrl+Down to bring the volume down... and nothing happened. Browse Stations is its own window, so the Playback menu's volume shortcut never reached it, and the station results list had already claimed the plain arrow keys for moving between rows. Now Ctrl+Up and Ctrl+Down work from anywhere in that window -- the results list, the volume slider, a button -- turning the same radio volume you'd change anywhere else, sliding the window's own volume control to match, and speaking the new level. Plain arrow keys still move you between stations, untouched. (Version 1.0.2 fixed exactly this on the main window's Favorites list; this reaches the Browse Stations window that fix didn't.)
-- **Find Streams now reaches the stations that hid behind a Play button.** A whole class of broadcast stations -- thousands of them, and the entire `player.listenlive.co` network -- put their "Listen Live" on a modern JavaScript player (Triton Digital / StreamTheWorld). Those players build the stream address in code the moment you press Play, so it is written nowhere on the page for a scanner to read. Point the old Find Streams at one and it came back empty, even with a Play button sitting right there on the screen. No longer: Quill Radio now recognizes the player, reads the station's call letters straight off the page, and looks up the real, playable stream through the station provider's own public address service -- no embedded browser, no guessing at URLs. When a station offers both an MP3 and an AAC feed, you get both to choose from. It only ever does this for pages that really are these players and only for call letters the service confirms, so it never hands you a wrong stream; ordinary pages behave exactly as before, and the lookup happens as part of the same Scan you already press (and stays off in Safe Mode). One real report -- `player.listenlive.co/34461`, "Magic 104.1" -- turned into a fix that quietly covers thousands of stations at once.
+## The updates after 1.0
 
-## What's new in 1.0.2
+### What's new in 1.1.0
 
-- **Volume keys, fixed.** Ctrl+Up/Ctrl+Down did nothing from the Favorites tree, which has focus by default when the app launches -- the tree's own arrow-key handling was silently swallowing the shortcut before it ever reached Volume Up/Down. Fixed.
-- **Volume that actually stays put.** Starting a stream -- or just pausing and resuming one -- could silently reset the volume to 100, even overwriting a favorite station's own remembered volume in the process. A favorite now reliably comes back at the volume you left it, and if you set a volume before playing something with no memory of its own yet, it stays exactly where you put it.
-- **Sound Enhancements' EQ sliders now announce a real accessible name to screen readers.**
-- **Reset Sound Enhancements back to default.** A "Reset to Default" button in Sound Enhancements clears a station's own EQ/compressor override, so it goes back to following the shared default. Preferences (Ctrl+,) gained "Reset All Stations' Sound Enhancements..." to clear every station's override at once, with a confirmation first.
-- **A real three-band equalizer.** Sound Enhancements' single preset choice became Bass, Mid, and Treble sliders (-12 to +12 dB each), freely adjustable. The old presets (Flat, Bass Boost, Voice Clarity, Podcast) are still there as a "Quick preset" shortcut -- pick one to set all three sliders at once, then keep tuning from there.
-- **Sound Enhancements, remembered per station.** Open Sound Enhancements while a favorite station is playing and it now remembers that station's own EQ and compressor separately from the shared default -- a jazz station and a talk station no longer have to sound the same. With nothing playing (or a non-favorite station on), you're adjusting the shared default every other station still follows.
-- **Exit or Minimize to Tray -- your choice.** When something is playing or recording, closing the window -- Alt+F4, the titlebar X, or Station > Exit, they all count -- asks: Exit, Minimize to Tray, or Cancel, with a "Don't ask me again" checkbox that remembers your answer. Preferences (Ctrl+,) gained a matching "When closing the window" setting so you can always change your mind later: set it to Minimize to Tray and Alt+F4 sends the radio to the tray, still playing, instead of exiting.
-- **A real dialog when you're already up to date.** Help > Check for Updates used to only announce "up to date" -- easy to miss. It now shows a proper dialog, the same as a genuine update does.
-- **Quieter by default.** Preferences (Ctrl+,) gained "Announce dialog transitions" (off by default) -- previously every dialog spoke "Entered/Exited" cues with no way to turn it off.
-- **Documentation, right in the Help menu.** User Guide, Release Notes, and Product Requirements now open directly from Help, rendered in your browser.
-- **Sound Enhancements.** Playback > Sound Enhancements... adds an equalizer preset (Flat, Bass Boost, Voice Clarity, Podcast) and a compressor ("Even Out Volume", boosts quiet passages and tames loud ones) to whatever station is playing, applied live through the ffmpeg Quill Radio already uses for recording. Off by default, and turning either one on reconnects instantly -- live radio has no position to lose. **Recording Settings...** gained a matching "Apply Sound Enhancements to recordings" checkbox (off by default) if you'd rather your recordings capture the filtered audio too.
-- **A second station directory.** Browse Stations search now also checks SomaFM, a free, curated internet-radio directory, blended right into the same results as RadioBrowser -- more stations to find, no extra step.
-- **Automatic Check for Updates.** Quill Radio quietly checks for a newer version once a day when it launches -- silent unless a real update is found, at which point you get the same "download it now?" prompt Help > Check for Updates always gave you. Throttled so it never hits the network on every single launch.
-- **Preferences...** (Ctrl+,) is a new, small dialog gathering the app's startup behavior in one place: Resume Last Station on Launch and the new automatic update check, each its own checkbox. Turning either off takes effect immediately.
-- **Dialog buttons that match Windows convention.** Recording Settings, the Wake-Up Timer, and Add Station now say "OK" instead of "Save," like a standard Windows dialog.
+#### Nearly every station now plays
 
-## Highlights
+Quill Radio 1.1.0 comes with a second, newer player that many media players
+use. Quill Radio uses it for you, so there is nothing to set up. With it,
+Quill Radio plays nearly every kind of station you will meet, including the
+Ogg, Opus and streaming formats that Windows Media cannot play. Many
+community, independent and international stations that used to be "found it,
+but it will not play" now just play.
 
-- **Your folders, on the front page.** The main window is your favorites tree -- the same nested folders you build in the manager, with a full context menu (Play/Stop, Rename, Move to Folder, Remove, New Folder) one Shift+F10 away. Create folders exactly where you want them with **New Folder** (Ctrl+Shift+E); they exist immediately, stations or not. An **Add to Favorites** button keeps whatever is playing, and flips to Remove when it's already saved.
-- **Favorites first, radio as an appliance.** The app opens with your favorites focused; Enter plays. **Play Last Station** (Ctrl+L) resumes whatever you had on, and **Resume Last Station on Launch** makes launching the app all you ever do. A **Recently Played** menu keeps your last fifteen stations one keystroke deep.
-- **A real Favorites Manager.** Folders of any depth (News/Morning style), live search across names, countries, tags, and folders, Move Up/Down, and Mark-and-Move for long hops. Rename any station to what *you* call it; rename folders with F2; deleting a folder walks its stations safely back to the top level -- never out of your collection.
-- **What's Playing.** Ctrl+T speaks the current track or show title straight from the stream's metadata; an optional check item announces titles as they change.
-- **Recording, grown up.** Record what you're hearing, record a *different* station while you listen to something else, or schedule shows once, daily, or weekly -- picking straight from your favorites, no typing. The new **Recordings** list shows everything -- recording now (size growing live), recorded, and scheduled -- with Play (Stop while it plays), Stop Recording, Open in Folder, and Remove. And recordings now **survive dropped connections**: ffmpeg rides out short gaps, and a true drop resumes into a numbered part file, with attempts and spacing yours to tune.
-- **Wake up with the radio.** The sleep timer got its twin: pick a favorite, a time, once or every day. (The app must be running -- the tray counts.)
-- **Never double-plays.** Starting any stream silences whatever else was playing, radio or podcast, in every app.
-- **Per-station volume memory.** Every favorite remembers the volume you gave it.
-- **Hardware media keys** control the app system-wide, even from the tray.
-- **The Command Palette** (Ctrl+Shift+P), scoped to exactly this app's commands.
-- **One data store.** Favorites (folders, names, volumes), history, recordings, timers, settings -- shared with QUILL and QUILL Cast. Set it up once, have it everywhere.
-- **Two flavors, everything bundled.** A system installer and a truly portable zip whose `data` folder keeps your whole radio on the stick. ffmpeg included, its own app icon, no downloads ever -- and if ffmpeg somehow goes missing, **Help > Get FFmpeg...** restores it from the official source. In-app **Check for Updates** knows which flavor you run and downloads the matching artifact with spoken progress, offering Install now.
-- **Report a Bug, built in.** Files an issue straight from the Help menu, no GitHub account needed, stamped with Quill Radio's own version.
-- **Spoken feedback everywhere**, through JAWS, NVDA, or Narrator, without stealing focus.
+The older Windows Media player is still there. In Preferences (Ctrl+comma),
+set Playback engine to "Windows Media (classic)" and Quill Radio plays exactly
+as it did before. If either player cannot open a station, Quill Radio quietly
+tries the other one before telling you about a problem.
 
-## Known notes for this release
+#### Pause live radio, and rewind it
 
-- Releases are not yet code-signed: Windows SmartScreen may warn on first run. Choose More info, then Run anyway. Signing is planned.
+Quill Radio now keeps the last part of a live station, about 45 minutes for
+most. Pause for the doorbell and carry on where you left off. Missed a
+sentence? **Rewind 30 Seconds** (Ctrl+Shift+Left). Catch up with **Forward 30
+Seconds** (Ctrl+Shift+Right), or go straight to **Back to Live**
+(Ctrl+Shift+L). Every move tells you how far behind live you are.
 
-## What Quill Radio deliberately is not
+#### Better sound
 
-It is not QUILL minus some menus -- it is the radio, period. The editor, AI, transcription, braille, and speech-synthesis stacks are not installed at all.
+- **A second sound card for the radio.** Preferences has **Radio output
+  device**. Send the radio to a USB headset and keep your screen reader on the
+  main speakers. If you unplug the headset, your choice is remembered, and if
+  the device cannot be used, the radio plays through the default one and tells
+  you.
+- **Volume Boost** (Ctrl+Shift+B) makes a quiet station up to 50 percent
+  louder than full volume.
+- **Combine channels into mono**, in Sound Enhancements, helps if you hear
+  with one ear or use one earbud, so a voice on the other side is never lost.
+- **Night mode** lifts the quiet parts so you can listen late without reaching
+  for the volume. There are two new presets, **Small Speakers** and **Late
+  Night**.
+- With the new player, every change in Sound Enhancements takes effect
+  straight away, mid-song.
 
-## Not a fork -- a guarantee
+#### Hearing what is playing
 
-Quill Radio runs the exact same radio feature code as QUILL, from the same upstream package. Fixes land once and reach QUILL, Quill Radio, and QUILL Cast together. This repository carries only the wrapper, the installer, the icon, and these docs.
+- **What's Playing** (Ctrl+T) has an answer on far more stations.
+- **It says it the way you would.** Some stations send a jumble of codes
+  instead of a title. Now Quill Radio finds the title and artist in it and
+  says "Now playing: YOUR SONG by Elton John." In Preferences, **What's Playing
+  announcement** lets you choose the wording, for example the artist first.
+  Leave it blank for the usual wording.
+- **"Buffering..." instead of silence.** When the internet hiccups, Quill
+  Radio tells you what is happening while it waits.
 
-## Dependencies
+#### Finding stations that would not play
 
-Playback uses Windows' built-in media engine; recording and Sound Enhancements use the bundled ffmpeg; station search uses the community RadioBrowser and SomaFM directories; the ACB Media directory is bundled. Every network call the app can make is inventoried in QUILL's public network-egress audit.
+- **Stations that used to fail now fix themselves.** It started with Magic
+  104.1 in Oklahoma City: listed in the directory, but nothing played, because
+  the real stream was hidden behind a player on the station's website. Now,
+  when a station will not play, Quill Radio looks for the real stream itself,
+  including on the station's own website if you leave that on in Preferences.
+  If it finds one, it plays it and remembers it. If it finds several, it sends
+  you to Find Streams to choose.
+- **Find Streams reaches stations behind a Play button.** Thousands of
+  stations put their "Listen Live" on a player whose stream is not written on
+  the page. Find Streams now recognises that player and finds the real stream,
+  offering both versions when a station has two. It never hands you a wrong
+  one.
+- **The whole dial, not just the first 50.** Browse Stations shows up to 200
+  results at once, most listened first, and **More Stations** loads the next
+  page with your cursor on the first new one.
 
-## Requirements
+#### Smaller things
 
-Windows 10 or 11, x64 (or ARM64 under emulation). No Python installation required.
+- **Alt+F4 can tuck the radio away.** A new Preferences checkbox, **Alt+F4
+  minimizes to the system tray**, keeps the music playing in the tray. It is
+  off at first.
+- **Record the station exactly as sent.** Recording Settings has a new format,
+  **Raw stream**, which saves exactly what the station sent with nothing
+  changed. It is the best starting point if you edit your own recordings.
+  This came straight from a listener's request.
+- **Volume keys work in Browse Stations**, from anywhere in the window, and say
+  the new level.
+
+### What's new in 1.0.2
+
+- **Volume keys work** in the Favorites list, where you land when the app
+  opens.
+- **Volume stays where you put it.** A favorite always comes back at the volume
+  you left it.
+- **A real three-band equalizer.** Sound Enhancements has Bass, Mid and Treble
+  sliders, each with a proper name your screen reader says. The old presets,
+  Flat, Bass Boost, Voice Clarity and Podcast, set all three at once.
+- **Sound Enhancements remembered for each station**, so a jazz station and a
+  talk station can sound different. **Reset to Default** puts one station back,
+  and Preferences can reset them all.
+- **Exit or Minimize to Tray, your choice.** Closing while something plays asks
+  what you want, with a "Don't ask me again" box. Preferences has a matching
+  **When closing the window** setting.
+- **Check for Updates shows a real window** when you are up to date, and Quill
+  Radio checks once a day when it starts, silently unless there is something
+  new.
+- **Quieter by default.** Windows no longer say "Entered" and "Exited" unless
+  you turn on **Announce dialog transitions** in Preferences.
+- **The documents are on the Help menu.** User Guide, Release Notes and
+  Product Requirements open in your browser.
+- **Sound Enhancements** arrived, with an equalizer and **Even Out Volume**,
+  which lifts quiet parts and tames loud ones. Recording Settings can apply
+  them to recordings too.
+- **SomaFM joins the search**, in the same results.
+- **Preferences** (Ctrl+comma) is new, starting with Resume Last Station on
+  Launch and the daily update check.
+- **OK means OK.** Recording Settings, the Wake-Up Timer and Add Station say OK
+  instead of Save, like other Windows windows.
+
+## What 1.0 brought
+
+- **Your folders, on the front page.** The main window is your favorites, in
+  the folders you make, with everything you can do one Shift+F10 away. **New
+  Folder** (Ctrl+Shift+E) makes a folder right where you are.
+- **Favorites first.** The app opens on your favorites, and Enter plays.
+  **Play Last Station** (Ctrl+L) brings back what you had on, and **Resume Last
+  Station on Launch** means opening the app is all you ever do. **Recently
+  Played** keeps your last fifteen stations close.
+- **A real Favorites Manager.** Folders inside folders, search across names,
+  countries and tags, Move Up and Move Down, and Mark and Move for long hops.
+  Rename a station to what you call it, and rename folders with F2. Deleting a
+  folder keeps its stations.
+- **What's Playing.** Ctrl+T says the song or show, and you can have new titles
+  read as they change.
+- **Recording, grown up.** Record what you are hearing, record a different
+  station while you listen to something else, or schedule shows once, daily or
+  weekly, picking from your favorites. The **Recordings** list shows what is
+  recording now, what is recorded and what is scheduled. Recordings ride out
+  short drops in the connection.
+- **Wake up with the radio.** The sleep timer has a twin: choose a favorite and
+  a time, once or every day. Quill Radio needs to be running, and the tray
+  counts.
+- **Never two things at once.** Starting anything stops whatever else was
+  playing, in every app in the family.
+- **Each favorite remembers its own volume.**
+- **Your keyboard's media keys** control the radio from anywhere, even from
+  the tray.
+- **The Command Palette** (Ctrl+Shift+P) finds any command by name.
+- **One set of favorites and settings**, shared with QUILL and QUILL Cast. Set
+  it up once and have it everywhere.
+- **An installer and a portable copy.** The portable copy keeps your whole
+  radio on a USB stick. Everything it needs is included, and Check for Updates
+  offers the right download for your copy.
+- **Reporting a problem from the Help menu**, with no account needed.
+- **Spoken feedback everywhere**, through JAWS, NVDA or Narrator, without
+  taking your focus.
+
+### What Quill Radio is not
+
+It is not QUILL with some menus taken away. It is just the radio. QUILL's
+editor, AI, transcription, braille and speech tools are not installed at all.
+
+### Good to know
+
+- Quill Radio runs on Windows 10 or 11, on ordinary 64-bit computers and on
+  ARM computers through Windows' own emulation. You do not need to install
+  anything else.
+- At the time, releases were not yet signed, so Windows SmartScreen could warn
+  you the first time. Choosing More info, then Run anyway, started it.
+
+## Where to learn more
+
+The user guide, **Help > User Guide** (Ctrl+F1), covers today's Quill Radio,
+starting with Chapter 2, Your first half hour.
+
+**Help > Tutorials** (Ctrl+Alt+F1) starts with the lessons in Your first hour,
+beginning with Play your first station and Keep a station, and find it
+tomorrow.
+
+If you get stuck, choose **Help > Get Help from Support** (Ctrl+Alt+F2), or
+write to support@community-access.org. A person at Community Access reads
+every message.

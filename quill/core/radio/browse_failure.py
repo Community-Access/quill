@@ -73,6 +73,11 @@ def last_error_was_network(error: BaseException | None = None) -> bool:
     current: BaseException | None = failure
     while current is not None and id(current) not in seen:
         seen.add(id(current))
+        # A service that answered and refused (a rejected key) was reached: the
+        # HTTP error underneath is not a network fault, and "could not be
+        # reached, open it again" would send the listener round in a circle.
+        if getattr(current, "service_reached", False):
+            return False
         if isinstance(current, transports):
             return True
         # A service that answers politely and says it is broken (the Archive
@@ -82,3 +87,32 @@ def last_error_was_network(error: BaseException | None = None) -> bool:
             return True
         current = current.__cause__ or current.__context__
     return False
+
+
+def listener_reason(error: BaseException | None = None) -> str:
+    """The sentence an empty folder should say instead of "Nothing in here".
+
+    ``""`` unless this thread's last browse failure -- or something in its
+    cause chain -- is an error whose messages are written for the listener
+    (``listener_facing = True``), such as the Podcast Index saying it has no
+    key. A network failure answers ``""`` too: it has its own sentence, with
+    the way back, and that one is better than a transport error's text.
+
+    Before this, a source that failed for a reason it could put into words --
+    no key entered, a key the service rejected -- read exactly like a folder
+    with nothing in it, which is how "the categories do not load at all" reached
+    a listener as an empty folder instead of an instruction.
+    """
+    failure = error if error is not None else LAST_FAILURE.get(_thread_key())
+    if failure is None or last_error_was_network(failure):
+        return ""
+    seen: set[int] = set()
+    current: BaseException | None = failure
+    while current is not None and id(current) not in seen:
+        seen.add(id(current))
+        if getattr(current, "listener_facing", False):
+            # The bare message: a coded error's str() leads with its
+            # "[QUILL-...]" code, which is for a log, not for a listener.
+            return BaseException.__str__(current).strip()
+        current = current.__cause__ or current.__context__
+    return ""

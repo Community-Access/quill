@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>QUILLBert and QUILLBee: a guide for people writing about
+QUILL</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1
+id="quillbert-and-quillbee-a-guide-for-people-writing-about-quill">QUILLBert
+and QUILLBee: a guide for people writing about QUILL</h1>
+<p>QUILLVille has two characters now. This page is for anyone writing
+the website, a user guide, release notes, or (later) text inside the
+apps, and wondering whether one of them belongs in what they’re writing.
+Most of the time the answer is no. When it’s yes, this is how to do it
+well.</p>
+<p>Jeff introduces them to everyone else on the website, at <a
+href="https://quillforall.org/meet-quillbert-and-quillbee.html">Meet
+QUILLBert and QUILLBee</a>. Read that first. It sets the tone better
+than any rule here.</p>
+<h2 id="the-one-line-rule">The one-line rule</h2>
+<p><strong>QUILLBert discovers. QUILLBee explains.</strong></p>
+<p>They belong together, and they must never feel interchangeable. If
+you could swap the names on a callout and nothing would feel wrong, it’s
+written wrong.</p>
+<h2 id="who-they-are">Who they are</h2>
+<p><strong>QUILLBert</strong> is the curious QUILLVille porcupine. He’s
+the explorer, the mascot, the wanderer, the one who presses the button
+to see what it does. He stands for curiosity, trying things, community
+and fun, and for the idea that useful technology can also be a delight.
+Every now and then he finds something he probably wasn’t supposed to
+find yet. He’s “he”.</p>
+<p><strong>QUILLBee</strong> is the guide. Clear, calm, patient,
+capable. QUILLBee explains how things work, hands you the faster way,
+points out the detail that saves you a detour, and meets you wherever
+you are. Refer to QUILLBee by name, or as “they” when a pronoun is
+unavoidable. The name reads better anyway.</p>
+<h2 id="when-each-one-shows-up">When each one shows up</h2>
+<p>QUILLBert appears when something is worth trying:</p>
+<ul>
+<li>introducing something new, or welcoming people somewhere</li>
+<li>a feature that’s easy to miss, or switched off by default</li>
+<li>celebrating a release or a milestone</li>
+<li>something experimental</li>
+<li>moving between parts of QUILLVille, from one app to another</li>
+</ul>
+<p>QUILLBee appears when something is worth understanding:</p>
+<ul>
+<li>a useful tip, a keyboard shortcut, a faster way</li>
+<li>an accessibility feature and how to use it</li>
+<li>getting started, and the first few minutes with an app</li>
+<li>a word that needs explaining</li>
+<li>a common mistake and how to avoid it</li>
+<li>where to read more</li>
+</ul>
+<p>Together, rarely. A short exchange where QUILLBert has found
+something and QUILLBee explains it. Keep it to four lines or so. If the
+pair turns up on every page, it stops being special, and special is the
+whole point.</p>
+<h2 id="their-voices">Their voices</h2>
+<p><strong>QUILLBert</strong>: curious, energetic, warm, a bit
+unpredictable, occasionally mischievous. He can be funny. The joke is on
+him, never on the reader. Vary how he arrives: “QUILLBert found
+something”, “QUILLBert noticed”, “QUILLBert wandered over here and
+found”, “QUILLBert’s Corner”. Don’t use the same opener everywhere.</p>
+<p><strong>QUILLBee</strong>: calm, friendly, concise, reassuring
+without patting anyone on the head. Knowledgeable without sounding like
+a manual wearing a hat. QUILLBee explains and never lectures. Vary the
+openers here too: “QUILLBee’s tip”, “QUILLBee’s shortcut”, “A note from
+QUILLBee”.</p>
+<p>For both of them, write like a person who likes the people reading.
+Use contractions. Mix long sentences with short ones. A fragment now and
+then is fine. Plain ASCII punctuation: no em dashes, no curly-quote
+habits, no decorative symbols.</p>
+<p>Leave these out entirely: “Whether you’re a beginner or an expert”,
+“Dive into”, “Unlock the power”, “Seamlessly”, “Elevate”, “In today’s
+fast-paced world”, “We’re thrilled to announce”, “Game-changing”,
+“Empowering”, “journey”, “endless possibilities”, three-part slogans,
+strings of rhetorical questions, and a summary of what you just
+said.</p>
+<p>Before you keep a line, ask:</p>
+<ul>
+<li>Does a person actually talk like this?</li>
+<li>Is it useful?</li>
+<li>Is it fun without trying too hard?</li>
+<li>Does it belong right here?</li>
+<li>Would I still like it the fiftieth time I read it?</li>
+</ul>
+<h2 id="ground-rules">Ground rules</h2>
+<ul>
+<li><strong>Every line must be true.</strong> Check keys, menu names and
+behaviour against the app’s user guide
+(<code>standalone/&lt;app&gt;/docs/userguide.md</code>, or
+<code>docs/user guide/userguide.md</code> for QUILL) and, when in doubt,
+the keymap. A character who teaches a key that doesn’t work is worse
+than no character.</li>
+<li><strong>Never inside step-by-step instructions.</strong> A callout
+goes before the steps or after them, never between step 3 and step
+4.</li>
+<li><strong>Restraint.</strong> Not every section gets a callout. One or
+two on a page is plenty, and a page with none is normal.</li>
+<li><strong>No invented features.</strong> There is no “Ask QUILLBee”
+command and no QUILLBert mode. Don’t write as if there were. Saying
+they’ll wander into the apps later is fine; promising what they’ll do
+there is not.</li>
+<li><strong>Accessibility is never cute.</strong> The characters can be
+playful about themselves. They’re never playful about a screen reader, a
+disability or the person reading.</li>
+</ul>
+<h2 id="the-callout-component-website">The callout component
+(website)</h2>
+<p>One pattern covers both characters. The styles live in
+<code>docs/site/assets/style.css</code>, in the block headed “QUILLVille
+characters”.</p>
+<h3 id="markup">Markup</h3>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode html"><code class="sourceCode html"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">aside</span><span class="ot"> class</span><span class="op">=</span><span class="st">&quot;qv-callout qv-callout--bee&quot;</span><span class="ot"> aria-labelledby</span><span class="op">=</span><span class="st">&quot;qv-docs-bee&quot;</span><span class="dt">&gt;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> class</span><span class="op">=</span><span class="st">&quot;qv-callout__label&quot;</span><span class="ot"> id</span><span class="op">=</span><span class="st">&quot;qv-docs-bee&quot;</span><span class="dt">&gt;</span>QUILLBee&#39;s shortcut<span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="dt">&gt;</span>Every guide on this page is built on headings. ...<span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">aside</span><span class="dt">&gt;</span></span></code></pre></div>
+<ul>
+<li><code>&lt;aside&gt;</code>, because a callout is related to the page
+but not part of its main flow.</li>
+<li>The <strong>label</strong> is a real <code>&lt;p&gt;</code> and
+always comes first. It names the character in words (“QUILLBee’s tip”,
+“QUILLBert found something”), so the meaning never depends on colour, a
+border or a picture. It’s what someone hears first.</li>
+<li><code>aria-labelledby</code> points at the label, so the landmark’s
+name is the same words a sighted reader sees. Don’t add
+<code>aria-label</code> with different text, and don’t add
+<code>role="note"</code>.</li>
+<li>Give each label an <code>id</code> that’s unique on the page. The
+convention is <code>qv-&lt;page&gt;-&lt;bert|bee|both&gt;</code>.</li>
+<li>An optional link goes in its own <code>&lt;p&gt;</code> at the end,
+with link text that makes sense on its own (“Try the QUILL Cast lesson”,
+not “click here”).</li>
+</ul>
+<p>One trade-off, so nobody is surprised by it. When you arrow into a
+callout, a screen reader announces the landmark by name and then reads
+the label, so you hear “QUILLBee’s tip” twice. We accept that because
+the alternatives are worse: a label hidden from the screen reader breaks
+the moment someone turns landmark announcements off, and unnamed
+landmarks all sound the same in the landmarks list. The real fix is the
+one that’s already a rule: keep callouts few.</p>
+<h3 id="variants">Variants</h3>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Who</th>
+<th>Visual cue besides the label</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>qv-callout--bert</code></td>
+<td>QUILLBert</td>
+<td>dashed left edge, dashed badge</td>
+</tr>
+<tr>
+<td><code>qv-callout--bee</code></td>
+<td>QUILLBee</td>
+<td>solid left edge, solid badge</td>
+</tr>
+<tr>
+<td><code>qv-callout--both</code></td>
+<td>the pair</td>
+<td>double left edge, double badge</td>
+</tr>
+</tbody>
+</table>
+<p>The border style is the second cue because Windows High Contrast
+recolours borders instead of throwing them away. Colour is the third cue
+and only decorates. Body text stays at the page’s normal text colour in
+light, dark and high-contrast modes, so contrast never depends on the
+character.</p>
+<h3 id="the-exchange-both-characters">The exchange (both
+characters)</h3>
+<p>One paragraph per line, with the speaker’s name in text:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode html"><code class="sourceCode html"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">aside</span><span class="ot"> class</span><span class="op">=</span><span class="st">&quot;qv-callout qv-callout--both&quot;</span><span class="ot"> aria-labelledby</span><span class="op">=</span><span class="st">&quot;qv-radio-both&quot;</span><span class="dt">&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> class</span><span class="op">=</span><span class="st">&quot;qv-callout__label&quot;</span><span class="ot"> id</span><span class="op">=</span><span class="st">&quot;qv-radio-both&quot;</span><span class="dt">&gt;</span>QUILLBert and QUILLBee<span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> class</span><span class="op">=</span><span class="st">&quot;qv-line&quot;</span><span class="dt">&gt;&lt;</span><span class="kw">strong</span><span class="ot"> class</span><span class="op">=</span><span class="st">&quot;qv-line__who&quot;</span><span class="dt">&gt;</span>QUILLBert:<span class="dt">&lt;/</span><span class="kw">strong</span><span class="dt">&gt;</span> I found something.<span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> class</span><span class="op">=</span><span class="st">&quot;qv-line&quot;</span><span class="dt">&gt;&lt;</span><span class="kw">strong</span><span class="ot"> class</span><span class="op">=</span><span class="st">&quot;qv-line__who&quot;</span><span class="dt">&gt;</span>QUILLBee:<span class="dt">&lt;/</span><span class="kw">strong</span><span class="dt">&gt;</span> You pressed every button again, didn&#39;t you?<span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">aside</span><span class="dt">&gt;</span></span></code></pre></div>
+<p>Paragraphs rather than a list or a table: a list adds “list, four
+items” for no benefit, and a table makes a conversation into a grid. No
+ARIA is needed.</p>
+<h3 id="headings">Headings</h3>
+<p>Most callouts don’t have one. Add a heading only when the callout is
+substantial, and only at the level the page’s outline needs at that
+spot: never skip a level, and never add an <code>h2</code> just to make
+it look important. The stylesheet makes any level look the same inside a
+callout, so pick the level for the outline and not for the size.</p>
+<h3 id="pictures">Pictures</h3>
+<p>There’s no artwork yet, and nobody should invent any. When there is,
+an <code>&lt;img class="qv-callout__art"&gt;</code> goes straight after
+the label and floats to the side. If the picture only repeats the label
+(a portrait of QUILLBee beside “QUILLBee’s tip”), use
+<code>alt=""</code>. If it shows something the words don’t, describe
+that in the alt text. Never put the character’s name only in the
+picture.</p>
+<h3 id="motion-sound-and-interaction">Motion, sound and interaction</h3>
+<p>None. No animation, no hover tricks, no sound, nothing that plays by
+itself. The only focusable thing in a callout is an ordinary link, which
+already gets the site’s focus ring. If motion is ever added, it must
+stop under <code>prefers-reduced-motion</code>.</p>
+<h3 id="readable-without-css">Readable without CSS</h3>
+<p>Strip the styles and a callout is still a short paragraph that starts
+with a name. Check that it reads well that way. It’s how many readers
+meet it.</p>
+<h2 id="in-user-guides">In user guides</h2>
+<p>User guides are Markdown and get rendered to HTML, EPUB and the
+in-app help, so the pattern has to survive all of them. Use a
+<strong>blockquote with the label in bold</strong>:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **QUILLBee&#39;s tip:** Forgotten where something lives? Press Ctrl+Shift+P and</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; type a word, like &quot;sort&quot; or &quot;print&quot;.</span></span></code></pre></div>
+<p>Why a blockquote and not a <code>#### QUILLBee's tip</code> heading:
+a heading lands in the heading list and the table of contents, so ten
+tips turn a guide’s outline into noise, and it has to fit the level of
+whatever section it’s in. A blockquote stays out of the outline, is
+announced as a quote that can be skipped, and renders sensibly on
+GitHub, in pandoc’s HTML and in an EPUB reader. The tutorials index
+(<code>docs/tutorials/README.md</code>) already uses it.</p>
+<p>Same rules as the website: sparingly, never inside numbered steps,
+and every key checked. In a long guide, a handful in the whole document
+is about right. The QUILL Cast user guide will be the first guide to
+carry them.</p>
+<h2 id="in-release-notes">In release notes</h2>
+<p>Release notes are where QUILLBert is most at home, because a release
+is a pile of new things to find. Good spots:</p>
+<ul>
+<li>QUILLBert pointing at one new thing worth trying first.</li>
+<li>QUILLBee on what upgrading means in practice (“Install over the old
+version and you keep everything”).</li>
+<li>At most one exchange, for the change most likely to surprise
+people.</li>
+</ul>
+<p>Keep them out of the list of fixes. A bug fix is not an occasion.</p>
+<h2 id="later-inside-the-apps">Later: inside the apps</h2>
+<p>This is future direction, not a plan of record and not a promise. If
+and when the characters move into QUILL, QUILL Lite, Quill Radio, QUILL
+Cast and the rest, the natural places are:</p>
+<ul>
+<li><strong>First run</strong>, where QUILLBert says hello and gets out
+of the way.</li>
+<li><strong>What’s New</strong>, where QUILLBert points at one thing and
+QUILLBee says how to use it.</li>
+<li><strong>F1 help</strong>, where a QUILLBee tip could follow the
+authored help text. It must never replace it, and the F1 audit’s rules
+still apply.</li>
+<li><strong>Empty states</strong>, such as an empty favorites list,
+where a line from QUILLBert is better than silence.</li>
+</ul>
+<p>In the apps, the screen-reader rules come first. Nothing the screen
+reader already says gets said again (GATE-13), a character never speaks
+on focus, and a verbosity setting is not an excuse for a chatty one.</p>
+<h2 id="examples">Examples</h2>
+<h3 id="good">Good</h3>
+<ol type="1">
+<li><strong>QUILLBee’s shortcut:</strong> “Forgotten where something
+lives? Press Ctrl+Shift+P and type a word, like “sort” or “print”. You
+don’t need to know which menu it’s in.” <em>One real key, checked
+against the guide, and it saves time today.</em></li>
+<li><strong>QUILLBert noticed:</strong> “There’s a switch in Tools &gt;
+Customize Features that’s easy to miss. Turn on Go To Anything…
+QUILLBert turned it on anyway. Of course he did.” <em>A real,
+off-by-default feature, and the joke is on him.</em></li>
+<li><strong>QUILLBee’s shortcut:</strong> “If you already live on the H
+key, you know this one. If not: press H to hop from one section to the
+next.” <em>It respects the expert and helps the newcomer in the same
+breath.</em></li>
+<li><strong>QUILLBert’s Corner:</strong> “QUILLBert wandered in while we
+were rewriting this page and hasn’t left since.” <em>A welcome with a
+wink, and short.</em></li>
+<li><strong>QUILLBert and QUILLBee</strong>, on the Wake-Up Timer: he
+tries it at three in the morning; QUILLBee gives the key and the two
+limits that matter. <em>Discovery, then the facts, including what it
+can’t do.</em></li>
+<li><strong>QUILLBert found something:</strong> “QUILL Cast doesn’t have
+a page of its own on this site yet, so QUILLBert went digging” and found
+the lesson. <em>He points at something real that people would otherwise
+miss.</em></li>
+<li><strong>A note from QUILLBee:</strong> “Upgrading? Install over the
+old version and you keep everything.” <em>Answers the question people
+actually have on release day.</em></li>
+<li><strong>QUILLBee’s tip:</strong> “Lost in Quill Radio? F1 tells you
+what the window you’re in is for, and Escape closes it.” <em>Reassuring,
+two keys, no fuss.</em></li>
+</ol>
+<h3 id="not-good">Not good</h3>
+<ol type="1">
+<li>“QUILLBee’s tip: Dive into QUILL and unlock endless possibilities!”
+<em>Banned phrases, and it says nothing at all.</em></li>
+<li>“QUILLBert: Oopsie! Lost again, little buddy? Don’t worry!”
+<em>Talks down to the reader and makes them the joke.</em></li>
+<li>“QUILLBee: Accessibility is super fun, and screen readers are
+adorable!” <em>Never make accessibility cute.</em></li>
+<li>A QUILLBee tip between step 3 and step 4 of a setup guide. <em>It
+breaks the steps exactly when someone is following them.</em></li>
+<li>“Stuck? Just ask QUILLBee!” <em>There is no Ask QUILLBee. Don’t
+promise a feature that doesn’t exist.</em></li>
+<li>“QUILLBert’s tip: press Ctrl+Q to see him dance.” <em>An invented
+key with invented behaviour. Someone will press it.</em></li>
+<li>A “QUILLBert’s Corner” at the end of every section of a page. <em>By
+the third one, people skip them, including the one that
+mattered.</em></li>
+<li>QUILLBert walking through five settings in order, while QUILLBee
+cracks jokes. <em>They’ve swapped jobs. Explaining is
+QUILLBee’s.</em></li>
+<li>A callout that’s only a coloured box or a bee picture, with the name
+in <code>aria-label</code> and nothing visible. <em>Meaning by colour
+and image, and invisible to anyone reading the text.</em></li>
+<li>“Whether you’re a beginner or an expert, QUILLBee is here for your
+journey.” <em>A slogan, and two banned phrases in one
+sentence.</em></li>
+</ol>
+</main>
+</body>
+</html>

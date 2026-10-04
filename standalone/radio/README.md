@@ -2,7 +2,7 @@
 
 Accessible, screen-reader-first internet radio for Windows, from the QUILL project by Community Access.
 
-Version 3.1.1, released 2026-09-30.
+Version 3.2.0, released 2026-10-03.
 
 Quill Radio is not a fork. The whole application lives in the [quill](https://github.com/Community-Access/quill) package (`quill.apps.radio`) and runs the same radio code QUILL itself uses: the same station browser, favorites, recorder, scheduler and dialogs. This folder (`standalone/radio` in the QUILL repository) holds only what exists because QUILL is not in the picture: the packaging wrapper (entry point), the installer, and this app's own documentation. Everything shared lives in the `quill` package, so Quill Radio tracks QUILL automatically.
 
@@ -24,10 +24,10 @@ Deliberately not included: QUILL's editor, AI writing tools, transcription, brai
 
 ## Install
 
-Downloads are on the [QUILL Releases page](https://github.com/Community-Access/quill/releases/tag/quill-radio-v3.1.1), under the tag `quill-radio-v3.1.1`. There are two:
+Downloads are on the [QUILL Releases page](https://github.com/Community-Access/quill/releases/tag/quill-radio-v3.2.0), under the tag `quill-radio-v3.2.0`. There are two:
 
-- **`Quill-Radio-Setup-Shared-3.1.1.exe`** -- the installer, and the right choice for most people. It installs the shared **QuillVille Runtime** if it is not already on the computer, then the app, with a Start Menu entry and an uninstaller. Your settings, favorites and recordings live in the shared Quill data folder in your Windows profile, so QUILL and QUILL Cast see them too.
-- **`Quill-Radio-Portable-3.1.1.zip`** -- the portable copy. It is fully self-contained, with its own genuine Python and the bundled FFmpeg and mpv. Unpack it anywhere, a USB stick included, and run `QuillRadio\QuillRadio.exe`. Nothing downloads when it runs.
+- **`Quill-Radio-Setup-Shared-3.2.0.exe`** -- the installer, and the right choice for most people. It installs the shared **QuillVille Runtime** if it is not already on the computer, then the app, with a Start Menu entry and an uninstaller. Your settings, favorites and recordings live in the shared Quill data folder in your Windows profile, so QUILL and QUILL Cast see them too.
+- **`Quill-Radio-Portable-3.2.0.zip`** -- the portable copy. It is fully self-contained, with its own genuine Python and the bundled FFmpeg and mpv. Unpack it anywhere, a USB stick included, and run `QuillRadio\QuillRadio.exe`. Nothing downloads when it runs.
 
 A portable copy writes nothing to the computer it runs on, from the very first launch, with no setting to find first. Settings, favorites, history, logs and caches live in the `data` folder beside `QuillRadio.exe`; recordings and downloads go to `Recordings` and `Downloads` folders beside it. Start with Windows and the wake-for-recording task are unavailable, because both would write to the host. Delete the `data` folder and it becomes an ordinary copy that uses this computer's profile.
 
@@ -77,7 +77,7 @@ The PyInstaller spec is onedir on purpose: instant startup (no per-launch temp e
 - [User Guide](docs/userguide.md) -- every feature, step by step (Help > User Guide, Ctrl+F1)
 - [Tutorials](docs/tutorials.md) -- the guided lessons, generated from the ones
   the app itself teaches (Help > Tutorials..., Ctrl+Alt+F1)
-- [Release Notes (3.1)](docs/release-notes-3.1.md) and [Release Notes (3.0)](docs/release-notes-3.0.md) -- also
+- [Release Notes (3.2)](docs/release-notes-3.2.md) and [Release Notes (3.0)](docs/release-notes-3.0.md) -- also
   [2.0](docs/release-notes-2.0.md), [1.0 and 1.1](docs/release-notes-1.0.md)
 - [Changelog](CHANGELOG.md)
 - [Product Requirements](docs/prd.md)

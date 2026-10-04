@@ -21,7 +21,7 @@ import wx
 #: -- and because the frame importing them from here avoids the circular
 #: import the other direction would need.
 APP_TITLE = "QUILL Cast"
-APP_VERSION = "1.1.0"
+APP_VERSION = "2.0.0"
 APP_REPO = "Community-Access/quill"
 
 _TITLE = APP_TITLE
@@ -117,7 +117,7 @@ class CastMenuBarMixin:
             subs_menu,
             "delete_all_data",
             delete_data_id,
-            "Dele&te All Podcast Data...\tCtrl+Alt+Shift+D",
+            "Clear All Podcast Data from &This Computer...\tCtrl+Alt+Shift+D",
         )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_export_data(), id=export_data_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_delete_all_data(), id=delete_data_id)
@@ -462,14 +462,15 @@ class CastMenuBarMixin:
             help_menu, "unlock_code", redeem_id, "Redeem U&nlock Code...\tCtrl+Alt+Shift+Y"
         )
         help_menu.Append(updates_id, "&Check for Updates...\tCtrl+Alt+U")
+        from quill.ui.updates.shell import append_release_channel_item
+
+        append_release_channel_item(self, help_menu, "cast", updates_id)  # Alt+H, L
         help_menu.AppendSeparator()
         help_menu.Append(about_id, "&About QUILL Cast\tCtrl+Alt+O")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_redeem_unlock_code_dialog(), id=redeem_id)
         self.frame.Bind(
             wx.EVT_MENU,
-            lambda _e: self.check_for_app_updates(
-                repo_slug=_REPO, current_version=_VERSION, app_key="cast"
-            ),
+            lambda _e: self._check_cast_updates(),
             id=updates_id,
         )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._show_about(), id=about_id)

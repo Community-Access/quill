@@ -17,16 +17,26 @@
 #          releases/download/runtime-latest/QuillVille-Runtime-Setup.exe.
 #          Deliberately NOT the repository's `latest` release: that follows the
 #          editor's release train, which carries no runtime asset.
+#
+# Release channel slots (2026-10): -Channel stable (the default) publishes to
+# `runtime-stable` AND `runtime-latest`, the alias every installed launcher has
+# compiled in and which therefore stays for ever. -Channel beta builds the
+# installer for Runtime\3.13-beta (its own AppId, so it never replaces the
+# Stable runtime's uninstall entry) and publishes to `runtime-beta`, where a Beta
+# app's launcher repairs a missing Beta runtime from. There is no Dev runtime
+# installer: Dev runtimes do not repair themselves ("Reinstall the Dev build").
 
 param(
     [string]$Iscc = "",
     [string]$Python = "",
     [string]$QuillRepo = "",
     [switch]$Sign,
-    [switch]$Publish
+    [switch]$Publish,
+    [ValidateSet("stable", "beta")]
+    [string]$Channel = "stable"
 )
 
-$RuntimeTag = "runtime-latest"
+$RuntimeTags = if ($Channel -eq "beta") { @("runtime-beta") } else { @("runtime-stable", "runtime-latest") }
 $GitHubRepo = "Community-Access/quill"
 
 $ErrorActionPreference = "Stop"
@@ -81,7 +91,9 @@ $innoSign = @()
 if ($env:QUILL_SIGN -eq "1") {
     $innoSign = @("/DSign", "/Squilltrusted=`$q$Python`$q `$q$signer`$q sign `$f")
 }
-& $Iscc @innoSign "/dAppVersion=$version" (Join-Path $runtimeRoot "installer\quillville-runtime.iss") "/O$(Join-Path $runtimeRoot 'dist')"
+$slotDefine = @()
+if ($Channel -eq "beta") { $slotDefine = @("/dRuntimeSlot=$pythonMinor-beta") }
+& $Iscc @innoSign @slotDefine "/dAppVersion=$version" (Join-Path $runtimeRoot "installer\quillville-runtime.iss") "/O$(Join-Path $runtimeRoot 'dist')"
 if ($LASTEXITCODE -ne 0) { throw "ISCC failed with exit code $LASTEXITCODE" }
 
 $setup = Join-Path $runtimeRoot "dist\QuillVille-Runtime-Setup.exe"
@@ -93,16 +105,18 @@ if ($Publish) {
     # Lite installers and the native launcher download from. --clobber makes a
     # republish idempotent; --latest=false keeps the runtime release from ever
     # hijacking the repository's "latest" (the editor's release train owns it).
-    gh release view $RuntimeTag --repo $GitHubRepo *> $null
-    if ($LASTEXITCODE -ne 0) {
-        gh release create $RuntimeTag --repo $GitHubRepo --latest=false `
-            --title "QuillVille Runtime (moving tag)" `
-            --notes "The shared QuillVille Runtime installer. Lite app installers and the native launcher download QuillVille-Runtime-Setup.exe from this tag; it is republished whenever the runtime is released. Install any QuillVille app instead of downloading this directly."
-        if ($LASTEXITCODE -ne 0) { throw "gh release create $RuntimeTag failed." }
+    foreach ($RuntimeTag in $RuntimeTags) {
+        gh release view $RuntimeTag --repo $GitHubRepo *> $null
+        if ($LASTEXITCODE -ne 0) {
+            gh release create $RuntimeTag --repo $GitHubRepo --latest=false `
+                --title "QuillVille Runtime ($Channel, moving tag)" `
+                --notes "The shared QuillVille Runtime installer for the $Channel channel. App installers and the native launcher download QuillVille-Runtime-Setup.exe from this tag; it is republished whenever the runtime is released. Install any QuillVille app instead of downloading this directly."
+            if ($LASTEXITCODE -ne 0) { throw "gh release create $RuntimeTag failed." }
+        }
+        gh release upload $RuntimeTag $setup --clobber --repo $GitHubRepo
+        if ($LASTEXITCODE -ne 0) { throw "gh release upload to $RuntimeTag failed." }
+        Write-Host "Published $setup to releases/download/$RuntimeTag/ (runtime $version, $Channel)."
     }
-    gh release upload $RuntimeTag $setup --clobber --repo $GitHubRepo
-    if ($LASTEXITCODE -ne 0) { throw "gh release upload to $RuntimeTag failed." }
-    Write-Host "Published $setup to releases/download/$RuntimeTag/ (runtime $version)."
 } else {
-    Write-Host "Publish with: .\standalone\runtime\build_runtime_installer.ps1 -Publish"
+    Write-Host "Publish with: .\standalone\runtime\build_runtime_installer.ps1 -Publish [-Channel beta]"
 }

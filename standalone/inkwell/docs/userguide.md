@@ -380,6 +380,22 @@ Options > Insert by pasting (section 12).
 **An abbreviation fires when I do not want it.** Set that entry's *Expand after*
 to Never; Quick Insert can still reach it.
 
+## Finding a setting or a command
+
+Quill Inkwell keeps its options in its menus, so there is no settings window to search.
+Instead, **Help > Find a Setting or Command** (**Ctrl+Alt+Shift+S**) searches
+every menu at once.
+
+1. Press **Ctrl+Alt+Shift+S**.
+2. Type part of what you are looking for, such as "announce". The list
+   below narrows as you type, and each row says which menu the command is in.
+   An option also says whether it is on or off.
+3. Press **Down** to move into the list, and **Enter** on the one you want.
+
+Enter does exactly what choosing that row from its menu would do. For an
+option, it switches it and tells you whether it is now on or off. Escape
+closes the window without doing anything.
+
 ## Getting help
 
 Support is run by **Community Access**, and the address is

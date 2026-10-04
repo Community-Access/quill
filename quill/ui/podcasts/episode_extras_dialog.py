@@ -11,7 +11,7 @@ Three decisions carry this window:
   podcast that publishes no credits. Arrowing through tabs that all say "none"
   is a worse way to learn there is nothing than being told once.
 * **The button names the thing it is about to do**, and changes as the highlight
-  moves: *Open in Browser*, *Play*, *Subscribe to This Podcast*. On a row with
+  moves: *Open in Browser*, *Play*, *Follow This Podcast*, *Go There*. On a row with
   nothing to do it reads *Nothing to Open* and is disabled -- because a control
   that silently declines is worse than one not offered.
 * **Every row is a whole sentence.** No columns: "Jane Smith, guest (this
@@ -28,13 +28,13 @@ from collections.abc import Callable
 from typing import Any
 
 from quill.core.podcasts.extras import (
+    ACTION_JUMP,
     ACTION_OPEN,
     ACTION_PLAY,
     ACTION_SUBSCRIBE,
     Extras,
     Row,
 )
-from quill.ui.dialog_contract import apply_modal_ids
 
 TITLE = "About This Episode"
 
@@ -47,8 +47,17 @@ NOTHING_HEADING = (
 )
 
 
-class EpisodeExtrasDialog:
-    """One tab per kind of extra the podcast published."""
+class EpisodeExtrasWindow:
+    """One tab per kind of extra the podcast published -- a peer window.
+
+    Made once (qc.md Phase 4). Asked for again, for this episode or another,
+    the same window is raised and its tabs rebuilt from :meth:`load`; the
+    action button simply acts, and the window stays open beside the library
+    until Escape or Close hides it.
+    """
+
+    TITLE = TITLE
+    MENU_TITLE = "&Episode"
 
     def __init__(
         self,
@@ -56,42 +65,109 @@ class EpisodeExtrasDialog:
         *,
         extras: Extras,
         episode_title: str = "",
-        show_modal_dialog: Callable[[Any, str], int] | None = None,
         announce: Callable[[str], None] | None = None,
         open_url: Callable[[str], bool] | None = None,
         play_url: Callable[[str, str], bool] | None = None,
         subscribe_feed: Callable[[str], bool] | None = None,
+        jump_to: Callable[[str], bool] | None = None,
     ) -> None:
         import wx
 
         self._wx = wx
-        self._extras = extras
         self._announce = announce or (lambda _m: None)
-        self._show_modal_dialog = show_modal_dialog
+        self._lists: list[Any] = []
+        self._notebook: Any = None
+        self._heading: Any = None
+
+        self.frame = wx.Frame(parent, title=TITLE, size=(660, 480))
+        self.frame.SetMinSize((620, 440))
+        self._panel = wx.Panel(self.frame, style=wx.TAB_TRAVERSAL)
+        root = wx.BoxSizer(wx.VERTICAL)
+        self._body = wx.BoxSizer(wx.VERTICAL)
+        root.Add(self._body, 1, wx.EXPAND)
+
+        buttons = wx.BoxSizer(wx.HORIZONTAL)
+        self._action_btn = wx.Button(self._panel, label="&Open in Browser")
+        self._action_btn.SetHelpText(
+            "Does what its name says to the highlighted row: opens the link, plays "
+            "the stream, follows the podcast, or plays from the bookmark. Its name "
+            "changes as you move through the list."
+        )
+        buttons.Add(self._action_btn, 0, wx.RIGHT, 6)
+        close_btn = wx.Button(self._panel, label="Close")
+        self._close_btn = close_btn
+        close_btn.SetHelpText("Closes this window and returns to where you were.")
+        from quill.ui.dialog_contract import bind_close_button
+
+        bind_close_button(self.frame, close_btn, modeless=True)
+        buttons.Add(close_btn, 0)
+        root.Add(buttons, 0, wx.ALL, 12)
+        self._panel.SetSizer(root)
+
+        self._action_btn.Bind(wx.EVT_BUTTON, lambda _e: self.activate_selected())
+        self.load(
+            extras,
+            episode_title=episode_title,
+            open_url=open_url,
+            play_url=play_url,
+            subscribe_feed=subscribe_feed,
+            jump_to=jump_to,
+        )
+        self.frame.CentreOnParent()
+
+    def focus_target(self) -> Any:
+        if self._lists and self._notebook is not None:
+            page = max(0, int(self._notebook.GetSelection()))
+            return self._lists[min(page, len(self._lists) - 1)]
+        # Nothing published: the heading says so, and Close is the one thing to do.
+        return self._close_btn
+
+    def load(
+        self,
+        extras: Extras,
+        *,
+        episode_title: str = "",
+        open_url: Callable[[str], bool] | None = None,
+        play_url: Callable[[str, str], bool] | None = None,
+        subscribe_feed: Callable[[str], bool] | None = None,
+        jump_to: Callable[[str], bool] | None = None,
+    ) -> None:
+        """Show *extras* -- the first time, or for whichever episode is asked next."""
+        from quill.ui.dialog_contract import apply_listbox_activation
+
+        wx = self._wx
+        self._extras = extras
         self._open_url = open_url
         self._play_url = play_url
         self._subscribe_feed = subscribe_feed
-        self._lists: list[Any] = []
-
-        self._dialog = wx.Dialog(
-            parent,
-            title=TITLE if not episode_title else f"{TITLE} -- {episode_title}",
-            style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
-        )
-        root = wx.BoxSizer(wx.VERTICAL)
+        self._jump_to = jump_to
+        self.frame.SetTitle(TITLE if not episode_title else f"{TITLE} -- {episode_title}")
+        self._body.Clear(delete_windows=True)
+        self._lists = []
+        self._notebook = None
+        self._heading = None
+        panel = self._panel
 
         if extras.is_empty:
-            root.Add(wx.StaticText(self._dialog, label=NOTHING_HEADING), 0, wx.ALL, 12)
-            self._notebook = None
+            self._heading = wx.StaticText(panel, label=NOTHING_HEADING)
+            self._body.Add(self._heading, 0, wx.ALL, 12)
         else:
-            self._notebook = wx.Notebook(self._dialog)
+            self._notebook = wx.Notebook(panel)
             self._notebook.SetName("Details this podcast published about this episode")
+            self._notebook.SetHelpText(
+                "One tab for each kind of thing this podcast published. Ctrl+Tab "
+                "moves between them."
+            )
             for section in extras.sections:
                 page = wx.Panel(self._notebook)
                 page_sizer = wx.BoxSizer(wx.VERTICAL)
                 page_sizer.Add(wx.StaticText(page, label=section.heading), 0, wx.ALL | wx.EXPAND, 8)
                 listbox = wx.ListBox(page, choices=[row.label for row in section.rows])
                 listbox.SetName(f"{section.title}: {section.heading}")
+                listbox.SetHelpText(
+                    "Each row is one thing the podcast published. The button below "
+                    "says what Enter on it does."
+                )
                 if section.rows:
                     listbox.SetSelection(0)
                 page_sizer.Add(listbox, 1, wx.EXPAND | wx.ALL, 8)
@@ -99,30 +175,14 @@ class EpisodeExtrasDialog:
                 self._notebook.AddPage(page, section.title)
                 self._lists.append(listbox)
                 listbox.Bind(wx.EVT_LISTBOX, lambda _e: self._sync_button())
-                listbox.Bind(wx.EVT_LISTBOX_DCLICK, lambda _e: self.activate_selected())
-            root.Add(self._notebook, 1, wx.EXPAND | wx.ALL, 8)
-
-        buttons = wx.BoxSizer(wx.HORIZONTAL)
-        self._action_btn = wx.Button(self._dialog, wx.ID_OK, "&Open in Browser")
-        buttons.Add(self._action_btn, 0, wx.RIGHT, 6)
-        buttons.Add(wx.Button(self._dialog, wx.ID_CANCEL, "Close"), 0)
-        root.Add(buttons, 0, wx.ALL, 12)
-
-        self._dialog.SetSizer(root)
-        self._dialog.SetMinSize((620, 440))
-        self._dialog.Fit()
-        apply_modal_ids(self._dialog, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
-
-        self._action_btn.Bind(wx.EVT_BUTTON, lambda _e: self.activate_selected())
-        if self._notebook is not None:
+                # A frame has no default button, so Enter on a row is wired here.
+                apply_listbox_activation(listbox, lambda _e: self.activate_selected())
+            self._body.Add(self._notebook, 1, wx.EXPAND | wx.ALL, 8)
+            # Built after the buttons, so put it back ahead of them in Tab order.
+            self._notebook.MoveBeforeInTabOrder(self._action_btn)
             self._notebook.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, lambda _e: self._sync_button())
+        self._panel.Layout()
         self._sync_button()
-        if self._lists:
-            self._lists[0].SetFocus()
-
-    @property
-    def dialog(self) -> Any:
-        return self._dialog
 
     def selected_row(self) -> Row | None:
         """The highlighted row on the visible tab, if there is one."""
@@ -158,10 +218,16 @@ class EpisodeExtrasDialog:
             return lambda: bool(self._play_url and self._play_url(row.target, row.label))
         if row.action == ACTION_SUBSCRIBE and self._subscribe_feed is not None:
             return lambda: bool(self._subscribe_feed and self._subscribe_feed(row.target))
+        if row.action == ACTION_JUMP and self._jump_to is not None:
+            return lambda: bool(self._jump_to and self._jump_to(row.target))
         return None
 
     def activate_selected(self) -> bool:
-        """Do what the button says. Always speaks the outcome, either way."""
+        """Do what the button says. Always speaks the outcome, either way.
+
+        In a peer the button simply acts: the window stays open, so a listener
+        can try a second link or bookmark without opening it again.
+        """
         row = self.selected_row()
         if row is None or not row.is_actionable:
             return False
@@ -179,15 +245,8 @@ class EpisodeExtrasDialog:
             pass
         elif row.action == ACTION_PLAY:
             self._announce(f"Playing {row.label}.")
+        elif row.action == ACTION_JUMP:
+            self._announce(f"Playing from {row.label}.")
         else:
             self._announce("Opened in your browser.")
         return True
-
-    def show(self) -> int:
-        """Show the window, and always destroy it afterwards (A11Y-4)."""
-        try:
-            if self._show_modal_dialog is not None:
-                return int(self._show_modal_dialog(self._dialog, TITLE))
-            return int(self._dialog.ShowModal())  # dialog_button_contract: exempt
-        finally:
-            self._dialog.Destroy()

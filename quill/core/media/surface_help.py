@@ -39,6 +39,12 @@ from quill.core.control_help import (
 
 #: Surface purposes by exact window title.
 PURPOSES: dict[str, str] = {
+    "Find a Setting or Command": (
+        "Every menu command in this app, searchable by name. Type part of a "
+        "name; Down moves into the matches; Enter does the highlighted one, exactly "
+        "as choosing it from its menu would. An option says whether it is on, and "
+        "doing it switches it and says the new state."
+    ),
     # -- the windows -------------------------------------------------------------
     "Quill Media Player": (
         "The main window: what is playing, the transport, and three pages "

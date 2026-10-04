@@ -152,7 +152,14 @@ class RadioStatsDialog:
         except OSError as error:
             self._announce(f"Could not save that file: {error}.")
             return
-        self._announce(f"Saved {len(sessions)} sessions to {Path(destination).name}.")
+        from quill.ui.outcome_report import report_outcome
+
+        report_outcome(
+            self,
+            "Save Listening Statistics",
+            f"Saved {len(sessions)} sessions to {Path(destination).name}.",
+            path=destination,
+        )
 
     def _clear(self) -> None:
         wx = self._wx

@@ -33,6 +33,7 @@ ACTION_NONE = ""
 ACTION_OPEN = "open"  # a web address, in the browser
 ACTION_PLAY = "play"  # audio, through the ordinary player
 ACTION_SUBSCRIBE = "subscribe"  # a feed, added to the library
+ACTION_JUMP = "jump"  # a bookmark: this episode, from that moment
 
 #: The button's label for each action. Set from the highlighted row, so the
 #: control always names what it is about to do rather than staying generic.
@@ -41,6 +42,7 @@ ACTION_LABELS: dict[str, str] = {
     ACTION_OPEN: "&Open in Browser",
     ACTION_PLAY: "&Play",
     ACTION_SUBSCRIBE: "&Follow This Podcast",
+    ACTION_JUMP: "&Go There",
 }
 
 

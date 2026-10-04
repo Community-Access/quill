@@ -45,6 +45,7 @@ from quill.ui.podcasts.manager_reveal import ManagerRevealMixin
 from quill.ui.podcasts.manager_row_view import ManagerRowViewMixin
 from quill.ui.podcasts.manager_verbs import ManagerVerbsMixin
 from quill.ui.podcasts.player_controller import PodcastPlayerController
+from quill.ui.podcasts.say_status import say_status
 from quill.ui.podcasts.winamp_mixin import CastWinampKeysMixin
 from quill.ui.surface_lifetime import surface_tasks
 
@@ -526,8 +527,10 @@ class PodcastManagerDialog(
         add_folder_children(root, None)
         self._tree.ExpandAll()
         if not self._library.shows:
-            self._status.SetLabel(
-                "No podcasts yet. Press Add Podcast to find one, add by feed URL, or import OPML."
+            say_status(
+                self._status,
+                "No podcasts yet. Press Add Podcast to find one, add by feed URL, or import OPML.",
+                self._announce,
             )
 
     def _selected_show_id(self) -> str | None:
@@ -800,7 +803,12 @@ class PodcastManagerDialog(
         self._remove_download_btn.Enable(False)
         self._chapters_btn.Enable(False)
         if show is not None:
-            self._status.SetLabel(f"{len(self._current_episodes)} episode(s) for {show.title}.")
+            # Follows the selection, which the reader already says; not spoken.
+            say_status(
+                self._status,
+                f"{len(self._current_episodes)} episode(s) for {show.title}.",
+                speak=False,
+            )
         if self._current_episodes:
             self._episodes.Select(0)
             self._episodes.Focus(0)
@@ -958,14 +966,9 @@ class PodcastManagerDialog(
             self.refresh_tree()
 
     def _on_new_folder(self, _event: object) -> None:
-        wx = self._wx
-        dialog = wx.TextEntryDialog(self.dialog, "Folder name:", "New Folder")
-        try:
-            if dialog.ShowModal() != wx.ID_OK:  # dialog_button_contract: exempt
-                return
-            name = dialog.GetValue().strip()
-        finally:
-            dialog.Destroy()
+        from quill.ui.podcasts.folder_prompt import folder_name_prompt
+
+        name = folder_name_prompt(self.dialog, announce=self._announce)
         if not name:
             return
         parent_folder_id = self._selected_folder_id()

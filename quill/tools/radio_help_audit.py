@@ -70,6 +70,9 @@ _SCAN_GLOBS: tuple[str, ...] = (
     "quill/apps/radio*.py",
     "quill/ui/tutorials_window.py",
     "quill/ui/tutorials_contents.py",
+    # Release channels: one set of windows for QUILL, QUILL Lite, Radio and
+    # Cast, gated here once for the same reason as the Tutorials window.
+    "quill/ui/updates/*.py",
 )
 
 #: Surface constructions whose titles the scan cannot resolve, with the

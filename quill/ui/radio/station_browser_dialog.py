@@ -1257,7 +1257,7 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
             # badge, so it says the good news and the "nobody has checked" case
             # too -- both worth having somewhere, neither worth a badge.
             explanation = station_confidence.assess(station).explanation
-            details = station.details_text
+            details = self._details_for(station)
             self._details.SetValue(f"{details}\n\n{explanation}" if explanation else details)
             self._play_btn.Enable(True)
             self._favorite_btn.Enable(True)
@@ -1302,6 +1302,7 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
                 open_link_label(station),
                 lambda url=station.homepage, s=from_spotify: self._open_url(url, spotify=s),
             ))
+        entries.append(("Edit Station &Tags...", lambda s=station: self._edit_tags(s)))
         if self._on_report_bad_station is not None:
             entries.append((
                 "Report &Bad Station...",

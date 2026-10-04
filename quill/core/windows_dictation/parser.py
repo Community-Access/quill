@@ -38,7 +38,9 @@ __all__ = [
 ]
 
 _SPLIT = re.compile(r"[\s\-]+")
-_WORD_CHARS = re.compile(r"[^a-z0-9']+")
+# Letters in any language survive: "linea" with its accent and "n" with its
+# tilde must reach the command table intact.
+_WORD_CHARS = re.compile(r"[^\w']+")
 
 
 @dataclass(frozen=True, slots=True)

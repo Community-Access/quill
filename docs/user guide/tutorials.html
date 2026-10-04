@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.12" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL Tutorials</title>
   <style>
@@ -11,7 +11,10 @@
     */
     html {
       color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
       background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
     }
     body {
       margin: 0 auto;
@@ -36,11 +39,16 @@
     }
     @media print {
       html {
-        background-color: white;
+        color-scheme: light only;
       }
-      body {
+      html, body, pre, code {
         background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
         color: black;
+      }
+      pre, code {
+        padding: 0;
       }
       p, h2, h3 {
         orphans: 3;
@@ -53,11 +61,8 @@
     p {
       margin: 1em 0;
     }
-    a {
-      color: #1a1a1a;
-    }
-    a:visited {
-      color: #1a1a1a;
+    a, a:visited {
+      color: inherit;
     }
     img {
       max-width: 100%;
@@ -86,8 +91,11 @@
     blockquote {
       margin: 1em 0 1em 1.7em;
       padding-left: 1em;
-      border-left: 2px solid #e6e6e6;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
       color: #606060;
+      color: light-dark(#606060, #b6b6b6);
     }
     code {
       white-space: pre-wrap;
@@ -111,7 +119,7 @@
     }
     hr {
       border: none;
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       height: 1px;
       margin: 1em 0;
     }
@@ -128,11 +136,11 @@
     }
     tbody {
       margin-top: 0.5em;
-      border-top: 1px solid #1a1a1a;
-      border-bottom: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
     }
     th {
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       padding: 0.25em 0.5em 0.25em 0.5em;
     }
     td {
@@ -171,7 +179,6 @@
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <style>
     /* Accessible skip link: off-screen until it receives keyboard focus. */
@@ -236,18 +243,19 @@
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content" tabindex="-1">
 <h1 id="quill-tutorials">QUILL Tutorials</h1>
-<p>23 guided tutorials, 137 steps, about 120 minutes of material in
-all.</p>
-<p>This document is generated from the tutorials inside QUILL, so it
-says exactly what the app teaches. To work through one with the app
-watching – running a step for you, and moving you on once it can see you
-have done it – open <strong>Help &gt; Tutorials…</strong> instead.</p>
-<p>The keys below are the ones QUILL ships with. If you have rebound
-something in the Keyboard Manager, the tutorials <em>inside the app</em>
-say your key; this document cannot know it.</p>
+<p>Welcome. There are 23 short lessons here, about 120 minutes in all,
+and you can take them in any order. Each one is a few small steps, and
+each step tells you what to press and what you should hear.</p>
+<p>This page is the lessons written out, so you can read them anywhere.
+If you would rather be walked through, open <strong>Help &gt;
+Tutorials…</strong> in QUILL. It does a step for you when you ask, and
+moves on by itself once it hears you have done one.</p>
+<p>The keys here are the ones QUILL comes with. If you have changed a
+key, the lessons inside the app use your key; this page cannot know
+about the change.</p>
 <h2 id="contents">Contents</h2>
 <ul>
-<li><strong>Your first hour</strong> – Write and save something, learn
+<li><strong>Your first hour</strong>: Write and save something, learn
 the four ways of getting anywhere, meet the QUILL key, and learn what to
 press when you are lost.
 <ul>
@@ -257,7 +265,7 @@ press when you are lost.
 <li>The QUILL key (5 minutes)</li>
 <li>Getting unstuck (4 minutes)</li>
 </ul></li>
-<li><strong>Writing and editing</strong> – Selecting and moving text
+<li><strong>Writing and editing</strong>: Selecting and moving text
 without a mouse, finding and replacing at every level of ambition,
 structure and formatting, words, and the one structure plain caret
 movement handles badly.
@@ -268,7 +276,7 @@ movement handles badly.
 <li>Spelling, words, and the thesaurus (5 minutes)</li>
 <li>Tables, by ear (4 minutes)</li>
 </ul></li>
-<li><strong>Reading and reviewing</strong> – Having the document read to
+<li><strong>Reading and reviewing</strong>: Having the document read to
 you, seeing the formatting that is normally hidden, single-letter
 movement, and inspecting a document somebody else wrote.
 <ul>
@@ -277,14 +285,14 @@ movement, and inspecting a document somebody else wrote.
 <li>Quick Nav: single-letter movement (4 minutes)</li>
 <li>Inspect a document you did not write (5 minutes)</li>
 </ul></li>
-<li><strong>How much QUILL says</strong> – Verbosity profiles, the
+<li><strong>How much QUILL says</strong>: Verbosity profiles, the
 channels that carry an announcement, and the echo of everything QUILL
 has just said.
 <ul>
 <li>Decide how much QUILL says (6 minutes)</li>
 </ul></li>
-<li><strong>The assistant, if you want one</strong> – Optional,
-explicit, and honest about what it did: setting up a provider or running
+<li><strong>The assistant, if you want one</strong>: Optional, explicit,
+and honest about what it did: setting up a provider or running
 on-device, asking a question, and the commands that work on one
 selection at a time.
 <ul>
@@ -292,7 +300,7 @@ selection at a time.
 <li>Ask, and run a prompt (6 minutes)</li>
 <li>The assistant on one piece of text (4 minutes)</li>
 </ul></li>
-<li><strong>Living with it</strong> – Shaping the app to the work you
+<li><strong>Living with it</strong>: Shaping the app to the work you
 actually do, the safety net underneath it, formats other people send
 you, braille files, and the family of apps QUILL sits in.
 <ul>
@@ -499,9 +507,10 @@ you know before any speech arrives.</p>
 <li>You should hear: A quick double-ping, unlike any other sound in the
 app.</li>
 </ul></li>
-<li><p><strong>Run one chord.</strong> With the prefix armed, press G
-for Go to Anything or R for Read Aloud. Menus and the cheat sheet write
-these as QUILL Key + G, which is the same thing said in words.</p>
+<li><p><strong>Run one chord.</strong> With the prefix armed, press G to
+open a file from a favorite folder or R for Read Aloud. Menus and the
+cheat sheet write these as QUILL Key + G, which is the same thing said
+in words.</p>
 <ul>
 <li>Keys: Ctrl+Shift+Grave, G</li>
 <li>You should hear: Whatever that command announces.</li>

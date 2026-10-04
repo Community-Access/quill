@@ -1,24 +1,24 @@
 # Quill Weather Tutorials
 
-11 guided tutorials, 60 steps, about 47 minutes of material in all.
+Welcome. There are 11 short lessons here, about 47 minutes in all, and you can take them in any order. Each one is a few small steps, and each step tells you what to press and what you should hear.
 
-This document is generated from the tutorials inside Quill Weather, so it says exactly what the app teaches. To work through one with the app watching -- running a step for you, and moving you on once it can see you have done it -- open **Help > Tutorials...** instead.
+This page is the lessons written out, so you can read them anywhere. If you would rather be walked through, open **Help > Tutorials...** in Quill Weather. It does a step for you when you ask, and moves on by itself once it hears you have done one.
 
-The keys below are the ones Quill Weather ships with. If you have rebound something in the Keyboard Manager, the tutorials *inside the app* say your key; this document cannot know it.
+The keys here are the ones Quill Weather comes with. If you have changed a key, the lessons inside the app use your key; this page cannot know about the change.
 
 ## Contents
 
-- **Your first ten minutes** -- Add a place, read everything the app knows about it, and learn the one key that answers without opening anything.
+- **Your first ten minutes**: Add a place, read everything the app knows about it, and learn the one key that answers without opening anything.
   - Add your first place (4 minutes)
   - Read everything it knows (6 minutes)
   - The one-line answer (3 minutes)
-- **Being warned** -- The reason this app exists: a watch that speaks a warning the moment it is issued, tuned so that you leave it on, and running whether or not anything else is.
+- **Being warned**: The reason this app exists: a watch that speaks a warning the moment it is issued, tuned so that you leave it on, and running whether or not anything else is.
   - Start the watch (5 minutes)
   - Rehearse an alert (3 minutes)
   - Decide what gets through (5 minutes)
   - Keep the watch running (5 minutes)
   - NOAA Weather Radio, out loud (3 minutes)
-- **Making it yours** -- Several places rather than one, the settings that decide how long a reading takes to speak, and living beside the rest of the family.
+- **Making it yours**: Several places rather than one, the settings that decide how long a reading takes to speak, and living beside the rest of the family.
   - More than one place (4 minutes)
   - Decide how the weather reads (5 minutes)
   - Weather beside the other apps (4 minutes)

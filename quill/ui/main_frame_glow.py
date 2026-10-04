@@ -1,10 +1,10 @@
 """GLOW structured-document commands (MainFrame mixin).
 
 The in-editor GLOW commands (audit/fix of the current document or selection)
-live in ``main_frame.py`` and work on the text in front of the user. This
-mixin adds the file-level half of GLOW: auditing and fixing structured
-documents on disk — DOCX, PPTX, XLSX, PDF, EPUB, Markdown — through the
-shared GLOW engine seam (:mod:`quill.core.glow`).
+work on the text in front of the user (``GlowEditorMixin``, at the end of this
+module since F-08). ``GlowFileMixin`` adds the file-level half of GLOW:
+auditing and fixing structured documents on disk — DOCX, PPTX, XLSX, PDF,
+EPUB, Markdown — through the shared GLOW engine seam (:mod:`quill.core.glow`).
 
 Behavior contract:
 
@@ -24,6 +24,10 @@ Wiring expectations from MainFrame: ``_wx``, ``frame``, ``_task_manager``,
 from __future__ import annotations
 
 from pathlib import Path
+
+from quill.core.document import Document
+from quill.core.glow import build_audit_report, build_fix_report, fix_text
+from quill.core.selection import line_span, paragraph_span
 
 GLOW_STRUCTURED_WILDCARD = (
     "Structured documents (*.docx;*.pptx;*.xlsx;*.pdf;*.epub;*.md)"
@@ -168,3 +172,105 @@ class GlowFileMixin:
             on_success=_on_success,
             on_failure=_on_failure,
         )
+
+
+class GlowEditorMixin:
+    """GLOW on the text in front of you: audit or fix the document or the selection.
+
+    Moved here from ``main_frame.py`` under F-08 (2026-10-03), beside the file-level half.
+    """
+
+    def _glow_scope(self) -> tuple[str, int, int, str]:
+        start, end = self.editor.GetSelection()
+        if start != end:
+            return self.editor.GetRange(start, end), start, end, "selection"
+        cursor = self.editor.GetInsertionPoint()
+        text = self.editor.GetValue()
+        start, end = paragraph_span(text, cursor)
+        scope = self.editor.GetRange(start, end)
+        if not scope.strip():
+            start, end = line_span(text, cursor)
+            scope = self.editor.GetRange(start, end)
+            return scope, start, end, "current line"
+        return scope, start, end, "current paragraph"
+
+    def _ensure_glow_enabled(self) -> bool:
+        """Gate every GLOW command behind the Experimental opt-in.
+
+        GLOW ships as an experimental feature: it runs only when both the
+        Experimental master switch and the GLOW checkbox are on (Preferences >
+        Experimental). Commands stay in the palette so they are discoverable;
+        invoking one while gated explains exactly how to turn GLOW on — the
+        same pattern as Read Document in Browser.
+        """
+        if self._feature_enabled("core.glow"):
+            return True
+        wx = self._wx
+        self._show_message_box(
+            "GLOW is an experimental feature and is currently turned off.\n\n"
+            "To enable it, open Preferences > Experimental, tick 'Enable "
+            "experimental features', then tick 'GLOW accessibility review and "
+            "repair'. It takes effect as soon as you apply Settings - no "
+            "restart needed.",
+            "GLOW (Experimental)",
+            wx.ICON_INFORMATION | wx.OK,
+        )
+        return False
+
+    def glow_audit_document(self) -> None:
+        if not self._ensure_glow_enabled():
+            return
+        markup = self._current_markup_context()
+        text = self.editor.GetValue()
+        report = build_audit_report(self.document.name, text, markup, "current document")
+        self._create_named_scratch_tab(f"GLOW Audit - {self.document.name}", report)
+        self._set_status(f"Opened GLOW audit for {self.document.name}")
+
+    def glow_audit_selection(self) -> None:
+        if not self._ensure_glow_enabled():
+            return
+        text, _start, _end, scope_label = self._glow_scope()
+        markup = self._current_markup_context()
+        report = build_audit_report(self.document.name, text, markup, scope_label)
+        self._create_named_scratch_tab(f"GLOW Audit - {scope_label.title()}", report)
+        self._set_status(f"Opened GLOW audit for {scope_label}")
+
+    def glow_fix_document(self) -> None:
+        if not self._ensure_glow_enabled():
+            return
+        original = self.editor.GetValue()
+        markup = self._current_markup_context()
+        result = fix_text(original, markup)
+        if result.text == original:
+            report = build_fix_report(self.document.name, result, markup, "current document")
+            self._create_named_scratch_tab(f"GLOW Fix Report - {self.document.name}", report)
+            self._set_status("No deterministic GLOW fixes were available")
+            return
+        preview_title = f"{self.document.name} - GLOW Fix Preview"
+        index = self._create_document_tab(
+            Document(text=result.text, path=None, modified=False),
+            select=True,
+        )
+        self._set_tab_page_text(index, preview_title)
+        report = build_fix_report(self.document.name, result, markup, "current document")
+        self._record_notification(report.splitlines()[0], "glow")
+        self._start_compare_session([(self.document.name, original), (preview_title, result.text)])
+        self._set_status(
+            f"Opened GLOW fix preview with {len(result.fixes)} changes and started compare"
+        )
+
+    def glow_fix_selection(self) -> None:
+        if not self._ensure_glow_enabled():
+            return
+        text, start, end, scope_label = self._glow_scope()
+        markup = self._current_markup_context()
+        result = fix_text(text, markup)
+        if result.text == text:
+            self._set_status(f"No deterministic GLOW fixes were available for {scope_label}")
+            return
+        self.editor.Replace(start, end, result.text)
+        self.editor.SetSelection(start, start + len(result.text))
+        self.document.set_text(self.editor.GetValue())
+        report = build_fix_report(self.document.name, result, markup, scope_label)
+        self._record_notification(report.splitlines()[0], "glow")
+        self._set_status(f"Applied {len(result.fixes)} GLOW fixes to {scope_label}")

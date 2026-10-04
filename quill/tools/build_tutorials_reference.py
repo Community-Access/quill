@@ -67,7 +67,9 @@ BOOKS: tuple[Book, ...] = (
         "cast",
         "QUILL Cast",
         REPO_ROOT / "standalone" / "cast" / "docs" / "tutorials.md",
-        "podcasts",
+        # APP_KEYMAPS names Cast's section "cast"; "podcasts" matched nothing,
+        # so the book never saw a Cast key of its own (found 2026-10-03).
+        "cast",
         "Help > Tutorials...",
     ),
     Book(
@@ -199,24 +201,26 @@ def render(book: Book) -> str:
     lines: list[str] = [
         f"# {book.app_name} Tutorials",
         "",
-        f"{len(catalogue)} guided tutorials, {catalogue.total_steps()} steps, about "
-        f"{catalogue.total_minutes()} minutes of material in all.",
+        f"Welcome. There are {len(catalogue)} short lessons here, about "
+        f"{catalogue.total_minutes()} minutes in all, and you can take them in any "
+        "order. Each one is a few small steps, and each step tells you what to "
+        "press and what you should hear.",
         "",
-        f"This document is generated from the tutorials inside {book.app_name}, so it "
-        f"says exactly what the app teaches. To work through one with the app "
-        f"watching -- running a step for you, and moving you on once it can see "
-        f"you have done it -- open **{book.door}** instead.",
+        f"This page is the lessons written out, so you can read them anywhere. If "
+        f"you would rather be walked through, open **{book.door}** in "
+        f"{book.app_name}. It does a step for you when you ask, and moves on by "
+        "itself once it hears you have done one.",
         "",
-        f"The keys below are the ones {book.app_name} ships with. If you have rebound "
-        "something in the Keyboard Manager, the tutorials *inside the app* say "
-        "your key; this document cannot know it.",
+        f"The keys here are the ones {book.app_name} comes with. If you have "
+        "changed a key, the lessons inside the app use your key; this page "
+        "cannot know about the change.",
         "",
         "## Contents",
         "",
     ]
     for track in catalogue.tracks:
         lessons = catalogue.in_track(track.id)
-        lines.append(f"- **{track.title}** -- {track.blurb}")
+        lines.append(f"- **{track.title}**: {track.blurb}")
         for tutorial in lessons:
             lines.append(f"  - {tutorial.title} ({tutorial.minutes} minutes)")
     lines.append("")

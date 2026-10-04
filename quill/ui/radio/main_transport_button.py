@@ -142,6 +142,11 @@ def add_transport_button(host: Any, panel: Any, row: Any, wx: Any) -> Any:
         pass
     row.Add(button, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
     host._transport_btn = button
+    # The station's website comes next in Tab order, beside Play and Stop (a
+    # listener's request, October 2026: Double Tap Live's schedule lives there).
+    from quill.ui.radio.station_website_button import add_website_button
+
+    add_website_button(host, panel, row, wx)
     tree = getattr(host, "_favorites_tree", None)
     if tree is not None:
         # The label names the selection, so it follows the selection.

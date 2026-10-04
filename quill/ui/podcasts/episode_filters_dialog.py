@@ -34,6 +34,7 @@ Nothing in this window deletes an episode, and every message says so.
 from __future__ import annotations
 
 from collections.abc import Callable
+from typing import Any
 
 from quill.core.podcasts import episode_filter_maintenance as maintenance
 from quill.core.podcasts import episode_filters as filters
@@ -48,7 +49,7 @@ from quill.core.podcasts.models_filters import (
     EpisodeFilterConfiguration,
 )
 from quill.core.podcasts.subscriptions import PodcastLibrary
-from quill.ui.dialog_contract import apply_modal_ids, show_message_box, show_modal_dialog
+from quill.ui.dialog_contract import show_message_box
 
 #: The title's stable opening; the podcast's name follows it. Answered by
 #: prefix in ``core/podcasts/surface_help.py`` (GATE-CAST-HELP).
@@ -56,11 +57,21 @@ TITLE = "Episode Filters"
 
 _MODE_CHOICES = tuple(MODE_LABELS[mode] for mode in FILTER_MODES)
 
-__all__ = ["TITLE", "EpisodeFiltersDialog"]
+__all__ = ["TITLE", "EpisodeFiltersWindow", "open_episode_filters"]
 
 
-class EpisodeFiltersDialog:
-    """Edits one podcast's rule set; ``show()`` returns whether it was saved."""
+class EpisodeFiltersWindow:
+    """Edits one podcast's rule set -- a peer window (qc.md Phase 4).
+
+    Made once. Save stores the rules and the window stays open; Close (or
+    Escape) leaves what is stored exactly as it was. Asked for again while it
+    is showing the same podcast it is only raised, so a draft in progress
+    survives; otherwise it is rebuilt from what is stored, for whichever
+    podcast was asked about.
+    """
+
+    TITLE = TITLE
+    MENU_TITLE = "Filter R&ules"
 
     def __init__(
         self,
@@ -71,13 +82,34 @@ class EpisodeFiltersDialog:
         announce_cb: Callable[[str], None] | None = None,
         playing: tuple[str, str] | None = None,
         suggestion: object = None,
+        on_saved: Callable[[], None] | None = None,
     ) -> None:
         import wx
 
         self._wx = wx
+        self._announce = announce_cb or (lambda _m: None)
+        self._panel: Any = None
+        self.frame = wx.Frame(parent, title=TITLE, size=(660, 760))
+        self.frame.SetMinSize((620, 620))
+        self.load(
+            library=library, show=show, playing=playing, suggestion=suggestion, on_saved=on_saved
+        )
+        self.frame.CentreOnParent()
+
+    def load(
+        self,
+        *,
+        library: PodcastLibrary,
+        show: PodcastShow,
+        playing: tuple[str, str] | None = None,
+        suggestion: object = None,
+        on_saved: Callable[[], None] | None = None,
+    ) -> None:
+        """Build the window's contents for *show*, from what is stored."""
+        wx = self._wx
+        self._on_saved = on_saved
         self._library = library
         self._show = show
-        self._announce = announce_cb or (lambda _m: None)
         self._playing = playing
         #: A drafted rule from "Filter Episodes Like This" (a
         #: ``filter_suggestions.FilterSuggestion``), opened in the rule editor
@@ -93,14 +125,14 @@ class EpisodeFiltersDialog:
             stored.copy() if stored is not None else EpisodeFilterConfiguration()
         )
 
-        self.dialog = wx.Dialog(
-            parent, title=self._title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
-        )
-        self.dialog.SetMinSize((620, 620))
+        self.frame.SetTitle(self._title)
+        if self._panel is not None:
+            self._panel.Destroy()
+        self._panel = wx.Panel(self.frame, style=wx.TAB_TRAVERSAL)
         root = wx.BoxSizer(wx.VERTICAL)
 
         intro = wx.StaticText(
-            self.dialog,
+            self._panel,
             label=(
                 f"Rules that decide what happens to {show.title}'s episodes, and "
                 "where that answer counts. A filtered episode is never deleted: it "
@@ -112,13 +144,14 @@ class EpisodeFiltersDialog:
         intro.Wrap(580)
         root.Add(intro, 0, wx.EXPAND | wx.ALL, 10)
 
+        self._notice: Any = None
         if maintenance.needs_review(library, show):
             # A status line, not an announcement: this may have been raised by
             # a background check hours ago, and the reader speaks a StaticText
             # when focus reaches it. Announcing it on open would be telling
             # somebody something they came here to read.
             notice = wx.StaticText(
-                self.dialog,
+                self._panel,
                 label=(
                     "Needs review: a refresh found these rules filtering out every "
                     "single new episode. Nothing was lost. Saving clears this notice."
@@ -126,20 +159,21 @@ class EpisodeFiltersDialog:
             )
             notice.Wrap(580)
             notice.SetHelpText(settings_help.FILTER_HELP["needs_review"])
+            self._notice = notice
             root.Add(notice, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
-        self._enabled = wx.CheckBox(self.dialog, label="&Filter new episodes of this podcast")
+        self._enabled = wx.CheckBox(self._panel, label="&Filter new episodes of this podcast")
         self._enabled.SetValue(self._draft.enabled)
         self._enabled.SetHelpText(settings_help.FILTER_HELP["enabled"])
         root.Add(self._enabled, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         root.Add(
-            wx.StaticText(self.dialog, label="&When a rule matches:"),
+            wx.StaticText(self._panel, label="&When a rule matches:"),
             0,
             wx.LEFT | wx.RIGHT,
             10,
         )
-        self._mode = wx.Choice(self.dialog, choices=list(_MODE_CHOICES))
+        self._mode = wx.Choice(self._panel, choices=list(_MODE_CHOICES))
         self._mode.SetName("When a rule matches")
         self._mode.SetHelpText(settings_help.FILTER_HELP["mode"])
         self._mode.SetSelection(
@@ -147,20 +181,20 @@ class EpisodeFiltersDialog:
         )
         root.Add(self._mode, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
-        root.Add(wx.StaticText(self.dialog, label="&Rules:"), 0, wx.LEFT | wx.RIGHT, 10)
-        self._rules = wx.ListBox(self.dialog, choices=[], style=wx.LB_SINGLE)
+        root.Add(wx.StaticText(self._panel, label="&Rules:"), 0, wx.LEFT | wx.RIGHT, 10)
+        self._rules = wx.ListBox(self._panel, choices=[], style=wx.LB_SINGLE)
         self._rules.SetName("Rules")
         self._rules.SetHelpText(settings_help.FILTER_HELP["rules"])
         root.Add(self._rules, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         rule_buttons = wx.BoxSizer(wx.HORIZONTAL)
-        self._add_btn = wx.Button(self.dialog, label="&Add Rule...")
+        self._add_btn = wx.Button(self._panel, label="&Add Rule...")
         self._add_btn.SetHelpText(settings_help.FILTER_HELP["add_rule"])
-        self._edit_btn = wx.Button(self.dialog, label="&Edit Rule...")
+        self._edit_btn = wx.Button(self._panel, label="&Edit Rule...")
         self._edit_btn.SetHelpText(settings_help.FILTER_HELP["edit_rule"])
-        self._toggle_btn = wx.Button(self.dialog, label="Switch Rule &On or Off")
+        self._toggle_btn = wx.Button(self._panel, label="Switch Rule &On or Off")
         self._toggle_btn.SetHelpText(settings_help.FILTER_HELP["toggle_rule"])
-        self._delete_btn = wx.Button(self.dialog, label="&Delete Rule")
+        self._delete_btn = wx.Button(self._panel, label="&Delete Rule")
         self._delete_btn.SetHelpText(settings_help.FILTER_HELP["delete_rule"])
         for button in (self._add_btn, self._edit_btn, self._toggle_btn, self._delete_btn):
             rule_buttons.Add(button, 0, wx.RIGHT, 6)
@@ -173,9 +207,9 @@ class EpisodeFiltersDialog:
         # rows exists to carry would be the one fact it did not say
         # (A11Y-SR-1). Eight Tab stops is the price, and it is the right price.
         root.Add(
-            wx.StaticText(self.dialog, label="W&here this applies:"), 0, wx.LEFT | wx.RIGHT, 10
+            wx.StaticText(self._panel, label="W&here this applies:"), 0, wx.LEFT | wx.RIGHT, 10
         )
-        scope_panel = wx.ScrolledWindow(self.dialog, style=wx.VSCROLL | wx.BORDER_SIMPLE)
+        scope_panel = wx.ScrolledWindow(self._panel, style=wx.VSCROLL | wx.BORDER_SIMPLE)
         scope_panel.SetScrollRate(0, 10)
         scope_sizer = wx.BoxSizer(wx.VERTICAL)
         self._scope_boxes: dict[str, object] = {}
@@ -190,33 +224,39 @@ class EpisodeFiltersDialog:
         root.Add(scope_panel, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         preview_row = wx.BoxSizer(wx.HORIZONTAL)
-        self._preview_btn = wx.Button(self.dialog, label="Pre&view")
+        self._preview_btn = wx.Button(self._panel, label="Pre&view")
         self._preview_btn.SetHelpText(settings_help.FILTER_HELP["preview"])
         preview_row.Add(self._preview_btn, 0, wx.RIGHT, 6)
         root.Add(preview_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
-        root.Add(wx.StaticText(self.dialog, label="Preview resu&lts:"), 0, wx.LEFT | wx.RIGHT, 10)
-        self._preview_list = wx.ListBox(self.dialog, choices=[], style=wx.LB_SINGLE)
+        root.Add(wx.StaticText(self._panel, label="Preview resu&lts:"), 0, wx.LEFT | wx.RIGHT, 10)
+        self._preview_list = wx.ListBox(self._panel, choices=[], style=wx.LB_SINGLE)
         self._preview_list.SetName("Preview results")
         self._preview_list.SetHelpText(settings_help.FILTER_HELP["preview_results"])
         root.Add(self._preview_list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         buttons.AddStretchSpacer()
-        ok_btn = wx.Button(self.dialog, wx.ID_OK, "Save")
+        ok_btn = wx.Button(self._panel, label="Save")
         ok_btn.SetHelpText(
             "Saves these rules for this podcast. Every list you ticked takes "
             "effect at once, on episodes you already have as well as new ones; "
             "nothing is deleted. The Play Queue is the only thing not touched "
             "without asking, and saving asks about it separately."
         )
-        cancel_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Cancel")
-        cancel_btn.SetHelpText("Leaves this podcast's rules exactly as they were.")
+        cancel_btn = wx.Button(self._panel, label="Close")
+        cancel_btn.SetHelpText(
+            "Closes this window and returns to where you were. Anything not saved "
+            "is left exactly as it was."
+        )
+        from quill.ui.dialog_contract import bind_close_button
+
+        bind_close_button(self.frame, cancel_btn, modeless=True)
         buttons.Add(ok_btn, 0, wx.RIGHT, 6)
         buttons.Add(cancel_btn)
         root.Add(buttons, 0, wx.EXPAND | wx.ALL, 10)
 
-        self.dialog.SetSizer(root)
+        self._panel.SetSizer(root)
         self._add_btn.Bind(wx.EVT_BUTTON, self._on_add_rule)
         self._edit_btn.Bind(wx.EVT_BUTTON, self._on_edit_rule)
         self._toggle_btn.Bind(wx.EVT_BUTTON, self._on_toggle_rule)
@@ -224,6 +264,29 @@ class EpisodeFiltersDialog:
         self._preview_btn.Bind(wx.EVT_BUTTON, self._on_preview)
         ok_btn.Bind(wx.EVT_BUTTON, self._on_ok)
         self._fill_rules()
+        self._sizer_for_frame()
+        if self._suggestion is not None:
+            wx.CallAfter(self._offer_suggestion)
+
+    def _sizer_for_frame(self) -> None:
+        sizer = self.frame.GetSizer()
+        if sizer is None:
+            sizer = self._wx.BoxSizer(self._wx.VERTICAL)
+            self.frame.SetSizer(sizer)
+        sizer.Clear()
+        sizer.Add(self._panel, 1, self._wx.EXPAND)
+        self.frame.Layout()
+
+    def focus_target(self) -> Any:
+        return self._rules if self._rules.GetCount() else self._enabled
+
+    def menu_rows(self) -> list[tuple[str, Callable[[], None]]]:
+        # A frame has no default button, so Save gets a key of its own.
+        return [("&Save\tCtrl+S", lambda: self._on_ok(None))]
+
+    def shows(self, show: PodcastShow) -> bool:
+        """Whether this window is up, on *show*."""
+        return bool(self.frame.IsShown()) and self._show.id == show.id
 
     # -- the rules list ------------------------------------------------------
 
@@ -265,7 +328,7 @@ class EpisodeFiltersDialog:
         from quill.ui.podcasts.episode_filter_rule_dialog import EpisodeFilterRuleDialog
 
         return EpisodeFilterRuleDialog(
-            self.dialog,
+            self.frame,
             rule=rule,
             announce_cb=self._announce,
             episodes=self._show.episodes,
@@ -340,7 +403,7 @@ class EpisodeFiltersDialog:
             "you queue them yourself.",
             "Delete Rule",
             wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION,
-            self.dialog,
+            self.frame,
             announce=None,
         )
         if answer != wx.YES:
@@ -372,7 +435,7 @@ class EpisodeFiltersDialog:
 
     def _refuse(self, message: str) -> None:
         show_message_box(
-            message, self._title, self._wx.OK | self._wx.ICON_WARNING, self.dialog, announce=None
+            message, self._title, self._wx.OK | self._wx.ICON_WARNING, self.frame, announce=None
         )
 
     def _ask_apply_to_existing(self) -> int:
@@ -387,7 +450,7 @@ class EpisodeFiltersDialog:
         """
         wx = self._wx
         dialog = wx.MessageDialog(
-            self.dialog,
+            self.frame,
             f"Also take {self._show.title}'s matching episodes out of the Play "
             "Queue now?\n\n"
             "Everywhere else takes effect the moment you save. The Play Queue is "
@@ -423,7 +486,7 @@ class EpisodeFiltersDialog:
                 assessment.confirm,
                 self._title,
                 wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION,
-                self.dialog,
+                self.frame,
                 announce=None,
             )
             if answer != wx.YES:
@@ -457,7 +520,7 @@ class EpisodeFiltersDialog:
                 f"Filter saved for {self._show.title}. "
                 f"{filters.describe_configuration(self._draft)}"
             )
-            self.dialog.EndModal(self._wx.ID_OK)
+            self._saved_and_open()
             return
         outcome = maintenance.apply_to_existing(
             self._library, self._show, self._draft, playing=self._playing
@@ -467,24 +530,51 @@ class EpisodeFiltersDialog:
                 self._show.title, outcome.queue_removed, outcome.playing_kept
             )
         )
-        self.dialog.EndModal(self._wx.ID_OK)
+        self._saved_and_open()
 
-    # -- showing -------------------------------------------------------------
+    def _saved_and_open(self) -> None:
+        """Saved: tell the caller, and stay open (a peer acts; it does not end)."""
+        # What was stored is the draft object itself; go on editing a copy, so
+        # Close after further changes still leaves the saved rules alone.
+        self._draft = self._draft.copy()
+        if self._notice is not None:
+            self._notice.Hide()  # saving is what clears the review notice
+            self._panel.Layout()
+        if self._on_saved is not None:
+            self._on_saved()
 
-    def show(self) -> bool:
-        wx = self._wx
-        self.dialog.CentreOnParent()
-        apply_modal_ids(
-            self.dialog,
-            affirmative_id=wx.ID_OK,
-            affirmative_label="Save",
-            cancel_id=wx.ID_CANCEL,
-            escape_id=wx.ID_CANCEL,
-        )
-        if self._suggestion is not None:
-            wx.CallAfter(self._offer_suggestion)
-        try:
-            show_modal_dialog(self.dialog, self._title, announce=self._announce)
-            return self._saved
-        finally:
-            self.dialog.Destroy()
+
+def open_episode_filters(
+    host: Any,
+    show: PodcastShow,
+    *,
+    library: PodcastLibrary,
+    parent: object,
+    on_saved: Callable[[], None] | None = None,
+    playing: tuple[str, str] | None = None,
+    suggestion: object = None,
+    opener: Any = None,
+) -> EpisodeFiltersWindow:
+    """Open, or raise, the one Episode Filters window, on *show*."""
+    from quill.ui.podcasts.peer_window import open_peer
+
+    content = {
+        "library": library,
+        "show": show,
+        "playing": playing,
+        "suggestion": suggestion,
+        "on_saved": on_saved,
+    }
+    existing = getattr(host, "_episode_filters_window", None)
+    if (
+        existing is not None
+        and existing.frame
+        and (suggestion is not None or not existing.shows(show))
+    ):
+        existing.load(**content)
+
+    def _make(owner: Any) -> EpisodeFiltersWindow:
+        return EpisodeFiltersWindow(parent, announce_cb=owner._announce, **content)
+
+    window: EpisodeFiltersWindow = open_peer(host, "_episode_filters_window", _make, opener=opener)
+    return window

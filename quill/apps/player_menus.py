@@ -173,6 +173,9 @@ class MediaPlayerMenuMixin:
         help_menu = wx.Menu()
         updates_id, about_id = wx.NewIdRef(), wx.NewIdRef()
         help_menu.Append(updates_id, "Check for &Updates...\tCtrl+Alt+U")
+        from quill.ui.menu_palette import append_palette_row
+
+        append_palette_row(self, help_menu)  # qc.md X-01
         # Every app in the family answers the same question the same way:
         # one item, one key, one form that reaches a person who can reply.
         from quill.ui.support_menu import append_get_help_item

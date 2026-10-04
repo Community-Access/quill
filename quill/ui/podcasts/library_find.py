@@ -29,6 +29,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from quill.ui.podcasts.say_status import say_status
+
 __all__ = ["MAX_ROWS", "PAUSE_MS", "find_rows", "match_count_sentence"]
 
 #: How long typing must pause before the tree is rebuilt and the count spoken.
@@ -163,10 +165,8 @@ class CastLibraryFindMixin:
         said = match_count_sentence(len(rows), query)
         status = getattr(self, "_find_status", None)
         if status is not None:
-            try:
-                status.SetLabel(said)
-            except RuntimeError:
-                pass
+            # Spoken by the caller, once typing pauses (qc.md 4.2).
+            say_status(status, said, speak=False)
         return said
 
     def _end_library_find(self, *, announce: bool = True) -> None:
@@ -181,10 +181,7 @@ class CastLibraryFindMixin:
         self._find_return_key = None
         status = getattr(self, "_find_status", None)
         if status is not None:
-            try:
-                status.SetLabel("")
-            except RuntimeError:
-                pass
+            say_status(status, "", speak=False)
         place = getattr(self, "_find_return_place", "")
         if place and callable(getattr(self, "show_place", None)):
             self.show_place(place, focus=False, keep=key if key and key[0] else None)

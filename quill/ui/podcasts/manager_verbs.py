@@ -20,6 +20,7 @@ from typing import Any
 
 from quill.core.podcasts import position_sync
 from quill.core.podcasts.models import Playlist, PodcastEpisode, PodcastShow
+from quill.core.sound_events import SoundEvent
 
 __all__ = ["ManagerVerbsMixin"]
 
@@ -52,18 +53,10 @@ class ManagerVerbsMixin:
 
         open_move_shows(self, preselect)
 
-    def _prompt_rename(self, title: str, current: str) -> str | None:
-        wx = self._wx
-        with wx.TextEntryDialog(  # dialog_button_contract: exempt
-            self._verb_parent(), "New name:", title, value=current
-        ) as dialog:
-            if dialog.ShowModal() != wx.ID_OK:
-                return None
-            name = dialog.GetValue().strip()
-        return name or None
-
     def _on_rename_folder(self, folder: object) -> None:
-        name = self._prompt_rename("Rename Folder", folder.name)
+        from quill.ui.podcasts.folder_prompt import folder_name_prompt
+
+        name = folder_name_prompt(self._verb_parent(), current=folder.name, announce=self._announce)
         if name is None:
             return
         folder.name = name
@@ -72,22 +65,40 @@ class ManagerVerbsMixin:
         self._announce(f"Folder renamed to {name}")
 
     def _on_rename_show(self, show: PodcastShow) -> None:
-        name = self._prompt_rename("Rename Podcast", show.title)
-        if name is None:
-            return
-        show.title = name
-        self._on_library_changed()
-        self.refresh_tree()
-        self._announce(f"Podcast renamed to {name}")
+        said = self._rename_keeping_feed_name(show, "Rename Podcast")
+        if said:
+            self._on_library_changed()
+            self.refresh_tree()
+            self._announce(said)
 
     def _on_rename_episode(self, episode: PodcastEpisode) -> None:
-        name = self._prompt_rename("Rename Episode", episode.title)
-        if name is None:
-            return
-        episode.title = name
-        self._on_library_changed()
-        self._fill_episodes(self._current_show)
-        self._announce(f"Episode renamed to {name}")
+        said = self._rename_keeping_feed_name(episode, "Rename Episode")
+        if said:
+            self._on_library_changed()
+            self._fill_episodes(self._current_show)
+            self._announce(said)
+
+    def _rename_keeping_feed_name(self, item: Any, title: str) -> str:
+        """Rename a podcast or an episode; the feed's own name is kept beside it.
+
+        The next refresh updates the feed's name and leaves the listener's
+        (ear.md R8). Clearing the box puts the feed's name back. Returns what to
+        say, or "" when nothing changed.
+        """
+        from quill.core.podcasts.custom_names import rename
+
+        wx = self._wx
+        feed = item.feed_title or item.title
+        with wx.TextEntryDialog(  # dialog_button_contract: exempt
+            self._verb_parent(),
+            f"New name (leave it empty to use the feed's own name, {feed}):",
+            title,
+            value=item.title,
+        ) as dialog:
+            if dialog.ShowModal() != wx.ID_OK:
+                return ""
+            typed = dialog.GetValue()
+        return rename(item, typed)
 
     def _on_chapters_click(self, _event: object) -> None:
         from quill.ui.podcasts import transcript_actions
@@ -168,7 +179,12 @@ class ManagerVerbsMixin:
             retention.on_episode_played(self._library, show, episode)
         self._on_library_changed()
         self._refresh_selected_episode_row()
-        self._announce("Marked as played" if episode.played else "Marked as unheard")
+        from quill.ui.podcasts.outcome_feedback import say_outcome
+
+        if episode.played:
+            say_outcome(self, "Marked as played", sound=SoundEvent.CAST_MARKED_PLAYED)
+        else:
+            self._announce("Marked as unheard")
 
     def _on_copy_episode_link(self, episode: PodcastEpisode) -> None:
         wx = self._wx
@@ -372,28 +388,35 @@ class ManagerVerbsMixin:
     def _on_new_smart_playlist(self) -> None:
         from quill.core.podcasts.models import Playlist, PlaylistRules
         from quill.core.podcasts.playlists import new_playlist_id
-        from quill.ui.podcasts.playlist_rules_dialog import PlaylistRulesDialog
+        from quill.ui.podcasts.playlist_rules_dialog import open_playlist_rules
 
         name = self._prompt_playlist_name("New Smart Playlist")
         if name is None:
             return
-        dialog = PlaylistRulesDialog(
-            self._verb_parent(),
+        made: list[Playlist] = []
+
+        def _save(rules: PlaylistRules) -> None:
+            # The first Save creates the playlist; the window stays open, and
+            # every Save after that edits the one it made.
+            if made:
+                self._save_playlist_rules(made[0], rules)
+                return
+            made.append(Playlist(id=new_playlist_id(), name=name, kind="smart", rules=rules))
+            self._library.add_playlist(made[0])
+            self._on_library_changed()
+            self.refresh_tree()
+            self._announce(f"Created Smart Playlist {name}")
+
+        open_playlist_rules(
+            self,
+            parent=self._verb_parent(),
             shows=list(self._library.shows),
             rules=PlaylistRules(),
-            announce_cb=self._announce,
             # For the live "matches N episodes right now" count.
             library=self._library,
+            on_save=_save,
+            key=None,
         )
-        rules = dialog.show()
-        if rules is None:
-            return
-        self._library.add_playlist(
-            Playlist(id=new_playlist_id(), name=name, kind="smart", rules=rules)
-        )
-        self._on_library_changed()
-        self.refresh_tree()
-        self._announce(f"Created Smart Playlist {name}")
 
     def _on_new_manual_playlist(self) -> None:
         from quill.core.podcasts.models import Playlist
@@ -408,18 +431,19 @@ class ManagerVerbsMixin:
         self._announce(f"Created playlist {name}")
 
     def _on_edit_playlist_rules(self, playlist: Playlist) -> None:
-        from quill.ui.podcasts.playlist_rules_dialog import PlaylistRulesDialog
+        from quill.ui.podcasts.playlist_rules_dialog import open_playlist_rules
 
-        dialog = PlaylistRulesDialog(
-            self._verb_parent(),
+        open_playlist_rules(
+            self,
+            parent=self._verb_parent(),
             shows=list(self._library.shows),
             rules=playlist.rules,
-            announce_cb=self._announce,
             library=self._library,
+            on_save=lambda rules: self._save_playlist_rules(playlist, rules),
+            key=playlist.id,
         )
-        rules = dialog.show()
-        if rules is None:
-            return
+
+    def _save_playlist_rules(self, playlist: Playlist, rules: Any) -> None:
         playlist.rules = rules
         self._on_library_changed()
         self.refresh_tree()

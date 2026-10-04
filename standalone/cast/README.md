@@ -8,6 +8,8 @@ It is part of the QUILL family, from Community Access. If you also use QUILL
 or Quill Radio, they share one library with Cast: follow a podcast in one and
 it is there in the others.
 
+Version 2.0.0, released 2026-10-03.
+
 ## What you can do with it
 
 - Follow podcasts by name, by feed address, or from another app's OPML file.
@@ -35,7 +37,7 @@ Everything Cast needs is in the download, including ffmpeg.
 ## Documentation
 
 - [User Guide](docs/userguide.md): start here.
-- [Release Notes](docs/release-notes-2.0.md): what QUILL Cast 2.0 can do.
+- [Release Notes](docs/release-notes-2.0.md): what QUILL Cast 2.0.0 can do.
 - [Tutorials](docs/tutorials.md): the guided lessons that are also in Help > Tutorials.
 
 Questions, or something not working? Write to support@community-access.org
@@ -64,7 +66,7 @@ installer; needs Inno Setup and an ffmpeg.exe to bundle):
 .\scripts\build_release.ps1 -FfmpegDir C:\path\to\ffmpeg\bin
 ```
 
-The [Changelog](CHANGELOG.md) and the [Product Requirements](docs/prd.md) are
+The [Changelog](docs/CHANGELOG.md) and the [Product Requirements](docs/prd.md) are
 the engineering record.
 
 ## License

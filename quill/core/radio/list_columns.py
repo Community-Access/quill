@@ -30,6 +30,7 @@ from quill.core.media.list_columns import (
 
 __all__ = [
     "FILE_NAME",
+    "LOCAL_MEDIA",
     "RECORDINGS",
     "STATION_RESULTS",
     "SURFACES",
@@ -139,16 +140,62 @@ RECORDINGS = SurfaceDef(
     },
 )
 
+#: The Local Media window's items. The title is pinned: it is what the row is,
+#: and it carries "playing" and "missing" when either is true.
+LOCAL_MEDIA = SurfaceDef(
+    id="radio.local_media",
+    label="Local Media",
+    columns=(
+        ColumnDef(
+            "title",
+            "Title",
+            "The title the file gives itself, or one made from its name; "
+            "followed by playing, paused or missing when one of those is true.",
+            width=260,
+            pinned=True,
+        ),
+        ColumnDef("artist", "Artist", "Who it is by, from the file's own tags.", width=150),
+        ColumnDef("album", "Album", "The album it comes from, from its tags.", width=150),
+        ColumnDef("length", "Length", "How long it plays, such as 3:07.", width=70),
+        ColumnDef("file", "File name", "The file's own name on disk.", width=180),
+        ColumnDef(
+            "folder",
+            "Folder",
+            "The folder the file is in.",
+            width=220,
+            default_visible=False,
+        ),
+        ColumnDef(
+            "added",
+            "Added",
+            "When you added it to this playlist.",
+            width=140,
+            default_visible=False,
+        ),
+    ),
+    sample={
+        "title": "Here Comes the Sun, playing",
+        "artist": "The Beatles",
+        "album": "Abbey Road",
+        "length": "3:05",
+        "file": "07 Here Comes the Sun.mp3",
+        "folder": "D:\\Music\\Abbey Road",
+        "added": "2026-10-03 21:40",
+    },
+)
+
 #: Every configurable Radio list, by id.
 SURFACES: dict[str, SurfaceDef] = {
     STATION_RESULTS.id: STATION_RESULTS,
     RECORDINGS.id: RECORDINGS,
+    LOCAL_MEDIA.id: LOCAL_MEDIA,
 }
 
 #: (surface id, label) in the order the configuration dialog offers them.
 SURFACE_LABELS: tuple[tuple[str, str], ...] = (
     (STATION_RESULTS.id, STATION_RESULTS.label),
     (RECORDINGS.id, RECORDINGS.label),
+    (LOCAL_MEDIA.id, LOCAL_MEDIA.label),
 )
 
 

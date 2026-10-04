@@ -375,7 +375,7 @@ SETTINGS: tuple[SettingDef, ...] = (
     # expressible the moment these two rows exist.
     define(
         "check_interval_minutes",
-        "Check this feed for new &episodes:",
+        "Check this podcast for new &episodes:",
         "How often Quill Radio and QUILL Cast ask this feed whether anything "
         "new has arrived. Both apps read this one setting, so turning it on in "
         "either turns it on. **Manually only** is a real answer, not an "

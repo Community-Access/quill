@@ -30,6 +30,7 @@ Capabilities: ui.prompt, ui.choices, ui.announce, editor.read, editor.write,
 from __future__ import annotations
 
 from quill.core.math import speech
+from quill.core.math.equation_text import equation_snippet, split_existing_equation
 from quill.core.math.navigator import EquationNavigator, MathNavigatorError, parse_equation
 
 _INLINE = "Inline  (\\(...\\))"
@@ -40,13 +41,13 @@ _DONE_EXPLORING = "Done exploring"
 
 
 def _strip_delimiters(text: str) -> tuple[str, str]:
-    """Return (equation_text, detected_mode) with LaTeX delimiters removed."""
-    t = text.strip()
-    if t.startswith("$$") and t.endswith("$$") and len(t) > 4:
-        return t[2:-2].strip(), "block"
-    if t.startswith("\\(") and t.endswith("\\)") and len(t) > 4:
-        return t[2:-2].strip(), "inline"
-    return t, "inline"
+    """Return (equation_text, detected_mode) with LaTeX delimiters removed.
+
+    The core command's own reader (quill.core.math.equation_text), so the two
+    Insert Equation commands agree on what an equation looks like.
+    """
+    equation, mode = split_existing_equation(text)
+    return equation.strip(), mode
 
 
 def register(api):
@@ -83,7 +84,7 @@ def register(api):
         if chosen is None:
             return
 
-        snippet = f"\n$${eq}$$\n" if chosen == _BLOCK else f"\\({eq}\\)"
+        snippet = equation_snippet(eq, "block" if chosen == _BLOCK else "inline")
 
         if selection:
             ctx.replace_selection(snippet)

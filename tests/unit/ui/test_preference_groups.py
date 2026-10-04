@@ -237,7 +237,8 @@ def test_quill_cast_groups_its_podcast_settings() -> None:
         Path(__file__).resolve().parents[3] / "quill" / "apps" / "podcasts_preferences.py"
     ).read_text(encoding="utf-8")
 
-    # Eight sections since 2026-10-02 (qc.md 13), each row placed in one.
+    # Eight sections since 2026-10-02 (qc.md 13), each row placed in one; nine
+    # since 2026-10-03, when the library's layouts and orders got their own.
     from quill.ui.podcasts.preferences_window import SECTIONS
 
     assert [key for key, _label in SECTIONS] == [
@@ -245,6 +246,7 @@ def test_quill_cast_groups_its_podcast_settings() -> None:
         "playing",
         "fetching",
         "inbox",
+        "library",
         "chapters",
         "telling",
         "window",

@@ -19,8 +19,6 @@ import zipfile
 from dataclasses import dataclass
 from pathlib import Path
 
-from defusedxml import ElementTree as DET
-
 from quill.io.pandoc import PandocConversionError, PandocUnavailableError, convert_file_with_pandoc
 
 _MATH_OMML_NS = "{http://schemas.openxmlformats.org/officeDocument/2006/math}"
@@ -40,7 +38,8 @@ def split_math_segments(text: str) -> list[MathSegment]:
     """Split *text* into plain-text and math segments.
 
     Recognizes ``$$...$$`` (display) and ``\\(...\\)`` (inline) only — matching
-    the delimiters ``quill/quillins_bundled/math-equations`` emits. A bare
+    the delimiters every Insert Equation writes (``quill.core.math.equation_text``,
+    shared by the core command and the Math Equations Quillin). A bare
     ``$`` (e.g. an ordinary dollar amount) is never treated as math.
     """
     segments: list[MathSegment] = []
@@ -84,7 +83,9 @@ def omml_fragment_for_latex(latex: str, *, display: bool) -> str | None:
         return None
 
     try:
-        root = DET.fromstring(xml)
+        from quill.core.safe_xml import fromstring  # defusedxml when present (X-08)
+
+        root = fromstring(xml)
     except Exception:  # noqa: BLE001 - malformed pandoc output degrades to plain text
         return None
     tag = f"{_MATH_OMML_NS}oMathPara" if display else f"{_MATH_OMML_NS}oMath"

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.12" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Tutorial 5: Start an Accessible Vault</title>
   <style>
@@ -11,7 +11,10 @@
     */
     html {
       color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
       background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
     }
     body {
       margin: 0 auto;
@@ -36,11 +39,16 @@
     }
     @media print {
       html {
-        background-color: white;
+        color-scheme: light only;
       }
-      body {
+      html, body, pre, code {
         background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
         color: black;
+      }
+      pre, code {
+        padding: 0;
       }
       p, h2, h3 {
         orphans: 3;
@@ -53,11 +61,8 @@
     p {
       margin: 1em 0;
     }
-    a {
-      color: #1a1a1a;
-    }
-    a:visited {
-      color: #1a1a1a;
+    a, a:visited {
+      color: inherit;
     }
     img {
       max-width: 100%;
@@ -86,8 +91,11 @@
     blockquote {
       margin: 1em 0 1em 1.7em;
       padding-left: 1em;
-      border-left: 2px solid #e6e6e6;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
       color: #606060;
+      color: light-dark(#606060, #b6b6b6);
     }
     code {
       white-space: pre-wrap;
@@ -111,7 +119,7 @@
     }
     hr {
       border: none;
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       height: 1px;
       margin: 1em 0;
     }
@@ -128,11 +136,11 @@
     }
     tbody {
       margin-top: 0.5em;
-      border-top: 1px solid #1a1a1a;
-      border-bottom: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
     }
     th {
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       padding: 0.25em 0.5em 0.25em 0.5em;
     }
     td {
@@ -171,7 +179,6 @@
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <style>
     /* Accessible skip link: off-screen until it receives keyboard focus. */
@@ -237,19 +244,21 @@
 <main id="main-content" tabindex="-1">
 <h1 id="tutorial-5-start-an-accessible-vault">Tutorial 5: Start an
 Accessible Vault</h1>
-<p><strong>Goal:</strong> a working linked-notes vault — backlinks,
-tags, daily notes, and sync — from an empty folder, in twenty
-minutes.</p>
+<p><strong>Goal:</strong> in about twenty minutes, turn an empty folder
+into a set of notes that link to each other, with backlinks, tags, daily
+notes and sync.</p>
 <p>A vault is <strong>just a folder of Markdown files</strong>. QUILL
-adds an index (a small cache you can delete without losing a word), and
-every “graph” question gets a spoken answer instead of a picture.</p>
+keeps a small index to find things quickly (you can delete it without
+losing a word). When you want to know how your notes connect, QUILL
+tells you in words instead of drawing a picture.</p>
 <h2 id="1-create-and-open-the-vault">1. Create and open the vault</h2>
 <ol type="1">
-<li>Make a folder, e.g. <code>Documents\Notes</code>.</li>
+<li>Make a folder, for example <code>Documents\Notes</code>.</li>
 <li><strong>Tools &gt; Vault &gt; Open Vault…</strong> and pick it.
 QUILL indexes it and announces: “Vault Notes: 0 notes, 0 links.”</li>
 </ol>
-<h2 id="2-the-first-triangle">2. The first triangle</h2>
+<h2 id="2-your-first-three-linked-notes">2. Your first three linked
+notes</h2>
 <ol type="1">
 <li>Create <code>Projects.md</code>, write a line, and save it into the
 vault folder.</li>
@@ -258,66 +267,67 @@ vault folder.</li>
 <li>Create <code>Podcast.md</code> and type:
 <code>A [[Projects]] idea that uses [[QUILL]].</code></li>
 <li>In <code>Podcast.md</code>, put the caret on <code>[[QUILL]]</code>
-and run <strong>Follow Wikilink</strong> — you land in
+and run <strong>Follow Wikilink</strong>. You are taken to
 <code>QUILL.md</code>.</li>
-<li>Now the magic: in <code>Projects.md</code>, run <strong>Show
+<li>Now go to <code>Projects.md</code> and run <strong>Show
 Backlinks</strong>. QUILL answers “2 notes link here” and reads each
 link <em>with the sentence it lives in</em>. Enter opens the source at
 the mention.</li>
 </ol>
-<p>That is the graph view, spoken.</p>
+<p>That is how you find out which notes point to this one, by ear.</p>
 <h2 id="3-daily-habits">3. Daily habits</h2>
 <ul>
 <li><strong>Complete Link or Tag at Cursor</strong> finishes a
-half-typed <code>[[note</code> or <code>#tag</code> from a spoken,
-filtered list.</li>
-<li><strong>Go to Note</strong> is a type-to-filter switcher;
-<strong>Search Vault</strong> searches every note (regex and whole-word
-supported) and opens hits at their line.</li>
+half-typed <code>[[note</code> or <code>#tag</code>. Pick from a short
+list as you type.</li>
+<li><strong>Go to Note</strong>: type part of a note’s name to jump to
+it. <strong>Search Vault</strong> searches every note and takes you
+straight to the line it found.</li>
 <li>Add <code>#project/quill</code> style tags anywhere; <strong>Show
-Tags</strong> rolls nested tags up (<code>#project</code> finds
+Tags</strong> groups them (<code>#project</code> also finds
 <code>#project/quill</code>).</li>
 <li><strong>Open Today’s Note</strong> starts a dated journal entry;
-<strong>Previous/Next Daily Note</strong> page through your
-journal.</li>
-<li><strong>Insert Template</strong> fills
-<code>{{date}}</code>/<code>{{title}}</code>, asks any
-<code>{{prompt}}</code>, and drops the caret at <code>{{cursor}}</code>.
-Configure the Templates folder in <strong>Vault Settings</strong>.</li>
+<strong>Previous Daily Note</strong> and <strong>Next Daily
+Note</strong> move through your journal.</li>
+<li><strong>Insert Template</strong> fills in <code>{{date}}</code> and
+<code>{{title}}</code>, asks you for anything marked
+<code>{{prompt}}</code>, and puts the cursor at <code>{{cursor}}</code>.
+Choose your Templates folder in <strong>Vault Settings</strong>.</li>
 </ul>
-<h2 id="4-growing-safely">4. Growing safely</h2>
+<h2 id="4-as-your-notes-grow">4. As your notes grow</h2>
 <ul>
 <li>A <code>[[link]]</code> to a note that does not exist offers to
-<strong>create</strong> it; an ambiguous name gets a spoken
-<strong>chooser</strong>, never a guess.</li>
-<li><strong>Rename Note</strong> updates the file, the H1, and every
-inbound link.</li>
+<strong>create</strong> it. If two notes have the same name, QUILL asks
+you which one you mean instead of guessing.</li>
+<li><strong>Rename Note</strong> renames the file, its main heading, and
+every link to it.</li>
 <li><strong>Unlinked Mentions</strong> finds where you wrote a note’s
-name without linking it — stitch the web tighter.</li>
-<li><strong>Note Neighborhood</strong> lists everything one hop away,
-both directions.</li>
+name without linking it, so you can add the link.</li>
+<li><strong>Note Neighborhood</strong> lists every note this one links
+to, and every note that links to it.</li>
 </ul>
 <h2 id="5-share-and-sync">5. Share and sync</h2>
 <ul>
 <li><strong>Export Vault as Website</strong> writes a small accessible
-site — one page per note, links and embeds resolved — ready to host
-anywhere.</li>
-<li><strong>Sync Vault</strong> commits, pulls, and pushes over
-<strong>your own Git remote</strong>, and lists conflicts for you to
-decide instead of overwriting.</li>
+website, with one page per note and all the links working, ready to put
+online wherever you like.</li>
+<li><strong>Sync Vault</strong> keeps your notes in step with
+<strong>your own Git repository</strong>. If the same note changed in
+two places, it lists it for you to decide, instead of overwriting
+anything.</li>
 </ul>
-<h2 id="6-ideas-that-stick">6. Ideas that stick</h2>
+<h2 id="6-ideas-to-try">6. Ideas to try</h2>
 <ul>
 <li><strong>Research</strong>: one note per source, links to topic
 notes; backlinks answer “which sources discuss this?”</li>
 <li><strong>Fiction</strong>: a note per character and place; from a
-character note, backlinks list every scene that mentions them (pairs
-beautifully with Story Studio).</li>
-<li><strong>Work journal</strong>: daily notes + tags; the Friday report
-is one vault search away.</li>
+character note, backlinks list every scene that mentions them (this
+works well with Story Studio).</li>
+<li><strong>Work journal</strong>: daily notes and tags. When you need
+to write your weekly report, one search finds it all.</li>
 </ul>
-<p>Start smaller than feels sensible. Ten notes and honest links beat a
-taxonomy you will never finish.</p>
+<p>Start small. Ten notes with real links between them are worth more
+than a big plan you never finish.</p>
 <p><strong>Next:</strong> <a
 href="06-make-it-accessible-with-glow.md">Make a document accessible
 with GLOW</a>.</p>

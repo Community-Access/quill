@@ -195,6 +195,10 @@ def delete_selected(dialog: Any) -> bool:
         return _remove_favorite(dialog, station)
     if kind in ("mypodcastshow", "mypodcastfolder"):
         return _remove_podcast(dialog, node, kind, args)
+    if kind in ("localplaylist", "localitem"):  # Local Media: the list goes, never a file
+        from quill.ui.radio import local_media_browse
+
+        return local_media_browse.delete_selected(dialog, node, kind, args)
     if not args and any(kind == nid for nid, _ in ROOT_SOURCES) and _hide_source(dialog, kind):
         return True
     explain_not_deletable(dialog, _label(dialog, node))

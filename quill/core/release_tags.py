@@ -20,9 +20,15 @@ forever, to the people who most need one.
   carry that shape and rewriting them would break every checkout that pins one.
   QUILL is also the only app whose tag has ever had to be typed by a person.
 * **Every sibling is ``quill-<app key>-v<version>``** -- ``quill-radio-v3.0.0``,
-  ``quill-cast-v2.0.0``, ``quill-quilllite-v1.0.0``. The app key is the one in
+  ``quill-cast-v2.0.0``. The app key is the one in
   :data:`quill.core.app_launcher.APP_NAMES`, so a tag and a launcher entry
   cannot describe two different apps.
+* **One grandfathered exception: QUILL Lite is ``quill-lite-v``**, not
+  ``quill-quilllite-v``. Every QUILL Lite release since 1.0.0 carries it, the
+  copies already installed look for it, and the sibling-version gate reads it
+  (release-channels plan 1.3 and open question 10). :data:`RELEASE_TAG_KEYS`
+  holds the mapping in both directions, so the app key stays ``quilllite``
+  everywhere else.
 * **The version is a bare dotted number**, optionally with a pre-release
   suffix: ``3.0.0``, ``0.9.0-beta.3``. No ``v`` inside it; the ``v`` is the
   separator, not part of the number.
@@ -44,6 +50,7 @@ import re
 from typing import NamedTuple
 
 __all__ = [
+    "RELEASE_TAG_KEYS",
     "TAG_PATTERN",
     "ReleaseTag",
     "is_release_tag",
@@ -56,6 +63,10 @@ _UNPREFIXED_APP = "quill"
 
 #: The prefix every sibling's tag carries.
 _PREFIX = "quill-"
+
+#: App key -> the key its tags spell, where the two differ (grandfathered).
+RELEASE_TAG_KEYS: dict[str, str] = {"quilllite": "lite"}
+_APP_FOR_TAG_KEY = {tag_key: app for app, tag_key in RELEASE_TAG_KEYS.items()}
 
 #: A version: dotted numbers, optionally a pre-release suffix. Anchored, because
 #: a "version" that merely *contains* a number is how a typo ships.
@@ -95,7 +106,7 @@ def release_tag(app_key: str, version: str) -> str:
         return f"v{number}"
     if not re.fullmatch(r"[a-z][a-z0-9]*", key):
         raise ValueError(f"{app_key!r} is not an app key (expected e.g. 'radio')")
-    return f"{_PREFIX}{key}-v{number}"
+    return f"{_PREFIX}{RELEASE_TAG_KEYS.get(key, key)}-v{number}"
 
 
 def parse_release_tag(tag: str) -> ReleaseTag | None:
@@ -109,7 +120,8 @@ def parse_release_tag(tag: str) -> ReleaseTag | None:
     match = TAG_PATTERN.match(str(tag or "").strip())
     if match is None:
         return None
-    return ReleaseTag(match.group("app") or _UNPREFIXED_APP, match.group("version"))
+    tag_key = match.group("app") or _UNPREFIXED_APP
+    return ReleaseTag(_APP_FOR_TAG_KEY.get(tag_key, tag_key), match.group("version"))
 
 
 def is_release_tag(tag: str, app_key: str | None = None) -> bool:

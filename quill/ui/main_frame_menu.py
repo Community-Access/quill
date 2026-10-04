@@ -3322,6 +3322,7 @@ class MenuBuilderMixin:
         # "Check for Updates on Startup" lives in Settings now (removed the
         # duplicate Help-menu toggle).
         help_menu.Append(self._id_check_updates, _("Check for &Updates..."))
+        self._install_release_channel_item(help_menu)  # main_frame_updates.py
         help_menu.Append(self._id_whats_new, _("What's New..."))
         if self._feature_enabled("core.glow"):
             help_menu.Append(self._id_check_glow_updates, _("Chec&k for GLOW Updates..."))

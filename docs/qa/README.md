@@ -16,6 +16,7 @@ you want the background.
 | [radio-signoff.md](radio-signoff.md) | Quill Radio, all of it | about 90 min | 20 min (ten tests, named at the top) |
 | [cast-signoff.md](cast-signoff.md) | QUILL Cast, all of it | about 2 hours | 20 min (ten tests, named at the top) |
 | [quilllite-signoff.md](quilllite-signoff.md) | QUILL Lite, all of it | about 90 min | 15 min (seventeen tests, named at the top) |
+| [screen-reader-checks-2026-10.md](screen-reader-checks-2026-10.md) | Everything new in Cast, Radio, Lite and QUILL from late September and early October 2026 | a few hours | one section at a time |
 | [dialogs.md](dialogs.md) | Every QUILL dialog: opens, keyboard, Escape, focus return | about 2 hours | one section at a time |
 | [audio-studio-validation.md](audio-studio-validation.md) | Audio Studio: what only a human with a screen reader can confirm | about 45 min | -- |
 | [macos-platform-validation.md](macos-platform-validation.md) | macOS-specific behaviour | about 90 min | -- |

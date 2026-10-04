@@ -67,6 +67,51 @@ _CHARTS = json.dumps({
     }
 })
 
+#: Trimmed from Apple's live History chart (itunes.apple.com/us/rss/toppodcasts/
+#: limit=200/genre=1487/json, fetched 2026-10-03), plus one incomplete row and
+#: one repeat, which the parser must drop.
+_GENRE_CHART = json.dumps({
+    "feed": {
+        "entry": [
+            {
+                "im:name": {"label": "The Team House"},
+                "im:image": [
+                    {"label": "https://is1-ssl.mzstatic.com/a/55x55bb.png"},
+                    {"label": "https://is1-ssl.mzstatic.com/a/170x170bb.png"},
+                ],
+                "id": {
+                    "label": "https://podcasts.apple.com/us/podcast/the-team-house/id1492797340?uo=2",
+                    "attributes": {"im:id": "1492797340"},
+                },
+                "im:artist": {"label": "dee takos"},
+                "category": {"attributes": {"im:id": "1487", "label": "History"}},
+                "link": {
+                    "attributes": {
+                        "href": "https://podcasts.apple.com/us/podcast/the-team-house/id1492797340?uo=2"
+                    }
+                },
+            },
+            {
+                "im:name": {"label": "The Rest Is History"},
+                "id": {"attributes": {"im:id": "1537788786"}},
+                "im:artist": {"label": "Goalhanger", "attributes": {"href": "https://x.test"}},
+                "category": {"attributes": {"im:id": "1487", "label": "History"}},
+            },
+            {
+                "im:name": {"label": "World War II with Tom Hanks"},
+                "id": {"attributes": {"im:id": "1896760409"}},
+                "im:artist": {"label": "The HISTORY Channel"},
+                "category": {"attributes": {"im:id": "1487", "label": "History"}},
+            },
+            {"im:name": {"label": "No id, dropped"}},
+            {
+                "im:name": {"label": "The Rest Is History"},
+                "id": {"attributes": {"im:id": "1537788786"}},
+            },
+        ]
+    }
+})
+
 _LOOKUP = json.dumps({
     "resultCount": 1,
     "results": [
@@ -206,11 +251,9 @@ def test_fetch_genres_caches_between_opens(monkeypatch) -> None:
     assert [g.name for g in second[0].subgenres] == ["Books", "Design"]
 
 
-def test_fetch_charts_filters_a_storefront_chart_by_genre(monkeypatch) -> None:
+def test_the_storefront_chart_is_whole_and_unfiltered(monkeypatch) -> None:
     monkeypatch.setattr(apple, "_fetch", lambda url: _CHARTS)
     assert [s.name for s in apple.fetch_charts("us")] == ["The Daily", "Arts Show"]
-    assert [s.name for s in apple.fetch_charts("us", genre_id="1301")] == ["Arts Show"]
-    assert apple.fetch_charts("us", genre_id="nope") == []
 
 
 def test_fetch_charts_requests_the_right_storefront_and_row_count(monkeypatch) -> None:
@@ -222,23 +265,39 @@ def test_fetch_charts_requests_the_right_storefront_and_row_count(monkeypatch) -
     assert "/api/v2/jp/podcasts/top/100/podcasts.json" in calls[1]
 
 
-def test_one_chart_request_serves_every_genre_in_a_storefront(monkeypatch) -> None:
-    # The politeness point: filtering the storefront chart beats one request
-    # per genre. The genre tree is fetched once too, and cached for a week.
+def test_a_genre_asks_apple_for_that_genres_own_chart(monkeypatch) -> None:
+    """The 2026-10-03 report: History had four shows and Comedy Fiction none.
+
+    Both came from filtering the storefront's overall top 100 by genre. A genre
+    folder now asks for the genre's own chart, 200 rows, and never touches the
+    storefront chart or the genre tree to do it.
+    """
     calls: list[str] = []
+    monkeypatch.setattr(apple, "_fetch", lambda url: (calls.append(url), _GENRE_CHART)[1])
 
-    def fake_fetch(url: str) -> str:
-        calls.append(url)
-        return _GENRES if "MZStoreServices" in url else _CHARTS
+    shows = apple.fetch_charts("us", genre_id="1487")
 
-    monkeypatch.setattr(apple, "_fetch", fake_fetch)
-    apple.fetch_charts("us", genre_id="1301")
-    apple.fetch_charts("us", genre_id="1303")
-    apple.fetch_charts("us")
-    chart_calls = [url for url in calls if "podcasts/top" in url]
-    genre_calls = [url for url in calls if "MZStoreServices" in url]
-    assert len(chart_calls) == 1, "one chart request must serve every genre"
-    assert len(genre_calls) == 1, "the genre tree must be fetched once, then cached"
+    assert calls == ["https://itunes.apple.com/us/rss/toppodcasts/limit=200/genre=1487/json"]
+    assert [s.name for s in shows] == [
+        "The Team House",
+        "The Rest Is History",
+        "World War II with Tom Hanks",
+    ]
+
+
+def test_each_genre_is_its_own_request_and_each_is_cached(monkeypatch) -> None:
+    calls: list[str] = []
+    monkeypatch.setattr(apple, "_fetch", lambda url: (calls.append(url), _GENRE_CHART)[1])
+    apple.fetch_charts("us", genre_id="1483")  # Fiction
+    apple.fetch_charts("us", genre_id="1486")  # Comedy Fiction, a subgenre
+    apple.fetch_charts("us", genre_id="1486")
+    apple.fetch_charts("gb", genre_id="1486")
+    base = "https://itunes.apple.com/{}/rss/toppodcasts/limit=200/genre={}/json"
+    assert calls == [
+        base.format("us", "1483"),
+        base.format("us", "1486"),
+        base.format("gb", "1486"),
+    ]
 
 
 def test_storefront_name_falls_back_to_the_code() -> None:
@@ -276,29 +335,38 @@ def test_no_podcast_index_dependency_anywhere_in_the_module() -> None:
     assert "x-auth-key" not in source
 
 
-def test_genre_id_set_includes_descendants() -> None:
-    arts = apple.parse_genres(_GENRES)[0]
-    assert apple.genre_id_set(arts) == frozenset({"1301", "1482", "1402"})
-    comedy = apple.parse_genres(_GENRES)[1]
-    assert apple.genre_id_set(comedy) == frozenset({"1303"})
+def test_parse_genre_chart_reads_apples_per_genre_feed() -> None:
+    from quill.core.podcasts import apple_genre_charts as charts
+
+    shows = charts.parse_genre_chart(_GENRE_CHART)
+    first = shows[0]
+    assert first.collection_id == "1492797340"
+    assert first.artist == "dee takos"
+    assert first.genre_ids == ("1487",)
+    assert first.artwork_url.endswith("170x170bb.png")
+    assert first.page_url.startswith("https://podcasts.apple.com/us/podcast/the-team-house/")
+    # The incomplete row and the repeated one are dropped, not raised on.
+    assert len(shows) == 3
 
 
-def test_filtering_by_a_top_level_genre_matches_rows_tagged_with_its_children(monkeypatch) -> None:
-    # The bug the first live run found: a chart row carries its LEAF genre, so
-    # matching a top-level id against raw row tags found nothing at all.
-    charts = json.dumps({
-        "feed": {
-            "results": [
-                {"id": "1", "name": "A Books Show", "genres": [{"genreId": "1482"}]},
-                {"id": "2", "name": "A Comedy Show", "genres": [{"genreId": "1303"}]},
-            ]
-        }
-    })
+def test_parse_genre_chart_reads_a_one_row_chart_and_junk() -> None:
+    from quill.core.podcasts import apple_genre_charts as charts
 
-    def fake_fetch(url: str) -> str:
-        return _GENRES if "genres" in url else charts
+    one = json.loads(_GENRE_CHART)
+    one["feed"]["entry"] = one["feed"]["entry"][0]  # Atom-as-JSON: a lone object
+    assert [s.name for s in charts.parse_genre_chart(json.dumps(one))] == ["The Team House"]
+    assert charts.parse_genre_chart(json.dumps({"feed": {}})) == []
+    assert charts.parse_genre_chart("not json") == []
+    assert charts.parse_genre_chart("[]") == []
 
-    monkeypatch.setattr(apple, "_fetch", fake_fetch)
-    assert [s.name for s in apple.fetch_charts("us", genre_id="1301")] == ["A Books Show"]
-    assert [s.name for s in apple.fetch_charts("us", genre_id="1482")] == ["A Books Show"]
-    assert [s.name for s in apple.fetch_charts("us", genre_id="1303")] == ["A Comedy Show"]
+
+def test_a_genre_chart_that_fails_is_recorded_not_raised(monkeypatch) -> None:
+    from quill.core.radio import browse_failure
+
+    def _down(url: str) -> str:
+        raise apple.ApplePodcastsError("Could not reach Apple Podcasts") from TimeoutError()
+
+    monkeypatch.setattr(apple, "_fetch", _down)
+    browse_failure.LAST_FAILURE.clear()
+    assert apple.fetch_charts("us", genre_id="1487") == []
+    assert browse_failure.last_error_was_network()

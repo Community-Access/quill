@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.12" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Tutorial 6: Make a document accessible with GLOW</title>
   <style>
@@ -11,7 +11,10 @@
     */
     html {
       color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
       background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
     }
     body {
       margin: 0 auto;
@@ -36,11 +39,16 @@
     }
     @media print {
       html {
-        background-color: white;
+        color-scheme: light only;
       }
-      body {
+      html, body, pre, code {
         background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
         color: black;
+      }
+      pre, code {
+        padding: 0;
       }
       p, h2, h3 {
         orphans: 3;
@@ -53,11 +61,8 @@
     p {
       margin: 1em 0;
     }
-    a {
-      color: #1a1a1a;
-    }
-    a:visited {
-      color: #1a1a1a;
+    a, a:visited {
+      color: inherit;
     }
     img {
       max-width: 100%;
@@ -86,8 +91,11 @@
     blockquote {
       margin: 1em 0 1em 1.7em;
       padding-left: 1em;
-      border-left: 2px solid #e6e6e6;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
       color: #606060;
+      color: light-dark(#606060, #b6b6b6);
     }
     code {
       white-space: pre-wrap;
@@ -111,7 +119,7 @@
     }
     hr {
       border: none;
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       height: 1px;
       margin: 1em 0;
     }
@@ -128,11 +136,11 @@
     }
     tbody {
       margin-top: 0.5em;
-      border-top: 1px solid #1a1a1a;
-      border-bottom: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
     }
     th {
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       padding: 0.25em 0.5em 0.25em 0.5em;
     }
     td {
@@ -171,7 +179,6 @@
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <style>
     /* Accessible skip link: off-screen until it receives keyboard focus. */
@@ -238,91 +245,98 @@
 <h1 id="tutorial-6-make-a-document-accessible-with-glow">Tutorial 6:
 Make a document accessible with GLOW</h1>
 <p><strong>Goal:</strong> take a real document from “probably fine” to
-<em>verified, graded, and repaired</em> — using GLOW, QUILL’s built-in
-accessibility review system.</p>
-<p>GLOW (Guided Layout and Output Workflow) is guided confidence, not a
-compliance dashboard: it explains each finding in plain language and
-only applies fixes you approve. Everything is under <strong>Tools &gt;
-GLOW</strong>.</p>
+<em>checked, graded and fixed</em>, using GLOW, QUILL’s built-in
+accessibility checker.</p>
+<p>GLOW (Guided Layout and Output Workflow) explains each problem it
+finds in plain words, and only makes the fixes you agree to. Everything
+is under <strong>Tools &gt; GLOW</strong>.</p>
 <h2 id="0-switch-it-on-glow-is-experimental">0. Switch it on (GLOW is
 experimental)</h2>
-<p>GLOW ships as an experimental feature, off by default while it
-matures:</p>
+<p>GLOW is still experimental, so it is off until you turn it on:</p>
 <ol type="1">
 <li><strong>Preferences &gt; Experimental.</strong></li>
-<li>Tick <strong>Enable experimental features</strong> (the master
-switch — until it is on, every experimental control is disabled and
-skipped in the tab order).</li>
+<li>Tick <strong>Enable experimental features</strong>. Until this is
+on, the other experimental choices are greyed out and Tab skips
+them.</li>
 <li>Tick <strong>GLOW accessibility review and repair
 (experimental)</strong>.</li>
-<li>Apply. The <strong>Tools &gt; GLOW</strong> menu appears immediately
-— no restart.</li>
+<li>Apply. The <strong>Tools &gt; GLOW</strong> menu appears right away.
+You do not need to restart.</li>
 </ol>
-<p>Experimental means still maturing, not unsafe: every GLOW action
-below keeps the review-first, never-touch-the-original contract.</p>
+<p>Experimental means it is still being improved, not that it is unsafe.
+GLOW always shows you a change before making it, and never changes your
+original file.</p>
 <h2 id="1-audit-what-you-are-writing">1. Audit what you are writing</h2>
 <ol type="1">
 <li>Open any Markdown or HTML document you have written.</li>
 <li><strong>Tools &gt; GLOW &gt; GLOW Audit Current
 Document.</strong></li>
 <li>The report opens as a normal tab. Arrow through it. Each finding
-gives: the rule, the severity, the location, and a plain-language
-suggestion — e.g. heading levels that jump (H1 straight to H4), links
-that just say “click here”, images without alt text, HTML missing
-<code>lang</code>, tables without header cells, paragraphs too dense to
-listen to.</li>
+tells you what the problem is, how serious it is, where it is, and what
+to do about it. For example: headings that skip a level (H1 straight to
+H4), links that just say “click here”, pictures with no description,
+tables with no header cells, or paragraphs too long to listen to
+comfortably.</li>
 </ol>
 <p>For just the section you are working on, use <strong>GLOW Audit
 Selection / Paragraph</strong> instead.</p>
-<h2 id="2-fix--with-your-eyes-open">2. Fix — with your eyes open</h2>
+<h2 id="2-fix-it-and-see-every-change">2. Fix it, and see every
+change</h2>
 <ol type="1">
 <li><strong>GLOW Fix Current Document.</strong> QUILL opens the repaired
-text as a <em>named preview tab</em> and immediately starts a
-<strong>compare session</strong> against your original.</li>
-<li>Walk the differences. Accept knowing exactly what changed; reject
-and nothing happened. Never a silent rewrite.</li>
-<li>For quick in-place cleanup of one block, <strong>GLOW Fix Selection
-/ Paragraph</strong> — the replacement stays selected so
-<code>Ctrl+Z</code> is one step away.</li>
+text in a <em>new preview tab</em> and compares it with your original
+right away.</li>
+<li>Go through the differences. If you accept, you know exactly what
+changed. If you reject, nothing changes. GLOW never rewrites anything
+without showing you.</li>
+<li>To quickly fix one paragraph where it is, use <strong>GLOW Fix
+Selection / Paragraph</strong>. The fixed text stays selected, and
+<code>Ctrl+Z</code> undoes it in one step.</li>
 </ol>
-<p>Fixable findings (heading-marker spacing, missing <code>lang</code>,
-missing alt attributes, trailing whitespace) are marked
-<code>[auto-fix]</code> in the audit; judgment calls (link text, dense
-paragraphs) stay yours.</p>
+<p>Problems GLOW can fix for you are marked <code>[auto-fix]</code> in
+the report. Things that need your judgment, like link wording or long
+paragraphs, are left for you.</p>
 <h2 id="3-grade-the-file-you-are-about-to-send">3. Grade the file you
 are about to send</h2>
-<p>The headline capability: GLOW audits <strong>structured files on
-disk</strong> — Word, PowerPoint, Excel, PDF, EPUB.</p>
+<p>GLOW can also check <strong>files on your computer</strong>: Word,
+PowerPoint, Excel, PDF and EPUB.</p>
 <ol type="1">
 <li>Export your document to Word (<strong>File &gt; Export &gt; Word
 Document…</strong>), or pick any existing docx.</li>
 <li><strong>Tools &gt; GLOW &gt; GLOW Audit File…</strong> and choose
 it. The audit runs in the background and returns a <strong>score out of
 100, a letter grade</strong>, and every finding.</li>
-<li>To repair: <strong>GLOW Fix File…</strong>. GLOW writes a fixed copy
-<em>next to</em> the original (<code>report.docx</code> →
-<code>report-accessible.docx</code>), confirms the destination first,
-and opens the post-fix audit so you can verify the improvement.
+<li>To fix it, choose <strong>GLOW Fix File…</strong>. GLOW saves a
+fixed copy <em>next to</em> the original (<code>report.docx</code>
+becomes <code>report-accessible.docx</code>), checks with you where to
+save it, and then shows you a new report so you can see what improved.
 <strong>The original file is never modified.</strong></li>
 </ol>
-<h2 id="4-keep-the-engine-fresh-only-when-you-ask">4. Keep the engine
-fresh (only when you ask)</h2>
+<h2 id="4-keep-glow-up-to-date-only-when-you-ask">4. Keep GLOW up to
+date (only when you ask)</h2>
 <p><strong>Help &gt; Check for GLOW Updates…</strong> checks for a newer
-accessibility engine. The check runs only on your command, the download
-is confirmed separately, every wheel is signature- and
-checksum-verified, and a failed install rolls back automatically. The
-engine’s optional networked helpers (AI alt-text, PII redaction) are off
-until you explicitly consent, per use — the default GLOW workflow is
-entirely on-device.</p>
-<h2 id="5-the-routine-worth-adopting">5. The routine worth adopting</h2>
-<p>Draft → <strong>Audit Current Document</strong> → fix the judgment
-calls yourself → <strong>Fix Current Document</strong> for the
-mechanical ones (accept from the compare) → export → <strong>Audit
-File</strong> as the final gate. Two minutes, and you are shipping
-documents more accessible than most sighted authors produce.</p>
-<p><em>Want an ambitious pass beyond the deterministic rules? The AI
-menu’s <strong>Accessibility Tune-Up</strong> agent drafts a broader
-improvement plan — reviewable like everything else.</em></p>
+version of GLOW. It only checks when you ask, and asks again before it
+downloads anything. Downloads are checked to make sure they are safe,
+and if an update fails, your old version is put back. A few optional
+extras go online, such as writing picture descriptions with AI; they ask
+you first every time. Everything else in GLOW stays on your
+computer.</p>
+<h2 id="5-a-routine-to-try">5. A routine to try</h2>
+<ol type="1">
+<li>Write your draft.</li>
+<li>Run <strong>Audit Current Document</strong>.</li>
+<li>Fix the things that need your judgment yourself.</li>
+<li>Run <strong>Fix Current Document</strong> for the rest, and accept
+the changes you want.</li>
+<li>Export your file.</li>
+<li>Run <strong>Audit File</strong> on it one last time.</li>
+</ol>
+<p>It takes a couple of minutes, and the people you send it to will
+thank you.</p>
+<p><em>Want more ideas than the checker gives? The AI menu’s
+<strong>Accessibility Tune-Up</strong> suggests a wider plan for
+improving your document, and you check every suggestion before anything
+changes.</em></p>
 </main>
 </body>
 </html>

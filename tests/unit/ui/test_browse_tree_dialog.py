@@ -839,3 +839,40 @@ def test_a_website_address_in_the_find_box_scans_it_wherever_you_stand() -> None
     assert asked == ["oj991.com"]
     # The scoped crawl must not also run: one answer, not two.
     assert submitted == []
+
+
+# --- a failure with a reason, and the quiet fill ---------------------------------
+
+
+def test_a_folder_that_failed_for_a_reason_says_the_reason() -> None:
+    """Not "Nothing in here": the sentence, spoken once, and the folder reopens."""
+    d = _dialog()
+    root = _Node()
+    d._tree.SetItemData(root, {"node_id": "picategories", "label": "By Category", "loaded": True})
+    reason = "The Podcast Index needs a free key, and none has been entered."
+    d._add_children(root, [], reason=reason)
+    assert d._announced[-1] == reason
+    assert _labels(d, root) == [reason]
+    assert d._tree.GetItemData(root)["loaded"] is False, "fixing the key must let it retry"
+
+
+def test_the_network_sentence_wins_over_a_reason() -> None:
+    d = _dialog()
+    root = _Node()
+    d._tree.SetItemData(root, {"node_id": "picategories", "label": "By Category"})
+    d._add_children(root, [], failed=True, reason="anything")
+    assert "could not be reached" in d._announced[-1]
+
+
+def test_a_big_folder_fills_frozen_and_says_its_count_once() -> None:
+    """Top Podcasts is a hundred folder rows; the screen reader gets one count."""
+    d = _dialog()
+    calls: list[str] = []
+    d._tree.Freeze = lambda: calls.append("freeze")
+    d._tree.Thaw = lambda: calls.append("thaw")
+    root = _Node()
+    d._tree.SetItemData(root, {"node_id": "applechart:us\tpodcasts", "label": "Top Podcasts"})
+    d._add_children(root, [folder(f"appleshow:{n}", f"Show {n}") for n in range(100)])
+    assert calls == ["freeze", "thaw"]
+    assert len(_labels(d, root)) == 100
+    assert d._announced == ["100 items."]

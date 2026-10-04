@@ -35,6 +35,7 @@ from quill.core.speech.ffmpeg import ffmpeg_available
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.main_frame_radio_callbacks import RadioCallbacksMixin
 from quill.ui.main_frame_radio_status import RadioStatusWindowsMixin
+from quill.ui.outcome_report import say_recording_failed, say_recording_saved
 from quill.ui.radio import browse_door, playback_status, quick_play, stats_session, youtube_ui
 from quill.ui.radio.link_finder_dialog import LinkFinderDialog
 from quill.ui.radio.playback_state import RadioPlaybackState
@@ -477,10 +478,7 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
             if destination is not None:
                 # The recorder's own stop-and-finalize edge: the one moment a
                 # capture is really over and on disk (#1302).
-                self._announce(
-                    f"Recording saved: {destination.name}",
-                    sound=SoundEvent.RADIO_RECORDING_STOPPED,
-                )
+                say_recording_saved(self, destination)  # said, and kept (qc.md F-10)
 
     def _radio_announce_capture_failed(self, station: str, reason: str) -> None:
         """Say that a recording captured nothing, and why.
@@ -489,10 +487,7 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         two outcomes must never sound alike. The reason comes from the recorder
         (which read ffmpeg's own last words); this only speaks it.
         """
-        self._announce(
-            f"Recording of {station} saved nothing: {reason}. No file was kept.",
-            sound=SoundEvent.RADIO_STREAM_ERROR,
-        )
+        say_recording_failed(self, station, reason)  # said, and kept (qc.md F-10)
         self._refresh_statusbar()
 
     def _persist_radio_recording_marker(self, job_id: str = "") -> None:
@@ -1165,8 +1160,10 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
             self.radio_whats_playing_details()
             return
         track = self._radio_now_playing_text()
+        from quill.ui.radio.station_tags_dialog import details_for
+
         lines = [
-            station.details_text,
+            details_for(self, station),  # your tags beside the directory's
             "",
             f"Now playing: {track}" if track else "Now playing: no track information yet",
         ]
@@ -2006,6 +2003,12 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         self._radio_history.favorites_sort = "manual"
         self._radio_history.folder_sort_orders = {}
         radio_history.save_history(app_data_dir(), self._radio_history)
+
+    def open_local_media(self) -> None:
+        """Local Media...: your playlists (body in ui/radio/local_media_commands)."""
+        from quill.ui.radio import local_media_commands
+
+        local_media_commands.open_window(self)
 
     def open_radio_recordings(self, *, embed_in: object | None = None) -> object | None:
         """Recordings...: made, in-progress (live status), and scheduled."""

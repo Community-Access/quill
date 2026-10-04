@@ -8,7 +8,8 @@ from types import SimpleNamespace
 from quill.ui.main_frame import MainFrame
 
 _ROOT = Path(__file__).resolve().parents[3]
-_FRAME_SOURCE = (_ROOT / "quill" / "ui" / "main_frame.py").read_text(encoding="utf-8")
+# Convert File moved to its own mixin under F-08 (2026-10-03).
+_FRAME_SOURCE = (_ROOT / "quill" / "ui" / "main_frame_convert_file.py").read_text(encoding="utf-8")
 _DIALOG_SOURCE = (_ROOT / "quill" / "ui" / "convert_file_dialog.py").read_text(encoding="utf-8")
 
 

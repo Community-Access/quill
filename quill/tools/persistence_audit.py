@@ -52,6 +52,28 @@ _CLASSIFICATIONS: dict[str, str] = {
 _REVIEWED_PERSISTENCE: dict[str, str] = {
     # --- versioned (the contract) ---
     "core/settings.py::save_settings": "versioned",
+    # qc.md X-03 and X-05 (2026-10-03): small, self-describing, "version": 1 stamped;
+    # an unreadable file reads as nothing on and nothing shared.
+    "core/settings_recipes.py::save_state": "marker",
+    "core/family_preferences.py::_write": "marker",
+    # Release channels (plan 6.2, 5.1): which channel each app is on, one small
+    # version-stamped file for the family; unknown keys are carried forward and
+    # an unreadable file reads as everything on Stable. The format ledger is the
+    # machinery "safe to go back?" will be decided from: it only ever goes up.
+    "core/updater/channels.py::save_channels": "marker",
+    "core/data_format_ledger.py::record": "framework",
+    # Release channels, Phase 2: the highest feed sequence each app has seen
+    # (the anti-replay mark) and the last good signed list beside it. Losing it
+    # costs one replay window and an offline answer; it is re-verified on read.
+    "core/updater/feed_fetch.py::_remember": "cache",
+    # Phase 4: lowering the ledger after a saved copy is restored is part of
+    # the same machinery; the update helper's books (pending update, kept
+    # installer, ageing) are regenerable -- losing them costs one undo.
+    "core/data_format_ledger.py::lower": "framework",
+    "core/updater/apply.py::_write": "cache",
+    # ear.md B3: what this device last shared (fingerprints, first-seen times,
+    # tombstones, carried fields). Version-stamped; losing it re-sends once.
+    "core/sync/subscriptions_sync.py::_save_state": "cache",
     "core/keymap.py::save_keymap": "versioned",
     # QUILL Lite's own keys. Same contract and the same reason: a schema stamp
     # and a delta of the user's overrides, never a snapshot, so a key improved
@@ -285,6 +307,22 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # Saved YouTube playlists and single videos (the YouTube branch's shelf),
     # same shape and same reasoning as the channel store above it.
     "core/radio/youtube_saved.py::_write": "content",
+    # Local Media's playlists: paths and the tags read from them, never file
+    # contents. Schema-stamped, loaded through versioned_store (a pre-release
+    # shape migrates once, with a backup; a newer file is never downgraded).
+    "core/radio/local_media.py::save_library": "versioned",
+    # Notify Me About New Videos: which followed channels ring, and the ids of
+    # uploads already seen (so nothing is announced twice). Losing it only means
+    # the next check is a fresh baseline; the stamp is the last check's time.
+    "core/radio/youtube_channel_alerts.py::_write": "content",
+    "core/radio/youtube_channel_alerts.py::stamp": "cache",
+    # Use my YouTube sign-in: only on/off, a browser NAME, or a cookies.txt
+    # PATH -- never a cookie value (youtube_signin.py; redaction.py drops
+    # cookie-shaped lines). Machine-specific, so Export My Setup leaves it.
+    "core/radio/youtube_signin.py::save": "marker",
+    # Skip Sponsor Segments: on/off and which SponsorBlock categories -- nothing
+    # about any video. Losing it only turns skipping off again.
+    "core/radio/youtube_sponsorblock.py::save": "marker",
     # Browse levels, cached so opening a source does not re-download its whole
     # index every time (the Xiph genre page alone is 5 MB). Regenerable by
     # definition -- every entry has a live fetch behind it -- and each answer
@@ -329,6 +367,8 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # something somebody made, which is why it is written atomically -- but
     # not something the versioned-delta contract helps with.
     "core/radio/item_notes.py::set_note": "content",
+    # Your own tags on stations that are not favorites; additive, self-describing.
+    "core/radio/station_tags.py::save_tag_store": "content",
     # --- marker / small state flags ---
     # Radio's active-recording resume marker (R1-R4): transient state written
     # when a recording starts and cleared on clean stop; absent by default, and
@@ -349,7 +389,7 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     "core/onboarding.py::mark_watch_folder_onboarding_complete": "marker",
     "core/github/consent.py::save_github_consent_complete": "marker",
     "core/spotify/consent.py::save_spotify_consent_complete": "marker",
-    "ui/main_frame.py::_maybe_run_first_run_onboarding": "marker",
+    "ui/main_frame_onboarding_flow.py::_maybe_run_first_run_onboarding": "marker",
     "core/ai/model_manager.py::save_ai_enabled": "marker",
     "core/ai/external_engine.py::set_external_engines_enabled": "marker",
     "core/speech/service.py::save_input_device": "marker",

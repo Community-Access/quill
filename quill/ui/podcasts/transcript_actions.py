@@ -86,13 +86,15 @@ def read_transcript(host: Any, show: Any, episode: Any) -> None:
         host._wx.CallAfter(_open_reader, host, show, episode, cues)
 
     def _failed(_op: str, error: object) -> None:
-        host._wx.CallAfter(host._announce, f"Transcript failed: {error}")
+        from quill.ui.podcasts.failure_report import report_failure
+
+        report_failure(host, f"Transcript failed: {error}")
 
     host._task_manager.submit("podcast-transcript-cues", _work, on_success=_ok, on_failure=_failed)
 
 
 def _open_reader(host: Any, show: Any, episode: Any, cues: object) -> None:
-    from quill.ui.transcript_reader import TranscriptReader
+    from quill.ui.podcasts.transcript_window import open_transcript_window
 
     rows = list(cues) if isinstance(cues, list) else []
     if not rows:
@@ -103,7 +105,9 @@ def _open_reader(host: Any, show: Any, episode: Any, cues: object) -> None:
         return
     controller = getattr(host, "_controller", None)
     playing = _is_playing(controller, episode)
-    reader = TranscriptReader(
+    # A peer (qc.md Phase 4): one Transcript window, raised with this episode.
+    open_transcript_window(
+        host,
         host.dialog,
         title=episode.title,
         cues=rows,
@@ -120,7 +124,6 @@ def _open_reader(host: Any, show: Any, episode: Any, cues: object) -> None:
         source_url=str(getattr(episode, "audio_url", "") or ""),
         transcript_detail=_transcript_detail(host),
     )
-    reader.show()
 
 
 def _is_playing(controller: Any, episode: Any) -> bool:
@@ -197,7 +200,9 @@ def fetch_then(host: Any, show: Any, episode: Any, consume: object) -> None:
         host._wx.CallAfter(consume, text)
 
     def _on_failure(_op: str, error: object) -> None:
-        host._wx.CallAfter(host._announce, f"Transcript failed: {error}")
+        from quill.ui.podcasts.failure_report import report_failure
+
+        report_failure(host, f"Transcript failed: {error}")
 
     host._task_manager.submit(
         "podcast-transcript", _do_fetch, on_success=_on_success, on_failure=_on_failure
@@ -212,7 +217,8 @@ def view_show_notes(host: Any, episode: Any) -> None:
     notes viewer is the other half of the transcript reader -- same episode,
     same two verbs on it (save it, list its links).
     """
-    from quill.ui.podcasts.show_notes_dialog import ShowNotesDialog
+    from quill.ui.podcasts.peer_window import open_peer
+    from quill.ui.podcasts.show_notes_dialog import ShowNotesWindow
 
     controller = getattr(host, "_controller", None)
 
@@ -229,14 +235,22 @@ def view_show_notes(host: Any, episode: Any) -> None:
             return
         host._announce("Play this episode first; its timestamps seek while it is playing.")
 
-    ShowNotesDialog(
-        host.dialog,
-        episode_title=episode.title,
-        description_html=episode.description,
-        on_send_to_editor=getattr(host, "_on_send_show_notes", None),
-        announce_cb=host._announce,
-        on_seek=seek if controller is not None else None,
-    ).show()
+    # A peer (qc.md Phase 4): one Show Notes window, raised with whichever
+    # episode was asked about.
+    content: dict[str, Any] = {
+        "episode_title": episode.title,
+        "description_html": episode.description,
+        "on_send_to_editor": getattr(host, "_on_send_show_notes", None),
+        "on_seek": seek if controller is not None else None,
+    }
+    existing = getattr(host, "_show_notes_window", None)
+    if existing is not None and existing.frame:
+        existing.load(**content)
+    open_peer(
+        host,
+        "_show_notes_window",
+        lambda owner: ShowNotesWindow(owner.dialog, announce_cb=owner._announce, **content),
+    )
 
 
 def open_chapters(host: Any, show: Any, episode: Any) -> None:
@@ -259,7 +273,9 @@ def open_chapters(host: Any, show: Any, episode: Any) -> None:
         host._open_chapters_dialog(show, episode, result)
 
     def _on_failure(_op: str, error: Exception) -> None:
-        host._announce(f"Could not load chapters: {error}")
+        from quill.ui.podcasts.failure_report import report_failure
+
+        report_failure(host, f"Could not load chapters: {error}")
 
     host._announce("Loading chapters...")
     host._task_manager.submit(

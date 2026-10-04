@@ -34,7 +34,8 @@ def test_radio_and_cast_compose_the_mixin() -> None:
 
 
 def test_apps_init_the_host_and_add_the_menu() -> None:
-    radio = _read("quill/apps/radio.py")
+    # Radio's menu bar moved to apps/radio_menu_bar.py under F-08 (2026-10-03).
+    radio = _read("quill/apps/radio.py") + _read("quill/apps/radio_menu_bar.py")
     # QUILL Cast's menu bar moved to apps/podcasts_menu.py in 1.1.0 (GATE-11).
     cast = _read("quill/apps/podcasts.py") + _read("quill/apps/podcasts_menu.py")
     assert 'self._init_app_quillins("radio")' in radio

@@ -101,6 +101,24 @@ class CastEpisodeListMixin:
         self._reload_library_tree()  # type: ignore[attr-defined]
         self._refresh_place(keep=True)  # type: ignore[attr-defined]
 
+    def _play_episode(
+        self, show: PodcastShow, episode: PodcastEpisode, *, resume_ms: int | None = None
+    ) -> None:
+        """The Manager's play verb, which its Play Next Episode and chapter jump
+        call. The Manager defined it and the one window never did, so both
+        raised here; this answers with the frame's own starter."""
+        from quill.ui.podcasts.show_actions import start_episode_playback
+
+        if start_episode_playback(
+            self._podcast_controller,  # type: ignore[attr-defined]
+            self._podcast_library,  # type: ignore[attr-defined]
+            show,
+            episode,
+            resume_ms=resume_ms,
+            announce=self._announce,  # type: ignore[attr-defined]
+        ):
+            self._announce(f"Playing {episode.title} from {show.title}")  # type: ignore[attr-defined]
+
     def _verb_selected_episode(self) -> PodcastEpisode | None:
         """The selected row's episode (the Manager's ``_selected_episode``)."""
         pair = self._selected_episode()  # type: ignore[attr-defined]
@@ -239,9 +257,19 @@ class CastEpisodeListMixin:
         return str(getattr(self._podcast_history, "episode_filter", "all") or "all")  # type: ignore[attr-defined]
 
     def _fill_episodes_from_pairs(
-        self, pairs: list[tuple[PodcastShow, PodcastEpisode]], *, view_label: str = ""
+        self,
+        pairs: list[tuple[PodcastShow, PodcastEpisode]],
+        *,
+        view_label: str = "",
+        lead_rows: list[tuple[str, str, str]] | None = None,
     ) -> None:
-        """Cross-podcast rows, in the listener's columns (never by position)."""
+        """Cross-podcast rows, in the listener's columns (never by position).
+
+        *lead_rows* are ``(kind, value, label)`` rows drawn first -- the Inbox's
+        folders, when it is laid out folders first. They sit in the same list
+        so arrowing is one motion; an episode verb on one of them finds no
+        episode and does nothing, because its ``_pair_shows`` entry is None.
+        """
         from quill.core.podcasts.filtering import filter_episodes
         from quill.core.podcasts.sorting import sort_pairs
         from quill.ui.media.list_columns_view import fill_row
@@ -257,14 +285,21 @@ class CastEpisodeListMixin:
             self._library, pairs, view_mode=self._library.settings.episode_list_view_mode
         )
         shown = pairs[:_MAX_ROWS]
+        lead = list(lead_rows or [])
         self._episodes.DeleteAllItems()
         self._current_show = None
-        self._current_episodes = [episode for _show, episode in shown]
-        self._pair_shows = [show for show, _episode in shown]
-        self._list_rows = [("episode", f"{show.id}\x00{ep.guid}") for show, ep in shown]
+        self._current_episodes = [
+            PodcastEpisode(guid="", title=label, audio_url="") for _k, _v, label in lead
+        ]
+        self._current_episodes += [episode for _show, episode in shown]
+        self._pair_shows = [None] * len(lead) + [show for show, _episode in shown]
+        self._list_rows = [(kind, value) for kind, value, _label in lead]
+        self._list_rows += [("episode", f"{show.id}\x00{ep.guid}") for show, ep in shown]
         self._episodes.Freeze()
         try:
-            for row, (show, episode) in enumerate(shown):
+            for row, (_kind, _value, label) in enumerate(lead):
+                fill_row(self._episodes, row, self._episode_columns, {"title": label})
+            for row, (show, episode) in enumerate(shown, start=len(lead)):
                 fill_row(
                     self._episodes,
                     row,
@@ -379,16 +414,36 @@ class CastEpisodeListMixin:
         if not count:
             return
         index = max(0, min(count - 1, index))
+        # The list allows several rows at once, and Select *adds*: without this
+        # the row the cursor was on stays selected too, and the next verb acts
+        # on both.
+        selected = self._episodes.GetFirstSelected()
+        while selected != -1:
+            if selected != index:
+                self._episodes.Select(selected, on=False)
+            selected = self._episodes.GetNextSelected(selected)
         self._episodes.Select(index)
         self._episodes.Focus(index)
         self._episodes.EnsureVisible(index)
 
     def _select_list_key(self, key: tuple[str, str] | None) -> bool:
+        """The cursor back on *key*'s row, or -- when that row has gone (Delete,
+        Mark as Played, a refresh) -- on the row that moved into its place, by
+        the shared rule (qc.md F-10, ``activity.restore_index``)."""
         if key is None:
             return False
-        try:
-            index = self._list_rows.index(key)
-        except ValueError:
+        from quill.core.activity import restore_index
+
+        previous = int(getattr(self, "_list_previous_index", -1))
+        self._list_previous_index = -1
+        keys = [repr(row) for row in self._list_rows]
+        if repr(key) in keys:
+            index = keys.index(repr(key))
+        elif previous >= 0:
+            index = restore_index(keys, None, previous)
+        else:
+            return False
+        if index < 0:
             return False
         self._select_list_row(index)
         return True
@@ -412,7 +467,7 @@ class CastEpisodeListMixin:
         if self._list_kind != "episodes":
             return
         for row, episode in enumerate(self._current_episodes):
-            if episode.guid == item.episode_guid:
+            if episode.guid and episode.guid == item.episode_guid:
                 show = self._show_for_selected_episode(row)
                 set_row(
                     self._episodes,
@@ -428,6 +483,8 @@ class CastEpisodeListMixin:
         index = self._episodes.GetFirstSelected()
         if self._list_kind != "episodes" or not (0 <= index < len(self._current_episodes)):
             return
+        if index < len(self._list_rows) and self._list_rows[index][0] != "episode":
+            return  # an Inbox folder row is not an episode to redraw
         episode = self._current_episodes[index]
         set_row(
             self._episodes,

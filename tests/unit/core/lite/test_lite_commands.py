@@ -48,6 +48,17 @@ def _items() -> list[tuple[str, str, str, str]]:
     ]
 
 
+#: Rows that ship with no key, each with the reason (rule 8: a key or a written
+#: reason). The route is the menu's own Alt path, which the access-key checks
+#: below keep unique. Shrink this, never grow it without an argument.
+KEYLESS_WITH_REASON: dict[str, str] = {
+    "cmd_release_channel": "Deliberately vacated 2026-10-03 in all four channel apps: "
+    "Alt+Shift+F4 closed a dialog or a separate window wherever Windows read it as "
+    "Alt+F4, and rule 4 fixes destructive habits first. Rule 9: once a year needs a "
+    "way in, not a short chord -- Alt+H, C, and the Preferences row.",
+}
+
+
 def _labelled() -> list[tuple[str, str]]:
     """``(menu, label)`` for everything that appears in a menu, titles included."""
     return [(menu, label) for menu, label, _key, _handler, kind in COMMANDS if kind != "sep"]
@@ -82,12 +93,29 @@ def test_the_table_is_not_empty_and_every_row_is_well_formed() -> None:
             )
             continue
         assert menu.startswith("&") or "&" in menu, menu
-        assert label and key and handler, (menu, label)
+        assert label and handler, (menu, label)
+        assert key or handler in KEYLESS_WITH_REASON, (menu, label)
 
 
 def test_every_enabled_item_advertises_a_key() -> None:
-    keyless = [f"{menu} > {label}" for menu, label, key, _h in _items() if not key.strip()]
+    keyless = [
+        f"{menu} > {label}"
+        for menu, label, key, handler in _items()
+        if not key.strip() and handler not in KEYLESS_WITH_REASON
+    ]
     assert keyless == [], f"menu items with no keyboard route: {keyless}"
+
+
+def test_the_keyless_reasons_are_current_and_argued() -> None:
+    """An exemption for a row that has a key again, or no longer exists, is stale."""
+    keys = {handler: key for _menu, _label, key, handler in _items()}
+    for handler, reason in KEYLESS_WITH_REASON.items():
+        assert handler in keys, f"{handler}: no such row"
+        assert not keys[handler], f"{handler} has a key now; drop its exemption"
+        assert len(reason) > 40 and reason.rstrip().endswith("."), handler
+        assert _mnemonic(next(label for _m, label, _k, h in _items() if h == handler)), (
+            f"{handler}: a keyless row needs an access letter, its only route"
+        )
 
 
 def _normalised_chord(key: str) -> str:
@@ -109,6 +137,8 @@ def test_no_key_is_claimed_twice() -> None:
     spellings: dict[str, str] = {}
     duplicates: list[str] = []
     for _menu, _label, key, _handler in _items():
+        if not key:
+            continue  # a KEYLESS_WITH_REASON row claims nothing
         chord = _normalised_chord(key)
         if chord in spellings:
             duplicates.append(f"{spellings[chord]!r} and {key!r}")
@@ -190,6 +220,8 @@ def test_every_key_is_one_wx_can_actually_parse() -> None:
     try:
         unparsed = []
         for menu, label, key, _handler in _items():
+            if not key:
+                continue  # a KEYLESS_WITH_REASON row has nothing to parse
             entry = wx.AcceleratorEntry()
             if not entry.FromString(f"item\t{key}"):
                 unparsed.append(f"{menu} > {label}: {key!r}")

@@ -1033,6 +1033,28 @@ def generate_all() -> None:
         vol=0.20,
     )
 
+    generate_cast_outcomes()
+
+
+def generate_cast_outcomes() -> None:
+    """QUILL Cast's three one-key outcomes (qc.md section 18 item 7).
+
+    Bell-voiced like the rest of Cast's cues, short because they answer a
+    key press, and shaped by meaning: added climbs, removed falls away, and
+    marked as played is one settled note with a soft fifth under it.
+    """
+    added = _concat(_bell(784, 70), _silence(14), _bell(1175, 110))
+    write_wav("cast_queue_added.wav", added, vol=0.42)
+    removed = _concat(_bell(622, 70), _silence(14), _bell(415, 120))
+    write_wav("cast_removed.wav", removed, vol=0.38)
+    marked = _mix(_bell(988, 260), [x * 0.45 for x in _bell(659, 260)])
+    write_wav("cast_marked_played.wav", marked, vol=0.40)
+
 
 if __name__ == "__main__":
-    generate_all()
+    import sys
+
+    if "--cast-outcomes" in sys.argv:
+        generate_cast_outcomes()
+    else:
+        generate_all()

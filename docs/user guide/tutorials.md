@@ -1,37 +1,37 @@
 # QUILL Tutorials
 
-23 guided tutorials, 137 steps, about 120 minutes of material in all.
+Welcome. There are 23 short lessons here, about 120 minutes in all, and you can take them in any order. Each one is a few small steps, and each step tells you what to press and what you should hear.
 
-This document is generated from the tutorials inside QUILL, so it says exactly what the app teaches. To work through one with the app watching -- running a step for you, and moving you on once it can see you have done it -- open **Help > Tutorials...** instead.
+This page is the lessons written out, so you can read them anywhere. If you would rather be walked through, open **Help > Tutorials...** in QUILL. It does a step for you when you ask, and moves on by itself once it hears you have done one.
 
-The keys below are the ones QUILL ships with. If you have rebound something in the Keyboard Manager, the tutorials *inside the app* say your key; this document cannot know it.
+The keys here are the ones QUILL comes with. If you have changed a key, the lessons inside the app use your key; this page cannot know about the change.
 
 ## Contents
 
-- **Your first hour** -- Write and save something, learn the four ways of getting anywhere, meet the QUILL key, and learn what to press when you are lost.
+- **Your first hour**: Write and save something, learn the four ways of getting anywhere, meet the QUILL key, and learn what to press when you are lost.
   - Write and save your first document (5 minutes)
   - Get around a long document (6 minutes)
   - Do anything by name (4 minutes)
   - The QUILL key (5 minutes)
   - Getting unstuck (4 minutes)
-- **Writing and editing** -- Selecting and moving text without a mouse, finding and replacing at every level of ambition, structure and formatting, words, and the one structure plain caret movement handles badly.
+- **Writing and editing**: Selecting and moving text without a mouse, finding and replacing at every level of ambition, structure and formatting, words, and the one structure plain caret movement handles badly.
   - Select, mark, and move text (6 minutes)
   - Find, replace, and search across files (6 minutes)
   - Structure and formatting (6 minutes)
   - Spelling, words, and the thesaurus (5 minutes)
   - Tables, by ear (4 minutes)
-- **Reading and reviewing** -- Having the document read to you, seeing the formatting that is normally hidden, single-letter movement, and inspecting a document somebody else wrote.
+- **Reading and reviewing**: Having the document read to you, seeing the formatting that is normally hidden, single-letter movement, and inspecting a document somebody else wrote.
   - Have it read to you (6 minutes)
   - See the formatting that is normally hidden (6 minutes)
   - Quick Nav: single-letter movement (4 minutes)
   - Inspect a document you did not write (5 minutes)
-- **How much QUILL says** -- Verbosity profiles, the channels that carry an announcement, and the echo of everything QUILL has just said.
+- **How much QUILL says**: Verbosity profiles, the channels that carry an announcement, and the echo of everything QUILL has just said.
   - Decide how much QUILL says (6 minutes)
-- **The assistant, if you want one** -- Optional, explicit, and honest about what it did: setting up a provider or running on-device, asking a question, and the commands that work on one selection at a time.
+- **The assistant, if you want one**: Optional, explicit, and honest about what it did: setting up a provider or running on-device, asking a question, and the commands that work on one selection at a time.
   - Set up the assistant, or do not (6 minutes)
   - Ask, and run a prompt (6 minutes)
   - The assistant on one piece of text (4 minutes)
-- **Living with it** -- Shaping the app to the work you actually do, the safety net underneath it, formats other people send you, braille files, and the family of apps QUILL sits in.
+- **Living with it**: Shaping the app to the work you actually do, the safety net underneath it, formats other people send you, braille files, and the family of apps QUILL sits in.
   - Make QUILL the size you need (6 minutes)
   - The safety net (5 minutes)
   - Open anything, save as anything (5 minutes)
@@ -151,7 +151,7 @@ One chord that opens most of QUILL's power features, and the browse mode that tu
    - Keys: Ctrl+Shift+Grave
    - You should hear: A quick double-ping, unlike any other sound in the app.
 
-2. **Run one chord.** With the prefix armed, press G for Go to Anything or R for Read Aloud. Menus and the cheat sheet write these as QUILL Key + G, which is the same thing said in words.
+2. **Run one chord.** With the prefix armed, press G to open a file from a favorite folder or R for Read Aloud. Menus and the cheat sheet write these as QUILL Key + G, which is the same thing said in words.
    - Keys: Ctrl+Shift+Grave, G
    - You should hear: Whatever that command announces.
 

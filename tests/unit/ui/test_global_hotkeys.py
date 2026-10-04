@@ -127,3 +127,32 @@ def test_every_allowlisted_command_is_low_risk_by_construction() -> None:
     )
     for command_id, _label, _needs in GLOBAL_HOTKEY_SAFE_COMMANDS:
         assert command_id.startswith(allowed_prefixes), command_id
+
+
+def test_no_editor_chord_is_the_global_show_hide_key() -> None:
+    # A registered system-wide hotkey reaches its owner before any window sees
+    # the key, so an editor command bound to the same chord can never fire --
+    # in QUILL, and in QUILL Lite whenever QUILL is running. Unquote Lines sat
+    # on Ctrl+Alt+Shift+Q in both editors until 2026-10-03.
+    from quill.core.keymap import DEFAULT_ALIASES, DEFAULT_KEYMAP
+    from quill.core.lite.commands import COMMANDS
+    from quill.core.lite.keymap import chord_identity
+    from quill.core.lite.keymap import default_aliases as lite_aliases
+    from quill.ui.main_frame_hotkeys import DEFAULT_SHOW_HIDE_HOTKEY
+
+    hotkey = chord_identity(DEFAULT_SHOW_HIDE_HOTKEY)
+    claimants = [
+        f"QUILL {command_id}"
+        for table in (DEFAULT_KEYMAP, DEFAULT_ALIASES)
+        for command_id, chord in table.items()
+        if chord and chord_identity(chord) == hotkey
+    ]
+    claimants += [
+        f"QUILL Lite {row[3]}" for row in COMMANDS if row[2] and chord_identity(row[2]) == hotkey
+    ]
+    claimants += [
+        f"QUILL Lite alias {handler}"
+        for handler, chord in lite_aliases().items()
+        if chord and chord_identity(chord) == hotkey
+    ]
+    assert claimants == []

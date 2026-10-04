@@ -48,6 +48,7 @@ def apply_update_and_restart(
             portable=portable,
             app_data_dir=app_data_dir,
             when=when,
+            version=version,
         )
     except self_update.SelfUpdateError as exc:
         show_error(

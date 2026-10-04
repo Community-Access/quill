@@ -31,6 +31,12 @@ from __future__ import annotations
 
 #: Surface purposes by exact window title.
 PURPOSES: dict[str, str] = {
+    "Find a Setting or Command": (
+        "Every menu command in this app, searchable by name. Type part of a "
+        "name; Down moves into the matches; Enter does the highlighted one, exactly "
+        "as choosing it from its menu would. An option says whether it is on, and "
+        "doing it switches it and says the new state."
+    ),
     # -- the window --------------------------------------------------------------
     "Quill Inkwell": (
         "The manager window for a service that lives in the system tray: "

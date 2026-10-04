@@ -159,6 +159,11 @@ class CastAiMixin(HostedAiMixin):
                 sub.AppendSeparator()
                 continue
             sub.Append(ids[command_id], self._menu_label(label, command_id))  # type: ignore[attr-defined]
+        # Cast's own domain verbs (ear.md A2-A9) live in cast_ai_features, not
+        # here: this adapter has no command of its own.
+        extra = getattr(self, "_append_cast_ai_feature_rows", None)
+        if callable(extra):
+            extra(sub)
         parent_menu.AppendSubMenu(sub, "AI &Features")
         if not getattr(self, "_cast_ai_wired", False):
             self._cast_ai_wired = True

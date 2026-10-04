@@ -46,6 +46,7 @@ from quill.core.app_features import (
 )
 from quill.core.structure_announce import HEADING_POSITION_LABELS, HEADING_POSITIONS
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name, show_modal_dialog
+from quill.ui.text_editor_prefs import TextEditorPrefs
 
 __all__ = ["PreferencesResult", "edit_preferences"]
 
@@ -236,6 +237,31 @@ def edit_preferences(
     )
     updates.SetValue(bool(getattr(settings, "check_updates_on_launch", True)))
     root.Add(updates, 0, wx.LEFT | wx.RIGHT, _PAD)
+
+    # Release channels (plan 7.1): shown here, changed only in the shared
+    # Release Channel window, never by a selection. The button has no access
+    # key: no letter is free in this window (GATE-14), and Tab reaches it.
+    from quill.apps.lite_updates import open_release_channel_for
+    from quill.core.updater.channels import shown_channel, state_for
+
+    channel_row = wx.BoxSizer(wx.HORIZONTAL)
+    channel_status = wx.StaticText(
+        dialog, label=f"Release channel: {shown_channel(state_for('quilllite'))}"
+    )
+    channel_button = wx.Button(dialog, label="Change release channel...")
+    channel_button.SetHelpText(
+        "Choose Stable, Beta or Dev for QUILL Lite. Opens the Release Channel "
+        "window, the same one as Help menu, then Release Channel."
+    )
+
+    def _change_channel(_event: wx.CommandEvent) -> None:
+        open_release_channel_for(dialog, check=False)
+        channel_status.SetLabel(f"Release channel: {shown_channel(state_for('quilllite'))}")
+
+    channel_button.Bind(wx.EVT_BUTTON, _change_channel)
+    channel_row.Add(channel_status, 1, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, _PAD)
+    channel_row.Add(channel_button, 0)
+    root.Add(channel_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
 
     spell_typing = wx.CheckBox(dialog, label="Check &spelling as I type")
     spell_typing.SetHelpText(
@@ -461,6 +487,9 @@ def edit_preferences(
         speak("AI help stays off. Nothing is sent anywhere.")
 
     ai_check.Bind(wx.EVT_CHECKBOX, _toggle_ai)
+
+    if hasattr(parent, "cmd_toggle_notepad_replacement"):  # quill/ui/text_editor_prefs.py
+        TextEditorPrefs(dialog, dialog, root, parent, make_key="x", notepad_key="o", pad=_PAD)
 
     buttons = dialog.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL)
     root.Add(buttons, 0, wx.ALIGN_RIGHT | wx.ALL, _PAD)

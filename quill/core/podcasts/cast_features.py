@@ -423,6 +423,8 @@ COMMAND_AREAS: dict[str, str] = {
     "podcasts.skip_back": "skipping",
     "podcasts.skip_settings": "skipping",
     "podcasts.skip_silence": "skipping",
+    "podcasts.bookmark_note": "notes",
+    "podcasts.episode_bookmarks": "notes",
     "podcasts.sound_enhancements": "sound",
     "podcasts.next_chapter": "transcripts",
     "podcasts.previous_chapter": "transcripts",

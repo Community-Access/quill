@@ -30,6 +30,9 @@ _EMPTY = "No folders yet. Press Add Folder to choose one."
 class WatchedFoldersWindow:
     """The frame, its list, and the verbs."""
 
+    TITLE = TITLE
+    MENU_TITLE = "Watched &Folders"
+
     def __init__(self, host: Any) -> None:
         self._host = host
         self._folders: list[WatchedFolder] = []
@@ -96,19 +99,12 @@ class WatchedFoldersWindow:
         for context_event in (wx.EVT_CONTEXT_MENU, wx.EVT_RIGHT_UP):
             self._list.Bind(context_event, self._on_context)
         self._list.Bind(wx.EVT_KEY_DOWN, self._on_key)
-        self.frame.Bind(wx.EVT_CLOSE, self._on_close)
-        self.frame.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
+        self.refresh()
 
     # -- showing --------------------------------------------------------------------- #
 
-    def show(self, *, focus: bool = True) -> None:
-        self.refresh()
-        from quill.ui.dialog_contract import show_modeless_surface
-
-        show_modeless_surface(self.frame, TITLE, announce=self._host._announce)
-        self.frame.Raise()
-        if focus:
-            self._list.SetFocus()
+    def focus_target(self) -> Any:
+        return self._list
 
     def refresh(self, *, keep: int = -1) -> None:
         library = self._host._podcast_library
@@ -118,25 +114,6 @@ class WatchedFoldersWindow:
         if self._list.GetCount():
             wanted = keep if 0 <= keep < self._list.GetCount() else 0
             self._list.SetSelection(wanted)
-
-    def _on_close(self, event: Any) -> None:
-        if event.CanVeto():
-            event.Veto()
-            self.frame.Hide()
-            from quill.ui.dialog_contract import announce_surface_exit
-
-            announce_surface_exit(TITLE, self._host._announce)
-            focus = getattr(self._host, "_focus_cast_initial_control", None)
-            if callable(focus):
-                focus()
-            return
-        event.Skip()
-
-    def _on_char_hook(self, event: Any) -> None:
-        if event.GetKeyCode() == wx.WXK_ESCAPE:
-            self.frame.Close()
-            return
-        event.Skip()
 
     # -- the verbs ---------------------------------------------------------------------- #
 
@@ -233,31 +210,18 @@ class WatchedFoldersWindow:
             event.Skip(False)
 
 
-def open_watched_folders_window(host: Any, *, focus: bool = True) -> WatchedFoldersWindow:
-    """Open, or raise, the host's Watched Folders window (made once, hidden on close)."""
-    window = getattr(host, "_watched_folders_window", None)
-    if window is None:
-        window = WatchedFoldersWindow(host)
-        host._watched_folders_window = window
-        _install_peer(host, window)
-    window.show(focus=focus)
+def open_watched_folders_window(
+    host: Any, *, focus: bool = True, opener: Any = None
+) -> WatchedFoldersWindow:
+    """Open, or raise, the host's Watched Folders window.
+
+    Through the shared peer contract (``peer_window``): made once, hidden on
+    close, raised and refreshed when asked again, and Escape returns focus to
+    whatever opened it.
+    """
+    from quill.ui.podcasts.peer_window import open_peer
+
+    window: WatchedFoldersWindow = open_peer(
+        host, "_watched_folders_window", WatchedFoldersWindow, focus=focus, opener=opener
+    )
     return window
-
-
-def _install_peer(host: Any, window: WatchedFoldersWindow) -> None:
-    windows = getattr(host, "_windows", None)
-    frame = window.frame
-    menu_bar = wx.MenuBar()
-    own = wx.Menu()
-    close_id = wx.NewIdRef()
-    own.Append(close_id, "&Close\tCtrl+W")
-    frame.Bind(wx.EVT_MENU, lambda _e: frame.Close(), id=close_id)
-    menu_bar.Append(own, "Watched &Folders")
-    if windows is not None:
-        windows.install(frame, menu_bar)
-    frame.SetMenuBar(menu_bar)
-    keep = getattr(host, "_keep_menu_ids", None)
-    if callable(keep):
-        keep(close_id)
-    if windows is not None:
-        windows.register(frame, TITLE, focus=lambda: window._list.SetFocus())

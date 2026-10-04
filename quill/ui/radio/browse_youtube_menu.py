@@ -48,9 +48,107 @@ def unfollow_channel(dialog: Any, node: Any, args: list[str]) -> None:
     if not url:
         return
     name = dialog._tree.GetItemText(node).split("  (")[0]
-    ChannelStore().remove(url)
+    from quill.core.radio.youtube_channel_alerts import AlertStore
+
+    followed = _followed_url(args) or url
+    ChannelStore().remove(followed)
+    AlertStore().forget(followed)  # no bell on a channel nobody follows
     _reload(dialog)
     dialog._announce(f"Stopped following {name}.")
+
+
+def _followed_url(args: list[str]) -> str:
+    """The address the channel is followed under, whichever of *args* it is."""
+    from quill.core.radio.youtube_channels import ChannelStore, normalize_channel_url
+
+    wanted = [normalize_channel_url(url) for url in args if url]
+    for channel in ChannelStore().all():
+        if channel.url in wanted:
+            return channel.url
+    return ""
+
+
+def channel_handlers(dialog: Any, node: Any, args: list[str], station: Any) -> dict:
+    """Follow, Subscribe on YouTube, the bell, and Read Comments."""
+    from quill.core.radio import row_actions_youtube as yt
+    from quill.ui.radio import youtube_row_account as account
+
+    return {
+        yt.FOLLOW_CHANNEL: lambda: follow_channel(dialog, node, args),
+        # Subscribes for real through Connect YouTube Account when it can;
+        # otherwise the confirm page below, exactly as before.
+        yt.SUBSCRIBE_ON_YOUTUBE: lambda: account.subscribe(
+            dialog, node, args, lambda: subscribe_on_youtube(dialog, node, args)
+        ),
+        yt.NOTIFY_CHANNEL: lambda: set_bell(dialog, node, args, on=True),
+        yt.STOP_NOTIFY_CHANNEL: lambda: set_bell(dialog, node, args, on=False),
+        yt.READ_COMMENTS: lambda: _read_comments(dialog, station),
+        yt.LIVE_CHAT: lambda: account.live_chat(dialog, station),
+        yt.VIDEO_DETAILS: lambda: account.video_window(dialog, station),
+        yt.ABOUT_CHANNEL: lambda: account.about_channel(dialog, node, args),
+    }
+
+
+def _row_name(dialog: Any, node: Any) -> str:
+    return str(dialog._tree.GetItemText(node)).split("  (")[0].strip()
+
+
+def follow_channel(dialog: Any, node: Any, args: list[str]) -> None:
+    """Follow a channel found by search or in My YouTube, in Quill Radio only."""
+    from quill.core.radio.youtube_channels import ChannelStore
+
+    if not args or not args[0]:
+        return
+    name = _row_name(dialog, node)
+    # The @handle address when there is one: it is the one a person recognises.
+    chosen = args[1] if len(args) > 1 and args[1] else args[0]
+    if ChannelStore().add(chosen, name=name) is None:
+        dialog._announce("That channel's address could not be read, so it was not followed.")
+        return
+    _reload(dialog)
+    dialog._announce(
+        f"Following {name} in Quill Radio. Find it under Browse Stations, YouTube. "
+        "Notify Me About New Videos is on its menu there."
+    )
+
+
+def subscribe_on_youtube(dialog: Any, node: Any, args: list[str]) -> None:
+    """Open YouTube's own subscribe page, after saying what will happen there."""
+    from quill.core.radio.row_actions_youtube import subscribe_url
+
+    url = subscribe_url(args[0] if args else "", args[1] if len(args) > 1 else "")
+    if not url:
+        dialog._announce("That channel's address could not be read.")
+        return
+    dialog._announce(
+        f"Opening {_row_name(dialog, node)} on YouTube in your browser. YouTube will "
+        "ask you to confirm the subscription there."
+    )
+    dialog._open_url(url)
+
+
+def set_bell(dialog: Any, node: Any, args: list[str], *, on: bool) -> None:
+    """Notify Me About New Videos, or stop, for a channel Quill Radio follows."""
+    from quill.core.radio.youtube_channel_alerts import AlertStore
+
+    url = _followed_url(args) or (args[0] if args else "")
+    if not url:
+        return
+    AlertStore().set_notifying(url, on)
+    name = _row_name(dialog, node)
+    if on:
+        dialog._announce(
+            f"{name}: new videos will notify you. Quill Radio looks whenever it "
+            "checks your podcasts."
+        )
+    else:
+        dialog._announce(f"{name}: no more notices about new videos.")
+
+
+def _read_comments(dialog: Any, station: Any) -> None:
+    from quill.ui.radio import youtube_comments_ui
+
+    youtube_comments_ui.open_for_station(dialog, station)
 
 
 def remove_saved(dialog: Any, node: Any, args: list[str]) -> None:

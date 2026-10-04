@@ -112,6 +112,9 @@ def build_menu_bar(host: Any, wx: Any, *, title: str, version: str, repo: str) -
 
     help_menu = wx.Menu()
     add(help_menu, "&Help for This Window\tF1", host.show_context_help)
+    from quill.ui.menu_palette import append_palette_row
+
+    ids.append(append_palette_row(host, help_menu))  # qc.md X-01
     add(help_menu, "&User Guide\tCtrl+F1", lambda: open_doc(host, "userguide"))
     add(help_menu, "&Release Notes\tShift+F1", lambda: open_doc(host, "release-notes-1.0"))
     add(help_menu, "Chan&gelog\tCtrl+Shift+F1", lambda: open_doc(host, "CHANGELOG"))

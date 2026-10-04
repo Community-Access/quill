@@ -286,8 +286,8 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Run one chord",
                 body=(
-                    "With the prefix armed, press G for Go to Anything or R for "
-                    "Read Aloud. Menus and the cheat sheet write these as QUILL "
+                    "With the prefix armed, press G to open a file from a favorite "
+                    "folder or R for Read Aloud. Menus and the cheat sheet write these as QUILL "
                     "Key + G, which is the same thing said in words."
                 ),
                 keys=("Ctrl+Shift+Grave, G",),

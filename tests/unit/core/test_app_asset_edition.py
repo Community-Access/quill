@@ -211,6 +211,8 @@ def test_quill_radio_asks_the_two_asset_question() -> None:
 
     assert radio._MATCH_EDITION is False
     source = Path(radio.__file__).read_text(encoding="utf-8")
+    # The Help menu's update row moved with the menu bar (F-08, 2026-10-03).
+    source += Path(radio.__file__).with_name("radio_menu_bar.py").read_text(encoding="utf-8")
     calls = source.count("self.check_for_app_updates(")
     assert calls >= 2
     assert source.count("match_edition=_MATCH_EDITION") == calls

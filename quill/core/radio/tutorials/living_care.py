@@ -19,85 +19,88 @@ TUTORIALS: tuple[Tutorial, ...] = (
         minutes=7,
         surfaces=("Sound Enhancements", "Player", "Quill Radio"),
         summary=(
-            "Per-station volume, a boost for a quiet stream, EQ and compression, "
-            "pausing and rewinding live radio, and a playback speed that sticks."
+            "Make every station sound its best: a volume for each station, a "
+            "boost for quiet ones, tone and loudness controls, pausing and "
+            "rewinding live radio, and a playback speed that stays put."
         ),
         steps=(
             Step(
                 title="Fix one station's volume once",
                 body=(
-                    "Set the volume while a favorite plays and it is remembered for "
-                    "that station, coming back the next time it starts. Stations are "
-                    "mastered wildly differently and you should only have to fix that "
-                    "once per station."
+                    "Set the volume while a favorite is playing, and Quill Radio "
+                    "remembers it for that station. Next time it starts, the "
+                    "volume comes back just as you left it. Some stations are "
+                    "much louder than others, and this way you only fix each "
+                    "one once."
                 ),
                 command="radio.volume_up",
                 keys=("Ctrl+Up", "Ctrl+Down"),
-                hear="The new level -- and the same level again the next time that station starts.",
+                hear="The new level, and the same level again next time that station starts.",
                 check="volume-changed",
                 note=(
-                    "A favorite's remembered level always wins over the general one. "
-                    "Forget Every Station's Own Volume, on the Audio menu, clears them "
-                    "all if you would rather start again, and Use One Volume for All "
-                    "Stations, beside it, turns the whole behaviour off."
+                    "A favorite's own volume always wins over the general "
+                    "volume. Forget Every Station's Own Volume, on the Audio "
+                    "menu, clears them all if you want a fresh start. Use One "
+                    "Volume for All Stations, right beside it, turns the whole "
+                    "idea off."
                 ),
             ),
             Step(
                 title="Boost a stream that is simply too quiet",
                 body=(
-                    "Volume Boost lifts a stream beyond the normal ceiling for the "
-                    "cases where full volume still is not enough. It needs the mpv "
-                    "engine, and says so rather than doing nothing if you are on the "
-                    "classic one."
+                    "Volume Boost makes a station louder than full volume, for "
+                    "those stations that are still too quiet. It needs the mpv "
+                    "engine. If you are using the classic engine, it tells you "
+                    "so."
                 ),
                 command="radio.volume_boost",
                 keys=("Ctrl+Shift+B",),
-                hear="Volume Boost on: up to 50 percent louder -- or the reason it cannot.",
+                hear="Volume Boost on: up to 50 percent louder. Or the reason it cannot.",
             ),
             Step(
                 title="Open Sound Enhancements",
                 body=(
-                    "An equaliser, Even Out Volume, a channel mode and Night mode -- "
-                    "the things that make a thin talk station or an over-compressed "
-                    "music station listenable. Changes apply to what is playing as "
-                    "you move the controls, and Cancel puts it back as it was."
+                    "Sound Enhancements has an equaliser, Even Out Volume, a "
+                    "channel mode and Night mode. They help a thin talk station "
+                    "or a harsh music station sound much better. You hear each "
+                    "change straight away, and Cancel puts everything back the "
+                    "way it was."
                 ),
                 command="radio.sound_enhancements",
                 keys=("Ctrl+E",),
                 hear="Sound Enhancements, then its Quick preset list.",
                 note=(
-                    "Enhancements are off for recordings by default, so your "
-                    "recordings stay an unfiltered archival copy. Recording Settings "
-                    "has Apply Sound Enhancements to recordings if you want the "
-                    "filtered audio captured instead."
+                    "These are not applied to recordings unless you ask, so your "
+                    "recordings stay exactly as the station sent them. To record "
+                    "what you hear, turn on Apply Sound Enhancements to "
+                    "recordings in Recording Settings."
                 ),
             ),
             Step(
                 title="Rewind live radio into what you missed",
                 body=(
-                    "On the mpv engine Quill Radio keeps the last three-quarters of "
-                    "an hour of a live station. Rewind 30 Seconds, on the Playback "
-                    "menu, steps back into what already went out; Forward 30 "
-                    "Seconds comes forward again; Back to Live returns you to the "
-                    "broadcast edge."
+                    "With the mpv engine, Quill Radio keeps about the last "
+                    "three-quarters of an hour of a live station. Rewind 30 "
+                    "Seconds, on the Playback menu, takes you back into what you "
+                    "missed. Forward 30 Seconds comes forward again, and Back to "
+                    "Live takes you right back to the live broadcast."
                 ),
                 command="radio.rewind",
                 keys=("Ctrl+Shift+Left", "Ctrl+Shift+Right", "Ctrl+Shift+L"),
                 hear="30 seconds behind live, then how far behind you are, then Back to live.",
                 note=(
-                    "Pause on the Playback menu is dimmed on a live station and says "
-                    "why; it is for recordings, episodes and files. On the classic "
-                    "engine the rewind keys say that they need mpv."
+                    "Pause on the Playback menu is dimmed on a live station and "
+                    "tells you why. It is for recordings, episodes and files. On "
+                    "the classic engine, the rewind keys tell you they need mpv."
                 ),
             ),
             Step(
                 title="Choose a speed that stays chosen",
                 body=(
-                    "A speed you choose while a recording plays applies to every "
-                    "recording; a speed chosen on a YouTube row applies to YouTube "
-                    "rows. Per kind rather than per row, because being asked to set "
-                    "it again for each captured hour is the same feature with the "
-                    "cost moved onto you."
+                    "Change the speed while a recording is playing, and every "
+                    "recording plays at that speed. Change it on a YouTube video, "
+                    "and every YouTube video does. So you set it once for each "
+                    "kind of thing, not over and over."
                 ),
                 command="radio.transport.speed_up",
                 keys=("Ctrl+Shift+Up", "Ctrl+Shift+Down", "Ctrl+Shift+0"),
@@ -106,34 +109,33 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Shorten the long pauses",
                 body=(
-                    "Skip Silence shortens the gaps in a recording, a YouTube row or "
-                    "an episode as it plays, taking effect on what is already playing "
-                    "with no interruption. It has no effect on live radio and says so "
-                    "if you turn it on while a station plays, rather than appearing to "
-                    "do nothing."
+                    "Skip Silence shortens the gaps in a recording, a YouTube "
+                    "video or an episode while it plays, with no interruption. "
+                    "It does not work on live radio, and if you turn it on while "
+                    "a station is playing, Quill Radio tells you why."
                 ),
                 command="radio.transport.skip_silence",
                 keys=("Ctrl+Shift+9",),
                 hear=(
-                    "Skip Silence on -- or the sentence explaining why a broadcast has no pauses "
-                    "to skip."
+                    "Skip Silence on. Or a sentence explaining why a live broadcast has "
+                    "no pauses to skip."
                 ),
             ),
             Step(
                 title="Send the radio somewhere else",
                 body=(
-                    "Output Device routes the radio to a second sound card or a USB "
-                    "headset while your screen reader stays on the system default. "
-                    "Switching mid-song reconnects the station on the new device, "
-                    "which is where it matters."
+                    "Output Device sends the radio to a second sound card or a "
+                    "USB headset, while your screen reader stays where it is. If "
+                    "you switch in the middle of a song, the station carries on "
+                    "through the new device."
                 ),
                 keys=("Ctrl+Shift+D",),
                 hear="The device you chose, read back.",
             ),
         ),
         closing=(
-            "Per-station volume is the one to set up now. The rest are worth "
-            "knowing about for the day a particular station annoys you."
+            "A volume for each station is the one worth setting up today. Keep "
+            "the rest in mind for the day a station gets on your nerves."
         ),
         then=("count-the-hours",),
     ),
@@ -144,16 +146,18 @@ TUTORIALS: tuple[Tutorial, ...] = (
         minutes=4,
         surfaces=("Listening Statistics",),
         summary=(
-            "Read your listening broken down by station and by network, take it "
-            "away as a spreadsheet, and understand exactly what is being counted."
+            "Find out how much you have listened, by station and by network, "
+            "save it as a spreadsheet, and learn exactly what counts as "
+            "listening."
         ),
         steps=(
             Step(
                 title="Open the statistics",
                 body=(
-                    "Choose a period -- this week, this month, this year, all time -- "
-                    "and the window reports how long you listened in total, how many "
-                    "sessions that was, then a breakdown by station and by network."
+                    "Choose a time period, such as this week, this month, this "
+                    "year or all time. The window tells you how long you "
+                    "listened in total and how many times, then breaks it down "
+                    "by station and by network."
                 ),
                 command="radio.statistics",
                 keys=("Ctrl+Shift+Q",),
@@ -162,54 +166,55 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Notice how the durations are read",
                 body=(
-                    "Three hours, 47 minutes -- as language, never as a clock face. "
-                    "A screen reader reads 3:47:00 as a time of day, which is the "
-                    "wrong sentence entirely for a duration."
+                    "Times are written in words, such as three hours, 47 "
+                    "minutes. They are never written like a clock, because a "
+                    "screen reader would read 3:47:00 as a time of day."
                 ),
-                hear="Durations spoken as hours and minutes.",
+                hear="Times spoken as hours and minutes.",
             ),
             Step(
                 title="Know what counts",
                 body=(
-                    "Time counts only while audio is actually coming out. Connecting "
-                    "does not count. Buffering through dead air does not count. Paused "
-                    "does not count. The app sitting stopped overnight does not count."
+                    "Only time when you can actually hear something counts. "
+                    "Connecting does not count. Waiting for a stream to come "
+                    "back does not count. Paused does not count. And Quill Radio "
+                    "sitting stopped all night certainly does not count."
                 ),
-                hear="Nothing: this is why the number is lower than you expected, and right.",
+                hear="Nothing. This is why the number may be lower than you expected.",
             ),
             Step(
                 title="Know what is deliberately not there",
                 body=(
-                    "Anything under ten seconds is not a session -- skipping past a "
-                    "station in a list is not listening, and a log full of "
-                    "three-second samples would make every per-station total "
-                    "meaningless. There is also no time saved by playing faster and no "
-                    "silence trimmed, because neither means anything for a broadcast."
+                    "Anything under ten seconds is not counted, because flicking "
+                    "past a station is not really listening. There is also no "
+                    "time saved by faster playback or by trimming silence, "
+                    "because those do not apply to live radio."
                 ),
-                hear="Nothing: a missing number here is a deliberate omission rather than a gap.",
+                hear="Nothing. If a number is missing here, it is missing on purpose.",
             ),
             Step(
                 title="Take it with you",
                 body=(
-                    "Copy takes the whole report as text. Save as CSV writes every "
-                    "session out for a spreadsheet, which is the one to use if you "
-                    "want to do arithmetic the window does not do."
+                    "Copy copies the whole report as text. Save as CSV saves "
+                    "every listening session for a spreadsheet, which is the one "
+                    "to use if you want to do your own sums."
                 ),
-                hear="Copied -- or Saved, the number of sessions, and the file's name.",
+                hear="Copied. Or Saved, the number of sessions, and the file's name.",
             ),
             Step(
                 title="Delete it if you would rather not keep it",
                 body=(
-                    "Delete My History removes the lot, and asks first with No as the "
-                    "default button -- because there is no other copy of it anywhere. "
-                    "Your history is kept on this computer and goes nowhere."
+                    "Delete My History removes all of it. It asks first, with No "
+                    "as the default, because there is no other copy anywhere. "
+                    "Your history stays on your computer and is never sent "
+                    "anywhere."
                 ),
-                hear="A confirmation, defaulting to No.",
+                hear="A question, with No chosen to start with.",
             ),
         ),
         closing=(
-            "It answers the question the recently-played list never could: not "
-            "what did I have on, but how much."
+            "Now you know not just what you listened to, but how much. It is "
+            "always fun to find out."
         ),
         then=("keep-it-safe",),
     ),
@@ -220,19 +225,20 @@ TUTORIALS: tuple[Tutorial, ...] = (
         minutes=8,
         surfaces=("Quill Radio",),
         summary=(
-            "Take a copy of everything you have built, move it to another machine, "
-            "stay up to date, and know what to do on the day something is genuinely "
-            "wrong."
+            "Keep a copy of everything you have set up, move it to another "
+            "computer, stay up to date, and know what to do if something ever "
+            "goes wrong."
         ),
         steps=(
             Step(
                 title="Back up the stations and the settings",
                 body=(
-                    "Back Up Stations and Settings writes your favorites, settings, "
-                    "wake timer and recording schedule into one portable file, and "
-                    "asks whether to include your recorded audio -- which can be "
-                    "large. Both commands are on the Station menu. Restore from "
-                    "Backup previews it and confirms before replacing anything."
+                    "Back Up Stations and Settings saves your favorites, "
+                    "settings, wake-up timer and recording schedule into one "
+                    "file. It asks whether to include your recordings too, which "
+                    "can be large. Both commands are on the Station menu. "
+                    "Restore from Backup shows you what is in the file and asks "
+                    "before replacing anything."
                 ),
                 keys=("Ctrl+Shift+U", "Ctrl+Alt+Shift+W"),
                 hear="Backing up Quill Radio, then Backup saved to, and the file's name.",
@@ -240,33 +246,31 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Move the whole setup to another machine",
                 body=(
-                    "Export My Setup writes one file carrying more than a backup "
-                    "does: subscriptions, folders and playlists, favorites and saved "
-                    "places, settings, your Go To order, your Quick Action order, "
-                    "scheduled recordings, bookmarks and any keys you rebound. Import "
-                    "My Setup, beside it on the Help menu, puts them on the other "
-                    "machine."
+                    "Export My Setup saves even more than a backup, in one file: "
+                    "your podcasts, folders and playlists, favorites and saved "
+                    "places, settings, your Go To order, your Quick Actions "
+                    "order, booked recordings, bookmarks and any keys you "
+                    "changed. Import My Setup, next to it on the Help menu, puts "
+                    "it all on the other computer."
                 ),
                 command="app.export_setup",
                 keys=("Ctrl+Alt+Shift+N",),
-                hear="What the file holds, named, before anything is written.",
+                hear="What the file holds, named, before anything is saved.",
                 note=(
-                    "Passwords are not in it: private-feed sign-ins, server "
-                    "credentials and unlock codes stay on the machine that holds "
-                    "them. Importing replaces what is on this machine rather than "
-                    "merging -- merging two libraries is a different job with "
-                    "different questions."
+                    "Passwords are not included. Sign-ins for private podcasts, "
+                    "server passwords and unlock codes stay on the computer they "
+                    "are on. Importing replaces what is on the new computer "
+                    "rather than mixing the two together."
                 ),
             ),
             Step(
                 title="Or let a sync service do it",
                 body=(
                     "The Data Folder button in Preferences, on the Station menu, "
-                    "points every Quill app at "
-                    "a folder of your choosing. Point it at one Dropbox, OneDrive, "
-                    "Google Drive or iCloud already syncs and the setup travels by "
-                    "itself -- no account, no sign-in, the sync client does the "
-                    "moving."
+                    "lets you choose where every Quill app keeps your things. "
+                    "Choose a folder that Dropbox, OneDrive, Google Drive or "
+                    "iCloud already syncs, and your setup travels with you by "
+                    "itself. No extra account and no sign-in."
                 ),
                 keys=("Ctrl+,",),
                 hear="The Data Folder window, and afterwards an offer to Restart Now or Later.",
@@ -274,11 +278,12 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Stay up to date without being nagged",
                 body=(
-                    "Check for Updates, on the Help menu, compares your version with "
-                    "the newest release, tells you what changed, downloads it with "
-                    "spoken progress, then offers Install now or Open folder. Quill "
-                    "Radio also checks quietly at launch, at most once a day -- "
-                    "silent unless it finds something."
+                    "Check for Updates, on the Help menu, checks whether there "
+                    "is a newer version and tells you what changed. It downloads "
+                    "it, telling you how far along it is, then offers Install "
+                    "now or Open folder. Quill Radio also checks quietly when it "
+                    "opens, no more than once a day, and only speaks up if it "
+                    "finds something."
                 ),
                 keys=("Ctrl+Alt+U",),
                 hear=(
@@ -286,73 +291,73 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "your version."
                 ),
                 note=(
-                    "Quill Radio comes as two downloads: the installer, "
+                    "Quill Radio comes in two downloads: the installer, "
                     "Quill-Radio-Setup-Shared, and the portable zip, "
-                    "Quill-Radio-Portable. Check for Updates knows which one you are "
-                    "running and offers that one back -- installer for installer, "
-                    "portable for portable."
+                    "Quill-Radio-Portable. Check for Updates knows which one you "
+                    "have and offers you the same kind again."
                 ),
             ),
             Step(
                 title="Keep it playing while you work",
                 body=(
-                    "Send to Tray, on the Station menu, hides the window and keeps "
-                    "everything running; Ctrl+Alt+Shift+R shows or hides it from "
-                    "anywhere in Windows. The "
-                    "tray icon carries the live now-playing line, play/stop, mute, "
-                    "your favorites and recently played nested by folder, recording, "
+                    "Send to Tray, on the Station menu, hides the window and "
+                    "keeps everything running. Ctrl+Alt+Shift+R shows or hides "
+                    "it from anywhere in Windows. The tray icon's menu has what "
+                    "is playing now, play and stop, mute, your favorites and "
+                    "recently played stations in their folders, recording, "
                     "scheduling and Browse Stations."
                 ),
                 keys=("Ctrl+W", "Ctrl+Alt+Shift+R"),
                 hear=(
-                    "Quill Radio hidden to the tray -- and Quill Radio shown when you "
-                    "bring it back."
+                    "Quill Radio hidden to the tray. Then Quill Radio shown when you bring it back."
                 ),
             ),
             Step(
                 title="Check the installation itself",
                 body=(
-                    "If playback or recording is misbehaving, Audio Health answers "
-                    "whether this installation can do the thing at all: which engine "
-                    "is really in use, whether mpv and FFmpeg are present, where the "
-                    "audio is going, and whether a recording could be written right "
-                    "now."
+                    "If playing or recording is not working properly, Audio "
+                    "Health tells you whether Quill Radio can do it at all. It "
+                    "shows which sound player is in use, whether mpv and FFmpeg "
+                    "are there, where the sound is going, and whether a "
+                    "recording could be saved right now."
                 ),
                 keys=("Ctrl+Alt+Shift+M",),
-                hear="Audio Health, then each check with its own verdict.",
+                hear="Audio Health, then each check with its own answer.",
                 note=(
-                    "mpv and FFmpeg ship inside every installer, so a missing one "
-                    "means a damaged installation -- antivirus quarantine and a "
-                    "half-finished update are the two usual causes. Repair FFmpeg and "
-                    "Repair mpv Playback Engine on the Help menu fetch them back."
+                    "mpv and FFmpeg come with every installer, so if one is "
+                    "missing, something has removed it. Antivirus programs and "
+                    "unfinished updates are the usual reasons. Repair FFmpeg and "
+                    "Repair mpv Playback Engine, on the Help menu, bring them "
+                    "back."
                 ),
             ),
             Step(
                 title="Report it properly",
                 body=(
-                    "Get Help from Support writes to a person from inside the "
-                    "app, stamped with this app's own version. Paste in Copy All "
-                    "from Recent Problems -- it carries addresses and error "
-                    "messages, never passwords."
+                    "Get Help from Support writes to a real person from inside "
+                    "Quill Radio, and includes which version you have. Paste in "
+                    "the list from Copy All in Recent Problems. It has web "
+                    "addresses and error messages in it, but never passwords."
                 ),
                 keys=("Ctrl+Alt+F2", "Ctrl+Alt+Shift+P"),
-                hear="A form with most of it filled in already.",
+                hear="A form with most of it already filled in.",
             ),
             Step(
                 title="Know the one setting that turns everything off",
                 body=(
-                    "Safe Mode starts Quill Radio with every network feature "
-                    "disabled -- no directories, no catalog refresh, no YouTube, no "
-                    "Spotify, no Quillins. Start it by adding --safe-mode after the "
-                    "program's name. It is what to try when something is broken "
-                    "enough that you want to know whether the network is involved."
+                    "Safe Mode starts Quill Radio with everything that uses the "
+                    "internet turned off: no directories, no catalog updates, no "
+                    "YouTube, no Spotify and no Quillins. To use it, add "
+                    "--safe-mode after the program's name when you start it. Try "
+                    "it when something is badly wrong and you want to know "
+                    "whether the internet is part of the problem."
                 ),
-                hear="Network commands saying they are off in Safe Mode, rather than failing.",
+                hear="Internet commands saying they are off in Safe Mode, rather than failing.",
             ),
         ),
         closing=(
-            "One backup file, one setup file, one health window and one bug form. "
-            "Between them, nothing you have built here is difficult to get back."
+            "One backup file, one setup file, one health check and one way to "
+            "ask for help. With those, everything you have set up is safe."
         ),
     ),
 )

@@ -25,7 +25,9 @@ def gate():
 
 
 def test_versions_parse_and_prereleases_sort_below_the_number(gate) -> None:
-    assert gate.parse_version("3.1.0") == (3, 1, 0, 0)
+    assert gate.parse_version("3.1.0") == gate.parse_version("v3.1.0")
+    assert gate.parse_version("3.3.0-beta.1") < gate.parse_version("3.3.0-beta.2")
+    assert gate.parse_version("3.3.0-dev.20261003.2") < gate.parse_version("3.3.0-beta.1")
     assert gate.parse_version("3.1.0") > gate.parse_version("3.0.4")
     assert gate.parse_version("1.1.0") < gate.parse_version("1.1.1")
     assert gate.parse_version("0.9.0-beta.2") < gate.parse_version("0.9.0")
@@ -72,6 +74,12 @@ def test_a_checkout_behind_the_release_fails_and_so_does_a_release_without_a_bum
 
 def test_an_app_never_released_is_skipped(gate) -> None:
     assert gate.disagreements({"weather": "2.2.0"}, {"weather": None}, releasing=set()) == []
+
+
+def test_cast_is_in_the_gate(gate) -> None:
+    sites = {site.app: site for site in gate.SITES}
+    assert sites["cast"].tag_prefix == "quill-cast-v"
+    assert sites["cast"].source == "quill/apps/podcasts_menu.py"
 
 
 def test_every_site_names_a_real_constant(gate) -> None:

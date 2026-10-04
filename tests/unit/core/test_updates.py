@@ -455,7 +455,9 @@ def test_fetch_releases_uses_api_override(monkeypatch) -> None:
 
     monkeypatch.setattr(updates, "urlopen", _fake_urlopen)
     assert updates.fetch_releases() == []
-    assert seen["url"] == override
+    # per_page=100: GitHub's default page of 30 would hide Stable releases
+    # once enough betas share the repository (release-channels plan, 1.9).
+    assert seen["url"] == f"{override}?per_page=100"
 
 
 # --------------------------------------------------------------------------- #

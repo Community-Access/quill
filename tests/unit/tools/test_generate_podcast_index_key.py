@@ -109,3 +109,14 @@ def test_the_windows_build_runs_it() -> None:
     script = (root / "scripts" / "build_windows_distribution.py").read_text("utf-8")
 
     assert "generate_podcast_index_key.py" in script
+
+
+def test_require_fails_a_release_build_with_no_pair(tmp_path, monkeypatch, capsys) -> None:
+    """2026-10-03: a release build may not ship without the pair; values never printed."""
+    monkeypatch.delenv("QUILL_PODCAST_INDEX_KEY", raising=False)
+    monkeypatch.delenv("QUILL_PODCAST_INDEX_SECRET", raising=False)
+    monkeypatch.setattr(gen, "resolve", lambda: ("", ""))
+    monkeypatch.setattr(gen, "OUTPUT_FILE", tmp_path / "_podcast_index_key.py")
+    assert gen.main(["--require"]) == 1
+    assert "QUILL_PODCAST_INDEX_KEY" in capsys.readouterr().err
+    assert not (tmp_path / "_podcast_index_key.py").exists()

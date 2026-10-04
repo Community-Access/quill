@@ -15,15 +15,21 @@ from collections.abc import Callable
 from datetime import datetime
 from typing import Any
 
-from quill.ui.dialog_contract import apply_modal_ids
-
-__all__ = ["YearInReviewDialog", "open_year_in_review"]
+__all__ = ["YearInReviewWindow", "open_year_in_review"]
 
 TITLE = "Year in Review"
 
 
-class YearInReviewDialog:
-    """A paragraph about one year, with a way to keep it."""
+class YearInReviewWindow:
+    """A paragraph about one year, with a way to keep it -- a peer window.
+
+    Made once and raised again (qc.md Phase 4): asked for a second time from
+    Listening Statistics it re-reads the statistics window's sessions, keeps
+    the year you chose, and Escape returns you to the button that opened it.
+    """
+
+    TITLE = TITLE
+    MENU_TITLE = "Year in Re&view"
 
     def __init__(
         self,
@@ -32,10 +38,12 @@ class YearInReviewDialog:
         sessions: list[Any],
         show_titles: dict[str, str] | None = None,
         announce_cb: Callable[[str], None] | None = None,
+        reload: Callable[[], tuple[list[Any], dict[str, str]]] | None = None,
     ) -> None:
         import wx
 
         self._wx = wx
+        self._reload = reload
         self._sessions = sessions
         self._titles = show_titles or {}
         self._announce = announce_cb or (lambda _m: None)
@@ -43,21 +51,23 @@ class YearInReviewDialog:
         this_year = datetime.now().astimezone().year
         self._years = [this_year, this_year - 1]
 
-        self.dialog = wx.Dialog(
-            parent, title=TITLE, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
-        )
-        self.dialog.SetMinSize((560, 520))
+        self.frame = wx.Frame(parent, title=TITLE, size=(600, 560))
+        self.frame.SetMinSize((560, 520))
+        panel = wx.Panel(self.frame, style=wx.TAB_TRAVERSAL)
         root = wx.BoxSizer(wx.VERTICAL)
 
         year_row = wx.BoxSizer(wx.HORIZONTAL)
         year_row.Add(
-            wx.StaticText(self.dialog, label="&Year:"),
+            wx.StaticText(panel, label="&Year:"),
             0,
             wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
             6,
         )
-        self._year_choice = wx.Choice(self.dialog, choices=[str(year) for year in self._years])
+        self._year_choice = wx.Choice(panel, choices=[str(year) for year in self._years])
         self._year_choice.SetName("Which year to report on")
+        self._year_choice.SetHelpText(
+            "This year or last year. The report below changes as soon as you choose."
+        )
         self._year_choice.SetSelection(self._opening_year_index())
         year_row.Add(self._year_choice, 1, wx.EXPAND)
         root.Add(year_row, 0, wx.EXPAND | wx.ALL, 10)
@@ -65,10 +75,8 @@ class YearInReviewDialog:
         # Created immediately before the field: the association is by creation
         # order, so the "Year:" label belongs to the combo after it and this
         # field, carrying only a SetName, announced as a bare read-only "edit".
-        report_label = wx.StaticText(self.dialog, label="&Report:")
-        self._report = wx.TextCtrl(
-            self.dialog, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2
-        )
+        report_label = wx.StaticText(panel, label="&Report:")
+        self._report = wx.TextCtrl(panel, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2)
         self._report.SetHelpText(
             "Your year in listening, in sentences. Read-only -- arrow through it "
             "line by line, or Copy takes the whole thing."
@@ -77,19 +85,38 @@ class YearInReviewDialog:
         root.Add(self._report, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
-        copy_btn = wx.Button(self.dialog, label="&Copy")
-        save_btn = wx.Button(self.dialog, label="&Save as Text...")
-        close_btn = wx.Button(self.dialog, wx.ID_CANCEL, "C&lose")
+        copy_btn = wx.Button(panel, label="&Copy")
+        copy_btn.SetHelpText("Puts the whole report on the clipboard.")
+        save_btn = wx.Button(panel, label="&Save as Text...")
+        save_btn.SetHelpText("Saves the report as a plain text file, to keep or send.")
+        close_btn = wx.Button(panel, label="Close")
+        close_btn.SetHelpText("Closes this window and returns to where you were.")
+        from quill.ui.dialog_contract import bind_close_button
+
+        bind_close_button(self.frame, close_btn, modeless=True)
         buttons.Add(copy_btn, 0, wx.RIGHT, 6)
         buttons.Add(save_btn, 0)
         buttons.AddStretchSpacer()
         buttons.Add(close_btn, 0)
         root.Add(buttons, 0, wx.EXPAND | wx.ALL, 10)
 
-        self.dialog.SetSizer(root)
+        panel.SetSizer(root)
         self._year_choice.Bind(wx.EVT_CHOICE, lambda _e: self._refresh(speak=True))
         copy_btn.Bind(wx.EVT_BUTTON, lambda _e: self._copy())
         save_btn.Bind(wx.EVT_BUTTON, lambda _e: self._save())
+        self.frame.CentreOnParent()
+        self._refresh()
+
+    def focus_target(self) -> Any:
+        # Focus on the thing this window is for, not on whatever control happens
+        # to come first in it (qc.md 6b: eight windows landed on a filter or a
+        # chooser).
+        return self._report
+
+    def refresh(self) -> None:
+        """Raised again: re-read the sessions, keeping the chosen year."""
+        if self._reload is not None:
+            self._sessions, self._titles = self._reload()
         self._refresh()
 
     def _opening_year_index(self) -> int:
@@ -136,7 +163,7 @@ class YearInReviewDialog:
     def _save(self) -> None:
         wx = self._wx
         with wx.FileDialog(
-            self.dialog,
+            self.frame,
             "Save your year in review",
             defaultFile=f"quill-cast-{self._year()}.txt",
             wildcard="Text file (*.txt)|*.txt|All files (*.*)|*.*",
@@ -152,34 +179,35 @@ class YearInReviewDialog:
         except OSError as error:
             self._announce(f"Could not save that file: {error}.")
             return
-        self._announce(f"Saved to {Path(destination).name}.")
+        from quill.ui.outcome_report import report_outcome
 
-    def show(self) -> None:
-        from quill.ui.dialog_contract import show_modal_dialog
-
-        self.dialog.CentreOnParent()
-        apply_modal_ids(
-            self.dialog,
-            affirmative_id=self._wx.ID_CANCEL,
-            affirmative_label="Close",
-            cancel_id=self._wx.ID_CANCEL,
-            escape_id=self._wx.ID_CANCEL,
+        report_outcome(
+            self, "Save Year in Review", f"Saved to {Path(destination).name}.", path=destination
         )
-        # Focus on the thing this window is for, not on whatever control happens
-        # to come first in it (qc.md 6b: eight windows landed on a filter or a
-        # chooser). Set before ShowModal, which keeps a focus already placed.
-        self._report.SetFocus()
-        try:
-            show_modal_dialog(self.dialog, TITLE, announce=self._announce)
-        finally:
-            self.dialog.Destroy()
 
 
-def open_year_in_review(stats_dialog: Any) -> None:
-    """Open the review over whatever the statistics window is already holding."""
-    YearInReviewDialog(
-        stats_dialog.dialog,
-        sessions=list(stats_dialog._sessions),
-        show_titles=dict(stats_dialog._show_titles),
-        announce_cb=stats_dialog._announce,
-    ).show()
+def open_year_in_review(
+    stats_window: Any, *, focus: bool = True, opener: Any = None
+) -> YearInReviewWindow:
+    """Open, or raise, the review over whatever the statistics window is holding."""
+    from quill.ui.podcasts.peer_window import open_peer
+
+    host = getattr(stats_window, "_host", None) or stats_window
+
+    def _current() -> tuple[list[Any], dict[str, str]]:
+        return list(stats_window._sessions), dict(stats_window._show_titles)
+
+    def _make(_owner: Any) -> YearInReviewWindow:
+        sessions, titles = _current()
+        return YearInReviewWindow(
+            getattr(host, "frame", None) or stats_window.frame,
+            sessions=sessions,
+            show_titles=titles,
+            announce_cb=stats_window._announce,
+            reload=_current,
+        )
+
+    window: YearInReviewWindow = open_peer(
+        host, "_year_review_window", _make, focus=focus, opener=opener
+    )
+    return window

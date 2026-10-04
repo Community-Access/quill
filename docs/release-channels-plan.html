@@ -1,0 +1,2695 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Release Channels for the QUILL Family: Stable, Beta and
+Dev</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1
+id="release-channels-for-the-quill-family-stable-beta-and-dev">Release
+Channels for the QUILL Family: Stable, Beta and Dev</h1>
+<p><em>Plan of record draft, 2026-10-03. Covers QUILL (the full editor),
+QUILL Lite, Quill Radio and QUILL Cast. Written so any other QuillVille
+app can join by adding one profile entry.</em></p>
+<blockquote>
+<p><strong>Status (2026-10-03): Phases 0 and 1 are implemented</strong>
+(uncommitted on <code>main</code>, not yet released). Phase 0:
+<code>quill/core/versioning.py</code>, <code>select_latest</code> in the
+sibling and Lite checks, <code>per_page=100</code> with paging, Cast’s
+installed-version check and <code>quill-app-version.ini</code> in both
+Cast installers, Cast in GATE-APPVER and GATE-SIBVER,
+<code>quill/core/data_formats.py</code> and
+<code>data_format_ledger.py</code> (recording only),
+<code>channels.json</code>
+(<code>quill/core/updater/channels.py</code>), and
+<code>windows-release.yml</code> reading the channel from the tag. Phase
+1: Help &gt; Release Channel… and a Preferences row in all four apps (no
+chord: Alt+Shift+F4 was dropped on 2026-10-03, because Windows reads it
+as Alt+F4 in a dialog and closes the window – family rules 4 and 9), the
+shared chooser and risk windows (<code>quill/ui/updates/</code>),
+joined-Beta copies, “Wait for Stable” plus the same-version flip, a
+channel-aware update check, read-only Update History (reached from the
+Release Channel window rather than its own menu item), and the interim
+runtime rule (6.5).</p>
+<p><strong>Phases 2, 3 and 4 are implemented too</strong> (2026-10-03,
+uncommitted, not yet run against a real release). Phase 2: the signed
+per-app feed (<code>quill/core/updater/feed.py</code>,
+<code>feed_fetch.py</code>, <code>feed_publish.py</code>), resumable
+downloads checked against the feed’s SHA-256 (<code>download.py</code>),
+background downloads on Beta and Dev (<code>background.py</code>,
+<code>quill/ui/updates/background.py</code>),
+<code>scripts/publish_release.py</code>,
+<code>promote_release.py</code>, <code>feed_tool.py</code> and
+<code>dev_build_plan.py</code> over
+<code>quill/tools/release_feed.py</code>, GATE-FEED
+(<code>tests/unit/docs/test_release_feeds.py</code>, and
+<code>quill/tools/release_feed_audit.py</code> in
+<code>platform_report</code> with the 14-day expiry warning),
+GATE-RELEASE-PAGE
+(<code>tests/unit/scripts/test_release_page_budget.py</code>), and the
+<code>dev-builds.yml</code> and <code>promote-release.yml</code>
+workflows. Every app’s update check reads the v2 feed first and uses the
+old GitHub path only while no feed is published (HTTP 404). Phase 3:
+runtime slots (<code>runtime_slots.py</code>;
+<code>installer/shared-runtime.iss</code> with <code>/CHANNEL=</code>,
+<code>[runtime] slot=</code> and slot-keyed refs;
+<code>runtime_resolve.c</code> and <code>launcher.c</code>, source only,
+not built; <code>runtime-stable</code>, <code>runtime-beta</code> and
+the <code>runtime-latest</code> alias in
+<code>build_runtime_installer.ps1</code>; channel-aware GATE-SIBVER),
+which lifts the “alone on the runtime” rule for any install whose marker
+names a slot. Phase 4: <code>downgrade_verdict</code> and the three Go
+back to Stable windows (<code>going_back.py</code>,
+<code>quill/ui/updates/return_to_stable_dialog.py</code>,
+<code>going_back_flow.py</code>), restoring the joined-Beta copy with
+the shared-file rule and ledger lowering
+(<code>snapshots.restore_snapshot</code>,
+<code>data_format_ledger.lower</code>),
+<code>UnsafeDowngradeError</code>, and the update helper’s health check,
+kept installer and portable <code>.previous</code> swap
+(<code>apply.py</code>, <code>apply_script.py</code>,
+<code>self_update.py</code>), with every undo in Update History.</p>
+<p><strong>Decisions, 2026-10-03</strong> (the owner’s answers to 10.4):
+per-app channel with “move the others too” (5); Stable takes only
+final-numbered builds that were first on Beta, promoted as the same
+files (4); screen-reader sign-off for Stable only (3); at least 7 days
+on Beta, shorter only with a written reason recorded in the promotion
+(3); Dev builds by CI from <code>main</code>, at most once a day and
+only when <code>main</code> changed, unsigned, published to the separate
+repository <code>Community-Access/quillville-dev-builds</code>, and Dev
+runtimes do not repair themselves (“Reinstall the Dev build”) (1); about
+335 MB extra for a Beta or Dev runtime slot is accepted and the risk
+window says so (2); the v2 feed expires after 90 days and is refreshed
+at every release, and the signing key stays off CI, so there is no
+weekly re-sign workflow – signing happens in the local publish scripts
+with the owner’s existing feed key, and <code>publish_release.py</code>
+and <code>platform_report</code> warn when any feed is within 14 days of
+expiry (6); the previous installer is kept for rollback until 3
+successful starts or 7 days, and Update History records each undo (7);
+macOS later (8); QUILL 1.0.0 is its first Stable, reached through a
+<code>v1.0.0-rc.1</code> tag on Beta and then promotion (9); QUILL Lite
+keeps the <code>quill-lite-v</code> prefix (10); on Beta and Dev every
+app downloads updates in the background and never installs without
+asking, skipping metered connections, Quiet Hours and Quill Radio
+recordings, and Stable is unchanged (11); no gradual rollout (12);
+<code>promote-release.yml</code> requires a GitHub Environment named
+<code>stable-promotion</code> (4.4).</p>
+<p>Where the code departs from the text below because of these
+decisions: no <code>feed-refresh.yml</code> (8.2) – a feed is refreshed
+at each publish or promotion, or by
+<code>scripts/feed_tool.py refresh</code>; the promote workflow cannot
+sign, so it runs <code>promote_release.py --no-sign</code> and opens a
+pull request that GATE-FEED keeps red until the owner signs it locally;
+and, so that a failed update can undo itself at all, the installer of
+the version you are running stays in
+<code>&lt;updates&gt;/rollback/</code> (the <em>previous</em> one is the
+one aged out after 3 starts or 7 days).</p>
+</blockquote>
+<hr />
+<h2 id="0-the-short-version">0. The short version</h2>
+<ul>
+<li><strong>Three channels.</strong> Stable, Beta and Dev. Every app is
+on Stable unless you choose otherwise. You choose per app, and you can
+also move all your QuillVille apps together in one step.</li>
+<li><strong>The channel belongs to the listing, not to the
+binary.</strong> A build is made once and signed once. After that it
+moves from Dev to Beta to Stable as the same bytes. Only the signed feed
+changes. Prerelease-numbered builds (<code>3.3.0-beta.2</code>) can
+never become Stable. A plain-numbered <em>candidate</em> build
+(<code>3.3.0</code>) goes to Beta first and is then promoted to Stable
+unchanged.</li>
+<li><strong>One signed feed per app.</strong> It lives at
+<code>updates/v2/&lt;app&gt;.json</code> on the existing Pages site and
+is signed with the existing Ed25519 feed key
+(<code>quill/core/feed-pub.key</code>). It lists every build with its
+channels, SHA-256 hashes, data-format versions, required runtime,
+rollback targets and a revoked flag. GitHub Releases still hosts the
+files and keeps the prerelease flags, so copies already installed keep
+working.</li>
+<li><strong>“Back to Stable only if safe” becomes a rule the code can
+check.</strong> Each build declares the data-format versions it
+<em>writes</em> and the versions it can <em>read</em>. Each machine
+keeps a ledger of the highest format version ever written there. Going
+down is allowed only if the target build can read everything in the
+ledger. When it can’t, you get two safe choices: wait on your current
+version until Stable catches up (the app then moves you across by
+itself), or restore the automatic copy saved when you joined Beta.</li>
+<li><strong>The biggest hidden problem is the shared runtime.</strong>
+The QuillVille Runtime carries a frozen copy of <em>every</em> app’s
+code, and the newest runtime build always wins. So putting Radio on Beta
+today would silently run Beta code for a Stable QUILL Lite on the same
+machine. Rolling Radio back would not help either, because the newer
+runtime is never replaced by an older one. Before runtime apps can offer
+Beta on a machine with more than one app, the plan adds <strong>channel
+runtime slots</strong> (<code>Runtime\3.13</code>,
+<code>Runtime\3.13-beta</code>, <code>Runtime\3.13-dev</code>).</li>
+<li><strong>Phase order follows user value.</strong> First fix the
+existing hazards. Then ship the channel choice and risk dialog in all
+four apps (QUILL first, because it does not use the shared runtime).
+Then the signed feed and promotion tooling, then runtime slots, then
+safe downgrade and rollback, then the extras.</li>
+</ul>
+<hr />
+<h2 id="1-survey-what-exists-today-with-evidence">1. Survey: what exists
+today (with evidence)</h2>
+<h3 id="11-two-updaters-one-shared-ui">1.1 Two updaters, one shared
+UI</h3>
+<table>
+<thead>
+<tr>
+<th>Piece</th>
+<th>Where</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>QUILL’s updater</td>
+<td><code>quill/ui/main_frame_updates.py</code>
+(<code>UpdatesMixin</code>)</td>
+<td>Reads the signed v1 manifest, then falls back to the GitHub Releases
+API. Has a <code>beta_updates</code> checkbox, a consent dialog, “Skip
+this version”, automatic download on the silent check, and a GLOW engine
+updater.</td>
+</tr>
+<tr>
+<td>Sibling-app updater</td>
+<td><code>quill/ui/app_shell.py:824-927</code>
+(<code>check_for_app_updates</code>) for Radio, Cast and others;
+<code>quill/apps/lite_updates.py</code> for Lite</td>
+<td>Reads the GitHub Releases API only, filtered to the app’s own asset
+prefix. Takes <code>stable[0]</code>. Has no channels.</td>
+</tr>
+<tr>
+<td>Shared offer dialog</td>
+<td><code>quill/ui/update_notice.py</code>
+(<code>show_update_available</code>; <code>update_header</code> at
+118-132 labels “Beta / prerelease” or “Stable”)</td>
+<td>One dialog for all nine apps.</td>
+</tr>
+<tr>
+<td>Shared download and install</td>
+<td><code>quill/ui/update_download.py</code>
+(<code>download_and_offer_install</code>, <code>offer_install</code>
+182-270, <code>apply_and_restart</code> 273)</td>
+<td>Offers Install and restart now, Install when I close, or Open
+folder.</td>
+</tr>
+<tr>
+<td>Self-apply helper</td>
+<td><code>quill/core/self_update.py</code>
+(<code>build_apply_update_script</code> 52-167,
+<code>begin_self_update</code> 361-429)</td>
+<td>A batch helper waits for the app’s PID. Portable copies get
+<code>robocopy /MIR /IS</code> with <code>data</code> excluded (line
+135). Installed copies get a silent elevated Inno run
+(<code>/VERYSILENT /SUPPRESSMSGBOXES /NORESTART</code>, 141-146). It
+breaks out of the launcher’s job object (300-321).</td>
+</tr>
+<tr>
+<td>Network core</td>
+<td><code>quill/core/updates.py</code></td>
+<td>See the details below.</td>
+</tr>
+</tbody>
+</table>
+<p>Details of <code>quill/core/updates.py</code>:</p>
+<ul>
+<li><strong>v1 manifest feed URL:</strong>
+<code>DEFAULT_UPDATE_MANIFEST_URL</code> at 19-21
+(<code>community-access.github.io/quill/updates/.quill-update-feed-v1.json</code>).</li>
+<li><strong>Signature on the v1 manifest:</strong> Ed25519 is
+<em>optional</em>. <code>parse_update_manifest</code> (527-552) accepts
+a feed with no <code>signature_ed25519</code> unless
+<code>QUILL_REQUIRE_SIGNED_FEED=1</code> (548-551). The legacy salted
+SHA-256 uses a public salt (<code>_SIGNATURE_SALT</code>, line 25, and
+the docstring at 660-664 says it “protects against accidental
+corruption, not a determined attacker”).</li>
+<li><strong>v1 manifest content:</strong> it has no channel field. It
+holds exactly one <code>version</code> and one <code>download_url</code>
+(the <code>UpdateManifest</code> dataclass, 97-109).</li>
+<li><strong>Asset hashes:</strong> these come from GitHub’s own API
+<code>digest</code> field (<code>download_digest</code>, 136-140), not
+from anything we signed. The download hashes as it streams
+(<code>download_release_asset</code> 861-908) but <strong>cannot
+resume</strong>.</li>
+<li><strong>Resumable download already exists elsewhere:</strong>
+<code>quill/core/release_assets.py:283</code>
+(<code>_download_resumable</code>, using HTTP Range plus mirrors) is
+used for components, not for updates.</li>
+<li><strong>Trusted hosts:</strong> <code>_trusted_update_hosts</code>
+(975-984).</li>
+</ul>
+<h3 id="12-how-versions-are-compared-today-three-different-parsers">1.2
+How versions are compared today (three different parsers)</h3>
+<ol type="1">
+<li><code>quill/core/updates.py:_version_tuple</code> (778-834) and
+<code>_prerelease_rank</code> (837-858). The order is rc (tier 2) &gt;
+beta/b (tier 1) &gt; alpha, <strong>dev</strong> and anything unknown
+(tier 0). It accepts display forms (“0.7.0 Beta 1”) and PEP 440
+(<code>0.8.0b1.post1</code>). The pre-release number is the
+<em>first</em> run of digits. So <code>3.3.0-dev.20261003.1</code> and
+<code>3.3.0-dev.20261003.2</code> <strong>tie</strong>, and two dev
+builds from the same day cannot be ordered. A tag like
+<code>quill-radio-v3.0.4</code> parses as <code>0.0.0</code> (partition
+on the first “-”). QUILL’s <code>fetch_releases</code> only avoids
+offering sibling-app releases by that accident.</li>
+<li><code>scripts/check_sibling_versions.py:parse_version</code>
+(69-75). Any suffix becomes <code>-1</code>, so every pre-release of a
+version is equal.</li>
+<li><code>tools/generate_build_info.py</code>:
+<code>pep440_version</code> (61-72) produces <code>1.0.0b1</code> and
+<code>1.0.0.dev&lt;date&gt;&lt;n&gt;</code>, and
+<code>display_version</code> (75-86) produces “1.0.0 Beta 1” and “1.0.0
+Dev”.</li>
+</ol>
+<p><strong>Pure semver would sort these wrongly for us.</strong> Semver
+compares pre-release labels as ASCII, which puts
+<code>3.3.0-dev.1</code> <em>after</em> <code>3.3.0-beta.1</code>. We
+need PEP 440 <em>ordering</em> (dev &lt; alpha &lt; beta &lt; rc &lt;
+final) with semver-shaped <em>spelling</em> in tags.</p>
+<h3 id="13-tags-actually-in-the-repo">1.3 Tags actually in the repo</h3>
+<p><code>git tag</code> shows <code>quill-lite-v1.1.2</code>,
+<code>quill-lite-v1.1.1</code>, <code>quill-lite-v1.1.0</code>,
+<code>quill-radio-v3.0.4</code> … <code>v3.0.0</code>,
+<code>quill-lite-v1.0.1</code>, <code>quill-lite-v1.0.0</code>,
+<code>runtime-latest</code>, <code>v0.9.0-beta.3</code>,
+<code>v0.9.0-beta.2</code>, <code>v0.9.0-beta.1</code>,
+<code>v0.8.0-beta.1</code>, <code>v0.7.0-beta.1</code>,
+<code>v0.6.0</code>, and so on. Notes:</p>
+<ul>
+<li><code>quill/core/release_tags.py</code> (19-27) <em>declares</em>
+the convention <code>quill-&lt;app key&gt;-v&lt;version&gt;</code> with
+Lite as <code>quill-quilllite-v1.0.0</code>. The real tags use
+<strong><code>quill-lite-v</code></strong>, and
+<code>check_sibling_versions.SITES</code> (59-66) uses
+<code>quill-lite-v</code> too. <code>release_tags.release_tag()</code>
+is only called from tests. The plan grandfathers <code>lite</code> as
+the tag key.</li>
+<li><strong>QUILL:</strong> <code>build/version.toml</code> says
+<code>base_version = "1.0.0"</code>, <code>channel = "stable"</code>,
+and <code>quill/__init__.py:26</code> says
+<code>__version__ = "1.0.0"</code>. The newest published tag is
+<strong>v0.9.0-beta.3</strong>. The request said “0.9.0 Beta 2”, so
+1.0.0 looks like the first QUILL Stable and has not shipped yet. This
+needs confirming (open question 9).</li>
+<li><strong>App versions in source:</strong> Radio
+<code>quill/apps/radio.py:39</code> <code>_VERSION = "3.2.0"</code>
+(published 3.0.4). Lite <code>quill/core/lite/__init__.py:45</code>
+<code>APP_VERSION = "1.2.0"</code> (published 1.1.2). Cast
+<code>quill/apps/podcasts_menu.py:24</code>
+<code>APP_VERSION = "2.0.0"</code> (never published). The build scripts
+agree: <code>standalone/radio/scripts/build_release.ps1:50</code>,
+<code>standalone/quilllite/scripts/build_release.ps1:54</code>,
+<code>standalone/cast/scripts/build_release.ps1:31</code>.</li>
+</ul>
+<h3 id="14-how-a-build-knows-what-it-is">1.4 How a build knows what it
+is</h3>
+<ul>
+<li><strong>QUILL:</strong> <code>build/version.toml</code>
+(<code>channel</code> = dev | alpha | beta | rc | stable) feeds
+<code>tools/generate_build_info.py</code>, which writes
+<code>quill/_build_info.py</code> (<code>CHANNEL</code>,
+<code>DISPLAY_VERSION</code>, <code>PEP440_VERSION</code>,
+<code>GIT_SHA</code>, <code>BUILD_STAMP</code>). That is read by
+<code>quill/build_info.py</code> (<code>is_release_build</code> 84-86;
+<code>resolve_running_version</code> 117-135, which returns the display
+form, for example “1.0.0 Beta 1”).</li>
+<li><strong>Sibling apps:</strong> there is no channel metadata at all.
+The installed version comes from the installer’s marker
+<code>{app}\quill-app-version.ini</code>
+(<code>quill/core/app_version.py</code>: <code>MARKER_NAME</code> 53,
+<code>installed_version</code> 87-100), because the runtime’s code
+constant cannot be trusted (see 1.6). It is written by
+<code>standalone/radio/installer/quill-radio.iss:142</code> and
+<code>quilllite.iss</code>, <strong>but not by Cast’s
+installers</strong> (a grep for <code>quill-app-version.ini</code> finds
+only Radio and Lite).</li>
+<li><strong>Cast passes the wrong version.</strong> It calls
+<code>check_for_app_updates(current_version=_VERSION)</code> with the
+<em>code constant</em> (<code>quill/apps/podcasts.py:598-600</code> and
+<code>quill/apps/podcasts_menu.py:470-473</code>). Radio correctly
+passes <code>installed_version(_VERSION)</code>
+(<code>radio.py:1048-1054</code>,
+<code>radio_menu_bar.py:456-461</code>).</li>
+</ul>
+<h3 id="15-release-pipelines">1.5 Release pipelines</h3>
+<ul>
+<li><strong>QUILL:</strong>
+<code>.github/workflows/windows-release.yml</code> runs on
+<code>v*</code> tags (3-7). It <strong>hard-codes
+<code>prerelease: true</code> and the title
+<code>"QUILL for All ${{ github.ref_name }} Beta"</code></strong>
+(158-168). It then runs <code>generate_update_feed.py</code> with
+<code>QUILL_FEED_SIGNING_KEY</code> (175-186) and pushes the v1 feed to
+<code>main</code> (188-194). The v1 feed has no channel, so <strong>once
+1.0.0 Stable ships, the next Beta tag would be offered to every Stable
+user through the manifest path</strong>
+(<code>main_frame_updates.py:174-194</code> offers any newer
+<code>manifest.version</code> regardless of
+<code>beta_updates</code>).</li>
+<li><strong>Sibling apps:</strong> built locally by
+<code>standalone/&lt;app&gt;/scripts/build_release.ps1</code>, which
+produces a portable zip and a Setup .exe and runs
+<code>Assert-QuillSiblingVersions</code>
+(<code>radio/build_release.ps1:73</code>) and
+<code>Assert-QuillRuntimeHasModule</code>. They are published by hand
+with <code>gh</code> (release bodies are in
+<code>build/github-release-lite-1.1.x.md</code>).
+<code>standalone/README.md:76-82</code> is stale: it says each updater
+polls its own repo, but all apps now share
+<code>Community-Access/quill</code>.</li>
+<li><strong>Runtime:</strong>
+<code>standalone/runtime/build_runtime_installer.ps1:89-105</code>
+republishes <code>QuillVille-Runtime-Setup.exe</code> under the
+<strong>moving tag <code>runtime-latest</code></strong>
+(<code>--latest=false</code>). Native launchers self-heal a missing
+runtime from it
+(<code>scripts/build_native_launcher.py:54-59</code>).</li>
+<li><strong>Release notes:</strong>
+<code>scripts/extract_release_body.py</code> reuses
+<code>quill/core/release_notes.extract_version_section</code>, so the
+GitHub body, the v1 feed <code>notes</code> and What’s New all match.
+Sibling apps keep <code>standalone/&lt;app&gt;/docs/CHANGELOG.md</code>
+and <code>release-notes-*.md</code>.</li>
+<li><strong>Test builds:</strong> <code>windows-test-build.yml</code>
+produces unsigned portable artifacts with 14-day retention. These are
+effectively today’s “dev” builds and are not published.</li>
+<li><strong>Version gates:</strong>
+<code>tests/unit/scripts/test_app_versions_agree.py</code> (GATE-APPVER:
+module constant, pyproject, build script, Inno and README agree; covers
+radio, converter, weather, inkwell and Lite, <strong>not Cast</strong>).
+<code>scripts/check_sibling_versions.py</code> (GATE-SIBVER: no sibling
+may be ahead of its newest published tag unless the build is releasing
+it; <strong>Cast is not in <code>SITES</code></strong>).</li>
+</ul>
+<h3 id="16-the-shared-quillville-runtime-the-hard-constraint">1.6 The
+shared QuillVille Runtime (the hard constraint)</h3>
+<ul>
+<li><code>standalone/runtime/runtime_launcher.py:1-12</code>: one
+PyInstaller onedir holds CPython, wx and the <strong>whole
+<code>quill</code> package</strong>. Every app is
+<code>QuillVilleRuntime.exe -m quill.apps.&lt;app&gt;</code>.</li>
+<li><code>installer/shared-runtime.iss</code>: <code>RuntimeDir</code> =
+<code>{localappdata}\QuillVille\Runtime\&lt;major&gt;</code> (139-149).
+<code>RuntimeNeedsInstall</code> (216-233) installs only if the
+payload’s build stamp is newer than the installed one: “installing an
+older sibling app never downgrades the shared runtime”. The Python
+mirror is <code>quill/core/runtime_marker.py:needs_install</code>
+(74-103).</li>
+<li><strong>Consequence for channels.</strong> Install Radio
+3.3.0-beta.1 and its runtime, which contains main-branch Lite and Cast
+code, replaces the runtime that Stable Lite and Cast run on. Reinstall
+Radio 3.2.0 Stable and <code>RuntimeNeedsInstall</code> skips the older
+runtime, so <strong>Radio keeps running Beta code after “rolling
+back”</strong>. This is the same class of bug GATE-SIBVER was written
+for (<code>check_sibling_versions.py:1-20</code>), made worse.</li>
+<li>Reference counting: <code>quill/core/runtime_refs.py</code> (keyed
+by runtime version) and
+<code>quill/core/runtime_apps.installed_apps()</code> (which apps share
+this runtime).</li>
+<li>The native launcher resolves
+<code>%LOCALAPPDATA%\QuillVille\Runtime\&lt;suite-major&gt;\</code>
+(<code>quill/native/launcher/launcher.c:19-23</code>,
+<code>runtime_resolve.c</code>) and exports
+<code>QUILL_LAUNCHER_DIR</code> (132-148).</li>
+<li>Cast’s <code>build_release.ps1</code> does not build the runtime
+itself
+(<code>docs/design/2026-08-17-runtime-layering-delta.md:265-266</code>).</li>
+<li><strong>QUILL (the editor) is a self-contained frozen
+<code>quill.exe</code></strong> (<code>self_update.py:187-201</code>).
+It does not use the shared runtime, so it can get channels first.</li>
+</ul>
+<h3 id="17-stored-data-schemas-and-safe-to-go-back">1.7 Stored data,
+schemas and “safe to go back”</h3>
+<ul>
+<li><strong>QUILL settings</strong> use the full versioned-delta
+contract. <code>quill/core/settings_migration.py:63</code> has
+<code>SETTINGS_SCHEMA_VERSION = 2</code>.
+<code>is_future_settings_document</code> (226-237) and
+<code>quill/core/versioned_store.py:80-83,105-109</code> mean a file
+from a <em>newer</em> schema is read but <strong>never
+rewritten</strong>. <code>reconcile_unknown_overrides</code> (247+)
+carries unknown keys forward. Migrations back up the original to
+<code>migration-backups/</code>
+(<code>quill/core/migration_backup.py</code>, keeps 5). This is the best
+foundation in the repo.</li>
+<li><strong>QUILL Lite settings:</strong>
+<code>quill/core/lite/settings.py:56</code> has <code>SCHEMA = 1</code>.
+<code>load</code> (559-576) skips unknown keys, and <code>save</code>
+(579-588) writes only known deltas, so <strong>an older Lite silently
+drops settings a newer Lite added</strong>. That is lossy, but it does
+not break anything. Lite data lives in
+<code>%LOCALAPPDATA%\QuillLite</code>
+(<code>quill/core/lite/paths.py</code>).</li>
+<li><strong>Radio and Cast stores</strong>
+(<code>radio_favorites.json</code>, <code>radio_history.json</code>,
+<code>podcasts_library.json</code>, <code>podcast_history.json</code>
+and others) have <strong>no schema stamp</strong>.
+<code>quill/tools/persistence_audit.py</code> classifies them as
+<code>"content"</code> (177, 229-230, 258). They live in the shared
+<code>%APPDATA%\Quill</code> folder alongside QUILL’s data. Cast’s
+backup deliberately includes the Radio-shared
+<code>media_bookmarks.json</code> and <code>radio-listens.json</code>
+(<code>quill/core/podcasts/backup.py:52-73</code>).</li>
+<li><strong>Radio’s catalog</strong> is SQLite with a
+<code>schema_version</code> meta row. A mismatch triggers a rebuild,
+never a migration
+(<code>quill/core/radio/catalog/store.py:255-262</code>), so it is
+derived data and safe to downgrade.</li>
+<li><strong>Existing backup features to reuse:</strong>
+<ul>
+<li>Radio: <code>quill/core/radio/backup.py</code>
+(<code>create_backup</code> 87-127, <code>.qrbackup</code>, manifest
+<code>schema</code> 1, refuses a newer schema on restore at
+138-140).</li>
+<li>Cast: <code>quill/core/podcasts/backup.py</code>
+(<code>.qcbackup</code>, same shape).</li>
+<li>Lite: Tools &gt; Back Up Settings
+(<code>quill/apps/lite_window_settings_backup.py</code>,
+<code>.qsf</code> via <code>export_portable</code>).</li>
+<li>QUILL: <code>quill/core/setup_transfer.py</code> (covers all apps’
+files, item list at 78-81), <code>migration_backup.py</code>, and
+document <code>restore_points.py</code>.</li>
+</ul></li>
+</ul>
+<h3 id="18-preferences-help-menus-and-accessibility-conventions">1.8
+Preferences, Help menus and accessibility conventions</h3>
+<ul>
+<li><strong>QUILL:</strong> <code>settings_specs.py:2124-2146</code>
+defines <code>auto_check_updates</code> and <code>beta_updates</code>
+(“Get beta updates”, admin page).
+<code>main_frame_preferences.py:725-730</code> pops
+<code>_confirm_beta_channel</code> when the box is ticked. The Help menu
+has “Check for &amp;Updates…” and “Chec&amp;k for GLOW Updates…”
+(<code>main_frame_menu.py:3324-3327</code>). The consent dialog is
+<code>main_frame_updates.py:583-608</code>. QUILL also
+<strong>auto-enrolls into Beta</strong> when it finds it is running a
+prerelease (214-222), and the <strong>silent startup check
+auto-downloads</strong> (237-240).</li>
+<li><strong>Lite:</strong>
+<code>quill/apps/lite_preferences.py:225-238</code> has “Look for
+&amp;updates when QUILL Lite starts”. The comment there notes every
+other letter is taken (GATE-14). Help &gt; Check for Updates is
+Ctrl+Alt+U (<code>lite_updates.py:192-196</code>).</li>
+<li><strong>Radio:</strong> <code>radio_preferences.py:195-211</code>
+uses a <code>PreferenceCheckbox</code> list in the shared
+<code>quill/ui/app_preferences_dialog.py</code>, which also offers
+<code>PreferenceChoice</code> (line 78). Help menu: “Check for
+Up&amp;dates…\tCtrl+Alt+U” (<code>radio_menu_bar.py:451</code>).</li>
+<li><strong>Cast:</strong> <code>AppRow</code> rows in
+<code>quill/apps/podcasts_preferences.py:30-60</code> and
+<code>quill/ui/podcasts/preferences_window.py:123</code>. Help menu:
+“&amp;Check for Updates…\tCtrl+Alt+U”
+(<code>podcasts_menu.py:465</code>).</li>
+<li><strong>CLAUDE.md rules the new UI must meet:</strong>
+<ul>
+<li>Every modal goes through <code>_show_modal_dialog</code> and
+<code>apply_modal_ids</code>, with Close bound by
+<code>dialog_contract.bind_close_button</code> (line 162).</li>
+<li>Every enabled menu item shows a keyboard route through
+<code>_menu_label</code> and <code>APP_KEYMAPS</code> (164).</li>
+<li>GATE-13: speak only what the screen reader cannot know (166).</li>
+<li>GATE-14: no duplicate access keys; OK, Cancel and Close carry none
+(168).</li>
+<li>F1 help is inline <code>SetHelpText</code> at construction, per-app
+<code>surface_help</code> catalogues, and
+<code>docs/f1-help-reference.md</code> is regenerated (170).</li>
+<li>GATE-REACH (223), GATE-SETDOC (207), GATE-EC coded errors (215), the
+network egress audit (GATE-9).</li>
+</ul></li>
+<li><strong>Helpers that already exist:</strong>
+<code>quill/core/net_metered.py</code>
+(<code>may_download(settings, automatic=True)</code>, 68; “unknown means
+unmetered”), <code>quill/core/quiet_hours.py</code>
+(<code>silences(hours, kind, now, high_priority)</code>, 164; shared by
+Radio and Cast), <code>quill/core/family_preferences.py</code> (opt-in
+sharing of a few prefs between apps).</li>
+</ul>
+<h3
+id="19-hazards-found-during-the-survey-fix-in-phase-0-whatever-else-happens">1.9
+Hazards found during the survey (fix in Phase 0 whatever else
+happens)</h3>
+<ol type="1">
+<li><strong>Pagination time bomb.</strong>
+<code>fetch_app_releases</code>, <code>fetch_releases</code> and Lite
+all call <code>/releases</code> with no <code>per_page</code>, so GitHub
+returns <strong>30</strong>. One repo now hosts about 20 releases for
+several apps. Once betas or dev builds are published there, Stable
+releases fall off page 1 and installed copies <strong>stop seeing
+updates without saying so</strong>. This applies to copies already
+installed (Radio 3.0.4, Lite 1.1.2), so new publishing must respect it
+(see section 9).</li>
+<li><code>stable[0]</code> in <code>app_shell.py:883-884</code> and
+<code>lite_updates.py:115-116</code> trusts GitHub’s order (newest
+<em>created</em>), not version order.</li>
+<li>The v1 manifest has no channel (1.5), and
+<code>windows-release.yml</code> marks every QUILL tag as a prerelease
+titled “Beta” (1.5).</li>
+<li>Cast compares the code constant, not the installed marker, and its
+installers don’t write the marker (1.4).</li>
+<li>Lite drops unknown settings on save (1.7).</li>
+<li>v1 feed signature is optional; sibling apps have no signed feed at
+all; hashes come from the same server as the files.</li>
+</ol>
+<hr />
+<h2 id="2-channels">2. Channels</h2>
+<h3 id="21-names-and-meanings-user-facing-wording">2.1 Names and
+meanings (user-facing wording)</h3>
+<table>
+<thead>
+<tr>
+<th>Channel</th>
+<th>One-line meaning (shown in the chooser)</th>
+<th>Who it is for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Stable</strong></td>
+<td>“The version we recommend. It has been checked with JAWS and NVDA,
+and it is what most people use.”</td>
+<td>Everyone. The default.</td>
+</tr>
+<tr>
+<td><strong>Beta</strong></td>
+<td>“New features a few weeks early. Mostly finished, but some things
+may not work right yet.”</td>
+<td>People who want to help find problems and can live with a rough
+edge.</td>
+</tr>
+<tr>
+<td><strong>Dev</strong></td>
+<td>“Builds from the work in progress, sometimes several a week. Things
+will break. Only choose this if a developer asked you to, or you enjoy
+testing.”</td>
+<td>Testers and developers.</td>
+</tr>
+</tbody>
+</table>
+<p>Rules:</p>
+<ul>
+<li><strong>Per app, default Stable.</strong> The chooser also offers
+“Also move my other QuillVille apps on this computer” with one checkbox
+per installed app, all unticked by default.</li>
+<li><strong>A build never chooses a channel for you without telling
+you.</strong> This replaces today’s silent auto-enroll
+(<code>main_frame_updates.py:214-222</code>). If a pre-release build is
+started with no channel stored (for example, a tester installed a Beta
+by hand), the app sets the channel to that build’s <em>birth
+channel</em> once and says so: “You installed a Beta version, so QUILL
+will offer you Beta updates. You can change this in Help &gt; Release
+Channel.”</li>
+<li><strong>Feed-only states</strong> (never chosen in the UI):
+<code>revoked</code> (pulled) and the internal flag
+<code>pending_return</code> (“on Beta, waiting for Stable to catch
+up”).</li>
+</ul>
+<h3 id="22-how-a-build-knows-its-identity-baked-build-metadata">2.2 How
+a build knows its identity: baked build metadata</h3>
+<p>Make QUILL’s <code>build/version.toml</code> model the family
+model.</p>
+<ul>
+<li><p><strong>New per-app source of truth:</strong>
+<code>build/apps/&lt;app&gt;.toml</code> (radio, quilllite, cast; QUILL
+keeps <code>build/version.toml</code> and gains the same keys):</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode toml"><code class="sourceCode toml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dt">app</span> <span class="op">=</span> <span class="st">&quot;radio&quot;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="dt">base_version</span> <span class="op">=</span> <span class="st">&quot;3.3.0&quot;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="dt">prerelease</span> <span class="op">=</span> <span class="st">&quot;beta&quot;</span>          <span class="co"># &quot;&quot;, &quot;dev&quot;, &quot;alpha&quot;, &quot;beta&quot;, &quot;rc&quot;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="dt">prerelease_number</span> <span class="op">=</span> <span class="dv">2</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="dt">birth_channel</span> <span class="op">=</span> <span class="st">&quot;beta&quot;</span>       <span class="co"># informational: where this build is first listed</span></span></code></pre></div></li>
+<li><p><strong>Generator:</strong>
+<code>tools/generate_build_info.py</code> becomes
+<code>tools/generate_build_info.py --app &lt;key&gt;</code> and
+writes:</p>
+<ul>
+<li><code>quill/_build_info.py</code> for QUILL (unchanged shape plus
+<code>DATA_FORMATS</code>, <code>READS_FORMATS</code> and
+<code>BIRTH_CHANNEL</code>).</li>
+<li><strong><code>build/app-build.json</code></strong> for each sibling
+build, which is then embedded in three places: the Inno
+<code>{app}</code> folder as <code>quill-app-build.json</code>, the
+portable zip root, and the GitHub release as an asset.</li>
+</ul>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span><span class="dt">&quot;app&quot;</span><span class="fu">:</span><span class="st">&quot;radio&quot;</span><span class="fu">,</span><span class="dt">&quot;version&quot;</span><span class="fu">:</span><span class="st">&quot;3.3.0-beta.2&quot;</span><span class="fu">,</span><span class="dt">&quot;birth_channel&quot;</span><span class="fu">:</span><span class="st">&quot;beta&quot;</span><span class="fu">,</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a> <span class="dt">&quot;git_sha&quot;</span><span class="fu">:</span><span class="st">&quot;1a2b3c4&quot;</span><span class="fu">,</span><span class="dt">&quot;build_stamp&quot;</span><span class="fu">:</span><span class="st">&quot;20261003.1&quot;</span><span class="fu">,</span><span class="dt">&quot;built_at&quot;</span><span class="fu">:</span><span class="st">&quot;2026-10-03T14:02:11Z&quot;</span><span class="fu">,</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a> <span class="dt">&quot;runtime&quot;</span><span class="fu">:{</span><span class="dt">&quot;python&quot;</span><span class="fu">:</span><span class="st">&quot;3.13&quot;</span><span class="fu">,</span><span class="dt">&quot;build&quot;</span><span class="fu">:</span><span class="st">&quot;2026-10-03T13:40:00Z&quot;</span><span class="fu">},</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a> <span class="dt">&quot;carries&quot;</span><span class="fu">:{</span><span class="dt">&quot;quilllite&quot;</span><span class="fu">:</span><span class="st">&quot;1.2.0&quot;</span><span class="fu">,</span><span class="dt">&quot;cast&quot;</span><span class="fu">:</span><span class="st">&quot;2.0.0&quot;</span><span class="fu">,</span><span class="dt">&quot;radio&quot;</span><span class="fu">:</span><span class="st">&quot;3.3.0-beta.2&quot;</span><span class="fu">},</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a> <span class="dt">&quot;data_formats&quot;</span><span class="fu">:{</span><span class="dt">&quot;radio.favorites&quot;</span><span class="fu">:</span><span class="dv">2</span><span class="fu">,</span><span class="dt">&quot;radio.history&quot;</span><span class="fu">:</span><span class="dv">1</span><span class="fu">,</span><span class="dt">&quot;shared.media_bookmarks&quot;</span><span class="fu">:</span><span class="dv">1</span><span class="fu">},</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a> <span class="dt">&quot;reads_formats&quot;</span><span class="fu">:{</span><span class="dt">&quot;radio.favorites&quot;</span><span class="fu">:</span><span class="dv">2</span><span class="fu">,</span><span class="dt">&quot;radio.history&quot;</span><span class="fu">:</span><span class="dv">1</span><span class="fu">,</span><span class="dt">&quot;shared.media_bookmarks&quot;</span><span class="fu">:</span><span class="dv">1</span><span class="fu">}}</span></span></code></pre></div></li>
+<li><p><strong>Extend the installer marker</strong>
+<code>quill-app-version.ini</code> (from
+<code>quill-radio.iss:142</code>) with <code>[app] channel=</code> (the
+channel the install was made <em>for</em>, passed in as
+<code>/CHANNEL=</code> by the updater, see 6.6) and
+<code>[runtime] slot=</code> (see 6.5).
+<code>app_version.read_marker</code> grows <code>read_channel()</code>
+and <code>read_runtime_slot()</code>. Cast’s installers must start
+writing this marker (Phase 0).</p></li>
+<li><p><strong>Portable zips</strong> gain the same
+<code>quill-app-version.ini</code> at the root
+(<code>build_portable.py</code>). Today a portable copy has no marker
+and relies on the code constant.</p></li>
+<li><p><strong>Why the channel is not compiled into code:</strong>
+promotion must not need a rebuild. The <em>effective channel</em> is the
+user’s setting. <code>birth_channel</code> is only used for the
+first-run default and in About (“3.3.0, first released on
+Beta”).</p></li>
+</ul>
+<h3 id="23-version-and-tag-scheme">2.3 Version and tag scheme</h3>
+<table>
+<thead>
+<tr>
+<th>Kind</th>
+<th>Version</th>
+<th>Tag</th>
+<th>Can be listed on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stable or candidate</td>
+<td><code>3.3.0</code></td>
+<td><code>quill-radio-v3.3.0</code></td>
+<td>Beta first, then Stable (promotion)</td>
+</tr>
+<tr>
+<td>Beta</td>
+<td><code>3.3.0-beta.2</code></td>
+<td><code>quill-radio-v3.3.0-beta.2</code></td>
+<td>Beta, Dev</td>
+</tr>
+<tr>
+<td>Release candidate (optional)</td>
+<td><code>3.3.0-rc.1</code></td>
+<td><code>quill-radio-v3.3.0-rc.1</code></td>
+<td>Beta, Dev</td>
+</tr>
+<tr>
+<td>Dev</td>
+<td><code>3.3.0-dev.20261003.1</code> (the last number is the build of
+the day); the SHA goes in build metadata as <code>+g1a2b3c4</code>,
+display only</td>
+<td><code>quill-radio-v3.3.0-dev.20261003.1</code> (only if published to
+GitHub; see 9.3)</td>
+<td>Dev only</td>
+</tr>
+<tr>
+<td>QUILL</td>
+<td><code>1.1.0-beta.1</code></td>
+<td><code>v1.1.0-beta.1</code> (QUILL keeps unprefixed tags,
+<code>release_tags.py:19-21</code>)</td>
+<td>as above</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Ordering rule: PEP 440 semantics with semver
+spelling.</strong>
+<code>dev &lt; alpha &lt; beta &lt; rc &lt; final</code>, numeric parts
+compare as numbers, and build metadata after <code>+</code> is ignored
+for order but kept for identity. For example
+<code>3.3.0-dev.20261003.2 &lt; 3.3.0-beta.1 &lt; 3.3.0-rc.1 &lt; 3.3.0 &lt; 3.3.1-dev.…</code>.
+Plain semver would put <code>dev</code> after <code>beta</code> (ASCII),
+which is wrong for us. Say so in the module docstring.</p>
+<p><strong>New module <code>quill/core/versioning.py</code></strong>
+(wx-free, the one parser):</p>
+<ul>
+<li><code>ReleaseVersion.parse(text)</code> accepts tags
+(<code>quill-radio-v3.3.0-beta.2</code>, via
+<code>release_tags.parse_release_tag</code>), semver-shaped strings, PEP
+440 (<code>1.0.0b1</code>, <code>1.0.0.dev20261003</code>,
+<code>0.8.0b1.post1</code>) and display forms (“1.0.0 Beta 1”, “1.0.0
+Release Candidate 2”, “1.0.0 Dev”).</li>
+<li>Fields: <code>base: tuple[int,int,int]</code>,
+<code>stage: Literal["dev","alpha","beta","rc","final"]</code>,
+<code>numbers: tuple[int,...]</code>, <code>post: int</code>,
+<code>local: str</code>.</li>
+<li><code>__lt__</code> and <code>key()</code>,
+<code>is_prerelease</code>, <code>display()</code> (“3.3.0 Beta 2”),
+<code>tag(app_key)</code>, <code>semver()</code>.</li>
+<li><code>updates._version_tuple</code> and
+<code>is_newer_version</code> become thin wrappers so every existing
+caller and test keeps working.
+<code>check_sibling_versions.parse_version</code> switches to it.</li>
+<li><code>release_tags.py</code> documents the grandfathered
+<code>lite</code> key:
+<code>RELEASE_TAG_KEYS = {"quilllite": "lite"}</code> with
+<code>release_tag("quilllite", …) == "quill-lite-v…"</code>.</li>
+</ul>
+<hr />
+<h2 id="3-the-release-feed-v2-signed-per-app">3. The release feed (v2,
+signed, per app)</h2>
+<h3 id="31-where">3.1 Where</h3>
+<ul>
+<li><strong>Files:</strong>
+<code>docs/site/updates/v2/&lt;app&gt;.json</code> and the detached
+signature <code>&lt;app&gt;.json.sig</code>, served at
+<code>https://community-access.github.io/quill/updates/v2/radio.json</code>.
+One file per app keeps each request small and means a request reveals
+only which app is asking, as today.</li>
+<li><strong>Index:</strong>
+<code>docs/site/updates/v2/index.json</code>, signed, listing the apps
+and their feed paths. Used by “switch all my apps” and by future
+apps.</li>
+<li><strong>Binaries stay on GitHub Releases</strong>
+(<code>github.com</code> and <code>objects.githubusercontent.com</code>
+are already trusted, <code>updates.py:975-984</code>), with
+<code>prerelease: true</code> for Beta and Dev listings so the updaters
+already installed keep ignoring them (section 9).</li>
+</ul>
+<h3 id="32-signing">3.2 Signing</h3>
+<ul>
+<li><strong>Reuse the existing feed keypair.</strong>
+<code>quill/core/feed-pub.key</code> is the public half. The secret is
+<code>QUILL_FEED_SIGNING_KEY</code> in the repo and
+<code>~/.config/quill/quill-feed-priv.key</code> locally
+(<code>docs/signing.md:44-101</code>).</li>
+<li><strong>Sign the exact bytes, not a canonical re-encoding.</strong>
+Use a minisign-shaped sidecar, generalising
+<code>quill/tools/signing.py</code> with a <code>key_id</code> and
+key-path parameter (<code>KEY_ID = "quill-feed-2026"</code>). Signing
+the bytes removes the class of bug where publisher and client
+canonicalise differently (<code>updates.py:648-652</code> records that
+history).</li>
+<li><strong>Key rotation.</strong> Clients carry a <em>list</em> of
+trusted feed keys (<code>quill/core/feed-pub.keys</code>, one base64 key
+per line) so a rotation can be double-signed for one release cycle. This
+extends <code>docs/signing.md:94-101</code>.</li>
+<li><strong>v2 has no unsigned fallback.</strong> A missing or invalid
+signature is “couldn’t check”, never “accept”.</li>
+</ul>
+<h3 id="33-manifest-schema-quillville-release-feed2">3.3 Manifest schema
+(<code>quillville-release-feed/2</code>)</h3>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;format&quot;</span><span class="fu">:</span> <span class="st">&quot;quillville-release-feed/2&quot;</span><span class="fu">,</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;app&quot;</span><span class="fu">:</span> <span class="st">&quot;radio&quot;</span><span class="fu">,</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;app_name&quot;</span><span class="fu">:</span> <span class="st">&quot;Quill Radio&quot;</span><span class="fu">,</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;sequence&quot;</span><span class="fu">:</span> <span class="dv">118</span><span class="fu">,</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;generated_at&quot;</span><span class="fu">:</span> <span class="st">&quot;2026-10-20T15:00:00Z&quot;</span><span class="fu">,</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;expires_at&quot;</span><span class="fu">:</span> <span class="st">&quot;2026-12-19T15:00:00Z&quot;</span><span class="fu">,</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;security_floor&quot;</span><span class="fu">:</span> <span class="st">&quot;3.0.4&quot;</span><span class="fu">,</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;channels&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;stable&quot;</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">&quot;current&quot;</span><span class="fu">:</span> <span class="st">&quot;3.3.0&quot;</span><span class="fu">},</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;beta&quot;</span><span class="fu">:</span>   <span class="fu">{</span><span class="dt">&quot;current&quot;</span><span class="fu">:</span> <span class="st">&quot;3.4.0-beta.1&quot;</span><span class="fu">},</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;dev&quot;</span><span class="fu">:</span>    <span class="fu">{</span><span class="dt">&quot;current&quot;</span><span class="fu">:</span> <span class="st">&quot;3.4.0-dev.20261019.2&quot;</span><span class="fu">}</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">},</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;releases&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;version&quot;</span><span class="fu">:</span> <span class="st">&quot;3.3.0&quot;</span><span class="fu">,</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;tag&quot;</span><span class="fu">:</span> <span class="st">&quot;quill-radio-v3.3.0&quot;</span><span class="fu">,</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;channels&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;stable&quot;</span><span class="ot">,</span> <span class="st">&quot;beta&quot;</span><span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;history&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span><span class="dt">&quot;channel&quot;</span><span class="fu">:</span> <span class="st">&quot;beta&quot;</span><span class="fu">,</span>   <span class="dt">&quot;at&quot;</span><span class="fu">:</span> <span class="st">&quot;2026-10-10T12:00:00Z&quot;</span><span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span><span class="dt">&quot;channel&quot;</span><span class="fu">:</span> <span class="st">&quot;stable&quot;</span><span class="fu">,</span> <span class="dt">&quot;at&quot;</span><span class="fu">:</span> <span class="st">&quot;2026-10-20T15:00:00Z&quot;</span><span class="fu">,</span> <span class="dt">&quot;by&quot;</span><span class="fu">:</span> <span class="st">&quot;promote_release.py&quot;</span><span class="fu">}</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>      <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;published_at&quot;</span><span class="fu">:</span> <span class="st">&quot;2026-10-10T12:00:00Z&quot;</span><span class="fu">,</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;notes_url&quot;</span><span class="fu">:</span> <span class="st">&quot;https://github.com/Community-Access/quill/releases/tag/quill-radio-v3.3.0&quot;</span><span class="fu">,</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;notes_summary&quot;</span><span class="fu">:</span> <span class="st">&quot;Plain-text summary, at most 4000 characters (update_notice.MAX_NOTE_CHARS).&quot;</span><span class="fu">,</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;assets&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span><span class="dt">&quot;kind&quot;</span><span class="fu">:</span> <span class="st">&quot;installer&quot;</span><span class="fu">,</span> <span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;Quill-Radio-Setup-Shared-3.3.0.exe&quot;</span><span class="fu">,</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>         <span class="dt">&quot;url&quot;</span><span class="fu">:</span> <span class="st">&quot;https://github.com/Community-Access/quill/releases/download/quill-radio-v3.3.0/Quill-Radio-Setup-Shared-3.3.0.exe&quot;</span><span class="fu">,</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>         <span class="dt">&quot;size&quot;</span><span class="fu">:</span> <span class="dv">189234112</span><span class="fu">,</span> <span class="dt">&quot;sha256&quot;</span><span class="fu">:</span> <span class="st">&quot;…&quot;</span><span class="fu">,</span> <span class="dt">&quot;authenticode_subject&quot;</span><span class="fu">:</span> <span class="st">&quot;Jeffrey Bishop&quot;</span><span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span><span class="dt">&quot;kind&quot;</span><span class="fu">:</span> <span class="st">&quot;portable&quot;</span><span class="fu">,</span> <span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;Quill-Radio-Portable-3.3.0.zip&quot;</span><span class="fu">,</span> <span class="dt">&quot;url&quot;</span><span class="fu">:</span> <span class="st">&quot;…&quot;</span><span class="fu">,</span> <span class="dt">&quot;size&quot;</span><span class="fu">:</span> <span class="dv">441000000</span><span class="fu">,</span> <span class="dt">&quot;sha256&quot;</span><span class="fu">:</span> <span class="st">&quot;…&quot;</span><span class="fu">}</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>      <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;runtime&quot;</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">&quot;python&quot;</span><span class="fu">:</span> <span class="st">&quot;3.13&quot;</span><span class="fu">,</span> <span class="dt">&quot;build&quot;</span><span class="fu">:</span> <span class="st">&quot;2026-10-09T18:22:00Z&quot;</span><span class="fu">},</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;carries&quot;</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">&quot;quilllite&quot;</span><span class="fu">:</span> <span class="st">&quot;1.2.0&quot;</span><span class="fu">,</span> <span class="dt">&quot;cast&quot;</span><span class="fu">:</span> <span class="st">&quot;2.0.0&quot;</span><span class="fu">},</span></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;data_formats&quot;</span><span class="fu">:</span>  <span class="fu">{</span><span class="dt">&quot;radio.favorites&quot;</span><span class="fu">:</span> <span class="dv">2</span><span class="fu">,</span> <span class="dt">&quot;radio.history&quot;</span><span class="fu">:</span> <span class="dv">1</span><span class="fu">,</span> <span class="dt">&quot;shared.media_bookmarks&quot;</span><span class="fu">:</span> <span class="dv">1</span><span class="fu">},</span></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;reads_formats&quot;</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">&quot;radio.favorites&quot;</span><span class="fu">:</span> <span class="dv">2</span><span class="fu">,</span> <span class="dt">&quot;radio.history&quot;</span><span class="fu">:</span> <span class="dv">1</span><span class="fu">,</span> <span class="dt">&quot;shared.media_bookmarks&quot;</span><span class="fu">:</span> <span class="dv">1</span><span class="fu">},</span></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;can_roll_back_to&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;3.2.0&quot;</span><span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;min_safe_downgrade&quot;</span><span class="fu">:</span> <span class="st">&quot;3.2.0&quot;</span><span class="fu">,</span></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;min_upgrade_from&quot;</span><span class="fu">:</span> <span class="st">&quot;3.0.0&quot;</span><span class="fu">,</span></span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;revoked&quot;</span><span class="fu">:</span> <span class="kw">false</span><span class="fu">,</span></span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;revoked_reason&quot;</span><span class="fu">:</span> <span class="st">&quot;&quot;</span><span class="fu">,</span></span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;replacement&quot;</span><span class="fu">:</span> <span class="st">&quot;&quot;</span><span class="fu">,</span></span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;advisories&quot;</span><span class="fu">:</span> <span class="ot">[]</span></span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p>What the less obvious fields are for:</p>
+<ul>
+<li><strong><code>sequence</code></strong> (an integer that always goes
+up) and <strong><code>expires_at</code></strong> defend against replay
+and freeze attacks (8.2). The client stores the highest
+<code>sequence</code> it has seen.</li>
+<li><strong><code>security_floor</code></strong>: builds below this are
+told to update (security), and are never rollback targets.</li>
+<li><strong><code>can_roll_back_to</code></strong> and
+<strong><code>min_safe_downgrade</code></strong> are <em>computed by the
+publisher</em> from the format tables of every listed release (5.2), so
+the answer is the same on every machine. The client still re-checks
+against its own ledger, because the ledger may hold formats written by a
+<em>sibling</em> app.</li>
+<li><strong><code>min_upgrade_from</code></strong> lets a release
+require a stepping stone. The client then offers the stepping stone
+first.</li>
+<li><strong><code>advisories</code></strong> carries the existing
+feature kill-switch forward (<code>FeatureAdvisory</code>,
+<code>updates.py:76-94</code>), per release.</li>
+<li><strong>QUILL</strong> gets <code>updates/v2/quill.json</code> and
+keeps generating the v1 feed for old clients (section 9).</li>
+</ul>
+<h3 id="34-client-parsing">3.4 Client parsing</h3>
+<p><code>quill/core/updater/feed.py</code>:</p>
+<ul>
+<li><code>fetch_feed(app_key) -&gt; ReleaseFeed</code>. HTTPS only,
+<code>_validate_remote_url</code>, signature checked against
+<code>feed-pub.keys</code> before JSON parsing, schema-validated,
+rejects a <code>sequence</code> lower than the stored one, and marks the
+feed <code>stale</code> past <code>expires_at</code>.</li>
+<li><code>ReleaseFeed.for_channel(ch)</code>,
+<code>.release(version)</code>,
+<code>.rollback_targets(...)</code>.</li>
+<li>The last good feed is cached at
+<code>&lt;app data&gt;/updates/feed-cache/&lt;app&gt;.json</code>
+together with its <code>.sig</code>, and re-verified on read. This is
+what offline mode uses.</li>
+<li>The override env var <code>QUILL_UPDATE_FEED_BASE</code> is used for
+rehearsals, in the same style as the existing
+<code>QUILL_UPDATE_API_URL</code> and
+<code>QUILL_UPDATE_MANIFEST_URL</code> (<code>updates.py:28-34</code>).
+It can only redirect <em>where to look</em>. Signatures and trusted
+hosts still apply.</li>
+</ul>
+<hr />
+<h2 id="4-promotion-dev-to-beta-to-stable-without-rebuilding">4.
+Promotion: Dev to Beta to Stable without rebuilding</h2>
+<h3 id="41-principles">4.1 Principles</h3>
+<ul>
+<li><strong>A build is made and signed once.</strong> Promotion edits
+the GitHub release flags and the signed feed. It never touches the
+bytes. The SHA-256 in the feed entry stays the same from the first
+listing onwards, and promotion <em>re-verifies</em> it.</li>
+<li><strong>Stable accepts only final-numbered builds</strong>
+(<code>3.3.0</code>). A <code>-beta.N</code> build is never relabelled.
+To ship a final, build a <strong>candidate</strong> with the final
+number, list it on Beta, let it soak, then promote it. This is the
+“release candidate as final bits” model, and the only one that is
+honestly “no rebuild”.</li>
+<li><strong>Dev to Beta</strong> is allowed for any build (a dev build
+that turned out good can be put on Beta as-is, keeping its dev
+version).</li>
+</ul>
+<h3 id="42-scripts">4.2 Scripts</h3>
+<p>New, wx-free, unit-tested:</p>
+<ol type="1">
+<li><strong><code>scripts/publish_release.py</code></strong> (first
+listing). Called from
+<code>build_release.ps1 -Publish -Channel dev|beta</code> and from
+<code>windows-release.yml</code>.
+<ul>
+<li>Hashes the dist assets locally (never trusts GitHub’s digest).</li>
+<li>Creates the GitHub release: Beta and Dev are
+<code>--prerelease</code>, and every sibling and Dev release uses
+<code>--latest=false</code>. Uploads the assets and
+<code>app-build.json</code>.</li>
+<li>Writes the feed entry with <code>channels=[&lt;channel&gt;]</code>,
+bumps <code>sequence</code>, re-signs, and writes
+<code>docs/site/updates/v2/&lt;app&gt;.json</code>.</li>
+<li>Commits on a branch and opens a PR (or pushes straight to
+<code>main</code> from the workflow, matching
+<code>windows-release.yml:188-194</code>).</li>
+</ul></li>
+<li><strong><code>scripts/promote_release.py --app radio --version 3.3.0 --to stable [--dry-run] [--notes-file …] [--skip-soak "reason"]</code></strong></li>
+<li><strong><code>scripts/revoke_release.py --app radio --version 3.4.0-beta.1 --reason "…" [--replacement 3.4.0-beta.2]</code></strong>.
+Sets <code>revoked</code>, removes the build from
+<code>channels.*.current</code> (falls back to the previous build), and
+marks the GitHub release title “(withdrawn)”. It does
+<strong>not</strong> delete assets, so people who already have the build
+can still roll forward or back.</li>
+<li><strong><code>scripts/rollup_release_notes.py --app radio --from 3.2.0 --to 3.3.0</code></strong>.
+Builds the Stable notes from the Beta sections in between (4.4).</li>
+<li><strong><code>scripts/feed_tool.py verify|show|resign</code></strong>.
+A maintenance CLI, also used by the CI gate.</li>
+</ol>
+<h3
+id="43-checks-promote_releasepy-runs-all-must-pass---dry-run-prints-the-list">4.3
+Checks <code>promote_release.py</code> runs (all must pass;
+<code>--dry-run</code> prints the list)</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Check</th>
+<th>Source / reuse</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P1</td>
+<td>The release exists, is not a draft and not revoked; the tag matches
+<code>release_tags</code></td>
+<td><code>gh release view --json</code></td>
+</tr>
+<tr>
+<td>P2</td>
+<td>Every asset re-downloaded or HEADed: size and <strong>SHA-256 match
+the feed entry</strong></td>
+<td><code>release_assets._download_resumable</code> + hash</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>Feed signature valid; <code>sequence</code> will increase</td>
+<td><code>feed_tool verify</code></td>
+</tr>
+<tr>
+<td>P4</td>
+<td>For Stable: version is final
+(<code>ReleaseVersion.stage == "final"</code>)</td>
+<td><code>versioning.py</code></td>
+</tr>
+<tr>
+<td>P5</td>
+<td>For Stable: Authenticode-signed installer and payload
+<code>.exe</code> (<code>code_signing.py verify</code>) when
+<code>QUILL_SIGN_REQUIRED</code> policy is on</td>
+<td><code>scripts/code_signing.py</code></td>
+</tr>
+<tr>
+<td>P6</td>
+<td>Version agreement inside the bits:
+<code>app-build.json.version</code> == the tag ==
+<code>quill-app-version.ini</code> inside the portable zip == the Inno
+<code>VersionInfo</code></td>
+<td>GATE-APPVER logic, applied to <em>artifacts</em> rather than
+source</td>
+</tr>
+<tr>
+<td>P7</td>
+<td><strong>Sibling check, channel-aware (GATE-SIBVER-CH):</strong> for
+Stable, every entry in <code>carries</code> must be ≤ that sibling’s
+newest <em>Stable</em> listing; for Beta, ≤ its newest Beta-or-Stable.
+The promoted runtime lands in that channel’s runtime slot, where
+siblings on the channel will run it (6.5).</td>
+<td><code>check_sibling_versions.disagreements</code>, fed by the feed
+instead of tags</td>
+</tr>
+<tr>
+<td>P8</td>
+<td>Release notes present: a CHANGELOG section for this version
+(<code>release_notes.extract_version_section</code> returns non-empty)
+<strong>and</strong>, for Stable, a rolled-up
+<code>standalone/&lt;app&gt;/docs/release-notes-&lt;x.y&gt;.md</code></td>
+<td><code>scripts/extract_release_body.py</code></td>
+</tr>
+<tr>
+<td>P9</td>
+<td><strong>Screen-reader sign-off</strong> for Stable:
+<code>docs/qa/signoffs/&lt;app&gt;-&lt;version&gt;.md</code> exists with
+<code>Result: pass</code>, a tester, screen readers and versions, and a
+date, plus at least the 20-minute pass IDs ticked (for Radio: R-02,
+R-04, R-08, R-14, R-18, R-37, R-45, R-55, R-69, R-73 from
+<code>docs/qa/radio-signoff.md</code>). New sign-off sheets are
+generated from the checklists by
+<code>scripts/gen_signoff_html.py</code>, extended to write the results
+stub.</td>
+<td><code>docs/qa/*-signoff.md</code></td>
+</tr>
+<tr>
+<td>P10</td>
+<td>Soak time: at least 7 days on Beta before Stable, at least 1 day on
+Dev before Beta (configurable in <code>build/release-policy.toml</code>;
+<code>--skip-soak "reason"</code> is recorded in the feed history)</td>
+<td>feed <code>history</code></td>
+</tr>
+<tr>
+<td>P11</td>
+<td>Data formats: compute <code>can_roll_back_to</code> and
+<code>min_safe_downgrade</code> for the new Stable;
+<strong>warn</strong> if the promotion makes the previous Stable an
+unsafe target, and print exactly which format moved</td>
+<td>5.2</td>
+</tr>
+<tr>
+<td>P12</td>
+<td>Docs build gates pass for the app’s docs
+(<code>check_docs_artifacts.py</code>, GATE-SITE-LINKS)</td>
+<td>existing</td>
+</tr>
+<tr>
+<td>P13</td>
+<td>Runtime build referenced in <code>runtime</code> exists in the
+release’s assets or as a <code>runtime-&lt;channel&gt;</code> tag
+(6.5)</td>
+<td><code>gh</code></td>
+</tr>
+</tbody>
+</table>
+<p>Actions on success:</p>
+<ol type="1">
+<li><code>gh release edit &lt;tag&gt; --prerelease=false --latest=false</code>
+(for QUILL v-tags, <code>--latest</code> on Stable only, because “the
+editor’s release train owns Latest”,
+<code>build_runtime_installer.ps1:89-92</code>).</li>
+<li>Append “Promoted to Stable on 20 October 2026” to the release title
+and body, and replace the body with the rolled-up notes.</li>
+<li>Add <code>stable</code> to the entry’s <code>channels</code>, set
+<code>channels.stable.current</code>, recompute rollback fields, bump
+<code>sequence</code>, sign, and commit.</li>
+<li>Republish the runtime installer under <code>runtime-stable</code>
+(the old <code>runtime-latest</code>, see 6.5) if this release carries a
+newer runtime build.</li>
+<li>Write an entry to <code>docs/release/promotions.log.md</code> (an
+audit trail in the repo).</li>
+</ol>
+<h3 id="44-workflow-with-manual-approval">4.4 Workflow with manual
+approval</h3>
+<p><strong><code>.github/workflows/promote-release.yml</code></strong>:
+<code>workflow_dispatch</code> with inputs <code>app</code> (choice),
+<code>version</code>, <code>to</code> (dev | beta | stable),
+<code>dry_run</code> (boolean).</p>
+<ul>
+<li><strong>Job 1 <code>checks</code>:</strong> runs
+<code>promote_release.py --dry-run</code> and uploads the report.</li>
+<li><strong>Job 2 <code>promote</code>:</strong>
+<code>needs: checks</code> and
+<code>environment: stable-promotion</code> (or
+<code>beta-promotion</code>). The GitHub Environment has
+<strong>required reviewers = the owner</strong>, so nothing reaches
+Stable without a person pressing Approve. Secrets:
+<code>QUILL_FEED_SIGNING_KEY</code>; <code>GITHUB_TOKEN</code> with
+<code>contents: write</code>.</li>
+<li><strong>The same script runs locally.</strong> This matters because
+sibling apps are built on the owner’s machine. Locally it uses
+<code>~/.config/quill/quill-feed-priv.key</code>.</li>
+</ul>
+<p>Also, <strong><code>windows-release.yml</code> stops hard-coding
+Beta.</strong> It reads the channel from <code>build/version.toml</code>
+(<code>prerelease</code> / <code>birth_channel</code>), sets
+<code>prerelease:</code> and the title from it, and calls
+<code>publish_release.py</code>.</p>
+<h3 id="45-release-notes-and-changelog-conventions">4.5 Release notes
+and changelog conventions</h3>
+<ul>
+<li><strong>CHANGELOG headings</strong> (one convention for all apps,
+parsed by <code>release_notes._HEADING</code>):
+<code>## 3.3.0-beta.2 (Beta) - 2026-10-03</code>,
+<code>## 3.3.0 (Stable) - 2026-10-20</code>.</li>
+<li><strong>Beta notes say what changed since the previous
+Beta</strong>, plus a short “Known rough edges” list (required, even if
+it says “none known”).</li>
+<li><strong>At promotion</strong>, <code>rollup_release_notes.py</code>
+writes the Stable section “What’s new since 3.2.0” by merging every Beta
+section from 3.3.0-beta.1 through the candidate, removing “fixed a bug
+introduced in beta.1” lines (marked <code>[beta-only]</code> in the
+source), and putting <strong>“Before you update”</strong> at the top
+whenever a data format moved: “This version saves your favorites in a
+newer way. Once you update, going back to 3.2.0 means restoring a copy.”
+The feed’s <code>notes_summary</code> is generated from the same
+text.</li>
+<li><strong>Notes are written for people:</strong> plain words, second
+person, no commit hashes. <code>scripts/plain_language_lint.py</code>
+runs on them as part of P8.</li>
+</ul>
+<hr />
+<h2 id="5-back-to-stable-only-if-safe">5. “Back to Stable only if
+safe”</h2>
+<h3 id="51-definitions">5.1 Definitions</h3>
+<ul>
+<li><strong>Data format:</strong> a named on-disk shape with an integer
+version. The registry lives in
+<strong><code>quill/core/data_formats.py</code></strong>:
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="at">@dataclass</span>(frozen<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> DataFormat:</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">id</span>: <span class="bu">str</span>               <span class="co"># &quot;radio.favorites&quot;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    owner: <span class="bu">str</span>            <span class="co"># app key, or &quot;shared&quot;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    files: <span class="bu">tuple</span>[<span class="bu">str</span>, ...]</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    location: <span class="bu">str</span>         <span class="co"># &quot;quill_data&quot; | &quot;lite_data&quot; | &quot;runtime&quot;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    current: <span class="bu">int</span>          <span class="co"># version this build WRITES</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    reads_up_to: <span class="bu">int</span>      <span class="co"># highest version this build can READ without loss</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    lossy_reads: <span class="bu">tuple</span>[<span class="bu">int</span>, ...] <span class="op">=</span> ()  <span class="co"># versions it reads but would drop fields from</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>FORMATS: <span class="bu">tuple</span>[DataFormat, ...] <span class="op">=</span> (</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    DataFormat(<span class="st">&quot;quill.settings&quot;</span>, <span class="st">&quot;quill&quot;</span>, (<span class="st">&quot;settings.json&quot;</span>,), <span class="st">&quot;quill_data&quot;</span>, <span class="dv">2</span>, <span class="dv">2</span>),</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    DataFormat(<span class="st">&quot;quill.keymap&quot;</span>, <span class="st">&quot;quill&quot;</span>, (...), <span class="st">&quot;quill_data&quot;</span>, ...),</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    DataFormat(<span class="st">&quot;lite.settings&quot;</span>, <span class="st">&quot;quilllite&quot;</span>, (<span class="st">&quot;settings.json&quot;</span>,), <span class="st">&quot;lite_data&quot;</span>, <span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    DataFormat(<span class="st">&quot;radio.favorites&quot;</span>, <span class="st">&quot;radio&quot;</span>, (<span class="st">&quot;radio_favorites.json&quot;</span>,), <span class="st">&quot;quill_data&quot;</span>, <span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    DataFormat(<span class="st">&quot;radio.history&quot;</span>, <span class="st">&quot;radio&quot;</span>, (<span class="st">&quot;radio_history.json&quot;</span>,), <span class="st">&quot;quill_data&quot;</span>, <span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    DataFormat(<span class="st">&quot;cast.library&quot;</span>, <span class="st">&quot;cast&quot;</span>, (<span class="st">&quot;podcasts_library.json&quot;</span>,), <span class="st">&quot;quill_data&quot;</span>, <span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    DataFormat(<span class="st">&quot;cast.history&quot;</span>, <span class="st">&quot;cast&quot;</span>, (<span class="st">&quot;podcast_history.json&quot;</span>,), <span class="st">&quot;quill_data&quot;</span>, <span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    DataFormat(<span class="st">&quot;shared.media_bookmarks&quot;</span>, <span class="st">&quot;shared&quot;</span>, (<span class="st">&quot;media_bookmarks.json&quot;</span>,), <span class="st">&quot;quill_data&quot;</span>, <span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># derived data (radio catalog SQLite, caches) is NOT listed: it is rebuilt, never migrated</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+The format version is the <strong>contract</strong>, not the JSON
+layout. It is bumped only when an older build would <em>misread or
+lose</em> data. Additive fields that older builds ignore safely are
+recorded as <code>lossy_reads</code> for Lite (whose <code>save</code>
+drops unknown keys) and as no change for QUILL (whose
+<code>reconcile_unknown</code> preserves them). The Radio and Cast files
+do <strong>not</strong> need a stamp inside them on day one. The ledger
+(below) is enough, and changing their bytes is a risk of its own.</li>
+<li><strong>Ledger:</strong>
+<code>&lt;data dir&gt;/data-format-ledger.json</code>, kept by
+<strong><code>quill/core/data_format_ledger.py</code></strong>. There is
+one for the shared <code>%APPDATA%\Quill</code> folder (QUILL, Radio,
+Cast, Inkwell) and one in <code>%LOCALAPPDATA%\QuillLite</code>, and one
+inside a portable <code>data</code> folder.
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span><span class="dt">&quot;version&quot;</span><span class="fu">:</span> <span class="dv">1</span><span class="fu">,</span> <span class="dt">&quot;formats&quot;</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">&quot;radio.favorites&quot;</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">&quot;high&quot;</span><span class="fu">:</span> <span class="dv">2</span><span class="fu">,</span> <span class="dt">&quot;by&quot;</span><span class="fu">:</span> <span class="st">&quot;radio 3.4.0-beta.1&quot;</span><span class="fu">,</span> <span class="dt">&quot;at&quot;</span><span class="fu">:</span> <span class="st">&quot;2026-10-21T09:00:00Z&quot;</span><span class="fu">}}}</span></span></code></pre></div>
+Each app calls <code>ledger.record_running_build(app_key)</code> at
+startup, <em>before</em> its first save. It raises <code>high</code> to
+<code>max(high, current)</code> for each format the app owns or shares.
+The ledger only goes up, except through an explicit snapshot restore
+(5.4), which lowers it to match the restored copy. The ledger is
+classified <code>framework</code> in
+<code>persistence_audit.py</code>.</li>
+<li><strong>Safety function</strong> (pure, wx-free, table-tested), in
+<code>quill/core/updater/policy.py</code>:
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> downgrade_verdict(target: FeedRelease, ledgers: <span class="bu">list</span>[Ledger]) <span class="op">-&gt;</span> Verdict</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Verdict.SAFE                     all formats: target.reads_formats[f] &gt;= ledger.high[f], no lossy reads</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Verdict.SAFE_WITH_LOSSES(items)  readable, but some newer fields would be forgotten (Lite settings)</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Verdict.UNSAFE(blockers)         some format f has ledger.high[f] &gt; target.reads_formats.get(f, 0)</span></span></code></pre></div>
+A format the target has never heard of (missing from
+<code>reads_formats</code>) counts as 0, which is unsafe if the ledger
+has it. That is the conservative choice.</li>
+</ul>
+<p>Precisely: <strong>going back to Stable build T is safe if and only
+if, for every data format recorded in every ledger the app touches, T’s
+highest readable version is at least the highest version ever written on
+this machine, T is not revoked, and T is at or above
+<code>security_floor</code>.</strong></p>
+<h3 id="52-publisher-side">5.2 Publisher side</h3>
+<p><code>promote_release.py</code> and <code>publish_release.py</code>
+compute <code>can_roll_back_to</code> for each release as the listed
+Stable releases T where, for every format in this release’s
+<code>data_formats</code>,
+<code>T.reads_formats[f] &gt;= data_formats[f]</code>.
+<code>min_safe_downgrade</code> is the oldest of those. This gives the
+dialog an answer before anything is downloaded. The client still runs
+<code>downgrade_verdict</code> against the real ledger, because a
+<em>sibling</em> (Cast Beta writing <code>shared.media_bookmarks</code>
+v2) can make Radio’s rollback unsafe even when Radio’s own entry says it
+is safe.</p>
+<h3 id="53-what-the-user-is-offered-when-its-not-safe">5.3 What the user
+is offered when it’s not safe</h3>
+<ol type="1">
+<li><strong>“Wait for Stable”</strong> (the default). Sets
+<code>pending_return = true</code>. The channel <em>shown</em> is
+“Stable (waiting for it to catch up with your version)”. The app
+<strong>stops taking Beta updates</strong> unless the user ticks “Keep
+getting Beta fixes while I wait” (unticked by default; ticking it may
+move the goalposts, and the dialog says so). When
+<code>channels.stable.current &gt;= installed version</code> and the
+downgrade verdict for that build is no longer needed (it is an
+<em>upgrade</em> or the same version), the app moves across by itself:
+<ul>
+<li>If it is the same bits (the candidate was promoted), it simply flips
+the channel and notes it in Update History.</li>
+<li>If it is a newer Stable, it is offered as a normal update.</li>
+<li>Either way it is spoken once: “Stable has caught up. Quill Radio is
+back on the Stable channel.”</li>
+</ul></li>
+<li><strong>“Use the copy from <date>”</strong>: restore the automatic
+snapshot taken when you joined Beta (5.4), then install Stable.</li>
+<li><strong>“Stay on Beta”</strong> (Escape): change nothing.</li>
+</ol>
+<h3 id="54-automatic-snapshots-the-copy-saved-when-you-joined-beta">5.4
+Automatic snapshots (“the copy saved when you joined Beta”)</h3>
+<p><strong><code>quill/core/updater/snapshots.py</code></strong> has
+per-app adapters that reuse the existing backup code:</p>
+<table>
+<thead>
+<tr>
+<th>App</th>
+<th>Snapshot contents</th>
+<th>Reuse</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>QUILL</td>
+<td>settings, keymap, feature flags, abbreviations, menu customisation,
+Quillin settings (the QUILL rows of
+<code>setup_transfer.SetupItem</code>)</td>
+<td><code>setup_transfer</code> item list
+(<code>setup_transfer.py:78+</code>) packaged as a zip; documents are
+<strong>not</strong> copied (restore points already cover them, and they
+are not migrated by updates)</td>
+</tr>
+<tr>
+<td>QUILL Lite</td>
+<td><code>%LOCALAPPDATA%\QuillLite\*.json</code> (settings, keymap,
+sessions, recent)</td>
+<td>raw file copy (not <code>export_portable</code>, which is
+selective)</td>
+</tr>
+<tr>
+<td>Quill Radio</td>
+<td><code>RADIO_DATA_FILES</code>; recordings excluded</td>
+<td><code>radio.backup.create_backup(include_recordings=False)</code> →
+<code>.qrbackup</code></td>
+</tr>
+<tr>
+<td>QUILL Cast</td>
+<td><code>CAST_DATA_FILES</code>; downloaded episodes excluded</td>
+<td><code>podcasts.backup.create_backup</code> →
+<code>.qcbackup</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Stored at:</strong>
+<code>&lt;data dir&gt;/channel-snapshots/&lt;app&gt;-&lt;version&gt;-&lt;reason&gt;-&lt;stamp&gt;.&lt;ext&gt;</code>,
+where reason is <code>joined-beta</code>, <code>joined-dev</code>,
+<code>before-update</code> or <code>before-restore</code>.</li>
+<li><strong>Retention:</strong> the latest <code>joined-*</code> copy is
+kept until you are back on Stable and have run it 3 times. The 3 newest
+<code>before-update</code> copies are kept. Everything else is pruned.
+Size is tiny (tens of KB). The adapters add a “snapshot” entry to
+<code>persistence_audit</code> (<code>export</code>).</li>
+<li><strong>When snapshots are taken:</strong> on joining Beta or Dev
+(before the channel flips, so a failure aborts the switch with a
+message); before every install while on Beta or Dev; before a restore
+(so “nothing is thrown away”).</li>
+<li><strong>Restore order matters,</strong> because the Stable app may
+be an <em>old</em> build that knows nothing about restores:
+<ol type="1">
+<li>The current (Beta) app takes a <code>before-restore</code>
+snapshot.</li>
+<li>It closes its own stores and writes the snapshot files back (it
+knows how).</li>
+<li>It lowers the ledger to the snapshot’s recorded formats (the
+snapshot stores its ledger alongside).</li>
+<li>It launches the install helper for the Stable build and exits. The
+Stable app then opens restored data it can read.</li>
+</ol></li>
+<li><strong>Shared files</strong> (<code>media_bookmarks.json</code>,
+<code>radio-listens.json</code>, QUILL’s shared folder). A restore
+writes a shared file back only if <strong>no other installed app on Beta
+or Dev wrote a higher version of that format</strong>. Otherwise the
+dialog lists it: “Your bookmarks are shared with QUILL Cast, which is
+still on Beta, so they stay as they are.” This is decided by
+<code>downgrade_verdict</code> over the shared ledger plus
+<code>channels.json</code> (6.2).</li>
+</ul>
+<h3 id="55-how-the-updater-refuses-an-unsafe-downgrade">5.5 How the
+updater refuses an unsafe downgrade</h3>
+<p>The install helper is never launched for a lower version unless
+<code>downgrade_verdict</code> is <code>SAFE</code> or
+<code>SAFE_WITH_LOSSES</code> (confirmed), or a snapshot restore has
+just completed. The refusal is one sentence plus what to do:</p>
+<blockquote>
+<p>“Quill Radio did not go back to 3.2.0, because 3.2.0 cannot read the
+favorites that 3.4.0 Beta saved. Your favorites are unchanged. You can
+wait for Stable to catch up, or go back using the copy saved on 3
+October.”</p>
+</blockquote>
+<p>The refusal is a <code>CodedError</code> subclass,
+<code>UnsafeDowngradeError(code = "QUILL-UPDATE-CHANNEL-UNSAFE-DOWNGRADE")</code>,
+for GATE-EC.</p>
+<hr />
+<h2 id="6-the-updater">6. The updater</h2>
+<h3 id="61-package-layout-wx-free-core-thin-ui">6.1 Package layout
+(wx-free core, thin UI)</h3>
+<pre><code>quill/core/updater/
+  __init__.py
+  channels.py        Channel enum, labels, descriptions, ChannelState
+  versioning.py      (or quill/core/versioning.py, see 2.3)
+  feed.py            fetch/verify/cache ReleaseFeed (3.4)
+  policy.py          decide(): the whole decision table, pure (6.3)
+  app_profiles.py    one UpdaterProfile per app: the join-later seam (6.9)
+  data_formats.py / data_format_ledger.py (5.1)
+  snapshots.py       (5.4)
+  download.py        resumable, hash-verified, metered-aware (6.4)
+  apply.py           wraps self_update.begin_self_update + rollback (6.6)
+  runtime_slots.py   channel slot selection + checks (6.5)
+  history.py         update-history.jsonl (6.8)
+  schedule.py        when a silent check may run / may speak (quiet hours, metered)
+quill/ui/updates/
+  release_channel_dialog.py   chooser + &quot;move my other apps&quot;
+  channel_risk_dialog.py      Beta/Dev warning
+  return_to_stable_dialog.py  safe / unsafe variants
+  update_history_dialog.py
+  (reuse) update_notice.py, update_download.py</code></pre>
+<p><code>main_frame_updates.UpdatesMixin</code>,
+<code>AppShell.check_for_app_updates</code> and
+<code>lite_updates.check_for_updates</code> all become callers of
+<strong>one</strong>
+<code>quill.ui.updates.run_update_check(host, profile, manual: bool)</code>.
+The GLOW updater stays separate.</p>
+<h3 id="62-channel-state-storage">6.2 Channel state storage</h3>
+<p>The family file is
+<strong><code>%LOCALAPPDATA%\QuillVille\channels.json</code></strong>
+(installed copies), or <code>&lt;portable&gt;\data\channels.json</code>
+(portable copies):</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span><span class="dt">&quot;version&quot;</span><span class="fu">:</span> <span class="dv">1</span><span class="fu">,</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a> <span class="dt">&quot;apps&quot;</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">&quot;radio&quot;</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">&quot;channel&quot;</span><span class="fu">:</span> <span class="st">&quot;beta&quot;</span><span class="fu">,</span> <span class="dt">&quot;pending_return&quot;</span><span class="fu">:</span> <span class="kw">false</span><span class="fu">,</span> <span class="dt">&quot;keep_beta_while_waiting&quot;</span><span class="fu">:</span> <span class="kw">false</span><span class="fu">,</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>                    <span class="dt">&quot;joined_at&quot;</span><span class="fu">:</span> <span class="st">&quot;2026-10-03T10:00:00Z&quot;</span><span class="fu">,</span> <span class="dt">&quot;joined_from&quot;</span><span class="fu">:</span> <span class="st">&quot;3.2.0&quot;</span><span class="fu">,</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>                    <span class="dt">&quot;snapshot&quot;</span><span class="fu">:</span> <span class="st">&quot;C:</span><span class="ch">\\</span><span class="st">...</span><span class="ch">\\</span><span class="st">channel-snapshots</span><span class="ch">\\</span><span class="st">radio-3.2.0-joined-beta-20261003.qrbackup&quot;</span><span class="fu">}}}</span></span></code></pre></div>
+<ul>
+<li>One file, so “move all my apps” is one write, every app can see its
+siblings’ channels (shared-file restore rules, slot planning), and Lite
+(in its own data folder) is not left out.</li>
+<li>Each app’s own settings get a mirror key for Preferences and
+documentation (GATE-SETDOC):
+<ul>
+<li>QUILL: <code>update_channel</code> (new <code>SettingSpec</code>, a
+choice; <code>beta_updates</code> is kept as a read-only legacy alias
+for one cycle, see section 9).</li>
+<li>Lite: <code>Settings.update_channel</code> in
+<code>quill/core/lite/settings.py</code>.</li>
+<li>Radio: <code>RadioHistory.update_channel</code>
+(<code>quill/core/radio/history.py:179</code> area, plus
+<code>history_store.py</code>).</li>
+<li>Cast: <code>PodcastHistory.update_channel</code>
+(<code>quill/core/podcasts/history.py:70</code> area).</li>
+<li><code>channels.json</code> wins if the two disagree. The mirror is
+written whenever the channel changes.</li>
+</ul></li>
+</ul>
+<h3 id="63-the-decision-table-policydecide">6.3 The decision table
+(<code>policy.decide</code>)</h3>
+<p>Inputs: installed <code>ReleaseVersion</code>,
+<code>ChannelState</code>, <code>ReleaseFeed</code> (or a stale or
+missing one), ledgers, <code>skipped_versions</code>, and the current
+time. Outputs (a tagged union):</p>
+<table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>Decision</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Installed build is <strong>revoked</strong></td>
+<td><code>RevokedOffer(replacement)</code>: shown even on a silent
+check, as the one high-priority case</td>
+</tr>
+<tr>
+<td>Installed &lt; <code>security_floor</code></td>
+<td><code>SecurityUpdate(target)</code>: offered on the silent check;
+never auto-installed</td>
+</tr>
+<tr>
+<td>Newer build on my channel (or on any <em>more stable</em>
+channel)</td>
+<td><code>Offer(target)</code>. Beta users are also offered Stable
+builds newer than their Beta, because Stable is always acceptable</td>
+</tr>
+<tr>
+<td><code>pending_return</code> and Stable ≥ installed</td>
+<td><code>ReturnComplete(target or None)</code></td>
+</tr>
+<tr>
+<td><code>pending_return</code> and Stable &lt; installed</td>
+<td><code>Waiting(stable_current)</code>; offers Beta only if
+<code>keep_beta_while_waiting</code></td>
+</tr>
+<tr>
+<td>Channel changed to a <em>less</em> stable one</td>
+<td><code>Offer(newest on new channel)</code> after the risk dialog</td>
+</tr>
+<tr>
+<td>Channel changed to Stable, Stable &lt; installed</td>
+<td><code>downgrade_verdict</code> → <code>ReturnSafe(target)</code> /
+<code>ReturnSafeWithLosses(target, items)</code> /
+<code>ReturnUnsafe(blockers, snapshot)</code></td>
+</tr>
+<tr>
+<td>Target needs a newer runtime than the slot holds</td>
+<td>handled by the installer bundling its runtime;
+<code>runtime_slots.plan()</code> names the slot (6.5)</td>
+</tr>
+<tr>
+<td><code>min_upgrade_from</code> &gt; installed</td>
+<td><code>Offer(stepping_stone)</code> with the sentence “This needs one
+step first”</td>
+</tr>
+<tr>
+<td>Nothing newer</td>
+<td><code>UpToDate(channel, last_checked)</code></td>
+</tr>
+<tr>
+<td>Feed unreachable, cache fresh</td>
+<td><code>UpToDate(…, offline=True)</code>: “Couldn’t reach the update
+server just now. As of <date>, you had the newest Beta.”</td>
+</tr>
+<tr>
+<td>Feed invalid (bad signature, lower sequence)</td>
+<td><code>CheckFailed(reason)</code>. Never falls back to unsigned
+data</td>
+</tr>
+</tbody>
+</table>
+<h3 id="64-download">6.4 Download</h3>
+<p><code>updater/download.py</code> is built on
+<code>release_assets._download_resumable</code>
+(<code>release_assets.py:283-350</code>):</p>
+<ul>
+<li>Writes to <code>&lt;data&gt;/updates/&lt;name&gt;.partial</code> and
+resumes with HTTP Range across app restarts.</li>
+<li>Verifies <strong>the SHA-256 from the signed feed</strong> (not
+GitHub’s <code>digest</code>) and size, then renames to the final name.
+A mismatch deletes the file and raises.</li>
+<li>Can be cancelled. Progress is spoken at 25, 50 and 75 percent
+(keeping <code>main_frame_updates.py:634-646</code> and
+<code>update_download._progress</code>).</li>
+<li><strong>Metered connections:</strong>
+<code>net_metered.may_download(settings, automatic=True)</code>.
+Automatic downloads (QUILL’s silent-check auto-download,
+<code>main_frame_updates.py:237-240</code>, and any Beta “download in
+background” option) are held on a metered connection and noted in Update
+History: “Held back because you are on a metered connection.” A download
+the user asked for always goes ahead.</li>
+<li><strong>Disk check:</strong> before downloading, compare free space
+with the asset size × 2.5 (download plus extraction plus the old copy)
+and give a plain message if there isn’t enough.</li>
+</ul>
+<h3 id="65-the-shared-runtime-channel-slots">6.5 The shared runtime:
+channel slots</h3>
+<p><strong>Rule: each channel has its own runtime slot. Within a slot
+the newest build wins, as today. Across slots nothing is
+shared.</strong></p>
+<ul>
+<li><strong>Slots:</strong>
+<code>%LOCALAPPDATA%\QuillVille\Runtime\3.13</code> (Stable; the
+existing folder, so nothing moves for anyone),
+<code>Runtime\3.13-beta</code>, <code>Runtime\3.13-dev</code>.</li>
+<li><strong>Installer:</strong>
+<code>installer/shared-runtime.iss</code> gains <code>/CHANNEL=</code>
+handling. <code>RuntimeDir()</code> (139-149) appends <code>-beta</code>
+or <code>-dev</code> when the channel is not Stable.
+<code>RuntimeNeedsInstall</code> (216-233) is unchanged inside the slot.
+The installer writes <code>[runtime] slot=3.13-beta</code> into
+<code>{app}\quill-app-version.ini</code>. With <strong>no</strong>
+<code>/CHANNEL</code>, the installer uses Stable for final versions and
+Beta for any pre-release version. This keeps hand installs from the
+website sensible.</li>
+<li><strong>Native launcher:</strong> <code>runtime_resolve.c</code>
+reads <code>slot=</code> from the ini beside it and resolves
+<code>Runtime\&lt;slot&gt;\</code>, falling back to
+<code>&lt;suite-major&gt;</code> (so behaviour is unchanged when the key
+is missing). Any app version that offers channels ships the new
+launcher, so an old launcher is never asked to find a Beta slot.</li>
+<li><strong>Reference counting:</strong>
+<code>quill/core/runtime_refs.py</code> keys by <em>slot</em>
+(<code>"3.13-beta"</code>) instead of by Python version. The existing
+unregister path in <code>shared-runtime.iss</code> (around line 241)
+removes an unreferenced slot. When your last Beta app returns to Stable,
+the Beta slot (about 335 MB) is reclaimed.</li>
+<li><strong>Self-heal:</strong> <code>runtime-latest</code> is renamed
+in practice to <strong><code>runtime-stable</code></strong>, with
+<code>runtime-latest</code> kept as an alias forever because installed
+launchers have it compiled in
+(<code>build_native_launcher.py:57-59</code>). Add
+<code>runtime-beta</code>. Dev slots do not self-heal; they say
+“Reinstall the Dev build” (open question 1).</li>
+<li><strong>GATE-SIBVER becomes channel-aware.</strong> Inside the
+Stable slot, the existing strict rule stands
+(<code>check_sibling_versions.py</code>). Inside Beta and Dev slots, a
+sibling being <em>ahead</em> is allowed, because a Beta Lite running
+newer Lite code from Radio’s Beta runtime is still Beta code you chose,
+and the About box (<code>app_version.describe_version</code>) already
+shows “(running shared runtime code X)”. The promotion check P7 applies
+the strict rule at the moment a build enters Stable.</li>
+<li><strong>Portable copies</strong> carry their own interpreter, so
+they have no slot question. A portable channel switch replaces the
+bundle.</li>
+<li><strong>QUILL</strong> has no runtime slot (it is a self-contained
+exe).</li>
+<li><strong>Interim before slots ship (Phases 1-2):</strong> a runtime
+app may join Beta only when <code>runtime_apps.installed_apps()</code>
+shows it is the <strong>only</strong> app on the runtime. Otherwise the
+chooser explains: “Beta for Quill Radio needs an update that is coming
+soon, because QUILL Lite on this computer shares Quill Radio’s engine.
+You can move both together instead.” It then offers to move all of them,
+which is safe because they then share one channel.</li>
+</ul>
+<h3 id="66-install-and-apply">6.6 Install and apply</h3>
+<ul>
+<li><p><strong>Installed copies:</strong> the existing helper
+(<code>self_update.build_apply_update_script</code>, installer mode)
+gains <code>/CHANNEL=&lt;ch&gt;</code> and
+<code>/LOG="&lt;updates&gt;\setup-&lt;ver&gt;.log"</code> on the Inno
+command line. The installer UI choice is “Install quietly” (the default:
+<code>/VERYSILENT</code>, as now) or “Show the installer”
+(<code>/SILENT</code> off). This is a Preferences option,
+<code>show_installer_when_updating</code>, default off, for people who
+want to see the UAC and progress steps.</p></li>
+<li><p><strong>Before Windows elevates the installer:</strong> verify
+Authenticode (subject matches the feed’s
+<code>authenticode_subject</code>) with
+<code>Get-AuthenticodeSignature</code> in the helper. This is required
+on Stable once signing is mandatory (open question 1).</p></li>
+<li><p><strong>Portable copies</strong> need the helper changed from
+in-place <code>/MIR</code> to a <strong>swap</strong>:</p>
+<ol type="1">
+<li>Extract to <code>&lt;install&gt;.new</code>.</li>
+<li>Rename <code>&lt;install&gt;</code> to
+<code>&lt;install&gt;.previous</code>.</li>
+<li>Rename <code>&lt;install&gt;.new</code> to
+<code>&lt;install&gt;</code>.</li>
+<li>Move <code>data\</code> back across.</li>
+<li>Relaunch.</li>
+</ol>
+<p><code>stage_portable_update</code> (247-272) stays. The extra disk
+use is one bundle, only during the update.</p></li>
+<li><p><strong>Rollback on failed update.</strong></p>
+<ul>
+<li>The helper relaunches the app and waits up to 120 seconds for
+<code>&lt;updates&gt;\apply-result.json</code> with
+<code>{"version": X, "started": true}</code>. The app writes this file
+after its main window is shown, via
+<code>updater.apply.confirm_started()</code>, called from every app’s
+startup after the first frame.</li>
+<li>Portable: if the file never appears, or the app exits, the helper
+swaps <code>.previous</code> back and relaunches the old version.</li>
+<li>Installed: the helper re-runs the cached previous installer
+(<code>&lt;updates&gt;\rollback\&lt;previous setup&gt;.exe</code>, kept
+until the new version has started 3 times or for 7 days; open question
+7). It then writes <code>apply-result.json</code> with
+<code>rolled_back: true</code>.</li>
+<li>On next start, the restored app reads that file and says once: “The
+update to 3.3.0 didn’t start, so Quill Radio went back to 3.2.0. Nothing
+of yours was changed. Details are in Help &gt; Update History.”</li>
+</ul></li>
+<li><p><strong>“No surprise restarts.”</strong> Nothing ever closes or
+restarts the app without the user pressing a button. “Install when I
+close” stays (<code>update_download.offer_install</code>). If a Radio
+recording or scheduled recording is due within 30 minutes, “Install and
+restart now” first asks: “A recording is scheduled for 21:00. Install
+after it finishes?” A silent check never installs. It only offers, or
+downloads when allowed.</p></li>
+</ul>
+<h3 id="67-when-checks-run-and-what-is-spoken">6.7 When checks run, and
+what is spoken</h3>
+<ul>
+<li><strong>Silent startup check:</strong> at most once a day (the
+existing throttles <code>_update_check_due</code> /
+<code>_app_update_check_due</code> / <code>update_check_due</code>). It
+is deferred with <code>wx.CallAfter</code>, as now.</li>
+<li><strong>Quiet hours:</strong> in Radio and Cast, if
+<code>quiet_hours.silences(hours, "update", now)</code> is true, the
+offer is held and recorded rather than shown. “update” is a new
+<code>Kind</code>. Revocation and security notices are
+<code>high_priority=True</code>.</li>
+<li><strong>What is spoken</strong> (GATE-13: only what the screen
+reader cannot know):
+<ul>
+<li>Spoken: “Checking for updates” on a manual check only; download
+milestones; “Update 3.3.0 downloaded”; “Switched to Beta”; “Back on
+Stable”; “Update held back: metered connection”; “Stable has caught
+up…”.</li>
+<li>Not spoken: dialog titles, button names, focus moves.</li>
+</ul></li>
+<li><strong>Offline:</strong> a manual check shows a dialog. A silent
+check says nothing and records the failure in history. QUILL keeps
+<code>_record_notification</code>.</li>
+</ul>
+<h3 id="68-update-history">6.8 Update History</h3>
+<p>Help &gt; <strong>Update History…</strong>, available in all four
+apps. It reads <code>&lt;data&gt;/updates/update-history.jsonl</code>,
+appended by <code>updater/history.py</code>. Entry kinds:
+<code>checked</code> (manual checks only, to keep it short),
+<code>downloaded</code>, <code>installed</code>, <code>failed</code>,
+<code>rolled_back</code>, <code>channel_changed</code>,
+<code>snapshot_saved</code>, <code>snapshot_restored</code>,
+<code>held_back</code>, <code>revoked_notice</code>.</p>
+<p>The dialog is a <code>wx.ListCtrl</code> report with columns Date,
+What happened, From, To, Channel. Below it is a read-only multi-line
+details box for the selected row (focus starts on the list). Buttons:
+“Restore this copy…” (enabled on snapshot rows; it goes through the
+restore flow in 5.4), “Open update folder”, and Close (no access
+key).</p>
+<h3 id="69-one-profile-per-app-so-new-apps-can-join">6.9 One profile per
+app, so new apps can join</h3>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="at">@dataclass</span>(frozen<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> UpdaterProfile:</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    app_key: <span class="bu">str</span>              <span class="co"># &quot;radio&quot; (feed file name; ASSET_PREFIX key)</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    tag_key: <span class="bu">str</span>              <span class="co"># &quot;radio&quot; / &quot;lite&quot; / &quot;&quot; for QUILL</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    display_name: <span class="bu">str</span>         <span class="co"># &quot;Quill Radio&quot;</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    uses_shared_runtime: <span class="bu">bool</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    asset_kinds: <span class="bu">tuple</span>[<span class="bu">str</span>, ...]          <span class="co"># (&quot;installer&quot;,&quot;portable&quot;)</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    data_location: Callable[[], Path]     <span class="co"># app_data_dir / lite data_dir</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    snapshot: SnapshotAdapter</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    formats: <span class="bu">tuple</span>[<span class="bu">str</span>, ...]              <span class="co"># DataFormat ids this app writes</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    channel_mirror: ChannelMirror         <span class="co"># read/write the per-app settings key</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>PROFILES <span class="op">=</span> {p.app_key: p <span class="cf">for</span> p <span class="kw">in</span> (QUILL, QUILL_LITE, RADIO, CAST)}</span></code></pre></div>
+<p>For an app to join, it adds a profile, a feed file,
+<code>build/apps/&lt;app&gt;.toml</code>, its formats and snapshot
+adapter, and the two Help menu items. A gate fails if an app in
+<code>companion_install.ASSET_PREFIX</code> that has an installer lacks
+a profile.</p>
+<hr />
+<h2 id="7-switching-channels-in-each-app-ui-and-wording">7. Switching
+channels in each app (UI and wording)</h2>
+<h3 id="71-where-the-controls-live">7.1 Where the controls live</h3>
+<p><strong>Changing the channel never happens from a combo box
+selection.</strong> Arrowing through a combo would otherwise fire a risk
+dialog per item, which is hostile to a screen-reader user. Every place
+shows the current channel and a <strong>“Change release
+channel…”</strong> button that opens one shared dialog.</p>
+<table>
+<thead>
+<tr>
+<th>App</th>
+<th>Help menu</th>
+<th>Preferences</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>QUILL</td>
+<td>Help &gt; “Release &amp;Channel…” and “Update &amp;History…” next to
+“Check for &amp;Updates…” (<code>main_frame_menu.py:3324</code>), labels
+through <code>_menu_label</code> with new command ids
+<code>help.release_channel</code> and <code>help.update_history</code>
+in <code>DEFAULT_KEYMAP</code></td>
+<td>Admin page: the <code>beta_updates</code> checkbox
+(<code>settings_specs.py:2139</code>) is replaced by a read-only
+“Release channel: Stable” row plus the “Change release channel…” button;
+the special case in <code>main_frame_preferences.py:725-730</code> is
+removed</td>
+</tr>
+<tr>
+<td>QUILL Lite</td>
+<td>Help menu (<code>lite_window_menus.py</code>)</td>
+<td>Under “Look for &amp;updates when QUILL Lite starts”
+(<code>lite_preferences.py:228</code>): a static line plus a button. The
+access key is chosen by GATE-14 (<code>check_access_keys.py</code>); if
+no letter is free, the button gets none, per CLAUDE.md:168</td>
+</tr>
+<tr>
+<td>Quill Radio</td>
+<td>Help menu beside “Check for Up&amp;dates…”
+(<code>radio_menu_bar.py:451</code>)</td>
+<td><code>radio_preferences.py</code>: add a button row (extend
+<code>app_preferences_dialog.PreferencesDialog</code> with a
+<code>PreferenceButton</code> row type)</td>
+</tr>
+<tr>
+<td>QUILL Cast</td>
+<td>Help menu beside “&amp;Check for Updates…”
+(<code>podcasts_menu.py:465</code>)</td>
+<td><code>podcasts_preferences.app_rows</code>: new <code>AppRow</code>
+kind “button”</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Keyboard routes</strong> (proposed; must be confirmed free by
+<code>tests/unit/ui/test_menu_accelerators.py</code> and GATE-DOCKEY).
+The family update key stays <strong>Ctrl+Alt+U</strong> for Check for
+Updates. Release Channel is <strong>Ctrl+Alt+Shift+U</strong> in every
+app. Update History has a menu access key only, plus a chord where one
+is free. Each key goes in <code>keymap.APP_KEYMAPS</code> per app so the
+label follows any rebinding. The new keys are added to
+<code>docs/keyboard-reference.md</code> (GATE-KEYREF regenerates
+it).</p>
+<p>The <strong>Check for Updates</strong> result dialog gains a line,
+“You are on the Beta channel,” and a “Change release channel…” button.
+When up to date on Stable, today’s <code>_offer_beta_switch</code> nag
+(<code>main_frame_updates.py:527-558</code>) is
+<strong>removed</strong>: an up-to-date answer should not try to sell
+Beta.</p>
+<h3 id="72-the-release-channel-dialog-release_channel_dialogpy">7.2 The
+Release Channel dialog (<code>release_channel_dialog.py</code>)</h3>
+<ul>
+<li><strong>Title:</strong> “Release Channel: Quill Radio”</li>
+<li><strong>Controls, in tab order:</strong>
+<ol type="1">
+<li>Radio buttons for Stable, Beta and Dev, each with the one-line
+meaning from 2.1 as its help text (<code>SetHelpText</code>, F1). The
+current channel is selected. The label “Choose a release channel” is a
+static box that the screen reader announces with the group.</li>
+<li>A read-only multi-line “What this means” box that updates as the
+selection changes: the current version, the newest version on the
+selected channel, and whether going there is an update, the same
+version, or a return (with the safety answer from 5.1 already
+computed).</li>
+<li>A group “Also move my other QuillVille apps on this computer”, with
+one checkbox per installed app (“QUILL Lite, now on Stable”) and every
+box unticked by default.</li>
+<li>“Read about release channels” (opens the site page).</li>
+<li>Buttons: “Switch” (not default when the choice is riskier than the
+current one), and Close (Escape, no access key).</li>
+</ol></li>
+<li>Choosing the current channel and pressing Switch does nothing and
+says “Already on Stable.”</li>
+</ul>
+<h3 id="73-risk-dialog-for-beta-draft-wording">7.3 Risk dialog for Beta
+(draft wording)</h3>
+<p><strong>Title:</strong> “Move Quill Radio to Beta?”</p>
+<blockquote>
+<p>Beta gets new features a few weeks before everyone else. In return,
+some things may not work right yet.</p>
+<p><strong>What could happen</strong></p>
+<ul>
+<li>Something might stop working, or Quill Radio might close
+unexpectedly.</li>
+<li>Your screen reader might miss something it should announce. We test
+every Stable version with JAWS and NVDA. Beta versions are tested
+less.</li>
+<li>Your favorites and settings may be saved in a newer way that the
+Stable version can’t read yet.</li>
+</ul>
+<p><strong>How you’re protected</strong></p>
+<ul>
+<li>Before switching, Quill Radio saves a copy of your favorites,
+history and settings. Your recordings are not copied, and updates don’t
+change them.</li>
+<li>You can come back to Stable any time from Help &gt; Release Channel.
+If it’s safe, you go straight back. If it isn’t, you can stay on your
+version until Stable catches up, or go back to the copy saved
+today.</li>
+<li>Beta versions of the QuillVille apps share their own copy of the
+engine, which uses about 350 MB more disk space until you come back to
+Stable.</li>
+</ul>
+<p>Nothing about you is sent to us when you switch. The only thing Quill
+Radio ever sends is a request for the list of versions.</p>
+</blockquote>
+<p>Buttons: <strong>“Stay on Stable”</strong> (the default, and Escape)
+and <strong>“Move to Beta”</strong>. Focus starts on the text box, as in
+<code>update_notice.py</code> (“focus lands on the notes”). The risk is
+carried by words and the button text. The icon is decorative only (no
+colour-only signals).</p>
+<h3 id="74-risk-dialog-for-dev-stronger">7.4 Risk dialog for Dev
+(stronger)</h3>
+<p><strong>Title:</strong> “Move Quill Radio to Dev?”</p>
+<blockquote>
+<p>Dev versions are built from work in progress, sometimes several times
+a week. They are meant for testing.</p>
+<ul>
+<li>Expect things to break. Some days a Dev version may not start at
+all.</li>
+<li>Dev versions are not checked with screen readers before they go
+out.</li>
+<li>Dev versions may change how your data is saved more than once. Going
+back to Stable may mean using the copy saved today and losing changes
+you made since.</li>
+<li>Windows may warn that a Dev version is from an unknown
+publisher.</li>
+</ul>
+<p>If a developer didn’t ask you to try Dev, Beta is probably the better
+choice.</p>
+</blockquote>
+<p>There is a checkbox: “I understand that Dev versions can break and
+that going back may lose recent changes.” Buttons: “Choose Beta
+instead”, “Stay on Stable” (the default, Escape), and “Move to Dev”. If
+“Move to Dev” is pressed with the box unticked, focus moves to the
+checkbox and the app says “Tick the box first, so we know you’ve read
+this.” That is an outcome the reader can’t know, so it is allowed.
+Typing a confirmation phrase is avoided because of what it costs a
+braille or speech user.</p>
+<h3 id="75-what-moving-to-beta-or-dev-does-step-by-step">7.5 What moving
+to Beta or Dev does, step by step</h3>
+<ol type="1">
+<li>Show the risk dialog. Cancel changes nothing.</li>
+<li>Take a <code>joined-beta</code> snapshot for this app and each
+ticked sibling. Announce “Saved a copy of your settings.” If the
+snapshot fails, stop with: “Quill Radio couldn’t save a copy of your
+favorites, so it stayed on Stable. <reason>.”</li>
+<li>Write <code>channels.json</code> and the mirror settings key. Record
+the change in history.</li>
+<li>Run an immediate check on the new channel. If there is a newer
+build, show the normal update dialog (<code>update_notice</code>), with
+the header “Beta version 3.3.0-beta.2”. Installing passes
+<code>/CHANNEL=beta</code>, which puts the runtime in the Beta
+slot.</li>
+<li>Announce “Quill Radio is on Beta.”</li>
+</ol>
+<h3 id="76-returning-to-stable-drafts">7.6 Returning to Stable
+(drafts)</h3>
+<p><strong>Safe</strong> (title “Go back to Stable?”):</p>
+<blockquote>
+<p>Stable is version 3.2.0. You have 3.3.0 Beta 2.</p>
+<p>Your favorites and settings will work in 3.2.0, so it’s safe to go
+back now. Features that are only in Beta will go away until they reach
+Stable.</p>
+<p>You can also stay on 3.3.0 Beta 2 and move to Stable when it catches
+up. You won’t get more Beta updates while you wait.</p>
+</blockquote>
+<p>Buttons: “Go back to 3.2.0 now” (the default), “Wait for Stable”,
+Close.</p>
+<p><strong>Safe with losses</strong> (Lite): the same, plus:</p>
+<blockquote>
+<p>3.2.0 doesn’t know about 4 settings you changed in Beta (for example,
+“Read headings aloud as I type”). They’ll go back to their usual
+values.</p>
+</blockquote>
+<p><strong>Not safe</strong> (title “Going straight back isn’t safe
+yet”):</p>
+<blockquote>
+<p>Quill Radio 3.4.0 Beta saved your favorites in a newer way that
+Stable 3.2.0 can’t read. If 3.2.0 were installed now, it might not see
+your favorites.</p>
+<p>You have two safe choices:</p>
+<p><strong>Wait for Stable.</strong> Keep 3.4.0 Beta, stop taking Beta
+updates, and move to Stable when it reaches 3.4.0. Quill Radio will do
+this by itself and tell you.</p>
+<p><strong>Use the copy from 3 October.</strong> Go back to how things
+were when you joined Beta, then install 3.2.0. Favorites you added after
+3 October won’t be in it. A copy of how things are right now is saved
+first, so nothing is thrown away.</p>
+</blockquote>
+<p>Buttons: “Wait for Stable” (the default), “Use the copy from 3
+October”, Close (no change). If no snapshot exists (for example, the
+user joined Beta by installing by hand), the second choice reads:
+“There’s no saved copy from before Beta, so the only safe choice is to
+wait.”</p>
+<hr />
+<h2 id="8-accessibility-and-security-requirements">8. Accessibility and
+security requirements</h2>
+<h3 id="81-accessibility">8.1 Accessibility</h3>
+<ul>
+<li><strong>Every dialog:</strong>
+<ul>
+<li>Is shown through <code>_show_modal_dialog</code> (or the app’s
+equivalent) and <code>apply_modal_ids</code>, with Close bound by
+<code>bind_close_button</code>. It is listed in the dialog inventory
+(<code>dialog_inventory.py</code>) and reachable from an app entry point
+(GATE-REACH).</li>
+<li>Has keyboard-complete tab order, sets focus on the explanatory text
+first, uses no access keys on OK, Cancel or Close, and has no duplicate
+mnemonics (GATE-14).</li>
+<li>Has inline <code>SetHelpText</code> on every control and a
+<code>surface_help</code> entry per app (radio, cast, QUILL Lite and
+QUILL catalogues). <code>docs/f1-help-reference.md</code> is regenerated
+(GATE-HELPREF).</li>
+</ul></li>
+<li><strong>No colour-only signals.</strong> Risk is in the words (“Move
+to Beta?”, “isn’t safe yet”); icons are decorative.</li>
+<li><strong>Spoken outcomes only</strong> (GATE-13;
+<code>check_over_announce.py</code> must stay green).</li>
+<li><strong>No surprise restarts or popups:</strong> see 6.6 and 6.7. A
+silent check never opens a modal during playback start-up, recording or
+quiet hours. It records and waits for the next manual check or idle
+moment.</li>
+<li>Long version strings are read the way they are displayed: “3.3.0
+Beta 2”, never “3.3.0-beta.2”
+(<code>ReleaseVersion.display()</code>).</li>
+</ul>
+<h3 id="82-security">8.2 Security</h3>
+<ul>
+<li><strong>Signed feed, required</strong> (3.2). The asset hash comes
+from the signed feed. Authenticode is checked before elevation
+(6.6).</li>
+<li><strong>Downgrade attack</strong> (an attacker serving an old,
+vulnerable build):
+<ul>
+<li>The client never installs a lower version unless <em>the user
+started a return to Stable</em>, and the target appears in the
+<strong>current signed feed</strong> with Stable in its
+<code>channels</code>, is not revoked, is at or above
+<code>security_floor</code>, and passes
+<code>downgrade_verdict</code>.</li>
+<li>Anti-replay: a stored <code>sequence</code> high-water mark (an
+older signed feed is refused) and <code>expires_at</code> (a feed frozen
+in time is treated as “couldn’t check” once expired).</li>
+<li>A scheduled workflow (<code>feed-refresh.yml</code>, weekly)
+re-signs each feed with a new <code>generated_at</code>,
+<code>expires_at</code> and <code>sequence</code>. This needs the key in
+CI (open question 6).</li>
+</ul></li>
+<li><strong>Revoked builds:</strong> never offered and never a rollback
+target. If you are running one, you get a high-priority notice that
+names the replacement. Revocation keeps assets downloadable for people
+moving forward.</li>
+<li><strong>Trusted hosts:</strong> the existing allowlist
+(<code>updates.py:975-984</code>) applies to both the feed and the
+assets.</li>
+<li><strong>Privacy:</strong>
+<ul>
+<li>The check is one HTTPS GET for
+<code>updates/v2/&lt;app&gt;.json</code> (and <code>.sig</code>), with
+no query string, no cookies, and a generic User-Agent
+<code>QuillVille-Updater/2</code> with no version or OS.</li>
+<li>Downloads are plain GETs to GitHub.</li>
+<li>No telemetry, no install pings, no crash-gated rollouts.</li>
+<li>New egress sites are registered in
+<code>quill/tools/network_egress_entries*.py</code> (the GATE-9 audit).
+The Preferences help text already promises “sends nothing about you”
+(<code>settings_specs.py:2129-2134</code>) and stays true.</li>
+</ul></li>
+<li><strong>Feed key compromise:</strong> the rotation path in 3.2
+applies. The <code>security_floor</code> plus revocation give a way to
+push people off a bad build.</li>
+</ul>
+<hr />
+<h2 id="9-migrating-from-today-without-breaking-installed-copies">9.
+Migrating from today without breaking installed copies</h2>
+<h3
+id="91-what-installed-copies-do-today-and-the-guarantees-we-keep">9.1
+What installed copies do today, and the guarantees we keep</h3>
+<table>
+<thead>
+<tr>
+<th>Installed copy</th>
+<th>How it checks</th>
+<th>What it will see</th>
+<th>Guarantee kept</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Quill Radio 3.0.4, QUILL Lite 1.1.2</td>
+<td>GitHub API page 1 (30 releases), own asset prefix, <strong>ignores
+<code>prerelease</code></strong>, takes <code>stable[0]</code></td>
+<td>Only non-prerelease releases</td>
+<td>Beta and Dev builds are published as prereleases, so they are never
+offered. A Stable promotion flips <code>prerelease=false</code>, so they
+see it</td>
+</tr>
+<tr>
+<td>QUILL 0.9.0 Beta 2/3</td>
+<td>v1 manifest (no channel) plus the GitHub API with
+<code>beta_updates</code></td>
+<td>v1 feed: one version. API: prereleases if beta</td>
+<td>Keep generating <code>.quill-update-feed-v1.json</code>,
+<strong>only ever with the newest Stable QUILL</strong> once 1.0.0 ships
+(until then, newest Beta as today). Beta users on old builds still get
+Betas through the API path</td>
+</tr>
+<tr>
+<td>QUILL Cast</td>
+<td>not released</td>
+<td>—</td>
+<td>Cast 2.0.0 ships with the v2 updater from day one</td>
+</tr>
+</tbody>
+</table>
+<h3
+id="92-the-pagination-hazard-must-be-handled-before-any-beta-or-dev-publishing">9.2
+The pagination hazard (must be handled before any Beta or Dev
+publishing)</h3>
+<p>Installed Radio and Lite read only the first 30 releases.</p>
+<ul>
+<li><strong>Do not publish Dev builds as GitHub Releases in
+<code>Community-Access/quill</code>.</strong> Host them in a separate
+repo,
+<strong><code>Community-Access/quillville-dev-builds</code></strong>
+(assets only; feed URLs point there; add it to trusted hosts as a
+<code>github.com</code> path, which is already trusted).</li>
+<li><strong>Cap Betas in the main repo.</strong> When a Beta is
+superseded, <code>publish_release.py</code> <em>deletes the GitHub
+release object but keeps the tag</em> (old Beta bits stay downloadable
+from the dev-builds repo mirror if needed). A gate
+(<code>test_release_page_budget.py</code>, run by
+<code>publish_release.py</code>) refuses to publish if more than
+<strong>20</strong> releases are newer than any app’s newest Stable on
+the default listing.</li>
+<li>Phase 0 adds <code>?per_page=100</code> to every API call in the new
+builds. That fixes future copies; the cap protects the copies already
+out there.</li>
+</ul>
+<h3 id="93-bridge-releases-the-first-channel-aware-versions">9.3 Bridge
+releases (the first channel-aware versions)</h3>
+<ul>
+<li><strong>Radio 3.2.0, Lite 1.2.0, QUILL 1.0.0 and Cast 2.0.0</strong>
+are the first builds with the v2 updater. They ship as ordinary Stable
+releases, so every old copy is offered them through its old path.</li>
+<li>They must:
+<ul>
+<li>Read the legacy settings (<code>beta_updates</code> becomes channel
+Beta; nothing to read for the others) and write
+<code>channels.json</code>.</li>
+<li>Start the format ledger at once (“start the clock”), recording
+today’s formats as version 1 (<code>quill.settings</code> 2).</li>
+<li>Write <code>quill-app-version.ini</code> with <code>channel=</code>
+and <code>slot=</code>. Radio and Lite already write the file;
+<strong>Cast must start</strong>.</li>
+<li>Keep working if the v2 feed is unreachable by reporting “couldn’t
+check”. There is no unsigned fallback.</li>
+</ul></li>
+</ul>
+<h3 id="94-settings-migration-details">9.4 Settings migration
+details</h3>
+<ul>
+<li><strong>QUILL:</strong> add
+<code>update_channel: str = "stable"</code>, with <code>normalize</code>
+restricting it to stable, beta or dev. On load, if
+<code>update_channel</code> is absent and <code>beta_updates</code> is
+true, set <code>update_channel = "beta"</code>. Keep writing
+<code>beta_updates = (channel != "stable")</code> for one release cycle
+so a QUILL downgraded to 0.9.x still behaves
+(<code>reconcile_unknown</code> preserves <code>update_channel</code>
+for it). No <code>SETTINGS_SCHEMA_VERSION</code> bump is needed (an
+additive field). <code>skipped_update_version</code> stays and is
+honoured per channel.</li>
+<li><strong>QUILL’s auto-enroll</strong>
+(<code>main_frame_updates.py:214-222</code>) is replaced by the
+birth-channel rule (2.1).</li>
+<li><strong>QUILL’s silent auto-download</strong> stays for QUILL, now
+metered-aware. It does not get added to the other apps.</li>
+<li><strong>Lite, Radio and Cast:</strong> additive fields. Lite’s lossy
+downgrade behaviour is declared in <code>data_formats</code> as
+<code>lossy_reads</code>, so the “Safe with losses” wording
+appears.</li>
+</ul>
+<h3 id="95-workflow-fixes-before-quill-100-stable">9.5 Workflow fixes
+before QUILL 1.0.0 Stable</h3>
+<ul>
+<li><code>windows-release.yml:158-168</code>: <code>prerelease</code>
+and the title come from <code>build/version.toml</code>, not
+hard-coded.</li>
+<li>The v1 feed is generated <strong>only for Stable releases</strong>
+after 1.0.0 (guarded in <code>generate_update_feed.py</code>). Beta tags
+no longer overwrite it.</li>
+<li>Clients that understand v2 ignore the v1 feed for offers, and keep
+fetching it only for <code>advisories</code> until v2 carries advisories
+(then drop it).</li>
+</ul>
+<hr />
+<h2 id="10-gates-tests-documentation-phases-and-open-questions">10.
+Gates, tests, documentation, phases and open questions</h2>
+<h3 id="101-new-and-extended-gates">10.1 New and extended gates</h3>
+<table>
+<thead>
+<tr>
+<th>Gate</th>
+<th>File</th>
+<th>What it enforces</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>GATE-VERSORT</strong></td>
+<td><code>tests/unit/core/test_versioning.py</code></td>
+<td>Ordering across all spellings (tags, semver, PEP 440, display),
+including dev &lt; alpha &lt; beta &lt; rc &lt; final, two dev builds on
+one day, <code>+sha</code> ignored; Hypothesis-free table plus generated
+pairs; old <code>_version_tuple</code> callers unchanged</td>
+</tr>
+<tr>
+<td><strong>GATE-FEED</strong></td>
+<td><code>tests/unit/docs/test_release_feeds.py</code></td>
+<td>Every <code>docs/site/updates/v2/*.json</code> matches the schema,
+its <code>.sig</code> verifies against <code>feed-pub.keys</code>,
+<code>sequence</code> increases versus <code>git show HEAD~1</code>,
+<code>channels.*.current</code> exist and are not revoked, Stable
+entries are final versions, and <code>can_roll_back_to</code> equals the
+recomputed value</td>
+</tr>
+<tr>
+<td><strong>GATE-DATAFMT</strong></td>
+<td><code>tests/unit/core/test_data_formats.py</code> +
+<code>quill/tools/data_format_audit.py</code></td>
+<td>Fingerprints each registered store’s serializer (dataclass fields
+and types, <code>_deltas</code> keys, <code>to_versioned</code> group
+layout) against
+<code>tests/unit/core/fixtures/data_format_fingerprints.json</code>; a
+change fails until someone either bumps <code>current</code> or records
+“additive, compatible” (the classification is the review, like
+<code>persistence_audit</code>)</td>
+</tr>
+<tr>
+<td><strong>GATE-SIBVER-CH</strong></td>
+<td><code>scripts/check_sibling_versions.py</code> (extended)</td>
+<td>Channel-aware rule (6.5); <strong>Cast added to
+<code>SITES</code></strong> (<code>quill/apps/podcasts_menu.py</code>,
+<code>APP_VERSION</code>, tag <code>quill-cast-v</code>)</td>
+</tr>
+<tr>
+<td><strong>GATE-APPVER</strong></td>
+<td><code>tests/unit/scripts/test_app_versions_agree.py</code></td>
+<td>Adds <code>test_cast_says_one_version_everywhere</code> and Lite
+parity; checks <code>build/apps/&lt;app&gt;.toml</code> agrees with
+constants</td>
+</tr>
+<tr>
+<td><strong>GATE-MARKER</strong></td>
+<td><code>tests/unit/structure/test_installer_markers.py</code></td>
+<td>Every shared-runtime <code>.iss</code> writes
+<code>quill-app-version.ini</code> with <code>version</code>,
+<code>channel</code> and <code>slot</code></td>
+</tr>
+<tr>
+<td><strong>GATE-UPDATER-PROFILE</strong></td>
+<td><code>tests/unit/core/test_updater_profiles.py</code></td>
+<td>Every app with an installer in <code>ASSET_PREFIX</code> has an
+<code>UpdaterProfile</code>, a feed file, Help menu items with keyboard
+routes, and F1 help for the channel surfaces</td>
+</tr>
+<tr>
+<td><strong>GATE-RELEASE-PAGE</strong></td>
+<td><code>tests/unit/scripts/test_release_page_budget.py</code></td>
+<td>The 30-release page budget (9.2)</td>
+</tr>
+<tr>
+<td>Policy tables</td>
+<td><code>tests/unit/core/updater/test_policy.py</code></td>
+<td>About 60 rows: installed × channel × feed × ledger × pending, down
+to the decision</td>
+</tr>
+<tr>
+<td>Helper script</td>
+<td><code>tests/unit/core/test_self_update.py</code> (extended)</td>
+<td>Portable swap and rollback script, <code>/CHANNEL</code>,
+<code>/LOG</code>, the apply-result wait</td>
+</tr>
+<tr>
+<td>Snapshots</td>
+<td><code>tests/unit/core/updater/test_snapshots.py</code></td>
+<td>Each adapter round-trip, the shared-file rule, ledger lowering on
+restore</td>
+</tr>
+<tr>
+<td>Promotion</td>
+<td><code>tests/unit/scripts/test_promote_release.py</code></td>
+<td>Each check P1-P13 against a fake <code>gh</code> and feed; the
+dry-run report text</td>
+</tr>
+<tr>
+<td>UI</td>
+<td>dialog inventory, <code>check_access_keys.py</code>,
+<code>check_over_announce.py</code>,
+<code>test_menu_accelerators.py</code>, surface reachability snapshot,
+per-app help audits</td>
+<td>Snapshots updated</td>
+</tr>
+<tr>
+<td>Egress</td>
+<td><code>quill/tools/network_egress_audit.py</code></td>
+<td>New v2 feed fetch sites registered</td>
+</tr>
+<tr>
+<td>Persistence</td>
+<td><code>quill/tools/persistence_audit.py</code></td>
+<td><code>channels.json</code> (marker), ledger (framework), snapshots
+(export), <code>update-history.jsonl</code> (cache)</td>
+</tr>
+<tr>
+<td>Rehearsal</td>
+<td><code>tests/integration/test_channel_rehearsal.py</code> (manual or
+nightly)</td>
+<td>Throwaway repo plus <code>QUILL_UPDATE_FEED_BASE</code>: publish
+dev, promote to beta, then stable, revoke, roll back</td>
+</tr>
+</tbody>
+</table>
+<h3 id="102-documentation">10.2 Documentation</h3>
+<ul>
+<li><strong>Site page
+<code>docs/site/release-channels.html</code></strong>, generated from
+<strong><code>docs/release-channels.md</code></strong> (a globally
+unique basename, as GATE-SITE-LINKS requires). It covers: what Stable,
+Beta and Dev mean; how to switch in each app (with the keys); what “safe
+to go back” means; snapshots; disk space; privacy; how to report a Beta
+problem. It is linked from <code>docs/site/radio.html</code>,
+<code>quilllite.html</code>, <code>docs.html</code> and the FAQ.</li>
+<li><strong>User guides:</strong> a “Release channels and updates”
+section in <code>docs/user guide/userguide.md</code> (QUILL),
+<code>standalone/quilllite/docs/userguide.md</code>, the Radio user
+guide and <code>standalone/cast/docs/userguide.md</code>. Also a
+tutorial step in each app’s tutorials.</li>
+<li><strong>Maintainer docs:</strong>
+<ul>
+<li><code>docs/release/RELEASE.md</code> gains “Channels, publishing and
+promotion”.</li>
+<li>New <code>docs/release/channels-runbook.md</code>: the publish,
+promote, revoke and rollback commands; a “what to do when a Beta breaks
+data” playbook; key handling.</li>
+<li><code>standalone/README.md:76-82</code> corrected.</li>
+<li><code>docs/signing.md</code> gets the key-list and rotation
+section.</li>
+</ul></li>
+<li><strong>Design record:</strong>
+<code>docs/design/2026-10-03-release-channels.md</code> (this plan),
+plus an addendum to the shared-runtime program doc for channel
+slots.</li>
+<li><strong>Release notes conventions</strong> as in 4.5.
+<strong>Sign-off results</strong> go in
+<code>docs/qa/signoffs/&lt;app&gt;-&lt;version&gt;.md</code>, with
+<code>docs/qa/README.md</code> explaining them.</li>
+<li><strong>Settings documentation (GATE-SETDOC):</strong> document
+<code>update_channel</code> in all four apps.</li>
+</ul>
+<h3
+id="103-phased-implementation-rough-sizes-s-is-up-to-3-days-m-is-about-1-2-weeks-l-is-2-4-weeks">10.3
+Phased implementation (rough sizes: S is up to 3 days, M is about 1-2
+weeks, L is 2-4 weeks)</h3>
+<p><strong>Phase 0: fix today’s hazards (S to M). This ships in the next
+point releases.</strong></p>
+<ul>
+<li><code>quill/core/versioning.py</code> (single parser), with
+<code>_version_tuple</code> and <code>parse_version</code> delegating to
+it. Replace <code>stable[0]</code> with <code>select_latest</code>. Add
+<code>per_page=100</code>.</li>
+<li>Cast: pass <code>installed_version(_VERSION)</code>; write
+<code>quill-app-version.ini</code> in both Cast <code>.iss</code> files;
+add Cast to GATE-APPVER and GATE-SIBVER.</li>
+<li><code>windows-release.yml</code>: take the channel from
+<code>version.toml</code>. v1 feed: Stable-only once 1.0.0 ships;
+clients ignore a pre-release manifest version unless on Beta.</li>
+<li>Data-format registry plus ledger, recording only (“start the
+clock”). <code>channels.json</code> reader and writer.</li>
+<li>Value: no wrong offers, and the groundwork for every later safety
+decision.</li>
+</ul>
+<p><strong>Phase 1: choose a channel, with the risk dialog, in all four
+apps (M). Most user value soonest.</strong></p>
+<ul>
+<li>Shared <code>release_channel_dialog</code>,
+<code>channel_risk_dialog</code>, Help &gt; Release Channel, and
+Preferences rows. <code>joined-beta</code> snapshots.</li>
+<li><strong>QUILL</strong> gets the full Beta experience at once (it is
+not on the shared runtime). It uses the existing GitHub path with
+prerelease flags to find Betas.</li>
+<li>Runtime apps can join Beta when they are alone on the runtime, or by
+“move all my apps together” (6.5 interim).</li>
+<li>Return to Stable is offered <strong>only as “Wait for
+Stable”</strong>, which is always safe, plus a same-version flip. No
+downgrade installs yet.</li>
+<li>Update History, read-only.</li>
+</ul>
+<p><strong>Phase 2: signed v2 feed and release tooling (M to
+L).</strong></p>
+<ul>
+<li><code>feed.py</code>, <code>publish_release.py</code>,
+<code>promote_release.py</code>, <code>revoke_release.py</code>,
+<code>rollup_release_notes.py</code>, <code>promote-release.yml</code>
+with environment approval, GATE-FEED, the
+<code>quillville-dev-builds</code> repo, and the page budget.</li>
+<li>Clients switch to v2. Downloads resume and verify against the feed
+hash.</li>
+</ul>
+<p><strong>Phase 3: runtime channel slots (L).</strong></p>
+<ul>
+<li><code>shared-runtime.iss</code> (<code>/CHANNEL</code>,
+<code>RuntimeDir</code>), launcher <code>runtime_resolve.c</code>
+(<code>slot=</code>), <code>runtime_refs</code> by slot,
+<code>runtime-stable</code> and <code>runtime-beta</code> tags,
+channel-aware GATE-SIBVER.</li>
+<li>This removes the “alone on the runtime” restriction.</li>
+</ul>
+<p><strong>Phase 4: safe downgrade and rollback (M to L).</strong></p>
+<ul>
+<li><code>downgrade_verdict</code> and the three return dialogs.
+Snapshot restore with shared-file rules. Unsafe-downgrade refusal.</li>
+<li>Portable swap install with <code>.previous</code>. The apply-result
+health check and automatic rollback. A cached previous installer.</li>
+</ul>
+<p><strong>Phase 5: polish (M).</strong></p>
+<ul>
+<li>Metered holds, quiet hours, recording-aware install timing,
+Authenticode check before elevation, revocation notices, Update History
+restore actions, “Show the installer” option, feed refresh workflow and
+expiry, and the Dev channel risk flow.</li>
+</ul>
+<p><strong>Phase 6: the rest of the family (S per app).</strong></p>
+<ul>
+<li>Profiles for Weather, Converter, Inkwell, Player, Studio, Beacon and
+Social.</li>
+</ul>
+<h3 id="104-open-questions-for-the-owner">10.4 Open questions for the
+owner</h3>
+<p><em>All answered on 2026-10-03; the answers are in the Status note at
+the top. The questions are kept as they were asked.</em></p>
+<ol type="1">
+<li><strong>Dev builds:</strong> built where (your machine or CI), how
+often, signed or unsigned (signing costs money per file), and hosted in
+a separate <code>quillville-dev-builds</code> repo (recommended because
+of the pagination risk)? Should Dev runtime slots self-heal?</li>
+<li><strong>Disk:</strong> is about 335 MB extra for a Beta or Dev
+runtime slot acceptable, and should the risk dialog state the
+number?</li>
+<li><strong>Soak and sign-off:</strong> a 7-day Beta minimum before
+Stable? Screen-reader sign-off required for Stable only (recommended),
+or for Beta too?</li>
+<li><strong>Promotion model:</strong> do you accept “Stable takes only
+final-numbered candidate builds that were first on Beta”? The
+alternative, rebuilding at promotion, gives up “same bits”.</li>
+<li><strong>Channel scope:</strong> per app with an optional “move all”
+(proposed), or one family-wide channel with per-app exceptions?</li>
+<li><strong>Feed expiry and re-signing:</strong> should CI hold the feed
+key for a weekly refresh (needed for the anti-freeze expiry), or should
+expiry be long (for example 90 days) and refreshed only on
+releases?</li>
+<li><strong>Rollback cache:</strong> keep the previous installer (about
+180-200 MB) for 7 days or 3 successful starts, so a failed update can
+undo itself?</li>
+<li><strong>macOS</strong> (<code>standalone/radio-mac</code>,
+<code>macos-release.yml</code>): in scope now, or later?</li>
+<li><strong>QUILL’s version:</strong> <code>build/version.toml</code>
+says 1.0.0 Stable while the newest tag is <code>v0.9.0-beta.3</code>
+(you mentioned Beta 2). Is 1.0.0 the first Stable, and should the
+workflow fix in Phase 0 land before it?</li>
+<li><strong>Lite’s tag key:</strong> confirm <code>quill-lite-v</code>
+stays (grandfathered) and update <code>release_tags.py</code>’s stated
+convention to match.</li>
+<li><strong>Background downloads on Beta:</strong> QUILL already
+auto-downloads on the silent check. Should Beta users of the other apps
+get the same (never auto-install)?</li>
+<li><strong>Gradual rollout without telemetry:</strong> do you want an
+optional client-side percentage rollout (a random bucket stored locally,
+no reporting), or is “promote when the sign-off is green” enough?</li>
+</ol>
+<hr />
+<h3 id="critical-files-for-implementation">Critical Files for
+Implementation</h3>
+<ul>
+<li>S:\QUILL\quill\core\updates.py (version parsing, feed parsing and
+signing, asset selection, download; to be split into
+<code>quill/core/updater/*</code> and
+<code>quill/core/versioning.py</code>)</li>
+<li>S:\QUILL\quill\ui\main_frame_updates.py and
+S:\QUILL\quill\ui\app_shell.py (with
+S:\QUILL\quill\apps\lite_updates.py): the three update flows to fold
+into one channel-aware <code>run_update_check</code></li>
+<li>S:\QUILL\quill\core\self_update.py: the apply helper (portable swap,
+<code>/CHANNEL</code>, apply-result health check, rollback)</li>
+<li>S:\QUILL\installer\shared-runtime.iss with
+S:\QUILL\quill\core\runtime_marker.py,
+S:\QUILL\quill\core\app_version.py and
+S:\QUILL\quill\native\launcher\runtime_resolve.c: channel runtime slots
+and the extended app marker</li>
+<li>S:\QUILL\scripts\check_sibling_versions.py with
+S:\QUILL.github\workflows\windows-release.yml and
+S:\QUILL\scripts\generate_update_feed.py: the channel-aware gates and
+publishing pipeline that the new <code>publish_release.py</code> and
+<code>promote_release.py</code> build on</li>
+</ul>
+<p>Other files referenced: S:\QUILL\quill\core\settings_migration.py,
+S:\QUILL\quill\core\versioned_store.py,
+S:\QUILL\quill\core\lite\settings.py,
+S:\QUILL\quill\core\radio\backup.py,
+S:\QUILL\quill\core\podcasts\backup.py,
+S:\QUILL\quill\core\release_tags.py,
+S:\QUILL\quill\core\release_assets.py,
+S:\QUILL\quill\core\net_metered.py, S:\QUILL\quill\core\quiet_hours.py,
+S:\QUILL\quill\core\settings_specs.py,
+S:\QUILL\quill\ui\main_frame_preferences.py,
+S:\QUILL\quill\apps\lite_preferences.py,
+S:\QUILL\quill\apps\radio_preferences.py,
+S:\QUILL\quill\apps\podcasts_preferences.py,
+S:\QUILL\quill\apps\podcasts.py, S:\QUILL\quill\apps\podcasts_menu.py,
+S:\QUILL\quill\ui\update_notice.py,
+S:\QUILL\quill\ui\update_download.py,
+S:\QUILL\tools\generate_build_info.py, S:\QUILL\build\version.toml,
+S:\QUILL\tests\unit\scripts\test_app_versions_agree.py,
+S:\QUILL\docs\signing.md,
+S:\QUILL\docs\design\2026-08-17-runtime-layering-delta.md,
+S:\QUILL\standalone\runtime\build_runtime_installer.ps1,
+S:\QUILL\standalone\README.md.</p>
+</main>
+</body>
+</html>

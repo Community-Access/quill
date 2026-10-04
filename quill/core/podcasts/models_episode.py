@@ -75,6 +75,9 @@ class PodcastEpisode:
     #: secondary detail for support and for a future rename action. The managed
     #: copy's name is Cast's business; this is what the listener will call it.
     source_filename: str = ""
+    #: The feed's own title when the listener renamed the episode (ear.md R8);
+    #: "" when not renamed. A refresh updates this, never the listener's name.
+    feed_title: str = ""
     #: This file's own playback speed (R12). 0.0 means inherit the show's, which
     #: is what every subscribed episode does; an imported file can want its own --
     #: a lecture at 1.5x and an audiobook at 1.0x, in the same "show".
@@ -86,6 +89,10 @@ class PodcastEpisode:
     #: ``core/podcasts/position_sync.py`` -- so without this field there is
     #: nothing to merge on and a place cannot travel between devices at all.
     position_updated_at: str = ""
+    #: The device the place above came from, when it came from another one
+    #: through Listening Places: "Jeff's iPhone", or "Earshot" when the file
+    #: names only its app (ear.md B1). "" when the place was decided here.
+    last_played_on: str = ""
     #: ``itunes:season`` and ``itunes:episode``; 0 = the feed did not say.
     #:
     #: Read because serial fiction is meant to be heard **in order** and its
@@ -113,6 +120,7 @@ class PodcastEpisode:
         return {
             "guid": self.guid,
             "title": self.title,
+            **({"feed_title": self.feed_title} if self.feed_title else {}),
             "audio_url": self.audio_url,
             "published": self.published,
             "duration_seconds": self.duration_seconds,
@@ -139,6 +147,7 @@ class PodcastEpisode:
                 if self.position_updated_at
                 else {}
             ),
+            **({"last_played_on": self.last_played_on} if self.last_played_on else {}),
             **({"tags": self.tags.to_dict()} if not self.tags.is_empty else {}),
         }
 
@@ -161,6 +170,7 @@ class PodcastEpisode:
         return cls(
             guid=guid,
             title=title,
+            feed_title=str(data.get("feed_title", "") or ""),
             audio_url=audio_url,
             published=str(data.get("published", "")),
             duration_seconds=_coerce_int(data.get("duration_seconds"), 0),
@@ -177,6 +187,7 @@ class PodcastEpisode:
             speed_override=_episode_speed(data.get("speed_override")),
             position_ms=_coerce_int(data.get("position_ms"), 0),
             position_updated_at=str(data.get("position_updated_at", "")),
+            last_played_on=str(data.get("last_played_on", "") or "")[:80],
             season=max(0, _coerce_int(data.get("season"), 0)),
             episode_number=max(0, _coerce_int(data.get("episode_number"), 0)),
             episode_type=str(data.get("episode_type", "")).strip().lower(),

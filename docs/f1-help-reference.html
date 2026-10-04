@@ -266,7 +266,7 @@ separately in <a href="CONTROL_REFERENCE.md">CONTROL_REFERENCE.md</a>,
 generated from <code>topics.json</code> by
 <code>quill/tools/build_docs.py</code>.</p>
 <h2 id="quill-radio">Quill Radio</h2>
-<p>Control coverage: 235 audited sites (121 helped, 114 named-help).</p>
+<p>Control coverage: 286 audited sites (172 helped, 114 named-help).</p>
 <h3 id="every-window-and-what-it-is-for">Every window, and what it is
 for</h3>
 <p><strong>ACB Media Podcasts.</strong> Everything ACB Media publishes,
@@ -287,6 +287,9 @@ the Play Queue and Copy Details. Search narrows the week in place, and
 the channel box narrows it to one. The schedule is kept on this
 computer, so it opens with no connection and says how old it is when it
 does.</p>
+<p><strong>About This Channel.</strong> A YouTube channel’s name,
+subscriber count and the description it wrote about itself, to read with
+the arrow keys. Escape closes it.</p>
 <p><strong>Add Custom Station.</strong> Add a station Quill Radio’s
 directories do not know, by pasting its own stream address. Name it what
 you like; it lands in your favorites as a custom station and plays like
@@ -347,6 +350,12 @@ These settings govern every download, from any source.</p>
 can do to it. Finished rows stay until you clear them so “did that
 actually download?” always has an answer, and Enter on a saved row opens
 the folder it landed in.</p>
+<p><strong>Edit Station Tags.</strong> Your own words for a station, so
+a search finds it by them: a team it carries, a show you like, anything.
+Type them in Your tags, separated by commas, and press Enter. The
+directory’s own tags are listed below, read-only, because they are
+searched too. Empty the box to remove your tags; Escape leaves
+everything as it was.</p>
 <p><strong>Find Streams from a Website.</strong> Point Quill Radio at a
 web page you know carries a stream, and it scans the page for playable
 stream links. Useful for the station whose website plays fine in a
@@ -363,6 +372,15 @@ front. Go To Settings chooses what is listed and in what order.</p>
 are in it, in what order, ten at most – numbered 1 to 9 then 0, which is
 why ten. What you use most belongs at 1, because you will press Ctrl+G
 then 1 without reading anything.</p>
+<p><strong>Go back to Stable?.</strong> How to come back to Stable from
+a newer version. When Stable can read everything you have saved, you can
+go back now. When it can’t, you can wait for Stable to catch up, or go
+back to the copy saved when you joined. Close changes nothing.</p>
+<p><strong>Going straight back isn’t safe yet.</strong> How to come back
+to Stable from a newer version. When Stable can read everything you have
+saved, you can go back now. When it can’t, you can wait for Stable to
+catch up, or go back to the copy saved when you joined. Close changes
+nothing.</p>
 <p><strong>Import Stations.</strong> Bring stations in from a playlist
 file – M3U, PLS – or another player’s export. What arrives lands in your
 favorites; nothing already there is touched.</p>
@@ -385,10 +403,25 @@ rebound. Type to filter; Copy All takes the list with you.</p>
 <p><strong>Listening Statistics.</strong> A report of your listening:
 which stations, how long, and when. It reads your own local history and
 nothing leaves this computer.</p>
+<p><strong>Local Media.</strong> Your own music, audiobooks and video,
+in playlists you make. Playlists are on the left and the selected one’s
+items on the right; Enter plays from an item and carries on through the
+playlist, Shift+F10 opens everything a row can do, and Ctrl+O adds
+files. Removing an item never touches the file on your computer.</p>
+<p><strong>Local Media Item Properties.</strong> Everything known about
+one file in a playlist: its title, artist and album, its length, where
+it is on your computer and whether it is still there. Read it with the
+arrow keys, or copy any of it.</p>
 <p><strong>Manage Favorite Stations.</strong> Your whole favorites
 collection in one place: search it, play from it, rename, remove, and
 arrange stations into folders. Changes save immediately and the main
 window’s tree follows along.</p>
+<p><strong>Move Quill Radio to Beta?.</strong> Says plainly what could
+go wrong on Beta or Dev, how your settings are protected, and how to
+come back. Nothing changes unless you tick the box and choose Move.</p>
+<p><strong>Move Quill Radio to Dev?.</strong> Says plainly what could go
+wrong on Beta or Dev, how your settings are protected, and how to come
+back. Nothing changes unless you tick the box and choose Move.</p>
 <p><strong>Player.</strong> The whole transport in one small window:
 what is playing, where you are in it, and buttons for play, stop,
 skipping, speed, chapters and volume. Ctrl+Shift+G opens it from
@@ -441,6 +474,11 @@ show its progress.</p>
 <p><strong>Recording Settings.</strong> How recordings are made: where
 the files go, how they are named, the format they are kept in, and the
 safety limits that stop an open-ended capture from filling the disk.</p>
+<p><strong>Release Channel: Quill Radio.</strong> Choose which versions
+this app offers you: Stable, the one we recommend; Beta, new features a
+few weeks early; or Dev, work in progress for testers. Arrowing through
+the choices only explains them – nothing changes until you choose
+Switch.</p>
 <p><strong>Resume Recording.</strong> Quill Radio closed while this
 recording was still being written – a crash, a shutdown, a log-off.
 Resume picks the capture back up on the same station; Skip keeps what
@@ -459,12 +497,20 @@ never contacted.</p>
 <p><strong>Search Stations.</strong> Field-based station search across
 every enabled directory at once. Type a name, narrow by country,
 language or genre, and play or save what comes back.</p>
+<p><strong>Search YouTube with Filters.</strong> Search YouTube with the
+filters YouTube’s own Filters menu offers – type, upload date, length
+and sort order – or search YouTube Music’s songs. The answers land in
+Browse Stations’ Search Results.</p>
 <p><strong>Set a Reminder.</strong> Be told about this at a time you
 choose – a programme in the schedule, a station, a recording. Pick how
 much warning you want, add a note if there is something to say with it,
 and choose High priority if it should come through quiet hours. A
 reminder only tells you: it never starts, records or queues anything by
 itself.</p>
+<p><strong>Skip Sponsor Segments.</strong> Whether Quill Radio jumps
+over the parts of YouTube videos that SponsorBlock’s volunteers have
+marked as sponsor reads, self-promotion and the like, and which kinds.
+Off until you turn it on here.</p>
 <p><strong>Sleep Timer.</strong> Stop playback by itself after a time
 you choose, so the radio does not play to an empty room all night. The
 status bar’s Sleep timer cell counts it down; setting a new time
@@ -488,11 +534,19 @@ account and no website. It is checked first, so a missing address or
 something already on the list is caught here. With no mail program, the
 whole suggestion goes on your clipboard to paste into any email. Nothing
 is sent at all in Safe Mode.</p>
+<p><strong>Undo History.</strong> The last ten things you can take back,
+newest first, each saying what undoing it brings back. Undo This One
+takes back the highlighted step alone and leaves the rest; Ctrl+Z always
+takes the newest.</p>
 <p><strong>Upcoming.</strong> Everything Quill Radio has planned –
 reminders and scheduled recordings together, soonest first, with the
 kind on every row. Snooze and Dismiss work on a reminder; a recording is
 cancelled in Schedule Recording, where it was made, because Dismiss on
 the wrong row would mean a very different morning.</p>
+<p><strong>Update History: Quill Radio.</strong> A plain record of what
+the updater did for this app: checks, downloads, channel changes and the
+copies of your settings it saved. Read-only; nothing here changes
+anything.</p>
 <p><strong>Use My ChatGPT Subscription.</strong> Sign Quill Radio in
 with the ChatGPT plan you already pay for, so Ask QUILL Radio can answer
 on it. Continue with ChatGPT opens your browser; once signed in, choose
@@ -506,6 +560,25 @@ what is scheduled.</p>
 <p><strong>Welcome to Quill Radio.</strong> A three-screen tour for a
 first launch. Nothing here is a setting you can get wrong: read, press
 Next, and Skip leaves at any point.</p>
+<p><strong>YouTube Comments.</strong> The comments people left on a
+YouTube video, one per row, with replies right after the comment they
+answer. Type in Search comments to narrow the list, change Sort by for
+the newest, read the selected comment in full in Full text, and use Load
+More for the next hundred. Keys: Alt+M Search comments, Alt+B Sort by,
+Alt+C the list, Alt+T Full text, Alt+L Load More, Alt+P Copy Comment.
+Escape closes it and takes you back where you were.</p>
+<p><strong>YouTube Live Chat.</strong> A YouTube live stream’s chat, or
+a finished stream’s replay, oldest at the top and newest at the bottom.
+New messages are added without moving you. Keys: Home and End, Ctrl+Up
+and Ctrl+Down for the same person’s previous or next message, Ctrl+J the
+newest, Ctrl+L read the newest without moving, Ctrl+T when the selected
+one was sent, Space pause, Ctrl+S speak new messages on or off, F6
+between the list, Full text and the filter. Escape closes it.</p>
+<p><strong>YouTube Video.</strong> Everything about one YouTube video
+apart from playing it: whether it is live or when a premiere starts, its
+description, the moments the description lists (Enter jumps there while
+it plays), Live Chat, Save Audio, and a reminder for a premiere. Escape
+closes it.</p>
 <p><strong>Windows titled “Chapters…”.</strong> The chapter list of what
 is playing. Enter jumps straight to the highlighted chapter.</p>
 <p><strong>Windows titled “Details:…”.</strong> One station’s details –
@@ -724,6 +797,31 @@ level) (<code>quill/ui/radio/import_stations_dialog.py</code>)</h4>
 favorites: pick an existing folder, or type a new name to create
 one.</li>
 </ul>
+<h4 id="module-level-quilluiradiolocal_media_managepy">(module level)
+(<code>quill/ui/radio/local_media_manage.py</code>)</h4>
+<ul>
+<li><code>box</code>: What this file says about itself and where it is,
+one fact a line. Arrow through it, or select and copy any of it.</li>
+<li><code>close</code>: Closes this and goes back to the list.</li>
+</ul>
+<h4
+id="localmediawindow-quilluiradiolocal_media_windowpy">LocalMediaWindow
+(<code>quill/ui/radio/local_media_window.py</code>)</h4>
+<ul>
+<li><code>self._playlists</code>: Your playlists, with how many items
+each holds and how long it plays. Enter plays the playlist; Tab moves to
+its items. F2 renames, Delete deletes it after asking, Alt+Shift+Up and
+Down move it, and the Applications key opens everything else.</li>
+<li><code>self._items</code>: The items in the selected playlist, in the
+order they play. Enter plays from here and stops the item playing; Space
+pauses it. Delete removes from the playlist, never from your computer.
+Alt+Shift+Up and Down move items; Ctrl+X then Ctrl+V moves them
+somewhere else; Insert adds files before the item. Type the start of a
+title to jump to it. The Applications key opens everything a row can
+do.</li>
+<li><code>close</code>: Closes Local Media. Whatever is playing carries
+on.</li>
+</ul>
 <h4 id="module-level-quilluiradiomain_transport_buttonpy">(module level)
 (<code>quill/ui/radio/main_transport_button.py</code>)</h4>
 <ul>
@@ -806,6 +904,25 @@ station or for every station; a confirmation asks which.</li>
 <li><code>close_btn</code>: Closes Song History; logging continues while
 stations play.</li>
 </ul>
+<h4 id="module-level-quilluiradiostation_tags_dialogpy">(module level)
+(<code>quill/ui/radio/station_tags_dialog.py</code>)</h4>
+<ul>
+<li><code>tags_box</code>: Words you want to find this station by,
+separated by commas – for example: Detroit Tigers, MLB, baseball. Search
+and the Favorites filter match them. Empty the box to remove your
+tags.</li>
+<li><code>directory_box</code>: The tags the station directory already
+lists for this station. They are searched too, and cannot be changed
+here.</li>
+</ul>
+<h4 id="module-level-quilluiradiostation_website_buttonpy">(module
+level) (<code>quill/ui/radio/station_website_button.py</code>)</h4>
+<ul>
+<li><code>button</code>: Opens the website of the station that is
+playing, or of the favorite the list is on, in your web browser – often
+where a station keeps its schedule. If the station gave no website, it
+tells you.</li>
+</ul>
 <h4 id="radiostatsdialog-quilluiradiostats_dialogpy">RadioStatsDialog
 (<code>quill/ui/radio/stats_dialog.py</code>)</h4>
 <ul>
@@ -867,6 +984,72 @@ id="wakeuptimerdialog-quilluiradiowake_timer_dialogpy">WakeUpTimerDialog
 timer.</li>
 </ul>
 <h4
+id="youtubecommentswindow-quilluiradioyoutube_comments_windowpy">YouTubeCommentsWindow
+(<code>quill/ui/radio/youtube_comments_window.py</code>)</h4>
+<ul>
+<li><code>self._search</code>: Type words to show only the comments that
+contain all of them, in the comment or its author’s name. The list
+narrows as you type, and how many match is said once when you pause.
+Clear the box to see every comment again.</li>
+<li><code>self._sort_choice</code>: Top comments shows what YouTube
+ranks highest; Newest first shows the most recent. Changing it asks
+YouTube again.</li>
+<li><code>self._list</code>: One comment per row: who wrote it, how it
+starts, its likes and when. A reply follows the comment it answers and
+says whose it was. Emoji are read as their names and web addresses as
+links. Tab to Full text to read the selected comment whole. Keys: Alt+M
+Search comments, Alt+B Sort by, Alt+L Load More, Alt+P Copy Comment,
+Escape closes.</li>
+<li><code>self._full</code>: The selected comment in full, with its
+author, likes and when it was written. Read it with the arrow keys; it
+cannot be changed.</li>
+<li><code>self._copy</code>: Puts the selected comment, with its author,
+on the clipboard.</li>
+<li><code>self._close</code>: Closes the comments and goes back to where
+you were.</li>
+</ul>
+<h4
+id="youtubelivechatwindow-quilluiradioyoutube_live_chat_windowpy">YouTubeLiveChatWindow
+(<code>quill/ui/radio/youtube_live_chat_window.py</code>)</h4>
+<ul>
+<li><code>self._filter</code>: Type words to show only the messages that
+contain all of them, in the message or its author’s name. New messages
+that match keep arriving at the bottom. Clear the box to see everything
+again.</li>
+<li><code>self._speak</code>: Off by default. Every message, only paid
+messages and those from moderators and the owner, or only messages that
+mention the word below. Quill Radio speaks at most once every few
+seconds and says a burst as a count, so a busy chat never floods your
+screen reader; paid messages and mentions keep their own words. Quiet
+Hours silence it. Ctrl+S turns speaking on and off from anywhere
+here.</li>
+<li><code>self._word</code>: A word, such as your name, that makes a
+message worth hearing. Used by Only messages that mention a word, and a
+message with it is spoken in its own words whichever choice is
+made.</li>
+<li><code>self._list</code>: The chat, oldest at the top and newest at
+the bottom: who wrote it, what they said, then whether it was paid or
+from a member, a moderator or the owner. New messages are added at the
+bottom without moving you. Home and End go to the first and newest;
+Ctrl+Up and Ctrl+Down go to the same person’s previous or next message;
+Ctrl+J jumps to the newest; Ctrl+L reads the newest without moving;
+Ctrl+T says when the selected one was sent; Space pauses and resumes the
+list.</li>
+<li><code>self._full</code>: The selected message in full, with who
+wrote it, its labels and when it was sent. Links are written out whole
+here. Read it with the arrow keys; it cannot be changed.</li>
+<li><code>self._pause</code>: Holds the list still. New messages are
+counted instead of added, and arrive together when you turn this off.
+Space on the list does the same.</li>
+<li><code>self._follow</code>: Off by default. When on, and you are on
+the newest message in the list, the selection moves down onto each new
+message so it is read. Anywhere else in the list nothing moves.</li>
+<li><code>self._copy</code>: Puts the selected message, with its author,
+on the clipboard.</li>
+<li><code>self._close</code>: Stops reading the chat and goes back to
+where you were.</li>
+</ul>
+<h4
 id="youtubeplaylistdialog-quilluiradioyoutube_playlist_dialogpy">YouTubePlaylistDialog
 (<code>quill/ui/radio/youtube_playlist_dialog.py</code>)</h4>
 <ul>
@@ -875,6 +1058,49 @@ favorites, each as its own row.</li>
 <li><code>self._add_all_btn</code>: Adds every entry of the playlist to
 your favorites.</li>
 <li><code>close_btn</code>: Closes without adding anything more.</li>
+</ul>
+<h4 id="module-level-quilluiradioyoutube_search_filters_uipy">(module
+level) (<code>quill/ui/radio/youtube_search_filters_ui.py</code>)</h4>
+<ul>
+<li><code>words</code>: The words to search YouTube for, as you would
+type them on YouTube.</li>
+<li><code>source</code>: YouTube, or YouTube Music’s songs. With YouTube
+Music the filters below do not apply.</li>
+<li><code>kind</code>: Videos, only what is live right now, playlists,
+or channels.</li>
+<li><code>date</code>: Only what was uploaded within this time. Any time
+is no filter.</li>
+<li><code>length</code>: Only videos of this length. Any length is no
+filter.</li>
+<li><code>sort</code>: The order YouTube puts the answers in. Relevance
+is YouTube’s usual order.</li>
+</ul>
+<h4 id="module-level-quilluiradioyoutube_sponsorblock_uipy">(module
+level) (<code>quill/ui/radio/youtube_sponsorblock_ui.py</code>)</h4>
+<ul>
+<li><code>enabled</code>: Off by default. When on, Quill Radio jumps
+over the kinds of segment ticked below while a YouTube video plays, and
+says what it skipped.</li>
+</ul>
+<h4 id="module-level-quilluiradioyoutube_video_windowpy">(module level)
+(<code>quill/ui/radio/youtube_video_window.py</code>)</h4>
+<ul>
+<li><code>box</code>: The channel’s name, its subscriber count and the
+description it wrote about itself. Read it with the arrow keys.</li>
+<li><code>close</code>: Closes this and goes back to the channel’s
+row.</li>
+</ul>
+<h4
+id="youtubevideowindow-quilluiradioyoutube_video_windowpy">YouTubeVideoWindow
+(<code>quill/ui/radio/youtube_video_window.py</code>)</h4>
+<ul>
+<li><code>self._description</code>: What the uploader wrote about this
+video, whole. Read it with the arrow keys; it cannot be changed.</li>
+<li><code>self._moments</code>: Every line of the description that gives
+a time, such as a track list or a running order. Press Enter on one to
+jump there, when this video is the one playing.</li>
+<li><code>self._close</code>: Closes this window and goes back to where
+you were.</li>
 </ul>
 <h4 id="radioappframe-quillappsradiopy">RadioAppFrame
 (<code>quill/apps/radio.py</code>)</h4>
@@ -898,7 +1124,7 @@ station’s remembered level.</li>
 is playing has chapters, and runs the same command as its key.</li>
 </ul>
 <h2 id="quill-cast">QUILL Cast</h2>
-<p>Control coverage: 288 audited sites (152 helped, 136 named-help).</p>
+<p>Control coverage: 298 audited sites (194 helped, 104 named-help).</p>
 <h3 id="every-window-and-what-it-is-for-1">Every window, and what it is
 for</h3>
 <p><strong>About This Episode.</strong> Everything the feed says about
@@ -909,10 +1135,12 @@ feed, not hidden by Cast.</p>
 directories by name, or paste a feed address you already have. What you
 add lands in your library, and its episodes appear the first time the
 feed is read.</p>
-<p><strong>Add your first podcast.</strong> The second first-run screen:
-the two ways a show gets into your library – searching the directories
-by name, or pasting a feed address – and the button that opens Add
-Podcast right now.</p>
+<p><strong>Build Me a Listening Run.</strong> Episodes AI help chose to
+fit the time you have, measured by Cast. Suggestions from AI help, for
+you to decide. Each row starts accepted; Space switches it between
+Accept and Skip, and Accept All and Skip All change every row. Apply
+Selected does only the accepted rows; Cancel or Escape changes
+nothing.</p>
 <p><strong>Closing QUILL Cast.</strong> What closing the window should
 do: exit, or keep playing with QUILL Cast tucked into the system tray.
 Cancel leaves everything as it was. Don’t ask me again remembers your
@@ -944,6 +1172,15 @@ for this feed alone and sent to its own host, never to a directory.</p>
 in one folder: how it is checked, how much is kept, and what happens
 when an episode finishes. A show with its own answer keeps it; the
 folder answers for the rest.</p>
+<p><strong>Go back to Stable?.</strong> How to come back to Stable from
+a newer version. When Stable can read everything you have saved, you can
+go back now. When it can’t, you can wait for Stable to catch up, or go
+back to the copy saved when you joined. Close changes nothing.</p>
+<p><strong>Going straight back isn’t safe yet.</strong> How to come back
+to Stable from a newer version. When Stable can read everything you have
+saved, you can go back now. When it can’t, you can wait for Stable to
+catch up, or go back to the copy saved when you joined. Close changes
+nothing.</p>
 <p><strong>Import OPML.</strong> Bring shows in from another podcast
 app’s OPML export. Choose the file, review what it found, and import;
 anything you already follow is left alone rather than added twice.</p>
@@ -953,13 +1190,20 @@ local history and nothing leaves this computer.</p>
 <p><strong>Mark All as Played.</strong> Confirm marking every episode
 listed as played. It says how many rows this touches before it does
 anything, and it changes only the played mark – no file is deleted.</p>
-<p><strong>Move Podcasts to Folder.</strong> File the chosen shows into
-a library folder. Folders are yours to invent; a show sits in one at a
-time, and moving one changes nothing about its episodes or its
-downloads.</p>
+<p><strong>Move QUILL Cast to Beta?.</strong> Says plainly what could go
+wrong on Beta or Dev, how your settings are protected, and how to come
+back. Nothing changes unless you tick the box and choose Move.</p>
+<p><strong>Move QUILL Cast to Dev?.</strong> Says plainly what could go
+wrong on Beta or Dev, how your settings are protected, and how to come
+back. Nothing changes unless you tick the box and choose Move.</p>
 <p><strong>Move to Folder.</strong> Choose the folder to file into, or
 make a new one. Folders are yours to invent, and filing changes nothing
 about what is downloaded or played.</p>
+<p><strong>Name These Chapters.</strong> New chapter titles AI help
+wrote from the transcript. Suggestions from AI help, for you to decide.
+Each row starts accepted; Space switches it between Accept and Skip, and
+Accept All and Skip All change every row. Apply Selected does only the
+accepted rows; Cancel or Escape changes nothing.</p>
 <p><strong>Notifications.</strong> What QUILL Cast told you while you
 were elsewhere, newest first: new episodes, finished downloads, feeds
 that keep failing and podcasts that have gone quiet. Enter goes to what
@@ -969,6 +1213,11 @@ to Queue. Clearing the list never touches the episodes it was about.</p>
 how many shows were added, how many were already followed, and every
 feed that could not be read, with its reason. Copy All takes the report
 with you.</p>
+<p><strong>Organise My Podcasts.</strong> Folders AI help suggests for
+your podcasts. Suggestions from AI help, for you to decide. Each row
+starts accepted; Space switches it between Accept and Skip, and Accept
+All and Skip All change every row. Apply Selected does only the accepted
+rows; Cancel or Escape changes nothing.</p>
 <p><strong>Places.</strong> The order of the places in the main window,
 and which of them it shows. Up and Down move a place, Hide and Show take
 it out of the list or put it back, Rename gives it your own name, and
@@ -999,10 +1248,10 @@ buttons name what they act on, the View menu reaches each place in one
 key, and F6 reaches the status bar. Nothing here needs an account, and
 nothing you listen to leaves this computer.</p>
 <p><strong>QUILL Cast Preferences.</strong> Everything that is not about
-one podcast, in eight sections: when Cast opens, playing, fetching, the
-Inbox, chapters, telling you, the window, and data. The shared defaults
-here are what every podcast follows until Settings for This Podcast says
-otherwise. Save writes only what you changed.</p>
+one podcast, in nine sections: when Cast opens, playing, fetching, the
+Inbox, the library, chapters, telling you, the window, and data. The
+shared defaults here are what every podcast follows until Settings for
+This Podcast says otherwise. Save writes only what you changed.</p>
 <p><strong>QUILL Cast Tutorials.</strong> Guided lessons, one step at a
 time, that can run the step for you and notice when you have done it.
 The contents list is grouped by track and remembers where you stopped;
@@ -1014,11 +1263,22 @@ speaking on its own: check ticks, new-episode notices, download notices.
 Feeds are still checked and downloads still run – only the announcements
 wait – and anything you press a key for still answers. The window is
 shared with the other Quill listening apps.</p>
+<p><strong>Rearrange Library and Inbox.</strong> How the library and the
+Inbox are laid out: folders first, folders only, podcasts without
+folders or everything together; how podcasts and folders are ordered;
+whether folders start open; what the counts say; and whether the Inbox
+lists folders first. Each choice takes effect as you make it, and Close
+keeps them all.</p>
 <p><strong>Recent Problems.</strong> Everything that has failed
 recently, in one list that outlives the announcement: feeds that could
 not be read, downloads that died, streams that dropped – each with its
 reason and the time it happened. Retry tries the highlighted row again;
 nothing here is sent anywhere.</p>
+<p><strong>Release Channel: QUILL Cast.</strong> Choose which versions
+this app offers you: Stable, the one we recommend; Beta, new features a
+few weeks early; or Dev, work in progress for testers. Arrowing through
+the choices only explains them – nothing changes until you choose
+Switch.</p>
 <p><strong>Rename Place.</strong> Your own name for a place in the main
 window. Leave it as shipped, or blank, to keep the shipped name; nothing
 in the place changes.</p>
@@ -1029,13 +1289,32 @@ queue itself.</p>
 knows: your shows, their episodes, show notes and transcripts. Each
 result says which show and which episode it came from, and Enter opens
 the row it names.</p>
-<p><strong>Skip Settings.</strong> How far each skip key moves, forward
-and back, and the intro and outro amounts an episode can skip by itself.
-A show can override any of this for itself in its own Settings.</p>
 <p><strong>Smart Playlist Rules.</strong> The rules that build a smart
 playlist: which shows it draws from, how old an episode may be, whether
 played episodes count, and how many it holds. The playlist rebuilds
 itself from these rules – you never add episodes to it by hand.</p>
+<p><strong>Smart Playlist from a Sentence.</strong> The rules Cast would
+save for the playlist you described. Apply Selected saves the playlist;
+you can change its rules later with Edit Rules. Cancel saves
+nothing.</p>
+<p><strong>Sound Enhancements.</strong> Bass, middle and treble, Even
+Out Volume and Smart Speed, for the podcast that is playing or for every
+podcast. Apply puts them into effect and the window stays open, so you
+can listen and adjust again.</p>
+<p><strong>Tidy the Podcasts I Follow.</strong> Podcasts that look
+finished, doubled up or broken, each with its reason and an action.
+Nothing is sent anywhere for this. Suggestions from AI help, for you to
+decide. Each row starts accepted; Space switches it between Accept and
+Skip, and Accept All and Skip All change every row. Apply Selected does
+only the accepted rows; Cancel or Escape changes nothing.</p>
+<p><strong>Undo History.</strong> The last ten things you can take back,
+newest first, each saying what undoing it brings back. Undo This One
+takes back the highlighted step alone and leaves the rest; Ctrl+Z always
+takes the newest.</p>
+<p><strong>Update History: QUILL Cast.</strong> A plain record of what
+the updater did for this app: checks, downloads, channel changes and the
+copies of your settings it saved. Read-only; nothing here changes
+anything.</p>
 <p><strong>Watched Folder Settings.</strong> How one watched folder
 behaves: its name in Personal Audio, whether Cast copies, moves or plays
 your files where they are, what a new file does when it arrives, what
@@ -1047,16 +1326,18 @@ shared folder – arrives in Personal Audio by itself, once, and is
 announced. Add Folder chooses a new one, Folder Settings changes how it
 behaves, Pause stops watching for now, and Remove stops for good without
 touching a single file.</p>
-<p><strong>Welcome to QUILL Cast.</strong> A three-screen tour for a
-first launch. Nothing here is a setting you can get wrong: read, press
-Next, and Skip leaves at any point.</p>
+<p><strong>Welcome to QUILL Cast.</strong> One screen for a first
+launch: where you would like to land each time Cast opens, whether to
+hear a tip now and then, and Add Your First Podcast. Nothing here is a
+setting you can get wrong; Skip, or Escape, leaves at once, and
+Preferences changes where you land later.</p>
 <p><strong>Year in Review.</strong> Your listening year as a short
 report: the shows you gave the most time to, how many episodes you
 finished, and when you listened. It is built from your own local
 history.</p>
-<p><strong>You’re set.</strong> The last first-run screen: where your
-shows live from here, and the handful of keys worth knowing on day
-one.</p>
+<p><strong>Windows titled “About …”.</strong> What AI help said, read
+only, to review at your own pace. Copy puts it on the clipboard. AI can
+be wrong, so check anything that matters.</p>
 <p><strong>Windows titled “About This Episode…”.</strong> Everything the
 feed says about one episode – people, links, chapters, transcripts,
 funding – as reviewable, copyable text.</p>
@@ -1086,6 +1367,9 @@ the folder answers for the rest.</p>
 <p><strong>Windows titled “Help:…”.</strong> This is the help window
 itself: the purpose of the window you were in, then the control you were
 on. Escape returns you to it.</p>
+<p><strong>Windows titled “Is …”.</strong> What AI help said, read only,
+to review at your own pace. Copy puts it on the clipboard. AI can be
+wrong, so check anything that matters.</p>
 <p><strong>Windows titled “Labels…”.</strong> Your own words for this
 podcast, as many as you like. A folder is one home and a label is not a
 home at all: labelling never moves a podcast, and a smart playlist can
@@ -1140,29 +1424,72 @@ playback to it.</p>
 podcast should jump over as it plays – an advert break or sponsor read
 the publisher marked. Exact, where skipping a number of seconds is a
 guess. Nothing is removed from the episode.</p>
+<p><strong>Windows titled “Summary of …”.</strong> What AI help said,
+read only, to review at your own pace. Copy puts it on the clipboard. AI
+can be wrong, so check anything that matters.</p>
 <p><strong>Windows titled “Tidy Episode Titles…”.</strong> Patterns
 removed from this podcast’s episode titles when they are shown and
 spoken – a repeated ‘Ep. 412 -’ that starts every row and ruins skimming
 by first letter. Preview shows exactly which of the 50 newest titles
 would change. The feed’s own titles are never altered and no episode is
 renamed.</p>
+<p><strong>Windows titled “Transcript…”.</strong> The episode’s
+transcript, a line per caption, to read along. Enter on a line plays
+from there while this episode is playing; Ctrl+F finds; Links lists
+every address in it. Escape returns to where you were.</p>
 <h3 id="every-authored-control-help-sentence-1">Every authored control
 help sentence</h3>
 <h4
-id="addpodcastdialog-quilluipodcastsadd_podcast_dialogpy">AddPodcastDialog
+id="addpodcastwindow-quilluipodcastsadd_podcast_dialogpy">AddPodcastWindow
 (<code>quill/ui/podcasts/add_podcast_dialog.py</code>)</h4>
 <ul>
+<li><code>self._source_choice</code>: Which directory to look in. iTunes
+needs nothing. Podcast Index carries the extra Podcasting 2.0
+information – chapters, transcripts – and needs a key you add with
+Podcast Index Credentials.</li>
 <li><code>self._query_ctrl</code>: Type part of a podcast’s name and
 press Enter, or choose Find Podcasts. The chosen directory is searched,
 and nothing is followed to until you say so.</li>
+<li><code>self._search_btn</code>: Finds podcasts matching this name in
+the chosen directory</li>
 <li><code>self._results</code>: Podcasts the chosen directory matched.
 Enter previews the one you are on; Follow adds it to your library.</li>
+<li><code>self._preview_btn</code>: Look at this podcast before
+following it</li>
 <li><code>self._subscribe_btn</code>: Adds the selected podcast to your
 library. If you already follow it, this button says Unfollow instead and
 asks before removing anything.</li>
 <li><code>self._url_ctrl</code>: Paste a podcast’s feed address here
 when you already have it, then press Enter or choose Add. Both http and
 https addresses work.</li>
+<li><code>self._add_url_btn</code>: Follow the podcast at this feed
+address</li>
+<li><code>import_btn</code>: Import a whole subscription list from an
+OPML file</li>
+<li><code>close_btn</code>: Closes this window and returns to where you
+were.</li>
+</ul>
+<h4 id="module-level-quilluipodcastsai_answer_dialogpy">(module level)
+(<code>quill/ui/podcasts/ai_answer_dialog.py</code>)</h4>
+<ul>
+<li><code>field</code>: What the AI said. It is read only; arrow through
+it, or press Copy to take it to the clipboard. AI can be wrong, so check
+anything that matters.</li>
+<li><code>copy</code>: Puts the whole answer on the clipboard.</li>
+<li><code>close</code>: Closes this window.</li>
+</ul>
+<h4 id="module-level-quilluipodcastsai_review_dialogpy">(module level)
+(<code>quill/ui/podcasts/ai_review_dialog.py</code>)</h4>
+<ul>
+<li><code>listbox</code>: Each suggestion starts accepted. Space
+switches the highlighted one between Accept and Skip. Nothing changes
+until you press Apply Selected.</li>
+<li><code>accept_all</code>: Marks every suggestion Accept.</li>
+<li><code>skip_all</code>: Marks every suggestion Skip, so you can
+accept just a few.</li>
+<li><code>apply_btn</code>: Does every suggestion marked Accept, and
+nothing else.</li>
+<li><code>cancel</code>: Closes this window. Nothing changes.</li>
 </ul>
 <h4
 id="castcloseconfirmdialog-quilluipodcastsclose_confirm_dialogpy">CastCloseConfirmDialog
@@ -1187,6 +1514,21 @@ podcast. Arrow through for sizes; Remove This Podcast’s Downloads
 deletes the files for the podcast you are on.</li>
 </ul>
 <h4
+id="episodeextraswindow-quilluipodcastsepisode_extras_dialogpy">EpisodeExtrasWindow
+(<code>quill/ui/podcasts/episode_extras_dialog.py</code>)</h4>
+<ul>
+<li><code>self._action_btn</code>: Does what its name says to the
+highlighted row: opens the link, plays the stream, follows the podcast,
+or plays from the bookmark. Its name changes as you move through the
+list.</li>
+<li><code>close_btn</code>: Closes this window and returns to where you
+were.</li>
+<li><code>self._notebook</code>: One tab for each kind of thing this
+podcast published. Ctrl+Tab moves between them.</li>
+<li><code>listbox</code>: Each row is one thing the podcast published.
+The button below says what Enter on it does.</li>
+</ul>
+<h4
 id="episodefilterruledialog-quilluipodcastsepisode_filter_rule_dialogpy">EpisodeFilterRuleDialog
 (<code>quill/ui/podcasts/episode_filter_rule_dialog.py</code>)</h4>
 <ul>
@@ -1203,15 +1545,15 @@ until the filter is saved.</li>
 <li><code>cancel_btn</code>: Leaves the test as it was.</li>
 </ul>
 <h4
-id="episodefiltersdialog-quilluipodcastsepisode_filters_dialogpy">EpisodeFiltersDialog
+id="episodefilterswindow-quilluipodcastsepisode_filters_dialogpy">EpisodeFiltersWindow
 (<code>quill/ui/podcasts/episode_filters_dialog.py</code>)</h4>
 <ul>
 <li><code>ok_btn</code>: Saves these rules for this podcast. Every list
 you ticked takes effect at once, on episodes you already have as well as
 new ones; nothing is deleted. The Play Queue is the only thing not
 touched without asking, and saving asks about it separately.</li>
-<li><code>cancel_btn</code>: Leaves this podcast’s rules exactly as they
-were.</li>
+<li><code>cancel_btn</code>: Closes this window and returns to where you
+were. Anything not saved is left exactly as it was.</li>
 </ul>
 <h4
 id="castepisodelistmixin-quilluipodcastsepisode_listpy">CastEpisodeListMixin
@@ -1224,7 +1566,7 @@ from this place; Shift+F10 offers everything else. Left Arrow at the top
 returns to Places.</li>
 </ul>
 <h4
-id="feedcheckdialog-quilluipodcastsfeed_check_dialogpy">FeedCheckDialog
+id="feedcheckwindow-quilluipodcastsfeed_check_dialogpy">FeedCheckWindow
 (<code>quill/ui/podcasts/feed_check_dialog.py</code>)</h4>
 <ul>
 <li><code>self._list</code>: Every podcast you follow, worst first: the
@@ -1240,8 +1582,25 @@ perfectly, and retrying it would report nothing new.</li>
 <li><code>self._copy_btn</code>: Put the selected podcast’s feed address
 on the clipboard, so you can open it in a browser and see what the
 publisher is actually sending.</li>
-<li><code>close_btn</code>: Closes Feed Check without changing which
-podcasts you follow.</li>
+<li><code>close_btn</code>: Closes Feed Check and returns to where you
+were, without changing which podcasts you follow.</li>
+</ul>
+<h4 id="firstrundialog-quilluipodcastsfirst_run_dialogpy">FirstRunDialog
+(<code>quill/ui/podcasts/first_run_dialog.py</code>)</h4>
+<ul>
+<li><code>self._body</code>: About QUILL Cast. Read only: arrow through
+it at your own pace.</li>
+<li><code>self._place</code>: Which place has focus each time QUILL Cast
+opens. What is new lands on the Inbox when anything is waiting, else
+Continue Listening, else Podcasts. You can change it later in
+Preferences.</li>
+<li><code>self._tips_check</code>: One sentence, once each, the first
+time you reach somewhere a tip would help.</li>
+<li><code>self._add_btn</code>: Keeps your choice and opens Add
+Podcast.</li>
+<li><code>done</code>: Keeps your choice and goes to Cast.</li>
+<li><code>skip</code>: Goes to Cast and changes nothing. This welcome
+does not come back.</li>
 </ul>
 <h4
 id="folderpickerdialog-quilluipodcastsfolder_picker_dialogpy">FolderPickerDialog
@@ -1250,6 +1609,14 @@ id="folderpickerdialog-quilluipodcastsfolder_picker_dialogpy">FolderPickerDialog
 <li><code>self._tree</code>: Your podcast folders. Choose the one to
 move into and press Move Here; New Folder creates one inside whatever is
 selected.</li>
+</ul>
+<h4 id="module-level-quilluipodcastslibrary_view_dialogpy">(module
+level) (<code>quill/ui/podcasts/library_view_dialog.py</code>)</h4>
+<ul>
+<li><code>empty</code>: Empty folders are still there, and come back the
+moment a podcast is filed in one.</li>
+<li><code>close</code>: Closes this window. Every choice above is
+already in effect.</li>
 </ul>
 <h4
 id="castmainpanelmixin-quilluipodcastsmain_panelpy">CastMainPanelMixin
@@ -1375,6 +1742,25 @@ selected episode now. Shift and arrow extend the selection, Ctrl and
 Space adds one, and Remove takes everything selected.</li>
 </ul>
 <h4
+id="playlistruleswindow-quilluipodcastsplaylist_rules_dialogpy">PlaylistRulesWindow
+(<code>quill/ui/podcasts/playlist_rules_dialog.py</code>)</h4>
+<ul>
+<li><code>self._status_choice</code>: Only episodes in this state:
+unheard, in progress or heard. Any status does not narrow anything.</li>
+<li><code>self._days_ctrl</code>: Only episodes published within this
+many days. 0 means no limit.</li>
+<li><code>self._min_minutes_ctrl</code>: Only episodes at least this
+many minutes long. 0 means any length.</li>
+<li><code>self._max_minutes_ctrl</code>: Only episodes at most this many
+minutes long. 0 means any length.</li>
+<li><code>self._sort_choice</code>: How this playlist’s episodes are
+ordered.</li>
+<li><code>ok_btn</code>: Saves these rules to the playlist and keeps
+this window open. Ctrl+S does the same from anywhere in the window.</li>
+<li><code>cancel_btn</code>: Closes this window and returns to where you
+were. Anything not saved is left as it was.</li>
+</ul>
+<h4
 id="castpreferenceswindow-quilluipodcastspreferences_windowpy">CastPreferencesWindow
 (<code>quill/ui/podcasts/preferences_window.py</code>)</h4>
 <ul>
@@ -1438,7 +1824,7 @@ altered by pressing it.</li>
 change, before and after. It reports; it has changed nothing.</li>
 </ul>
 <h4
-id="shownotesdialog-quilluipodcastsshow_notes_dialogpy">ShowNotesDialog
+id="shownoteswindow-quilluipodcastsshow_notes_dialogpy">ShowNotesWindow
 (<code>quill/ui/podcasts/show_notes_dialog.py</code>)</h4>
 <ul>
 <li><code>send_btn</code>: Opens these show notes as a new document, as
@@ -1446,9 +1832,11 @@ plain text.</li>
 <li><code>self._save_btn</code>: Saves these show notes to a file as
 plain text, HTML or Markdown; the last two keep every link as a
 link.</li>
+<li><code>close_btn</code>: Closes this window and returns to where you
+were.</li>
 </ul>
 <h4
-id="showsettingsdialog-quilluipodcastsshow_settings_dialogpy">ShowSettingsDialog
+id="showsettingswindow-quilluipodcastsshow_settings_dialogpy">ShowSettingsWindow
 (<code>quill/ui/podcasts/show_settings_dialog.py</code>)</h4>
 <ul>
 <li><code>self._category</code>: Which group of settings is shown below.
@@ -1462,11 +1850,12 @@ filed.</li>
 answers for itself, out of all of them. It changes nothing – it is the
 question a settings window full of controls cannot answer.</li>
 <li><code>ok_btn</code>: Saves what you changed, and only what you
-changed. Anything you left alone keeps following its folder and the
-shared defaults.</li>
-<li><code>cancel_btn</code>: Leaves this podcast’s settings as they
-were. An Episode Filter you already saved in its own window is not
-undone by this.</li>
+changed, and keeps this window open. Anything you left alone keeps
+following its folder and the shared defaults. Ctrl+S does the same from
+anywhere in the window.</li>
+<li><code>cancel_btn</code>: Closes this window and returns to where you
+were. Anything not saved is left as it was; an Episode Filter saved in
+its own window stays saved.</li>
 </ul>
 <h4 id="module-level-quilluipodcastsshow_settings_panelpy">(module
 level) (<code>quill/ui/podcasts/show_settings_panel.py</code>)</h4>
@@ -1483,13 +1872,39 @@ id="singlesettingdialog-quilluipodcastssingle_setting_dialogpy">SingleSettingDia
 <li><code>ok_btn</code>: Applies this setting to this podcast only.</li>
 <li><code>cancel_btn</code>: Leaves the setting as it was.</li>
 </ul>
+<h4 id="_peereditor-quilluipodcastssound_enhance_windowpy">_PeerEditor
+(<code>quill/ui/podcasts/sound_enhance_window.py</code>)</h4>
+<ul>
+<li><code>apply_btn</code>: Puts these settings into effect for the
+podcast named above and keeps the window open, so you can listen and
+adjust again.</li>
+<li><code>close_btn</code>: Closes this window and returns to where you
+were. Anything not applied is left as it was.</li>
+</ul>
 <h4
-id="podcaststatsdialog-quilluipodcastsstats_dialogpy">PodcastStatsDialog
+id="podcaststatswindow-quilluipodcastsstats_dialogpy">PodcastStatsWindow
 (<code>quill/ui/podcasts/stats_dialog.py</code>)</h4>
 <ul>
+<li><code>self._period_choice</code>: Which stretch of time the report
+covers. The report below changes as soon as you choose.</li>
 <li><code>self._report</code>: Your listening figures for the chosen
 period. Read-only – arrow through it line by line, or Copy takes the
 whole thing.</li>
+<li><code>copy_btn</code>: Puts the whole report on the clipboard.</li>
+<li><code>export_btn</code>: Saves every listening session as a CSV
+file, for a spreadsheet.</li>
+<li><code>year_btn</code>: Opens Year in Review: a few sentences about
+your listening year, to read or keep. It opens beside this window.</li>
+<li><code>clear_btn</code>: Deletes the whole listening log, after
+asking. Nothing else about your library changes.</li>
+<li><code>close_btn</code>: Closes this window and returns to where you
+were.</li>
+</ul>
+<h4 id="_peerreader-quilluipodcaststranscript_windowpy">_PeerReader
+(<code>quill/ui/podcasts/transcript_window.py</code>)</h4>
+<ul>
+<li><code>close_btn</code>: Closes the transcript and returns to where
+you were.</li>
 </ul>
 <h4
 id="watchedfoldersettingsdialog-quilluipodcastswatched_folder_settingspy">WatchedFolderSettingsDialog
@@ -1536,12 +1951,19 @@ File Explorer and Copy Path. Escape closes the window.</li>
 were.</li>
 </ul>
 <h4
-id="yearinreviewdialog-quilluipodcastsyear_review_dialogpy">YearInReviewDialog
+id="yearinreviewwindow-quilluipodcastsyear_review_dialogpy">YearInReviewWindow
 (<code>quill/ui/podcasts/year_review_dialog.py</code>)</h4>
 <ul>
+<li><code>self._year_choice</code>: This year or last year. The report
+below changes as soon as you choose.</li>
 <li><code>self._report</code>: Your year in listening, in sentences.
 Read-only – arrow through it line by line, or Copy takes the whole
 thing.</li>
+<li><code>copy_btn</code>: Puts the whole report on the clipboard.</li>
+<li><code>save_btn</code>: Saves the report as a plain text file, to
+keep or send.</li>
+<li><code>close_btn</code>: Closes this window and returns to where you
+were.</li>
 </ul>
 <h2 id="quill-media-player">QUILL Media Player</h2>
 <p>Control coverage: 36 audited sites (23 helped, 13 named-help).</p>
@@ -1562,6 +1984,11 @@ reads exactly what one row will say. Cancel leaves every list as it
 was.</p>
 <p><strong>Edit Bookmark.</strong> Change the note on the highlighted
 bookmark. Only the words change – the bookmark keeps its position.</p>
+<p><strong>Find a Setting or Command.</strong> Every menu command in
+this app, searchable by name. Type part of a name; Down moves into the
+matches; Enter does the highlighted one, exactly as choosing it from its
+menu would. An option says whether it is on, and doing it switches it
+and says the new state.</p>
 <p><strong>Go to Position.</strong> Jump to an exact place in the open
 file. Give it hours, minutes and seconds, or type a single timecode such
 as 1:23:45 – a typed timecode wins over the three fields. A position
@@ -2349,6 +2776,11 @@ the shared library at once.</p>
 never run, one program file name per line – notepad.exe, for example.
 Password managers and Windows sign-in prompts are always excluded
 whether or not you list them. OK saves the list immediately.</p>
+<p><strong>Find a Setting or Command.</strong> Every menu command in
+this app, searchable by name. Type part of a name; Down moves into the
+matches; Enter does the highlighted one, exactly as choosing it from its
+menu would. An option says whether it is on, and doing it switches it
+and says the new state.</p>
 <p><strong>Manage Abbreviations.</strong> Your whole abbreviation
 library in one place: create, edit, delete, and switch entries on or
 off, with search and a category filter to find the one you mean. Import
@@ -2641,6 +3073,11 @@ later fetches only what is new.</p>
 highlighted, in plain words: its length and size, its tags, each video,
 audio and subtitle track, whether it has cover art, and its chapters. It
 is read-only, and Copy All puts it on the clipboard.</p>
+<p><strong>Find a Setting or Command.</strong> Every menu command in
+this app, searchable by name. Type part of a name; Down moves into the
+matches; Enter does the highlighted one, exactly as choosing it from its
+menu would. An option says whether it is on, and doing it switches it
+and says the new state.</p>
 <p><strong>Keyboard Shortcuts.</strong> Every key in Quill Converter,
 grouped by menu, in one read-only list you can arrow through or copy. It
 is a reference; nothing here changes a key.</p>
@@ -3216,7 +3653,7 @@ playback to its start.</li>
 text, when one is available. Empty otherwise.</li>
 </ul>
 <h2 id="quill-lite">QUILL Lite</h2>
-<p>Control coverage: 95 audited sites (95 helped).</p>
+<p>Control coverage: 96 audited sites (96 helped).</p>
 <h3 id="every-window-and-what-it-is-for-8">Every window, and what it is
 for</h3>
 <p><strong>AI Assistant.</strong> Ask QUILL’s free AI to summarize,
@@ -3297,12 +3734,21 @@ next match and Shift Enter the previous one; the search wraps around the
 end and says so when it does. The window stays open while you work, so
 F3 and Shift F3 keep moving through the matches after you have gone back
 to the text.</p>
+<p><strong>Go back to Stable?.</strong> How to come back to Stable from
+a newer version. When Stable can read everything you have saved, you can
+go back now. When it can’t, you can wait for Stable to catch up, or go
+back to the copy saved when you joined. Close changes nothing.</p>
 <p><strong>Go to Anything.</strong> One box that searches commands,
 headings and bookmarks together. Type part of what you want; a hash sign
 at the front restricts the results to headings.</p>
 <p><strong>Go to line.</strong> Jump straight to a line by number. The
 prompt says how many lines the document has, and a number past the end
 takes you to the last line rather than refusing.</p>
+<p><strong>Going straight back isn’t safe yet.</strong> How to come back
+to Stable from a newer version. When Stable can read everything you have
+saved, you can go back now. When it can’t, you can wait for Stable to
+catch up, or go back to the copy saved when you joined. Close changes
+nothing.</p>
 <p><strong>Headings.</strong> Every heading in this document, in the
 order they appear. Choose one and the cursor lands at the start of it.
 Headings exist in rich text only: they are the bold-plus-point-size
@@ -3362,6 +3808,12 @@ first, with the line each one is on. Choose one and press Enter to go
 there. A mark is not a bookmark: a bookmark is somewhere you meant to
 keep, a mark is where you were standing before you went to look
 something up.</p>
+<p><strong>Move QUILL Lite to Beta?.</strong> Says plainly what could go
+wrong on Beta or Dev, how your settings are protected, and how to come
+back. Nothing changes unless you tick the box and choose Move.</p>
+<p><strong>Move QUILL Lite to Dev?.</strong> Says plainly what could go
+wrong on Beta or Dev, how your settings are protected, and how to come
+back. Nothing changes unless you tick the box and choose Move.</p>
 <p><strong>Preferences.</strong> Every setting QUILL Lite has, in one
 window. Two of them live only here: what Control N creates, and how
 often unsaved work is copied aside. The rest – theme, word wrap, and the
@@ -3392,6 +3844,11 @@ Documents live inside one QUILL Lite window, so Alt+Tab will not step
 between them – those four are how you move. Press F6 for the status bar,
 which carries the position, the word count, the encoding and the line
 endings.</p>
+<p><strong>Release Channel: QUILL Lite.</strong> Choose which versions
+this app offers you: Stable, the one we recommend; Beta, new features a
+few weeks early; or Dev, work in progress for testers. Arrowing through
+the choices only explains them – nothing changes until you choose
+Switch.</p>
 <p><strong>Replace.</strong> Find text and put something else in its
 place. Replace changes the match you are on and moves to the next;
 Replace All changes every one and tells you how many. In a rich text
@@ -3423,6 +3880,10 @@ Control Z takes back.</p>
 recogniser’s mistakes corrected – misheard words, punctuation, fillers –
 and nothing else changed. Replace My Selection puts it where the
 dictated text was; Control Z takes it back.</p>
+<p><strong>Update History: QUILL Lite.</strong> A plain record of what
+the updater did for this app: checks, downloads, channel changes and the
+copies of your settings it saved. Read-only; nothing here changes
+anything.</p>
 <p><strong>Use My ChatGPT Subscription.</strong> Use the ChatGPT plan
 you already pay for instead of QUILL’s free AI or an API key. Continue
 with ChatGPT opens your browser to sign in and allow it; once signed in,
@@ -3563,6 +4024,9 @@ whether a newer QUILL Lite has been published. Nothing is said unless
 there is one, and nothing is downloaded or installed without being asked
 – a new version shows you what changed and offers it. Off means Check
 for Updates on the Help menu is the only check that ever runs.</li>
+<li><code>channel_button</code>: Choose Stable, Beta or Dev for QUILL
+Lite. Opens the Release Channel window, the same one as Help menu, then
+Release Channel.</li>
 <li><code>spell_typing</code>: Report a misspelling in the status bar
 shortly after you finish a word. Never in a source or configuration
 file, whatever this says: every identifier in one would be a false

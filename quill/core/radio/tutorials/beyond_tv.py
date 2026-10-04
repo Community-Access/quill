@@ -19,20 +19,19 @@ TUTORIALS: tuple[Tutorial, ...] = (
         minutes=6,
         surfaces=("Browse Stations", "Video"),
         summary=(
-            "Find a channel by country, category or postcode, play it with the "
-            "same keys as everything else, and give yourself a programme guide if "
-            "you want one."
+            "Find a TV channel by country, category or ZIP code, play it with "
+            "the same keys you already know, and add a programme guide if you "
+            "would like one."
         ),
         steps=(
             Step(
                 title="Find the branch",
                 body=(
-                    "Television sits in Browse Stations just above YouTube. It is "
-                    "built on the iptv.org community catalog -- roughly 9,300 "
-                    "playable channels after Quill Radio's own filtering, which "
-                    "removes adult-flagged channels, closed ones, ones with no "
-                    "stream, and streams that would fail the moment you pressed "
-                    "Enter."
+                    "Television is in Browse Stations, just above YouTube. It "
+                    "comes from the iptv.org community list, with about 9,300 "
+                    "channels you can play. Quill Radio leaves out adult "
+                    "channels, closed ones, and ones that would not play when "
+                    "you pressed Enter."
                 ),
                 keys=("Ctrl+B",),
                 hear="Television, then By Country and By Category.",
@@ -41,11 +40,11 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Open your own country",
                 body=(
-                    "A country whose feeds declare local coverage opens into "
-                    "Nationwide plus its states, and a state's list carries its own "
-                    "channels and its cities', each city named on the row. A "
-                    "country without local data stays a single list rather than "
-                    "making you open folders with nothing in them."
+                    "Where a country has local channels, it opens into "
+                    "Nationwide plus its states. Each state lists its own "
+                    "channels and its cities' channels, with the city named on "
+                    "the row. A country without local channels is just one "
+                    "list, so you never open empty folders."
                 ),
                 keys=("Right arrow",),
                 hear="The country, then Nationwide and the states.",
@@ -53,55 +52,53 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Search by place, not only by name",
                 body=(
-                    "Anywhere you can search -- Find Stations, Search All Sources, "
-                    "the Find box -- television answers by channel name, network, "
-                    "country, city, state, or a five-digit ZIP code. Typing 66044 "
-                    "answers with Kansas television, because a ZIP is a place."
+                    "Anywhere you can search, such as Find Stations, Search All "
+                    "Sources or the Find box, you can find TV by channel name, "
+                    "network, country, city, state, or a five-digit ZIP code. "
+                    "Type 66044 and you get Kansas television."
                 ),
                 keys=("Ctrl+F",),
                 hear="The matching channels.",
                 note=(
-                    "The ZIP mapping is by postal prefix. It is exact enough to "
-                    "narrow a list and claims nothing about what your antenna can "
-                    "pull in -- which is what the antennaweb link is for."
+                    "A ZIP code gets you close, which is handy for narrowing a "
+                    "list. It cannot tell you what your antenna picks up. For "
+                    "that, use the antennaweb link."
                 ),
             ),
             Step(
                 title="Play a channel",
                 body=(
-                    "Enter plays it, and the video opens with the same captions, "
-                    "audio-track selection and transport every stream gets. Show or "
-                    "hide the picture with Ctrl+Shift+V -- the audio carries on "
-                    "either way, which is the point on a screen you are not "
-                    "looking at."
+                    "Press Enter to play it. The video opens with captions, a "
+                    "choice of audio tracks and all the usual player keys. Show "
+                    "or hide the picture with Ctrl+Shift+V. The sound keeps "
+                    "playing either way."
                 ),
                 keys=("Enter", "Ctrl+Shift+V"),
-                hear="The channel playing, and the video window announced when it opens.",
+                hear="The channel playing, and the video window when it opens.",
             ),
             Step(
                 title="Turn on captions and read them",
                 body=(
-                    "Ctrl+Shift+K turns captions on and they open in their own "
-                    "window as text you can arrow through: each line joins the ones "
-                    "already spoken, and the line being spoken now is marked. It "
-                    "never announces itself, so read it whenever you like."
+                    "Ctrl+Shift+K turns captions on. They open in their own "
+                    "window as text you can arrow through. Each new line is added "
+                    "to the ones before, and the line being spoken now is "
+                    "marked. The window stays quiet, so read it whenever you like."
                 ),
                 keys=("Ctrl+Shift+K",),
-                hear="The captions window, and then nothing until you go and read it.",
+                hear="The captions window, then quiet until you go and read it.",
                 note=(
-                    "Follow Playback can be switched off so the window holds still "
-                    "while you read back. Escape closes it, and closing it turns "
+                    "Turn off Follow Playback if you want the text to hold still "
+                    "while you read back. Escape closes the window and turns "
                     "captions off."
                 ),
             ),
             Step(
                 title="Choose the audio track",
                 body=(
-                    "Ctrl+Shift+A lists the audio and described-audio tracks, "
-                    "leading with the language you read the app in, then the "
-                    "video's own original track, then the rest alphabetically -- so "
-                    "a channel with two dozen dubs is a list you can find your way "
-                    "down."
+                    "Ctrl+Shift+A lists the audio and described audio tracks. "
+                    "Your own language comes first, then the original language, "
+                    "then the rest in alphabetical order. So even a channel with "
+                    "two dozen languages is easy to find your way around."
                 ),
                 keys=("Ctrl+Shift+A",),
                 hear="The track list, your language first.",
@@ -109,34 +106,35 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Give yourself a programme guide",
                 body=(
-                    "Drop an XMLTV guide named tv_guide.xml into your Quill Radio "
-                    "data folder and every channel it covers gains a Now and Next "
-                    "line in its details. It is read locally, works offline, is "
-                    "re-read when you replace it, and is never fetched from "
-                    "anywhere. Delete the file and the lines disappear."
+                    "If you have an XMLTV guide file, name it tv_guide.xml and "
+                    "put it in your Quill Radio data folder. Every channel it "
+                    "covers then gets a Now and Next line in its details. It "
+                    "works offline, updates when you replace the file, and is "
+                    "never downloaded from anywhere. Delete the file and the "
+                    "lines go away."
                 ),
-                hear="Now, and Next, in the details of a covered channel.",
+                hear="Now, and Next, in the details of a channel the guide covers.",
                 note=(
-                    "There is no one TV guide feed for the world -- guides are "
-                    "published per country and per provider -- so the file is "
-                    "deliberately yours to choose rather than the app's to pick."
+                    "There is no single TV guide for the whole world. Guides are "
+                    "made by each country and provider, so you choose the one "
+                    "that suits you."
                 ),
             ),
             Step(
                 title="Keep the channel list current",
                 body=(
-                    "The channel list updates itself weekly; it is the largest "
-                    "catalog in the app at about 28 MB. Update the channel list "
-                    "now, at the top of the branch, fetches today's copy on demand "
-                    "and says what it is doing while it works."
+                    "The channel list updates itself once a week. It is the "
+                    "biggest list in Quill Radio, about 28 MB. To get today's "
+                    "list right now, use Update the channel list now, at the top "
+                    "of the branch. It tells you what it is doing as it works."
                 ),
-                hear="Progress while it fetches, then how many channels it has.",
+                hear="Progress while it downloads, then how many channels it has.",
             ),
         ),
         closing=(
-            "Television is video in a radio app, and it behaves like radio: "
-            "favorite it, record it, schedule it, and drive it with the keys you "
-            "already know."
+            "Television in Quill Radio works just like radio. You can make a "
+            "channel a favorite, record it, book it, and use all the keys you "
+            "already know. Enjoy the show."
         ),
     ),
     Tutorial(
@@ -146,18 +144,18 @@ TUTORIALS: tuple[Tutorial, ...] = (
         minutes=7,
         surfaces=("ACB Media Schedule", "Upcoming"),
         summary=(
-            "Read a published schedule across ten channels, find a programme, "
-            "record it or be reminded about it, and understand why the list "
-            "sometimes has nothing in it for today."
+            "Browse the ACB Media schedule across ten channels, find a "
+            "programme, record it or get a reminder, and understand why there "
+            "is sometimes nothing listed for today."
         ),
         steps=(
             Step(
                 title="Open the schedule",
                 body=(
-                    "One list, oldest first, each row carrying its date, both its "
-                    "times, its programme and its channel. It opens on the next "
-                    "programme still to come rather than at the start of a "
-                    "fortnight that may already have finished."
+                    "The schedule is one list, earliest first. Each row gives "
+                    "the date, the start and end times, the programme and the "
+                    "channel. It opens on the next programme still to come, so "
+                    "you do not have to arrow past ones that are over."
                 ),
                 command="radio.acb_calendar",
                 hear="ACB Media Schedule, then the next programme still to come.",
@@ -165,73 +163,71 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Read the line above the list",
                 body=(
-                    "It always says how far the published schedule runs -- 49 "
-                    "programmes published; the published schedule runs 1 August to "
-                    "15 August -- and says so plainly when that is behind us. ACB "
-                    "publishes a fortnight at a time and then stops, so for much of "
-                    "a month there is nothing posted for today. That is not a "
-                    "fault."
+                    "This line always tells you how far ahead the schedule goes, "
+                    "for example: 49 programmes published; the published "
+                    "schedule runs 1 August to 15 August. It tells you plainly "
+                    "when those dates have passed. ACB posts two weeks at a time, "
+                    "so there are often days with nothing posted yet. Nothing is "
+                    "wrong when that happens."
                 ),
                 keys=("Shift+Tab",),
-                hear="The sentence, in a field you can arrow through word by word.",
+                hear="The sentence, in a box you can arrow through word by word.",
             ),
             Step(
                 title="Check whose clock the times are on",
                 body=(
-                    "ACB publishes in US Central time and Quill Radio converts "
-                    "every programme to your own clock. The line says so when the "
-                    "two differ -- because shown a bare 7:00 AM you have no way to "
-                    "tell a correct conversion from a missing one."
+                    "ACB lists its times in US Central time, and Quill Radio "
+                    "changes every one to your own time. When the two are "
+                    "different, the line says so, so you know the times are "
+                    "already right for you."
                 ),
-                hear="Times are shown in your zone, and the zone ACB publishes in.",
+                hear="Times are shown in your time zone, and the time zone ACB uses.",
             ),
             Step(
                 title="Find one programme",
                 body=(
-                    "Three filters, all of which narrow what is listed and change "
-                    "nothing about what is playing. Search wants every word to "
-                    "appear somewhere, in any field, so blues tuesday finds the "
-                    "Tuesday blues show. Date jumps to a day that actually has "
-                    "programmes. Channel narrows to one of the ten."
+                    "There are three filters. They change what is listed, never "
+                    "what is playing. Search finds rows that have all your "
+                    "words, so blues tuesday finds the Tuesday blues show. Date "
+                    "jumps to a day that has programmes. Channel shows just one "
+                    "of the ten channels."
                 ),
                 keys=("Alt+S",),
-                hear="The number of programmes left after the filter.",
+                hear="How many programmes are left after the filter.",
             ),
             Step(
                 title="Do something with a programme",
                 body=(
-                    "Six verbs, each reachable from the context menu, from the "
-                    "buttons in the same order, and -- for Play -- from Enter: "
-                    "Play, Record, Remind Me, Add to Queue, Copy Details and Show "
-                    "Notes. A verb that cannot run is dimmed and says why."
+                    "There are six things you can do, on the context menu and as "
+                    "buttons in the same order: Play, Record, Remind Me, Add to "
+                    "Queue, Copy Details and Show Notes. Enter also plays. If one "
+                    "cannot be used right now, it is dimmed and says why."
                 ),
                 keys=("Shift+F10",),
-                hear="The action's own confirmation, naming the programme.",
+                hear="The action confirmed, naming the programme.",
                 note=(
-                    "Play tunes in to the programme's channel, and stops it if that "
-                    "channel is what you are already listening to. Live radio has "
-                    "one thing on it at a time, so Quill Radio tells you whether "
-                    "the programme is on now or when it starts."
+                    "Play tunes in to the programme's channel, or stops it if "
+                    "you are already listening to that channel. Live radio plays "
+                    "one thing at a time, so Quill Radio tells you whether the "
+                    "programme is on now or when it starts."
                 ),
             ),
             Step(
                 title="Book it, without doing the arithmetic",
                 body=(
-                    "Record opens Schedule Recording already filled in with the "
-                    "channel, the date, the time and the length -- the four things "
-                    "the schedule already knows -- so all that is left is to check "
-                    "them and press OK. It then appears in Recordings and in "
-                    "Upcoming like any other scheduled recording."
+                    "Record opens Schedule Recording with the channel, date, "
+                    "time and length already filled in. All you do is check "
+                    "them and press OK. It then shows up in Recordings and in "
+                    "Upcoming like any other booked recording."
                 ),
-                hear="Schedule Recording, its fields already holding this programme's details.",
+                hear="Schedule Recording, already filled in with this programme's details.",
             ),
             Step(
                 title="Ask what is on without opening anything",
                 body=(
-                    "What Is On Now answers in one sentence across all ten "
-                    "channels. It answers from the stored schedule so it answers "
-                    "straight away -- a key that spends four seconds on a feed "
-                    "before speaking is a key nobody presses twice."
+                    "What Is On Now tells you, in one sentence, what is on "
+                    "across all ten channels. It answers straight away, from the "
+                    "schedule already saved on your computer."
                 ),
                 command="radio.on_now",
                 hear="What is on, across the channels, in one sentence.",
@@ -239,35 +235,35 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Re-read the schedule",
                 body=(
-                    "Three ways, because one was not enough: the Refresh button, "
-                    "Refresh the Schedule on the list's own context menu (offered "
-                    "even when nothing is selected, which is exactly when you want "
-                    "it), and Refresh the Schedule from anywhere in the app, window "
-                    "open or shut."
+                    "There are three ways to fetch the latest schedule. Use the "
+                    "Refresh button, or Refresh the Schedule on the list's "
+                    "context menu, which is there even when nothing is selected. "
+                    "Or use Refresh the Schedule from anywhere in Quill Radio, "
+                    "whether the schedule window is open or not."
                 ),
                 command="radio.refresh_calendar",
                 hear=(
                     "Reading the ACB Media schedule again, then how far the schedule runs "
-                    "and Pulled from ACB just now, with the clock time."
+                    "and Pulled from ACB just now, with the time."
                 ),
             ),
             Step(
                 title="See everything you have planned",
                 body=(
-                    "Upcoming is your reminders and your scheduled recordings "
-                    "together, soonest first, with the kind written on every row. "
-                    "Snooze and Dismiss work on reminders only -- a scheduled "
-                    "recording is cancelled where it was made, because Dismiss "
-                    "meaning two different mornings would be one button too many."
+                    "Upcoming shows your reminders and your booked recordings "
+                    "together, soonest first, and each row says which kind it "
+                    "is. Snooze and Dismiss work on reminders only. To cancel a "
+                    "booked recording, go to Schedule Recording, where you made "
+                    "it."
                 ),
                 command="radio.upcoming",
                 hear="Upcoming, then each item with its kind and time.",
             ),
         ),
         closing=(
-            "The schedule is kept on this computer and read again every time you "
-            "open the window. With no connection it opens from what it has and "
-            "tells you how old that is."
+            "The schedule is saved on your computer and freshened each time you "
+            "open the window. Without an internet connection, it still opens and "
+            "tells you how old it is. Happy listening."
         ),
     ),
     Tutorial(
@@ -277,18 +273,18 @@ TUTORIALS: tuple[Tutorial, ...] = (
         minutes=4,
         surfaces=("Browse Stations",),
         summary=(
-            "Find your local weather transmitter by state, by call sign or by "
-            "county, and know that the whole directory works with no connection."
+            "Find your local NOAA weather radio transmitter by state, call sign "
+            "or county. The whole list works even without an internet "
+            "connection."
         ),
         steps=(
             Step(
                 title="Open the branch",
                 body=(
-                    "Weather / NOAA in the browse tree is the real NOAA Weather "
-                    "Radio directory, state by state, each state announcing its "
-                    "transmitter count. The complete directory -- 1,035 "
-                    "transmitters -- is bundled inside the app, so this branch "
-                    "works offline."
+                    "Weather / NOAA, in Browse Stations, is the real NOAA "
+                    "Weather Radio list, state by state, and each state says how "
+                    "many transmitters it has. All 1,035 transmitters come built "
+                    "into Quill Radio, so this branch works offline."
                 ),
                 keys=("Ctrl+B",),
                 hear="The states, each with its count.",
@@ -297,20 +293,21 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Find your transmitter",
                 body=(
-                    "Open a state and you get its actual transmitters, named with "
-                    "call sign, frequency and place -- KHB36 162.550 MHz Manassas. "
-                    "Enter plays the best available internet re-stream of it."
+                    "Open a state to hear its transmitters, each with its call "
+                    "sign, frequency and place, such as KHB36 162.550 MHz "
+                    "Manassas. Press Enter to play the best internet stream of "
+                    "it that is available."
                 ),
                 keys=("Right arrow", "Enter"),
-                hear="The transmitter's call sign, frequency and place, then the audio.",
+                hear="The transmitter's call sign, frequency and place, then the sound.",
             ),
             Step(
                 title="Search for it instead",
                 body=(
-                    "Weather radio is searchable by call sign, by SAME code, or by "
-                    "County, ST -- which is usually faster than arrowing a state "
-                    "with forty transmitters in it, and is how you find the one "
-                    "that actually covers you."
+                    "You can search weather radio by call sign, by SAME code, or "
+                    "by County, ST, such as Fairfax, VA. That is often quicker "
+                    "than arrowing through a state with forty transmitters, and "
+                    "it finds the one that covers where you live."
                 ),
                 keys=("Ctrl+F",),
                 hear="The matching transmitters.",
@@ -318,9 +315,9 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Keep it where you can reach it",
                 body=(
-                    "Favorite your transmitter and put it in a folder with your "
-                    "local news station. In severe weather the thing you want is "
-                    "one keystroke, not a directory."
+                    "Add your transmitter to your favorites, and maybe put it in "
+                    "a folder with your local news station. When the weather "
+                    "turns bad, you want it one key away, not buried in a list."
                 ),
                 command="radio.toggle_playing_favorite",
                 hear="Added, and the transmitter's name.",
@@ -329,17 +326,18 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Know where the rest of weather went",
                 body=(
-                    "Forecasts, alerts and background alert monitoring are Quill "
-                    "Weather's job now -- a separate app in the same family, opened "
-                    "from the QuillVille menu. What stays here is the radio part of "
-                    "weather, which is this branch."
+                    "Forecasts, alerts and watching for alerts in the background "
+                    "now live in Quill Weather, a separate app in the same "
+                    "family. Open it from the QuillVille menu. Quill Radio keeps "
+                    "the radio part of weather, which is this branch."
                 ),
-                hear="Nothing: this is the answer to where did the Weather menu go.",
+                hear="Nothing. This answers the question: where did the Weather menu go?",
             ),
         ),
         closing=(
-            "One favorite, bundled offline, searchable by the three things people "
-            "actually know: the call sign, the SAME code, or the county."
+            "One favorite, working offline, that you can find by the things "
+            "people actually know: the call sign, the SAME code, or the county. "
+            "Stay safe out there."
         ),
     ),
 )

@@ -136,4 +136,10 @@ def run_search(
         # embedded); the sitemap-index route this replaced is retired
         # in directory_search's history.
         extras += iheart_variants(name, safe_mode=safe_mode)
+    # What is known about a station, not only its name: the stations you
+    # tagged and the flagships of the teams the query names. In front of the
+    # other extras so the row that says why it was found is the one kept.
+    from quill.ui.radio.station_lookup_lane import lane_rows
+
+    extras = lane_rows(host, name or tag, safe_mode=safe_mode) + extras
     return radio, extras

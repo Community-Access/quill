@@ -141,6 +141,7 @@
   "cmd_promote_heading": "covered",
   "cmd_quote_lines": "covered",
   "cmd_redo": "covered",
+  "cmd_release_channel": "covered",
   "cmd_remember_clip": "covered",
   "cmd_remove_blank_lines": "covered",
   "cmd_remove_duplicate_lines": "covered",

@@ -49,8 +49,15 @@ def _starts_sentence(before: str) -> bool:
     return bool(stripped) and stripped[-1] in _SENTENCE_END
 
 
+#: Opening marks a Spanish sentence starts with; the letter after them is the
+#: one to capitalise.
+_OPENERS = chr(0xBF) + chr(0xA1)
+
+
 def _capitalise(word: str) -> str:
-    return word[:1].upper() + word[1:] if word[:1].islower() else word
+    lead = len(word) - len(word.lstrip(_OPENERS))
+    head, rest = word[:lead], word[lead:]
+    return head + rest[:1].upper() + rest[1:] if rest[:1].islower() else word
 
 
 def compose(

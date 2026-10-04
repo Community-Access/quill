@@ -190,7 +190,11 @@ _REVIEWED_EGRESS: dict[str, str] = {
     "core/podcasts/apple_podcasts.py::_fetch": (
         "Single egress site for browsing Apple Podcasts without a key: the "
         "public store-services genre tree (MZStoreServices .../genres?id=26), "
-        "the per-storefront chart feeds (rss.marketingtools.apple.com), and the "
+        "the per-storefront chart feeds (rss.marketingtools.apple.com), the "
+        "per-genre chart feed (itunes.apple.com/<storefront>/rss/toppodcasts/"
+        "limit=200/genre=<id>/json, requested by core/podcasts/"
+        "apple_genre_charts.py through this same site when a genre folder is "
+        "opened), and the "
         "lookup that turns a chart row's collection id into its RSS feedUrl. "
         "Reached only by an explicit browse action or by activating a show; the "
         "lookup is lazy, never a bulk pre-fetch. Genre tree and charts are "
@@ -258,26 +262,44 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "Update check; gated by the user's update-check setting and shown in the "
         "update UI. Verified TLS."
     ),
-    "core/updates.py::fetch_latest_release": (
-        "Update check against GitHub Releases; same update setting and UI."
-    ),
-    "core/updates.py::fetch_app_releases": (
-        "Per-app update check: lists the shared Community-Access/quill releases to "
-        "find THIS app's own asset (Quill-Radio-*, Quill-Weather-*, ...) so each "
-        "QuillVille app updates independently. Same gating as fetch_releases -- the "
-        "app's 'check for updates' action or its throttled once-a-day startup check. "
-        "Verified TLS."
-    ),
-    "core/updates.py::fetch_releases": (
-        "Fetches release notes for an update the user is already reviewing (Help > "
-        "Check for Updates) or, for the standalone companion apps (Quill Radio, "
-        "QUILL Cast), a throttled once-a-day automatic startup check gated by each "
-        "app's own 'check for updates automatically on launch' Preferences toggle "
-        "(on by default, one checkbox away from off) -- silent unless a genuine "
-        "update is found, per AppShellFrame.check_for_app_updates(silent_no_update=)."
+    # One paged reader behind fetch_latest_release, fetch_releases and
+    # fetch_app_releases since 2026-10 (release channels, Phase 0): the same
+    # GitHub Releases endpoint as before, now asking for 100 a page (GitHub's
+    # default 30 would hide Stable releases once betas share the repo) and
+    # following at most two "next" links on the same host. No new endpoint.
+    "core/updates.py::_fetch_release_json": (
+        "Update check against the shared Community-Access/quill GitHub Releases "
+        "list: QUILL's own check (Help > Check for Updates, or the startup check "
+        "behind 'Check for updates on startup'), and each QuillVille app's check "
+        "for THIS app's own asset (Quill-Radio-*, ...) from its Help menu or its "
+        "throttled once-a-day launch check, gated by that app's own Preferences "
+        "toggle and silent unless a genuine update is found. Lists releases only; "
+        "nothing about the user is sent. Verified TLS; redirected only by the "
+        "QUILL_UPDATE_API_URL rehearsal override."
     ),
     "core/updates.py::download_release_asset": (
         "User chooses to download an offered update; verified TLS, visible progress."
+    ),
+    # Release channels, Phase 2 (2026-10-03). The same update checks as
+    # _fetch_release_json above, reading the signed per-app v2 list first.
+    "core/updater/feed_fetch.py::http_get": (
+        "Update check (QUILL, QUILL Lite, Quill Radio, QUILL Cast: Help > Check for "
+        "Updates, or each app's once-a-day launch check behind its own Preferences "
+        "toggle): one plain HTTPS GET of community-access.github.io/quill/updates/v2/"
+        "<app>.json and its .sig -- no query string, no cookies, a generic "
+        "'QuillVille-Updater/2' User-Agent with no version or OS. Nothing about the "
+        "user is sent. Verified TLS and the trusted-host list; the "
+        "QUILL_UPDATE_FEED_BASE rehearsal override changes only where to look. "
+        "Not an AI or Quillin path, so Safe Mode leaves it as it leaves the old check."
+    ),
+    "core/updater/download.py::_default_opener": (
+        "Downloads an update file named in the signed v2 list: when the person presses "
+        "Update, or -- on the Beta and Dev channels only -- in the background after an "
+        "automatic check, held on metered connections, in Quiet Hours and while Quill "
+        "Radio records, and never installed without asking. Plain GET (with a Range "
+        "header to resume) to github.com release assets, including the separate "
+        "Community-Access/quillville-dev-builds repository for Dev builds; verified "
+        "TLS, trusted hosts, and the list's SHA-256 checked before the file is kept."
     ),
     "core/companion_install.py::fetch_companion_asset": (
         "Lists the Community-Access/quill GitHub releases to find a sibling app's "

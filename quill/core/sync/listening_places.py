@@ -270,6 +270,9 @@ class DeviceFile:
     app: str = ""
     written_at: str = ""
     records: list[PlaceRecord] = field(default_factory=list)
+    #: Every row as written, for the readers that need fields a place does
+    #: not have -- subscription and folder rows (ear.md B3).
+    raw_records: list[dict[str, object]] = field(default_factory=list)
 
     @classmethod
     def from_dict(cls, data: object) -> DeviceFile | None:
@@ -286,7 +289,14 @@ class DeviceFile:
             device_label=str(data.get("device_label", "")),
             app=str(data.get("app", "")),
             written_at=str(data.get("written_at", "")),
-            records=[row for row in rows if row is not None],
+            records=[
+                row
+                for row in rows
+                if row is not None and row.kind != "sub" and row.kind != "folder"
+            ],
+            raw_records=[dict(row) for row in raw if isinstance(row, dict)]
+            if isinstance(raw, list)
+            else [],
         )
 
 
@@ -314,6 +324,7 @@ def write_device_file(
     records: list[PlaceRecord],
     include_labels: bool = True,
     now: str = "",
+    extra_rows: list[dict[str, object]] | None = None,
 ) -> bool:
     """Write this device's file. Returns whether anything was actually written.
 
@@ -328,6 +339,8 @@ def write_device_file(
     """
     kept = sorted(records, key=lambda row: row.updated_at, reverse=True)[:MAX_RECORDS]
     rows = [row.to_dict(include_label=include_labels) for row in kept]
+    # Subscription and folder rows (B3), only when that switch is on.
+    rows += list(extra_rows or [])
     fingerprint = hashlib.sha256(
         json.dumps(rows, sort_keys=True, separators=(",", ":")).encode("utf-8")
     ).hexdigest()
@@ -416,6 +429,37 @@ def read_other_devices(remote_dir: Path | str, device_id: str) -> list[DeviceFil
 
 
 # -- merging (6.4, 6.5) ------------------------------------------------------
+
+
+#: The names a device file's ``app`` field is spoken as, by its prefix.
+_APP_NAMES = {"earshot": "Earshot", "quill-cast": "QUILL Cast", "quill": "QUILL"}
+
+
+def spoken_device(device_file: DeviceFile) -> str:
+    """What to call the device that wrote *device_file* (ear.md B1).
+
+    Its ``device_label`` when it has one ("Jeff's iPhone"). Earshot writes no
+    label -- the field is optional in the format and its encoder leaves it out
+    -- so the app named in ``app`` ("earshot/1.2.3") is the honest fallback:
+    "last played in Earshot" is true, where a guessed device name would not be.
+    """
+    label = device_file.device_label.strip()
+    if label:
+        return label[:80]
+    app = device_file.app.split("/", 1)[0].strip().lower()
+    return _APP_NAMES.get(app, app[:40])
+
+
+def remote_sources(files: list[DeviceFile]) -> dict[str, str]:
+    """For each id, :func:`spoken_device` of the device whose record wins."""
+    best: dict[str, tuple[str, str]] = {}
+    for device_file in files:
+        name = spoken_device(device_file)
+        for record in device_file.records:
+            current = best.get(record.id)
+            if current is None or record.updated_at > current[0]:
+                best[record.id] = (record.updated_at, name)
+    return {key: name for key, (_at, name) in best.items()}
 
 
 def remote_view(files: list[DeviceFile]) -> dict[str, PlaceRecord]:

@@ -41,16 +41,16 @@ TRACKS: tuple[Track, ...] = (
     Track(
         "first-documents",
         "Your first documents",
-        "Open a file and give it back unchanged, learn where the facts about it "
-        "live, learn what kind of document you are in, and find your way "
-        "between the ones you have open.",
+        "Start here. Open a file and save it back unchanged, find out where "
+        "the facts about it live and what kind of document you are in, and "
+        "move between the documents you have open.",
     ),
     Track(
         "working-in-it",
         "Working in a document",
-        "Selecting more than a few words, finding your way back to where you "
-        "were, skimming something long, spelling without a red squiggle, and "
-        "asking a question about the document in front of you.",
+        "Once you are comfortable: select more than a few words, find your "
+        "way back to where you were, skim something long, fix spelling without "
+        "a red squiggle, and ask a question about the document in front of you.",
     ),
 )
 

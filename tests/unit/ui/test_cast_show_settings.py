@@ -34,7 +34,10 @@ from quill.core.podcasts.settings_types import (  # noqa: E402
     LEVEL_SHOW,
 )
 from quill.core.podcasts.subscriptions import PodcastLibrary  # noqa: E402
-from quill.ui.podcasts.show_settings_dialog import ShowSettingsDialog  # noqa: E402
+from quill.ui.podcasts.show_settings_dialog import (  # noqa: E402
+    ShowSettingsWindow,
+    per_podcast_settings,
+)
 
 
 @pytest.fixture(scope="module")
@@ -72,7 +75,7 @@ def _definition(setting_id: str):
     return found
 
 
-def _control_for(dialog: ShowSettingsDialog, setting_id: str):
+def _control_for(dialog: ShowSettingsWindow, setting_id: str):
     for built in dialog._controls:
         if built.definition.id == setting_id:
             return built
@@ -83,9 +86,9 @@ def test_the_window_builds_its_controls_from_the_catalogue(wx_app) -> None:
     library, show = _library()
     frame = wx.Frame(None)
     try:
-        dialog = ShowSettingsDialog(frame, library=library, show=show)
+        dialog = ShowSettingsWindow(frame, library=library, show=show)
         try:
-            expected = settings_catalog.for_category(CATEGORY_ARRIVAL, level=LEVEL_SHOW)
+            expected = per_podcast_settings(CATEGORY_ARRIVAL)
             assert {b.definition.id for b in dialog._controls} == {d.id for d in expected}
             assert len(dialog._controls) > 10
             for built in dialog._controls:
@@ -95,7 +98,40 @@ def test_the_window_builds_its_controls_from_the_catalogue(wx_app) -> None:
                 assert built.control.GetHelpText()
                 assert "shared default" in built.control.GetHelpText()
         finally:
-            dialog.dialog.Destroy()
+            dialog.frame.Destroy()
+    finally:
+        frame.Destroy()
+
+
+#: The legacy refresh rows the refresh schedule replaced; Preferences hides
+#: them (preferences_window.section_of answers ""), and so does this window.
+_SUPERSEDED = ("refresh_minutes", "refresh_on_launch", "check_interval_minutes")
+
+
+def test_the_rows_the_schedule_replaced_are_not_offered_per_podcast(wx_app) -> None:
+    """The rows "Check this podcast for new episodes", "Check the podcasts I
+    follow every" and "Also check once at launch" read as rival answers to the
+    schedule row beside them, which is the one that decides."""
+    all_ids = {d.id for d in settings_catalog.for_level(LEVEL_SHOW)}
+    assert set(_SUPERSEDED) <= all_ids, "the catalogue still allows them per podcast"
+    for category in settings_catalog.categories_with_settings():
+        shown = {d.id for d in per_podcast_settings(category)}
+        assert not shown & set(_SUPERSEDED), category
+    library, show = _library()
+    frame = wx.Frame(None)
+    try:
+        dialog = ShowSettingsWindow(frame, library=library, show=show)
+        try:
+            for category in (CATEGORY_ARRIVAL, CATEGORY_PLAYBACK):
+                dialog._category.SetSelection(dialog._categories.index(category))
+                dialog._on_category(None)
+                ids = {b.definition.id for b in dialog._controls}
+                assert not ids & set(_SUPERSEDED), category
+            dialog._category.SetSelection(dialog._categories.index(CATEGORY_ARRIVAL))
+            dialog._on_category(None)
+            assert "refresh_schedule" in {b.definition.id for b in dialog._controls}
+        finally:
+            dialog.frame.Destroy()
     finally:
         frame.Destroy()
 
@@ -104,7 +140,7 @@ def test_changing_the_category_rebuilds_the_panel(wx_app) -> None:
     library, show = _library()
     frame = wx.Frame(None)
     try:
-        dialog = ShowSettingsDialog(frame, library=library, show=show)
+        dialog = ShowSettingsWindow(frame, library=library, show=show)
         try:
             said: list[str] = []
             dialog._announce = said.append
@@ -115,7 +151,7 @@ def test_changing_the_category_rebuilds_the_panel(wx_app) -> None:
             # The count, not the name: the reader already said the name.
             assert said and "Playback settings" in said[0]
         finally:
-            dialog.dialog.Destroy()
+            dialog.frame.Destroy()
     finally:
         frame.Destroy()
 
@@ -123,19 +159,21 @@ def test_changing_the_category_rebuilds_the_panel(wx_app) -> None:
 def test_a_control_shows_the_value_in_force_not_a_blank(wx_app) -> None:
     """Inherited from the folder, and the help says so."""
     library, show = _library()
-    set_value(library, _definition("refresh_minutes"), 60, level=LEVEL_FOLDER, scope_id="f-news")
+    set_value(
+        library, _definition("queue_age_limit_days"), 60, level=LEVEL_FOLDER, scope_id="f-news"
+    )
     frame = wx.Frame(None)
     try:
-        dialog = ShowSettingsDialog(frame, library=library, show=show)
+        dialog = ShowSettingsWindow(frame, library=library, show=show)
         try:
-            built = _control_for(dialog, "refresh_minutes")
+            built = _control_for(dialog, "queue_age_limit_days")
             assert built is not None
             assert built.control.GetValue() == 60
             assert "folder News" in built.control.GetHelpText()
             # Inherited, so there is nothing of this podcast's own to drop.
             assert built.follow_button is None
         finally:
-            dialog.dialog.Destroy()
+            dialog.frame.Destroy()
     finally:
         frame.Destroy()
 
@@ -145,7 +183,7 @@ def test_saving_writes_only_what_changed(wx_app) -> None:
     library, show = _library()
     frame = wx.Frame(None)
     try:
-        dialog = ShowSettingsDialog(frame, library=library, show=show)
+        dialog = ShowSettingsWindow(frame, library=library, show=show)
         try:
             built = _control_for(dialog, "inbox_max_episodes")
             assert built is not None
@@ -165,23 +203,25 @@ def test_saving_writes_only_what_changed(wx_app) -> None:
 
 def test_follow_appears_only_where_there_is_an_opinion_to_drop(wx_app) -> None:
     library, show = _library()
-    set_value(library, _definition("refresh_minutes"), 30, level=LEVEL_FOLDER, scope_id="f-news")
-    set_value(library, _definition("refresh_minutes"), 120, level=LEVEL_SHOW, scope_id="s1")
+    set_value(
+        library, _definition("queue_age_limit_days"), 30, level=LEVEL_FOLDER, scope_id="f-news"
+    )
+    set_value(library, _definition("queue_age_limit_days"), 120, level=LEVEL_SHOW, scope_id="s1")
     frame = wx.Frame(None)
     try:
-        dialog = ShowSettingsDialog(frame, library=library, show=show)
+        dialog = ShowSettingsWindow(frame, library=library, show=show)
         try:
-            built = _control_for(dialog, "refresh_minutes")
+            built = _control_for(dialog, "queue_age_limit_days")
             assert built is not None
             assert built.follow_button is not None
             said: list[str] = []
             dialog._announce = said.append
             dialog._on_follow(built.definition)
             # Back to the folder, not to the class default.
-            assert value_of(library, _definition("refresh_minutes"), show=show) == 30
+            assert value_of(library, _definition("queue_age_limit_days"), show=show) == 30
             assert said and "follows the folder" in said[0]
         finally:
-            dialog.dialog.Destroy()
+            dialog.frame.Destroy()
     finally:
         frame.Destroy()
 
@@ -190,7 +230,7 @@ def test_the_window_carries_the_verbs_that_are_not_settings(wx_app) -> None:
     library, show = _library()
     frame = wx.Frame(None)
     try:
-        dialog = ShowSettingsDialog(frame, library=library, show=show)
+        dialog = ShowSettingsWindow(frame, library=library, show=show)
         try:
             assert dialog._favorite.GetValue() is False
             assert dialog._route_inbox.GetValue() is False

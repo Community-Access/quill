@@ -22,6 +22,7 @@ Every one of these can be switched off, and all of them are off in Safe Mode
 | Quill Radio's community play count | `radio-browser.info` -- when you play one of that directory's own stations, tells it so; sends the station's id and nothing about you | On | *Share play counts with the RadioBrowser directory* |
 | Quill Radio's now-playing title | The station you are already listening to -- re-reads the current track title every 30 seconds. No third party is involved | On while playing | Stops with playback |
 | Quill Radio's stream recovery | The failing station's own website, plus its provider's public address service -- only after a stream fails to play, once per station per session | On | *Recover failed streams from the station's website* |
+| Quill Radio's new-video check | `youtube.com` -- for each channel you asked to be told about, reads its five newest uploads on the podcast refresh schedule; sends nothing about you unless you turned on the browser sign-in | Off (per channel) | *Notify Me About New Videos* on the channel |
 
 Everything else -- every directory search, every AI request, every file
 transfer, every podcast feed -- happens because you asked for it.
@@ -71,6 +72,20 @@ If you work with private repositories, review the `github-temp` directory period
 The optional **Read Document in Browser** feature (off by default, under **Settings > Experimental**) writes a self-contained reader page containing your document text to a `browser-reader` subdirectory of the app-data folder and opens it in your web browser. QUILL itself makes no network request for this feature, and the page is deleted when you close QUILL so no plaintext copy is left behind.
 
 Be aware that the browser's speech voices are not all local. On-device voices (labelled "on this device" in the page's voice picker) synthesize speech locally. The browser's "Online (Natural)" voices synthesize in the voice vendor's cloud (for example, Microsoft Edge's online voices), which means selecting one sends the text being read to that service. Choose an on-device voice to keep everything local.
+
+## YouTube in Quill Radio
+
+Quill Radio uses YouTube API Services. By using its YouTube features you agree to the [YouTube Terms of Service](https://www.youtube.com/t/terms), and the [Google Privacy Policy](https://policies.google.com/privacy) applies to what Google does with your data.
+
+**Without signing in.** Playing, searching, reading comments and reading live chat talk to YouTube directly, the way a web browser does. QUILL sends nothing about you beyond what any visitor to YouTube sends.
+
+**Skip Sponsor Segments** (off until you turn it on) asks the community SponsorBlock service (`sponsor.ajay.app`) which parts of a video are sponsored. It sends only the first four characters of a scrambled (hashed) form of the video's id, so SponsorBlock cannot tell which video you are watching.
+
+**Using your browser's YouTube sign-in** (off until you turn it on in Preferences). Quill Radio reads your browser's YouTube sign-in on your own computer each time it asks YouTube for something, so YouTube treats the request as coming from you. QUILL never sees your password. It saves only which browser you chose, or the location of a cookies.txt file, and never the sign-in itself. Sign-in data is removed from QUILL's logs and problem reports.
+
+**Connect YouTube Account** (the official Google sign-in, when it is available). You sign in on Google's own page in your browser. QUILL asks Google for permission to read the channels and playlists you follow, and only if you then use a feature that needs it, to post comments, replies and live chat messages you write, to subscribe or unsubscribe, to rate videos, and to add videos to your playlists. QUILL does these things only when you press the button for them. The permission Google gives QUILL is kept in Windows' secure credential store, never in QUILL's own files and never on any server. QUILL has no servers that receive your data, and what it reads from YouTube stays on your computer. Disconnect YouTube Account forgets the sign-in on your computer and also removes QUILL's access at Google. You can also remove QUILL's access at any time from your Google account at <https://myaccount.google.com/permissions>.
+
+QUILL's use of information received from Google APIs adheres to the [Google API Services User Data Policy](https://developers.google.com/terms/api-services-user-data-policy), including the Limited Use requirements.
 
 ## User responsibility
 

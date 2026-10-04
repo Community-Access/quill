@@ -18,19 +18,19 @@ TUTORIALS: tuple[Tutorial, ...] = (
         minutes=5,
         surfaces=("Community Picks", "ACB Media Podcasts"),
         summary=(
-            "Add stations and podcasts from a curated list that is kept up to "
-            "date on the web, and suggest something for that list yourself by "
-            "email, with no account and no website."
+            "Add stations and podcasts from a hand-picked list that is kept up "
+            "to date for you, and suggest something for the list yourself by "
+            "email. No account and no website needed."
         ),
         steps=(
             Step(
                 title="Open the picks",
                 body=(
-                    "Community Picks is a hand-curated list of stations, podcasts "
-                    "and places rather than a directory. Arrow the Available list, "
-                    "Tab to Description to hear what one is, and press Add for the "
-                    "one you are on or Add All for the lot. Anything you already "
-                    "have is marked, so nothing is added twice."
+                    "Community Picks is a hand-picked list of stations, podcasts "
+                    "and places. Arrow through the Available list, and press Tab "
+                    "to Description to hear what one is. Press Add for the one "
+                    "you are on, or Add All for the whole list. Anything you "
+                    "already have is marked, so nothing is added twice."
                 ),
                 command="radio.community_picks",
                 hear=(
@@ -40,38 +40,38 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Know why it works offline",
                 body=(
-                    "A copy ships with the app, so the picker works on first run, "
-                    "with no connection, and if the site is ever down. A fetched copy "
-                    "supersedes it and a failed fetch falls back to it -- never to an "
-                    "empty window."
+                    "A copy of the list comes with Quill Radio, so it works the "
+                    "very first time, with no internet, and even if the website "
+                    "is down. When Quill Radio can fetch a newer list, it uses "
+                    "that. If it cannot, it uses the copy it has, so the window "
+                    "is never empty."
                 ),
                 hear=(
                     "The heading, adding Showing the list that came with the app when it "
-                    "is the bundled copy."
+                    "is using its own copy."
                 ),
                 note=(
-                    "The list is signed, and the signature is checked against the "
-                    "same publisher key that signs Quillins and releases. This file "
-                    "causes the app to add stations, so whoever could replace it "
-                    "could point you at content you did not choose."
+                    "The list is signed, and Quill Radio checks the signature "
+                    "before using it. That way only Community Access can change "
+                    "what it offers you."
                 ),
             ),
             Step(
                 title="Understand what retiring a pick does",
                 body=(
-                    "A pick that is retired vanishes from the picker and nothing you "
-                    "already added is touched. Your favorite stays, your subscription "
-                    "stays. A catalogue that could reach into your library would be "
-                    "one worth refusing to fetch at all."
+                    "When a pick is retired, it disappears from this window, and "
+                    "nothing you already added is touched. Your favorite stays "
+                    "and your subscription stays. This list can only ever offer, "
+                    "never take away."
                 ),
-                hear="Nothing: this is the promise behind the window.",
+                hear="Nothing. This is just a promise worth knowing.",
             ),
             Step(
                 title="Add ACB's whole podcast lineup the same way",
                 body=(
-                    "ACB Media Podcasts uses the same picker: everything ACB "
-                    "publishes, with what you already have marked, so you add the "
-                    "rest without duplicating anything."
+                    "ACB Media Podcasts works the same way. It shows everything "
+                    "ACB publishes, with the ones you already have marked, so "
+                    "you can add the rest without any doubles."
                 ),
                 command="radio.acb_podcasts",
                 hear=(
@@ -82,20 +82,21 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Suggest something for the list",
                 body=(
-                    "Suggest a Station or Podcast takes your suggestion here and "
-                    "opens your own mail program with it written to "
-                    "support@community-access.org -- press Send there, and a person "
-                    "at Community Access reads it. No login, no account, no website. "
-                    "Duplicates are caught before anything is written."
+                    "Suggest a Station or Podcast takes your suggestion and opens "
+                    "your own email program with a message to "
+                    "support@community-access.org, ready to go. Press Send there, "
+                    "and a real person at Community Access reads it. No login, no "
+                    "account and no website. If it is already on the list, you "
+                    "are told before anything is written."
                 ),
                 command="radio.suggest_pick",
                 hear="Your mail program has opened with your suggestion written. Press Send there.",
             ),
         ),
         closing=(
-            "The list is rebuilt on the site whenever a suggestion is approved, so "
-            "a station added on a Tuesday reaches everybody on Tuesday rather than "
-            "at the next installer."
+            "The list is updated whenever a suggestion is approved, so a station "
+            "added on a Tuesday reaches everyone that same Tuesday. Thank you for "
+            "helping it grow."
         ),
     ),
     Tutorial(
@@ -105,86 +106,85 @@ TUTORIALS: tuple[Tutorial, ...] = (
         minutes=9,
         surfaces=("Connect to Spotify", "Browse Spotify"),
         summary=(
-            "Set up Spotify search and browsing with your own Client ID, and "
-            "understand precisely what a free account can and cannot do here "
-            "before you spend the ten minutes."
+            "Set up Spotify search and browsing with your own Client ID. Before "
+            "you spend ten minutes on it, find out exactly what a free account "
+            "can and cannot do here."
         ),
         steps=(
             Step(
                 title="Read what a free account gets first",
                 body=(
-                    "On a free account you can search Spotify from inside Quill "
-                    "Radio and browse your saved shows, episodes, tracks and "
-                    "playlists. What you cannot do is have audio start inside Quill "
-                    "Radio -- Spotify does not license other applications to stream "
-                    "free-tier audio, and says so in its own developer "
-                    "documentation."
+                    "With a free account, you can search Spotify from inside "
+                    "Quill Radio and browse your saved shows, episodes, songs and "
+                    "playlists. What you cannot do is play the sound inside Quill "
+                    "Radio. Spotify does not allow other apps to play free "
+                    "account audio, and says so itself."
                 ),
-                hear="Nothing: this step is the one that decides whether the rest is worth doing.",
+                hear="Nothing yet. This step helps you decide whether the rest is worth it.",
                 note=(
-                    "This is about where the audio plays, not whether you may listen. "
-                    "The sensible use on a free account is to let Quill Radio do the "
-                    "finding -- the part that is genuinely awkward with a screen "
-                    "reader -- and play what you find in Spotify's own app."
+                    "This is only about where the sound plays, not whether you "
+                    "can listen. On a free account, a good plan is to let Quill "
+                    "Radio do the searching, which is the fiddly part with a "
+                    "screen reader, and play what you find in Spotify's own app."
                 ),
             ),
             Step(
                 title="Create your own app identity",
                 body=(
-                    "Quill Radio ships no Spotify identity, so you supply your own "
-                    "and nothing of yours passes through anybody else's. Go to "
-                    "Spotify's developer dashboard, sign in with your ordinary "
-                    "account, and choose Create app. There is no charge and a free "
-                    "account works."
+                    "Quill Radio does not come with a Spotify sign-in of its own, "
+                    "so you make your own, and your details never pass through "
+                    "anyone else. Go to Spotify's developer dashboard, sign in "
+                    "with your normal Spotify account, and choose Create app. It "
+                    "is free, and a free account is fine."
                 ),
-                hear="Nothing from Quill Radio: this step happens in your browser.",
+                hear="Nothing from Quill Radio. This step happens in your web browser.",
             ),
             Step(
                 title="Fill in the app's details exactly",
                 body=(
-                    "Name and description are only for you. The Redirect URI must be "
-                    "http://127.0.0.1:43217/callback, character for character, "
-                    "including the port -- that address is how Spotify hands the "
-                    "finished sign-in back to your own computer. Tick Web API and Web "
-                    "Playback SDK."
+                    "The name and description are just for you. The Redirect URI "
+                    "must be exactly http://127.0.0.1:43217/callback, letter for "
+                    "letter, including the number after the colon. That is how "
+                    "Spotify sends the finished sign-in back to your computer. "
+                    "Check Web API and Web Playback SDK."
                 ),
-                hear="Nothing: this is still the browser.",
+                hear="Nothing. You are still in your web browser.",
             ),
             Step(
                 title="Copy the Client ID, and leave the secret alone",
                 body=(
-                    "Open your new app's settings and copy the Client ID. You will "
-                    "also see a Client secret: you do not need it and you should not "
-                    "paste it anywhere. Quill Radio signs in with the modern PKCE "
-                    "flow, which needs only the ID."
+                    "Open your new app's settings and copy the Client ID. You "
+                    "will also see a Client secret. You do not need it, so do "
+                    "not paste it anywhere. Quill Radio only needs the Client ID "
+                    "to sign you in."
                 ),
                 hear="Nothing yet.",
             ),
             Step(
                 title="Connect",
                 body=(
-                    "Connect to Spotify takes the Client ID and starts the sign-in: "
-                    "your browser opens Spotify's own approval page, you approve, and "
-                    "Spotify returns to a tiny local address your own machine is "
-                    "listening on for exactly that one moment."
+                    "Connect to Spotify asks for your Client ID and starts the "
+                    "sign-in. Your web browser opens Spotify's own page, you "
+                    "approve, and Spotify sends you back to Quill Radio on your "
+                    "own computer."
                 ),
                 command="spotify.connect",
                 keys=("Ctrl+Alt+P",),
                 hear="Which kind of account you signed in with, straight away.",
                 note=(
-                    "Your tokens go into the Windows credential vault -- never a "
-                    "plain file and never a log -- with the Client ID beside them, so "
-                    "the whole connection lives in one place and clears together."
+                    "Your sign-in is kept safely in Windows' own password store, "
+                    "never in an ordinary file, together with your Client ID. "
+                    "Disconnecting clears them all together."
                 ),
             ),
             Step(
                 title="Search and play",
                 body=(
-                    "Browse Spotify is a search box with a results list. Type, arrow, "
-                    "press Enter. A Spotify item plays through the hidden Web Playback "
-                    "engine, and everything you already know keeps working -- "
-                    "play/stop, volume, the status bar, the tray, and any global "
-                    "hotkeys you assigned."
+                    "Browse Spotify is a search box with a list of results. "
+                    "Type, arrow, press Enter. With Premium, a Spotify item plays "
+                    "right in Quill Radio, and all the keys you know still work: "
+                    "play and stop, volume, the status bar, the tray, and any "
+                    "global hotkeys you set up."
                 ),
                 command="spotify.browse",
                 keys=("Ctrl+Alt+O",),
@@ -193,29 +193,28 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Know the two hard limits",
                 body=(
-                    "A Spotify selection can never be recorded or downloaded on any "
-                    "account, because the audio is copy-protected. And Spotify, like "
-                    "every network feature, is off in Safe Mode."
+                    "Spotify music can never be recorded or downloaded, on any "
+                    "account, because it is copy-protected. And like everything "
+                    "that uses the internet, Spotify is off in Safe Mode."
                 ),
-                hear="The refusal, with the reason, if you try.",
+                hear="If you try, Quill Radio tells you no, and why.",
             ),
             Step(
                 title="Know where it lives if you do not use it",
                 body=(
-                    "Connect to Spotify and Browse Spotify sit together near the end "
-                    "of the Station menu, and are not there at all in Safe Mode. "
-                    "Customize Features in Quill Radio switches only the Record menu, "
-                    "so there is no switch for Spotify here: if you never set it up, "
-                    "it is two rows to arrow past and nothing more."
+                    "Connect to Spotify and Browse Spotify sit together near the "
+                    "end of the Station menu, and are left out in Safe Mode. "
+                    "There is no switch to hide them. If you never set Spotify "
+                    "up, they are just two items to arrow past."
                 ),
                 keys=("Alt+S",),
                 hear="Connect to Spotify, then Browse Spotify, on the Station menu.",
             ),
         ),
         closing=(
-            "Ten minutes of setup, once, for search and browsing that work on any "
-            "account -- and playback only if you have Premium. Quill Radio tells "
-            "you which you signed in with rather than leaving you to guess."
+            "Ten minutes of setup, just once, gets you search and browsing on any "
+            "account, and playback with Premium. Quill Radio tells you which kind "
+            "of account you have, so you never have to guess."
         ),
     ),
     Tutorial(
@@ -225,74 +224,75 @@ TUTORIALS: tuple[Tutorial, ...] = (
         minutes=4,
         surfaces=("Quill Radio", "Browse Stations"),
         summary=(
-            "What a Quillin is, where they appear in Quill Radio, and what one can "
-            "contribute to the browse tree."
+            "Find out what a Quillin is, where Quillins show up in Quill Radio, "
+            "and what one can add to Browse Stations."
         ),
         steps=(
             Step(
                 title="Know that there is no menu to find",
                 body=(
-                    "Quill Radio runs Quillins -- QUILL's small, sandboxed, "
-                    "permission-gated add-ons -- but in this release it has no "
-                    "Quillins menu: that menu is held back to developer builds. The "
-                    "bundled Quillins still load and still contribute, so what they "
-                    "add turns up where you already look, in the browse tree and in "
-                    "search."
+                    "Quillins are small, safe add-ons for Quill apps. Quill Radio "
+                    "uses them, but in this version it has no Quillins menu. The "
+                    "Quillins that come with Quill Radio still work, so what they "
+                    "add shows up where you already look: in Browse Stations and "
+                    "in search."
                 ),
                 hear=(
-                    "Nothing: the menu bar goes from QuillVille straight to Help, and that "
-                    "is expected."
+                    "Nothing. The menu bar goes from QuillVille straight to Help, and that "
+                    "is how it should be."
                 ),
                 note=(
-                    "A Quillin says in its manifest which apps it is for, so only "
-                    "add-ons written for Quill Radio contribute here."
+                    "Each Quillin says which apps it is for, so only ones made "
+                    "for Quill Radio show up here."
                 ),
             ),
             Step(
                 title="See what one can contribute",
                 body=(
-                    "A Quillin can contribute a whole station source, not only search "
-                    "results. When one is installed and enabled, a Quillin Sources "
-                    "branch appears in Browse Stations -- one folder per contributed "
-                    "source, with its categories and its stations, playable and "
-                    "favouritable like anything else."
+                    "A Quillin can add a whole source of stations, not just "
+                    "search results. When one is installed and turned on, a "
+                    "Quillin Sources branch appears in Browse Stations, with a "
+                    "folder for each source and its categories and stations. You "
+                    "can play them and keep them as favorites like any others."
                 ),
                 keys=("Ctrl+B",),
-                hear="Quillin Sources, and the contributed source beneath it.",
+                hear="Quillin Sources, and the added source beneath it.",
                 check="window:Browse Stations",
             ),
             Step(
                 title="Notice when there is nothing to notice",
                 body=(
-                    "With no Quillin contributing a source, that branch is simply "
-                    "absent rather than present and empty. An empty branch is a "
-                    "question you have to answer; an absent one is not."
+                    "If no Quillin is adding a source, the branch is simply not "
+                    "there, rather than there and empty. So you never have to "
+                    "wonder why a folder has nothing in it."
                 ),
-                hear="Nothing: this is the branch you will not find.",
+                hear="Nothing. This is the branch you will not find.",
             ),
             Step(
                 title="Search finds them too",
                 body=(
-                    "A contributed source is searched by Search All Sources along "
-                    "with everything else, and the bundled Radio Community Directory "
-                    "sample shows authors the whole shape -- including a station whose "
-                    "address is only worked out at the moment you play it."
+                    "Search All Sources searches Quillin sources along with "
+                    "everything else. The Radio Community Directory sample that "
+                    "comes with Quill Radio shows everything a Quillin can do, "
+                    "including a station whose address is only looked up when "
+                    "you play it."
                 ),
-                hear="Results from the contributed source, mixed in with the rest.",
+                hear="Results from the added source, mixed in with the rest.",
             ),
             Step(
                 title="Know when they are off",
                 body=(
-                    "Quillins are off in Safe Mode, and third-party Quillins remain "
-                    "disabled in this release -- the bundled ones are the foundation. "
-                    "If the Quillin Sources branch is missing, that is why."
+                    "Quillins are off in Safe Mode. Quillins from other people "
+                    "are also turned off in this version, so only the ones that "
+                    "come with Quill Radio run. If the Quillin Sources branch is "
+                    "missing, that is why."
                 ),
-                hear="An absent branch, rather than a failure.",
+                hear="A missing branch, rather than an error.",
             ),
         ),
         closing=(
-            "Extensions in a radio app are a small idea deliberately: a source, a "
-            "search, a directory. Nothing here can reach your files."
+            "Quillins in Quill Radio are kept small on purpose: a source, a "
+            "search, a list of stations. None of them can touch your files."
         ),
     ),
 )

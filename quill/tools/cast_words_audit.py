@@ -8,6 +8,14 @@ literal that could reach a listener in the Cast UI (``quill/ui/podcasts`` and
 ``quill/apps/podcasts*.py``) and fails on a forbidden word that is not in the
 reviewed allowlist, with the reason beside it.
 
+It also walks the settings catalogue's words (``settings_defs_*.py`` and
+``settings_help.py`` in ``quill/core/podcasts``): Preferences and Settings for
+This Podcast build their rows from those labels and help sentences, so they
+reach a listener as surely as a literal in a window does. Until 2026-10-03 they
+were outside the scan, and Preferences said "When I subscribe" in an app that
+never otherwise does. QUILL shows the same labels, and Cast's words read
+plainly there too.
+
 A literal counts when it has at least two words and no underscore (an
 identifier is not a sentence). Docstrings are skipped: they are read by
 developers. The allowlist is a ratchet -- an entry with no reason is an
@@ -35,7 +43,13 @@ __all__ = ["ALLOWLIST_PATH", "Offence", "main", "scan"]
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 ALLOWLIST_PATH = REPO_ROOT / "tests" / "unit" / "ui" / "fixtures" / "cast_words_allowlist.json"
-_SCAN: tuple[str, ...] = ("quill/ui/podcasts", "quill/apps")
+#: (directory, glob) pairs: every file a Cast listener's words come from.
+_SCAN: tuple[tuple[str, str], ...] = (
+    ("quill/ui/podcasts", "*.py"),
+    ("quill/apps", "podcasts*.py"),
+    ("quill/core/podcasts", "settings_defs_*.py"),
+    ("quill/core/podcasts", "settings_help.py"),
+)
 
 
 class Offence(tuple):
@@ -54,13 +68,10 @@ class Offence(tuple):
 
 def _files() -> list[Path]:
     found: list[Path] = []
-    for rel in _SCAN:
+    for rel, pattern in _SCAN:
         base = REPO_ROOT / rel
         if base.is_dir():
-            if rel.endswith("apps"):
-                found.extend(sorted(base.glob("podcasts*.py")))
-            else:
-                found.extend(sorted(base.glob("*.py")))
+            found.extend(sorted(base.glob(pattern)))
     return found
 
 

@@ -80,6 +80,7 @@ ITEMS: tuple[SetupItem, ...] = (
     SetupItem("radio_history.json", "your radio settings and recently played stations", "radio"),
     SetupItem("podcast_history.json", "your podcast settings", "cast"),
     SetupItem("radio-go-to.json", "your Go To list, in the order you put it", "radio"),
+    SetupItem("radio-station-tags.json", "your tags on stations you have not saved", "radio"),
     SetupItem("podcast_quick_actions.json", "your Quick Action order", "cast"),
     SetupItem("radio-youtube-saved.json", "your saved YouTube rows", "radio"),
     SetupItem("radio-youtube-channels.json", "the YouTube channels you follow", "radio"),

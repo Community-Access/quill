@@ -527,7 +527,9 @@ def test_quote_lines_default_is_ctrl_shift_q() -> None:
     # own twin: the blockquote merge freed Ctrl+Alt+Q for Duplicate Selection,
     # which freed Ctrl+Alt+Shift+Q for this, which freed Ctrl+Shift+K for
     # lowercase -- QUILL Lite's chord for it (bad.md P2.5, P1.2, P1.1).
-    assert DEFAULT_KEYMAP["edit.unquote_lines"] == "Ctrl+Alt+Shift+Q"
+    # Then Alt+Shift+. on 2026-10-03: Ctrl+Alt+Shift+Q is the global
+    # show/hide hotkey, which took the key before the editor ever saw it.
+    assert DEFAULT_KEYMAP["edit.unquote_lines"] == "Alt+Shift+."
     assert DEFAULT_KEYMAP["format.lower_case"] == "Ctrl+Shift+K"
 
 
@@ -550,11 +552,12 @@ def test_legacy_unquote_lines_binding_follows_the_command() -> None:
     """A saved binding from either prior default lands where the command is.
 
     #608 moved it to Ctrl+Shift+K; the 2026-09-18 blockquote merge moved it on
-    to Ctrl+Alt+Shift+Q. Somebody who saved either one meant "Unquote Lines",
-    not "this key", and the curated rebinding is how they keep the command.
+    to Ctrl+Alt+Shift+Q, and the global show/hide hotkey moved it to
+    Alt+Shift+. on 2026-10-03. Somebody who saved an old one meant "Unquote
+    Lines", not "this key", and the curated rebinding is how they keep it.
     """
     merged = keymap_module.merge_keymaps({"edit.unquote_lines": "Ctrl+Shift+K"})
-    assert merged["edit.unquote_lines"] == "Ctrl+Alt+Shift+Q"
+    assert merged["edit.unquote_lines"] == "Alt+Shift+."
 
 
 # ---------------------------------------------------------------------------

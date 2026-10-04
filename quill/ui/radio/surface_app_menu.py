@@ -50,6 +50,7 @@ from typing import Any
 #: ``_menu_label`` (a test double, or an app that does not use the keymap).
 COMMANDS: tuple[tuple[str, str, str, str], ...] = (
     ("&Browse Stations...", "radio.browse", "Ctrl+B", "open_browse_stations"),
+    ("&Local Media...", "radio.local_media", "Ctrl+O", "open_local_media"),
     ("&Search Stations...", "", "Ctrl+F", "open_internet_radio"),
     ("&Manage Favorites...", "radio.manage_favorites", "", "open_manage_radio_favorites"),
     ("Recordin&gs...", "radio.recordings", "", "open_radio_recordings"),

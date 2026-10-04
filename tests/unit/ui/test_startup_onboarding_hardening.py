@@ -33,6 +33,8 @@ from pathlib import Path
 import pytest
 
 import quill.ui.main_frame as main_frame_module
+import quill.ui.main_frame_crash_recovery as recovery_module  # F-08: moved, 2026-10-03
+import quill.ui.main_frame_onboarding_flow as onboarding_module  # F-08: moved, 2026-10-03
 from quill.ui.main_frame import MainFrame
 
 
@@ -120,7 +122,7 @@ def test_trust_consent_decline_does_not_record_consent(monkeypatch) -> None:
     frame = _build_frame()
     frame._show_modal_dialog = lambda dialog, title: _Wx.ID_NO
     marked: list[int] = []
-    monkeypatch.setattr(main_frame_module, "mark_trust_consent_complete", lambda: marked.append(1))
+    monkeypatch.setattr(onboarding_module, "mark_trust_consent_complete", lambda: marked.append(1))
 
     class _Dialog:
         def __init__(self, *a, **k) -> None:
@@ -144,7 +146,7 @@ def test_trust_consent_accept_records_consent(monkeypatch) -> None:
     frame = _build_frame()
     frame._show_modal_dialog = lambda dialog, title: _Wx.ID_YES
     marked: list[int] = []
-    monkeypatch.setattr(main_frame_module, "mark_trust_consent_complete", lambda: marked.append(1))
+    monkeypatch.setattr(onboarding_module, "mark_trust_consent_complete", lambda: marked.append(1))
 
     class _Dialog:
         def __init__(self, *a, **k) -> None:
@@ -264,11 +266,9 @@ def test_crash_recovery_offloads_snapshot_io_to_background(monkeypatch) -> None:
 
     # Pre-mock read_recovery_snapshot + app_data_dir so the prepare worker is
     # safe to call synchronously.
+    monkeypatch.setattr(recovery_module, "app_data_dir", lambda: __import__("pathlib").Path("/tmp"))
     monkeypatch.setattr(
-        main_frame_module, "app_data_dir", lambda: __import__("pathlib").Path("/tmp")
-    )
-    monkeypatch.setattr(
-        main_frame_module,
+        recovery_module,
         "read_recovery_snapshot",
         lambda _p: ("line1\nline2\nline3", False),
     )
@@ -303,11 +303,9 @@ def test_crash_recovery_prepare_failure_is_reported_via_startup_failure(monkeypa
     frame._show_crash_recovery_dialog = lambda *a, **k: show_calls.append((a, k))
     failures: list[str] = []
     frame._report_startup_task_failure = lambda label: failures.append(label)
+    monkeypatch.setattr(recovery_module, "app_data_dir", lambda: __import__("pathlib").Path("/tmp"))
     monkeypatch.setattr(
-        main_frame_module, "app_data_dir", lambda: __import__("pathlib").Path("/tmp")
-    )
-    monkeypatch.setattr(
-        main_frame_module,
+        recovery_module,
         "read_recovery_snapshot",
         lambda _p: (_ for _ in ()).throw(OSError("boom")),
     )

@@ -20,21 +20,34 @@ from typing import Any
 __all__ = ["append_folder_items", "folder_items"]
 
 
-def folder_items(dialog: Any, folder_id: str) -> list[tuple[str, Callable[[], None]]]:
-    """The label and handler for each folder action, in menu order."""
+def folder_items(
+    dialog: Any, folder_id: str, *, settings: bool = True
+) -> list[tuple[str, Callable[[], None]]]:
+    """The label and handler for each folder action, in menu order.
+
+    *dialog* is QUILL's Podcast Manager or QUILL Cast's one window -- both
+    answer the names :mod:`folder_commands` reads. ``settings=False`` leaves
+    out Folder Settings, which Cast does not offer: there a podcast's settings
+    are set one podcast at a time.
+    """
     from quill.ui.podcasts import folder_commands
 
-    return [
+    items: list[tuple[str, Callable[[], None]]] = [
         ("&Play All Unheard", lambda: folder_commands.play_folder(dialog, folder_id)),
         ("Add All to &Queue", lambda: folder_commands.add_folder_to_queue(dialog, folder_id)),
         ("Move &Up", lambda: folder_commands.reorder(dialog, folder_id, -1)),
         ("Move Dow&n", lambda: folder_commands.reorder(dialog, folder_id, 1)),
-        ("Folder &Settings...", lambda: folder_commands.open_folder_settings(dialog, folder_id)),
-        (
-            "&Export This Folder as OPML...",
-            lambda: folder_commands.export_folder_opml(dialog, folder_id),
-        ),
     ]
+    if settings:
+        items.append((
+            "Folder &Settings...",
+            lambda: folder_commands.open_folder_settings(dialog, folder_id),
+        ))
+    items.append((
+        "&Export This Folder as OPML...",
+        lambda: folder_commands.export_folder_opml(dialog, folder_id),
+    ))
+    return items
 
 
 def append_folder_items(dialog: Any, menu: Any, folder_id: str) -> None:

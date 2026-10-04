@@ -20,6 +20,7 @@ The guide is prose and stays prose; what is asserted is coverage, never wording.
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 import pytest
@@ -38,6 +39,23 @@ _KEYS_END = "<!-- keys:end -->"
 @pytest.fixture(scope="module")
 def guide() -> str:
     return GUIDE.read_text(encoding="utf-8")
+
+
+def _profile_section(guide: str, name: str) -> str | None:
+    """The text under a profile's own heading, down to the next heading at its level.
+
+    Level-aware rather than pinned to ``####``: the guide is grouped into
+    chapters, so the profiles sit a level deeper than they did when every topic
+    was a top-level section, and a check pinned to one depth would either miss
+    the heading or run on into the next profile's text.
+    """
+    match = re.search(rf"^(#{{3,6}}) {re.escape(name)}[ \t]*$", guide, re.MULTILINE)
+    if match is None:
+        return None
+    level = len(match.group(1))
+    rest = guide[match.end() :]
+    end = re.search(rf"^#{{2,{level}}} ", rest, re.MULTILINE)
+    return rest[: end.start()] if end else rest
 
 
 def test_the_guide_exists_and_carries_the_generated_key_table(guide: str) -> None:
@@ -78,7 +96,7 @@ def test_every_profile_has_its_own_section_in_the_guide(guide: str) -> None:
     """
     from quill.core.lite.features import PROFILES
 
-    missing = sorted(p.name for p in PROFILES if f"#### {p.name}" not in guide)
+    missing = sorted(p.name for p in PROFILES if _profile_section(guide, p.name) is None)
     assert missing == [], "profiles with no section of their own: " + ", ".join(missing)
 
 
@@ -143,11 +161,8 @@ def test_every_profile_section_names_what_that_profile_removes(guide: str) -> No
     for profile in PROFILES:
         if not profile.disabled:
             continue
-        start = guide.index(f"#### {profile.name}")
-        section = guide[start:]
-        end = section.find("\n#### ", 1)
-        if end != -1:
-            section = section[:end]
+        section = _profile_section(guide, profile.name)
+        assert section is not None, profile.name
         # Whitespace-normalised, because the guide is hard-wrapped and a phrase
         # like "line tools" can arrive with a newline in the middle of it.
         lowered = " ".join(section.lower().split())

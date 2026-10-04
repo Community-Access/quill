@@ -1,6 +1,102 @@
 # QUILL Lite changelog
 
-## Unreleased -- the next release, QUILL Lite 1.2.0
+## 1.2.0 -- 2026-10-03
+
+### Remove Quote Marks has a key that works (2026-10-03)
+
+- **Remove Quote Marks** is now **Alt+Shift+.** (Alt, Shift and the period).
+  Its old key, Ctrl+Alt+Shift+Q, is the key that shows and hides QUILL from
+  anywhere in Windows, so whenever QUILL was running it got the keystroke and
+  QUILL Lite never did. QUILL moved its Unquote Lines to the same new key.
+
+### Release channels: safe ways back, background downloads, and updates that undo themselves (2026-10-03)
+
+- **Coming back to Stable can now go straight back** when Stable can read
+  everything QUILL Lite has saved. When it can't, the window says so and offers to
+  wait for Stable or to put back the copy saved when you joined Beta (a copy of
+  how things are now is saved first).
+- **Beta and Dev download updates in the background** and never install
+  without asking; they wait on a metered connection, during Quiet Hours and
+  while Quill Radio records.
+- **Beta and Dev get their own copy of the shared engine** (about 335 MB, gone
+  when the last app returns to Stable), so moving one app never touches the
+  others. The "move together" rule is lifted for installs that have it.
+- **A failed update undoes itself** and says so the next time QUILL Lite starts;
+  Update History records it.
+- Updates come from a signed list of versions, with downloads checked against
+  it and resumed when interrupted.
+
+### Release channels: Stable, Beta and Dev (2026-10-03)
+
+- **Help > Release Channel...** (no key), and a Change release channel...
+  button in Settings, open the family's shared window (`quill/ui/updates/`). The
+  choices only explain as you arrow; Beta and Dev ask first in plain words and
+  need "I understand" ticked; a zip of QUILL Lite's settings, keys and recent
+  files is saved to `channel-snapshots` before anything moves. QUILL Lite shares
+  the QuillVille engine with Quill Radio and QUILL Cast, so for now they join
+  Beta together. Coming back never installs an older version; QUILL Lite waits
+  for Stable to catch up and says so.
+- Check for Updates honours the channel and picks the newest release by version,
+  not by GitHub's list order (it used to take the first stable one listed), and
+  asks for 100 releases a page. Each launch records the data formats QUILL Lite
+  writes in `data-format-ledger.json` (recording only).
+- No chord, the same as QUILL, Quill Radio and QUILL Cast: Alt+Shift+F4 was
+  tried and dropped, because in a dialog Windows reads it as Alt+F4 and closes
+  the window (family rules 4 and 9; `KEYLESS_WITH_REASON` in
+  `tests/unit/core/lite/test_lite_commands.py`, `cmd_release_channel` ->
+  `help.release_channel` in the parity table).
+
+### QUILL Lite as your Windows text editor (2026-10-03)
+
+- **The installer always registers QUILL Lite as a capable text editor and
+  takes nothing over.** A `QuillLite.Document` ProgID (DefaultIcon,
+  `shell\open\command` = `"{app}\QuillLite.exe" "%1"`), a `QuillLite.Document`
+  value in `OpenWithProgids` for .txt .text .log .md .markdown .rtf .html .htm
+  .csv, `Applications\QuillLite.exe` (FriendlyAppName, SupportedTypes), and
+  `Software\QuillLite\Capabilities` + `RegisteredApplications`, so QUILL Lite
+  is listed in Settings > Apps > Default apps. HKA: HKCU for a per-user
+  install, HKLM for an administrator one; every key and value goes on
+  uninstall, and a type's own key never does. `ChangesAssociations=yes`. The
+  optional "assoc" component, Custom installs only and drawn as a check list
+  a screen reader reads as unchecked, is gone. No `UserChoice` key is ever
+  written.
+- **Make QUILL Lite My Text Editor...**, a button in Preferences under Windows
+  and your files (no menu row and no key, in either editor), explains
+  what Windows lets an app do and what the user chooses, writes the same keys
+  for the current user pointing at the running `QuillLite.exe` (so a portable
+  copy works), and opens Default apps on QUILL Lite's own page
+  (`ms-settings:defaultapps?registeredAppUser=QUILL%20Lite` on Windows 11,
+  the general page on Windows 10). When an administrator install already
+  registered this copy for everyone, it writes nothing and opens the
+  `registeredAppMachine` page instead, so no uninstaller-orphaned copy is
+  left in the profile.
+- **Open QUILL Lite instead of Notepad**, a checkbox beside it, off by
+  default. It sets `Debugger` = `"<launcher>" --notepad`
+  under `Image File Execution Options\notepad.exe` (HKLM, every user), on the
+  parent key and on each Windows 11 `UseFilter` subkey whose `FilterFullPath`
+  is a Notepad, through one `cmd.exe /c reg.exe ...` run with the `runas`
+  verb after a confirmation that names the scope, the administrator prompt,
+  and the undo. Turning it off removes only QUILL Lite's own values; another
+  program's replacement is named before it is replaced and never removed. The
+  checkbox is read back from HKLM each time Preferences opens. On Windows
+  11 it then explains the Notepad app execution alias and offers
+  `ms-settings:advanced-apps`. The uninstaller removes any value naming its
+  own `QuillLite.exe`, asking for approval when it is not elevated.
+- **`--notepad` on the command line**: Windows' own Notepad path is dropped,
+  Notepad's switches (/A /W /P /PT) are dropped, an unquoted path with spaces
+  is joined back into one file, and no file means a new plain text document.
+  /P opens the file rather than printing it. The handover to a running copy
+  is unchanged.
+- Code, shared with QUILL, which has the same two settings: `quill/core/windows_editor.py`
+  (what to write, wx- and registry-free, one profile per app),
+  `quill/platform/windows/editor_registration.py` (winreg, `ShellExecuteEx`
+  runas, Settings), `quill/ui/text_editor_commands.py` (the flows) and
+  `quill/ui/text_editor_prefs.py` (the Preferences group, the only door).
+  QUILL Lite binds its profile in `quill/core/lite/windows_editor.py` and
+  `quill/apps/lite_window_text_editor.py`. Tests:
+  `tests/unit/core/lite/test_lite_windows_editor.py`,
+  `tests/unit/apps/test_lite_text_editor_commands.py`,
+  `tests/unit/scripts/test_quilllite_text_editor_installer.py`.
 
 ### Each app keeps its own ChatGPT sign-in (2026-10-02)
 
@@ -29,6 +125,7 @@
   `tests/unit/core/ai/test_own_key_gemini.py` drives a Gemini-shaped
   loopback server with a synthetic key).
 
+### A thesaurus that finds the word you are on, Look Up, and an AI dictionary (2026-10-02)
 
 - **Tools > Thesaurus... (Shift+F7)**, QUILL's two-pane picker and QUILL's
   data, which ships inside QUILL Lite. It looks up the word you are *on*:
@@ -63,8 +160,9 @@
   dictionary). Each sends the word and its sentence, never the document, and
   answers in prose for listening plus choices that each say why; Use This
   Word replaces the word (or inserts, for Find the Word For) as one undo
-  step, and only while the word is still where it was. On your own OpenAI key
-  or ChatGPT subscription only -- never the free allowance -- and the same
+  step, and only while the word is still where it was. On your own key
+  (OpenAI or Google Gemini) or ChatGPT subscription only -- never the free
+  allowance -- and the same
   rows, keys and window in QUILL's AI menu (`quill/core/ai/word_tools.py`,
   `quill/ui/word_tools_window.py`, `quill/ui/main_frame_hosted_ai.py`).
 - **Tools > Spelling > Dictionary Status... (Alt+Shift+;)**, QUILL's row: the
@@ -80,7 +178,8 @@
   first, each with what you can do about it: Retry, Open Folder, Copy
   Details, Clear List. **Help > Repeat Last Result (F9)** says the newest
   result that mattered again. The same two keys and the same window in QUILL,
-  Quill Radio and QUILL Cast; every document window shares one list
+  Quill Radio and QUILL Cast; every document window shares one list, and
+  work still running is listed beside what finished
   (`quill/core/activity.py`, `quill/ui/activity_window.py`,
   `quill/apps/lite_window_activity.py`).
 - **A settings save that fails is said once, with a way back.** Every settings
@@ -106,6 +205,32 @@
   arrives, closing the window cancels, and a failed read offers Try Again
   (`quill/core/lite/open_prepare.py`, `quill/apps/lite_window_open.py`,
   `tests/unit/apps/test_lite_background_open.py`).
+- **A background open is listed in Activity.** While it runs it is an
+  in-progress row; afterwards it is kept as Opened, or Could not open with the
+  reason, so a slow file that finished while you were elsewhere can be checked
+  (`quill/apps/lite_window_open.py`, qc.md F-10).
+
+### Find a setting, a focus repair with limits, and a tidier close (2026-09-30)
+
+- **Preferences has a Find a setting box.** It searches each setting's name,
+  what the screen reader calls it and its help text; Down reaches Matching
+  settings and Enter moves focus to the control. Ctrl+F returns to the box,
+  Escape clears it first, and searching never changes or saves a setting
+  (`quill/ui/preferences_search.py`, shared with every app's Preferences:
+  Quill Radio and QUILL Cast have the same box).
+- **Alt+Tab back into QUILL Lite puts focus in the document.** The activation
+  repair runs once with one bounded follow-up check; menus, real fields such
+  as Find, hidden windows, deactivation and shutdown are left alone, and a
+  stale callback from an earlier activation does nothing.
+- **A settings save that fails is reported, not discarded.** Your choices stay
+  active for the session, the warning stays reviewable in the status bar's
+  Message cell, reopening Preferences retries the save, and Preferences no
+  longer says "saved" when it was not. Diagnostics carry no raw file-system
+  errors or paths.
+- **Closing is tidier.** The inbox that receives documents from a second
+  launch stops before the documents are destroyed; a cancelled close keeps it
+  running; documents sent while QUILL Lite closes are opened next time; and a
+  deferred update check never starts once closing has begun.
 
 ### A focus repair that does not take leaves a trace (F-04)
 
@@ -806,8 +931,9 @@ in the same release.
 
 #### Lines and text tools
 
-- **Quote Lines (Ctrl+Shift+Q)** and **Remove Quote Marks (Ctrl+Alt+Shift+Q)**,
-  for replying to email and quoting a log excerpt.
+- **Quote Lines (Ctrl+Shift+Q)** and **Remove Quote Marks (Alt+Shift+.)**,
+  for replying to email and quoting a log excerpt. (Remove Quote Marks was
+  on Ctrl+Alt+Shift+Q until 1.2.0.)
 
 - **Hard Wrap Lines (Alt+Shift+W)** asks for a width and re-flows to it, keeping
   paragraphs apart and never breaking a word. This changes the document, unlike

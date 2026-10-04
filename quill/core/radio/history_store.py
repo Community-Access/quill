@@ -128,6 +128,7 @@ def load_history(data_dir: Path) -> RadioHistory:
             close_action if close_action in ("ask", "exit", "minimize") else "ask"
         )
         history.announce_dialog_transitions = bool(raw.get("announce_dialog_transitions", False))
+        history.share_family_prefs = bool(raw.get("share_family_prefs", False))
         history.transcript_detail = transcript_export.normalize_detail(raw.get("transcript_detail"))
         template = raw.get("now_playing_template")
         if isinstance(template, str) and template.strip():
@@ -291,6 +292,7 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
                 "compressor_enabled": history.compressor_enabled,
                 "close_action": history.close_action,
                 "announce_dialog_transitions": history.announce_dialog_transitions,
+                "share_family_prefs": history.share_family_prefs,
                 "transcript_detail": history.transcript_detail,
                 "now_playing_template": history.now_playing_template,
                 "recover_from_website": history.recover_from_website,

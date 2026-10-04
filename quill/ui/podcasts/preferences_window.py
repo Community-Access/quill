@@ -1,4 +1,4 @@
-"""Preferences: everything that is not about one podcast, in eight sections (qc.md 13).
+"""Preferences: everything that is not about one podcast, in nine sections (qc.md 13).
 
 Four windows called themselves settings; two remain. This is the first:
 the app's own rows (the ``PodcastHistory`` record) and the shared defaults
@@ -51,6 +51,7 @@ SECTIONS: tuple[tuple[str, str], ...] = (
     ("playing", "Playing"),
     ("fetching", "Fetching"),
     ("inbox", "The Inbox"),
+    ("library", "The library"),
     ("chapters", "Chapters"),
     ("telling", "Telling you"),
     ("window", "The window"),
@@ -71,6 +72,16 @@ _SECTION_BY_ID: dict[str, str] = {
     "inbox_mode": "inbox",
     "inbox_max_episodes": "inbox",
     "inbox_age_limit_hours": "inbox",
+    "inbox_layout": "inbox",
+    # How the library is laid out and ordered (Jeff, 2026-10-03).
+    "library_layout": "library",
+    "show_sort_mode": "library",
+    "folder_sort_mode": "library",
+    "library_folders_open": "library",
+    "library_counts": "library",
+    "library_hide_empty_folders": "library",
+    "episode_sort_mode": "library",
+    "episode_list_view_mode": "library",
     "queue_age_limit_days": "inbox",
     "new_episode_alert": "telling",
     "download_notify": "telling",
@@ -223,7 +234,63 @@ class CastPreferencesWindow:
             self.dialog, affirmative_id=wx.ID_OK, affirmative_label="Save", cancel_id=wx.ID_CANCEL
         )
         ok.Bind(wx.EVT_BUTTON, self._on_save)
+        # Find a setting reaches every section, not only the one showing.
+        self.dialog._quill_settings_index = self._settings_index
         self._fill()
+
+    def _settings_index(self) -> list[Any]:
+        """Every setting in every section, for Find a setting (qc.md X-01).
+
+        The sections are built one at a time, so a search over the controls on
+        screen could only ever find the section that happened to be showing.
+        Each entry knows its section, and choosing it shows that section and
+        focuses the setting.
+        """
+        from quill.core.podcasts import settings_catalog
+        from quill.core.podcasts.settings_types import LEVEL_GLOBAL
+        from quill.ui.preferences_search import SettingTarget
+
+        keys = [key for key, _label in SECTIONS]
+        names = dict(SECTIONS)
+        targets: list[Any] = []
+
+        def reveal(section: str, key: str) -> Any:
+            def _go() -> Any:
+                if self._current_section() != section:
+                    self._section.SetSelection(keys.index(section))
+                    self._remember()
+                    self._fill()
+                for built in self._built:
+                    if built.key == key:
+                        return built.control
+                return None
+
+            return _go
+
+        for row in self._app_rows:
+            if row.section in names:
+                label = row.label.replace("&", "").rstrip(":")
+                targets.append(
+                    SettingTarget(
+                        f"{names[row.section]}: {label}",
+                        row.help,
+                        None,
+                        reveal(row.section, row.key),
+                    )
+                )
+        for definition in settings_catalog.for_level(LEVEL_GLOBAL):
+            section = section_of(definition)
+            if section in names:
+                label = definition.label.replace("&", "").rstrip(":")
+                targets.append(
+                    SettingTarget(
+                        f"{names[section]}: {label}",
+                        definition.help,
+                        None,
+                        reveal(section, definition.id),
+                    )
+                )
+        return targets
 
     # -- building a section ---------------------------------------------------------- #
 

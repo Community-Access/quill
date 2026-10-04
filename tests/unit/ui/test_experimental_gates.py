@@ -124,16 +124,17 @@ def test_experimental_tab_wires_live_enable_disable_gating() -> None:
 
 def test_every_glow_command_is_gated() -> None:
     source = _main_frame_source()
+    mixin = Path("quill/ui/main_frame_glow.py").read_text(encoding="utf-8")
+    # The in-editor commands moved to GlowEditorMixin under F-08 (2026-10-03).
     for handler in (
         "def glow_audit_document",
         "def glow_audit_selection",
         "def glow_fix_document",
         "def glow_fix_selection",
     ):
-        start = source.index(handler)
-        body = source[start : start + 400]
+        start = mixin.index(handler)
+        body = mixin[start : start + 400]
         assert "_ensure_glow_enabled" in body, handler
     updates = source.index("def check_for_glow_updates")
     assert "_ensure_glow_enabled" in source[updates : updates + 1200]
-    mixin = Path("quill/ui/main_frame_glow.py").read_text(encoding="utf-8")
     assert mixin.count("_ensure_glow_enabled") >= 2

@@ -213,6 +213,9 @@ class QuillInkwellFrame(AppShellFrame, InkwellExpansionMixin):
         help_menu = wx.Menu()
         updates_id, about_id = wx.NewIdRef(), wx.NewIdRef()
         help_menu.Append(updates_id, "Check for &Updates...\tCtrl+Alt+U")
+        from quill.ui.menu_palette import append_palette_row
+
+        append_palette_row(self, help_menu)  # qc.md X-01
         self.frame.Bind(
             wx.EVT_MENU,
             lambda _e: self.check_for_app_updates(

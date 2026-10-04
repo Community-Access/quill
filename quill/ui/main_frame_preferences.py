@@ -76,6 +76,12 @@ class PreferencesMixin:
                 None,
             ),
             (
+                "Task Recipes and Working Modes",
+                "Change several settings for one task at once, with a preview and Put Back.",
+                self.open_settings_recipes,
+                None,
+            ),
+            (
                 "Keymap Editor",
                 "Review and change the keyboard shortcuts for every command.",
                 self.open_keymap_editor,
@@ -219,59 +225,16 @@ class PreferencesMixin:
         handler()
 
     def open_glow_settings(self) -> None:
-        """Open the GLOW accessibility settings (engine toggle + network consent).
+        """GLOW Accessibility settings (moved to quill/ui/glow_settings.py, GATE-11)."""
+        from quill.ui.glow_settings import open_glow_settings
 
-        GLOW is enabled by default and runs locally; the optional networked
-        features stay off until the user explicitly turns them on here (GLOW-7).
-        """
-        from quill.ui.web_form import show_web_form
+        open_glow_settings(self)
 
-        values = show_web_form(
-            self.frame,
-            self._wx,
-            title="GLOW Accessibility",
-            intro=(
-                "GLOW is Quill's built-in accessibility engine. It is on by default "
-                "and runs entirely on your computer. The optional features below can "
-                "use a network connection and are off until you turn them on. Quill "
-                "never sends your document anywhere without asking first."
-            ),
-            fields=[
-                {
-                    "name": "enabled",
-                    "label": "Enable the GLOW accessibility engine",
-                    "type": "checkbox",
-                    "value": getattr(self.settings, "glow_enabled", True),
-                },
-                {
-                    "name": "ai_alt_text",
-                    "label": "Allow optional AI alt-text generation (uses the network)",
-                    "type": "checkbox",
-                    "value": getattr(self.settings, "glow_ai_alt_text_consent", False),
-                },
-                {
-                    "name": "pii_redaction",
-                    "label": "Allow optional PII redaction (uses the network)",
-                    "type": "checkbox",
-                    "value": getattr(self.settings, "glow_pii_redaction_consent", False),
-                },
-                {
-                    "name": "language_processing",
-                    "label": "Allow optional WCAG language processing (uses the network)",
-                    "type": "checkbox",
-                    "value": getattr(self.settings, "glow_language_processing_consent", False),
-                },
-            ],
-        )
-        if values is None:
-            self._set_status("GLOW settings cancelled")
-            return
-        self.settings.glow_enabled = bool(values.get("enabled", True))
-        self.settings.glow_ai_alt_text_consent = bool(values.get("ai_alt_text"))
-        self.settings.glow_pii_redaction_consent = bool(values.get("pii_redaction"))
-        self.settings.glow_language_processing_consent = bool(values.get("language_processing"))
-        save_settings(self.settings)
-        self._set_status("GLOW settings saved")
+    def open_settings_recipes(self) -> None:
+        """Preferences > Task Recipes and Working Modes (qc.md X-02, X-03)."""
+        from quill.ui.settings_recipes_dialog import open_settings_recipes
+
+        open_settings_recipes(self)
 
     #: Wildcard for exported QUILL settings files (SET-7).
     QSF_WILDCARD = "QUILL settings file (*.qsf)|*.qsf|All files (*.*)|*.*"
@@ -749,6 +712,15 @@ class PreferencesMixin:
                     sp_text.Bind(wx.EVT_TEXT, _mark_dirty)
                     return
 
+                if spec.key == "beta_updates":
+                    # Release channels (plan 7.1): the channel is shown here and
+                    # changed only in the shared Release Channel window, never by
+                    # ticking a box. main_frame_updates.py builds the row.
+                    shown = self._add_release_channel_row(parent_panel, sizer)
+                    readers[spec.key] = self._release_channel_is_prerelease
+                    writers[spec.key] = lambda _v: None
+                    control_index[spec.key] = (page_index, shown)
+                    return
                 if spec.kind == "bool":
                     cb = wx.CheckBox(parent_panel, label=spec.label)
                     cb.SetValue(bool(current))
@@ -759,13 +731,6 @@ class PreferencesMixin:
                     writers[spec.key] = lambda v, c=cb: c.SetValue(bool(v))
                     control_index[spec.key] = (page_index, cb)
                     cb.Bind(wx.EVT_CHECKBOX, _mark_dirty)
-                    if spec.key == "beta_updates":
-
-                        def _on_beta_toggle(_event: object, _cb=cb) -> None:
-                            if _cb.GetValue() and not self._confirm_beta_channel():
-                                _cb.SetValue(False)
-
-                        cb.Bind(wx.EVT_CHECKBOX, _on_beta_toggle)
                     if spec.key == "braille_editor_hide_border":
                         # Unchecking breaks braille cell alignment; warn at
                         # decision time and re-check unless the user confirms.
@@ -1109,6 +1074,7 @@ class PreferencesMixin:
                         self._wire_experimental_gates(control_index)
                     if _show_data_location:
                         _build_data_location_block(_p, _ps)
+                        self._add_text_editor_prefs(dialog, _p, _ps, _mark_dirty)
                     if _show_mgmt:
                         _ps.Add(wx.StaticLine(_p), 0, wx.EXPAND | wx.TOP | wx.BOTTOM, 6)
                         _ps.Add(
@@ -1320,6 +1286,8 @@ class PreferencesMixin:
                     _apply_btn.Enable(True)
 
             def _do_apply() -> None:
+                if getattr(dialog, "text_editor_prefs", None) is not None:
+                    dialog.text_editor_prefs.commit()  # quill/ui/text_editor_prefs.py
                 _c = {k: r() for k, r in readers.items()}
                 # The braille editor fix only takes full effect on restart; warn if
                 # the user changed it so they are not confused that nothing changed.

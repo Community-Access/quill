@@ -322,6 +322,9 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_promote_heading": "format.decrease_heading_level",
     "cmd_quote_lines": "edit.quote_lines",
     "cmd_redo": "edit.redo",
+    # Release channels: one shared window, and no chord in any of the four
+    # channel apps (rules 4 and 9; keymap.py's help.release_channel says why).
+    "cmd_release_channel": "help.release_channel",
     "cmd_remember_clip": "edit.keep_selection_in_clip_library",
     "cmd_remove_blank_lines": "power.remove_blank_lines",
     "cmd_remove_duplicate_lines": "edit.remove_duplicate_lines",

@@ -58,7 +58,15 @@ def browse_youtube(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
     from quill.core.radio import youtube_saved
 
     if not (args and args[0]):
-        nodes = [
+        from quill.core.radio import youtube_signin
+
+        # Search first: the way in that works with nothing saved yet. Then My
+        # YouTube, only while the listener has turned their sign-in on.
+        signed_in = youtube_signin.is_on(safe_mode=safe_mode)
+        nodes = [action("searchyoutube", "Search YouTube...", note="videos, playlists, channels")]
+        if signed_in:
+            nodes.append(folder("myyoutube", "My YouTube", note="from your YouTube sign-in"))
+        nodes += [
             folder(make_id("youtubechannel", channel.url), channel.display_name)
             for channel in yt.ChannelStore().all()
         ]
@@ -88,7 +96,7 @@ def browse_youtube(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
                     note=item.note,
                 )
             )
-        if not nodes:
+        if len(nodes) == 1 + int(signed_in):
             # Only while there is nothing here. Three permanent "Add a ..."
             # rows at the bottom of a growing list are three rows to arrow
             # past on every visit, for a thing you do rarely -- and they are
@@ -108,7 +116,10 @@ def browse_youtube_channel(args: list[str], *, safe_mode: bool) -> list[BrowseNo
     if not args or not args[0]:
         return []
     url = args[0]
-    nodes: list[BrowseNode] = [folder(make_id("youtubevideos", url, "1"), "Uploads")]
+    nodes: list[BrowseNode] = [
+        folder(make_id("youtubevideos", url, "1"), "Uploads"),
+        folder(make_id("ytstreams", url, "1"), "Live", note="live now and past broadcasts"),
+    ]
     for title, playlist_url in yt.playlists(url, safe_mode=safe_mode):
         nodes.append(folder(make_id("youtubevideos", playlist_url, "1"), title))
     return nodes

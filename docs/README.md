@@ -40,6 +40,8 @@ quick index for the docs tree itself.
   notices.
 - [signing](signing.md) — artifact signing workflow for Quillin Hub
   publishers and operators.
+- [QUILLVille characters](quillville-characters.md) - how and when QUILLBert
+  and QUILLBee appear on the website, in guides and in release notes.
 
 ## Feature areas and the rest
 

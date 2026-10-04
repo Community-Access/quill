@@ -113,6 +113,16 @@ _BUTTONS = (
 )
 
 
+def _summary(results: list[ActionResult]) -> str:
+    """The results' summary, then what is still running (qc.md X-04): a long
+    download batch or a slow open is listed while it works, not only after."""
+    text = activity.summary_sentence(results)
+    working = [progress.spoken() for progress in activity.LOG.active()]
+    if working:
+        text += " Still working: " + "; ".join(working) + "."
+    return text
+
+
 def show_activity(host: Any) -> None:
     """Open the Activity window. Modal, house pattern; changes nothing by itself."""
     import wx
@@ -125,7 +135,7 @@ def show_activity(host: Any) -> None:
     dialog.SetSize(wx.Size(760, 520))
     root = wx.BoxSizer(wx.VERTICAL)
 
-    summary_label = wx.StaticText(dialog, label=activity.summary_sentence(results))
+    summary_label = wx.StaticText(dialog, label=_summary(results))
     root.Add(summary_label, 0, wx.ALL, 8)
     root.Add(wx.StaticText(dialog, label="&What happened:"), 0, wx.LEFT | wx.RIGHT, 8)
     listbox = wx.ListBox(dialog, choices=[r.row() for r in results], style=wx.LB_SINGLE)
@@ -187,7 +197,7 @@ def show_activity(host: Any) -> None:
     def _refill(keep: str | None, previous: int) -> None:
         live[:] = activity.LOG.recent()
         listbox.Set([r.row() for r in live])
-        summary_label.SetLabel(activity.summary_sentence(live))
+        summary_label.SetLabel(_summary(live))
         index = activity.restore_index([r.operation_id for r in live], keep, previous)
         if index >= 0:
             listbox.SetSelection(index)

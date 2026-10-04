@@ -19,6 +19,12 @@
 ; QuillVille app on the machine reuses it, so no elevation is ever needed.
 
 #define AppName "QuillVille Runtime"
+; The release-channel slot this installer fills (build_runtime_installer.ps1
+; -Channel beta passes /dRuntimeSlot=3.13-beta). Stable is the folder that
+; always existed; the app installers' fragment uses the same names.
+#ifndef RuntimeSlot
+  #define RuntimeSlot "3.13"
+#endif
 #ifndef AppVersion
   #define AppVersion "3.13"
 #endif
@@ -32,7 +38,13 @@
 SignTool=quilltrusted
 SignedUninstaller=yes
 #endif
+#if RuntimeSlot == "3.13"
 AppId={{6D6B0E7C-51A4-4B5E-9E0D-2F8B4C0A9137}}
+#else
+; A channel slot's runtime (build_runtime_installer.ps1 -Channel beta): its own
+; AppId, so installing it never replaces the Stable runtime's uninstall entry.
+AppId={{6D6B0E7C-51A4-4B5E-9E0D-2F8B4C0A9138}}
+#endif
 AppName={#AppName}
 AppVersion={#AppVersion}
 AppPublisher={#AppPublisher}
@@ -40,7 +52,8 @@ AppPublisherURL={#AppURL}
 AppSupportURL={#AppURL}
 VersionInfoCompany={#AppPublisher}
 VersionInfoDescription=Shared Python runtime for the QuillVille apps
-DefaultDirName={localappdata}\QuillVille\Runtime\3.13
+; Runtime\3.13 for Stable, Runtime\3.13-beta for the Beta slot.
+DefaultDirName={localappdata}\QuillVille\Runtime\{#RuntimeSlot}
 ; The path IS the contract (quill.core.runtime_marker and every per-app
 ; launcher resolve it); letting a user relocate it would strand every app.
 DisableDirPage=yes

@@ -19,7 +19,10 @@ _READOUT = _APPS / "radio_now_playing.py"
 
 
 def _source() -> str:
-    return _RADIO.read_text(encoding="utf-8")
+    # The menu bar moved to radio_menu_bar.py under F-08 (2026-10-03).
+    return _RADIO.read_text(encoding="utf-8") + (_APPS / "radio_menu_bar.py").read_text(
+        encoding="utf-8"
+    )
 
 
 def _compose_body() -> str:

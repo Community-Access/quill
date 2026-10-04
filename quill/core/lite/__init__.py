@@ -42,7 +42,7 @@ APP_ID = "QuillLite"
 #: QUILL Lite versions with the QUILL family rather than with QUILL itself
 #: (``quill.__version__``): it ships its own installers and its own release
 #: notes, exactly as Radio, Cast, Weather, Studio and Inkwell do.
-APP_VERSION = "1.1.2"
+APP_VERSION = "1.2.0"
 
 
 def version_label() -> str:

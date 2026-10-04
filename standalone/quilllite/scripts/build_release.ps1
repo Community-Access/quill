@@ -46,12 +46,16 @@ param(
     [string]$QuillRepo = "",
     [switch]$SkipSharedRuntime,
     [switch]$SkipPublishedCheck,
+    # A Dev build's version (dev-builds.yml): 3.3.0-dev.20261003.1. Release
+    # builds never pass it; the literal below stays the app's real version.
+    [string]$DevVersion = "",
     [switch]$Sign
 )
 
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
-$version = "1.1.2"
+$version = "1.2.0"
+if ($DevVersion) { $version = $DevVersion }
 
 # Authenticode code signing is opt-in (docs/code-signing.md). -Sign turns it on
 # for this run via QUILL_SIGN, read by QUILL\scripts\code_signing.py. Without it
@@ -179,6 +183,10 @@ $signer = Join-Path $QuillRepo "scripts\code_signing.py"
 & $Python $signer sign-build $sharedRuntimeDist $appDir $installerLauncherDir --label "quilllite payload"
 if ($LASTEXITCODE -ne 0) { throw "Code signing (payload) failed." }
 
+# Release channels: a portable copy names its own version, as the installer's
+# quill-app-version.ini does -- a Dev build's version is not the code constant,
+# and the update helper's health check waits for exactly this version to start.
+Set-Content -LiteralPath (Join-Path $appDir "quill-app-version.ini") -Value "[app]`r`nversion=$version" -Encoding ascii
 $zipPath = Join-Path $repoRoot "dist\QuillLite-Portable-$version.zip"
 if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
 Write-Host "Compressing portable bundle -> $zipPath ..."

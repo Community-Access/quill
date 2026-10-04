@@ -59,7 +59,8 @@ def test_the_sheet_uses_the_same_key_in_both_apps() -> None:
     the key in one app has learned it in the other."""
     from quill.core.app_keymaps import APP_KEYMAPS
 
-    radio_source = (REPO / "quill" / "apps" / "radio.py").read_text(encoding="utf-8")
+    # Radio's menu bar moved to radio_menu_bar.py under F-08 (2026-10-03).
+    radio_source = (REPO / "quill" / "apps" / "radio_menu_bar.py").read_text(encoding="utf-8")
 
     assert r"Keyboard Shortcuts S&heet...\tCtrl+Alt+Shift+K" in radio_source
     assert APP_KEYMAPS["cast"]["app.shortcut_sheet"] == "Ctrl+Alt+Shift+K"

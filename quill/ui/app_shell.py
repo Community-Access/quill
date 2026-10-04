@@ -91,9 +91,17 @@ class AppShellFrame(
         # app_id keeps the old fixed-size behaviour, so this cannot change a
         # surface nobody has opted in.
         if app_id:
+            from quill.core.data_format_ledger import record_running_build
             from quill.ui.window_state import apply_window_geometry
 
             apply_window_geometry(self.frame, app_id, default_size=size)
+            # Release channels, Phase 0: note the data formats this app writes,
+            # before its first save (a no-op for an app without any).
+            record_running_build(app_id, "")
+            # Phase 4: once the window is up, tell the update helper so.
+            from quill.ui.updates.started import confirm_for_shell
+
+            wx.CallAfter(confirm_for_shell, self, app_id)
         # F1 context help, on every shell app from day one: install the wx
         # help provider (SetHelpText stores nothing without one) and register
         # the shared handler the dialog contract binds onto every window it
@@ -870,28 +878,52 @@ class AppShellFrame(
         def _fetch(**_kw: object) -> object:
             # Absorb the task manager's injected kwargs (cancellation_token, ...).
             if app_prefix:
-                return fetch_app_releases(
-                    app_prefix,
-                    api_url,
-                    prefer_portable=prefer_portable,
-                    match_edition=match_edition,
-                )
+
+                def _legacy() -> object:
+                    return fetch_app_releases(
+                        app_prefix,
+                        api_url,
+                        prefer_portable=prefer_portable,
+                        match_edition=match_edition,
+                    )
+
+                from quill.core.updater.profiles import PROFILES
+
+                if app_key in PROFILES:
+                    # The signed v2 list when this app has one; the old GitHub
+                    # path only while none is published (release channels).
+                    from quill.core.updater.feed_fetch import releases_for_check
+
+                    return releases_for_check(app_key, _legacy, portable=prefer_portable)
+                return _legacy()
             return fetch_releases(api_url, prefer_portable=prefer_portable)
 
         def _report(_name: str, releases: object) -> None:
             def _show() -> None:
-                stable = [r for r in releases if not r.prerelease]
-                newest = stable[0] if stable else None
+                # The channel decides what may be offered, and the newest by
+                # *version* wins -- never GitHub's list order (release channels).
+                from quill.core.updater.check import evaluate, up_to_date_text
+
+                result = evaluate(app_key, current_version, list(releases))
+                for notice in result.notices:
+                    self._announce(notice)
+                newest = result.target
                 if newest is None or not is_newer_version(current_version, newest.version):
                     if not silent_no_update:
                         # A manual check deserves a real dialog, not just a spoken
                         # announcement that's easy to miss over other app noise.
                         self._show_message_box(
-                            f"You are up to date ({current_version}).",
+                            up_to_date_text(current_version, result.state, known_app=bool(app_key)),
                             "Check for Updates",
                             wx.ICON_INFORMATION | wx.OK,
                         )
                     return
+                if silent_no_update:
+                    # Beta and Dev fetch it quietly first (owner decision 11).
+                    from quill.ui.updates.background import shell_found
+
+                    if shell_found(self, app_key, newest, result.state, current_version):
+                        return
                 # The same dialog QUILL shows, with the release notes in it.
                 # This used to be a Yes/No box asking "Download it now?" and
                 # saying nothing about what was in the release -- a question

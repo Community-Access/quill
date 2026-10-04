@@ -190,22 +190,15 @@ class PodcastSessionMixin:
             pass
 
     def open_podcast_statistics(self) -> None:
-        """Episode > Statistics...: how much you listened, and to what."""
-        from quill.ui.podcasts.stats_dialog import PodcastStatsDialog
+        """Episode > Statistics...: how much you listened, and to what.
+
+        A peer window (qc.md Phase 4): asked for again, it is raised and read
+        afresh rather than opened twice.
+        """
+        from quill.ui.podcasts.stats_dialog import open_statistics_window
 
         self._podcast_flush_stats()
-        titles = {show.id: show.title for show in self._podcast_library.shows}
-        dialog = PodcastStatsDialog(
-            self.frame,
-            sessions=stats.load_sessions(app_data_dir()),
-            show_titles=titles,
-            announce_cb=self._announce,
-            on_clear=self._podcast_clear_statistics,
-            streaks_enabled=bool(
-                getattr(self._podcast_library.settings, "stats_streaks_enabled", False)
-            ),
-        )
-        dialog.show()
+        open_statistics_window(self)
 
     def _podcast_clear_statistics(self) -> int:
         cleared = stats.clear_sessions(app_data_dir())
@@ -486,7 +479,11 @@ class PodcastSessionMixin:
         except (OSError, TypeError, ValueError) as error:
             self._announce(f"Could not export your data: {error}")
             return
-        self._announce(f"Exported your podcast data to {target.name}")
+        from quill.ui.outcome_report import report_outcome
+
+        report_outcome(
+            self, "Export My Data", f"Exported your podcast data to {target.name}.", path=target
+        )
 
     def podcast_delete_all_data(self) -> None:
         """Unsubscribe from everything and clear every local record.
@@ -504,10 +501,12 @@ class PodcastSessionMixin:
             self._announce("There is nothing to delete: your library is already empty.")
             return
         first = show_message_box(
-            f"Delete everything? This unsubscribes from all {show_count} podcast(s) and "
-            "clears your queue, playlists, Inbox filing, listening statistics, and "
-            "recently played list.",
-            "Delete All Podcast Data",
+            f"Clear everything from this computer? This unfollows all {show_count} "
+            "podcast(s) here and clears your queue, playlists, Inbox filing, listening "
+            "statistics and recently played list on this computer only. Your phone, your "
+            "other computers and the shared folder you carry your place through are not "
+            "touched.",
+            "Clear This Computer",
             wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING,
             self.frame,
             announce=self._announce,
@@ -533,14 +532,14 @@ class PodcastSessionMixin:
                 == wx.YES
             )
         confirm = show_message_box(
-            "Last chance: this cannot be undone. Delete all podcast data now?",
-            "Delete All Podcast Data",
+            "Last chance: this cannot be undone. Clear all podcast data from this computer now?",
+            "Clear This Computer",
             wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING,
             self.frame,
             announce=self._announce,
         )
         if confirm != wx.YES:
-            self._announce("Nothing was deleted.")
+            self._announce("Nothing was cleared.")
             return
         controller = getattr(self, "_podcast_controller", None)
         if controller is not None:
@@ -572,7 +571,9 @@ class PodcastSessionMixin:
         if manager is not None:
             manager.refresh_tree()
         self._announce(
-            "All podcast data deleted" + (" and downloaded files removed" if delete_files else "")
+            "Cleared all podcast data from this computer"
+            + (", and removed the downloaded files" if delete_files else "")
+            + ". Nothing anywhere else was touched."
         )
 
     # -- command registration -------------------------------------------

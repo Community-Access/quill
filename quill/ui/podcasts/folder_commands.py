@@ -33,7 +33,7 @@ __all__ = [
 def play_folder(dialog: Any, folder_id: str) -> None:
     """Queue one round of what is new in this folder, and start it."""
     library = dialog._library
-    pairs = folder_actions.latest_unheard_per_show(library, folder_id)
+    pairs = folder_actions.latest_unplayed_per_show(library, folder_id)
     if not pairs:
         dialog._announce("Nothing in that folder is unheard.")
         return
@@ -45,13 +45,21 @@ def play_folder(dialog: Any, folder_id: str) -> None:
             added += 1
     dialog._on_library_changed()
     first_show, first_episode = pairs[0]
-    dialog._announce(
-        f"Queued {added} episode{'' if added == 1 else 's'}, one from each podcast. "
-        f"Playing {first_episode.title} from {first_show.title}."
-    )
-    play = getattr(dialog, "_play_episode", None)
-    if callable(play):
-        play(first_show, first_episode)
+    # Started here, through the one shared starter, rather than through the
+    # host's own play verb: the Manager's needs a resume point and Cast's
+    # window has none of that name, and either way that verb would speak a
+    # second sentence over this one.
+    from quill.ui.podcasts.show_actions import start_episode_playback
+
+    started = start_episode_playback(dialog._controller, library, first_show, first_episode)
+    queued = f"Queued {added} episode{'' if added == 1 else 's'}, one from each podcast."
+    if not started:
+        dialog._announce(f"{queued} {first_episode.title} could not be played.")
+        return
+    refresh = getattr(dialog, "_update_now_playing", None)
+    if callable(refresh):
+        refresh()
+    dialog._announce(f"{queued} Playing {first_episode.title} from {first_show.title}.")
 
 
 def add_folder_to_queue(dialog: Any, folder_id: str) -> None:
@@ -64,7 +72,7 @@ def add_folder_to_queue(dialog: Any, folder_id: str) -> None:
     from quill.core.podcasts import queue as queue_module
 
     added = 0
-    for show, episode in folder_actions.unheard_in_folder(library, folder_id):
+    for show, episode in folder_actions.unplayed_in_folder(library, folder_id):
         if queue_module.add_to_queue(library, str(show.id), str(episode.guid)):
             added += 1
     if not added:
@@ -124,8 +132,13 @@ def export_folder_opml(dialog: Any, folder_id: str) -> None:
         dialog._announce(f"Could not write that file: {error}.")
         return
     count = len(folder_actions.subtree_show_ids(dialog._library, folder_id))
-    dialog._announce(
-        f"Exported {count} podcast{'' if count == 1 else 's'} to {Path(destination).name}."
+    from quill.ui.outcome_report import report_outcome
+
+    report_outcome(
+        dialog,
+        "Export Folder as OPML",
+        f"Exported {count} podcast{'' if count == 1 else 's'} to {Path(destination).name}.",
+        path=destination,
     )
 
 

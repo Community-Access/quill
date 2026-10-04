@@ -159,10 +159,17 @@ class TranscriptReader:
         self._show_modal_dialog = show_modal_dialog
         self._on_send_to_quill = on_send_to_quill
 
-        self._dialog = wx.Dialog(
-            parent,
-            title=f"Transcript: {title}",
-            style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
+        # A peer window hands over a panel to build into instead (Cast,
+        # quill/ui/podcasts/transcript_window.py; qc.md Phase 4).
+        panel = self._peer_panel(parent)
+        self._dialog = (
+            panel
+            if panel is not None
+            else wx.Dialog(
+                parent,
+                title=f"Transcript: {title}",
+                style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
+            )
         )
         # A real size, not just a floor: the window used to open at whatever
         # its sizer's minimum happened to be, which showed a dozen lines of
@@ -214,7 +221,8 @@ class TranscriptReader:
         root.Add(buttons, 0, wx.ALL, 10)
 
         self._dialog.SetSizer(root)
-        apply_modal_ids(self._dialog, cancel_id=wx.ID_CANCEL)
+        if panel is None:
+            apply_modal_ids(self._dialog, cancel_id=wx.ID_CANCEL)
 
         self._text.Bind(wx.EVT_TEXT_ENTER, lambda _e: self.jump_to_caret())
         self._text.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
@@ -229,6 +237,10 @@ class TranscriptReader:
         self._text.SetFocus()
 
     # -- the window ------------------------------------------------------------
+
+    def _peer_panel(self, parent: Any) -> Any:
+        """None here: the reader is its own dialog. A peer returns its panel."""
+        return None
 
     @property
     def dialog(self) -> Any:

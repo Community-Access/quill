@@ -122,6 +122,8 @@ def test_radio_startup_registers_the_handler() -> None:
 
     repo = Path(__file__).resolve().parents[3]
     source = (repo / "quill" / "apps" / "radio.py").read_text(encoding="utf-8")
+    # The menu bar moved to radio_menu_bar.py under F-08 (2026-10-03).
+    source += (repo / "quill" / "apps" / "radio_menu_bar.py").read_text(encoding="utf-8")
     assert "context_help.activate()" in source
     # The Help menu's F1 row moved into apps/radio_help_docs.py with the rest of
     # that menu's documents when Tutorials arrived (GATE-11: extract, never

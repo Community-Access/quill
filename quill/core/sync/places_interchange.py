@@ -45,6 +45,7 @@ from quill.core.sync.listening_places import (
     PlaceRecord,
     merge_records,
     read_other_devices,
+    remote_sources,
     remote_view,
     write_device_file,
 )
@@ -65,6 +66,10 @@ class InterchangeReport:
     sent: int = 0
     disagreements: list[Disagreement] = field(default_factory=list)
     problems: list[str] = field(default_factory=list)
+    #: Followed and unfollowed podcasts, each named (ear.md B3).
+    subscription_news: list[str] = field(default_factory=list)
+    #: Private feeds left out of the plain file, counted so it can be said.
+    private_skipped: int = 0
 
     @property
     def changed(self) -> bool:
@@ -76,10 +81,14 @@ class InterchangeReport:
         "Sync finished" after a sync that moved nothing is the message that
         teaches people to ignore the message.
         """
+        news = " ".join(self.subscription_news)
+        if self.private_skipped:
+            noun = "feed" if self.private_skipped == 1 else "feeds"
+            news = (news + f" {self.private_skipped} private {noun} stayed on this device.").strip()
         if self.problems and not self.changed:
-            return self.problems[0]
+            return (self.problems[0] + " " + news).strip()
         if not self.changed:
-            return "Everything was already up to date."
+            return ("Everything was already up to date. " + news).strip()
         parts: list[str] = []
         if self.applied:
             parts.append(f"brought back {self.applied} place{'' if self.applied == 1 else 's'}")
@@ -94,7 +103,7 @@ class InterchangeReport:
             )
         if self.problems:
             said += f" {self.problems[0]}"
-        return said
+        return (said + " " + news).strip()
 
 
 def sync_interchange(
@@ -106,6 +115,7 @@ def sync_interchange(
     include_labels: bool = True,
     library: Any = None,
     save_library: Any = None,
+    share_subscriptions: bool = False,
 ) -> InterchangeReport:
     """Read every other device, apply what is newer, rewrite this device's file.
 
@@ -145,6 +155,7 @@ def sync_interchange(
 
     local = {record.id: record for record in position_sync.collect_records(library)}
     incoming = remote_view(others)
+    sources = remote_sources(others)
     merged, disagreements = merge_records(local, incoming)
     report.disagreements = disagreements
 
@@ -152,11 +163,26 @@ def sync_interchange(
     for entity_id, record in merged.items():
         if entity_id in local and local[entity_id].updated_at >= record.updated_at:
             continue
-        if position_sync.apply_record(library, record):
+        if position_sync.apply_record(library, record, device=sources.get(entity_id, "")):
             applied += 1
     report.applied = applied
 
-    if applied:
+    extra_rows: list[dict[str, object]] = []
+    subscriptions_changed = False
+    if share_subscriptions:
+        from quill.core.sync.subscriptions_sync import sync_subscriptions
+
+        try:
+            subs = sync_subscriptions(library, Path(data_dir), others)
+        except Exception as error:  # noqa: BLE001 - a sentence, never a traceback
+            report.problems.append(f"Podcasts you follow could not be shared: {error}")
+        else:
+            extra_rows = subs.rows
+            subscriptions_changed = subs.changed
+            report.subscription_news = subs.said
+            report.private_skipped = subs.private_skipped
+
+    if applied or subscriptions_changed:
         try:
             if save_library is not None:
                 save_library(library)
@@ -177,6 +203,7 @@ def sync_interchange(
             app=_app_version(),
             records=outgoing,
             include_labels=include_labels,
+            extra_rows=extra_rows,
         )
     except Exception as error:  # noqa: BLE001
         report.problems.append(f"Could not write to the sync folder: {error}")

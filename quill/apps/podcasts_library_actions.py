@@ -1,9 +1,10 @@
 """QUILL Cast's library-tree actions: the context menu and its handlers.
 
 Extracted from ``podcasts.py`` (GATE-11) when the episode rows gained
-Play/Download, the pinned views became renamable (F2, with Reset Name), and
-custom show ordering (Alt+Up/Alt+Down + Subscriptions > Sort Podcasts)
-arrived. Mixed into ``PodcastsAppFrame``; every ``self._*`` here is built by
+Play/Download and custom show ordering (Alt+Up/Alt+Down + Podcasts > Sort
+Podcasts) arrived. The pinned views' Rename and Reset Name rows went when the
+views left the tree for the Places list (2026-10-03): no row they applied to
+could be selected any more. Mixed into ``PodcastsAppFrame``; every ``self._*`` here is built by
 that class or ``PodcastsMixin``.
 """
 
@@ -17,7 +18,7 @@ class CastLibraryActionsMixin:
     page's library tree."""
 
     def _on_library_rename_key(self) -> None:
-        """F2: rename what is yours to rename -- folders and the pinned views.
+        """F2: rename what is yours to rename -- a folder.
 
         A show or an episode keeps its feed's name: those labels belong to
         the podcast, and a personal alias would quietly stop matching what
@@ -29,12 +30,10 @@ class CastLibraryActionsMixin:
         kind = selected[0]
         if kind == "folder":
             self._on_library_rename_folder()
-        elif kind == "view":
-            self._on_library_rename_view()
         elif kind in ("show", "episode"):
             self._announce(
-                "Show and episode names come from the podcast's own feed and "
-                "can't be renamed. Folders and the pinned views can, with F2."
+                "Podcast and episode names come from the podcast itself and "
+                "can't be renamed. Folders can, with F2."
             )
 
     def _library_context_entries(self) -> list[tuple[str, object]]:
@@ -72,23 +71,23 @@ class CastLibraryActionsMixin:
             entries += [
                 ("Un&follow...\tDelete", self._on_library_remove),
                 ("New F&older...", self._on_library_new_folder),
-                ("Open &Manager...", lambda: self.open_podcast_manager()),
             ]
         elif kind == "folder":
-            entries = [
+            # The listening verbs lead (folder_menu says why), from the one
+            # implementation QUILL's Manager uses too. Its Folder Settings row
+            # stays QUILL's: Cast sets podcasts one at a time, in Settings for
+            # This Podcast.
+            from quill.ui.podcasts.folder_menu import folder_items
+
+            entries = list(folder_items(self, key, settings=False))
+            entries += [
                 ("Rena&me Folder...\tF2", self._on_library_rename_folder),
                 ("&Delete Folder...\tDelete", self._on_library_remove),
                 ("New F&older...", self._on_library_new_folder),
                 # On branches, never on shows or episodes -- those already ARE
                 # subscriptions; Add belongs where new things get filed.
                 ("&Add Podcast...", lambda: self._podcast_open_add_dialog()),
-                ("Open &Manager...", lambda: self.open_podcast_manager()),
             ]
-        elif kind == "view":
-            entries = [("&Rename...\tF2", self._on_library_rename_view)]
-            if self._podcast_library.settings.view_names.get(key, "").strip():
-                entries.append(("Reset &Name", self._on_library_reset_view_name))
-            entries.append(("Open &Manager...", lambda: self.open_podcast_manager()))
         elif kind == "episode":
             pair = self._selected_episode()
             if pair is None:
@@ -124,7 +123,6 @@ class CastLibraryActionsMixin:
                     ),
                     ("&Download Episode", self._on_library_download_episode),
                 ]
-            entries.append(("Open &Manager...", lambda: self.open_podcast_manager()))
         elif kind == "action":
             # The empty-library filler rows: their menu is what they do.
             entries = [
@@ -132,10 +130,10 @@ class CastLibraryActionsMixin:
                 ("&Import Podcasts from OPML...", lambda: self._podcast_open_import_opml()),
             ]
         else:
-            entries = [
-                ("&Add Podcast...", lambda: self._podcast_open_add_dialog()),
-                ("Open &Manager...", lambda: self.open_podcast_manager()),
-            ]
+            # The "No folder" group and the load-more rows. There is no Open
+            # Manager anywhere in this tree: in Cast it only led back to the
+            # Podcasts place, which is where the tree already is.
+            entries = [("&Add Podcast...", lambda: self._podcast_open_add_dialog())]
         return entries
 
     def _on_library_context_menu(self, _event: object) -> None:
@@ -184,6 +182,7 @@ class CastLibraryActionsMixin:
             self._podcast_download_root(),
             show,
             announce=self._announce,
+            host=self,
         )
 
     def _on_library_remove_all_downloads(self) -> None:
@@ -373,26 +372,6 @@ class CastLibraryActionsMixin:
                 "custom": "your custom order; move shows with Alt+Up and Alt+Down",
             }
             self._announce(f"Podcasts sorted {labels.get(mode, mode)}.")
-
-    def _on_library_rename_view(self) -> None:
-        from quill.ui.podcasts.show_actions import rename_view_prompt
-
-        selected = self._selected_tree_data()
-        if selected is None or selected[0] != "view":
-            return
-        if rename_view_prompt(
-            self.frame, self._podcast_library, selected[1], announce=self._announce
-        ):
-            self._save_podcast_library()
-
-    def _on_library_reset_view_name(self) -> None:
-        from quill.ui.podcasts.show_actions import reset_view_name_action
-
-        selected = self._selected_tree_data()
-        if selected is None or selected[0] != "view":
-            return
-        if reset_view_name_action(self._podcast_library, selected[1], announce=self._announce):
-            self._save_podcast_library()
 
     def _on_library_rename_folder(self) -> None:
         from quill.ui.podcasts.show_actions import rename_folder_prompt

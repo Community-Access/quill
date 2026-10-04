@@ -2137,12 +2137,12 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
     ),
     SettingSpec(
         "beta_updates",
-        "Get beta updates",
+        "Release channel",
         "admin",
         "bool",
-        "Receive pre-release builds, which may be unstable.",
+        "Stable, Beta or Dev. Change it with the button here or Help, Release Channel.",
         feature_id="core.updates",
-        keywords=("updates", "beta", "channel", "prerelease"),
+        keywords=("updates", "beta", "dev", "stable", "channel", "release", "prerelease"),
     ),
     # --- Integration and Context Menu --------------------------------------
     SettingSpec(

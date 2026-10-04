@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Quill Radio - the next generation of the ACB Radio Tuner</title>
-  <meta name="description" content="Quill Radio 3.0.4, released 2026-09-28: a free, screen-reader-first internet radio app for Windows. Every ACB Media stream ready out of the box, more than 62,000 stations on your computer, podcasts, audiobooks and television, nested favorites, reconnecting recordings, and guided tutorials.">
+  <meta name="description" content="Quill Radio 3.0.4 is a free internet radio app for Windows, made for people who use a screen reader. ACB Media plays the moment you install it, and more than 62,000 stations, podcasts and audiobooks are a few keys away.">
   <link rel="stylesheet" href="/assets/style.css">
 </head>
 <body>
@@ -43,15 +43,13 @@
   <main id="main" tabindex="-1">
     <div class="hero">
       <div class="wrap">
-        <h1>Quill Radio: the next generation of the ACB Radio Tuner.</h1>
+        <h1>Quill Radio: the next generation of the ACB Radio Tuner</h1>
         <p class="lede">
-          For over a decade, the ACB Radio Tuner gave blind and low-vision listeners a small,
-          devoted way to hear ACB Media on the desktop. Quill Radio carries that legacy forward
-          - every ACB Media stream plays the moment you install, with zero setup - and then goes
-          further: tens of thousands of stations from every country, a real nested favorites
-          system, recording that survives a dropped connection, a wake-up timer, hardware media
-          keys, and a system tray presence that keeps the music going while you work. Free.
-          Built the way a screen reader user would build it.
+          Quill Radio is a free internet radio for Windows, made for people who use a
+          screen reader. Install it, and every ACB Media stream is ready to play. From
+          there you can find stations from all over the world, save the ones you like,
+          and record a show. You do it all with the keyboard, and Quill Radio tells you
+          what is happening as it happens.
         </p>
         <div class="cta">
           <a class="btn" href="https://github.com/Community-Access/quill/releases/download/quill-radio-v3.0.4/Quill-Radio-Setup-Shared-3.0.4.exe">Download the Quill Radio 3.0.4 installer (recommended)</a>
@@ -60,26 +58,119 @@
           <a class="btn secondary" href="/docs/radio-tutorials.html">Browse the tutorials</a>
           <a class="btn secondary" href="/docs/radio-pr.html">Read the press release</a>
         </div>
-        <p class="req-note">Version 3.0.4, released 2026-09-28. Windows 10 or later, 64-bit. Two downloads, and everything is bundled in both - FFmpeg for recording and the mpv playback engine included. The installer is the one most people want: it sets up the shared QuillVille Runtime if it is not already there, then Quill Radio, with a Start Menu entry and an uninstaller. The portable ZIP unpacks anywhere, a USB stick included, and writes nothing to the computer it runs on: settings, favorites, history, recordings and downloads live beside QuillRadio.exe from the very first launch. Help &gt; Check for Updates (Ctrl+Alt+U) offers whichever of the two you are running.</p> Both files are digitally signed and are on the <a href="https://github.com/Community-Access/quill/releases/tag/quill-radio-v3.0.4">Quill Radio 3.0.4 release page</a>, with their SHA-256 checksums.
+        <p class="req-note">Version 3.0.4, released 2026-09-28. You need Windows 10 or later, 64-bit. If you are not sure which download to pick, choose the installer. It adds Quill Radio to your Start Menu and gives you an uninstaller. The portable ZIP is for carrying the radio on a USB stick, or for a computer where you cannot install things. It keeps everything in its own folder. Both downloads include everything the app needs, so nothing else downloads later. Both files are digitally signed, and you can check them against the SHA-256 checksums on the <a href="https://github.com/Community-Access/quill/releases/tag/quill-radio-v3.0.4">Quill Radio 3.0.4 release page</a>.</p>
       </div>
     </div>
+
+    <section class="band" aria-labelledby="start-h">
+      <div class="wrap">
+        <h2 id="start-h">Your first five minutes</h2>
+        <p class="intro">Here is how to get from download to music. Each step tells you what to press.</p>
+        <ol class="intro">
+          <li>Download the installer and open it from your Downloads folder. Press Enter on each page to accept the choices it offers, then choose Install.</li>
+          <li>On the last page, press Space on the Launch Quill Radio checkbox, then choose Finish. Next time, press the Windows key, type Quill Radio, and press Enter.</li>
+          <li>The first time, a short welcome of three screens opens. Press Alt+N to move through it, or Escape to skip it. It will not come back.</li>
+          <li>Press Ctrl+B to open Browse Stations. Arrow down to a branch, such as ACB Media or Popular Stations, and press Right Arrow to open it.</li>
+          <li>Arrow to a station and press Enter. You will hear "Playing" and then the station. Press Enter again to stop it.</li>
+          <li>Like what you hear? Press Ctrl+Shift+F to save it to your favorites. Next time, it is waiting in the list when the app opens. Just arrow to it and press Enter.</li>
+        </ol>
+        <p>A few keys that help right away: Ctrl+Up and Ctrl+Down change the volume. Ctrl+T tells you what is playing. Escape closes the window you are in. If you forget a key, press Ctrl+Shift+P and type what you want, such as "record". F1 explains whatever window you are in.</p>
+        <p>Want more help? Help &gt; Tutorials (Ctrl+Alt+F1) has 41 short lessons that walk you through the app one step at a time. The <a href="/docs/radio-userguide.html">user guide</a> has a "Your first half hour" chapter too.</p>
+      </div>
+    </section>
 
     <section class="band" aria-labelledby="whats-new-h">
       <div class="wrap">
         <h2 id="whats-new-h">What's new in 3.0</h2>
         <ul class="intro">
-          <li><strong>Two downloads.</strong> An installer and a portable ZIP. A portable copy writes nothing to the computer it runs on, and Check for Updates (Ctrl+Alt+U) offers the one you are running, with the release's notes to read first.</li>
-          <li><strong>Browse is a place, not a list.</strong> Browse Stations (Ctrl+B) is one tree: By Country, By Language, Trending Now and Recently Added, radio reading services, whole libraries - the Internet Archive, LibriVox, Project Gutenberg, Audius, Mixcloud, ccMixter, AudioPub - Apple and Podcast Index podcasts with no account, SHOUTcast, Live365, Radio Paradise in lossless FLAC, your own Icecast servers, YouTube, and television from iptv.org. Station &gt; Choose Browse Sources turns off any branch you never use, and an off branch is never contacted.</li>
-          <li><strong>A radio that works before the internet does.</strong> More than 62,000 stations ship inside the app, so browsing and searching answer instantly, and still answer with no connection at all.</li>
-          <li><strong>Search that finds the station you meant.</strong> Search Stations (Ctrl+F) understands a brand, a frequency, a call sign and a place - "Sunny 105.7 Gulf Shores Alabama" finds the station.</li>
-          <li><strong>Live radio you can rewind.</strong> Rewind 30 Seconds (Ctrl+Shift+Left) and Back to Live (Ctrl+Shift+L) on any live station. Pause (Ctrl+Space) is for podcasts, recordings and files; a live broadcast keeps going, so it rewinds rather than pauses.</li>
-          <li><strong>A timeline for anything with an end.</strong> Chapters, Go to Position (Ctrl+Alt+J), Where Am I (Ctrl+Shift+W), Play Faster and Slower, Skip Silence, and transcripts you can read and search.</li>
-          <li><strong>Described audio, named.</strong> Audio &gt; Audio and Described Audio (Ctrl+Shift+A) lists a video's audio tracks with the described one first, and Play Described Audio (Ctrl+Alt+D) switches straight to it.</li>
-          <li><strong>Every window reaches the player.</strong> Browse, Search, Recordings, Favorites and the Player are real windows; Ctrl+Tab moves between them, Go To (Ctrl+G) reaches every place in the app, every menu item names its key, and Ctrl+Z undoes the last destructive action.</li>
-          <li><strong>Your favorites on Alt+1 to Alt+0.</strong> The first ten favorites play with one key, without opening anything.</li>
-          <li><strong>The app teaches itself.</strong> F1 explains any window and the control you are on, and Help &gt; Tutorials (Ctrl+Alt+F1) opens 41 guided lessons that can run a step for you and move on when they notice you have done it.</li>
+          <li><strong>Two downloads.</strong> An installer, and a portable ZIP that leaves nothing behind on the computer. Help &gt; Check for Updates (Ctrl+Alt+U) offers you the kind you already have, and lets you read what changed first.</li>
+          <li><strong>One place to browse.</strong> Browse Stations (Ctrl+B) puts everything in one tree. You can look by country, language or genre, or try the reading services, podcasts, audiobook libraries, and even TV. If there is a branch you never use, Station &gt; Choose Browse Sources hides it.</li>
+          <li><strong>Works without the internet, for finding things.</strong> More than 62,000 stations come with the app. Browsing and searching answer right away, even when you are offline.</li>
+          <li><strong>Search the way you talk.</strong> Search Stations (Ctrl+F) understands names, frequencies, call signs and places. Typing "Sunny 105.7 Gulf Shores Alabama" finds that station.</li>
+          <li><strong>Missed something? Rewind live radio.</strong> Ctrl+Shift+Left goes back 30 seconds. Ctrl+Shift+L takes you back to live. For podcasts, recordings and files, Ctrl+Space pauses.</li>
+          <li><strong>Find your place in long listening.</strong> Podcasts and audiobooks have chapters. Go to Position (Ctrl+Alt+J) jumps to a time, and Where Am I (Ctrl+Shift+W) tells you where you are. You can also speed up, slow down, and skip silence.</li>
+          <li><strong>Described audio.</strong> When a video has a described audio track, Play Described Audio (Ctrl+Alt+D) switches to it.</li>
+          <li><strong>Easy to get around.</strong> Ctrl+Tab moves between Quill Radio's windows. Go To (Ctrl+G) lists every place in the app. If you delete something by mistake, Ctrl+Z brings it back.</li>
+          <li><strong>Your top ten favorites on one key.</strong> Alt+1 through Alt+0 play your first ten favorites without opening anything.</li>
         </ul>
         <p><a href="/docs/radio-release-notes.html">Read the full 3.0 release notes</a>.</p>
+      </div>
+    </section>
+
+    <section class="band" aria-labelledby="features-h">
+      <div class="wrap">
+        <h2 id="features-h">What else Quill Radio can do</h2>
+
+        <details class="deep" open>
+          <summary><h3>Find almost any station</h3></summary>
+          <div>
+            <p>All ten ACB Media streams are there from the start, including Mainstream,
+            The Trove, Cafe and Community. Browse Stations (Ctrl+B) opens the rest of the
+            world: stations by country, language and genre, plus podcasts and audiobooks.
+            If you know a station's web page but not its stream, Find Streams from a
+            Website looks for it. You can also paste a stream address yourself.</p>
+          </div>
+        </details>
+
+        <details class="deep">
+          <summary><h3>Keep your favorites tidy</h3></summary>
+          <div>
+            <p>Put your favorites in folders, such as News, with Morning inside it.
+            New Folder (Ctrl+Shift+E) makes one wherever you are. You can rename a station
+            to whatever you call it. If you delete a folder, its stations move back to the
+            top of the list, so you never lose one. Each favorite also remembers its own
+            volume, so a loud station stays turned down.</p>
+          </div>
+        </details>
+
+        <details class="deep">
+          <summary><h3>Record a show</h3></summary>
+          <div>
+            <p>Press Ctrl+R to record what is playing, and Ctrl+R again to stop. You can
+            also record one station while you listen to another. If your internet drops,
+            Quill Radio reconnects and keeps going. You can schedule a recording once,
+            every day, or every week. Ctrl+Shift+R opens the Recordings window, where you
+            can play, find or delete what you have recorded.</p>
+          </div>
+        </details>
+
+        <details class="deep">
+          <summary><h3>Use it like a kitchen radio</h3></summary>
+          <div>
+            <p>Turn on Station &gt; Resume Last Station on Launch (Ctrl+Alt+L), and the
+            radio starts playing as soon as you open the app. Play Last Station (Ctrl+L)
+            brings back whatever you had on. There is a sleep timer (Ctrl+Shift+Z) and a
+            wake-up timer (Ctrl+Alt+Z). The media keys on your keyboard work too, even when
+            Quill Radio is tucked away in the system tray.</p>
+          </div>
+        </details>
+
+        <details class="deep">
+          <summary><h3>It talks to you</h3></summary>
+          <div>
+            <p>Quill Radio speaks through JAWS, NVDA or Narrator, and shows the same
+            messages on a braille display. It does this without moving your focus.
+            Ctrl+T tells you the song or show that is playing. If you can't remember
+            a key, press Ctrl+Shift+P and type a word to find the command.</p>
+          </div>
+        </details>
+
+        <details class="deep">
+          <summary><h3>Shares with QUILL and QUILL Cast</h3></summary>
+          <div>
+            <p>If you install Quill Radio next to QUILL or QUILL Cast, they share your
+            favorites, history, recordings and settings. Save a station in one, and it is
+            in the other too. A portable copy keeps its own, inside its own folder.</p>
+          </div>
+        </details>
+
+        <div class="qv-callout qv-callout--both">
+          <p class="qv-callout__label" id="qv-radio-both">QUILLBert and QUILLBee</p>
+          <p class="qv-line"><strong class="qv-line__who">QUILLBert:</strong> I set the Wake-Up Timer for three in the morning, just to see what it does.</p>
+          <p class="qv-line"><strong class="qv-line__who">QUILLBee:</strong> And?</p>
+          <p class="qv-line"><strong class="qv-line__who">QUILLBert:</strong> It said "Good morning." I'm not sure it meant it.</p>
+          <p class="qv-line"><strong class="qv-line__who">QUILLBee:</strong> For everyone else: press Ctrl+Alt+Z, pick a favorite and a time, and your station comes on by itself, once or every day. Leave Quill Radio running, even if it's tucked away in the tray. It won't wake a sleeping computer.</p>
+        </div>
       </div>
     </section>
 
@@ -87,107 +178,24 @@
       <div class="wrap">
         <h2 id="heritage-h">Where this came from</h2>
         <p class="intro">
-          Quill Radio is offered with real gratitude to the American Council of the Blind and
-          everyone who built and maintained the original ACB Radio Tuner. That project proved
-          something worth proving: a radio app designed specifically for blind listeners, by
-          people who understood exactly what that meant, could be simple, dependable, and
-          genuinely loved. Quill Radio doesn't replace that legacy - it's an attempt to honor it,
-          by taking the same care and pointing it at the whole dial.
+          For more than ten years, the ACB Radio Tuner let blind and low-vision listeners
+          hear ACB Media on their computers. We are grateful to the American Council of
+          the Blind and to everyone who built and looked after it. It showed that a radio
+          made for blind listeners could be simple and dependable. Quill Radio tries to
+          keep that same care, and to bring it to every station we can find.
         </p>
-      </div>
-    </section>
-
-    <section class="band" aria-labelledby="features-h">
-      <div class="wrap">
-        <h2 id="features-h">Everything you'd expect - and everything you didn't have before</h2>
-
-        <details class="deep" open>
-          <summary><h3>From ten streams to the whole dial</h3></summary>
-          <div>
-            <p>The bundled <strong>ACB Media</strong> directory carries all ten ACB streams -
-            Mainstream, The Trove, Cafe, Community, Live, Special, and the rest - playable the
-            moment you install. <strong>Browse Stations</strong> (Ctrl+B) opens a tree of more
-            than 62,000 stations worldwide, kept on your computer by the Station Catalog, by
-            country, language, genre and more, alongside podcasts, audiobooks and television.
-            <strong>Find Streams from a Website</strong> scans a page you give it for stream
-            links, and you can always paste a URL directly. However a station reaches you, one
-            keystroke makes it a favorite.</p>
-          </div>
-        </details>
-
-        <details class="deep">
-          <summary><h3>Favorites that grow the way your listening does</h3></summary>
-          <div>
-            <p>Folders as deep as you want - News, then News &gt; Morning, then News &gt;
-            Morning &gt; Local - created wherever you need them with <strong>New Folder</strong>
-            (Ctrl+Shift+E), before a single station lives there. Rename any station to what
-            <em>you</em> call it; your name follows it everywhere. Delete a folder and its
-            stations step safely back to the top level - nothing vanishes with it. Every
-            favorite remembers its own volume, because stations are mastered wildly
-            differently and you should only have to fix that once.</p>
-          </div>
-        </details>
-
-        <details class="deep">
-          <summary><h3>Recording that survives the real internet</h3></summary>
-          <div>
-            <p>If your connection drops mid-recording, ffmpeg first rides out the gap; if the
-            drop is real, Quill Radio waits, reconnects, and resumes into a cleanly numbered
-            part file - attempts and spacing entirely yours to tune. Record what's playing, or
-            record a different station while you listen to something else - the recorder never
-            needed the player. Schedule a show once, daily, or weekly, picking straight from
-            your favorites. The <strong>Recordings</strong> window shows the whole life cycle
-            live: recording now with its size growing, recorded and ready, or scheduled and
-            waiting.</p>
-          </div>
-        </details>
-
-        <details class="deep">
-          <summary><h3>An appliance, when you want it to be one</h3></summary>
-          <div>
-            <p>Check <strong>Resume Last Station on Launch</strong> once and Quill Radio
-            becomes exactly what a radio should be: something you turn on. <strong>Play Last
-            Station</strong> (Ctrl+L) picks up where you left off with no navigation at all.
-            The <strong>Wake-Up Timer</strong> is the sleep timer's twin - pick a favorite, pick
-            a time, once or every day. Hardware media keys control playback system-wide, even
-            from the tray, with a live now-playing tooltip.</p>
-          </div>
-        </details>
-
-        <details class="deep">
-          <summary><h3>Built to be heard</h3></summary>
-          <div>
-            <p>Everything Quill Radio does, it says out loud, through the same announcement
-            engine that powers QUILL - accurate, and compatible with JAWS, NVDA, and Narrator
-            without ever stealing focus. The <strong>Command Palette</strong> (Ctrl+Shift+P)
-            puts every command behind one searchable list. <strong>What's Playing</strong>
-            (Ctrl+T) speaks the current track or show title from the stream's own metadata,
-            the instant you ask.</p>
-          </div>
-        </details>
-
-        <details class="deep">
-          <summary><h3>One data store, shared with QUILL</h3></summary>
-          <div>
-            <p>Installed on the same computer, Quill Radio shares favorites, history,
-            recordings, schedules, and settings with QUILL and QUILL Cast. Favorite a station
-            here, and it's already a favorite in QUILL. Nothing is ever set up twice. A
-            portable copy keeps its own, inside its own folder.</p>
-          </div>
-        </details>
       </div>
     </section>
 
     <section class="band" aria-labelledby="feedback-h">
       <div class="wrap">
-        <h2 id="feedback-h">Tell us what to build next</h2>
+        <h2 id="feedback-h">Questions, problems and ideas</h2>
         <p class="intro">
-          Quill Radio is free, and it grows from the people who use it. <strong>Help &gt;
-          Get Help from Support</strong> (Ctrl+Alt+F2), right inside the app, writes to
-          support@community-access.org in seconds - no account or sign-up needed - stamped with
-          Quill Radio's own version so we always know exactly what you were running. A person at
-          Community Access reads every message and replies by email. Station and podcast
-          suggestions go the same way. Every report shapes what ships next.
+          We would love to hear from you. In Quill Radio, choose Help &gt; Get Help from
+          Support (Ctrl+Alt+F2). It writes a message to support@community-access.org for
+          you, and adds your Quill Radio version so we know what you are running. You
+          don't need an account. A real person at Community Access reads every message
+          and writes back. You can suggest stations and podcasts the same way.
         </p>
         <div class="cta">
           <a class="btn" href="mailto:support@community-access.org">Write to support@community-access.org</a>
@@ -201,27 +209,27 @@
         <div class="cards">
           <div class="card">
             <h3><a href="/docs/radio-userguide.html">User guide</a></h3>
-            <p>Installing, the main window, every menu, the Favorites Manager, the Recordings list, and the full keyboard reference.</p>
-          </div>
-          <div class="card">
-            <h3><a href="/docs/radio-prd.html">Product requirements</a></h3>
-            <p>The design document behind Quill Radio: architecture, feature scope, and the accessibility commitments the app is held to.</p>
-          </div>
-          <div class="card">
-            <h3><a href="/docs/radio-release-notes.html">Release notes</a></h3>
-            <p>What is new in 3.0: your first hour with the app, then everything that moved underneath it.</p>
+            <p>Start here. How to install, your first half hour, every menu, and all the keys.</p>
           </div>
           <div class="card">
             <h3><a href="/docs/radio-tutorials.html">Tutorials</a></h3>
-            <p>All 41 guided tutorials from Help &gt; Tutorials (Ctrl+Alt+F1), step by step, with the key for each step and what you should hear.</p>
+            <p>The 41 lessons from Help &gt; Tutorials, step by step, with the key for each step and what you should hear.</p>
+          </div>
+          <div class="card">
+            <h3><a href="/docs/radio-release-notes.html">Release notes</a></h3>
+            <p>What is new in 3.0, starting with your first hour.</p>
           </div>
           <div class="card">
             <h3><a href="/docs/radio-changelog.html">Changelog</a></h3>
-            <p>Every change in every version, newest first, including the final 3.0 changes.</p>
+            <p>Every change in every version, newest first.</p>
           </div>
           <div class="card">
             <h3><a href="/docs/radio-pr.html">Press release</a></h3>
-            <p>The full announcement: the ACB Radio Tuner heritage, every capability, and how to get involved.</p>
+            <p>The 3.0 announcement, and where Quill Radio came from.</p>
+          </div>
+          <div class="card">
+            <h3><a href="/docs/radio-prd.html">Product requirements</a></h3>
+            <p>The design document, for people who want to know how it is built.</p>
           </div>
         </div>
       </div>
@@ -232,10 +240,10 @@
     <div class="wrap">
       <p class="note">
         <strong class="quill" style="color:var(--accent)">Quill Radio</strong> -
-        free, screen-reader-first internet radio for Windows, sharing its codebase with QUILL.
+        free internet radio for Windows, made for screen reader users. Part of the QUILL family.
       </p>
       <nav aria-label="Documentation">
-        <h4>Documentation</h4>
+        <h2>Documentation</h2>
         <ul>
           <li><a href="/docs/radio-userguide.html">User guide</a></li>
           <li><a href="/docs/radio-release-notes.html">Release notes</a></li>
@@ -243,14 +251,14 @@
         </ul>
       </nav>
       <nav aria-label="Project">
-        <h4>Project</h4>
+        <h2>Project</h2>
         <ul>
           <li><a href="https://github.com/Community-Access/quill/releases/tag/quill-radio-v3.0.4">Quill Radio 3.0.4 release</a></li>
           <li><a href="mailto:support@community-access.org">Email QUILL support</a></li>
         </ul>
       </nav>
       <nav aria-label="The QUILL family">
-        <h4>The QUILL family</h4>
+        <h2>The QUILL family</h2>
         <ul>
           <li><a href="/index.html">QUILL writing environment</a></li>
           <li><a href="/podcast/index.html">The QUILL Cast (learn QUILL by ear)</a></li>

@@ -71,6 +71,13 @@ def test_a_tag_round_trips() -> None:
         assert parse_release_tag(tag) == ReleaseTag(app_key, "1.2.3"), tag
 
 
+def test_quill_lite_keeps_its_grandfathered_tag_key() -> None:
+    # Every QUILL Lite release since 1.0.0 is tagged quill-lite-v; installed
+    # copies and GATE-SIBVER look for exactly that (release channels, 2.3).
+    assert release_tag("quilllite", "1.2.0") == "quill-lite-v1.2.0"
+    assert parse_release_tag("quill-lite-v1.1.2") == ReleaseTag("quilllite", "1.1.2")
+
+
 def test_an_unprefixed_tag_reads_as_quills() -> None:
     assert parse_release_tag("v0.9.0-beta.3") == ReleaseTag("quill", "0.9.0-beta.3")
 

@@ -22,6 +22,14 @@ MODE_PREFIX = "prefix"
 #: Cheat-sheet for browse mode (after the QUILL key, then N).
 MODE_BROWSE = "browse"
 
+#: Second keys the QUILL key handler answers itself, before the keymap is
+#: consulted, so a keymap binding on one of them can never fire. N enters browse
+#: mode and ? opens this cheat sheet. (A is answered first only while text is
+#: selected, which is why the leader-A binding is documented as the
+#: no-selection half of the pair.) G was here until 2026-10-03 and silently ate
+#: the default leader G binding; a test now holds DEFAULT_KEYMAP off this set.
+RESERVED_LEADER_KEYS: frozenset[str] = frozenset({"N", "?"})
+
 #: Command ids for the structural quick-nav follow-on keys, mapped to the
 #: documented default key shown when no binding is configured.
 _DEFAULT_KEYS: dict[str, str] = {
@@ -117,7 +125,6 @@ def build_cheat_sheet(
 
 def _build_prefix_groups(quill_key_label: str, selection_active: bool) -> tuple[KeyHelpGroup, ...]:
     entries = [KeyHelpEntry("N", "Enter browse mode")]
-    entries.append(KeyHelpEntry("G", "Go to anything (Quick Nav)"))
     entries.append(KeyHelpEntry("M", "Paste HTML clipboard as Markdown (magic paste)"))
     entries.append(KeyHelpEntry("V", "Browser Preview"))
     if selection_active:

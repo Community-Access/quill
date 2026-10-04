@@ -61,6 +61,18 @@ def _open_data_folder(app: Any) -> None:
     open_data_folder_dialog(app, app_title=_TITLE)
 
 
+def _shown_channel() -> str:
+    from quill.core.updater.channels import shown_channel, state_for
+
+    return shown_channel(state_for("radio"))
+
+
+def _open_release_channel(app: Any) -> None:
+    from quill.ui.updates.shell import open_for_shell
+
+    open_for_shell(app, "radio")
+
+
 #: Preference group names (list.md 8.1). Written in the order somebody looks
 #: for them, which is what the dialog preserves -- and short, because the box
 #: label is read aloud every time focus enters the group.
@@ -155,6 +167,9 @@ def open_preferences(app: Any) -> None:
     )
 
     history = app._radio_history
+    from quill.apps import radio_youtube_signin_prefs as yt_signin
+
+    yt_check, yt_choice, yt_file = yt_signin.rows(app)
     close_action_index = _CLOSE_ACTION_VALUES.index(history.close_action)
     device_labels, device_names, device_index = output_device_choices(
         list_output_devices(), history.output_device
@@ -210,6 +225,12 @@ def open_preferences(app: Any) -> None:
                 "&Announce dialog transitions (more spoken detail)",
                 "Announce dialog transitions -- off by default to reduce alert noise",
                 history.announce_dialog_transitions,
+            ),
+            PreferenceCheckbox(
+                "Share these choices with my other Quill apps",
+                "Announce dialog transitions is kept the same in every Quill app that "
+                "also shares. Nothing about keys, focus or your screen reader is shared.",
+                history.share_family_prefs,
             ),
             PreferenceCheckbox(
                 "&Recover failed streams from the station's website",
@@ -297,6 +318,7 @@ def open_preferences(app: Any) -> None:
                 history.reminder_sound,
                 group=_REMINDERS,
             ),
+            yt_check,
         ],
         choices=[
             PreferenceChoice(
@@ -394,6 +416,7 @@ def open_preferences(app: Any) -> None:
                 [label for _value, label in RESUME_CHOICES],
                 _resume_index(history.recording_resume_choice),
             ),
+            yt_choice,
         ],
         texts=[
             PreferenceText(
@@ -421,6 +444,17 @@ def open_preferences(app: Any) -> None:
                 "OneDrive keeps in sync to carry them between computers.",
                 lambda: _open_data_folder(app),
             ),
+            # Release channels (plan 7.1): shown and changed only through the
+            # shared Release Channel window, never by a selection. No access
+            # key: this window has no letter left that is not already taken.
+            PreferenceAction(
+                f"Change Release Channel (now {_shown_channel()})...",
+                "Stable, Beta or Dev: which versions Quill Radio offers you. Opens "
+                "the Release Channel window, the same one as the Help menu's "
+                "Release Channel. Nothing changes until you choose Switch.",
+                lambda: _open_release_channel(app),
+            ),
+            yt_file,
         ],
         announce_cb=app._announce,
     )
@@ -432,6 +466,7 @@ def open_preferences(app: Any) -> None:
         history.resume_on_launch,
         history.check_updates_on_startup,
         history.announce_dialog_transitions,
+        history.share_family_prefs,
         history.recover_from_website,
         history.share_play_counts,
         history.alt_f4_to_tray,
@@ -444,12 +479,17 @@ def open_preferences(app: Any) -> None:
         history.winamp_playback_keys,
         history.podcast_refresh_on_launch,
         history.reminder_sound,
+        youtube_signin_on,
     ) = checkbox_values
+    youtube_said = yt_signin.apply(youtube_signin_on, choice_indices[10], app=app)
     # Apply verbose logging immediately (quill-radio #5) so it takes effect
     # this session, not just the next launch.
     from quill.core.radio.radio_logging import set_radio_debug
 
     set_radio_debug(history.debug_mode)
+    from quill.ui.family_sharing import after_preferences
+
+    after_preferences(app, "radio", history, {"share_family_prefs": history.share_family_prefs})
     chosen_view = main_view.from_index(choice_indices[0])
     if chosen_view != history.main_view:
         history.main_view = chosen_view
@@ -521,4 +561,4 @@ def open_preferences(app: Any) -> None:
     menu_bar = app.frame.GetMenuBar()
     if menu_bar is not None:
         menu_bar.Check(int(app._resume_menu_item_id), history.resume_on_launch)
-    app._announce(f"Preferences saved. {schedule_said}".strip())
+    app._announce(f"Preferences saved. {schedule_said} {youtube_said}".strip())

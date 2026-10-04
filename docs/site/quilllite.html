@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>QUILL Lite - free AI help, in an editor that talks to you</title>
-  <meta name="description" content="QUILL Lite is a free, screen-reader-first text editor for Windows with free AI help built in: summarize, rewrite, proofread, explain, and ask questions about your document. No account, no password, no card.">
+  <meta name="description" content="QUILL Lite is a free text editor for Windows, made for people who use a screen reader. It has free AI help built in: it can summarize, rewrite, proofread and explain, and answer questions about your document. No account, password or card.">
   <link rel="stylesheet" href="/assets/style.css">
 </head>
 <body>
@@ -42,13 +42,13 @@
   <main id="main" tabindex="-1">
     <div class="hero">
       <div class="wrap">
-        <h1>QUILL Lite: free AI help, in an editor that talks to you.</h1>
+        <h1>QUILL Lite: free AI help, in an editor that talks to you</h1>
         <p class="lede">
-          Select a paragraph. Press two keys. Hear it summarized, rewritten, proofread or
-          explained - free, with no account, no password and no card. QUILL Lite is a small,
-          free text editor for Windows, built from the ground up for people who use a screen
-          reader, with AI help designed the same way: keyboard-first, spoken-first, and never
-          leaving you wondering what just happened.
+          QUILL Lite is a small, free text editor for Windows, made for people who use a
+          screen reader. If you have used Notepad or WordPad, you already know most of the
+          keys. It also has free AI help. Put your cursor in a paragraph, press two keys,
+          and it can summarize, rewrite, proofread or explain it for you. You don't need
+          an account, a password or a card.
         </p>
         <div class="cta">
           <a class="btn" href="https://github.com/Community-Access/quill/releases/download/quill-lite-v1.1.2/QuillLite-Setup-Shared-1.1.2.exe">Download QUILL Lite 1.1.2 - Windows Installer</a>
@@ -57,125 +57,140 @@
           <a class="btn secondary" href="/docs/quilllite-ai-guide.html">Read the AI guide</a>
           <a class="btn secondary" href="/docs/quilllite-announcement.html">Read the 1.0 announcement</a>
         </div>
-        <p class="req-note">Windows 10 or later, 64-bit. Both downloads are digitally signed, so Windows can confirm they have not been altered. The installer puts QUILL Lite in its own folder with a Start Menu entry, and can optionally add it to the Open With list for .txt and .rtf files without ever making itself the default. The portable ZIP carries its own <code>data</code> folder, so it runs from a USB stick. Released September 25, 2026.</p>
+        <p class="req-note">Version 1.1.2, released September 30, 2026. You need Windows 10 or later, 64-bit. Not sure which download to pick? Choose the installer. It adds QUILL Lite to your Start Menu. It can also add QUILL Lite to the Open With list for .txt and .rtf files, but it never makes itself your default editor. The portable ZIP keeps everything in its own <code>data</code> folder, so you can run it from a USB stick. Both downloads are digitally signed.</p>
       </div>
     </div>
 
-    <section class="band callout" aria-labelledby="new11-h">
+    <section class="band" aria-labelledby="first-h">
       <div class="wrap">
-        <h2 id="new11-h">New in 1.1: your ChatGPT plan, pictures described, web search, and dictation</h2>
-        <p class="intro">
-          Released September 29, 2026. Everything below is in the
-          <a href="/docs/quilllite-release-notes.html">1.1 release notes</a> with every step and key,
-          and in the <a href="/docs/quilllite-ai-guide.html">AI guide</a>.
-        </p>
-        <div class="cards">
-          <div class="card">
-            <h3>Use My ChatGPT Subscription (Alt+F5)</h3>
-            <p>If you pay for ChatGPT, every AI command can run on that plan. Continue with ChatGPT opens your browser, you allow QUILL Lite to use your plan, and you are done: no key, no allowance, no size limit, no bill, and nothing through QUILL's servers. The model list is your plan's own. Sign Out and Forget appear only while you are signed in.</p>
-          </div>
-          <div class="card">
-            <h3>Ask About an Image (Ctrl+F5)</h3>
-            <p>Choose a JPEG, PNG, WebP or GIF and ask a question, or ask nothing. You hear what the picture is, what matters most in it, and every word of any text in it, transcribed exactly. Insert Below puts the description into your document; Ctrl+Z takes it back.</p>
-          </div>
-          <div class="card">
-            <h3>Web search, one checkbox away</h3>
-            <p>Alt+F5, then Alt+W, then Space: the model may look up an event, a price, or what a page says today, in Ask a general question, in a question about the document, and in conversations. Off until you turn it on, because a search is a second thing sent somewhere and that is yours to allow.</p>
-          </div>
-          <div class="card">
-            <h3>Dictation, and Tidy Dictated Text (Ctrl+F11, Ctrl+F3)</h3>
-            <p>Talk, pause, and hear what was written. The recogniser ships inside QUILL Lite and nothing you say leaves the computer. When it mishears, Ctrl+F3 sends the paragraph to the model with one instruction: fix what was misheard, and change nothing else. Replace My Selection puts it back; Ctrl+Z undoes it as one step. <a href="/dictation.html">The complete dictation guide</a> has every key, every spoken command and every setting.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="band" aria-labelledby="ai-h">
-      <div class="wrap">
-        <h2 id="ai-h">AI that is built for the way you work</h2>
+        <h2 id="first-h">Your first minute</h2>
+        <p class="intro">Open QUILL Lite and you get one window with an empty document called "1: Untitled". Start typing. Press Ctrl+S when you want to save. That is really all you need.</p>
+        <p>Three keys help you find your way:</p>
         <ul class="intro">
-          <li><strong>Two keys to an answer.</strong> Ctrl+Alt+G opens the AI pad right where you are. Ctrl+Alt+Z opens it ready for a question about your document.</li>
-          <li><strong>Five things it does.</strong> Summarize, Rewrite, Proofread, Explain, and answer a plain question about the document you have open.</li>
-          <li><strong>You always know what is sent.</strong> Before anything leaves your computer, the pad shows you exactly what is about to go, in a box you can read line by line.</li>
-          <li><strong>Nothing changes behind your back.</strong> The answer arrives in its own window, and goes into your document only when you press Replace or Insert. Ctrl+Z takes it back.</li>
-          <li><strong>Your words are not kept.</strong> The service counts how many requests you make and how big they were. It never keeps what you wrote or what came back.</li>
-          <li><strong>Free.</strong> No account, no password, no email address, no card, and no trial that runs out.</li>
+          <li><strong>F1</strong> tells you where you are and what the thing you are on does. It works everywhere.</li>
+          <li><strong>F6</strong> takes you to the status bar. Arrow along it to hear your line, word count and more. Press Escape to go back to your document.</li>
+          <li><strong>Ctrl+Alt+F1</strong> opens nine short spoken lessons. Each step tells you what to press and what you should hear.</li>
         </ul>
+        <div class="qv-callout qv-callout--bee">
+          <p class="qv-callout__label" id="qv-lite-bee">QUILLBee's shortcut</p>
+          <p>Forgotten where something lives? Press Ctrl+Shift+P and type a word, like "sort" or "print". You don't need to know which menu it's in. Every command in the list shows its key beside it, too, so you pick up keys without really trying.</p>
+        </div>
       </div>
     </section>
 
     <section class="band" aria-labelledby="start-h">
       <div class="wrap">
-        <h2 id="start-h">Your first answer, in about a minute</h2>
+        <h2 id="start-h">Your first AI answer, in about a minute</h2>
+        <p class="intro">AI help is off until you say yes. Here is how to turn it on and try it.</p>
         <ol class="intro">
           <li><strong>Open the agreement.</strong> Press Ctrl+Alt+Shift+K, or choose Tools, AI, Privacy Agreement.</li>
-          <li><strong>Read it, and choose I Agree.</strong> That switches AI help on. There is no second switch to find.</li>
-          <li><strong>Connect this computer.</strong> The Connect window opens by itself with your eight-character code. Press Open the Connect Page, and your browser opens with the code already filled in: press Confirm.</li>
-          <li><strong>Try it.</strong> Put the cursor in any paragraph, press Ctrl+Alt+G, choose Summarize, and press Send.</li>
+          <li><strong>Read it, and choose I Agree.</strong> That turns AI help on.</li>
+          <li><strong>Connect this computer.</strong> The Connect window opens by itself and reads you an eight-character code. Press Open the Connect Page. Your browser opens with the code already filled in. Press Confirm. You only do this once.</li>
+          <li><strong>Try it.</strong> Put your cursor in any paragraph and press Ctrl+Alt+G. Choose Summarize and press Send. The answer opens in its own window, and you can read it with the arrow keys.</li>
         </ol>
+      </div>
+    </section>
+
+    <section class="band" aria-labelledby="ai-h">
+      <div class="wrap">
+        <h2 id="ai-h">What the AI help does for you</h2>
+        <ul class="intro">
+          <li><strong>Five things.</strong> It can summarize, rewrite, proofread or explain your text. It can also answer a question about the document you have open. Ctrl+Alt+G opens the AI pad. Ctrl+Alt+Z opens it ready for a question about your document.</li>
+          <li><strong>You see what is sent.</strong> Before anything leaves your computer, the pad shows you the exact text, so you can read it first.</li>
+          <li><strong>Your document only changes when you say so.</strong> The answer waits in its own window. It goes into your document only when you press Replace or Insert, and Ctrl+Z takes it back.</li>
+          <li><strong>Your words are not kept.</strong> The service counts how many requests you make and how big they are. It does not keep what you wrote or what came back.</li>
+          <li><strong>It's free.</strong> No account, no password, no email address and no card. There is no trial that runs out.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="band callout" aria-labelledby="new11-h">
+      <div class="wrap">
+        <h2 id="new11-h">New in 1.1: your ChatGPT plan, pictures described, web search, and dictation</h2>
+        <p class="intro">
+          Version 1.1 came out on September 29, 2026. The
+          <a href="/docs/quilllite-release-notes.html">1.1 release notes</a> and the
+          <a href="/docs/quilllite-ai-guide.html">AI guide</a> walk you through each of these, step by step.
+        </p>
+        <div class="cards">
+          <div class="card">
+            <h3>Use My ChatGPT Subscription (Alt+F5)</h3>
+            <p>If you already pay for ChatGPT, QUILL Lite can use your plan for its AI help. Choose Continue with ChatGPT, and your browser opens. Say yes there, and you are done. You don't need a key, and there is no extra bill.</p>
+          </div>
+          <div class="card">
+            <h3>Ask About an Image (Ctrl+F5)</h3>
+            <p>Pick a picture, such as a JPEG or PNG. You can ask a question about it, or just ask what it is. You hear a description, and any text in the picture, word for word. Insert Below puts the description in your document. Ctrl+Z takes it out again.</p>
+          </div>
+          <div class="card">
+            <h3>Web search, when you want it</h3>
+            <p>With your ChatGPT plan, the AI can look things up on the web, such as today's news or a price. It is off until you turn it on. Press Alt+F5, then Alt+W, then Space.</p>
+          </div>
+          <div class="card">
+            <h3>Dictation, and Tidy Dictated Text (Ctrl+F11, Ctrl+F3)</h3>
+            <p>Press Ctrl+F11 and talk. When you pause, you hear what was written. Nothing you say leaves your computer. If it mishears you, select the text and press Ctrl+F3. The AI fixes the mistakes and leaves everything else alone. <a href="/dictation.html">The complete dictation guide</a> has every key, every spoken command and every setting.</p>
+          </div>
+        </div>
       </div>
     </section>
 
     <section class="band" aria-labelledby="how-h">
       <div class="wrap">
-        <h2 id="how-h">How it works</h2>
+        <h2 id="how-h">How the AI help works</h2>
 
         <details class="deep" open>
-          <summary><h3>How it knows what to send</h3></summary>
+          <summary><h3>What gets sent</h3></summary>
           <div>
-            <p>If you have selected something, that is what is sent. If you have not, the
-            paragraph your cursor is in is sent - you never have to select anything first. In a
-            document with headings you can choose This section instead. A Send this much chooser
-            switches between them, and a read-only box shows exactly the text that will go,
-            updated the moment you change your choice. Nothing else from your document is
-            sent.</p>
+            <p>If you have selected some text, that is what is sent. If you haven't, the
+            paragraph your cursor is in is sent, so you don't have to select anything.
+            In a document with headings, you can choose to send the whole section instead.
+            A box in the pad always shows you the exact text that will go. Nothing else from
+            your document is sent.</p>
           </div>
         </details>
 
         <details class="deep">
           <summary><h3>Asking about a whole document</h3></summary>
           <div>
-            <p>Rather than sending the whole file, QUILL Lite reads it on your own computer,
-            finds the three passages most likely to answer your question - each about 180 words,
-            each labelled with the heading it sits under - and sends only those, with your
-            question. The pad shows you which passages it chose before you press Send, which is
-            why a hundred-page document is a perfectly fair thing to ask about.</p>
+            <p>When you ask a question about a long document, QUILL Lite doesn't send the
+            whole thing. It looks through it on your own computer and picks the three
+            passages most likely to have your answer. Each one is about 180 words. Only those
+            are sent, with your question, and the pad shows you which ones before you press
+            Send. So it is fine to ask about a document with a hundred pages.</p>
           </div>
         </details>
 
         <details class="deep">
           <summary><h3>What happens to the answer</h3></summary>
           <div>
-            <p>It arrives in its own window, in a box you can arrow through, with Replace My
-            Selection, Insert Below, Copy and Try Again under it. Every edit goes through the
-            ordinary undo. If you changed the text while the answer was on its way, Replace is
-            not offered, so an answer is never written over words it was not about. The editor
-            never freezes while you wait.</p>
+            <p>The answer opens in its own window. You can read it with the arrow keys.
+            Under it are buttons to replace your selection, insert the answer below, copy it,
+            or try again. Ctrl+Z undoes any change. If you edited your text while you waited,
+            Replace is not offered, so the answer never writes over the wrong words. You can
+            keep working while you wait.</p>
           </div>
         </details>
 
         <details class="deep">
-          <summary><h3>Free, and fair</h3></summary>
+          <summary><h3>How much you can use</h3></summary>
           <div>
-            <p>There is a monthly allowance, with daily and hourly limits so a runaway loop
-            cannot spend a month in an afternoon. A request only counts if an answer comes back.
-            A new connection starts with a smaller allowance for its first 48 hours, then the
-            full one applies by itself. Usage (Ctrl+Alt+Shift+F9) and Help, About show exactly
-            where you stand and when each count starts again. Need more for a course, a deadline
-            or a book? Get Help from Support includes your support ID automatically, and support
-            can raise your allowance.</p>
+            <p>There is a free allowance each month, with smaller daily and hourly limits.
+            A request only counts if you get an answer. A newly connected computer has a
+            smaller allowance for its first 48 hours, and then it goes up by itself.
+            Press Ctrl+Alt+Shift+F9 to see how much you have used and what is left.
+            If you need more, for a class or a book, use Get Help from Support and ask.
+            Support can raise your allowance.</p>
           </div>
         </details>
 
         <details class="deep">
-          <summary><h3>Your privacy, in plain words</h3></summary>
+          <summary><h3>Your privacy</h3></summary>
           <div>
-            <p>The passage you ask about is sent to QUILL's service and on to OpenAI, which
-            writes the answer. The service keeps how many requests you made and how big they
-            were - never what you wrote, never what came back, and never your name, because
-            there is no name on the account at all. Nothing is sent as you type or in the
+            <p>The text you ask about goes to QUILL's service, and from there to OpenAI,
+            which writes the answer. The service keeps a count of your requests and how big
+            they were. It does not keep what you wrote or what came back. It doesn't know
+            your name, because there is no account. Nothing is sent while you type or in the
             background. <a href="https://ai.community-access.org">ai.community-access.org</a>
-            explains the service and publishes what it costs to run.</p>
+            explains the service and shows what it costs to run.</p>
           </div>
         </details>
       </div>
@@ -183,19 +198,22 @@
 
     <section class="band" aria-labelledby="editor-h">
       <div class="wrap">
-        <h2 id="editor-h">And the editor underneath it</h2>
-        <p class="intro">You already know how to use it: every key Notepad and WordPad have
-        had for thirty years does exactly what it always has. What is different is that QUILL
-        Lite answers.</p>
+        <h2 id="editor-h">The editor itself</h2>
+        <p class="intro">The keys you know from Notepad and WordPad work the same way here.
+        The difference is that QUILL Lite tells you more about what is going on.</p>
         <ul class="intro">
-          <li><strong>F6</strong> lands you in a status bar you can read, cell by cell: line, word count, encoding, line endings.</li>
-          <li><strong>F1</strong> anywhere tells you what window you are in and what the control you are on does.</li>
-          <li><strong>Headings and lists announce themselves</strong> - "Heading 2, Installing", "Bulleted list, 5 items" - which no Windows edit control can tell your screen reader on its own.</li>
-          <li><strong>Spell check spells the word out</strong>, letter by letter or in the phonetic alphabet, because "receive" and "recieve" sound identical.</li>
-          <li><strong>Plain text, Markdown, HTML and rich text</strong>, each with its own formatting keys, and your file comes back byte for byte as it went in.</li>
-          <li><strong>Nine spoken lessons</strong> (Ctrl+Alt+F1), each step saying what to press and what you should hear when it worked.</li>
-          <li><strong>Every key is yours to change</strong>, with a Keyboard Manager that names the owner of a key before it takes it.</li>
+          <li><strong>A status bar you can read.</strong> Press F6, then arrow through your line, word count, encoding and line endings.</li>
+          <li><strong>Help wherever you are.</strong> F1 tells you what window you are in and what the control you are on does.</li>
+          <li><strong>Headings and lists speak up.</strong> You hear things like "Heading 2, Installing" or "Bulleted list, 5 items" as you arrive.</li>
+          <li><strong>Spell check spells the word out.</strong> You can hear it letter by letter or in the phonetic alphabet, because "receive" and "recieve" sound the same.</li>
+          <li><strong>Plain text, Markdown, HTML and rich text.</strong> Each has its own formatting keys. When you save, your file comes back exactly as it was, apart from your changes.</li>
+          <li><strong>Lessons you can listen to.</strong> Nine short tutorials (Ctrl+Alt+F1) say what to press and what you should hear.</li>
+          <li><strong>Change any key.</strong> The Keyboard Manager tells you if a key is already in use before you take it.</li>
         </ul>
+        <div class="qv-callout qv-callout--bert">
+          <p class="qv-callout__label" id="qv-lite-bert">QUILLBert noticed</p>
+          <p>There's a switch in Tools &gt; Customize Features (Ctrl+Alt+F10) that's easy to miss. Turn on Go To Anything, and Ctrl+Alt+Shift+A opens one box that finds commands, bookmarks and, in a rich text document, headings, all together. It starts off, because each of those already has a key of its own. QUILLBert turned it on anyway. Of course he did.</p>
+        </div>
       </div>
     </section>
 
@@ -204,32 +222,32 @@
         <h2 id="docs-h">Documentation</h2>
         <div class="cards">
           <div class="card">
-            <h3><a href="/docs/quilllite-announcement.html">Announcement</a></h3>
-            <p>QUILL Lite 1.0: free AI help at the centre, the one-minute setup, and everything the editor does.</p>
-          </div>
-          <div class="card">
-            <h3><a href="/docs/quilllite-ai-guide.html">The AI guide</a></h3>
-            <p>Every AI command, exactly what is sent, asking about a whole document, the answer window, limits, and privacy.</p>
-          </div>
-          <div class="card">
             <h3><a href="/docs/quilllite-userguide.html">User guide</a></h3>
-            <p>Installing, every menu, every key, and every setting.</p>
+            <p>Start here. Installing, every menu, every key and every setting.</p>
           </div>
           <div class="card">
             <h3><a href="/docs/quilllite-tutorials.html">Tutorials</a></h3>
-            <p>The nine spoken lessons as text: every step, what to press, and what you should hear when it worked.</p>
+            <p>The nine spoken lessons, written out. Each step says what to press and what you should hear.</p>
+          </div>
+          <div class="card">
+            <h3><a href="/docs/quilllite-ai-guide.html">The AI guide</a></h3>
+            <p>Every AI command, what is sent, the answer window, limits and privacy.</p>
+          </div>
+          <div class="card">
+            <h3><a href="/docs/quilllite-announcement.html">Announcement</a></h3>
+            <p>The QUILL Lite 1.0 announcement: the free AI help, the one-minute setup, and the editor.</p>
           </div>
           <div class="card">
             <h3><a href="/docs/quilllite-release-notes.html">Release notes</a></h3>
-            <p>What shipped in 1.0, in full detail.</p>
+            <p>What is new in each version.</p>
           </div>
           <div class="card">
             <h3><a href="/docs/quilllite-changelog.html">Changelog</a></h3>
-            <p>Every change, grouped into what was added, what changed and what was fixed.</p>
+            <p>Every change: what was added, what changed and what was fixed.</p>
           </div>
           <div class="card">
             <h3><a href="/docs/quilllite-prd.html">Product requirements</a></h3>
-            <p>Why a second editor exists, what it deliberately does not do, and the rule that keeps it from getting ahead of QUILL.</p>
+            <p>The design document, for people who want to know why QUILL Lite works the way it does.</p>
           </div>
         </div>
       </div>
@@ -240,10 +258,10 @@
     <div class="wrap">
       <p class="note">
         <strong class="quill" style="color:var(--accent)">QUILL Lite</strong> -
-        a free, screen-reader-first text editor for Windows with free AI help, from Community Access.
+        a free text editor for Windows with free AI help, made for screen reader users by Community Access.
       </p>
       <nav aria-label="Documentation">
-        <h4>Documentation</h4>
+        <h2>Documentation</h2>
         <ul>
           <li><a href="/docs/quilllite-announcement.html">Announcement</a></li>
           <li><a href="/docs/quilllite-ai-guide.html">AI guide</a></li>
@@ -255,7 +273,7 @@
         </ul>
       </nav>
       <nav aria-label="Project">
-        <h4>Project</h4>
+        <h2>Project</h2>
         <ul>
           <li><a href="https://github.com/Community-Access/quill/releases/tag/quill-lite-v1.1.2">QUILL Lite 1.1.2 release</a></li>
           <li><a href="https://ai.community-access.org">The free AI service</a></li>
@@ -263,7 +281,7 @@
         </ul>
       </nav>
       <nav aria-label="The QUILL family">
-        <h4>The QUILL family</h4>
+        <h2>The QUILL family</h2>
         <ul>
           <li><a href="/index.html">QUILL writing environment</a></li>
           <li><a href="/radio.html">Quill Radio</a></li>

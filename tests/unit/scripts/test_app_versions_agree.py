@@ -79,6 +79,25 @@ def test_radio_says_one_version_everywhere() -> None:
     assert f"VersionInfoVersion={expected}.0" in iss
 
 
+def test_cast_says_one_version_everywhere() -> None:
+    # Cast keeps its constant in the menu mixin (podcasts.py re-exports it),
+    # and ships two shared-runtime installers, both of which write the
+    # quill-app-version.ini marker Check for Updates reads (release-channels
+    # plan, Phase 0).
+    expected = _pyproject_version("cast")
+    assert (
+        _one(r'^APP_VERSION = "([^"]+)"', _read("quill/apps/podcasts_menu.py"), "podcasts_menu.py")
+        == expected
+    )
+    assert _release_script_version("cast") == expected
+    assert _readme_version("cast") == expected
+    for iss in ("quill-cast-shared.iss", "quill-cast-lite.iss", "quill-cast.iss"):
+        assert _inno_version(f"standalone/cast/installer/{iss}") == expected, iss
+    for iss in ("quill-cast-shared.iss", "quill-cast-lite.iss"):
+        text = _read(f"standalone/cast/installer/{iss}")
+        assert "quill-app-version.ini" in text, f"{iss} does not write the version marker"
+
+
 def test_converter_says_one_version_everywhere() -> None:
     expected = _pyproject_version("converter")
     assert _module_version("quill/apps/converter.py") == expected

@@ -32,6 +32,7 @@ from typing import Any
 from quill.core.undo_last import (
     HELD_DIR_NAME,
     UndoableAction,
+    UndoHistory,
     UndoSlot,
     discard_held,
     hold_files,
@@ -49,7 +50,7 @@ OFFER_TAIL = "Ctrl+Z undoes this."
 def activate(data_dir: Path) -> UndoSlot:
     """Claim the slot for this app, holding deleted files under *data_dir*."""
     global _slot, _data_dir
-    _slot = UndoSlot()
+    _slot = UndoHistory()  # Ctrl+Z is still once; the list is Undo History
     _data_dir = data_dir
     # A holding folder left behind by a crash is one step of deletions nobody
     # can reach any more: clear it on the way in rather than growing it.
@@ -78,12 +79,26 @@ def sweep_holding_dir() -> None:
     directory = holding_dir()
     if directory is None or not directory.exists():
         return
+    import shutil
+
     for path in directory.iterdir():
         try:
-            if path.is_file():
+            if path.is_dir():
+                shutil.rmtree(path, ignore_errors=True)
+            elif path.is_file():
                 path.unlink(missing_ok=True)
         except OSError:
             continue
+
+
+def _step_dir() -> Path | None:
+    """A holding folder of its own for one step: ten steps may wait at once."""
+    directory = holding_dir()
+    if directory is None:
+        return None
+    import uuid
+
+    return directory / uuid.uuid4().hex
 
 
 def remember(
@@ -133,7 +148,7 @@ def hold_or_delete(paths: list[Path]) -> dict[Path, Path]:
     slot, or no data directory, the files are deleted outright exactly as
     before: undo must never turn a delete into a leak.
     """
-    directory = holding_dir()
+    directory = _step_dir()
     if _slot is None or directory is None:
         for path in paths:
             try:
@@ -161,7 +176,7 @@ def capturing_deletes() -> Iterator[dict[Path, Path]]:
     from quill.core.podcasts import retention
 
     held: dict[Path, Path] = {}
-    directory = holding_dir()
+    directory = _step_dir()
     if _slot is None or directory is None:
         yield held
         return
@@ -222,6 +237,14 @@ class UndoLastMixin:
             feature_id="core.app",
         )
         commands.register_non_repeatable("app.undo_last")
+        binding_for = getattr(self, "_binding_for", None)
+        commands.try_register(
+            "app.undo_history",
+            "Undo History",
+            self.open_undo_history,
+            binding_for("app.undo_history") if callable(binding_for) else None,
+            feature_id="core.app",
+        )
 
     def undo_last_menu_label(self) -> str:
         """ "Undo Unsubscribe" / "Undo" -- what the menu item should read."""
@@ -245,3 +268,9 @@ class UndoLastMixin:
             return
         if callable(announce):
             announce(action.done())
+
+    def open_undo_history(self) -> None:
+        """Edit > Undo History...: the last ten steps, each with its own Undo."""
+        from quill.ui.undo_history_dialog import show_undo_history
+
+        show_undo_history(self)

@@ -85,6 +85,13 @@ ejs_datas, ejs_binaries, ejs_hidden = collect_all("yt_dlp_ejs")
 ytdlp_datas += ejs_datas
 ytdlp_binaries += ejs_binaries
 ytdlp_hidden += ejs_hidden
+# chat-downloader: Quill Radio's Live Chat window. Imported lazily, and it
+# ships a JSON format table (formatting/custom_formats.json) the tracer cannot
+# see, so it is collected the same way.
+chat_datas, chat_binaries, chat_hidden = collect_all("chat_downloader")
+ytdlp_datas += chat_datas
+ytdlp_binaries += chat_binaries
+ytdlp_hidden += chat_hidden
 
 # mutagen: Quill Converter carries cover art into the formats FFmpeg drops it
 # from (quill/core/audio/cover_art.py), and QUILL writes MP3 chapter frames

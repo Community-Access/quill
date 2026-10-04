@@ -186,3 +186,35 @@ def test_an_older_history_file_reads_as_never_welcomed() -> None:
             json.dumps({"resume_on_launch": True}), encoding="utf-8"
         )
         assert load_history(data_dir).onboarding.completed_first_run is False
+
+
+def test_one_question_where_to_land_and_done_keeps_it() -> None:
+    """qc.md section 14: First Run asks only where to land; Done keeps it."""
+    from types import SimpleNamespace
+
+    from quill.ui.podcasts.first_run_dialog import FirstRunDialog
+
+    host = _Host()
+    settings = SimpleNamespace(default_launch_view="")
+    host._podcast_library.settings = settings  # type: ignore[attr-defined]
+    saved: list[str] = []
+    dialog = FirstRunDialog(
+        host.frame,
+        state=OnboardingState(),
+        show_modal_dialog=lambda _d, _t: wx.ID_OK,
+        launch_view="",
+        on_launch_place=saved.append,
+    )
+    dialog._place.SetSelection(dialog._places.index("favorites"))
+    dialog.show()
+    assert saved == ["favorites"]
+
+    skipped: list[str] = []
+    dialog = FirstRunDialog(
+        host.frame,
+        state=OnboardingState(),
+        show_modal_dialog=lambda _d, _t: wx.ID_CANCEL,
+        on_launch_place=skipped.append,
+    )
+    dialog.show()
+    assert skipped == []

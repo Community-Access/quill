@@ -137,6 +137,10 @@ def insert_edit_menu(host: object, menu_bar: object, wx: object, *, position: in
     host._keep_menu_ids(undo_id)
     edit_menu.Append(undo_id, host._menu_label("&Undo Last Action", "app.undo_last"))
     host.frame.Bind(wx.EVT_MENU, lambda _e: host.undo_last_action(), id=undo_id)
+    history_id = wx.NewIdRef()
+    host._keep_menu_ids(history_id)
+    edit_menu.Append(history_id, host._menu_label("Undo &History...", "app.undo_history"))
+    host.frame.Bind(wx.EVT_MENU, lambda _e: host.open_undo_history(), id=history_id)
     menu_bar.Insert(position, edit_menu, _edit_label(menu_bar))
     return undo_id
 

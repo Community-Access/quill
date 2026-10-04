@@ -302,7 +302,9 @@ def find_chapters_for_episode(host: Any, show: Any, episode: Any) -> None:
         host._wx.CallAfter(_apply, host, show_id, guid, answer)
 
     def _failed(*_args: object) -> None:
-        host._wx.CallAfter(host._announce, "Could not look for chapters in this episode.")
+        from quill.ui.podcasts.failure_report import report_failure
+
+        report_failure(host, "Could not look for chapters in this episode.")
 
     host._task_manager.submit(
         "podcast-chapter-inference", _work, on_success=_done, on_failure=_failed

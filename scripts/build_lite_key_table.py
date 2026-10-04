@@ -88,19 +88,39 @@ def render() -> str:
         # they name gets its own heading from the rows that do carry keys.
         if kind in {"sep", "sub"}:
             continue
+        # A row with no key (Release Channel, rules 4 and 9) is reached from its
+        # menu; a key table has nothing to say about it.
+        if not key:
+            continue
         if menu not in grouped:
             order.append(menu)
             grouped[menu] = []
         grouped[menu].append((key, plain_label(label)))
+    # A submenu sits one heading level below its menu, so heading navigation
+    # walks the same tree the menu bar does: "### Edit", then "#### Matches"
+    # inside it. Each menu comes first, then its submenus, whatever order the
+    # rows happen to be declared in.
+    parents: list[str] = []
     for menu in order:
+        parent, _child = split_menu(menu)
+        if parent not in parents:
+            parents.append(parent)
+    for parent in parents:
         if lines and lines[-1] != "":
             lines.append("")  # a heading needs air above it, in Markdown and by ear
-        parent, child = split_menu(menu)
-        # "Edit|Selection" is the table's way of saying "submenu"; a reader
-        # wants the path, not the separator.
-        heading = f"{plain_label(parent)} ▸ {plain_label(child)}" if child else plain_label(parent)
-        lines += [f"### {heading}", "", "| Key | Command |", "|---|---|"]
-        lines += [f"| **{key}** | {label} |" for key, label in grouped[menu]]
+        lines += [f"### {plain_label(parent)}", ""]
+        if parent in grouped:
+            lines += ["| Key | Command |", "|---|---|"]
+            lines += [f"| **{key}** | {label} |" for key, label in grouped[parent]]
+        else:
+            lines.append("Everything in this menu is in the submenus below.")
+        for menu in order:
+            menu_parent, child = split_menu(menu)
+            if menu_parent != parent or not child:
+                continue
+            lines += ["", f"#### {plain_label(child)} (in {plain_label(parent)})", ""]
+            lines += ["| Key | Command |", "|---|---|"]
+            lines += [f"| **{key}** | {label} |" for key, label in grouped[menu]]
     lines += ["", "### Built per window", "", "| Key | Command |", "|---|---|"]
     lines += [f"| {key} | {what} |" for key, what in _PER_WINDOW]
     # The aliases are bound, and they appear in no menu label -- so a table

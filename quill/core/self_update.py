@@ -63,6 +63,14 @@ def build_apply_update_script(
     also_wait_for: Sequence[int] = (),
     relaunch: bool = True,
     wait_limit_seconds: int | None = _PID_WAIT_SECONDS,
+    channel: str = "",
+    setup_log: Path | None = None,
+    swap: bool = False,
+    health_marker: Path | None = None,
+    result_file: Path | None = None,
+    from_version: str = "",
+    to_version: str = "",
+    rollback_setup: Path | None = None,
 ) -> str:
     """The Windows ``.bat`` that applies an update after this process exits (pure).
 
@@ -86,6 +94,18 @@ def build_apply_update_script(
     launcher, which holds ``QuillRadio.exe`` open until the app exits.
     ``relaunch=False`` with ``wait_limit_seconds=None`` is "update when I
     close": wait however long the app stays open, apply, and leave it closed.
+
+    ``channel`` (release channels, plan 6.6) is passed to the installer as
+    ``/CHANNEL=<channel>``, which puts a shared-runtime app's runtime in that
+    channel's slot (``installer/shared-runtime.iss``); ``setup_log`` becomes
+    ``/LOG="<path>"`` so a failed install leaves Inno's own account of it.
+
+    Phase 4 of release channels: ``swap=True`` updates a portable copy by
+    swapping folders (``.previous`` kept for an undo) instead of copying over
+    itself; ``health_marker`` makes the helper wait for the relaunched app to
+    say it started, and undo the update -- the ``.previous`` folder, or
+    ``rollback_setup`` for an installed copy -- when it never does
+    (:mod:`quill.core.updater.apply_script`).
     """
     if mode == "portable" and source_dir is None:
         raise SelfUpdateError("Portable apply needs a staged source directory.")
@@ -127,21 +147,39 @@ def build_apply_update_script(
         'echo [apply] app exited (waited %WAITED%s) >>"%LOG%" 2>&1',
     ]
     if mode == "portable":
-        lines += [
-            f'echo [apply] robocopy "{source_dir}" -> "{install_dir}" (xd data) >>"%LOG%" 2>&1',
-            # /IS forces same-size/same-timestamp files to be overwritten too, so
-            # the install becomes exactly the new version -- never skipping a
-            # changed-but-same-size file (and making the swap deterministic).
+        # /IS forces same-size/same-timestamp files to be overwritten too, so
+        # the install becomes exactly the new version -- never skipping a
+        # changed-but-same-size file (and making the swap deterministic).
+        mirror = (
             f'robocopy "{source_dir}" "{install_dir}" /MIR /IS /XD "{data_dir}" '
-            f'/R:2 /W:1 /NP >>"%LOG%" 2>&1',
-            'echo [apply] robocopy exit %ERRORLEVEL% >>"%LOG%" 2>&1',
-        ]
+            f'/R:2 /W:1 /NP >>"%LOG%" 2>&1'
+        )
+        if swap and source_dir is not None:
+            from quill.core.updater.apply_script import swap_lines
+
+            lines += swap_lines(
+                source_dir=source_dir,
+                install_dir=install_dir,
+                data_dirname=data_dirname,
+                mir_fallback=mirror,
+            )
+        else:
+            lines += [
+                f'echo [apply] robocopy "{source_dir}" -> "{install_dir}" (xd data) >>"%LOG%" 2>&1',
+                mirror,
+                'echo [apply] robocopy exit %ERRORLEVEL% >>"%LOG%" 2>&1',
+            ]
     else:
+        setup_args = ["'/VERYSILENT'", "'/SUPPRESSMSGBOXES'", "'/NORESTART'"]
+        if channel:
+            setup_args.append(f"'/CHANNEL={channel}'")
+        if setup_log is not None:
+            setup_args.append(f'\'/LOG=""{setup_log}""\'')
         lines += [
             f'echo [apply] running installer "{setup_exe}" >>"%LOG%" 2>&1',
             "powershell -NoProfile -Command "
             f"\"Start-Process -FilePath '{setup_exe}' "
-            "-ArgumentList '/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART' "
+            f"-ArgumentList {','.join(setup_args)} "
             f'-Verb RunAs -Wait" >>"%LOG%" 2>&1',
             'echo [apply] installer done %ERRORLEVEL% >>"%LOG%" 2>&1',
         ]
@@ -150,10 +188,26 @@ def build_apply_update_script(
     # what the apply log should show.
     arguments = " ".join(f'"{arg}"' if (not arg or " " in arg) else arg for arg in relaunch_args)
     if relaunch:
+        start = f'start "" "{exe_path}" {arguments}'.rstrip()
         lines += [
             f'echo [apply] relaunching "{exe_path}" {arguments} >>"%LOG%" 2>&1',
-            f'start "" "{exe_path}" {arguments}'.rstrip(),
+            start,
         ]
+        if health_marker is not None and result_file is not None:
+            from quill.core.updater.apply_script import health_lines
+
+            lines += health_lines(
+                marker=health_marker,
+                result_file=result_file,
+                from_version=from_version,
+                to_version=to_version,
+                relaunch=start,
+                portable=mode == "portable",
+                install_dir=install_dir,
+                data_dirname=data_dirname,
+                rollback_setup=rollback_setup,
+                setup_args=[f"'/CHANNEL={channel}'"] if channel else [],
+            )
     else:
         lines.append('echo [apply] not relaunching: updated on close >>"%LOG%" 2>&1')
     if mode == "portable" and source_dir is not None:
@@ -358,6 +412,24 @@ def _launch_outside_job(command: list[str], cwd: Path) -> None:
         )
 
 
+def running_app_key() -> str:
+    """The family key of the app this process is (``radio``), ``quill`` for QUILL."""
+    from quill.core.runtime_apps import app_for_module
+
+    app = app_for_module(main_module())
+    return app.ref_id if app is not None else "quill"
+
+
+def running_channel() -> str:
+    """The release channel this app is on, for the installer's ``/CHANNEL=``."""
+    try:
+        from quill.core.updater.channels import state_for
+
+        return state_for(running_app_key()).channel
+    except Exception:  # noqa: BLE001 - unknown: the installer decides by version
+        return ""
+
+
 def begin_self_update(
     *,
     download_path: Path,
@@ -365,6 +437,8 @@ def begin_self_update(
     app_data_dir: Path,
     pid: int | None = None,
     when: str = "now",
+    channel: str | None = None,
+    version: str = "",
 ) -> None:
     """Apply the already-downloaded update at ``download_path`` and relaunch.
 
@@ -401,6 +475,33 @@ def begin_self_update(
         "wait_limit_seconds": None if on_close else _PID_WAIT_SECONDS,
     }
 
+    # Release channels, Phase 4: the health check and the undo. The pending
+    # note and the kept installer live in quill.core.updater.apply.
+    from quill.core.updater import apply as kept
+    from quill.core.updater.profiles import PROFILES
+
+    previous = kept.installed_version(updates_dir)
+    health: dict[str, object] = {}
+    # Only apps that confirm their start (quill.ui.updates.started) can be
+    # health-checked; any other app would be undone for staying silent.
+    if version and not on_close and running_app_key() in PROFILES:
+        health = {
+            "health_marker": kept.started_marker(updates_dir, version),
+            "result_file": kept.result_path(updates_dir),
+            "from_version": previous,
+            "to_version": version,
+            "rollback_setup": None if portable else kept.rollback_setup_for(updates_dir, previous),
+        }
+    if version:
+        kept.record_pending(
+            updates_dir,
+            app_key=running_app_key(),
+            from_version=previous,
+            to_version=version,
+            setup=None if portable else download_path,
+            portable_previous=Path(f"{install_dir}.previous") if portable else None,
+        )
+
     if portable:
         staging = updates_dir / "staging"
         source = stage_portable_update(download_path, staging, exe_name=exe_path.name)
@@ -412,6 +513,8 @@ def begin_self_update(
             log_path=log_path,
             source_dir=source,
             relaunch_args=relaunch_args,
+            swap=True,
+            **health,  # type: ignore[arg-type]
             **timing,  # type: ignore[arg-type]
         )
     else:
@@ -423,6 +526,9 @@ def begin_self_update(
             log_path=log_path,
             setup_exe=download_path,
             relaunch_args=relaunch_args,
+            channel=running_channel() if channel is None else channel,
+            setup_log=updates_dir / f"setup-{download_path.stem}.log",
+            **health,  # type: ignore[arg-type]
             **timing,  # type: ignore[arg-type]
         )
     helper_dir = Path(tempfile.gettempdir()) / "quill-apply-update"
@@ -437,6 +543,8 @@ __all__ = [
     "launcher_exe",
     "main_module",
     "relaunch_command",
+    "running_app_key",
+    "running_channel",
     "stage_portable_update",
     "write_and_launch_helper",
 ]

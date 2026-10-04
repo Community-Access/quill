@@ -284,18 +284,13 @@ class FolderPickerDialog:
         self._library.delete_folder(folder_id, contents="promote")
 
     def _on_rename(self, _event: object) -> None:
-        wx = self._wx
         folder_id = self._selected_folder_id()
         if folder_id is None:
             return
         current = next((f.name for f in self._folders() if f.id == folder_id), "")
-        dialog = wx.TextEntryDialog(self.dialog, "Folder name:", "Rename Folder", value=current)
-        try:
-            if dialog.ShowModal() != wx.ID_OK:  # dialog_button_contract: exempt
-                return
-            name = dialog.GetValue().strip()
-        finally:
-            dialog.Destroy()
+        from quill.ui.podcasts.folder_prompt import folder_name_prompt
+
+        name = folder_name_prompt(self.dialog, current=current, announce=self._announce)
         if not name or name == current:
             return
         if self._rename_folder(folder_id, name):
@@ -333,15 +328,10 @@ class FolderPickerDialog:
         self._rebuild_tree(select_folder_id=selected)
 
     def _on_new_folder(self, _event: object) -> None:
-        wx = self._wx
         parent_folder_id = self._selected_folder_id()
-        dialog = wx.TextEntryDialog(self.dialog, "Folder name:", "New Folder")
-        try:
-            if dialog.ShowModal() != wx.ID_OK:  # dialog_button_contract: exempt
-                return
-            name = dialog.GetValue().strip()
-        finally:
-            dialog.Destroy()
+        from quill.ui.podcasts.folder_prompt import folder_name_prompt
+
+        name = folder_name_prompt(self.dialog, announce=self._announce)
         if not name:
             return
         folder = self._create_folder(name, parent_folder_id)

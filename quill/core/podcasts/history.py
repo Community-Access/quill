@@ -139,6 +139,19 @@ class PodcastHistory:
     notify_import_finished: bool = True
     launch_digest: bool = True
     toasts_enabled: bool = True
+    #: Say what plays next about ten seconds before an episode ends (qc.md 18.4).
+    announce_up_next: bool = True
+    #: Sound, speech, both or silent for a one-key action's outcome (qc.md 18.7).
+    action_feedback: str = "both"
+    #: Defaults for a new watched folder (qc.md 5d): Preferences > Data.
+    wf_default_original: str = "keep"
+    wf_default_tell: str = "each"
+    wf_default_min_seconds: int = 30
+    wf_default_subfolders: bool = True
+    #: Personal Audio arrivals also wait in the Inbox (qc.md 5d), off.
+    inbox_personal_audio: bool = False
+    #: Share the family's shared choices with the other Quill apps (qc.md X-05).
+    share_family_prefs: bool = False
     last_seen_at: str = ""
     #: Look for new episodes on a timer. Named exactly as
     #: :class:`quill.core.settings.Settings` names them, because
@@ -213,6 +226,8 @@ _SWITCHES: tuple[str, ...] = (
     "notify_import_finished",
     "launch_digest",
     "toasts_enabled",
+    "announce_up_next",
+    "wf_default_subfolders",
 )
 
 
@@ -287,8 +302,23 @@ def load_history(data_dir: Path) -> PodcastHistory:
             history.ai_privacy_accepted_version = 0
         history.ai_own_key_model = str(raw.get("ai_own_key_model", "") or "")
         history.episode_filter = str(raw.get("episode_filter", "all") or "all")
+        from quill.core.action_feedback import coerce as _feedback
+
+        history.action_feedback = (
+            _feedback(raw.get("action_feedback", "both")).value
+            if raw.get("action_feedback") is not None
+            else "both"
+        )
         for switch in _SWITCHES:
             setattr(history, switch, bool(raw.get(switch, True)))
+        history.inbox_personal_audio = bool(raw.get("inbox_personal_audio", False))
+        history.share_family_prefs = bool(raw.get("share_family_prefs", False))
+        history.wf_default_original = str(raw.get("wf_default_original", "keep") or "keep")
+        history.wf_default_tell = str(raw.get("wf_default_tell", "each") or "each")
+        try:
+            history.wf_default_min_seconds = max(0, int(raw.get("wf_default_min_seconds", 30)))
+        except (TypeError, ValueError):
+            history.wf_default_min_seconds = 30
         history.last_seen_at = str(raw.get("last_seen_at", "") or "")
         from quill.core.ai.own_key import normalize_provider
 
@@ -338,7 +368,13 @@ def save_history(data_dir: Path, history: PodcastHistory) -> None:
                 "ai_own_key_model": history.ai_own_key_model,
                 "ai_own_key_provider": history.ai_own_key_provider,
                 "episode_filter": history.episode_filter,
+                "action_feedback": history.action_feedback,
                 **{switch: getattr(history, switch, True) for switch in _SWITCHES},
+                "inbox_personal_audio": history.inbox_personal_audio,
+                "share_family_prefs": history.share_family_prefs,
+                "wf_default_original": history.wf_default_original,
+                "wf_default_tell": history.wf_default_tell,
+                "wf_default_min_seconds": history.wf_default_min_seconds,
                 "last_seen_at": history.last_seen_at,
                 # transcript_detail was read by load_history and missing from this
                 # list, so it has never persisted: a listener chose how much

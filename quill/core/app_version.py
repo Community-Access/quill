@@ -48,6 +48,8 @@ __all__ = [
     "installed_version",
     "marker_roots",
     "read_marker",
+    "read_marker_value",
+    "runtime_slot",
 ]
 
 MARKER_NAME = "quill-app-version.ini"
@@ -67,6 +69,33 @@ def read_marker(root: Path | None) -> str:
         return ""
     value = parser.get("app", "version", fallback="").strip()
     return value if _VERSION_RE.match(value) else ""
+
+
+def read_marker_value(root: Path | None, section: str, key: str) -> str:
+    """Any other value the installer recorded: ``[app] channel=``, ``[runtime] slot=``.
+
+    The installer writes the channel the install was made for and the runtime
+    slot it put the runtime in (release channels, plan 6.5). "" when absent.
+    """
+    if root is None:
+        return ""
+    parser = configparser.ConfigParser()
+    try:
+        if not parser.read(root / MARKER_NAME, encoding="utf-8"):
+            return ""
+    except (OSError, configparser.Error, UnicodeDecodeError):
+        return ""
+    return parser.get(section, key, fallback="").strip()
+
+
+def runtime_slot(root: Path | None = None) -> str:
+    """The shared-runtime slot this install runs from (``3.13``, ``3.13-beta``), or ""."""
+    roots = [root] if root is not None else marker_roots()
+    for candidate in roots:
+        slot = read_marker_value(candidate, "runtime", "slot")
+        if slot:
+            return slot
+    return ""
 
 
 def marker_roots() -> list[Path]:

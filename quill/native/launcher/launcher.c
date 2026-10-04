@@ -348,7 +348,25 @@ int wmain(int argc, wchar_t *wargv[])
          * if its own runtime is missing. A portable launcher has no URL, so
          * ql_bootstrap_runtime returns at once and it says what is wrong. If
          * the user declines or it fails, fall back to the clean error. */
-        if (ql_bootstrap_runtime(PRODUCT_DISPLAY_NAME, PRODUCT_RUNTIME_URL) != 0 ||
+        /* Release channels: a Beta app repairs from runtime-beta, and a Dev
+         * app does not repair itself at all -- it says to reinstall. */
+        char heal_url[1024];
+        if (ql_runtime_url_for_slot(PRODUCT_RUNTIME_URL, runtime.slot,
+                                    heal_url, sizeof(heal_url)) != 0) {
+            char dev_msg[1024];
+            snprintf(dev_msg, sizeof(dev_msg),
+                "%s is a Dev version, and the engine it runs on is missing from "
+                "this computer.\n\n"
+                "Dev versions don't repair themselves. Reinstall the Dev build of %s, "
+                "or install the Stable version from the QuillVille website. "
+                "The application will now exit.",
+                PRODUCT_DISPLAY_NAME, PRODUCT_DISPLAY_NAME);
+            show_error(PRODUCT_DISPLAY_NAME, dev_msg);
+            for (int i = 0; i < argc; ++i) free(argv[i]);
+            free(argv);
+            return 2;
+        }
+        if (ql_bootstrap_runtime(PRODUCT_DISPLAY_NAME, heal_url) != 0 ||
             ql_resolve_runtime(self_path, &runtime) != 0 || !runtime.python[0]) {
             for (int i = 0; i < argc; ++i) free(argv[i]);
             free(argv);

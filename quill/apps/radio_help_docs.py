@@ -14,7 +14,7 @@ from typing import Any
 #: Which document each Help-menu item opens, by its file stem.
 DOC_TITLES: dict[str, str] = {
     "userguide": "Quill Radio User Guide",
-    "release-notes-3.1": "Quill Radio Release Notes",
+    "release-notes-3.2": "Quill Radio Release Notes",
     "prd": "Quill Radio Product Requirements",
     "tutorials": "Quill Radio Tutorials",
 }
@@ -68,7 +68,7 @@ def install_help_items(host: Any, help_menu: Any, wx: Any) -> list[Any]:
     frame.Bind(wx.EVT_MENU, lambda _e: host.open_radio_tutorials(), id=ids["tutorials"])
     for name, stem in (
         ("guide", "userguide"),
-        ("notes", "release-notes-3.1"),
+        ("notes", "release-notes-3.2"),
         ("prd", "prd"),
     ):
         frame.Bind(wx.EVT_MENU, lambda _e, s=stem: open_doc(host, s), id=ids[name])

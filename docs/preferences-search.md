@@ -28,6 +28,21 @@ custom section panels follow the same rule. Search never presses action buttons;
 it puts keyboard focus on them. Standard control names and native focus changes
 are left to the screen reader rather than announced twice.
 
+## Where else search reaches
+
+* **Windows built one part at a time.** QUILL Cast's Preferences shows one
+  section at a time, so a search over what is on screen could only find the
+  section showing. It searches every section; choosing a match shows its
+  section and focuses the setting.
+* **Apps whose settings are menu options.** Quill Converter, Quill Media
+  Player and Quill Inkwell have no settings window. **Help > Find a Setting or
+  Command** (Ctrl+Alt+Shift+S) searches every menu row; Enter does the row as
+  its menu would, and an option says whether it is now on or off.
+* **Settings shown as a web form.** A form made of switches and choices, such
+  as GLOW Accessibility, gets a Find a setting box at the top; Enter moves to
+  the first match. With a screen reader running the same form is native and
+  gets the ordinary search.
+
 ## Current Coverage
 
 - QUILL: the Preferences category hub and native Settings/Preferences dialogs

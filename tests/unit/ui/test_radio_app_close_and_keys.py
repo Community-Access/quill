@@ -854,9 +854,11 @@ def test_the_main_window_answers_go_to_player_like_every_other_window() -> None:
 
     from quill.core.radio import transport_commands
 
-    source = (Path(__file__).resolve().parents[3] / "quill" / "apps" / "radio.py").read_text(
-        encoding="utf-8"
-    )
+    # The menu bar moved to radio_menu_bar.py under F-08 (2026-10-03).
+    apps = Path(__file__).resolve().parents[3] / "quill" / "apps"
+    source = (apps / "radio.py").read_text(encoding="utf-8") + (
+        apps / "radio_menu_bar.py"
+    ).read_text(encoding="utf-8")
     command = transport_commands.command(transport_commands.GO_TO_PLAYER)
     assert command is not None
     assert f"Go to Player\t{command.key}" in source, (

@@ -34,7 +34,7 @@
 ; /dAppVersion=<version> to ISCC. The literal below is only the fallback for a
 ; manual ISCC run and must be kept in step with build_release.ps1's $version.
 #ifndef AppVersion
-  #define AppVersion "3.1.1"
+  #define AppVersion "3.2.0"
 #endif
 #define AppPublisher "Community Access"
 #define AppURL "https://github.com/Community-Access/quill-radio"
@@ -77,7 +77,7 @@ AppPublisher={#AppPublisher}
 AppPublisherURL={#AppURL}
 AppSupportURL={#AppURL}
 AppUpdatesURL={#AppURL}
-VersionInfoVersion=3.1.1.0
+VersionInfoVersion=3.2.0.0
 VersionInfoCompany={#AppPublisher}
 VersionInfoDescription={#AppName} accessible internet radio (shared runtime)
 DefaultDirName={autopf}\{#AppName}

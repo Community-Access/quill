@@ -116,7 +116,9 @@ def main(argv: list[str] | None = None) -> int:
             data_dir, app_id, version = _data_dir(), args[1], args[2]
             runtime_refs.unregister(data_dir, app_id)
             # Signal the installer whether the shared runtime is now orphaned.
-            if runtime_refs.is_referenced(data_dir, version):
+            # By slot: a Beta slot goes when its last app goes, and an older
+            # app registered as "3.13.1" still keeps the Stable slot alive.
+            if runtime_refs.slot_referenced(data_dir, version):
                 return 0
             return _UNREFERENCED_EXIT
         if command == "is-referenced":

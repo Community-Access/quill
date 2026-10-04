@@ -38,6 +38,8 @@ from pathlib import Path
 
 __all__ = [
     "HELD_DIR_NAME",
+    "HISTORY_LIMIT",
+    "UndoHistory",
     "UndoSlot",
     "UndoableAction",
     "discard_held",
@@ -135,6 +137,65 @@ class UndoSlot:
             action.dispose()
         except Exception:  # noqa: BLE001 - a disposer bug must not break the app
             pass
+
+
+#: How many steps Undo History keeps (qc.md section 18 item 12).
+HISTORY_LIMIT = 10
+
+
+@dataclass(slots=True)
+class UndoHistory(UndoSlot):
+    """The last ten undoable steps, newest first (qc.md section 18 item 12).
+
+    Ctrl+Z is unchanged: it takes the newest step, once, so nobody has to count
+    presses -- the reason the slot was never a stack. What this adds is a list
+    for the case where the mistake was three actions ago: each row carries its
+    own Undo, and taking one does not disturb the others. The eleventh step
+    disposes of the oldest, which is when its held files are truly deleted.
+    """
+
+    _older: list[UndoableAction] = field(default_factory=list, repr=False)
+
+    def remember(self, action: UndoableAction) -> None:
+        current = self._action
+        if current is not None:
+            self._older.insert(0, current)
+        self._action = action
+        while len(self._older) > HISTORY_LIMIT - 1:
+            dropped = self._older.pop()
+            if dropped.dispose is not None:
+                try:
+                    dropped.dispose()
+                except Exception:  # noqa: BLE001 - a disposer bug must not break the app
+                    pass
+
+    def take(self) -> UndoableAction | None:
+        action = self._action
+        self._action = self._older.pop(0) if self._older else None
+        return action
+
+    def entries(self) -> list[UndoableAction]:
+        """Every held step, newest first."""
+        return ([self._action] if self._action is not None else []) + list(self._older)
+
+    def take_at(self, index: int) -> UndoableAction | None:
+        """The step at *index* in :meth:`entries`, removed from the list."""
+        if index == 0:
+            return self.take()
+        older = index - 1 if self._action is not None else index
+        if 0 <= older < len(self._older):
+            return self._older.pop(older)
+        return None
+
+    def clear(self) -> None:
+        for action in self.entries():
+            if action.dispose is not None:
+                try:
+                    action.dispose()
+                except Exception:  # noqa: BLE001
+                    pass
+        self._action = None
+        self._older = []
 
 
 # -- holding deleted files ------------------------------------------------------

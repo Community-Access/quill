@@ -196,20 +196,39 @@ def _strip_latex_delimiters(text: str) -> str:
     return t
 
 
-def _convert_mathml_to_speech(mathml_str: str) -> str:
-    try:
-        mathml_str = html.unescape(mathml_str)
-        from quill.core.math.mathml import parse_mathml
-        from quill.core.math.navigator import _normalize
-        from quill.core.math.speech import speak
+_XML_ENTITIES = re.compile(r"&(lt|gt|amp|quot|apos|#\d+|#x[0-9a-fA-F]+);")
 
-        root = parse_mathml(mathml_str)
-        normalized = _normalize(root)
-        return speak(normalized)
-    except Exception:
-        without_tags = re.sub(r"<[^>]+>", " ", mathml_str)
-        decoded = html.unescape(without_tags)
-        return " ".join(decoded.split())
+
+def _html_entities_only(text: str) -> str:
+    """Decode HTML's named entities (&nbsp;, &InvisibleTimes;) and leave XML's
+    own five, so an escaped ``&lt;`` stays a less-than sign in the parsed tree."""
+    kept: list[str] = []
+
+    def _park(match: re.Match[str]) -> str:
+        kept.append(match.group(0))
+        return f"\x00{len(kept) - 1}\x00"
+
+    parked = _XML_ENTITIES.sub(_park, text)
+    decoded = html.unescape(parked)
+    return re.sub("\x00(\\d+)\x00", lambda m: kept[int(m.group(1))], decoded)
+
+
+def _convert_mathml_to_speech(mathml_str: str) -> str:
+    """Speak a MathML island. Parsed *before* any unescaping (PR #1618, qc.md
+    X-08): unescaping first turned ``<mo>&lt;</mo>`` into a bare ``<``, the parse
+    failed, and the symbol was lost from what was spoken."""
+    from quill.core.math.mathml import parse_mathml
+    from quill.core.math.navigator import _normalize
+    from quill.core.math.speech import speak
+
+    for candidate in (mathml_str, _html_entities_only(mathml_str)):
+        try:
+            return speak(_normalize(parse_mathml(candidate)))
+        except Exception:  # noqa: BLE001 - try the next form, then plain text
+            continue
+    without_tags = re.sub(r"<[^>]+>", " ", mathml_str)
+    decoded = html.unescape(without_tags)
+    return " ".join(decoded.split())
 
 
 def _convert_latex_to_speech(latex_str: str) -> str:

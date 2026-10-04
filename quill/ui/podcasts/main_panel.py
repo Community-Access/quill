@@ -329,9 +329,11 @@ class CastMainPanelMixin(CastLibraryFindMixin):
         menu = wx.Menu()
         for label, handler in (
             ("&Open\tEnter", lambda: self._open_notice(notice_id)),
+            ("&Play Now\tCtrl+Enter", lambda: self._notice_verb(notice_id, "play")),
+            ("Add to &Queue\tSpace", lambda: self._notice_verb(notice_id, "queue")),
             ("Mark &Read", lambda: self._mark_notice_read(notice_id)),
             ("Mark All as R&ead", self.mark_all_notices_read),
-            ("&Remove\tDelete", lambda: self._dismiss_notice(notice_id)),
+            ("Re&move\tDelete", lambda: self._dismiss_notice(notice_id)),
             ("&Clear List", self.clear_all_notices),
         ):
             item = menu.Append(wx.ID_ANY, label)
@@ -380,6 +382,9 @@ class CastMainPanelMixin(CastLibraryFindMixin):
             if place_id:
                 self._move_place(place_id, -1 if event.GetKeyCode() == wx.WXK_UP else 1)
             return
+        extension = getattr(self, "_cast_extension_key", None)
+        if callable(extension) and extension(event):
+            return  # Ctrl+Home, Shift+Space (qc.md section 18)
         scan = getattr(self, "_scan_hold", None)
         if scan is not None and scan.handles(
             key_code=event.GetKeyCode(),

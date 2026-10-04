@@ -31,6 +31,42 @@ def _folder_step(host: Any, *, forward: bool) -> None:
         favorite_folder_actions.previous_in_folder(host, controller)
 
 
+def _youtube(host: Any, verb: str) -> None:
+    """Search YouTube... or Read Comments... for what is playing."""
+    if verb == "search":
+        from quill.ui.radio import youtube_search_ui
+
+        youtube_search_ui.search_youtube(host)
+        return
+    from quill.ui.radio import youtube_comments_ui
+
+    youtube_comments_ui.open_for_playing(host)
+
+
+def _youtube_more(host: Any, verb: str) -> None:
+    """Video > YouTube's four commands (radio_youtube_video_menu)."""
+    from quill.ui.radio import (
+        youtube_live_chat_ui,
+        youtube_search_filters_ui,
+        youtube_sponsorblock_ui,
+        youtube_video_window,
+    )
+
+    {
+        "chat": youtube_live_chat_ui.open_for_playing,
+        "video": youtube_video_window.open_for_playing,
+        "sponsorblock": youtube_sponsorblock_ui.open_settings,
+        "filters": youtube_search_filters_ui.search_with_filters,
+    }[verb](host)
+
+
+def _edit_playing_tags(host: Any) -> None:
+    """Edit Station Tags... for the station on air -- see station_tags_dialog."""
+    from quill.ui.radio.station_tags_dialog import edit_playing
+
+    edit_playing(host)
+
+
 def register_radio_commands(host: Any) -> None:
     for command_id, title, handler in (
         (
@@ -134,9 +170,45 @@ def register_radio_commands(host: Any) -> None:
             host.radio_import_youtube_subscriptions,
         ),
         (
+            "radio.search_youtube",
+            "Internet Radio: Search YouTube...",
+            lambda: _youtube(host, "search"),
+        ),
+        (
+            "radio.youtube_comments",
+            "Internet Radio: Read YouTube Comments...",
+            lambda: _youtube(host, "comments"),
+        ),
+        (
+            "radio.youtube_live_chat",
+            "Internet Radio: YouTube Live Chat...",
+            lambda: _youtube_more(host, "chat"),
+        ),
+        (
+            "radio.youtube_video",
+            "Internet Radio: YouTube Video Details...",
+            lambda: _youtube_more(host, "video"),
+        ),
+        (
+            "radio.youtube_sponsorblock",
+            "Internet Radio: Skip Sponsor Segments in YouTube Videos...",
+            lambda: _youtube_more(host, "sponsorblock"),
+        ),
+        (
+            "radio.youtube_search_filters",
+            "Internet Radio: Search YouTube with Filters...",
+            lambda: _youtube_more(host, "filters"),
+        ),
+        (
             "radio.song_history",
             "Internet Radio: Song History...",
             host.radio_song_history,
+        ),
+        (
+            # Your own searchable tags on what is on air (station_tags_dialog).
+            "radio.edit_station_tags",
+            "Internet Radio: Edit Tags for the Playing Station...",
+            lambda: _edit_playing_tags(host),
         ),
         (
             "radio.toggle_global_volume",
@@ -265,6 +337,8 @@ def register_radio_commands(host: Any) -> None:
     # the palette could change a setting and could not pause what was playing
     # (2026-08-18). Last on purpose -- register_commands skips any verb this
     # app already listed, so it has to see the table above first.
-    from quill.ui.radio import transport_keys
+    # Local Media: the window, adding files, and the playing playlist's steps.
+    from quill.ui.radio import local_media_commands, transport_keys
 
+    local_media_commands.register(host)
     transport_keys.register_commands(host, prefix="radio")

@@ -441,7 +441,9 @@ footer.site {
 }
 footer.site .wrap { display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: space-between; }
 footer.site nav ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.35rem; }
-footer.site h4 { margin: 0 0 0.5rem; font-size: 0.95rem; color: var(--text); }
+/* Footer headings are h2 on revised pages (the footer sits outside main, so its
+   headings start a new branch of the outline); h4 is kept for older pages. */
+footer.site h2, footer.site h4 { margin: 0 0 0.5rem; font-size: 0.95rem; color: var(--text); }
 footer.site .note { max-width: 22rem; font-size: 0.92rem; }
 
 .visually-hidden {
@@ -868,7 +870,8 @@ section.band.splash {
   text-transform: uppercase;
   font-size: 0.85rem;
 }
-.splash h1 {
+.splash h1,
+.splash h2.splash-title {
   font-size: clamp(2.1rem, 5.4vw, 3.4rem);
   line-height: 1.12;
   margin: 0 0 0.9rem;
@@ -902,7 +905,8 @@ section.band.splash {
 .splash-tiles .tile-3 { border-top-color: var(--tile-3); }
 .splash-tiles .tile-4 { border-top-color: var(--tile-4); }
 .splash-tiles .tile-5 { border-top-color: var(--tile-5); }
-.splash-tiles .tile h2 { font-size: 1.3rem; margin: 0.35rem 0 0.5rem; }
+.splash-tiles .tile h2,
+.splash-tiles .tile h3 { font-size: 1.3rem; margin: 0.35rem 0 0.5rem; }
 .splash-tiles .tile p { margin: 0 0 0.6rem; }
 .splash-tiles .tile p:last-child { margin-bottom: 0; }
 .splash-tiles .tile-key { margin: 0; font-weight: 700; color: var(--muted); }
@@ -926,7 +930,8 @@ section.band.splash {
   border-radius: var(--radius);
   max-width: var(--measure);
 }
-.splash-try h2 { margin: 0 0 0.6rem; font-size: 1.35rem; }
+.splash-try h2,
+.splash-try h3 { margin: 0 0 0.6rem; font-size: 1.35rem; }
 .splash-try ol { margin: 0 0 0.8rem; padding-left: 1.4rem; }
 .splash-try li { margin: 0.45rem 0; }
 .splash-try p { margin: 0; }
@@ -1219,3 +1224,124 @@ code.glyph {
    bases instead of one; a --border-strong row rule bands the table better
    anyway, at 4.04:1 against the 1.13:1 the stripe manages. */
 .cmp-keys tbody tr:nth-child(even) > * { background: none; }
+
+/* -- QUILLVille characters: QUILLBert and QUILLBee (2026-10-03) ---------------
+   One callout component for both characters, documented for contributors in
+   docs/quillville-characters.md. QUILLBert discovers; QUILLBee explains.
+
+   Markup (the label is real text and always comes first):
+
+     <div class="qv-callout qv-callout--bee">
+       <p class="qv-callout__label">QUILLBee's tip</p>
+       <p>...</p>
+     </div>
+
+   Variants: --bert, --bee, and --both for the rare two-line exchange, where
+   each line is a <p class="qv-line"> beginning with
+   <strong class="qv-line__who">QUILLBert:</strong>.
+
+   Who is speaking is carried by the label's WORDS. The second cue is a
+   border STYLE, because that is the one channel forced colours recolours
+   rather than discards: dashed for QUILLBert (he never quite stays inside the
+   lines), solid for QUILLBee, double for the pair. Hue is the third cue and
+   decorates only. Body text stays --text on a surface tint, so contrast is the
+   page's own in every theme; the two accent tokens are used on borders only
+   and clear 3:1 against --surface in both schemes anyway.
+
+   No ::before or ::after content: NVDA and JAWS speak generated content, so a
+   CSS badge would be read on top of the label (see the FAQ marker note above).
+   No animation, no hover effects, nothing focusable but ordinary links.
+
+   Artwork is optional and not yet drawn. An <img class="qv-callout__art"> may
+   sit straight after the label; it floats to the inline end and the box
+   contains it (display: flow-root). alt="" when the picture only repeats the
+   label, real alt text when it shows something the words do not. */
+:root {
+  --qv-bert: #9a4a12;
+  --qv-bee: #0b6b66;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --qv-bert: #f0a868;
+    --qv-bee: #5fd3c9;
+  }
+}
+.qv-callout {
+  --qv-accent: var(--border-strong);
+  display: flow-root;
+  max-width: var(--measure);
+  margin: 1.5rem 0;
+  padding: 0.9rem 1.1rem 1rem;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-left: 6px solid var(--qv-accent);
+  border-radius: var(--radius);
+}
+.qv-callout--bert {
+  --qv-accent: var(--qv-bert);
+  border-left-style: dashed;
+  background: color-mix(in srgb, var(--qv-bert) 6%, var(--surface));
+}
+.qv-callout--bee {
+  --qv-accent: var(--qv-bee);
+  background: color-mix(in srgb, var(--qv-bee) 6%, var(--surface));
+}
+.qv-callout--both {
+  --qv-accent: var(--qv-bee);
+  border-left: 7px double var(--qv-bert);
+  background: var(--surface);
+}
+/* The label: plain text in a small bordered badge. The badge border repeats
+   the box's style, so the two cues agree. */
+.qv-callout__label {
+  display: inline-block;
+  margin: 0 0 0.5rem;
+  padding: 0.05rem 0.7rem;
+  border: 2px solid var(--qv-accent);
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
+  color: var(--text);
+}
+.qv-callout--bert .qv-callout__label { border-style: dashed; }
+.qv-callout--both .qv-callout__label { border-style: double; border-width: 4px; border-color: var(--qv-bert); }
+.qv-callout p { margin: 0 0 0.6rem; max-width: none; color: var(--text); }
+.qv-callout p:last-child { margin-bottom: 0; }
+/* A heading is optional and only for a substantial callout. Whatever level the
+   page outline needs, it looks the same here, and the prose rule that gives
+   every h2 a top border does not reach inside. */
+.qv-callout h2,
+.qv-callout h3,
+.qv-callout h4,
+.prose .qv-callout h2,
+.prose .qv-callout h3 {
+  margin: 0.1rem 0 0.45rem;
+  padding: 0;
+  border: 0;
+  font-size: 1.15rem;
+}
+.qv-callout a { text-decoration: underline; }
+/* The two-character exchange: one paragraph per line, the speaker named in
+   text. Indented continuation lines keep each speaker's turn easy to find at
+   high zoom. */
+.qv-callout .qv-line { margin: 0 0 0.35rem; padding-left: 1.25rem; text-indent: -1.25rem; }
+.qv-line__who { font-weight: 700; }
+.qv-callout__art {
+  float: inline-end;
+  width: 5.5rem;
+  max-width: 30%;
+  height: auto;
+  margin: 0 0 0.5rem 1rem;
+}
+/* On the colour-washed splash and callout bands the box keeps its own
+   surface, so it never sits text-on-gradient. */
+.splash .qv-callout,
+.band.callout .qv-callout { background: var(--surface); }
+
+@media (forced-colors: active) {
+  /* Backgrounds go; the border styles stay and carry the difference. */
+  .qv-callout,
+  .qv-callout__label { border-color: CanvasText; }
+}

@@ -33,6 +33,7 @@ from pathlib import Path
 
 from quill.core.shell_verbs import ShellVerb, default_shell_verbs
 from quill.core.storage import write_json_atomic
+from quill.core.windows_editor import QUILL as QUILL_EDITOR
 
 # Product-name fallback. The canonical source is build/version.toml; this
 # constant from quill.branding is the safety default when the TOML is
@@ -896,6 +897,160 @@ def _render_readme(
     )
 
 
+def build_text_editor_registry_lines() -> list[str]:
+    """Return Inno ``[Registry]`` lines that register QUILL as a text editor.
+
+    Always written and never a takeover: a ProgID, an entry in each type's
+    ``OpenWithProgids``, ``Applications\\quill.exe`` and the ``Capabilities`` +
+    ``RegisteredApplications`` pair that lists QUILL in Settings > Default apps.
+    The choice of default stays the user's (a ``UserChoice`` key nothing here
+    touches). Generated from ``quill.core.windows_editor.QUILL`` -- the profile
+    Settings' Make QUILL My Text Editor writes for one account -- so the installer
+    and the command cannot offer different types. HKA is HKCU for a per-user
+    install and HKLM for an administrator one.
+    """
+    profile = QUILL_EDITOR
+    classes = "Software\\Classes"
+    progid = f"{classes}\\{profile.progid}"
+    application = f"{classes}\\Applications\\{{#AppExeName}}"
+    capabilities = profile.capabilities_key
+    command = '"""{app}\\{#AppExeName}"" -m ' + profile.module + ' ""%1"""'
+    icon = '"{app}\\{#AppExeName},0"'
+
+    def value(subkey: str, name: str, data: str, flags: str = "uninsdeletekey") -> str:
+        return (
+            f'Root: HKA; Subkey: "{subkey}"; ValueType: string; ValueName: "{name}";'
+            f" ValueData: {data}; Flags: {flags}"
+        )
+
+    lines = [
+        "; QUILL tells Windows it is a text editor that CAN open these types, on",
+        "; every install, and takes nothing over. Windows keeps the choice of which",
+        "; app opens a type for the user alone; these keys put QUILL in Open With and",
+        "; in Settings > Apps > Default apps, where that choice is made. Tools > Make",
+        "; QUILL My Text Editor writes the same keys for one account and opens that",
+        "; page. Generated from quill.core.windows_editor.QUILL (HKA: this user for",
+        "; a per-user install, the whole machine for an administrator one).",
+        value(progid, "", f'"{profile.app_name} Document"'),
+        value(progid, "FriendlyTypeName", f'"{profile.app_name} Document"'),
+        value(f"{progid}\\DefaultIcon", "", icon),
+        value(f"{progid}\\shell\\open\\command", "", command),
+        value(application, "FriendlyAppName", f'"{profile.app_name}"'),
+        value(f"{application}\\DefaultIcon", "", icon),
+        value(f"{application}\\shell\\open\\command", "", command),
+    ]
+    lines += [value(f"{application}\\SupportedTypes", ext, '""') for ext in profile.extensions]
+    lines += [
+        "; One value in each type's own list, removed on uninstall; the type's key",
+        "; is shared with every other app and is never deleted.",
+    ]
+    lines += [
+        value(f"{classes}\\{ext}\\OpenWithProgids", profile.progid, '""', "uninsdeletevalue")
+        for ext in profile.extensions
+    ]
+    owner = capabilities.rsplit("\\", 1)[0]
+    lines += [
+        "; Capabilities + RegisteredApplications: what Default apps lists QUILL by.",
+        f'Root: HKA; Subkey: "{owner}"; Flags: uninsdeletekeyifempty',
+        value(capabilities, "ApplicationName", f'"{profile.app_name}"'),
+        value(capabilities, "ApplicationDescription", f'"{profile.description}"'),
+        value(capabilities, "ApplicationIcon", icon),
+    ]
+    lines += [
+        value(f"{capabilities}\\FileAssociations", ext, f'"{profile.progid}"')
+        for ext in profile.extensions
+    ]
+    lines.append(
+        value(
+            "Software\\RegisteredApplications",
+            profile.app_name,
+            f'"{capabilities}"',
+            "uninsdeletevalue",
+        )
+    )
+    return lines
+
+
+#: Settings' Open QUILL instead of Notepad points every Notepad launch at this
+#: install through Image File Execution Options. Left behind by an uninstall,
+#: Notepad would stop opening at all, so the uninstaller takes those Debugger
+#: values out again: only values naming a program in this install's folder
+#: together with --notepad, in the parent key and the Windows 11 per-path
+#: subkeys. Another program's value -- QUILL Lite's included -- and
+#: Microsoft's own values are left alone. An event procedure, so it runs
+#: beside the data-removal prompt in the main CurUninstallStepChanged.
+_NOTEPAD_UNINSTALL_CODE: tuple[str, ...] = (
+    "// -- Uninstall: put Notepad back, if QUILL replaced it ------------------------",
+    "const",
+    "  NotepadIfeoKey = 'SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File"
+    " Execution Options\\notepad.exe';",
+    "",
+    "function DebuggerPointsHere(Key: String): Boolean;",
+    "var",
+    "  Value: String;",
+    "begin",
+    "  Result := RegQueryStringValue(HKLM64, Key, 'Debugger', Value) and",
+    "    (Pos(Lowercase(ExpandConstant('{app}\\')), Lowercase(Value)) > 0) and",
+    "    (Pos('--notepad', Lowercase(Value)) > 0);",
+    "end;",
+    "",
+    "function NotepadKeysPointingHere(var Keys: TArrayOfString): Integer;",
+    "var",
+    "  Names: TArrayOfString;",
+    "  I: Integer;",
+    "begin",
+    "  SetArrayLength(Keys, 0);",
+    "  if DebuggerPointsHere(NotepadIfeoKey) then",
+    "  begin",
+    "    SetArrayLength(Keys, 1);",
+    "    Keys[0] := NotepadIfeoKey;",
+    "  end;",
+    "  if RegGetSubkeyNames(HKLM64, NotepadIfeoKey, Names) then",
+    "    for I := 0 to GetArrayLength(Names) - 1 do",
+    "      if DebuggerPointsHere(NotepadIfeoKey + '\\' + Names[I]) then",
+    "      begin",
+    "        SetArrayLength(Keys, GetArrayLength(Keys) + 1);",
+    "        Keys[GetArrayLength(Keys) - 1] := NotepadIfeoKey + '\\' + Names[I];",
+    "      end;",
+    "  Result := GetArrayLength(Keys);",
+    "end;",
+    "",
+    "<event('CurUninstallStepChanged')>",
+    "procedure PutNotepadBack(CurUninstallStep: TUninstallStep);",
+    "var",
+    "  Keys: TArrayOfString;",
+    "  I, ResultCode: Integer;",
+    "  Params: String;",
+    "begin",
+    "  if (CurUninstallStep <> usUninstall) or (NotepadKeysPointingHere(Keys) = 0) then",
+    "    Exit;",
+    "  if IsAdmin then",
+    "  begin",
+    "    for I := 0 to GetArrayLength(Keys) - 1 do",
+    "      RegDeleteValue(HKLM64, Keys[I], 'Debugger');",
+    "  end",
+    "  else if not UninstallSilent then",
+    "  begin",
+    "    // One administrator prompt for every key, the same command the app runs.",
+    "    Params := '/d /s /c \"';",
+    "    for I := 0 to GetArrayLength(Keys) - 1 do",
+    "    begin",
+    "      if I > 0 then",
+    "        Params := Params + ' & ';",
+    "      Params := Params + '\"' + ExpandConstant('{sys}\\reg.exe') + '\" delete \"HKLM\\' +",
+    "        Keys[I] + '\" /v Debugger /f /reg:64';",
+    "    end;",
+    "    Params := Params + '\"';",
+    "    MsgBox('QUILL is still opening in place of Notepad. To put Notepad back, ' +",
+    "      'Windows will ask for administrator approval next.', mbInformation, MB_OK);",
+    "    ShellExec('runas', ExpandConstant('{cmd}'), Params, '', SW_HIDE,",
+    "      ewWaitUntilTerminated, ResultCode);",
+    "  end;",
+    "end;",
+    "",
+)
+
+
 def build_shell_verb_registry_lines(
     verbs: tuple[ShellVerb, ...] | list[ShellVerb] | None = None,
 ) -> list[str]:
@@ -1288,6 +1443,8 @@ def build_inno_setup_script(
             f'Root: HKCU; Subkey: "Software\\Classes\\{extension}\\OpenWithList\\{{#AppExeName}}";'
             " Flags: uninsdeletekey; Check: WantsFileAssoc"
         )
+    lines += [""]
+    lines += build_text_editor_registry_lines()
     lines += [
         "",
         '; "Send to Quill" file right-click verbs (SHELL-3). Generated from',
@@ -1686,6 +1843,7 @@ def build_inno_setup_script(
         "  Result := True;",
         "end;",
         "",
+        *_NOTEPAD_UNINSTALL_CODE,
         "// -- Uninstall: ask before wiping personal data ----------------------------",
         "procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);",
         "var",

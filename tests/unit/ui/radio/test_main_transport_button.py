@@ -188,7 +188,9 @@ def test_the_button_is_built_first_in_the_row_with_inline_help_and_follows_the_t
     host = _host(selected=_favorite("KSPN"))
     row = _Row()
     button = mtb.add_transport_button(host, None, row, _WX)
-    assert row.added == [button]
+    # Play/Stop first, then the station's Website (a listener's request, 2026-10).
+    assert row.added == [button, host._website_btn]
+    assert host._website_btn.label == "We&bsite"
     assert host._transport_btn is button
     assert button.label == "P&lay KSPN"
     assert "Ctrl+Period" in button.help

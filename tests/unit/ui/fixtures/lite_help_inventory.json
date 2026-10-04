@@ -25,6 +25,7 @@
   "quill/apps/lite_keymap_editor.py::KeymapEditorDialog._build_search_row::wx.ToggleButton": "helped",
   "quill/apps/lite_keymap_editor.py::ask_for_chord::wx.TextCtrl": "helped",
   "quill/apps/lite_preferences.py::edit_preferences::wx.Button": "helped",
+  "quill/apps/lite_preferences.py::edit_preferences::wx.Button#2": "helped",
   "quill/apps/lite_preferences.py::edit_preferences::wx.Choice": "helped",
   "quill/apps/lite_preferences.py::edit_preferences::wx.Choice#2": "helped",
   "quill/apps/lite_preferences.py::edit_preferences::wx.Choice#3": "helped",

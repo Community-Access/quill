@@ -2,7 +2,7 @@
 
 The shared half -- peer windows, the probe protocol, the never-guess rule --
 is :mod:`quill.ui.tutorial_checks`. Cast's own questions are about its player
-and its library: is something playing, did you subscribe to something, did the
+and its library: is something playing, did you follow something, did the
 queue grow, did a download start.
 
 Every probe reads a named attribute defensively and answers ``None`` when it

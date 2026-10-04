@@ -221,6 +221,13 @@ def ensure_and_resolve(
     return resolve_youtube_stream(url, resolver=resolver)
 
 
+def _signin_options() -> dict[str, object]:
+    """Use my YouTube sign-in (Preferences): a browser name or a file path."""
+    from quill.core.radio.youtube_signin import cookie_options
+
+    return cookie_options()
+
+
 def _default_installer(progress: ProgressCallback | None) -> None:
     from quill.core.speech.engine_install import install_yt_dlp
 
@@ -258,6 +265,7 @@ def _default_resolver(page_url: str) -> YouTubeStream:
         },
     }
     options.update(yt_dlp_js_options())  # the bundled deno solves YouTube's JS
+    options.update(_signin_options())  # the listener's sign-in, only if on
     with yt_dlp.YoutubeDL(options) as ydl:
         info = ydl.extract_info(page_url, download=False)
     if not isinstance(info, dict):
@@ -459,6 +467,7 @@ def _default_search_resolver(spec: str) -> dict[str, object]:
         "skip_download": True,
     }
     options.update(yt_dlp_js_options())  # the bundled deno solves YouTube's JS
+    options.update(_signin_options())  # the listener's sign-in, only if on
     with yt_dlp.YoutubeDL(options) as ydl:
         info = ydl.extract_info(spec, download=False)
     return info if isinstance(info, dict) else {}
@@ -481,6 +490,7 @@ def _default_playlist_resolver(url: str) -> dict[str, object]:
         "skip_download": True,
     }
     options.update(yt_dlp_js_options())  # the bundled deno solves YouTube's JS
+    options.update(_signin_options())  # the listener's sign-in, only if on
     with yt_dlp.YoutubeDL(options) as ydl:
         info = ydl.extract_info(url, download=False)
     return info if isinstance(info, dict) else {}

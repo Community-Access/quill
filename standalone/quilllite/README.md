@@ -10,6 +10,8 @@ replacement: they install side by side and neither touches the other's settings.
 
 Windows · MIT · part of the QuillVille family
 
+Version 1.2.0, released 2026-10-03.
+
 ---
 
 ## What it is
@@ -45,7 +47,7 @@ one-page version, written for somebody who has never opened it.
 Full detail is in [the user guide](docs/userguide.md); the reasoning is in
 [the product requirements](docs/prd.md); what changed and why is in
 [the changelog](docs/CHANGELOG.md) and
-[the release notes](docs/release-notes-1.0.md).
+[the release notes](docs/release-notes-1.2.md).
 
 ---
 

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.12" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Privacy Statement</title>
   <style>
@@ -11,7 +11,10 @@
     */
     html {
       color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
       background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
     }
     body {
       margin: 0 auto;
@@ -36,11 +39,16 @@
     }
     @media print {
       html {
-        background-color: white;
+        color-scheme: light only;
       }
-      body {
+      html, body, pre, code {
         background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
         color: black;
+      }
+      pre, code {
+        padding: 0;
       }
       p, h2, h3 {
         orphans: 3;
@@ -53,11 +61,8 @@
     p {
       margin: 1em 0;
     }
-    a {
-      color: #1a1a1a;
-    }
-    a:visited {
-      color: #1a1a1a;
+    a, a:visited {
+      color: inherit;
     }
     img {
       max-width: 100%;
@@ -86,8 +91,11 @@
     blockquote {
       margin: 1em 0 1em 1.7em;
       padding-left: 1em;
-      border-left: 2px solid #e6e6e6;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
       color: #606060;
+      color: light-dark(#606060, #b6b6b6);
     }
     code {
       white-space: pre-wrap;
@@ -111,7 +119,7 @@
     }
     hr {
       border: none;
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       height: 1px;
       margin: 1em 0;
     }
@@ -128,11 +136,11 @@
     }
     tbody {
       margin-top: 0.5em;
-      border-top: 1px solid #1a1a1a;
-      border-bottom: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
     }
     th {
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       padding: 0.25em 0.5em 0.25em 0.5em;
     }
     td {
@@ -171,7 +179,6 @@
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <style>
     /* Accessible skip link: off-screen until it receives keyboard focus. */
@@ -311,6 +318,14 @@ per session</td>
 <td>On</td>
 <td><em>Recover failed streams from the station’s website</em></td>
 </tr>
+<tr>
+<td>Quill Radio’s new-video check</td>
+<td><code>youtube.com</code> – for each channel you asked to be told
+about, reads its five newest uploads on the podcast refresh schedule;
+sends nothing about you unless you turned on the browser sign-in</td>
+<td>Off (per channel)</td>
+<td><em>Notify Me About New Videos</em> on the channel</td>
+</tr>
 </tbody>
 </table>
 <p>Everything else – every directory search, every AI request, every
@@ -381,6 +396,47 @@ synthesize speech locally. The browser’s “Online (Natural)” voices
 synthesize in the voice vendor’s cloud (for example, Microsoft Edge’s
 online voices), which means selecting one sends the text being read to
 that service. Choose an on-device voice to keep everything local.</p>
+<h2 id="youtube-in-quill-radio">YouTube in Quill Radio</h2>
+<p>Quill Radio uses YouTube API Services. By using its YouTube features
+you agree to the <a href="https://www.youtube.com/t/terms">YouTube Terms
+of Service</a>, and the <a
+href="https://policies.google.com/privacy">Google Privacy Policy</a>
+applies to what Google does with your data.</p>
+<p><strong>Without signing in.</strong> Playing, searching, reading
+comments and reading live chat talk to YouTube directly, the way a web
+browser does. QUILL sends nothing about you beyond what any visitor to
+YouTube sends.</p>
+<p><strong>Skip Sponsor Segments</strong> (off until you turn it on)
+asks the community SponsorBlock service (<code>sponsor.ajay.app</code>)
+which parts of a video are sponsored. It sends only the first four
+characters of a scrambled (hashed) form of the video’s id, so
+SponsorBlock cannot tell which video you are watching.</p>
+<p><strong>Using your browser’s YouTube sign-in</strong> (off until you
+turn it on in Preferences). Quill Radio reads your browser’s YouTube
+sign-in on your own computer each time it asks YouTube for something, so
+YouTube treats the request as coming from you. QUILL never sees your
+password. It saves only which browser you chose, or the location of a
+cookies.txt file, and never the sign-in itself. Sign-in data is removed
+from QUILL’s logs and problem reports.</p>
+<p><strong>Connect YouTube Account</strong> (the official Google
+sign-in, when it is available). You sign in on Google’s own page in your
+browser. QUILL asks Google for permission to read the channels and
+playlists you follow, and only if you then use a feature that needs it,
+to post comments, replies and live chat messages you write, to subscribe
+or unsubscribe, to rate videos, and to add videos to your playlists.
+QUILL does these things only when you press the button for them. The
+permission Google gives QUILL is kept in Windows’ secure credential
+store, never in QUILL’s own files and never on any server. QUILL has no
+servers that receive your data, and what it reads from YouTube stays on
+your computer. Disconnect YouTube Account forgets the sign-in on your
+computer and also removes QUILL’s access at Google. You can also remove
+QUILL’s access at any time from your Google account at <a
+href="https://myaccount.google.com/permissions">https://myaccount.google.com/permissions</a>.</p>
+<p>QUILL’s use of information received from Google APIs adheres to the
+<a
+href="https://developers.google.com/terms/api-services-user-data-policy">Google
+API Services User Data Policy</a>, including the Limited Use
+requirements.</p>
 <h2 id="user-responsibility">User responsibility</h2>
 <p>You are responsible for reviewing AI-generated output before using,
 sharing, or publishing it. For sensitive content, use local models when

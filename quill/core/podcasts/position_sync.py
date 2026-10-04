@@ -71,6 +71,7 @@ def remember_position(episode: Any, position_ms: int) -> None:
     """
     episode.position_ms = max(0, int(position_ms))
     episode.position_updated_at = stamp()
+    episode.last_played_on = ""  # decided here, so no longer "on your phone"
 
 
 def mark_played(episode: Any, played: bool = True) -> None:
@@ -84,6 +85,7 @@ def mark_played(episode: Any, played: bool = True) -> None:
     if played:
         episode.position_ms = 0
     episode.position_updated_at = stamp()
+    episode.last_played_on = ""
 
 
 def record_for(show: Any, episode: Any, *, include_label: bool = True) -> PlaceRecord | None:
@@ -130,7 +132,7 @@ def collect_records(library: Any, *, include_labels: bool = True) -> list[PlaceR
     return records
 
 
-def apply_record(library: Any, record: PlaceRecord) -> bool:
+def apply_record(library: Any, record: PlaceRecord, *, device: str = "") -> bool:
     """Apply one incoming record to the library. Returns whether it changed anything.
 
     An episode the library has never heard of is **not** an error and **not**
@@ -159,6 +161,8 @@ def apply_record(library: Any, record: PlaceRecord) -> bool:
     episode.position_ms = max(0, record.position_ms)
     episode.played = record.played
     episode.position_updated_at = record.updated_at or stamp()
+    # Where it came from, for Continue Listening's "last played on" (B1).
+    episode.last_played_on = device
     return True
 
 

@@ -302,6 +302,11 @@ PURPOSES: dict[str, str] = {
 for _result_title in ("Rewrite", "Proofread", "Explanation", "Answer", "AI Result"):
     PURPOSES[_result_title] = PURPOSES["Summary"]
 
+# Release channels: the shared windows (quill/ui/updates) take their titles and
+# purposes from one place, so a title can never ship without its F1 paragraph.
+from quill.core.updater.wording import window_titles as _channel_windows  # noqa: E402
+
+PURPOSES.update(_channel_windows("QUILL Lite"))
 
 PREFIX_PURPOSES: tuple[tuple[str, str], ...] = (
     (

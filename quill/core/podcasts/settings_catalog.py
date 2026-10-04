@@ -36,6 +36,7 @@ from quill.core.podcasts import (
     settings_defs_library,
     settings_defs_playback,
     settings_defs_show,
+    settings_defs_views,
 )
 from quill.core.podcasts.models import PodcastShow
 from quill.core.podcasts.settings_types import (
@@ -56,6 +57,7 @@ CATALOG: tuple[SettingDef, ...] = (
     *settings_defs_fetching.SETTINGS,
     *row_speech.SETTINGS,
     *settings_defs_show.SETTINGS,
+    *settings_defs_views.SETTINGS,
 )
 
 _BY_ID: dict[str, SettingDef] = {item.id: item for item in CATALOG}

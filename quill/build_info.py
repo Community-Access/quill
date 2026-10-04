@@ -57,6 +57,24 @@ def get_short_version() -> str:
     return str(_BUILD_INFO.DISPLAY_VERSION)
 
 
+def feed_version() -> str:
+    """The running build's version as the signed release feed spells it.
+
+    The same as :func:`get_short_version` for Stable, Beta and Release
+    Candidate builds. A Dev build adds its build stamp -- ``1.1.0-dev.20261003.4``
+    -- because "1.1.0 Dev" alone cannot tell two Dev builds apart, and an
+    update check that cannot would offer the same Dev build again forever.
+    """
+    if _BUILD_INFO is None:
+        return __version__
+    channel = str(getattr(_BUILD_INFO, "CHANNEL", "stable"))
+    if channel != "dev":
+        return str(_BUILD_INFO.DISPLAY_VERSION)
+    stamp = str(getattr(_BUILD_INFO, "BUILD_STAMP", "")).strip()
+    base = str(getattr(_BUILD_INFO, "BASE_VERSION", __version__))
+    return f"{base}-dev.{stamp}" if stamp else str(_BUILD_INFO.DISPLAY_VERSION)
+
+
 def get_support_info() -> str:
     """Multi-line block the About dialog copies to the clipboard."""
     if _BUILD_INFO is None:
@@ -136,6 +154,7 @@ def resolve_running_version(*, override: str | None = None) -> str:
 
 
 __all__ = [
+    "feed_version",
     "get_display_version",
     "get_short_version",
     "get_support_info",

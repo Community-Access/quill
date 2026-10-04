@@ -31,6 +31,7 @@ from quill.core.podcasts import opml_import
 from quill.core.podcasts.opml import OpmlError, OpmlValidationResult
 from quill.core.podcasts.subscriptions import PodcastLibrary
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.podcasts.say_status import say_status
 from quill.ui.surface_lifetime import surface_tasks
 
 #: Announce progress this often during the sweep (every N per cent).
@@ -240,7 +241,8 @@ class OpmlImportDialog:
             return
         try:
             self._gauge.SetValue(done)
-            self._status.SetLabel(f"Checking feeds: {done} of {total}...")
+            # Paced: the percentage below is spoken every few per cent.
+            say_status(self._status, f"Checking feeds: {done} of {total}...", speak=False)
         except RuntimeError:
             return
         percent = int(done * 100 / total) if total else 100
@@ -287,8 +289,7 @@ class OpmlImportDialog:
             "The feed check could not run. Everything you imported is kept; "
             "Podcasts, Feed Check shows which feeds are healthy."
         )
-        self._set_status(message)
-        self._announce(message)
+        self._set_status(message)  # set and spoken
         self._finish()
 
     # -- report ---------------------------------------------------------
@@ -310,8 +311,5 @@ class OpmlImportDialog:
         )
         report.show()
 
-    def _set_status(self, text: str) -> None:
-        try:
-            self._status.SetLabel(text)
-        except RuntimeError:
-            pass
+    def _set_status(self, text: str, *, speak: bool = True) -> None:
+        say_status(self._status, text, self._announce, speak=speak)

@@ -36,9 +36,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
-from quill.ui.dialog_contract import apply_modal_ids
-
-__all__ = ["FeedCheckDialog", "open_feed_check"]
+__all__ = ["FeedCheckWindow", "open_feed_check"]
 
 _COLUMNS: tuple[tuple[str, int], ...] = (
     # Status second, not last. The row is read out column by column, and a
@@ -53,8 +51,15 @@ _COLUMNS: tuple[tuple[str, int], ...] = (
 )
 
 
-class FeedCheckDialog:
-    """The report, as a list with four actions."""
+class FeedCheckWindow:
+    """The report, as a list with four actions -- a peer window (qc.md Phase 4).
+
+    Made once; asked for again it is raised and re-read from the live
+    bookkeeping, keeping the row you were on. Escape returns to the opener.
+    """
+
+    TITLE = "Feed Check"
+    MENU_TITLE = "Feed C&heck"
 
     def __init__(
         self,
@@ -76,24 +81,21 @@ class FeedCheckDialog:
         self._change_schedule = change_schedule
         self._rows: list[Any] = []
 
-        self.dialog = wx.Dialog(
-            parent,
-            title="Feed Check",
-            style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
-        )
-        self.dialog.SetMinSize((720, 420))
+        self.frame = wx.Frame(parent, title="Feed Check", size=(1000, 480))
+        self.frame.SetMinSize((720, 420))
+        panel = wx.Panel(self.frame, style=wx.TAB_TRAVERSAL)
         root = wx.BoxSizer(wx.VERTICAL)
 
         # The summary is a StaticText that changes, which is exactly what a screen
         # reader does not announce -- so it is also spoken on open and after every
         # retry (GATE-12's cure, not GATE-13's violation).
-        self._summary = wx.StaticText(self.dialog, label="")
+        self._summary = wx.StaticText(panel, label="")
         root.Add(self._summary, 0, wx.EXPAND | wx.ALL, 10)
 
         # Label first, then the list. The ordering is the accessible name.
-        list_label = wx.StaticText(self.dialog, label="Your feeds, &worst first:")
+        list_label = wx.StaticText(panel, label="Your feeds, &worst first:")
         root.Add(list_label, 0, wx.LEFT | wx.RIGHT, 10)
-        self._list = wx.ListCtrl(self.dialog, style=wx.LC_REPORT | wx.BORDER_SIMPLE)
+        self._list = wx.ListCtrl(panel, style=wx.LC_REPORT | wx.BORDER_SIMPLE)
         self._list.SetHelpText(
             "Every podcast you follow, worst first: the ones failing to check, then "
             "any never checked, then any that have gone quiet, then the healthy "
@@ -106,16 +108,16 @@ class FeedCheckDialog:
         root.Add(self._list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
-        self._retry_btn = wx.Button(self.dialog, label="&Retry")
+        self._retry_btn = wx.Button(panel, label="&Retry")
         self._retry_btn.SetHelpText("Check the selected feed again, now.")
         self._retry_btn.Enable(False)
-        self._retry_all_btn = wx.Button(self.dialog, label="Retry All &Failed")
+        self._retry_all_btn = wx.Button(panel, label="Retry All &Failed")
         self._retry_all_btn.SetHelpText(
             "Check every failing feed again. Feeds that have gone quiet are left "
             "alone -- a quiet feed is working perfectly, and retrying it would "
             "report nothing new."
         )
-        self._copy_btn = wx.Button(self.dialog, label="&Copy Feed Address")
+        self._copy_btn = wx.Button(panel, label="&Copy Feed Address")
         self._copy_btn.SetHelpText(
             "Put the selected podcast's feed address on the clipboard, so you can "
             "open it in a browser and see what the publisher is actually sending."
@@ -123,15 +125,21 @@ class FeedCheckDialog:
         self._copy_btn.Enable(False)
         # No access key on Close: Escape already serves it, and the letter it gives
         # up resolves a collision elsewhere (GATE-14's first rule).
-        close_btn = wx.Button(self.dialog, self._wx.ID_CANCEL, "Close")
-        close_btn.SetHelpText("Closes Feed Check without changing which podcasts you follow.")
+        close_btn = wx.Button(panel, label="Close")
+        close_btn.SetHelpText(
+            "Closes Feed Check and returns to where you were, without changing "
+            "which podcasts you follow."
+        )
+        from quill.ui.dialog_contract import bind_close_button
+
+        bind_close_button(self.frame, close_btn, modeless=True)
         for button in (self._retry_btn, self._retry_all_btn, self._copy_btn):
             buttons.Add(button, 0, wx.RIGHT, 6)
         buttons.AddStretchSpacer()
         buttons.Add(close_btn, 0)
         root.Add(buttons, 0, wx.EXPAND | wx.ALL, 10)
 
-        self.dialog.SetSizer(root)
+        panel.SetSizer(root)
 
         self._list.Bind(wx.EVT_LIST_ITEM_SELECTED, self._on_selected)
         self._list.Bind(wx.EVT_LIST_ITEM_DESELECTED, self._on_deselected)
@@ -143,6 +151,7 @@ class FeedCheckDialog:
         self._retry_all_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_retry_all())
         self._copy_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_copy())
 
+        self.frame.CentreOnParent()
         self._reload()
 
     # -- the report -------------------------------------------------------- #
@@ -274,9 +283,9 @@ class FeedCheckDialog:
         menu.Enable(retry_id, not row.is_local and not self._safe_mode)
         menu.Enable(schedule_id, not row.is_local and self._change_schedule is not None)
         menu.Enable(copy_id, bool(row.feed_url))
-        self.dialog.Bind(wx.EVT_MENU, lambda _e: self._on_retry(), id=retry_id)
-        self.dialog.Bind(wx.EVT_MENU, lambda _e: self._on_change_schedule(), id=schedule_id)
-        self.dialog.Bind(wx.EVT_MENU, lambda _e: self._on_copy(), id=copy_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self._on_retry(), id=retry_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self._on_change_schedule(), id=schedule_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self._on_copy(), id=copy_id)
         try:
             self._list.PopupMenu(menu)
         finally:
@@ -286,22 +295,18 @@ class FeedCheckDialog:
 
     # -- showing it -------------------------------------------------------- #
 
-    def show(self) -> None:
-        from quill.ui.dialog_contract import show_modal_dialog
-
-        self.dialog.CentreOnParent()
-        apply_modal_ids(self.dialog, cancel_id=self._wx.ID_CANCEL)
-        # The summary is spoken on arrival: it is the answer to the question
-        # somebody opened this window to ask, and a StaticText is silent.
-        self._announce(self._summary.GetLabel())
+    def focus_target(self) -> Any:
         # Focus on the thing this window is for, not on whatever control happens
         # to come first in it (qc.md 6b: eight windows landed on a filter or a
-        # chooser). Set before ShowModal, which keeps a focus already placed.
-        self._list.SetFocus()
-        try:
-            show_modal_dialog(self.dialog, "Feed Check", announce=self._announce)
-        finally:
-            self.dialog.Destroy()
+        # chooser).
+        return self._list
+
+    def refresh(self) -> None:
+        """Raised again: re-read the bookkeeping, keeping the row you were on."""
+        self._reload(keep_index=self._list.GetFirstSelected())
+
+    def summary(self) -> str:
+        return str(self._summary.GetLabel())
 
 
 def _change_schedule(host: Any, show_id: str) -> bool:
@@ -311,16 +316,25 @@ def _change_schedule(host: Any, show_id: str) -> bool:
     return bool(show is not None and change_schedule(host, show))
 
 
-def open_feed_check(host: Any) -> None:
+def open_feed_check(host: Any, *, focus: bool = True, opener: Any = None) -> FeedCheckWindow:
     """Podcasts > Feed Check...: the report, with Retry wired to the real refresh."""
     from quill.ui.podcasts.feed_refresh import refresh_feed
+    from quill.ui.podcasts.peer_window import open_peer
 
-    dialog = FeedCheckDialog(
-        host.frame,
-        library=host._podcast_library,
-        announce=host._announce,
-        retry=lambda show_id: refresh_feed(host, show_id),
-        safe_mode=bool(getattr(host, "_safe_mode", False)),
-        change_schedule=lambda show_id: _change_schedule(host, show_id),
+    def _make(owner: Any) -> FeedCheckWindow:
+        return FeedCheckWindow(
+            owner.frame,
+            library=owner._podcast_library,
+            announce=owner._announce,
+            retry=lambda show_id: refresh_feed(owner, show_id),
+            safe_mode=bool(getattr(owner, "_safe_mode", False)),
+            change_schedule=lambda show_id: _change_schedule(owner, show_id),
+        )
+
+    window: FeedCheckWindow = open_peer(
+        host, "_feed_check_window", _make, focus=focus, opener=opener
     )
-    dialog.show()
+    # The summary is spoken on arrival: it is the answer to the question
+    # somebody opened this window to ask, and a StaticText is silent.
+    host._announce(window.summary())
+    return window

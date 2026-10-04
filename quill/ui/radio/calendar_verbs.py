@@ -311,7 +311,14 @@ def export_schedule(host: Any, parent: Any, events: list[Any]) -> None:
     except OSError as error:
         host._announce(f"The schedule could not be exported. {error}.")
         return
-    host._announce(f"Exported {len(ordered)} programme(s) to {destination.name}.")
+    from quill.ui.outcome_report import report_outcome
+
+    report_outcome(
+        host,
+        "Export Calendar",
+        f"Exported {len(ordered)} programme(s) to {destination.name}.",
+        path=destination,
+    )
 
 
 __all__ = ["export_schedule", "playing_stream_name", "run"]

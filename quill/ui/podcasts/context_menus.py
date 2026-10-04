@@ -165,6 +165,12 @@ def episode_row_menu(host: Any) -> None:
         forget = menu.Append(wx.ID_ANY, "&Forget This One")
         menu.Bind(wx.EVT_MENU, lambda _e: host._on_forget_expired((show, episode)), forget)
     host._append_transcript_items(menu, show, episode)
+    if show.feed_url and not show.is_local:
+        # Earshot parity R3: get the file again from wherever the feed says it is.
+        from quill.ui.podcasts.refresh_audio_command import refresh_episode_audio
+
+        refresh = menu.Append(wx.ID_ANY, "Refresh Episode Audio...")
+        menu.Bind(wx.EVT_MENU, lambda _e: refresh_episode_audio(host), refresh)
     menu.AppendSeparator()
     build_menu(host, menu, resolved_episode_actions(host))
     _popup(host, menu)
@@ -206,8 +212,9 @@ def podcast_row_menu(host: Any) -> None:
     )
     pause_item = menu.Append(wx.ID_ANY, pause_label)
     menu.Bind(wx.EVT_MENU, lambda _e: host._on_toggle_show_paused(show), pause_item)
-    check_item = menu.Append(wx.ID_ANY, "Chec&k Now")
-    menu.Bind(wx.EVT_MENU, lambda _e: host._on_refresh_feed(show), check_item)
+    # No "Check Now" here: it ran the same handler as Refresh Feed, which the
+    # Quick Actions rows below already carry (and can put on a key), so one
+    # menu offered the same verb twice under two names.
     schedule_item = menu.Append(wx.ID_ANY, "Change Sc&hedule...")
     menu.Bind(wx.EVT_MENU, lambda _e: host.change_show_schedule(show), schedule_item)
     menu.AppendSeparator()

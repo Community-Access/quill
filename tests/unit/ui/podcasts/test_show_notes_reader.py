@@ -14,14 +14,14 @@ def wx_app():
 
 
 def test_the_show_notes_window_is_the_notes_reader_with_send_and_save(wx_app) -> None:
-    from quill.ui.podcasts.show_notes_dialog import ShowNotesDialog
+    from quill.ui.podcasts.show_notes_dialog import ShowNotesWindow
 
     parent = wx.Frame(None)
     said: list[str] = []
     seeks: list[int] = []
     sent: list[str] = []
     try:
-        dialog = ShowNotesDialog(
+        dialog = ShowNotesWindow(
             parent,
             episode_title="Thursday",
             description_html=NOTES,
@@ -30,7 +30,7 @@ def test_the_show_notes_window_is_the_notes_reader_with_send_and_save(wx_app) ->
             on_seek=seeks.append,
             podcast_title="The Daily",
         )
-        assert dialog.dialog.GetTitle() == "Show Notes -- Thursday"
+        assert dialog.frame.GetTitle() == "Show Notes -- Thursday"
         assert dialog.reader.document.headings[0].text == "Guests"
         assert dialog.reader.links_btn.GetName() == "Links, 1 in these notes"
         # The reader's Tab circuit and seeking work here exactly as in Now Playing.
@@ -43,7 +43,7 @@ def test_the_show_notes_window_is_the_notes_reader_with_send_and_save(wx_app) ->
         dialog._on_send_to_editor_click(None)
         assert sent == ["Guests\nWith Jane at 1:05."] or sent[0].startswith("Guests")
         assert dialog.show_links.__name__ == "show_links"
-        dialog.dialog.Destroy()
+        dialog.frame.Destroy()
     finally:
         parent.Destroy()
 

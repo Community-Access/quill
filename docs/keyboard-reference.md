@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 481.
+Editor commands with default bindings: 482.
 
 ## The QUILL editor
 
@@ -57,6 +57,7 @@ Editor commands with default bindings: 481.
 | Alt+F12 | Convert Indentation to Tabs | `edit.convert_indentation_to_tabs` |
 | Alt+F8 | Read All | `edit.read_all` |
 | Alt+M | List Marks | `edit.list_marks` |
+| Alt+Shift+. | Unquote Lines | `edit.unquote_lines` |
 | Alt+Shift+C | Copy With Source | `edit.copy_with_source` |
 | Alt+Shift+F3 | Undo and Say What Changed | `edit.undo_and_say` |
 | Alt+Shift+F5 | Select Section | `edit.select_section` |
@@ -87,7 +88,6 @@ Editor commands with default bindings: 481.
 | Ctrl+Alt+Shift+= | Paste from tray 12 | `edit.paste_from_tray_12` |
 | Ctrl+Alt+Shift+B | Select Block | `edit.select_block` |
 | Ctrl+Alt+Shift+M | Open clip library | `edit.open_clip_library` |
-| Ctrl+Alt+Shift+Q | Unquote Lines | `edit.unquote_lines` |
 | Ctrl+Alt+Shift+S | Sort Lines Descending | `edit.sort_lines_descending` |
 | Ctrl+Alt+Shift+T | Normalize Whitespace | `edit.normalize_whitespace` |
 | Ctrl+Alt+Shift+X | Shrink Selection | `edit.shrink_selection` |
@@ -399,6 +399,7 @@ Editor commands with default bindings: 481.
 
 | Key | Command | Command id |
 | --- | --- | --- |
+| (unbound by default) | Release Channel... | `help.release_channel` |
 | Alt+F1 | Why Is This Unavailable? | `help.why_unavailable` |
 | Alt+Shift+/ or Ctrl+F1 | Key Cheatsheet | `help.key_cheatsheet` |
 | Alt+Shift+P | Switch Feature Profile... | `help.switch_feature_profile` |
@@ -526,6 +527,7 @@ Editor commands with default bindings: 481.
 | Q | QUILL Quick Nav: Block Quote | `quill.quick_nav.block_quote` |
 | QUILL Key + 0 | Radio: Stop | `radio.stop` |
 | QUILL Key + 1 | Sound Enhancements... | `media.sound_enhancements` |
+| QUILL Key + 2 | Radio: Play/Pause | `radio.play_pause` |
 | QUILL Key + 3 | Play Favorite Station... | `radio.play_favorite` |
 | QUILL Key + 4 | Podcasts: Skip Back | `podcasts.skip_back` |
 | QUILL Key + 5 | Podcasts: Skip Forward | `podcasts.skip_forward` |
@@ -534,7 +536,6 @@ Editor commands with default bindings: 481.
 | QUILL Key + 8 | Podcasts: Play/Pause | `podcasts.play_pause` |
 | QUILL Key + 9 | Radio: Mute/Unmute | `radio.mute_toggle` |
 | QUILL Key + M | Paste html as markdown | `power.paste_html_as_markdown` |
-| QUILL Key + N | Radio: Play/Pause | `radio.play_pause` |
 | QUILL Key + Shift+G | Snippet Gallery... | `power.open_snippet_gallery` |
 | QUILL Key + Shift+M | Toggle Meeting Mode | `verbosity.toggle_meeting` |
 | QUILL Key + Shift+Q | Toggle Quiet Mode | `verbosity.toggle_quiet` |
@@ -575,6 +576,11 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+N | Internet Radio: Add YouTube Link... | `radio.add_youtube_link` |
 | Ctrl+Alt+R | Record Station... | `radio.record_station` |
 | Ctrl+Alt+S | Find Streams from a Website... | `radio.find_streams` |
+| Ctrl+Alt+Shift+0 | Internet Radio: Search YouTube with Filters... | `radio.youtube_search_filters` |
+| Ctrl+Alt+Shift+7 | Internet Radio: YouTube Live Chat... | `radio.youtube_live_chat` |
+| Ctrl+Alt+Shift+8 | Internet Radio: YouTube Video Details... | `radio.youtube_video` |
+| Ctrl+Alt+Shift+9 | Internet Radio: Skip Sponsor Segments in YouTube Videos... | `radio.youtube_sponsorblock` |
+| Ctrl+Alt+Shift+A | Undo History... | `app.undo_history` |
 | Ctrl+Alt+Shift+D | Internet Radio: Download Preferences... | `radio.download_preferences` |
 | Ctrl+Alt+Shift+F | Upcoming... | `radio.upcoming` |
 | Ctrl+Alt+Shift+F3 | Notifications... | `app.notifications` |
@@ -600,11 +606,14 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+L | Play Last Station | `radio.play_last` |
 | Ctrl+M | Radio: Mute/Unmute | `radio.mute_toggle` |
 | Ctrl+N | Add Custom Station... | `radio.add_custom_station` |
+| Ctrl+O | Internet Radio: Local Media... | `radio.local_media` |
 | Ctrl+P | Radio: Play/Pause | `radio.play_pause` |
 | Ctrl+R | Record Now / Stop Recording | `radio.record_toggle` |
 | Ctrl+Shift+, | Transport.previous chapter | `radio.transport.previous_chapter` |
 | Ctrl+Shift+. | Transport.next chapter | `radio.transport.next_chapter` |
 | Ctrl+Shift+0 | Transport.speed reset | `radio.transport.speed_reset` |
+| Ctrl+Shift+6 | Internet Radio: Search YouTube... | `radio.search_youtube` |
+| Ctrl+Shift+7 | Internet Radio: Read YouTube Comments... | `radio.youtube_comments` |
 | Ctrl+Shift+8 | Ask QUILL Radio... | `radio.ask_quill_radio` |
 | Ctrl+Shift+9 | Transport.skip silence | `radio.transport.skip_silence` |
 | Ctrl+Shift+B | Volume Boost | `radio.volume_boost` |
@@ -642,7 +651,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Alt+F2 | Use My Own AI Key... | `tools.hosted_ai_own_key` |
 | Alt+F5 | Use My ChatGPT Subscription... | `tools.hosted_ai_chatgpt` |
 | Alt+Shift+F2 | Privacy Agreement... | `tools.hosted_ai_privacy` |
-| Ctrl+Alt+2 | Now playing | `podcasts.now_playing` |
+| Ctrl+Alt+2 | Podcasts: Now Playing window | `podcasts.now_playing` |
 | Ctrl+Alt+A | Bookmark This Moment | `app.bookmark_moment` |
 | Ctrl+Alt+F1 | Podcasts: Tutorials... | `podcasts.tutorials` |
 | Ctrl+Alt+G | Free AI Assistant... | `tools.hosted_ai_assistant` |
@@ -664,6 +673,10 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+G | Go to | `app.go_to` |
 | Ctrl+I | Player Information... | `podcasts.player_information` |
 | Ctrl+Shift+9 | Skip silence | `podcasts.skip_silence` |
+| Ctrl+Shift+D | Bookmark note | `podcasts.bookmark_note` |
+| Ctrl+Shift+J | Episode bookmarks | `podcasts.episode_bookmarks` |
+| Ctrl+Shift+T | Podcasts: Time Remaining | `podcasts.time_remaining` |
+| Ctrl+Shift+Z | Undo History... | `app.undo_history` |
 | Ctrl+T | Say now playing | `podcasts.say_now_playing` |
 | Ctrl+Z | Undo Last Action | `app.undo_last` |
 | F9 | Repeat Last Result | `app.repeat_last_result` |
