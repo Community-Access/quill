@@ -62,6 +62,16 @@ _SCAN_GLOBS: tuple[str, ...] = (
     # see is one that rots -- QUILL's own help audit covers them as well, which
     # is correct: two callers, two gates, one set of sentences.
     "quill/ui/hosted_ai*.py",
+    # The same again for the two shared surfaces QUILL Lite reaches from its
+    # Preferences and its dictation commands: the "make QUILL Lite my text
+    # editor" group and the Windows dictation settings windows. QUILL opens
+    # both as well; neither had a gate until 2026-10-04, when the Spanish
+    # dictation setting and the text-editor group arrived in them.
+    "quill/ui/text_editor_prefs.py",
+    "quill/ui/text_editor_commands.py",
+    "quill/ui/windows_dictation_*.py",
+    # File > Recent Documents, the same window in both editors (2026-10-04).
+    "quill/ui/recent_documents_dialog.py",
 )
 
 #: Surface constructions whose titles the scan cannot resolve, with the reason
@@ -96,6 +106,11 @@ TITLE_EXEMPT: dict[str, str] = {
         "that owns the agreement's text and its version number, so a change to "
         "what is being agreed to cannot leave the window announcing the old "
         "thing. The catalogue answers that constant's current value."
+    ),
+    "quill/ui/hosted_ai_pad.py::AiResultFrame.__init__": (
+        "Titled from quill.core.ai.writing_tools.ACTION_TITLES (or 'AI Result'), "
+        "and the catalogue builds its result-window entries from that same "
+        "table, so every title it can carry has a purpose."
     ),
     "quill/apps/lite_dialogs_entry.py::ask_text": (
         "One labelled-box window whose three callers pass literals the catalogue "

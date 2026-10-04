@@ -24,6 +24,7 @@ param(
     [string]$LibmpvDir = "",
     [string]$Iscc = "",
     [string]$QuillRepo = "",
+    [int]$Build = 0,
     [switch]$Sign
 )
 
@@ -40,6 +41,11 @@ if (-not $QuillRepo) {
 $QuillRepo = Resolve-QuillRepo -Preferred $QuillRepo
 $Python = Resolve-QuillPython -Preferred $Python -QuillRepo $QuillRepo
 $Iscc = Resolve-QuillIscc -Preferred $Iscc
+
+# The build number: -Build, else the next one after the newest tag published
+# for $version. It must equal the app's build constant in source, which the
+# runtime carries; the installer records it and Windows shows X.Y.Z.B.
+$build, $fileVersion = Resolve-QuillReleaseBuild -QuillRepo $QuillRepo -Python $Python -App "beacon" -Version $version -Build $Build
 Assert-QuillBuildEnv -Python $Python -QuillRepo $QuillRepo
 
 # Authenticode code signing is opt-in (docs/code-signing.md). -Sign turns it on
@@ -141,9 +147,9 @@ New-Item -ItemType Directory -Force (Join-Path $launcherDir "docs") | Out-Null
 Copy-Item (Join-Path $appDir "docs\*") (Join-Path $launcherDir "docs") -Recurse -Force
 & $Python $signer sign-build $sharedRuntimeDist $launcherDir --label "beacon shared payload"
 if ($LASTEXITCODE -ne 0) { throw "Code signing (shared payload) failed." }
-& $Iscc @innoSign "/dAppVersion=$version" (Join-Path $repoRoot "installer\quill-beacon-shared.iss") "/O$(Join-Path $repoRoot 'dist')"
+& $Iscc @innoSign "/dAppVersion=$version" "/dAppBuild=$build" "/dAppFileVersion=$fileVersion" (Join-Path $repoRoot "installer\quill-beacon-shared.iss") "/O$(Join-Path $repoRoot 'dist')"
 if ($LASTEXITCODE -ne 0) { throw "ISCC (Setup-Shared) failed with exit code $LASTEXITCODE" }
-& $Iscc @innoSign "/dAppVersion=$version" (Join-Path $repoRoot "installer\quill-beacon-lite.iss") "/O$(Join-Path $repoRoot 'dist')"
+& $Iscc @innoSign "/dAppVersion=$version" "/dAppBuild=$build" "/dAppFileVersion=$fileVersion" (Join-Path $repoRoot "installer\quill-beacon-lite.iss") "/O$(Join-Path $repoRoot 'dist')"
 if ($LASTEXITCODE -ne 0) { throw "ISCC (Lite) failed with exit code $LASTEXITCODE" }
 # Companion: the runtime-less stick (launcher + icon + docs, ~1 MB).
 $companionZip = Join-Path $repoRoot "dist\Quill-Beacon-Companion-$version.zip"

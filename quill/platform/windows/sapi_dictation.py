@@ -43,6 +43,7 @@ __all__ = [
     "default_microphone_id",
     "list_microphones",
     "list_recognizers",
+    "pick_for_language",
 ]
 
 _AUDIO_INPUT_CATEGORY = r"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\AudioInput"
@@ -159,6 +160,51 @@ def _pick(tokens: Any, wanted: str) -> Any:
     return None
 
 
+#: Windows' language ids (LCIDs, hexadecimal, as SAPI's ``Language`` attribute
+#: writes them) whose primary language is Spanish: the low ten bits are 0x0A.
+_SPANISH_PRIMARY = 0x0A
+_NO_SPANISH = (
+    "Windows has no Spanish speech recogniser installed, so Windows speech "
+    "recognition cannot dictate Spanish. Add Spanish (Spain or Mexico) in Windows "
+    "Settings, Time and language, Speech, or choose Whisper as the speech engine "
+    "in Dictation Settings."
+)
+
+
+def _is_spanish(token: Any) -> bool:
+    """Whether a recogniser token hears Spanish (es-ES, es-MX, es-US, ...)."""
+    try:
+        codes = str(token.GetAttribute("Language") or "")
+    except Exception:  # noqa: BLE001 - fall back on the name
+        codes = ""
+    for code in codes.replace(",", ";").split(";"):
+        try:
+            if int(code.strip(), 16) & 0x3FF == _SPANISH_PRIMARY:
+                return True
+        except ValueError:
+            continue
+    name = str(token.GetDescription()).lower()
+    return "spanish" in name or "espa" in name
+
+
+def pick_for_language(tokens: Any, speech_language: str, chosen: str = "") -> Any:
+    """The recogniser token for *speech_language*, or ``None`` when Windows has none.
+
+    English keeps the old behaviour (the caller falls back on Windows' default).
+    For Spanish, the recogniser chosen in Dictation Settings is used when it is a
+    Spanish one, and otherwise the first Spanish recogniser installed.
+    """
+    if speech_language != "es":
+        return _pick(tokens, chosen) if chosen else None
+    picked = _pick(tokens, chosen) if chosen else None
+    if picked is not None and _is_spanish(picked):
+        return picked
+    for index in range(int(tokens.Count)):
+        if _is_spanish(tokens.Item(index)):
+            return tokens.Item(index)
+    return None
+
+
 def _phrase_from(result: Any) -> RecognizedPhrase:
     info = result.PhraseInfo
     words: list[RecognizedWord] = []
@@ -205,8 +251,17 @@ class _EventsBase:
 class SapiDictationRecognizer:
     """One listening session on one microphone. Make it on the UI thread."""
 
-    def __init__(self, listener: _Listener, *, language: str = "", pause_ms: int = 0) -> None:
+    def __init__(
+        self,
+        listener: _Listener,
+        *,
+        language: str = "",
+        pause_ms: int = 0,
+        speech_language: str = "en",
+    ) -> None:
         self._listener = listener
+        #: ``en`` or ``es``: Spanish insists on a Spanish recogniser (dict.md 9).
+        self._speech_language = speech_language
         #: How long a silence ends a phrase, in milliseconds; 0 leaves Windows'
         #: own setting alone.
         self._pause_ms = pause_ms
@@ -240,7 +295,9 @@ class SapiDictationRecognizer:
                 "Windows has no speech recogniser installed. Add a speech language "
                 "in Windows Settings, Time and language, Speech."
             )
-        engine = _pick(engines, self._language) if self._language else None
+        engine = pick_for_language(engines, self._speech_language, self._language)
+        if engine is None and self._speech_language == "es":
+            raise DictationStartError(_NO_SPANISH)
         if engine is None:
             engine = _pick(engines, _category_default(client, _RECOGNIZER_CATEGORY))
         recognizer.Recognizer = engine if engine is not None else engines.Item(0)

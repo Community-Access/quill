@@ -457,6 +457,9 @@ class MenuBindingsMixin:
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.open_general_preferences(), id=self._id_preferences
         )
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.open_preferences(), id=self._id_preferences_hub
+        )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_menu_editor(), id=self._id_menu_editor)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.exit_app(), id=self._id_exit)
         self.frame.Bind(

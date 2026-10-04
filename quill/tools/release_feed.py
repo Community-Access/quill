@@ -31,6 +31,7 @@ from typing import Protocol
 
 from quill.core.updater.feed import (
     FeedAsset,
+    FeedRelease,
     ReleaseFeed,
     parse_feed,
     verify_feed_bytes,
@@ -41,6 +42,7 @@ from quill.core.updater.feed_publish import (
     new_feed,
     sign_bytes,
 )
+from quill.core.updater.notes_rollup import Rollup
 from quill.core.versioning import ReleaseVersion
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -105,7 +107,20 @@ def app(key: str) -> AppRelease:
 
 
 def tag_for(app_key: str, version: str) -> str:
-    return app(app_key).tag_prefix + version
+    """The tag *version* is released under. A build is spelled the way installed
+    copies can read it: ``3.2.0+2`` is tagged ``quill-radio-v3.2.0-build.2``
+    (:meth:`ReleaseVersion.tag_version` says why)."""
+    parsed = ReleaseVersion.try_parse(version)
+    spelled = parsed.tag_version() if parsed is not None and parsed.build else version
+    return app(app_key).tag_prefix + spelled
+
+
+def file_version_text(version: str) -> str:
+    """The version as release file names spell it: no build (``3.2.0`` for
+    ``3.2.0+2``). Every build of a version ships under the same file names, in
+    its own release."""
+    parsed = ReleaseVersion.try_parse(version)
+    return parsed.plain() if parsed is not None and parsed.build else version
 
 
 def app_for_tag(tag: str) -> tuple[str, str] | None:
@@ -206,7 +221,7 @@ def dist_files(folder: Path, app_key: str, version: str) -> list[Path]:
         for p in sorted(folder.iterdir())
         if p.is_file()
         and p.name.lower().startswith(prefix)
-        and version in p.name
+        and file_version_text(version) in p.name
         and asset_kind(p.name)
     ]
 
@@ -280,6 +295,107 @@ def write_index(*, root: Path = REPO_ROOT, seed: bytes | None) -> Path:
     else:
         sig.write_bytes(sign_bytes(data, seed).encode("ascii"))
     return path
+
+
+def repo_of(feed: ReleaseFeed, version: str) -> str:
+    """The repository a listed build's files live in (main, or the dev-builds one)."""
+    release = feed.release(version)
+    if release is not None:
+        for asset in release.assets:
+            parts = asset.url.split("/")
+            if len(parts) > 4 and parts[2] == "github.com":
+                return f"{parts[3]}/{parts[4]}"
+    return MAIN_REPO
+
+
+WITHDRAWN = " (withdrawn)"
+
+
+def _newest_build_of(feed: ReleaseFeed, version: str) -> FeedRelease | None:
+    """The newest listed build of *version* when it was given with no build.
+
+    Beta and Stable list every release with its build (``3.4.0-beta.1+1``), and
+    a person withdrawing it types the release number they know.
+    """
+    wanted = ReleaseVersion.try_parse(version)
+    if wanted is None or wanted.build:
+        return None
+    builds = [
+        release
+        for release in feed.releases
+        if (listed := ReleaseVersion.try_parse(release.version)) is not None
+        and listed.same_number(wanted)
+    ]
+    return max(builds, key=lambda r: ReleaseVersion.parse(r.version).build, default=None)
+
+
+def withdraw(
+    app_key: str,
+    version: str,
+    *,
+    reason: str,
+    replacement: str = "",
+    gh: Gh,
+    root: Path = REPO_ROOT,
+    now: datetime,
+    seed: bytes | None,
+    dry_run: bool = False,
+    out: Callable[[str], None] = print,
+) -> int:
+    """Withdraw a listed build: the one implementation behind ``revoke_release.py``
+    and ``feed_tool.py revoke`` (plan 4.2).
+
+    Marks it revoked in the feed (each channel then falls back to its previous
+    build, because :meth:`ReleaseFeed.current` never answers a withdrawn one),
+    adds "(withdrawn)" to its GitHub release title, and deletes nothing: people
+    who have the build can still move forward or back from it.
+    """
+    from quill.core.updater.feed_publish import revoke
+
+    feed = load_feed(app_key, root)
+    release = feed.release(version) or _newest_build_of(feed, version)
+    if release is None:
+        out(f"{version} is not in the {app_key} feed. Nothing to withdraw.")
+        return 1
+    # "3.4.0-beta.1" names the release; the feed lists its build ("+1"), and
+    # every step below has to speak about the build that is actually listed.
+    version = release.version
+    if release.revoked:
+        out(f"{version} is already withdrawn ({release.revoked_reason}). Nothing to do.")
+        return 1
+    if replacement:
+        other = feed.release(replacement)
+        if other is None or other.revoked:
+            out(f"The replacement {replacement} is not a listed, current build. Not withdrawn.")
+            return 1
+    before = {c: feed.current(c) for c in ("stable", "beta", "dev")}
+    updated = revoke(feed, version, reason=reason, replacement=replacement, now=now)
+    for channel, was in before.items():
+        if was is None or was.version != version:
+            continue
+        now_current = updated.current(channel)
+        shown = now_current.version if now_current else "nothing"
+        out(f"{channel.capitalize()} now offers {shown} instead of {version}.")
+    tag = tag_for(app_key, version)
+    repo = repo_of(feed, version)
+    if dry_run:
+        out(f"Dry run: {app_key} {version} would be withdrawn: {reason}")
+        return 0
+    try:
+        info = json.loads(gh(["release", "view", tag, "--repo", repo, "--json", "name"]) or "{}")
+        title = str(info.get("name") or "") if isinstance(info, dict) else ""
+        if not title.endswith(WITHDRAWN):
+            title = (title or f"{app(app_key).name} {version}") + WITHDRAWN
+            gh(["release", "edit", tag, "--repo", repo, "--title", title])
+    except (subprocess.CalledProcessError, OSError, ValueError) as error:
+        out(
+            f"Warning: the GitHub release title was not changed ({error}). Add (withdrawn) by hand."
+        )
+    write_feed(updated, seed=seed, root=root)
+    out(f"Withdrew {app_key} {version} (feed sequence {updated.sequence}). Its files stay.")
+    if seed is None:
+        out(f"Unsigned: run python scripts/feed_tool.py sign --app {app_key}")
+    return 0
 
 
 def feed_signature_ok(path: Path, keys: Sequence[bytes] | None = None) -> bool:
@@ -362,6 +478,61 @@ def changelog_has(app_key: str, version: str, root: Path = REPO_ROOT) -> bool:
     except OSError:
         return False
     return bool(extract_version_section(text, version).strip())
+
+
+def rolled_up_notes(
+    app_key: str,
+    to_version: str,
+    *,
+    from_version: str = "",
+    feed: ReleaseFeed | None = None,
+    root: Path = REPO_ROOT,
+) -> tuple[Rollup, list[str]]:
+    """The Stable notes for *to_version* (plan 4.5), and any notes for the owner.
+
+    *from_version* defaults to the feed's current Stable build. The formats
+    come from the feed: the older build's ``reads_formats`` against the newer
+    one's ``data_formats`` (or, before it is listed, what this source tree
+    writes).
+    """
+    from quill.core.updater.feed_publish import formats_for_build
+    from quill.core.updater.notes_rollup import rollup
+
+    notes: list[str] = []
+    listed = feed if feed is not None else load_feed(app_key, root)
+    if not from_version:
+        stable = listed.current("stable")
+        from_version = stable.version if stable is not None and stable.version != to_version else ""
+    older = listed.release(from_version) if from_version else None
+    newer = listed.release(to_version)
+    after = dict(newer.data_formats) if newer is not None else formats_for_build(app_key)[0]
+    before: dict[str, int] | None = None
+    if older is not None and (older.reads_formats or older.data_formats):
+        before = dict(older.reads_formats or older.data_formats)
+    elif from_version:
+        notes.append(
+            f"{from_version} is not in the {app_key} feed with its data formats, so whether "
+            "a data format moved "
+            "could not be checked. Look at quill/core/data_formats.py yourself."
+        )
+    try:
+        text = (root / app(app_key).changelog).read_text(encoding="utf-8")
+    except OSError:
+        text = ""
+        notes.append(f"No changelog at {app(app_key).changelog}.")
+    result = rollup(
+        text,
+        app_name=app(app_key).name,
+        from_version=from_version,
+        to_version=to_version,
+        formats_before=before,
+        formats_after=after,
+    )
+    if not result.merged:
+        notes.append(
+            f"The changelog has no section after {from_version or 'the start'} up to {to_version}."
+        )
+    return result, notes
 
 
 def signoff_problems(app_key: str, version: str, root: Path = REPO_ROOT) -> list[str]:

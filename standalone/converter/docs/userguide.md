@@ -786,6 +786,10 @@ every key in a read-only window you can arrow through.
 | Check for Updates... | Ctrl+Alt+U |
 | About Quill Converter | Alt+F1 |
 
+Help > About shows your version with a build number, such as 3.2.0 (build 2). The
+build number tells you which build of a version you have: when a fix comes out
+without a new version number, it is a newer build, and Check for Updates offers it.
+
 ### Anywhere
 
 | Action | Key |

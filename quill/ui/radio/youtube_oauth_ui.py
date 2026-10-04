@@ -159,6 +159,6 @@ def _forget_after_failure(host: Any) -> None:
     try:
         youtube_oauth.clear_tokens()
     except Exception as error:  # noqa: BLE001 - spoken, never swallowed
-        host._announce(f"Could not forget the YouTube sign-in: {error}")
+        host._announce(f"Could not forget the YouTube sign-in: {error}.")
         return
     host._announce(DISCONNECTED_LOCALLY)

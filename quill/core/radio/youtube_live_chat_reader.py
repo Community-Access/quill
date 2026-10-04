@@ -71,7 +71,9 @@ def open_chat(url: str) -> tuple[Iterable[dict[str, object]], Callable[[], None]
     if os.environ.get("QUILL_SAFE_MODE") == "1":
         raise LiveChatError("YouTube is not available in Safe Mode.")
     try:
-        from chat_downloader import ChatDownloader  # type: ignore[import-untyped]
+        import chat_downloader  # type: ignore[import-untyped,import-not-found,unused-ignore]
+
+        ChatDownloader = chat_downloader.ChatDownloader
     except ImportError as error:
         raise LiveChatError(
             "Live chat support is not installed in this copy of Quill Radio."

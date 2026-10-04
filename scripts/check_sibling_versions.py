@@ -33,6 +33,15 @@ ahead -- that slot is code the listener chose to test, and About already says
 moment a build enters Stable, ``promote_release.py`` (check P7) applies the
 strict rule again.
 
+**Build numbers (2026-10).** A source version is its constant plus its build
+constant (``_VERSION = "3.2.0"`` and ``_BUILD = 2`` is ``3.2.0+2``), and a tag
+carries its build as ``-build.2``. Builds are compared only when *both* sides
+carry one: a release tagged before build numbers (``quill-radio-v3.0.4``) says
+nothing about builds, so a source at ``3.0.4`` build 1 agrees with it. Where
+both do, a rebuild is held to the same rule as a release: a sibling may not
+carry a build nobody can download, and a build that releases an app must bump
+its build constant.
+
 Exit 0 when every app agrees, 1 with a sentence per disagreement, 2 when the
 published releases could not be read (a release build must not guess; a dev
 build passes ``--offline-ok``). The comparison is a pure function
@@ -63,19 +72,27 @@ class AppVersionSite:
     source: str
     constant: str
     tag_prefix: str
+    #: The app's build-number constant beside *constant* (build numbers).
+    build_constant: str = ""
 
 
 #: Every app whose version travels in the shared runtime. An app with no
 #: published release under its prefix yet is skipped: there is nothing to be
 #: ahead of, and the first release is the one that sets the mark.
 SITES: tuple[AppVersionSite, ...] = (
-    AppVersionSite("radio", "quill/apps/radio.py", "_VERSION", "quill-radio-v"),
-    AppVersionSite("quilllite", "quill/core/lite/__init__.py", "APP_VERSION", "quill-lite-v"),
-    AppVersionSite("converter", "quill/apps/converter.py", "_VERSION", "quill-converter-v"),
-    AppVersionSite("weather", "quill/apps/weather.py", "_VERSION", "quill-weather-v"),
-    AppVersionSite("inkwell", "quill/apps/inkwell.py", "_VERSION", "quill-inkwell-v"),
-    AppVersionSite("player", "quill/apps/player.py", "_VERSION", "quill-player-v"),
-    AppVersionSite("cast", "quill/apps/podcasts_menu.py", "APP_VERSION", "quill-cast-v"),
+    AppVersionSite("radio", "quill/apps/radio.py", "_VERSION", "quill-radio-v", "_BUILD"),
+    AppVersionSite(
+        "quilllite", "quill/core/lite/__init__.py", "APP_VERSION", "quill-lite-v", "APP_BUILD"
+    ),
+    AppVersionSite(
+        "converter", "quill/apps/converter.py", "_VERSION", "quill-converter-v", "_BUILD"
+    ),
+    AppVersionSite("weather", "quill/apps/weather.py", "_VERSION", "quill-weather-v", "_BUILD"),
+    AppVersionSite("inkwell", "quill/apps/inkwell.py", "_VERSION", "quill-inkwell-v", "_BUILD"),
+    AppVersionSite("player", "quill/apps/player.py", "_VERSION", "quill-player-v", "_BUILD"),
+    AppVersionSite(
+        "cast", "quill/apps/podcasts_menu.py", "APP_VERSION", "quill-cast-v", "APP_BUILD"
+    ),
 )
 
 
@@ -94,11 +111,32 @@ def parse_version(text: str) -> tuple[object, ...]:
 
 
 def source_version(site: AppVersionSite, root: Path = REPO_ROOT) -> str:
+    """The app's version in source, with its build: ``3.2.0+2`` (``3.2.0`` when
+    the app has no build constant, or it is 0)."""
     text = (root / site.source).read_text(encoding="utf-8")
     match = re.search(rf'^{re.escape(site.constant)}\s*=\s*"([^"]+)"', text, re.M)
     if not match:
         raise ValueError(f'{site.source} has no {site.constant} = "..." line')
-    return match.group(1)
+    version = match.group(1)
+    if site.build_constant:
+        build = re.search(rf"^{re.escape(site.build_constant)}\s*=\s*(\d+)", text, re.M)
+        if build:
+            from quill.core.versioning import with_build
+
+            version = with_build(version, int(build.group(1)))
+    return version
+
+
+def _comparable(source: str, published: str) -> tuple[tuple[object, ...], tuple[object, ...]]:
+    """Sort keys for the two, with builds compared only when both carry one."""
+    from quill.core.versioning import ReleaseVersion
+
+    src, pub = ReleaseVersion.try_parse(source), ReleaseVersion.try_parse(published)
+    if src is None or pub is None:
+        return parse_version(source), parse_version(published)
+    if not src.build or not pub.build:
+        src, pub = src.without_build(), pub.without_build()
+    return src.key(), pub.key()
 
 
 def newest_published(tags: list[str], prefix: str) -> str | None:
@@ -127,7 +165,7 @@ def disagreements(
         latest = published.get(app)
         if latest is None:
             continue
-        src, pub = parse_version(source), parse_version(latest)
+        src, pub = _comparable(source, latest)
         if src > pub and app not in releasing and channel != "stable":
             continue  # a Beta or Dev slot carries siblings ahead by design
         if src > pub and app not in releasing:
@@ -148,7 +186,8 @@ def disagreements(
         elif src == pub and app in releasing:
             problems.append(
                 f"{app}: this build says it is releasing {app}, but source still says "
-                f"{source}, which is already published. Bump the version in the release commit."
+                f"{source}, which is already published. Bump the version in the release "
+                "commit -- or, to ship the same version again, its build number."
             )
     return problems
 

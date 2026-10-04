@@ -50,7 +50,13 @@ _SCAN_GLOBS: tuple[str, ...] = ("quill/apps/converter*.py", "quill/ui/converter_
 
 #: Surface constructions whose titles the scan cannot resolve, with the
 #: reason they are fine. Keyed ``<module>::<qualname>``.
-TITLE_EXEMPT: dict[str, str] = {}
+TITLE_EXEMPT: dict[str, str] = {
+    "quill/ui/converter_dialogs.py::ConverterTextDialog.__init__": (
+        "One read-only report window; show_text's three callers pass literals "
+        "the catalogue answers: 'File Properties', 'Conversion Report' and "
+        "'Keyboard Shortcuts'."
+    ),
+}
 
 
 def scan() -> tuple[list[ControlSite], list[TitleViolation]]:

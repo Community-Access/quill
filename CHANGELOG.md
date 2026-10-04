@@ -2,6 +2,130 @@
 
 ## 1.0.0
 
+### Settings you could not reach, keys that did nothing, and one echo (2026-10-04)
+
+- **More Preferences** (`app.preferences_hub`, QUILL key + O, Tools > Customize
+  and Support): the Preferences hub had no way in since `Ctrl+,` began opening
+  Settings directly (6d1bc9e), stranding Task Recipes and Working Modes, GLOW
+  and every Quillin preference page.
+- **Settings, AI and Assistant** draws its own settings (its builder returned
+  after the master switch), each control carries its description as F1 help,
+  and **Find a setting** searches pages not yet built
+  (`preferences_search.registry_page_index`). List-valued settings are not drawn
+  as text, because OK would have written the text back over the list.
+- **Quill Eraser's** four `hygiene_*` settings are on the Spelling page.
+- **Dead keys:** QUILL key + C runs Copy Selection For Email (the same
+  `copy_as_email_body` as File > Copy as Email Body); `Alt+F1` is registered
+  with its key. **Announce Contrast Ratio** always speaks; the startup-tips
+  setting is for automatic announcements only.
+- **Heading navigation speaks once** in QUILL and in QUILL Lite's rich
+  documents: the command now latches the caret cue it has just answered.
+- **File > Exit has its X back** (Alt+F, X); Export moves to E.
+- **Audio Studio** reports its own version (2.2.0) in About and Check for
+  Updates instead of QUILL's; GATE-APPVER covers it.
+- The first-hour tutorial teaches the real keys for the keyboard reference
+  (Help > Open Keyboard Reference) and What Can I Do Here; a test keeps help
+  keys in lessons named by command rather than typed.
+
+### Build numbers in every app (2026-10-04)
+
+- **The same version can ship more than once.** Every app's version now has a
+  build number: QUILL 1.0.0, QUILL Lite 1.2.0, Quill Radio 3.2.0 and QUILL Cast
+  2.0.0 are build 1. A fix shipped without a new version number is the next
+  build (3.2.0 build 2), and Check for Updates offers it to everyone on an
+  earlier build. About, Update History, update notices and the Release Channel
+  window say "3.2.0 (build 2)"; release notes keep saying 3.2.0.
+- **One order.** `quill/core/versioning.py` reads `3.2.0+2` (canonical),
+  `3.2.0-build.2` (tags) and "3.2.0 (build 2)", and the build only breaks ties:
+  3.2.0-rc.1 build 40 < 3.2.0 < build 1 < build 2 < 3.2.1. A commit after a
+  plus is still not a build. GATE-VERSORT gained the rows.
+- **Tags say `-build.N`, never `+N`**: `quill-radio-v3.2.0-build.2`,
+  `v1.0.0-build.1`. Copies installed before build numbers read a plus in a tag
+  as no version, or as part of the patch; they read `-build.2` as a pre-release
+  of 3.2.0, so a copy on an older release is still offered the newest build.
+  `release_tags.release_tag` spells it, `release_tags.next_build` counts it, and
+  every reader takes both spellings and the old build-less tags.
+- **Builds and installers.** Each app keeps its build beside its version
+  (`_BUILD`, `APP_BUILD`, `quill.__build__`). `build_release.ps1 -Build` and
+  `publish_release.py --build` default to the next build after the newest
+  published tag (`scripts/release_build_number.py`, which also refuses a build
+  the source constant does not say). Every installer stamps Windows file
+  version X.Y.Z.B and writes `version_build=` beside `version=` in
+  `quill-app-version.ini`; QUILL's generated installer and the native launcher
+  do the same. GATE-APPVER and GATE-SIBVER compare builds, promotion names one
+  build, and a resumed download can no longer mix two builds that share a file
+  name. Runbook: `docs/release/RELEASE.md`, "Build numbers".
+
+### Insert Markdown Tag only in Markdown documents (2026-10-04)
+
+- **Insert > Markdown Tag leaves the menu outside Markdown**, in QUILL and
+  QUILL Lite alike (reported from @quillforall: the item was "unavailable" in
+  rich and plain documents). It was dimmed, and a dimmed row's key never fired,
+  so the key did nothing and said nothing. The row now hides and comes back in
+  its own place as the document changes, its key stays bound, and pressing it
+  in a non-Markdown document says "Markdown tags are for Markdown documents."
+  Insert HTML Tag is unchanged (dimmed outside HTML).
+- **Shared, not copied.** The rule, the sentence and the hide-and-return
+  machinery are `quill/ui/markdown_tag_row.py`; QUILL calls it from
+  `_refresh_contextual_menu_items`, QUILL Lite from `sync_menu_state`, which
+  runs on the language change itself because an MDI child never receives
+  `EVT_MENU_OPEN`.
+
+### Recent Documents in QUILL and QUILL Lite (2026-10-04)
+
+- **Recent Documents...** (`Alt+Shift+0` in both editors; on QUILL Lite's File
+  menu, and at the foot of QUILL's File > Open Recent, whose File menu has no
+  Alt letter left) shows the
+  whole recent list in one window: open, pin and unpin, remove a row, open the
+  containing folder, clear everything unpinned (asks first, No is the default),
+  how many to remember, and whether deleted files drop off at startup. Reported
+  by a QUILL Lite user who could not find recent documents at all; the submenu
+  had been there, and was not enough.
+- **Shared, not copied.** The rules live in `quill/core/recent_documents.py`
+  and the window in `quill/ui/recent_documents_dialog.py`; QUILL's half is
+  `quill/ui/main_frame_recent_documents.py` (its Open Recent code moved out of
+  `main_frame.py`) and QUILL Lite's is `quill/apps/lite_window_recent.py`.
+- **QUILL's Open Recent gains QUILL Lite's numbers**: name first, folder in
+  brackets, `Alt+Shift+1` to `Alt+Shift+9` on the first nine, pinned files
+  first. Clear Recent Files now asks and keeps pins.
+- **QUILL Lite gains QUILL's settings** under QUILL's names:
+  `recent_files_limit` (1 to 50) and `recent_files_auto_clear_missing` (the
+  #14 rule, fixed drives only). Pins are `pinned_recent_files` in QUILL Lite
+  and `recent-pinned.json` beside `recent.json` in QUILL. The lists stay
+  separate: neither the bridge nor a portable backup carries them.
+
+### Dictating in Spanish, in QUILL and QUILL Lite (2026-10-04)
+
+- **Dictation Settings has a Dictation language: English or Spanish**
+  (`windows_dictation_speech_language`, shared by both editors). In Spanish,
+  Moonshine and Whisper both use Whisper tiny's multilingual model, told the
+  language. It ships beside the English models in both installers (about
+  104 MB more; tiny rather than base because base already runs over the
+  0.25 speed budget). Windows speech recognition is asked for a Spanish
+  recogniser, and says plainly when Windows has none.
+- **Spanish text with English commands** is the first step. Filler removal
+  uses the Spanish list, the wake and stop phrases default to "Quill dicta"
+  and "deja de dictar", and Spanish punctuation words ("coma", "punto",
+  "abrir interrogación"...) work only while automatic punctuation is off, since
+  "coma" and "punto" are everyday words too. Matching ignores accents.
+- **A Spanish command table is drafted and switched off**, awaiting a native
+  speaker's review. A development build can try it with
+  `QUILL_DICTATION_SPANISH_COMMANDS=1`.
+- **"este" is no longer a Spanish filler word.** It is also "this".
+- **`scripts/dictbench.py`** benchmarks the engines on a folder of recordings
+  and a `transcripts.txt`, with `--language es` for the Spanish set.
+
+### Two keys that clashed across the family (2026-10-04)
+
+- **QUILL Cast's Mark as Played and Next is Ctrl+Alt+Shift+Down**, Next in
+  Queue's key with Shift added. It was Ctrl+Alt+Shift+Q, QUILL's show-and-hide
+  key for the whole of Windows, so it never fired while QUILL ran. A test now
+  checks every app's keys against every family app's show-and-hide key
+  (`tests/unit/ui/test_global_hotkeys.py`).
+- **Quill Radio's Station > Local Media... has no access letter.** It had taken
+  D, which Download Preferences already had, so Alt+S then D moved between
+  the two instead of choosing one. Ctrl+O still opens it.
+
 ### Keys that did nothing, and equations that did not export (2026-10-03)
 
 - **QUILL key, then G now opens Open From Favorite Folder**, as the keyboard
@@ -90,6 +214,14 @@
   version, or swaps a portable copy's `.previous` folder back; the app says so
   once and Update History records it. The previous installer is kept until 3
   successful starts or 7 days.
+- **Withdrawing, Stable notes, and a gate for saved shapes (2026-10-04)**:
+  `scripts/revoke_release.py` withdraws a build (each channel falls back, the
+  GitHub title says "(withdrawn)", nothing is deleted); promotion to Stable
+  rolls the Beta notes up with `scripts/rollup_release_notes.py`; GATE-DATAFMT
+  (`quill/tools/data_format_audit.py`) fails a changed serializer until its
+  format version is bumped or the change is recorded as additive; a channel
+  rehearsal runs offline in CI; and the running version's installer is kept
+  always on Beta and Dev but on Stable only for 7 days or 3 starts.
 
 ### Release channels, Phases 0 and 1: Stable, Beta and Dev in QUILL, QUILL Lite, Quill Radio and QUILL Cast (2026-10-03)
 
@@ -466,8 +598,9 @@
   `watched_folder_words.py`, `ui/podcasts/folder_watch.py`,
   `watched_folders_window.py`, `watched_folder_settings.py`.
 - **Cast's own show/hide key**, Ctrl+Alt+Shift+F12. The shared default had
-  taken Ctrl+Alt+Shift+Q system-wide, which is Cast's Mark as Played and Next,
-  so that row never fired while Cast ran.
+  taken Ctrl+Alt+Shift+Q system-wide, which was then Cast's Mark as Played and
+  Next, so that row never fired while Cast ran (it moved off that key on
+  2026-10-04).
 - **Episode > Player Information... (Ctrl+I)** and **Podcasts > Carry My Place
   Between Machines...**, both previously reachable only from the Command
   Palette; **Bookmark This Moment** (Ctrl+Alt+A) and **Skip Silence**

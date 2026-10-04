@@ -42,6 +42,22 @@ def clear_recent_files() -> None:
     save_recent_files([])
 
 
+# Pinned recent documents (quill.core.recent_documents): a separate file rather
+# than a change of recent.json's shape, so an older QUILL reading recent.json
+# still finds the plain list it expects. Written through _save_path_list, the
+# same reviewed cache-class site as the Audio Studio lists.
+def _pinned_path() -> Path:
+    return app_data_dir() / "recent-pinned.json"
+
+
+def load_pinned_recent_files() -> list[str]:
+    return [str(entry) for entry in _load_path_list(_pinned_path())]
+
+
+def save_pinned_recent_files(paths: list[str]) -> None:
+    _save_path_list(_pinned_path(), [Path(entry) for entry in paths])
+
+
 # --- Audio Studio MRU lists ---------------------------------------------
 # Two parallel MRU lists (audio source folders + audiobooks) used by the
 # wizard's source pages and the edit journey's EditSourcePage ComboBox.

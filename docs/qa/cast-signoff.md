@@ -696,11 +696,12 @@ and need no key, no second machine and no long download:
 
 **C-93. Global hotkeys**
 - Do: **Help > Global Hotkeys...**, assign Play/Pause, then use it from another
-  program. Note that **Show/Hide to the Tray** starts on **Ctrl+Alt+Shift+Q**.
+  program. Note that **Show/Hide to the Tray** starts on **Ctrl+Alt+Shift+F12**.
 - Pass: only the safe commands can be bound; the first assignment warns that a
   system-wide key may override the same key elsewhere; a key another app owns is
-  left alone. If you also run QUILL, that chord collides by design -- change one
-  of them here and confirm the change sticks.
+  left alone. With QUILL running too, Ctrl+Alt+Shift+F12 shows and hides Cast
+  and Ctrl+Alt+Shift+Q shows and hides QUILL; change one here and confirm the
+  change sticks.
 - [ ] pass  [ ] fail: ______
 
 **C-94. The Keyboard Manager is shared with the family**

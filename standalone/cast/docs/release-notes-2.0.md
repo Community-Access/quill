@@ -40,8 +40,10 @@ A few things work differently now:
   OPML file is still called a subscription list, because that's what every
   other app calls it.
 - **A new key for showing and hiding Cast.** From any program, it's now
-  Ctrl+Alt+Shift+F12. The old key, Ctrl+Alt+Shift+Q, now marks the episode
-  played and moves on to the next one.
+  Ctrl+Alt+Shift+F12.
+- **Mark as Played and Next is Ctrl+Alt+Shift+Down**, right beside Next in
+  Queue on Ctrl+Alt+Down. It used to be Ctrl+Alt+Shift+Q, which shows and
+  hides QUILL, so it never worked while QUILL was open.
 - **Save and Close instead of OK and Cancel.** Windows that change settings,
   such as Settings for This Podcast (Ctrl+Alt+,), now have a Save button that
   keeps the window open, so you can try something and adjust it. Ctrl+S saves
@@ -158,10 +160,17 @@ from "Try this first" will carry you a long way. A few more worth knowing:
 - **Shift+Space** on any episode plays it straight after this one.
 - **Ctrl+Home** takes you back to where Cast opens, from anywhere.
 - **Ctrl+Alt+T** sets a sleep timer, and Cast tells you when there is a minute
-  left.
+  left. **Ctrl+Alt+Shift+T** sleeps at the end of this episode instead.
+- **Ctrl+Alt+Shift+A** stops after this episode, just once.
+- **Ctrl+Shift+9** turns Skip Silence on and off, so long pauses get shorter
+  without anyone sounding rushed.
+- **Ctrl+E** opens Sound Enhancements, and **Ctrl+Shift+K** chooses which
+  speakers or headphones Cast plays through.
 
 Speed can belong to a podcast. Speed up the slow talker, leave the fast one
-alone, and each podcast remembers its own.
+alone, and each podcast remembers its own. The same goes for loudness: give
+the podcast recorded in a cupboard a Volume Boost in Settings for This Podcast
+(Ctrl+Alt+,), and it plays louder while everything else stays as it was.
 
 Chapters work even when a podcast does not publish any. Cast can find them in
 the show notes or a transcript, and can skip the sponsor chapter for you every
@@ -201,7 +210,19 @@ open Cast in the morning, one sentence tells you what came in overnight.
 The **Play Queue** (Ctrl+Shift+Q) is what plays next. Shuffle it, clear it, or
 save a running order you use every week and put it back with one choice. When
 Cast put an episode there for you, its row says why, such as "queued by
-Auto-Queue" or "queued by a watched folder".
+Auto-Queue" or "queued by a watched folder". Choose **Auto-Queue New
+Episodes** on a podcast's menu (Shift+F10) and its new episodes go straight
+into the queue. A daily news podcast can expire, too: choose **Queue
+Expiry...** on its menu, and yesterday's headlines step aside to **Recently
+Expired** (Ctrl+Shift+X), where they wait a week in case you want them back.
+
+Fallen behind on a podcast? **Mark All as Played...** (Ctrl+Shift+E) catches
+you up in one go. It asks first, and your downloads stay where they are.
+
+Which of your podcasts have stopped working? Podcasts > **Feed Check...**
+(Ctrl+Shift+C) lists the ones that need something, worst first, and checks
+nothing until you ask it to. In Settings for This Podcast you can also ask
+Cast to tell you if a podcast goes quiet for a few weeks.
 
 **Playlists** can be lists you build by hand or smart ones that follow a rule,
 such as everything under twenty minutes from one folder. There are five
@@ -209,7 +230,11 @@ starter playlists ready to try.
 
 Cast can keep the newest few episodes of each podcast downloaded, so they
 are ready when the internet is not. It keeps an eye on disk space for you and
-never removes an episode you have queued or started.
+never removes an episode you have queued or started. When you want the space
+back now, **Free Up Space** (Ctrl+Alt+F) applies your storage rules straight
+away and tells you how much space came back, and **Run Housekeeping Now**
+(Ctrl+Alt+H) does the whole tidy-up at once. Both are in the Command Palette,
+and on the Downloads menu in Advanced mode.
 
 Now and then a podcast moves its audio, or a download comes out cut short or
 silent. You do not need to unfollow and follow again. Press Shift+F10 on the
@@ -280,9 +305,20 @@ like it to. Ctrl+W sends it there any time.
 ## Your library goes where you go
 
 Back up your whole library to one file, with your podcasts, playlists,
-positions, notes and bookmarks, and restore it later. When you get a new
-computer, Help > Export My Setup moves your library, settings and keys across
-in one file.
+positions, notes and bookmarks, using Podcasts > **Back Up My Podcasts...**
+(Ctrl+Alt+Shift+B), and put it back later with **Restore from a Backup...**
+(Ctrl+Alt+Shift+R). When you get a new computer, Help > Export My Setup
+(Ctrl+Alt+Shift+X) moves your library, settings and keys across in one file.
+
+**Listening Statistics** (Ctrl+Alt+Shift+S) tells you which podcasts you
+listen to most, how long, and when, from your own history on this computer.
+Its **Year in Review** button tells the story of your year in a few friendly
+sentences you can copy or save.
+
+An episode can come out of Cast too. On an episode's menu (Shift+F10), **Save
+Episode Audio As...** saves a copy of the audio wherever you choose, even
+before it is downloaded, and **Copy Podcast Link** copies the podcast's feed
+address to give to a friend.
 
 If you listen on more than one computer, Cast can keep your place in each
 episode in step through a folder you already sync, such as Dropbox or
@@ -353,6 +389,10 @@ last app comes back to Stable.
 If an update ever fails to start, it undoes itself, puts back the version you
 had, and tells you so the next time Cast opens. The window's **Update
 History** button shows everything the updater has done.
+
+Help > About now shows a build number after the version: this release is
+2.0.0 (build 1). If a fix comes out without a new version number, it is a
+newer build, and Check for Updates offers it to you.
 
 ## When you need a hand
 

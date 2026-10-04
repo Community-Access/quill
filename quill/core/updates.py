@@ -481,8 +481,12 @@ def _app_asset_url(
 def _app_version_from_tag(tag: str) -> str:
     """'quill-radio-v2.2.0' / 'weather-2.2.0' / 'v2.2.0' -> '2.2.0'. Pulls the
     trailing dotted-number version out of a per-app release tag so each app's
-    own version can be compared even when several apps share one repo's tags."""
-    match = re.search(r"(\d+\.\d+(?:\.\d+)?(?:[-.][0-9A-Za-z.]+)?)\s*$", tag or "")
+    own version can be compared even when several apps share one repo's tags.
+    A build rides along in either spelling: ``quill-radio-v3.2.0-build.12`` ->
+    ``3.2.0-build.12``, which :mod:`quill.core.versioning` reads as build 12."""
+    match = re.search(
+        r"(\d+\.\d+(?:\.\d+)?(?:[-.][0-9A-Za-z.]+)?(?:\+[0-9A-Za-z.]+)?)\s*$", tag or ""
+    )
     return match.group(1) if match else (tag or "").strip()
 
 
@@ -815,7 +819,7 @@ def is_newer_version(current: str, available: str) -> bool:
     return _version_tuple(available) > _version_tuple(current)
 
 
-def _version_tuple(value: str) -> tuple[tuple[int, int, int], int, tuple[int, ...], int]:
+def _version_tuple(value: str) -> _versioning.VersionKey:
     """Sortable version key -- a thin wrapper over :mod:`quill.core.versioning`.
 
     Kept so every existing caller and test keeps working. The ordering is

@@ -185,6 +185,10 @@ class CaptureBridge:
         return {"ok": True, "count": len(results), "results": results}
 
 
+#: The most a rejected request's body is read (and thrown away) before the 401.
+_MAX_DISCARD_BYTES = 1 << 20
+
+
 def _make_handler(bridge: CaptureBridge):
     class _Handler(BaseHTTPRequestHandler):
         # Quiet logging.
@@ -239,6 +243,22 @@ def _make_handler(bridge: CaptureBridge):
                 return json.loads(raw.decode("utf-8"))
             except (ValueError, UnicodeDecodeError):
                 return {}
+
+        def _discard_body(self) -> None:
+            # A rejected request's body must still be read before the reply:
+            # on Windows, closing a socket with unread data in its receive
+            # buffer sends a reset, and the reset can destroy the 401 before
+            # the client reads it (WinError 10053 on the client). Bounded, so
+            # an unauthenticated sender cannot make us read without limit;
+            # past the bound the connection is simply closed.
+            try:
+                length = int(self.headers.get("Content-Length") or 0)
+            except ValueError:
+                length = 0
+            if 0 < length <= _MAX_DISCARD_BYTES:
+                self.rfile.read(length)
+            elif length > _MAX_DISCARD_BYTES:
+                self.close_connection = True
 
         # -- routes ---------------------------------------------------------
         def do_OPTIONS(self) -> None:
@@ -304,6 +324,7 @@ def _make_handler(bridge: CaptureBridge):
 
         def do_POST(self) -> None:
             if not self._authorized():
+                self._discard_body()
                 self._send(401, {"ok": False, "error": "unauthorized"})
                 return
             path = urlparse(self.path).path

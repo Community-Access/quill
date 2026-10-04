@@ -75,6 +75,47 @@ def _targets(parent: Any, prefix: str = "") -> list[SettingTarget]:
     return targets
 
 
+def registry_page_index(
+    dialog: Any,
+    book: Any,
+    page_specs: list[tuple[str, list[Any]]],
+    built_pages: set[int],
+    build_page: Callable[[int], None],
+    control_index: dict[str, tuple[int, Any]],
+    value_of: Callable[[str], object],
+) -> list[SettingTarget]:
+    """Every setting on every page of a lazily built Settings book.
+
+    QUILL's Settings builds a page the first time it is shown, so a search over
+    the controls on screen found only the first page. The built pages are read
+    as usual; an unbuilt page's settings come from its registry specs, and
+    choosing one shows that page and returns the control to focus.
+    """
+
+    def reveal(index: int, key: str) -> Any:
+        book.SetSelection(index)
+        build_page(index)
+        entry = control_index.get(key)
+        return entry[1] if entry is not None else None
+
+    targets = _targets(dialog)
+    for index, (title, specs) in enumerate(page_specs):
+        if index in built_pages:
+            continue
+        for spec in specs:
+            if isinstance(value_of(spec.key), (list, dict)):
+                continue  # not drawn on the page (it has its own manager)
+            targets.append(
+                SettingTarget(
+                    f"{title}: {spec.label}",
+                    f"{spec.key} {spec.description} {' '.join(spec.keywords)}",
+                    None,
+                    reveal=lambda i=index, k=spec.key: reveal(i, k),
+                )
+            )
+    return targets
+
+
 class PreferencesSearch:
     """Find a setting and focus it without changing values or accepting edits."""
 

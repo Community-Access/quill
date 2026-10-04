@@ -11,7 +11,6 @@ from __future__ import annotations
 import wx
 
 from quill.apps import radio_audio_menu, radio_go_to
-from quill.core.app_version import installed_version
 
 
 class RadioMenuBarMixin:
@@ -43,8 +42,8 @@ class RadioMenuBarMixin:
         )
         station_menu.Append(browse_id, self._menu_label("&Browse Stations...", "radio.browse"))
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_browse_stations(), id=browse_id)
-        local_id = wx.NewIdRef()  # Local Media: your own files, in playlists
-        station_menu.Append(local_id, self._menu_label("Local Me&dia...", "radio.local_media"))
+        local_id = wx.NewIdRef()  # no access letter: D is Download Preferences' (GATE-14)
+        station_menu.Append(local_id, self._menu_label("Local Media...", "radio.local_media"))
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_local_media(), id=local_id)
         rrs_update_id = wx.NewIdRef()
         station_menu.Append(rrs_update_id, "Update Radio Reading &Services...\tCtrl+Alt+F10")
@@ -447,7 +446,7 @@ class RadioMenuBarMixin:
         doc_ids = radio_help_docs.install_help_items(self, help_menu, wx)
         help_menu.AppendSeparator()
         help_menu.Append(updates_id, "Check for Up&dates...\tCtrl+Alt+U")
-        from quill.ui.updates.shell import append_release_channel_item
+        from quill.ui.updates.shell import append_release_channel_item, installed_app_version
 
         append_release_channel_item(self, help_menu, "radio", updates_id)  # Alt+H, N
         help_menu.AppendSeparator()
@@ -456,7 +455,7 @@ class RadioMenuBarMixin:
             wx.EVT_MENU,
             lambda _e: self.check_for_app_updates(
                 repo_slug=_REPO,
-                current_version=installed_version(_VERSION),
+                current_version=installed_app_version("radio"),
                 app_key="radio",
                 match_edition=_MATCH_EDITION,
             ),

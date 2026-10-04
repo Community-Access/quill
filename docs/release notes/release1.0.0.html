@@ -347,6 +347,38 @@ the GitHub CLI, and more. They all live in <strong>Help &gt; Download
 Optional Components</strong>, each with a plain description, its size, a
 Test button and a Remove button. Nothing is downloaded until you
 ask.</p>
+<p><strong>QUILL can be your text editor.</strong> Installing it tells
+Windows that QUILL can open your text, Markdown, rich text, HTML, Word
+and EPUB files, and takes nothing over. In <strong>Settings &gt;
+General</strong>, under <strong>Windows and your files</strong>,
+<strong>Make QUILL My Text Editor…</strong> explains what Windows lets
+an app do and opens the page where you choose QUILL for
+<code>.txt</code> and anything else. <strong>Open QUILL instead of
+Notepad</strong> goes further, for the programs that start Notepad by
+name. It is off until you turn it on, asks first, and puts Notepad back
+when you turn it off or uninstall QUILL. It works from a portable copy
+too.</p>
+<h3 id="staying-up-to-date">Staying up to date</h3>
+<p><strong>Help &gt; Check for Updates…</strong> looks for a newer
+QUILL, and by default QUILL looks by itself each time it starts. It
+never installs anything without asking. After an update, QUILL checks
+that the new version really opens, and if it does not open within two
+minutes, it puts back the version you had.</p>
+<p><strong>Help &gt; Release Channel…</strong> chooses which updates you
+are offered. <strong>Stable</strong>, the one we recommend, is where
+every copy starts. <strong>Beta</strong> gets new features a few weeks
+early, and <strong>Dev</strong> is the work in progress. Moving to Beta
+or Dev saves a copy of your settings and keys first, shows a short
+warning you have to agree to, and can move QUILL Lite, Quill Radio and
+QUILL Cast in the same step if you tick them. Coming back to Stable is
+the same window, and QUILL tells you plainly if it has to wait for
+Stable to catch up. The same window is a button away in <strong>Settings
+&gt; Administration</strong>, and its <strong>Update History</strong>
+shows everything the updater has done.</p>
+<p>Every version now has a <strong>build number</strong>, so a fix can
+ship without a new version number. <strong>Help &gt; About
+Quill</strong> says “1.0.0 (build 1)”, and Check for Updates offers a
+later build of the same version to everyone on an earlier one.</p>
 <h3 id="the-first-two-minutes">The first two minutes</h3>
 <p>The first time you start QUILL, a startup wizard asks one question:
 what kind of writing do you do? Your answer picks a <strong>feature
@@ -447,6 +479,29 @@ that menu bar. The key you see is the one that is actually bound, so if
 you change it, the menu follows you.</li>
 <li>Every Close button closes. That is now true in every window in the
 family.</li>
+<li><strong>More Preferences is back.</strong> <code>Ctrl+,</code> opens
+Settings straight away, which had left Task Recipes and Working Modes,
+GLOW Accessibility and every Quillin’s preferences (Smart Insert, BRF
+Tools, Journal Stamp, Document Guardian, Status Scribe) with no way in.
+<strong>Tools &gt; Customize and Support &gt; More Preferences…</strong>
+(the QUILL key, then <code>O</code>) lists them all.</li>
+<li><strong>The AI and Assistant page shows all its settings.</strong>
+Voice question reply, the assistant’s tone, Ask AI’s default provider
+and model, the image description style and the rest were never drawn.
+They are there now, each with F1 help.</li>
+<li><strong>Find a setting finds settings on every page</strong>,
+including pages you have not opened yet. Before, it only searched the
+page that was showing.</li>
+<li><strong>Quill Eraser’s four settings are on the Spelling
+page.</strong> The guide said they were in Settings, and they were on no
+page at all.</li>
+<li><strong>Two keys that did nothing now work.</strong> The QUILL key
+followed by <code>C</code> copies your selection ready to paste into an
+email, and <code>Alt+F1</code> on something greyed out tells you why it
+is unavailable.</li>
+<li><strong>Announce Contrast Ratio always answers out loud.</strong> It
+used to speak only when the startup announcements setting was on, which
+it is not unless you turn it on.</li>
 </ul>
 <h3 id="smaller-fixes-you-will-feel">Smaller fixes you will feel</h3>
 <ul>
@@ -660,7 +715,14 @@ you are in.</li>
 <li>The Window menu lists them all.</li>
 </ul>
 <p>Recent files, Save, Save All and session restore work the way you
-expect.</p>
+expect. <strong>Alt+Shift+1</strong> to <strong>Alt+Shift+9</strong>
+reopen the nine documents you opened most recently, and <strong>Recent
+Documents…</strong> (<strong>Alt+Shift+0</strong>, also at the foot of
+<strong>File &gt; Open Recent</strong>) shows the whole list in one
+window. You can open a document, pin the ones you keep coming back to,
+remove a row, open the containing folder, clear everything that is not
+pinned, and choose how many documents to remember. QUILL Lite has the
+same window on the same key.</p>
 <p><strong>Notebooks</strong> gather a folder of related files into a
 project, with entries, headings, bookmarks, sticky notes, saved versions
 and optional writing goals. <strong>Workspace Snapshots</strong> save
@@ -822,7 +884,9 @@ finished.</p>
 <h4 id="working-with-lines">Working with lines</h4>
 <ul>
 <li>Sort ascending, descending, by length, by number or by date.
-Reverse, shuffle, remove duplicates, quote and unquote.</li>
+Reverse, shuffle, remove duplicates, quote and unquote. <strong>Unquote
+Lines</strong> is <strong>Alt+Shift+.</strong> (Alt, Shift and the
+period), in QUILL and QUILL Lite.</li>
 <li><strong>Number Lines (Advanced)</strong> lets you set the starting
 number, the step, digits or Roman numerals, leading zeros, what follows
 the number, and the alignment.</li>
@@ -890,6 +954,11 @@ on one line, and QUILL asks before a large insertion.</li>
 <li><strong>Word Prediction</strong> (<strong>Ctrl+Period</strong>)
 suggests endings from the words already in your document, and from HTML
 and Markdown tags.</li>
+<li><strong>Insert &gt; Markdown Tag</strong>
+(<strong>Ctrl+Alt+I</strong>) is on the Insert menu only while you are
+in a Markdown document, and comes back as soon as you are. Pressed
+anywhere else, its key tells you that Markdown tags are for Markdown
+documents, instead of doing nothing.</li>
 </ul>
 <h3 id="the-clipboard-expanded">The clipboard, expanded</h3>
 <p>The <strong>Copy Tray</strong> has twelve numbered slots. Copy to a
@@ -1078,6 +1147,11 @@ read it. The preview and HTML export show it through MathJax. Word
 export writes real Word equations you can edit, and they turn back into
 text when you reopen the file. With the optional MathCAT engine
 installed, “read this part aloud” speaks math the way NVDA does.</p>
+<p>Insert Equation writes <code>\(...\)</code> around an equation in the
+line and <code>$$...$$</code> around a block, the same marks the Math
+Equations Quillin uses, so the preview and Word export both pick it up.
+A beta wrote single dollar signs, which neither of them recognised. To
+update an equation from a beta, select it and insert it again.</p>
 <p><strong>Math in the books you read, too.</strong> When you open an
 <strong>EPUB</strong> with equations in MathML or LaTeX, QUILL turns
 each one into the same plain-language reading and puts it in the text as
@@ -1293,6 +1367,20 @@ graphics card, warns you when a model is too big for your computer, and
 recommends the best fit. Downloads use a checksum-pinned progress dialog
 you can cancel.</p>
 <ul>
+<li><strong>Live Dictation</strong> (<strong>Ctrl+F11</strong>) writes
+as you talk: each phrase lands at the cursor when you pause, with a soft
+tone, and is read back to you. <strong>Shift+F11</strong> lists the last
+twenty phrases, and <strong>My Words and Phrases…</strong>
+(<strong>Alt+Shift+F10</strong>) teaches it your names and corrections.
+Nothing leaves your computer and no recording is kept.</li>
+<li><strong>You can dictate in Spanish.</strong> In <strong>Dictation
+Settings</strong> (<strong>Alt+Shift+F6</strong>), set <strong>Dictation
+language</strong> to Spanish. Your words come out in Spanish, accents
+and all, using a multilingual model that comes with QUILL, so there is
+nothing to download. The wake and stop phrases become “Quill dicta” and
+“deja de dictar”, and Spanish punctuation words such as “coma” and
+“punto” work when automatic punctuation is off. Commands stay in English
+for now. This is new, and we would love to hear how it goes.</li>
 <li><strong>Locked Dictation</strong> is the reliable way to speak into
 a document. <strong>Ctrl+F9</strong> starts and stops,
 <strong>Ctrl+Shift+F9</strong> pauses and resumes, and
@@ -2877,6 +2965,14 @@ your own computer. A menu item switched off this way explains why, right
 there in the menu, instead of just being greyed out.</li>
 </ul>
 <h3 id="resetting-and-moving">Resetting and moving</h3>
+<p><strong>Settings</strong> (<strong>Ctrl+,</strong>) opens on a
+<strong>Find a setting</strong> box: type a word or two and arrow to the
+setting you meant, on whichever page it lives. The
+<strong>Administration</strong> page can <strong>Export
+settings…</strong> to a file you carry to another computer, leaving out
+the folders that only make sense on this one, and <strong>Import
+settings…</strong> brings them back and tells you what the file did and
+did not contain.</p>
 <p><strong>Reset Everything to Factory Defaults</strong> puts your
 settings, shortcuts, menu changes and feature profile back as they were,
 after one confirmation. <strong>Import data from a previous QUILL
@@ -2899,7 +2995,8 @@ reach. <strong>Add Favorite Folder</strong>
 (<strong>Ctrl+Shift+Grave</strong> then <strong>Shift+F</strong>) adds
 the current document’s folder, <strong>Remove Favorite Folder…</strong>
 (<strong>Ctrl+Shift+Grave</strong> then <strong>Shift+X</strong>) takes
-one off, and <strong>Open From Favorite Folder…</strong> opens Quick
+one off, and <strong>Open From Favorite Folder…</strong>
+(<strong>Ctrl+Shift+Grave</strong> then <strong>G</strong>) opens Quick
 Open across them. All three are on <strong>File &gt; Favorite
 Folders</strong>.</li>
 <li><strong>Quick Open</strong> puts you straight in a search box and

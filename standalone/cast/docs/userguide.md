@@ -874,7 +874,7 @@ with a long list of credits. Cast can skip them for you, every time.
 2. Set **Skip the first** to how many seconds to skip at the start.
 3. Set **Stop this far before the end** to how many seconds to leave off the
    end.
-4. Press OK.
+4. Press **Save** (Ctrl+S), then **Close**.
 
 The intro skip only happens when an episode starts from the beginning, so
 picking up halfway through never throws you past where you were. When Cast
@@ -909,7 +909,8 @@ To see the whole list:
 1. Arrow to the episode and press **Shift+F10** or the Applications key.
 2. Choose **Chapters...**. The list shows each chapter's name and where it
    starts.
-3. Arrow to one and press Enter to go there.
+3. Arrow to one and press Enter, or **Jump To Chapter** (Alt+J), to go
+   there.
 
 Cast finds chapters in several places: a list the podcast published, marks
 inside a downloaded file, and timestamps the podcast typed into its show
@@ -965,7 +966,7 @@ To choose how hard Cast tries:
      computer, writes down what was said, and finds the sections from that.
      It takes minutes, works without the internet, and you can stop it any
      time.
-4. Press OK.
+4. Press **Save**.
 
 **Work out chapters**, in the same section, chooses whether Cast does this
 never, only for downloaded episodes, or for every episode. The rest of the
@@ -1105,7 +1106,7 @@ Give that podcast a boost instead.
 
 1. Select the podcast and press **Ctrl+Alt+,** for Settings for This Podcast.
 2. Set **Volume Boost** to Low, Medium or High.
-3. Press OK.
+3. Press **Save** (Ctrl+S), then **Close**.
 
 Cast applies the boost every time that podcast plays, and leaves everything
 else alone. Chapter 6, Making Cast yours, has more on what Settings for This
@@ -1132,7 +1133,7 @@ about the queue. While you listen, three keys work with it:
 
 - **Ctrl+Alt+Down** plays the next episode in the queue now.
 - **Ctrl+Alt+Up** goes back to the previous one.
-- **Ctrl+Alt+Shift+Q** marks this episode played and moves on to the next.
+- **Ctrl+Alt+Shift+Down** marks this episode played and moves on to the next.
 
 Two switches in Preferences > Playing decide what happens at the end: **Play
 the next episode in the Play Queue**, which is on, and **When the queue is
@@ -1278,6 +1279,15 @@ where it goes. The button says how many there are.
 **View in Browser** opens the notes as the podcast wrote them, pictures and
 all, in your web browser.
 
+The **Show Notes** window has two more buttons of its own:
+
+- **Send to Editor** (Alt+S) puts the notes on the clipboard as plain text, so
+  you can paste them into QUILL, Word or an email. Cast says "Show notes
+  copied to clipboard".
+- **Save As...** (Alt+A) saves the notes to a file. Choose plain text, HTML or
+  Markdown in the file type list. HTML and Markdown keep every link as a
+  link.
+
 If you would rather be walked through it, Help > Tutorials has a lesson called
 **Show notes, and what else the podcast sent**. It goes on to About This
 Episode and transcripts as well.
@@ -1392,10 +1402,12 @@ To read your notes:
 - **My Notes in This Episode**, in the Command Palette (Ctrl+Shift+P), lists
   the notes for what is playing.
 
-Select a note and Cast takes you to that moment, starting the episode if it
-has to. **Copy Note** copies the episode, the podcast, the time and your words
-together, ready to send to someone. The Your note box in Now Playing is a
-note too, so it shows up here as well.
+Select a note and press **Jump To Note** (Alt+J), or Enter, and Cast takes
+you to that moment, starting the episode if it has to. **Copy Note** (Alt+C)
+copies the episode, the podcast, the time and your words together, ready to
+send to someone. **Delete Note** (Alt+D) removes the note you are on, and
+Cast says "Note deleted". The Your note box in Now Playing is a note too, so
+it shows up here as well.
 
 #### Sharing a moment
 
@@ -1589,6 +1601,12 @@ Between them, these tell you whether it is the one you meant, whether it is
 still running, and whether it is in your language. Press **Follow** if it is,
 or Escape to go back to your results and keep looking.
 
+Every result has a menu of its own, too. Press **Shift+F10** or the
+Applications key on it for **Follow** (or **Stop Following**), **Preview...**,
+**Copy Feed Address**, **Copy Website Address** and **Open Website in Your
+Browser**. The two website items are dimmed when the podcast did not give a
+website. Cast tells you when an address has been copied.
+
 If you would rather be walked through it, Help > Tutorials has a lesson called
 **The first hour**. Its first few steps find and follow a podcast with you.
 
@@ -1654,7 +1672,7 @@ Podcasts >
 
 1. Type your key in **Key** (Alt+K) and your secret in **Secret** (Alt+E).
 2. Press **Read It Back** (Alt+R) if you want to hear what you typed.
-3. Press OK.
+3. Press **Save**.
 
 Your key is used from then on, and it is kept by Windows like a feed
 password. **Forget These** (Alt+F) removes it, and Cast goes back to its own.
@@ -2215,7 +2233,7 @@ are on Episode > Play Queue Run:
 
 - **Next in Queue** (Ctrl+Alt+Down) skips to the next episode.
 - **Previous in Queue** (Ctrl+Alt+Up) goes back one.
-- **Mark as Played and Next** (Ctrl+Alt+Shift+Q) finishes this one for good
+- **Mark as Played and Next** (Ctrl+Alt+Shift+Down) finishes this one for good
   and moves on. I use this one for news I have heard enough of.
 
 In the queue itself, Delete takes an episode out of the queue. It stays in
@@ -2908,6 +2926,10 @@ You can move between sections before you save, and Cast keeps what you
 changed in each one. When you press Save, it tells you what changed. If you
 get lost in a long section, Alt+S takes you back to the Section list.
 
+Two sections have a shortcut by name. In the Command Palette (Ctrl+Shift+P),
+**Fetching Preferences** opens Preferences on Fetching, and **Playing
+Preferences** opens it on Playing.
+
 Here is what each of the nine sections is for, so you know where to look:
 
 - **When Cast opens.** Where Cast puts you when it starts, whether it picks up
@@ -3374,7 +3396,7 @@ Cast is easier to learn.
 2. Every feature is a checkbox, grouped under eight headings: Places,
    Playing, Library, Getting podcasts, Keeping things, Telling you, Listening
    data and Around the app. Everything starts on.
-3. Uncheck what you do not want and press OK.
+3. Uncheck what you do not want and press **Save**.
 
 The menus and places change straight away. The status bar follows the next
 time you open Cast.
@@ -3661,7 +3683,9 @@ The buttons under the report:
 - **Year in Review...** (Alt+Y) tells the story of your year in a few
   friendly sentences: how long you listened, your top podcasts and what share
   of the year each took, your busiest month, and how many days you listened.
-  You can arrow through it, copy it, or save it.
+  Choose a different **Year** (Alt+Y) to look back further. **Copy** (Alt+C)
+  puts the story on the clipboard, and **Save as Text...** (Alt+S) saves it
+  as a file.
 - **Export CSV...** (Alt+E) saves every listening session as a file you can
   open in a spreadsheet.
 - **Clear Statistics...** (Alt+S) deletes the listening log and nothing
@@ -4034,6 +4058,10 @@ unless it finds one. To check now:
    open again afterwards, or **Install when I close** (Alt+C) to keep
    listening and update the next time you close Cast.
 
+Help > About shows your version with a build number, such as 3.2.0 (build 2). The
+build number tells you which build of a version you have: when a fix comes out
+without a new version number, it is a newer build, and Check for Updates offers it.
+
 If you are already up to date, Cast tells you so. To turn the daily check
 off, open Preferences (Ctrl+,), choose **When Cast opens**, and clear
 **Check for updates on launch**.
@@ -4096,8 +4124,11 @@ version really opens. If it doesn't open within two minutes, the update undoes
 itself and puts back the version you had, and the next time Cast starts it
 tells you so. Nothing of yours is changed, and Update History has the details.
 To make this possible, Cast keeps a copy of the installer for the version you
-have. After an update, the previous one is kept until the new version has
-started three times, or for a week, and then it is deleted.
+have: on Beta and Dev for as long as you have that version, and on Stable for a
+week or three starts after each update. That copy takes about 200 MB of disk
+space, which Stable gives back once the week or the three starts are up. After
+an update, the previous installer is kept until the new version has started
+three times, or for a week, and then it is deleted.
 
 **Coming back to Stable.** Open Release Channel again and choose **Stable**.
 
@@ -4353,7 +4384,7 @@ Playlists, Enter opens a playlist.
 | Volume up, volume down | Ctrl+Up, Ctrl+Down |
 | Mute or unmute | Ctrl+Alt+M |
 | Next in the Play Queue, previous | Ctrl+Alt+Down, Ctrl+Alt+Up |
-| Mark as Played and Next | Ctrl+Alt+Shift+Q |
+| Mark as Played and Next | Ctrl+Alt+Shift+Down |
 | Stop After This Episode | Ctrl+Alt+Shift+A |
 | Bookmark this moment | Ctrl+Alt+A |
 | Bookmark with a note | Ctrl+Shift+D |

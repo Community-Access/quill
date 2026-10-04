@@ -138,7 +138,9 @@ markers and ACX loudness normalization.
 Dictation runs **on your own machine**, using whisper.cpp, Faster Whisper, Vosk or
 NVIDIA's Nemotron. A model manager checks your actual RAM and GPU before it
 recommends one. Your audio is saved before transcription starts, so a failed
-transcription never costs you a session.
+transcription never costs you a session. **Live Dictation** (**Ctrl+F11**) writes
+each phrase at the cursor as you pause, and you can now dictate in **Spanish** as
+well as English.
 
 ## AI, only if you want it
 
@@ -184,7 +186,12 @@ on your menus, choose **Help > Why Don't I See a Feature?**
 Install QUILL with the Windows installer, unpack the portable ZIP onto a USB stick,
 or take the Offline Edition, which carries every optional part inside it for a
 computer with no internet connection. macOS builds are notarized and Developer-ID
-signed.
+signed. Once it is installed, QUILL can be your text editor in Windows, and even
+open in place of Notepad if you ask it to.
+
+**Help > Release Channel...** lets you stay on Stable, the version we recommend, or
+try new features early on Beta. QUILL saves a copy of your settings before it
+moves, and coming back to Stable is the same window.
 
 ## Or take the small one
 

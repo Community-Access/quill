@@ -16,6 +16,7 @@ import wx
 from quill.core.updater.channels import channel_label
 from quill.core.updater.history import UpdateEvent
 from quill.core.updater.wording import history_title
+from quill.core.versioning import display_version
 from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
 
 __all__ = ["UpdateHistoryDialog", "details_text"]
@@ -24,12 +25,13 @@ _COLUMNS = ("Date", "What happened", "From", "To", "Channel")
 
 
 def details_text(event: UpdateEvent) -> str:
-    """The details box for one row: every field, in words."""
+    """The details box for one row: every field, in words (a build as
+    "3.2.0 (build 2)", which is the only thing that tells two builds apart)."""
     lines = [f"{event.what}, {event.when()}."]
     if event.from_version:
-        lines.append(f"From version: {event.from_version}")
+        lines.append(f"From version: {display_version(event.from_version)}")
     if event.to_version:
-        lines.append(f"To version: {event.to_version}")
+        lines.append(f"To version: {display_version(event.to_version)}")
     if event.channel:
         lines.append(f"Channel: {channel_label(event.channel)}")
     if event.detail:
@@ -59,8 +61,8 @@ class UpdateHistoryDialog(wx.Dialog):  # type: ignore[misc]
         for row, event in enumerate(self._events):
             self._list.InsertItem(row, event.when())
             self._list.SetItem(row, 1, event.what)
-            self._list.SetItem(row, 2, event.from_version)
-            self._list.SetItem(row, 3, event.to_version)
+            self._list.SetItem(row, 2, display_version(event.from_version))
+            self._list.SetItem(row, 3, display_version(event.to_version))
             self._list.SetItem(row, 4, channel_label(event.channel) if event.channel else "")
         if not self._events:
             self._list.InsertItem(0, "Nothing yet")

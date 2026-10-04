@@ -15,6 +15,7 @@ wx-free.
 from __future__ import annotations
 
 from collections.abc import Iterable
+from typing import Any
 
 from quill.core.windows_dictation.vocabulary import (
     COMMAND_HELP,
@@ -48,6 +49,32 @@ def _grouped(marks: Iterable[Mark]) -> dict[str, list[Mark]]:
     return groups
 
 
+def _spanish_sections(heading: Any, row: Any, table_head: Any, lines: list[str], md: bool) -> None:
+    """The Spanish punctuation words, and the drafted commands when switched on."""
+    from quill.core.windows_dictation.speech_language import spanish_commands_enabled
+    from quill.core.windows_dictation.vocabulary_es import (
+        SPANISH_COMMAND_HELP,
+        spanish_mark_rows,
+    )
+
+    heading("Spanish punctuation")
+    note = (
+        "With the dictation language set to Spanish, these words write punctuation only "
+        "while automatic punctuation is off (or with Windows speech recognition): coma "
+        "and punto are everyday words too. Commands are the English ones above."
+    )
+    lines.append(("- " + note) if md else note)
+    table_head("Say", "Writes")
+    for said, writes in spanish_mark_rows():
+        writes = "a dash, in the style chosen for dash" if writes == "{dash}" else writes
+        row(said, _SHOWN.get(writes, writes.replace("\n\n", " and a new paragraph")))
+    if spanish_commands_enabled():
+        heading("Spanish commands (draft, awaiting review)")
+        table_head("Say, on its own", "What happens")
+        for entry in SPANISH_COMMAND_HELP:
+            row(" or ".join(f'"{phrase}"' for phrase in entry.phrases), entry.description)
+
+
 def commands_reference(
     *,
     markdown: bool = False,
@@ -55,6 +82,7 @@ def commands_reference(
     wake_phrase: str = "",
     stop_phrase: str = "",
     own_phrases: Iterable[tuple[str, str]] = (),
+    language: str = "en",
 ) -> str:
     """Every phrase dictation acts on, grouped, with what each one does.
 
@@ -62,7 +90,9 @@ def commands_reference(
     text is plain, one entry per line, for a read-only window a screen reader
     moves through with the arrow keys. *wake_phrase*, *stop_phrase* and
     *own_phrases* (the user's replacements) personalise the window; the
-    published copy leaves them out.
+    published copy leaves them out. *language* ``"es"`` adds the Spanish
+    punctuation words (and, in a development build that has them switched on,
+    the drafted Spanish commands).
     """
     lines: list[str] = []
 
@@ -159,6 +189,9 @@ def commands_reference(
         "You choose both phrases in Dictation Settings; each needs at least two words.",
     ):
         lines.append(("- " + sentence) if markdown else sentence)
+
+    if language == "es":
+        _spanish_sections(heading, row, table_head, lines, markdown)
 
     own = list(own_phrases)
     if own:

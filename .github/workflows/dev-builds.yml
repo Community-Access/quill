@@ -159,7 +159,7 @@ jobs:
             cast) VERSION="${{ needs.decide.outputs.version_cast }}"; TAG="quill-cast-v$VERSION"; NAME="QUILL Cast" ;;
           esac
           SHA="$(git rev-parse HEAD)"
-          (cd dist/dev && sha256sum * > SHA256SUMS.txt)
+          (cd dist/dev && sha256sum -- * > SHA256SUMS.txt)
           printf 'Dev build of %s, unsigned. Built from Community-Access/quill@%s.\n\nNot listed on the Dev channel until the owner signs it into the feed.\n' "$NAME" "$SHA" > notes.md
           gh release create "$TAG" dist/dev/* \
             --repo "$DEV_REPO" \

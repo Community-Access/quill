@@ -46,15 +46,15 @@ from quill.ui.app_shell import AppShellFrame
 
 _TITLE = "Quill Converter"
 _VERSION = "1.0.0"
+_BUILD = 1  # this version's build (docs/release/RELEASE.md, "Build numbers")
 _REPO = "Community-Access/quill"
 _IPC_SLOT = "converter"
 
-#: Shared-store components this app's job depends on: without ffmpeg,
-#: available_output_formats() is exactly ["wav"] -- a converter that cannot
-#: convert -- and mpv is the Chapter Workbench's player, which needs exact
-#: seeking in every format to set a chapter at the playhead (1.0.0). Declared
-#: so the family's refcount registry knows an installed Converter still needs
-#: the shared copies (app-profiles.json).
+#: Shared-store components this app's job depends on: without ffmpeg, available_output_formats() is
+#: exactly ["wav"] -- a converter that cannot convert -- and mpv is the Chapter Workbench's player,
+#: which needs exact seeking in every format to set a chapter at the playhead (1.0.0). Declared so
+#: the family's refcount registry knows an installed Converter still needs the shared copies
+#: (app-profiles.json).
 REQUIRED_COMPONENTS: tuple[str, ...] = ("ffmpeg", "mpv")
 
 

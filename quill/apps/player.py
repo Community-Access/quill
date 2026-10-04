@@ -40,6 +40,7 @@ from quill.ui.media.winamp_mixin import MediaWinampKeysMixin
 
 _TITLE = "Quill Media Player"
 _VERSION = "1.0.0"
+_BUILD = 1  # this version's build (docs/release/RELEASE.md, "Build numbers")
 _REPO = "Community-Access/quill"
 _IPC_SLOT = "player"
 

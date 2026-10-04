@@ -398,6 +398,8 @@ These settings are shared with QUILL rather than repeated in the Studio's own Pr
 
 **Help > Check for Updates...** compares your version with the newest Quill release, works out which download matches the flavor you run (the installer for an installed copy, the portable zip for a portable one), and fetches it with spoken progress. Then choose **Install and restart now** and the Studio does the rest itself: it applies the update - unpacking the new portable files over your folder, or running the installer quietly - and relaunches, keeping every setting, voice, and saved listening position. There is nothing to unzip and no folder to swap by hand.
 
+Help > About shows your version with a build number, such as 2.2.0 (build 2). The build number tells you which build of a version you have: when a fix comes out without a new version number, it is a newer build, and Check for Updates offers it.
+
 All the Quill apps are published from one place, and each one recognizes its own download, so an update to Quill Radio is never offered to the Studio and each app updates on its own schedule. The automatic startup check (on by default, throttled to once a day) is silent unless it actually finds something.
 
 ## The Command Palette

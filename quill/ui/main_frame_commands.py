@@ -277,6 +277,12 @@ class CommandRegistryMixin:
             self._binding_for("app.preferences"),
         )
         self.commands.register(
+            "app.preferences_hub",
+            "More Preferences...",
+            self.open_preferences,
+            self._binding_for("app.preferences_hub"),
+        )
+        self.commands.register(
             "app.exit",
             "Exit",
             self.exit_app,
@@ -2565,6 +2571,12 @@ class CommandRegistryMixin:
             "help.why_unavailable",
             "Why Is This Unavailable?",
             self.explain_unavailable_feature,
+            self._binding_for("help.why_unavailable"),
+        )
+        self.commands.register(
+            "edit.copy_selection_for_email",
+            "Copy Selection For Email",
+            self.copy_as_email_body,  # File > Copy as Email Body, on the QUILL key
             None,
         )
         self.commands.register(
@@ -2600,6 +2612,7 @@ class CommandRegistryMixin:
             self.search_tray_slots,
             self._binding_for("edit.search_tray_slots"),
         )
+        self._register_recent_documents_commands()
         self._register_power_tools_commands()
         self._register_quillins_commands()
         self._register_braille_commands()
@@ -2701,6 +2714,7 @@ class CommandRegistryMixin:
             "app.exit": self._id_exit,
             "app.command_palette": self._id_palette,
             "app.preferences": self._id_preferences,
+            "app.preferences_hub": self._id_preferences_hub,
             "app.menu_editor": self._id_menu_editor,
             "edit.undo": self._id_undo,
             "edit.redo": self._id_redo,

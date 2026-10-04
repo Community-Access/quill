@@ -266,7 +266,7 @@ separately in <a href="CONTROL_REFERENCE.md">CONTROL_REFERENCE.md</a>,
 generated from <code>topics.json</code> by
 <code>quill/tools/build_docs.py</code>.</p>
 <h2 id="quill-radio">Quill Radio</h2>
-<p>Control coverage: 286 audited sites (172 helped, 114 named-help).</p>
+<p>Control coverage: 291 audited sites (177 helped, 114 named-help).</p>
 <h3 id="every-window-and-what-it-is-for">Every window, and what it is
 for</h3>
 <p><strong>ACB Media Podcasts.</strong> Everything ACB Media publishes,
@@ -1122,6 +1122,95 @@ station’s remembered level.</li>
 <ul>
 <li><code>button</code>: A chapter control; it appears only while what
 is playing has chapters, and runs the same command as its key.</li>
+</ul>
+<h4 id="tutorialswindow-quilluitutorials_windowpy">TutorialsWindow
+(<code>quill/ui/tutorials_window.py</code>)</h4>
+<ul>
+<li><code>self._step_field</code>: The step you are on: what to do, why,
+the keys for it, and what you should hear. Read-only, so arrow through
+it freely and copy from it with Ctrl+C.</li>
+<li><code>self._follow</code>: While this is ticked, the lesson watches
+the app and moves you to the next step by itself once it can see you
+have done this one. It watches what changed, not which key you pressed,
+so any route counts. Unavailable in an app whose lessons have nothing to
+watch for, because every step’s outcome there is a sentence the app
+already says.</li>
+<li><code>self._try_btn</code>: Runs this step’s command for you,
+exactly as its key would – so a step that opens a window opens it.</li>
+<li><code>self._next_btn</code>: Moves to the next step, and reads
+it.</li>
+<li><code>self._back_btn</code>: Moves to the previous step, and reads
+it.</li>
+<li><code>self._again_btn</code>: Reads the current step out again, in
+full.</li>
+<li><code>self._contents_btn</code>: Goes back to the list of tutorials,
+keeping your place.</li>
+</ul>
+<h4 id="module-level-quilluitutorials_contentspy">(module level)
+(<code>quill/ui/tutorials_contents.py</code>)</h4>
+<ul>
+<li><code>window._filter</code>: Narrows the list below: every word you
+type has to appear somewhere in a tutorial – its title, a step, a key,
+or the window it is about. Type ‘here’ for the tutorials about the
+window you came from. Enter moves into the list.</li>
+<li><code>window._tree</code>: Tracks, each holding its tutorials. Right
+arrow opens a track, Enter starts the tutorial you are on – or picks it
+up where you left it. Each row says how many steps it has, roughly how
+long it takes, and whether you have finished it.</li>
+<li><code>window._start_btn</code>: Opens the selected tutorial at the
+step you left it on, or at step one.</li>
+<li><code>window._read_btn</code>: Shows the whole tutorial as one page
+of text to arrow through, instead of one step at a time.</li>
+<li><code>window._forget_btn</code>: Clears where you had got to in
+every tutorial. It changes nothing else and asks first.</li>
+</ul>
+<h4 id="riskdialog-quilluiupdateschannel_risk_dialogpy">RiskDialog
+(<code>quill/ui/updates/channel_risk_dialog.py</code>)</h4>
+<ul>
+<li><code>stay</code>: Close this and change nothing.</li>
+<li><code>instead</code>: Close this and look at Beta instead, which is
+safer than Dev.</li>
+</ul>
+<h4
+id="releasechanneldialog-quilluiupdatesrelease_channel_dialogpy">ReleaseChannelDialog
+(<code>quill/ui/updates/release_channel_dialog.py</code>)</h4>
+<ul>
+<li><code>self._choices</code>: Stable, Beta or Dev. Arrowing through
+them only explains each one in the box below; nothing changes until you
+choose Switch.</li>
+<li><code>self._meaning</code>: What the selected channel means, and
+exactly what choosing Switch would do for this app. Read-only.</li>
+<li><code>history</code>: What the updater has done for this app, newest
+first. Read-only.</li>
+<li><code>self._switch</code>: Move to the selected channel. Moving to
+Beta or Dev asks first and saves a copy of your settings before anything
+changes.</li>
+<li><code>close</code>: Close without changing anything.</li>
+</ul>
+<h4
+id="returntostabledialog-quilluiupdatesreturn_to_stable_dialogpy">ReturnToStableDialog
+(<code>quill/ui/updates/return_to_stable_dialog.py</code>)</h4>
+<ul>
+<li><code>self._text</code>: Whether Stable can read everything you have
+saved, and the ways back that are safe. Read-only; arrow through it like
+a document.</li>
+<li><code>wait</code>: Keep the version you have, stop taking test
+versions, and move to Stable by itself when Stable catches up. Nothing
+is installed.</li>
+<li><code>close</code>: Close this and change nothing.</li>
+<li><code>restore</code>: Put back the copy of your settings saved when
+you joined, then install Stable. A copy of how things are now is saved
+first.</li>
+</ul>
+<h4
+id="updatehistorydialog-quilluiupdatesupdate_history_dialogpy">UpdateHistoryDialog
+(<code>quill/ui/updates/update_history_dialog.py</code>)</h4>
+<ul>
+<li><code>self._list</code>: Everything the updater did for this app,
+newest first. The box below shows the whole of the selected row.</li>
+<li><code>self._details</code>: Every detail of the row selected above.
+Read-only.</li>
+<li><code>close</code>: Close Update History.</li>
 </ul>
 <h2 id="quill-cast">QUILL Cast</h2>
 <p>Control coverage: 298 audited sites (194 helped, 104 named-help).</p>
@@ -3173,6 +3262,52 @@ counting inside each file as well as across the queue. The status bar
 says the same in words, with about how long is left. Empty when nothing
 is converting.</li>
 </ul>
+<h4 id="module-level-quillappsconverter_advancedpy">(module level)
+(<code>quill/apps/converter_advanced.py</code>)</h4>
+<ul>
+<li><code>host._recurse</code>: When a folder is in the queue, convert
+the files in its subfolders as well, and rebuild the same folder layout
+in the output folder. On by default.</li>
+</ul>
+<h4
+id="convertereffectsdialog-quilluiconverter_dialogspy">ConverterEffectsDialog
+(<code>quill/ui/converter_dialogs.py</code>)</h4>
+<ul>
+<li><code>self._loudness</code>: Makes every file the same perceived
+loudness. -16 LUFS suits podcasts and phones, -20 is Audible’s ACX
+window, -14 is where music services play, and -23 is the television and
+radio standard.</li>
+</ul>
+<h4
+id="convertertextdialog-quilluiconverter_dialogspy">ConverterTextDialog
+(<code>quill/ui/converter_dialogs.py</code>)</h4>
+<ul>
+<li><code>self._body</code>: Read-only. Arrow through it line by line,
+or press Copy to put all of it on the clipboard – for an email to
+support, for example.</li>
+<li><code>copy_btn</code>: Puts the whole report on the clipboard.</li>
+<li><code>close_btn</code>: Closes this window.</li>
+</ul>
+<h4
+id="converterlinkdialog-quilluiconverter_dialogspy">ConverterLinkDialog
+(<code>quill/ui/converter_dialogs.py</code>)</h4>
+<ul>
+<li><code>self._count</code>: How many videos to take. A channel is
+newest first and can hold thousands, so it starts at the newest 25; a
+playlist keeps its order.</li>
+<li><code>self._only_new</code>: Quill Converter remembers what it has
+downloaded from each playlist and channel, so the next time you paste
+the same link it fetches only what is new. Clear this to download
+everything again.</li>
+<li><code>self._scope</code>: The link points at one video inside a
+playlist. Choose the video alone, or every video in the playlist.</li>
+<li><code>self._section</code>: Which part of the channel: its videos,
+its Shorts, or its past live streams. Only the sections this channel has
+are listed.</li>
+<li><code>self._since</code>: Only videos published in this window of
+time. Together with How many, whichever limit is reached first ends the
+download.</li>
+</ul>
 <h2 id="quill-beacon">Quill Beacon</h2>
 <p>Control coverage: 127 audited sites (127 helped).</p>
 <h3 id="every-window-and-what-it-is-for-7">Every window, and what it is
@@ -3653,7 +3788,7 @@ playback to its start.</li>
 text, when one is available. Empty otherwise.</li>
 </ul>
 <h2 id="quill-lite">QUILL Lite</h2>
-<p>Control coverage: 96 audited sites (96 helped).</p>
+<p>Control coverage: 125 audited sites (125 helped).</p>
 <h3 id="every-window-and-what-it-is-for-8">Every window, and what it is
 for</h3>
 <p><strong>AI Assistant.</strong> Ask QUILL’s free AI to summarize,
@@ -3662,6 +3797,10 @@ question about this document. What you see in ‘What will be sent’ is
 exactly what leaves your computer – nothing else from the document goes
 with it. Each answer uses one of your free requests, and you keep typing
 while it works.</p>
+<p><strong>AI Conversation.</strong> Talk back and forth with the AI.
+Type in the message box and press Enter; the reply is read aloud when it
+arrives and stays in the conversation above, so you can read it again.
+Nothing goes into your document until you choose to put it there.</p>
 <p><strong>AI Result.</strong> What the AI sent back. It is read-only on
 purpose: nothing goes into your document until you choose Replace My
 Selection or Insert Below, and either of those is a single edit that
@@ -3674,6 +3813,10 @@ this computer out from here, and connect it again whenever you like.</p>
 keeps your settings and your recovered work. QUILL Lite is a small
 companion to QUILL for All, not a replacement for it: conversion,
 comparison, publishing and the rest of QUILL’s AI live in QUILL.</p>
+<p><strong>Action Items.</strong> What the AI sent back. It is read-only
+on purpose: nothing goes into your document until you choose Replace My
+Selection or Insert Below, and either of those is a single edit that
+Control Z takes back.</p>
 <p><strong>Answer.</strong> What the AI sent back. It is read-only on
 purpose: nothing goes into your document until you choose Replace My
 Selection or Insert Below, and either of those is a single edit that
@@ -3690,6 +3833,9 @@ for the session and move with the text as you edit around them.</p>
 cursor is on: its name, its code point, and what it does to a search. A
 screen reader says ‘space’ for four different characters, and this is
 how you tell which one you have.</p>
+<p><strong>Clear Recent Documents.</strong> Asks before the recent list
+is emptied. No is the default, so Enter keeps the list; pinned documents
+stay either way.</p>
 <p><strong>Clip Library.</strong> Everything you have copied recently,
 newest first, whether or not you decided at the time that it mattered.
 Choose one and press Enter to paste it back.</p>
@@ -3708,6 +3854,13 @@ one. Type in the search box to narrow the list, or choose a profile –
 Notepad, WordPad, Recommended, Everything – to set them all at once.
 Three areas start switched off and are found here rather than hidden:
 autocorrect, timestamped backups, and Go To Anything.</p>
+<p><strong>Dictation Commands.</strong> Every phrase dictation acts on,
+and what each one does, as text you can read line by line. The same list
+is in the user guide.</p>
+<p><strong>Dictation Settings.</strong> How dictation works for you: the
+speech engine, the microphone, the language you speak, and what you hear
+as it goes. Test Microphone checks the microphone before you rely on it.
+Nothing changes until you choose OK.</p>
 <p><strong>Dictionary Status.</strong> How many words each of your
 spelling dictionaries holds, where each file is kept, and whether the
 thesaurus data is present. A reading, not a setting: nothing here
@@ -3721,6 +3874,10 @@ cursor can tell you what list you are in. QUILL Lite reads it from the
 file name; this is where you say otherwise. Nothing in your document
 changes – only what the keys write from now on. The choice lasts as long
 as this window is open.</p>
+<p><strong>Email Reply.</strong> What the AI sent back. It is read-only
+on purpose: nothing goes into your document until you choose Replace My
+Selection or Insert Below, and either of those is a single edit that
+Control Z takes back.</p>
 <p><strong>Explanation.</strong> What the AI sent back. It is read-only
 on purpose: nothing goes into your document until you choose Replace My
 Selection or Insert Below, and either of those is a single edit that
@@ -3734,6 +3891,10 @@ next match and Shift Enter the previous one; the search wraps around the
 end and says so when it does. The window stays open while you work, so
 F3 and Shift F3 keep moving through the matches after you have gone back
 to the text.</p>
+<p><strong>Friendlier.</strong> What the AI sent back. It is read-only
+on purpose: nothing goes into your document until you choose Replace My
+Selection or Insert Below, and either of those is a single edit that
+Control Z takes back.</p>
 <p><strong>Go back to Stable?.</strong> How to come back to Stable from
 a newer version. When Stable can read everything you have saved, you can
 go back now. When it can’t, you can wait for Stable to catch up, or go
@@ -3785,10 +3946,7 @@ accented letters, Greek and punctuation from other languages. Arrow
 through the characters to hear each one described and press Enter to
 insert the one you are on. QUILL Lite reads back what it put in, because
 most of this list is invisible on the page. QUILL has the same picker on
-Shift+F2.</p>
-<p><strong>Key for.</strong> Press the key combination you want, and it
-appears in the box. Pressing another replaces it. Escape leaves the
-command on the key it has now.</p>
+the same key, Ctrl+Shift+F2.</p>
 <p><strong>Keyboard Manager.</strong> Every command QUILL Lite has, with
 the key it answers to. Type part of a command’s name to find it, or
 press Record a Key and press a combination to be told what that key
@@ -3799,6 +3957,10 @@ use as their own modifier.</p>
 by menu. It is generated from the same table that builds the menus, so
 it cannot drift from what is actually bound. Read it with the arrow
 keys; Escape closes it.</p>
+<p><strong>List.</strong> What the AI sent back. It is read-only on
+purpose: nothing goes into your document until you choose Replace My
+Selection or Insert Below, and either of those is a single edit that
+Control Z takes back.</p>
 <p><strong>Manage Abbreviations.</strong> Your abbreviations: type the
 short form and a space, and the long form appears. This is QUILL Lite’s
 own list unless you asked it, in Preferences, to share the one QUILL and
@@ -3808,12 +3970,24 @@ first, with the line each one is on. Choose one and press Enter to go
 there. A mark is not a bookmark: a bookmark is somewhere you meant to
 keep, a mark is where you were standing before you went to look
 something up.</p>
+<p><strong>More Formal.</strong> What the AI sent back. It is read-only
+on purpose: nothing goes into your document until you choose Replace My
+Selection or Insert Below, and either of those is a single edit that
+Control Z takes back.</p>
 <p><strong>Move QUILL Lite to Beta?.</strong> Says plainly what could go
 wrong on Beta or Dev, how your settings are protected, and how to come
 back. Nothing changes unless you tick the box and choose Move.</p>
 <p><strong>Move QUILL Lite to Dev?.</strong> Says plainly what could go
 wrong on Beta or Dev, how your settings are protected, and how to come
 back. Nothing changes unless you tick the box and choose Move.</p>
+<p><strong>Next Paragraph.</strong> What the AI sent back. It is
+read-only on purpose: nothing goes into your document until you choose
+Replace My Selection or Insert Below, and either of those is a single
+edit that Control Z takes back.</p>
+<p><strong>Plain Language.</strong> What the AI sent back. It is
+read-only on purpose: nothing goes into your document until you choose
+Replace My Selection or Insert Below, and either of those is a single
+edit that Control Z takes back.</p>
 <p><strong>Preferences.</strong> Every setting QUILL Lite has, in one
 window. Two of them live only here: what Control N creates, and how
 often unsaved work is copied aside. The rest – theme, word wrap, and the
@@ -3844,6 +4018,14 @@ Documents live inside one QUILL Lite window, so Alt+Tab will not step
 between them – those four are how you move. Press F6 for the status bar,
 which carries the position, the word count, the encoding and the line
 endings.</p>
+<p><strong>Recent Documents.</strong> Every document you opened
+recently, pinned ones first. Enter opens the one you are on; pin the
+ones you come back to and they stay at the top. Removing a row or
+clearing the list never touches the files themselves.</p>
+<p><strong>Recent Phrases.</strong> What you have dictated since the app
+started, newest first. Insert Again writes the phrase you are on at the
+cursor, and Copy puts it on the clipboard. The list is forgotten when
+you close the app.</p>
 <p><strong>Release Channel: QUILL Lite.</strong> Choose which versions
 this app offers you: Stable, the one we recommend; Beta, new features a
 few weeks early; or Dev, work in progress for testers. Arrowing through
@@ -3855,6 +4037,10 @@ Replace All changes every one and tells you how many. In a rich text
 document Replace All asks first, because replaced text takes the
 formatting of the run it lands in.</p>
 <p><strong>Rewrite.</strong> What the AI sent back. It is read-only on
+purpose: nothing goes into your document until you choose Replace My
+Selection or Insert Below, and either of those is a single edit that
+Control Z takes back.</p>
+<p><strong>Shorter.</strong> What the AI sent back. It is read-only on
 purpose: nothing goes into your document until you choose Replace My
 Selection or Insert Below, and either of those is a single edit that
 Control Z takes back.</p>
@@ -3872,6 +4058,10 @@ your dictionary so it is never questioned again.</p>
 the cursor was in, closest first. Choose one and press Enter to replace
 the word; press Escape to leave it as you wrote it. Alt F7 adds it to
 your dictionary instead, if it was right all along.</p>
+<p><strong>Suggested Headings.</strong> What the AI sent back. It is
+read-only on purpose: nothing goes into your document until you choose
+Replace My Selection or Insert Below, and either of those is a single
+edit that Control Z takes back.</p>
 <p><strong>Summary.</strong> What the AI sent back. It is read-only on
 purpose: nothing goes into your document until you choose Replace My
 Selection or Insert Below, and either of those is a single edit that
@@ -3880,6 +4070,10 @@ Control Z takes back.</p>
 recogniser’s mistakes corrected – misheard words, punctuation, fillers –
 and nothing else changed. Replace My Selection puts it where the
 dictated text was; Control Z takes it back.</p>
+<p><strong>Translation.</strong> What the AI sent back. It is read-only
+on purpose: nothing goes into your document until you choose Replace My
+Selection or Insert Below, and either of those is a single edit that
+Control Z takes back.</p>
 <p><strong>Update History: QUILL Lite.</strong> A plain record of what
 the updater did for this app: checks, downloads, channel changes and the
 copies of your settings it saved. Read-only; nothing here changes
@@ -3890,9 +4084,17 @@ with ChatGPT opens your browser to sign in and allow it; once signed in,
 choose the model from your plan’s own list and whether web search is
 allowed. Sign Out and Forget on This Computer appear only while you are
 signed in.</p>
+<p><strong>Use My Own AI Key.</strong> Use AI help on your own OpenAI or
+Google Gemini account instead of QUILL’s free service. Choose the
+company, paste the key it gave you, and test it; with a saved key there
+is no daily limit. Remove the Saved Key puts you straight back on the
+free service.</p>
 <p><strong>Windows titled “Help:…”.</strong> This is the help window
 itself: the purpose of the window you were in, then the control you were
 on. Escape returns you to it.</p>
+<p><strong>Windows titled “Key for …”.</strong> Press the key
+combination you want, and it appears in the box. Pressing another
+replaces it. Escape leaves the command on the key it has now.</p>
 <h3 id="every-authored-control-help-sentence-8">Every authored control
 help sentence</h3>
 <h4 id="module-level-quillappslite_dialogspy">(module level)
@@ -4103,7 +4305,7 @@ silence; the status bar still says so, and F7 still finds
 everything.</li>
 <li><code>speech</code>: Speak the misspelling as well as the sound. Off
 by default and deliberately: an interruption while you are composing
-costs more than it tells you, and the same word is one Shift+F7
+costs more than it tells you, and the same word is one Alt+Shift+F7
 away.</li>
 <li><code>repeat</code>: Stops one stubborn name becoming a drum while
 you edit around it. Zero means alert every time.</li>
@@ -4288,6 +4490,139 @@ message uses one request.</li>
 <ul>
 <li><code>choice</code>: Which part of your document to send: what you
 selected, the paragraph you are in, or the whole section.</li>
+</ul>
+<h4
+id="windowsdictationdialog-quilluiwindows_dictation_dialogpy">WindowsDictationDialog
+(<code>quill/ui/windows_dictation_dialog.py</code>)</h4>
+<ul>
+<li><code>self.speech_language</code>: The language you dictate in:
+English, or Spanish, which is new. In Spanish, Moonshine and Whisper
+both use Whisper’s multilingual model; Windows speech recognition needs
+Spanish installed in Windows. Commands stay in English for now, and
+Spanish punctuation words such as coma and punto work while automatic
+punctuation is off.</li>
+<li><code>self.auto_punctuation</code>: On: Moonshine and Whisper put in
+full stops, commas and question marks by themselves, and any mark you
+say still wins. Off: nothing is added for you, and a sentence runs on
+until you say a mark, as with Windows speech recognition, which never
+punctuates by itself.</li>
+<li><code>self.language</code>: Which of the speech languages installed
+in Windows the Windows speech recognition engine listens for. Moonshine
+and Whisper ignore this and follow the dictation language. Add languages
+in Windows Settings, Time and language, Speech.</li>
+<li><code>self.microphone</code>: The microphone dictation listens on.
+The Windows default follows whatever Windows Sound settings choose as
+the default recording device; choose a named microphone to keep using
+that one whatever the default becomes. If the chosen microphone is
+unplugged, starting dictation says so rather than quietly listening on
+another.</li>
+<li><code>self.test_microphone</code>: Records four seconds on the
+chosen microphone – start speaking when you hear Speak now – then says
+how loud it was and, with Moonshine or Whisper, what the engine heard.
+Nothing is kept.</li>
+<li><code>self.test_result</code>: What the last microphone test
+found.</li>
+<li><code>self.feedback</code>: What you hear each time a phrase goes
+into the document. A sound is a short tone. Speech reads back the words
+that were written, so you can hear whether they are the words you said.
+Use headphones if you choose speech: read back through speakers, the
+microphone can hear it and write it down again.</li>
+<li><code>self.dash</code>: What the spoken word dash writes. A hyphen,
+said as hyphen, is always a plain hyphen that joins two words.</li>
+<li><code>self.pause</code>: How long you can stop talking before what
+you said is written. Choose Long if dictation cuts you off while you are
+still thinking; Short writes sooner after you stop.</li>
+<li><code>self.remove_fillers</code>: Leave out hesitations – um, uh,
+erm, hmm – instead of writing them. Real words are never removed.</li>
+<li><code>self.continuous</code>: For talking in one long run and
+pausing wherever you like. A pause then puts in no full stop, plays no
+sound and reads nothing back, and voice commands are written as words –
+only the stop phrase still stops dictation. Punctuation you say still
+works.</li>
+<li><code>self.cue_sounds</code>: A rising pair of tones when dictation
+starts listening, a falling pair when it stops, and a low double tone
+when something goes wrong. A failure is always spoken as well, whatever
+this is set to.</li>
+<li><code>self.announce</code>: Speak the words as well as, or instead
+of, the sounds when dictation starts and stops. With both off, the check
+mark on the Dictation menu item still shows whether it is on.</li>
+<li><code>self.wake</code>: Start dictation by saying the wake phrase
+instead of pressing a key. While this is on, the microphone stays open
+whenever this program is the window in front – nothing it hears is
+written, kept or sent anywhere until it hears the wake phrase – and it
+closes whenever another program comes to the front. Off unless you turn
+it on.</li>
+<li><code>self.wake_phrase</code>: The words that start dictation, at
+least two of them. Choose words you would not say in passing: a name and
+a verb works well, like the default, Quill dictate. Anything you say
+after it in the same breath is written.</li>
+<li><code>self.stop_phrase</code>: The words that stop dictation, at
+least two of them, said on their own after a pause. Stop dictation
+always works as well. With the wake phrase on, stopping goes back to
+listening for the wake phrase.</li>
+<li><code>self.silence</code>: Stop dictation by itself when it has
+heard nothing for this long, so it is not left writing in an empty room.
+With the wake phrase on, it goes back to waiting for the wake phrase
+instead.</li>
+<li><code>commands</code>: The list of everything dictation understands:
+punctuation, layout, the commands, spelling, and your own phrases.
+Saying what can I say while dictating opens the same list.</li>
+<li><code>words</code>: Add, change and remove your own words for
+dictation in a window: names and jargon to spell your way, phrases that
+write whatever you choose, and corrections for what the engine keeps
+hearing wrong. Saves these settings first.</li>
+</ul>
+<h4
+id="dictationcommandsdialog-quilluiwindows_dictation_dialogpy">DictationCommandsDialog
+(<code>quill/ui/windows_dictation_dialog.py</code>)</h4>
+<ul>
+<li><code>self.text</code>: Every phrase dictation acts on and what it
+does. Read with the arrow keys; Escape closes. The same list is in the
+user guide.</li>
+<li><code>close</code>: Close this list.</li>
+</ul>
+<h4
+id="recentphrasesdialog-quilluiwindows_dictation_dialogpy">RecentPhrasesDialog
+(<code>quill/ui/windows_dictation_dialog.py</code>)</h4>
+<ul>
+<li><code>self.list</code>: What you dictated this session, newest
+first. Enter inserts the one you are on at the cursor again; Copy puts
+it on the clipboard.</li>
+<li><code>insert</code>: Write this phrase at the cursor again, as one
+undo step.</li>
+<li><code>copy</code>: Put this phrase on the clipboard without writing
+it.</li>
+<li><code>close</code>: Close the list without inserting anything.</li>
+</ul>
+<h4
+id="recentdocumentswindow-quilluirecent_documents_dialogpy">RecentDocumentsWindow
+(<code>quill/ui/recent_documents_dialog.py</code>)</h4>
+<ul>
+<li><code>self.listbox</code>: Every document you opened recently,
+pinned ones first. Enter opens the one you are on. Delete takes it off
+this list without touching the file. A row that says not found is a file
+that has moved or been deleted.</li>
+<li><code>self.open_button</code>: Open the document you are on in the
+list.</li>
+<li><code>self.pin_button</code>: Pin the document you are on so it
+stays at the top of the list however many others you open. On a pinned
+document this button unpins it.</li>
+<li><code>self.remove_button</code>: Take the document you are on off
+the recent list. The file itself is not touched.</li>
+<li><code>self.folder_button</code>: Show the document you are on in
+File Explorer, in the folder it lives in.</li>
+<li><code>self.clear_button</code>: Empty the recent list, after asking.
+Pinned documents stay, and no file is deleted.</li>
+<li><code>self.limit_spin</code>: How many recently opened documents to
+remember, from 1 to 50. Pinned documents are kept on top of this
+number.</li>
+<li><code>self.auto_clear</code>: When ticked, a document that has been
+deleted from this computer’s own drives leaves the list at the next
+start. Files on a USB drive or a network share are kept, because they
+are usually just unplugged.</li>
+<li><code>self.status</code>: What the last button you pressed did.</li>
+<li><code>close</code>: Close this window. Changes to the list are
+kept.</li>
 </ul>
 </main>
 </body>

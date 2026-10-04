@@ -278,12 +278,16 @@ def test_publish_then_promote_to_stable_end_to_end(tmp_path: Path, key) -> None:
     assert code == 0, out
     create = next(c for c in gh.calls if c[:2] == ["release", "create"])
     assert "--prerelease" in create and "--latest=false" in create
+    # Nothing published yet, so this is build 1 -- listed with its build, and
+    # tagged the way installed copies can read (build numbers).
+    listed = "3.3.0+1"
+    assert create[2] == "quill-radio-v3.3.0-build.1"
     feed_path = tmp_path / "docs" / "site" / "updates" / "v2" / "radio.json"
     sig = (feed_path.parent / "radio.json.sig").read_text("utf-8")
     assert verify_feed_bytes(feed_path.read_bytes(), sig, [bytes(key.verify_key)])
     feed = parse_feed(feed_path.read_bytes())
-    assert feed.release(version).channels == ("beta",)
-    assert feed.release(version).data_formats.get("radio.favorites") == 1
+    assert feed.release(listed).channels == ("beta",)
+    assert feed.release(listed).data_formats.get("radio.favorites") == 1
 
     _changelog(tmp_path, version)
     common = dict(gh=gh, root=tmp_path, seed_reader=lambda _p: seed, docs_gate=lambda: True)
@@ -292,7 +296,7 @@ def test_publish_then_promote_to_stable_end_to_end(tmp_path: Path, key) -> None:
     rf.feed_signature_ok = lambda path, keys=None: original(path, monkey_keys)  # type: ignore[assignment]
     try:
         early: list[str] = []
-        args = ["--app", "radio", "--version", version, "--to", "stable"]
+        args = ["--app", "radio", "--version", listed, "--to", "stable"]
         assert (
             promote_script.run(
                 [*args, "--dry-run"], now=T0 + timedelta(days=3), out=early.append, **common
@@ -314,17 +318,18 @@ def test_publish_then_promote_to_stable_end_to_end(tmp_path: Path, key) -> None:
             == 0
         ), dry
         assert "PASS P2" in report.read_text("utf-8")
-        assert parse_feed(feed_path.read_bytes()).release(version).channels == ("beta",)
+        assert parse_feed(feed_path.read_bytes()).release(listed).channels == ("beta",)
         done: list[str] = []
         assert promote_script.run(args, now=T0 + timedelta(days=8), out=done.append, **common) == 0
     finally:
         rf.feed_signature_ok = original  # type: ignore[assignment]
     feed = parse_feed(feed_path.read_bytes())
-    assert feed.current("stable").version == version
+    assert feed.current("stable").version == listed
     edit = next(c for c in gh.calls if c[:2] == ["release", "edit"])
     assert "--prerelease=false" in edit and "--latest=false" in edit
+    assert edit[2] == "quill-radio-v3.3.0-build.1"
     log = (tmp_path / "docs" / "release" / "promotions.log").read_text("utf-8")
-    assert f"radio {version} promoted to stable" in log
+    assert f"radio {listed} promoted to stable" in log
 
 
 def test_a_tampered_file_fails_promotion(tmp_path: Path, key) -> None:

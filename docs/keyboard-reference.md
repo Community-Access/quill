@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 482.
+Editor commands with default bindings: 484.
 
 ## The QUILL editor
 
@@ -27,6 +27,7 @@ Editor commands with default bindings: 482.
 | (unbound by default) | Open GitHub Items... | `file.open_github_items` |
 | (unbound by default) | Open Remote GitHub Repository... | `file.open_github_repository` |
 | (unbound by default) | Save to Remote | `file.save_to_remote` |
+| Alt+Shift+0 | Recent Documents | `file.recent_documents` |
 | Alt+Shift+F12 | Reopen Last Session | `file.reopen_last_session` |
 | Alt+Shift+T | New Rich Text Document | `file.new_rich_document` |
 | Ctrl+Alt+E | File Format | `file.file_format` |
@@ -123,7 +124,7 @@ Editor commands with default bindings: 482.
 | F3 | Find Next | `edit.find_next` |
 | F5 | Insert Date and Time | `edit.insert_date_time` |
 | F8 or Ctrl+; | Start Selection | `edit.start_selection` |
-| QUILL Key + C | Copy selection for email | `edit.copy_selection_for_email` |
+| QUILL Key + C | Copy Selection For Email | `edit.copy_selection_for_email` |
 | QUILL Key + Shift+- | Copy to tray 11 | `edit.copy_to_tray_11` |
 | QUILL Key + Shift+0 | Copy to tray 10 | `edit.copy_to_tray_10` |
 | QUILL Key + Shift+1 | Copy to tray 1 | `edit.copy_to_tray_1` |
@@ -393,6 +394,7 @@ Editor commands with default bindings: 482.
 | Ctrl+Q | Exit | `app.exit` |
 | Ctrl+Shift+P | Command Palette... | `app.command_palette` |
 | F9 | Repeat Last Result | `app.repeat_last_result` |
+| QUILL Key + O | More Preferences... | `app.preferences_hub` |
 | Shift+F9 | Activity... | `app.activity` |
 
 ### Help
@@ -657,6 +659,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+G | Free AI Assistant... | `tools.hosted_ai_assistant` |
 | Ctrl+Alt+J | Podcasts: Go to Position... | `podcasts.go_to_position` |
 | Ctrl+Alt+Shift+B | Backup | `app.backup` |
+| Ctrl+Alt+Shift+Down | Podcasts: Mark as Played and Next | `podcasts.mark_played_and_next` |
 | Ctrl+Alt+Shift+F2 | Free AI Usage... | `tools.hosted_ai_usage` |
 | Ctrl+Alt+Shift+F3 | Notifications... | `app.notifications` |
 | Ctrl+Alt+Shift+F4 | Connect or Sign Out... | `tools.hosted_ai_sign_in` |

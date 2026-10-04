@@ -213,8 +213,6 @@ from quill.core.read_aloud import (
     synthesize_with_piper,
 )
 from quill.core.recent import (
-    add_recent_file,
-    clear_recent_files,
     load_recent_files,
     prune_missing_recent_files,
     save_recent_files,
@@ -426,6 +424,7 @@ from quill.ui.main_frame_quick_insert import QuickInsertMixin
 from quill.ui.main_frame_quill_key import QuillKeyMixin
 from quill.ui.main_frame_quillins import QuillinsMenuMixin
 from quill.ui.main_frame_radio import RadioMixin
+from quill.ui.main_frame_recent_documents import RecentDocumentsMixin
 from quill.ui.main_frame_remote_files import RemoteFilesMixin
 from quill.ui.main_frame_restore_points import RestorePointsMixin
 from quill.ui.main_frame_reveal_codes import RevealCodesMixin
@@ -467,6 +466,7 @@ from quill.ui.main_frame_watch_profile import WatchProfileDialogMixin
 from quill.ui.main_frame_work_persona import WorkPersonaMixin
 from quill.ui.main_frame_worktrees import WorktreesMixin
 from quill.ui.main_frame_write_safety import WriteSafetyMixin
+from quill.ui.markdown_tag_row import MARKDOWN_TAG_REFUSAL, sync_menu_row
 from quill.ui.notebook_panel import NotebookEntriesPanel
 from quill.ui.sound_manager import post_sound
 from quill.ui.status_bar_role import mark_as_status_bar
@@ -721,6 +721,7 @@ _DIGIT_KEY_CODES: dict[int, int] = {ord(str(digit)): digit for digit in range(10
 
 class MainFrame(
     CloseOthersMixin,
+    RecentDocumentsMixin,
     SessionRestoreMixin,
     MagicalTierMixin,
     LiteBridgeMixin,
@@ -3695,10 +3696,10 @@ class MainFrame(
             else:
                 grade = "below AA (insufficient)"
             msg = f"Contrast ratio: {ratio:.1f}:1, WCAG grade: {grade}"
-            if self.settings.announcement_startup_tips_enabled:
-                self._announce(msg)
-            else:
-                self._set_status(msg)
+            # Always spoken: you pressed the key to hear this. The startup-tips
+            # setting governs the automatic announcements, not a command.
+            self._set_status_quiet(msg)
+            self._announce(msg)
         except Exception:  # noqa: BLE001
             self._set_status("Could not calculate contrast ratio")
 
@@ -4257,37 +4258,6 @@ class MainFrame(
                 except Exception:
                     pass
 
-    def _refresh_recent_menu(self) -> None:
-        if not hasattr(self, "_recent_menu") or not hasattr(self, "_wx"):
-            return
-        if not self._menu_updates_allowed():
-            self._request_menu_refresh()
-            return
-        while self._recent_menu.GetMenuItemCount() > 0:
-            item = self._recent_menu.FindItemByPosition(0)
-            if item is None:
-                break
-            self._recent_menu.DestroyItem(item)
-        self._recent_menu_ids.clear()
-        if not self.recent_files:
-            item = self._recent_menu.Append(self._wx.ID_ANY, "(No recent files)")
-            item.Enable(False)
-            self._recent_menu.AppendSeparator()
-            self._recent_menu.Append(self._id_clear_recent, "C&lear Recent Files")
-            self._reapply_menu_routes()
-            return
-        for path in self.recent_files:
-            menu_id = self._wx.NewIdRef()
-            self._recent_menu.Append(menu_id, str(path))
-            self._recent_menu_ids[int(menu_id)] = path
-        self._recent_menu.AppendSeparator()
-        self._recent_menu.Append(self._id_clear_recent, "C&lear Recent Files")
-        # A rebuilt submenu has no routes: these rows are file paths, built here
-        # rather than in the menu-bar build, so they never met the pass. Without
-        # this they are the only rows in QUILL with no keyboard route at all --
-        # which is exactly the silent gap the gate is meant to catch.
-        self._reapply_menu_routes()
-
     def _reapply_menu_routes(self) -> None:
         """Re-run the Alt-path pass over the current menu bar.
 
@@ -4306,17 +4276,6 @@ class MainFrame(
             # A frame mid-teardown, or a test double with no menu bar. A missing
             # route is a smaller failure than a menu refresh that raises.
             pass
-
-    def _on_open_recent(self, event: object) -> None:
-        menu_id = event.GetId()
-        path = self._recent_menu_ids.get(menu_id)
-        if menu_id == int(self._id_clear_recent):
-            self.clear_recent_files()
-            return
-        if path is None:
-            event.Skip()
-            return
-        self.open_file(path)
 
     def _refresh_title(self) -> None:
         self._refresh_title_bar()
@@ -4491,6 +4450,10 @@ class MainFrame(
         # that quietly became half-Markdown is not something you can see you
         # did. Set Document Language turns the rows back on in one keystroke.
         markdown_ready = context == "markdown"
+        # Insert Markdown Tag is not dimmed but absent outside Markdown, in both
+        # editors (quill/ui/markdown_tag_row.py); its key still says why.
+        shown = self._markdown_tags_apply()
+        sync_menu_row(self, "_markdown_tag_row", menu_bar, self._id_insert_markdown_tag, shown)
         active_surface = self._active_markup_surface()
         structured_markup_ready = active_surface in {"markdown", "html"}
         markdown_ids = tuple(
@@ -7373,12 +7336,6 @@ class MainFrame(
                 return None
             return ("keep", "illuminate", "plain")[dialog.GetSelection()]
 
-    def clear_recent_files(self) -> None:
-        clear_recent_files()
-        self.recent_files = []
-        self._refresh_recent_menu()
-        self._set_status("Cleared recent files")
-
     def open_url(self) -> None:
         wx = self._wx
         from quill.io.http_transport import download_url
@@ -7473,10 +7430,6 @@ class MainFrame(
             return
 
         self._install_remote_document((loaded, epub_book), suffix, download)
-
-    def _record_recent(self, path: Path) -> None:
-        self.recent_files = add_recent_file(path, self.settings.recent_files_limit)
-        self._refresh_recent_menu()
 
     def _maybe_autosave(self) -> None:
         if self._autosave_interval.total_seconds() <= 0:
@@ -8408,7 +8361,7 @@ class MainFrame(
             )
         else:
             prefix = f"Moved to {label}"
-        self._announce_navigation_move(prefix, target)
+        self._announce_navigation_move(prefix, target, latch_structure=context is not None)
 
     def _navigate_heading_rich_word(self, reverse: bool) -> bool:
         """H / Shift+H inside a rich-mode Word document. Headings there are the
@@ -8434,7 +8387,9 @@ class MainFrame(
         self.editor.SetFocus()
         self._location_ring.record(target)
         title = self._heading_title_at(target)
-        self._announce_navigation_move(describe_heading_arrival(level, title), target)
+        self._announce_navigation_move(
+            describe_heading_arrival(level, title), target, latch_structure=True
+        )
         return True
 
     def _heading_title_at(self, offset: int) -> str:
@@ -8474,10 +8429,16 @@ class MainFrame(
         self._location_ring.record(target)
         self._announce_navigation_move(f"Moved to {label}", target)
 
-    def _announce_navigation_move(self, prefix: str, target: int) -> None:
+    def _announce_navigation_move(
+        self, prefix: str, target: int, *, latch_structure: bool = False
+    ) -> None:
         detail = str(getattr(self.settings, "browse_mode_move_detail", "position")).strip().lower()
         if detail == "none":
             return
+        if latch_structure:
+            # The move names the heading itself; latch the caret cue so the
+            # key-release hook does not say the same heading a second time.
+            self.sync_structure_announcer()
         line, column = line_column_for_position(self.editor.GetValue(), target)
         if detail == "line":
             message = f"{prefix} at line {line}"
@@ -14286,9 +14247,17 @@ class MainFrame(
             f"Inserted {tag}" if is_form_snippet(tag) else f"Inserted HTML tag <{tag}>"
         )
 
+    def _markdown_tags_apply(self) -> bool:
+        """A Markdown document, not rich: where Insert Markdown Tag belongs."""
+        rich = self._current_editor_mode().startswith("rich")
+        return not rich and self._current_markup_context() == "markdown"
+
     def insert_markdown_tag(self) -> None:
         if not self._feature_enabled("core.format"):
             self._set_status("Markdown tag tools are unavailable in this profile")
+            return
+        if not self._markdown_tags_apply():
+            self._announce_result(MARKDOWN_TAG_REFUSAL)
             return
         kind = self._choose_searchable_option(
             title="Insert Markdown Tag",

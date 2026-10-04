@@ -3,7 +3,10 @@
 * Bytes go to ``<name>.partial`` first. If the app closes half-way, the next
   attempt asks the server for the rest (an HTTP ``Range`` request) instead of
   starting again -- a 200 MB installer on a slow line should not have to be
-  fetched from the top three times.
+  fetched from the top three times. Beside it, ``<name>.partial.sha256`` names
+  the file those bytes belong to: every build of one version ships under the
+  same file name (docs/release/RELEASE.md, "Build numbers"), and half of build
+  1 must never be finished with the second half of build 2.
 * When the last byte is in, the size and the SHA-256 **from the signed feed**
   are checked before the file gets its real name. A mismatch deletes the file
   and raises; an installer that will run elevated is never kept on trust.
@@ -122,6 +125,13 @@ def download_verified(
             return dest
         dest.unlink(missing_ok=True)
     partial = dest.with_name(dest.name + ".partial")
+    claim = dest.with_name(dest.name + ".partial.sha256")
+    try:
+        claimed = claim.read_text(encoding="ascii").strip().lower()
+    except (OSError, UnicodeDecodeError):
+        claimed = ""
+    if claimed and claimed != expected:  # another build's bytes under this name
+        partial.unlink(missing_ok=True)
     have = partial.stat().st_size if partial.is_file() else 0
     if size and have > size:
         partial.unlink(missing_ok=True)
@@ -132,6 +142,7 @@ def download_verified(
             f"There isn't enough free space to download this update. It needs about "
             f"{_megabytes(space_needed(size))}, and there is {_megabytes(space)} free."
         )
+    claim.write_text(expected, encoding="ascii")
     response = (open_range or _default_opener)(url, have)
     try:
         if have and getattr(response, "status", 200) != 206:
@@ -157,9 +168,11 @@ def download_verified(
     actual = _hash_file(partial).hexdigest()
     if (size and actual_size != size) or not hmac.compare_digest(actual, expected):
         partial.unlink(missing_ok=True)
+        claim.unlink(missing_ok=True)
         raise DownloadVerifyError(
             "The downloaded update did not match the signed list of versions, so it was "
             "deleted. Nothing was installed. Try again later."
         )
     os.replace(partial, dest)
+    claim.unlink(missing_ok=True)
     return dest

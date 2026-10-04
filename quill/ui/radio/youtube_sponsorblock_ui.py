@@ -166,6 +166,15 @@ def open_settings(app: Any) -> None:
     buttons = dialog.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL)
     sizer.Add(buttons, 0, wx.ALL | wx.EXPAND, 10)
     dialog.SetSizerAndFit(sizer)
+    from quill.ui.dialog_contract import apply_modal_ids
+
+    apply_modal_ids(
+        dialog,
+        affirmative_id=wx.ID_OK,
+        affirmative_label="OK",
+        cancel_id=wx.ID_CANCEL,
+        cancel_label="Cancel",
+    )
     try:
         if app._show_modal_dialog(dialog, TITLE) != wx.ID_OK:
             return

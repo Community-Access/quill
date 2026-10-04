@@ -128,7 +128,15 @@ def update_header(
     The app's own name is in the first line because several of these apps can
     be open at once and a dialog that says only "Update available: 2.1.0" makes
     the user guess which window it belongs to.
+
+    Both versions are said the way a person hears them, build included: a
+    rebuild of the version already installed reads "3.2.0 (build 13)" against
+    "3.2.0 (build 12)", which is the only thing that tells the two apart.
     """
+    from quill.core.versioning import display_version
+
+    new_version = display_version(new_version)
+    current_version = display_version(current_version)
     channel = "Beta / prerelease" if prerelease else "Stable"
     published = f"Published: {published_at}\n" if str(published_at or "").strip() else ""
     name = f"{app_name} " if app_name else ""
@@ -232,7 +240,9 @@ def show_update_available(
     wx = wx_module or _wx_default
     version = str(getattr(release, "version", "") or "")
     if announce is not None:
-        announce(f"Update available: {version}")
+        from quill.core.versioning import display_version
+
+        announce(f"Update available: {display_version(version)}")
     notes = summarize_release_notes(str(getattr(release, "notes", "") or ""))
     if notes_prefix:
         notes = f"{notes_prefix}\n\n{notes}"

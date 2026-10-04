@@ -96,9 +96,17 @@ def test_the_dialog_is_labelled_and_helped() -> None:
     wx = pytest.importorskip("wx")
     app = wx.App()
     try:
-        dialog, box = station_tags_dialog.build_dialog(None, "WXYT", "MLB", "sports, talk")
-        try:
+        seen: list[str] = []
+
+        def _inspect(dialog, title):
+            # Built and handed to the show path, never shown for real.
+            seen.append(title)
             assert dialog.GetTitle() == station_tags_dialog.TITLE
+            box = next(
+                child
+                for child in dialog.GetChildren()
+                if isinstance(child, wx.TextCtrl) and child.IsEditable()
+            )
             assert box.GetValue() == "MLB"
             assert box.GetName() == "Your tags, separated by commas"
             labels = [
@@ -114,8 +122,11 @@ def test_the_dialog_is_labelled_and_helped() -> None:
                 if isinstance(child, wx.TextCtrl) and not child.IsEditable()
             ]
             assert readonly and readonly[0].GetValue() == "sports, talk"
-        finally:
-            dialog.Destroy()
+            return wx.ID_CANCEL
+
+        answer = station_tags_dialog.ask_tags(None, "WXYT", "MLB", "sports, talk", show=_inspect)
+        assert seen == [station_tags_dialog.TITLE]
+        assert answer is None  # cancelled
     finally:
         del app
 

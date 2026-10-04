@@ -150,7 +150,7 @@ class _Recognizer:
 @pytest.fixture
 def recognizer(monkeypatch):
     fake = _Recognizer("Hello there.")
-    monkeypatch.setattr(local_recognizer, "_load", lambda _engine: fake)
+    monkeypatch.setattr(local_recognizer, "_load", lambda _engine, _language="en": fake)
     return fake
 
 
@@ -229,7 +229,7 @@ def test_a_finished_phrase_reaches_the_listener_through_the_poster(recognizer) -
 
 
 def test_an_engine_failure_is_a_sentence_on_the_poster(monkeypatch) -> None:
-    def broken(_engine: str) -> Any:
+    def broken(_engine: str, _language: str = "en") -> Any:
         raise RuntimeError("onnx exploded")
 
     monkeypatch.setattr(local_recognizer, "_load", broken)
@@ -255,8 +255,8 @@ def test_an_engine_failure_is_a_sentence_on_the_poster(monkeypatch) -> None:
 
 
 def test_a_missing_model_says_which_and_what_to_do(monkeypatch) -> None:
-    local_recognizer._recognizers.pop("whisper", None)
-    monkeypatch.setattr(local_recognizer, "model_dir", lambda _engine: None)
+    local_recognizer._recognizers.pop(("whisper", "en"), None)
+    monkeypatch.setattr(local_recognizer, "model_dir", lambda _engine, _language="en": None)
     with pytest.raises(DictationStartError) as caught:
         local_recognizer._load("whisper")
     assert "Whisper" in str(caught.value) and "Dictation Settings" in str(caught.value)

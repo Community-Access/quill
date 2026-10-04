@@ -247,7 +247,7 @@ Record exact speech.
   back and press Scan Now: it recovers silently.
 - [ ] Remove (Alt+M): the question starts on No; Yes says its files stay in
   Personal Audio, and they do.
-- [ ] Ctrl+Alt+Shift+F12 from another program shows and hides Cast. Ctrl+Alt+Shift+Q
+- [ ] Ctrl+Alt+Shift+F12 from another program shows and hides Cast. Ctrl+Alt+Shift+Down
   in Cast marks the playing episode played and moves to the next.
 - [ ] Episode menu: Player Information... (Ctrl+I) opens the report; Bookmark
   This Moment (Ctrl+Alt+A) saves a bookmark; Skip Silence (Ctrl+Shift+9)

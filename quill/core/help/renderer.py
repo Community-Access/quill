@@ -97,7 +97,7 @@ class HelpRenderer:
             title="No help available",
             body=(
                 "No specific help is available for this control. "
-                "Press Ctrl+F1 to open the User Guide."
+                "Press Ctrl+Shift+F1 from your document to open the User Guide."
             ),
         )
 

@@ -428,6 +428,26 @@ def test_navigate_next_heading_announces_level_and_ordinal() -> None:
     assert statuses == ["Heading 2, 2 of 3: Child at line 3, column 1"]
 
 
+def test_heading_navigation_speaks_once_not_again_on_key_release() -> None:
+    """The caret cue must not repeat a heading the command already named."""
+    text = "# Top\nIntro\n## Child\nBody\n"
+    frame = _build_frame(text, insertion_point=text.index("Intro"))
+    spoken: list[str] = []
+    frame._quill_feedback = lambda message, **_kw: spoken.append(message)  # type: ignore[method-assign]
+    frame._announce = lambda message, **_kw: spoken.append(message)  # type: ignore[method-assign]
+    frame._document_text_for_display = lambda: text  # type: ignore[method-assign]
+    frame._current_editor_mode = lambda: "markup"  # type: ignore[method-assign]
+    frame._effective_markup_kind = lambda: "markdown"  # type: ignore[method-assign]
+    frame.settings.browse_mode_move_detail = "position"
+    frame.reset_structure_announcer()
+    frame.announce_structure_at_caret()  # latch where the caret starts
+
+    frame.navigate_next_heading()
+    frame.announce_structure_at_caret()  # the hook that fires on key release
+
+    assert len(spoken) == 1, spoken
+
+
 def test_navigate_previous_heading_announces_level_and_ordinal() -> None:
     text = "# Top\nIntro\n## Child\nBody\n### Grandchild\nMore\n"
     frame = _build_frame(text, insertion_point=len(text))
@@ -1673,6 +1693,13 @@ def test_spellcheck_hint_bell_debounces_same_word(monkeypatch: pytest.MonkeyPatc
     # The hint moved to main_frame_spell_voice when "how a misspelling is
     # voiced" became one subject in one module.
     monkeypatch.setattr(main_frame_spell_voice.time, "monotonic", lambda: now[0])
+    # The alert prefers the sound pack's earcon and rings the bell only when the
+    # sound system is off. The sound manager is process-global, so a test that
+    # ran earlier and left it active with a pack loaded turned every bell here
+    # into an earcon and this test failed by order alone. Pin it off.
+    from quill.ui import sound_manager
+
+    monkeypatch.setattr(sound_manager, "is_active", lambda: False)
 
     frame._announce_spellcheck_hint()
     now[0] = 10.1

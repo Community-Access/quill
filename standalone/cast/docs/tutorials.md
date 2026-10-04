@@ -322,7 +322,7 @@ Fill the Play Queue, play one next, and move through it while it plays. You will
    - You should hear: Play Queue, then the episode at the front.
 
 4. **Move through it while it plays.** From anywhere in Cast, Next in Queue skips to the next episode and Previous in Queue goes back one. Mark as Played and Next finishes this one for good and moves on, which is handy when you have heard enough of the news.
-   - Keys: Ctrl+Alt+Down, Ctrl+Alt+Up, Ctrl+Alt+Shift+Q
+   - Keys: Ctrl+Alt+Down, Ctrl+Alt+Up, Ctrl+Alt+Shift+Down
    - You should hear: The next episode's title, then its audio.
 
 5. **Hear what is up next.** Just listen. About ten seconds before an episode ends, Cast tells you what comes next. It names the podcast only when it changes, says nothing when nothing will follow, and stays quiet during Quiet Hours. You do not have to press anything.

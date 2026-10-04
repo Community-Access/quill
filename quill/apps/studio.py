@@ -22,7 +22,7 @@ from pathlib import Path
 
 import wx
 
-from quill import __version__
+from quill.core.app_version import describe_version, installed_version
 from quill.core.audio_studio.book_prefs import (
     get_prefs,
     load_prefs,
@@ -73,7 +73,10 @@ except ImportError:  # pragma: no cover - non-Windows
     _winsound = None  # type: ignore[assignment]
 
 _TITLE = "QUILL Audio Studio"
-_VERSION = __version__
+#: Studio's own version, not QUILL's: About and Check for Updates both read it,
+#: and it must match standalone/studio (pyproject, installers) -- GATE-APPVER.
+_VERSION = "2.2.0"
+_BUILD = 1  # this version's build (docs/release/RELEASE.md, "Build numbers")
 #: Shared components this app requires, for the component-refcount registry
 #: (ffmpeg for audio processing/export; mpv for the player preview).
 #: mpv was declared "opt-in" while the build has always bundled it and
@@ -2647,7 +2650,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
 
     def _show_about(self) -> None:
         self._show_message_box(
-            f"{_TITLE} {_VERSION}\n"
+            f"{_TITLE} {describe_version(_VERSION, build=_BUILD)}\n"
             "Audiobook and audio production from QUILL, as a standalone app.\n\n"
             "Runs the same Audio Studio code as QUILL itself and shares its "
             "settings, voices, and downloaded speech engines.\n"
@@ -2657,7 +2660,11 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
         )
 
     def check_updates_manual(self) -> None:
-        self.check_for_app_updates(repo_slug=_REPO, current_version=_VERSION, app_key="studio")
+        self.check_for_app_updates(
+            repo_slug=_REPO,
+            current_version=installed_version(_VERSION, build=_BUILD),
+            app_key="studio",
+        )
 
     def _maybe_check_updates_on_startup(self) -> None:
         from datetime import UTC, datetime
@@ -2670,7 +2677,10 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
         prefs["last_update_check"] = datetime.now(UTC).isoformat()
         _save_app_prefs(prefs)
         self.check_for_app_updates(
-            repo_slug=_REPO, current_version=_VERSION, app_key="studio", silent_no_update=True
+            repo_slug=_REPO,
+            current_version=installed_version(_VERSION, build=_BUILD),
+            app_key="studio",
+            silent_no_update=True,
         )
 
     # -- lifecycle --------------------------------------------------------------

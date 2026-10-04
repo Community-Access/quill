@@ -1,6 +1,6 @@
 """Dictation's settings as QUILL's settings loader reads them from JSON.
 
-Nine fields, shared by name with QUILL Lite. Parsed here rather than inline in
+Shared by name with QUILL Lite. Parsed here rather than inline in
 :func:`quill.core.settings.load_settings` (GATE-11: that module is a single
 hand-written loader at its size budget), and returned as keyword arguments for
 the :class:`~quill.core.settings.Settings` constructor. QUILL Lite's settings
@@ -17,6 +17,7 @@ from typing import Any
 from quill.core.action_feedback import coerce as coerce_feedback
 from quill.core.windows_dictation.engines import coerce_engine
 from quill.core.windows_dictation.options import coerce_pause, coerce_silence
+from quill.core.windows_dictation.speech_language import coerce_speech_language
 from quill.core.windows_dictation.vocabulary import DASH_STYLES
 from quill.core.windows_dictation.wake import DEFAULT_STOP_PHRASE, DEFAULT_WAKE_PHRASE
 
@@ -30,6 +31,9 @@ def load_fields(data: Mapping[str, Any]) -> dict[str, Any]:
         "windows_dictation_microphone": str(data.get("windows_dictation_microphone", "") or ""),
         "windows_dictation_engine": coerce_engine(data.get("windows_dictation_engine", "")),
         "windows_dictation_language": str(data.get("windows_dictation_language", "") or ""),
+        "windows_dictation_speech_language": coerce_speech_language(
+            data.get("windows_dictation_speech_language", "en")
+        ),
         "windows_dictation_dash": dash if dash in DASH_STYLES else "em",
         "windows_dictation_wake_enabled": bool(data.get("windows_dictation_wake_enabled", False)),
         "windows_dictation_wake_phrase": str(

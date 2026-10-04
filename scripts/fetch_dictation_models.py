@@ -36,6 +36,7 @@ sys.path.insert(0, str(_REPO))
 
 from quill.core.windows_dictation.engines import (  # noqa: E402
     ENGINES,
+    LANGUAGE_MODELS,
     MODELS_FOLDER,
     VAD_MODEL,
     VAD_URL,
@@ -50,10 +51,12 @@ _NOTICE = """Speech models bundled with QUILL Lite for dictation.
 moonshine-tiny-en  Moonshine tiny, English. Copyright (c) 2024 Useful Sensors.
                    MIT License (moonshine-tiny-en/LICENSE).
 whisper-tiny-en    Whisper tiny.en. Copyright (c) 2022 OpenAI. MIT License.
+whisper-tiny       Whisper tiny, multilingual (Spanish dictation).
+                   Copyright (c) 2022 OpenAI. MIT License.
 silero_vad.onnx    Silero VAD. Copyright (c) 2020-present Silero Team.
                    MIT License.
 
-All three are converted to ONNX and distributed by the sherpa-onnx project
+All four are converted to ONNX and distributed by the sherpa-onnx project
 (k2-fsa/sherpa-onnx, Apache License 2.0), which also runs them.
 """
 
@@ -92,7 +95,7 @@ def fetch(out: Path, *, check_only: bool = False) -> list[str]:
                 vad.unlink(missing_ok=True)
                 problems.append(f"{vad.name}: digest mismatch")
 
-    for engine in ENGINES:
+    for engine in ENGINES + LANGUAGE_MODELS:
         if not engine.folder:
             continue
         folder = out / engine.folder

@@ -97,8 +97,8 @@ class CastPlaceRoutesMixin:
     def _register_cast_tray_hotkey(self) -> None:
         """Cast's own show/hide chord, like every family app's (Radio R, Weather
         W, Converter C, Player P). Without it the shared default added
-        Ctrl+Alt+Shift+Q system-wide, which is Cast's own Mark as Played and
-        Next, so that row never fired while Cast ran (qc.md C2-01). Every
+        Ctrl+Alt+Shift+Q system-wide, QUILL's own show/hide key (and then Cast's
+        Mark as Played and Next, which has since moved) (qc.md C2-01). Every
         Ctrl+Alt+Shift letter already belongs to some family app, so Cast takes
         a function key nothing in the family uses. ``_own_tray_hotkey`` keeps
         the shared default away even when Windows refuses this chord.

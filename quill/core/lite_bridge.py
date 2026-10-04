@@ -119,6 +119,7 @@ SHARED_CONTENT_STORES: tuple[SharedStore, ...] = (
 #: screen they do not have, or a Recent list of files this install cannot open.
 _NOT_COPIED: frozenset[str] = frozenset({
     "recent_files",
+    "pinned_recent_files",
     "session_files",
     "window_width",
     "window_height",

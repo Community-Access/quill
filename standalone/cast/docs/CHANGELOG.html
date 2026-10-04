@@ -256,6 +256,18 @@ release are described for listeners in
 its own menus until this release; 2.0.0 is the version everywhere
 now.)</p>
 <h3
+id="mark-as-played-and-next-moves-to-ctrlaltshiftdown-2026-10-04">Mark
+as Played and Next moves to Ctrl+Alt+Shift+Down (2026-10-04)</h3>
+<ul>
+<li><strong>Episode &gt; Play Queue Run &gt; Mark as Played and Next is
+Ctrl+Alt+Shift+Down</strong>, Next in Queue’s key with Shift added. Its
+old key, Ctrl+Alt+Shift+Q, is QUILL’s show-and-hide key for the whole of
+Windows, so while QUILL ran the key went to QUILL and the row never
+fired. The key now lives in <code>APP_KEYMAPS["cast"]</code>, so the
+menu shows whatever it is bound to, and Alt+Shift+Up and Down in the
+places list no longer catch it with Ctrl held.</li>
+</ul>
+<h3
 id="release-channels-safe-ways-back-background-downloads-and-updates-that-undo-themselves-2026-10-03">Release
 channels: safe ways back, background downloads, and updates that undo
 themselves (2026-10-03)</h3>
@@ -422,8 +434,8 @@ a menu row of its own, and <strong>Bookmark This Moment</strong>
 (Ctrl+Alt+A) and <strong>Skip Silence</strong> (Ctrl+Shift+9) gained
 Episode rows so their keys work.</li>
 <li><strong>Cast’s own show and hide key</strong> is Ctrl+Alt+Shift+F12,
-so it no longer takes Mark as Played and Next’s key away while Cast
-runs.</li>
+so it no longer takes Ctrl+Alt+Shift+Q, QUILL’s show and hide key, while
+Cast runs.</li>
 </ul>
 <h3
 id="closing-says-what-it-could-not-save-and-find-in-library-2026-10-01">Closing

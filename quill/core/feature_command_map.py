@@ -11,6 +11,7 @@ from __future__ import annotations
 COMMAND_FEATURE_MAP: dict[str, str] = {
     "app.command_palette": "core.palette",
     "app.preferences": "core.view",
+    "app.preferences_hub": "core.view",
     "app.display_language": "core.view",
     "app.exit": "core.app",
     "file.new": "core.file",

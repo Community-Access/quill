@@ -6,6 +6,7 @@
     python scripts/feed_tool.py refresh --app radio # re-sign with a fresh 90-day expiry
     python scripts/feed_tool.py revoke --app radio --version 3.4.0-beta.1 \\
         --reason "can lose favorites on first start" [--replacement 3.4.0-beta.2]
+        # the same as scripts/revoke_release.py, which is the documented way in
     python scripts/feed_tool.py expiry              # the 14-day warning, on its own
 
 Signing reads the owner's key (``QUILL_FEED_KEY_FILE`` or
@@ -26,7 +27,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from quill.core.updater.feed_publish import refresh, revoke, sign_bytes, validate_feed  # noqa: E402
+from quill.core.updater.feed_publish import refresh, sign_bytes, validate_feed  # noqa: E402
 from quill.tools import release_feed as rf  # noqa: E402
 
 
@@ -53,6 +54,7 @@ def run(
     now: datetime | None = None,
     seed_reader: Callable[[Path | None], bytes] = rf.read_seed,
     out: Callable[[str], None] = print,
+    gh: rf.Gh = rf.gh_cli,
 ) -> int:
     args = build_parser().parse_args(argv)
     moment = now or datetime.now(UTC)
@@ -91,12 +93,19 @@ def run(
         rf.write_index(root=root, seed=seed)
         out(f"Signed {path.name} (sequence {feed.sequence}).")
         return 0
-    if args.command == "refresh":
-        feed = refresh(feed, moment)
-    else:
-        feed = revoke(
-            feed, args.version, reason=args.reason, replacement=args.replacement, now=moment
+    if args.command == "revoke":
+        return rf.withdraw(
+            args.app,
+            args.version,
+            reason=args.reason,
+            replacement=args.replacement,
+            gh=gh,
+            root=root,
+            now=moment,
+            seed=seed_reader(args.key_file),
+            out=out,
         )
+    feed = refresh(feed, moment)
     rf.write_feed(feed, seed=seed_reader(args.key_file), root=root)
     out(f"Wrote {args.app}.json: sequence {feed.sequence}, expires {feed.expires_at}.")
     return 0

@@ -199,6 +199,7 @@ def copy_items(host: Any, playlist: Playlist, rows: list[int]) -> None:
     pasted = local_media_manage.copy_paths(host, items)
     noun = "1 item" if len(items) == 1 else f"{len(items)} items"
     tail = " Its path is on the clipboard too." if len(items) == 1 else " Their paths are too."
+    # announce-punctuation: exempt -- each part is a whole sentence
     ui.announce(host, f"Copied {noun}.{tail if pasted else ''}")
 
 

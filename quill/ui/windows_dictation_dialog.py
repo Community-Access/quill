@@ -39,13 +39,20 @@ import wx
 from quill.core.action_feedback import ACTION_FEEDBACK_LABELS
 from quill.core.action_feedback import coerce as coerce_feedback
 from quill.core.windows_dictation.controller import DEFAULT_PHRASE_FEEDBACK
-from quill.core.windows_dictation.engines import ENGINES, coerce_engine
+from quill.core.windows_dictation.engines import ENGINES, coerce_engine, language_model_problem
 from quill.core.windows_dictation.options import (
     PAUSE_CHOICES,
     SILENCE_CHOICES,
     coerce_pause,
     coerce_silence,
     level_sentence,
+)
+from quill.core.windows_dictation.speech_language import (
+    SPEECH_LANGUAGES,
+    STOP_PHRASES,
+    WAKE_PHRASES,
+    coerce_speech_language,
+    localised_phrase,
 )
 from quill.core.windows_dictation.vocabulary import DASH_STYLES
 from quill.core.windows_dictation.wake import (
@@ -59,6 +66,11 @@ from quill.ui.dialog_contract import (
     apply_modal_ids,
     bind_close_button,
     show_message_box,
+)
+from quill.ui.windows_dictation_devices import (
+    default_microphone_name,
+    microphone_names,
+    recognizer_names,
 )
 
 __all__ = [
@@ -76,44 +88,6 @@ SHOW_COMMANDS = 5801
 EDIT_WORDS = 5802
 
 _PAD = 8
-
-
-def _microphone_names() -> list[str]:
-    """Every microphone by name: Windows speech's full names, else sounddevice's."""
-    names: list[str] = []
-    try:
-        from quill.platform.windows.sapi_dictation import list_microphones
-
-        names = [microphone.name for microphone in list_microphones()]
-    except Exception:  # noqa: BLE001 - try the other list
-        names = []
-    if not names:
-        try:
-            from quill.core.windows_dictation.local_recognizer import list_input_names
-
-            names = list_input_names()
-        except Exception:  # noqa: BLE001 - an empty list is the honest answer
-            names = []
-    return names
-
-
-def _recognizer_names() -> list[str]:
-    try:
-        from quill.platform.windows.sapi_dictation import list_recognizers
-
-        return list_recognizers()
-    except Exception:  # noqa: BLE001 - Windows speech not available here
-        return []
-
-
-def _default_microphone_name() -> str:
-    try:
-        from quill.platform.windows.sapi_dictation import default_microphone_id, list_microphones
-
-        default_id = default_microphone_id()
-        return next((m.name for m in list_microphones() if m.id == default_id), "")
-    except Exception:  # noqa: BLE001 - the row simply does not name it
-        return ""
 
 
 class WindowsDictationDialog(wx.Dialog):
@@ -143,6 +117,24 @@ class WindowsDictationDialog(wx.Dialog):
         root.Add(engine_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
         root.Add(self.engine, 0, wx.EXPAND | wx.ALL, _PAD)
 
+        speech_label = wx.StaticText(self, label="Dictation lan&guage:")
+        self._speech_languages = [value for value, _label in SPEECH_LANGUAGES]
+        self.speech_language = wx.Choice(self, choices=[label for _v, label in SPEECH_LANGUAGES])
+        self.speech_language.SetHelpText(
+            "The language you dictate in: English, or Spanish, which is new. In Spanish, "
+            "Moonshine and Whisper both use Whisper's multilingual model; Windows speech "
+            "recognition needs Spanish installed in Windows. Commands stay in English for "
+            "now, and Spanish punctuation words such as coma and punto work while automatic "
+            "punctuation is off."
+        )
+        saved = getattr(settings, "windows_dictation_speech_language", "")
+        self.speech_language.SetSelection(
+            self._speech_languages.index(coerce_speech_language(saved))
+        )
+        self.speech_language.Bind(wx.EVT_CHOICE, self._on_speech_language)
+        root.Add(speech_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
+        root.Add(self.speech_language, 0, wx.EXPAND | wx.ALL, _PAD)
+
         self.auto_punctuation = wx.CheckBox(
             self, label="Automatic punctuat&ion (Moonshine and Whisper)"
         )
@@ -158,13 +150,13 @@ class WindowsDictationDialog(wx.Dialog):
         root.Add(self.auto_punctuation, 0, wx.ALL, _PAD)
 
         language_label = wx.StaticText(self, label="&Language for Windows speech recognition:")
-        self._languages = [""] + _recognizer_names()
+        self._languages = [""] + recognizer_names()
         self.language = wx.Choice(self, choices=["Windows default"] + self._languages[1:])
         self.language.SetHelpText(
             "Which of the speech languages installed in Windows the Windows speech "
-            "recognition engine listens for. Moonshine and Whisper understand "
-            "English and ignore this. Add languages in Windows Settings, Time and "
-            "language, Speech."
+            "recognition engine listens for. Moonshine and Whisper ignore this and "
+            "follow the dictation language. Add languages in Windows Settings, Time "
+            "and language, Speech."
         )
         saved_language = str(getattr(settings, "windows_dictation_language", "") or "")
         self.language.SetSelection(
@@ -173,9 +165,9 @@ class WindowsDictationDialog(wx.Dialog):
         root.Add(language_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
         root.Add(self.language, 0, wx.EXPAND | wx.ALL, _PAD)
 
-        names = _microphone_names()
+        names = microphone_names()
         self._microphone_names = [""] + names
-        default_name = _default_microphone_name()
+        default_name = default_microphone_name()
         default_row = (
             f"Windows default microphone ({default_name})"
             if default_name
@@ -408,6 +400,16 @@ class WindowsDictationDialog(wx.Dialog):
                 return
         event.Skip()
 
+    def _on_speech_language(self, _event: Any) -> None:
+        """Default wake and stop phrases follow the language; a missing model is said."""
+        language = self._speech_languages[max(0, self.speech_language.GetSelection())]
+        for field, defaults in ((self.wake_phrase, WAKE_PHRASES), (self.stop_phrase, STOP_PHRASES)):
+            field.SetValue(localised_phrase(field.GetValue(), language, defaults))
+        engine = self._engine_ids[max(0, self.engine.GetSelection())]
+        problem = language_model_problem(engine, language)
+        if problem:
+            self._show_test(problem)
+
     # -- Test Microphone -------------------------------------------------- #
 
     def _on_test_microphone(self, _event: Any) -> None:
@@ -426,8 +428,10 @@ class WindowsDictationDialog(wx.Dialog):
         # Spoken, not shown: the person has to know when to start talking.
         self._announce("Speak now. Recording for four seconds.")
 
+        language = self._speech_languages[max(0, self.speech_language.GetSelection())]
+
         def work(**_kwargs: Any) -> tuple[float, str]:
-            return record_and_hear(microphone, engine)
+            return record_and_hear(microphone, engine, language=language)
 
         def done(_name: str, result: Any) -> None:
             peak, heard = result
@@ -456,6 +460,8 @@ class WindowsDictationDialog(wx.Dialog):
         engine = self.engine.GetSelection()
         if 0 <= engine < len(self._engine_ids):
             settings.windows_dictation_engine = self._engine_ids[engine]
+        speech = self.speech_language.GetSelection()
+        settings.windows_dictation_speech_language = self._speech_languages[max(0, speech)]
         row = self.microphone.GetSelection()
         settings.windows_dictation_microphone = (
             self._microphone_names[row] if 0 <= row < len(self._microphone_names) else ""

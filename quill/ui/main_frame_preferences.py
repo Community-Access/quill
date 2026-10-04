@@ -30,11 +30,13 @@ from quill.core.features import (
 from quill.core.paths import app_data_dir
 from quill.core.settings import Settings, save_settings
 from quill.ui.accessible_names import ensure_accessible_names
+from quill.ui.app_context_help import ensure_help_provider
 from quill.ui.dialog_contract import (
     apply_modal_ids,
     focus_primary_control,
     set_accessible_name,
 )
+from quill.ui.preferences_search import registry_page_index
 
 
 class PreferencesMixin:
@@ -141,7 +143,7 @@ class PreferencesMixin:
         # modal is on screen at a time.
         chosen: dict[str, Callable[[], None] | None] = {"handler": None}
 
-        with wx.Dialog(self.frame, title="Preferences") as dialog:
+        with wx.Dialog(self.frame, title="More Preferences") as dialog:
             # This hub answers F1 itself with topic-based help (its char hook
             # below); the marker keeps the dialog contract's generic F1 hook
             # from shadowing that authored answer.
@@ -216,11 +218,11 @@ class PreferencesMixin:
             # on every platform.
             book.SetFocus()
             dialog._quill_keep_initial_focus = True
-            self._show_modal_dialog(dialog, "Preferences")
+            self._show_modal_dialog(dialog, "More Preferences")
 
         handler = chosen["handler"]
         if handler is None:
-            self._set_status("Preferences closed")
+            self._set_status("More Preferences closed")
             return
         handler()
 
@@ -449,6 +451,7 @@ class PreferencesMixin:
         ext_master_value: bool | None = None
         ext_engine_spec: tuple[str, str, bool] | None = None
         data_location_choice: tuple[str, str] | None = None
+        ensure_help_provider()  # SetHelpText is a no-op without one
 
         with wx.Dialog(self.frame, title="Settings") as dialog:
             outer = wx.BoxSizer(wx.VERTICAL)
@@ -475,6 +478,8 @@ class PreferencesMixin:
 
             def _make_control(parent_panel, sizer, spec, page_index: int) -> None:
                 current = registry.get_value(self.settings, spec.key)
+                if isinstance(current, (list, dict)):
+                    return  # as text, OK would wipe it; these have their own manager
                 # preview_browser is stored as text but is best chosen from the
                 # list of installed browsers.
                 if spec.key == "preview_browser":
@@ -904,6 +909,7 @@ class PreferencesMixin:
 
             page_index = 0
             _page_build_fns: list[Callable[[], None]] = []
+            _page_specs: list[tuple[str, list]] = []
             _built_pages: set[int] = set()
             _ai_refs: dict[str, object] = {}
             _data_location_refs: dict[str, object] = {}
@@ -1059,17 +1065,23 @@ class PreferencesMixin:
                         _ps.Add(
                             wx.StaticText(
                                 _p,
-                                label="All other AI settings (providers, models, API keys) "
-                                "are managed in the AI Hub.",
+                                label="Providers and API keys are managed in the AI Hub. "
+                                "Image prompt styles you add or hide are in More "
+                                "Preferences, AI Connection, Image Prompt Styles.",
                             ),
                             0,
                             wx.ALL,
                             6,
                         )
-                        _p.Layout()
-                        return
+                        # The page's own settings follow. This used to return
+                        # here, so the eleven below were never drawn and Find a
+                        # setting could not reach them.
                     for spec in _sp:
                         _make_control(_p, _ps, spec, _pi)
+                        _built = control_index.get(spec.key)
+                        if _built is not None and spec.description:
+                            # F1 on the control says what the setting does.
+                            _built[1].SetHelpText(spec.description)
                     if _show_experimental:
                         self._wire_experimental_gates(control_index)
                     if _show_data_location:
@@ -1246,6 +1258,7 @@ class PreferencesMixin:
                 _pg = wx.Panel(notebook, style=wx.TAB_TRAVERSAL)
                 _pg.SetSizer(wx.BoxSizer(wx.VERTICAL))
                 notebook.AddPage(_pg, group.title)
+                _page_specs.append((group.title, specs))
                 _page_build_fns.append(
                     _make_page_builder(
                         _pg,
@@ -1369,6 +1382,17 @@ class PreferencesMixin:
                 # must stay on the tabs so the tab names can be browsed.
                 if wx.Window.FindFocus() is not notebook:
                     focus_primary_control(dialog)
+
+            # Find a setting reaches every page, built or not (preferences_search).
+            dialog._quill_settings_index = lambda: registry_page_index(
+                dialog,
+                notebook,
+                _page_specs,
+                _built_pages,
+                _build_page,
+                control_index,
+                lambda key: registry.get_value(self.settings, key),
+            )
 
             notebook.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, _on_page_changed)
 

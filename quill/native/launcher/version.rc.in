@@ -35,7 +35,7 @@ BEGIN
         BEGIN
             VALUE "CompanyName",      "Community Access"
             VALUE "FileDescription",  "@PRODUCT_DISPLAY_NAME@"
-            VALUE "FileVersion",      "@PRODUCT_VERSION@"
+            VALUE "FileVersion",      "@PRODUCT_FILE_VERSION@"
             VALUE "InternalName",     "@PRODUCT_NAME@"
             VALUE "OriginalFilename", "@PRODUCT_NAME@.exe"
             VALUE "ProductName",      "@PRODUCT_DISPLAY_NAME@"

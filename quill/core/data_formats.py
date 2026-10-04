@@ -71,7 +71,7 @@ FORMATS: tuple[DataFormat, ...] = (
     DataFormat("quill.settings", "quill", ("settings.json",), "quill_data", 2, 2),
     DataFormat("quill.keymap", "quill", ("keymap.json",), "quill_data", 1, 1),
     DataFormat("lite.settings", "quilllite", ("settings.json",), "lite_data", 1, 1),
-    DataFormat("lite.keymap", "quilllite", ("keymap.json",), "lite_data", 1, 1),
+    DataFormat("lite.keymap", "quilllite", ("lite_keymap.json",), "lite_data", 1, 1),
     DataFormat("radio.favorites", "radio", ("radio_favorites.json",), "quill_data", 1, 1),
     DataFormat("radio.history", "radio", ("radio_history.json",), "quill_data", 1, 1),
     DataFormat("cast.library", "cast", ("podcasts_library.json",), "quill_data", 1, 1),

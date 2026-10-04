@@ -32,7 +32,7 @@ from quill.branding import (
     APP_ORGANIZATION,
     INDEPENDENCE_NOTICE,
 )
-from quill.build_info import get_short_version, get_support_info
+from quill.build_info import get_short_version, get_support_info, release_build
 
 # Org links shown on the Overview tab. Mirrors ``MainFrame._ABOUT_LINKS``.
 _DEFAULT_ORG_LINKS: tuple[tuple[str, str], ...] = (
@@ -300,7 +300,9 @@ def gather_about_info(
     dependencies = dep_loader(resolved_pyproject)
     bundled = bundle_loader()
 
-    short = display_version or get_short_version()
+    # About says which build of the version this is: "1.0.0 (build 2)".
+    build = release_build()
+    short = display_version or (get_short_version() + (f" (build {build})" if build else ""))
     resolved_channel = channel or _resolve_channel()
     resolved_version = version or __version__
     resolved_product = product_name or APP_DISPLAY_NAME

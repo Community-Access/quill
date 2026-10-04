@@ -197,7 +197,19 @@ def promotion_checks(
     checks: list[Check] = []
     release = feed.release(version)
     if release is None:
-        return [Check("P1", "the build is in the list", False, f"{version} is not listed")]
+        # Promotion moves one build, never "whichever build of 3.2.0": name it.
+        wanted = ReleaseVersion.try_parse(version)
+        builds = [
+            r.version
+            for r in feed.releases
+            if wanted is not None
+            and (found := ReleaseVersion.try_parse(r.version)) is not None
+            and found.same_number(wanted)
+        ]
+        detail = f"{version} is not listed"
+        if builds:
+            detail += "; name the build to promote: " + ", ".join(sorted(builds, key=sort_key))
+        return [Check("P1", "the build is in the list", False, detail)]
     checks.append(Check("P1", "the build is listed and not withdrawn", not release.revoked))
     checks.append(Check("P3", "the list's sequence will increase", True, str(feed.sequence + 1)))
     if to not in ("beta", "stable"):

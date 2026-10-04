@@ -149,6 +149,7 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "view.toggle_tab_control": "Ctrl+Shift+Grave, Shift+T",
     "app.command_palette": "Ctrl+Shift+P",
     "app.preferences": "Ctrl+,",
+    "app.preferences_hub": "Ctrl+Shift+Grave, O",  # the hub; Ctrl+, opens Settings
     # #608: app.exit is bound to Ctrl+Q so it maps to Cmd+Q on macOS
     # (the conventional Quit shortcut) and Alt+F4 on Windows is also
     # wired by the wx stock accelerator on the file menu. Quote Lines
@@ -754,6 +755,7 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # The session chooser on demand, so "Not Now" is deferrable rather than
     # lost (rule 9: a once-in-a-while command gets a key, not a short one).
     "file.reopen_last_session": "Alt+Shift+F12",
+    "file.recent_documents": "Alt+Shift+0",  # beside Alt+Shift+1-9; free in both (rule 5)
     # Once in a lifetime, so an F-key past F9 (rule 9). Reachable without
     # switching profiles, because somebody can want their QUILL Lite
     # abbreviations in QUILL without wanting QUILL Lite's menus (bad.md P2.4).

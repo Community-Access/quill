@@ -262,14 +262,26 @@ def test_preferences_and_the_places_chooser_build(cast_frame) -> None:
 
 
 def test_cast_never_takes_ctrl_alt_shift_q_system_wide(cast_frame) -> None:
-    """qc.md C2-01: Ctrl+Alt+Shift+Q is Cast's Mark as Played and Next. The
-    shared default show/hide key must not claim it while Cast runs, even when
-    Windows refuses Cast's own chord."""
+    """qc.md C2-01: Ctrl+Alt+Shift+Q is QUILL's show/hide key. Cast must not
+    claim it as a second show/hide while it runs, even when Windows refuses
+    Cast's own chord."""
     from quill.apps.podcasts_routes import CAST_TRAY_HOTKEY
 
     assert cast_frame._own_tray_hotkey == CAST_TRAY_HOTKEY
     cast_frame._tray_hotkey_registered = False  # as if Windows refused it
     assert "Ctrl+Alt+Shift+Q" not in cast_frame._global_hotkey_bindings().values()
+
+
+def test_mark_as_played_and_next_shows_its_own_key(cast_frame) -> None:
+    """It was Ctrl+Alt+Shift+Q, QUILL's show/hide key, and never fired while
+    QUILL ran. It now follows Next in Queue's key, through the app keymap."""
+    labels = []
+    bar = cast_frame.frame.GetMenuBar()
+    for index in range(bar.GetMenuCount()):
+        for item in bar.GetMenu(index).GetMenuItems():
+            if item.GetSubMenu() is not None:
+                labels += [sub.GetItemLabel() for sub in item.GetSubMenu().GetMenuItems()]
+    assert "Mark as Played and Ne&xt\tCtrl+Alt+Shift+Down" in labels
 
 
 def test_player_information_and_carry_my_place_have_menu_rows(cast_frame) -> None:

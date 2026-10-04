@@ -9,6 +9,15 @@ library and the rest of this release are described for listeners in
 `docs/release-notes-2.0.md`. (The app had carried 1.1.0 in its own menus
 until this release; 2.0.0 is the version everywhere now.)
 
+### Mark as Played and Next moves to Ctrl+Alt+Shift+Down (2026-10-04)
+
+- **Episode > Play Queue Run > Mark as Played and Next is Ctrl+Alt+Shift+Down**,
+  Next in Queue's key with Shift added. Its old key, Ctrl+Alt+Shift+Q, is
+  QUILL's show-and-hide key for the whole of Windows, so while QUILL ran the
+  key went to QUILL and the row never fired. The key now lives in
+  `APP_KEYMAPS["cast"]`, so the menu shows whatever it is bound to, and
+  Alt+Shift+Up and Down in the places list no longer catch it with Ctrl held.
+
 ### Release channels: safe ways back, background downloads, and updates that undo themselves (2026-10-03)
 
 - **Coming back to Stable can now go straight back** when Stable can read
@@ -143,7 +152,7 @@ until this release; 2.0.0 is the version everywhere now.)
   own, and **Bookmark This Moment** (Ctrl+Alt+A) and **Skip Silence**
   (Ctrl+Shift+9) gained Episode rows so their keys work.
 - **Cast's own show and hide key** is Ctrl+Alt+Shift+F12, so it no longer
-  takes Mark as Played and Next's key away while Cast runs.
+  takes Ctrl+Alt+Shift+Q, QUILL's show and hide key, while Cast runs.
 
 ### Closing says what it could not save, and Find in library (2026-10-01)
 

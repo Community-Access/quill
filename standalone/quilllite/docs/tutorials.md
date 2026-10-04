@@ -28,7 +28,7 @@ Start here. Open a file and save it back unchanged, find out where the facts abo
 
 Start here. You open a file you already have, hear the three things QUILL Lite remembers about it, and save it back exactly as it was.
 
-*4 steps, about 5 minutes.*
+*5 steps, about 5 minutes.*
 
 1. **Open something you already have.** Pick any text file you already have. An older one is a good test. QUILL Lite opens plain text, Markdown, HTML and rich text, so whatever you choose will be fine.
    - Keys: Ctrl+O
@@ -43,7 +43,12 @@ Start here. You open a file you already have, hear the three things QUILL Lite r
    - Keys: Ctrl+S
    - You should hear: "Saved" and the file's name.
 
-4. **Type a character the file cannot hold.** This one is optional. If your file uses an older encoding, type an em dash or an emoji and save again. QUILL Lite stops and asks you first: save as UTF-8 and keep the character, save as it was and lose it, or cancel. You decide.
+4. **Find it again later.** QUILL Lite remembers what you open. Open the Recent Documents window and your file is at the top of the list. Next time, press Enter on it instead of hunting for it with Open. Alt Shift 1 reopens the newest one without opening the window at all.
+   - Keys: Alt+Shift+0
+   - You should hear: The Recent Documents window, on your file's name and its folder.
+   - Worth knowing: Press Escape to close the window. Pin, in the same window, keeps a file you use often at the top for good.
+
+5. **Type a character the file cannot hold.** This one is optional. If your file uses an older encoding, type an em dash or an emoji and save again. QUILL Lite stops and asks you first: save as UTF-8 and keep the character, save as it was and lose it, or cancel. You decide.
    - You should hear: A question counting the characters, naming the encoding, and offering Yes, No and Cancel.
    - Worth knowing: Not sure which encoding your file uses? The Encoding cell in the status bar tells you.
 

@@ -188,7 +188,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "you have heard enough of the news."
                 ),
                 command="podcasts.next_in_queue",
-                keys=("Ctrl+Alt+Down", "Ctrl+Alt+Up", "Ctrl+Alt+Shift+Q"),
+                keys=("Ctrl+Alt+Down", "Ctrl+Alt+Up", "Ctrl+Alt+Shift+Down"),
                 hear="The next episode's title, then its audio.",
             ),
             Step(

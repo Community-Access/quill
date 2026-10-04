@@ -40,6 +40,10 @@ _HORIZONTAL_SPACE = " \t"
 def _starts_sentence(before: str) -> bool:
     """Whether a word typed after *before* begins a sentence."""
     text = before.rstrip(" ")
+    if text[-1:] in (chr(0xBF), chr(0xA1)):
+        # "Hola. ¿" then "qué": the opening mark said by itself does not
+        # end the sentence it starts, so look in front of it.
+        return _starts_sentence(text.rstrip(chr(0xBF) + chr(0xA1) + " "))
     if not text:
         return True
     last = text[-1]
@@ -86,8 +90,9 @@ def compose(
     # between the document and this phrase.
     previous = before[-1:] if before else ""
     capital = _starts_sentence(before)
-    # True after something that hugs whatever comes next.
-    attach = False
+    # True after something that hugs whatever comes next -- including a Spanish
+    # opening mark the previous phrase ended on.
+    attach = bool(previous) and previous in _OPENERS
     # How many trailing characters of ``out`` are spaces *this phrase* added,
     # so a closing mark can take exactly those back and nothing else.
     own_space = 0

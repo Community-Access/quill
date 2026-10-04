@@ -20,6 +20,7 @@ import wx
 
 from quill.core import http_client
 from quill.core.app_features import AppArea, load_app_features
+from quill.core.app_version import describe_version, installed_version
 from quill.ui.app_shell import AppShellFrame
 from quill.ui.dialog_contract import set_accessible_name
 from quill.ui.main_frame_weather import WeatherMixin
@@ -33,6 +34,7 @@ _TITLE = "Quill Weather"
 #: independently (each resolves its own release asset), so nothing requires the
 #: numbers to agree.
 _VERSION = "2.2.0"
+_BUILD = 1  # this version's build (docs/release/RELEASE.md, "Build numbers")
 #: Every QuillVille app now updates from the one shared repo, each resolving its
 #: own release asset (Quill-Weather-*), so they update and maintain independently.
 _REPO = "Community-Access/quill"
@@ -213,7 +215,9 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin):
         self.frame.Bind(
             wx.EVT_MENU,
             lambda _e: self.check_for_app_updates(
-                repo_slug=_REPO, current_version=_VERSION, app_key="weather"
+                repo_slug=_REPO,
+                current_version=installed_version(_VERSION, build=_BUILD),
+                app_key="weather",
             ),
             id=updates_id,
         )
@@ -431,7 +435,7 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin):
     def _show_about(self) -> None:
         from quill.apps import weather_help
 
-        weather_help.show_about(self, wx, _TITLE, _VERSION)
+        weather_help.show_about(self, wx, _TITLE, describe_version(_VERSION, build=_BUILD))
 
     # -- monitoring lifecycle ---------------------------------------------------
 

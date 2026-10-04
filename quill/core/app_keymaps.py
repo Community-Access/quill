@@ -245,6 +245,14 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         # The same key Quill Radio's Go to Position uses, so "jump to the bit
         # forty minutes in" is one keystroke in both players (11.8).
         "podcasts.go_to_position": "Ctrl+Alt+J",
+        # Mark as Played and Next (ear.md R3): Next in Queue's Ctrl+Alt+Down with
+        # Shift added, so the two "and on to the next" keys sit together. It was
+        # Ctrl+Alt+Shift+Q until 2026-10-04, which is QUILL's system-wide
+        # show/hide key, so it never fired while QUILL ran. A Cast command, so
+        # its key lives here and not in the editor's table (family rule 7);
+        # QUILL Lite's Next Section on the same chord is no clash, because
+        # neither key is system-wide and the two never share a window.
+        "podcasts.mark_played_and_next": "Ctrl+Alt+Shift+Down",
         # Now Playing (qc.md 5): window 2, so Ctrl+2 reaches it through the
         # Window menu; this is the Episode menu row's own chord.
         "podcasts.now_playing": "Ctrl+Alt+2",

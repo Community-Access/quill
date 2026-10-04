@@ -36,6 +36,7 @@ __all__ = [
     "GENERIC_PURPOSE",
     "PREFIX_PURPOSES",
     "PURPOSES",
+    "SHARED_WITH_QUILL",
     "is_known_title",
     "purpose_for_title",
 ]
@@ -135,7 +136,7 @@ PURPOSES: dict[str, str] = {
         "Arrow through the characters to hear each one described and press Enter to "
         "insert the one you are on. QUILL Lite reads back what it put in, because "
         "most of this list is invisible on the page. QUILL has the same picker on "
-        "Shift+F2."
+        "the same key, Ctrl+Shift+F2."
     ),
     "Go to line": (
         "Jump straight to a line by number. The prompt says how many lines the "
@@ -147,6 +148,15 @@ PURPOSES: dict[str, str] = {
         "the cursor lands at the start of it. Headings exist in rich text only: "
         "they are the bold-plus-point-size ladder QUILL uses, so this list is "
         "also what Word will show in its navigation pane."
+    ),
+    "Recent Documents": (
+        "Every document you opened recently, pinned ones first. Enter opens the "
+        "one you are on; pin the ones you come back to and they stay at the top. "
+        "Removing a row or clearing the list never touches the files themselves."
+    ),
+    "Clear Recent Documents": (
+        "Asks before the recent list is emptied. No is the default, so Enter "
+        "keeps the list; pinned documents stay either way."
     ),
     "Preferences": (
         "Every setting QUILL Lite has, in one window. Two of them live only here: "
@@ -267,10 +277,6 @@ PURPOSES: dict[str, str] = {
         "somebody else has names them and asks before moving it. Insert is never "
         "bindable: it is the key NVDA and JAWS use as their own modifier."
     ),
-    "Key for": (
-        "Press the key combination you want, and it appears in the box. Pressing "
-        "another replaces it. Escape leaves the command on the key it has now."
-    ),
     "Command Palette": (
         "Every command QUILL Lite has, searchable, with its key beside it. A menu "
         "answers 'what is under Format?'; this answers 'how do I sort lines?', "
@@ -299,8 +305,68 @@ PURPOSES: dict[str, str] = {
 # titles needs an entry. Same sentence for all five: the window is the same
 # window, and a different paragraph per verb would be five things to keep in
 # step for no gain to anybody listening.
-for _result_title in ("Rewrite", "Proofread", "Explanation", "Answer", "AI Result"):
-    PURPOSES[_result_title] = PURPOSES["Summary"]
+# The titles come from the table that names the window, so a new writing tool
+# cannot ship a result window that answers F1 with the generic paragraph (ten
+# of them did until 2026-10-04: Shorter, Plain Language, Translation and the
+# rest). The two with a purpose of their own above keep it.
+from quill.core.ai.writing_tools import ACTION_TITLES as _AI_RESULT_TITLES  # noqa: E402
+
+for _result_title in (*_AI_RESULT_TITLES.values(), "AI Result"):
+    PURPOSES.setdefault(_result_title, PURPOSES["Summary"])
+
+# Windows QUILL Lite shares with QUILL: the hosted-AI windows and the Windows
+# dictation ones. Their wording names neither editor, because QUILL answers F1
+# in them from this same paragraph (quill.ui.context_help).
+PURPOSES.update({
+    "AI Conversation": (
+        "Talk back and forth with the AI. Type in the message box and press "
+        "Enter; the reply is read aloud when it arrives and stays in the "
+        "conversation above, so you can read it again. Nothing goes into your "
+        "document until you choose to put it there."
+    ),
+    "Use My Own AI Key": (
+        "Use AI help on your own OpenAI or Google Gemini account instead of "
+        "QUILL's free service. Choose the company, paste the key it gave you, "
+        "and test it; with a saved key there is no daily limit. Remove the "
+        "Saved Key puts you straight back on the free service."
+    ),
+    "Dictation Settings": (
+        "How dictation works for you: the speech engine, the microphone, the "
+        "language you speak, and what you hear as it goes. Test Microphone "
+        "checks the microphone before you rely on it. Nothing changes until "
+        "you choose OK."
+    ),
+    "Dictation Commands": (
+        "Every phrase dictation acts on, and what each one does, as text you "
+        "can read line by line. The same list is in the user guide."
+    ),
+    "Recent Phrases": (
+        "What you have dictated since the app started, newest first. Insert "
+        "Again writes the phrase you are on at the cursor, and Copy puts it on "
+        "the clipboard. The list is forgotten when you close the app."
+    ),
+})
+
+#: Titles of the windows QUILL opens from the same shared modules. QUILL's F1
+#: takes their opening paragraph from here rather than keeping a second copy.
+SHARED_WITH_QUILL: frozenset[str] = frozenset({
+    "AI Assistant",
+    "AI Conversation",
+    "AI Usage",
+    "Ask About an Image",
+    "QUILL AI Sign-In",
+    "QUILL AI: what is sent, and what is kept",
+    "Use My ChatGPT Subscription",
+    "Use My Own AI Key",
+    "Spelling Announcements",
+    "Dictation Settings",
+    "Dictation Commands",
+    "Recent Phrases",
+    "Recent Documents",
+    "Clear Recent Documents",
+    *_AI_RESULT_TITLES.values(),
+    "AI Result",
+})
 
 # Release channels: the shared windows (quill/ui/updates) take their titles and
 # purposes from one place, so a title can never ship without its F1 paragraph.
@@ -309,6 +375,14 @@ from quill.core.updater.wording import window_titles as _channel_windows  # noqa
 PURPOSES.update(_channel_windows("QUILL Lite"))
 
 PREFIX_PURPOSES: tuple[tuple[str, str], ...] = (
+    # Titled "Key for <command>". It sat in PURPOSES as an exact "Key for"
+    # until 2026-10-04, which no real title ever equals, so the window answered
+    # F1 with the generic paragraph; the audit's prefix check hid it.
+    (
+        "Key for ",
+        "Press the key combination you want, and it appears in the box. Pressing "
+        "another replaces it. Escape leaves the command on the key it has now.",
+    ),
     (
         "Help:",
         "This is the help window itself: the purpose of the window you were in, "

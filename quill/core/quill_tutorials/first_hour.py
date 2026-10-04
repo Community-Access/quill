@@ -238,9 +238,9 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "The keyboard reference is generated from your current feature "
                     "profile and your own keybindings, so it always describes the "
                     "QUILL in front of you -- not the one in a manual written a "
-                    "year ago."
+                    "year ago. It lives on the Help menu as Open Keyboard Reference."
                 ),
-                keys=("Ctrl+F1",),
+                keys=("Alt+H, R",),
                 hear="The reference, opening as an ordinary document tab.",
             ),
             Step(
@@ -357,17 +357,17 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "control does and which keys apply to it, all in one "
                     "read-only field so your reader announces it in one pass."
                 ),
-                keys=("F1",),
+                command="help.help_on_control",
                 hear="The window's purpose, then the control's own help.",
             ),
             Step(
                 title="Ask what you can do here",
                 body=(
-                    "Shift+F1 answers What Can I Do Here for the document you are "
-                    "in, which is a different question from what is this control: "
+                    "What Can I Do Here answers for the document you are in, "
+                    "which is a different question from what is this control: "
                     "it is about the work rather than the widget."
                 ),
-                keys=("Shift+F1",),
+                command="help.what_can_i_do_here",
                 hear="What this kind of document supports, in context.",
             ),
             Step(

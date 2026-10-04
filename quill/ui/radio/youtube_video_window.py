@@ -25,6 +25,7 @@ from collections.abc import Callable
 from typing import Any
 
 from quill.core.radio import youtube_video_info as vi
+from quill.ui.surface_lifetime import surface_tasks
 
 TITLE = "YouTube Video"
 ABOUT_TITLE = "About This Channel"
@@ -58,7 +59,10 @@ class YouTubeVideoWindow:
         self._wx = wx
         self._host = host
         self._announce = host._announce
-        self._task_manager = getattr(host, "_task_manager", None)
+        # Tied to the frame, so details that arrive after it is gone land nowhere.
+        self._task_manager = surface_tasks(
+            getattr(host, "_task_manager", None), lambda: getattr(self, "frame", None)
+        )
         self._station = station
         self._page_url = page_url
         self._fetch = fetch
@@ -496,7 +500,9 @@ def show_text(host: Any, heading: str, text: str) -> None:
     close.SetHelpText("Closes this and goes back to the channel's row.")
     sizer.Add(close, 0, wx.EXPAND | wx.ALL, 8)
     dialog.SetSizerAndFit(sizer)
-    dialog.SetEscapeId(wx.ID_CANCEL)
+    from quill.ui.dialog_contract import apply_modal_ids
+
+    apply_modal_ids(dialog, cancel_id=wx.ID_CANCEL)
     try:
         shower = getattr(app, "_show_modal_dialog", None)
         if callable(shower):

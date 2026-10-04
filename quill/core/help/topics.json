@@ -117,7 +117,7 @@
     "body": "Ask Quill is a conversational AI assistant embedded in QUILL. Type your question or instruction, and QUILL sends it to the configured AI provider with your selected text as context. Responses appear in the conversation panel.",
     "keystrokes": [
       "Ctrl+Enter - Send message",
-      "Ctrl+K - Open Ask Quill",
+      "Alt+Q - Open Ask Quill",
       "Escape - Close"
     ],
     "user_guide_section": "ai-assistant"
@@ -125,7 +125,7 @@
   {
     "id": "ai_chat.conversation_history",
     "title": "Conversation History",
-    "body": "Shows the full conversation with the AI assistant. Arrow through to re-read previous turns. Press Ctrl+A to select all text and Ctrl+C to copy. Press Ctrl+Shift+Delete to clear the conversation and start fresh.",
+    "body": "Shows the full conversation with the AI assistant. Arrow through to re-read previous turns. Press Ctrl+A to select all text and Ctrl+C to copy.",
     "user_guide_section": "ai-assistant"
   },
   {
@@ -135,7 +135,7 @@
     "keystrokes": [
       "Ctrl+Enter - Send message",
       "Escape - Close Ask Quill",
-      "Ctrl+K - Open Ask Quill"
+      "Alt+Q - Open Ask Quill"
     ],
     "user_guide_section": "ai-assistant"
   },
@@ -198,6 +198,15 @@
     "body": "Open the Preferences dialog, where every QUILL setting lives in one searchable place: editing behaviour, accessibility, speech, AI, and more. Changes apply when you press OK or Apply.",
     "keystrokes": [
       "Ctrl+,"
+    ],
+    "user_guide_section": "getting-started"
+  },
+  {
+    "id": "app.preferences_hub",
+    "title": "More Preferences...",
+    "body": "Open the Preferences hub: a list of the places QUILL keeps settings that are not on the Settings pages themselves -- Task Recipes and Working Modes, Profiles and Features, the Status Bar Layout, the Keymap Editor, GLOW Accessibility, Watch Folder Automation, and a page for each installed Quillin that has preferences, such as Smart Insert, BRF Tools, Journal Stamp, Document Guardian and Status Scribe. Arrow to one and press Enter to open it. Ctrl+, still opens Settings directly.",
+    "keystrokes": [
+      "QUILL Key + O"
     ],
     "user_guide_section": "getting-started"
   },
@@ -406,8 +415,7 @@
     "body": "This is the context-sensitive help dialog. It shows information about the control you were focused on when you pressed F1. Tab to the 'Open User Guide' button for the full documentation section, or press Escape to close.",
     "keystrokes": [
       "F1 - Open this dialog",
-      "Escape - Close",
-      "Ctrl+F1 - Open User Guide"
+      "Escape - Close"
     ],
     "user_guide_section": "help-learning-and-daily-confidence"
   },
@@ -416,8 +424,8 @@
     "title": "Copy Tray",
     "body": "The Copy Tray holds up to 12 saved text clips that you can paste at any time. Use it as a persistent clipboard for frequently reused text, template snippets, or content you are assembling from multiple sources.",
     "keystrokes": [
-      "Ctrl+Shift+Grave, X - Open Copy Tray",
-      "Ctrl+Shift+1..9, 0, -, = - Paste slot 1-12"
+      "Ctrl+Alt+V - Open Copy Tray",
+      "Ctrl+Alt+Shift+1..9, 0, -, = - Paste slot 1-12"
     ],
     "user_guide_section": "writing-and-editing"
   },
@@ -436,10 +444,10 @@
   {
     "id": "copy_tray.slot_list",
     "title": "Copy Tray Slots",
-    "body": "The Copy Tray holds up to 12 saved text clips. Arrow through the list to hear each slot's label and preview. Press Enter to paste the selected slot into the editor. Ctrl+Shift+1 through Ctrl+Shift+9, 0, -, and = paste the twelve slots directly.",
+    "body": "The Copy Tray holds up to 12 saved text clips. Arrow through the list to hear each slot's label and preview. Press Enter to paste the selected slot into the editor. Ctrl+Alt+Shift+1 through Ctrl+Alt+Shift+9, 0, -, and = paste the twelve slots directly.",
     "keystrokes": [
-      "Ctrl+Shift+1..9, 0, -, = - Paste slot 1-12",
-      "Ctrl+Shift+Grave, Shift+1..9, 0, -, = - Copy to slot 1-12"
+      "Ctrl+Alt+Shift+1..9, 0, -, = - Paste slot 1-12",
+      "QUILL Key + Shift+1..9, 0, -, = - Copy to slot 1-12"
     ],
     "user_guide_section": "writing-and-editing"
   },
@@ -456,12 +464,18 @@
     "id": "edit.convert_indentation_to_spaces",
     "title": "Convert Indentation to Spaces",
     "body": "Replace leading tab characters on each line with spaces, using your configured tab width. Useful when a file mixes tabs and spaces.",
+    "keystrokes": [
+      "Alt+F11"
+    ],
     "user_guide_section": "writing-and-editing"
   },
   {
     "id": "edit.convert_indentation_to_tabs",
     "title": "Convert Indentation to Tabs",
     "body": "Replace leading runs of spaces at the start of each line with tab characters, using your configured tab width.",
+    "keystrokes": [
+      "Alt+F12"
+    ],
     "user_guide_section": "writing-and-editing"
   },
   {
@@ -476,9 +490,9 @@
   {
     "id": "edit.copy_selection_for_email",
     "title": "Copy Selection For Email",
-    "body": "Copy the selected text formatted for email quoting, so it pastes cleanly into a reply with the expected quote markers.",
+    "body": "Copy the selected text, ready to paste into an email, in the format you chose for kept and sent content (plain text unless you changed it). With nothing selected it copies the whole document. It is the same as File > Copy as Email Body, on a QUILL key chord.",
     "keystrokes": [
-      "Ctrl+Shift+Grave, C"
+      "QUILL Key + C"
     ],
     "user_guide_section": "writing-and-editing"
   },
@@ -487,7 +501,7 @@
     "title": "Copy With Source",
     "body": "Copy the selection along with a reference to its source document, so a pasted excerpt keeps a note of where it came from.",
     "keystrokes": [
-      "Ctrl+Shift+C"
+      "Alt+Shift+C"
     ],
     "user_guide_section": "writing-and-editing"
   },
@@ -496,7 +510,7 @@
     "title": "Exchange Point and Mark",
     "body": "Swap the cursor position with the mark you set earlier, jumping between the two ends of a region. Repeat to jump back.",
     "keystrokes": [
-      "Ctrl+Shift+X"
+      "Ctrl+Alt+X"
     ],
     "user_guide_section": "writing-and-editing"
   },
@@ -505,7 +519,7 @@
     "title": "Expand Selection",
     "body": "Grow the selection outward to the next larger syntactic unit — word, then sentence, then paragraph, then block — one step at a time.",
     "keystrokes": [
-      "Ctrl+Shift+Grave, J"
+      "Ctrl+Shift+X"
     ],
     "user_guide_section": "writing-and-editing"
   },
@@ -599,18 +613,27 @@
     "id": "edit.normalize_whitespace",
     "title": "Normalize Whitespace",
     "body": "Collapse runs of spaces and tabs to single spaces and tidy inconsistent spacing across the document, without changing line breaks.",
+    "keystrokes": [
+      "Ctrl+Alt+Shift+T"
+    ],
     "user_guide_section": "writing-and-editing"
   },
   {
     "id": "edit.open_review_buffer",
     "title": "Open Review Buffer",
     "body": "Open a separate, read-only buffer holding text for review (for example AI or comparison output) so you can read it beside your document.",
+    "keystrokes": [
+      "Alt+Shift+U"
+    ],
     "user_guide_section": "writing-and-editing"
   },
   {
     "id": "edit.paste_plain_text",
     "title": "Paste Text Only",
     "body": "Paste what is on the clipboard with none of its formatting -- the words without the web page. In a rich text document an ordinary paste brings the fonts, colours and sizes of wherever the text came from; this brings the text and nothing else.",
+    "keystrokes": [
+      "Ctrl+Shift+V"
+    ],
     "user_guide_section": "writing-and-editing"
   },
   {
@@ -644,6 +667,9 @@
     "id": "edit.remove_duplicate_lines",
     "title": "Remove Duplicate Lines",
     "body": "Delete repeated lines from the document (or selection), keeping the first occurrence of each.",
+    "keystrokes": [
+      "Ctrl+Alt+D"
+    ],
     "user_guide_section": "writing-and-editing"
   },
   {
@@ -666,7 +692,7 @@
     "title": "Replace All...",
     "body": "Replace every occurrence of your search text throughout the document in one step, and announce how many replacements were made.",
     "keystrokes": [
-      "Ctrl+Shift+H"
+      "QUILL Key + X"
     ],
     "user_guide_section": "writing-and-editing"
   },
@@ -683,6 +709,9 @@
     "id": "edit.restore_deletion",
     "title": "Restore Deleted Text",
     "body": "Re-inserts text you recently deleted with one of QUILL's structured delete commands (delete to line start or end, delete to document start or end, or delete paragraph). It remembers the last three deletions; choose one from the list and it is inserted at the cursor. Unlike Undo, which reverts the last edit in place, Restore Deleted Text can place the recovered text anywhere.",
+    "keystrokes": [
+      "Ctrl+Alt+Shift+Z"
+    ],
     "user_guide_section": "writing-and-editing"
   },
   {
@@ -698,6 +727,9 @@
     "id": "edit.say_selected",
     "title": "Say Selected",
     "body": "Speak the current selection aloud once, so you can hear exactly what is selected before acting on it.",
+    "keystrokes": [
+      "Ctrl+Shift+Y"
+    ],
     "user_guide_section": "writing-and-editing"
   },
   {
@@ -705,7 +737,7 @@
     "title": "Select Block",
     "body": "Select the block of text around the cursor — the paragraph, list item, or code block you are in.",
     "keystrokes": [
-      "Ctrl+Shift+B"
+      "Ctrl+Alt+Shift+B"
     ],
     "user_guide_section": "writing-and-editing"
   },
@@ -713,12 +745,18 @@
     "id": "edit.select_line",
     "title": "Select Line",
     "body": "Select the entire current line, including its line break.",
+    "keystrokes": [
+      "Ctrl+Shift+E"
+    ],
     "user_guide_section": "writing-and-editing"
   },
   {
     "id": "edit.select_paragraph",
     "title": "Select Paragraph",
     "body": "Select the whole paragraph the cursor is in.",
+    "keystrokes": [
+      "Ctrl+Shift+H"
+    ],
     "user_guide_section": "writing-and-editing"
   },
   {
@@ -804,7 +842,7 @@
     "title": "Shrink Selection",
     "body": "Shrink the selection inward to the next smaller unit — the reverse of Expand Selection.",
     "keystrokes": [
-      "Ctrl+Shift+Grave, Shift+J"
+      "Ctrl+Alt+Shift+X"
     ],
     "user_guide_section": "writing-and-editing"
   },
@@ -812,12 +850,18 @@
     "id": "edit.sort_lines_ascending",
     "title": "Sort Lines Ascending",
     "body": "Sort the selected lines (or the whole document) into ascending order.",
+    "keystrokes": [
+      "Ctrl+Alt+S"
+    ],
     "user_guide_section": "writing-and-editing"
   },
   {
     "id": "edit.sort_lines_descending",
     "title": "Sort Lines Descending",
     "body": "Sort the selected lines (or the whole document) into descending order.",
+    "keystrokes": [
+      "Ctrl+Alt+Shift+S"
+    ],
     "user_guide_section": "writing-and-editing"
   },
   {
@@ -833,6 +877,9 @@
     "id": "edit.toggle_extend_selection_mode",
     "title": "Toggle Extend Selection Mode",
     "body": "Turn a sticky selection mode on or off. While on, ordinary cursor movement extends the selection so you can select large ranges without holding Shift.",
+    "keystrokes": [
+      "Alt+Shift+F9"
+    ],
     "user_guide_section": "writing-and-editing"
   },
   {
@@ -847,6 +894,9 @@
     "id": "edit.trim_trailing_whitespace",
     "title": "Trim Trailing Whitespace",
     "body": "Remove trailing spaces and tabs from the end of every line in the document.",
+    "keystrokes": [
+      "Ctrl+Alt+R"
+    ],
     "user_guide_section": "writing-and-editing"
   },
   {
@@ -896,7 +946,7 @@
     "id": "file.choose_encoding",
     "title": "Choose Encoding...",
     "body": "Reopen the current file interpreting its bytes with a character encoding you choose, for when text looks garbled because it was saved in a different encoding.",
-    "user_guide_section": "files"
+    "user_guide_section": "encoding-and-line-endings-ctrl-alt-e"
   },
   {
     "id": "file.close_document",
@@ -905,7 +955,7 @@
     "keystrokes": [
       "Ctrl+W"
     ],
-    "user_guide_section": "files"
+    "user_guide_section": "the-rest-of-the-file-menu"
   },
   {
     "id": "file.file_format",
@@ -927,13 +977,13 @@
     "id": "file.github_manage_accounts",
     "title": "Manage GitHub Accounts...",
     "body": "Add, remove, or switch the GitHub accounts QUILL uses to open and save files in repositories.",
-    "user_guide_section": "files"
+    "user_guide_section": "managing-your-github-account"
   },
   {
     "id": "file.github_save_back",
     "title": "Save to GitHub...",
     "body": "Save the current file back to the GitHub repository it came from, creating a commit with your changes.",
-    "user_guide_section": "files"
+    "user_guide_section": "saving-back-to-github"
   },
   {
     "id": "file.import_convert",
@@ -945,16 +995,13 @@
     "id": "file.manage_remote_sites",
     "title": "Manage Remote Sites",
     "body": "Manage your saved remote connections (SFTP and similar) that QUILL uses to open and save files on other machines.",
-    "keystrokes": [
-      "Ctrl+Shift+Grave, Shift+M"
-    ],
-    "user_guide_section": "files"
+    "user_guide_section": "remote-access"
   },
   {
     "id": "file.manage_snapshots",
     "title": "Manage Snapshots",
     "body": "Review the point-in-time snapshots QUILL has kept of the current document and restore an earlier version if needed.",
-    "user_guide_section": "files"
+    "user_guide_section": "sessions"
   },
   {
     "id": "file.new",
@@ -963,19 +1010,19 @@
     "keystrokes": [
       "Ctrl+N"
     ],
-    "user_guide_section": "files"
+    "user_guide_section": "chapter-3-opening-saving-and-converting-files"
   },
   {
     "id": "file.new_notebook",
     "title": "New Notebook",
     "body": "Create a new notebook — a single file that holds many entries you can navigate as one document.",
-    "user_guide_section": "files"
+    "user_guide_section": "creating-a-notebook"
   },
   {
     "id": "file.new_notebook_from_folder",
     "title": "New Notebook From Folder",
     "body": "Build a notebook from an existing folder of text files, turning each file into a navigable entry.",
-    "user_guide_section": "files"
+    "user_guide_section": "creating-a-notebook"
   },
   {
     "id": "file.new_plain_text_document",
@@ -1000,13 +1047,13 @@
     "keystrokes": [
       "Ctrl+O"
     ],
-    "user_guide_section": "files"
+    "user_guide_section": "opening-files"
   },
   {
     "id": "file.open_containing_folder",
     "title": "Open Containing Folder",
     "body": "Open the folder that holds the current file in your system file manager, with the file selected.",
-    "user_guide_section": "files"
+    "user_guide_section": "the-rest-of-the-file-menu"
   },
   {
     "id": "file.open_from_favorite_folder",
@@ -1020,16 +1067,13 @@
     "id": "file.open_from_remote",
     "title": "Open From Remote",
     "body": "Open a file from one of your saved remote sites (such as SFTP), editing it in place and saving back over the connection.",
-    "keystrokes": [
-      "Ctrl+Shift+Grave, Shift+O"
-    ],
-    "user_guide_section": "files"
+    "user_guide_section": "remote-access"
   },
   {
     "id": "file.open_github_file_url",
     "title": "Open Remote GitHub File URL...",
     "body": "Open a single file directly from a GitHub file URL you paste in, without cloning the whole repository.",
-    "user_guide_section": "files"
+    "user_guide_section": "opening-and-saving-github-files"
   },
   {
     "id": "file.open_github_items",
@@ -1040,31 +1084,34 @@
     "id": "file.open_github_repository",
     "title": "Open Remote GitHub Repository...",
     "body": "Browse a GitHub repository and open files from it directly inside QUILL.",
-    "user_guide_section": "files"
+    "user_guide_section": "opening-and-saving-github-files"
   },
   {
     "id": "file.open_notebook",
     "title": "Open Notebook",
     "body": "Open an existing notebook file and its entries.",
-    "user_guide_section": "files"
+    "user_guide_section": "notebooks"
   },
   {
     "id": "file.open_session",
     "title": "Open Session...",
     "body": "Reopen a saved session — the set of documents and their positions you had open — restoring your workspace.",
-    "user_guide_section": "files"
+    "user_guide_section": "sessions"
   },
   {
     "id": "file.open_url",
     "title": "Open from URL...",
     "body": "Download and open a document from a web address you paste in.",
-    "user_guide_section": "files"
+    "user_guide_section": "the-rest-of-the-file-menu"
   },
   {
     "id": "file.page_setup",
     "title": "Page Setup...",
     "body": "Set the paper size, orientation, and margins used when you print the document.",
-    "user_guide_section": "files"
+    "keystrokes": [
+      "Ctrl+Alt+P"
+    ],
+    "user_guide_section": "the-rest-of-the-file-menu"
   },
   {
     "id": "file.print",
@@ -1073,13 +1120,13 @@
     "keystrokes": [
       "Ctrl+P"
     ],
-    "user_guide_section": "files"
+    "user_guide_section": "the-rest-of-the-file-menu"
   },
   {
     "id": "file.reload_from_disk",
     "title": "Reload from Disk",
     "body": "Discard your unsaved changes and reload the file from disk as it currently is — useful when another program has changed it.",
-    "user_guide_section": "files"
+    "user_guide_section": "when-another-program-changes-the-file-you-are-editing"
   },
   {
     "id": "file.remove_favorite_folder",
@@ -1093,7 +1140,7 @@
     "id": "file.restore_backup",
     "title": "Restore Backup...",
     "body": "Restore the current document from one of QUILL's automatic backups if the file was lost or corrupted.",
-    "user_guide_section": "files"
+    "user_guide_section": "the-rest-of-the-file-menu"
   },
   {
     "id": "file.save",
@@ -1102,13 +1149,13 @@
     "keystrokes": [
       "Ctrl+S"
     ],
-    "user_guide_section": "files"
+    "user_guide_section": "saving-files"
   },
   {
     "id": "file.save_all",
     "title": "Save All",
     "body": "Save every open document that has unsaved changes in one step.",
-    "user_guide_section": "files"
+    "user_guide_section": "saving-files"
   },
   {
     "id": "file.save_as",
@@ -1117,46 +1164,43 @@
     "keystrokes": [
       "Ctrl+Shift+S"
     ],
-    "user_guide_section": "files"
+    "user_guide_section": "saving-files"
   },
   {
     "id": "file.save_as_plain_text",
     "title": "Save As Plain Text...",
     "body": "Save the current document as a plain text file. If it carries hidden formatting, QUILL asks how to handle it so nothing is lost silently.",
-    "user_guide_section": "files"
+    "user_guide_section": "save-as-plain-text"
   },
   {
     "id": "file.save_copy_to_remote",
     "title": "Save Copy To Remote",
     "body": "Save a copy of the current document to one of your remote sites without changing which file you are editing locally.",
-    "user_guide_section": "files"
+    "user_guide_section": "remote-access"
   },
   {
     "id": "file.save_session",
     "title": "Save Session...",
     "body": "Save your current set of open documents and their positions as a named session you can reopen later.",
-    "user_guide_section": "files"
+    "user_guide_section": "sessions"
   },
   {
     "id": "file.save_snapshot",
     "title": "Save Snapshot",
     "body": "Record a point-in-time snapshot of the current document so you can return to exactly this version later.",
-    "user_guide_section": "files"
+    "user_guide_section": "sessions"
   },
   {
     "id": "file.save_to_remote",
     "title": "Save To Remote",
     "body": "Save the current document back to the remote site it came from over the connection.",
-    "keystrokes": [
-      "Ctrl+Shift+Grave, W"
-    ],
-    "user_guide_section": "files"
+    "user_guide_section": "remote-access"
   },
   {
     "id": "file.toggle_line_endings",
     "title": "Toggle Line Endings",
     "body": "Switch the document between Windows (CRLF) and Unix (LF) line endings and report which is now in use.",
-    "user_guide_section": "files"
+    "user_guide_section": "encoding-and-line-endings-ctrl-alt-e"
   },
   {
     "id": "fill_in_fields",
@@ -1214,9 +1258,6 @@
     "id": "format.blockquote",
     "title": "Insert Block Quote",
     "body": "Insert a block quote at the cursor, or turn the selected lines into one. Format-aware: it writes Markdown in a Markdown document and HTML in an HTML document.",
-    "keystrokes": [
-      "Ctrl+Alt+Q"
-    ],
     "user_guide_section": "writing-and-editing"
   },
   {
@@ -1232,6 +1273,9 @@
     "id": "format.clear_formatting",
     "title": "Clear Formatting",
     "body": "Remove all character formatting — bold, italic, colour, and the rest — from the selection, leaving plain text.",
+    "keystrokes": [
+      "Ctrl+Shift+N"
+    ],
     "user_guide_section": "writing-and-editing"
   },
   {
@@ -1247,6 +1291,9 @@
     "id": "format.delete_line",
     "title": "Delete Line",
     "body": "Delete the entire current line, including its line break.",
+    "keystrokes": [
+      "Ctrl+Shift+Delete"
+    ],
     "user_guide_section": "writing-and-editing"
   },
   {
@@ -1270,6 +1317,9 @@
     "id": "format.duplicate_line",
     "title": "Duplicate Line",
     "body": "Copy the current line and insert the copy directly below it.",
+    "keystrokes": [
+      "Ctrl+D"
+    ],
     "user_guide_section": "writing-and-editing"
   },
   {
@@ -1277,7 +1327,7 @@
     "title": "Expand Abbreviation",
     "body": "Expand the abbreviation just before the cursor into its full text now, without waiting for an automatic trigger.",
     "keystrokes": [
-      "Ctrl+Shift+Grave, A"
+      "QUILL Key + A"
     ],
     "user_guide_section": "writing-and-editing"
   },
@@ -1291,6 +1341,9 @@
     "id": "format.grow_font",
     "title": "Grow Font",
     "body": "Make the selected text one step larger, in a rich text document. The step is a ladder of real point sizes rather than one point at a time, so it lands on sizes people recognise -- and the ladder includes the heading sizes, so growing a heading stays on the heading ladder instead of becoming a paragraph that merely looks large. This changes the document; the View menu's text size changes only the view.",
+    "keystrokes": [
+      "Ctrl+Shift+."
+    ],
     "user_guide_section": "writing-and-editing"
   },
   {
@@ -1352,7 +1405,7 @@
     "title": "Insert Horizontal Rule",
     "body": "Insert a horizontal rule (a divider line) at the cursor. Format-aware: it writes Markdown in a Markdown document and HTML in an HTML document.",
     "keystrokes": [
-      "Ctrl+Alt+H"
+      "Ctrl+Alt+-"
     ],
     "user_guide_section": "writing-and-editing"
   },
@@ -1397,7 +1450,7 @@
     "title": "Insert HTML Tag...",
     "body": "Insert an HTML tag around the selection or at the cursor, chosen from a prompt.",
     "keystrokes": [
-      "Ctrl+Shift+Grave, H"
+      "QUILL Key + H"
     ],
     "user_guide_section": "writing-and-editing"
   },
@@ -1405,6 +1458,9 @@
     "id": "format.insert_markdown_tag",
     "title": "Insert Markdown Tag...",
     "body": "Wrap the selection in a Markdown construct you choose, such as bold, italic, or a link.",
+    "keystrokes": [
+      "Ctrl+Alt+I"
+    ],
     "user_guide_section": "writing-and-editing"
   },
   {
@@ -1447,36 +1503,54 @@
     "id": "format.join_lines",
     "title": "Join Lines",
     "body": "Join the current line with the next, replacing the line break with a single space.",
+    "keystrokes": [
+      "Ctrl+Alt+Shift+J"
+    ],
     "user_guide_section": "writing-and-editing"
   },
   {
     "id": "format.justify",
     "title": "Justify",
     "body": "Spread the paragraph so both edges line up, in a rich text document. The fourth alignment, beside Align Left, Centre and Align Right. Markdown and HTML have no paragraph justification, so in those formats QUILL says where the command does work rather than doing nothing quietly.",
+    "keystrokes": [
+      "Ctrl+J"
+    ],
     "user_guide_section": "writing-and-editing"
   },
   {
     "id": "format.line_spacing_double",
     "title": "Double Line Spacing",
     "body": "Set the paragraphs under the cursor to double line spacing, in a rich text document. Useful for a draft somebody is going to mark up.",
+    "keystrokes": [
+      "Ctrl+2"
+    ],
     "user_guide_section": "writing-and-editing"
   },
   {
     "id": "format.line_spacing_one_and_a_half",
     "title": "One and a Half Line Spacing",
     "body": "Set the paragraphs under the cursor to one and a half line spacing, in a rich text document.",
+    "keystrokes": [
+      "Ctrl+5"
+    ],
     "user_guide_section": "writing-and-editing"
   },
   {
     "id": "format.line_spacing_single",
     "title": "Single Line Spacing",
     "body": "Set the paragraphs under the cursor to single line spacing, in a rich text document. WordPad's own chord, so it is already in your hands if you have used it.",
+    "keystrokes": [
+      "Ctrl+1"
+    ],
     "user_guide_section": "writing-and-editing"
   },
   {
     "id": "format.lower_case",
     "title": "Lower Case",
     "body": "Change the selected text to all lower case.",
+    "keystrokes": [
+      "Ctrl+Shift+K"
+    ],
     "user_guide_section": "writing-and-editing"
   },
   {
@@ -1484,7 +1558,7 @@
     "title": "Manage Abbreviations...",
     "body": "Open the Abbreviation Manager to create, edit, and remove the short triggers that expand into longer text as you type.",
     "keystrokes": [
-      "Ctrl+Shift+Grave, Shift+A"
+      "QUILL Key + Shift+A"
     ],
     "user_guide_section": "writing-and-editing"
   },
@@ -1492,12 +1566,18 @@
     "id": "format.move_line_down",
     "title": "Move Line Down",
     "body": "Move the current line down one position, swapping it with the line below.",
+    "keystrokes": [
+      "Ctrl+Shift+Down"
+    ],
     "user_guide_section": "writing-and-editing"
   },
   {
     "id": "format.move_line_up",
     "title": "Move Line Up",
     "body": "Move the current line up one position, swapping it with the line above.",
+    "keystrokes": [
+      "Ctrl+Shift+Up"
+    ],
     "user_guide_section": "writing-and-editing"
   },
   {
@@ -1545,12 +1625,18 @@
     "id": "format.sentence_case",
     "title": "Sentence Case",
     "body": "Change the selected text to sentence case: capitalise the first letter of each sentence, lower-case the rest.",
+    "keystrokes": [
+      "Ctrl+Alt+Shift+U"
+    ],
     "user_guide_section": "writing-and-editing"
   },
   {
     "id": "format.shrink_font",
     "title": "Shrink Font",
     "body": "Make the selected text one step smaller, in a rich text document, down the same ladder Grow Font climbs.",
+    "keystrokes": [
+      "Ctrl+Shift+,"
+    ],
     "user_guide_section": "writing-and-editing"
   },
   {
@@ -1558,7 +1644,7 @@
     "title": "Switch Document Format",
     "body": "Open the Document Format switcher for the current document: move between Plain text, Markdown, HTML, and Rich Text (RTF) mid-session. The current format is checked and shown in the status bar; conversions warn before anything lossy.",
     "keystrokes": [
-      "Ctrl+Shift+Grave, K"
+      "Alt+Shift+F"
     ],
     "user_guide_section": "format-menu"
   },
@@ -1566,6 +1652,9 @@
     "id": "format.title_case",
     "title": "Title Case",
     "body": "Change the selected text to title case: capitalise the first letter of each significant word.",
+    "keystrokes": [
+      "Ctrl+Shift+T"
+    ],
     "user_guide_section": "writing-and-editing"
   },
   {
@@ -1573,7 +1662,7 @@
     "title": "Toggle Abbreviation Expansion",
     "body": "Turn automatic abbreviation expansion on or off for this session, without deleting any of your abbreviations.",
     "keystrokes": [
-      "Ctrl+Shift+Grave, E"
+      "Alt+Shift+A"
     ],
     "user_guide_section": "writing-and-editing"
   },
@@ -1588,7 +1677,7 @@
     "title": "Toggle Block Comment",
     "body": "Comment out the selection, or uncomment it, using the block-comment syntax of the document's language.",
     "keystrokes": [
-      "Shift+Alt+A"
+      "Ctrl+Shift+/"
     ],
     "user_guide_section": "writing-and-editing"
   },
@@ -1597,7 +1686,7 @@
     "title": "Toggle Bullet List",
     "body": "Turn the current line or selection into a bulleted list, or back into plain lines if it already is one.",
     "keystrokes": [
-      "Ctrl+Alt+7"
+      "Ctrl+Shift+L"
     ],
     "user_guide_section": "writing-and-editing"
   },
@@ -1605,6 +1694,9 @@
     "id": "format.toggle_case",
     "title": "Toggle Case",
     "body": "Cycle the case of the selected text between lower, UPPER, and Title case with each press.",
+    "keystrokes": [
+      "Ctrl+Alt+Shift+N"
+    ],
     "user_guide_section": "writing-and-editing"
   },
   {
@@ -1621,7 +1713,7 @@
     "title": "Toggle Numbered List",
     "body": "Turn the current line or selection into a numbered list, or back into plain lines if it already is one.",
     "keystrokes": [
-      "Ctrl+Alt+8"
+      "QUILL Key + Shift+L"
     ],
     "user_guide_section": "writing-and-editing"
   },
@@ -1635,6 +1727,9 @@
     "id": "format.upper_case",
     "title": "Upper Case",
     "body": "Change the selected text to ALL UPPER CASE.",
+    "keystrokes": [
+      "Ctrl+Shift+U"
+    ],
     "user_guide_section": "writing-and-editing"
   },
   {
@@ -1783,6 +1878,9 @@
     "id": "help.about_quill",
     "title": "About Quill",
     "body": "Show QUILL's version, credits, licences, and the list of supporters, in accessible tabs.",
+    "keystrokes": [
+      "Shift+F1"
+    ],
     "user_guide_section": "help"
   },
   {
@@ -1807,6 +1905,9 @@
     "id": "help.report_bug",
     "title": "Get Help from Support...",
     "body": "Write to support about a problem, a question or an idea. Fill in the form and press Send: your own mail program opens with the whole message ready, addressed to support@community-access.org, with QUILL's version and your Windows version filled in. Nothing is sent until you send it there.",
+    "keystrokes": [
+      "Ctrl+Alt+F2"
+    ],
     "user_guide_section": "help"
   },
   {
@@ -1819,6 +1920,9 @@
     "id": "help.what_can_i_do_here",
     "title": "What Can I Do Here?",
     "body": "Speak a short, context-aware summary of the actions available where your focus currently is.",
+    "keystrokes": [
+      "Ctrl+Alt+Shift+F1"
+    ],
     "user_guide_section": "help"
   },
   {
@@ -1855,15 +1959,15 @@
       "Ctrl+Z - Undo",
       "Ctrl+Y - Redo",
       "Ctrl+F - Find",
-      "F6 - Move to status bar",
+      "F6 - Move to the next region, such as the status bar",
       "F1 - Help on this control",
-      "Ctrl+F1 - Open User Guide",
-      "Shift+F1 - What Can I Do Here?",
+      "Ctrl+Shift+F1 - Open User Guide",
+      "Ctrl+Alt+Shift+F1 - What Can I Do Here?",
       "Ctrl+Alt+1..6 - Convert the caret line to heading level 1..6 (Markdown / HTML only)",
       "Alt+Shift+Down - Move the current heading section below its next sibling (Markdown / HTML only)",
       "Alt+Shift+Up - Move the current heading section above its previous sibling (Markdown / HTML only)",
-      "Ctrl+Alt+7 - Toggle a bullet list at the caret (Markdown / HTML only)",
-      "Ctrl+Alt+8 - Toggle a numbered list at the caret (Markdown / HTML only)"
+      "Ctrl+Shift+L - Toggle a bullet list at the caret (Markdown / HTML only)",
+      "QUILL Key + Shift+L - Toggle a numbered list at the caret (Markdown / HTML only)"
     ],
     "user_guide_section": "writing-and-editing"
   },
@@ -1876,9 +1980,9 @@
   {
     "id": "main.find_regex",
     "title": "Regular Expression Search",
-    "body": "When checked, the search term is treated as a regular expression. For example, '\\\\bword\\\\b' matches whole words and '\\\\d+' matches one or more digits.",
+    "body": "When Search mode is set to Regular expression, the search term is treated as a regular expression. For example, '\\\\bword\\\\b' matches whole words and '\\\\d+' matches one or more digits.",
     "keystrokes": [
-      "Ctrl+F then Alt+X - Toggle regex"
+      "Ctrl+F - Open Find, then choose Regular expression in Search mode"
     ],
     "user_guide_section": "search-and-replace",
     "see_also": [
@@ -1991,9 +2095,6 @@
     "id": "navigate.go_to_page",
     "title": "Go To Page...",
     "body": "Jump to a page number in documents that have pages, such as PDF or paged exports.",
-    "keystrokes": [
-      "Ctrl+Shift+G"
-    ],
     "user_guide_section": "navigation"
   },
   {
@@ -2016,7 +2117,7 @@
     "title": "List Bookmarks...",
     "body": "Show all bookmarks in the current document as a list you can review and jump from.",
     "keystrokes": [
-      "Alt+Shift+B"
+      "Alt+Shift+G"
     ],
     "user_guide_section": "navigation"
   },
@@ -2047,6 +2148,9 @@
     "id": "navigate.next_heading",
     "title": "Next Heading",
     "body": "Move the cursor to the next heading, so you can skim a document by its structure.",
+    "keystrokes": [
+      "Ctrl+Alt+H"
+    ],
     "user_guide_section": "navigation"
   },
   {
@@ -2100,6 +2204,9 @@
     "id": "navigate.previous_heading",
     "title": "Previous Heading",
     "body": "Move the cursor to the previous heading.",
+    "keystrokes": [
+      "Ctrl+Alt+Shift+H"
+    ],
     "user_guide_section": "navigation"
   },
   {
@@ -2130,6 +2237,9 @@
     "id": "navigate.quick_nav",
     "title": "Quick Nav (Go to Anything)",
     "body": "Open Quick Nav, a single prompt that jumps to anything — a heading, bookmark, line, or open document — by typing part of its name.",
+    "keystrokes": [
+      "Ctrl+Shift+Z"
+    ],
     "user_guide_section": "navigation"
   },
   {
@@ -2142,6 +2252,9 @@
     "id": "navigate.set_language",
     "title": "Set Document Language...",
     "body": "Set the language profile for this document, which controls editing behaviour like comment syntax and structure navigation. It does not rename the file.",
+    "keystrokes": [
+      "Ctrl+Alt+F6"
+    ],
     "user_guide_section": "navigation"
   },
   {
@@ -2149,7 +2262,7 @@
     "title": "Set Temporary Bookmark",
     "body": "Drop a single unnamed jump point at the cursor. No dialog appears; setting it again silently moves it, and it is forgotten when QUILL closes. Use it for a quick come-right-back-here marker.",
     "keystrokes": [
-      "Ctrl+J"
+      "Ctrl+Alt+J"
     ],
     "user_guide_section": "navigation"
   },
@@ -2158,7 +2271,7 @@
     "title": "Speak Full Path",
     "body": "Speak the full path of the current file, so you can hear exactly where it lives on disk.",
     "keystrokes": [
-      "Ctrl+Shift+Grave, P"
+      "QUILL Key + P"
     ],
     "user_guide_section": "navigation"
   },
@@ -2167,7 +2280,7 @@
     "title": "Speak Status Summary",
     "body": "Speak a summary of the document's status: position, selection, word count, and current mode.",
     "keystrokes": [
-      "Ctrl+Shift+Grave, Q"
+      "QUILL Key + Q"
     ],
     "user_guide_section": "navigation"
   },
@@ -2176,7 +2289,7 @@
     "title": "Speak Window Title",
     "body": "Speak the window title, which includes the document name and its saved state.",
     "keystrokes": [
-      "Ctrl+Shift+Grave, F"
+      "QUILL Key + F"
     ],
     "user_guide_section": "navigation"
   },
@@ -2196,6 +2309,9 @@
     "id": "power.compute_line_statistics",
     "title": "Compute Line Statistics",
     "body": "Report statistics about the document's lines, such as counts and the longest line, useful for fixed-width or code files.",
+    "keystrokes": [
+      "Ctrl+Alt+W"
+    ],
     "user_guide_section": "power-tools"
   },
   {
@@ -2220,6 +2336,9 @@
     "id": "power.count_occurrences",
     "title": "Count Occurrences",
     "body": "Count how many times a piece of text you type appears in the document, and report the total.",
+    "keystrokes": [
+      "Ctrl+Alt+Shift+F3"
+    ],
     "user_guide_section": "power-tools"
   },
   {
@@ -2232,6 +2351,9 @@
     "id": "power.describe_character",
     "title": "Describe Character at Cursor",
     "body": "Opens an accessible dialog describing the exact character under the cursor: its name, Unicode code point (hexadecimal and decimal), general category, and plain-language notes for invisibles that are easy to miss, such as a no-break space, a zero-width space, a smart quote, a tab, or a line ending. This is the screen-reader descendant of the classic 'Reveal Codes' view.",
+    "keystrokes": [
+      "Ctrl+Shift+C"
+    ],
     "user_guide_section": "tools-for-reading-review-and-inspection"
   },
   {
@@ -2386,7 +2508,6 @@
     "body": "The Preferences dialog lets you customise QUILL's behaviour, appearance, and integrations. Changes in most groups take effect immediately. Use the category list on the left to navigate between groups.",
     "keystrokes": [
       "F1 - Help on focused control",
-      "Ctrl+F1 - Open User Guide",
       "Escape - Close without saving"
     ],
     "user_guide_section": "general-preferences"
@@ -2431,13 +2552,13 @@
     "id": "prefs.indent_with_spaces",
     "title": "Indent with Spaces",
     "body": "When on, pressing Tab inserts spaces instead of a tab character. Useful for code where consistent spacing matters more than actual tab characters.",
-    "user_guide_section": "editing"
+    "user_guide_section": "the-tab-key-indent-or-tab-character"
   },
   {
     "id": "prefs.keyboard_pack",
     "title": "Keyboard Pack",
     "body": "Select the keyboard layout QUILL uses for all shortcuts. 'QUILL Default' is the recommended starting point. You can import custom packs from Tools > Keymap.",
-    "user_guide_section": "keyboard-and-sound"
+    "user_guide_section": "keyboard-packs"
   },
   {
     "id": "prefs.language",
@@ -2456,14 +2577,14 @@
     "title": "Read Aloud Engine",
     "body": "Select the speech engine used when you press the Read Aloud shortcut. 'System (pyttsx3)' works on all Windows machines. Piper, Kokoro, and DECtalk require extra setup.",
     "keystrokes": [
-      "Alt+R - Read Aloud"
+      "QUILL Key + R - Read Aloud"
     ],
     "user_guide_section": "read-aloud"
   },
   {
     "id": "prefs.read_aloud_rate",
     "title": "Read Aloud Rate",
-    "body": "Controls the words-per-minute speed for the selected read-aloud engine. Higher values read faster. Press Alt+R to test the setting with your current text.",
+    "body": "Controls the words-per-minute speed for the selected read-aloud engine. Higher values read faster. Press QUILL Key + R in your document to hear it.",
     "user_guide_section": "read-aloud"
   },
   {
@@ -2488,26 +2609,27 @@
     "id": "prefs.show_line_numbers",
     "title": "Show Line Numbers",
     "body": "When on, a line-number gutter appears on the left side of the editor. Useful for code and structured documents. Toggle quickly with View > Line Numbers.",
-    "user_guide_section": "editing"
+    "user_guide_section": "general-preferences"
   },
   {
     "id": "prefs.soft_wrap",
     "title": "Soft Wrap",
     "body": "When on, long lines wrap visually to fit the window. The document text itself is not changed. Turn off to see each line end only at a hard line break.",
-    "user_guide_section": "editing"
+    "user_guide_section": "general-preferences"
   },
   {
     "id": "prefs.sound_enabled",
     "title": "Sound Effects",
     "body": "When on, QUILL plays short audio cues for mode changes, error events, and important announcements. If you use a screen reader, QUILL adjusts sound behaviour to avoid clashing with speech output.",
-    "user_guide_section": "keyboard-and-sound"
+    "user_guide_section": "sounds-and-turning-them-off"
   },
   {
     "id": "prefs.spellcheck_as_you_type",
     "title": "Spell Check As You Type",
-    "body": "When on, QUILL flags misspellings with an underline as you write. Press Ctrl+Period to jump to the next misspelling.",
+    "body": "When on, QUILL flags misspellings with an underline as you write. Press Ctrl+F7 to jump to the next misspelling, and Ctrl+Shift+F7 for the one before.",
     "keystrokes": [
-      "Ctrl+. - Next misspelling",
+      "Ctrl+F7 - Next misspelling",
+      "Ctrl+Shift+F7 - Previous misspelling",
       "F7 - Open Spell Check dialog"
     ],
     "user_guide_section": "spelling"
@@ -2528,7 +2650,7 @@
     "id": "prefs.tab_width",
     "title": "Tab Width",
     "body": "The number of spaces shown for each tab character. 4 is a common default. This affects display only unless you also enable 'Indent with Spaces'.",
-    "user_guide_section": "editing"
+    "user_guide_section": "the-tab-key-indent-or-tab-character"
   },
   {
     "id": "prefs.theme",
@@ -2935,6 +3057,9 @@
     "id": "tools.check_updates",
     "title": "Check for Updates...",
     "body": "Check whether a newer version of QUILL is available and, if so, show what is new.",
+    "keystrokes": [
+      "Ctrl+Alt+U"
+    ],
     "user_guide_section": "tools"
   },
   {
@@ -3041,7 +3166,7 @@
     "title": "Describe Image...",
     "body": "Describe an image using AI — from a file, the clipboard, or a screen capture — and read the description aloud or insert it as alt text.",
     "keystrokes": [
-      "Ctrl+Shift+Grave, I"
+      "QUILL Key + I"
     ],
     "user_guide_section": "tools"
   },
@@ -3050,7 +3175,7 @@
     "title": "Dictation",
     "body": "Start or stop dictation, turning your speech into text at the cursor using the on-device speech engine.",
     "keystrokes": [
-      "Ctrl+Shift+Grave, D"
+      "QUILL Key + D"
     ],
     "user_guide_section": "tools"
   },
@@ -3058,6 +3183,9 @@
     "id": "tools.dictionary_status",
     "title": "Dictionary Status...",
     "body": "Show which spell-check dictionaries are installed and active, and how to add more languages.",
+    "keystrokes": [
+      "Alt+Shift+;"
+    ],
     "user_guide_section": "tools"
   },
   {
@@ -3065,7 +3193,7 @@
     "title": "Document Intake Report...",
     "body": "Show a report on how the current document was read in — its detected format, encoding, and any extraction issues.",
     "keystrokes": [
-      "Ctrl+Shift+I"
+      "QUILL Key + Shift+I"
     ],
     "user_guide_section": "tools"
   },
@@ -3133,6 +3261,9 @@
     "id": "tools.keymap_editor",
     "title": "Keymap Editor...",
     "body": "Open the Keymap Editor to view, search, and change any keyboard shortcut. You can search by command name or by pressing a shortcut to see what owns it.",
+    "keystrokes": [
+      "Ctrl+Alt+Shift+R"
+    ],
     "user_guide_section": "tools"
   },
   {
@@ -3252,7 +3383,7 @@
     "title": "Post to Mastodon...",
     "body": "Post the current document or selection to Mastodon through one of your connected accounts.",
     "keystrokes": [
-      "Ctrl+Shift+Grave, Shift+P"
+      "QUILL Key + Shift+P"
     ],
     "user_guide_section": "tools"
   },
@@ -3288,7 +3419,7 @@
     "title": "Read Aloud Start/Pause",
     "body": "Start reading the document aloud from the cursor, or pause and resume if already reading.",
     "keystrokes": [
-      "Ctrl+Shift+Grave, R"
+      "QUILL Key + R"
     ],
     "user_guide_section": "tools"
   },
@@ -3297,7 +3428,7 @@
     "title": "Read Aloud Stop",
     "body": "Stop reading aloud.",
     "keystrokes": [
-      "Ctrl+Shift+Grave, Shift+R"
+      "QUILL Key + Shift+R"
     ],
     "user_guide_section": "tools"
   },
@@ -3369,7 +3500,7 @@
     "title": "Search in Files...",
     "body": "Search for text across all files in a folder and open results at the exact match.",
     "keystrokes": [
-      "Ctrl+Shift+F"
+      "Ctrl+Alt+Shift+F"
     ],
     "user_guide_section": "tools"
   },
@@ -3377,12 +3508,18 @@
     "id": "tools.share_export",
     "title": "Export and Back Up...",
     "body": "Export your QUILL settings, shortcuts, and data to a backup file you can restore later or move to another machine.",
+    "keystrokes": [
+      "Ctrl+Alt+F11"
+    ],
     "user_guide_section": "tools"
   },
   {
     "id": "tools.share_import",
     "title": "Import or Restore...",
     "body": "Import settings and data from a QUILL backup file, restoring or transferring your setup.",
+    "keystrokes": [
+      "Ctrl+Alt+F12"
+    ],
     "user_guide_section": "tools"
   },
   {
@@ -3457,7 +3594,7 @@
     "title": "New Sticky Note...",
     "body": "Capture a quick sticky note without leaving your document; it is saved to your notes.",
     "keystrokes": [
-      "Ctrl+Shift+Grave, Shift+N"
+      "QUILL Key + Shift+N"
     ],
     "user_guide_section": "tools"
   },
@@ -3541,7 +3678,7 @@
     "title": "Word Count...",
     "body": "Show word, character, line, and paragraph counts for the document or the selection.",
     "keystrokes": [
-      "Ctrl+Shift+W"
+      "Ctrl+Shift+G"
     ],
     "user_guide_section": "tools"
   },
@@ -3578,7 +3715,7 @@
     "title": "Send to Tray",
     "body": "Hide QUILL to the background, keeping it running. Restore it from the tray icon (Windows) or menu-bar item (macOS).",
     "keystrokes": [
-      "Ctrl+Shift+Grave, T"
+      "QUILL Key + T"
     ],
     "user_guide_section": "view-and-display"
   },
@@ -3616,6 +3753,9 @@
     "id": "view.toggle_overwrite_mode",
     "title": "Toggle Overwrite Mode",
     "body": "Switch between inserting text and overwriting existing text as you type, and announce which mode is active.",
+    "keystrokes": [
+      "Ctrl+Alt+Shift+W"
+    ],
     "user_guide_section": "view-and-display"
   },
   {
@@ -3637,6 +3777,9 @@
     "id": "view.toggle_spellcheck_as_you_type",
     "title": "Toggle Spell Check As You Type",
     "body": "Turn spell checking as you type on or off.",
+    "keystrokes": [
+      "Ctrl+Alt+F7"
+    ],
     "user_guide_section": "view-and-display"
   },
   {
@@ -3644,7 +3787,7 @@
     "title": "Toggle Tab Control",
     "body": "Show or hide the document tab strip, which lets you move between open documents.",
     "keystrokes": [
-      "Ctrl+Shift+Grave, Shift+T"
+      "QUILL Key + Shift+T"
     ],
     "user_guide_section": "view-and-display"
   },
@@ -3847,7 +3990,7 @@
     "id": "wizard.keyboard_pack",
     "title": "Keyboard Layout",
     "body": "Choose the keyboard shortcut layout that feels most familiar. QUILL Default uses QUILL's own layout, optimised for screen-reader users. Other packs mimic Word, Notepad++, or VS Code if you are transitioning from those tools.",
-    "user_guide_section": "keyboard-and-sound"
+    "user_guide_section": "keyboard-packs"
   },
   {
     "id": "wizard.profile_choice",
@@ -3865,12 +4008,12 @@
     "id": "wizard.sound_enabled",
     "title": "Sound Effects",
     "body": "Whether QUILL plays audio cues for mode changes and events. QUILL detects your screen reader automatically and adjusts sounds to avoid clashing with speech output. You can adjust this further from Preferences.",
-    "user_guide_section": "keyboard-and-sound"
+    "user_guide_section": "sounds-and-turning-them-off"
   },
   {
     "id": "wizard.spell_enabled",
     "title": "Spell Check as You Type",
-    "body": "When on, QUILL underlines misspelled words as you type and lets you jump between errors with Ctrl+Period. You can turn this off and use the full spell check dialog (F7) instead.",
+    "body": "When on, QUILL underlines misspelled words as you type and lets you jump between errors with Ctrl+F7 and Ctrl+Shift+F7. You can turn this off and use the full spell check dialog (F7) instead.",
     "user_guide_section": "spelling"
   },
   {
@@ -3890,7 +4033,7 @@
     "title": "Word Count Statistics",
     "body": "Shows the word, character, line, paragraph, and sentence count for the document or selection. If you have a selection, the counts reflect only the selected text. Use Ctrl+A to count the whole document.",
     "keystrokes": [
-      "Ctrl+Shift+W - Open Word Count"
+      "Ctrl+Shift+G - Open Word Count"
     ],
     "user_guide_section": "tools-for-reading-review-and-inspection"
   },
@@ -3899,7 +4042,7 @@
     "title": "Word Count",
     "body": "Shows detailed statistics for your document or current selection: words, characters (with and without spaces), lines, paragraphs, and an estimated reading time. If text is selected, counts apply to that selection only.",
     "keystrokes": [
-      "Ctrl+Shift+W - Open Word Count"
+      "Ctrl+Shift+G - Open Word Count"
     ],
     "user_guide_section": "tools-for-reading-review-and-inspection"
   }

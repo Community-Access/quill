@@ -159,6 +159,9 @@ You hear the file's name when it opens, and a save sound when it saves. The
 file is exactly what it was before: the same way of storing letters, the same
 line endings, and the same ending, with or without a blank last line.
 
+Next time you want it, you do not need Ctrl+O at all: **Alt+Shift+1** reopens
+the last document you opened, and **Alt+Shift+0** lists all your recent ones.
+
 **2. Find out where you are.**
 
 1. Press **F6**. You land in the status bar.
@@ -1015,6 +1018,44 @@ You can bring one back in two ways:
 If you had backups switched on before version 1.0, those older copies are in
 the list too.
 
+### Opening something you worked on recently
+
+QUILL Lite remembers the documents you open, newest first, so getting back to
+one never means hunting through folders.
+
+**The quick way.** Press **Alt+Shift+1** to reopen the document you opened most
+recently, **Alt+Shift+2** for the one before that, and so on up to
+**Alt+Shift+9**. The same list is on the File menu, under **Open Recent**: press
+**Alt+F**, then **T**. Each row says the file's name first and then the folder
+it is in, so two files called "notes" are easy to tell apart.
+
+**The whole list.** Press **Alt+Shift+0**, or choose
+**File > Recent Documents...**. A window opens with every document QUILL Lite remembers. Arrow
+to one and press **Enter** to open it. In the same window you can:
+
+- **Pin** a document you come back to often (**Alt+P**). Pinned documents stay
+  at the top of the list, however many others you open after them. On a pinned
+  document the same button says **Unpin**.
+- **Remove from List** (**Alt+R**, or the **Delete** key) takes a document off
+  the list. The file itself is not touched.
+- **Open Containing Folder** (**Alt+F**) shows the file in File Explorer, in its
+  folder.
+- **Clear Unpinned...** (**Alt+L**) empties the list. It asks first, and **No**
+  is the answer if you just press Enter. Pinned documents always stay.
+- **Remember up to this many documents** (**Alt+U**) sets how long the list is,
+  from 1 to 50. Ten is where it starts.
+- **Forget missing files when the app starts** (**Alt+M**) tidies away files
+  that have been deleted from this computer. A file on a USB drive or a network
+  share is kept, because it is usually just unplugged.
+
+If a file has been moved or deleted, its row says "not found". It stays in the
+window so you know what happened, and Remove from List tidies it away. The Open
+Recent menu leaves it out, so the quick keys only ever open something that is
+there.
+
+QUILL has the same window on the same key. The two apps keep separate lists,
+so what you open in one does not show up in the other.
+
 ### Reopening what you had open
 
 When you start QUILL Lite, it can offer you back the saved documents you had
@@ -1116,7 +1157,9 @@ it. Only rich text really converts your document, and it asks first.
 line endings and ending kept, and **Ctrl+Alt+E** changes those on purpose. You
 know what happens when a character will not fit, how a spare copy keeps your
 work safe after a crash, and how **File > Earlier Versions...** brings back an
-older copy once backups are on. QUILL Lite offers your last documents back,
+older copy once backups are on. **Alt+Shift+1** to **Alt+Shift+9** reopen your
+recent documents, and **Alt+Shift+0** shows the whole list, where you can pin
+the ones you keep coming back to. QUILL Lite offers your last documents back,
 only asks when there are several or something has moved, and
 **Alt+Shift+F12** brings that window back whenever you want it. **Ctrl+P**
 prints, **Ctrl+Alt+P** sets up the page, and **Ctrl+Alt+Shift+P** tells you
@@ -1152,6 +1195,38 @@ These are the keys you will use most when you are looking for something:
 When a search reaches the end of the document, it goes back to the top and
 keeps looking, and it tells you it has done so. That little message is worth
 listening for. It is how you know a document has only one match, and not none.
+
+#### What is in the Find and Replace windows
+
+The **Find** window (**Ctrl+F**) opens with your cursor in the box where you
+type what to look for. If you had something selected, it is already there;
+if not, your last search is. Tab past the box and you meet two checkboxes:
+
+- **Match case**: when it is checked, *Cat* and *cat* count as different
+  words.
+- **Whole word only**: when it is checked, *cat* finds the word on its own
+  and not the start of *catalogue*.
+
+After those come the **Search mode** (more about that below) and the buttons.
+**Find next** is the one **Enter** presses, and **Shift+Enter** in the box
+finds the previous match, just like the **Find previous** button. **Close**,
+or **Escape**, puts the window away, and **F3** still remembers what you were
+looking for.
+
+The **Replace** window (**Ctrl+H**) has the same box and checkboxes, plus a
+**Replace with** box for what each match should become. Leave it empty to
+delete the matches. Its buttons are:
+
+- **Find next**, which moves to the next match without changing anything.
+- **Replace**, which changes the match you are on and moves on to the next
+  one, so you can decide one at a time.
+- **Replace all**, which changes every match in the document at once and
+  tells you how many it changed.
+- **Close**. Anything you have already replaced stays replaced, and
+  **Ctrl+Z** takes it back if you change your mind.
+
+Both windows stay open while you work, so you can go back to your document
+and return to them.
 
 #### How many are there?
 
@@ -1308,8 +1383,10 @@ Unlike bookmarks, this history is only kept while the window is open.
 
 ### What you learned, and where to go next
 
-You can find text with **Ctrl+F**, hear how many matches there are, see them
-all in one list, and search for characters you cannot type. **Ctrl+G** takes
+You can find text with **Ctrl+F**, narrow it with Match case and Whole word
+only, replace one match at a time or all at once with **Ctrl+H**, hear how
+many matches there are, see them all in one list, and search for characters
+you cannot type. **Ctrl+G** takes
 you to a line, a bookmark or a heading from one window. Numbered bookmarks
 are still there after you close the document, the temporary bookmark is there
 for a quick trip, and **Alt+Left** takes you back after any jump.
@@ -2177,7 +2254,7 @@ The Insert menu is for anything you put into your document other than typing.
 | **Ctrl+Shift+F2** | Special Character: 357 of them, in 15 groups, searchable by name or code point |
 | **Alt+.** | Emoji: search or browse, with a description of each one |
 | **Shift+Enter** | A line break that does not start a new paragraph |
-| **Ctrl+Alt+I** | Markdown Tag: everything Markdown can write |
+| **Ctrl+Alt+I** | Markdown Tag: everything Markdown can write (Markdown documents only) |
 | **Ctrl+Alt+O** | HTML Tag: 111 tags and 20 whole form fields, searchable by what they do |
 
 Insert sits just before Format on the menu bar, the same as in Word. You put
@@ -2202,14 +2279,16 @@ Emoji work in every kind of document, rich text included.
 
 #### The two tag pickers
 
-There are two tag pickers, one for Markdown and one for HTML. Only one of them
-is ever available: the one that matches your document's language. The other
-stays on the menu but is greyed out, and your screen reader tells you so when
-you arrive on it.
+There are two tag pickers, one for Markdown and one for HTML.
 
-If you press the key for the one that is not available, QUILL Lite tells you
-what kind of document you are in, what it would need to be, and that
-**Ctrl+Alt+F6** is how to change it.
+Markdown Tag appears only in Markdown documents. In a plain or rich text
+document it is not on the Insert menu at all, and if you press **Ctrl+Alt+I**
+there, QUILL Lite just says "Markdown tags are for Markdown documents."
+
+HTML Tag stays on the menu in every document, but it is greyed out unless the
+document is HTML, and your screen reader tells you so when you arrive on it. If
+you press **Ctrl+Alt+O** anyway, QUILL Lite tells you what kind of document you
+are in and that **Ctrl+Alt+F6** is how to change it.
 
 In both pickers, if you have text selected, the tags go around it. If you do
 not, the cursor lands between the opening and closing tags, ready for you to
@@ -2478,7 +2557,11 @@ The menu is always laid out the same way:
 2. A separator, then one row called *Spelling Actions for "wrold"* (with your
    word in it).
 3. The **Thesaurus** and **Dictionary** submenus for the word (see below).
-4. The everyday rows: Undo, Redo, Cut, Copy, Paste, Delete, Select All.
+4. When your cursor is on a web address, two rows for it: **Open** followed by
+   the address, which opens it in your web browser, and **Copy Link
+   Address**. They are there for a plain address, a Markdown link and an HTML
+   link alike, and they are simply not in the menu when there is no link.
+5. The everyday rows: Undo, Redo, Cut, Copy, Paste, Delete, Select All.
 
 Only the number of suggestions changes. Everything after them stays in the
 same order, so you can learn it once.
@@ -2740,7 +2823,8 @@ line by line.
 ### What you learned, and where to go next
 
 **F7** checks the whole document, **Ctrl+F7** hops between mistakes and spells
-each one out, and the Applications key fixes the word you are on. You can
+each one out, and the Applications key fixes the word you are on, or opens
+or copies a web address your cursor is on. You can
 quiet or tune the spelling sounds, and teach QUILL Lite your own words.
 **Shift+F7** opens the thesaurus and puts a better word in place, already in
 the right form, and **Say Word Summary** tells you what it knows without
@@ -3239,8 +3323,9 @@ right side is about starting and stopping.
 | Option | What it does | Starts as |
 |---|---|---|
 | Speech engine | Moonshine, Whisper, Windows speech recognition, or Windows voice typing | Moonshine |
+| Dictation language | English, or Spanish (see "Dictating in Spanish") | English |
 | Automatic punctuation (Moonshine and Whisper) | The engine puts in the marks you do not say | On |
-| Language for Windows speech recognition | Which installed Windows speech language to use; the other engines understand English | Windows default |
+| Language for Windows speech recognition | Which installed Windows speech language to use; the other engines follow the dictation language | Windows default |
 | Microphone | Which microphone to listen on | Windows default |
 | Test Microphone (button) | Four seconds of listening: how loud, and what was heard | (a button) |
 | After each phrase is written, give me | A sound, speech (the words read back), both, or neither | Both |
@@ -3258,6 +3343,54 @@ right side is about starting and stopping.
 Two buttons sit below the options. **Dictation Commands...** opens the full
 list of what you can say. **My Words and Phrases...** saves your settings and
 opens the window described in "Your own words and phrases" above.
+
+#### Dictating in Spanish
+
+You can dictate in Spanish. It's new, so think of it as something to try, and
+let us know how it goes.
+
+**To switch it on**, open Dictation Settings (**Alt+Shift+F6**), move to
+**Dictation language**, choose **Spanish**, and press Enter. To go back,
+choose English the same way.
+
+**What works now:**
+
+- **Your words come out in Spanish**, accents and all. QUILL Lite uses
+  Whisper's multilingual speech model for this. It comes with QUILL Lite, so
+  there is nothing to download. Moonshine only knows English, so in Spanish
+  you get Whisper whichever of the two you chose.
+- **Windows speech recognition** needs Spanish installed in Windows: add
+  Spanish (Spain or Mexico) in Windows Settings, Time and language, Speech. If
+  it isn't there, dictation tells you when you start.
+- **The wake and stop phrases** become "Quill dicta" and "deja de dictar".
+  If you typed your own, yours stay.
+
+**Commands stay in English for now.** "Scratch that", "select that", "new
+paragraph" and the others work just as they do in English. Spanish commands
+will come once a native speaker has checked them.
+
+**Punctuation.** With automatic punctuation on (the usual setting), Whisper
+adds the commas, full stops and question marks for you, so just talk. The
+Spanish punctuation words only work when automatic punctuation is off, or
+with Windows speech recognition. That's because "coma" and "punto" are
+everyday words too, and nobody wants "que coma" turned into a comma. When
+they are on, you can say:
+
+- "coma" for a comma, "punto" (or "punto y seguido") for a full stop, and
+  "punto y aparte" for a full stop and a new paragraph
+- "punto y coma", "dos puntos" and "puntos suspensivos"
+- "abrir interrogación" and "cerrar interrogación" for the question marks at
+  each end, and "abrir exclamación" and "cerrar exclamación" the same way
+- "abrir paréntesis", "cerrar paréntesis", "abrir comillas", "cerrar comillas"
+- "guion", "guion largo" and "arroba"
+- "nueva línea", "nuevo párrafo" and "tabulador"
+
+Say "literal" first to write the word itself: "literal coma" writes *coma*.
+Say "what can I say" while dictating to see the full list.
+
+**It's new, and your feedback helps.** If a word keeps coming out wrong, or
+something doesn't work the way you expect, use **Help > Get Help from
+Support** and tell us what you said and what was written.
 
 ### While you dictate
 
@@ -3698,7 +3831,7 @@ new-connection allowance early. The change applies from your next request. You
 do not need to sign out, reconnect or update anything, and Usage shows the new
 number the next time you open it.
 
-Your support ID is also in **Help > About** and in **Usage**, with a **Copy
+Your support ID is also in **Help > About QUILL Lite** and in **Usage**, with a **Copy
 Support ID** button, if you would rather write from somewhere else.
 
 ### Using your own OpenAI or Google Gemini key
@@ -3774,7 +3907,7 @@ pictures. The free service and an OpenAI key cannot, so with a Gemini key,
   model is answering, that no allowance applies, and an **Open My Usage**
   button that takes you to the usage page of your OpenAI or Google AI Studio
   account, where your requests and charges are listed. There is no Sign Out
-  and no support ID, because you do not need them. **Help > About** likewise
+  and no support ID, because you do not need them. **Help > About QUILL Lite** likewise
   shows the model and that page's address instead of the free allowance.
 - You do not need to connect this computer, and you are not asked to accept
   the free service's agreement. That agreement is about QUILL's servers, and
@@ -3881,7 +4014,7 @@ takes over straight away.
   resets.
 - **Usage** (**Ctrl+Alt+Shift+F9**) opens this same window instead of the free
   allowance, since there is no QUILL count to show and your plan's page is one
-  button away. **Help > About** shows the account and the model instead of the
+  button away. **Help > About QUILL Lite** shows the account and the model instead of the
   free allowance.
 - You do not need to connect this computer to the free service, and you are
   not asked to accept the free service's agreement, because your text never
@@ -4737,6 +4870,10 @@ everywhere.
 If you already have the newest version, a small window tells you so. You always
 get an answer.
 
+Help > About shows your version with a build number, such as 3.2.0 (build 2). The
+build number tells you which build of a version you have: when a fix comes out
+without a new version number, it is a newer build, and Check for Updates offers it.
+
 #### When there is a new version
 
 If there is something newer, the window opens on the release notes for that
@@ -4835,8 +4972,11 @@ had. The next time QUILL Lite starts, it tells you so. Nothing of yours is chang
 and Update History has the details.
 
 To make this possible, QUILL Lite keeps a copy of the installer for the version you
-have. After an update, the previous one is kept until the new version has
-started three times, or for a week, and then it is deleted.
+have: on Beta and Dev for as long as you have that version, and on Stable for a
+week or three starts after each update. That copy takes about 200 MB of disk
+space, which Stable gives back once the week or the three starts are up. After
+an update, the previous installer is kept until the new version has started
+three times, or for a week, and then it is deleted.
 
 #### Coming back to Stable
 
@@ -5219,6 +5359,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Alt+Shift+T** | New Rich Text Document |
 | **Ctrl+Alt+N** | New Plain Text Document |
 | **Ctrl+O** | Open... |
+| **Alt+Shift+0** | Recent Documents... |
 | **Ctrl+S** | Save |
 | **Ctrl+Shift+S** | Save As... |
 | **Ctrl+Alt+Shift+E** | Earlier Versions... |

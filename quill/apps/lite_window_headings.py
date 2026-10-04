@@ -246,6 +246,9 @@ class DocumentHeadingsMixin:
         # The level *and* the text: the level alone says what shape the document
         # is, not where in it the caret has landed.
         self._announce(describe_heading_arrival(level, self.editor.paragraph_text_at(start)))
+        # Latch the arrival, as the plain path does: the caret hook fires on key
+        # release and would otherwise say the same heading a second time.
+        self.sync_structure_announcer()
 
     def cmd_next_heading(self) -> None:
         self._navigate_heading(reverse=False)

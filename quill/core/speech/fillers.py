@@ -59,7 +59,9 @@ UNIVERSAL_FILLER_WORDS: frozenset[str] = frozenset({
 #: keep it as text.
 _GATED_FILLERS: dict[str, frozenset[str]] = {
     "en": frozenset({"um", "er", "erm", "mm", "mhm", "uh-huh", "mm-hmm"}),
-    "es": frozenset({"eh", "este", "em"}),
+    # Not "este": it is also the everyday word "this" (este libro), and
+    # dictation in Spanish would lose it (dict.md 9, 2026-10-04).
+    "es": frozenset({"eh", "em"}),
     "fr": frozenset({"euh", "ben", "hein"}),
     "de": frozenset({"äh", "ähm", "öh", "öhm", "mh"}),
     "pt": frozenset({"é", "eh", "ãh", "hã"}),

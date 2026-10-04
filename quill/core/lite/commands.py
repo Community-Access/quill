@@ -106,6 +106,7 @@ COMMANDS: list[CommandRow] = [
     ("&File", "New &Rich Text Document", "Alt+Shift+T", "cmd_new_rich", ""),
     ("&File", "New P&lain Text Document", "Ctrl+Alt+N", "cmd_new_plain", ""),
     ("&File", "&Open...", "Ctrl+O", "cmd_open", ""),
+    ("&File", "Recent &Documents...", "Alt+Shift+0", "cmd_recent_documents", ""),
     ("&File", "", "", "", "sep"),
     ("&File", "&Save", "Ctrl+S", "cmd_save", ""),
     ("&File", "Save &As...", "Ctrl+Shift+S", "cmd_save_as", ""),
@@ -513,12 +514,11 @@ COMMANDS: list[CommandRow] = [
     # HTML kinds, a tag picker for each, and no way to make it (bad.md 4.2).
     ("&Insert", "Lin&k...", "Ctrl+K", "cmd_insert_link", ""),
     ("&Insert", "", "", "", "sep"),
-    # The two tag pickers. Exactly one of them is ever enabled -- whichever the
-    # document's language is -- and the other is *dimmed rather than hidden*,
-    # because a row that is present and greyed announces itself as unavailable
-    # the moment a reader touches it, while a row that has vanished leaves
-    # somebody hunting a menu for a feature they know exists. See
-    # DocumentMarkupMixin and MARKUP_COMMANDS.
+    # The two tag pickers. Markdown Tag is on the menu only in a Markdown
+    # document, in both editors (owner's decision, 2026-10-04: "unavailable" in
+    # rich and plain documents was a row with no use there), and its key still
+    # says why outside one. HTML Tag is dimmed outside HTML. See
+    # quill/ui/markdown_tag_row.py, DocumentMarkupMixin and MARKUP_COMMANDS.
     #
     # The keys are two free neighbours rather than mnemonics, and that is an
     # admission rather than a design: M, H, T and G were all bound years ago, and

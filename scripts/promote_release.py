@@ -23,6 +23,11 @@ the promotion. ``--dry-run`` prints the list and changes nothing.
 * P11 a warning when going back to the previous Stable will need a saved copy
 * P12 the documentation gates pass (``scripts/check_docs_artifacts.py``)
 
+For Stable, the notes are rolled up from the Beta sections since the current
+Stable build (``scripts/rollup_release_notes.py``; ``--dry-run`` prints them),
+unless ``--notes-file`` gives them; they become the GitHub release body and the
+feed's ``notes_summary``.
+
 Then: the GitHub release stops being a prerelease (QUILL's own Stable release
 also becomes "Latest"), its title says when it was promoted, the feed lists it
 on the new channel with a fresh 90-day expiry, and a line goes into
@@ -53,6 +58,7 @@ from quill.core.updater.feed_publish import (  # noqa: E402
     promote,
     promotion_checks,
 )
+from quill.core.updater.notes_rollup import notes_summary  # noqa: E402
 from quill.tools import release_feed as rf  # noqa: E402
 
 DocsGate = Callable[[], bool]
@@ -81,16 +87,6 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def _repo_of(feed: ReleaseFeed, version: str) -> str:
-    release = feed.release(version)
-    if release is not None:
-        for asset in release.assets:
-            parts = asset.url.split("/")
-            if len(parts) > 4 and parts[2] == "github.com":
-                return f"{parts[3]}/{parts[4]}"
-    return rf.MAIN_REPO
-
-
 def gather_checks(
     args: argparse.Namespace,
     *,
@@ -113,7 +109,7 @@ def gather_checks(
     if release is None:
         return feed, checks
     tag = rf.tag_for(args.app, args.version)
-    repo = _repo_of(feed, args.version)
+    repo = rf.repo_of(feed, args.version)
     feed_path = rf.feed_dir(root) / f"{args.app}.json"
     checks.append(Check("P3s", "the feed's signature is valid", rf.feed_signature_ok(feed_path)))
     try:
@@ -141,15 +137,16 @@ def gather_checks(
         else:
             checks.append(Check("P5", "Authenticode", True, "not required for this promotion"))
     checks.append(Check("P2", "every file matches the feed", not mismatched, "; ".join(mismatched)))
-    names_ok = all(args.version in a.name for a in release.assets if a.kind != "build-info")
+    # A build (3.2.0+2) is promoted as itself, but its files, changelog section
+    # and sign-off sheet carry the release number alone (3.2.0).
+    number = rf.file_version_text(args.version)
+    names_ok = all(number in a.name for a in release.assets if a.kind != "build-info")
     checks.append(Check("P6", "tag, version and file names agree", names_ok and release.tag == tag))
     checks.append(
-        Check(
-            "P8", "the changelog has this version", rf.changelog_has(args.app, args.version, root)
-        )
+        Check("P8", "the changelog has this version", rf.changelog_has(args.app, number, root))
     )
     if args.to == "stable":
-        problems = rf.signoff_problems(args.app, args.version, root)
+        problems = rf.signoff_problems(args.app, number, root)
         checks.append(Check("P9", "screen-reader sign-off", not problems, "; ".join(problems)))
     checks.append(Check("P12", "documentation gates", docs_gate()))
     return feed, checks
@@ -175,6 +172,23 @@ def _authenticode(folder: Path, assets: object) -> Check:
     return Check("P5", "Authenticode-signed installers", not unsigned, ", ".join(unsigned))
 
 
+def _rolled_up(
+    args: argparse.Namespace, feed: ReleaseFeed, root: Path, out: Callable[[str], None]
+) -> str:
+    """Stable's "What's new since" notes, printed (plan 4.5); "" for Beta or a notes file."""
+    if args.to != "stable" or args.notes_file:
+        return ""
+    result, problems = rf.rolled_up_notes(args.app, args.version, feed=feed, root=root)
+    for problem in problems:
+        out(f"Note: {problem}")
+    if not result.merged:
+        return ""
+    text = result.markdown()
+    out("Stable release notes (the same as scripts/rollup_release_notes.py):")
+    out(text.rstrip())
+    return text
+
+
 def run(
     argv: list[str] | None = None,
     *,
@@ -197,10 +211,14 @@ def run(
     if stopped:
         out(f"Not promoted: {len(stopped)} check(s) failed.")
         return 1
+    rolled = _rolled_up(args, feed, root, out)
     if args.dry_run:
         out(f"Dry run: every check passed; {args.app} {args.version} can go to {args.to}.")
         return 0
-    notes = args.notes_file.read_text(encoding="utf-8") if args.notes_file else ""
+    if args.notes_file:
+        notes = args.notes_file.read_text(encoding="utf-8")
+    else:
+        notes = notes_summary(rolled) if rolled else ""
     feed = promote(
         feed,
         args.version,
@@ -210,11 +228,13 @@ def run(
         notes_summary=notes,
     )
     tag = rf.tag_for(args.app, args.version)
-    repo = _repo_of(feed, args.version)
+    repo = rf.repo_of(feed, args.version)
     if args.to == "stable" and repo == rf.MAIN_REPO:
         title = f"{rf.app(args.app).name} {args.version} (promoted to Stable on {moment:%d %B %Y})"
         latest = "--latest=true" if args.app == "quill" else "--latest=false"
-        gh(["release", "edit", tag, "--repo", repo, "--prerelease=false", latest, "--title", title])
+        command = ["release", "edit", tag, "--repo", repo, "--prerelease=false", latest]
+        command += ["--title", title, *(["--notes", rolled] if rolled else [])]
+        gh(command)
     seed = None if args.no_sign else seed_reader(args.key_file)
     rf.write_feed(feed, seed=seed, root=root)
     reason = f" (shortened soak: {args.skip_soak})" if args.skip_soak else ""

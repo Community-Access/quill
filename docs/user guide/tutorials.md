@@ -129,8 +129,8 @@ The command palette, Go to Anything, and the keyboard reference that is generate
    - Keys: Ctrl+Alt+Shift+A
    - You should hear: A search box, then matches grouped by what they are.
 
-4. **Read the keys you actually have.** The keyboard reference is generated from your current feature profile and your own keybindings, so it always describes the QUILL in front of you -- not the one in a manual written a year ago.
-   - Keys: Ctrl+F1
+4. **Read the keys you actually have.** The keyboard reference is generated from your current feature profile and your own keybindings, so it always describes the QUILL in front of you -- not the one in a manual written a year ago. It lives on the Help menu as Open Keyboard Reference.
+   - Keys: Alt+H, R
    - You should hear: The reference, opening as an ordinary document tab.
 
 5. **Find one key fast.** The key cheat sheet is the filtered version: type what you want to do and it narrows. It is the quickest way to answer what is the key for this without leaving what you are doing.
@@ -181,8 +181,8 @@ F1, the echo of what QUILL just said, why a thing is unavailable, and the undo t
    - Keys: F1
    - You should hear: The window's purpose, then the control's own help.
 
-2. **Ask what you can do here.** Shift+F1 answers What Can I Do Here for the document you are in, which is a different question from what is this control: it is about the work rather than the widget.
-   - Keys: Shift+F1
+2. **Ask what you can do here.** What Can I Do Here answers for the document you are in, which is a different question from what is this control: it is about the work rather than the widget.
+   - Keys: Ctrl+Alt+Shift+F1
    - You should hear: What this kind of document supports, in context.
 
 3. **Re-read what QUILL just said.** Speech is fleeting: an indent depth, a save result, a no matches. The Spoken Echo remembers the last twenty things QUILL announced, newest first, in a dialog you can arrow through, review by character, select and copy.

@@ -56,7 +56,6 @@ from quill.core.lite import features as features_mod
 from quill.core.lite import inbox as inbox_mod
 from quill.core.lite import keymap as keymap_mod
 from quill.core.lite import recovery as recovery_mod
-from quill.core.lite import settings as settings_mod
 from quill.core.lite.open_prepare import prepare_in_background
 from quill.core.lite.paths import data_dir
 from quill.core.windows_editor import translate_notepad_argv
@@ -126,7 +125,7 @@ class QuillLiteApp(
     def OnInit(self) -> bool:  # noqa: N802 - wx API shape
         self.SetAppName(APP_ID)
         self.data_dir = data_dir()
-        self.settings = settings_mod.load()
+        self.settings = self._load_settings()
         self._settings_baseline = copy.deepcopy(self.settings)  # F-11: merge on save
         # Here and not in __init__, where it was until 2026-09-17 and where it
         # read self.settings **before OnInit had loaded it** -- so constructing

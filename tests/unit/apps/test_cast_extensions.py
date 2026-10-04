@@ -9,6 +9,10 @@ import pytest
 
 wx = pytest.importorskip("wx")
 
+#: Serialized onto one worker under ``-n --dist loadgroup``: this file builds a
+#: real QUILL Cast window, which registers the system-wide global hotkeys
+#: (RegisterHotKey is per-desktop, not per-process).
+#: See ``pytest_collection_modifyitems`` in ``tests/conftest.py``.
 pytestmark = pytest.mark.machine_global
 
 

@@ -25,7 +25,8 @@ class MediaPlayerMenuMixin:
         # The app's identity constants stay in quill.apps.player, which
         # imports THIS module -- so they are read at call time; a top-level
         # import back into it would be a cycle.
-        from quill.apps.player import _REPO, _TITLE, _VERSION
+        from quill.apps.player import _BUILD, _REPO, _TITLE, _VERSION
+        from quill.core.app_version import installed_version
 
         menu_bar = wx.MenuBar()
 
@@ -185,7 +186,9 @@ class MediaPlayerMenuMixin:
         self.frame.Bind(
             wx.EVT_MENU,
             lambda _e: self.check_for_app_updates(
-                repo_slug=_REPO, current_version=_VERSION, app_key="player"
+                repo_slug=_REPO,
+                current_version=installed_version(_VERSION, build=_BUILD),
+                app_key="player",
             ),
             id=updates_id,
         )
@@ -214,10 +217,11 @@ class MediaPlayerMenuMixin:
     # own row, and nothing else in the app reads it.
 
     def _show_about(self) -> None:
-        from quill.apps.player import _TITLE, _VERSION
+        from quill.apps.player import _BUILD, _TITLE, _VERSION
+        from quill.core.app_version import describe_version
 
         self._show_message_box(
-            f"{_TITLE} {_VERSION}\n\n"
+            f"{_TITLE} {describe_version(_VERSION, build=_BUILD)}\n\n"
             "The accessible QUILL media player: audiobooks and audio with chapter "
             "navigation, resume, bookmarks, and precise Go to Position -- offline, "
             "keyboard- and screen-reader-first.\n\nSupport: support@community-access.org",

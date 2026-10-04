@@ -44,6 +44,7 @@
   "quill/ui/radio/download_runner.py::clear_all": "no-announce",
   "quill/ui/radio/favorite_actions.py::remove_all_favorites": "counted",
   "quill/ui/radio/favorites_manager_dialog.py::FavoritesManagerDialog._on_remove_all": "counts-elsewhere",
+  "quill/ui/radio/local_media_window_commands.py::LocalMediaCommandsMixin.cmd_select_all": "counted",
   "quill/ui/radio/recordings_manager_dialog.py::RecordingsManagerDialog._on_stop_all_recordings": "counted",
   "quill/ui/radio/search_sources_dialog.py::SearchSourcesDialog._set_all": "counts-elsewhere",
   "quill/ui/radio/youtube_playlist_dialog.py::YouTubePlaylistDialog._on_add_all": "counts-elsewhere"

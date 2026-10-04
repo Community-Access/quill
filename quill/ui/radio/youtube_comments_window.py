@@ -21,6 +21,7 @@ from collections.abc import Callable
 from typing import Any
 
 from quill.core.radio import youtube_comments as yc
+from quill.ui.surface_lifetime import surface_tasks
 
 TITLE = "YouTube Comments"
 
@@ -54,7 +55,9 @@ class YouTubeCommentsWindow:
         self.account_app = account_app
         self._title = video_title.strip() or "this video"
         self._page_url = page_url
-        self._task_manager = task_manager
+        # Tied to the frame, so a page that arrives after the window is gone
+        # cannot land in its controls (F-02).
+        self._task_manager = surface_tasks(task_manager, lambda: getattr(self, "frame", None))
         self._announce = announce
         self._copy_text = copy_text
         self._on_failure = on_failure or (lambda _m: None)

@@ -38,7 +38,13 @@ from typing import Any
 import wx
 
 from quill.core.app_version import installed_version
-from quill.core.lite import APP_NAME, APP_VERSION, RELEASE_ASSET_PREFIX, RELEASE_REPO
+from quill.core.lite import (
+    APP_BUILD,
+    APP_NAME,
+    APP_VERSION,
+    RELEASE_ASSET_PREFIX,
+    RELEASE_REPO,
+)
 from quill.ui.dialog_contract import show_message_box, show_modal_dialog
 
 __all__ = [
@@ -122,7 +128,7 @@ def check_for_updates(window: Any, *, silent_no_update: bool = False) -> None:
 
         # The installer's version, not the runtime's code constant: a
         # sibling's newer runtime must never make this copy look up to date.
-        current = installed_version(APP_VERSION)
+        current = installed_version(APP_VERSION, build=APP_BUILD)
         # The release channel decides what may be offered, and the newest by
         # version wins -- never GitHub's list order.
         result = evaluate("quilllite", current, list(releases))
@@ -247,7 +253,7 @@ def _confirm_update_started(app: Any) -> None:
     confirm_after_start(
         app_key="quilllite",
         app_name=APP_NAME,
-        version=installed_version(APP_VERSION),
+        version=installed_version(APP_VERSION, build=APP_BUILD),
         updates_dir=app_data_dir() / "updates",
         announce=getattr(target, "_announce", lambda _msg: None),
     )
@@ -279,7 +285,7 @@ def open_release_channel_for(window: Any, *, check: bool = True) -> None:
     open_release_channel(
         window,
         app_key="quilllite",
-        installed_version=installed_version(APP_VERSION),
+        installed_version=installed_version(APP_VERSION, build=APP_BUILD),
         show_modal=show_modal_dialog,
         announce=getattr(window, "_announce", lambda _msg: None),
         check_now=(lambda: check_for_updates(window)) if check else None,

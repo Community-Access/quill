@@ -78,6 +78,25 @@ _SCAN_GLOBS: tuple[str, ...] = (
 #: Surface constructions whose titles the scan cannot resolve, with the
 #: reason they are fine. Keyed ``<module>::<qualname>``.
 TITLE_EXEMPT: dict[str, str] = {
+    # The release-channel windows, gated here for all four apps. Each title is
+    # built by quill.core.updater.wording (chooser_title, history_title,
+    # risk_title, RETURN_SAFE_TITLE / RETURN_UNSAFE_TITLE) and every app's
+    # catalogue merges wording.window_titles(<its name>), so the builder and
+    # the F1 paragraph cannot disagree. Seen by the scan since 2026-10-04, when
+    # it learned super().__init__(title=...).
+    "quill/ui/updates/release_channel_dialog.py::ReleaseChannelDialog.__init__": (
+        "chooser_title(app_name); in every catalogue via wording.window_titles"
+    ),
+    "quill/ui/updates/update_history_dialog.py::UpdateHistoryDialog.__init__": (
+        "history_title(app_name); in every catalogue via wording.window_titles"
+    ),
+    "quill/ui/updates/channel_risk_dialog.py::RiskDialog.__init__": (
+        "risk_title(app_name, channel) for Beta and Dev; in every catalogue via "
+        "wording.window_titles"
+    ),
+    "quill/ui/updates/return_to_stable_dialog.py::ReturnToStableDialog.__init__": (
+        "RETURN_SAFE_TITLE or RETURN_UNSAFE_TITLE; in every catalogue via wording.window_titles"
+    ),
     "quill/ui/radio/first_run_dialog.py::RadioFirstRunDialog.__init__": (
         "titles come from onboarding.SCREEN_TITLES; all three screens are in "
         "surface_help.PURPOSES, pinned by test_surface_help"

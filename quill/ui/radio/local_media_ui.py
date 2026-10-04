@@ -150,13 +150,14 @@ def _parent(host: Any) -> Any:
     return getattr(app_of(host), "frame", None)
 
 
-def _show(host: Any, dialog: Any, label: str) -> int:
+def show_modal_dialog(host: Any, dialog: Any, label: str) -> int:
+    """Show *dialog* modally through the app's announcing helper."""
     shower = getattr(app_of(host), "_show_modal_dialog", None)
     if callable(shower):
         return int(shower(dialog, label))
-    from quill.ui.dialog_contract import show_modal_dialog
+    from quill.ui import dialog_contract
 
-    return show_modal_dialog(dialog, label)
+    return dialog_contract.show_modal_dialog(dialog, label)
 
 
 def ask_files(host: Any, *, title: str = "Add Media Files") -> list[str]:
@@ -169,7 +170,7 @@ def ask_files(host: Any, *, title: str = "Add Media Files") -> list[str]:
         wildcard=local_media.OPEN_WILDCARD,
         style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST | wx.FD_MULTIPLE,
     ) as chooser:
-        if _show(host, chooser, title) != wx.ID_OK:
+        if show_modal_dialog(host, chooser, title) != wx.ID_OK:
             return []
         return [str(path) for path in chooser.GetPaths()]
 
@@ -179,7 +180,7 @@ def ask_folder(host: Any, *, title: str = "Add a Folder") -> str:
     import wx
 
     with wx.DirDialog(_parent(host), title, style=wx.DD_DIR_MUST_EXIST) as chooser:
-        if _show(host, chooser, title) != wx.ID_OK:
+        if show_modal_dialog(host, chooser, title) != wx.ID_OK:
             return ""
         return str(chooser.GetPath())
 
@@ -189,7 +190,7 @@ def ask_text(host: Any, prompt: str, title: str, value: str = "") -> str | None:
     import wx
 
     with wx.TextEntryDialog(_parent(host), prompt, title, value=value) as entry:
-        if _show(host, entry, title) != wx.ID_OK:
+        if show_modal_dialog(host, entry, title) != wx.ID_OK:
             return None
         return str(entry.GetValue()).strip()
 
@@ -201,7 +202,7 @@ def confirm(host: Any, question: str, title: str) -> bool:
     with wx.MessageDialog(
         _parent(host), question, title, style=wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION
     ) as box:
-        return _show(host, box, title) == wx.ID_YES
+        return show_modal_dialog(host, box, title) == wx.ID_YES
 
 
 # --- adding ---------------------------------------------------------------------

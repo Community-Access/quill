@@ -93,7 +93,13 @@ configure_file(
 # expect WORD WORD WORD WORD) is a derived value -- we split the dotted
 # string here rather than asking the caller to pass it twice.
 if(WIN32)
-    string(REPLACE "." "," PRODUCT_VERSION_COMMA "${PRODUCT_VERSION}")
+    # PRODUCT_FILE_VERSION is X.Y.Z.B -- the version plus the app's build number
+    # (docs/release/RELEASE.md, "Build numbers"); older callers pass only the
+    # dotted version, which is what it falls back to.
+    if(NOT DEFINED PRODUCT_FILE_VERSION OR "${PRODUCT_FILE_VERSION}" STREQUAL "")
+        set(PRODUCT_FILE_VERSION "${PRODUCT_VERSION}")
+    endif()
+    string(REPLACE "." "," PRODUCT_VERSION_COMMA "${PRODUCT_FILE_VERSION}")
     set(PRODUCT_ICON_PATH "")
     if(DEFINED PRODUCT_ICON AND EXISTS "${PRODUCT_ICON}")
         # Convert the path the user passed to a Windows backslash form

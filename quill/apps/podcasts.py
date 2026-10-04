@@ -19,7 +19,7 @@ from quill.apps.podcasts_extensions import CastExtensionsMixin
 from quill.apps.podcasts_go_to import CastGoToMixin
 from quill.apps.podcasts_help_surfaces import CastHelpSurfacesMixin
 from quill.apps.podcasts_library_actions import CastLibraryActionsMixin
-from quill.apps.podcasts_menu import APP_REPO, APP_TITLE, APP_VERSION, CastMenuBarMixin
+from quill.apps.podcasts_menu import APP_BUILD, APP_REPO, APP_TITLE, APP_VERSION, CastMenuBarMixin
 from quill.apps.podcasts_now_playing import CastNowPlayingMixin
 from quill.apps.podcasts_preferences import CastPreferencesMixin
 from quill.apps.podcasts_routes import CastPlaceRoutesMixin
@@ -635,8 +635,10 @@ class PodcastsAppFrame(
         self._announce("QUILL Cast is still running in the system tray.")
 
     def _show_about(self) -> None:
+        from quill.core.app_version import describe_version
+
         self._show_message_box(
-            f"{_TITLE} {_VERSION}\n"
+            f"{_TITLE} {describe_version(_VERSION, build=APP_BUILD)}\n"
             "Podcasts from Quill, as a standalone app.\n\n"
             "Runs the same podcast feature code as QUILL itself and shares "
             "its settings, podcasts, and downloads.\n"

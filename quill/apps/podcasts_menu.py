@@ -22,10 +22,12 @@ import wx
 #: import the other direction would need.
 APP_TITLE = "QUILL Cast"
 APP_VERSION = "2.0.0"
+APP_BUILD = 1  # this version's build (docs/release/RELEASE.md, "Build numbers")
 APP_REPO = "Community-Access/quill"
 
 _TITLE = APP_TITLE
 _VERSION = APP_VERSION
+_BUILD = APP_BUILD
 _REPO = APP_REPO
 
 
@@ -575,16 +577,16 @@ class CastMenuBarMixin:
         The keys were chosen against what Cast has already bound, in the menu
         literals *and* in ``APP_KEYMAPS["cast"]``: Ctrl+Alt+Up and Ctrl+Alt+Down
         are free (Ctrl+Up/Down is volume, Ctrl+Shift+Up/Down is speed,
-        Ctrl+Alt+Left/Right is chapters), and Ctrl+Alt+Shift+Q is free and sits
-        beside Ctrl+Shift+Q, which opens the queue this steps through.
-        Ctrl+Alt+Shift+N would have read better for "and Next" and is already
-        ``app.import_setup``.
+        Ctrl+Alt+Left/Right is chapters). Mark as Played and Next is Next in
+        Queue with Shift added, and its key is in ``APP_KEYMAPS["cast"]``: its
+        old Ctrl+Alt+Shift+Q was QUILL's system-wide show/hide key.
         """
         queue_run = wx.Menu()
         next_id, prev_id, played_next_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
         queue_run.Append(next_id, "&Next in Queue\tCtrl+Alt+Down")
         queue_run.Append(prev_id, "P&revious in Queue\tCtrl+Alt+Up")
-        queue_run.Append(played_next_id, "Mark as Played and Ne&xt\tCtrl+Alt+Shift+Q")
+        label = self._menu_label("Mark as Played and Ne&xt", "podcasts.mark_played_and_next")
+        queue_run.Append(played_next_id, label)
         episode_menu.AppendSubMenu(queue_run, "Pla&y Queue Run")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_next_in_queue(), id=next_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_previous_in_queue(), id=prev_id)

@@ -24,7 +24,6 @@ from typing import Any
 __all__ = [
     "TITLE",
     "ask_tags",
-    "build_dialog",
     "details_for",
     "edit_playing",
     "edit_row_tags",
@@ -38,11 +37,22 @@ TITLE = "Edit Station Tags"
 AskTags = Callable[[Any, str, str, str], "str | None"]
 
 
-def build_dialog(parent: Any, station_name: str, current: str, directory: str) -> tuple[Any, Any]:
-    """The dialog and its tags box, built but not shown."""
+def ask_tags(
+    parent: Any,
+    station_name: str,
+    current: str,
+    directory: str,
+    *,
+    show: Callable[[Any, str], int] | None = None,
+) -> str | None:
+    """Show the dialog. The typed text, or ``None`` when cancelled.
+
+    *show* replaces the announcing modal helper; tests pass one that inspects
+    the built dialog and answers for it.
+    """
     import wx
 
-    from quill.ui.dialog_contract import apply_modal_ids
+    from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
 
     dialog = wx.Dialog(parent, title=TITLE)
     root = wx.BoxSizer(wx.VERTICAL)
@@ -102,20 +112,10 @@ def build_dialog(parent: Any, station_name: str, current: str, directory: str) -
         cancel_label="Cancel",
         escape_id=wx.ID_CANCEL,
     )
-    return dialog, tags_box
-
-
-def ask_tags(parent: Any, station_name: str, current: str, directory: str) -> str | None:
-    """Show the dialog. The typed text, or ``None`` when cancelled."""
-    import wx
-
-    from quill.ui.dialog_contract import show_modal_dialog
-
-    dialog, tags_box = build_dialog(parent, station_name, current, directory)
     try:
         tags_box.SetFocus()
         tags_box.SetInsertionPointEnd()
-        if show_modal_dialog(dialog, TITLE) != wx.ID_OK:
+        if (show or show_modal_dialog)(dialog, TITLE) != wx.ID_OK:
             return None
         return str(tags_box.GetValue() or "")
     finally:

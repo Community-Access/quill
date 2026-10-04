@@ -27,6 +27,7 @@ param(
     # A Dev build's version (dev-builds.yml): 3.3.0-dev.20261003.1. Release
     # builds never pass it; the literal below stays the app's real version.
     [string]$DevVersion = "",
+    [int]$Build = 0,
     [switch]$Sign
 )
 
@@ -44,6 +45,11 @@ if (-not $QuillRepo) {
 $QuillRepo = Resolve-QuillRepo -Preferred $QuillRepo
 $Python = Resolve-QuillPython -Preferred $Python -QuillRepo $QuillRepo
 $Iscc = Resolve-QuillIscc -Preferred $Iscc
+
+# The build number: -Build, else the next one after the newest tag published
+# for $version. It must equal the app's build constant in source, which the
+# runtime carries; the installer records it and Windows shows X.Y.Z.B.
+$build, $fileVersion = Resolve-QuillReleaseBuild -QuillRepo $QuillRepo -Python $Python -App "cast" -Version $version -Build $Build -Dev:([bool]$DevVersion) -OfflineOk:$SkipPublishedCheck
 Assert-QuillBuildEnv -Python $Python -QuillRepo $QuillRepo
 
 # GATE-SIBVER (2026-10-03, as Radio's script): the runtime this build ships carries
@@ -175,7 +181,7 @@ if ($LASTEXITCODE -ne 0) { throw "Code signing (payload) failed." }
 # Release channels: a portable copy names its own version, as the installer's
 # quill-app-version.ini does -- a Dev build's version is not the code constant,
 # and the update helper's health check waits for exactly this version to start.
-Set-Content -LiteralPath (Join-Path $appDir "quill-app-version.ini") -Value "[app]`r`nversion=$version" -Encoding ascii
+Set-Content -LiteralPath (Join-Path $appDir "quill-app-version.ini") -Value "[app]`r`nversion=$version`r`nversion_build=$version+$build" -Encoding ascii
 $zipPath = Join-Path $repoRoot "dist\QUILL-Cast-Portable-$version.zip"
 if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
 Compress-Archive -Path $appDir -DestinationPath $zipPath
@@ -207,9 +213,9 @@ New-Item -ItemType Directory -Force (Join-Path $launcherDir "docs") | Out-Null
 Copy-Item (Join-Path $appDir "docs\*") (Join-Path $launcherDir "docs") -Recurse -Force
 & $Python $signer sign-build $sharedRuntimeDist $launcherDir --label "cast shared payload"
 if ($LASTEXITCODE -ne 0) { throw "Code signing (shared payload) failed." }
-& $Iscc @innoSign "/dAppVersion=$version" (Join-Path $repoRoot "installer\quill-cast-shared.iss") "/O$(Join-Path $repoRoot 'dist')"
+& $Iscc @innoSign "/dAppVersion=$version" "/dAppBuild=$build" "/dAppFileVersion=$fileVersion" (Join-Path $repoRoot "installer\quill-cast-shared.iss") "/O$(Join-Path $repoRoot 'dist')"
 if ($LASTEXITCODE -ne 0) { throw "ISCC (Setup-Shared) failed with exit code $LASTEXITCODE" }
-& $Iscc @innoSign "/dAppVersion=$version" (Join-Path $repoRoot "installer\quill-cast-lite.iss") "/O$(Join-Path $repoRoot 'dist')"
+& $Iscc @innoSign "/dAppVersion=$version" "/dAppBuild=$build" "/dAppFileVersion=$fileVersion" (Join-Path $repoRoot "installer\quill-cast-lite.iss") "/O$(Join-Path $repoRoot 'dist')"
 if ($LASTEXITCODE -ne 0) { throw "ISCC (Lite) failed with exit code $LASTEXITCODE" }
 # Companion: the runtime-less stick (launcher + icon + docs, ~1 MB).
 $companionZip = Join-Path $repoRoot "dist\QUILL-Cast-Companion-$version.zip"

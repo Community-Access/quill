@@ -407,6 +407,8 @@ class UpdatesMixin:
         current = build_info.resolve_running_version(
             override=getattr(getattr(self, "_updates", None), "current_version", "")
         )
+        if current == build_info.get_short_version():
+            current = build_info.feed_version()  # with its build: "1.0.0 (build 2)"
         open_release_channel(
             self.frame,
             app_key="quill",

@@ -220,7 +220,7 @@ def test_the_microphone_test_records_and_asks_the_engine(monkeypatch) -> None:
     monkeypatch.setitem(sys.modules, "sounddevice", fake)
     monkeypatch.setattr(local_recognizer, "input_device_for", lambda _name: None)
     monkeypatch.setattr(
-        local_recognizer, "transcribe", lambda engine, _samples: f"heard by {engine}"
+        local_recognizer, "transcribe", lambda engine, _samples, _lang="en": f"heard by {engine}"
     )
 
     peak, heard = local_recognizer.record_and_hear("", "moonshine", seconds=0.1)

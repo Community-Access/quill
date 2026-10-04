@@ -55,18 +55,21 @@ The chapters follow the order you are likely to want things.
    and what happens when the internet hiccups.
 9. **Chapter 9: Podcasts, books, video and more.** Podcasts, downloads,
    television, weather radio and Spotify.
-10. **Chapter 10: YouTube.** Searching YouTube, playing and recording it,
+10. **Chapter 10: Local Media, your own music and audiobooks.** Playlists of
+    the music, audiobooks and video on your computer: building them, putting
+    them in order, and playing them from any window.
+11. **Chapter 11: YouTube.** Searching YouTube, playing and recording it,
     channels, playlists, comments, being told about new videos, and your own
     YouTube sign-in.
-11. **Chapter 11: The ACB Media schedule and reminders.** What is on, what is
+12. **Chapter 12: The ACB Media schedule and reminders.** What is on, what is
     coming up, and being told about it.
-12. **Chapter 12: The Community menu.** Ask QUILL Radio, your ChatGPT plan,
+13. **Chapter 13: The Community menu.** Ask QUILL Radio, your ChatGPT plan,
     ACB Media podcasts, Community Picks, and suggesting a station.
-13. **Chapter 13: Making Quill Radio yours.** Preferences, keys, the Command
+14. **Chapter 14: Making Quill Radio yours.** Preferences, keys, the Command
     Palette, quiet hours and more.
-14. **Chapter 14: Safety nets.** Undo, why something is dimmed, Recent
+15. **Chapter 15: Safety nets.** Undo, why something is dimmed, Recent
     Problems, Activity, and what Quill Radio connects to.
-15. **Chapter 15: When you need a hand.** Tutorials, F1 help, updates, Audio
+16. **Chapter 16: When you need a hand.** Tutorials, F1 help, updates, Audio
     Health, support, and answers to common problems.
 
 After the chapters comes the **Keyboard reference**: every key worth knowing,
@@ -80,6 +83,11 @@ heading, and the smaller parts of a section are level 4. In JAWS or NVDA,
 press 2 to jump from chapter to chapter and 3 to move between sections. Shift
 with the number goes back. To see every heading at once, press Insert+F6 in
 JAWS or Insert+F7 in NVDA and choose headings.
+
+Now and then a short note from QUILLBee, QUILLVille's guide, is set apart as a
+quote: a faster key, or something worth knowing before it catches you out. The
+notes are block quotes, so in a web browser Q moves to the next one in JAWS and
+NVDA, and Shift+Q goes back. The guide reads perfectly well if you skip them.
 
 A few ways of writing things that you will meet everywhere:
 
@@ -104,7 +112,7 @@ Quill Radio comes with 41 short guided lessons. Open them with **Help >
 Tutorials...** (Ctrl+Alt+F1). A lesson can do a step for you, notice when you
 have done it yourself, and always shows the keys you actually have. Wherever a
 chapter covers something a lesson walks through, this guide names the lesson,
-so you can practise straight away. Chapter 15 tells you how they work.
+so you can practise straight away. Chapter 16 tells you how they work.
 
 And whenever you wonder what something is for, press **F1**. Every window
 answers with what the window is for and what the control you are on does.
@@ -172,7 +180,7 @@ Next time, open Quill Radio from the Start menu: press the Windows key, type
    in the Favorite stations list.
 5. If it does not open, give it a moment. Since 3.0.4, a message tells you
    what went wrong and what to do. See "If Quill Radio does not start" in
-   Chapter 15.
+   Chapter 16.
 
 One thing catches people out. If you press Enter on `QuillRadio.exe` while you
 are still inside the zip, Windows runs that one file on its own. Quill Radio
@@ -816,7 +824,7 @@ rather than something to learn.
 - **Browse Stations...** (Ctrl+B): the tree of every source. See "Browse
   Stations" in Chapter 6.
 - **Local Media...** (Ctrl+O): your own music, audiobooks and video, in
-  playlists. See "Your own music and audiobooks: Local Media" in Chapter 9.
+  playlists. See Chapter 10, Local Media, your own music and audiobooks.
 - **Update Radio Reading Services...** (Ctrl+Alt+F10): fetches the latest list
   of radio reading services from the RadioBrowser directory and tells you how
   many it found. The list that comes with Quill Radio stays as a backup. Off in
@@ -873,7 +881,7 @@ rather than something to learn.
   Quill Radio writes the startup entry fresh.
 - **Download Preferences...** (Ctrl+Alt+Shift+D): where downloads are saved and
   how they are filed.
-- **Preferences...** (Ctrl+,): see "Preferences" in Chapter 13.
+- **Preferences...** (Ctrl+,): see "Preferences" in Chapter 14.
 - **Send to Tray** (Ctrl+W): hides every Quill Radio window. Playing and
   recording carry on, and the tray icon stays. You should hear "Quill Radio is
   still running in the system tray."
@@ -883,7 +891,7 @@ rather than something to learn.
 #### Edit menu (Alt+E)
 
 - **Undo Last Action** (Ctrl+Z): brings back the last thing you removed or
-  cleared. See "Taking back the last thing you did" in Chapter 14.
+  cleared. See "Taking back the last thing you did" in Chapter 15.
 - **Undo History...** (Ctrl+Alt+Shift+A): the last ten things you can take
   back, each with its own Undo.
 
@@ -982,7 +990,7 @@ tell you so.
 - **Take a Snapshot** (Ctrl+Shift+Alt+H).
 - **Full Screen** (F11).
 - **Read Comments...** (Ctrl+Shift+7): the comments on the YouTube video that
-  is playing. See "Read a video's comments" in Chapter 10.
+  is playing. See "Read a video's comments" in Chapter 11.
 - **Video Size**: a submenu with **Fit** (Ctrl+Alt+4), **50%** (Ctrl+Alt+5),
   **100%** (Ctrl+Alt+6) and **200%** (Ctrl+Alt+7). In this release, Fit gives
   the same size as 100%.
@@ -1012,7 +1020,7 @@ See Chapter 8, Recording.
 - **Community Picks...** (Ctrl+Alt+0) and **Suggest a Station or Podcast...**
   (Ctrl+Alt+9).
 
-See Chapter 11, The ACB Media schedule and reminders, and Chapter 12, The
+See Chapter 12, The ACB Media schedule and reminders, and Chapter 13, The
 Community menu.
 
 #### QuillVille menu (Alt+Q)
@@ -1031,7 +1039,7 @@ A for Audio Studio, I for Quill Inkwell.
 The long keys are only where things start. Each row is a command called
 **QuillVille: Open** and the app's name, and you can give it any key you like
 in **Help > Keyboard Shortcuts...** (Ctrl+Alt+K). See "Keyboard access without
-chords" in Chapter 13.
+chords" in Chapter 14.
 
 #### Help menu (Alt+H)
 
@@ -1040,9 +1048,9 @@ chords" in Chapter 13.
 - **Global Hotkeys...** (Ctrl+Alt+G).
 - **Recent Problems...** (Ctrl+Alt+Shift+P).
 - **Activity...** (Shift+F9) and **Repeat Last Result** (F9). See "Activity and
-  Repeat Last Result" in Chapter 14.
+  Repeat Last Result" in Chapter 15.
 - **Notifications...** (Ctrl+Alt+Shift+F3): everything you have been told
-  about. See "Notifications" in Chapter 11.
+  about. See "Notifications" in Chapter 12.
 - **Quiet Hours...** (Ctrl+Alt+Shift+Z).
 - **Bookmarks...** (Ctrl+Alt+Shift+J).
 - **Export My Setup...** (Ctrl+Alt+Shift+X) and **Import My Setup...**
@@ -1059,12 +1067,12 @@ chords" in Chapter 13.
   Requirements...** (Alt+Shift+F1). Each opens in your web browser.
 - **Check for Updates...** (Ctrl+Alt+U).
 - **Release Channel...**: Stable, Beta or Dev. See "Release channels" in
-  Chapter 15.
+  Chapter 16.
 - **About Quill Radio** (Alt+F1): the version, and where the project lives.
 
 Three commands are only in the Command Palette: **Redeem Unlock Code...**,
 **Repeat Last Announcement** and **Announcement Self-Test...**. See "Other
-help" in Chapter 15.
+help" in Chapter 16.
 
 #### Window menu (Alt+W)
 
@@ -1816,7 +1824,7 @@ When you play a video that has a described track, Quill Radio tells you once,
 and tells you the key.
 
 A YouTube video's transcript, which you can read, search and play from, is in
-Chapter 10, YouTube, under "Transcript, step by step".
+Chapter 11, YouTube, under "Transcript, step by step".
 
 ### Timers
 
@@ -1933,8 +1941,7 @@ After **Search All Sources...**, the branches are:
 
 1. **Favorites**: your own stations and folders.
 2. **Local Media**: your own music, audiobooks and video, in playlists
-   you make. See "Your own music and audiobooks: Local Media" in
-   Chapter 9.
+   you make. See Chapter 10, Local Media, your own music and audiobooks.
 3. **Popular Stations**: ranked by votes over the years.
 4. **Trending Now**: ranked by what people are listening to today.
 5. **Recently Added or Changed**: new stations, and ones whose address was
@@ -2138,7 +2145,7 @@ In this order:
   Source** and **Reset Sources to Default**.
 
 A dimmed item tells you why it is dimmed. See "Why a menu item is dimmed" in
-Chapter 14.
+Chapter 15.
 
 #### The Delete key
 
@@ -2368,7 +2375,7 @@ menu.
 Search Sources decides which directories Search Stations asks. There are
 twelve, all on to begin with: Radio Browser, TuneIn, iHeart, SomaFM,
 SHOUTcast, Live365, TV, Radio Paradise, NOAA Weather Radio, Radio Reading
-Service, Spotify and YouTube. "YouTube in Search Stations" in Chapter 10 says
+Service, Spotify and YouTube. "YouTube in Search Stations" in Chapter 11 says
 what the YouTube one finds.
 
 1. Press **Ctrl+Alt+Shift+U** (**Station > Search Sources...**). The Search
@@ -2546,7 +2553,7 @@ to hear it.
 
 Three kinds of link get extra help:
 
-- **A YouTube link becomes a station.** Chapter 10, YouTube, says how a
+- **A YouTube link becomes a station.** Chapter 11, YouTube, says how a
   YouTube link plays, records and is kept.
 - **A Live365 link is fixed for you.** A Live365 station page, a player link
   such as `player.live365.com/a25891`, or just a station number is turned into
@@ -2877,7 +2884,7 @@ with the computer it runs on.
 
 If you would like your data kept somewhere else, such as a folder that
 OneDrive or Dropbox keeps in step across your computers, use **Data Folder...**
-in Preferences. See "Preferences" in Chapter 13.
+in Preferences. See "Preferences" in Chapter 14.
 
 ### What you learned, and where to go next
 
@@ -3028,7 +3035,7 @@ Preferences.
 
 You can also schedule from Browse Stations: **Schedule Recording...** on a live
 station's menu opens this window with that station filled in. The ACB Media
-schedule can book a programme for you too. See Chapter 11.
+schedule can book a programme for you too. See Chapter 12.
 
 ### Recording Settings, step by step
 
@@ -3092,7 +3099,7 @@ scheduled, none coming up".
 The list keeps itself up to date every couple of seconds, without losing your
 place. It has no Shift+F10 menu. Its menus are **Recordings** (Alt+R, with
 **Close**, Ctrl+W), **Station** and **Window**. To choose what each row says,
-see "What each row says" in Chapter 13.
+see "What each row says" in Chapter 14.
 
 #### Winamp keys in Radio Recordings
 
@@ -3173,8 +3180,8 @@ and its planned end was no more than ten minutes ago, a window titled
 3. Choose **Resume** (Enter) to record the minutes that are left, or **Skip**
    (Escape) to leave it. Resume records from the same station.
 
-If several recordings were interrupted, one question covers them all. It lists
-them, asks "Resume all of them for their remaining time?", and offers **Resume
+If several recordings were interrupted, one window, **Resume Recordings**,
+covers them all. It lists them, asks "Resume all of them for their remaining time?", and offers **Resume
 All** and **Skip All**.
 
 To change your mind later:
@@ -3199,12 +3206,12 @@ has not started yet** walks you through it.
 
 Quill Radio is not only radio. This chapter shows you how to follow podcasts,
 hand an episode over to QUILL Cast, save audiobooks and episodes to keep,
-play your own music and audiobooks in playlists, watch television, find your
-local weather radio, and try Spotify.
+watch television, find your local weather radio, and try Spotify. Your own
+music and audiobooks have a chapter of their own, Chapter 10.
 
 Most of the **More than radio** track of the tutorials belongs to this
 chapter: **Follow a podcast**, **Audiobooks, archives and free music**,
-**Play your own files in playlists**, **Watch television**, **NOAA Weather
+**Watch television**, **NOAA Weather
 Radio**, **Save a copy, and find it on disk** and **Spotify, honestly**.
 
 ### Podcasts in Browse Stations
@@ -3233,6 +3240,12 @@ Worth knowing:
   **Mark All as Played...** (with a "Don't ask me again" box shared with QUILL
   Cast), **Download All Episodes...** and **Remove All Downloads...** (the
   files go, but you still follow the show).
+- **Folders of shows** work here too, the same folders QUILL Cast uses. On a
+  folder under Subscriptions, **Shift+F10** offers **New Folder Inside...**,
+  **Rename Folder...**, **Delete Folder...** and **Check All Feeds Now**.
+  Deleting a folder asks first, and its shows and folders move up a level:
+  nothing is unsubscribed. **Check All Feeds Now** looks for new episodes in
+  every show you follow, straight away, even ones you have paused.
 - When you finish an episode here, the show's unheard count goes down at once.
 - While Subscriptions is empty, it offers **Add a Podcast by URL...**,
   **Import Podcasts from OPML...** and **Search for a Podcast...**.
@@ -3314,7 +3327,7 @@ itself:
 - During quiet hours it still checks, and saves the summary for later.
 - A check that fails goes into Recent Problems.
 - New episodes it finds can also be noted in the Notifications list, so you
-  can look them up later. See "Notifications" in Chapter 11.
+  can look them up later. See "Notifications" in Chapter 12.
 
 If you also use QUILL Cast, the two apps share a note of when each show was
 last checked, so they do not both ask the same podcast.
@@ -3416,206 +3429,12 @@ Preferences.
 
 ### Your own music and audiobooks: Local Media
 
-Quill Radio plays more than the internet. Local Media is where your own files
-live: the music on your computer, the audiobooks you bought, a folder of old
-radio shows, even videos. You put them in playlists, in whatever order you
-like, and Quill Radio plays them one after another.
-
-Nothing is ever copied or moved. A playlist only remembers where each file
-is. Taking something out of a playlist never deletes it from your computer.
-
-#### Open Local Media, step by step
-
-1. Press **Ctrl+O** (**Station > Local Media...**). The Local Media window
-   opens. It is a window of its own, like Radio Recordings, so it is on the
-   Window menu and in the Ctrl+Tab order.
-2. The first time, there is nothing in it yet. Your cursor is already on
-   **Add Media Files...**, and Quill Radio tells you what the two buttons do.
-3. Press **Space** on **Add Media Files...**. A file window opens. Pick one
-   file, or hold **Ctrl** and pick several, and press **Enter**.
-4. You should hear "Made a playlist called", and the name of the folder the
-   files came from. A playlist of tracks from your Abbey Road folder is
-   called Abbey Road, which is what you would have typed anyway.
-
-You can also start from a whole folder. Press **Ctrl+Alt+O** (**Local Media >
-Add a Folder...**) and choose the folder. Every file in it comes in, and the
-files in the folders inside it too, in the order you would read the names: 2
-comes before 10, and disc one comes before disc two. A playlist made from a
-folder keeps an eye on it. Copy new music into the folder later, and it joins
-the playlist the next time you open it.
-
-Quill Radio plays MP3, M4A and M4B audiobooks, AAC, Ogg, Opus, FLAC, WAV, WMA
-and AIFF, and video files such as MP4, MKV and WebM. A video plays its sound,
-and **Ctrl+Shift+V** shows the picture.
-
-#### Find your way around the window
-
-The window has two lists side by side, and Tab moves between them.
-
-- **Playlists** (Alt+Y) on the left. Each one says how many items it has and
-  how long it plays, such as "Road Trip, 12 items, 47 minutes".
-- **Items** (Alt+I) on the right: what is in the playlist you are on, in the
-  order it plays. Each row reads the title, the artist, the album, the length
-  and the file name. **Ctrl+Alt+Shift+C** chooses what each row says.
-
-Under the lists are the **Add Media Files...**, **Add a Folder...** and **New
-Playlist...** buttons, and a line that sums up the playlist you are on.
-
-The row that is playing says **playing** after its title, or **paused**. A file
-that is not where it used to be, because a drive is unplugged or a folder was
-renamed, says **missing**. It keeps its place in the list until you decide
-what to do with it.
-
-Type the first letters of a title to jump to it.
-
-#### Play a playlist, step by step
-
-1. Arrow to an item and press **Enter**. Quill Radio plays it, then carries on
-   down the playlist by itself. You should hear the title and where it is,
-   such as "Playing Here Comes the Sun, 7 of 17."
-2. Press **Space** on the item that is playing to pause it. Press **Space**
-   again to carry on.
-3. Press **Enter** on the item that is playing to stop it.
-4. Press **Ctrl+Right** for the next item and **Ctrl+Left** for the one
-   before.
-5. Close the window with **Escape** whenever you like. The playlist keeps
-   playing.
-
-From any Quill Radio window, the chapter keys move through the playlist that
-is playing: **Ctrl+Shift+.** for the next item and **Ctrl+Shift+,** for the one
-before. **Ctrl+Shift+W** (Where Am I) tells you where you are in the item and
-in the playlist, such as "2 minutes 10 seconds of 3 minutes 5 seconds, 7 of 17
-in Abbey Road."
-
-When a file has chapters of its own, like an audiobook, the chapter keys move
-by chapter first. At the last chapter, they move on to the next item.
-
-#### Shuffle, repeat and what plays next
-
-- **Ctrl+H** turns shuffle on and off. Shuffle picks one order and keeps it,
-  so every item plays once before any plays again, and the previous key always
-  takes you back to what you just heard.
-- **Ctrl+Shift+H** (Shuffle Again) deals a fresh order.
-- **Ctrl+R** goes from repeat off, to repeating the whole playlist, to
-  repeating the item that is playing. Each playlist remembers its own shuffle
-  and repeat.
-- **Ctrl+Shift+Enter** (Play Next) plays the selected items straight after the
-  one that is playing. **Ctrl+Alt+Enter** (Add to Up Next) puts them after
-  anything already waiting. Either way, the playlist carries on where it left
-  off afterwards.
-- **Ctrl+Alt+S** (Stop After This Item) stops when this item ends. It switches
-  itself off once it has done its job.
-- **Ctrl+Alt+C** (Continue Where I Left Off) goes back to the item you were
-  last listening to, at the place you stopped.
-- **Ctrl+T** says what is playing, and sums up the playlist: how many items,
-  how long, and whether shuffle and repeat are on.
-
-#### Put things in your own order, step by step
-
-1. Arrow to an item. To work on several at once, hold **Shift** and arrow, or
-   hold **Ctrl** and press **Space** on each one you want.
-2. Press **Alt+Shift+Up** or **Alt+Shift+Down** to move them one place. You
-   should hear where they landed, such as "Moved to 3 of 12."
-3. Press **Alt+Shift+Home** to move them to the top, **Alt+Shift+End** to the
-   bottom, or **Ctrl+J** to type the number of the place they should go.
-4. For a longer move, press **Ctrl+X**. Nothing disappears yet. Arrow to where
-   they belong and press **Ctrl+V** to put them before that item, or
-   **Ctrl+Alt+V** to put them after it.
-5. **Ctrl+C** then **Ctrl+V** puts a copy in instead, in this playlist or
-   another one. **Ctrl+C** also puts the files' paths on the clipboard.
-6. **Ctrl+Shift+S** sorts the whole playlist once: by title, artist, album,
-   file name, folder, length, the date you added it, or a random order. After
-   that, the order is yours to change again.
-7. Changed your mind? **Ctrl+Z** takes back the last change.
-
-On the **Playlists** list, **Alt+Shift+Up** and **Alt+Shift+Down** move a whole
-playlist up and down.
-
-#### Add, insert and remove
-
-- **Ctrl+O** adds files at the end of the playlist you are on.
-- **Insert** adds files before the item you are on, and **Shift+Insert** adds
-  them after it.
-- **Delete** removes the selected items from the playlist. You should hear
-  "Removed", then "The file is still on your computer. Ctrl+Z undoes this."
-- **Ctrl+Shift+Delete** removes every missing item at once.
-- **Ctrl+Shift+L** (Locate Missing File...) asks where a missing file is now.
-  If the whole folder moved, the other missing files from that folder are
-  found too.
-
-#### The menu on an item, and on a playlist
-
-Press **Shift+F10**, or the Applications key, on an item for **Play** (or
-**Stop**), **Pause or Resume**, **Play Next**, **Add to Up Next**, a **Move**
-submenu, **Cut**, **Copy**, **Paste Before** and **Paste After** (when you have
-cut or copied something), **Insert Files Here...**, **Insert Files After...**,
-**Remove from Playlist**, **Locate File...** or **Show in File Explorer**, and
-**Properties...**. Properties shows the title, artist, album, length, where the
-file is and how big it is, in a box you can read and copy.
-
-On a playlist, the menu offers **Play This Playlist**, **Shuffle and Play**,
-**Continue Where I Left Off**, **Add Media Files...**, **Add a Folder...**,
-**Check the Folder for New Files** (for a playlist made from a folder),
-**Rename...**, **Duplicate**, **Export as M3U...** and **Delete Playlist...**.
-Deleting asks first, with **No** already chosen, and only the list goes. Your
-files stay where they are, and **Ctrl+Z** brings the playlist back.
-
-#### Playlists from other programs
-
-**Import a Playlist...** (Ctrl+I) reads an M3U, M3U8 or PLS playlist that
-Winamp, foobar2000, VLC or another player made, and turns it into a playlist
-here. Web addresses in it are left out, and Quill Radio tells you how many.
-**Export as M3U...** (Ctrl+Shift+X) goes the other way, so another player can
-open your playlist. Save it in your music folder and it keeps working when you
-copy the folder to another computer.
-
-#### Local Media in Browse Stations
-
-Local Media is also the second branch of Browse Stations, right under
-Favorites. Open it to find your playlists, and under them **Add Media
-Files...**, **Add a Folder...**, **New Playlist...** and **Open the Local Media
-Window**. Open a playlist to see its items, and press **Enter** on one to play
-it and the rest of the playlist after it. **Shift+F10** on an item offers
-**Play Next**, **Add to Up Next**, **Remove from Playlist**, **Show in File
-Explorer**, **Copy Path** and **Properties...**, and **Delete** removes it from
-the playlist. Local Media works in Safe Mode, because nothing in it touches the
-internet.
-
-#### Keys in the Local Media window
-
-| Key | What it does |
-| --- | --- |
-| Enter | Play the item, or stop the one playing |
-| Space | Pause or resume the item playing |
-| Ctrl+Right, Ctrl+Left | Next item, previous item |
-| Ctrl+O | Add Media Files |
-| Ctrl+Alt+O | Add a Folder |
-| Insert, Shift+Insert | Insert files before or after the item |
-| Delete | Remove from the playlist (the file stays) |
-| Alt+Shift+Up, Alt+Shift+Down | Move up or down one place |
-| Alt+Shift+Home, Alt+Shift+End | Move to the top or the bottom |
-| Ctrl+J | Move to a position you type |
-| Ctrl+X, Ctrl+V, Ctrl+Alt+V | Cut, then paste before or after |
-| Ctrl+H, Ctrl+Shift+H | Shuffle on or off, shuffle again |
-| Ctrl+R | Repeat: off, the whole playlist, this item |
-| Ctrl+Shift+Enter, Ctrl+Alt+Enter | Play Next, Add to Up Next |
-| Ctrl+T | What is playing, and the playlist summed up |
-| Ctrl+Z | Take back the last change |
-| F2 | Rename the playlist |
-| Ctrl+N | New Playlist |
-| Alt+Enter | Properties |
-| Escape | Close the window; playing carries on |
-
-#### What you learned
-
-You can now bring your own music, audiobooks and videos into Quill Radio, play
-them as playlists, shuffle and repeat them, put them in exactly the order you
-want, and move through them from any window. The tutorial **Play your own
-files in playlists** walks through it with you.
+Local Media has a chapter of its own now: Chapter 10, Local Media, your own
+music and audiobooks.
 
 ### YouTube
 
-YouTube has a chapter of its own now: Chapter 10, YouTube.
+YouTube has a chapter of its own now: Chapter 11, YouTube.
 
 ### Television
 
@@ -3766,13 +3585,561 @@ work with it.
 ### What you learned, and where to go next
 
 You can now follow podcasts and check them for new episodes, hand episodes to
-QUILL Cast, save books and episodes to keep, play your own files in
-playlists, watch television, find your local weather radio, and know just what
+QUILL Cast, save books and episodes to keep, watch television, find your local weather radio, and know just what
 Spotify can and cannot do here. Next,
-Chapter 10, YouTube, brings in everything YouTube can do here. The tutorial
+Chapter 10, Local Media, brings in the music and audiobooks on your own
+computer. The tutorial
 **Follow a podcast** is a good place to practise.
 
-## Chapter 10: YouTube
+## Chapter 10: Local Media, your own music and audiobooks
+
+Quill Radio plays more than the internet. Local Media is where your own files
+live: the music on your computer, the audiobooks you bought, a folder of old
+radio shows, even videos. You put them in playlists, in whatever order you
+like, and Quill Radio plays them one after another, with the same keys you
+already use for the radio.
+
+This chapter starts with an empty window and ends with playlists you have
+built, arranged and left playing while you get on with something else.
+
+The tutorial **Play your own files in playlists**, in the **More than radio**
+track, walks you through the same ground in about eight minutes.
+
+### What Local Media is, and why you would use it
+
+A playlist in Local Media is simply a list of files in an order you chose.
+Nothing is ever copied or moved. A playlist only remembers where each file is
+and what its tags say, such as the title, artist, album and length. Taking
+something out of a playlist never deletes it from your computer.
+
+You might use it to:
+
+- Play an album, or a whole music folder, in the right order.
+- Listen to an audiobook you bought, chapter by chapter, and pick up where you
+  stopped.
+- Build a playlist for a long drive or a quiet evening, in your own order.
+- Play a playlist you made years ago in Winamp, foobar2000 or VLC.
+
+Nothing in Local Media touches the internet, so it works just the same in Safe
+Mode and when you are offline.
+
+### Getting started
+
+#### Open Local Media, step by step
+
+1. Press **Ctrl+O** (**Station > Local Media...**). The Local Media window
+   opens. It is a window of its own, like Radio Recordings, so it is on the
+   Window menu and in the Ctrl+Tab order. It is also on the Go To list and in
+   the Command Palette.
+2. The first time, there is nothing in it yet. Quill Radio says so: "Nothing
+   in Local Media yet." Your cursor is already on the **Add Media Files...**
+   button, with **Add a Folder...** and **New Playlist...** beside it.
+3. Press **Ctrl+O** again, or **Space** on the button. A file window opens.
+   So from anywhere in Quill Radio, Ctrl+O twice takes you straight to picking
+   files.
+4. Pick one file, or hold **Ctrl** and pick several, and press **Enter**.
+5. You should hear "Made a playlist called", the name of the folder the files
+   came from, and how many items it has. A playlist of tracks from your Abbey
+   Road folder is called Abbey Road, which is what you would have typed
+   anyway.
+
+If Local Media is already open, Ctrl+O from the main window brings it to the
+front rather than opening a second copy.
+
+#### Bring in a whole folder, step by step
+
+1. In the empty window, press **Ctrl+Alt+O** (**Local Media > Add a
+   Folder...**), or choose the **Add a Folder...** button.
+2. Choose the folder and press **Enter**. You hear "Looking for media in", and
+   the folder's name.
+3. Every file in it comes in, and the files in the folders inside it too, in
+   the order you would read the names: track 2 comes before track 10, and disc
+   one comes before disc two.
+4. You hear "Made a playlist called", the folder's name, and how many items it
+   has.
+
+Once you have playlists, **Add a Folder...** in the window adds the folder's
+files to the end of the playlist you are on. To make a brand new playlist from
+a folder, use **Add a Folder...** on the Local Media branch of Browse Stations,
+or **Local Media: Add a Folder...** in the Command Palette.
+
+#### Follow the Folder
+
+A playlist made from a folder keeps an eye on it. Copy new music into the
+folder later, and it joins the end of the playlist the next time you open Local
+Media or choose that playlist. You hear how many new files were added.
+
+- **Follow the Folder** (**Local Media > Follow the Folder**, Ctrl+Alt+F)
+  turns this on and off. It has a check mark when it is on. Turned off, the
+  playlist stays exactly as it is.
+- **Check the Folder Now** (F5) looks straight away. If there is nothing new,
+  you hear "Nothing new in the folder for", and the playlist's name.
+
+Both only work on a playlist that was made from a folder. On any other
+playlist, Quill Radio tells you so.
+
+#### What Quill Radio can play
+
+Quill Radio plays MP3, M4A and M4B audiobooks, AAC, Ogg, Opus, FLAC, WAV, WMA,
+AIFF and more, and video files such as MP4, MKV, MOV and WebM. A video plays
+its sound, and **Ctrl+Shift+V** shows the picture. When you add a folder,
+anything that is not music or video, such as cover pictures and text files, is
+left out.
+
+### Finding your way around the window
+
+#### The two lists
+
+The window has two lists side by side, and Tab moves between them.
+
+- **Playlists** (Alt+Y) on the left. Each one says how many items it has and
+  how long it plays, such as "Road Trip, 12 items, 47 minutes".
+- **Items** (Alt+I) on the right: what is in the playlist you are on, in the
+  order it plays. Each row reads the title, the artist, the album, the length
+  and the file name. **Choose Columns...** (Ctrl+Alt+Shift+C) chooses what
+  each row says.
+
+Under the lists are the **Add Media Files...**, **Add a Folder...** and **New
+Playlist...** buttons, and a line that sums up the playlist you are on.
+
+The row that is playing says **playing** after its title, or **paused**. A file
+that is not where it used to be, because a drive is unplugged or a folder was
+renamed, says **missing**. It keeps its place in the list until you decide
+what to do with it.
+
+Type the first letters of a title to jump to it. To select several items,
+hold **Shift** and arrow, or press **Ctrl+A** (**Edit > Select All**) for every
+item in the playlist.
+
+#### The menus in the window
+
+The window has its own menu bar, and every item on it shows its key:
+
+- **Local Media** (Alt+L): New Playlist, Add Media Files, Add a Folder, Insert
+  Files Here and Insert Files After, Import a Playlist, Export as M3U, Rename
+  Playlist, Duplicate Playlist, Delete Playlist, Follow the Folder, Check the
+  Folder Now, Choose Columns and Close.
+- **Edit** (Alt+E): Undo, Cut, Copy, Paste Before, Paste After, Remove from
+  Playlist, Remove Missing Items, Select All, Properties, Show in File Explorer
+  and Locate Missing File.
+- **Arrange** (Alt+A): Move Up, Move Down, Move to Top, Move to Bottom, Move to
+  Position and Sort Playlist.
+- **Play** (Alt+P): Play, Pause or Resume, Next Item, Previous Item, Play This
+  Playlist, Continue Where I Left Off, Play Next, Add to Up Next, Shuffle,
+  Shuffle Again, Repeat, Stop After This Item and Playlist Summary.
+
+The Station and Window menus are there too, the same as in every Quill Radio
+window. You seldom need the menus, though: press **Shift+F10**, or the
+Applications key, on an item or a playlist, and everything you can do with it
+is right there.
+
+Close the window with **Escape** or **Ctrl+W** (**Local Media > Close**)
+whenever you like. Whatever is playing carries on.
+
+### Building playlists
+
+#### Make a new playlist, step by step
+
+1. Press **Ctrl+N** (**Local Media > New Playlist...**).
+2. Type a name, such as Sunday Morning, and press **Enter**.
+3. You hear "Made Sunday Morning. It is empty". Your cursor is on **Add Media
+   Files...**, ready to fill it.
+4. Press **Space** and pick your files. They are added to the end of the new
+   playlist.
+
+If you leave the name empty, the playlist is called My Playlist. Two playlists
+never share a name: Quill Radio adds a number to the second one.
+
+#### Add, insert and remove
+
+- **Add Media Files...** (Ctrl+O) adds files at the end of the playlist you
+  are on. You hear "Added", how many, and "to the end of", and the playlist's
+  name.
+- **Insert Files Here...** (Insert) adds files just before the item you are
+  on, and **Insert Files After...** (Shift+Insert) adds them just after it.
+  This is how you slip a song in between two others. You hear where they went,
+  such as "Inserted 2 items at 5 of 14."
+- **Remove from Playlist** (Delete) takes the selected items out of the
+  playlist. You should hear "Removed", then "The file is still on your
+  computer. Ctrl+Z undoes this."
+
+> **QUILLBee's tip:** Delete in Local Media never deletes a file. It only
+> takes the item out of the list, which is why it does not stop to ask. If
+> you change your mind, Ctrl+Z puts it back in the very same place.
+
+#### Playlists from other programs
+
+**Import a Playlist...** (Ctrl+I) reads an M3U, M3U8 or PLS playlist that
+Winamp, foobar2000, VLC or another player made, and turns it into a new
+playlist named after the file.
+
+1. Press **Ctrl+I** (**Local Media > Import a Playlist...**).
+2. Choose the playlist file and press **Enter**.
+3. You hear "Imported", how many items, and the new playlist's name.
+
+A few things to know:
+
+- If some of the files are not on this computer, they come in anyway and are
+  marked missing, and Quill Radio tells you how many.
+- Web addresses in the playlist are left out, and Quill Radio tells you how
+  many. Internet stations belong in your favorites: **Import Stations from
+  Playlist**, in Chapter 6, is the place for those.
+- On the Local Media branch of Browse Stations, the menu on the branch offers
+  **Import a Playlist...** too.
+
+#### Rename, duplicate and delete a playlist
+
+These work on the playlist you are on, from the **Local Media** menu or from
+the menu on the playlist itself (Shift+F10 in the Playlists list).
+
+- **Rename Playlist...** (F2) gives it a new name. Ctrl+Z gives back the old
+  one.
+- **Duplicate Playlist** (Ctrl+D) makes a copy, called the same name with
+  "copy" after it, placed just below the original. It keeps the same items,
+  shuffle, repeat and folder. It is a handy way to try out a new order without
+  losing the old one.
+- **Delete Playlist...** (Shift+Delete, or Delete in the Playlists list) asks
+  first, with **No** already chosen. Only the list goes: your files stay where
+  they are. You hear "Deleted the playlist", and its name, and **Ctrl+Z**
+  brings it back, items and all, in the same place.
+
+### Arranging a playlist
+
+A playlist is an order you chose, and Local Media gives you every way to
+change it from the keyboard. After each move, Quill Radio tells you where the
+items landed, such as "Moved to 3 of 12", and the moved items stay selected so
+you can move them again.
+
+#### Move items, step by step
+
+1. Arrow to an item. To move several at once, hold **Shift** and arrow to
+   select them.
+2. Press **Alt+Shift+Up** (**Arrange > Move Up**) or **Alt+Shift+Down**
+   (**Arrange > Move Down**) to move them one place.
+3. Press **Alt+Shift+Home** (**Move to Top**) to send them to the start, or
+   **Alt+Shift+End** (**Move to Bottom**) to send them to the end.
+4. At the top or the bottom, you hear "Already at the top" or "Already at the
+   bottom", so you know you have gone as far as you can.
+
+#### Move to Position, step by step
+
+When you know exactly where something belongs, type its new place:
+
+1. Select the item, or items.
+2. Press **Ctrl+J** (**Arrange > Move to Position...**).
+3. Type the number of the place it should go, from 1 to the number of items,
+   and press **Enter**. You hear where it landed.
+
+#### Cut and paste to move a long way
+
+For a longer move, cut and paste is quickest.
+
+1. Select what you want to move and press **Ctrl+X** (**Edit > Cut**). Nothing
+   disappears yet. You hear "Cut", and what you cut.
+2. Arrow to where it belongs.
+3. Press **Ctrl+V** (**Edit > Paste Before**) to put it before that item, or
+   **Ctrl+Alt+V** (**Edit > Paste After**) to put it after it.
+
+> **QUILLBee wants you to know:** Cutting in Local Media only marks the items.
+> They stay in the list, playing and all, until you paste. If you never
+> paste, nothing has changed.
+
+#### Copy into another playlist
+
+**Ctrl+C** (**Edit > Copy**) holds copies of the selected items. Arrow to
+another playlist, or another place in the same one, and paste with **Ctrl+V**
+or **Ctrl+Alt+V**. The originals stay where they were. Ctrl+C also puts the
+files' paths on the clipboard as text, so you can paste them into an email or
+a document.
+
+#### Sort Playlist, step by step
+
+1. Press **Ctrl+Shift+S** (**Arrange > Sort Playlist...**).
+2. Choose how to sort: **Title**, **Artist, then album**, **Album, then track
+   order**, **File name**, **Folder, then file name**, **Length, shortest
+   first**, **Date added, oldest first** or **Random order**.
+3. Press **Enter**. The playlist is sorted once, and your cursor is on the
+   first item.
+
+A sort happens once. After that, the order is yours to change again, and
+**Ctrl+Z** puts back the order you had before.
+
+#### Moving whole playlists
+
+In the **Playlists** list, **Alt+Shift+Up** and **Alt+Shift+Down** move the
+playlist you are on up and down, and **Alt+Shift+Home** and **Alt+Shift+End**
+move it to the top or the bottom. Your playlists stay in that order here and in
+Browse Stations.
+
+#### Undo and Undo History
+
+Changed your mind? **Ctrl+Z** (**Edit > Undo**) takes back the last change:
+a move, a sort, a paste, a removal, a rename, or a deleted playlist. Press it
+again to go back one more step.
+
+In the main window, **Edit > Undo History** (Ctrl+Alt+Shift+A) lists the last
+ten things you can take back, Local Media changes among them, and lets you
+take back just one. "Taking back the last thing you did", in Chapter 15, says
+more.
+
+### Playing
+
+#### Play a playlist, step by step
+
+1. Arrow to an item and press **Enter**. Quill Radio plays it, then carries on
+   down the playlist by itself. You should hear the title and where it is,
+   such as "Playing Here Comes the Sun, 7 of 17."
+2. Press **Space** on the item that is playing to pause it. Press **Space**
+   again to carry on. On any other item, Space selects it, as it does in any
+   list.
+3. Press **Enter** on the item that is playing to stop it.
+4. Press **Ctrl+Right** (**Play > Next Item**) for the next item and
+   **Ctrl+Left** (**Play > Previous Item**) for the one before.
+5. When the last item ends, you hear "That was the end of", and the
+   playlist's name.
+
+The **Play** menu has the same verbs with keys that work from anywhere in the
+window: **Play** (Ctrl+Enter) and **Pause or Resume** (Ctrl+Space).
+
+In the **Playlists** list, **Enter** plays the whole playlist you are on from
+the start.
+
+#### Play This Playlist, and Continue Where I Left Off
+
+- **Play This Playlist** (Ctrl+Alt+P) plays the playlist from the start, or
+  from the start of its shuffled order when shuffle is on.
+- **Shuffle and Play**, on the menu on a playlist, turns shuffle on and starts
+  playing in one go.
+- **Continue Where I Left Off** (Ctrl+Alt+C) goes back to the item you were
+  last listening to in that playlist, at the place you stopped. This is the
+  one to use for an audiobook. If there is nothing to go back to, it plays the
+  playlist from the start.
+
+#### Play Next and Add to Up Next
+
+Sometimes you want to hear a particular song soon, without changing your
+playlist.
+
+- **Play Next** (Ctrl+Shift+Enter) plays the selected items straight after the
+  one that is playing. You hear "Will play next."
+- **Add to Up Next** (Ctrl+Alt+Enter) puts them after anything already
+  waiting. You hear how many are waiting.
+
+Either way, once they have played, the playlist carries on where it left off.
+
+#### Shuffle and Shuffle Again
+
+- **Shuffle** (Ctrl+H) turns shuffle on and off, and has a check mark on the
+  Play menu when it is on. Shuffle picks one order and keeps it, so every item
+  plays once before any plays again, and the previous key always takes you back
+  to what you just heard.
+- **Shuffle Again** (Ctrl+Shift+H) deals a fresh order. The new order starts
+  after the item that is playing.
+
+#### Repeat
+
+**Repeat** (Ctrl+R) goes round three choices, and Quill Radio says the one you
+land on:
+
+- **Repeat off**: the playlist plays once and stops.
+- **Repeat the whole playlist**: after the last item, it starts again at the
+  top.
+- **Repeat this item**: the item that is playing plays again when it ends.
+  Pressing Next still moves on.
+
+Each playlist remembers its own shuffle and repeat.
+
+#### Stop After This Item
+
+**Stop After This Item** (Ctrl+Alt+S) stops when the item that is playing
+ends. You hear "Will stop after this item", and later "Stopped after that
+item, as you asked." It switches itself off once it has done its job, so the
+next time you play, the playlist carries on as normal. It is perfect for
+falling asleep to one more chapter.
+
+#### Next and previous from any window
+
+You do not need the Local Media window open to move through a playlist. From
+any Quill Radio window, the chapter keys move through the playlist that is
+playing: **Ctrl+Shift+.** for the next item and **Ctrl+Shift+,** for the one
+before.
+
+When a file has chapters of its own, like an audiobook, the chapter keys move
+by chapter first. At the last chapter, they move on to the next item.
+
+The Command Palette has **Local Media: Next Item** and **Local Media: Previous
+Item** too, if you would rather move by name.
+
+#### Where Am I, and Playlist Summary
+
+- **Where Am I** (Ctrl+Shift+W), from any window, tells you where you are in
+  the item and in the playlist, such as "2 minutes 10 seconds of 3 minutes 5
+  seconds, 7 of 17 in Abbey Road."
+- **Playlist Summary** (Ctrl+T, in the Local Media window) sums up the
+  playlist you are on in one breath: how many items and how long, what is
+  playing and where, how many are waiting up next, and whether shuffle and
+  repeat are on.
+
+### Local Media in Browse Stations
+
+Local Media is also the second branch of Browse Stations, right under
+Favorites. It is handy when you are already browsing and want your own music
+without opening another window.
+
+#### Play from the tree, step by step
+
+1. Press **Ctrl+B** to open Browse Stations, arrow to **Local Media** and press
+   **Right Arrow**.
+2. Your playlists are listed, each with how many items it has and how long it
+   plays. Under them are **Add Media Files...**, **Add a Folder...**, **New
+   Playlist...** and **Open the Local Media Window**. While you have no
+   playlists yet, **Import a Playlist...** is there too.
+3. Arrow to a playlist and press **Right Arrow** to open it. Each item says
+   its artist and length, "video" for a video, and "missing" for a file that is
+   not there.
+4. Press **Enter** on an item. It plays, and the rest of the playlist follows
+   it.
+
+In the tree, **Add Media Files...** and **Add a Folder...** always make a new
+playlist, named after the folder, and one made from a folder follows it.
+
+#### The menu on a row
+
+Press **Shift+F10**, or the Applications key, on any Local Media row.
+
+- **On the Local Media branch:** Open or Close, Open in Local Media Window,
+  Add Media Files, Add a Folder, New Playlist, Import a Playlist, Hide This
+  Source and Reset Sources to Default.
+- **On a playlist:** Open or Close, Play This Playlist, Shuffle and Play,
+  Continue Where I Left Off (when there is somewhere to continue from), Open in
+  Local Media Window, Add Media Files, Add a Folder, Check the Folder for New
+  Files (for a playlist made from a folder), Rename, Duplicate, Export as M3U
+  and Delete Playlist.
+- **On an item:** Play (or Stop, on the one playing), Play Next, Add to Up
+  Next, Remove from Playlist, Locate (for a missing file) or Show in File
+  Explorer, Copy Path, Properties, Open in Local Media Window, and Where Am I?
+  on the item that is playing.
+
+**Open in Local Media Window** opens the window on that very playlist and
+item, so you can carry on arranging there.
+
+The **Delete** key works here too. On an item, it asks "Remove", the title,
+"from", the playlist, and "The file stays", the same way Delete always asks in
+Browse Stations. On a playlist, it asks whether to delete the playlist.
+
+### When a file goes missing
+
+If you move a folder, rename it, or unplug the drive a file was on, the item
+says **missing**. It keeps its place in the playlist, and when Quill Radio comes
+to it while playing, it skips to the next one that is there. Plug the drive
+back in and the item simply plays again.
+
+#### Locate a missing file, step by step
+
+1. Arrow to the missing item.
+2. Press **Ctrl+Shift+L** (**Edit > Locate Missing File...**), or choose
+   **Locate File...** on its menu.
+3. A file window opens, already looking for the file by name. Find it where it
+   is now and press **Enter**.
+4. You hear "Found", and its title. If the whole folder moved, the other
+   missing files from that folder are found too, and Quill Radio tells you how
+   many.
+
+Pressing Ctrl+Shift+L on an item that is not missing takes you to the first
+one that is. If nothing in the playlist is missing, Quill Radio tells you so.
+
+#### Remove Missing Items
+
+If the files are gone for good, **Remove Missing Items** (Ctrl+Shift+Delete,
+on the **Edit** menu) takes every missing item out of the playlist at once.
+**Ctrl+Z** brings them back if you were too quick.
+
+### Properties and File Explorer
+
+- **Properties...** (Alt+Enter) opens **Local Media Item Properties**, a box
+  you can arrow through and copy from. It shows the title, artist, album, length, whether it is audio or
+  video, its place in the playlist, the file name, the folder, whether it is on
+  this computer, and how big it is. Press **Escape** to go back to the list.
+- **Show in File Explorer** (Ctrl+Shift+E) opens the item's folder in File
+  Explorer with the file already selected.
+- **Copy Path**, on an item's menu in Browse Stations, puts the file's full
+  path on the clipboard.
+
+### Exporting a playlist, step by step
+
+**Export as M3U...** goes the other way from Import, so another player can
+open your playlist.
+
+1. Arrow to the playlist and press **Ctrl+Shift+X** (**Local Media > Export as
+   M3U...**).
+2. A save window opens with the playlist's name already filled in. Choose
+   where to save it and press **Enter**.
+3. You hear "Exported", how many items, and the file's name.
+
+Save it in your music folder and it keeps working when you copy the whole
+folder to another computer, because the files inside that folder are written
+relative to it. An empty playlist has nothing to export, and Quill Radio says
+so.
+
+### Keys in the Local Media window
+
+| Key | What it does |
+| --- | --- |
+| Enter | Play the item, or stop the one playing; on a playlist, play it |
+| Space | Pause or resume the item playing |
+| Ctrl+Enter, Ctrl+Space | Play, Pause or Resume, from anywhere in the window |
+| Ctrl+Right, Ctrl+Left | Next item, previous item |
+| Ctrl+Alt+P | Play This Playlist |
+| Ctrl+Alt+C | Continue Where I Left Off |
+| Ctrl+Shift+Enter, Ctrl+Alt+Enter | Play Next, Add to Up Next |
+| Ctrl+H, Ctrl+Shift+H | Shuffle on or off, Shuffle Again |
+| Ctrl+R | Repeat: off, the whole playlist, this item |
+| Ctrl+Alt+S | Stop After This Item |
+| Ctrl+T | Playlist Summary |
+| Ctrl+N | New Playlist |
+| Ctrl+O | Add Media Files |
+| Ctrl+Alt+O | Add a Folder |
+| Insert, Shift+Insert | Insert files before or after the item |
+| Ctrl+I, Ctrl+Shift+X | Import a Playlist, Export as M3U |
+| F2 | Rename Playlist |
+| Ctrl+D | Duplicate Playlist |
+| Shift+Delete | Delete Playlist (asks first) |
+| Ctrl+Alt+F, F5 | Follow the Folder, Check the Folder Now |
+| Delete | Remove from the playlist (the file stays) |
+| Ctrl+Shift+Delete | Remove Missing Items |
+| Ctrl+Shift+L | Locate Missing File |
+| Alt+Shift+Up, Alt+Shift+Down | Move up or down one place |
+| Alt+Shift+Home, Alt+Shift+End | Move to the top or the bottom |
+| Ctrl+J | Move to Position |
+| Ctrl+Shift+S | Sort Playlist |
+| Ctrl+X, Ctrl+C | Cut, Copy |
+| Ctrl+V, Ctrl+Alt+V | Paste Before, Paste After |
+| Ctrl+A | Select All |
+| Ctrl+Z | Undo |
+| Alt+Enter | Properties |
+| Ctrl+Shift+E | Show in File Explorer |
+| Ctrl+Alt+Shift+C | Choose Columns |
+| Escape, Ctrl+W | Close the window; playing carries on |
+
+From any Quill Radio window: **Ctrl+O** opens Local Media, **Ctrl+Shift+.**
+and **Ctrl+Shift+,** move to the next and previous item, and **Ctrl+Shift+W**
+says where you are.
+
+### What you learned, and where to go next
+
+You can now bring your own music, audiobooks and videos into Quill Radio, from
+single files, whole folders or other players' playlists. You can build
+playlists, slip songs in between others, put everything in exactly the order
+you want, and take back any change you regret. You can play, shuffle and
+repeat, line up what plays next, stop after one more item, pick up where you
+left off, and move through a playlist from any window. And when a file goes
+missing, you know how to find it again.
+
+The tutorial **Play your own files in playlists**, in the **More than radio**
+track, walks through it all with you. Next, Chapter 11, YouTube, brings in
+everything YouTube can do here.
+
+## Chapter 11: YouTube
 
 YouTube is full of things worth listening to: lectures and talks, travel
 shows, radio programmes that only publish there, live broadcasts, and a great
@@ -3817,7 +4184,8 @@ Worth knowing:
   YouTube** comes next when your sign-in is on.
 - While the YouTube branch is empty, it shows **Add a Channel...**, **Add a
   Playlist...** and **Add a Video...**. After that, those three are on the
-  branch's menu (Shift+F10) and on every row inside it.
+  branch's menu (Shift+F10) and on every row inside it, where the last one is
+  called **Add a Video URL...**.
 - The first time you add or play anything from YouTube, Quill Radio asks once
   whether it may contact YouTube, and remembers your answer.
 - A row uses the video's own name, with the channel and length read after it.
@@ -4347,10 +4715,10 @@ your subscriptions, move around a video, read along with its captions and
 transcript, read its comments, follow a live chat, skip sponsor segments,
 search with YouTube's own filters or YouTube Music, and, if you like, use your
 own YouTube sign-in.
-Next, Chapter 11, The ACB Media schedule and reminders, helps you catch the
+Next, Chapter 12, The ACB Media schedule and reminders, helps you catch the
 programmes you care about.
 
-## Chapter 11: The ACB Media schedule and reminders
+## Chapter 12: The ACB Media schedule and reminders
 
 ACB Media runs ten channels made with blind listeners in mind. This chapter
 shows you how to see what is on and what is coming up, tune in, record a
@@ -4551,18 +4919,18 @@ what the other one found.
 You can now browse the ACB Media schedule, tune in, record a programme with a
 couple of key presses, and set reminders so you never miss the ones you love.
 Upcoming shows you everything you have planned, and Notifications keeps
-everything you have been told. Next, Chapter 12, The Community menu, has the
+everything you have been told. Next, Chapter 13, The Community menu, has the
 rest of what is on that menu, including Ask QUILL Radio. The tutorial
 **Sleeping, waking, and being left alone** touches on reminders and quiet
 hours too.
 
-## Chapter 12: The Community menu
+## Chapter 13: The Community menu
 
 The Community menu (Alt+C) is where Quill Radio connects you with other
 listeners and with a helpful assistant. This chapter covers Ask QUILL Radio,
 signing in with your ChatGPT plan, ACB Media's podcasts, Community Picks, and
 how to suggest a station or podcast for everyone to enjoy. The ACB Media
-schedule, which is on this menu too, has Chapter 11 to itself.
+schedule, which is on this menu too, has Chapter 12 to itself.
 
 The tutorial **Community Picks, and suggesting one**, in the More than radio
 track, goes with this chapter.
@@ -4836,10 +5204,10 @@ on, so nothing is sent anywhere."
 You can now ask Quill Radio's assistant about whatever is playing, sign in with
 your ChatGPT plan and choose a model, add ACB Media's podcasts, pick up
 stations other listeners recommend, and suggest your own favorites for
-everyone. Next, Chapter 13, Making Quill Radio yours, shows you how to change
+everyone. Next, Chapter 14, Making Quill Radio yours, shows you how to change
 settings and keys so the app fits you like a glove.
 
-## Chapter 13: Making Quill Radio yours
+## Chapter 14: Making Quill Radio yours
 
 Quill Radio works well straight away, but it is happiest when it fits the way
 you listen. This chapter walks through Preferences, the one setting most
@@ -4922,7 +5290,7 @@ Each one is listed with how it starts:
   your cursor or your screen reader is ever shared.
 - **Recover failed streams from the station's website**: on.
 - **Share play counts with the RadioBrowser directory**: on. See "What Quill
-  Radio connects to" in Chapter 14.
+  Radio connects to" in Chapter 15.
 - **Alt+F4 minimizes to the system tray**: off. When it is on, Alt+F4 tucks the
   radio into the tray, still playing.
 - **Verbose logging (debug mode)**: off. Keeps a much more detailed log, to
@@ -4978,7 +5346,7 @@ Three groups:
 - **YouTube**: **Use my YouTube sign-in from my web browser** (off), **Read
   the YouTube sign-in from** (Mozilla Firefox, to begin with), and **Choose a
   cookies.txt File...**. See "Use your YouTube sign-in (My YouTube)" in
-  Chapter 10, which also says plainly what turning it on means for your
+  Chapter 11, which also says plainly what turning it on means for your
   privacy.
 
 #### Finding a setting by typing
@@ -5226,12 +5594,12 @@ searched like any others. When there is none, the branch is not there.
 You have been through every setting in Preferences, switched off what you do
 not need, put the actions and columns you use most first, and learned how to
 change any key, see them all on one sheet, and reach any command by name. You
-also know how quiet hours give you peace when you want it. Next, Chapter 14,
+also know how quiet hours give you peace when you want it. Next, Chapter 15,
 Safety nets, shows you the ways Quill Radio catches you when something goes
 wrong. The tutorial **Make the keys yours** is a friendly way to practise
 changing a key.
 
-## Chapter 14: Safety nets
+## Chapter 15: Safety nets
 
 Everybody presses the wrong thing sometimes, or misses something Quill Radio
 said. This chapter shows you how to take back what you did, why an item is
@@ -5426,10 +5794,10 @@ plainly.
 You now know that Ctrl+Z and Undo History can take back what you removed, that
 a dimmed item always tells you why, and that Recent Problems, Activity and F9
 keep anything you might have missed. You also know exactly what Quill Radio
-does on the internet, and what it never does. The last chapter, Chapter 15,
+does on the internet, and what it never does. The last chapter, Chapter 16,
 When you need a hand, shows you every way to get help.
 
-## Chapter 15: When you need a hand
+## Chapter 16: When you need a hand
 
 Help is never far away in Quill Radio. This chapter covers the guided
 tutorials, F1 help on any control, keeping Quill Radio up to date, checking
@@ -5496,6 +5864,10 @@ Quill Radio comes with.
 4. Press **Escape**. You are back exactly where you were.
 
 ### Check for Updates, step by step
+
+Help > About shows your version with a build number, such as 3.2.0 (build 2). The
+build number tells you which build of a version you have: when a fix comes out
+without a new version number, it is a newer build, and Check for Updates offers it.
 
 1. Press **Ctrl+Alt+U** (**Help > Check for Updates...**). You should hear
    "Checking for updates".
@@ -5602,8 +5974,11 @@ version really opens. If it doesn't open within two minutes, the update undoes
 itself and puts back the version you had, and the next time Quill Radio starts it
 tells you so. Nothing of yours is changed, and Update History has the details.
 To make this possible, Quill Radio keeps a copy of the installer for the version you
-have. After an update, the previous one is kept until the new version has
-started three times, or for a week, and then it is deleted.
+have: on Beta and Dev for as long as you have that version, and on Stable for a
+week or three starts after each update. That copy takes about 200 MB of disk
+space, which Stable gives back once the week or the three starts are up. After
+an update, the previous installer is kept until the new version has started
+three times, or for a week, and then it is deleted.
 
 **Coming back to Stable.** Open Release Channel again and choose **Stable**.
 
@@ -5846,7 +6221,7 @@ contains file locations from your computer and nothing else personal.
 - **My YouTube will not open, or says your browser keeps its sign-in locked
   or protected.** Close the browser completely and try again, or choose
   Mozilla Firefox or a cookies.txt file in Preferences. "When the YouTube
-  sign-in does not work" in Chapter 10 goes through each message.
+  sign-in does not work" in Chapter 11 goes through each message.
 - **Search YouTube or Read Comments says YouTube did not answer.** YouTube
   changes things from time to time. Try **Station > Repair YouTube
   Support...** (Ctrl+Alt+Y), then try again.

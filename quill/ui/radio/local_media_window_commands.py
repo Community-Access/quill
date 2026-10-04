@@ -353,7 +353,7 @@ class LocalMediaCommandsMixin:
             "Sort Playlist",
             labels,
         ) as chooser:
-            if ui._show(self._host, chooser, "Sort Playlist") != wx.ID_OK:
+            if ui.show_modal_dialog(self._host, chooser, "Sort Playlist") != wx.ID_OK:
                 return
             key = SORT_KEYS[chooser.GetSelection()][0]
         edit_ui.sort(self._host, playlist, key, source=self)

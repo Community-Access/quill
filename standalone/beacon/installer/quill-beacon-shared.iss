@@ -18,6 +18,15 @@
 #ifndef AppVersion
   #define AppVersion "0.1.0"
 #endif
+; The build of this version and the Windows file version (X.Y.Z.B)
+; (docs/release/RELEASE.md, "Build numbers"). build_release.ps1 passes
+; /dAppBuild= and /dAppFileVersion=; these literals are only the fallback.
+#ifndef AppBuild
+  #define AppBuild "1"
+#endif
+#ifndef AppFileVersion
+  #define AppFileVersion "0.1.0.1"
+#endif
 #define AppPublisher "Community Access"
 #define AppURL "https://github.com/Community-Access/quill"
 
@@ -37,6 +46,7 @@ SignedUninstaller=yes
 AppId={{6B1F0E92-3A7D-4C15-9E28-BEAC0FADE001}}
 AppName={#AppName}
 AppVersion={#AppVersion}
+VersionInfoVersion={#AppFileVersion}
 AppPublisher={#AppPublisher}
 AppPublisherURL={#AppURL}
 AppSupportURL={#AppURL}

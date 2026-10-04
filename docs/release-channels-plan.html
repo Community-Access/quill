@@ -407,6 +407,37 @@ and, so that a failed update can undo itself at all, the installer of
 the version you are running stays in
 <code>&lt;updates&gt;/rollback/</code> (the <em>previous</em> one is the
 one aged out after 3 starts or 7 days).</p>
+<p><strong>Also implemented, 2026-10-04:</strong>
+<code>scripts/revoke_release.py</code> (the documented way to withdraw a
+build; <code>feed_tool.py revoke</code> calls the same
+<code>release_feed.withdraw</code>),
+<code>scripts/rollup_release_notes.py</code> over
+<code>quill/core/updater/notes_rollup.py</code> (run by
+<code>promote_release.py</code> at every promotion to Stable, printed by
+its <code>--dry-run</code>, and used for the GitHub release body and the
+feed’s <code>notes_summary</code>), GATE-DATAFMT
+(<code>quill/tools/data_format_audit.py</code>,
+<code>tests/unit/core/test_data_formats.py</code>,
+<code>tests/unit/core/fixtures/data_format_fingerprints.json</code>, in
+<code>platform_report</code>), and the rehearsal
+(<code>tests/unit/scripts/test_channel_rehearsal_offline.py</code> in
+CI, <code>tests/integration/test_channel_rehearsal.py</code> opt-in with
+<code>QUILL_CHANNEL_REHEARSAL=1</code>).</p>
+<p><strong>Decisions, 2026-10-04.</strong> (questions.md 32) The
+installer kept so that a failed update can undo itself is kept
+<strong>always on Beta and Dev</strong>, and <strong>on Stable only for
+7 days or 3 successful starts after each update</strong>
+(<code>quill/core/updater/apply.py</code>,
+<code>keeps_installer</code>), so a Stable computer gets its roughly 200
+MB back; this narrows decision 7 for the running version’s installer,
+while the <em>previous</em> version’s installer still ages out after 3
+starts or 7 days on every channel. And the old v1 update list stays
+signed in CI by <code>windows-release.yml</code> with the
+<code>QUILL_FEED_SIGNING_KEY</code> secret for now. Remove that secret
+from CI and stop v1 signing once every app’s channel-aware release
+(QUILL 1.0.0, QUILL Lite 1.2.0, Quill Radio 3.2.0, QUILL Cast 2.0.0) has
+been out for one full release cycle; until then, leave it alone
+(<code>docs/release/RELEASE.md</code>).</p>
 </blockquote>
 <hr />
 <h2 id="0-the-short-version">0. The short version</h2>
@@ -1016,6 +1047,42 @@ for order but kept for identity. For example
 <code>3.3.0-dev.20261003.2 &lt; 3.3.0-beta.1 &lt; 3.3.0-rc.1 &lt; 3.3.0 &lt; 3.3.1-dev.…</code>.
 Plain semver would put <code>dev</code> after <code>beta</code> (ASCII),
 which is wrong for us. Say so in the module docstring.</p>
+<p><strong>Build numbers (decided 2026-10-04).</strong> The owner asked
+for the same release number to ship more than once (“version numbers
+should also have build numbers so we can ship multiple versions of the
+same release number”). Every version now has a build: canonical
+<code>X.Y.Z[-pre.N]+B</code> (<code>3.2.0+2</code>), shown to people as
+“3.2.0 (build 2)” in About, Update History, update notices and the
+Release Channel window; release notes, changelog headings and file names
+keep <code>3.2.0</code>. A <em>numeric</em> first identifier after
+<code>+</code> is the build and breaks ties when everything else is
+equal
+(<code>3.2.0-rc.1+40 &lt; 3.2.0 &lt; 3.2.0+1 &lt; 3.2.0+2 &lt; 3.2.1</code>;
+a release with no build is build 0); other metadata
+(<code>+g1a2b3c4</code>) is still identity only. <strong>Tags spell the
+build as a pre-release identifier, not with <code>+</code>:</strong>
+<code>quill-radio-v3.2.0-build.2</code>,
+<code>v1.1.0-beta.1.build.3</code>. Copies installed before build
+numbers read <code>+</code> in a sibling tag as no version
+(<code>_app_version_from_tag</code> returns the whole tag, which parses
+as 0.0.0) and in QUILL’s tag as part of the patch (<code>v1.0.0+2</code>
+was 1.0.2); they read <code>-build.2</code> as a pre-release of 3.2.0,
+which a copy on an older release still sees as newer, and which never
+outranks a later release. A pre-build copy already on 3.2.0 is not
+offered the 3.2.0 rebuild (accepted); it gets builds from its next
+update on. The first build of a version is tagged <code>-build.1</code>
+too, so those copies take the newest build rather than the build-less
+one. Every reader accepts both spellings and the existing build-less
+tags. The build lives beside each app’s version constant
+(<code>_BUILD</code>, <code>APP_BUILD</code>,
+<code>quill.__build__</code>), <code>build_release.ps1 -Build</code> and
+<code>publish_release.py --build</code> default to the next build after
+the newest published tag for that version
+(<code>release_tags.next_build</code>), installers write
+<code>[app] version_build=</code> beside <code>version=</code> and stamp
+<code>VersionInfoVersion</code> <code>X.Y.Z.B</code>, the v2 feed
+carries <code>3.2.0+2</code>, and promotion names one build. Runbook:
+<code>docs/release/RELEASE.md</code>, “Build numbers”.</p>
 <p><strong>New module <code>quill/core/versioning.py</code></strong>
 (wx-free, the one parser):</p>
 <ul>

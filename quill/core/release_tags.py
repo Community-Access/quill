@@ -32,6 +32,13 @@ forever, to the people who most need one.
 * **The version is a bare dotted number**, optionally with a pre-release
   suffix: ``3.0.0``, ``0.9.0-beta.3``. No ``v`` inside it; the ``v`` is the
   separator, not part of the number.
+* **A build number is a pre-release identifier in a tag** (2026-10):
+  ``quill-radio-v3.2.0-build.12``, ``v1.1.0-beta.1.build.3``. The canonical
+  version is ``3.2.0+12``, but a ``+`` in a tag is read by the copies already
+  installed as part of the patch number (``v1.0.0+2`` was 1.0.2 to them) or as
+  no version at all, so :func:`release_tag` spells the build the way they can
+  read: as a pre-release of the same number, which an older release still sees
+  as newer. Reading accepts both spellings, and build-less tags stay valid.
 
 **Why the prefix and not just the app name.** Tags in this repository are
 globally ordered and globally listed: ``git tag`` is read by people, and a list
@@ -47,6 +54,7 @@ both need this, and neither should import a UI to find out what a tag is called.
 from __future__ import annotations
 
 import re
+from collections.abc import Iterable
 from typing import NamedTuple
 
 __all__ = [
@@ -54,6 +62,7 @@ __all__ = [
     "TAG_PATTERN",
     "ReleaseTag",
     "is_release_tag",
+    "next_build",
     "parse_release_tag",
     "release_tag",
 ]
@@ -70,7 +79,10 @@ _APP_FOR_TAG_KEY = {tag_key: app for app, tag_key in RELEASE_TAG_KEYS.items()}
 
 #: A version: dotted numbers, optionally a pre-release suffix. Anchored, because
 #: a "version" that merely *contains* a number is how a typo ships.
-_VERSION = r"\d+\.\d+(?:\.\d+)?(?:[-.][0-9A-Za-z][0-9A-Za-z.]*)?"
+_VERSION = (
+    r"\d+\.\d+(?:\.\d+)?(?:[-.][0-9A-Za-z][0-9A-Za-z.]*)?"
+    r"(?:\+[0-9A-Za-z][0-9A-Za-z.]*)?"
+)
 
 #: The whole tag. ``quill-radio-v3.0.0``, or ``v1.0.0`` for QUILL itself.
 TAG_PATTERN = re.compile(rf"^(?:{_PREFIX}(?P<app>[a-z][a-z0-9]*)-)?v(?P<version>{_VERSION})$")
@@ -97,11 +109,18 @@ def release_tag(app_key: str, version: str) -> str:
 
     A leading ``v`` on *version* is tolerated and dropped: the ``v`` in the tag
     is the separator, and ``quill-radio-vv3.0.0`` is a tag nothing will match.
+    A build number is spelled the way installed copies read it (module
+    docstring): ``release_tag("radio", "3.2.0+12")`` is
+    ``quill-radio-v3.2.0-build.12``; commit metadata (``+g1a2b3c``) is dropped.
     """
     number = str(version).strip().lstrip("vV")
     key = str(app_key).strip().lower()
     if not re.fullmatch(_VERSION, number):
         raise ValueError(f"{version!r} is not a release version (expected e.g. '3.0.0')")
+    if "+" in number:
+        from quill.core.versioning import ReleaseVersion
+
+        number = ReleaseVersion.parse(number).tag_version()
     if key == _UNPREFIXED_APP:
         return f"v{number}"
     if not re.fullmatch(r"[a-z][a-z0-9]*", key):
@@ -130,3 +149,27 @@ def is_release_tag(tag: str, app_key: str | None = None) -> bool:
     if parsed is None:
         return False
     return app_key is None or parsed.app_key == str(app_key).strip().lower()
+
+
+def next_build(tags: Iterable[str], app_key: str, version: str) -> int:
+    """The build number the next release of *version* for *app_key* takes.
+
+    One more than the highest build already tagged for that exact release
+    number, in either spelling; a build-less tag (every release before build
+    numbers) counts as build 0, so the first rebuild of an old ``3.0.4`` is
+    build 1. Nothing tagged yet: build 1. Other apps' tags and other versions
+    are ignored.
+    """
+    from quill.core.versioning import ReleaseVersion
+
+    wanted = ReleaseVersion.parse(version).without_build()
+    key = str(app_key).strip().lower()
+    builds = []
+    for tag in tags:
+        parsed = parse_release_tag(tag)
+        if parsed is None or parsed.app_key != key:
+            continue
+        found = ReleaseVersion.try_parse(parsed.version)
+        if found is not None and found.same_number(wanted):
+            builds.append(found.build)
+    return max(builds, default=0) + 1

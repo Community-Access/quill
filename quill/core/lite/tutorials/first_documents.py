@@ -62,6 +62,21 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 hear='"Saved" and the file\'s name.',
             ),
             Step(
+                title="Find it again later",
+                body=(
+                    "QUILL Lite remembers what you open. Open the Recent Documents "
+                    "window and your file is at the top of the list. Next time, "
+                    "press Enter on it instead of hunting for it with Open. Alt "
+                    "Shift 1 reopens the newest one without opening the window at all."
+                ),
+                command="cmd_recent_documents",
+                hear="The Recent Documents window, on your file's name and its folder.",
+                note=(
+                    "Press Escape to close the window. Pin, in the same window, keeps "
+                    "a file you use often at the top for good."
+                ),
+            ),
+            Step(
                 title="Type a character the file cannot hold",
                 body=(
                     "This one is optional. If your file uses an older encoding, "

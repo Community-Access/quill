@@ -221,6 +221,51 @@ If an update ever fails to start, it undoes itself, puts back the version you
 had, and tells you so the next time QUILL Lite opens. The window's **Update
 History** button shows everything the updater has done.
 
+Help > About now shows a build number after the version: this release is
+1.2.0 (build 1). If a fix comes out without a new version number, it is a
+newer build, and Check for Updates offers it to you.
+
+## Dictating in Spanish
+
+New, and ready for you to try: you can dictate in Spanish. Open Dictation
+Settings (**Alt+Shift+F6**), choose **Spanish** under **Dictation language**,
+and press Enter.
+
+- Your words come out in Spanish, accents and all, using Whisper's
+  multilingual speech model. It comes with QUILL Lite, so nothing is
+  downloaded.
+- The commands stay in English for now. "Scratch that", "new paragraph" and
+  the rest work as they always have. Spanish commands come next, once a native
+  speaker has checked them.
+- With automatic punctuation on, Whisper punctuates for you. Turn it off and
+  you can say the Spanish words instead: "coma", "punto", "punto y coma",
+  "dos puntos", "abrir interrogación", "cerrar interrogación" and more.
+- The wake and stop phrases become "Quill dicta" and "deja de dictar".
+
+QUILL has the same thing, in the same place. The user guide's "Dictating in
+Spanish" has the whole list. If something comes out wrong, tell us through
+**Help > Get Help from Support**. We're keen to hear how it goes.
+
+## Your recent documents, one key away
+
+New: press **Alt+Shift+0** (or choose **File > Recent Documents...**) to see
+every document you opened recently, newest first, and press Enter on the one
+you want. The list was always there, under **File > Open Recent**, but it was
+easy to miss. Now it has a key and a window of its own.
+
+- **Pin** the documents you come back to, and they stay at the top however many
+  others you open.
+- **Remove from List** takes one off. The file is not touched.
+- **Open Containing Folder** shows the file in File Explorer.
+- **Clear Unpinned...** empties the list after asking. Pinned documents stay.
+- Choose how many documents to remember, from 1 to 50, and whether files
+  deleted from this computer drop off by themselves.
+
+**Alt+Shift+1** to **Alt+Shift+9** still reopen the first nine straight away,
+and pinned documents now come first there too. QUILL has the same window on
+the same key, and the same quick keys on its Open Recent menu. The user
+guide's "Opening something you worked on recently" has the details.
+
 ## Things that work better now
 
 - **Coming back with Alt+Tab** puts your focus in your document, even when
@@ -231,9 +276,22 @@ History** button shows everything the updater has done.
   offered Try Again.
 - **Two copies at once** no longer undo each other's preferences. Each keeps
   the changes you made in it.
+- **Remove Quote Marks has a key that works.** It is now **Alt+Shift+.**
+  (Alt, Shift and the period), under **Edit > Lines**. Its old key was also
+  the key that shows and hides QUILL from anywhere in Windows, so whenever
+  QUILL was running, QUILL Lite never heard it. QUILL's Unquote Lines moved to
+  the same new key.
 - **Closing QUILL Lite is tidier.** Documents sent to it while it closes are
   opened next time, an update check never starts on the way out, and an error
   message some people saw while exiting is gone.
+- **Insert > Markdown Tag appears only in Markdown documents.** In a plain or
+  rich text document it used to sit on the menu greyed out, which told you
+  nothing. Now it is not there at all, and if you press **Ctrl+Alt+I** in one
+  of those documents, QUILL Lite says "Markdown tags are for Markdown
+  documents." QUILL does the same.
+- **Next and Previous Heading say the heading once.** In a rich document you
+  used to hear it twice, "Heading 1: Two" and then "Heading 1, Two" a moment
+  later. Now you hear it once. QUILL had the same echo and is fixed too.
 
 ## Keys new in 1.2
 
@@ -246,6 +304,8 @@ History** button shows everything the updater has done.
 | **Ctrl+Alt+Shift+'** | Define in Context |
 | **Ctrl+Alt+Shift+]** | Find the Word For |
 | **Alt+Shift+;** | Dictionary Status |
+| **Alt+Shift+.** | Remove Quote Marks, on its new key |
+| **Alt+Shift+0** | Recent Documents |
 | **Shift+F9** | Activity |
 | **F9** | Repeat Last Result |
 

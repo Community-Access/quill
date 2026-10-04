@@ -1719,8 +1719,8 @@ as a palette command and scans every folder.
 
 **Show/hide chord (C2-01).** Cast registers its own system-wide show/hide,
 Ctrl+Alt+Shift+F12 (`podcasts_routes.CAST_TRAY_HOTKEY`), and sets
-`_own_tray_hotkey` so the shared default (Ctrl+Alt+Shift+Q, which is Cast's
-Mark as Played and Next) is never added, even when Windows refuses Cast's own
+`_own_tray_hotkey` so the shared default (Ctrl+Alt+Shift+Q, which is QUILL's
+own show/hide key) is never added, even when Windows refuses Cast's own
 chord. Every Ctrl+Alt+Shift letter already belongs to a family app.
 
 **Menu rows (C2-03).** Episode > Player Information... (Ctrl+I) and Podcasts >

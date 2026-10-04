@@ -291,6 +291,11 @@ GATES: tuple[Gate, ...] = (
         "GATE-FEED: signed v2 update feeds; warns 14 days before one expires",
         (sys.executable, "-m", "quill.tools.release_feed_audit"),
     ),
+    Gate(
+        "data-formats",
+        "GATE-DATAFMT: a saved shape changes only with a bumped version or a review",
+        (sys.executable, "-m", "quill.tools.data_format_audit"),
+    ),
 )
 
 

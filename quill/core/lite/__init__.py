@@ -43,6 +43,7 @@ APP_ID = "QuillLite"
 #: (``quill.__version__``): it ships its own installers and its own release
 #: notes, exactly as Radio, Cast, Weather, Studio and Inkwell do.
 APP_VERSION = "1.2.0"
+APP_BUILD = 1  # this version's build (docs/release/RELEASE.md, "Build numbers")
 
 
 def version_label() -> str:
@@ -50,7 +51,7 @@ def version_label() -> str:
     shared runtime's (quill.core.app_version explains the 2026-09-29 mix-up)."""
     from quill.core.app_version import describe_version
 
-    return describe_version(APP_VERSION)
+    return describe_version(APP_VERSION, build=APP_BUILD)
 
 
 #: Where QUILL Lite's own releases live, and the basename every one of its
@@ -66,6 +67,7 @@ RELEASE_ASSET_PREFIX = "QuillLite"
 __all__ = [
     "APP_ID",
     "APP_NAME",
+    "APP_BUILD",
     "APP_VERSION",
     "RELEASE_ASSET_PREFIX",
     "RELEASE_REPO",

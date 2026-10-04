@@ -36,12 +36,14 @@ def installed_app_version(app_key: str) -> str:
     from quill.core.app_version import installed_version
 
     if app_key == "radio":
+        from quill.apps.radio import _BUILD as build
         from quill.apps.radio import _VERSION as code
     elif app_key == "cast":
+        from quill.apps.podcasts_menu import APP_BUILD as build
         from quill.apps.podcasts_menu import APP_VERSION as code
     else:
         raise KeyError(app_key)
-    return installed_version(code)
+    return installed_version(code, build=build)
 
 
 def open_for_shell(

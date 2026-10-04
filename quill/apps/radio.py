@@ -37,10 +37,10 @@ _TITLE = "Quill Radio"
 from quill.core.app_version import describe_version, installed_version  # noqa: E402
 
 _VERSION = "3.2.0"
+_BUILD = 1  # this version's build (docs/release/RELEASE.md, "Build numbers")
 _REPO = "Community-Access/quill"
-#: Radio publishes two downloads since 3.0.0 -- the installer and the portable
-#: zip -- so Check for Updates asks "portable, or not" and nothing else, exactly
-#: as QUILL Lite does (AppShell.check_for_app_updates says why).
+#: Two downloads since 3.0.0 (installer, portable zip): Check for Updates asks "portable,
+#: or not" and nothing else, as QUILL Lite does (AppShell.check_for_app_updates says why).
 _MATCH_EDITION = False
 #: Shared components this app requires, for the component-refcount registry
 #: (ffmpeg for recording; mpv/libmpv is the playback engine).
@@ -1047,7 +1047,7 @@ class RadioAppFrame(
         radio_history.save_history(app_data_dir(), history)
         self.check_for_app_updates(
             repo_slug=_REPO,
-            current_version=installed_version(_VERSION),
+            current_version=installed_version(_VERSION, build=_BUILD),
             app_key="radio",
             silent_no_update=True,
             match_edition=_MATCH_EDITION,
@@ -1055,7 +1055,7 @@ class RadioAppFrame(
 
     def _show_about(self) -> None:
         self._show_message_box(
-            f"{_TITLE} {describe_version(_VERSION)}\n"
+            f"{_TITLE} {describe_version(_VERSION, build=_BUILD)}\n"
             "Accessible internet radio, podcasts, and audio from Quill.\n\n"
             f"https://github.com/{_REPO}\n\n"
             "Credits and thanks:\n"

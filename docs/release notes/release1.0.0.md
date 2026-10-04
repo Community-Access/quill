@@ -103,6 +103,37 @@ more. They all live in **Help > Download Optional Components**, each with a
 plain description, its size, a Test button and a Remove button. Nothing is
 downloaded until you ask.
 
+**QUILL can be your text editor.** Installing it tells Windows that QUILL can
+open your text, Markdown, rich text, HTML, Word and EPUB files, and takes
+nothing over. In **Settings > General**, under **Windows and your files**,
+**Make QUILL My Text Editor...** explains what Windows lets an app do and opens
+the page where you choose QUILL for `.txt` and anything else. **Open QUILL
+instead of Notepad** goes further, for the programs that start Notepad by
+name. It is off until you turn it on, asks first, and puts Notepad back when
+you turn it off or uninstall QUILL. It works from a portable copy too.
+
+### Staying up to date
+
+**Help > Check for Updates...** looks for a newer QUILL, and by default QUILL
+looks by itself each time it starts. It never installs anything without
+asking. After an update, QUILL checks that the new version really opens, and
+if it does not open within two minutes, it puts back the version you had.
+
+**Help > Release Channel...** chooses which updates you are offered.
+**Stable**, the one we recommend, is where every copy starts. **Beta** gets new
+features a few weeks early, and **Dev** is the work in progress. Moving to
+Beta or Dev saves a copy of your settings and keys first, shows a short
+warning you have to agree to, and can move QUILL Lite, Quill Radio and QUILL
+Cast in the same step if you tick them. Coming back to Stable is the same
+window, and QUILL tells you plainly if it has to wait for Stable to catch up.
+The same window is a button away in **Settings > Administration**, and its
+**Update History** shows everything the updater has done.
+
+Every version now has a **build number**, so a fix can ship without a new
+version number. **Help > About Quill** says "1.0.0 (build 1)", and Check for
+Updates offers a later build of the same version to everyone on an earlier
+one.
+
 ### The first two minutes
 
 The first time you start QUILL, a startup wizard asks one question: what kind
@@ -215,6 +246,25 @@ its guesses.
   bar. The key you see is the one that is actually bound, so if you change it,
   the menu follows you.
 - Every Close button closes. That is now true in every window in the family.
+- **More Preferences is back.** `Ctrl+,` opens Settings straight away, which
+  had left Task Recipes and Working Modes, GLOW Accessibility and every
+  Quillin's preferences (Smart Insert, BRF Tools, Journal Stamp, Document
+  Guardian, Status Scribe) with no way in. **Tools > Customize and Support >
+  More Preferences...** (the QUILL key, then `O`) lists them all.
+- **The AI and Assistant page shows all its settings.** Voice question reply,
+  the assistant's tone, Ask AI's default provider and model, the image
+  description style and the rest were never drawn. They are there now, each
+  with F1 help.
+- **Find a setting finds settings on every page**, including pages you have
+  not opened yet. Before, it only searched the page that was showing.
+- **Quill Eraser's four settings are on the Spelling page.** The guide said
+  they were in Settings, and they were on no page at all.
+- **Two keys that did nothing now work.** The QUILL key followed by `C` copies
+  your selection ready to paste into an email, and `Alt+F1` on something
+  greyed out tells you why it is unavailable.
+- **Announce Contrast Ratio always answers out loud.** It used to speak only
+  when the startup announcements setting was on, which it is not unless you
+  turn it on.
 
 ### Smaller fixes you will feel
 
@@ -422,6 +472,12 @@ QUILL opens many documents at once, each in its own tab.
 - The Window menu lists them all.
 
 Recent files, Save, Save All and session restore work the way you expect.
+**Alt+Shift+1** to **Alt+Shift+9** reopen the nine documents you opened most
+recently, and **Recent Documents...** (**Alt+Shift+0**, also at the foot of
+**File > Open Recent**) shows the whole list in one window. You can open a
+document, pin the ones you keep coming back to, remove a row, open the
+containing folder, clear everything that is not pinned, and choose how many
+documents to remember. QUILL Lite has the same window on the same key.
 
 **Notebooks** gather a folder of related files into a project, with entries,
 headings, bookmarks, sticky notes, saved versions and optional writing goals.
@@ -573,7 +629,8 @@ available, until testing with JAWS and NVDA is finished.
 #### Working with lines
 
 - Sort ascending, descending, by length, by number or by date. Reverse,
-  shuffle, remove duplicates, quote and unquote.
+  shuffle, remove duplicates, quote and unquote. **Unquote Lines** is
+  **Alt+Shift+.** (Alt, Shift and the period), in QUILL and QUILL Lite.
 - **Number Lines (Advanced)** lets you set the starting number, the step,
   digits or Roman numerals, leading zeros, what follows the number, and the
   alignment.
@@ -630,6 +687,10 @@ table column or a row.
   QUILL asks before a large insertion.
 - **Word Prediction** (**Ctrl+Period**) suggests endings from the words
   already in your document, and from HTML and Markdown tags.
+- **Insert > Markdown Tag** (**Ctrl+Alt+I**) is on the Insert menu only while
+  you are in a Markdown document, and comes back as soon as you are. Pressed
+  anywhere else, its key tells you that Markdown tags are for Markdown
+  documents, instead of doing nothing.
 
 ### The clipboard, expanded
 
@@ -792,6 +853,12 @@ preview and HTML export show it through MathJax. Word export writes real Word
 equations you can edit, and they turn back into text when you reopen the
 file. With the optional MathCAT engine installed, "read this part aloud"
 speaks math the way NVDA does.
+
+Insert Equation writes `\(...\)` around an equation in the line and `$$...$$`
+around a block, the same marks the Math Equations Quillin uses, so the preview
+and Word export both pick it up. A beta wrote single dollar signs, which
+neither of them recognised. To update an equation from a beta, select it and
+insert it again.
 
 **Math in the books you read, too.** When you open an **EPUB** with equations
 in MathML or LaTeX, QUILL turns each one into the same plain-language reading
@@ -1013,6 +1080,18 @@ QUILL turns speech into text on your own computer.
 you when a model is too big for your computer, and recommends the best fit.
 Downloads use a checksum-pinned progress dialog you can cancel.
 
+- **Live Dictation** (**Ctrl+F11**) writes as you talk: each phrase lands at
+  the cursor when you pause, with a soft tone, and is read back to you.
+  **Shift+F11** lists the last twenty phrases, and **My Words and Phrases...**
+  (**Alt+Shift+F10**) teaches it your names and corrections. Nothing leaves
+  your computer and no recording is kept.
+- **You can dictate in Spanish.** In **Dictation Settings** (**Alt+Shift+F6**),
+  set **Dictation language** to Spanish. Your words come out in Spanish,
+  accents and all, using a multilingual model that comes with QUILL, so there
+  is nothing to download. The wake and stop phrases become "Quill dicta" and
+  "deja de dictar", and Spanish punctuation words such as "coma" and "punto"
+  work when automatic punctuation is off. Commands stay in English for now.
+  This is new, and we would love to hear how it goes.
 - **Locked Dictation** is the reliable way to speak into a document.
   **Ctrl+F9** starts and stops, **Ctrl+Shift+F9** pauses and resumes, and
   **Alt+F9** tells you where things stand. Everything you dictate arrives as
@@ -2607,6 +2686,13 @@ happen.
 
 ### Resetting and moving
 
+**Settings** (**Ctrl+,**) opens on a **Find a setting** box: type a word or
+two and arrow to the setting you meant, on whichever page it lives. The
+**Administration** page can **Export settings...** to a file you carry to
+another computer, leaving out the folders that only make sense on this one,
+and **Import settings...** brings them back and tells you what the file did
+and did not contain.
+
 **Reset Everything to Factory Defaults** puts your settings, shortcuts, menu
 changes and feature profile back as they were, after one confirmation.
 **Import data from a previous QUILL install** brings settings, shortcuts and
@@ -2628,8 +2714,9 @@ out.
   Favorite folders are the ones that must always be easy to reach. **Add
   Favorite Folder** (**Ctrl+Shift+Grave** then **Shift+F**) adds the current
   document's folder, **Remove Favorite Folder...** (**Ctrl+Shift+Grave** then
-  **Shift+X**) takes one off, and **Open From Favorite Folder...** opens Quick
-  Open across them. All three are on **File > Favorite Folders**.
+  **Shift+X**) takes one off, and **Open From Favorite Folder...**
+  (**Ctrl+Shift+Grave** then **G**) opens Quick Open across them. All three
+  are on **File > Favorite Folders**.
 - **Quick Open** puts you straight in a search box and filters as you type,
   across every favorite folder, with capital letters ignored. Each result
   says which folder it came from. By default it looks only at the top level of

@@ -374,6 +374,7 @@ class CastMainPanelMixin(CastLibraryFindMixin):
             event.GetKeyCode() in (wx.WXK_UP, wx.WXK_DOWN)
             and event.AltDown()
             and event.ShiftDown()
+            and not event.ControlDown()  # Ctrl+Alt+Shift+Down is Mark as Played and Next
             and wx.Window.FindFocus() is getattr(getattr(self, "_places", None), "box", None)
         ):
             # Alt+Shift+Up/Down moves a place (qc.md 4.3): Radio's chord, caught

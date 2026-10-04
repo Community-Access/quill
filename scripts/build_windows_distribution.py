@@ -607,7 +607,10 @@ def build_windows_distribution(
         )
 
     iss_numeric_version = _iss_numeric_version(
-        identity.base_version, identity.channel, identity.prerelease_number
+        identity.base_version,
+        identity.channel,
+        identity.prerelease_number,
+        identity.release_build,
     )
     installer_script = installer_dir / "quill.iss"
     reference_installer_script = reference_installer_dir / "quill.iss"
@@ -3287,6 +3290,7 @@ def _build_identity(source_root: Path) -> BuildIdentity:
         base_version=base,
         channel=channel,
         prerelease_number=pre,
+        release_build=0 if channel == "dev" else _release_build_from_init_py(source_root),
         display_version=display,
         product_name=product_name,
         publisher=publisher,
@@ -3315,6 +3319,19 @@ def _base_version_from_init_py(source_root: Path) -> str:
     return "unknown"
 
 
+def _release_build_from_init_py(source_root: Path) -> int:
+    """``quill.__build__``, the release build number (docs/release/RELEASE.md,
+    "Build numbers"), read as text; 0 when the checkout predates it."""
+    import re
+
+    init_py = source_root / "quill" / "__init__.py"
+    if init_py.exists():
+        match = re.search(r"^__build__\s*=\s*(\d+)", init_py.read_text(encoding="utf-8"), re.M)
+        if match:
+            return int(match.group(1))
+    return 0
+
+
 def _display_version(base: str, channel: str, pre: int) -> str:
     """User-facing release label, matching tools/generate_build_info.py.
 
@@ -3331,21 +3348,25 @@ def _display_version(base: str, channel: str, pre: int) -> str:
     return f"{base} Dev"
 
 
-def _iss_numeric_version(base: str, channel: str, pre: int) -> str:
+def _iss_numeric_version(base: str, channel: str, pre: int, release_build: int = 0) -> str:
     """Return a Major.Minor.Build.Revision quadruple for Inno Setup.
 
     Inno Setup's ``VersionInfoVersion`` directive (which feeds the
     Windows VERSIONINFO resource) requires a numeric quadruple, not
     the user-visible "0.7.0 Beta 1" string. The ``base`` is split on
-    dots; missing segments are filled with zeros; ``pre`` fills the
-    Revision slot for alpha/beta/rc channels so beta 1 is distinguishable
-    from the final 0.7.0 release once a user has both installed.
+    dots; missing segments are filled with zeros. The Revision slot is the
+    release build number (``1.0.0.2`` for 1.0.0 build 2, so Windows shows
+    which build is installed); without one, ``pre`` fills it for
+    alpha/beta/rc channels so beta 1 is distinguishable from the final.
     """
     parts = base.split(".")
     while len(parts) < 3:
         parts.append("0")
     major, minor, build = parts[0], parts[1], parts[2]
-    revision = str(pre) if channel in {"alpha", "beta", "rc"} else "0"
+    if release_build > 0:
+        revision = str(release_build)
+    else:
+        revision = str(pre) if channel in {"alpha", "beta", "rc"} else "0"
     return f"{major}.{minor}.{build}.{revision}"
 
 
@@ -3359,6 +3380,7 @@ class BuildIdentity:
     display_version: str
     product_name: str
     publisher: str
+    release_build: int = 0
 
 
 if __name__ == "__main__":

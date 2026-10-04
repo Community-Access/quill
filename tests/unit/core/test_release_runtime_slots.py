@@ -182,7 +182,8 @@ def test_beta_and_dev_slots_may_carry_a_sibling_ahead_stable_may_not() -> None:
     published = {"quilllite": "1.2.0", "radio": "3.2.0"}
     assert sib.disagreements(sources, published, {"radio"}, channel="beta") == [
         "radio: this build says it is releasing radio, but source still says 3.2.0, which "
-        "is already published. Bump the version in the release commit."
+        "is already published. Bump the version in the release commit -- or, to ship the "
+        "same version again, its build number."
     ]
     strict = sib.disagreements(sources, published, set(), channel="stable")
     assert any(p.startswith("quilllite: source says 1.3.0") for p in strict)

@@ -107,6 +107,7 @@ class MenuBuilderMixin:
         self._id_exit = wx.ID_EXIT
         self._id_palette = wx.NewIdRef()
         self._id_preferences = wx.ID_PREFERENCES
+        self._id_preferences_hub = wx.NewIdRef()
         self._id_menu_editor = wx.NewIdRef()
         self._id_open_url = wx.NewIdRef()
         self._id_open_remote = wx.NewIdRef()
@@ -213,6 +214,7 @@ class MenuBuilderMixin:
         )
         self._recent_menu = wx.Menu()
         file_menu.AppendSubMenu(self._recent_menu, _("O&pen Recent"))
+        self._prepare_recent_documents_item()
         self._refresh_recent_menu()
         self._id_open_from_favorite_folder = wx.NewIdRef()
         self._id_add_favorite_folder = wx.NewIdRef()
@@ -275,7 +277,7 @@ class MenuBuilderMixin:
             self._id_github_manage_accounts,
             self._menu_label(_("Ma&nage GitHub Accounts..."), "file.github_manage_accounts"),
         )
-        file_menu.AppendSubMenu(remote_menu, _("Op&en from Remote"))
+        file_menu.AppendSubMenu(remote_menu, _("Open from Remote"))  # E is Export's
         file_menu.AppendSubMenu(self._sessions_menu, _("&Snapshots"))
         self._id_publishing_connections = wx.NewIdRef()
         self._id_publishing_verify_connection = wx.NewIdRef()
@@ -463,7 +465,7 @@ class MenuBuilderMixin:
             self._id_export_other,
             self._menu_label(_("Other Pandoc Format..."), "file.export_other_pandoc"),
         )
-        file_menu.AppendSubMenu(export_menu, _("E&xport"))
+        file_menu.AppendSubMenu(export_menu, _("&Export"))  # X belongs to Exit
 
         file_menu.Append(
             self._id_convert_file,
@@ -544,7 +546,7 @@ class MenuBuilderMixin:
             self._id_close_document,
             self._menu_label(_("Close Docu&ment"), "file.close_document"),
         )
-        file_menu.Append(self._id_exit, self._menu_label(_("Exit"), "app.exit"))
+        file_menu.Append(self._id_exit, self._menu_label(_("E&xit"), "app.exit"))
 
         self._id_find = wx.NewIdRef()
         self._id_undo = wx.NewIdRef()
@@ -3165,6 +3167,10 @@ class MenuBuilderMixin:
         customize_support_menu.Append(
             self._id_preferences,
             self._menu_label(_("Pre&ferences..."), "app.preferences"),
+        )
+        customize_support_menu.Append(
+            self._id_preferences_hub,
+            self._menu_label(_("More Preferen&ces..."), "app.preferences_hub"),
         )
         customize_support_menu.Append(
             self._id_menu_editor,

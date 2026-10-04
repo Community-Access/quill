@@ -168,7 +168,7 @@ def export_playlist(host: Any, playlist_id: str) -> bool:
         defaultFile=f"{_safe_file_name(playlist.name)}.m3u8",
         style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
     ) as chooser:
-        if ui._show(host, chooser, "Export as M3U") != wx.ID_OK:
+        if ui.show_modal_dialog(host, chooser, "Export as M3U") != wx.ID_OK:
             return False
         target = Path(chooser.GetPath())
     text = export_m3u(playlist, playlist_dir=target.parent)
@@ -199,7 +199,7 @@ def import_playlist(host: Any, *, into: str = "") -> None:
         wildcard=IMPORT_WILDCARD,
         style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
     ) as chooser:
-        if ui._show(host, chooser, "Import a Playlist") != wx.ID_OK:
+        if ui.show_modal_dialog(host, chooser, "Import a Playlist") != wx.ID_OK:
             return
         source = Path(chooser.GetPath())
     try:
@@ -209,6 +209,7 @@ def import_playlist(host: Any, *, into: str = "") -> None:
         return
     if not entries:
         tail = f" It held {skipped} web addresses; Import Stations is for those." if skipped else ""
+        # announce-punctuation: exempt -- each part is a whole sentence
         ui.announce(host, f"No files were found in {source.name}.{tail}")
         return
     lib = ui.library(host)
@@ -267,7 +268,7 @@ def locate(host: Any, playlist_id: str, item_id: int) -> bool:
         defaultFile=item.file_name,
         style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
     ) as chooser:
-        if ui._show(host, chooser, "Locate") != wx.ID_OK:
+        if ui.show_modal_dialog(host, chooser, "Locate") != wx.ID_OK:
             return False
         found = Path(chooser.GetPath())
     old_folder, new_folder = Path(item.path).parent, found.parent
@@ -282,6 +283,7 @@ def locate(host: Any, playlist_id: str, item_id: int) -> bool:
             fixed += 1
     ui.commit(host)
     tail = f" {fixed - 1} more from the same folder were found too." if fixed > 1 else ""
+    # announce-punctuation: exempt -- each part is a whole sentence
     ui.announce(host, f"Found {item.display_title}.{tail}")
     return True
 
@@ -367,9 +369,11 @@ def properties(host: Any, playlist_id: str, item_id: int) -> None:
     close.SetHelpText("Closes this and goes back to the list.")
     sizer.Add(close, 0, wx.EXPAND | wx.ALL, 8)
     dialog.SetSizerAndFit(sizer)
-    dialog.SetEscapeId(wx.ID_CANCEL)
+    from quill.ui.dialog_contract import apply_modal_ids
+
+    apply_modal_ids(dialog, cancel_id=wx.ID_CANCEL)
     try:
         box.SetFocus()
-        ui._show(host, dialog, PROPERTIES_TITLE)
+        ui.show_modal_dialog(host, dialog, PROPERTIES_TITLE)
     finally:
         dialog.Destroy()

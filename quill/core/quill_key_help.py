@@ -265,6 +265,7 @@ _CHORD_COMMAND_TITLES: dict[str, str] = {
     "tools.dictation_toggle": "Dictation Toggle",
     "tools.describe_image": "Describe Image",
     "edit.copy_selection_for_email": "Copy Selection For Email",
+    "app.preferences_hub": "More Preferences",
     "edit.open_review_buffer": "Review Buffer",
     "view.text_size_up": "Increase Text Size",
     "view.text_size_down": "Decrease Text Size",

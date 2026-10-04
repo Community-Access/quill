@@ -393,7 +393,7 @@ def test_safe_regex_times_out(monkeypatch) -> None:
     )
 
     with pytest.raises(RegexTimeoutError):
-        safe_finditer("(a+)+$", "a" * 100)
+        safe_finditer("a+$", "a" * 100)  # the fake compile times out regardless
 
 
 def test_memory_snapshot_writes_file(tmp_path: Path) -> None:

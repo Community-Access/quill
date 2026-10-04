@@ -206,6 +206,13 @@ def _live_chords() -> set[str]:
     from quill.ui.main_frame_hotkeys import DEFAULT_SHOW_HIDE_HOTKEY
 
     live.add(_normalise(DEFAULT_SHOW_HIDE_HOTKEY))
+    # Alt+Shift+1 to 9 reopen the first nine recent documents in both editors.
+    # They are menu-label accelerators on rows built at run time, worded by the
+    # one shared function, so that function is the honest source (2026-10-04).
+    from quill.core.recent_documents import NUMBERED, menu_label
+
+    for index in range(1, NUMBERED + 1):
+        live.add(_normalise(menu_label(index, "x.txt").split("\t", 1)[1]))
     for row in COMMANDS:
         for cell in row:
             if isinstance(cell, str) and "+" in cell:

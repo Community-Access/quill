@@ -134,6 +134,11 @@ jobs:
         id: channel
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
+          # A build number (v1.0.0-build.2, v1.1.0-beta.1.build.3) says which
+          # build of a release this is, not which channel: read the channel
+          # without it (docs/release/RELEASE.md, "Build numbers").
+          VERSION="${VERSION%-build.*}"
+          VERSION="${VERSION%.build.*}"
           BASE="${VERSION%%-*}"
           MAJOR="${BASE%%.*}"
           case "$VERSION" in

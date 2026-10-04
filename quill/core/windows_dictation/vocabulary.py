@@ -25,12 +25,21 @@ so the list somebody reads is the list that works. The parser matches the
 longest phrase first ("exclamation point" before "exclamation"), and
 ``literal`` before any phrase makes it words instead: "literal new line" types
 *new line*.
+
+**One table per language.** The tables above are English. :func:`vocabulary_for`
+puts together what a phrase is matched against for the dictation language: the
+English table as it is, or -- for Spanish -- the English commands and marks
+plus the Spanish punctuation words of
+:mod:`~quill.core.windows_dictation.vocabulary_es` when the engine is not
+punctuating, matched without accents (dict.md 9.4).
 """
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
 from enum import StrEnum
+from functools import lru_cache
 
 __all__ = [
     "COMMANDS",
@@ -43,9 +52,11 @@ __all__ = [
     "CommandHelp",
     "Glue",
     "Mark",
+    "Vocabulary",
     "dash_text",
     "longest_phrase",
     "mark_for",
+    "vocabulary_for",
 ]
 
 
@@ -394,3 +405,102 @@ def longest_phrase(words: list[str], start: int) -> tuple[str, ...] | None:
 def mark_for(phrase: tuple[str, ...]) -> Mark | None:
     """The mark *phrase* names, or ``None`` when it is a command or nothing."""
     return _MARK_BY_PHRASE.get(phrase)
+
+
+class Vocabulary:
+    """Everything one dictation language matches a phrase against.
+
+    *marks* maps a phrase to the marks it writes -- usually one, two for
+    Spanish "punto y aparte". *folds* says the phrase's words are compared
+    without accents (the table's own phrases are stored that way already).
+    """
+
+    def __init__(
+        self,
+        marks: dict[tuple[str, ...], tuple[Mark, ...]],
+        commands: dict[tuple[str, ...], Command],
+        *,
+        folds: bool = False,
+        capital_words: Iterable[str] = (),
+        space_words: Iterable[str] = (),
+    ) -> None:
+        self.marks = marks
+        self.commands = commands
+        self.folds = folds
+        self.capital_words = frozenset(capital_words)
+        self.space_words = frozenset(space_words)
+        by_first: dict[str, list[tuple[str, ...]]] = {}
+        for phrase in list(marks) + list(commands):
+            by_first.setdefault(phrase[0], []).append(phrase)
+        for candidates in by_first.values():
+            candidates.sort(key=len, reverse=True)
+        self._by_first = by_first
+
+    def longest(self, words: list[str], start: int) -> tuple[str, ...] | None:
+        """The longest mark or command phrase beginning at *words[start]*."""
+        if start >= len(words):
+            return None
+        for phrase in self._by_first.get(words[start], ()):
+            if tuple(words[start : start + len(phrase)]) == phrase:
+                return phrase
+        return None
+
+
+#: English, as dictation has always matched it.
+ENGLISH = Vocabulary({mark.phrase: (mark,) for mark in MARKS}, COMMANDS)
+
+#: English mark words that are everyday Spanish words too ("colon", "Colón"),
+#: left out of the Spanish vocabulary so Spanish text keeps them.
+_SPANISH_COLLISIONS = frozenset({("colon",)})
+
+
+@lru_cache(maxsize=8)
+def _spanish(spoken_marks: bool, commands: bool) -> Vocabulary:
+    from quill.core.windows_dictation.speech_language import fold
+    from quill.core.windows_dictation.vocabulary_es import (
+        SPANISH_CAPITAL_WORDS,
+        SPANISH_COMMAND_HELP,
+        SPANISH_MARKS,
+        SPANISH_SPACE_WORDS,
+    )
+
+    marks = {
+        phrase: written
+        for phrase, written in ENGLISH.marks.items()
+        if phrase not in _SPANISH_COLLISIONS
+    }
+    if spoken_marks:
+        marks.update({
+            tuple(fold(said).split()): written for said, written in SPANISH_MARKS.items()
+        })
+    table = dict(COMMANDS)
+    if commands:
+        for entry in SPANISH_COMMAND_HELP:
+            table.update({tuple(fold(said).split()): entry.command for said in entry.phrases})
+    return Vocabulary(
+        marks,
+        table,
+        folds=True,
+        capital_words=SPANISH_CAPITAL_WORDS,
+        space_words=SPANISH_SPACE_WORDS,
+    )
+
+
+def vocabulary_for(language: str = "en", *, spoken_marks: bool = True) -> Vocabulary:
+    """What a phrase in *language* is matched against.
+
+    *spoken_marks* is whether the Spanish punctuation words count -- the
+    controller passes ``True`` only while the engine is not punctuating by
+    itself (dict.md 9.4 C, option 1). English ignores it: its mark words are
+    rarely ordinary words, and they have always worked alongside automatic
+    punctuation. The Spanish commands join only when
+    :func:`~quill.core.windows_dictation.speech_language.spanish_commands_enabled`.
+    """
+    from quill.core.windows_dictation.speech_language import (
+        coerce_speech_language,
+        spanish_commands_enabled,
+    )
+
+    if coerce_speech_language(language) == "en":
+        return ENGLISH
+    return _spanish(spoken_marks, spanish_commands_enabled())

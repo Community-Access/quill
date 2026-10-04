@@ -2,6 +2,18 @@
 
 ## 1.2.0 -- 2026-10-03
 
+### Recent Documents: the whole list on Alt+Shift+0 (2026-10-04)
+
+- **File > Recent Documents...** (**Alt+Shift+0**) lists every document you
+  opened recently. Enter opens one; you can also pin a document so it stays at
+  the top, remove one from the list, open its folder, clear everything that is
+  not pinned (it asks first, and No is the default), and choose how many to
+  remember (1 to 50) and whether deleted files drop off at startup.
+- **File > Open Recent** puts pinned documents first. A file on a USB drive or a
+  network share stays on it while the drive is unplugged; only a file deleted
+  from this computer's own drives is left out.
+- QUILL has the same window on the same key. The two keep separate lists.
+
 ### Remove Quote Marks has a key that works (2026-10-03)
 
 - **Remove Quote Marks** is now **Alt+Shift+.** (Alt, Shift and the period).

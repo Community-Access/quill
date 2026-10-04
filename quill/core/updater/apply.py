@@ -18,11 +18,21 @@ Either way the helper writes ``<updates>/apply-result.json`` with
 ``"rolled_back": true``, and on its next start the app says once, plainly,
 what happened, and Update History records the undo.
 
-**What is kept, and for how long** (owner decision, 2026-10-03). The installer
-of the version you are running is kept in ``<updates>/rollback/`` -- it is what
-a failed *next* update goes back to. After an update, the previous version's
-installer (or a portable copy's ``.previous`` folder) is kept until the new
-version has started three times, or for seven days, whichever comes first.
+**What is kept, and for how long** (owner decisions, 2026-10-03 and
+2026-10-04). The installer of the version you are running is kept in
+``<updates>/rollback/`` -- it is what a failed *next* update goes back to.
+How long depends on the channel (:func:`keeps_installer`):
+
+* **Beta and Dev** keep it for as long as that version is the one running,
+  because an update that does not start is likeliest there;
+* **Stable** keeps it only for seven days or three successful starts after
+  each update, whichever comes first, and then gives the disk space (about
+  200 MB) back. A later failed update on Stable cannot undo itself; the
+  installer of the version it came from can be downloaded again.
+
+After an update, the previous version's installer (or a portable copy's
+``.previous`` folder) is kept until the new version has started three times,
+or for seven days, whichever comes first, on every channel.
 
 wx-free and strict-typed. Nothing here runs an installer: it keeps the books
 the helper and the app read.
@@ -46,6 +56,7 @@ __all__ = [
     "StartReport",
     "confirm_started",
     "installed_version",
+    "keeps_installer",
     "pending_path",
     "record_pending",
     "result_path",
@@ -60,10 +71,32 @@ HEALTH_WAIT_SECONDS = 120
 _STATE = "rollback-state.json"
 
 
+def keeps_installer(channel: str) -> bool:
+    """True when *channel* keeps the running version's installer for as long as
+    it runs (Beta, Dev); Stable ages it out like the previous one."""
+    from quill.core.updater.channels import normalize_channel
+
+    return normalize_channel(channel) != "stable"
+
+
+def _channel_of(app_key: str) -> str:
+    try:
+        from quill.core.updater.channels import state_for
+
+        return state_for(app_key).channel
+    except Exception:  # noqa: BLE001 - unknown: Stable, the cautious answer for disk
+        return "stable"
+
+
 def _canon(version: str) -> str:
-    """One spelling per version (``1.1.0 Beta 1`` and ``1.1.0-beta.1`` agree)."""
+    """One spelling per version (``1.1.0 Beta 1`` and ``1.1.0-beta.1`` agree).
+
+    The build stays in it (``3.2.0-build.2``; commit metadata does not): a
+    rebuild of the same version is a different version to wait for, and build
+    1 starting must never count as build 2 having started.
+    """
     parsed = ReleaseVersion.try_parse(version)
-    return parsed.semver().partition("+")[0] if parsed is not None else version.strip()
+    return parsed.tag_version() if parsed is not None else version.strip()
 
 
 def _same(a: object, b: str) -> bool:
@@ -177,15 +210,24 @@ def confirm_started(
     version: str,
     now: datetime | None = None,
     history_path: Path | None = None,
+    channel: str | None = None,
 ) -> StartReport:
     """Call once the first window is up. Never raises.
 
     Writes the marker the helper waits for, settles a pending update (success
     or undo, each recorded in Update History), and ages out what was kept for
-    rolling back.
+    rolling back -- by *channel* (default: this app's, from ``channels.json``).
     """
     try:
-        return _confirm(updates, app_key, app_name, version, now or datetime.now(UTC), history_path)
+        return _confirm(
+            updates,
+            app_key,
+            app_name,
+            version,
+            now or datetime.now(UTC),
+            history_path,
+            _channel_of(app_key) if channel is None else channel,
+        )
     except Exception:  # noqa: BLE001 - book-keeping must never cost a launch
         return StartReport()
 
@@ -197,6 +239,7 @@ def _confirm(
     version: str,
     moment: datetime,
     history_path: Path | None,
+    channel: str,
 ) -> StartReport:
     from quill.core.updater import history
 
@@ -240,6 +283,7 @@ def _confirm(
         _clear(updates, keep_marker=True)
     _forget_stale(updates, version)
     _age_out(updates, moment)
+    _age_out_installed(updates, moment, keep=keeps_installer(channel))
     return report
 
 
@@ -284,7 +328,12 @@ def _promote_kept(updates: Path, pending: dict[str, object], moment: datetime) -
         kept = folder / setup.name
         if kept != setup:
             shutil.move(str(setup), str(kept))
-        new_state["installed"] = {"version": str(pending.get("to") or ""), "setup": str(kept)}
+        new_state["installed"] = {
+            "version": str(pending.get("to") or ""),
+            "setup": str(kept),
+            "since": moment.isoformat(timespec="seconds"),
+            "starts": 0,
+        }
     aging: dict[str, object] = {"since": moment.isoformat(timespec="seconds"), "starts": 0}
     if isinstance(previous, dict) and previous.get("setup"):
         aging["setup"] = str(previous.get("setup"))
@@ -295,6 +344,43 @@ def _promote_kept(updates: Path, pending: dict[str, object], moment: datetime) -
     if len(aging) > 2:
         new_state["previous"] = aging
     _write(folder / _STATE, new_state)
+
+
+def _expired(entry: dict[str, object], moment: datetime) -> bool:
+    """Count this start; True once 3 starts or 7 days have passed since ``since``."""
+    starts = int(str(entry.get("starts") or 0)) + 1
+    try:
+        since = datetime.fromisoformat(str(entry.get("since")))
+    except ValueError:
+        since = moment
+        entry["since"] = moment.isoformat(timespec="seconds")
+    entry["starts"] = starts
+    return starts >= KEEP_STARTS or moment - since >= timedelta(days=KEEP_DAYS)
+
+
+def _age_out_installed(updates: Path, moment: datetime, *, keep: bool) -> None:
+    """Stable: the running version's installer goes after 3 starts or 7 days.
+    Beta and Dev (*keep*): it stays while that version runs."""
+    folder = updates / "rollback"
+    state = _read(folder / _STATE)
+    installed = state.get("installed")
+    if not isinstance(installed, dict) or not installed.get("setup"):
+        return
+    if keep:
+        if "since" in installed or "starts" in installed:
+            installed.pop("since", None)
+            installed.pop("starts", None)
+            _write(folder / _STATE, state)
+        return
+    if not _expired(installed, moment):
+        _write(folder / _STATE, state)
+        return
+    setup = Path(str(installed.get("setup") or ""))
+    if setup.is_file():
+        setup.unlink(missing_ok=True)
+    # The version stays known (the next update's "from"); only the file goes.
+    state["installed"] = {"version": str(installed.get("version") or ""), "setup": ""}
+    _write(folder / _STATE, state)
 
 
 def _age_out(updates: Path, moment: datetime) -> None:

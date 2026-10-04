@@ -140,6 +140,7 @@
   "cmd_print_preview": "covered",
   "cmd_promote_heading": "covered",
   "cmd_quote_lines": "covered",
+  "cmd_recent_documents": "covered",
   "cmd_redo": "covered",
   "cmd_release_channel": "covered",
   "cmd_remember_clip": "covered",

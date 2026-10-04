@@ -120,6 +120,8 @@ class LocalMediaWindow(LocalMediaCommandsMixin):
         self._playlists_label = wx.StaticText(surface, label="Pla&ylists:")
         left.Add(self._playlists_label, 0, wx.BOTTOM, 4)
         self._playlists = wx.ListBox(surface, style=wx.LB_SINGLE)
+        # A peer window, not a modal dialog: name the lists here (#1012).
+        self._playlists.SetName("Playlists")
         self._playlists.SetHelpText(
             "Your playlists, with how many items each holds and how long it plays. "
             "Enter plays the playlist; Tab moves to its items. F2 renames, Delete "
@@ -134,6 +136,7 @@ class LocalMediaWindow(LocalMediaCommandsMixin):
         self._items_label = wx.StaticText(surface, label="&Items:")
         right.Add(self._items_label, 0, wx.BOTTOM, 4)
         self._items = wx.ListCtrl(surface, style=wx.LC_REPORT | wx.BORDER_SIMPLE)
+        self._items.SetName("Items")
         self._items.SetHelpText(
             "The items in the selected playlist, in the order they play. Enter plays "
             "from here and stops the item playing; Space pauses it. Delete removes "
@@ -282,6 +285,8 @@ class LocalMediaWindow(LocalMediaCommandsMixin):
             label = f"&Items in {name} (empty; Ctrl+O adds files):"
         if self._items_label.GetLabel() != label:
             self._items_label.SetLabel(label)
+            # The list's own name follows its label (VoiceOver reads the name).
+            self._items.SetName(label.replace("&", "").rstrip(":"))
         marker = self._current_marker()
         wanted = [
             cells(
@@ -518,7 +523,7 @@ class LocalMediaWindow(LocalMediaCommandsMixin):
         self.focus_default_control()
         wx.CallLater(600, self._greet)
         try:
-            ui._show(self._host, self._win, TITLE)
+            ui.show_modal_dialog(self._host, self._win, TITLE)
         finally:
             self._teardown()
             self._win.Destroy()

@@ -98,6 +98,7 @@ COMMAND_ALIASES: dict[str, str] = {
     "file.print": "printer paper",
     "file.open_url": "web address link internet",
     "app.preferences": "settings options configure",
+    "app.preferences_hub": "preferences hub recipes working modes quillin glow pages",
     "app.exit": "quit leave shut down",
     "app.announcement_self_test": "speech test braille test output check",
     "app.report_editor_surface": "braille diagnostic surface class emulation",
