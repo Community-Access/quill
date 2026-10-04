@@ -175,6 +175,10 @@ class WatchedFolderSettingsDialog:
         chosen = tuple(ext for ext, box in pairs if box.GetValue())
         folder.extensions = chosen or SUPPORTED_AUDIO_EXTENSIONS
 
+    def ShowModal(self) -> int:
+        """Show the dialog modally; returns wx.ID_OK or wx.ID_CANCEL."""
+        return self.dialog.ShowModal()
+
 
 def edit_folder_settings(host: Any, parent: Any, folder: WatchedFolder) -> bool:
     """Show the page for *folder*; True when Save was pressed (and applied)."""

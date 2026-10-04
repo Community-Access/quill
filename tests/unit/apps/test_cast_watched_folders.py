@@ -16,6 +16,9 @@ import pytest
 
 wx = pytest.importorskip("wx")
 
+#: Serialized onto one worker under ``-n --dist loadgroup``: this file drives
+#: live watching and UI dialogs in Cast that share global window and filesystem state.
+#: See ``pytest_collection_modifyitems`` in ``tests/conftest.py``.
 pytestmark = pytest.mark.machine_global
 
 

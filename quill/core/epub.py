@@ -197,19 +197,23 @@ def _strip_latex_delimiters(text: str) -> str:
 
 
 def _convert_mathml_to_speech(mathml_str: str) -> str:
-    try:
-        mathml_str = html.unescape(mathml_str)
-        from quill.core.math.mathml import parse_mathml
-        from quill.core.math.navigator import _normalize
-        from quill.core.math.speech import speak
+    from quill.core.math.mathml import parse_mathml
+    from quill.core.math.navigator import _normalize
+    from quill.core.math.speech import speak
 
+    try:
         root = parse_mathml(mathml_str)
         normalized = _normalize(root)
         return speak(normalized)
     except Exception:
-        without_tags = re.sub(r"<[^>]+>", " ", mathml_str)
-        decoded = html.unescape(without_tags)
-        return " ".join(decoded.split())
+        try:
+            root = parse_mathml(html.unescape(mathml_str))
+            normalized = _normalize(root)
+            return speak(normalized)
+        except Exception:
+            without_tags = re.sub(r"<[^>]+>", " ", mathml_str)
+            decoded = html.unescape(without_tags)
+            return " ".join(decoded.split())
 
 
 def _convert_latex_to_speech(latex_str: str) -> str:
