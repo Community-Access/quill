@@ -2,8 +2,8 @@
 
 These are the hands-on checks for everything built in late September and early
 October 2026 across QUILL Cast, Quill Radio, QUILL Lite and QUILL. There are
-149 of them. Each one says where to go, what to press and what you should
-hear. Tick a box only after you have tried it yourself with a screen reader;
+210 of them. Each one says where to go, what to press and what you should
+hear. Check a box only after you have tried it yourself with a screen reader;
 passing automated tests do not count.
 
 Try them with NVDA, JAWS and Narrator where you can. When something is wrong,
@@ -26,7 +26,7 @@ This section records user-experience changes implemented in source, not a
 release announcement. Test the current source build; older installed builds
 may not contain these changes. All manual checks below are pending. Automated
 test passes do not mean speech, braille, native Alt+Tab, or every app was
-manually verified. Do not tick a checkbox until a human completes that check.
+manually verified. Do not check a checkbox until a human completes that check.
 
 Run the keyboard checks separately with NVDA, JAWS, and Narrator. Record the
 reader/version, app/build or commit, result, and exact unexpected speech or
@@ -689,3 +689,187 @@ your place when it should not.
   build: Connect YouTube Account, Reply / Add a Comment / Delete My Comment, a
   Send box in Live Chat, Like / Dislike / Add to Playlist in the YouTube Video
   window.
+
+## Built 2026-10-04, Not Yet Tried Live
+
+Everything here passed its automated tests on 2026-10-04 and has not been tried
+by hand. Use an installed build for the Quill Radio checks, because Open with,
+Default apps and the right-click verbs come from the installer.
+
+### Quill Radio as a media player
+
+- [ ] In File Explorer, select an MP3 and press Shift+F10, then choose Open with.
+  Quill Radio is in the list, with its own name and icon. Choosing it plays the
+  file and what is playing is said once.
+- [ ] Settings > Apps > Default apps lists Quill Radio. Nothing changed which
+  app opens any type until you chose it there.
+- [ ] Preferences > Windows and your files > Make Quill Radio My Media
+  Player... (Alt+Q) on a portable copy: Windows' Default apps page opens on
+  Quill Radio, and the button's result is said in one sentence.
+- [ ] With Quill Radio already running and minimised, open a file from
+  Explorer. It plays in the running copy, the window does not jump in front,
+  and no second copy starts.
+- [ ] Select five files in Explorer and press Enter. They become one Opened
+  files list in Local Media, playing from the first; Next and Previous move
+  through them. Opening another file afterwards replaces the list, unless you
+  kept it with Save as Playlist... (Ctrl+S in Local Media).
+- [ ] A file in a folder with a space in its name (for example C:\My Music)
+  plays, rather than being said as missing.
+- [ ] Right-click verbs, on an MP3 and on an M3U: Play with Quill Radio plays
+  it; Add to Quill Radio Playlist adds it to the end of the Opened files list
+  without interrupting what is playing, and says how many were added.
+- [ ] A missing or unplayable file is one plain sentence, not a dialog.
+- [ ] Uninstall Quill Radio, then check Open with and the right-click menu:
+  neither mentions Quill Radio any more, and other players are untouched.
+
+### Opening files in QUILL and QUILL Lite
+
+- [ ] Drag and drop, in both editors: drag one file, then three, from File
+  Explorer onto the window. Each opens in its own document and one sentence
+  says how many opened. Dropping selected text on the editor still inserts it.
+- [ ] Open from Clipboard (Ctrl+Alt+Shift+Enter), in both editors: with files
+  copied in Explorer (Ctrl+C), each opens. With a file path copied as text, it
+  opens. With a web link copied, Open from URL asks first, naming the website
+  and the size. With nothing usable copied, one plain sentence says so.
+- [ ] QUILL's File menu: Alt+F, P opens Print. Alt+F, X still exits and Alt+F, E
+  still opens Export.
+- [ ] QUILL, File > Open Recent: Alt+Shift+1 reopens the most recent document,
+  Alt+Shift+2 the one before, through Alt+Shift+9; Alt+Shift+0 opens Recent
+  Documents. Each row of Open Recent says the file's name first, then its
+  folder, and says how to reach it from the keyboard.
+
+### QUILL Lite's outside-change watcher
+
+- [ ] Open a .md file in QUILL Lite, then change and save it in Notepad. Within a
+  second or two QUILL Lite asks once: Keep Mine, Reload from Disk or Save As...,
+  with Keep Mine on Enter. Keep Mine leaves your text and your place alone.
+- [ ] With Preferences > When another program changes the file > Reload
+  automatically when you have no unsaved edits turned on, an untouched document
+  reloads quietly, your cursor stays on the same line, and you hear it once.
+- [ ] Check Do not ask me again for .md files with Reload. Change the file
+  again: it reloads without asking. Now type something (unsaved) and change the
+  file once more: QUILL Lite asks rather than reloading over your edits. Try the
+  same in QUILL.
+- [ ] Change a file that belongs to a document in the background: nothing is
+  said until you switch to that document, then the question comes once.
+- [ ] Delete the file in Explorer: QUILL Lite says so once, keeps your text, and
+  Save As is offered next time you save.
+
+### The launcher, from a folder with a space
+
+- [ ] Unpack a portable Quill Radio, QUILL Lite and QUILL Cast to a folder such
+  as C:\Portable Apps\Quill Radio and start each from there. Each starts; none
+  shows the "did not start" window.
+- [ ] From that folder, open a file whose own path has a space through Open
+  with. It opens as one file.
+
+### Quill Radio backup: What Was Left Out
+
+- [ ] Back up Quill Radio with one recording kept only in OneDrive (not on this
+  computer) and one file open in another program. The result offers Show what
+  was left out, and why?. Yes opens What Was Left Out: one row per item, the
+  reason read with each, what to do under the list, and Copy List beside it.
+  Escape closes it and returns you to where you were.
+- [ ] The same list is in Recent Problems afterwards.
+- [ ] A backup with nothing left out says nothing about skipped items at all.
+
+## Dictation, Built 2026-10-05, Not Yet Tried Live
+
+Everything here passed its automated tests on 2026-10-05 and has not been tried
+by hand. Try each one in both QUILL (Tools > Speech > Live Dictation) and QUILL
+Lite (Tools > Dictation), with NVDA and with JAWS, at the screen reader's
+default punctuation level and again at its lowest. Use headphones so the
+microphone does not hear the read-back.
+
+### The read-back says the punctuation
+
+- [ ] Dictate "hello comma world period". The read-back says "Hello comma world
+  period" with the marks spoken as words, at every punctuation level, and your
+  screen reader does not also read the same line a second time. The status bar
+  and a braille display show "Dictated: Hello, world."
+- [ ] Dictate a quotation and a question. You hear "open quote", "close quote"
+  and "question mark" in the read-back; "new paragraph" is said as words too.
+- [ ] Dictate "it's 3.5 percent of 1,000" and "example dot com": the apostrophe
+  and the marks inside the numbers are silent, and the address is read as
+  "example dot com".
+- [ ] Uncheck Say punctuation marks in the read-back in More Dictation Settings
+  (Alt+S there). The read-back now says only the words.
+
+### Selecting and moving by voice
+
+- [ ] With a few lines of text, say "select" and two words that are above the
+  cursor. You hear "Selected:" and the words once, not twice, and your screen
+  reader's own selection announcement does not talk over it. Say new words: they
+  replace the selection.
+- [ ] Say "go to" and words near the cursor: you hear "Before" and the words.
+  Say "go after" and words: you hear "After" and the words. For words three or
+  more lines away, the line number is added, such as ", line 40".
+- [ ] Say "select" and words that are not in the document. You hear "Not found,
+  written as text." and the phrase is in the document; "scratch that" removes
+  it.
+- [ ] Say "correct" and words: you hear "Correcting" and the words, then "Say
+  the new words".
+
+### Capitals, spelling and language
+
+- [ ] Say "caps on". You hear "Caps on." and the status bar shows it. Dictate a
+  sentence: every word starts with a capital. "Caps off" ends it.
+- [ ] Say "no space on", dictate "example dot com", then "no space off". The
+  words are joined with no spaces and no capital.
+- [ ] Press Ctrl+Shift+F11. You hear "Español." once. Press it again: you hear
+  "English." once. Say "switch to Spanish", then "cambiar a inglés": the same
+  two words, once each. Restart the program: it starts in the language you
+  left it in.
+
+### Live transcripts
+
+- [ ] Press Ctrl+Alt+Shift+PageDown. A new untitled document opens and you hear
+  "Live transcript on, in a new document." The first time ever, you then hear
+  "Please record other people only when they have agreed." Start a second
+  transcript later: that sentence is not said again.
+- [ ] Talk for a minute with a long pause in the middle. No tone or read-back
+  after each phrase; the pause starts a new paragraph. The status bar says
+  "Live transcript:" with minutes and words, and Alt+F9 says the same.
+- [ ] Switch to another document and keep talking. Nothing is announced in the
+  document you are working in, and the words land at the end of the transcript.
+- [ ] Press Ctrl+Alt+Shift+PageDown again. You hear "Live transcript stopped,"
+  and the number of words, once. The transcript stays open and unsaved.
+
+### Dictation Context
+
+- [ ] Press Ctrl+Alt+Shift+PageUp. The Dictation Context window opens with
+  focus in "This document is:", and its title is read once. Tab reaches "Start
+  from a saved context:", "Also save it as a context named:" and the read-only
+  "Who uses it:" box, each with its own name. Escape closes it and returns you
+  to the document.
+- [ ] With Moonshine or Whisper chosen, the window says plainly that this
+  engine cannot use the context.
+
+### Dictation Status
+
+- [ ] With dictation off, press Alt+F9. You hear "Dictation is off." with the
+  engine and the language, once.
+- [ ] With dictation on and "caps on" said, press Alt+F9. You hear "Dictation
+  on," the engine, the language and "Caps on." In QUILL Lite, Tools > Dictation
+  > Dictation Status does the same. In QUILL, while Locked Dictation is
+  recording, Alt+F9 still answers for Locked Dictation.
+
+### Dictate Anywhere, in Quill Inkwell
+
+- [ ] In QUILL Lite, open More Dictation Settings and press Dictate in Other
+  Programs (Alt+O). Quill Inkwell starts and, with no key chosen yet, the
+  Dictate Anywhere Key chooser opens with focus in it.
+- [ ] Choose a key, go to a text field in your web browser, press the key and
+  dictate a sentence. It is typed at the cursor. The read-back is a tone only,
+  and your screen reader's typing echo is the only speech you hear for the
+  words.
+- [ ] In the browser field, say "scratch that": the phrase is erased. Say
+  "select" and a word: you hear "That works in QUILL's own documents. In
+  another program, say the words again, or scratch that."
+- [ ] Move to a password field and press the key. You hear "That is a password
+  field, so nothing is typed there." and nothing is typed.
+- [ ] Press the key while QUILL or QUILL Lite is in front: you hear "This is a
+  QUILL window: press Ctrl+F11 to dictate here."
+- [ ] In Inkwell, the Dictation menu reads Dictate Anywhere as a checked or
+  unchecked item, and Dictation Settings (Ctrl+Alt+D) opens the same window the
+  editors use.

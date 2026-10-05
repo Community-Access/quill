@@ -208,8 +208,8 @@ class GlowEditorMixin:
         wx = self._wx
         self._show_message_box(
             "GLOW is an experimental feature and is currently turned off.\n\n"
-            "To enable it, open Preferences > Experimental, tick 'Enable "
-            "experimental features', then tick 'GLOW accessibility review and "
+            "To enable it, open Preferences > Experimental, check 'Enable "
+            "experimental features', then check 'GLOW accessibility review and "
             "repair'. It takes effect as soon as you apply Settings - no "
             "restart needed.",
             "GLOW (Experimental)",

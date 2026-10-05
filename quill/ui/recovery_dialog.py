@@ -15,7 +15,7 @@ decision easy. A message box cannot hold a list, and this question is a list.
 **Discarding here really does delete.** Not like Forget in the session window,
 which only drops a row: these rows *are* the only copy of the work, so the note
 under the buttons says so in those words, and Discard Everything asks once. The
-per-row Discard does not ask, because ticking the row is the deliberate act and
+per-row Discard does not ask, because checking the row is the deliberate act and
 a confirmation on every small deletion is how people learn to confirm without
 reading.
 """
@@ -105,8 +105,8 @@ def ask_recovery(parent: object, result: Triage) -> RecoveryAnswer:
     panel.SetScrollRate(0, 12)
     panel.SetName("Unsaved documents")
     panel.SetHelpText(
-        "The unsaved work found from last time, one checkbox each. Space ticks "
-        "and unticks. Each row says how much text it holds and when it was last "
+        "The unsaved work found from last time, one checkbox each. Space checks "
+        "and unchecks. Each row says how much text it holds and when it was last "
         "written, which is how you tell a note you were writing from a scratch "
         "window you abandoned."
     )
@@ -118,12 +118,12 @@ def ask_recovery(parent: object, result: Triage) -> RecoveryAnswer:
 
     for slot in entries:
         box = wx.CheckBox(panel, label=_label(slot))
-        # Everything starts ticked, so the person who wants all of it presses
-        # Enter and the person who wants one unticks the rest. The old Yes/No
+        # Everything starts checked, so the person who wants all of it presses
+        # Enter and the person who wants one unchecks the rest. The old Yes/No
         # could only express this answer, so it stays the cheapest one.
         box.SetValue(True)
         box.SetHelpText(
-            "Ticked means Restore Checked opens this document in a window, and "
+            "Checked means Restore Checked opens this document in a window, and "
             "Discard Checked deletes the saved-aside copy. Restoring does not "
             "save anything: the window opens with the work in it and you decide "
             "where it goes."
@@ -134,13 +134,13 @@ def ask_recovery(parent: object, result: Triage) -> RecoveryAnswer:
     panel.SetSizer(rows)
     root.Add(panel, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, _PAD)
 
-    # The whole window as a paragraph, rewritten on every tick (asked for by
+    # The whole window as a paragraph, rewritten on every check or uncheck (asked for by
     # name, 2026-09-21). A list of checkboxes answers "what is here" one row at
     # a time and never answers "what happens when I press the button" at all --
     # and that second question is the one somebody is actually asking, because
     # the buttons are the irreversible part. Sighted users assemble the answer
     # by glancing down the list; assembling it by ear costs a pass through every
-    # row, and the pass has to be repeated after every tick.
+    # row, and the pass has to be repeated after every check or uncheck.
     #
     # A read-only multiline TextCtrl rather than a StaticText: a text control is
     # focusable, so it can be Tabbed to and read at the reader's own pace with
@@ -158,7 +158,7 @@ def ask_recovery(parent: object, result: Triage) -> RecoveryAnswer:
         "A read-only description of everything in this window: what was tidied "
         "away before the list was built, what each row holds and when it was "
         "written, and exactly what each button would do with the boxes as they "
-        "are ticked right now. It is rewritten every time you tick or untick a "
+        "are checked right now. It is rewritten every time you check or uncheck a "
         "row, so it always describes what would happen if you pressed a button "
         "at this moment. Read it with the arrow keys; nothing here can be typed "
         "into or changed."
@@ -183,9 +183,11 @@ def ask_recovery(parent: object, result: Triage) -> RecoveryAnswer:
 
     restoring = wx.BoxSizer(wx.HORIZONTAL)
     restore_checked = wx.Button(dialog, _ID_RESTORE_CHECKED, "&Restore Checked")
-    restore_checked.SetHelpText("Open the ticked documents. Everything else is kept for next time.")
+    restore_checked.SetHelpText(
+        "Open the checked documents. Everything else is kept for next time."
+    )
     restore_all = wx.Button(dialog, _ID_RESTORE_ALL, "Restore &All")
-    restore_all.SetHelpText("Open every document in this list, whether or not it is ticked.")
+    restore_all.SetHelpText("Open every document in this list, whether or not it is checked.")
     # No access key on Not Now: Escape already serves it (GATE-14).
     not_now = wx.Button(dialog, _ID_NOT_NOW, "Not Now")
     not_now.SetHelpText(
@@ -198,7 +200,7 @@ def ask_recovery(parent: object, result: Triage) -> RecoveryAnswer:
     dropping = wx.BoxSizer(wx.HORIZONTAL)
     discard_checked = wx.Button(dialog, _ID_DISCARD_CHECKED, "&Discard Checked")
     discard_checked.SetHelpText(
-        "Delete the saved-aside copy of the ticked documents. The files they came "
+        "Delete the saved-aside copy of the checked documents. The files they came "
         "from, if any, are not touched."
     )
     discard_all = wx.Button(dialog, _ID_DISCARD_ALL, "Discard &Everything")
@@ -208,7 +210,7 @@ def ask_recovery(parent: object, result: Triage) -> RecoveryAnswer:
     )
     never_untitled = wx.Button(dialog, _ID_NEVER_UNTITLED, "&Never Offer Untitled")
     never_untitled.SetHelpText(
-        "Restore the ticked documents, then stop offering unsaved work from "
+        "Restore the checked documents, then stop offering unsaved work from "
         "windows that never had a file -- now and in future, which means those "
         "copies are discarded rather than kept. The setting is Offer untitled "
         "unsaved work, in preferences."
@@ -255,7 +257,7 @@ def ask_recovery(parent: object, result: Triage) -> RecoveryAnswer:
 
         Bound to every checkbox, and called again after a discard rebuilds the
         rows. ``ChangeValue`` rather than ``SetValue``: the latter fires a text
-        event, and a read-only field that announces itself on every tick would
+        event, and a read-only field that announces itself on every check or uncheck would
         talk over the reader saying "checked" -- which is the announcement the
         person actually asked for by pressing Space (GATE-13).
         """
@@ -320,7 +322,7 @@ def ask_recovery(parent: object, result: Triage) -> RecoveryAnswer:
                 if not doomed:
                     # Says so rather than doing nothing: a button that answers
                     # silently is one somebody presses twice.
-                    intro.SetLabel("Nothing is ticked, so nothing was discarded.")
+                    intro.SetLabel("Nothing is checked, so nothing was discarded.")
                     continue
                 discarded.extend(doomed)
                 dropped = {id(slot) for slot in doomed}

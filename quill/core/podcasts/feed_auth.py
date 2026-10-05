@@ -14,13 +14,38 @@ password is never sent to a third-party CDN. wx-free, strict-typed.
 from __future__ import annotations
 
 import base64
+import threading
 import urllib.parse
 import urllib.request
+from collections.abc import Iterator
+from contextlib import contextmanager
 from typing import Any
 
 from quill.core.podcasts.models import PodcastEpisode, PodcastShow
 
 _CRED_PREFIX = "quill-podcast-feed:"
+
+#: Per-thread redirect log, active only inside :func:`recording_redirects`.
+_REDIRECTS = threading.local()
+
+
+@contextmanager
+def recording_redirects() -> Iterator[list[tuple[int, str]]]:
+    """Collect every redirect followed on this thread, as ``(status, url)``.
+
+    urllib follows 301, 302, 303, 307 and 308 alike and silently, and the
+    response's final address cannot say which kind got it there -- so a
+    temporary bounce used to be recorded as a permanent move (check.md bug 4).
+    Thread-local rather than a parameter so every fetch site, and every test
+    double standing in for :func:`urlopen_auth_safe`, keeps its signature.
+    """
+    hops: list[tuple[int, str]] = []
+    previous = getattr(_REDIRECTS, "hops", None)
+    _REDIRECTS.hops = hops
+    try:
+        yield hops
+    finally:
+        _REDIRECTS.hops = previous
 
 
 def _same_origin(url_a: str, url_b: str) -> bool:
@@ -49,6 +74,9 @@ class _AuthStrippingRedirectHandler(urllib.request.HTTPRedirectHandler):
         self, req: Any, fp: Any, code: int, msg: str, headers: Any, newurl: str
     ) -> Any:
         new = super().redirect_request(req, fp, code, msg, headers, newurl)
+        hops = getattr(_REDIRECTS, "hops", None)
+        if new is not None and hops is not None:
+            hops.append((int(code), str(newurl)))
         if new is not None and not _same_origin(req.full_url, newurl):
             new.headers = {
                 key: value for key, value in new.headers.items() if key.lower() != "authorization"

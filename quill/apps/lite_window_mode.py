@@ -247,7 +247,7 @@ class DocumentModeMixin:
 
         An untitled document is offered under the extension of the language it
         has been *told* it is, not always ``.txt``: somebody who rang
-        Ctrl+Shift+M round to Markdown and then pressed Ctrl+S was offered a
+        Alt+Shift+F round to Markdown and then pressed Ctrl+S was offered a
         text file, which is the app forgetting the one thing it had just been
         told about the document.
         """

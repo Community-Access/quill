@@ -16,11 +16,10 @@ import urllib.parse
 import urllib.request
 from dataclasses import dataclass
 
-from quill import __version__
+from quill.core import http_client
 from quill.core.error_codes import CodedError
 from quill.core.net_retry import retry_transient
 
-_USER_AGENT = f"QUILL/{__version__} (https://github.com/Community-Access/quill)"
 _BASE_URL = "https://itunes.apple.com/search"
 _TIMEOUT_SECONDS = 10.0
 _DEFAULT_LIMIT = 25
@@ -78,7 +77,7 @@ def _http_json(url: str) -> object:
     if not url.startswith("https://"):
         raise ITunesSearchError("Refusing a non-HTTPS iTunes Search request.")
     request = urllib.request.Request(
-        url, headers={"User-Agent": _USER_AGENT, "Accept": "application/json"}
+        url, headers={"User-Agent": http_client.podcast_user_agent(), "Accept": "application/json"}
     )
     context = ssl.create_default_context()
 

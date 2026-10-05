@@ -22,6 +22,8 @@ equivalent here (same limitation the sticky-note hotkey always had).
 
 from __future__ import annotations
 
+from quill.core.family_chords import SHOW_HIDE_DEFAULTS
+
 #: (command_id, human label, needs_window). needs_window commands restore
 #: the QUILL window before running (they open a dialog); transport commands
 #: run wherever you are. THE SAFETY BOUNDARY: nothing off this list can be
@@ -46,7 +48,7 @@ GLOBAL_HOTKEY_SAFE_COMMANDS: tuple[tuple[str, str, bool], ...] = (
 #: hotkey to its owner before any window sees the keystroke, so no default
 #: editor chord may equal it -- in QUILL or in QUILL Lite, which loses the key
 #: whenever QUILL is running (test_no_editor_chord_is_the_global_show_hide_key).
-DEFAULT_SHOW_HIDE_HOTKEY = "Ctrl+Alt+Shift+Q"
+DEFAULT_SHOW_HIDE_HOTKEY = SHOW_HIDE_DEFAULTS["quill"]
 
 _SAFE_IDS = {command_id for command_id, _label, _needs in GLOBAL_HOTKEY_SAFE_COMMANDS}
 _NEEDS_WINDOW = {command_id for command_id, _label, needs in GLOBAL_HOTKEY_SAFE_COMMANDS if needs}
@@ -100,11 +102,12 @@ class GlobalHotkeysMixin:
             if legacy and self._parse_keybinding(legacy) is not None:
                 bindings["tools.sticky_note_capture"] = legacy
         # A unique default so show/hide-to-tray works out of the box, matching
-        # the standalone apps (Radio Ctrl+Alt+Shift+R, Weather ...+W). The user
-        # can rebind or clear it in Tools > Global Hotkeys.
+        # Quill Radio's Ctrl+Alt+Shift+R and Quill Cast's Ctrl+Alt+Shift+F12
+        # (core/family_chords.py). The user can rebind or clear it in Tools >
+        # Global Hotkeys.
         #
         # ...but not in an app that has already registered its own show/hide
-        # chord (_register_tray_hotkey: Radio's Ctrl+Alt+Shift+R, Weather's W).
+        # chord (_register_tray_hotkey: Radio's Ctrl+Alt+Shift+R).
         # There this default was a *second* system-wide show/hide key, and it
         # took Ctrl+Alt+Shift+Q from every other program -- including QUILL,
         # whose own show/hide it is, and Radio's own Community menu (2026-09-25).

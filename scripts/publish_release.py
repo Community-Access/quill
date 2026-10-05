@@ -28,6 +28,14 @@ this version, so ``--version 3.2.0`` lists ``3.2.0+2`` under the tag
 ``quill-radio-v3.2.0-build.2`` when build 1 is out. ``--version 3.2.0+2`` says
 the same thing. A Dev build has no build number (its version is unique).
 
+**Code signing (owner decision, 2026-10-04).** Beta and Dev builds are never
+Authenticode-signed, and Stable always is. A build's number decides which it
+is: a final-numbered build (``3.2.0``) is a Stable candidate, built with
+``-Sign``, and every installer and every program in its portable zip must be
+signed; a ``-dev``, ``-alpha``, ``-beta`` or ``-rc`` build's installer must not
+be. Either mismatch is refused here, before anything is created, so a
+candidate that could never reach Stable does not spend a week on Beta first.
+
 Before anything is created it checks the **page budget**: installed Quill
 Radio 3.0.4 and QUILL Lite 1.1.2 read only the first 30 releases, so the main
 repository may not hold more than 20 newer than any app's newest Stable one.
@@ -67,6 +75,46 @@ from quill.core.updater.feed_publish import (  # noqa: E402
 from quill.core.versioning import ReleaseVersion  # noqa: E402
 from quill.tools import release_feed as rf  # noqa: E402
 
+#: Is this release file Authenticode-signed throughout? (code_signing.asset_is_signed)
+Authenticode = Callable[[Path], bool]
+
+
+def _asset_is_signed(path: Path) -> bool:
+    from scripts.code_signing import asset_is_signed
+
+    return asset_is_signed(path)
+
+
+def signing_problems(files: list[Path], version: ReleaseVersion, signed: Authenticode) -> list[str]:
+    """Why these files may not be listed as *version*, by the signing rule; [] when fine.
+
+    A final-numbered build is a Stable candidate: its installer and portable
+    files must all be signed. Any other build is Beta or Dev: its installer
+    must not be. (A portable zip of a Beta build is not checked: it carries
+    Python's own signed python.exe whoever built it.)
+    """
+    shown = version.semver()
+    if not version.is_prerelease:
+        unsigned = [p.name for p in _kinds(files) if not signed(p)]
+        if unsigned:
+            return [
+                f"{shown} is a Stable candidate, so it must be code-signed when it is built, "
+                f"and these are not: {', '.join(unsigned)}. Rebuild it with -Sign and list "
+                "that build instead."
+            ]
+        return []
+    stray = [p.name for p in files if rf.asset_kind(p.name) == "installer" and signed(p)]
+    if stray:
+        return [
+            f"{shown} is a Beta or Dev build, and Beta and Dev builds are never code-signed, "
+            f"but these are: {', '.join(stray)}. Rebuild it without -Sign."
+        ]
+    return []
+
+
+def _kinds(files: list[Path]) -> list[Path]:
+    return [p for p in files if rf.asset_kind(p.name) in ("installer", "portable")]
+
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
@@ -99,6 +147,7 @@ def run(
     now: datetime | None = None,
     seed_reader: Callable[[Path | None], bytes] = rf.read_seed,
     out: Callable[[str], None] = print,
+    authenticode: Authenticode = _asset_is_signed,
 ) -> int:
     args = build_parser().parse_args(argv)
     moment = now or datetime.now(UTC)
@@ -148,6 +197,11 @@ def run(
         else:
             files = rf.dist_files(args.dist, args.app, version)
         assets = rf.assets_from_files(files, repo=repo, tag=tag)
+        refused = signing_problems(list(files), ReleaseVersion.parse(version), authenticode)
+    if refused:
+        for line in refused:
+            out(f"Refused: {line}")
+        return 1
     if not any(a.kind in ("installer", "portable") for a in assets):
         out(f"No installer or portable file for {args.app} {version} was found.")
         return 1

@@ -298,8 +298,8 @@ class StructureAnnounceMixin:
         on = not bool(getattr(self.settings, "announce_lists", True))
         self.settings.announce_lists = on
         save_settings(self.settings)
-        # The View menu shows this as a check item; a tick that disagrees with
-        # the behaviour is worse than no tick at all.
+        # The View menu shows this as a check item; a check mark that disagrees with
+        # the behaviour is worse than no check mark at all.
         item = getattr(self, "_announce_lists_item", None)
         if item is not None:
             try:
@@ -323,8 +323,8 @@ class StructureAnnounceMixin:
         on = not bool(getattr(self.settings, "announce_headings", True))
         self.settings.announce_headings = on
         save_settings(self.settings)
-        # The View menu shows this as a check item; a tick that disagrees with
-        # the behaviour is worse than no tick at all.
+        # The View menu shows this as a check item; a check mark that disagrees with
+        # the behaviour is worse than no check mark at all.
         item = getattr(self, "_announce_headings_item", None)
         if item is not None:
             try:

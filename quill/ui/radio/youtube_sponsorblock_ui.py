@@ -23,7 +23,7 @@ TITLE = "Skip Sponsor Segments"
 EXPLAINER = (
     "SponsorBlock is a list, kept by volunteers, of the parts of YouTube videos "
     "that are sponsor reads, self-promotion, intros and the like. With this on, "
-    "Quill Radio jumps over the kinds you tick while a video plays, and says "
+    "Quill Radio jumps over the kinds you check while a video plays, and says "
     "what it skipped. To look a video up it sends SponsorBlock only the first "
     "four characters of a scrambled form of the video's id -- never the video's "
     "address, and nothing about you -- so SponsorBlock cannot tell what you are "
@@ -149,7 +149,7 @@ def open_settings(app: Any) -> None:
     enabled.SetValue(current.enabled)
     enabled.SetHelpText(
         "Off by default. When on, Quill Radio jumps over the kinds of segment "
-        "ticked below while a YouTube video plays, and says what it skipped."
+        "checked below while a YouTube video plays, and says what it skipped."
     )
     sizer.Add(enabled, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
     sizer.Add(wx.StaticText(dialog, label="Kinds to skip:"), 0, wx.LEFT, 10)
@@ -194,7 +194,7 @@ def open_settings(app: Any) -> None:
             f"Skipping {count} kind{'' if count == 1 else 's'} of segment in YouTube videos."
         )
     elif chosen.enabled:
-        app._announce("Nothing is ticked, so nothing will be skipped.")
+        app._announce("Nothing is checked, so nothing will be skipped.")
     else:
         app._announce("Not skipping segments.")
 

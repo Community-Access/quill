@@ -33,6 +33,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from quill.core import http_client
 from quill.core.error_codes import CodedError
 
 #: Versioned in the path, so a breaking change cannot reach a v1 client.
@@ -60,7 +61,6 @@ KNOWN_TYPES = frozenset({"stream", "podcast", "place"})
 
 _TIMEOUT_SECONDS = 20
 _MAX_BYTES = 4 * 1024 * 1024
-_USER_AGENT = "QUILL (community picks; +https://github.com/Community-Access/quill)"
 
 
 class CommunityPicksError(CodedError):
@@ -131,7 +131,7 @@ class Catalogue:
 
 def _fetch(url: str = PICKS_URL) -> bytes:
     """One HTTPS GET for the catalogue -- the reviewed egress site."""
-    request = urllib.request.Request(url, headers={"User-Agent": _USER_AGENT})
+    request = urllib.request.Request(url, headers={"User-Agent": http_client.user_agent()})
     context = ssl.create_default_context()
     try:
         with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:

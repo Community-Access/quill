@@ -17,6 +17,7 @@ from quill.apps.radio_favorites_tree import RadioFavoritesTreeMixin
 from quill.apps.radio_menu_bar import RadioMenuBarMixin
 from quill.core import http_client
 from quill.core.app_features import AppArea, load_app_features
+from quill.core.family_chords import SHOW_HIDE_DEFAULTS
 from quill.core.radio import reading_services
 from quill.core.radio.radio_browser import RadioBrowserError
 from quill.core.sound_events import SoundEvent
@@ -214,7 +215,8 @@ class RadioAppFrame(
             "play_pause": self._on_play_stop_button,
             "stop": self.radio_stop,
         })
-        self._register_tray_hotkey("Ctrl+Alt+Shift+R")  # show/hide Radio to the tray
+        # Show/hide Radio to the tray: Ctrl+Alt+Shift+R (core/family_chords.py).
+        self._register_tray_hotkey(SHOW_HIDE_DEFAULTS["radio"])
         # Per-command system-wide hotkeys (Help > Global Hotkeys...). Register
         # the show/hide command the default table binds so its Ctrl+Alt+Shift+Q
         # actually dispatches; the transport commands (radio.play_pause/stop/...)
@@ -696,12 +698,9 @@ class RadioAppFrame(
         self._ipc_timer = timer
 
     def _on_ipc_timer(self, _event: object) -> None:
-        from quill.core.ipc import drain_open_requests
+        from quill.ui.radio.opened_files_ui import drain_requests
 
-        # Any queued request is a "come to the foreground" from a second launch
-        # (the radio slot only ever enqueues show requests). Drain and surface.
-        if drain_open_requests(slot=_IPC_SLOT):
-            self._foreground_window()
+        drain_requests(self, _IPC_SLOT)  # a second launch's files, or "come forward"
 
     def _foreground_window(self) -> None:
         """Bring the window forward, un-hiding it from the tray and de-iconizing."""
@@ -1024,8 +1023,10 @@ class RadioAppFrame(
 
     def _maybe_resume_last_station(self) -> None:
         """Radio as an appliance: launch, and your station is already on."""
-        if not self._radio_history.resume_on_launch:
-            return
+        from quill.core.radio.opened_files import parse_argv
+
+        if not self._radio_history.resume_on_launch or parse_argv(sys.argv[1:]).paths:
+            return  # files Quill Radio was opened with play instead
         station = self._radio_history.last_station
         if station is not None:
             self._radio_controller.play_station(station)
@@ -1215,17 +1216,15 @@ def main() -> int:
     from quill.stability.safe_mode import should_enable_safe_mode
 
     safe_mode = should_enable_safe_mode(sys.argv[1:], os.environ)
-    from quill.core.ipc import (
-        enqueue_open_request,
-        release_primary_instance,
-        try_claim_primary_instance,
-    )
+    from quill.core.ipc import release_primary_instance, try_claim_primary_instance
+    from quill.core.radio.opened_files import hand_over
 
     # Single instance (#1152): if a Quill Radio is already running, even in the
-    # tray, ask it to come forward and exit. Cheap, before any UI or logging
+    # tray, hand it this launch's files (Open with, a double-click) -- or, with
+    # none, ask it to come forward -- and exit. Cheap, before any UI or logging
     # setup, so a re-launch is near-instant.
     if not try_claim_primary_instance(slot=_IPC_SLOT):
-        enqueue_open_request(None, slot=_IPC_SLOT)
+        hand_over(sys.argv[1:], slot=_IPC_SLOT)
         return 0
 
     from quill.core import components

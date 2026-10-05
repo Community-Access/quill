@@ -25,8 +25,14 @@ def _no_real_waiting(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr("quill.core.net_retry.time.sleep", lambda _seconds: None)
 
 
-def _http_error(code: int) -> urllib.error.HTTPError:
-    return urllib.error.HTTPError("https://example.com/feed.xml", code, "reason", {}, None)  # type: ignore[arg-type]
+def _http_error(code: int, headers: dict[str, str] | None = None) -> urllib.error.HTTPError:
+    return urllib.error.HTTPError(
+        "https://example.com/feed.xml",
+        code,
+        "reason",
+        headers or {},  # type: ignore[arg-type]
+        None,
+    )
 
 
 class _Response:
@@ -102,7 +108,7 @@ def test_a_sign_in_failure_is_not_retried(monkeypatch: pytest.MonkeyPatch) -> No
 
     def always_401(*_args: object, **_kwargs: object) -> _Response:
         calls.append(1)
-        raise _http_error(401)
+        raise _http_error(401, {"WWW-Authenticate": 'Basic realm="feed"'})
 
     monkeypatch.setattr(feed_reader.feed_auth, "urlopen_auth_safe", always_401)
 
@@ -145,7 +151,7 @@ def test_a_feed_that_blips_is_not_reported_dead(monkeypatch: pytest.MonkeyPatch)
     """The verdict this sweep produces is what the report offers to prune, so
     one 503 must never be the reason a live subscription is deleted."""
     flaky = _Flaky(b"<rss/>", failures=2, error=_http_error(503))
-    monkeypatch.setattr(opml_import.urllib.request, "urlopen", flaky)
+    monkeypatch.setattr(opml_import.feed_auth, "urlopen_auth_safe", flaky)
 
     result = opml_import.probe_feed("https://example.com/feed.xml")
 
@@ -164,12 +170,13 @@ def test_a_genuinely_dead_feed_is_still_one_round_trip(
         calls.append(1)
         raise _http_error(404)
 
-    monkeypatch.setattr(opml_import.urllib.request, "urlopen", always_404)
+    monkeypatch.setattr(opml_import.feed_auth, "urlopen_auth_safe", always_404)
 
     result = opml_import.probe_feed("https://example.com/feed.xml")
 
     assert result.ok is False
-    assert "404" in result.error
+    # Said in plain words, not "HTTP 404 reason" (check.md bug 7).
+    assert result.error == "The host no longer has a feed at this address."
     assert len(calls) == 1
 
 
@@ -182,9 +189,9 @@ def test_a_private_feed_is_still_reachable_and_not_retried(
 
     def always_401(*_args: object, **_kwargs: object) -> _Response:
         calls.append(1)
-        raise _http_error(401)
+        raise _http_error(401, {"WWW-Authenticate": 'Basic realm="feed"'})
 
-    monkeypatch.setattr(opml_import.urllib.request, "urlopen", always_401)
+    monkeypatch.setattr(opml_import.feed_auth, "urlopen_auth_safe", always_401)
 
     result = opml_import.probe_feed("https://example.com/feed.xml")
 
@@ -208,7 +215,7 @@ def test_probe_feed_still_never_raises(monkeypatch: pytest.MonkeyPatch) -> None:
     def explode(*_args: object, **_kwargs: object) -> _Response:
         raise OSError("the socket layer fell over")
 
-    monkeypatch.setattr(opml_import.urllib.request, "urlopen", explode)
+    monkeypatch.setattr(opml_import.feed_auth, "urlopen_auth_safe", explode)
 
     result = opml_import.probe_feed("https://example.com/feed.xml")
     assert result.ok is False

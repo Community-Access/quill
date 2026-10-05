@@ -283,6 +283,10 @@ words changed. An OPML file is still called a subscription list, because
 that’s what every other app calls it.</li>
 <li><strong>A new key for showing and hiding Cast.</strong> From any
 program, it’s now Ctrl+Alt+Shift+F12.</li>
+<li><strong>Restore from a Backup is Ctrl+Alt+F12</strong>, the key
+QUILL and QUILL Lite use for restoring their settings. It used to be
+Ctrl+Alt+Shift+R, which shows and hides Quill Radio, so it never worked
+while Radio was open.</li>
 <li><strong>Mark as Played and Next is Ctrl+Alt+Shift+Down</strong>,
 right beside Next in Queue on Ctrl+Alt+Down. It used to be
 Ctrl+Alt+Shift+Q, which shows and hides QUILL, so it never worked while
@@ -292,6 +296,8 @@ that change settings, such as Settings for This Podcast (Ctrl+Alt+,),
 now have a Save button that keeps the window open, so you can try
 something and adjust it. Ctrl+S saves too. Close leaves anything you
 haven’t saved as it was.</li>
+<li>Portable copies now start from a folder whose name has a space in
+it.</li>
 <li><strong>More windows stay open beside your library.</strong> Add
 Podcast, Feed Check, Show Notes, Notifications and several others are on
 the Window menu while they’re open. Escape or Ctrl+W closes one and puts
@@ -371,8 +377,11 @@ address. Feeds that need a password, such as a Patreon supporter feed,
 work too, and Windows keeps the password safe for you.</p>
 <p>Coming from another podcast app? Save your list from it as an OPML
 file, then press Import OPML in the Add Podcast window (Alt+I). However
-long your list is, Cast brings it across, folders and all, and you can
-keep listening while it works.</p>
+long your list is, Cast brings it across, folders and all, empty folders
+included, and you can keep listening while it works. Your old shows
+arrive quietly: Cast does not announce their whole back catalogue as new
+episodes, and each one shows the real date of its newest episode, so the
+ones that stopped years ago are easy to spot.</p>
 <p>Changed your mind about a podcast? Unfollow it, and if that was a
 mistake, Ctrl+Z brings it back with its episodes and downloads. Ctrl+Z
 rescues you the same way after removing or marking a whole batch of
@@ -442,6 +451,12 @@ link that opens the episode at that second for anyone who has Cast.</p>
 watch</h2>
 <p>Cast checks your podcasts for you, on a schedule you choose for all
 of them or one at a time. Press F5 whenever you cannot wait.</p>
+<p><strong>Feed Check</strong> (Ctrl+Shift+C) tells you which podcasts
+need something, and why, in plain words: removed by the host, a web
+address that has lapsed, an address that now opens a web page, a feed
+the publisher emptied, a host that turns podcast apps away. When a show
+has moved, <strong>Find This Show’s New Feed</strong> looks it up for
+you and moves it to its new feed, keeping everything you have heard.</p>
 <p>New episodes wait in the <strong>Inbox</strong> (Ctrl+Shift+I) for
 you to decide about them. You choose which podcasts send episodes there,
 and you can keep it short so it never turns into a wall. Press Delete on
@@ -551,10 +566,10 @@ go</h2>
 <p>Back up your whole library to one file, with your podcasts,
 playlists, positions, notes and bookmarks, using Podcasts &gt;
 <strong>Back Up My Podcasts…</strong> (Ctrl+Alt+Shift+B), and put it
-back later with <strong>Restore from a Backup…</strong>
-(Ctrl+Alt+Shift+R). When you get a new computer, Help &gt; Export My
-Setup (Ctrl+Alt+Shift+X) moves your library, settings and keys across in
-one file.</p>
+back later with <strong>Restore from a Backup…</strong> (Ctrl+Alt+F12).
+When you get a new computer, Help &gt; Export My Setup
+(Ctrl+Alt+Shift+X) moves your library, settings and keys across in one
+file.</p>
 <p><strong>Listening Statistics</strong> (Ctrl+Alt+Shift+S) tells you
 which podcasts you listen to most, how long, and when, from your own
 history on this computer. Its <strong>Year in Review</strong> button
@@ -570,7 +585,7 @@ each episode in step through a folder you already sync, such as Dropbox
 or OneDrive. There is no account to make. Podcasts &gt; Carry My Place
 Between Machines is where you set it up. Continue Listening then tells
 you where a place came from, such as “last played on Kitchen laptop”.
-Tick <strong>Also share the podcasts I follow, and their
+Check <strong>Also share the podcasts I follow, and their
 folders</strong>, and a podcast you follow on one computer turns up on
 the others, in the same folder. It is off until you choose it, and
 private feeds are never shared.</p>
@@ -610,9 +625,9 @@ gets new features a few weeks early; <strong>Dev</strong> is the work in
 progress, for testers.</p>
 <p>Arrowing through the three only explains them. If you choose Beta or
 Dev, a short warning says plainly what could go wrong and how to come
-back, and nothing moves until you tick <strong>I understand</strong> and
-choose <strong>Move</strong>. Before it moves, Cast saves a copy of your
-subscriptions, playlists, listening places and settings. Downloaded
+back, and nothing moves until you check <strong>I understand</strong>
+and choose <strong>Move</strong>. Before it moves, Cast saves a copy of
+your subscriptions, playlists, listening places and settings. Downloaded
 episodes are not copied, and updates don’t change them.</p>
 <p>Coming back to Stable is safe. If Stable can read everything you have
 saved, Cast offers to go straight back. If it can’t yet, Cast says so

@@ -21,6 +21,7 @@ from quill.core.spelling.models import (
     ReviewCounters,
     SpellingIssue,
 )
+from quill.core.spelling.paragraph_context import normalize_context_mode, paragraph_context
 
 
 @dataclass
@@ -58,8 +59,12 @@ class ReviewSession:
         ignores: object | None = None,
         start_at: int | None = None,
         wrap: bool = False,
+        context_mode: str = "sentence",
     ) -> None:
         self._text = text
+        #: ``spell_review_context_mode``: the Context field shows the sentence
+        #: and its neighbours, or the whole paragraph.
+        self._context_mode = normalize_context_mode(context_mode)
         self._dictionary = dictionary
         self._scope_start = scope_start
         self._scope_end = scope_end if scope_end is not None else len(text)
@@ -131,7 +136,10 @@ class ReviewSession:
         if self._current_idx >= len(self._issues):
             return None
         m = self._issues[self._current_idx]
-        ctx, ws, we = build_context(self._text, m.start, m.end)
+        if self._context_mode == "paragraph":
+            ctx, ws, we = paragraph_context(self._text, m.start, m.end)
+        else:
+            ctx, ws, we = build_context(self._text, m.start, m.end)
         suggs = tuple(suggest_words(m.word, self._dictionary))
         return SpellingIssue(
             word=m.word,

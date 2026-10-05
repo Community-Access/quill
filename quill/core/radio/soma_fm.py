@@ -26,11 +26,10 @@ import urllib.error
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 
-from quill import __version__
+from quill.core import http_client
 from quill.core.error_codes import CodedError
 from quill.core.radio.models import RadioStation
 
-_USER_AGENT = f"QUILL/{__version__} (https://github.com/Community-Access/quill)"
 _CHANNELS_URL = "https://somafm.com/channels.json"
 _TIMEOUT_SECONDS = 10.0
 _MAX_RESOLVE_WORKERS = 8
@@ -81,7 +80,7 @@ def _http_text(url: str) -> str:
     (shared by the channel list and per-channel playlist resolution)."""
     if not url.startswith("https://"):
         raise SomaFmError("Only https:// URLs can be fetched.")
-    request = urllib.request.Request(url, headers={"User-Agent": _USER_AGENT})
+    request = urllib.request.Request(url, headers={"User-Agent": http_client.user_agent()})
     context = ssl.create_default_context()
     try:
         with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:

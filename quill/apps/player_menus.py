@@ -47,6 +47,7 @@ class MediaPlayerMenuMixin:
         file_menu.AppendSubMenu(bookmarks_menu, "Book&marks && Sync")
         file_menu.AppendSeparator()
         file_menu.Append(tray_id, "Minimize to &Tray\tCtrl+W")
+        self._append_show_hide_key_item(file_menu, "player")
         file_menu.Append(exit_id, "E&xit\tCtrl+Q")
         menu_bar.Append(file_menu, "&File")
         self.frame.Bind(wx.EVT_MENU, self._on_open_daisy, id=daisy_id)

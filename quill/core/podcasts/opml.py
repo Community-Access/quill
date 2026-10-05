@@ -17,6 +17,7 @@ wx-free, strict-typed.
 
 from __future__ import annotations
 
+import html
 import xml.etree.ElementTree as ET
 from collections.abc import Iterator
 from dataclasses import dataclass
@@ -171,6 +172,19 @@ class ImportedShow:
     category: str = ""
 
 
+def _display_text(raw: str) -> str:
+    """A title or folder name with any *second* layer of escaping undone.
+
+    Some exporters escape twice: Downcast writes ``We&amp;apos;re Alive``, so
+    after the XML parser has done its job the title is still the literal
+    ``We&apos;re Alive`` -- and a screen reader says "ampersand a-p-o-s
+    semicolon" on every row, for good, because a refresh never renames a
+    show. 47 of the 1,307 shows in one real Downcast export carried it.
+    Unescaping a title that was escaped only once changes nothing.
+    """
+    return html.unescape(raw).strip()
+
+
 def _walk_outline(element: ET.Element, path: list[str]) -> list[ImportedShow]:
     results: list[ImportedShow] = []
     for child in element.findall("outline"):
@@ -183,10 +197,10 @@ def _walk_outline(element: ET.Element, path: list[str]) -> list[ImportedShow]:
             continue
         xml_url = child.get("xmlUrl", "").strip()
         if xml_url:
-            title = child.get("title") or child.get("text") or xml_url
+            title = _display_text(child.get("title") or child.get("text") or xml_url)
             results.append(
                 ImportedShow(
-                    title=title.strip(),
+                    title=title,
                     feed_url=xml_url,
                     homepage=child.get("htmlUrl", "").strip(),
                     folder_path=list(path),
@@ -199,12 +213,48 @@ def _walk_outline(element: ET.Element, path: list[str]) -> list[ImportedShow]:
             )
             continue
         # No xmlUrl: a folder grouping outline. Recurse with an extended path.
-        folder_name = (child.get("text") or child.get("title") or "").strip()
+        folder_name = _display_text(child.get("text") or child.get("title") or "")
         if folder_name:
             results.extend(_walk_outline(child, [*path, folder_name]))
         else:
             results.extend(_walk_outline(child, path))
     return results
+
+
+def _walk_folders(element: ET.Element, path: list[str], found: list[list[str]]) -> None:
+    for child in element.findall("outline"):
+        if (child.get("isComment") or "").strip().lower() == "true":
+            continue
+        if child.get("xmlUrl", "").strip():
+            continue
+        name = _display_text(child.get("text") or child.get("title") or "")
+        if name:
+            found.append([*path, name])
+            _walk_folders(child, [*path, name], found)
+        else:
+            _walk_folders(child, path, found)
+
+
+def parse_opml_folders(text: str) -> list[list[str]]:
+    """Every folder in the file, as a path of names, in document order.
+
+    Including the **empty** ones. :func:`parse_opml` describes shows, and a
+    folder only ever existed on import because a show was inside it -- so an
+    empty folder, or one holding only empty folders, quietly vanished, and the
+    order folders were created in was the order their first shows happened to
+    appear (2026-10-04 folder test). Names are unescaped the same way titles
+    are. A file that cannot be read yields no folders; :func:`parse_opml`
+    is the one that says why.
+    """
+    try:
+        root = safe_fromstring(text)
+    except (ParseError, UnsafeXMLError):
+        return []
+    body = root.find("body")
+    found: list[list[str]] = []
+    if body is not None:
+        _walk_folders(body, [], found)
+    return found
 
 
 def parse_opml(text: str) -> list[ImportedShow]:
@@ -232,9 +282,13 @@ class OpmlValidationResult:
     feed_url: str
     ok: bool
     error: str = ""
-    #: When the checker found the feed at a corrected address (e.g. a
-    #: permanent redirect), the address the subscription was updated to.
+    #: The feed's new address, when the server said -- with a 301 or 308 on
+    #: every hop -- that it has moved for good. A temporary redirect never
+    #: sets it (check.md bug 4).
     corrected_url: str = ""
+    #: The subscription was actually updated to ``corrected_url`` (its
+    #: "Follow permanent feed redirects" setting allowed it).
+    applied: bool = False
 
 
 @dataclass(slots=True)

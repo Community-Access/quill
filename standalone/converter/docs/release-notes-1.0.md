@@ -27,8 +27,24 @@ Two downloads. Choose one.
   installs the shared QuillVille runtime if the computer does not already have
   it, then the app, with a Start Menu entry and an uninstaller.
 - **Quill-Converter-Portable-1.0.0.zip** -- unpack anywhere, a USB stick
-  included. It keeps its settings in its own `data` folder next to the app and
+  or a folder with spaces in its name included. It keeps its settings in its own `data` folder next to the app and
   writes nothing to the computer it runs on.
+
+## Try this first
+
+1. Open Quill Converter. Focus is already on the list of files to convert.
+2. Press **Alt+A** and choose a recording, or copy one in File Explorer and
+   press **Ctrl+V** here.
+3. Press **Alt+T** and arrow through **Convert to**. Each format tells you what
+   it is for. MP3 plays everywhere, so it is a good first choice.
+4. Press **Alt+E** and try **Clean up speech**, then **Ctrl+P** to hear fifteen
+   seconds exactly as the result will sound. **Ctrl+Shift+P** plays the same
+   fifteen seconds as they are now, so you can compare.
+5. Press **Ctrl+Enter**. Progress is spoken as it goes, and the new file lands
+   in a folder called Converted beside the original. Your original is never
+   changed.
+6. Press **F1** on anything you are unsure of. It tells you what the window is
+   for and what that control does.
 
 ## Everything is included
 
@@ -228,6 +244,23 @@ Support is by email, to a person: **support@community-access.org**. Get Help
 from Support writes the message in your own mail program, with the app's version
 filled in, and nothing goes until you send it.
 
+### Out of the way when you want it
+
+**Minimize to Tray** (Ctrl+W) tucks Quill Converter into the notification area,
+and a conversion carries on. If you would like one key that brings it back from
+any program, choose it in **File > Show and Hide Key...** (Ctrl+Alt+Shift+H).
+There is none until you choose one, on purpose: a key like that works
+everywhere in Windows, so it would take the key away from any program that
+uses it. If another QuillVille app already uses the key you type, Quill
+Converter says which app and lets you pick another.
+
+### Find any command by name
+
+Can't remember which menu something is in? **Help > Find a Setting or
+Command** (Ctrl+Alt+Shift+S) searches every menu at once. Type part of a name,
+such as "tags", arrow to the row you want and press Enter. An option also says
+whether it is on or off.
+
 ### In the family
 
 Quill Converter now appears on the QuillVille menu of the other apps, and QUILL's
@@ -257,7 +290,20 @@ available in public builds.
   MP3 first.
 - **Preview ignores chapters**; it plays fifteen seconds of sound.
 
+## Your version, and updates
+
+Help > About says **1.0.0 (build 1)**. If a fix comes out without a new
+version number, it is a newer build, and **Help > Check for Updates...**
+(Ctrl+Alt+U) offers it to you. Check for Updates only looks when you ask, and
+it offers the same kind of download you have, the installer or the portable
+zip. The installer is signed by Community Access, so Windows knows who it is
+from.
+
 ## Getting help
+
+Press **F1** anywhere to hear what the window is for and what the control you
+are on does. The user guide (Help > User Guide, Ctrl+F1) walks through
+everything in eight short chapters, starting with your first conversion.
 
 Write to **support@community-access.org**, or use Help > Get Help from
 Support... (Ctrl+Alt+F2). Community Access reads every message.

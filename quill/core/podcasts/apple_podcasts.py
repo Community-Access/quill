@@ -68,11 +68,10 @@ import urllib.parse
 import urllib.request
 from dataclasses import dataclass, field
 
-from quill import __version__
+from quill.core import http_client
 from quill.core.error_codes import CodedError
 from quill.core.radio import directory_cache
 
-_USER_AGENT = f"QUILL/{__version__} (https://github.com/Community-Access/quill)"
 _TIMEOUT_SECONDS = 15.0
 _MAX_BYTES = 4_000_000
 
@@ -340,7 +339,7 @@ def _fetch(url: str) -> str:
     """One HTTPS GET of a public Apple endpoint -- the reviewed egress site."""
     if not url.startswith("https://"):
         raise ApplePodcastsError("Only https:// URLs can be fetched.")
-    request = urllib.request.Request(url, headers={"User-Agent": _USER_AGENT})
+    request = urllib.request.Request(url, headers={"User-Agent": http_client.podcast_user_agent()})
     context = ssl.create_default_context()
     try:
         with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:

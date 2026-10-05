@@ -23,7 +23,18 @@ from __future__ import annotations
 from collections.abc import Sequence
 from pathlib import Path
 
-__all__ = ["health_lines", "swap_lines"]
+__all__ = ["health_lines", "ps_single_quoted", "swap_lines"]
+
+
+def ps_single_quoted(value: object) -> str:
+    """*value* as a PowerShell single-quoted string literal.
+
+    Inside single quotes PowerShell treats every character literally except
+    the single quote itself, which is written twice. Without that, an installer
+    kept under a profile folder named ``O'Brien`` ended the string early and
+    the undo never ran.
+    """
+    return "'" + str(value).replace("'", "''") + "'"
 
 
 def swap_lines(
@@ -103,7 +114,7 @@ def health_lines(
         lines += [
             f'echo [apply] reinstalling {from_version} from "{rollback_setup}" >>"%LOG%" 2>&1',
             "powershell -NoProfile -Command "
-            f"\"Start-Process -FilePath '{rollback_setup}' -ArgumentList {args} "
+            f'"Start-Process -FilePath {ps_single_quoted(rollback_setup)} -ArgumentList {args} '
             f'-Verb RunAs -Wait" >>"%LOG%" 2>&1',
             result,
             relaunch,

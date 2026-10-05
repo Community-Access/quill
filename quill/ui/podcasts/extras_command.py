@@ -196,7 +196,7 @@ def subscribe_to(host: Any, feed_url: str) -> bool:
         "podcast-podroll-subscribe",
         _work,
         on_success=_done,
-        on_failure=lambda _op, exc: _report(host, f"Could not follow it: {exc}"),
+        on_failure=lambda _op, exc: _report(host, f"Could not follow it: {_plain(exc)}"),
     )
     return True
 
@@ -257,6 +257,13 @@ def _jump(host: Any, show: Any, episode: Any, target: str) -> bool:
         host._podcast_controller, host._podcast_library, show, episode, resume_ms=position
     )
     return True
+
+
+def _plain(error: BaseException) -> str:
+    """The plain sentence for a failed feed read, never its raw text (check.md bug 7)."""
+    from quill.core.podcasts.feed_problems import plain
+
+    return plain(error)
 
 
 def _report(host: Any, sentence: str) -> None:

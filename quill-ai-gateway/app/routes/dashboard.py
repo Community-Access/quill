@@ -250,7 +250,7 @@ def update_config(key: str):
     if impact is not None and impact.needs_confirmation and request.form.get("confirm") != "yes":
         flash(
             f"That change was not saved, because it more than doubles the cost. "
-            f"{impact.sentence()} Tick the confirmation box beside the field and "
+            f"{impact.sentence()} Check the confirmation box beside the field and "
             f"save again if you meant it.",
             "error",
         )

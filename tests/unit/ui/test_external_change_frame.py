@@ -156,3 +156,47 @@ def test_the_dialog_answer_maps_to_what_gets_stored() -> None:
     assert ExternalChangeAnswer(RELOAD, False).remembered_value == ""
     # A one-off comparison is never a policy, however the box was left.
     assert ExternalChangeAnswer(NEW_TAB, True).remembered_value == ""
+
+
+class _PollHost:
+    """The watcher tick, with every action it can take recorded."""
+
+    _poll_external_change = MainFrame._poll_external_change
+
+    def __init__(self, path: Path, *, modified: bool) -> None:
+        self.settings = Settings()
+        self.settings.external_change_always_reload = [path.suffix]
+        self.document = Document(text="mine", path=path)
+        self.document.modified = modified
+        self.done: list[str] = []
+
+        class _Watcher:
+            def poll(self) -> str:
+                return "modified"
+
+        self._external_change_watcher = _Watcher()
+
+    def _reload_from_disk_preserving_cursor(self) -> None:
+        self.done.append("reload")
+
+    def _keep_my_version_of_external_change(self) -> None:
+        self.done.append("keep")
+
+    def _announce(self, _text: str) -> None:
+        pass
+
+    def _show_external_change_prompt(self, action: object) -> None:
+        self.done.append(f"ask:{getattr(action, 'name', action)}")
+
+
+def test_a_remembered_reload_still_reloads_a_clean_tab_silently(tmp_path: Path) -> None:
+    host = _PollHost(tmp_path / "build.md", modified=False)
+    host._poll_external_change()
+    assert host.done == ["reload"]
+
+
+def test_a_remembered_reload_never_throws_away_unsaved_edits(tmp_path: Path) -> None:
+    """Family rule 4: with unsaved edits QUILL asks rather than reloading."""
+    host = _PollHost(tmp_path / "build.md", modified=True)
+    host._poll_external_change()
+    assert host.done == ["ask:PROMPT_CONFLICT"]

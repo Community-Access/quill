@@ -134,6 +134,7 @@ class DocumentFileMixin:
             # set_rtf), so the mirror is told here rather than in each branch.
             self.doc_text.invalidate()
         self.path = path
+        self._remember_disk_baseline()
         self._discard_slot()
         self.modified = False
         self._remember_clean_text()
@@ -157,6 +158,15 @@ class DocumentFileMixin:
         # be about the document, not about a caret that has already moved.
         self.restore_document_memory()
         self.announce_spelling_state_if_skipped()
+        # Once, and only for a file that is not UTF-8: the reader can read the
+        # text but cannot know what it was stored as, and that decides what a
+        # save can hold. The same sentence QUILL says (2026-10-04).
+        if prepared.mode != RICH:
+            from quill.core.text_decoding import open_notice
+
+            notice = open_notice(prepared.encoding)
+            if notice:
+                self._announce(notice)
         # Last, because it is the one thing about this file that will cost
         # something later: a read-only file typed into for twenty minutes
         # refuses at Ctrl+S, which is the worst moment to learn it. The
@@ -269,6 +279,10 @@ class DocumentFileMixin:
         as_rich = self.editor.mode == RICH and text is None
         if not as_rich and not self._encoding_allows(body):
             return False
+        # Never overwrite a change another program made since this window last
+        # read or wrote the file (2026-10-04); asks Overwrite, Reload or Save As.
+        if not self._confirm_unseen_disk_change(destination):
+            return False
         try:
             if as_rich:
                 self._write_rtf(destination)
@@ -287,6 +301,7 @@ class DocumentFileMixin:
 
             write_backup(destination, self.control.GetValue())
         self.path = destination
+        self._remember_disk_baseline()
         self._discard_slot()
         self._set_modified(False)
         self._update_title()
@@ -424,6 +439,9 @@ class DocumentFileMixin:
         if callable(cancel_open):
             cancel_open()
         self._stop_status_timer()
+        stop_watch = getattr(self, "_stop_disk_watch", None)  # lite_window_watch.py
+        if callable(stop_watch):
+            stop_watch()
         timer = getattr(self, "_spell_timer", None)
         if timer is not None:
             try:

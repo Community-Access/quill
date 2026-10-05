@@ -393,7 +393,7 @@ you can hand to support — showing you what's inside first.
   either step reports **"Diagnostics export cancelled"** and writes nothing. On
   Continue + Save, a ZIP is written and QUILL reports **"Saved diagnostics bundle
   to …"**; the file appears in the Diagnostics folder (HELP-07). Secrets are
-  redacted and file paths are only included if you ticked the box.
+  redacted and file paths are only included if you checked the box.
 
 **Sign off** — `[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A`
 `[ ] Works` `[ ] Surface-exact` `[ ] Accessible`  · Notes: ____________________

@@ -13,6 +13,8 @@
 > **Also implemented, 2026-10-04:** `scripts/revoke_release.py` (the documented way to withdraw a build; `feed_tool.py revoke` calls the same `release_feed.withdraw`), `scripts/rollup_release_notes.py` over `quill/core/updater/notes_rollup.py` (run by `promote_release.py` at every promotion to Stable, printed by its `--dry-run`, and used for the GitHub release body and the feed's `notes_summary`), GATE-DATAFMT (`quill/tools/data_format_audit.py`, `tests/unit/core/test_data_formats.py`, `tests/unit/core/fixtures/data_format_fingerprints.json`, in `platform_report`), and the rehearsal (`tests/unit/scripts/test_channel_rehearsal_offline.py` in CI, `tests/integration/test_channel_rehearsal.py` opt-in with `QUILL_CHANNEL_REHEARSAL=1`).
 >
 > **Decisions, 2026-10-04.** (questions.md 32) The installer kept so that a failed update can undo itself is kept **always on Beta and Dev**, and **on Stable only for 7 days or 3 successful starts after each update** (`quill/core/updater/apply.py`, `keeps_installer`), so a Stable computer gets its roughly 200 MB back; this narrows decision 7 for the running version's installer, while the *previous* version's installer still ages out after 3 starts or 7 days on every channel. And the old v1 update list stays signed in CI by `windows-release.yml` with the `QUILL_FEED_SIGNING_KEY` secret for now. Remove that secret from CI and stop v1 signing once every app's channel-aware release (QUILL 1.0.0, QUILL Lite 1.2.0, Quill Radio 3.2.0, QUILL Cast 2.0.0) has been out for one full release cycle; until then, leave it alone (`docs/release/RELEASE.md`).
+>
+> **Decisions, 2026-10-04 (code signing).** "Beta and developer builds should not be digitally signed." Authenticode signing is refused for any version with a pre-release part (`-dev`, `-alpha`, `-beta`, `-rc`) and for every Dev build: `-Sign`, `QUILL_SIGN` and `QUILL_SIGN_REQUIRED` cannot force it, and the build says "Beta and Dev builds are not code-signed; signing skipped." (`scripts/code_signing.py` `build_decision`, asked by every `build_release.ps1` through `Resolve-QuillSigning` and by `build_windows_distribution.py`). Stable is always signed. The conflict with "Stable takes the same files that were on Beta" is resolved by signing the **final-numbered candidate when it is built**, not at promotion: an Inno `Setup.exe` carries its payload compressed inside it, so signing at promotion would mean either rebuilding the installer (new files, never tested on Beta) or signing only the outer `Setup.exe` (unsigned programs on Stable). A final-numbered build waiting on Beta is a release candidate of Stable, not a Beta build. `publish_release.py` refuses an unsigned final-numbered build and a signed Beta or Dev one; P5 is no longer conditional on `QUILL_SIGN_REQUIRED` and always runs for Stable, reading the embedded signature from the installer and from every `.exe` in the portable zip (so it works on the Linux promote runner), and verifying with `signtool` where it is installed. QUILL's own `v1.0.0` candidate is built and signed on the owner's computer, because `windows-release.yml` has no Azure credential (`docs/code-signing.md`).
 
 ---
 
@@ -104,7 +106,7 @@ Details of `quill/core/updates.py`:
 
 ### 1.8 Preferences, Help menus and accessibility conventions
 
-- **QUILL:** `settings_specs.py:2124-2146` defines `auto_check_updates` and `beta_updates` ("Get beta updates", admin page). `main_frame_preferences.py:725-730` pops `_confirm_beta_channel` when the box is ticked. The Help menu has "Check for &Updates..." and "Chec&k for GLOW Updates..." (`main_frame_menu.py:3324-3327`). The consent dialog is `main_frame_updates.py:583-608`. QUILL also **auto-enrolls into Beta** when it finds it is running a prerelease (214-222), and the **silent startup check auto-downloads** (237-240).
+- **QUILL:** `settings_specs.py:2124-2146` defines `auto_check_updates` and `beta_updates` ("Get beta updates", admin page). `main_frame_preferences.py:725-730` pops `_confirm_beta_channel` when the box is checked. The Help menu has "Check for &Updates..." and "Chec&k for GLOW Updates..." (`main_frame_menu.py:3324-3327`). The consent dialog is `main_frame_updates.py:583-608`. QUILL also **auto-enrolls into Beta** when it finds it is running a prerelease (214-222), and the **silent startup check auto-downloads** (237-240).
 - **Lite:** `quill/apps/lite_preferences.py:225-238` has "Look for &updates when QUILL Lite starts". The comment there notes every other letter is taken (GATE-14). Help > Check for Updates is Ctrl+Alt+U (`lite_updates.py:192-196`).
 - **Radio:** `radio_preferences.py:195-211` uses a `PreferenceCheckbox` list in the shared `quill/ui/app_preferences_dialog.py`, which also offers `PreferenceChoice` (line 78). Help menu: "Check for Up&dates...\tCtrl+Alt+U" (`radio_menu_bar.py:451`).
 - **Cast:** `AppRow` rows in `quill/apps/podcasts_preferences.py:30-60` and `quill/ui/podcasts/preferences_window.py:123`. Help menu: "&Check for Updates...\tCtrl+Alt+U" (`podcasts_menu.py:465`).
@@ -140,7 +142,7 @@ Details of `quill/core/updates.py`:
 
 Rules:
 
-- **Per app, default Stable.** The chooser also offers "Also move my other QuillVille apps on this computer" with one checkbox per installed app, all unticked by default.
+- **Per app, default Stable.** The chooser also offers "Also move my other QuillVille apps on this computer" with one checkbox per installed app, all unchecked by default.
 - **A build never chooses a channel for you without telling you.** This replaces today's silent auto-enroll (`main_frame_updates.py:214-222`). If a pre-release build is started with no channel stored (for example, a tester installed a Beta by hand), the app sets the channel to that build's *birth channel* once and says so: "You installed a Beta version, so QUILL will offer you Beta updates. You can change this in Help > Release Channel."
 - **Feed-only states** (never chosen in the UI): `revoked` (pulled) and the internal flag `pending_return` ("on Beta, waiting for Stable to catch up").
 
@@ -312,11 +314,11 @@ New, wx-free, unit-tested:
 | P2 | Every asset re-downloaded or HEADed: size and **SHA-256 match the feed entry** | `release_assets._download_resumable` + hash |
 | P3 | Feed signature valid; `sequence` will increase | `feed_tool verify` |
 | P4 | For Stable: version is final (`ReleaseVersion.stage == "final"`) | `versioning.py` |
-| P5 | For Stable: Authenticode-signed installer and payload `.exe` (`code_signing.py verify`) when `QUILL_SIGN_REQUIRED` policy is on | `scripts/code_signing.py` |
+| P5 | For Stable, always: Authenticode-signed installer and every `.exe` in the portable zip (embedded signature; `signtool verify` where installed). Decided 2026-10-04: Stable is never unsigned | `scripts/code_signing.py` `asset_is_signed` |
 | P6 | Version agreement inside the bits: `app-build.json.version` == the tag == `quill-app-version.ini` inside the portable zip == the Inno `VersionInfo` | GATE-APPVER logic, applied to *artifacts* rather than source |
 | P7 | **Sibling check, channel-aware (GATE-SIBVER-CH):** for Stable, every entry in `carries` must be ≤ that sibling's newest *Stable* listing; for Beta, ≤ its newest Beta-or-Stable. The promoted runtime lands in that channel's runtime slot, where siblings on the channel will run it (6.5). | `check_sibling_versions.disagreements`, fed by the feed instead of tags |
 | P8 | Release notes present: a CHANGELOG section for this version (`release_notes.extract_version_section` returns non-empty) **and**, for Stable, a rolled-up `standalone/<app>/docs/release-notes-<x.y>.md` | `scripts/extract_release_body.py` |
-| P9 | **Screen-reader sign-off** for Stable: `docs/qa/signoffs/<app>-<version>.md` exists with `Result: pass`, a tester, screen readers and versions, and a date, plus at least the 20-minute pass IDs ticked (for Radio: R-02, R-04, R-08, R-14, R-18, R-37, R-45, R-55, R-69, R-73 from `docs/qa/radio-signoff.md`). New sign-off sheets are generated from the checklists by `scripts/gen_signoff_html.py`, extended to write the results stub. | `docs/qa/*-signoff.md` |
+| P9 | **Screen-reader sign-off** for Stable: `docs/qa/signoffs/<app>-<version>.md` exists with `Result: pass`, a tester, screen readers and versions, and a date, plus at least the 20-minute pass IDs checked (for Radio: R-02, R-04, R-08, R-14, R-18, R-37, R-45, R-55, R-69, R-73 from `docs/qa/radio-signoff.md`). New sign-off sheets are generated from the checklists by `scripts/gen_signoff_html.py`, extended to write the results stub. | `docs/qa/*-signoff.md` |
 | P10 | Soak time: at least 7 days on Beta before Stable, at least 1 day on Dev before Beta (configurable in `build/release-policy.toml`; `--skip-soak "reason"` is recorded in the feed history) | feed `history` |
 | P11 | Data formats: compute `can_roll_back_to` and `min_safe_downgrade` for the new Stable; **warn** if the promotion makes the previous Stable an unsafe target, and print exactly which format moved | 5.2 |
 | P12 | Docs build gates pass for the app's docs (`check_docs_artifacts.py`, GATE-SITE-LINKS) | existing |
@@ -400,7 +402,7 @@ Precisely: **going back to Stable build T is safe if and only if, for every data
 
 ### 5.3 What the user is offered when it's not safe
 
-1. **"Wait for Stable"** (the default). Sets `pending_return = true`. The channel *shown* is "Stable (waiting for it to catch up with your version)". The app **stops taking Beta updates** unless the user ticks "Keep getting Beta fixes while I wait" (unticked by default; ticking it may move the goalposts, and the dialog says so). When `channels.stable.current >= installed version` and the downgrade verdict for that build is no longer needed (it is an *upgrade* or the same version), the app moves across by itself:
+1. **"Wait for Stable"** (the default). Sets `pending_return = true`. The channel *shown* is "Stable (waiting for it to catch up with your version)". The app **stops taking Beta updates** unless the user checks "Keep getting Beta fixes while I wait" (unchecked by default; checking it may move the goalposts, and the dialog says so). When `channels.stable.current >= installed version` and the downgrade verdict for that build is no longer needed (it is an *upgrade* or the same version), the app moves across by itself:
    - If it is the same bits (the candidate was promoted), it simply flips the channel and notes it in Update History.
    - If it is a newer Stable, it is offered as a normal update.
    - Either way it is spoken once: "Stable has caught up. Quill Radio is back on the Stable channel."
@@ -608,7 +610,7 @@ The **Check for Updates** result dialog gains a line, "You are on the Beta chann
 - **Controls, in tab order:**
   1. Radio buttons for Stable, Beta and Dev, each with the one-line meaning from 2.1 as its help text (`SetHelpText`, F1). The current channel is selected. The label "Choose a release channel" is a static box that the screen reader announces with the group.
   2. A read-only multi-line "What this means" box that updates as the selection changes: the current version, the newest version on the selected channel, and whether going there is an update, the same version, or a return (with the safety answer from 5.1 already computed).
-  3. A group "Also move my other QuillVille apps on this computer", with one checkbox per installed app ("QUILL Lite, now on Stable") and every box unticked by default.
+  3. A group "Also move my other QuillVille apps on this computer", with one checkbox per installed app ("QUILL Lite, now on Stable") and every box unchecked by default.
   4. "Read about release channels" (opens the site page).
   5. Buttons: "Switch" (not default when the choice is riskier than the current one), and Close (Escape, no access key).
 - Choosing the current channel and pressing Switch does nothing and says "Already on Stable."
@@ -623,6 +625,7 @@ The **Check for Updates** result dialog gains a line, "You are on the Beta chann
 > - Something might stop working, or Quill Radio might close unexpectedly.
 > - Your screen reader might miss something it should announce. We test every Stable version with JAWS and NVDA. Beta versions are tested less.
 > - Your favorites and settings may be saved in a newer way that the Stable version can't read yet.
+> - Beta and Dev versions aren't signed, so Windows may warn that the installer comes from an unknown publisher; that's expected, and you can choose More info, then Run anyway.
 >
 > **How you're protected**
 > - Before switching, Quill Radio saves a copy of your favorites, history and settings. Your recordings are not copied, and updates don't change them.
@@ -642,16 +645,16 @@ Buttons: **"Stay on Stable"** (the default, and Escape) and **"Move to Beta"**. 
 > - Expect things to break. Some days a Dev version may not start at all.
 > - Dev versions are not checked with screen readers before they go out.
 > - Dev versions may change how your data is saved more than once. Going back to Stable may mean using the copy saved today and losing changes you made since.
-> - Windows may warn that a Dev version is from an unknown publisher.
+> - Beta and Dev versions aren't signed, so Windows may warn that the installer comes from an unknown publisher; that's expected, and you can choose More info, then Run anyway.
 >
 > If a developer didn't ask you to try Dev, Beta is probably the better choice.
 
-There is a checkbox: "I understand that Dev versions can break and that going back may lose recent changes." Buttons: "Choose Beta instead", "Stay on Stable" (the default, Escape), and "Move to Dev". If "Move to Dev" is pressed with the box unticked, focus moves to the checkbox and the app says "Tick the box first, so we know you've read this." That is an outcome the reader can't know, so it is allowed. Typing a confirmation phrase is avoided because of what it costs a braille or speech user.
+There is a checkbox: "I understand that Dev versions can break and that going back may lose recent changes." Buttons: "Choose Beta instead", "Stay on Stable" (the default, Escape), and "Move to Dev". If "Move to Dev" is pressed with the box unchecked, focus moves to the checkbox and the app says "Check the box first, so we know you've read this." That is an outcome the reader can't know, so it is allowed. Typing a confirmation phrase is avoided because of what it costs a braille or speech user.
 
 ### 7.5 What moving to Beta or Dev does, step by step
 
 1. Show the risk dialog. Cancel changes nothing.
-2. Take a `joined-beta` snapshot for this app and each ticked sibling. Announce "Saved a copy of your settings." If the snapshot fails, stop with: "Quill Radio couldn't save a copy of your favorites, so it stayed on Stable. <reason>."
+2. Take a `joined-beta` snapshot for this app and each checked sibling. Announce "Saved a copy of your settings." If the snapshot fails, stop with: "Quill Radio couldn't save a copy of your favorites, so it stayed on Stable. <reason>."
 3. Write `channels.json` and the mirror settings key. Record the change in history.
 4. Run an immediate check on the new channel. If there is a newer build, show the normal update dialog (`update_notice`), with the header "Beta version 3.3.0-beta.2". Installing passes `/CHANNEL=beta`, which puts the runtime in the Beta slot.
 5. Announce "Quill Radio is on Beta."

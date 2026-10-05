@@ -81,6 +81,13 @@ $Iscc = Resolve-QuillIscc -Preferred $Iscc
 # runtime carries; the installer records it and Windows shows X.Y.Z.B.
 $build, $fileVersion = Resolve-QuillReleaseBuild -QuillRepo $QuillRepo -Python $Python -App "quilllite" -Version $version -Build $Build -Dev:([bool]$DevVersion) -OfflineOk:$SkipPublishedCheck
 
+# Beta and Dev builds are never code-signed (owner decision 2026-10-04). For a
+# -dev, -alpha, -beta or -rc version, or a Dev build, this says so in one line
+# and switches -Sign off for the whole build, Inno's /DSign included; a
+# final-numbered build (a Stable candidate) signs as before. The rule is
+# scripts\code_signing.py build-decision; see docs\code-signing.md.
+$null = Resolve-QuillSigning -QuillRepo $QuillRepo -Python $Python -Version $version -Dev:([bool]$DevVersion)
+
 # GATE-SIBVER (2026-09-30): the runtime this build ships carries every app's
 # version constant, so no sibling may be ahead of its published release here.
 Assert-QuillSiblingVersions -QuillRepo $QuillRepo -Python $Python -Releasing @("quilllite") -Skip:$SkipPublishedCheck

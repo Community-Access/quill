@@ -244,6 +244,359 @@
 <main id="main-content" tabindex="-1">
 <h1 id="quill-lite-changelog">QUILL Lite changelog</h1>
 <h2 id="120--2026-10-03">1.2.0 – 2026-10-03</h2>
+<h3
+id="dictation-gap-plan-read-back-marks-voice-editing-live-transcripts-dictate-anywhere-2026-10-05">Dictation
+gap plan: read-back marks, voice editing, live transcripts, Dictate
+Anywhere (2026-10-05)</h3>
+<p>Everything below is shared code, in both editors on the same keys and
+the same words (QUILL: Tools &gt; Speech &gt; Live Dictation; QUILL
+Lite: Tools &gt; Dictation).</p>
+<ul>
+<li><strong>Punctuation in the read-back</strong>
+(<code>readback.py</code>): marks are said by their dictation names
+(“Hello comma world period”, “open quote”, “new paragraph”) whatever the
+screen reader’s punctuation level; Spanish names in Spanish. Apostrophes
+and hyphens inside words and the separators inside numbers stay silent;
+“example.com” is “example dot com”. The status bar and braille keep the
+real characters. Setting <strong>Say punctuation marks in the
+read-back</strong> (<code>windows_dictation_readback_marks</code>, on),
+in More Dictation Settings.</li>
+<li><strong>Clips, snippets, abbreviations and copying by voice</strong>
+(<code>voice_commands.py</code>): “copy all”, “copy that”, “show clips”,
+“show snippets”, “paste clip N” (1 to 12), “insert snippet <name>”
+(exact, then a unique start, then contained words; several open the
+list, none says “No snippet called X.”), “insert abbreviation” / “expand
+abbreviation”. One phrase, one undo step; the read-back names it
+(“Snippet sign off”, “Pasted slot 3”). Bare “expand <word>” was rejected
+as a command: it is ordinary English.</li>
+<li><strong>Characters and Markdown</strong>
+(<code>vocabulary.py</code>): spelling mode writes punctuation with no
+spaces; “spell <letters>” spells one word; “spell that” respells the
+last phrase; “caps on/off”, “all caps on/off”, “no space on/off” last
+until turned off or dictation stops and show in the status bar. New
+“Markdown and code” marks (backtick by count on the line, code fence,
+tilde, vertical bar, caret, greater/less than sign) and phrase-start
+line marks (bullet, numbered item, block quote, heading one to
+six).</li>
+<li><strong>Moving and selecting by words</strong>
+(<code>editing.py</code>): “select <words>”, “select <words> through
+<words>”, “go to / go before / go after <words>”, “correct <words>”,
+“select again / next / previous”, “select sentence / line / paragraph”,
+“go to start / end of paragraph”. Matching ignores case, punctuation and
+accents, and numbers match both ways; outcome said once (“Selected: the
+cat”, with “, line 40” when three or more lines away). Not found: the
+phrase is written and “Not found, written as text.” is said.</li>
+<li><strong>Live transcripts</strong> (<code>transcript.py</code>,
+<code>windows_dictation_extras.py</code>): Start or Stop Live Transcript
+(Ctrl+Alt+Shift+PageDown) writes into a new untitled document, always at
+its end, with no commands but the stop phrase, no per-phrase cue, no
+silence stop, fillers removed; a paragraph per pause of four seconds,
+optionally time-stamped
+(<code>windows_dictation_transcript_timestamps</code>, off). “Live
+transcript stopped, N words.” on stop; the consent sentence is said once
+(<code>windows_dictation_transcript_told</code>). Microphone only.</li>
+<li><strong>Switch Dictation Language</strong> (Ctrl+Shift+F11), also
+“switch to Spanish” / “cambiar a inglés”: saved as the setting,
+“Español.” / “English.”, loaded models kept for the session. No
+automatic language detection, on purpose.</li>
+<li><strong>Pauses</strong>: Longer (2 s) and Longest (3 s) choices; a
+phrase ending on a word a sentence does not end on (“a”, “the”, “of”,
+“and”, “very” and so on) is joined to the next, and a spoken full stop
+is never taken back.</li>
+<li><strong>Dictation Context for This Document…</strong>
+(Ctrl+Alt+Shift+PageUp, <code>contexts.py</code>): per-document
+description and saved contexts with five starters, kept in
+<code>dictation-contexts.json</code> beside <code>dictation.md</code>;
+the OpenAI engine’s prompt and part of Tidy Dictated Text’s
+instructions; voice “dictation context <name>”. Local engines cannot use
+it and the window says so. The OpenAI consent text now mentions it.</li>
+<li><strong>Dictation Status</strong> (Alt+F9): QUILL Lite gains the
+row; in QUILL, Alt+F9 answers for Live Dictation whenever Locked
+Dictation is idle.</li>
+<li><strong>Dictate in Other Programs…</strong> (More Dictation
+Settings, Alt+O) hands the editor’s dictation settings to Quill Inkwell
+and starts it (<code>anywhere.py</code>,
+<code>dictate-anywhere.json</code>).</li>
+<li><strong>Keys</strong>: QUILL’s <strong>Forget Remembered File-Change
+Answers</strong> moved from Ctrl+Shift+F11 to Ctrl+Shift+0 (rule 9) to
+free Ctrl+Shift+F11 for Switch Dictation Language in both editors.</li>
+<li><strong>Tutorials</strong>: five new lessons in both editors
+(punctuation and symbols, fixing a word, snippets and clips, Spanish and
+back, a live transcript).</li>
+<li><strong>Docs</strong>: <code>docs/site/dictation.html</code> gains a
+section per feature and a “Dictating well” section;
+<code>scripts/build_dictation_page.py</code> names the new marks and
+introduces the new groups.</li>
+</ul>
+<h3
+id="transcribe-a-recording-a-recording-into-text-with-dictations-engines-2026-10-05">Transcribe
+a Recording: a recording into text with dictation’s engines
+(2026-10-05)</h3>
+<ul>
+<li><strong>Transcribe a Recording…</strong> (Shift+F5; QUILL Lite:
+Tools &gt; Dictation; QUILL: Tools &gt; Speech &gt; Live Dictation), one
+shared command (<code>cmd_transcribe_audio_file</code>,
+<code>tools.windows_dictation_transcribe_file</code>) in
+<code>quill/ui/windows_dictation_transcribe.py</code>, inherited by both
+editors through <code>WindowsDictationMixin</code>; QUILL’s adapter
+answers two hooks (its task manager, a new tab) and has no command of
+its own. Shift+F5 under rule 9: free in both editors and nothing either
+does in Word, Notepad or WordPad. The visible name is not “Transcribe
+Audio File” because QUILL’s AI menu already has a command of that name
+(cloud Whisper, Transcript Actions).</li>
+<li><strong>The window</strong>
+(<code>dictation_transcribe_dialog.py</code>): the recording (typed,
+Browse with several at once, or dropped), the language, the speech model
+– every engine this computer has, most accurate first, the most accurate
+local one chosen (<code>file_models.py</code>: Parakeet TDT, Parakeet
+Unified, Nemotron, the Whisper family large to small, then the built-in
+two), OpenAI’s file models added live for a saved key outside Safe Mode
+and never preselected – an estimate from the measured speeds, where the
+text goes (a new document, or the cursor when it finishes), Add
+timestamps (off unless checked), and Obey spoken punctuation and
+commands (off: “new paragraph” in a recording is words).</li>
+<li><strong>The pipeline</strong> (<code>file_transcribe.py</code>), on
+the task manager: decode to 16 kHz mono a second at a time
+(<code>audio_file.py</code>: libsndfile for WAV, FLAC, Ogg, Opus and
+MP3, Windows Media Foundation through <code>ctypes</code> for M4A, AAC,
+MP4 sound, WMA and as a fallback, <code>media_foundation.py</code>;
+ffmpeg only as a last resort where the program has one, so QUILL Lite
+needs none), Silero phrases, dictation’s engines and model cache
+(<code>local_recognizer.transcribe</code>), OpenAI through dictation’s
+own <code>/v1/audio/transcriptions</code> path about a minute at a time,
+the composer’s spacing and capitals, filler removal and My Words
+corrections as dictation has them, breath full stops taken back,
+paragraphs at two-second pauses. Never the whole recording in
+memory.</li>
+<li><strong>Heard and kept</strong>: one sentence at the start, the
+percentage quietly at each quarter and in the status bar as it moves,
+one sentence at the end (“Transcribed meeting.mp3: 12 minutes, 1,804
+words, in 6 minutes.”), the error tone and the reason on failure; every
+result in Activity. Shift+F5 while one runs shows its progress and Stop
+Transcribing; several files queue.</li>
+<li><strong>OpenAI</strong> asks before each recording is sent
+(<code>FILE_CONSENT_TEXT</code>, No by default); no new endpoint, so no
+new egress entry.</li>
+<li>Four error codes (<code>QUILL-DICTATION-FILE-FAILED</code>,
+<code>-CANCELLED</code>, <code>-UNREADABLE</code>,
+<code>-MEDIAFOUNDATION</code>); Lite’s dictation rows moved to
+<code>quill/core/lite/commands_dictation.py</code> (GATE-11); tests in
+<code>tests/unit/core/test_windows_dictation_file_transcribe.py</code>,
+<code>tests/unit/apps/test_lite_transcribe_audio_file.py</code>,
+<code>tests/unit/ui/test_dictation_transcribe_dialog.py</code> and the
+parity test.</li>
+</ul>
+<h3
+id="dictation-hold-to-talk-live-words-talking-to-the-ai-and-openai-with-your-own-key-2026-10-05">Dictation:
+hold-to-talk, live words, talking to the AI, and OpenAI with your own
+key (2026-10-05)</h3>
+<ul>
+<li><strong>Hold Ctrl+F11 to talk</strong>, after VS Code’s hold mode,
+as an option: held for half a second, letting go stops; a quick press
+still toggles; key repeats are ignored. Off by default, so one press
+starts and the next stops; <strong>More Dictation Settings</strong>
+turns it on (<code>hold.py</code>,
+<code>windows_dictation_hold.py</code>). Stopping while a phrase is
+being heard now waits for it and writes it (<code>live.py</code>,
+<code>recognizer_worker.py</code>).</li>
+<li><strong>Live preview with Nemotron</strong>: run as a streaming
+model on one stream per session, its words while you speak go to the
+status bar and braille as “Hearing: …”, never into the document or the
+undo history; spoken only on request, new words only
+(<code>streaming.py</code>, <code>preview.py</code>). Nemotron’s
+questions now end in question marks: the mark it writes on hearing the
+next phrase corrects the last one, and a phrase that opens like a
+question closes with one.</li>
+<li><strong>Words go where you started speaking</strong>, even if the
+caret moved or the focus left while the phrase was recognised (“Written
+where you started”); the caret is put back
+(<code>windows_dictation_ports.py</code>).</li>
+<li><strong>“Correct that”</strong> and “choose one” to “choose three”,
+with Windows speech recognition’s alternates; other engines say they
+have none.</li>
+<li><strong>Talk to the AI</strong>: Ctrl+F11 in the AI Conversation
+window’s message box, with its own <strong>Talking to AI</strong>
+profile (long pause, fillers removed); sent at the pause or on Enter;
+the microphone is muted while the reply is read, and Escape listens at
+once (<code>hosted_ai_chat.py</code>).</li>
+<li><strong>OpenAI dictation, own key only</strong>: a new speech engine
+listed only where an OpenAI key is saved, off until chosen, with a plain
+consent; models read live from OpenAI’s <code>/v1/models</code> without
+the ones OpenAI is retiring, the newest pre-selected, never switched
+silently; Realtime transcription for <code>gpt-live-transcribe</code>,
+streamed file transcription otherwise; My Words sent as
+<code>keywords</code>; refused in Safe Mode; three reviewed egress
+entries; a Dictation section in <code>docs/legal/PRIVACY.md</code>
+(<code>openai_models.py</code>, <code>openai_transcribe.py</code>,
+<code>openai_recognizer.py</code>).</li>
+<li><strong>My Dictation Instructions</strong> for Tidy Dictated Text
+(Ctrl+F3), sent as a marked part, with the dictated text treated as data
+(<code>instructions.py</code>).</li>
+<li><strong>Kind to a modest computer</strong>: the keep-up watchdog
+gives way to Moonshine when a downloaded model falls behind, and models
+are unloaded five minutes after the last session
+(<code>keep_up.py</code>).</li>
+<li><strong>More Dictation Settings…</strong> (Alt+A in Dictation
+Settings), a new shared window (<code>dictation_more_dialog.py</code>);
+eight new settings; all 24 <code>windows_dictation_*</code> settings now
+declared once and inherited by both editors’ settings
+(<code>settings_fields.DictationSettings</code>).</li>
+<li><strong>Parity</strong>: QUILL’s Live Dictation row is now the
+checkable <strong>Dictation On</strong>, as in QUILL Lite, and QUILL
+shows dictation’s state in the status bar; F1 topics for the live
+dictation commands; <code>test_dictation_parity.py</code> fails on any
+difference in dictation commands, keys or settings.</li>
+<li>A new lesson, <strong>Write by talking</strong>, in both editors’
+tutorials.</li>
+<li>The dictation plan (<code>dict.md</code>) is retired into
+<code>docs/design/2026-10-05-dictation-plan-and-status.md</code>, with
+what is still to do (the Spanish recordings and review, baseline-machine
+measurements, word biasing for the local models).</li>
+</ul>
+<h3 id="better-accuracy-optional-speech-models-2026-10-05">Better
+accuracy: optional speech models (2026-10-05)</h3>
+<ul>
+<li><strong>Dictation Settings &gt; Better Accuracy: Speech
+Models…</strong> (<strong>Alt+B</strong>): the same local models VS Code
+offers – NVIDIA Nemotron 3.5 ASR Streaming 0.6B (the suggested
+download), Parakeet Unified 0.6B, Parakeet TDT 0.6B v3, Whisper small
+and base (tiny is built in) – then Whisper base.en to large-v3,
+Distil-Whisper, and Moonshine base. Downloaded only on request, after a
+question naming source, size, licence and folder; metered connections
+asked first; free space checked; Cancel Download keeps what arrived and
+Download resumes; every file checked against a pinned SHA-256; Remove
+frees the space. CPU only.</li>
+<li>One folder for QUILL and QUILL Lite
+(<code>%LOCALAPPDATA%\QuillVille\Dictation\models</code>), or inside the
+portable folder in a portable copy.</li>
+<li>A downloaded model joins the Speech engine list; Moonshine stays the
+default. A missing or broken download gives way to the built-in engine
+with one sentence. A two-second speed check says whether this computer
+should keep up.</li>
+<li>Shared with QUILL, through the same code
+(<code>quill/core/windows_dictation/model_catalog.py</code>,
+<code>model_store.py</code>, <code>model_loader.py</code>,
+<code>speed_check.py</code>,
+<code>quill/ui/dictation_models_dialog.py</code>).</li>
+</ul>
+<h3 id="keyboard-manager-on-ctrlaltshiftspace-2026-10-05">Keyboard
+Manager on Ctrl+Alt+Shift+Space (2026-10-05)</h3>
+<ul>
+<li><strong>Tools &gt; Keyboard Manager moves from Ctrl+Alt+Shift+R to
+Ctrl+Alt+Shift+Space</strong>, with QUILL’s Keymap Editor (family rule
+2). The old key is Quill Radio’s system-wide show and hide key, so while
+Radio ran the Keyboard Manager never opened
+(<code>quill/core/lite/commands.py</code>,
+<code>quill/core/keymap.py</code>).</li>
+</ul>
+<h3 id="dictating-in-spanish-2026-10-04">Dictating in Spanish
+(2026-10-04)</h3>
+<ul>
+<li><strong>Dictation language</strong> in Dictation Settings
+(<strong>Alt+Shift+F6</strong>): English or Spanish. In Spanish your
+words come out in Spanish, accents and all, using Whisper’s multilingual
+model, which comes with QUILL Lite; Windows speech recognition uses a
+Spanish recogniser when Windows has one.</li>
+<li>Commands stay in English for now. Spanish punctuation words (“coma”,
+“punto”, “punto y aparte” and the rest) work when automatic punctuation
+is off. The wake and stop phrases become “Quill dicta” and “deja de
+dictar”.</li>
+<li>Shared with QUILL, through the same code.</li>
+</ul>
+<h3
+id="open-from-the-clipboard-a-link-or-a-drop-honest-encodings-and-a-careful-save-2026-10-04">Open
+from the clipboard, a link or a drop, honest encodings, and a careful
+Save (2026-10-04)</h3>
+<p>More ideas from <strong>PlanCake</strong>, by <strong>Andre of Oire
+Software</strong>. Thank you, Andre. All of it is shared with QUILL, on
+QUILL’s keys.</p>
+<ul>
+<li><strong>Open from Clipboard</strong>
+(<strong>Ctrl+Alt+Shift+Enter</strong>, <strong>File</strong> menu):
+files copied in File Explorer, a file path copied as text, or a web
+link.</li>
+<li><strong>Open from URL…</strong> (<strong>Alt+F, F</strong>), new in
+QUILL Lite: asks before downloading, naming the website and the size,
+shows progress with a Cancel button, and opens the download as a new
+unsaved document.</li>
+<li><strong>Drag and drop to open:</strong> drop files on the window or
+the editor. Dropped text is still inserted.</li>
+<li><strong>A remembered Reload never throws away unsaved
+edits.</strong> “Do not ask me again” with Reload was an answer about an
+untouched document; with unsaved edits QUILL Lite now asks the normal
+question instead. Shared with QUILL.</li>
+<li><strong>No more lost bytes in older files.</strong> A file that was
+not UTF-8 used to be read as Windows-1252 with replacement characters,
+which the next save wrote over five byte values. Now every byte is read
+and saved back, and QUILL Lite says once as it opens when a file is not
+UTF-8.</li>
+<li><strong>Reopen with Encoding…</strong> in the File Encoding and Line
+Endings window reads the file again as a code page you choose.</li>
+<li><strong>Save checks first:</strong> if another program changed the
+file since you opened or last saved it, Save asks: Save As, Reload from
+Disk, Overwrite or Cancel.</li>
+<li><strong>Watching for outside changes as you work,</strong> the way
+QUILL does and from QUILL’s code. Each open document notices when
+another program changes or deletes its file. An unchanged document can
+reload by itself, keeping the cursor’s line, and says once “Reloaded
+plan.md: changed by another program.” Otherwise QUILL Lite asks once per
+change: Keep Mine (Enter and Escape), Reload from Disk or Save As…, with
+a “Do not ask me again” box per kind of file. A deleted file is said
+once and the document is marked not saved.</li>
+<li>Four new settings in Preferences, under <strong>When another program
+changes the file</strong>, with QUILL’s names: <strong>Watch the open
+file for external changes</strong>, <strong>Reload automatically when
+you have no unsaved edits</strong>, <strong>Ask before discarding
+unsaved edits on a conflict</strong> and <strong>External-change
+debounce (milliseconds)</strong>, plus <strong>Forget remembered
+file-change answers</strong>.</li>
+<li>The user guide no longer says the Heading Organizer cannot work in
+rich text. It has since 1.2.0.</li>
+</ul>
+<h3 id="inline-notes-task-lists-and-a-page-to-share-2026-10-04">Inline
+notes, task lists and a page to share (2026-10-04)</h3>
+<p>The ideas here come from <strong>PlanCake</strong>, a small Windows
+app by <strong>Andre of Oire Software</strong> for reviewing the plans
+AI assistants write. Thank you, Andre. All of it is QUILL’s own code,
+shared, on QUILL’s keys.</p>
+<ul>
+<li><strong>Inline notes</strong>, on <strong>Tools &gt; Inline
+Notes</strong>: <strong>Add Inline Note…</strong>
+(<strong>Alt+Shift+I</strong>), <strong>Next Inline Note</strong>
+(<strong>Alt+Shift+J</strong>), <strong>Previous Inline Note</strong>
+(<strong>Alt+Shift+K</strong>), <strong>Speak Inline Note</strong>
+(<strong>Alt+Shift+H</strong>; twice to edit), <strong>Delete Inline
+Note…</strong> (<strong>Alt+Shift+Delete</strong>) and <strong>List
+Inline Notes…</strong> (<strong>Alt+Shift+Enter</strong>), which shows
+every note and can go to, edit, delete, remove all, copy all and export
+them as Markdown or JSON.</li>
+<li><strong>Notes in the file:</strong> in Markdown and HTML, a note can
+be written into the document as a hidden comment that anyone reading the
+file can see, instead of staying private. Turn it on per note, or for
+every new note with <strong>Write new inline notes into the
+file</strong> in Preferences.</li>
+<li><strong>Notes from the command line:</strong>
+<code>QuillLite.exe --notes list|check|clear FILE</code>.</li>
+<li><strong>Snippets moved</strong> from <strong>Alt+Shift+I</strong> to
+<strong>Ctrl+Alt+Shift+Home</strong>, so the note keys are the same as
+QUILL’s. QUILL answers the new key too.</li>
+<li><strong>Toggle Task Done</strong> (<strong>Ctrl+Alt+Enter</strong>,
+<strong>Format</strong> menu) checks <code>- [ ]</code> tasks and says
+how many in the list are done.</li>
+<li><strong>File &gt; Export as HTML…</strong>
+(<strong>Ctrl+Alt+Shift+End</strong>) saves a copy as one web page you
+can share, with task lists as check boxes.</li>
+</ul>
+<h3
+id="portable-copies-start-from-a-folder-with-a-space-in-its-name-2026-10-04">Portable
+copies start from a folder with a space in its name (2026-10-04)</h3>
+<ul>
+<li>A portable copy unpacked to a folder whose name has a space in it
+said it did not start. The QuillVille launcher passed its own path to
+Python unquoted, so Python read it as two words; the same mistake split
+a document opened from File Explorer out of such a folder. Every release
+before 1.2 had it (<code>quill/native/launcher/cmdline.c</code>).</li>
+</ul>
 <h3 id="recent-documents-the-whole-list-on-altshift0-2026-10-04">Recent
 Documents: the whole list on Alt+Shift+0 (2026-10-04)</h3>
 <ul>
@@ -297,7 +650,7 @@ channels: Stable, Beta and Dev (2026-10-03)</h3>
 <li><strong>Help &gt; Release Channel…</strong> (no key), and a Change
 release channel… button in Settings, open the family’s shared window
 (<code>quill/ui/updates/</code>). The choices only explain as you arrow;
-Beta and Dev ask first in plain words and need “I understand” ticked; a
+Beta and Dev ask first in plain words and need “I understand” checked; a
 zip of QUILL Lite’s settings, keys and recent files is saved to
 <code>channel-snapshots</code> before anything moves. QUILL Lite shares
 the QuillVille engine with Quill Radio and QUILL Cast, so for now they
@@ -440,8 +793,8 @@ thesaurus knows – the headword, the meanings per part of speech, the
 first replacements and the opposites – without opening anything.</li>
 <li><strong>Tools &gt; Look Up Word… (Alt+F10)</strong>: QUILL’s Look Up
 window, the dictionary without AI, shared by both editors. Offline it is
-the thesaurus; with <strong>Use online sources</strong> ticked – off
-until you tick it, remembered as <code>dictionary_online_lookups</code>
+the thesaurus; with <strong>Use online sources</strong> checked – off
+until you check it, remembered as <code>dictionary_online_lookups</code>
 – the word alone goes to the Free Dictionary, Datamuse and Wikipedia for
 definitions, more words and a summary, arriving in the background. Words
 you can use replace the word on Enter; Add to Dictionary teaches it
@@ -1502,9 +1855,9 @@ either way.</p></li>
 <li><p><strong>Tab Key Inserts a Tab Character</strong>
 (<strong>Ctrl+Alt+Shift+I</strong>), with a <strong>Tab Mode</strong>
 status cell. QUILL Lite starts where Notepad does – Tab types a tab –
-and clearing the tick makes Tab indent the line instead, announcing the
-new depth. <strong>Shift+Tab</strong> outdents in either mode, so a tab
-typed by accident is always one keystroke away from being
+and clearing the check mark makes Tab indent the line instead,
+announcing the new depth. <strong>Shift+Tab</strong> outdents in either
+mode, so a tab typed by accident is always one keystroke away from being
 undone.</p></li>
 <li><p><strong>Describe Character</strong> (Ctrl+Shift+C). Exactly which
 character the cursor is on: its name, its code point, and the
@@ -1514,18 +1867,18 @@ way to tell which one broke the search.</p></li>
 </ul>
 <h4 id="abbreviations-and-snippets">Abbreviations and snippets</h4>
 <ul>
-<li><p><strong>Snippets — Alt+Shift+I.</strong> A list of every
-abbreviation, most used first, with a preview of what each one writes.
-Abbreviations expand when you type the trigger, which is perfect for the
-six you use daily and no help at all for the fortieth one, whose trigger
-you cannot remember.</p></li>
+<li><p><strong>Snippets — Ctrl+Alt+Shift+Home.</strong> (It was
+Alt+Shift+I until 1.2.) A list of every abbreviation, most used first,
+with a preview of what each one writes. Abbreviations expand when you
+type the trigger, which is perfect for the six you use daily and no help
+at all for the fortieth one, whose trigger you cannot remember.</p></li>
 <li><p><strong>Tools ▸ Expand Abbreviations (Alt+Shift+A)</strong> turns
-expansion off and on from the keyboard, with a tick showing which way it
-is set. Expansion is the one feature that acts <em>while you type</em>,
-so the moment you want it off is usually the moment it has just expanded
-something you meant to keep – and a dialog three keystrokes away is
-three too many. It is the same switch as the Abbreviations box in
-Customize Features.</p></li>
+expansion off and on from the keyboard, with a check mark showing which
+way it is set. Expansion is the one feature that acts <em>while you
+type</em>, so the moment you want it off is usually the moment it has
+just expanded something you meant to keep – and a dialog three
+keystrokes away is three too many. It is the same switch as the
+Abbreviations box in Customize Features.</p></li>
 <li><p><strong>Abbreviations.</strong> QUILL’s own engine and manager
 dialog, over QUILL Lite’s own library. A switch in Preferences – off by
 default – points it at the library QUILL and Quill Inkwell share
@@ -1794,10 +2147,10 @@ version, with <strong>Update</strong> and <strong>Close</strong> beside
 it, and offers to install and restart for you when the download
 finishes. Nothing downloads until you press Update. It is the same key
 and the same window every other app in the family uses.</p></li>
-<li><p><strong>A quiet daily look, off by one tick.</strong> QUILL Lite
-also checks once a day when it starts and says nothing unless there is
-something – not while it checks, not when there is nothing, and not when
-the network is down. Settings ▸ “Look for updates when QUILL Lite
+<li><p><strong>A quiet daily look, off by one check box.</strong> QUILL
+Lite also checks once a day when it starts and says nothing unless there
+is something – not while it checks, not when there is nothing, and not
+when the network is down. Settings ▸ “Look for updates when QUILL Lite
 starts” turns it off; Ctrl+Alt+U still works.</p></li>
 <li><p><strong>An application icon of its own.</strong> A white page
 with a folded corner and two amber lines of writing, on a forest-green
@@ -1847,7 +2200,7 @@ not consent.</p>
 <strong>version</strong> rather than a yes, so that a material change to
 what is sent or kept can ask again instead of the old answer being taken
 to cover the new thing. It is reachable by three doors – <strong>Tools
-&gt; AI &gt; Privacy Agreement</strong>, a tick box in
+&gt; AI &gt; Privacy Agreement</strong>, a check box in
 <strong>Preferences</strong>, and switching the area on in
 <strong>Customize Features</strong> – because the place somebody looks
 depends on which part of the app they already know. All three read and
@@ -1924,8 +2277,8 @@ QUILL gained it in the same change.</p></li>
 sitting there doing nothing. The tutorial window’s Follow me watches the
 app’s live state and moves you on when it can see you did the step; none
 of QUILL Lite’s nine lessons carries a check, because every step here
-ends in a sentence the editor already says out loud. A tick box that can
-never do anything is one somebody ticks, waits on, and concludes is
+ends in a sentence the editor already says out loud. A check box that
+can never do anything is one somebody checks, waits on, and concludes is
 broken. Disabled rather than removed, so somebody who used it in Quill
 Radio is told it is unavailable instead of hunting for it.</p></li>
 </ul>

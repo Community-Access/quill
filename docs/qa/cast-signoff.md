@@ -1,6 +1,6 @@
 # QUILL Cast -- sign-off checklist
 
-One pass, top to bottom, ticking boxes. Every step says exactly what to press,
+One pass, top to bottom, checking boxes. Every step says exactly what to press,
 exactly what to type, and the one thing that decides pass or fail.
 
 The narrative version of every feature below is
@@ -381,7 +381,7 @@ and need no key, no second machine and no long download:
 - [ ] pass  [ ] fail: ______
 
 **C-51. Resume Last Episode on Launch**
-- Do: tick **Alt+S > Resume Last Episode on Launch**, quit mid-episode,
+- Do: check **Alt+S > Resume Last Episode on Launch**, quit mid-episode,
   relaunch.
 - Pass: it picks the episode back up at launch (and only at launch).
 - [ ] pass  [ ] fail: ______
@@ -520,7 +520,7 @@ and need no key, no second machine and no long download:
 - [ ] pass  [ ] fail: ______
 
 **C-70. Downloads... answers "how much disk"**
-- Do: **Alt+D > Downloads...**, then tick **Unheard only**.
+- Do: **Alt+D > Downloads...**, then check **Unheard only**.
 - Pass: a total, a breakdown by podcast largest first, and it says how many
   already-played downloads the filter hid. **Remove This Podcast's
   Downloads...** clears one show without touching the library.
@@ -729,11 +729,11 @@ and need no key, no second machine and no long download:
 
 **C-97. Import a large OPML**
 - Do: **Import OPML...** on an export of a thousand or more feeds, with **Check
-  that each feed is still reachable** ticked. Use **Stop Checking** part way.
+  that each feed is still reachable** checked. Use **Stop Checking** part way.
 - Pass: it runs in the background without freezing; `http://` and `https://`
   twins count as one feed; two shows sharing only a *title* are both imported
   and flagged; progress every ten per cent; stopping keeps everything already
-  imported; **Add every show as streaming** is ticked by default.
+  imported; **Add every show as streaming** is checked by default.
 - [ ] pass  [ ] fail: ______
 
 **C-98. The import report**
@@ -744,7 +744,7 @@ and need no key, no second machine and no long download:
 - [ ] pass  [ ] fail: ______
 
 **C-99. Opening an OPML from Explorer**
-- Do: if you ticked the installer's file-association box, double-click a
+- Do: if you checked the installer's file-association box, double-click a
   `.opml` file.
 - Pass: Cast opens **straight into the import** and names the file. The box is
   **off** unless asked for, and uninstalling gives the file type back.
@@ -836,7 +836,7 @@ and need no key, no second machine and no long download:
 
 **C-112. Mark All as Played dims and shares its answer**
 - Do: in Cast, **Mark All as Play&ed...** on a show with nothing unheard; then
-  tick **Don't ask me again** on another and try the same in Radio.
+  check **Don't ask me again** on another and try the same in Radio.
 - Pass: the menu item is present but **dimmed** when there is nothing to do, and
   neither app asks again.
 - [ ] pass  [ ] fail: ______

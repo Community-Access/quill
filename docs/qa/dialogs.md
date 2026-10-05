@@ -9,8 +9,8 @@ How to use this file:
 
 - Work through a section, open each dialog with the listed keyboard command (or
   menu path when there is no default key), and confirm it behaves.
-- Tick the checkbox when a dialog passes a full pass on the current build.
-- When a dialog fails, leave it unticked and file or reference an issue next to
+- Check the checkbox when a dialog passes a full pass on the current build.
+- When a dialog fails, leave it unchecked and file or reference an issue next to
   it.
 - Keep this file up to date: whenever a dialog is added, removed, or rebound,
   update the matching row in the same change. See the contributor rule in
@@ -94,8 +94,8 @@ or the command palette (`Ctrl+Shift+P`).
 - [ ] Reopen Last Session: `Alt+Shift+F12`, or File menu. Also appears at launch
       when it matters -- three or more remembered documents, or any whose file has
       moved or gone
-  - [ ] The list is a check list: Space ticks a row, openable rows start ticked,
-        and a row whose file has gone says so and cannot be ticked
+  - [ ] The list is a check list: Space checks a row, openable rows start checked,
+        and a row whose file has gone says so and cannot be checked
   - [ ] Six answers work: Open Checked, Open All, Not Now (also Escape), Forget
         Checked, Clear the List, Never Ask Again
   - [ ] **Forget touches no file.** After Forget Checked and after Clear the List,

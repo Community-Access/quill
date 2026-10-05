@@ -96,6 +96,7 @@ ADD_FOLDER_HERE = "local.add_folder"
 NEW = "local.new_playlist"
 IMPORT_PLAYLIST = "local.import"
 RENAME = "local.rename"
+SAVE_OPENED = "local.save_opened"
 DUPLICATE = "local.duplicate"
 DELETE = "local.delete"
 EXPORT = "local.export"
@@ -240,7 +241,10 @@ def menu_actions(
         if playlist.folder:
             actions.append(RowAction(RESCAN, "Check the Folder for New Fil&es"))
         actions += [
-            RowAction(RENAME, "&Rename..."),
+            # The Opened files list is kept by saving it, not by renaming it.
+            RowAction(SAVE_OPENED, "&Save as Playlist...")
+            if playlist.temporary
+            else RowAction(RENAME, "&Rename..."),
             RowAction(DUPLICATE, "Dup&licate"),
             RowAction(EXPORT, "E&xport as M3U...", enabled=has_items, reason=_EMPTY),
             RowAction(DELETE, "&Delete Playlist..."),

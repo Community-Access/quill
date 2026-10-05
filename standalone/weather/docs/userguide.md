@@ -28,15 +28,24 @@ Quill Weather is built to keep running.
 
 - **Minimize to Tray** (File menu, or Ctrl+W) tucks the window into the system
   tray; monitoring keeps going.
-- **Ctrl+Alt+Shift+W** is a global show/hide hotkey: it works from any app, even
-  when Quill Weather does not have focus. Press it once to hide the window to the
-  tray (monitoring keeps running); press it again to bring the window back and
-  focus it. Quill Weather speaks "hidden to the tray" or "shown" so you know
-  which happened, and you never have to go looking for the tray icon. The chord
-  is unique to Quill Weather (QUILL uses Ctrl+Alt+Shift+Q and Quill Radio uses
-  Ctrl+Alt+Shift+R), so the three apps never collide. It is Windows-only; if
-  another program has already claimed Ctrl+Alt+Shift+W, Quill Weather leaves it
-  alone and you still show and hide the window from the tray icon.
+- **A key to show and hide Quill Weather from anywhere.** You can choose one
+  key that works from any program, even when Quill Weather does not have focus.
+  Press it once to hide the window to the tray (monitoring keeps running); press
+  it again to bring the window back and focus it. Quill Weather says "hidden to
+  the tray" or "shown" so you know which happened, and you never have to go
+  looking for the tray icon.
+
+  There is no key until you choose one. Open **File > Show and Hide Key...**
+  (Ctrl+Alt+Shift+H), type the key you want, and press Enter. Leave the box
+  empty for no key. If another QuillVille app already uses the key you type,
+  Quill Weather tells you whose it is and lets you try another, so the apps
+  never fight over a key. If some other program already has it, Quill Weather
+  says so and keeps the key you had. It is Windows-only, and the tray icon
+  always works too.
+
+  If you used an earlier version, you may remember Ctrl+Alt+Shift+W doing this.
+  Other QuillVille apps use that key, so it is off now. Quill Weather tells you
+  once, the first time you start it after updating.
 - By default, **closing the window** also goes to the tray rather than quitting
   (so a stray Alt+F4 does not end your watch). Only **Exit** (File menu or the
   tray) truly quits. You can change this in **Options > Close button keeps
@@ -212,7 +221,7 @@ document cannot see what you have already done. This window can.
 - **Try it runs the step.** Any step that names a command can be performed from
   the lesson, so a tutorial can open a window for you and then talk you through
   what you are standing in.
-- **Follow me notices that you did it.** Tick **Follow me** and the lesson
+- **Follow me notices that you did it.** Check **Follow me** and the lesson
   watches the app -- once a second, and it watches *what changed*, never which
   key you pressed -- so however you do the step, it says what it saw ("Done:
   the watch is running") and reads you the next one. It never takes the keyboard, and

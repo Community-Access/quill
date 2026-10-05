@@ -56,6 +56,9 @@ KEYLESS_WITH_REASON: dict[str, str] = {
     "Alt+Shift+F4 closed a dialog or a separate window wherever Windows read it as "
     "Alt+F4, and rule 4 fixes destructive habits first. Rule 9: once a year needs a "
     "way in, not a short chord -- Alt+H, C, and the Preferences row.",
+    "cmd_open_from_url": "Reached another way, as in QUILL, where Open from URL has "
+    "no key either: a link usually arrives on the clipboard, and Open from Clipboard "
+    "(Ctrl+Alt+Shift+Enter) opens it. This row is for typing an address -- Alt+F, F.",
 }
 
 

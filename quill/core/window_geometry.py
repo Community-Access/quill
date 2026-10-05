@@ -43,6 +43,7 @@ from pathlib import Path
 __all__ = [
     "STORE_NAME",
     "WindowGeometry",
+    "has_geometry",
     "load_geometry",
     "save_geometry",
 ]
@@ -108,6 +109,11 @@ def load_geometry(data_dir: Path, app_id: str) -> WindowGeometry:
         width=_positive_int(entry.get("width")),
         height=_positive_int(entry.get("height")),
     )
+
+
+def has_geometry(data_dir: Path, app_id: str) -> bool:
+    """Whether *app_id* has ever recorded a window here -- i.e. has run before."""
+    return isinstance(_read_all(data_dir).get(str(app_id)), dict)
 
 
 def _positive_int(value: object) -> int:

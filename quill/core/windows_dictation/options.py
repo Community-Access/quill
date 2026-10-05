@@ -56,8 +56,18 @@ PAUSE_CHOICES: tuple[tuple[str, str], ...] = (
     ("short", "Short (half a second)"),
     ("normal", "Normal (under a second)"),
     ("long", "Long (about a second and a half)"),
+    # 2026-10-05, for slow speakers (dict.md 3.6). Honest about the cost: every
+    # phrase waits this long before it is written.
+    ("longer", "Longer (2 seconds; words appear later)"),
+    ("longest", "Longest (3 seconds; words appear later still)"),
 )
-PAUSE_SECONDS: dict[str, float] = {"short": 0.5, "normal": 0.8, "long": 1.4}
+PAUSE_SECONDS: dict[str, float] = {
+    "short": 0.5,
+    "normal": 0.8,
+    "long": 1.4,
+    "longer": 2.0,
+    "longest": 3.0,
+}
 
 #: (minutes, label); 0 is never.
 SILENCE_CHOICES: tuple[tuple[int, str], ...] = (

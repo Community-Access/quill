@@ -26,10 +26,13 @@ from dataclasses import dataclass, field
 
 from quill.core.windows_dictation.speech_language import fold
 from quill.core.windows_dictation.vocabulary import (
+    DASH_PLACEHOLDER,
     ENGLISH,
     LITERAL,
     SPELLING_ALPHABET,
+    SPELLING_MARKS,
     Command,
+    Glue,
     Mark,
     Vocabulary,
 )
@@ -68,6 +71,11 @@ class RecognizedPhrase:
     words: tuple[RecognizedWord, ...]
     text: str = ""
     confidence: float = 1.0
+    #: The mark a streaming engine put at the end of the *previous* phrase once
+    #: it heard this one ("?" after "Can you send it"): live.py revises it.
+    previous_mark: str = ""
+    #: Other things the engine thought was said, best first, for "correct that".
+    alternatives: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -92,6 +100,16 @@ class ParsedPhrase:
     #: only a pause in the middle of one; the controller takes this full stop
     #: back when the next phrase plainly continues the sentence.
     auto_period: bool = False
+    #: The words after a command that takes some ("select *the cat*"), as said.
+    #: With such a command, ``pieces`` is the whole phrase as ordinary text --
+    #: what is written when the command finds nothing to act on (dict.md
+    #: question 3: nothing you said is lost).
+    argument: tuple[str, ...] = ()
+
+
+#: Whole-phrase commands that are also ordinary sentences ("Next one."): when
+#: there is nothing for them to act on, the phrase is written instead.
+_WRITTEN_WHEN_IDLE = frozenset({Command.SELECT_NEXT, Command.SELECT_PREVIOUS})
 
 
 @dataclass(frozen=True, slots=True)
@@ -149,11 +167,34 @@ def parse(
     lexical = [token.lexical for token in tokens]
     spoken = tuple(word for word in lexical if word)
     if spoken in table.commands:
-        return ParsedPhrase(command=table.commands[spoken])
+        command = table.commands[spoken]
+        if command in _WRITTEN_WHEN_IDLE:
+            return ParsedPhrase(_pieces(tokens, lexical, table)[0], command=command)
+        return ParsedPhrase(command=command)
     if spelling:
         letters = _spell(spoken, table)
         return ParsedPhrase(pieces=(Piece(letters, verbatim=True),) if letters else ())
+    opened = table.prefix(spoken)
+    if opened is not None:
+        command, argument = opened
+        if command is Command.SPELL_WORDS:
+            # "spell bravo alpha delta": one word spelled, no mode to leave. A
+            # sentence that only starts with "spell" is not letters, and is text.
+            letters = _spell(argument, table, strict=True)
+            if letters:
+                return ParsedPhrase(pieces=(Piece(letters, verbatim=True),))
+        else:
+            pieces, _auto = _pieces(tokens, lexical, table)
+            return ParsedPhrase(pieces, command=command, argument=argument)
+    pieces, auto_period = _pieces(tokens, lexical, table)
+    return ParsedPhrase(pieces=pieces, auto_period=auto_period)
 
+
+def _pieces(
+    tokens: list[_Token], lexical: list[str], table: Vocabulary
+) -> tuple[tuple[Piece, ...], bool]:
+    """The words and marks a phrase writes, and whether it ends on an engine's
+    full stop."""
     pieces: list[Piece] = []
     written: set[int] = set()
     index = 0
@@ -173,6 +214,10 @@ def parse(
         found = table.longest(lexical, index)
         if found is not None:
             marks = table.marks.get(found, ())
+            if marks and marks[0].glue is Glue.LINE_START and index != 0:
+                # "bullet" and "heading two" start a line only when they start
+                # the phrase; anywhere else they are words (dict.md question 4).
+                marks = ()
             if marks:
                 pieces.extend(Piece(mark.text, mark) for mark in marks)
                 for consumed in tokens[index : index + len(found)]:
@@ -191,7 +236,7 @@ def parse(
         and last.text.endswith(".")
         and not last.text.endswith("..")
     )
-    return ParsedPhrase(pieces=tuple(pieces), auto_period=auto_period)
+    return tuple(pieces), auto_period
 
 
 #: What a recogniser writes when somebody says a letter's name.
@@ -232,31 +277,54 @@ _LETTER_SOUNDS: dict[str, str] = {
 _CAPITAL = {"capital", "cap", "uppercase", "upper"}
 
 
-def _spell(words: tuple[str, ...], vocabulary: Vocabulary = ENGLISH) -> str:
+def _spell(
+    words: tuple[str, ...], vocabulary: Vocabulary = ENGLISH, *, strict: bool = False
+) -> str:
     """Spelling mode: letter names, the phonetic alphabet and digits, as letters.
 
-    "capital" (or "cap") before a letter makes it a capital; "space" is a
-    space; "double you" is w. Anything else is not a letter and is
-    left out rather than guessed at -- the read-back says what was written, so
-    a gap is heard at once.
+    "capital" (or "cap") before a letter makes it a capital, and "all caps"
+    makes every letter one until "no caps"; "space" is a space; "double you" is
+    w. Punctuation works too, with no spaces round it: "bravo dot com",
+    "jay underscore smith", "at sign" (dict.md 3.3). Anything else is not a
+    letter and is left out rather than guessed at -- the read-back says what was
+    written, so a gap is heard at once. *strict* gives ``""`` instead when any
+    word is not a letter: "spell" opening an ordinary sentence is text.
     """
     out: list[str] = []
     capital = False
+    all_caps = False
     index = 0
     while index < len(words):
         word = words[index]
         index += 1
+        following = words[index] if index < len(words) else ""
+        if word in ("all", "no") and following == "caps":
+            index += 1
+            all_caps = word == "all"
+            continue
         if word in _CAPITAL or word in vocabulary.capital_words:
             capital = True
             continue
-        if word == "double" and index < len(words) and words[index] == "you":
+        found = vocabulary.longest(list(words), index - 1)
+        marks = vocabulary.marks.get(found, ()) if found is not None else ()
+        if marks:
+            index += len(found or ()) - 1
+            for mark in marks:
+                out.append("-" if mark.text == DASH_PLACEHOLDER else mark.text.strip(" ") or " ")
+            capital = False
+            continue
+        if word == "double" and following == "you":
             index += 1
             letter = "w"
-        elif word == "x" and index < len(words) and words[index] == "ray":
+        elif word == "x" and following == "ray":
             index += 1  # "x-ray" arrives as two words once its hyphen is split
             letter = "x"
         elif word == "space" or word in vocabulary.space_words:
             out.append(" ")
+            capital = False
+            continue
+        elif word in SPELLING_MARKS:
+            out.append(SPELLING_MARKS[word])
             capital = False
             continue
         elif word in SPELLING_ALPHABET:
@@ -266,8 +334,10 @@ def _spell(words: tuple[str, ...], vocabulary: Vocabulary = ENGLISH) -> str:
         elif word.isdigit() or (word.isalpha() and len(word) == 1):
             letter = word
         else:
+            if strict:
+                return ""
             capital = False
             continue
-        out.append(letter.upper() if capital else letter)
+        out.append(letter.upper() if capital or all_caps else letter)
         capital = False
     return "".join(out)

@@ -510,7 +510,7 @@
 <ul>
 <li><input type="checkbox" class="so" data-key="SIGNOFF-editor:3a78c2be516e:0:0" aria-label="Works: W S A navigate.back_location — Back Location Alt+Left"> W  <input type="checkbox" class="so" data-key="SIGNOFF-editor:3a78c2be516e:0:1" aria-label="Surface-exact: W S A navigate.back_location — Back Location Alt+Left"> S  <input type="checkbox" class="so" data-key="SIGNOFF-editor:3a78c2be516e:0:2" aria-label="Accessible: W S A navigate.back_location — Back Location Alt+Left"> A  <code>navigate.back_location</code> — Back Location  <code>Alt+Left</code></li>
 <li><input type="checkbox" class="so" data-key="SIGNOFF-editor:1e9246e5a215:0:0" aria-label="Works: W S A navigate.forward_location — Forward Location Alt+Right"> W  <input type="checkbox" class="so" data-key="SIGNOFF-editor:1e9246e5a215:0:1" aria-label="Surface-exact: W S A navigate.forward_location — Forward Location Alt+Right"> S  <input type="checkbox" class="so" data-key="SIGNOFF-editor:1e9246e5a215:0:2" aria-label="Accessible: W S A navigate.forward_location — Forward Location Alt+Right"> A  <code>navigate.forward_location</code> — Forward Location  <code>Alt+Right</code></li>
-<li><input type="checkbox" class="so" data-key="SIGNOFF-editor:5453fc1b78e1:0:0" aria-label="Works: W S A navigate.go_to_anything — Go to Anything Ctrl+Shift+Grave, G"> W  <input type="checkbox" class="so" data-key="SIGNOFF-editor:5453fc1b78e1:0:1" aria-label="Surface-exact: W S A navigate.go_to_anything — Go to Anything Ctrl+Shift+Grave, G"> S  <input type="checkbox" class="so" data-key="SIGNOFF-editor:5453fc1b78e1:0:2" aria-label="Accessible: W S A navigate.go_to_anything — Go to Anything Ctrl+Shift+Grave, G"> A  <code>navigate.go_to_anything</code> — Go to Anything  <code>Ctrl+Shift+Grave, G</code></li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-editor:44ce758f82fb:0:0" aria-label="Works: W S A navigate.go_to_anything — Go to Anything Ctrl+Alt+Shift+A"> W  <input type="checkbox" class="so" data-key="SIGNOFF-editor:44ce758f82fb:0:1" aria-label="Surface-exact: W S A navigate.go_to_anything — Go to Anything Ctrl+Alt+Shift+A"> S  <input type="checkbox" class="so" data-key="SIGNOFF-editor:44ce758f82fb:0:2" aria-label="Accessible: W S A navigate.go_to_anything — Go to Anything Ctrl+Alt+Shift+A"> A  <code>navigate.go_to_anything</code> — Go to Anything  <code>Ctrl+Alt+Shift+A</code></li>
 <li><input type="checkbox" class="so" data-key="SIGNOFF-editor:36c52e6f2289:0:0" aria-label="Works: W S A navigate.go_to_bookmark — Go To Bookmark..."> W  <input type="checkbox" class="so" data-key="SIGNOFF-editor:36c52e6f2289:0:1" aria-label="Surface-exact: W S A navigate.go_to_bookmark — Go To Bookmark..."> S  <input type="checkbox" class="so" data-key="SIGNOFF-editor:36c52e6f2289:0:2" aria-label="Accessible: W S A navigate.go_to_bookmark — Go To Bookmark..."> A  <code>navigate.go_to_bookmark</code> — Go To Bookmark...</li>
 <li><input type="checkbox" class="so" data-key="SIGNOFF-editor:b069ead8412d:0:0" aria-label="Works: W S A navigate.go_to_line — Go To Line... Ctrl+G"> W  <input type="checkbox" class="so" data-key="SIGNOFF-editor:b069ead8412d:0:1" aria-label="Surface-exact: W S A navigate.go_to_line — Go To Line... Ctrl+G"> S  <input type="checkbox" class="so" data-key="SIGNOFF-editor:b069ead8412d:0:2" aria-label="Accessible: W S A navigate.go_to_line — Go To Line... Ctrl+G"> A  <code>navigate.go_to_line</code> — Go To Line...  <code>Ctrl+G</code></li>
 <li><input type="checkbox" class="so" data-key="SIGNOFF-editor:40c6ea28f7e2:0:0" aria-label="Works: W S A navigate.go_to_page — Go To Page... Ctrl+Shift+G"> W  <input type="checkbox" class="so" data-key="SIGNOFF-editor:40c6ea28f7e2:0:1" aria-label="Surface-exact: W S A navigate.go_to_page — Go To Page... Ctrl+Shift+G"> S  <input type="checkbox" class="so" data-key="SIGNOFF-editor:40c6ea28f7e2:0:2" aria-label="Accessible: W S A navigate.go_to_page — Go To Page... Ctrl+Shift+G"> A  <code>navigate.go_to_page</code> — Go To Page...  <code>Ctrl+Shift+G</code></li>
@@ -771,7 +771,7 @@
       done + " of " + boxes.length + " boxes checked";
   }
   // An item is "checked off" only when every checkbox on it (Works / Surface /
-  // Accessible) is ticked; a partly-done item stays visible.
+  // Accessible) is checked; a partly-done item stays visible.
   function itemDone(li) {
     var bs = li.querySelectorAll("input.so");
     if (bs.length === 0) return false;
@@ -789,7 +789,7 @@
     if (toggleBtn) toggleBtn.setAttribute("aria-pressed", on ? "true" : "false");
     return hidden;
   }
-  // When ticking a box hides the item the user is standing on, move focus off
+  // When checking a box hides the item the user is standing on, move focus off
   // the now-hidden control to the next visible box (else the previous, else the
   // toggle) so keyboard/screen-reader focus is never stranded.
   function focusAfterHide(box) {

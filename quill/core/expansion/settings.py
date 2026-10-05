@@ -46,17 +46,100 @@ class InkwellSettings:
     announce_expansions: bool = False
     start_in_tray: bool = False
     close_to_tray: bool = True
-    #: Show/hide the Inkwell window from anywhere.
-    tray_hotkey: str = "Ctrl+Alt+Shift+I"
+    #: Show/hide the Inkwell window from anywhere. None until the listener
+    #: chooses one (File > Show and Hide Key): Ctrl+Alt+Shift+I until
+    #: 2026-10-05, which is a menu key in both editors (core/family_chords.py).
+    tray_hotkey: str = ""
     #: Open Quick Insert from anywhere, so a "manual" entry is always reachable.
-    quick_insert_hotkey: str = "Ctrl+Alt+Shift+K"
+    #: None until the listener chooses one (File > Quick Insert Key):
+    #: Ctrl+Alt+Shift+K until 2026-10-05, a menu key elsewhere in the family.
+    quick_insert_hotkey: str = ""
     #: Expand the word just typed, without waiting for a trigger character --
     #: the system-wide twin of QUILL's Expand Abbreviation command. Works
-    #: mid-word and at the end of a line.
-    expand_now_hotkey: str = "Ctrl+Alt+Shift+X"
+    #: mid-word and at the end of a line. None until chosen (File > Expand Word
+    #: Key): Ctrl+Alt+Shift+X until 2026-10-05, Quill Radio's Export My Setup.
+    expand_now_hotkey: str = ""
+    #: Dictate Anywhere (2026-10-05, dict.md 3.9): QUILL's dictation typed into
+    #: the program in front. None until chosen (File > Dictate Anywhere Key).
+    dictate_anywhere_hotkey: str = ""
+    #: Inkwell's own copy of the dictation settings, under the editors' names
+    #: (windows_dictation_*), so Dictate Anywhere runs without an editor open.
+    dictation: dict[str, object] = field(default_factory=dict)
     #: Set when the file on disk came from a newer build. Not persisted: it is
     #: a fact about *this* load, and saving would be the thing it prevents.
     read_only: bool = False
+
+    def take_system_keys(self, data_dir: Path, *, ran_before: bool) -> tuple[str, str]:
+        """``(show/hide key to register, sentence to say once)`` at launch, for
+        all three of Inkwell's system-wide keys.
+
+        A key still on its old default moves to none and is saved; a key the
+        listener chose is kept. With no settings file at all nothing was ever
+        changed, so somebody who has run Inkwell before (*ran_before*) had all
+        three old defaults; somebody new is told nothing. Either way the file
+        is written, so the sentence is said once.
+        """
+        from quill.core.family_chords import migrate_show_hide_key
+        from quill.core.lite.keymap import chord_identity
+
+        moved: list[str] = []
+        if not settings_path(data_dir).exists():
+            if ran_before:
+                moved = [_SHOW_HIDE, *(label for _old, label in _RETIRED_HOTKEYS.values())]
+            save_settings(data_dir, self)
+            return self.tray_hotkey, retired_keys_notice(moved)
+        chord, tell = migrate_show_hide_key("inkwell", self.tray_hotkey, existing_user=True)
+        if tell:
+            self.tray_hotkey = chord
+            moved.append(_SHOW_HIDE)
+        for name, (old, label) in _RETIRED_HOTKEYS.items():
+            value = str(getattr(self, name)).strip()
+            if value and chord_identity(value) == chord_identity(old):
+                setattr(self, name, "")
+                moved.append(label)
+        if moved:
+            save_settings(data_dir, self)
+        return self.tray_hotkey, retired_keys_notice(moved)
+
+
+_SHOW_HIDE = "show and hide"
+
+#: The two keys Inkwell registered system-wide until 2026-10-05, each a menu key
+#: elsewhere in the family, and the name each is called by now. A saved key
+#: equal to its old default moves to none, and the listener is told once.
+_RETIRED_HOTKEYS: dict[str, tuple[str, str]] = {
+    "quick_insert_hotkey": ("Ctrl+Alt+Shift+K", "Quick Insert"),
+    "expand_now_hotkey": ("Ctrl+Alt+Shift+X", "Expand Word"),
+}
+
+#: ``{field: old default}``.
+RETIRED_HOTKEY_DEFAULTS: dict[str, str] = {
+    name: old for name, (old, _label) in _RETIRED_HOTKEYS.items()
+}
+
+
+def retired_keys_notice(moved: list[str]) -> str:
+    """What somebody whose keys were on the old defaults is told, once.
+
+    The show-and-hide key alone keeps the family's own sentence, word for word.
+    """
+    from quill.core.family_chords import retired_key_notice
+
+    if not moved:
+        return ""
+    if moved == [_SHOW_HIDE]:
+        return retired_key_notice("inkwell")
+    if len(moved) == 1:
+        return (
+            f"Quill Inkwell's {moved[0]} key is now off by default so it no longer "
+            "blocks other apps' shortcuts. To choose one, open the File menu and "
+            f"choose {moved[0]} Key."
+        )
+    names = ", ".join(moved[:-1]) + " and " + moved[-1]
+    return (
+        f"Quill Inkwell's {names} keys are now off by default so they no longer "
+        "block other apps' shortcuts. To choose them, open the File menu."
+    )
 
 
 #: Bumped when a field changes meaning (never merely when one is added --
@@ -105,9 +188,19 @@ def _read_fields(raw: dict) -> InkwellSettings:
     settings.announce_expansions = bool(raw.get("announce_expansions", False))
     settings.start_in_tray = bool(raw.get("start_in_tray", False))
     settings.close_to_tray = bool(raw.get("close_to_tray", True))
-    settings.tray_hotkey = str(raw.get("tray_hotkey", "Ctrl+Alt+Shift+I"))
-    settings.quick_insert_hotkey = str(raw.get("quick_insert_hotkey", "Ctrl+Alt+Shift+K"))
-    settings.expand_now_hotkey = str(raw.get("expand_now_hotkey", "Ctrl+Alt+Shift+X"))
+    settings.tray_hotkey = str(raw.get("tray_hotkey", ""))
+    # A file without these keys came from a build that registered the old
+    # defaults, so that is what it had; take_system_keys moves them to none.
+    for name, old in RETIRED_HOTKEY_DEFAULTS.items():
+        setattr(settings, name, str(raw.get(name, old)))
+    settings.dictate_anywhere_hotkey = str(raw.get("dictate_anywhere_hotkey", "") or "")
+    dictation = raw.get("dictation", {})
+    if isinstance(dictation, dict):
+        settings.dictation = {
+            str(name): value
+            for name, value in dictation.items()
+            if str(name).startswith("windows_dictation_")
+        }
     return settings
 
 
@@ -135,6 +228,8 @@ def save_settings(data_dir: Path, settings: InkwellSettings) -> None:
             "tray_hotkey": settings.tray_hotkey,
             "quick_insert_hotkey": settings.quick_insert_hotkey,
             "expand_now_hotkey": settings.expand_now_hotkey,
+            "dictate_anywhere_hotkey": settings.dictate_anywhere_hotkey,
+            "dictation": dict(settings.dictation),
         },
     )
 

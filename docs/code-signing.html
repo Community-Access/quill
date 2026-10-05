@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.12" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Windows code signing (Authenticode via Azure Trusted
 Signing)</title>
@@ -12,7 +12,10 @@ Signing)</title>
     */
     html {
       color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
       background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
     }
     body {
       margin: 0 auto;
@@ -37,11 +40,16 @@ Signing)</title>
     }
     @media print {
       html {
-        background-color: white;
+        color-scheme: light only;
       }
-      body {
+      html, body, pre, code {
         background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
         color: black;
+      }
+      pre, code {
+        padding: 0;
       }
       p, h2, h3 {
         orphans: 3;
@@ -54,11 +62,8 @@ Signing)</title>
     p {
       margin: 1em 0;
     }
-    a {
-      color: #1a1a1a;
-    }
-    a:visited {
-      color: #1a1a1a;
+    a, a:visited {
+      color: inherit;
     }
     img {
       max-width: 100%;
@@ -87,8 +92,11 @@ Signing)</title>
     blockquote {
       margin: 1em 0 1em 1.7em;
       padding-left: 1em;
-      border-left: 2px solid #e6e6e6;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
       color: #606060;
+      color: light-dark(#606060, #b6b6b6);
     }
     code {
       white-space: pre-wrap;
@@ -112,7 +120,7 @@ Signing)</title>
     }
     hr {
       border: none;
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       height: 1px;
       margin: 1em 0;
     }
@@ -129,11 +137,11 @@ Signing)</title>
     }
     tbody {
       margin-top: 0.5em;
-      border-top: 1px solid #1a1a1a;
-      border-bottom: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
     }
     th {
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       padding: 0.25em 0.5em 0.25em 0.5em;
     }
     td {
@@ -172,7 +180,6 @@ Signing)</title>
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
     /* CSS for syntax highlighting */
     html { -webkit-text-size-adjust: 100%; }
     pre > code.sourceCode { white-space: pre; position: relative; }
@@ -373,7 +380,8 @@ class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>python scripts\code_signing<span class="op">.</span><span class="fu">py</span> sign a<span class="op">.</span><span class="fu">exe</span> b<span class="op">.</span><span class="fu">dll</span>  <span class="co"># sign specific files (fails closed)</span></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>python scripts\code_signing<span class="op">.</span><span class="fu">py</span> sign-tree dist\portable   <span class="co"># sign every *.exe/*.dll under a tree</span></span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>python scripts\code_signing<span class="op">.</span><span class="fu">py</span> sign-build dist\App <span class="op">--</span>label app   <span class="co"># opt-in/fail-open (build scripts use this)</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>python scripts\code_signing<span class="op">.</span><span class="fu">py</span> verify a<span class="op">.</span><span class="fu">exe</span>      <span class="co"># verify the embedded Authenticode signature</span></span></code></pre></div>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>python scripts\code_signing<span class="op">.</span><span class="fu">py</span> verify a<span class="op">.</span><span class="fu">exe</span>      <span class="co"># verify the embedded Authenticode signature</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>python scripts\code_signing<span class="op">.</span><span class="fu">py</span> build-decision <span class="op">--</span>version <span class="dv">3.3</span><span class="op">.</span><span class="dv">0</span><span class="op">-</span>beta<span class="op">.</span><span class="dv">1</span>   <span class="co"># does this build sign? (last line: sign or skip)</span></span></code></pre></div>
 <p>It:</p>
 <ul>
 <li><strong>Locates <code>signtool.exe</code></strong> from the
@@ -441,12 +449,97 @@ also sign CPython extension modules.</td>
 <td>Path to an alternate <code>metadata.json</code>. Default: repo-root
 <code>metadata.json</code>.</td>
 </tr>
+<tr>
+<td><code>QUILL_SIGN_VERSION</code>, <code>QUILL_SIGN_DEV</code></td>
+<td>Set by the build itself (<code>Resolve-QuillSigning</code>), not by
+you: the version being built, and whether it is a Dev build. Every later
+signing call in that build refuses a Beta or Dev version on its
+own.</td>
+</tr>
 </tbody>
 </table>
 <p>So CI, offline builds, and contributor clones without the certificate
 build exactly as before; a release machine sets
 <code>QUILL_SIGN=1</code> (and <code>QUILL_SIGN_REQUIRED=1</code>) and
-gets signed output.</p>
+gets signed output – for a final-numbered build.</p>
+<h2 id="which-builds-are-signed-decided-2026-10-04">Which builds are
+signed (decided 2026-10-04)</h2>
+<p>The owner’s decision: <strong>Beta and Dev builds are not
+code-signed.</strong> Stable always is. The version being built decides,
+in one helper every build asks (<code>build_decision</code> in
+<code>scripts/code_signing.py</code>, and
+<code>python scripts\code_signing.py build-decision --version &lt;v&gt;</code>
+from PowerShell):</p>
+<table>
+<thead>
+<tr>
+<th>Version being built</th>
+<th>Signed?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>3.2.0</code>, <code>3.2.0+2</code> (final-numbered: a Stable
+candidate)</td>
+<td>Yes, when <code>-Sign</code> / <code>QUILL_SIGN=1</code> asks,
+exactly as before</td>
+</tr>
+<tr>
+<td><code>3.3.0-beta.2</code>, <code>1.0.0-rc.1</code>,
+<code>3.3.0-alpha.1</code></td>
+<td>Never</td>
+</tr>
+<tr>
+<td><code>3.3.1-dev.20261003.1</code>, or any build made with
+<code>-DevVersion</code></td>
+<td>Never</td>
+</tr>
+<tr>
+<td>The Beta runtime slot
+(<code>build_runtime_installer.ps1 -Channel beta</code>)</td>
+<td>Never</td>
+</tr>
+</tbody>
+</table>
+<p>For a version that is never signed, the build prints one line –
+<code>Beta and Dev builds are not code-signed; signing skipped.</code> –
+and carries on unsigned. <code>-Sign</code>, <code>QUILL_SIGN=1</code>,
+<code>QUILL_SIGN_REQUIRED=1</code> and <code>--require</code> cannot
+change that: the build switches signing off, ISCC gets no
+<code>/DSign</code>, and the signer itself refuses the version the build
+declared, so <code>sign-build</code> quietly does nothing and Inno’s
+<code>sign</code> command fails the compile rather than sign.</p>
+<p><strong>Why a final-numbered build on Beta is signed.</strong> Stable
+takes the same files that were on Beta
+(<code>docs/release-channels-plan.md</code>, section 4). A Stable
+candidate (<code>3.3.0</code>) is built once, listed on Beta, and
+promoted unchanged. It cannot be signed later: the installer carries its
+programs compressed inside <code>Setup.exe</code>, so signing them at
+promotion would mean rebuilding the installer, which makes new files
+that were never on Beta, and signing only the outer
+<code>Setup.exe</code> would ship Stable with unsigned programs inside.
+So the candidate is signed when it is built, and the ones that are
+really Beta – <code>-beta.N</code>, <code>-rc.N</code>,
+<code>-alpha.N</code> – and every Dev build never are. A final-numbered
+build is not a Beta build; it is a release candidate of Stable that
+waits on Beta.</p>
+<p><strong>What enforces it.</strong></p>
+<ul>
+<li><code>scripts/publish_release.py</code> refuses to list a
+final-numbered build whose installer or portable programs are not signed
+(“rebuild it with -Sign”), and a Beta or Dev build whose installer is
+signed. Nothing is created first.</li>
+<li><code>scripts/promote_release.py</code> check <strong>P5</strong>
+always runs for Stable: every installer and every <code>.exe</code> in
+the portable zip must carry an Authenticode signature. It reads the
+signature from the file itself, so it works on the Linux promote runner
+too; where <code>signtool</code> is installed it also verifies it. A
+build that fails P5 is rebuilt with <code>-Sign</code> as the next build
+number, listed on Beta, and promoted from there.</li>
+<li><code>tests/unit/scripts/test_release_code_signing_policy.py</code>
+pins the rule per version form, the wiring in every
+<code>build_release.ps1</code>, and both checks.</li>
+</ul>
 <h2 id="how-it-is-wired-into-the-builds">How it is wired into the
 builds</h2>
 <p>Three things are signed for every app: <strong>each shipped
@@ -487,7 +580,18 @@ assembled <code>portable/</code> tree, then compiles the installer. When
 passes <code>/DSign</code> + the sign-command mapping so Inno signs
 <code>Quill-for-All-Setup-&lt;ver&gt;.exe</code> <strong>and its
 uninstaller</strong> during compile. No new flags – it honours
-<code>QUILL_SIGN</code>.</p>
+<code>QUILL_SIGN</code>. The version comes from
+<code>build/version.toml</code>: <code>channel = "stable"</code> is
+final-numbered and may sign; <code>beta</code>, <code>rc</code>,
+<code>alpha</code> and <code>dev</code> never do.</p>
+<p><code>windows-release.yml</code> has no Azure credential, so a QUILL
+tag built in CI is unsigned. That is right for <code>v1.0.0-rc.1</code>.
+For the final <code>v1.0.0</code> candidate, build it on your computer
+with <code>QUILL_SIGN=1</code>, upload the signed installer and portable
+zip over the CI ones
+(<code>gh release upload v1.0.0 &lt;files&gt; --clobber</code>), then
+list it with <code>publish_release.py --existing</code>; the publish
+check refuses the unsigned CI files otherwise.</p>
 <div class="sourceCode" id="cb3"><pre
 class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="va">$env</span><span class="op">:</span><span class="va">QUILL_SIGN</span> <span class="op">=</span> <span class="st">&quot;1&quot;</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>python scripts\build_windows_distribution<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>bundle-python <span class="op">--</span>compile-installer</span></code></pre></div>
@@ -503,7 +607,11 @@ passes <code>/DSign</code> + the mapping to ISCC so Inno signs the
 class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>\scripts\build_release<span class="op">.</span><span class="fu">ps1</span> <span class="op">-</span>Sign</span></code></pre></div>
 <p>Without <code>-Sign</code>, the payload <code>sign-build</code> step
 prints a “skipped” line and ISCC is invoked with no sign arguments, so
-the build is byte-for-byte what it was before.</p>
+the build is byte-for-byte what it was before. Each script calls
+<code>Resolve-QuillSigning</code> (in <code>scripts\BuildEnv.ps1</code>)
+right after it knows its version and build number, before anything is
+signed; for a Beta or Dev version that turns <code>-Sign</code> off for
+the whole build, with the one line above.</p>
 <h2 id="cost-note">Cost note</h2>
 <p>Trusted Signing bills per signature, and every file is one remote
 round-trip, so signing time scales with file count. The default

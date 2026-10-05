@@ -26,6 +26,7 @@ __all__ = [
     "CHOOSER_PURPOSE",
     "HISTORY_PURPOSE",
     "RISK_PURPOSE",
+    "UNSIGNED_NOTE",
     "WAIT_PURPOSE",
     "WAIT_TITLE",
     "chooser_title",
@@ -48,7 +49,7 @@ CHOOSER_PURPOSE = (
 )
 RISK_PURPOSE = (
     "Says plainly what could go wrong on Beta or Dev, how your settings are "
-    "protected, and how to come back. Nothing changes unless you tick the box "
+    "protected, and how to come back. Nothing changes unless you check the box "
     "and choose Move."
 )
 WAIT_PURPOSE = (
@@ -95,12 +96,21 @@ def _joined(names: tuple[str, ...]) -> str:
 
 
 def risk_confirm_label(channel: str) -> str:
-    """The tick box the risk dialog needs before Move does anything."""
+    """The check box the risk dialog needs before Move does anything."""
     if channel == DEV:
         return (
             "I &understand that Dev versions can break and that going back may lose recent changes."
         )
     return "I &understand that some things may not work right yet."
+
+
+#: Beta and Dev builds are never code-signed (owner decision 2026-10-04), so
+#: SmartScreen may stop their installer. One sentence, the same in both risk texts.
+UNSIGNED_NOTE = (
+    "- Beta and Dev versions aren't signed, so Windows may warn that the installer "
+    "comes from an unknown publisher; that's expected, and you can choose More info, "
+    "then Run anyway."
+)
 
 
 def risk_text(context: RiskContext) -> str:
@@ -146,7 +156,7 @@ def risk_text(context: RiskContext) -> str:
             "- Dev versions may change how your data is saved more than once. Going "
             "back to Stable may mean using the copy saved today and losing changes "
             "you made since.\n"
-            "- Windows may warn that a Dev version is from an unknown publisher.\n\n"
+            f"{UNSIGNED_NOTE}\n\n"
             f"{protected}\n\n"
             "If a developer didn't ask you to try Dev, Beta is probably the better "
             f"choice.{together}\n\n{privacy}"
@@ -159,7 +169,8 @@ def risk_text(context: RiskContext) -> str:
         "- Your screen reader might miss something it should announce. We test "
         "every Stable version with JAWS and NVDA. Beta versions are tested less.\n"
         "- Your settings may be saved in a newer way that the Stable version "
-        "can't read yet.\n\n"
+        "can't read yet.\n"
+        f"{UNSIGNED_NOTE}\n\n"
         f"{protected}{together}\n\n{privacy}"
     )
 

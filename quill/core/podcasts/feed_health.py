@@ -35,12 +35,20 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import UTC, datetime
 
-from quill.core.podcasts import schedule_policy
-from quill.core.podcasts.check_state import failure_run, last_checked, last_published
+from quill.core.podcasts import feed_problems, schedule_policy
+from quill.core.podcasts.check_state import (
+    failure_kind,
+    failure_reason,
+    failure_run,
+    is_empty,
+    last_checked,
+    last_published,
+)
 from quill.core.podcasts.models import PodcastShow
 from quill.core.podcasts.subscriptions import PodcastLibrary
 
 __all__ = [
+    "EMPTY_RANK",
     "FeedRow",
     "QUIET_DAYS",
     "failing_rows",
@@ -55,6 +63,12 @@ __all__ = [
 #: be answering a question nobody asked. Six weeks is long enough that a monthly
 #: show is not flagged for being monthly.
 QUIET_DAYS = 42
+
+#: Where an empty feed sits: below a failing one, above everything else. It
+#: answers, so it is not failing, and it has nothing to play, so it is not OK
+#: either -- and it used to read "OK", which is how 29 emptied feeds in one
+#: real library went unnoticed (check.md bug 3).
+EMPTY_RANK = 15
 
 
 @dataclass(frozen=True, slots=True)
@@ -85,10 +99,26 @@ class FeedRow:
     #: will it look again?" is a column rather than a guess.
     schedule: str = ""
     next_check: str = "never"
+    #: The last failure's plain reason and its kind (check.md bug 8), or "".
+    reason: str = ""
+    kind: str = ""
 
     @property
     def is_failing(self) -> bool:
         return self.failures > 0
+
+    @property
+    def is_empty(self) -> bool:
+        return self.rank == EMPTY_RANK
+
+    @property
+    def worth_a_search(self) -> bool:
+        """Whether Find This Show's New Feed is the useful next step: the feed is
+        failing in a way that will not come back at this address, or it is
+        empty. Not for a slow host or a bot check -- the show has not moved."""
+        if self.is_local:
+            return False
+        return self.is_empty or (self.is_failing and self.kind in feed_problems.WORTH_A_SEARCH)
 
     @property
     def is_local(self) -> bool:
@@ -151,18 +181,25 @@ def _status_and_rank(
     checked: datetime | None,
     published: datetime | None,
     now: datetime,
+    reason: str = "",
+    empty: bool = False,
 ) -> tuple[str, int]:
     """What to say about this feed, and how far up the list it goes.
 
     The ranks are spaced so a later kind of trouble can be inserted between two
     of them without renumbering the ones a test names.
+
+    A failing row says **why** (check.md bug 8). "Failing, 3 checks in a row"
+    told a listener something was wrong and nothing about what, so the only
+    next step was to guess.
     """
     if failures > 0:
-        return (
-            f"Failing, {failures} check{'' if failures == 1 else 's'} in a row "
-            "(Cast is still trying)",
-            10,
-        )
+        said = f"Failing, {failures} check{'' if failures == 1 else 's'} in a row"
+        if reason:
+            said += f": {reason.rstrip('.')}"
+        return (f"{said} (Cast is still trying)", 10)
+    if empty and show.feed_url:
+        return ("Empty: the feed has no episodes", EMPTY_RANK)
     if not show.feed_url:
         # A local show is not broken; it simply has no feed to check. Its own
         # rank, below trouble and above healthy feeds, because somebody scanning
@@ -189,8 +226,15 @@ def rows(library: PodcastLibrary, *, now: datetime | None = None) -> list[FeedRo
         failures = failure_run(library, show)
         checked = last_checked(library, show)
         published = last_published(library, show)
+        reason = failure_reason(library, show) if failures else ""
         status, rank = _status_and_rank(
-            show, failures=failures, checked=checked, published=published, now=moment
+            show,
+            failures=failures,
+            checked=checked,
+            published=published,
+            now=moment,
+            reason=reason,
+            empty=is_empty(library, show),
         )
         built.append(
             FeedRow(
@@ -208,6 +252,8 @@ def rows(library: PodcastLibrary, *, now: datetime | None = None) -> list[FeedRo
                 next_check=schedule_policy.next_check_words(
                     schedule_policy.next_check(library, show, now=moment), now=moment
                 ),
+                reason=reason,
+                kind=failure_kind(library, show) if failures else "",
             )
         )
     built.sort(
@@ -238,14 +284,18 @@ def summary(report: list[FeedRow]) -> str:
     if not report:
         return "No podcasts yet."
     failing = len(failing_rows(report))
+    empty = len([item for item in report if item.is_empty])
     quiet = len([item for item in report if item.rank == 30])
     total = len(report)
     head = f"{total} podcast{'' if total == 1 else 's'}"
-    if not failing and not quiet:
+    if not failing and not quiet and not empty:
         return f"{head}, all checking normally."
     parts = []
     if failing:
         parts.append(f"{failing} failing")
+    if empty:
+        parts.append(f"{empty} empty")
     if quiet:
         parts.append(f"{quiet} gone quiet")
-    return f"{head}, {' and '.join(parts)}. Worst first."
+    joined = ", ".join(parts[:-1]) + f" and {parts[-1]}" if len(parts) > 1 else parts[0]
+    return f"{head}, {joined}. Worst first."

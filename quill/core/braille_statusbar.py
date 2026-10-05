@@ -16,6 +16,7 @@ replaced with ``| Print ?"``; for an implied print page we render
 
 from __future__ import annotations
 
+from quill.core.braille_cues import page_break_mode
 from quill.core.braille_position import BraillePosition, BraillePositionResolver
 from quill.core.braille_status import PrintPageInfo
 
@@ -57,4 +58,4 @@ def short_form_from_resolver(
     return short_form(resolver.resolve(char_offset), print_page)
 
 
-__all__ = ["short_form", "short_form_from_resolver"]
+__all__ = ["page_break_mode", "short_form", "short_form_from_resolver"]

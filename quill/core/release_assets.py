@@ -472,6 +472,7 @@ def download_verified(
     label: str = "Downloading...",
     retries: int = 4,
     timeout: float = 60.0,
+    partial: Path | None = None,
 ) -> Path:
     """Download a single file from *urls* (primary + mirrors) to *dest*, and --
     when *sha256* is given -- verify it. The one hardened download path every
@@ -482,6 +483,12 @@ def download_verified(
 
     Pass ``sha256=""`` only for a source with no stable checksum (a moving
     "latest" URL); pin a SHA wherever one exists.
+
+    *partial*, when given, is where the bytes are staged instead of a temporary
+    folder, and it is **kept** when the download is cancelled or the program
+    closes part-way, so the next call resumes it (HTTP Range); a checksum
+    mismatch deletes it, and so does a source that fails every retry. Large
+    optional downloads (dictation's speech models) use it.
     """
     if os.environ.get("QUILL_SAFE_MODE") == "1":
         raise ReleaseAssetError("Downloading components is disabled in Safe Mode.")
@@ -489,7 +496,7 @@ def download_verified(
     dest = Path(dest)
     tmp = Path(tempfile.mkdtemp(prefix="quill-dl-"))
     try:
-        staged = tmp / (dest.name or "download.bin")
+        staged = Path(partial) if partial is not None else tmp / (dest.name or "download.bin")
         if progress is not None:
             progress(0.0, label)
         _download_resumable(
@@ -504,6 +511,7 @@ def download_verified(
         if sha256:
             actual = _sha256_file(staged)
             if actual.lower() != sha256.lower():
+                staged.unlink(missing_ok=True)
                 raise ReleaseAssetError(
                     f"Checksum mismatch for {dest.name} "
                     f"(expected {sha256[:12]}..., got {actual[:12]}...)."

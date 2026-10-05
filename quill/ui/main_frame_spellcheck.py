@@ -208,6 +208,7 @@ class SpellcheckCommandsMixin:
             # pass: a review scoped to a selection has a start the person chose.
             start_at=(self.editor.GetInsertionPoint() if scope_start == 0 else None),
             wrap=bool(getattr(self.settings, "spell_review_wrap_to_beginning", True)),
+            context_mode=str(getattr(self.settings, "spell_review_context_mode", "sentence")),
         )
 
         if session.is_complete():

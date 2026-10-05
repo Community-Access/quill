@@ -30,11 +30,10 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-from quill import __version__
+from quill.core import http_client
 from quill.core.error_codes import CodedError
 from quill.core.radio.models import RadioStation, _coerce_int
 
-_USER_AGENT = f"QUILL/{__version__} (https://github.com/Community-Access/quill)"
 _ALL_HOSTS = "all.api.radio-browser.info"
 #: A RadioBrowser station id. Used to keep other directories' ids out of the
 #: click-count call -- see :func:`is_radio_browser_uuid`.
@@ -115,7 +114,7 @@ def _http_json(url_path: str) -> object:
     for host in _resolve_mirrors():
         url = f"https://{host}{url_path}"
         request = urllib.request.Request(
-            url, headers={"User-Agent": _USER_AGENT, "Accept": "application/json"}
+            url, headers={"User-Agent": http_client.user_agent(), "Accept": "application/json"}
         )
         context = ssl.create_default_context()
         try:

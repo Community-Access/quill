@@ -958,9 +958,18 @@
     "user_guide_section": "the-rest-of-the-file-menu"
   },
   {
+    "id": "file.export_html",
+    "title": "Export as HTML",
+    "body": "Save a copy of the document as one web page you can share: styles inside, no scripts, the document's language set, and task lists shown as check boxes. The document you are editing stays as it is. If notes are written into the file, QUILL asks whether to include them, marked as notes.",
+    "keystrokes": [
+      "Ctrl+Alt+Shift+End"
+    ],
+    "user_guide_section": "writing-and-editing"
+  },
+  {
     "id": "file.file_format",
     "title": "File Format",
-    "body": "Sets how this file will be written to disk: its character encoding and its line endings, in one dialog. Changing either marks the document modified on purpose -- otherwise fixing an encoding and closing the document would throw the fix away without a word. Cancelling, or choosing the values it already had, reports that nothing changed.",
+    "body": "Sets how this file will be written to disk: its character encoding and its line endings, in one dialog. Changing either marks the document modified on purpose -- otherwise fixing an encoding and closing the document would throw the fix away without a word. Cancelling, or choosing the values it already had, reports that nothing changed. If the letters in an older file came out wrong, Reopen with Encoding reads the same file again from disk as the encoding you choose; it then saves in that encoding, or choose UTF-8 here to convert it when you save.",
     "keystrokes": [
       "Ctrl+Alt+E"
     ]
@@ -970,7 +979,7 @@
     "title": "Forget Remembered File-Change Answers",
     "body": "Clears every \"don't ask me again\" answer you have given to the question QUILL asks when a file changes on disk while you have it open. After this, QUILL asks again. This is the only way to undo that checkbox; if you have not answered it for any file format, it tells you there is nothing to forget.",
     "keystrokes": [
-      "Ctrl+Shift+F11"
+      "Ctrl+Shift+0"
     ]
   },
   {
@@ -1056,9 +1065,18 @@
     "user_guide_section": "the-rest-of-the-file-menu"
   },
   {
+    "id": "file.open_from_clipboard",
+    "title": "Open from Clipboard",
+    "body": "Opens whatever you copied: a file (or several) copied in File Explorer, a file path copied as text, or a web link, which goes through Open from URL and asks before downloading. If the clipboard holds none of those, QUILL says so and nothing else happens.",
+    "keystrokes": [
+      "Ctrl+Alt+Shift+Enter"
+    ],
+    "user_guide_section": "opening-files"
+  },
+  {
     "id": "file.open_from_favorite_folder",
     "title": "Open From Favorite Folder",
-    "body": "Finds a file across your favorite folders: type part of a filename, arrow the results, press Enter to open. It looks at the top level of each favorite; tick Include subfolders to search deeper. If you have not added any favorites yet it says so and points at Add Favorite Folder.",
+    "body": "Finds a file across your favorite folders: type part of a filename, arrow the results, press Enter to open. It looks at the top level of each favorite; check Include subfolders to search deeper. If you have not added any favorites yet it says so and points at Add Favorite Folder.",
     "keystrokes": [
       "QUILL Key + G"
     ]
@@ -1101,7 +1119,7 @@
   {
     "id": "file.open_url",
     "title": "Open from URL...",
-    "body": "Download and open a document from a web address you paste in.",
+    "body": "Download and open a document from a web address you type or paste. QUILL asks first, naming the website and the size, and shows the download's progress with a Cancel button. A GitHub page link opens the file behind it. The document opens read-only; use Save Copy to keep it.",
     "user_guide_section": "the-rest-of-the-file-menu"
   },
   {
@@ -1718,6 +1736,15 @@
     "user_guide_section": "writing-and-editing"
   },
   {
+    "id": "format.toggle_task_done",
+    "title": "Toggle Task Done",
+    "body": "Check or uncheck the task on the line you are on, or every task in the selection, and hear how many tasks in that list are done. A task is a list item that starts with a box: - [ ] to do, - [x] done. Undo takes it back.",
+    "keystrokes": [
+      "Ctrl+Alt+Enter"
+    ],
+    "user_guide_section": "writing-and-editing"
+  },
+  {
     "id": "format.underline",
     "title": "Underline",
     "body": "Underline the selected text, or turn underline on for what you type next.",
@@ -2292,6 +2319,33 @@
       "QUILL Key + F"
     ],
     "user_guide_section": "navigation"
+  },
+  {
+    "id": "notes.list_inline_notes",
+    "title": "List Inline Notes",
+    "body": "Every note in this document in one window: the note, its line, the text it is about, and whether it is private or written into the file. A note whose text was deleted is listed last. Enter goes to a note, Delete deletes one, F2 edits one, and the buttons remove all, copy all, or export the notes as Markdown or JSON.",
+    "keystrokes": [
+      "Alt+Shift+Enter"
+    ],
+    "user_guide_section": "writing-and-editing"
+  },
+  {
+    "id": "notes.delete_inline_note",
+    "title": "Delete Inline Note",
+    "body": "Delete the note at the cursor. QUILL names the note and asks first, with No as the default. The text the note is on is never changed.",
+    "keystrokes": [
+      "Alt+Shift+Delete"
+    ],
+    "user_guide_section": "writing-and-editing"
+  },
+  {
+    "id": "notes.add_inline_note",
+    "title": "Add Inline Note",
+    "body": "Write a note about the selection, or about the line you are on. The Note on line shows the start of that text so you can check the place before saving. A note follows its text as you edit. In Markdown and HTML documents you can check Write this note into the file, and the note is kept in the document as a hidden comment that a colleague or an AI assistant can read; otherwise it stays private to you.",
+    "keystrokes": [
+      "Alt+Shift+I"
+    ],
+    "user_guide_section": "writing-and-editing"
   },
   {
     "id": "player_information",
@@ -3180,6 +3234,60 @@
     "user_guide_section": "tools"
   },
   {
+    "id": "tools.windows_dictation_toggle",
+    "title": "Dictation On",
+    "body": "Live dictation: speak and each phrase is written when you pause. Press Ctrl+F11 to start dictating and press it again to stop; the last phrase is always kept. If you prefer to hold the key while you talk, turn on Hold the dictation key to talk in More Dictation Settings. Escape throws away the phrase being heard. In a text field such as Find or the AI Conversation window's message box, Ctrl+F11 dictates into that field. With Nemotron or OpenAI, the words heard so far show in the status bar and on a braille display while you speak.",
+    "keystrokes": [
+      "Ctrl+F11"
+    ],
+    "user_guide_section": "tools"
+  },
+  {
+    "id": "tools.windows_dictation_settings",
+    "title": "Dictation Settings",
+    "body": "Choose the speech engine, the microphone, the dictation language and what you hear after each phrase. More Dictation Settings holds hold-to-talk, the live preview, Talking to the AI, OpenAI with your own key, and My Dictation Instructions.",
+    "keystrokes": [
+      "Alt+Shift+F6"
+    ],
+    "user_guide_section": "tools"
+  },
+  {
+    "id": "tools.windows_dictation_recent",
+    "title": "Recent Phrases",
+    "body": "The last twenty phrases you dictated this session, newest first. Enter writes the chosen phrase at the cursor again; Copy puts it on the clipboard.",
+    "keystrokes": [
+      "Shift+F11"
+    ],
+    "user_guide_section": "tools"
+  },
+  {
+    "id": "tools.windows_dictation_words",
+    "title": "My Words and Phrases",
+    "body": "Teach dictation your words: names and jargon spelled your way, your own spoken phrases, and corrections for what the engine keeps hearing wrong. With OpenAI dictation your words are also sent as words to expect.",
+    "keystrokes": [
+      "Alt+Shift+F10"
+    ],
+    "user_guide_section": "tools"
+  },
+  {
+    "id": "tools.windows_dictation_transcribe_file",
+    "title": "Transcribe a Recording",
+    "body": "Turns a recording into text in the background while you keep working: MP3, M4A, AAC, WAV, Ogg, Opus, FLAC or WMA. Choose the file, the speech model (the most accurate one on this computer is chosen for you, with an estimate of how long it will take), the language, and whether the text goes into a new document or at the cursor. Paragraphs start where the recording pauses. Timestamps, like [00:01:23], are off unless you check Add timestamps. You hear the percentage at each quarter and one sentence when it is done. Press Shift+F5 again to see how far it has got, or to stop it. OpenAI is offered only with your own key, and asks before the recording is sent.",
+    "keystrokes": [
+      "Shift+F5"
+    ],
+    "user_guide_section": "tools"
+  },
+  {
+    "id": "tools.dictation_tidy",
+    "title": "Tidy Dictated Text",
+    "body": "Sends the selection, or the paragraph the cursor is in, to the AI to fix what speech recognition misheard, with your own My Dictation Instructions if you wrote any. Needs a ChatGPT subscription or your own AI key. Nothing changes until you choose Replace My Selection.",
+    "keystrokes": [
+      "Ctrl+F3"
+    ],
+    "user_guide_section": "tools"
+  },
+  {
     "id": "tools.dictionary_status",
     "title": "Dictionary Status...",
     "body": "Show which spell-check dictionaries are installed and active, and how to add more languages.",
@@ -3262,7 +3370,7 @@
     "title": "Keymap Editor...",
     "body": "Open the Keymap Editor to view, search, and change any keyboard shortcut. You can search by command name or by pressing a shortcut to see what owns it.",
     "keystrokes": [
-      "Ctrl+Alt+Shift+R"
+      "Ctrl+Alt+Shift+Space"
     ],
     "user_guide_section": "tools"
   },
@@ -4045,5 +4153,32 @@
       "Ctrl+Shift+G - Open Word Count"
     ],
     "user_guide_section": "tools-for-reading-review-and-inspection"
+  },
+  {
+    "id": "tools.windows_dictation_switch_language",
+    "title": "Switch Dictation Language",
+    "body": "Switches dictation between English and Spanish without opening Dictation Settings, and remembers the choice, so the next time you dictate it starts in the language you used last. You hear English or Español. While you are dictating you can also say switch to Spanish, and in Spanish say cambiar a inglés to come back. The engine is reopened in the new language; if a model has to load the first time, there is a short wait.",
+    "keystrokes": [
+      "Ctrl+Shift+F11"
+    ],
+    "user_guide_section": "tools"
+  },
+  {
+    "id": "tools.windows_dictation_live_transcript",
+    "title": "Start or Stop Live Transcript",
+    "body": "For a lecture, a talk or a meeting. Opens a new, untitled document and writes everything it hears into it, quietly: no tone and no read-back for each phrase, and voice commands are written as words, except the stop phrase. A pause of four seconds starts a new paragraph, and Time stamps in live transcripts (More Dictation Settings) puts the time at the start of each one. You can keep working in other documents while it writes; the status bar shows how long it has run and how many words it has written, and Dictation Status says the same. Press this key again, or Ctrl+F11, to stop; the document stays open for you to save. Please record other people only when they have agreed.",
+    "keystrokes": [
+      "Ctrl+Alt+Shift+PageDown"
+    ],
+    "user_guide_section": "tools"
+  },
+  {
+    "id": "tools.windows_dictation_context",
+    "title": "Dictation Context for This Document",
+    "body": "Tell dictation what this document is, in a sentence: a formal letter to a client, notes to a friend, technical writing. It is remembered for this document. OpenAI dictation uses it to get names, titles and style right, and Tidy Dictated Text follows it with your instructions. The engines on this computer cannot be given a context. You can save a context under a name and pick it again later, or say dictation context and the name while dictating.",
+    "keystrokes": [
+      "Ctrl+Alt+Shift+PageUp"
+    ],
+    "user_guide_section": "tools"
   }
 ]

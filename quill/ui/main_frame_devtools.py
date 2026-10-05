@@ -46,7 +46,7 @@ class DevToolsMixin:
 
     def _dt_python_console(self) -> PythonConsole:
         if not hasattr(self, "_dev_python_console"):
-            self._dev_python_console = PythonConsole(self._dt_make_namespace())
+            self._dev_python_console = PythonConsole(self._dt_make_namespace(), settings_host=self)
         return self._dev_python_console
 
     def _dt_ts_console(self) -> TypeScriptConsole:

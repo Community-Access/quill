@@ -229,16 +229,16 @@ Some podcasts publish more than one thing. A show you follow also runs a daily t
 
 **Rules.** Each rule has your own name for it, its own on/off, and up to two tests:
 
-- **Title.** *Wildcard* is the everyday choice — `*` matches any text and `?` matches one character, and every other punctuation mark means itself, so `Q+A*` finds the segment actually called "Q+A". *Regular expression* is there for people who want one. A pattern has to describe the **whole** title, so put a star at each end to mean "contains". Matching ignores capital letters unless you tick **Capital letters have to match too**.
+- **Title.** *Wildcard* is the everyday choice — `*` matches any text and `?` matches one character, and every other punctuation mark means itself, so `Q+A*` finds the segment actually called "Q+A". *Regular expression* is there for people who want one. A pattern has to describe the **whole** title, so put a star at each end to mean "contains". Matching ignores capital letters unless you check **Capital letters have to match too**.
 - **Minimum length**, in minutes. An episode whose feed does not say how long it is never matches a length rule — a missing length is not a short episode.
 
 Both tests in one rule have to match. Several rules are combined with *or*: an episode need match only one of them. A rule that is switched off, or that asks nothing at all, never counts.
 
 **Two modes.** *Keep everything except episodes a rule matches* is the common one. *Keep only episodes a rule matches* is the sharp one — it is how you follow a single strand of a feed that carries several, and every safety rule below exists because of it.
 
-**Where this applies** is the part that makes one feature do the work of eight. Tick as many or as few as you like:
+**Where this applies** is the part that makes one feature do the work of eight. Check as many or as few as you like:
 
-| Ticked | What it means |
+| Checked | What it means |
 | --- | --- |
 | Keep them out of the Inbox | They never appear in the Inbox |
 | Never add them to the Play Queue automatically | Auto-Queue skips them |
@@ -249,13 +249,13 @@ Both tests in one rule have to match. Several rules are combined with *or*: an e
 | Keep them out of smart playlists | A smart playlist never picks them up |
 | Leave them out of Search Everywhere | Search stops finding them |
 
-A new filter starts with the first four ticked and the last four clear. The first four decline to *route* an episode and are invisible when they are wrong; the last four *hide* it, which is a stronger thing to do to somebody's library, so they are opt-in one tick at a time. Saving with any of them ticked asks you once, and says where the hidden episodes still are.
+A new filter starts with the first four checked and the last four clear. The first four decline to *route* an episode and are invisible when they are wrong; the last four *hide* it, which is a stronger thing to do to somebody's library, so they are opt-in one check box at a time. Saving with any of them checked asks you once, and says where the hidden episodes still are.
 
-**Everything except the Play Queue takes effect the moment you save**, including on episodes you already had — the lists ask the filter as they are drawn, so unticking a scope later brings those episodes straight back. The Play Queue is the exception: it is the one list you built by hand, so saving offers, separately, to clear this podcast's matching episodes out of it. That never deletes anything, and the episode playing right now keeps its place.
+**Everything except the Play Queue takes effect the moment you save**, including on episodes you already had — the lists ask the filter as they are drawn, so unchecking a scope later brings those episodes straight back. The Play Queue is the exception: it is the one list you built by hand, so saving offers, separately, to clear this podcast's matching episodes out of it. That never deletes anything, and the episode playing right now keeps its place.
 
 **Preview** tries the rules against the 50 newest episodes you already have and reports what each one would be — *Filtered* or *Kept* first, then the title and the length. It changes nothing, and it works **while the filter itself is switched off**, which is how you check a Keep-only rule before it is in force.
 
-**Saving is gated, not merely checked.** QUILL Cast refuses to save a filter that is switched on with no rule switched on, one whose regular expression cannot be read (it quotes the reason), one with nothing ticked under Where this applies, or a minimum-length rule against a feed where not one of the 50 newest episodes publishes a length. Where only *some* episodes publish a length, it says exactly how many and asks.
+**Saving is gated, not merely checked.** QUILL Cast refuses to save a filter that is switched on with no rule switched on, one whose regular expression cannot be read (it quotes the reason), one with nothing checked under Where this applies, or a minimum-length rule against a feed where not one of the 50 newest episodes publishes a length. Where only *some* episodes publish a length, it says exactly how many and asks.
 
 **Two ways back, always.** Choose **Filtered out** in the Episodes filter to see everything a podcast's rules are catching — every episode action still works from there. And any single episode's menu offers **Always Keep This Episode (Ignore the Filter)**, which exempts that one episode everywhere the filter applies and is not undone by editing the rules afterwards.
 
@@ -297,7 +297,7 @@ The command speaks a one-line summary before the window opens, so if all you wan
 
 #### Always Sync, and downloaded-audio processing
 
-Podcast Settings gains three per-show-overridable switches. **Always sync the full catalog**: beyond the routine "what's new" refresh, a download-mode show backfills and downloads every episode the live feed still offers — and because backfilling a catalog while keep-last-N retention prunes it would fight itself, ticking it nudges retention to keep-all (announced, never silent). **Auto-trim silence** and **Normalize loudness** process each finished download using the same ffmpeg passes the Audio Studio's audiobook builder uses. And for quiet audio right now, the manager's **volume boost** control (1.5x/2x/3x) raises playback gain live without touching your saved volume — the Sleep Timer still restores the true, unboosted level.
+Podcast Settings gains three per-show-overridable switches. **Always sync the full catalog**: beyond the routine "what's new" refresh, a download-mode show backfills and downloads every episode the live feed still offers — and because backfilling a catalog while keep-last-N retention prunes it would fight itself, checking it nudges retention to keep-all (announced, never silent). **Auto-trim silence** and **Normalize loudness** process each finished download using the same ffmpeg passes the Audio Studio's audiobook builder uses. And for quiet audio right now, the manager's **volume boost** control (1.5x/2x/3x) raises playback gain live without touching your saved volume — the Sleep Timer still restores the true, unboosted level.
 
 #### What's not in Podcasts
 
@@ -944,7 +944,7 @@ Pause is per feed; unsubscribing is all or nothing.
   from. A rule set says *what* an episode is; the scopes say *where that means
   anything*: the Inbox, Auto-Queue, auto-download, the new-episode
   announcement, the podcast's own episode list, the cross-show views, smart
-  playlists, and Search Everywhere. Eight independent ticks, so one feature
+  playlists, and Search Everywhere. Eight independent check boxes, so one feature
   answers "do not put it in front of me", "do not spend my bandwidth on it"
   and "I never want to see it again" without any of them implying the others.
   A new filter ships with the four **routing** scopes on and the four
@@ -952,7 +952,7 @@ Pause is per feed; unsubscribing is all or nothing.
   hiding changes what a person can find, and is opt-in.
 
 **Asked, not stamped.** The verdict is computed at every point of use rather
-than written onto an episode at ingest. That is why unticking a scope takes
+than written onto an episode at ingest. That is why unchecking a scope takes
 effect on the next redraw with no sweep, no migration and nothing to undo --
 and it is the correction to the first cut, which stamped an Inbox dismissal at
 refresh time and could therefore only ever be undone episode by episode. Two
@@ -985,7 +985,7 @@ publish a duration -- the empty sample included -- is refused outright.
 
 **Preview** is a dry run over the newest 50 stored episodes that mutates
 nothing, and it **evaluates the draft while the top-level switch is off and
-while no scope is ticked**. Preview answers "what do these rules catch?",
+while no scope is checked**. Preview answers "what do these rules catch?",
 which is a question about the rules; a preview that agreed with you whenever
 the switch was off would agree right up until it mattered. This was the first
 defect device testing found in the design this ports, and both halves of it

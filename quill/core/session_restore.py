@@ -172,7 +172,7 @@ def forget(entries: tuple[SessionEntry, ...], paths: object) -> tuple[str, ...]:
 
     Matching is on the remembered string, not on a resolved path: the entry is
     what the user is looking at in the list, and resolving could quietly fail to
-    match the row they ticked (a substituted drive letter, a path that no longer
+    match the row they checked (a substituted drive letter, a path that no longer
     resolves because the file is gone -- which is exactly the row most likely to
     be forgotten).
     """
@@ -228,7 +228,7 @@ def describe_session_plan(
     exists for the same reason: a list of checkboxes answers "what is here" one
     row at a time and never answers "what happens when I press the button".
     Sighted users assemble that by glancing down the list; by ear it costs a
-    pass through every row, repeated after every tick. So it is written out and
+    pass through every row, repeated after every check or uncheck. So it is written out and
     rewritten whenever a box changes.
     """
     lines: list[str] = []
@@ -239,7 +239,7 @@ def describe_session_plan(
     lines.append("")
     for index, entry in enumerate(entries, start=1):
         on = checked[index - 1] if index - 1 < len(checked) else False
-        mark = "Ticked" if on else "Not ticked"
+        mark = "Checked" if on else "Not checked"
         lines.append(f"{index}. {mark}. {entry.label}")
     lines.append("")
 
@@ -249,12 +249,12 @@ def describe_session_plan(
         names = ", ".join(entry.name for entry in openable_ticked)
         lines.append(f"  Open Checked reopens {len(openable_ticked)}: {names}.")
     else:
-        lines.append("  Open Checked opens nothing: no row that still has a file is ticked.")
+        lines.append("  Open Checked opens nothing: no row that still has a file is checked.")
     skipped = [entry for entry in ticked if not entry.exists]
     if skipped:
         names = ", ".join(entry.name for entry in skipped)
         lines.append(
-            f"  {len(skipped)} ticked cannot be opened, because the files have gone: {names}."
+            f"  {len(skipped)} checked cannot be opened, because the files have gone: {names}."
         )
     still_there = [entry for entry in entries if entry.exists]
     lines.append(f"  Open All reopens the {len(still_there)} whose files are still there.")
@@ -264,7 +264,7 @@ def describe_session_plan(
             "No file is touched -- only what is offered next time."
         )
     else:
-        lines.append("  Forget Checked does nothing: no rows are ticked.")
+        lines.append("  Forget Checked does nothing: no rows are checked.")
     lines.append(f"  Clear the List forgets all {len(entries)}. Again, no file is touched.")
     if gone:
         verb = "is" if len(gone) == 1 else "are"

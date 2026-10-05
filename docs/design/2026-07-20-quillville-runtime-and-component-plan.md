@@ -32,7 +32,7 @@ only Cast needs. The download and install are small and quick. You now have two
 apps sharing one engine and one set of components.
 
 **Getting the whole suite.** Alternatively you run the single "QuillVille"
-installer, which shows every app as a checkbox. Tick the ones you want. They all
+installer, which shows every app as a checkbox. Check the ones you want. They all
 share the one runtime and one component store. You can come back and add or
 remove apps anytime; nothing is ever installed twice.
 

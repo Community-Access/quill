@@ -2,25 +2,67 @@
 
 Version 1.0.0 -- September 28, 2026
 
+## Introduction
+
 Quill Converter changes audio and video files from one format into another, on
 your own computer, without uploading anything to a website. Sound to sound,
 video to sound, and video to video. It can clean up the sound on the way
 through, let you hear the result before you commit, join a pile of files into
 one audiobook, and split a chaptered book back into its chapters.
 
-Chapters are a headline feature. Keep a file's own chapters, write your own in
-a plain text file beside it, find them at the pauses, or have one every few
-minutes -- in any format. Where a format has no place for chapters, a `.cue`
-sheet is written beside the converted file, so nothing is silently lost. The
-Chapter Workbench lets you hear a book and edit its chapters at the playhead.
-
 It is a small window with a queue, a few choices and a Convert button. Focus
 lands on the queue the moment it opens, every control has a name, most have an
-access key, and everything runs from the keyboard. It was built for screen readers
-from the first line: every action says what it did, and the status bar always
-carries the same words.
+access key, and everything runs from the keyboard. It was built for screen
+readers from the first line: every action says what it did, and the status bar
+always carries the same words.
 
-## Installing
+### What you will be able to do
+
+By the end of this guide you will be able to:
+
+- turn a recording into the format your player, phone or editor wants;
+- pull the sound out of a video, or make a video smaller;
+- clean up speech, even out loudness, and hear the result before you convert;
+- keep, write, find and edit chapters, so a long recording stays easy to move
+  around in;
+- join a folder of files into one audiobook, or split a book into its chapters;
+- download the sound of a video, a playlist or a channel from a link.
+
+### How this guide is laid out
+
+Each chapter starts with what it covers and ends with a short summary of what
+you learned and where to go next. You do not have to read them in order.
+
+1. **Getting started** -- installing, your first conversion, and the main
+   window.
+2. **Formats** -- what Quill Converter reads and writes, video included.
+3. **Making it sound right** -- presets, effects, and hearing a preview.
+4. **Chapters** -- keeping them, writing your own, the Chapter Workbench, and
+   joining and splitting.
+5. **Working with the queue** -- adding, ordering, tags, the report, and
+   Advanced Options.
+6. **Converting from a link** -- one video, a playlist, or a channel.
+7. **Out of the way, and easy to find** -- the tray, a key to show and hide
+   Quill Converter, and finding any command by name.
+8. **When you need a hand** -- F1, troubleshooting, updates and support.
+
+The keyboard reference at the end lists every key in one place.
+
+### Reading this guide with a screen reader
+
+Every chapter is a level 2 heading and every topic inside it is a level 3
+heading, so your screen reader's heading keys move through the guide a topic at
+a time. Keys are written the way you press them, such as Ctrl+Enter. A menu
+path such as **File > Add Files...** means open the File menu and choose Add
+Files. Help > User Guide (Ctrl+F1) opens this guide from inside the app.
+
+## Chapter 1: Getting started
+
+This chapter gets Quill Converter onto your computer and walks you through one
+conversion from start to finish. Then it tours the main window, so you know
+where everything is.
+
+### Installing
 
 There are two downloads. Choose one.
 
@@ -29,9 +71,9 @@ There are two downloads. Choose one.
   not have it yet (the same runtime QUILL and Quill Radio use), then the app,
   with a Start Menu entry and an uninstaller.
 - **Quill-Converter-Portable-1.0.0.zip** -- the portable copy. Unpack it
-  anywhere, including a USB stick, and run `QuillConverter.exe`. It keeps its
-  settings in its own `data` folder next to the app and writes nothing to the
-  computer it runs on.
+  anywhere, including a USB stick or a folder with spaces in its name, and run
+  `QuillConverter.exe`. It keeps its settings in its own `data` folder next to
+  the app and writes nothing to the computer it runs on.
 
 Nothing downloads the first time you use a feature. Both downloads already
 contain everything the app needs: FFmpeg and ffprobe (which do the converting
@@ -40,7 +82,7 @@ yt-dlp (for Convert from URL), mutagen (for carrying cover art and chapters
 across) and, in builds that include it, the OptiLab Core broadcast-polish
 adapter.
 
-### The File Explorer right-click menu
+#### The File Explorer right-click menu
 
 The installer offers three choices, each a real Windows checkbox that a screen
 reader announces as checked or not checked: **Create a desktop icon** (off by
@@ -63,7 +105,7 @@ queued.
 QUILL has its own, separate setting for a **Convert with Quill** entry; it also
 opens Quill Converter. You do not need both.
 
-## Your first conversion
+### Your first conversion
 
 1. Start Quill Converter from the Start Menu. Focus is on the **Files to
    convert** list.
@@ -80,7 +122,7 @@ opens Quill Converter. You do not need both.
    recipe named for the problem it solves, such as "Clean up speech".
 6. If the files have chapters, or you want some, press Alt+K for **Chapter marks**.
    The default, "Keep each file's own chapters", carries them across as they
-   are. See [Chapters](#chapters).
+   are. See [Where chapters come from](#where-chapters-come-from).
 7. Press Alt+Y (**Play Preview**) to hear fifteen seconds exactly as the converted
    file will sound. Press it again to stop.
 8. Press the **Convert** button, or Ctrl+Enter from anywhere in the window.
@@ -103,7 +145,7 @@ keep-from and keep-until times, the Chapter marks choice, the Advanced Options, 
 the output folder between runs, so the next job starts where the last one
 ended.
 
-## The main window
+### The main window
 
 Tab order, top to bottom, with each control's access key:
 
@@ -138,7 +180,19 @@ Ctrl+Enter stops as well.
 Press F1 on any control to hear what it does, after a sentence about what the
 window is for.
 
-## What it reads
+### What you learned, and where to go next
+
+You can install Quill Converter, add files, choose a format, and press
+Ctrl+Enter. You know that your originals are never changed, and that the
+converted copies go to the output folder. Next, Chapter 2 explains the formats,
+so you can choose one by what it is for.
+
+## Chapter 2: Formats
+
+Quill Converter reads 82 kinds of file and writes 34. This chapter lists them,
+explains what the fussier formats decide for you, and covers video.
+
+### What it reads
 
 Quill Converter reads 82 file types. Sound files:
 
@@ -159,7 +213,7 @@ Video files:
 A file with a name ending in one of these that turns out to be damaged, or not
 really that kind of file, fails on its own; the rest of the batch carries on.
 
-## What it writes
+### What it writes
 
 34 formats: 25 sound and 9 video. The **Convert to** list only shows the ones
 the bundled FFmpeg can actually write, so a batch never stops half way because
@@ -205,7 +259,7 @@ Video formats:
 - MPEG-2 video -- DVD players
 - Ogg video (Theora) -- open format
 
-### What the formats decide for you
+#### What the formats decide for you
 
 Some formats only accept certain settings. Quill Converter makes the file right
 rather than letting it fail:
@@ -223,7 +277,7 @@ rather than letting it fail:
 - **32-bit.** Choosing 32-bit in Advanced Options for WAV, Wave64 or CAF
   gives real 32-bit floating point.
 
-## Converting video
+### Converting video
 
 - **Video to a sound format** keeps its sound. This is how you get the audio
   out of a recorded lecture, a film or a music video.
@@ -249,7 +303,7 @@ rather than letting it fail:
   the rest of the session. There is nothing to set. WebM (VP9), AVI, WMV,
   MPEG-2 and Ogg Theora always use the processor.
 
-### Video presets
+#### Video presets
 
 When the format is a video format, the Preset list offers:
 
@@ -270,7 +324,19 @@ When the format is a video format, the Preset list offers:
 A size limit never makes a picture bigger: a 480p video on "up to 1080p" stays
 480p.
 
-## Sound presets
+### What you learned, and where to go next
+
+You know what goes in and what comes out, and that a video can become sound or
+stay a video. When a format is fussy, Quill Converter makes the file right
+rather than letting it fail. Chapter 3 is about how the result sounds.
+
+## Chapter 3: Making it sound right
+
+A preset decides the quality of the result. An effect fixes something in the
+sound on the way through. A preview lets you hear both before you spend time
+converting a whole batch.
+
+### Sound presets
 
 When the format is a sound format, the Preset list offers:
 
@@ -290,7 +356,7 @@ choice always wins over a preset's own format, so you can take the Podcast
 preset and still ask for Opus. Quill Converter remembers your last sound preset
 and your last video preset separately.
 
-## Effects
+### Effects
 
 The **Effects** choice (Alt+E) is what to do to the sound on the way through.
 Each recipe is named for the problem it solves, so you do not need to know what
@@ -325,7 +391,7 @@ a de-esser is to use one.
   speakers.
 - **Custom** -- the effects you chose in the Custom Effects dialog.
 
-### Custom Effects
+#### Custom Effects
 
 **Custom Effects...** (Alt+S on the main window, or Ctrl+E from anywhere) puts
 every effect on one page. It opens showing exactly what the current Effects
@@ -374,7 +440,7 @@ set, Quill Converter says so as part of what Convert will do. Chapters follow
 the cut: a chapter partly inside the kept part is trimmed to it, one wholly
 outside is dropped, and the rest are shifted so the first starts at zero.
 
-## Preview: hear it before you convert
+### Preview: hear it before you convert
 
 - **Play Preview** (Alt+Y, or Ctrl+P) plays fifteen seconds of the highlighted file,
   or of the first file in the queue, exactly as it will sound after conversion.
@@ -389,7 +455,20 @@ than 30 seconds in, because the first seconds of most recordings are silence, a
 jingle or somebody asking whether the microphone is on. For a video format you
 hear the sound the new video will have.
 
-## Chapters
+### What you learned, and where to go next
+
+Choose a preset for the quality, an effect for the problem, and press Ctrl+P to
+hear fifteen seconds before you commit. Custom Effects (Ctrl+E) lets you take a
+recipe and change one thing. Chapter 4 is about chapters.
+
+## Chapter 4: Chapters
+
+Chapter marks are how you find your way around a long recording without seeing
+a waveform, so Quill Converter treats them as part of the content. This chapter
+covers where they come from, writing your own, where they end up, editing them
+in the Chapter Workbench, and joining and splitting files by chapter.
+
+### Where chapters come from
 
 Chapter marks are how you find your way around a long recording without seeing
 a waveform, so Quill Converter treats them as part of the content. The
@@ -410,7 +489,7 @@ a waveform, so Quill Converter treats them as part of the content. The
 To see whether a file already has chapters, highlight it and press Alt+Enter
 (File Properties).
 
-### Writing your own chapters
+#### Writing your own chapters
 
 You can define chapters for any file, in any format, with a text file. Put it
 beside the source with the same name and `.chapters.txt` on the end: for
@@ -436,7 +515,7 @@ Quill Converter also accepts, beside the file and with the same name:
 
 A file with no chapter list beside it keeps its own chapters.
 
-### Where chapters land
+#### Where chapters land
 
 - **Inside the file**, written by FFmpeg: MP3 (ID3 CHAP and CTOC frames), M4B,
   M4A, Apple Lossless, M4R, MP4, MOV, MKV, MKA, WebM, WebM audio, Opus, and
@@ -451,7 +530,7 @@ A file with no chapter list beside it keeps its own chapters.
 Nothing is silently lost: where a format cannot hold chapters inside the file,
 look beside the converted file for its `.cue` sheet.
 
-### Chapter Workbench
+#### Chapter Workbench
 
 **Queue > Chapter Workbench...** (Ctrl+H, or the **Chapter Workbench...**
 button) opens the highlighted MP3, M4B or M4A in the Chapter Workbench,
@@ -480,7 +559,7 @@ MP3 first and open that.
 
 Preview and Hear Original ignore chapters; they play fifteen seconds of sound.
 
-## Join into One File
+### Join into One File
 
 **Convert > Join into One File...** (Ctrl+J) joins every file in the queue, in
 queue order, into one sound file. A folder in the queue contributes its files in
@@ -501,7 +580,7 @@ for the rest. Files with different sample rates or channel counts join cleanly.
 Join needs at least two files and a sound format; a video format is refused with
 a reason.
 
-## Split by Chapters
+### Split by Chapters
 
 **Convert > Split by Chapters** (Ctrl+Shift+S) makes one file per chapter from
 every queued file that has chapters: an audiobook, a podcast episode, a film.
@@ -525,7 +604,21 @@ title", and tagged with that title and its track number. The chosen format,
 preset and effects apply to every piece. Files without chapters are named in
 the summary and left alone.
 
-## Managing the queue
+### What you learned, and where to go next
+
+You can keep a file's chapters, write your own in a plain text file, find them
+at the pauses, or have one every few minutes. You know where they land in each
+format, and that nothing is silently lost. Join (Ctrl+J) makes many files one
+book, and Split (Ctrl+Shift+S) makes one book many files. Chapter 5 is about
+the queue.
+
+## Chapter 5: Working with the queue
+
+The queue is the list of files waiting to be converted. This chapter covers
+filling it and ordering it, editing tags, what happens during and after a
+conversion, and the Advanced Options for when a preset is not quite right.
+
+### Managing the queue
 
 - **Add files:** Alt+A, or File > Add Files... (Ctrl+O).
 - **Add a folder:** Alt+O, or File > Add Folder... (Ctrl+Shift+O). A folder is
@@ -546,7 +639,7 @@ the summary and left alone.
 Adding the same file twice queues it once. A file that is not a media file is
 left out, and the announcement says how many were.
 
-## Editing tags
+### Editing tags
 
 **Queue > Edit Tags...** (Ctrl+T) opens the Tag Editor on the highlighted file:
 the same editor Audio Studio uses, built into Quill Converter so nothing else
@@ -575,7 +668,7 @@ Tags also travel through every conversion by themselves, and the Chapter
 Workbench has the five fields an audiobook needs in its Book details, with an
 **All tags...** button that opens this same editor.
 
-## During and after a conversion
+### During and after a conversion
 
 - **Stop:** Ctrl+Enter or the Stop Converting button. Stop is immediate: the file
   being converted stops too, and its unfinished output is removed, so nothing
@@ -604,7 +697,7 @@ Workbench has the five fields an audiobook needs in its Book details, with an
   MP3, M4A, M4B, M4R, FLAC, Ogg, Opus and Speex. Text tags such as title,
   artist and album are normally kept as well.
 
-### Why a file failed
+#### Why a file failed
 
 A failure is explained in plain words first, then FFmpeg's own last line, which
 support may ask for. The explanations are:
@@ -622,7 +715,7 @@ support may ask for. The explanations are:
 - This file uses a codec the bundled FFmpeg cannot read.
 - The file has no sound track to convert -- for example, a video with no audio.
 
-## Advanced Options
+### Advanced Options
 
 **View > Advanced Options** (Ctrl+Alt+V) is a check item that shows or hides an
 **Advanced** section in the main window, just above the Convert button. Showing
@@ -649,7 +742,19 @@ file's own -- so showing the section to look around changes nothing.
   folder is in the queue, its subfolders are converted too, and the same folder
   layout is rebuilt in the output folder.
 
-## Convert from URL
+### What you learned, and where to go next
+
+You can add, reorder and remove files, see what is inside one with
+Alt+Enter, and edit its tags with Ctrl+T. Ctrl+Enter stops a conversion as
+well as starting it, and the Conversion Report (Ctrl+R) says what happened to
+every file and why. Chapter 6 is about converting from a link.
+
+## Chapter 6: Converting from a link
+
+Quill Converter can download the sound of a video from YouTube and many other
+sites, and of a whole playlist or channel, and put it straight into the queue.
+
+### Convert from URL
 
 **From URL...** (Alt+L, or File > Convert from URL..., Ctrl+U) takes a web
 address -- YouTube and many other sites -- and downloads its audio. Quill
@@ -696,17 +801,36 @@ right to use; no account or password of yours is sent to the site. Anything
 that is not a full `http://` or `https://` address is refused with a plain
 explanation. Convert from URL is unavailable in Safe Mode.
 
-## The tray
+### What you learned, and where to go next
+
+Paste a link into Convert from URL (Ctrl+U). One video downloads at once; a
+playlist or channel asks how much you want first, and pasting the same link
+later fetches only what is new. Chapter 7 is about keeping Quill Converter out
+of the way while it works.
+
+## Chapter 7: Out of the way, and easy to find
+
+A long conversion can run in the notification area while you do something else.
+This chapter covers the tray, choosing a key to show and hide Quill Converter
+from anywhere, and finding any command when you cannot remember which menu it
+is in.
+
+### The tray
 
 - **Minimize to Tray** (File > Minimize to Tray, Ctrl+W) hides the window to the
   notification area; the same command brings it back. A conversion keeps
   running.
-- **Ctrl+Alt+Shift+C** shows or hides Quill Converter from anywhere in Windows.
-  If another program already owns that key, Quill Converter leaves it alone.
+- **File > Show and Hide Key...** (Ctrl+Alt+Shift+H) lets you choose one key
+  that shows or hides Quill Converter from anywhere in Windows. There is no key
+  until you choose one. Type the key you want, or leave the box empty for none.
+  If another QuillVille app already uses it, Quill Converter tells you whose it
+  is and lets you try another. If you tried a test copy before 1.0.0,
+  Ctrl+Alt+Shift+C did this; other QuillVille apps use that key for menu
+  commands, so it is off now, and Quill Converter tells you so once.
 - The tray icon's menu has Show and Exit.
 - **Exit** (File > Exit, Ctrl+Q) really exits. Alt+F4 closes the window.
 
-## Finding a setting or a command
+### Finding a setting or a command
 
 Quill Converter keeps its options in its menus, so there is no settings window to search.
 Instead, **Help > Find a Setting or Command** (**Ctrl+Alt+Shift+S**) searches
@@ -721,6 +845,114 @@ every menu at once.
 Enter does exactly what choosing that row from its menu would do. For an
 option, it switches it and tells you whether it is now on or off. Escape
 closes the window without doing anything.
+
+### What you learned, and where to go next
+
+Ctrl+W tucks Quill Converter into the tray and brings it back. If you want one
+key that works from any program, choose it in File > Show and Hide Key...
+(Ctrl+Alt+Shift+H). Ctrl+Alt+Shift+S finds any command by name. Chapter 8 is
+for when something goes wrong.
+
+## Chapter 8: When you need a hand
+
+Everybody gets stuck sometimes. This chapter covers the help that is always one
+key away, what to do when something does not work, where your settings live,
+updates, and how to reach a person.
+
+### Help where you are
+
+Press **F1** on any control to hear what the window is for and what that
+control does. Help > User Guide (Ctrl+F1) opens this guide, and Help >
+Keyboard Shortcuts... (Ctrl+Alt+K) lists every key in a window you can arrow
+through.
+
+### Troubleshooting
+
+- **Quill Converter does not open.** It never fails silently: if the app's
+  engine cannot start, a plain message opens that your screen reader reads on
+  its own. It says "Quill Converter did not start", gives the reason in words,
+  names the launch log that holds the details, and gives the support address.
+  If it says the zip was opened from inside, extract the whole zip first
+  (Applications key on the zip, then **Extract All...**) and open
+  `QuillConverter.exe` from the extracted folder. If it names a missing file
+  or DLL, extract the zip again into an empty folder and check your antivirus
+  quarantine. If it says "Python reported", send the launch log to support:
+  `data\logs\launch.log` beside a portable copy, or
+  `%APPDATA%\Quill\logs\QuillConverter-launch.log` for an installed one. If
+  nothing at all happens and there is no message, a Quill Converter is
+  probably already running; check the notification area and Task Manager.
+- **"Quill Converter cannot find FFmpeg."** FFmpeg is installed with the app,
+  so this means it was removed or damaged. Help > Get FFmpeg... (Ctrl+Alt+F)
+  puts it back.
+- **Only a few formats are listed.** The list shows what the FFmpeg in use can
+  write. The same fix applies: Get FFmpeg.
+- **Sound files were skipped.** The format is a video format, and a sound file
+  has no picture. Choose a sound format for them.
+- **"Change the container only" failed.** That picture and sound cannot be
+  copied into that container as they are. Choose Same quality instead, which
+  converts rather than copies.
+- **A video is taking a long time.** On a computer whose graphics chip has no
+  video encoder, H.264 runs at about the speed of playback and H.265 slower;
+  WebM (VP9) is slow everywhere. MP4 H.264 is the fastest choice. The status
+  bar and tray tooltip say how far the file has got and about how long is
+  left.
+- **A file failed as copy-protected.** Files with DRM, such as purchased
+  Audible books or protected iTunes purchases, cannot be converted.
+- **Preview is silent.** Preview plays through the Windows default sound device.
+  Check that it is the one you are listening on.
+
+### Settings and Safe Mode
+
+Your choices are kept in `converter.json` in the app's data folder: the shared
+QuillVille data folder for the installed app, or the `data` folder beside the
+program for the portable copy. Uninstalling never deletes the shared data
+folder; another app in the family may still be using it.
+
+Starting with the environment variable `QUILL_SAFE_MODE=1` runs Quill Converter
+in Safe Mode. Everything local still works; Convert from URL is refused.
+
+### Your version and updates
+
+**Help > About Quill Converter** (Alt+F1) shows your version with a build
+number, such as 1.0.0 (build 1). The build number tells you which build of a
+version you have: when a fix comes out without a new version number, it is a
+newer build.
+
+**Help > Check for Updates...** (Ctrl+Alt+U) asks whether a newer Quill
+Converter is out. If one is, it shows you what changed and offers to download
+it, with progress spoken as it goes. It only checks when you ask, and it offers
+the same kind of download you have: the installer if you installed, or the
+portable zip if you unpacked one.
+
+### Getting help
+
+Support is run by **Community Access**, and the address is
+**support@community-access.org**. A person reads it, and replies come back by
+email.
+
+The quickest way there is **Help > Get Help from Support...** (Ctrl+Alt+F2).
+It asks what kind of message this is, a subject, what happened, and -- if you
+want an answer somewhere other than the address you send from -- an email
+address. What you expected and how to reproduce it are optional, and worth more
+than anything else when you can give them.
+
+Press Send and your **own mail program opens with the whole message already
+written**, addressed to support, with Quill Converter's name and version and
+your Windows version filled in at the bottom. Nothing is sent until you send it
+there, so you can read it over, add anything, or change your mind.
+
+If this computer has no mail program set up -- webmail only, say -- the app puts
+the whole message on your clipboard and tells you the address, so nothing you
+typed is lost. Writing to **support@community-access.org** yourself always
+works just as well. Say which app you were using and what happened. If a
+conversion failed, open the Conversion Report (Ctrl+R), press Copy All, and
+paste it into your message.
+
+### What you learned, and where to go next
+
+F1 explains wherever you are, Troubleshooting covers the common problems, and
+Help > Get Help from Support... (Ctrl+Alt+F2) writes to a person. The keyboard
+reference below lists every key, so it is a good page to come back to.
 
 ## Keyboard reference
 
@@ -737,6 +969,7 @@ every key in a read-only window you can arrow through.
 | Convert from URL... | Ctrl+U |
 | Open Output Folder | Ctrl+Shift+F |
 | Minimize to Tray | Ctrl+W |
+| Show and Hide Key... | Ctrl+Alt+Shift+H |
 | Exit | Ctrl+Q |
 
 ### Queue menu
@@ -786,15 +1019,11 @@ every key in a read-only window you can arrow through.
 | Check for Updates... | Ctrl+Alt+U |
 | About Quill Converter | Alt+F1 |
 
-Help > About shows your version with a build number, such as 3.2.0 (build 2). The
-build number tells you which build of a version you have: when a fix comes out
-without a new version number, it is a newer build, and Check for Updates offers it.
-
 ### Anywhere
 
 | Action | Key |
 | --- | --- |
-| Show or hide Quill Converter | Ctrl+Alt+Shift+C |
+| Show or hide Quill Converter | The key you chose (none at first) |
 | Remove the highlighted queue row | Delete |
 | Next window, previous window | Ctrl+Tab, Ctrl+Shift+Tab |
 | Go to window 1 to 9 | Ctrl+1 to Ctrl+9 |
@@ -804,72 +1033,3 @@ QUILL, Quill Radio, Quill Weather and Quill Inkwell. Each item has an access
 letter, so Alt+U and then Q, R, W or I opens that app with nothing held down,
 and each shows its key, which you can see in Keyboard Shortcuts.
 The **Window** menu lists the open windows.
-
-## Troubleshooting
-
-- **Quill Converter does not open.** It never fails silently: if the app's
-  engine cannot start, a plain message opens that your screen reader reads on
-  its own. It says "Quill Converter did not start", gives the reason in words,
-  names the launch log that holds the details, and gives the support address.
-  If it says the zip was opened from inside, extract the whole zip first
-  (Applications key on the zip, then **Extract All...**) and open
-  `QuillConverter.exe` from the extracted folder. If it names a missing file
-  or DLL, extract the zip again into an empty folder and check your antivirus
-  quarantine. If it says "Python reported", send the launch log to support:
-  `data\logs\launch.log` beside a portable copy, or
-  `%APPDATA%\Quill\logs\QuillConverter-launch.log` for an installed one. If
-  nothing at all happens and there is no message, a Quill Converter is
-  probably already running; check the notification area and Task Manager.
-- **"Quill Converter cannot find FFmpeg."** FFmpeg is installed with the app,
-  so this means it was removed or damaged. Help > Get FFmpeg... (Ctrl+Alt+F)
-  puts it back.
-- **Only a few formats are listed.** The list shows what the FFmpeg in use can
-  write. The same fix applies: Get FFmpeg.
-- **Sound files were skipped.** The format is a video format, and a sound file
-  has no picture. Choose a sound format for them.
-- **"Change the container only" failed.** That picture and sound cannot be
-  copied into that container as they are. Choose Same quality instead, which
-  converts rather than copies.
-- **A video is taking a long time.** On a computer whose graphics chip has no
-  video encoder, H.264 runs at about the speed of playback and H.265 slower;
-  WebM (VP9) is slow everywhere. MP4 H.264 is the fastest choice. The status
-  bar and tray tooltip say how far the file has got and about how long is
-  left.
-- **A file failed as copy-protected.** Files with DRM, such as purchased
-  Audible books or protected iTunes purchases, cannot be converted.
-- **Preview is silent.** Preview plays through the Windows default sound device.
-  Check that it is the one you are listening on.
-
-## Settings and Safe Mode
-
-Your choices are kept in `converter.json` in the app's data folder: the shared
-QuillVille data folder for the installed app, or the `data` folder beside the
-program for the portable copy. Uninstalling never deletes the shared data
-folder; another app in the family may still be using it.
-
-Starting with the environment variable `QUILL_SAFE_MODE=1` runs Quill Converter
-in Safe Mode. Everything local still works; Convert from URL is refused.
-
-## Getting help
-
-Support is run by **Community Access**, and the address is
-**support@community-access.org**. A person reads it, and replies come back by
-email.
-
-The quickest way there is **Help > Get Help from Support...** (Ctrl+Alt+F2).
-It asks what kind of message this is, a subject, what happened, and -- if you
-want an answer somewhere other than the address you send from -- an email
-address. What you expected and how to reproduce it are optional, and worth more
-than anything else when you can give them.
-
-Press Send and your **own mail program opens with the whole message already
-written**, addressed to support, with Quill Converter's name and version and
-your Windows version filled in at the bottom. Nothing is sent until you send it
-there, so you can read it over, add anything, or change your mind.
-
-If this computer has no mail program set up -- webmail only, say -- the app puts
-the whole message on your clipboard and tells you the address, so nothing you
-typed is lost. Writing to **support@community-access.org** yourself always
-works just as well. Say which app you were using and what happened. If a
-conversion failed, open the Conversion Report (Ctrl+R), press Copy All, and
-paste it into your message.

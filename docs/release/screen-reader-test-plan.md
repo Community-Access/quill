@@ -208,7 +208,7 @@ the next. It now always asks, and can be told to stop asking per file format.
   - Expected: a second tab opens with the disk version, announced as a new
     document; the first tab is untouched and still dirty.
 - TC-PARITY-001d — Remembering, per format
-  - Steps: raise the question again, tick **Do not ask me again for .txt files**,
+  - Steps: raise the question again, check **Do not ask me again for .txt files**,
     and choose **Keep Mine**. Raise it again on a `.txt`, then on a `.md`.
   - Expected: the `.txt` is kept with no dialog and a spoken status line saying so;
     the `.md` still asks. The checkbox is reachable by Tab and announced with its
@@ -365,14 +365,14 @@ invisible -- indistinguishable from one that opened and had not been found yet.
 - TC-PARITY-008b — A missing file is a row, not an omission
   - Steps: delete one of two remembered files from outside QUILL and launch.
   - Expected: the window appears on two documents, and the row for the deleted one
-    is announced as "(the file is no longer there)" and cannot be ticked.
+    is announced as "(the file is no longer there)" and cannot be checked.
 - TC-PARITY-008c — The answer is per document
-  - Steps: untick one row, press Open Checked.
-  - Expected: only the ticked documents open, and the count spoken afterwards
+  - Steps: uncheck one row, press Open Checked.
+  - Expected: only the checked documents open, and the count spoken afterwards
     matches what you chose -- "Reopened all 2 documents", or "Reopened 1 of 2" if
     one could not be opened. A shortfall is exactly what the number is for.
 - TC-PARITY-008d — Forget says the files are safe
-  - Steps: tick a row, press Forget Checked.
+  - Steps: check a row, press Forget Checked.
   - Expected: "Forgot 1 document. 2 still remembered. The files themselves are
     untouched." No confirmation box, because nothing destructive happened -- and
     the reassurance is in the sentence rather than in a warning nobody should be

@@ -292,12 +292,22 @@ def choose_bookmark(parent: wx.Window, marks: list[Any]) -> tuple[str, int] | No
     return ("remove" if verb == "extra" else "go", int(number))
 
 
-def edit_file_format(parent: wx.Window, *, encoding: str, newline: str) -> tuple[str, str] | None:
+def edit_file_format(
+    parent: wx.Window,
+    *,
+    encoding: str,
+    newline: str,
+    on_reopen: Callable[[str], None] | None = None,
+) -> tuple[str, str] | None:
     """Choose the encoding and line endings this document saves with.
 
     Nothing is written here. The choice takes effect at the next save, which is
     the moment it means anything -- and which is why the dialog says so rather
     than implying the file has already changed.
+
+    *on_reopen*, when given, adds **Reopen with Encoding...** (2026-10-04): the
+    shared chooser QUILL's File Format window uses, and the chosen code page is
+    handed to *on_reopen* after this window has closed. Returns ``None`` then.
     """
     dialog = wx.Dialog(parent, title="File format", style=wx.DEFAULT_DIALOG_STYLE)
     root = wx.BoxSizer(wx.VERTICAL)
@@ -343,20 +353,44 @@ def edit_file_format(parent: wx.Window, *, encoding: str, newline: str) -> tuple
     newline_choice.SetSelection(_index_of(newline_offers, newline))
     _stack(root, newline_label, newline_choice)
 
+    reopen_choice: list[str] = []
+    if on_reopen is not None:
+        reopen_button = wx.Button(dialog, label="&Reopen with Encoding...")
+        reopen_button.SetHelpText(
+            "Read this file again from disk as an encoding you choose, for a file "
+            "whose letters came out wrong. Unsaved changes are discarded and "
+            "nothing on disk changes. Afterwards it saves in that encoding, or "
+            "choose UTF-8 here to convert it when you save."
+        )
+
+        def _on_reopen(_event: wx.CommandEvent) -> None:
+            from quill.ui.file_format_dialog import REOPEN_ID, choose_reopen_encoding
+
+            codec = choose_reopen_encoding(dialog, encoding)
+            if codec:
+                reopen_choice.append(codec)
+                dialog.EndModal(REOPEN_ID)
+
+        reopen_button.Bind(wx.EVT_BUTTON, _on_reopen)
+        root.Add(reopen_button, 0, wx.ALL, _PAD)
+
     buttons = dialog.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL)
     root.Add(buttons, 0, wx.ALIGN_RIGHT | wx.ALL, _PAD)
     dialog.SetSizerAndFit(root)
     apply_modal_ids(dialog, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
     encoding_choice.SetFocus()
     try:
-        if show_modal_dialog(dialog, "File format") != wx.ID_OK:
-            return None
-        return (
+        answer = show_modal_dialog(dialog, "File format")
+        chosen = (
             encoding_offers[max(0, encoding_choice.GetSelection())][0],
             newline_offers[max(0, newline_choice.GetSelection())][0],
         )
     finally:
         dialog.Destroy()
+    if reopen_choice and on_reopen is not None:
+        on_reopen(reopen_choice[0])
+        return None
+    return chosen if answer == wx.ID_OK else None
 
 
 def _index_of(choices: tuple[tuple[str, str], ...], value: str) -> int:

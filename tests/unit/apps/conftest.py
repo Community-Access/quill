@@ -770,6 +770,7 @@ def lite_window(tmp_path, lite_settings):
     from quill.apps.lite_window_mode import DocumentModeMixin
     from quill.apps.lite_window_sections import DocumentSectionCommandsMixin
     from quill.apps.lite_window_selection import DocumentSelectionMixin
+    from quill.apps.lite_window_sources import DocumentSourcesMixin
     from quill.apps.lite_window_spelling import DocumentSpellingMixin
     from quill.apps.lite_window_text_editor import DocumentTextEditorMixin
     from quill.apps.lite_window_tools import DocumentToolsMixin
@@ -777,10 +778,19 @@ def lite_window(tmp_path, lite_settings):
     from quill.apps.lite_window_view import DocumentViewCommandsMixin
     from quill.apps.lite_window_words import DocumentWordsMixin
     from quill.ui.hosted_ai_commands import HostedAiMixin
+    from quill.ui.html_export_commands import HtmlExportCommandsMixin
+    from quill.ui.inline_notes_commands import InlineNotesCommandsMixin
+    from quill.ui.task_list_commands import TaskListCommandsMixin
 
     class LiteWindowStub(
         # Tools > Thesaurus and the Dictionary Status row, 2026-10-02.
         DocumentWordsMixin,
+        # Inline notes, Toggle Task Done and Export as HTML, 2026-10-04: the
+        # shared modules themselves, whose hooks default to this window's own
+        # control, _announce and app.
+        InlineNotesCommandsMixin,
+        TaskListCommandsMixin,
+        HtmlExportCommandsMixin,
         # Help > Activity and Repeat Last Result, 2026-10-02 (qc.md F-10).
         DocumentActivityMixin,
         # Tools > AI, added 2026-09-23. The four handlers open modeless
@@ -814,6 +824,9 @@ def lite_window(tmp_path, lite_settings):
         DocumentViewCommandsMixin,
         DocumentSpellingMixin,
         DocumentFileMixin,
+        # Open from URL and the clipboard, drops, Reopen with Encoding and the
+        # save-time disk check, 2026-10-04 (the PlanCake design note).
+        DocumentSourcesMixin,
         # Printing and the Keyboard Manager, added 2026-09-11. Both are one
         # state change behind a wx dialog, which is the shape the dialog
         # recorder (``lite_dialogs``) exists to make testable.

@@ -16,6 +16,8 @@ from __future__ import annotations
 
 import wx
 
+from quill.core import http_client
+
 #: QUILL Cast's identity. It lives beside the menu bar because that is where
 #: every one of these is *displayed* -- About, Report a Bug, Check for Updates
 #: -- and because the frame importing them from here avoids the circular
@@ -24,6 +26,9 @@ APP_TITLE = "QUILL Cast"
 APP_VERSION = "2.0.0"
 APP_BUILD = 1  # this version's build (docs/release/RELEASE.md, "Build numbers")
 APP_REPO = "Community-Access/quill"
+# Every feed, episode and directory request names QUILL Cast and its release
+# (check.md bug 1), the way Quill Radio and Quill Weather already do.
+http_client.set_product_identity(APP_TITLE, APP_VERSION)
 
 _TITLE = APP_TITLE
 _VERSION = APP_VERSION

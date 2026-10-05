@@ -71,10 +71,15 @@ def prepare(path: Path, mode: str) -> PreparedDocument:
     worker, and anything it said would be said from the wrong thread.
     """
     if mode == RICH:
-        report = scan_rtf_safety(Path(path).read_text(encoding="utf-8", errors="replace"))
+        # Latin-1 both ways, because it maps every byte to one character and
+        # back: an RTF file is 7-bit by the spec, and the 8-bit bytes some
+        # writers put in anyway now reach the control as the bytes they were,
+        # instead of as UTF-8 replacement characters (2026-10-04: nothing a
+        # file is opened for editing through may use errors="replace").
+        report = scan_rtf_safety(Path(path).read_bytes().decode("latin-1"))
         return PreparedDocument(
             mode=RICH,
-            rtf=report.sanitized_rtf.encode("utf-8", errors="replace"),
+            rtf=report.sanitized_rtf.encode("latin-1", errors="strict"),
             blocked=tuple(report.blocked),
         )
     decoded = decode_text(Path(path).read_bytes())

@@ -312,7 +312,14 @@ way you already know. Its fields: **State**, **Position**, **Chapter**, **Speed*
 On Windows, the player lives in the **notification-area tray**:
 
 - Its tooltip shows what's playing.
-- Double-click, or the **Restore Player** hotkey, brings the window back.
+- Double-click the tray icon to bring the window back. You can also choose a
+  key that shows and hides the player from any program: **File > Show and Hide
+  Key...** (Ctrl+Alt+Shift+H). There is no key until you choose one. Type the
+  key you want, or leave the box empty for none. If another QuillVille app
+  already uses it, the player tells you whose it is and lets you try another.
+  If you used an earlier version, Ctrl+Alt+Shift+P did this; other QuillVille
+  apps use that key, so it is off now, and the player tells you once after you
+  update.
 - Right-click for a menu of the essentials (Play/Pause, skip, chapter, bookmark,
   sleep, Show Player, Exit).
 - **Closing to the tray** is a choice — *ask*, *minimize to tray*, or *exit* —

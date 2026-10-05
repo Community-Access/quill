@@ -168,6 +168,7 @@ def open_preferences(app: Any) -> None:
 
     history = app._radio_history
     from quill.apps import radio_youtube_signin_prefs as yt_signin
+    from quill.ui.radio import media_player_registration as media_player
 
     yt_check, yt_choice, yt_file = yt_signin.rows(app)
     close_action_index = _CLOSE_ACTION_VALUES.index(history.close_action)
@@ -455,6 +456,13 @@ def open_preferences(app: Any) -> None:
                 lambda: _open_release_channel(app),
             ),
             yt_file,
+            # Windows and your files (2026-10-04): the editors' group, for music.
+            PreferenceAction(
+                media_player.BUTTON_LABEL,
+                media_player.BUTTON_HELP,
+                lambda: media_player.make_media_player(app),
+                group=media_player.GROUP_TITLE,
+            ),
         ],
         announce_cb=app._announce,
     )

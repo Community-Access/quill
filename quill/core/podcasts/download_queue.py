@@ -35,13 +35,12 @@ from datetime import UTC
 from pathlib import Path
 from typing import Literal
 
-from quill import __version__
+from quill.core import http_client
 from quill.core.error_codes import CodedError
 from quill.core.podcasts import feed_auth, transport
 
 _log = logging.getLogger(__name__)
 
-_USER_AGENT = f"QUILL/{__version__} (https://github.com/Community-Access/quill)"
 _TIMEOUT_SECONDS = 20.0
 _CHUNK_BYTES = 65536
 _MAX_CONCURRENT = 3
@@ -109,7 +108,7 @@ def _fetch_chunked(
         raise DownloadError("An episode link must start with https:// or http://.")
     destination.parent.mkdir(parents=True, exist_ok=True)
     resume_from = destination.stat().st_size if destination.exists() else 0
-    headers = {"User-Agent": _USER_AGENT}
+    headers = {"User-Agent": http_client.podcast_user_agent()}
     if auth_header:
         headers["Authorization"] = auth_header
     if resume_from:

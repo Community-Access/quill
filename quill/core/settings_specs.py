@@ -386,6 +386,18 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         keywords=("recovery", "unsaved", "untitled", "crash", "autosave"),
     ),
     SettingSpec(
+        "inline_notes_in_file",
+        "Write new inline notes into the file",
+        "editing",
+        "bool",
+        "In Markdown and HTML documents, Add Inline Note starts with Write this "
+        "note into the file checked, so the note is saved inside the document as "
+        "a hidden comment that a colleague or an AI assistant can read. Off, "
+        "notes stay private to you. Each document remembers your last choice. "
+        "QUILL Lite has the same setting under the same name.",
+        keywords=("notes", "inline", "comment", "review", "file"),
+    ),
+    SettingSpec(
         "recovery_keep_days",
         "Days of unsaved work to keep",
         "general",
@@ -400,7 +412,7 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "Default export preset",
         "general",
         "choice",
-        "The format pre-selected in the export dialog.",
+        "Format pre-selected in File, Export, Other Pandoc Format, so Enter exports in it.",
         choices=(
             ("html", "HTML"),
             ("markdown", "Markdown"),
@@ -591,8 +603,9 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "Markdown clipboard format",
         "editing",
         "choice",
-        "Format used when copying Markdown with source.",
-        choices=(("html", "HTML"), ("rtf", "Rich text")),
+        "Copy With Source in a Markdown document: plain text only, or plain text plus a formatted "
+        "HTML or Rich text copy for Word and email.",
+        choices=(("text", "Plain text only"), ("html", "HTML"), ("rtf", "Rich text")),
         keywords=("clipboard", "copy", "markdown", "format"),
     ),
     SettingSpec(
@@ -1070,7 +1083,7 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "Keep an announcement history",
         "accessibility",
         "bool",
-        "Record announcements so Spoken Echo and Repeat Last Announcement can replay them.",
+        "Keep recent announcements for the Spoken Echo. Off keeps nothing and clears the list.",
         feature_id="core.accessibility",
         keywords=("echo", "history", "repeat"),
     ),
@@ -1079,7 +1092,8 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "Interrupt speech for",
         "accessibility",
         "choice",
-        "Which announcements cut across whatever the screen reader is saying.",
+        "Which announcements cut across the screen reader. Warnings and errors (the default) "
+        "includes replies to a command you just gave.",
         choices=(
             ("errors", "Errors only"),
             ("warnings", "Warnings and errors"),
@@ -2025,10 +2039,9 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "Listen for 'Hey QUILL' (wake word)",
         "transcription",
         "bool",
-        "Listen continuously, on-device, for the phrase 'Hey QUILL' so you can "
-        "start a command without touching the keyboard. The microphone stays "
-        "on while this is enabled; QUILL keeps its status visible and can play "
-        "a periodic reminder. Off in Safe Mode.",
+        "Listen continuously, on-device, for 'Hey QUILL' so you can start a command without the "
+        "keyboard. The same switch as Tools, Speech, Listen for Hey QUILL. Needs voice commands; "
+        "off in Safe Mode. The microphone stays on while this is on.",
         feature_id="core.voice_commands",
         keywords=("wake word", "hey quill", "always listening", "hands-free"),
     ),
@@ -2049,7 +2062,7 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "Enable folder watching by default",
         "watch",
         "bool",
-        "Turn watched-folder automation on when QUILL starts.",
+        "Start watching your enabled watch folder profiles each time QUILL starts.",
         feature_id="core.watch",
         keywords=("watch", "folder", "automation", "monitor"),
     ),
@@ -2058,7 +2071,7 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "Default watch folder",
         "watch",
         "text",
-        "Folder to watch for new files when watching is enabled.",
+        "A folder QUILL watches without a profile; each new supported file in it is opened.",
         feature_id="core.watch",
         keywords=("watch", "folder", "path", "directory"),
     ),
@@ -2067,7 +2080,7 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "Include subfolders",
         "watch",
         "bool",
-        "Also watch files inside nested subfolders.",
+        "Also open files in folders inside the default watch folder.",
         feature_id="core.watch",
         keywords=("watch", "subfolders", "recursive"),
     ),
@@ -2076,7 +2089,7 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "Process existing files on start",
         "watch",
         "bool",
-        "Run actions against files already present when watching begins.",
+        "Also open files already in the default watch folder when watching begins.",
         feature_id="core.watch",
         keywords=("watch", "existing", "backlog"),
     ),
@@ -2085,7 +2098,7 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "Start watching automatically",
         "watch",
         "bool",
-        "Begin watching the default folder as soon as QUILL launches.",
+        "Watch the default watch folder from launch for as long as QUILL runs. Not in Safe Mode.",
         feature_id="core.watch",
         keywords=("watch", "auto start", "startup"),
     ),
@@ -2158,7 +2171,7 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "File types offered to QUILL",
         "integration",
         "choice",
-        "Which kinds of files show QUILL verbs in the context menu.",
+        "Which files get QUILL's right-click commands (audio and video follow Convert).",
         choices=(
             ("images", "Images only"),
             ("images_pdf", "Images and PDF"),
@@ -2238,7 +2251,7 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "Python console execution timeout (seconds)",
         "admin",
         "int",
-        "Maximum seconds a Python console command may run before QUILL interrupts it. Default: 30.",
+        "Seconds a Python console command may run before QUILL stops it. Default: 30.",
         minimum=5,
         maximum=300,
         keywords=("developer console", "python", "timeout"),
@@ -2329,9 +2342,8 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "Use form feeds for page breaks",
         "braille",
         "bool",
-        "When on (the historical default), form-feed characters (0x0C) in a "
-        "BRF file are treated as authoritative page breaks. Turn off only "
-        "if the source never used form feeds.",
+        "When on (the default), form-feed characters in a BRF file are page breaks. Off counts "
+        "pages by page size alone.",
         keywords=("braille", "form feed", "page break", "brf"),
         feature_id="core.braille",
     ),
@@ -2355,9 +2367,8 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "Calculate pages from geometry",
         "braille",
         "bool",
-        "When on and no form feeds are present, derive page boundaries from "
-        "the cells-per-line / lines-per-page setting. Off by default only "
-        "when both heuristics disagree; QUILL falls back to a hybrid mode.",
+        "When a braille file has no page breaks, work out its pages from your page size. Off "
+        "reads such a file as one long page.",
         keywords=("braille", "calculate", "geometry", "page break", "brf"),
         feature_id="core.braille",
     ),
@@ -2393,8 +2404,7 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "Announce page changes automatically",
         "braille",
         "bool",
-        "When on, QUILL speaks the new page number whenever the caret "
-        "crosses a page boundary. Off by default to avoid speech churn.",
+        "When on, QUILL says the new braille page number as your cursor moves onto it.",
         keywords=("braille", "announce", "page", "speech"),
         feature_id="core.braille",
     ),
@@ -2413,8 +2423,7 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "Announce line overflow",
         "braille",
         "bool",
-        "When on, QUILL warns when a source line exceeds the cells-per-line "
-        "budget. Off by default to keep read-aloud uninterrupted.",
+        "When on, QUILL says when the line you move to or type on is longer than Cells per line.",
         keywords=("braille", "announce", "overflow", "line", "speech"),
         feature_id="core.braille",
     ),
@@ -2511,7 +2520,7 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "Spelling review context display mode",
         "spelling",
         "choice",
-        "How much surrounding text is shown in the Context field of the F7 spelling review dialog.",
+        "The F7 review's Context field: nearby sentences, or the whole paragraph.",
         choices=(
             ("sentence", "Sentence with adjacent sentences"),
             ("paragraph", "Full paragraph"),
@@ -2752,7 +2761,7 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
             "features work, but they are still maturing and may change or have rough "
             "edges. While this is OFF, every experimental option below is ignored and "
             "its controls are disabled (they leave the tab order), so an accidental "
-            "change can never affect QUILL. Tick it to unlock the individual "
+            "change can never affect QUILL. Check it to unlock the individual "
             "experiments below — each one still has its own switch."
         ),
         keywords=(

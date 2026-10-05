@@ -202,16 +202,26 @@ def test_every_menu_item_has_a_mnemonic_at_all(quill_menu_bar) -> None:
 
     Rows of data rather than commands, which is why nobody wrote a mnemonic for
     them, and a row you cannot type a letter at is a row you have to arrow to.
+
+    One exception, and it is arithmetic rather than taste: a popup with more
+    rows than the 36 letters and digits cannot seat them all, so as many rows
+    as it is over may go without -- GATE-14's "silence beats a duplicate" --
+    but only rows holding a real accelerator, which are never arrowed to.
+    The File menu is the one that is over (Open from Clipboard, 2026-10).
     """
     missing: list[str] = []
+    capacity = 36  # A-Z and 0-9, menu_routes._CANDIDATES
 
     def walk(menu, path: str) -> None:
-        for item in menu.GetMenuItems():
-            if item.IsSeparator():
-                continue
-            title = item.GetItemLabel().split(_TAB, 1)[0]
+        items = [item for item in menu.GetMenuItems() if not item.IsSeparator()]
+        allowance = max(0, len(items) - capacity)
+        for item in items:
+            title, _sep, accel = item.GetItemLabel().partition(_TAB)
             if not _mnemonic(title):
-                missing.append(f"{path} > {title}")
+                if allowance and accel.strip():
+                    allowance -= 1
+                else:
+                    missing.append(f"{path} > {title}")
             submenu = item.GetSubMenu()
             if submenu is not None:
                 walk(submenu, f"{path} > {title}")
@@ -237,6 +247,25 @@ def test_file_exit_keeps_x(quill_menu_bar) -> None:
         found[title.replace("&", "")] = _mnemonic(title)
     exit_title = next(t for t in found if t.startswith("Exit"))
     assert found[exit_title] == "X", "; ".join(f"{t}={m}" for t, m in found.items())
+    export_title = next(t for t in found if t.startswith("Export"))
+    assert found[export_title] == "E", "; ".join(f"{t}={m}" for t, m in found.items())
+
+
+def test_file_print_keeps_p(quill_menu_bar) -> None:
+    """Alt+F, P prints in every Windows program (family rule 1).
+
+    When File gained Open from Clipboard it held 37 rows for 36 letters and
+    digits, and Print -- a row with no letter written into it -- was the one the
+    resolver left without. It now writes its P, so it is seated first.
+    """
+    file_menu = quill_menu_bar.GetMenu(quill_menu_bar.FindMenu("File"))
+    titles = {
+        item.GetItemLabel().split(_TAB, 1)[0]
+        for item in file_menu.GetMenuItems()
+        if not item.IsSeparator()
+    }
+    print_title = next(t for t in titles if t.replace("&", "").startswith("Print..."))
+    assert _mnemonic(print_title) == "P", sorted(titles)
 
 
 def test_the_preferences_hub_has_a_way_in(quill_menu_bar, monkeypatch) -> None:

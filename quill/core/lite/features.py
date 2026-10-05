@@ -30,7 +30,7 @@ rather than how many there are -- and what a listener actually complained about
 was not the granularity but having to *walk* the list. So the list is filtered
 by typing (:class:`~quill.ui.app_features_dialog.AppFeaturesDialog`), and
 :data:`PROFILES` is there for somebody who wants to say "the small one" rather
-than tick eighteen boxes. Where the coarseness genuinely *hid* something --
+than check eighteen boxes. Where the coarseness genuinely *hid* something --
 Matches, Back/Forward, the Command Palette, Describe Character and text size all
 belonged to no area at all -- the answer was more areas, not finer ones.
 
@@ -257,7 +257,7 @@ DEFAULT_OFF: frozenset[str] = frozenset({
 })
 
 #: Named starting points, so somebody can ask for "the small one" without
-#: ticking eighteen boxes. Applying one sets every box and then the boxes are
+#: checking eighteen boxes. Applying one sets every box and then the boxes are
 #: the truth again -- there is no mode to escape from, and the next change is an
 #: ordinary override. Written as what each profile takes *away*, so an area
 #: added later is on in all four until somebody says otherwise.

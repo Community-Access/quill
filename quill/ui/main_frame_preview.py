@@ -114,7 +114,13 @@ class PreviewMixin:
         source_map = kind == "markdown" and text == raw
         try:
             tab.preview.update(
-                render_preview_body(text, kind, dark=self._preview_is_dark(), source_map=source_map)
+                render_preview_body(
+                    text,
+                    kind,
+                    dark=self._preview_is_dark(),
+                    source_map=source_map,
+                    notes=True,  # the writer's own view shows notes in the file
+                )
             )
         except Exception:
             # WebView2 can enter ERROR_INVALID_STATE (0x8007139f) after a forced
@@ -353,6 +359,7 @@ class PreviewMixin:
             self._vault_preview_text(text, kind, tab.document.path),
             kind,
             dark=self._preview_is_dark(),
+            notes=True,
         )
 
         # #179: WebView2's first ``New()`` call blocks the UI thread for tens

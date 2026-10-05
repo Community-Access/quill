@@ -77,8 +77,17 @@ def add_podcast_by_url(data_dir: Path, url: str, *, safe_mode: bool = False) -> 
             "password; it will then work in both apps."
         )
     except FeedReaderError as error:
+        from quill.core.podcasts import feed_problems
+
+        if error.kind == feed_problems.WEB_PAGE:
+            return _invalid(
+                "That address answers with a web page, not a podcast feed. On the "
+                "show's website, look for a link named RSS or Subscribe and paste "
+                "that address instead."
+            )
+        # The plain sentence, never the exception text (check.md bug 7).
         return _invalid(
-            f"That address could not be read as a feed. {error} "
+            f"That address could not be read as a feed. {feed_problems.plain(error)} "
             "Check the address for typos, and that you are online."
         )
 

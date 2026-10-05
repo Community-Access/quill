@@ -164,6 +164,24 @@ PURPOSES: dict[str, str] = {
         "rest -- theme, word wrap, and the editor font -- are also on the View "
         "menu, where you will reach them faster."
     ),
+    "Inline Notes": (
+        "Every note in this document: what it says, the line it is on, the text "
+        "it is about, and whether it is private or written into the file. A note "
+        "whose text was deleted is listed last, so you can still read or remove "
+        "it. Enter goes to a note, Delete deletes one, F2 edits one; Remove All, "
+        "Copy All and Export are buttons."
+    ),
+    "Add Inline Note": (
+        "Write a note about the line or selection you were on. Note on shows the "
+        "start of that text, so you can check you are in the right place. In "
+        "Markdown and HTML, Write this note into the file keeps the note inside "
+        "the document where others can read it; otherwise it stays private."
+    ),
+    "Edit Inline Note": (
+        "Change what this note says, or delete it. The text the note is about is "
+        "never changed. A note written into the file is changed in the file, so "
+        "Undo takes the change back."
+    ),
     "Dictionary Status": (
         "How many words each of your spelling dictionaries holds, where each "
         "file is kept, and whether the thesaurus data is present. A reading, "
@@ -345,6 +363,24 @@ PURPOSES.update({
         "Again writes the phrase you are on at the cursor, and Copy puts it on "
         "the clipboard. The list is forgotten when you close the app."
     ),
+    "More Dictation Settings": (
+        "The finer dictation choices: holding the key to talk, the quiet "
+        "preview of what is being heard, profiles for writing and for talking "
+        "to the AI, and My Dictation Instructions. Nothing changes until you "
+        "choose OK."
+    ),
+    "Speech Models": (
+        "Optional speech models you can download for better accuracy, with "
+        "each one's size, languages and what it suits. Your voice never "
+        "leaves the computer with these models; Download asks first, and "
+        "Remove frees the space again."
+    ),
+    "Transcribe a Recording": (
+        "Turns a recording into text in the background: choose the file, the "
+        "speech model, the language and where the text goes, then keep working. "
+        "While one is running, this window says how far it has got and can stop "
+        "it."
+    ),
 })
 
 #: Titles of the windows QUILL opens from the same shared modules. QUILL's F1
@@ -362,8 +398,14 @@ SHARED_WITH_QUILL: frozenset[str] = frozenset({
     "Dictation Settings",
     "Dictation Commands",
     "Recent Phrases",
+    "More Dictation Settings",
+    "Speech Models",
+    "Transcribe a Recording",
     "Recent Documents",
     "Clear Recent Documents",
+    "Inline Notes",
+    "Add Inline Note",
+    "Edit Inline Note",
     *_AI_RESULT_TITLES.values(),
     "AI Result",
 })

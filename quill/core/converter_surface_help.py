@@ -36,6 +36,12 @@ from __future__ import annotations
 
 #: Surface purposes by exact window title.
 PURPOSES: dict[str, str] = {
+    "Show and Hide Key": (
+        "Choose one key that shows and hides Quill Converter from any program. Type it, "
+        "for example with Ctrl, Alt and Shift held, or leave the box empty for "
+        "no key. A key another QuillVille app already uses is refused, and you "
+        "are told whose it is."
+    ),
     "Find a Setting or Command": (
         "Every menu command in this app, searchable by name. Type part of a "
         "name; Down moves into the matches; Enter does the highlighted one, exactly "

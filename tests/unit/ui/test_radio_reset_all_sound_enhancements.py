@@ -187,12 +187,15 @@ def test_open_preferences_passes_a_reset_all_action(monkeypatch: pytest.MonkeyPa
     RadioAppFrame._open_preferences(frame)
 
     actions = _FakePreferencesDialog.instances[0].kwargs["actions"]
-    # Four utility buttons now: Reset All, the Data Folder dialog
-    # (2026-08-17), Change Release Channel (2026-10-04) and the YouTube
-    # group's cookies.txt picker (2026-10-03). This test owns the first; the
-    # exact count is pinned so a silently dropped action still fails here.
-    assert len(actions) == 4
+    # Five utility buttons now: Reset All, the Data Folder dialog
+    # (2026-08-17), Change Release Channel (2026-10-04), the YouTube
+    # group's cookies.txt picker (2026-10-03) and Make Quill Radio My Media
+    # Player in Windows and your files (2026-10-04). This test owns the first;
+    # the exact count is pinned so a silently dropped action still fails here.
+    assert len(actions) == 5
     assert actions[0].on_click == frame._reset_all_sound_enhancements
     assert "Data Fol" in actions[1].name
     assert "Release Channel" in actions[2].name
     assert "cookies.t&xt" in actions[3].name
+    assert "My Media Player" in actions[4].name
+    assert actions[4].group == "Windows and your files"

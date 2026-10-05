@@ -11,6 +11,13 @@ transport is the supporting infrastructure for the new behaviour:
   dialog (handled by the dialog, not by this module).
 * Infer a filename from the ``Content-Disposition`` header, then from the
   URL path, then fall back to ``untitled``.
+* Ask before downloading (2026-10-04): ``confirm`` is called with the host,
+  the file name and the size the server gave, after the headers arrive and
+  before a byte of the body is read. ``False`` stops it. The user guide had
+  promised this question for a year before the code asked it.
+* Stop when asked: ``should_cancel`` is polled between chunks, and a stopped,
+  refused or failed download removes its temp file rather than leaving a
+  partial copy behind.
 
 The download is then handed to :func:`quill.io.open_read.read_open_document`
 which performs the actual format detection (PDF, RTF, DOCX, plain text,
@@ -23,11 +30,14 @@ from __future__ import annotations
 
 import os
 import re
+import tempfile
 import time
 import urllib.error
 import urllib.parse
 import urllib.request
+from collections.abc import Callable
 from dataclasses import dataclass
+from pathlib import Path
 from typing import IO
 
 from quill.core.net import verified_ssl_context
@@ -45,6 +55,21 @@ _MAX_BYTES = 256 * 1024 * 1024  # 256 MiB cap; matches the S3 transport.
 # Conservative defaults: most servers happily serve 8 MiB chunks, and we want
 # to keep memory pressure low on the worker thread that hosts the download.
 _CHUNK_SIZE = 64 * 1024
+
+#: Every download's temp file starts with this, so a sweep can find the ones a
+#: closed tab or a crash left behind (:func:`sweep_stale_downloads`).
+TEMP_PREFIX = "quill-url-"
+
+#: ``confirm(host, filename, size)``; ``size`` is ``None`` when the server did
+#: not say. Return ``False`` to stop before the body is read.
+ConfirmCallback = Callable[[str, str, "int | None"], bool]
+
+
+class DownloadCancelledError(RemoteTransportError):
+    """The person said no to the download, or stopped it part way."""
+
+    code = "QUILL-IO-REMOTE-DOWNLOAD-CANCELLED"
+
 
 _FILENAME_DISPOSITION = re.compile(
     r"""filename\*?=(?:
@@ -77,12 +102,16 @@ def download_url(
     timeout: float = 30.0,
     progress: ProgressCallback | None = None,
     max_bytes: int = _MAX_BYTES,
+    confirm: ConfirmCallback | None = None,
+    should_cancel: Callable[[], bool] | None = None,
 ) -> HttpDownload:
     """Stream ``url`` to a local temp file and return a :class:`HttpDownload`.
 
-    The caller owns the returned ``local_path`` (the temp file is *not*
-    auto-deleted). The :func:`quill.io.open_read.read_open_document` entry
-    point handles the format detection on that file.
+    The caller owns the returned ``local_path`` and removes it with
+    :func:`discard_download` once the document is read. The
+    :func:`quill.io.open_read.read_open_document` entry point handles the
+    format detection on that file. Raises :class:`DownloadCancelledError` when
+    ``confirm`` says no or ``should_cancel`` says stop.
     """
 
     if not url:
@@ -141,15 +170,24 @@ def download_url(
                 raise RemoteTransportError(
                     f"Remote file is {total} bytes; QUILL refuses downloads larger than {max_bytes}"
                 )
+            if confirm is not None:
+                host = urllib.parse.urlparse(current_url).hostname or ""
+                if not confirm(host, filename, total):
+                    raise DownloadCancelledError("Download declined")
             local_path = _alloc_temp_path(filename)
-            with open(local_path, "wb") as dest:
-                written = _stream_to_file(
-                    response,
-                    dest,
-                    total=total,
-                    progress=progress,
-                    max_bytes=max_bytes,
-                )
+            try:
+                with open(local_path, "wb") as dest:
+                    written = _stream_to_file(
+                        response,
+                        dest,
+                        total=total,
+                        progress=progress,
+                        max_bytes=max_bytes,
+                        should_cancel=should_cancel,
+                    )
+            except BaseException:
+                discard_download(local_path)
+                raise
             return HttpDownload(
                 local_path=local_path,
                 size=written,
@@ -169,12 +207,18 @@ def _stream_to_file(
     total: int | None,
     progress: ProgressCallback | None,
     max_bytes: int,
+    should_cancel: Callable[[], bool] | None = None,
 ) -> int:
     """Drain ``response`` into ``dest`` with progress + a hard byte cap."""
 
     written = 0
     while True:
-        chunk = response.read(_CHUNK_SIZE)
+        if should_cancel is not None and should_cancel():
+            raise DownloadCancelledError("Download cancelled")
+        try:
+            chunk = response.read(_CHUNK_SIZE)
+        except (OSError, TimeoutError) as exc:
+            raise RemoteTransportError(f"Download interrupted: {exc}") from exc
         if not chunk:
             break
         written += len(chunk)
@@ -215,10 +259,49 @@ def _safe_filename(name: str) -> str:
 
 
 def _alloc_temp_path(filename: str) -> str:
-    import tempfile
-
     base = _safe_filename(filename)
     suffix = os.path.splitext(base)[1] or ""
-    fd, path = tempfile.mkstemp(prefix="quill-url-", suffix=suffix)
+    fd, path = tempfile.mkstemp(prefix=TEMP_PREFIX, suffix=suffix)
     os.close(fd)
     return path
+
+
+def discard_download(local_path: str | Path) -> None:
+    """Remove a download's temp file; quietly, because it is only tidying.
+
+    Refuses anything that is not one of ours -- a name that does not start
+    with :data:`TEMP_PREFIX` -- so a wrong path can never delete a document.
+    """
+    path = Path(local_path)
+    if not path.name.startswith(TEMP_PREFIX):
+        return
+    try:
+        path.unlink(missing_ok=True)
+    except OSError:
+        pass
+
+
+def sweep_stale_downloads(
+    *, directory: str | Path | None = None, older_than_seconds: float = 24 * 3600
+) -> int:
+    """Remove download temp files older than a day; returns how many went.
+
+    The tab that owned one removes it when it closes; this catches the ones a
+    crash or an exit with tabs still open left behind. Run at the start of the
+    next Open from URL, so nothing runs for somebody who never uses it.
+    """
+    folder = Path(directory) if directory is not None else Path(tempfile.gettempdir())
+    cutoff = time.time() - older_than_seconds
+    removed = 0
+    try:
+        candidates = list(folder.glob(f"{TEMP_PREFIX}*"))
+    except OSError:
+        return 0
+    for candidate in candidates:
+        try:
+            if candidate.is_file() and candidate.stat().st_mtime < cutoff:
+                candidate.unlink()
+                removed += 1
+        except OSError:
+            continue
+    return removed

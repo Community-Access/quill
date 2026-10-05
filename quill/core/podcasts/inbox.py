@@ -185,7 +185,7 @@ def inbox_pairs(library: PodcastLibrary) -> list[tuple[PodcastShow, PodcastEpiso
     scope is on (which likewise stays exactly where it was)."""
     # Episode Filters (see core/podcasts/episode_filter_maintenance.py) are
     # asked here rather than stamped onto an episode when it arrived, which is
-    # what lets somebody untick the Inbox scope and have the episodes back on
+    # what lets somebody uncheck the Inbox scope and have the episodes back on
     # the next redraw. Imported inside the function because that module reads
     # this one; and asked once per show, so a library of shows without filters
     # -- almost all of them -- pays a single dict lookup each.

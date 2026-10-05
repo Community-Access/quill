@@ -20,10 +20,11 @@ import re
 import ssl
 import urllib.request
 
+from quill.core import http_client
+
 _TIMEOUT_SECONDS = 8.0
 _MAX_AUDIO_SKIP = 512 * 1024  # refuse absurd metaint values (DoS guard)
 _TITLE_PATTERN = re.compile(r"StreamTitle='(.*?)';")
-_USER_AGENT = "QUILL Radio"
 
 
 def parse_stream_title(metadata: bytes) -> str:
@@ -44,7 +45,7 @@ def read_stream_title(stream_url: str, *, timeout: float = _TIMEOUT_SECONDS) -> 
     if not stream_url.lower().startswith(("http://", "https://")):
         return ""
     request = urllib.request.Request(
-        stream_url, headers={"Icy-MetaData": "1", "User-Agent": _USER_AGENT}
+        stream_url, headers={"Icy-MetaData": "1", "User-Agent": http_client.user_agent()}
     )
     context = ssl.create_default_context()
     try:

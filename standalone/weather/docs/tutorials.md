@@ -223,10 +223,10 @@ The tray, the global key, starting with Windows, and the background check that w
    - Keys: Ctrl+W
    - You should hear: Hidden to the tray.
 
-2. **Get it back from anywhere.** Ctrl+Alt+Shift+W shows and hides Quill Weather from any program, even without focus, and says which it did. The chord is unique to this app -- QUILL is Ctrl+Alt+Shift+Q and Quill Radio is Ctrl+Alt+Shift+R -- so the three never collide.
-   - Keys: Ctrl+Alt+Shift+W
-   - You should hear: Shown -- and Hidden to the tray when you press it again.
-   - Worth knowing: If another program already owns that chord, Quill Weather leaves it alone rather than fighting for it, and the tray icon still works.
+2. **Get it back from anywhere.** Quill Weather has no show and hide key until you choose one, so it never takes a key another program needs. Show and Hide Key, in the File menu, asks for the key you want. After that, the key shows and hides Quill Weather from any program and says which it did.
+   - Keys: Ctrl+Alt+Shift+H
+   - You should hear: A box asking for the key, and what the key is now.
+   - Worth knowing: If another QuillVille app already uses the key you type, Quill Weather says whose it is and asks again. Until you choose one, the tray icon brings the window back.
 
 3. **Make closing safe.** By default the close button also goes to the tray rather than quitting, so a stray Alt+F4 does not end your watch. Only Exit truly quits. Options has the switch if you would rather close mean close.
    - Keys: Ctrl+Alt+C
@@ -320,8 +320,8 @@ Units, how much forecast, and which details are in the paragraph -- the settings
    - You should hear: Each length read back.
 
 3. **Choose what is in the conditions paragraph.** A checkbox each for feels-like, humidity, dew point, wind and gusts, cloud cover, pressure, visibility, chance of precipitation, sunrise and sunset, the moon, the ultraviolet index, air quality and the current local time there. Temperature and sky always show.
-   - You should hear: Each detail as you tick or untick it.
-   - Worth knowing: This is a speech setting wearing a display setting's clothes: every box you leave ticked is a clause you hear on every reading, for the rest of your life with the app.
+   - You should hear: Each detail as you check or uncheck it.
+   - Worth knowing: This is a speech setting wearing a display setting's clothes: every box you leave checked is a clause you hear on every reading, for the rest of your life with the app.
 
 4. **Keep the moon, or drop it.** Phase, how full it is, moonrise and moonset are computed on your own machine with no extra lookup, so keeping them costs no time and no network -- only the seconds it takes to speak them.
    - You should hear: The moon's phase and times, if you kept them.
@@ -339,11 +339,11 @@ Reaching QUILL and Quill Radio, turning off whole areas you never use, keeping t
 
 *5 steps, about 4 minutes.*
 
-1. **Open the family.** The QuillVille menu opens the other apps -- QUILL, Quill Radio, and the rest -- and each has its own show/hide chord so they never fight. Quill Weather never launches something you did not ask for.
+1. **Open the family.** The QuillVille menu opens the other apps -- QUILL, Quill Radio, and the rest -- and none of them takes another's keys. Quill Weather never launches something you did not ask for.
    - Keys: Alt+Q
    - You should hear: The other apps, listed by name.
 
-2. **Turn off an area you never use.** Customize Features leaves out a whole area and every command under it -- the NOAA radio rows, for instance, if you never listen. Nothing is deleted; tick it again and it comes back.
+2. **Turn off an area you never use.** Customize Features leaves out a whole area and every command under it -- the NOAA radio rows, for instance, if you never listen. Nothing is deleted; check it again and it comes back.
    - Keys: Ctrl+Alt+F
    - You should hear: Each area with a short description of what it covers.
 

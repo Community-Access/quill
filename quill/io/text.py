@@ -5,6 +5,7 @@ from pathlib import Path
 
 from quill.core.document import Document
 from quill.core.storage import write_text_atomic
+from quill.core.text_decoding import decode_as, decode_bytes, is_utf8_family
 
 # Braille text family (#226 / BR-004). Saving any of these must round-trip
 # byte-for-byte (#235 / BR-012): no line-ending normalization, no trailing
@@ -32,8 +33,6 @@ def _emit_save_warning(message: str) -> None:
     except Exception:  # noqa: BLE001 - a warning sink must never break a save
         pass
 
-
-_UTF8_BOM = b"\xef\xbb\xbf"
 
 #: The two UTF-16 byte-order marks, and what each means (bad.md F6, P1.8).
 #: A UTF-16 file opened as UTF-8 did not raise -- most of its bytes decode as
@@ -65,11 +64,9 @@ def detect_utf16(raw: bytes) -> str | None:
     return None
 
 
-# #867: a plain-text open must never crash on a non-UTF-8 file. cp1252 covers
-# the common case (Windows "smart quotes"/dashes saved without a BOM); latin-1
-# is the terminal fallback because it maps every byte 0x00-0xFF to a codepoint
-# and therefore can never itself raise UnicodeDecodeError.
-_FALLBACK_ENCODINGS: tuple[str, ...] = ("cp1252", "latin-1")
+# #867: a plain-text open must never crash on a non-UTF-8 file. The fallback
+# chain (cp1252, then latin-1, which cannot fail) lives in the shared
+# quill.core.text_decoding since 2026-10-04, so both editors read one way.
 
 
 def read_text_document(path: Path, encoding: str = "utf-8") -> Document:
@@ -80,66 +77,32 @@ def read_text_document(path: Path, encoding: str = "utf-8") -> Document:
     # as LF, and a leading BOM showed up as an editable U+FEFF at the cursor.
     raw = path.read_bytes()
 
-    is_utf8 = encoding.replace("-", "").replace("_", "").lower() == "utf8"
-    # Only when the caller has not named a specific encoding: an explicit
-    # encoding is an instruction, and a reader that overrules it cannot be
-    # used to open a file the way its owner says it is (test_text.py has said
-    # so since #867).
-    utf16 = detect_utf16(raw) if is_utf8 else None
-    if utf16 is not None:
-        # Decoded with the plain "utf-16" codec, which consumes the BOM and
-        # honours its endianness; stored under the same name so the writer puts
-        # a BOM back and the file round-trips byte for byte (bad.md F6, P1.8).
-        text = raw.decode(utf16)
-        line_ending = "\r\n" if "\r\n" in text else "\n"
-        return Document(
-            text=text.replace("\r\n", "\n").replace("\r", "\n"),
-            path=path,
-            modified=False,
-            encoding=utf16,
-            line_ending=line_ending,
-            source_metadata={
-                "source_kind": "text",
-                "engine": "plain text",
-                "quality_score": 100,
-                "encoding_detected": utf16,
-            },
-        )
-
-    had_bom = raw.startswith(_UTF8_BOM)
-    if had_bom and is_utf8:
-        # Decode with utf-8-sig so the BOM is dropped from the editable text,
-        # and remember it via the encoding so the writer re-adds it on save:
-        # opening a BOM file and saving it must round-trip byte-for-byte (#649).
-        decode_encoding = "utf-8-sig"
-        stored_encoding = "utf-8-sig"
+    # The default is the family's one lossless decoder (2026-10-04), shared
+    # with QUILL Lite: a BOM, strict UTF-8, strict cp1252, then latin-1, which
+    # cannot fail -- so a file always opens and always saves back byte for
+    # byte. An explicit encoding is an instruction, and a reader that overrules
+    # it cannot be used to open a file the way its owner says it is
+    # (test_text.py has said so since #867): it is decoded strictly and raises.
+    if is_utf8_family(encoding):
+        decoded = decode_bytes(raw)
     else:
-        decode_encoding = encoding
-        stored_encoding = encoding
-    detected_encoding: str | None = None
-    try:
-        text = raw.decode(decode_encoding)
-    except UnicodeDecodeError:
-        if not is_utf8:
-            raise
-        for fallback in _FALLBACK_ENCODINGS:
-            try:
-                text = raw.decode(fallback)
-            except UnicodeDecodeError:
-                continue
-            stored_encoding = fallback
-            detected_encoding = fallback
-            break
-        else:
-            raise
+        decoded = decode_as(raw, encoding)
+    text = decoded.text
+    # The encoding a BOM or a fallback revealed is said once on open
+    # (_announce_encoding_fallback); UTF-16's BOM and both fallbacks count.
+    detected_encoding = None if is_utf8_family(decoded.encoding) else decoded.encoding
 
-    # Detect the original line ending from the raw bytes, then hand the editor
-    # LF-only text (wx normalises to LF anyway); the writer converts back to the
-    # stored line ending on save.
-    line_ending = "\r\n" if b"\r\n" in raw else "\n"
+    # Detect the original line ending, then hand the editor LF-only text (wx
+    # normalises to LF anyway); the writer converts back on save. From the
+    # decoded text, because a UTF-16 CRLF is not the bytes b"\r\n".
+    line_ending = "\r\n" if "\r\n" in text else "\n"
     text = text.replace("\r\n", "\n").replace("\r", "\n")
 
-    source_metadata = {"source_kind": "text", "engine": "plain text", "quality_score": 100}
+    source_metadata: dict[str, object] = {
+        "source_kind": "text",
+        "engine": "plain text",
+        "quality_score": 100,
+    }
     if detected_encoding is not None:
         source_metadata["encoding_detected"] = detected_encoding
 
@@ -147,7 +110,7 @@ def read_text_document(path: Path, encoding: str = "utf-8") -> Document:
         text=text,
         path=path,
         modified=False,
-        encoding=stored_encoding,
+        encoding=decoded.encoding,
         line_ending=line_ending,
         source_metadata=source_metadata,
     )

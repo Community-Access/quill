@@ -236,6 +236,29 @@ and Play**, **Copy Path** and **Open in Local Media Window**.
 > Alt+Shift+Up and Down to move, Ctrl+Z to undo, and Shift+F10 for
 > everything else. The Local Media window's menus show every other key.
 
+### Play a song straight from File Explorer
+
+Julie asked whether she could be looking at the music on her external drive,
+pick a song, and choose Quill Radio to play it, the way you might choose VLC.
+Now you can.
+
+- **Open with.** Press **Shift+F10** on a song in File Explorer, choose **Open
+  with**, and Quill Radio is on the list. It is there for music, audiobooks,
+  video and M3U or PLS playlists as soon as Quill Radio is installed.
+- **Make Quill Radio your media player.** In **Preferences** (Ctrl+,), under
+  **Windows and your files**, press **Make Quill Radio My Media Player...**.
+  Windows does not let any app make itself the default, so Quill Radio opens
+  the Windows page where you choose, already on Quill Radio. Chapter 10 of the
+  user guide walks you through that page.
+- **Several songs at once.** Select a few and press Enter, and they become a
+  list called **Opened files** in Local Media, so Next and Previous work. The
+  next songs you open replace it, unless you keep it with **Save as
+  Playlist...** (Ctrl+S in the Local Media window).
+- **Quill Radio already open?** The song goes to the copy that is running, and
+  you stay in File Explorer while it plays.
+- **Right-click.** **Play with Quill Radio** and **Add to Quill Radio
+  Playlist** are on the right-click menu of every song.
+
 There is a new tutorial, **Play your own files in playlists**, and a whole new
 chapter in the user guide: Chapter 10, Local Media, your own music and
 audiobooks.
@@ -289,6 +312,10 @@ When you arrow through a long list, such as Top Podcasts, Quill Radio no
 longer loads every show you pass. It waits until you stop on one. The list
 stays quick to move through with your screen reader, and a big folder fills
 in all at once.
+
+- **Searching the Internet Archive finds new uploads.** Find on an Internet
+  Archive folder now puts the best matches first, so a series uploaded last
+  week turns up instead of being lost behind older items.
 
 ## YouTube
 
@@ -649,7 +676,7 @@ progress, for testers.
 
 Arrowing through the three only explains them. If you choose Beta or Dev, a
 short warning says plainly what could go wrong and how to come back, and
-nothing moves until you tick **I understand** and choose **Move**. Before it
+nothing moves until you check **I understand** and choose **Move**. Before it
 moves, Quill Radio saves a copy of your favorites, history and settings. Your recordings are not copied, and updates don't change them.
 
 Coming back to Stable is safe. If Stable can read everything you have saved,
@@ -698,8 +725,26 @@ newer build, and Check for Updates offers it to you.
   Unfollow", the same word QUILL Cast uses.
 - **Bringing favorites into a portable copy works.** Answering Yes to copy your
   favorites into a portable copy you had opened before now copies them.
+- Portable copies now start from a folder whose name has a space in it.
+- **Backups say what they hold, and name anything left out.** A backup now
+  carries the podcasts you follow and where you are in each episode, your
+  notes, tags, bookmarks and recording settings, as well as your favorites
+  and settings, and takes recordings from the folder you chose in Recording
+  Settings, even a OneDrive one. If anything is left out, from a backup or
+  from Export My Setup, you are told how many and can choose **Show what was
+  left out, and why?** to hear each one and what to do. See "Moving to a new
+  or reset computer" in the user guide.
 - **Live stations stay close to live.** After a hiccup in the connection, a
   live station now catches up rather than playing further and further behind.
+- **Four keys work even with the other QuillVille apps open.** Restore from
+  Backup (Ctrl+Alt+Shift+W), Recording Settings (Ctrl+Alt+Shift+I), Recent
+  Problems (Ctrl+Alt+Shift+P) and Choose Columns (Ctrl+Alt+Shift+C) did
+  nothing while Quill Weather, Inkwell, the Media Player or Converter was
+  running, because each of those apps took one of these keys for itself. Those
+  apps now have no show and hide key until you choose one, so the keys are
+  Quill Radio's again. And Ctrl+Alt+Shift+R stays Quill Radio's own: QUILL,
+  QUILL Lite, QUILL Cast and Audio Studio each had a command on it, and those
+  commands have moved.
 
 ## Where to learn more
 

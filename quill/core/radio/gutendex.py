@@ -35,12 +35,11 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-from quill import __version__
+from quill.core import http_client
 from quill.core.error_codes import CodedError
 from quill.core.radio import directory_cache
 from quill.core.radio.models import RadioStation
 
-_USER_AGENT = f"QUILL-Radio/{__version__} (+https://github.com/Community-Access/quill)"
 _TIMEOUT_SECONDS = 30.0
 _MAX_BYTES = 4_000_000
 _BASE = "https://gutendex.com/books"
@@ -104,7 +103,7 @@ def _fetch(url: str) -> str:
     """One HTTPS GET of Gutendex -- the reviewed egress site."""
     if not url.startswith("https://"):
         raise GutendexError("Only https:// URLs can be fetched.")
-    request = urllib.request.Request(url, headers={"User-Agent": _USER_AGENT})
+    request = urllib.request.Request(url, headers={"User-Agent": http_client.user_agent()})
     context = ssl.create_default_context()
     try:
         with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:

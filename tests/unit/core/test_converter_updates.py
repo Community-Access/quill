@@ -56,3 +56,31 @@ def test_the_release_tag_reads_back_as_the_version() -> None:
     tag = release_tag("converter", "1.0.0")
     assert tag == "quill-converter-v1.0.0"
     assert _app_version_from_tag(tag) == "1.0.0"
+
+
+def test_converter_is_not_a_release_channel_app() -> None:
+    # Release channels are for QUILL, QUILL Lite, Quill Radio and QUILL Cast;
+    # Converter has no Release Channel window, and its check always reads Stable.
+    from quill.core.updater.profiles import PROFILES
+
+    assert "converter" not in PROFILES
+
+
+def test_converter_is_offered_a_newer_build_and_never_a_beta(tmp_path) -> None:
+    from dataclasses import dataclass
+
+    from quill.core.updater.check import evaluate
+
+    @dataclass(frozen=True)
+    class _Release:
+        version: str
+        prerelease: bool = False
+
+    channels = tmp_path / "channels.json"
+    history = tmp_path / "history.json"
+    builds = [_Release("1.0.0+1"), _Release("1.0.0+2"), _Release("1.1.0-beta.1", True)]
+    result = evaluate("converter", "1.0.0+1", builds, path=channels, history_path=history)
+    assert result.target is not None and result.target.version == "1.0.0+2"
+    assert not result.notices
+    current = evaluate("converter", "1.0.0+2", builds[:2], path=channels, history_path=history)
+    assert current.target is None

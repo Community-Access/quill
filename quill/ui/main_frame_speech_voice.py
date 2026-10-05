@@ -533,11 +533,12 @@ class VoiceInteractionMixin:
         perceivable.
         """
         from quill.core.speech.voice_commands import voice_commands_available
+        from quill.ui.wakeword_switch import remember_wakeword
 
         wake = getattr(self, "_wake", None)
         if wake is not None and wake.state != "off":
             self._wake_run(wake.stop())
-            return
+            return remember_wakeword(self, False)
         if not voice_commands_available(
             self.settings, safe_mode_active=bool(getattr(self, "_safe_mode", False))
         ):
@@ -559,6 +560,7 @@ class VoiceInteractionMixin:
 
         self._wake = WakeController()
         self._wake_run(self._wake.start())
+        remember_wakeword(self, True)
 
     def _wake_run(self, effects: list) -> None:
         for effect in effects:

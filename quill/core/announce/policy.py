@@ -81,6 +81,26 @@ class PolicyModes:
     #: "compact" renders the short braille labels (#425); "speech" sends the
     #: spoken string so nobody loses information by default.
     braille_style: str = "speech"
+    #: announcement_severity_interrupt: which severities cut across the
+    #: reader -- "errors", "warnings" (warnings and errors) or "never".
+    interrupt_for: str = "warnings"
+
+
+def severity_interrupts(severity: Severity, interrupt_for: str) -> bool:
+    """Whether *severity* interrupts speech under the "Interrupt speech for" choice.
+
+    "warnings" is the long-standing behaviour (WARNING and ERROR interrupt, and
+    a legacy ``force=True`` call is a WARNING); "errors" keeps only failures;
+    "never" lets every message wait its turn. An unknown value behaves as
+    "warnings", so a hand-edited settings file cannot silence a failure's
+    urgency by accident.
+    """
+    choice = (interrupt_for or "").strip().lower()
+    if choice == "never":
+        return False
+    if choice == "errors":
+        return severity is Severity.ERROR
+    return severity.interrupts
 
 
 class AnnouncementPolicy:
@@ -138,7 +158,7 @@ class AnnouncementPolicy:
 
         return Decision(
             channels=frozenset(allowed),
-            interrupt=severity.interrupts,
+            interrupt=severity_interrupts(severity, modes.interrupt_for),
             sticky=severity is Severity.ERROR,
             braille_text=self._braille_text(announcement),
             reason=reason,

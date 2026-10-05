@@ -2954,7 +2954,7 @@ unconditional cue.</li>
 Browse Stations at startup” predates the window model; with six windows
 there is one question (“which one, if any”) and a checkbox cannot ask
 it. <code>startup_window</code> is the pure choice (ids, labels, index
-round-trip, and <code>migrate_from_checkbox</code>, so a ticked box
+round-trip, and <code>migrate_from_checkbox</code>, so a checked box
 still means Browse),
 <code>radio_startup_window.open_startup_window</code> is the app half,
 and everything not chosen stays closed. None remains the default. The
@@ -3176,7 +3176,7 @@ chosen track afterwards (that method clears it by design).</li>
 <li><em>Delete did nothing.</em> Every removable row had a verb
 reachable only by opening a context menu. Delete now runs that same verb
 after a named question – <code>wx.RichMessageDialog</code> with an
-unticked “Don’t ask me again” and No as the default, persisted on
+unchecked “Don’t ask me again” and No as the default, persisted on
 <code>RadioHistory</code> – and reloads the branch. A row with nothing
 to remove explains itself (same checkbox) and points at Hide This
 Source. The window’s four keys moved to <code>browse_keys</code>

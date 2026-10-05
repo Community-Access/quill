@@ -344,6 +344,52 @@ settings, not QUILL.</p>
 Assistant interaction transcripts by default. If you explicitly copy
 output into a document, that content is then part of your document and
 saved according to your normal file and backup workflow.</p>
+<h2 id="dictation">Dictation</h2>
+<p>Dictation in QUILL and QUILL Lite recognises your speech on your own
+computer. The microphone opens only while dictation is on, or, if you
+switched on the wake phrase, while QUILL is the window in front. No
+recording is kept, and nothing is sent anywhere, with one exception that
+you have to choose.</p>
+<p><strong>OpenAI dictation, with your own key</strong> (added October
+2026). If you save your own OpenAI key in Use My Own AI Key and then
+choose OpenAI as the dictation speech engine, QUILL first asks, in plain
+words, whether your speech may be sent; the answer is No unless you
+choose Yes, and you can take it back in More Dictation Settings at any
+time. While dictation is on with that engine:</p>
+<ul>
+<li>each phrase you speak is sent to OpenAI
+(<code>api.openai.com</code>) over an encrypted, certificate-checked
+connection, and the words come back. Silence is not sent: only the
+speech QUILL’s voice detector heard;</li>
+<li>the words in your My Words and Phrases list go with it, as words to
+expect, along with the dictation language;</li>
+<li>your key travels only in the request’s authorization header. It is
+never logged, and QUILL’s diagnostic bundles scrub anything that looks
+like a key;</li>
+<li>nothing goes through QUILL’s servers, QUILL keeps no copy of the
+audio, and OpenAI bills your own account. What OpenAI keeps, and for how
+long, is set by OpenAI’s own terms (openai.com/policies).</li>
+</ul>
+<p>When More Dictation Settings opens on a computer with an OpenAI key
+saved, QUILL asks OpenAI which speech models your key can use. That
+request sends your key and nothing else. QUILL’s free hosted AI is never
+used for dictation. OpenAI dictation is refused in Safe Mode.</p>
+<p><strong>Transcribe a Recording</strong> (Shift+F5, added October
+2026) reads a recording you choose on your own computer, with the same
+engines, and keeps only the text. If your own OpenAI key is saved,
+OpenAI’s speech models are offered in its list too (the list is asked of
+OpenAI the same way, sending only your key). They are never chosen for
+you, and are refused in Safe Mode. Choosing one asks, for each
+recording, whether to send it; the answer is No unless you choose Yes.
+If you agree, the speech in that recording is sent to OpenAI’s
+transcription service about a minute at a time, over an encrypted
+connection, with your key and the words from My Words and Phrases, and
+OpenAI bills your account. Nothing goes through QUILL’s servers and
+QUILL keeps no copy.</p>
+<p><strong>Tidy Dictated Text</strong> sends the passage you choose, and
+your My Dictation Instructions if you wrote any, to the AI service you
+use with your own key or ChatGPT subscription, only when you press
+it.</p>
 <h2 id="key-and-credential-handling">Key and credential handling</h2>
 <p>QUILL stores API keys using Windows Credential Manager when
 available. If Credential Manager is unavailable, QUILL falls back to

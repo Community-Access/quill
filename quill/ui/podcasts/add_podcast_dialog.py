@@ -14,6 +14,7 @@ from typing import Any
 
 from quill.core.media.list_columns import ColumnDef
 from quill.core.podcasts import directory_search, feed_reader, itunes_search
+from quill.core.podcasts.feed_problems import plain
 from quill.core.podcasts.list_columns import DIRECTORY_RESULTS
 from quill.core.podcasts.models import PodcastShow
 from quill.core.podcasts.subscriptions import PodcastLibrary, new_id
@@ -452,7 +453,8 @@ class AddPodcastWindow:
             self._prompt_for_credentials(feed_url, last_username=username)
             return
         if error is not None or info is None:
-            say_status(self._status, f"Could not follow it: {error}", self._announce)
+            said = plain(error) if error is not None else "the feed could not be read."
+            say_status(self._status, f"Could not follow it: {said}", self._announce)
             self._return_focus_to_results(result_index)
             return
         show = PodcastShow(

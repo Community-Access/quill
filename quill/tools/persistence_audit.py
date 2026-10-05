@@ -52,6 +52,11 @@ _CLASSIFICATIONS: dict[str, str] = {
 _REVIEWED_PERSISTENCE: dict[str, str] = {
     # --- versioned (the contract) ---
     "core/settings.py::save_settings": "versioned",
+    # 2026-10-05, dictation: each document's context (user-written descriptions,
+    # schema-stamped, additive) and the one-shot hand-off of an editor's dictation
+    # settings to Quill Inkwell (read once and deleted).
+    "core/windows_dictation/contexts.py::save": "content",
+    "core/windows_dictation/anywhere.py::write_handoff": "cache",
     # qc.md X-03 and X-05 (2026-10-03): small, self-describing, "version": 1 stamped;
     # an unreadable file reads as nothing on and nothing shared.
     "core/settings_recipes.py::save_state": "marker",
@@ -111,7 +116,7 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # the user chose to bring, from a file they chose, over a declared
     # inventory -- the read half of an export rather than a store of its own.
     # Every file it writes is one the audit already classifies on its own line.
-    "core/setup_transfer.py::import_setup": "export",
+    "core/setup_transfer.py::import_setup_report": "export",
     "core/keymap.py::export_keyboard_pack": "export",
     "core/keymap.py::export_keymap": "export",
     "core/features.py::export_feature_profile_file": "export",
@@ -153,6 +158,12 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # default is that a build which changes its mind about it reaches everybody
     # who never chose otherwise, which a migration contract would freeze.
     "core/window_geometry.py::save_geometry": "marker",
+    # The show/hide key the listener chose for Weather, Converter or Media
+    # Player (2026-10-05), schema-stamped. An app missing from the file has not
+    # decided yet, which is what makes the "your key is now off" sentence a
+    # once-only thing; a key that is present is the listener's and is never
+    # rewritten by a later build.
+    "core/show_hide_keys.py::save_show_hide_key": "versioned",
     # The sound card a player app was last sent to: one machine-local string
     # per app ("" = whatever Windows gives it). Trivially defaulted, and a
     # lost file means the system default, which is where every app starts

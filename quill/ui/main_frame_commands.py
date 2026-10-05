@@ -246,12 +246,8 @@ class CommandRegistryMixin:
             self.open_containing_folder,
             None,
         )
-        self.commands.register(
-            "file.open_url",
-            "Open from URL...",
-            self.open_url,
-            None,
-        )
+        # Open from URL and Open from Clipboard (main_frame_open_sources.py).
+        self._register_open_sources_commands()
         self.commands.register(
             "file.save_session",
             "Save Session...",

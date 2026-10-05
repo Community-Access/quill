@@ -213,7 +213,7 @@ class ChapterEditsMixin:
     # -- nudging ---------------------------------------------------------------
 
     def _hear_after_nudge(self) -> bool:
-        """Whether the "hear the boundary after each nudge" box is ticked.
+        """Whether the "hear the boundary after each nudge" box is checked.
 
         Overridden by the Workbench, which owns the checkbox. The default of
         False keeps the mixin usable without one.

@@ -153,7 +153,7 @@ GitHub** creates and configures them.
    visibility changes warn extra loudly when you're about to make something
    public.
 4. **Configure Branch Protection...**: pick a branch, then either set required
-   approving reviews and required status checks, or tick "remove all
+   approving reviews and required status checks, or check "remove all
    protection instead" to clear existing rules.
 5. **Commit Multiple Files...**: pick several local files with a file browser,
    choose a branch and a commit message, and QUILL commits all of them

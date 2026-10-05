@@ -475,23 +475,76 @@ A version without a build is refused with the builds it could mean.</li>
 tag carry one, and GATE-APPVER checks that each app’s build constant,
 its installers’ <code>AppBuild</code> and <code>AppFileVersion</code>,
 and its build script agree.</p>
+<h3 id="a-joint-release-of-several-apps-decided-2026-10-05">A joint
+release of several apps (decided 2026-10-05)</h3>
+<p>Every app build ships the shared runtime, and the runtime carries
+every app’s version. When several apps release together before any of
+them is published, each app’s own GATE-SIBVER check fails on the others,
+because it names only the app it builds. For that case, run the check
+once naming every app in the release:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>check_sibling_versions<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>releasing radio <span class="op">--</span>releasing quilllite <span class="op">--</span>releasing cast <span class="op">--</span>releasing converter</span></code></pre></div>
+<p>If it passes, build each app with
+<code>-SkipPublishedCheck -Build 1</code> (or the build being shipped).
+<code>-SkipPublishedCheck</code> also lets the build number go unchecked
+against GitHub, so check that by hand first:
+<code>python scripts/release_build_number.py --app radio --version 3.2.0 --build 1</code>
+for each app. Outside a joint release, <code>-SkipPublishedCheck</code>
+is for Dev builds only.</p>
+<h3
+id="code-signing-beta-and-dev-never-stable-always-decided-2026-10-04">Code
+signing: Beta and Dev never, Stable always (decided 2026-10-04)</h3>
+<p>Beta and Dev builds are not code-signed, and Stable always is. The
+version number decides:</p>
+<ul>
+<li>A <strong>Beta, Release Candidate, Alpha or Dev</strong> build
+(<code>3.3.0-beta.1</code>, <code>1.0.0-rc.1</code>,
+<code>3.3.1-dev.20261003.1</code>, anything built with
+<code>-DevVersion</code>) is never signed. <code>-Sign</code> and
+<code>QUILL_SIGN_REQUIRED=1</code> are ignored, and the build says so in
+one line: “Beta and Dev builds are not code-signed; signing
+skipped.”</li>
+<li>A <strong>final-numbered</strong> build (<code>3.3.0</code>) is a
+Stable candidate. Build it with <code>-Sign</code> (or
+<code>QUILL_SIGN=1</code>): it is signed when it is built, listed on
+Beta for its soak, and promoted to Stable as the same files.</li>
+</ul>
+<p>Why the candidate is signed at build time rather than at promotion:
+Stable takes the same files that were on Beta, and an installer carries
+its programs packed inside <code>Setup.exe</code>. Signing them at
+promotion would mean building a new installer, which is not what was
+tested on Beta; signing only the outer <code>Setup.exe</code> would put
+unsigned programs on Stable. A final-numbered build waiting on Beta is a
+release candidate of Stable, not a Beta build, so signing it keeps both
+promises.</p>
+<p><code>publish_release.py</code> refuses an unsigned final-numbered
+build (and a signed Beta or Dev one) before creating anything, and
+promotion check P5 refuses Stable for anything unsigned. If P5 fails,
+rebuild with <code>-Sign</code>; the rebuild gets the next build number,
+goes on Beta, and is promoted from there. Details:
+<code>docs/code-signing.md</code>, “Which builds are signed”.</p>
 <h3 id="publishing-to-beta">Publishing to Beta</h3>
 <p>A sibling app built on this computer:</p>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>\standalone\radio\scripts\build_release<span class="op">.</span><span class="fu">ps1</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>publish_release<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>app radio <span class="op">--</span>version <span class="dv">3.3</span><span class="op">.</span><span class="dv">0</span><span class="op">-</span>beta<span class="op">.</span><span class="dv">1</span> `</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>channel beta <span class="op">--</span>dist standalone<span class="op">/</span>radio<span class="op">/</span>dist <span class="op">--</span>notes-file notes<span class="op">.</span><span class="fu">md</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>\standalone\radio\scripts\build_release<span class="op">.</span><span class="fu">ps1</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>publish_release<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>app radio <span class="op">--</span>version <span class="dv">3.3</span><span class="op">.</span><span class="dv">0</span><span class="op">-</span>beta<span class="op">.</span><span class="dv">1</span> `</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>channel beta <span class="op">--</span>dist standalone<span class="op">/</span>radio<span class="op">/</span>dist <span class="op">--</span>notes-file notes<span class="op">.</span><span class="fu">md</span></span></code></pre></div>
 <p>This hashes the files locally, creates the GitHub release as a
 prerelease that is never “Latest”, uploads the files, lists the build on
 Beta, and signs the list. QUILL’s own release is still built by
 <code>windows-release.yml</code> from a tag; list it afterwards with
 <code>--existing</code>, which downloads and hashes the files here
 rather than trusting GitHub’s numbers:</p>
-<div class="sourceCode" id="cb2"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>publish_release<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>app quill <span class="op">--</span>version <span class="dv">1.0</span><span class="op">.</span><span class="dv">0</span><span class="op">-</span>rc<span class="op">.</span><span class="dv">1</span> <span class="op">--</span>channel beta <span class="op">--</span>existing</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>publish_release<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>app quill <span class="op">--</span>version <span class="dv">1.0</span><span class="op">.</span><span class="dv">0</span><span class="op">-</span>rc<span class="op">.</span><span class="dv">1</span> <span class="op">--</span>channel beta <span class="op">--</span>existing</span></code></pre></div>
 <p>QUILL 1.0.0 becomes Stable this way: tag <code>v1.0.0-rc.1</code>,
 list it on Beta, then build the final <code>v1.0.0</code> candidate,
-list it on Beta, and promote it.</p>
+list it on Beta, and promote it. CI cannot sign, so the
+<code>v1.0.0</code> candidate is built on your computer with
+<code>QUILL_SIGN=1</code> and its signed installer and portable zip are
+uploaded over the CI files
+(<code>gh release upload v1.0.0 &lt;files&gt; --clobber</code>) before
+you list it; the release candidate stays unsigned.</p>
 <p><strong>The page budget.</strong> Installed Quill Radio 3.0.4 and
 QUILL Lite 1.1.2 read only the first 30 releases of
 <code>Community-Access/quill</code>. <code>publish_release.py</code>
@@ -503,14 +556,15 @@ shows everything without creating or writing anything.</p>
 <p>Commit <code>docs/site/updates/v2</code> through a pull request as
 usual.</p>
 <h3 id="promoting">Promoting</h3>
-<div class="sourceCode" id="cb3"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>promote_release<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>app radio <span class="op">--</span>version <span class="dv">3.3</span><span class="op">.</span><span class="dv">0</span> <span class="op">--</span>to stable <span class="op">--</span>dry-run</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>promote_release<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>app radio <span class="op">--</span>version <span class="dv">3.3</span><span class="op">.</span><span class="dv">0</span> <span class="op">--</span>to stable</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>promote_release<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>app radio <span class="op">--</span>version <span class="dv">3.3</span><span class="op">.</span><span class="dv">0</span> <span class="op">--</span>to stable <span class="op">--</span>dry-run</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>promote_release<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>app radio <span class="op">--</span>version <span class="dv">3.3</span><span class="op">.</span><span class="dv">0</span> <span class="op">--</span>to stable</span></code></pre></div>
 <p>Every check is printed as PASS, WARN or FAIL, and one FAIL stops it:
 the release exists; every file downloads again with the size and SHA-256
 in the list; the list’s signature is valid; Stable takes only a
-final-numbered build that was on Beta first; Authenticode when
-<code>QUILL_SIGN_REQUIRED=1</code>; tag, version and file names agree;
+final-numbered build that was on Beta first; for Stable, every installer
+and every program in the portable zip carries an Authenticode signature
+(always – Stable is never unsigned); tag, version and file names agree;
 nothing the build carries is ahead of that app’s own channel; the
 changelog has the version; for Stable, a screen-reader sign-off sheet at
 <code>docs/qa/signoffs/&lt;app&gt;-&lt;version&gt;.md</code> with
@@ -531,10 +585,10 @@ update” comes first when a data format moved. <code>--dry-run</code>
 prints the result; the real run makes it the GitHub release body and the
 feed’s summary. <code>--notes-file</code> gives your own notes instead.
 To see or save them before promoting:</p>
-<div class="sourceCode" id="cb4"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>rollup_release_notes<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>app radio <span class="op">--</span>from <span class="dv">3.2</span><span class="op">.</span><span class="dv">0</span> <span class="op">--</span>to <span class="dv">3.3</span><span class="op">.</span><span class="dv">0</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>rollup_release_notes<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>app radio <span class="op">--</span>to <span class="dv">3.3</span><span class="op">.</span><span class="dv">0</span> <span class="op">--</span>out notes<span class="op">.</span><span class="fu">md</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>rollup_release_notes<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>app radio <span class="op">--</span>to <span class="dv">3.3</span><span class="op">.</span><span class="dv">0</span> <span class="op">--</span>summary</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>rollup_release_notes<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>app radio <span class="op">--</span>from <span class="dv">3.2</span><span class="op">.</span><span class="dv">0</span> <span class="op">--</span>to <span class="dv">3.3</span><span class="op">.</span><span class="dv">0</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>rollup_release_notes<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>app radio <span class="op">--</span>to <span class="dv">3.3</span><span class="op">.</span><span class="dv">0</span> <span class="op">--</span>out notes<span class="op">.</span><span class="fu">md</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>rollup_release_notes<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>app radio <span class="op">--</span>to <span class="dv">3.3</span><span class="op">.</span><span class="dv">0</span> <span class="op">--</span>summary</span></code></pre></div>
 <p>On success the GitHub release stops being a prerelease (only QUILL’s
 own Stable release becomes “Latest”), its title says when it was
 promoted, the list moves it to Stable with a fresh 90-day expiry, and a
@@ -558,16 +612,16 @@ publishes them to
 main repository.</p>
 <p>Dev builds reach the Dev channel only when you list them, from your
 computer:</p>
-<div class="sourceCode" id="cb5"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>publish_release<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>app radio <span class="op">--</span>version <span class="dv">3.3</span><span class="op">.</span><span class="dv">1</span><span class="op">-</span>dev<span class="op">.</span><span class="dv">20261003.1</span> <span class="op">--</span>channel dev <span class="op">--</span>existing</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>publish_release<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>app radio <span class="op">--</span>version <span class="dv">3.3</span><span class="op">.</span><span class="dv">1</span><span class="op">-</span>dev<span class="op">.</span><span class="dv">20261003.1</span> <span class="op">--</span>channel dev <span class="op">--</span>existing</span></code></pre></div>
 <p>A good Dev build can go to Beta as-is:
 <code>promote_release.py --to beta</code>.</p>
 <h3 id="withdrawing-a-build">Withdrawing a build</h3>
-<div class="sourceCode" id="cb6"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>revoke_release<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>app radio <span class="op">--</span>version <span class="dv">3.4</span><span class="op">.</span><span class="dv">0</span><span class="op">-</span>beta<span class="op">.</span><span class="dv">1</span> `</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>reason <span class="st">&quot;can lose favorites on first start&quot;</span> <span class="op">--</span>replacement <span class="dv">3.4</span><span class="op">.</span><span class="dv">0</span><span class="op">-</span>beta<span class="op">.</span><span class="dv">2</span> <span class="op">--</span>dry-run</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>revoke_release<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>app radio <span class="op">--</span>version <span class="dv">3.4</span><span class="op">.</span><span class="dv">0</span><span class="op">-</span>beta<span class="op">.</span><span class="dv">1</span> `</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>reason <span class="st">&quot;can lose favorites on first start&quot;</span> <span class="op">--</span>replacement <span class="dv">3.4</span><span class="op">.</span><span class="dv">0</span><span class="op">-</span>beta<span class="op">.</span><span class="dv">2</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>revoke_release<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>app radio <span class="op">--</span>version <span class="dv">3.4</span><span class="op">.</span><span class="dv">0</span><span class="op">-</span>beta<span class="op">.</span><span class="dv">1</span> `</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>reason <span class="st">&quot;can lose favorites on first start&quot;</span> <span class="op">--</span>replacement <span class="dv">3.4</span><span class="op">.</span><span class="dv">0</span><span class="op">-</span>beta<span class="op">.</span><span class="dv">2</span> <span class="op">--</span>dry-run</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>revoke_release<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>app radio <span class="op">--</span>version <span class="dv">3.4</span><span class="op">.</span><span class="dv">0</span><span class="op">-</span>beta<span class="op">.</span><span class="dv">1</span> `</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>reason <span class="st">&quot;can lose favorites on first start&quot;</span> <span class="op">--</span>replacement <span class="dv">3.4</span><span class="op">.</span><span class="dv">0</span><span class="op">-</span>beta<span class="op">.</span><span class="dv">2</span></span></code></pre></div>
 <p>The build is marked withdrawn in the list, so it is never offered
 again and is never a way back. Each channel that offered it falls back
 to the build before it, and the script says which. Its GitHub release
@@ -606,11 +660,11 @@ Beta, withdraw it, and go back to Stable, with the real scripts, a fake
 <code>gh</code> and a throwaway key, the app reading the lists through
 <code>QUILL_UPDATE_FEED_BASE</code>. Before a first real promotion, run
 the same flow over HTTPS against a throwaway server:</p>
-<div class="sourceCode" id="cb7"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="va">$env</span><span class="op">:</span><span class="va">QUILL_CHANNEL_REHEARSAL</span> <span class="op">=</span> <span class="st">&quot;1&quot;</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="va">$env</span><span class="op">:</span><span class="va">QUILL_UPDATE_FEED_BASE</span> <span class="op">=</span> <span class="st">&quot;https://rehearsal.example/updates/v2/&quot;</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="va">$env</span><span class="op">:</span><span class="va">QUILL_REHEARSAL_SERVE_DIR</span> <span class="op">=</span> <span class="st">&quot;D:/rehearsal/updates/v2&quot;</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>pytest tests<span class="op">/</span>integration<span class="op">/</span>test_channel_rehearsal<span class="op">.</span><span class="fu">py</span> <span class="op">-</span>v</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="va">$env</span><span class="op">:</span><span class="va">QUILL_CHANNEL_REHEARSAL</span> <span class="op">=</span> <span class="st">&quot;1&quot;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="va">$env</span><span class="op">:</span><span class="va">QUILL_UPDATE_FEED_BASE</span> <span class="op">=</span> <span class="st">&quot;https://rehearsal.example/updates/v2/&quot;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="va">$env</span><span class="op">:</span><span class="va">QUILL_REHEARSAL_SERVE_DIR</span> <span class="op">=</span> <span class="st">&quot;D:/rehearsal/updates/v2&quot;</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>pytest tests<span class="op">/</span>integration<span class="op">/</span>test_channel_rehearsal<span class="op">.</span><span class="fu">py</span> <span class="op">-</span>v</span></code></pre></div>
 <p>The server’s host must be trusted
 (<code>QUILL_UPDATE_TRUSTED_HOSTS</code> if it is not GitHub’s). Nothing
 touches the real lists, your key or GitHub.</p>
@@ -623,8 +677,8 @@ Between releases, <code>publish_release.py</code>,
 <code>promote_release.py</code>, <code>feed_tool.py verify</code> and
 <code>platform_report</code> (the release-feeds row) warn once any list
 is within 14 days of expiring. To refresh one without a release:</p>
-<div class="sourceCode" id="cb8"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>feed_tool<span class="op">.</span><span class="fu">py</span> refresh <span class="op">--</span>app radio</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>feed_tool<span class="op">.</span><span class="fu">py</span> refresh <span class="op">--</span>app radio</span></code></pre></div>
 <h3 id="runtime-slots">Runtime slots</h3>
 <p>Beta and Dev apps run on their own copy of the shared runtime
 (<code>Runtime\3.13-beta</code>, <code>Runtime\3.13-dev</code>). Publish
@@ -692,16 +746,16 @@ admin/maintainer scope.</li>
 <code>.github/workflows/macos-release.yml</code>.</li>
 <li>From terminal:</li>
 </ol>
-<div class="sourceCode" id="cb9"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cd</span> S<span class="op">:</span>\quill</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>gh auth status</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>gh repo set-default Community-Access<span class="op">/</span>quill</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cd</span> S<span class="op">:</span>\quill</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>gh auth status</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>gh repo set-default Community-Access<span class="op">/</span>quill</span></code></pre></div>
 <h3 id="3-create-release-environment">3) Create release environment</h3>
 <ol type="1">
 <li>Create the protected GitHub Actions environment:</li>
 </ol>
-<div class="sourceCode" id="cb10"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>gh api <span class="op">--</span>method PUT repos<span class="op">/</span>Community-Access<span class="op">/</span>quill<span class="op">/</span>environments<span class="op">/</span>macos-release</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>gh api <span class="op">--</span>method PUT repos<span class="op">/</span>Community-Access<span class="op">/</span>quill<span class="op">/</span>environments<span class="op">/</span>macos-release</span></code></pre></div>
 <ol start="2" type="1">
 <li>In GitHub UI, configure environment protections for
 <code>macos-release</code>:
@@ -715,32 +769,32 @@ secrets</h3>
 <ol type="1">
 <li>File secrets:</li>
 </ol>
-<div class="sourceCode" id="cb11"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="op">[</span>Convert<span class="op">]::</span>ToBase64String<span class="op">([</span>IO<span class="op">.</span><span class="fu">File</span><span class="op">]::</span>ReadAllBytes<span class="op">(</span><span class="st">&quot;C:\path\to\DeveloperID.p12&quot;</span><span class="op">))</span> <span class="op">|</span> gh secret <span class="fu">set</span> <span class="op">-</span>e macos-release BUILD_CERTIFICATE_BASE64</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="op">[</span>Convert<span class="op">]::</span>ToBase64String<span class="op">([</span>IO<span class="op">.</span><span class="fu">File</span><span class="op">]::</span>ReadAllBytes<span class="op">(</span><span class="st">&quot;C:\path\to\AuthKey_ABC123XYZ.p8&quot;</span><span class="op">))</span> <span class="op">|</span> gh secret <span class="fu">set</span> <span class="op">-</span>e macos-release APPLE_API_KEY_B64</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="op">[</span>Convert<span class="op">]::</span>ToBase64String<span class="op">([</span>IO<span class="op">.</span><span class="fu">File</span><span class="op">]::</span>ReadAllBytes<span class="op">(</span><span class="st">&quot;C:\path\to\DeveloperID.p12&quot;</span><span class="op">))</span> <span class="op">|</span> gh secret <span class="fu">set</span> <span class="op">-</span>e macos-release BUILD_CERTIFICATE_BASE64</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="op">[</span>Convert<span class="op">]::</span>ToBase64String<span class="op">([</span>IO<span class="op">.</span><span class="fu">File</span><span class="op">]::</span>ReadAllBytes<span class="op">(</span><span class="st">&quot;C:\path\to\AuthKey_ABC123XYZ.p8&quot;</span><span class="op">))</span> <span class="op">|</span> gh secret <span class="fu">set</span> <span class="op">-</span>e macos-release APPLE_API_KEY_B64</span></code></pre></div>
 <ol start="2" type="1">
 <li>Prompted text secrets:</li>
 </ol>
-<div class="sourceCode" id="cb12"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>gh secret <span class="fu">set</span> <span class="op">-</span>e macos-release P12_PASSWORD</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>gh secret <span class="fu">set</span> <span class="op">-</span>e macos-release KEYCHAIN_PASSWORD</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>gh secret <span class="fu">set</span> <span class="op">-</span>e macos-release MACOS_CODESIGN_IDENTITY</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>gh secret <span class="fu">set</span> <span class="op">-</span>e macos-release APPLE_API_KEY_ID</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>gh secret <span class="fu">set</span> <span class="op">-</span>e macos-release APPLE_API_ISSUER</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>gh secret <span class="fu">set</span> <span class="op">-</span>e macos-release APPLE_TEAM_ID</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>gh secret <span class="fu">set</span> <span class="op">-</span>e macos-release P12_PASSWORD</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>gh secret <span class="fu">set</span> <span class="op">-</span>e macos-release KEYCHAIN_PASSWORD</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>gh secret <span class="fu">set</span> <span class="op">-</span>e macos-release MACOS_CODESIGN_IDENTITY</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>gh secret <span class="fu">set</span> <span class="op">-</span>e macos-release APPLE_API_KEY_ID</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>gh secret <span class="fu">set</span> <span class="op">-</span>e macos-release APPLE_API_ISSUER</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>gh secret <span class="fu">set</span> <span class="op">-</span>e macos-release APPLE_TEAM_ID</span></code></pre></div>
 <ol start="3" type="1">
 <li>Verify:</li>
 </ol>
-<div class="sourceCode" id="cb13"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>gh secret list <span class="op">-</span>e macos-release</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>gh secret list <span class="op">-</span>e macos-release</span></code></pre></div>
 <h3 id="5-dry-run-on-branch">5) Dry run on branch</h3>
 <ol type="1">
 <li>Trigger a manual build on your working branch:</li>
 </ol>
-<div class="sourceCode" id="cb14"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>gh <span class="kw">workflow</span> run macos-release<span class="op">.</span><span class="fu">yml</span> <span class="op">--</span>ref <span class="op">&lt;</span>branch-name<span class="op">&gt;</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>gh run list <span class="op">--</span>workflow macos-release<span class="op">.</span><span class="fu">yml</span> <span class="op">--</span>limit <span class="dv">5</span></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>gh run watch</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>gh <span class="kw">workflow</span> run macos-release<span class="op">.</span><span class="fu">yml</span> <span class="op">--</span>ref <span class="op">&lt;</span>branch-name<span class="op">&gt;</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>gh run list <span class="op">--</span>workflow macos-release<span class="op">.</span><span class="fu">yml</span> <span class="op">--</span>limit <span class="dv">5</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>gh run watch</span></code></pre></div>
 <ol start="2" type="1">
 <li><p>Confirm artifacts exist:</p>
 <ul>

@@ -248,6 +248,23 @@ def test_the_view_menu_holds_advanced_options(converter) -> None:
     assert item.IsCheckable() and item.GetItemLabel().endswith("\tCtrl+Alt+V")
 
 
+def test_no_ai_in_the_menus_or_the_command_palette(converter) -> None:
+    """Quill Converter has no AI (owner decision, 2026-10-05). Find a Setting or
+    Command lists exactly the menu bar's rows, so one walk covers both; a
+    shared menu that grows an AI row would show up here first."""
+    import re
+
+    from quill.ui.menu_palette import menu_rows
+
+    rows = menu_rows(converter.frame.GetMenuBar())
+    assert rows
+    ai = re.compile(r"\bAI\b|ChatGPT|OpenAI|Copilot|Claude|Gemini|Assistant|API key", re.I)
+    found = [row.spoken() for row in rows if ai.search(f"{row.path} {row.label}")]
+    assert not found, found
+    # Not a release-channel app either: Converter offers Stable only.
+    assert not [row.label for row in rows if "Release Channel" in row.label]
+
+
 def test_the_chapters_choice_reaches_the_spec_and_the_summary(converter) -> None:
     converter._chapters.SetSelection(converter._chapter_ids.index("every-30"))
     assert converter.current_spec().chapter_source == "every-30"

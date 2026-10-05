@@ -37,9 +37,17 @@ punctuating, matched without accents (dict.md 9.4).
 from __future__ import annotations
 
 from collections.abc import Iterable
-from dataclasses import dataclass
-from enum import StrEnum
 from functools import lru_cache
+
+from quill.core.windows_dictation.vocabulary_commands import COMMAND_HELP, PREFIX_HELP
+from quill.core.windows_dictation.vocabulary_types import (
+    Command,
+    CommandHelp,
+    Glue,
+    Mark,
+    PrefixHelp,
+    make_mark,
+)
 
 __all__ = [
     "COMMANDS",
@@ -47,84 +55,21 @@ __all__ = [
     "DASH_STYLES",
     "LITERAL",
     "MARKS",
+    "PREFIXES",
+    "PREFIX_HELP",
     "SPELLING_ALPHABET",
+    "SPELLING_MARKS",
     "Command",
     "CommandHelp",
     "Glue",
     "Mark",
+    "PrefixHelp",
     "Vocabulary",
     "dash_text",
     "longest_phrase",
     "mark_for",
     "vocabulary_for",
 ]
-
-
-class Glue(StrEnum):
-    """How a mark sits against the text on either side of it."""
-
-    #: Hugs the word before it; a space follows before the next word. ``. , ? !``
-    LEFT = "left"
-    #: Takes a space before it and hugs the word after it. ``( [`` and an
-    #: opening quotation mark.
-    OPEN = "open"
-    #: Hugs both sides. A hyphen, a slash, an apostrophe.
-    JOIN = "join"
-    #: Ends the line or indents it. No space on either side, and never a space
-    #: at the start of the line that follows.
-    BREAK = "break"
-    #: Stands alone like a word: a space either side. ``& + =``
-    WORD = "word"
-
-
-class Command(StrEnum):
-    """What a whole-phrase command does."""
-
-    SCRATCH = "scratch"
-    UNDO = "undo"
-    STOP = "stop"
-    SELECT = "select"
-    CAPITALIZE = "capitalize"
-    UPPERCASE = "uppercase"
-    LOWERCASE = "lowercase"
-    READ_BACK = "read_back"
-    DELETE_WORD = "delete_word"
-    DELETE_SENTENCE = "delete_sentence"
-    LINE_START = "line_start"
-    LINE_END = "line_end"
-    DOCUMENT_START = "document_start"
-    DOCUMENT_END = "document_end"
-    SPELL_ON = "spell_on"
-    SPELL_OFF = "spell_off"
-    HELP = "help"
-
-
-@dataclass(frozen=True, slots=True)
-class Mark:
-    """A spoken phrase that becomes a character or two in the document."""
-
-    phrase: tuple[str, ...]
-    text: str
-    glue: Glue
-    #: A sentence ends here, so the next word takes a capital.
-    ends_sentence: bool = False
-    #: What the read-back says when this is *all* a phrase inserted -- a blank
-    #: line speaks as nothing at all, which is indistinguishable from failure.
-    spoken: str = ""
-    #: Which heading the command reference lists it under.
-    group: str = "Punctuation"
-
-
-def _mark(
-    phrase: str,
-    text: str,
-    glue: Glue,
-    *,
-    ends: bool = False,
-    spoken: str = "",
-    group: str = "Punctuation",
-) -> Mark:
-    return Mark(tuple(phrase.split()), text, glue, ends, spoken, group)
 
 
 #: The dash is a mark whose text is a preference: ``{dash}`` is replaced by
@@ -146,57 +91,60 @@ def dash_text(style: str) -> str:
     return DASH_STYLES.get(style, DASH_STYLES["em"])[1]
 
 
+_CODE = "Markdown and code"
+_LINES = "Starting a line (say these first)"
+
 #: Every mark, in the order the command reference lists them.
 MARKS: tuple[Mark, ...] = (
-    _mark("period", ".", Glue.LEFT, ends=True),
-    _mark("full stop", ".", Glue.LEFT, ends=True),
-    _mark("comma", ",", Glue.LEFT),
-    _mark("question mark", "?", Glue.LEFT, ends=True),
-    _mark("exclamation point", "!", Glue.LEFT, ends=True),
-    _mark("exclamation mark", "!", Glue.LEFT, ends=True),
-    _mark("colon", ":", Glue.LEFT),
-    _mark("semicolon", ";", Glue.LEFT),
-    _mark("ellipsis", "...", Glue.LEFT),
-    _mark("open quote", '"', Glue.OPEN),
-    _mark("begin quote", '"', Glue.OPEN),
-    _mark("close quote", '"', Glue.LEFT),
-    _mark("end quote", '"', Glue.LEFT),
-    _mark("open single quote", "'", Glue.OPEN),
-    _mark("close single quote", "'", Glue.LEFT),
-    _mark("apostrophe", "'", Glue.JOIN),
-    _mark("open parenthesis", "(", Glue.OPEN, group="Brackets"),
-    _mark("open paren", "(", Glue.OPEN, group="Brackets"),
-    _mark("left parenthesis", "(", Glue.OPEN, group="Brackets"),
-    _mark("close parenthesis", ")", Glue.LEFT, group="Brackets"),
-    _mark("close paren", ")", Glue.LEFT, group="Brackets"),
-    _mark("right parenthesis", ")", Glue.LEFT, group="Brackets"),
-    _mark("open bracket", "[", Glue.OPEN, group="Brackets"),
-    _mark("left bracket", "[", Glue.OPEN, group="Brackets"),
-    _mark("close bracket", "]", Glue.LEFT, group="Brackets"),
-    _mark("right bracket", "]", Glue.LEFT, group="Brackets"),
-    _mark("open brace", "{", Glue.OPEN, group="Brackets"),
-    _mark("close brace", "}", Glue.LEFT, group="Brackets"),
-    _mark("open angle bracket", "<", Glue.OPEN, group="Brackets"),
-    _mark("close angle bracket", ">", Glue.LEFT, group="Brackets"),
-    _mark("hyphen", "-", Glue.JOIN, group="Dashes and joining"),
-    _mark("dash", DASH_PLACEHOLDER, Glue.JOIN, group="Dashes and joining"),
-    _mark("slash", "/", Glue.JOIN, group="Dashes and joining"),
-    _mark("forward slash", "/", Glue.JOIN, group="Dashes and joining"),
-    _mark("backslash", "\\", Glue.JOIN, group="Dashes and joining"),
-    _mark("underscore", "_", Glue.JOIN, group="Dashes and joining"),
-    _mark("at sign", "@", Glue.JOIN, group="Symbols"),
-    _mark("hash sign", "#", Glue.OPEN, group="Symbols"),
-    _mark("number sign", "#", Glue.OPEN, group="Symbols"),
-    _mark("dollar sign", "$", Glue.OPEN, group="Symbols"),
-    _mark("percent sign", "%", Glue.LEFT, group="Symbols"),
-    _mark("ampersand", "&", Glue.WORD, group="Symbols"),
-    _mark("asterisk", "*", Glue.JOIN, group="Symbols"),
-    _mark("plus sign", "+", Glue.WORD, group="Symbols"),
-    _mark("minus sign", "-", Glue.WORD, group="Symbols"),
-    _mark("equals sign", "=", Glue.WORD, group="Symbols"),
-    _mark("new line", "\n", Glue.BREAK, ends=True, spoken="New line", group="Lines and layout"),
-    _mark("newline", "\n", Glue.BREAK, ends=True, spoken="New line", group="Lines and layout"),
-    _mark(
+    make_mark("period", ".", Glue.LEFT, ends=True),
+    make_mark("full stop", ".", Glue.LEFT, ends=True),
+    make_mark("comma", ",", Glue.LEFT),
+    make_mark("question mark", "?", Glue.LEFT, ends=True),
+    make_mark("exclamation point", "!", Glue.LEFT, ends=True),
+    make_mark("exclamation mark", "!", Glue.LEFT, ends=True),
+    make_mark("colon", ":", Glue.LEFT),
+    make_mark("semicolon", ";", Glue.LEFT),
+    make_mark("ellipsis", "...", Glue.LEFT),
+    make_mark("open quote", '"', Glue.OPEN),
+    make_mark("begin quote", '"', Glue.OPEN),
+    make_mark("close quote", '"', Glue.LEFT),
+    make_mark("end quote", '"', Glue.LEFT),
+    make_mark("open single quote", "'", Glue.OPEN),
+    make_mark("close single quote", "'", Glue.LEFT),
+    make_mark("apostrophe", "'", Glue.JOIN),
+    make_mark("open parenthesis", "(", Glue.OPEN, group="Brackets"),
+    make_mark("open paren", "(", Glue.OPEN, group="Brackets"),
+    make_mark("left parenthesis", "(", Glue.OPEN, group="Brackets"),
+    make_mark("close parenthesis", ")", Glue.LEFT, group="Brackets"),
+    make_mark("close paren", ")", Glue.LEFT, group="Brackets"),
+    make_mark("right parenthesis", ")", Glue.LEFT, group="Brackets"),
+    make_mark("open bracket", "[", Glue.OPEN, group="Brackets"),
+    make_mark("left bracket", "[", Glue.OPEN, group="Brackets"),
+    make_mark("close bracket", "]", Glue.LEFT, group="Brackets"),
+    make_mark("right bracket", "]", Glue.LEFT, group="Brackets"),
+    make_mark("open brace", "{", Glue.OPEN, group="Brackets"),
+    make_mark("close brace", "}", Glue.LEFT, group="Brackets"),
+    make_mark("open angle bracket", "<", Glue.OPEN, group="Brackets"),
+    make_mark("close angle bracket", ">", Glue.LEFT, group="Brackets"),
+    make_mark("hyphen", "-", Glue.JOIN, group="Dashes and joining"),
+    make_mark("dash", DASH_PLACEHOLDER, Glue.JOIN, group="Dashes and joining"),
+    make_mark("slash", "/", Glue.JOIN, group="Dashes and joining"),
+    make_mark("forward slash", "/", Glue.JOIN, group="Dashes and joining"),
+    make_mark("backslash", "\\", Glue.JOIN, group="Dashes and joining"),
+    make_mark("underscore", "_", Glue.JOIN, group="Dashes and joining"),
+    make_mark("at sign", "@", Glue.JOIN, group="Symbols"),
+    make_mark("hash sign", "#", Glue.OPEN, group="Symbols"),
+    make_mark("number sign", "#", Glue.OPEN, group="Symbols"),
+    make_mark("dollar sign", "$", Glue.OPEN, group="Symbols"),
+    make_mark("percent sign", "%", Glue.LEFT, group="Symbols"),
+    make_mark("ampersand", "&", Glue.WORD, group="Symbols"),
+    make_mark("asterisk", "*", Glue.JOIN, group="Symbols"),
+    make_mark("plus sign", "+", Glue.WORD, group="Symbols"),
+    make_mark("minus sign", "-", Glue.WORD, group="Symbols"),
+    make_mark("equals sign", "=", Glue.WORD, group="Symbols"),
+    make_mark("new line", "\n", Glue.BREAK, ends=True, spoken="New line", group="Lines and layout"),
+    make_mark("newline", "\n", Glue.BREAK, ends=True, spoken="New line", group="Lines and layout"),
+    make_mark(
         "new paragraph",
         "\n\n",
         Glue.BREAK,
@@ -204,134 +152,48 @@ MARKS: tuple[Mark, ...] = (
         spoken="New paragraph",
         group="Lines and layout",
     ),
-    _mark("tab key", "\t", Glue.BREAK, spoken="Tab", group="Lines and layout"),
-    _mark("press tab", "\t", Glue.BREAK, spoken="Tab", group="Lines and layout"),
-    _mark("tab", "\t", Glue.BREAK, spoken="Tab", group="Lines and layout"),
-)
-
-
-@dataclass(frozen=True, slots=True)
-class CommandHelp:
-    """One command as the reference describes it."""
-
-    command: Command
-    phrases: tuple[str, ...]
-    description: str
-    group: str
-
-
-#: Every whole-phrase command, with what it does, in reference order.
-COMMAND_HELP: tuple[CommandHelp, ...] = (
-    CommandHelp(
-        Command.SCRATCH,
-        ("scratch that", "delete that"),
-        "Removes the phrase you dictated last. Say it again to remove the one "
-        "before. A phrase you have typed into since is left alone.",
-        "Correcting",
-    ),
-    CommandHelp(
-        Command.UNDO,
-        ("undo that", "undo", "undo last"),
-        "The same as pressing Ctrl+Z.",
-        "Correcting",
-    ),
-    CommandHelp(
-        Command.SELECT,
-        ("select that",),
-        "Selects the phrase you dictated last, so you can change or format it "
-        "with the keyboard. The next phrase you say replaces it.",
-        "Correcting",
-    ),
-    CommandHelp(
-        Command.CAPITALIZE,
-        ("capitalize that", "cap that"),
-        "Gives every word of the last phrase a capital: meeting notes becomes Meeting Notes.",
-        "Correcting",
-    ),
-    CommandHelp(
-        Command.UPPERCASE,
-        ("all caps that", "uppercase that"),
-        "Puts the last phrase in capitals.",
-        "Correcting",
-    ),
-    CommandHelp(
-        Command.LOWERCASE,
-        ("no caps that", "lowercase that"),
-        "Puts the last phrase in small letters.",
-        "Correcting",
-    ),
-    CommandHelp(
-        Command.DELETE_WORD,
-        ("delete word", "delete last word"),
-        "Deletes the word just before the cursor.",
-        "Correcting",
-    ),
-    CommandHelp(
-        Command.DELETE_SENTENCE,
-        ("delete sentence", "delete last sentence"),
-        "Deletes from the start of the sentence the cursor is in up to the cursor.",
-        "Correcting",
-    ),
-    CommandHelp(
-        Command.READ_BACK,
-        ("read that", "repeat that"),
-        "Reads the last phrase aloud again.",
-        "Correcting",
-    ),
-    CommandHelp(
-        Command.LINE_START,
-        ("go to beginning of line", "go to start of line"),
-        "Moves the cursor to the start of the line.",
-        "Moving the cursor",
-    ),
-    CommandHelp(
-        Command.LINE_END,
-        ("go to end of line",),
-        "Moves the cursor to the end of the line.",
-        "Moving the cursor",
-    ),
-    CommandHelp(
-        Command.DOCUMENT_START,
-        ("go to top", "go to start of document", "go to beginning of document"),
-        "Moves the cursor to the start of the document.",
-        "Moving the cursor",
-    ),
-    CommandHelp(
-        Command.DOCUMENT_END,
-        ("go to bottom", "go to end of document"),
-        "Moves the cursor to the end of the document.",
-        "Moving the cursor",
-    ),
-    CommandHelp(
-        Command.SPELL_ON,
-        ("start spelling", "spell mode", "spelling mode"),
-        "Starts spelling mode: every phrase is read as letters until you say "
-        "stop spelling. See Spelling below.",
-        "Dictation itself",
-    ),
-    CommandHelp(
-        Command.SPELL_OFF,
-        ("stop spelling", "end spelling", "spelling off"),
-        "Leaves spelling mode.",
-        "Dictation itself",
-    ),
-    CommandHelp(
-        Command.HELP,
-        ("what can i say", "show commands", "dictation commands"),
-        "Opens this list.",
-        "Dictation itself",
-    ),
-    CommandHelp(
-        Command.STOP,
-        ("stop dictation", "stop dictating", "stop listening"),
-        "Stops dictation. With a wake phrase set, dictation goes back to waiting for it.",
-        "Dictation itself",
+    make_mark("tab key", "\t", Glue.BREAK, spoken="Tab", group="Lines and layout"),
+    make_mark("press tab", "\t", Glue.BREAK, spoken="Tab", group="Lines and layout"),
+    make_mark("tab", "\t", Glue.BREAK, spoken="Tab", group="Lines and layout"),
+    # 2026-10-05 (dict.md 3.3): Markdown and code. A backtick opens or closes by
+    # how many came before it on the line; the fence takes a line of its own.
+    make_mark("backtick", "`", Glue.TOGGLE, group=_CODE),
+    make_mark("back quote", "`", Glue.TOGGLE, group=_CODE),
+    make_mark("triple backtick", "```\n", Glue.LINE_START, spoken="Code fence", group=_CODE),
+    make_mark("code fence", "```\n", Glue.LINE_START, spoken="Code fence", group=_CODE),
+    make_mark("tilde", "~", Glue.JOIN, group=_CODE),
+    make_mark("vertical bar", "|", Glue.WORD, group=_CODE),
+    make_mark("pipe symbol", "|", Glue.WORD, group=_CODE),
+    make_mark("caret", "^", Glue.JOIN, group=_CODE),
+    make_mark("greater than sign", ">", Glue.WORD, group=_CODE),
+    make_mark("less than sign", "<", Glue.WORD, group=_CODE),
+    # Only at the start of a phrase: "the heading two lines down" is English.
+    make_mark("bullet", "- ", Glue.LINE_START, spoken="Bullet", group=_LINES),
+    make_mark("list item", "- ", Glue.LINE_START, spoken="Bullet", group=_LINES),
+    make_mark("numbered item", "1. ", Glue.LINE_START, spoken="Numbered item", group=_LINES),
+    make_mark("block quote", "> ", Glue.LINE_START, spoken="Block quote", group=_LINES),
+    *(
+        make_mark(
+            f"heading {said}",
+            "#" * level + " ",
+            Glue.LINE_START,
+            spoken=f"Heading {name}",
+            group=_LINES,
+        )
+        for level, name in enumerate(("one", "two", "three", "four", "five", "six"), 1)
+        for said in (name, str(level))
     ),
 )
+
 
 #: Whole-phrase commands, by the words that say them.
 COMMANDS: dict[tuple[str, ...], Command] = {
     tuple(phrase.split()): entry.command for entry in COMMAND_HELP for phrase in entry.phrases
+}
+
+#: Commands said with words after them ("select the cat"), by their opening words.
+PREFIXES: dict[tuple[str, ...], Command] = {
+    tuple(prefix.split()): entry.command for entry in PREFIX_HELP for prefix in entry.prefixes
 }
 
 #: The escape word. "literal comma" types *comma*.
@@ -383,6 +245,10 @@ SPELLING_ALPHABET: dict[str, str] = {
     "nine": "9",
 }
 
+#: Marks that count only while spelling, where "dot" in "bravo dot com" is a
+#: full stop with no space and nowhere near the end of a sentence.
+SPELLING_MARKS: dict[str, str] = {"dot": ".", "point": ".", "dash": "-"}
+
 _BY_FIRST_WORD: dict[str, list[tuple[str, ...]]] = {}
 for _phrase in [mark.phrase for mark in MARKS] + list(COMMANDS):
     _BY_FIRST_WORD.setdefault(_phrase[0], []).append(_phrase)
@@ -423,9 +289,12 @@ class Vocabulary:
         folds: bool = False,
         capital_words: Iterable[str] = (),
         space_words: Iterable[str] = (),
+        prefixes: dict[tuple[str, ...], Command] | None = None,
     ) -> None:
         self.marks = marks
         self.commands = commands
+        #: Opening words of a command that takes words after it, longest first.
+        self.prefixes = sorted((prefixes or {}).items(), key=lambda item: -len(item[0]))
         self.folds = folds
         self.capital_words = frozenset(capital_words)
         self.space_words = frozenset(space_words)
@@ -435,6 +304,14 @@ class Vocabulary:
         for candidates in by_first.values():
             candidates.sort(key=len, reverse=True)
         self._by_first = by_first
+
+    def prefix(self, words: tuple[str, ...]) -> tuple[Command, tuple[str, ...]] | None:
+        """The command *words* open with, and the words after it -- only when
+        there are some: "select" on its own is not a search for nothing."""
+        for opening, command in self.prefixes:
+            if len(words) > len(opening) and words[: len(opening)] == opening:
+                return command, words[len(opening) :]
+        return None
 
     def longest(self, words: list[str], start: int) -> tuple[str, ...] | None:
         """The longest mark or command phrase beginning at *words[start]*."""
@@ -447,7 +324,7 @@ class Vocabulary:
 
 
 #: English, as dictation has always matched it.
-ENGLISH = Vocabulary({mark.phrase: (mark,) for mark in MARKS}, COMMANDS)
+ENGLISH = Vocabulary({mark.phrase: (mark,) for mark in MARKS}, COMMANDS, prefixes=PREFIXES)
 
 #: English mark words that are everyday Spanish words too ("colon", "Colón"),
 #: left out of the Spanish vocabulary so Spanish text keeps them.
@@ -461,7 +338,9 @@ def _spanish(spoken_marks: bool, commands: bool) -> Vocabulary:
         SPANISH_CAPITAL_WORDS,
         SPANISH_COMMAND_HELP,
         SPANISH_MARKS,
+        SPANISH_PREFIX_HELP,
         SPANISH_SPACE_WORDS,
+        SPANISH_SWITCH_HELP,
     )
 
     marks = {
@@ -474,7 +353,14 @@ def _spanish(spoken_marks: bool, commands: bool) -> Vocabulary:
             tuple(fold(said).split()): written for said, written in SPANISH_MARKS.items()
         })
     table = dict(COMMANDS)
+    # The way back to English works whether or not the drafted commands are on:
+    # somebody who switched by voice must be able to switch back by voice.
+    for entry in SPANISH_SWITCH_HELP:
+        table.update({tuple(fold(said).split()): entry.command for said in entry.phrases})
+    prefixes = dict(PREFIXES)
     if commands:
+        for prefix in SPANISH_PREFIX_HELP:
+            prefixes.update({tuple(fold(said).split()): prefix.command for said in prefix.prefixes})
         for entry in SPANISH_COMMAND_HELP:
             table.update({tuple(fold(said).split()): entry.command for said in entry.phrases})
     return Vocabulary(
@@ -483,6 +369,7 @@ def _spanish(spoken_marks: bool, commands: bool) -> Vocabulary:
         folds=True,
         capital_words=SPANISH_CAPITAL_WORDS,
         space_words=SPANISH_SPACE_WORDS,
+        prefixes=prefixes,
     )
 
 

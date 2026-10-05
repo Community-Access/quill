@@ -93,9 +93,11 @@ def _zip_json_files(source: Path, dest: Path) -> Path:
 
 
 def _radio(source: Path, dest: Path, version: str) -> Path:
-    from quill.core.radio.backup import create_backup
+    from quill.core.radio.backup import SNAPSHOT_DATA_FILES, create_backup
 
-    return create_backup(source, dest, include_recordings=False, app_version=version)
+    return create_backup(
+        source, dest, include_recordings=False, app_version=version, files=SNAPSHOT_DATA_FILES
+    )
 
 
 def _cast(source: Path, dest: Path, version: str) -> Path:

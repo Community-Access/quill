@@ -1761,7 +1761,7 @@ the rules are <strong>or</strong>-ed. Two modes – filter-matching and
 keep-matching.</p>
 <p>The scopes are the half that matters: the Inbox, Auto-Queue,
 auto-download, the new-episode announcement, the podcast’s own episode
-list, the cross-show views, smart playlists, Search Everywhere. Ticked
+list, the cross-show views, smart playlists, Search Everywhere. Checked
 independently, so one feature answers “do not put it in front of me”,
 “do not spend my bandwidth on it” and “I never want to see it again”
 without any of them implying the others. A new filter ships with the
@@ -1770,11 +1770,11 @@ four <strong>routing</strong> scopes on and the four
 reversible, hiding changes what can be found.</p>
 <h3 id="212-asked-not-stamped">21.2 Asked, not stamped</h3>
 <p>The verdict is computed at every point of use rather than written
-onto an episode at ingest. That is why unticking a scope takes effect on
-the next redraw with nothing to migrate and nothing to undo. Two things
-are still written down because they are events rather than opinions: a
-Play Queue slot removed by the explicit apply-to-existing pass, and the
-Needs review warning.</p>
+onto an episode at ingest. That is why unchecking a scope takes effect
+on the next redraw with nothing to migrate and nothing to undo. Two
+things are still written down because they are events rather than
+opinions: a Play Queue slot removed by the explicit apply-to-existing
+pass, and the Needs review warning.</p>
 <p><code>hide_predicate</code> returns <code>None</code> for a podcast
 with no active filter in that scope, so the hot loops – the Inbox over a
 1,300-podcast library, a smart playlist over every episode of every show
@@ -1796,10 +1796,10 @@ newest 50 episodes publishes a duration. Asked, with exact counts:
 partial duration coverage, and any hiding scope – with the two ways back
 named in the question.</p>
 <p>Preview evaluates the draft <strong>while the top-level switch is off
-and while no scope is ticked</strong>, because it answers “what do these
-rules catch?”, which is a question about the rules. The episode list’s
-state filter gains <strong>Filtered out</strong>, present for every
-podcast rather than only for filtered ones; and a per-episode
+and while no scope is checked</strong>, because it answers “what do
+these rules catch?”, which is a question about the rules. The episode
+list’s state filter gains <strong>Filtered out</strong>, present for
+every podcast rather than only for filtered ones; and a per-episode
 <strong>exemption</strong> beats every rule in every scope and survives
 editing the rules.</p>
 <h3

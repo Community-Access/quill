@@ -40,13 +40,24 @@ import wx
 from quill.core.external_change import REMEMBER_KEEP, REMEMBER_RELOAD, format_key
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name, show_modal_dialog
 
-__all__ = ["ExternalChangeAnswer", "ask_external_change"]
+__all__ = [
+    "KEEP",
+    "NEW_TAB",
+    "RELOAD",
+    "SAVE_AS",
+    "ExternalChangeAnswer",
+    "ask_external_change",
+]
 
 _PAD = 8
 
 RELOAD = "reload"
 KEEP = "keep"
 NEW_TAB = "new_tab"
+#: QUILL Lite's third answer (2026-10-04): one document per window and no
+#: read-only second copy to compare in, so it offers Save As instead -- yours
+#: under a new name, theirs untouched. Never remembered, like NEW_TAB.
+SAVE_AS = "save_as"
 
 
 @dataclass(frozen=True, slots=True)
@@ -78,13 +89,27 @@ def ask_external_change(
     file_name: str,
     *,
     buffer_dirty: bool,
+    alternative: str = NEW_TAB,
+    default_keep: bool = False,
+    forget_hint: str = "File > Forget Remembered File-Change Answers undoes this.",
 ) -> ExternalChangeAnswer:
     """Ask what to do about *file_name* having changed on disk.
 
     ``buffer_dirty`` only changes the wording: the three answers are the same
     either way, but what Reload costs is not -- with unsaved edits it discards
     them, and with none it simply shows the newer text.
+
+    *alternative* is the third answer: :data:`NEW_TAB` (QUILL) or
+    :data:`SAVE_AS` (QUILL Lite). *default_keep* puts the focus, and so Enter,
+    on Keep Mine rather than Reload. *forget_hint* says where the app asking
+    takes a "do not ask me again" answer back.
     """
+    saving = alternative == SAVE_AS
+    third = (
+        "Save As keeps your version under a new name and leaves the disk version alone."
+        if saving
+        else "Opening the disk version in a new tab lets you compare the two."
+    )
     dialog = wx.Dialog(parent, title="File Changed on Disk")
     root = wx.BoxSizer(wx.VERTICAL)
 
@@ -92,15 +117,13 @@ def ask_external_change(
         story = (
             f"'{file_name}' was changed on disk while you have unsaved edits.\n\n"
             "Reloading replaces your edits with the version on disk.\n"
-            "Keeping yours means the disk version is overwritten when you save.\n"
-            "Opening the disk version in a new tab lets you compare the two."
+            "Keeping yours means the disk version is overwritten when you save.\n" + third
         )
     else:
         story = (
             f"'{file_name}' was changed on disk by another program.\n\n"
             "Reloading shows the new version, keeping the cursor where it is.\n"
-            "Keeping yours leaves this tab exactly as it is.\n"
-            "Opening the disk version in a new tab lets you compare the two."
+            "Keeping yours leaves this tab exactly as it is.\n" + third
         )
     message = wx.StaticText(dialog, label=story)
     message.SetHelpText(
@@ -111,9 +134,7 @@ def ask_external_change(
     remember = wx.CheckBox(dialog, label=f"&Do not ask me again for {_describe_format(file_name)}")
     remember.SetHelpText(
         "Answer this once for every file of this format. Reload and Keep Mine can "
-        "be remembered; opening the disk version in a new tab is a one-off "
-        "comparison and is never remembered. Tools > Forget Remembered "
-        "File-Change Answers undoes this."
+        "be remembered; the third answer is a one-off and is never remembered. " + forget_hint
     )
     set_accessible_name(remember, f"Do not ask me again for {_describe_format(file_name)}")
     root.Add(remember, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, _PAD)
@@ -127,11 +148,18 @@ def ask_external_change(
     keep_button.SetHelpText(
         "Leave this tab as it is. The version on disk is ignored until you save over it or reload."
     )
-    new_tab_button = wx.Button(dialog, wx.ID_APPLY, "Open Disk Version in a &New Tab")
-    new_tab_button.SetHelpText(
-        "Open what is on disk as a second, separate tab so both versions are open "
-        "at once. This tab is left alone."
-    )
+    if saving:
+        new_tab_button = wx.Button(dialog, wx.ID_APPLY, "Save &As...")
+        new_tab_button.SetHelpText(
+            "Save what is open under a new name. The file on disk is left as the "
+            "other program wrote it."
+        )
+    else:
+        new_tab_button = wx.Button(dialog, wx.ID_APPLY, "Open Disk Version in a &New Tab")
+        new_tab_button.SetHelpText(
+            "Open what is on disk as a second, separate tab so both versions are open "
+            "at once. This tab is left alone."
+        )
     for button in (reload_button, keep_button, new_tab_button):
         buttons.Add(button, 0, wx.RIGHT, _PAD)
     root.Add(buttons, 0, wx.EXPAND | wx.ALL, _PAD)
@@ -143,14 +171,19 @@ def ask_external_change(
 
     dialog.SetSizerAndFit(root)
     apply_modal_ids(dialog, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
-    reload_button.SetFocus()
+    if default_keep:
+        # Enter answers the focused button: here, the answer that changes nothing.
+        keep_button.SetDefault()
+        keep_button.SetFocus()
+    else:
+        reload_button.SetFocus()
     try:
         result = show_modal_dialog(dialog, "File Changed on Disk")
         wants_remember = bool(remember.GetValue())
         if result == wx.ID_OK:
             return ExternalChangeAnswer(RELOAD, wants_remember)
         if result == wx.ID_APPLY:
-            return ExternalChangeAnswer(NEW_TAB, False)
+            return ExternalChangeAnswer(SAVE_AS if saving else NEW_TAB, False)
         return ExternalChangeAnswer(KEEP, wants_remember)
     finally:
         dialog.Destroy()

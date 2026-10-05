@@ -25,13 +25,12 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from quill import __version__
+from quill.core import http_client
 from quill.core.error_codes import CodedError
 
 API_BASE = "https://auphonic.com/api"
 #: Windows Credential Manager target for the user's Auphonic API token.
 CREDENTIAL_TARGET = "quill:publish:auphonic"
-_USER_AGENT = f"QUILL/{__version__} (https://github.com/Community-Access/quill)"
 _TIMEOUT_SECONDS = 60.0
 #: Production statuses that mean "finished" (3 = Done per Auphonic's API docs).
 DONE_STATUS = 3
@@ -138,7 +137,7 @@ def _request(
     """
     if not url.startswith("https://"):
         raise AuphonicError("Refusing a non-HTTPS Auphonic request.")
-    headers = {"User-Agent": _USER_AGENT, "Authorization": f"Bearer {token}"}
+    headers = {"User-Agent": http_client.user_agent(), "Authorization": f"Bearer {token}"}
     if content_type:
         headers["Content-Type"] = content_type
     body: bytes | _ProgressReader | None = data

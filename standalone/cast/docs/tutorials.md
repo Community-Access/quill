@@ -238,7 +238,7 @@ Everybody presses the wrong thing now and then. Here you will hear a message aga
    - Keys: Alt+I, H
    - You should hear: Undo History, then the newest thing you can take back.
 
-6. **Ask any window what it is for.** Every window in Cast answers F1. You hear what the window is for, then what the control you are on does. On a checkbox and not sure what ticking it will change? Press F1 first and find out.
+6. **Ask any window what it is for.** Every window in Cast answers F1. You hear what the window is for, then what the control you are on does. On a checkbox and not sure what checking it will change? Press F1 first and find out.
    - Keys: F1
    - You should hear: What the window is for, then what this control does.
 
@@ -477,14 +477,14 @@ Episode Filters keep trailers, reruns or a daily segment out of your way, withou
    - Keys: Alt+S, Alt+A, Alt+W
    - You should hear: The rule read back as a sentence.
 
-6. **Decide where the filter applies.** Where this applies has eight checkboxes. The first four start ticked. They keep matching episodes out of the Inbox, and never queue, download or announce them for you. The other four hide them from lists, and start unticked.
+6. **Decide where the filter applies.** Where this applies has eight checkboxes. The first four start checked. They keep matching episodes out of the Inbox, and never queue, download or announce them for you. The other four hide them from lists, and start unchecked.
    - Keys: Alt+H
-   - You should hear: Each checkbox, and whether it is ticked.
+   - You should hear: Each checkbox, and whether it is checked.
 
 7. **Save it.** Press Save, and the filter works straight away, on episodes you already have as well as new ones. You built the Play Queue by hand, so Cast asks about it separately: clear matching episodes from it, or leave it alone.
    - You should hear: Cast asking about the Play Queue, then the filter in force.
 
-8. **Get a filtered episode back.** Changed your mind about one episode? Choose Always Keep This Episode (Ignore the Filter) from its menu, and the filter leaves it alone. Or untick a box under Where this applies, or switch a rule off, and its episodes come back at once.
+8. **Get a filtered episode back.** Changed your mind about one episode? Choose Always Keep This Episode (Ignore the Filter) from its menu, and the filter leaves it alone. Or uncheck a box under Where this applies, or switch a rule off, and its episodes come back at once.
    - Keys: Shift+F10
    - You should hear: Cast confirming the episode is kept.
 
@@ -949,7 +949,7 @@ Save your whole library in one file and put it back again. Then move everything 
    - You should hear: Cast telling you the backup is written.
 
 2. **Put it back.** Restore from a Backup asks for the file. Before it changes anything, it tells you when the backup was made and how many podcasts it holds. It replaces the library on this computer, and you do not need to restart Cast.
-   - Keys: Ctrl+Alt+Shift+R
+   - Keys: Ctrl+Alt+F12
    - You should hear: When the backup was made, and how many podcasts it holds.
 
 3. **Move your setup to a new computer.** Export My Setup carries what a backup does not: your settings, your Go To and Quick Action order, and any keys you changed. On the new computer, Import My Setup tells you what the file holds and asks before it changes anything. Passwords are never included.

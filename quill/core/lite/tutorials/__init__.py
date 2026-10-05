@@ -1,6 +1,6 @@
 """QUILL Lite's guided tutorials: its tracks, and its lessons assembled.
 
-Nine lessons in two tracks, and the number is the point. QUILL has twenty-one
+Ten lessons in two tracks, and the number is the point. QUILL has twenty-four
 in six, because QUILL is an environment somebody moves into; QUILL Lite is a
 Notepad replacement, and a Notepad replacement with a twenty-one-lesson course
 attached to it is advertising that it is not one.
@@ -24,7 +24,9 @@ Two tracks, and they answer the two questions this product exists for:
   end to end to find one fact. That last one earns a lesson despite the
   restraint above, because it is the only feature here that sends anything off
   the machine -- a thing somebody should be taught deliberately rather than
-  discover.
+  discover. The tenth, writing by talking (2026-10-05), is there because
+  dictation is the other way in that has no sighted equivalent for somebody
+  who would rather speak than type.
 
 What is deliberately not here: a tour of everything. The menus, the command
 palette and the user guide cover the rest, and a lesson that duplicates the
@@ -34,6 +36,7 @@ keyboard reference is a keyboard reference with extra words (bad.md P3.2).
 from __future__ import annotations
 
 from quill.core.lite.tutorials import first_documents, working_in_it
+from quill.core.tutorials.dictation_lessons import dictation_lessons
 from quill.core.tutorials.model import Track, TutorialSet, build
 
 #: QUILL Lite's tracks, in teaching order.
@@ -50,7 +53,8 @@ TRACKS: tuple[Track, ...] = (
         "Working in a document",
         "Once you are comfortable: select more than a few words, find your "
         "way back to where you were, skim something long, fix spelling without "
-        "a red squiggle, and ask a question about the document in front of you.",
+        "a red squiggle, ask a question about the document in front of you, and "
+        "write by talking.",
     ),
 )
 
@@ -60,6 +64,17 @@ CATALOGUE: TutorialSet = build(
     TRACKS,
     first_documents.TUTORIALS,
     working_in_it.TUTORIALS,
+    # 2026-10-05 (dict.md 3.10): five short dictation lessons, shared with QUILL.
+    dictation_lessons(
+        {
+            "toggle": "cmd_toggle_dictation",
+            "language": "cmd_switch_dictation_language",
+            "transcript": "cmd_live_transcript",
+            "status": "cmd_dictation_status",
+        },
+        track="working-in-it",
+        surfaces=("QUILL Lite",),
+    ),
 )
 
 __all__ = ["CATALOGUE", "TRACKS"]

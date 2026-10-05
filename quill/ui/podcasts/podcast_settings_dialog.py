@@ -311,7 +311,7 @@ class PodcastSettingsDialog:
 
         # Which shows the Inbox holds. A radio pair rather than a checkbox,
         # because the two modes are opposites rather than an on/off: reading a
-        # ticked box called "opt out" and working out what it means is exactly
+        # checked box called "opt out" and working out what it means is exactly
         # the kind of puzzle this app avoids.
         root.Add(
             wx.StaticText(self.dialog, label="Which shows go to the &Inbox:"),

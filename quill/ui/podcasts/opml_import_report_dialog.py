@@ -6,8 +6,25 @@ from __future__ import annotations
 from collections.abc import Callable
 from pathlib import Path
 
+from quill.core.counted import plural
 from quill.core.podcasts.opml import OpmlValidationResult
 from quill.ui.dialog_contract import apply_modal_ids
+
+
+def summary_sentence(results: list[OpmlValidationResult], skipped: int) -> str:
+    """The one-line count at the top of the report, in agreeing words.
+
+    "Updated to a new address" counts only the moves actually made. It used to
+    say "154 corrected", for redirects that changed nothing and a lookup that
+    never ran (check.md bug 5).
+    """
+    failed = sum(1 for result in results if not result.ok)
+    updated = sum(1 for result in results if result.corrected_url and result.applied)
+    return (
+        f"{plural(len(results), 'feed')} checked: {len(results) - failed} reachable, "
+        f"{failed} unreachable, {updated} updated to a new address, "
+        f"{plural(skipped, 'duplicate')} skipped."
+    )
 
 
 def format_report_text(
@@ -19,14 +36,13 @@ def format_report_text(
 ) -> str:
     """The exportable plain-text form of a validation report."""
     failed = [r for r in results if not r.ok]
-    corrected = [r for r in results if r.corrected_url]
+    updated = [r for r in results if r.corrected_url and r.applied]
+    moved = [r for r in results if r.corrected_url and not r.applied]
     skipped = skipped_duplicates or []
     possible = possible_duplicates or []
     broken = unusable or []
     lines = [
-        f"OPML import report: {len(results)} feed(s) checked, "
-        f"{len(results) - len(failed)} reachable, {len(failed)} unreachable, "
-        f"{len(corrected)} corrected, {len(skipped)} duplicate(s) skipped.",
+        f"OPML import report: {summary_sentence(results, len(skipped))}",
         "",
     ]
     if broken:
@@ -34,10 +50,17 @@ def format_report_text(
         for entry in broken:
             lines.append(f"- {entry}")
         lines.append("")
-    if corrected:
-        lines.append("Corrected feed URLs (found working replacements via iTunes):")
-        for result in corrected:
-            lines.append(f"- {result.title}: {result.feed_url} -> {result.corrected_url}")
+    if updated:
+        lines.append("Updated to the feed's new address (the host says it moved for good):")
+        for result in updated:
+            lines.append(f"- {result.title}, now at {result.corrected_url}")
+        lines.append("")
+    if moved:
+        lines.append(
+            "Moved for good, but left alone because Follow permanent feed redirects is off:"
+        )
+        for result in moved:
+            lines.append(f"- {result.title}, now at {result.corrected_url}")
         lines.append("")
     if failed:
         lines.append("Unreachable feeds:")
@@ -57,7 +80,7 @@ def format_report_text(
         for entry in possible:
             lines.append(f"- {entry}")
         lines.append("")
-    if not failed and not corrected and not skipped and not possible and not broken:
+    if not failed and not updated and not moved and not skipped and not possible and not broken:
         lines.append("Every imported feed was reachable.")
     return "\n".join(lines).rstrip() + "\n"
 
@@ -92,7 +115,8 @@ class OpmlImportReportDialog:
         self._announce = announce_cb or (lambda _m: None)
 
         failed = [r for r in results if not r.ok]
-        corrected = [r for r in results if r.corrected_url]
+        updated = [r for r in results if r.corrected_url and r.applied]
+        moved = [r for r in results if r.corrected_url and not r.applied]
         self.dialog = wx.Dialog(
             parent,
             title="OPML Import Report",
@@ -103,20 +127,18 @@ class OpmlImportReportDialog:
 
         summary = wx.StaticText(
             self.dialog,
-            label=(
-                f"{len(results)} feed(s) checked: {len(results) - len(failed)} reachable, "
-                f"{len(failed)} unreachable, {len(corrected)} corrected, "
-                f"{len(self._skipped_duplicates)} duplicate(s) skipped."
-            ),
+            label=summary_sentence(results, len(self._skipped_duplicates)),
         )
         root.Add(summary, 0, wx.EXPAND | wx.ALL, 10)
 
         self._list = wx.ListBox(self.dialog)
-        self._list.SetName("Import findings: corrections, failures, and duplicates")
-        for result in corrected:
-            self._list.Append(
-                f"Corrected: {result.title} -- {result.feed_url} -> {result.corrected_url}"
-            )
+        self._list.SetName("Import findings: new addresses, failures, and duplicates")
+        # "now at", not "old address -> new address": an arrow is read aloud
+        # as "dash greater-than", and the old address is the one in the file.
+        for result in updated:
+            self._list.Append(f"Updated: {result.title}, now at {result.corrected_url}")
+        for result in moved:
+            self._list.Append(f"Moved, left alone: {result.title}, now at {result.corrected_url}")
         for result in failed:
             self._list.Append(f"Unreachable: {result.title} -- {result.error}")
         for entry in self._skipped_duplicates:
@@ -215,4 +237,4 @@ class OpmlImportReportDialog:
         except OSError as error:
             self._announce(f"Could not save the pruned file: {error}")
             return
-        self._announce(f"Saved {path.name} with {len(dead)} unreachable feed(s) removed")
+        self._announce(f"Saved {path.name} with {plural(len(dead), 'unreachable feed')} removed")

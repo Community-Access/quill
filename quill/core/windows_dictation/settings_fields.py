@@ -1,10 +1,12 @@
 """Dictation's settings as QUILL's settings loader reads them from JSON.
 
-Shared by name with QUILL Lite. Parsed here rather than inline in
-:func:`quill.core.settings.load_settings` (GATE-11: that module is a single
-hand-written loader at its size budget), and returned as keyword arguments for
-the :class:`~quill.core.settings.Settings` constructor. QUILL Lite's settings
-parse the same fields by type, so the two cannot disagree about a value.
+Shared with QUILL Lite twice over: the fields themselves are declared once,
+here, as :class:`DictationSettings`, which both editors' ``Settings`` inherit
+(2026-10-05 -- before then each declared its own copy, and the two lists were
+kept equal by hand), and they are cleaned once, by :func:`load_fields`, which
+QUILL's loader and QUILL Lite's ``normalized`` both call. Parsed here rather
+than inline in :func:`quill.core.settings.load_settings` (GATE-11: that module
+is a single hand-written loader at its size budget).
 
 wx-free.
 """
@@ -12,16 +14,57 @@ wx-free.
 from __future__ import annotations
 
 from collections.abc import Mapping
+from dataclasses import dataclass
 from typing import Any
 
 from quill.core.action_feedback import coerce as coerce_feedback
 from quill.core.windows_dictation.engines import coerce_engine
 from quill.core.windows_dictation.options import coerce_pause, coerce_silence
+from quill.core.windows_dictation.preview import coerce_preview
 from quill.core.windows_dictation.speech_language import coerce_speech_language
 from quill.core.windows_dictation.vocabulary import DASH_STYLES
 from quill.core.windows_dictation.wake import DEFAULT_STOP_PHRASE, DEFAULT_WAKE_PHRASE
 
-__all__ = ["load_fields"]
+__all__ = ["DictationSettings", "load_fields"]
+
+
+@dataclass(slots=True)
+class DictationSettings:
+    """Tools > Dictation's settings, in both editors, under one set of names.
+
+    Meanings are in :mod:`~quill.core.windows_dictation.preferences`.
+    """
+
+    windows_dictation_microphone: str = ""
+    windows_dictation_engine: str = "moonshine"
+    windows_dictation_language: str = ""
+    windows_dictation_speech_language: str = "en"
+    windows_dictation_dash: str = "em"
+    windows_dictation_wake_enabled: bool = False
+    windows_dictation_wake_phrase: str = "Quill dictate"
+    windows_dictation_stop_phrase: str = "stop dictation"
+    windows_dictation_phrase_feedback: str = "both"
+    windows_dictation_cue_sounds: bool = True
+    windows_dictation_announce: bool = True
+    windows_dictation_pause: str = "normal"
+    windows_dictation_remove_fillers: bool = False
+    windows_dictation_auto_punctuation: bool = True
+    windows_dictation_silence_minutes: int = 0
+    windows_dictation_continuous: bool = False
+    # 2026-10-05: hold-to-talk, the live preview, Talking to AI, and OpenAI.
+    windows_dictation_hold_to_talk: bool = False
+    windows_dictation_preview: str = "show"
+    windows_dictation_ai_send: str = "pause"
+    windows_dictation_ai_pause: str = "long"
+    windows_dictation_ai_remove_fillers: bool = True
+    windows_dictation_ai_auto_punctuation: bool = True
+    windows_dictation_openai_model: str = ""
+    windows_dictation_openai_consent: bool = False
+    # 2026-10-05, the gap plan: marks said in the read-back, transcript times,
+    # and the one-time sentence about recording other people.
+    windows_dictation_readback_marks: bool = True
+    windows_dictation_transcript_timestamps: bool = False
+    windows_dictation_transcript_told: bool = False
 
 
 def load_fields(data: Mapping[str, Any]) -> dict[str, Any]:
@@ -58,4 +101,30 @@ def load_fields(data: Mapping[str, Any]) -> dict[str, Any]:
             data.get("windows_dictation_silence_minutes", 0)
         ),
         "windows_dictation_continuous": bool(data.get("windows_dictation_continuous", False)),
+        # 2026-10-05: hold-to-talk, the live preview, Talking to AI, OpenAI.
+        "windows_dictation_hold_to_talk": bool(data.get("windows_dictation_hold_to_talk", False)),
+        "windows_dictation_preview": coerce_preview(data.get("windows_dictation_preview", "show")),
+        "windows_dictation_ai_send": (
+            "enter" if data.get("windows_dictation_ai_send") == "enter" else "pause"
+        ),
+        "windows_dictation_ai_pause": coerce_pause(data.get("windows_dictation_ai_pause", "long")),
+        "windows_dictation_ai_remove_fillers": bool(
+            data.get("windows_dictation_ai_remove_fillers", True)
+        ),
+        "windows_dictation_ai_auto_punctuation": bool(
+            data.get("windows_dictation_ai_auto_punctuation", True)
+        ),
+        "windows_dictation_openai_model": str(data.get("windows_dictation_openai_model", "") or ""),
+        "windows_dictation_openai_consent": bool(
+            data.get("windows_dictation_openai_consent", False)
+        ),
+        "windows_dictation_readback_marks": bool(
+            data.get("windows_dictation_readback_marks", True)
+        ),
+        "windows_dictation_transcript_timestamps": bool(
+            data.get("windows_dictation_transcript_timestamps", False)
+        ),
+        "windows_dictation_transcript_told": bool(
+            data.get("windows_dictation_transcript_told", False)
+        ),
     }

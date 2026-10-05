@@ -17,6 +17,7 @@ from typing import ClassVar
 
 from quill.core.settings import save_settings
 from quill.core.watch_actions import WatchActionOutcome
+from quill.core.watch_default import launch_plan
 from quill.core.watch_profiles import WatchProfile, iter_matching_files
 from quill.core.watch_queue import (
     STATE_DONE,
@@ -42,13 +43,19 @@ class WatchFolderRuntimeMixin:
         # contract. The WatchService can still be constructed so other
         # surfaces (settings UI, diagnostics) can inspect profiles, but
         # ``start()`` is the side effect we are refusing.
-        if self._safe_mode:
-            self._apply_watch_folder_menu_state()
+        #
+        # Two switches decide what launch starts (watch_default.launch_plan):
+        # "Enable folder watching by default" starts the enabled profiles,
+        # "Start watching automatically" starts the page's default folder.
+        profiles, default_folder = launch_plan(self.settings, safe_mode=bool(self._safe_mode))
+        if profiles:
+            self._start_watch_folder_monitoring(announce=False)
             return
-        if not bool(getattr(self.settings, "watch_folder_enabled", False)):
-            self._apply_watch_folder_menu_state()
-            return
-        self._start_watch_folder_monitoring(announce=False)
+        if default_folder and self._feature_enabled("core.watch_folder"):
+            # The default folder alone: deliberately not recorded as
+            # watch_folder_enabled, which would start every profile next time.
+            self._watch_service.start(profiles=False)
+        self._apply_watch_folder_menu_state()
 
     def _start_watch_folder_monitoring(self, *, announce: bool = True) -> bool:
         if not self._feature_enabled("core.watch_folder"):
@@ -395,12 +402,12 @@ class WatchFolderRuntimeMixin:
             spec = resolve_spec(load_model_choice())
             return (
                 f"AI actions send each file's text to your selected model "
-                f"({spec.name}). This runs only when consent is ticked."
+                f"({spec.name}). This runs only when consent is checked."
             )
         except Exception:  # noqa: BLE001 - never block the dialog on this lookup
             return (
                 "AI actions send each file's text to your selected AI model. "
-                "This runs only when consent is ticked."
+                "This runs only when consent is checked."
             )
 
     def _watch_dry_run_sample(self, profile: WatchProfile) -> Path:

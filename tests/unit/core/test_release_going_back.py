@@ -345,3 +345,36 @@ def test_an_installed_copy_with_nothing_kept_cannot_undo() -> None:
     )
     assert "Start-Process" not in "\n".join(lines)
     assert "nothing to go back to" in "\n".join(lines)
+
+
+def test_an_apostrophe_in_the_installer_path_is_escaped_for_powershell() -> None:
+    """PowerShell ends a single-quoted string at the next quote unless it is
+    doubled, so O'Brien's profile folder used to break both installer lines."""
+    from quill.core.updater.apply_script import ps_single_quoted
+
+    assert ps_single_quoted("C:/Users/O'Brien/Setup.exe") == "'C:/Users/O''Brien/Setup.exe'"
+    folder = Path("C:/Users/O'Brien/AppData/Local/Quill")
+    lines = health_lines(
+        marker=Path("m.ok"),
+        result_file=Path("r.json"),
+        from_version="3.2.0",
+        to_version="3.3.0",
+        relaunch='start "" x',
+        portable=False,
+        install_dir=Path("app"),
+        rollback_setup=folder / "rollback" / "Setup-3.2.0.exe",
+    )
+    undo = next(line for line in lines if "Start-Process" in line)
+    assert f"-FilePath '{str(folder).replace(chr(39), chr(39) * 2)}" in undo
+    assert "O'Brien" not in undo.replace("O''Brien", "")
+    script = build_apply_update_script(
+        pid=7,
+        mode="installer",
+        install_dir=folder,
+        exe_path=folder / "QuillRadio.exe",
+        log_path=folder / "apply.log",
+        setup_exe=folder / "Setup-3.3.0.exe",
+    )
+    forward = next(line for line in script.splitlines() if "Start-Process" in line)
+    assert "O'Brien" not in forward.replace("O''Brien", "")
+    assert "O''Brien" in forward

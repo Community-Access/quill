@@ -256,6 +256,13 @@ PURPOSES: dict[str, str] = {
         "player's export. What arrives lands in your favorites; nothing "
         "already there is touched."
     ),
+    "What Was Left Out": (
+        "Everything a backup, a restore or a setup file left out, one row per "
+        "item, each with the reason -- stored only in OneDrive, in use by "
+        "another program, a path too long for Windows. Nothing listed here was "
+        "deleted. What to do about it is under the list, and Copy List takes "
+        "the whole thing with you."
+    ),
     "Keyboard Shortcuts Sheet": (
         "Every key Quill Radio answers to, in one filterable list, built by "
         "reading the menus in front of you -- so it shows the keys you "

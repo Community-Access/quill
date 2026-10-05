@@ -247,25 +247,42 @@ RCEDIT_PINNED_URL = (
 RCEDIT_PINNED_SHA256 = "3e7801db1a5edbec91b49a24a094aad776cb4515488ea5a4ca2289c400eade2a"
 
 
-def _sign_paths(paths: list[Path], *, label: str) -> list[Path]:
+def _sign_paths(paths: list[Path], *, label: str, version: str | None = None) -> list[Path]:
     """Authenticode-sign build outputs (opt-in; see scripts/code_signing.py).
 
     A thin, import-safe wrapper: ``code_signing`` lives beside this module in
     ``scripts/`` and is imported as ``scripts.code_signing`` under pytest but as
     a top-level ``code_signing`` when this file is run directly as a script.
     Signing is a no-op unless ``QUILL_SIGN=1`` (fail-open unless
-    ``QUILL_SIGN_REQUIRED=1``), so calling it unconditionally is safe.
+    ``QUILL_SIGN_REQUIRED=1``), so calling it unconditionally is safe. A Beta,
+    Release Candidate or Dev *version* is never signed (owner decision
+    2026-10-04), whatever the environment says.
     """
     try:
         from scripts.code_signing import sign_paths
     except ModuleNotFoundError:
         from code_signing import sign_paths  # type: ignore[no-redef]
-    return sign_paths(paths, label=label)
+    return sign_paths(paths, label=label, version=version)
 
 
-def _inno_sign_args() -> list[str]:
+def _signing_decision(version: str) -> bool:
+    """Whether this build of *version* signs, said once in a plain line when not.
+
+    The same helper every ``build_release.ps1`` asks through
+    ``Resolve-QuillSigning``: only a final-numbered version (the display
+    version ``1.0.0``, not ``1.0.0 Beta 1`` or ``1.0.0 Dev``) may be signed.
+    """
+    try:
+        from scripts.code_signing import build_decision
+    except ModuleNotFoundError:
+        from code_signing import build_decision  # type: ignore[no-redef]
+    return build_decision(version)
+
+
+def _inno_sign_args(version: str | None = None) -> list[str]:
     """ISCC args that activate the generated ``.iss`` ``#ifdef Sign`` SignTool
-    block, or ``[]`` when code signing is not requested.
+    block, or ``[]`` when code signing is not requested -- or when *version* is
+    a Beta, Release Candidate or Dev build, which is never signed.
 
     Mirrors the standalone ``build_release.ps1`` wiring: ``/DSign`` plus a
     ``/Squilltrusted=`` mapping whose command signs ``$f`` (Inno's ``$q`` -> a
@@ -275,10 +292,13 @@ def _inno_sign_args() -> list[str]:
     plain build compiles the inert directives away and stays unsigned.
     """
     try:
-        from scripts.code_signing import signing_requested
+        from scripts.code_signing import signing_refused, signing_requested
     except ModuleNotFoundError:
-        from code_signing import signing_requested  # type: ignore[no-redef]
-    if not signing_requested():
+        from code_signing import (  # type: ignore[no-redef]
+            signing_refused,
+            signing_requested,
+        )
+    if not signing_requested() or (version is not None and signing_refused(version)):
         return []
     signer = Path(__file__).resolve().parent / "code_signing.py"
     sign_cmd = f"$q{sys.executable}$q $q{signer}$q sign $f"
@@ -727,7 +747,10 @@ def build_windows_distribution(
     # Sign the fully-assembled payload BEFORE the installer compiles so the
     # signed launcher/binaries are what Inno embeds; the Setup.exe itself is
     # signed after compile below. A plain build (QUILL_SIGN unset) is unchanged.
-    _sign_paths([portable_dir], label="portable payload")
+    # A Beta or Dev build is never signed (owner decision 2026-10-04): the
+    # decision says so once, and both calls below then do nothing.
+    _signing_decision(version)
+    _sign_paths([portable_dir], label="portable payload", version=version)
 
     result = {
         "portable_dir": str(portable_dir),
@@ -912,66 +935,53 @@ def build_text_editor_registry_lines() -> list[str]:
     and the command cannot offer different types. HKA is HKCU for a per-user
     install and HKLM for an administrator one.
     """
-    profile = QUILL_EDITOR
-    classes = "Software\\Classes"
-    progid = f"{classes}\\{profile.progid}"
-    application = f"{classes}\\Applications\\{{#AppExeName}}"
-    capabilities = profile.capabilities_key
-    command = '"""{app}\\{#AppExeName}"" -m ' + profile.module + ' ""%1"""'
-    icon = '"{app}\\{#AppExeName},0"'
+    from quill.core.windows_installer_lines import inno_registry_lines
 
-    def value(subkey: str, name: str, data: str, flags: str = "uninsdeletekey") -> str:
-        return (
-            f'Root: HKA; Subkey: "{subkey}"; ValueType: string; ValueName: "{name}";'
-            f" ValueData: {data}; Flags: {flags}"
-        )
-
-    lines = [
-        "; QUILL tells Windows it is a text editor that CAN open these types, on",
-        "; every install, and takes nothing over. Windows keeps the choice of which",
-        "; app opens a type for the user alone; these keys put QUILL in Open With and",
-        "; in Settings > Apps > Default apps, where that choice is made. Tools > Make",
-        "; QUILL My Text Editor writes the same keys for one account and opens that",
-        "; page. Generated from quill.core.windows_editor.QUILL (HKA: this user for",
-        "; a per-user install, the whole machine for an administrator one).",
-        value(progid, "", f'"{profile.app_name} Document"'),
-        value(progid, "FriendlyTypeName", f'"{profile.app_name} Document"'),
-        value(f"{progid}\\DefaultIcon", "", icon),
-        value(f"{progid}\\shell\\open\\command", "", command),
-        value(application, "FriendlyAppName", f'"{profile.app_name}"'),
-        value(f"{application}\\DefaultIcon", "", icon),
-        value(f"{application}\\shell\\open\\command", "", command),
-    ]
-    lines += [value(f"{application}\\SupportedTypes", ext, '""') for ext in profile.extensions]
-    lines += [
-        "; One value in each type's own list, removed on uninstall; the type's key",
-        "; is shared with every other app and is never deleted.",
-    ]
-    lines += [
-        value(f"{classes}\\{ext}\\OpenWithProgids", profile.progid, '""', "uninsdeletevalue")
-        for ext in profile.extensions
-    ]
-    owner = capabilities.rsplit("\\", 1)[0]
-    lines += [
-        "; Capabilities + RegisteredApplications: what Default apps lists QUILL by.",
-        f'Root: HKA; Subkey: "{owner}"; Flags: uninsdeletekeyifempty',
-        value(capabilities, "ApplicationName", f'"{profile.app_name}"'),
-        value(capabilities, "ApplicationDescription", f'"{profile.description}"'),
-        value(capabilities, "ApplicationIcon", icon),
-    ]
-    lines += [
-        value(f"{capabilities}\\FileAssociations", ext, f'"{profile.progid}"')
-        for ext in profile.extensions
-    ]
-    lines.append(
-        value(
-            "Software\\RegisteredApplications",
-            profile.app_name,
-            f'"{capabilities}"',
-            "uninsdeletevalue",
-        )
+    return inno_registry_lines(
+        QUILL_EDITOR,
+        launcher="{app}\\{#AppExeName}",
+        launcher_arguments=f"-m {QUILL_EDITOR.module}",
+        application="{#AppExeName}",
+        icon='"{app}\\{#AppExeName},0"',
+        header=(
+            "; QUILL tells Windows it is a text editor that CAN open these types, on",
+            "; every install, and takes nothing over. Windows keeps the choice of which",
+            "; app opens a type for the user alone; these keys put QUILL in Open With and",
+            "; in Settings > Apps > Default apps, where that choice is made. Tools > Make",
+            "; QUILL My Text Editor writes the same keys for one account and opens that",
+            "; page. Generated from quill.core.windows_editor.QUILL (HKA: this user for",
+            "; a per-user install, the whole machine for an administrator one).",
+        ),
     )
-    return lines
+
+
+def build_media_player_registry_lines() -> list[str]:
+    """Return the ``[Registry]`` lines that register Quill Radio as a media player.
+
+    The same generator as QUILL's text-editor block, with Quill Radio's
+    profile (:data:`quill.core.windows_media.RADIO`): Open with for music,
+    video and playlists, a place in Default apps, and the Play with Quill Radio
+    and Add to Quill Radio Playlist verbs. ``quill-radio.iss`` keeps them
+    between the generated-block marks; ``scripts/sync_radio_installer_registry.py``
+    rewrites them and ``tests/unit/scripts/test_radio_media_player_installer.py``
+    fails when they drift.
+    """
+    from quill.core.windows_installer_lines import inno_registry_lines
+    from quill.core.windows_media import RADIO
+
+    return inno_registry_lines(
+        RADIO,
+        launcher=f"{{app}}\\{RADIO.launcher_name}",
+        application=RADIO.exe_name,
+        icon=f'"{{app}}\\{RADIO.icon_name}"',
+        header=(
+            "; Quill Radio tells Windows it is a media player that CAN open these",
+            "; types, on every install, and takes nothing over: these keys put it in",
+            "; Open with and in Settings > Apps > Default apps, where the person",
+            "; chooses. Preferences > Make Quill Radio My Media Player writes the same",
+            "; keys for one account. Generated from quill.core.windows_media.RADIO.",
+        ),
+    )
 
 
 #: Settings' Open QUILL instead of Notepad points every Notepad launch at this
@@ -1903,7 +1913,7 @@ def compile_inno_setup_installer(
             "uses the v7 SetupArchitecture directive). Install Inno Setup 7 or "
             "pass --iscc-path."
         )
-    subprocess.run([str(compiler), *_inno_sign_args(), str(installer_script)], check=True)
+    subprocess.run([str(compiler), *_inno_sign_args(version), str(installer_script)], check=True)
     # The Offline Edition uses a distinct OutputBaseFilename (Quill-Offline-Setup)
     # so it never overwrites a coexisting slim installer; the slim build keeps the
     # long-standing Quill-for-All-Setup name.

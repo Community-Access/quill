@@ -464,7 +464,9 @@ class ConverterActionsMixin:
         from quill.apps.converter_menu import shortcut_list
         from quill.ui.converter_dialogs import show_text
 
-        show_text(self, "Keyboard Shortcuts", shortcut_list(self.frame.GetMenuBar()))
+        show_text(
+            self, "Keyboard Shortcuts", shortcut_list(self.frame.GetMenuBar(), self._show_hide_key)
+        )
 
     def _show_about(self) -> None:
         self._show_message_box(

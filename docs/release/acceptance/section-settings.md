@@ -221,7 +221,7 @@ the AI Hub where providers, models, and API keys are managed.
 **Before you start**
 - **Precondition:** the AI feature is enabled in this profile; otherwise this tab
   is absent — mark **N/A** and confirm absence in `gated-absence.md`.
-- Sample change: tick **Use Artificial Intelligence** on.
+- Sample change: check **Use Artificial Intelligence**.
 
 **Do this**
 1. Ctrl+Tab to **AI and Assistant**.
@@ -304,7 +304,7 @@ idle ones.
 files that appear in a folder you watch).
 
 **Before you start**
-- Settings open. Sample change: tick **Enable folder watching by default** on, then
+- Settings open. Sample change: check **Enable folder watching by default**, then
   set a **Default watch folder**.
 
 **Do this**
@@ -333,8 +333,8 @@ files that appear in a folder you watch).
 menu, and which verbs (Open, OCR, Read, Convert).
 
 **Before you start**
-- Settings open. Sample change: tick **Show QUILL in the file-manager right-click
-  menu** on.
+- Settings open. Sample change: check **Show QUILL in the file-manager right-click
+  menu**.
 
 **Do this**
 1. Ctrl+Tab to **Integration and Context Menu**.
@@ -450,7 +450,7 @@ all behind one switch so nothing experimental is reachable by accident.
 1. Ctrl+Tab to **Experimental**.
 2. With **Enable experimental features (the master switch for everything on this
    tab)** off, Tab through the pane.
-3. Now tick the master switch on and Tab again.
+3. Now check the master switch and Tab again.
 4. Press **Cancel** (leave experimental off unless a later scenario needs it).
 
 **You should see and hear**
@@ -458,7 +458,7 @@ all behind one switch so nothing experimental is reachable by accident.
   to a screen-reader user the tab is a single reachable checkbox; the experimental
   options (GLOW review/repair, WordPress publishing, Table Studio, browser Read
   Aloud) drop out of the Tab order and cannot be focused or changed.
-- Ticking the master switch **on** live-enables those controls (they enter the Tab
+- Checking the master switch live-enables those controls (they enter the Tab
   order). The pane's own text reminds you to **restart** after changing anything
   here.
 

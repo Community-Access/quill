@@ -57,13 +57,13 @@ def launcher(profile: editor.EditorProfile) -> tuple[list[str], str]:
     return argv, f"{argv[0]},0"
 
 
-def _register_text(name: str, types: str) -> str:
+def _register_text(name: str, types: str, example: str = ".txt") -> str:
     return (
         "Windows lets an app offer to open your files, but only you can choose "
         "which app opens them.\n\n"
         f"When you press OK, {name} tells Windows, for your account only, that it "
         f"can open {types}. Then it opens Windows' Default apps page for {name}.\n\n"
-        f"On that page, choose .txt, pick {name}, and choose Set default. Do the "
+        f"On that page, choose {example}, pick {name}, and choose Set default. Do the "
         f"same for any other type you want {name} to open. Anything you leave "
         "alone stays with the app that opens it now, and you can change any of them "
         "back on the same page."
@@ -154,8 +154,8 @@ class TextEditorCommandsMixin:
         profile = self._text_editor_profile()
         name = profile.app_name
         answer = self._text_editor_ask(
-            _register_text(name, profile.types_phrase),
-            f"Make {name} My Text Editor",
+            _register_text(name, profile.types_phrase, profile.example_type),
+            f"Make {name} My {profile.role}",
             wx.OK | wx.CANCEL | wx.ICON_INFORMATION,
         )
         if answer != wx.OK:
@@ -171,19 +171,21 @@ class TextEditorCommandsMixin:
                 plan = editor.registration_plan(profile, argv, icon)
                 editor.write_plan(plan, sys_.CurrentUserWriter())
         except OSError as error:
-            self._announce(f"Windows would not record {name} as a text editor: {error}")
+            role = profile.role.lower()
+            self._announce(f"Windows would not record {name} as a {role}: {error}")
             self._text_editor_return()
             return False
         sys_.notify_association_change()
         uri = editor.default_apps_uri(profile, sys_.windows_build(), machine=machine)
+        example = profile.example_type
         if sys_.open_settings(uri):
             self._announce(
-                f"{name} is ready in Default apps. Choose it for .txt and any other type."
+                f"{name} is ready in Default apps. Choose it for {example} and any other type."
             )
         else:
             self._announce(
                 f"{name} is registered. Open Settings, then Apps, then Default apps, "
-                f"and choose {name} for .txt and any other type."
+                f"and choose {name} for {example} and any other type."
             )
         return True
 

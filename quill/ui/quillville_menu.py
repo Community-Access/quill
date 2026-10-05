@@ -87,9 +87,11 @@ def _row(
     rebinding in Keyboard Shortcuts wins and a reset brings the default back.
     Without a host (the tray's copy in a test) the default is shown as it is.
     """
-    from quill.core.app_keymaps import SIBLING_APP_ACCELERATORS
+    from quill.core.app_keymaps import SIBLING_APP_ACCELERATORS, SIBLING_APP_FIXED_ACCELERATORS
 
-    default = SIBLING_APP_ACCELERATORS[position] if position < len(SIBLING_APP_ACCELERATORS) else ""
+    default = SIBLING_APP_FIXED_ACCELERATORS.get(key, "")
+    if not default and position < len(SIBLING_APP_ACCELERATORS):
+        default = SIBLING_APP_ACCELERATORS[position]
     name = MENU_NAMES.get(key, APP_NAMES[key])
     binding = default
     commands = getattr(host, "commands", None)
@@ -143,10 +145,19 @@ def build_quillville_menu(
             continue
         item_id = wx.NewIdRef()
         menu.Append(item_id, _row(key, position, on_launch, host))
-        position += 1
+        position += _counts(key)
         frame.Bind(wx.EVT_MENU, lambda _e, k=key: on_launch(k), id=item_id)
         retain(item_id)
     return menu
+
+
+def _counts(key: str) -> int:
+    """1 when *key*'s row takes the next positional launcher key, 0 when it has
+    a key of its own (``SIBLING_APP_FIXED_ACCELERATORS``: Quill Cast's row is
+    Cast's show/hide key, so the others count on without it)."""
+    from quill.core.app_keymaps import SIBLING_APP_FIXED_ACCELERATORS
+
+    return 0 if key in SIBLING_APP_FIXED_ACCELERATORS else 1
 
 
 def append_sibling_items(

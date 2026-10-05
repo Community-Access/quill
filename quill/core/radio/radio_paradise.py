@@ -44,6 +44,7 @@ import urllib.error
 import urllib.request
 from typing import Any
 
+from quill.core import http_client
 from quill.core.error_codes import CodedError
 from quill.core.radio import directory_cache
 from quill.core.radio.models import RadioStation
@@ -54,7 +55,6 @@ _TIMEOUT_SECONDS = 15.0
 #: The list is ~8 KB. A megabyte is absurdly generous and still catches a
 #: redirect to something that is not the API at all.
 _MAX_BYTES = 1_000_000
-_USER_AGENT: str | None = None
 
 CATEGORY_LABEL = "Radio Paradise"
 #: Spoken/shown attribution. It names the quality expansion because a listener
@@ -241,12 +241,7 @@ def parse_channels(payload: str, *, preferred_quality: str = "") -> list[RadioSt
 
 
 def _user_agent() -> str:
-    global _USER_AGENT
-    if _USER_AGENT is None:
-        from quill import __version__
-
-        _USER_AGENT = f"QUILL/{__version__} (https://github.com/Community-Access/quill)"
-    return _USER_AGENT
+    return http_client.user_agent()
 
 
 def _fetch(url: str) -> str:

@@ -645,7 +645,7 @@ def test_settings_normalize_invalid_shell_file_types(
         encoding="utf-8",
     )
     loaded = load_settings()
-    assert loaded.shell_file_types == "images_pdf"
+    assert loaded.shell_file_types == "images_pdf_docs"
 
 
 def test_settings_defaults_announcement_startup_tips_to_off(

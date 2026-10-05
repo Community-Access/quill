@@ -121,6 +121,7 @@ def policy_modes_from_settings(settings: Any) -> PolicyModes:
             getattr(settings, "announcement_sound_instead_of_speech_when_quiet", True)
         ),
         braille_style=str(getattr(settings, "announcement_braille_style", "speech")),
+        interrupt_for=str(getattr(settings, "announcement_severity_interrupt", "warnings")),
     )
 
 

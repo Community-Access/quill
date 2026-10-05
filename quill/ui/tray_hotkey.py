@@ -23,6 +23,9 @@ _NAMED_KEYS = {
     "RIGHT": "WXK_RIGHT",
     "UP": "WXK_UP",
     "DOWN": "WXK_DOWN",
+    "PAGEUP": "WXK_PAGEUP",
+    "PAGEDOWN": "WXK_PAGEDOWN",
+    "INSERT": "WXK_INSERT",
 }
 
 

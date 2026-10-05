@@ -261,6 +261,11 @@ class DictationHotkeysMixin(WindowsDictationCommandsMixin):
 
         controller = self._live_dictation
         state = controller.state if controller is not None else DictationState.IDLE
+        if state is DictationState.IDLE:
+            # Locked Dictation is idle: the key answers for Live Dictation, as
+            # Dictation Status does on the same key in QUILL Lite (2026-10-05).
+            self._announce(self._dictation_status_sentence(), force=True)
+            return
         self._announce(_DICTATION_STATUS_TEXT.get(state, "Dictation is off."), force=True)
 
     def open_dictation_settings(self) -> None:

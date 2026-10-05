@@ -149,7 +149,7 @@ counts as done, so it will not come back next time. If you already have
 podcasts, from a backup or another QUILL app, Cast does not show it at all.
 
 The welcome also has a checkbox, **Show me a tip now and then** (Alt+T).
-Leave it ticked. The first time you reach somewhere new, such as the Play
+Leave it checked. The first time you reach somewhere new, such as the Play
 Queue, Cast says one helpful sentence about it. Each tip is said once, ever.
 It goes to your braille display as well as to speech, and it never takes your
 focus or makes you press anything.
@@ -363,12 +363,12 @@ tray, or ask you each time.
 
 If you choose to be asked, closing the window brings up a small question
 called **Closing QUILL Cast**. Press **Exit** to close Cast, or **Minimize to
-Tray** (Alt+M) to keep listening with the window out of the way. Tick **Don't
+Tray** (Alt+M) to keep listening with the window out of the way. Check **Don't
 ask me again** (Alt+D) and Cast remembers your answer. Cancel, or Escape,
 leaves everything as it was.
 
 One more choice sits beside it: **Alt+F4 minimizes to the system tray**. With
-it ticked, Alt+F4 tucks Cast into the tray, still playing, instead of closing
+it checked, Alt+F4 tucks Cast into the tray, still playing, instead of closing
 it.
 
 If your keyboard has media keys, Play/Pause, Stop, Next Track and Previous
@@ -1467,7 +1467,7 @@ unheard episodes staring at you.
 3. Cast asks first, naming the podcast and how many episodes. Press **Mark Played**.
 
 Every episode is marked played and leaves the Inbox. They stay in your
-library, and your downloads stay too. If you do this often, tick **Don't ask
+library, and your downloads stay too. If you do this often, check **Don't ask
 me again** and Cast stops asking.
 
 For one episode at a time, press Shift+F10 on it and choose **Mark as
@@ -1693,25 +1693,46 @@ built up over years.
    - **Check that each feed is still reachable after importing** (Alt+C)
      finds the podcasts that have stopped publishing, so you are not left
      wondering why one never has anything new.
-   - **Add every show as streaming** (Alt+S) is ticked to begin with, so a
+   - **Add every show as streaming** (Alt+S) is checked to begin with, so a
      long list does not start a download for every podcast in it. Leave it
-     ticked unless you know you want downloads.
+     checked unless you know you want downloads.
 5. Press **Import**.
 
-Your folders come across as folders. A podcast listed twice is imported once,
-even if one copy has a slightly different address. Two different podcasts
-that happen to share a name are both imported, and the report points them out
-so you can check.
+Your folders come across as folders, exactly as the file has them: folders
+inside folders as deep as they go, in the same order, and empty folders too.
+Podcasts that sit outside any folder stay at the top level. Folder names with
+an ampersand, accents or quotation marks come across as written, and so do
+names that another app saved with its punctuation spelled out twice.
+
+A podcast listed twice is imported once, even if one copy has a slightly
+different address. If the file puts one podcast in two folders, Cast follows
+it once, in the first folder it appears in, and the report says where the
+other copy was. Two different podcasts that happen to share a name are both
+imported, whether the other one is already in your list or elsewhere in the
+same file, and the report points them out so you can check. A line in the file
+whose address is not a complete web address, like "http://feed/", is not
+imported; the report lists it with the reason.
+
+The first time Cast reads each new podcast, it takes that as a starting
+point. You will not be told about hundreds of "new" episodes from shows you
+have just brought across, and nothing is downloaded or added to a playlist
+because of it. The only exception is what you asked for under "When I follow
+a podcast, also fetch" in the podcast's settings.
 
 The import runs in the background, so carry on listening while it works. If
 you asked for the reachability check, Cast tells you how far along it is as
 it goes. **Stop Checking** (Alt+T) ends the check early and keeps everything
-already imported. A private feed that asks for a sign-in counts as working.
+already imported. A private feed that asks you to sign in counts as working.
+An address that now opens a web page, a feed with nothing in it, and a host
+that turns podcast apps away do not.
 
 When it is done, the **OPML Import Report** window lists anything worth your
-attention: corrections,
-feeds that did not answer, duplicates it skipped, and anything it could not
-import. Two buttons sit under it:
+attention. It names feeds that did not answer, each with the reason in
+plain words, and duplicates it skipped. It lists anything it could not
+import, and feeds whose host says they have moved for good. Cast moves a
+podcast to its new address only when **Follow permanent feed redirects** is
+on (Preferences > Fetching). Otherwise the report says the address was left
+alone. Two buttons sit under it:
 
 - **Export Report...** (Alt+E) saves the whole report as a text file.
 - **Save Pruned OPML...** (Alt+P) writes your original file back out without
@@ -1723,9 +1744,14 @@ You can ask about dead feeds again any time with Podcasts > **Feed Check...**
 read it.
 
 To go the other way, choose Podcasts > **Export OPML...** (Ctrl+Alt+E,
-Advanced) and save the file. Any other podcast app can read it.
+Advanced) and save the file. Any other podcast app can read it. Your folders
+go into the file as folders, empty ones included, so importing it again, in
+Cast or anywhere else, gives you the same arrangement. Inside each folder the
+folders are written first and then the podcasts. A file that mixed the two in
+another order comes back with the same folders and podcasts in the same
+places, just grouped that way.
 
-If you ticked the box for it when you installed Cast, pressing Enter on an
+If you checked the box for it when you installed Cast, pressing Enter on an
 OPML file in File Explorer opens Cast straight into the import, and Cast
 tells you which file it is opening. A list saved with an ".xml" ending
 imports fine through Import OPML too.
@@ -1955,9 +1981,9 @@ never leaves any out.
 
 > **QUILLBee's tip:** A big library gets shorter still with View > Hide
 > Caught-Up Podcasts (Ctrl+Shift+H), which leaves out every podcast with
-> nothing unheard. It's a tick on the View menu, so the same key brings them
+> nothing unheard. It's a check item on the View menu, so the same key brings them
 > all back. And if the Podcasts place ever looks emptier than you remember,
-> that tick is the first thing to check.
+> that check mark is the first thing to look at.
 
 ### Keeping your favourites close
 
@@ -2269,7 +2295,7 @@ For a podcast you never skip, there is no need to queue each episode by
 hand. Choose **Auto-Queue New Episodes** on the podcast's menu (Shift+F10).
 Its new episodes go straight into the Play Queue when they arrive and skip
 the Inbox. **Stop Auto-Queueing New Episodes** on the same menu turns it off.
-You can also tick it in the podcast's Settings for This Podcast.
+You can also check it in the podcast's Settings for This Podcast.
 
 Starting a series from the beginning? In the same window, set **Auto-Queue
 takes the** to **Oldest unheard episode**. Cast then queues the podcast one
@@ -2367,8 +2393,8 @@ To set the shared one:
      number in **Every** (Alt+E) and the **Unit** (Alt+N), or pick from
      **Quick pick** (Alt+Q).
    - **At set times**: such as 6:00 and 18:00. Type up to six times in
-     **Times of day** (Alt+T), separated by commas, and tick days under **On
-     these days** (Alt+D). No days ticked means every day.
+     **Times of day** (Alt+T), separated by commas, and check days under **On
+     these days** (Alt+D). No days checked means every day.
    - **Around when it usually publishes**: Cast learns when the podcast
      tends to appear and looks closely then. This is the one I use for my
      daily shows. The window tells you what it has learned. **Pin This
@@ -2383,7 +2409,7 @@ To give one podcast its own schedule, press Shift+F10 on it and choose
 This Podcast. When you save, Cast reads the schedule back in one sentence:
 "The Daily now checks: at 06:00 and 18:00, weekdays."
 
-Scheduled checks wait for the end of Quiet Hours unless you tick **Check
+Scheduled checks wait for the end of Quiet Hours unless you check **Check
 during Quiet Hours** in Preferences > Fetching.
 
 #### Pausing a podcast
@@ -2406,16 +2432,58 @@ Cast updates the podcast's address for you when it finds one. It starts off.
 A saved username and password are never sent on to the new address.
 
 1. Focus is in **Your feeds, worst first** (Alt+W). Failing feeds come first,
-   then quiet ones, then healthy ones.
-2. Read from the top and stop when the rows turn healthy. Each row also says
-   when Cast will check it next.
+   then feeds that are empty, then quiet ones, then healthy ones.
+2. Read from the top and stop when the rows turn healthy. A failing row says
+   why, in plain words, and each row says when Cast will check it next. The
+   "last new episode" column is the date of the podcast's newest episode, so
+   a show that stopped years ago says so.
 3. On a failing row, press **Retry** (Alt+R). To try every failing feed
    again, press **Retry All Failed** (Alt+F).
 
+The reasons you may hear:
+
+- **The host no longer has a feed at this address**, or **has removed it for
+  good**. The podcast has probably moved or ended.
+- **This podcast's web address no longer exists.** The website's name has
+  lapsed.
+- **The podcast's site is refusing every connection**, **the site's secure
+  connection is broken**, or **its security certificate is not valid**. The
+  site itself is broken.
+- **This address returns a web page, not a podcast feed.** The address now
+  leads somewhere else entirely.
+- **The feed is there, but it has no episodes.** The publisher has emptied
+  it. These rows read "Empty".
+- **The publisher has locked this feed.** It may now need a paid
+  subscription.
+- **The feed's host is refusing podcast apps.** This is usually a bot check
+  that only the publisher can switch off.
+- **This feed needs a sign-in.** Use Feed Credentials on the podcast's menu.
+- **The host took too long to answer**, or **is having trouble right now**.
+  This usually passes by itself.
+
+For a podcast that has moved, ended up somewhere unexpected or emptied its
+feed, press **Find This Show's New Feed...** (Alt+N). Cast looks the show's
+title up in the podcast directories you use in Add Podcast. It reads each feed
+it finds to make sure it answers, and lists the ones that do, with how many
+episodes each has and the date of the newest. That date is the quickest way
+to tell the show you know from a different one with the same name. Choose one
+and press **Replace Feed** (Alt+R). The podcast keeps everything: what you
+have heard, where you stopped, your notes and its settings. Only its address
+changes, and episodes the new feed shares with the old one are not listed
+twice. Nothing is looked up until you press the button.
+
 Opening Feed Check checks nothing by itself. **Copy Feed Address** (Alt+C)
-puts a row's address on the clipboard, handy for looking up whether a podcast
-has moved. On a row, the Applications key also offers **Check Now** and
-**Change Schedule...**. A failing feed is not given up on: Cast keeps trying.
+puts a row's address on the clipboard. On a row, the Applications key also
+offers **Check Now**, **Find This Show's New Feed...** and **Change
+Schedule...**. A failing feed is not given up on: Cast keeps trying.
+
+Checking is kind to your connection. After the first time, Cast asks each
+host whether the feed has changed, and a feed that has not changed costs
+almost nothing to check. A plain "http" address is tried over a secure
+connection first. Feed checks also run on their own, so a big check never
+holds up a download or anything else you are doing. If a feed is so large
+that Cast cannot read all of it, Player Information says so; the newest
+episodes are always there.
 
 ### Being told about new episodes
 
@@ -2547,7 +2615,7 @@ them. In Preferences > **Fetching**:
   everything.
 
 Cast tells you how many downloads it started. To hear when they have all
-finished, tick **Notify me when downloads finish** in Preferences > Telling
+finished, check **Notify me when downloads finish** in Preferences > Telling
 you. You get one notification for the whole batch.
 
 #### Keeping disk use in check
@@ -2565,7 +2633,7 @@ Delete is finished with too, so its download goes as well, and Cast says so.
 An episode you marked Keep This Episode is never deleted this way.
 
 Neither ever removes an episode that is in your queue or that you are partway
-through. To protect one podcast completely, tick **Never delete this
+through. To protect one podcast completely, check **Never delete this
 podcast's downloads** in its Settings for This Podcast.
 
 A few more rows in Preferences > Data, for when you want them:
@@ -2637,7 +2705,7 @@ Edit Rules to see how it is made. Then try your own.
 
 1. In Playlists, press the Applications key and choose **New Smart
    Playlist...**. Give it a name.
-2. Under **Shows**, tick the podcasts to include. None ticked means every
+2. Under **Shows**, check the podcasts to include. None checked means every
    podcast.
 3. Choose an **Episode status** (Alt+S), such as unheard.
 4. Fill in any of the rest, leaving 0 for "any":
@@ -2716,7 +2784,7 @@ Once you have tried Filter Episodes Like This, writing your own is not much
 harder. Here is a rule that hides trailers, step by step.
 
 1. Press Shift+F10 on the podcast and choose **Episode Filters...**.
-2. Tick **Filter new episodes of this podcast** (Alt+F).
+2. Check **Filter new episodes of this podcast** (Alt+F).
 3. In **When a rule matches** (Alt+W), leave "Keep everything except
    episodes a rule matches".
 4. Press **Add Rule...** (Alt+A). The **Episode Filter Rule** window opens.
@@ -2773,7 +2841,7 @@ letters in it, it tells you why and puts you back in Value.
 "a trailer, or anything under five minutes" is one rule with one name.
 
 A few things to know. Words are found anywhere in the text, and capitals do
-not matter unless you tick the capitals box. When a feed leaves out a fact,
+not matter unless you check the capitals box. When a feed leaves out a fact,
 such as an episode's length, number tests never match that episode. An
 episode with no type counts as a full episode.
 
@@ -2809,8 +2877,8 @@ Nothing changes while you try, so adjust and try again as often as you like.
 
 #### Where a filter applies, and saving it
 
-Under **Where this applies** (Alt+H), tick what the filter does to matching
-episodes. There are eight checkboxes. The first four are ticked on a new
+Under **Where this applies** (Alt+H), check what the filter does to matching
+episodes. There are eight checkboxes. The first four are checked on a new
 filter, and they keep an episode from reaching you:
 
 - Keep them out of the Inbox.
@@ -2818,7 +2886,7 @@ filter, and they keep an episode from reaching you:
 - Never download them automatically.
 - Don't announce them as new episodes.
 
-The other four hide an episode, and start unticked:
+The other four hide an episode, and start unchecked:
 
 - Hide them from this podcast's episode list.
 - Hide them from New Episodes and Continue Listening.
@@ -2829,13 +2897,13 @@ When you press **Save**, the filter works straight away, on episodes you
 already have as well as new ones. The Play Queue is the one list you built by
 hand, so Cast asks about it separately: **Save and clear them from the
 queue**, or **Save, leave the queue alone**. The episode playing now keeps its
-place either way. Unticking a box later brings those episodes straight back.
+place either way. Unchecking a box later brings those episodes straight back.
 
 If a "keep only" filter turns away every new episode of a check, Cast tells
 you, and leaves a note in Episode Filters for when you next open it, in case
 the publisher changed their titles.
 
-> **QUILLBee's tip:** Give a new filter a week or two before you tick any of
+> **QUILLBee's tip:** Give a new filter a week or two before you check any of
 > the four boxes that hide episodes. While the episodes it catches are still
 > in the podcast's own list, one it caught by mistake is a Shift+F10 away from
 > Always Keep This Episode (Ignore the Filter). Once a rule has proved itself,
@@ -2849,12 +2917,12 @@ Two ways, always:
   (Ignore the Filter)**. That episode is treated as if no filter existed, and
   editing the rules later does not change that. **Apply the Episode Filter to
   This Episode** undoes it.
-- Untick a box under Where this applies, or switch a rule off, and its
+- Uncheck a box under Where this applies, or switch a rule off, and its
   episodes come back at once.
 
-If you ticked **Hide them from this podcast's episode list**, a hidden
-episode is not there to press Shift+F10 on. Untick that box for a moment,
-keep the episode, and tick it again.
+If you checked **Hide them from this podcast's episode list**, a hidden
+episode is not there to press Shift+F10 on. Uncheck that box for a moment,
+keep the episode, and check it again.
 
 ### Saving an episode's audio
 
@@ -3732,7 +3800,7 @@ Then do it again whenever you have spent an evening sorting folders.
 
 When you need your library back, from a backup you made earlier:
 
-1. Press **Ctrl+Alt+Shift+R** (Podcasts > Restore from a Backup).
+1. Press **Ctrl+Alt+F12** (Podcasts > Restore from a Backup).
 2. Pick the backup file.
 3. Before it does anything, Cast tells you when the backup was made and how
    many podcasts it holds. If that is the one you meant, confirm.
@@ -3912,8 +3980,8 @@ Most of what follows lives on the Help menu, **Alt+H**.
 ### Press F1 anywhere
 
 Every window in Cast answers **F1**. You hear what the window is for, then
-what the control you are on does. On a checkbox and not sure what ticking it
-changes? Press F1 before you tick it. Try it now on anything in the main
+what the control you are on does. On a checkbox and not sure what checking it
+changes? Press F1 before you check it. Try it now on anything in the main
 window.
 
 ### Finding a command you have forgotten
@@ -4091,9 +4159,13 @@ They are called release channels.
 3. Press **Switch** to move, or **Close** (Escape) to leave things as they
    are.
 4. For Beta or Dev, a short warning comes first: what could go wrong, how your
-   podcasts are protected, and how to come back. Read it, tick the **I
+   podcasts are protected, and how to come back. Read it, check the **I
    understand** box, and choose **Move to Beta** (or **Move to Dev**). **Stay
    on Stable**, or Escape, changes nothing.
+
+Beta and Dev versions aren't signed, so when you install one, Windows
+SmartScreen may warn that it comes from an unknown publisher; that's expected,
+and choosing **More info**, then **Run anyway**, installs it.
 
 Before it moves, Cast saves a copy of your subscriptions, playlists, listening
 places and settings. If it cannot, it stays where it is and tells you why.
@@ -4104,7 +4176,7 @@ version there, if there is one. Nothing is installed unless you say so.
 **When Quill Radio or QUILL Lite is installed too.** These apps run on one shared engine on
 your computer. When an app moves to Beta or Dev, it gets its own copy of that
 engine, so the apps you leave on Stable are never touched. You can still move
-several at once: tick them under "Also move my other QuillVille apps on this
+several at once: check them under "Also move my other QuillVille apps on this
 computer" and choose **Switch**.
 
 **A note about disk space.** That second copy of the engine takes about 335 MB.
@@ -4453,7 +4525,7 @@ they keep doing that.
 | Free Up Space (Advanced) | Ctrl+Alt+F |
 | Run Housekeeping Now (Advanced) | Ctrl+Alt+H |
 | Back Up My Podcasts (Advanced) | Ctrl+Alt+Shift+B |
-| Restore from a Backup (Advanced) | Ctrl+Alt+Shift+R |
+| Restore from a Backup (Advanced) | Ctrl+Alt+F12 |
 | Export My Data (Advanced) | Ctrl+Alt+Shift+E |
 | Clear All Podcast Data from This Computer (Advanced) | Ctrl+Alt+Shift+D |
 | Export My Setup | Ctrl+Alt+Shift+X |

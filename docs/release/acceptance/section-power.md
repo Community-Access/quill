@@ -114,11 +114,11 @@ no AI, always exactly matching the headings present.
 **Do this**
 1. Press **Ctrl+Alt+I**, or **Insert menu ▸ Image…**.
 2. In the dialog, choose an image file; type alt text **`Red circle`** in the
-   Alt-text field (or tick **Decorative**); confirm.
+   Alt-text field (or check **Decorative**); confirm.
 
 **You should see and hear**
 - Every field is labelled and keyboard-reachable; the Alt-text field is required
-  unless Decorative is ticked. On confirm, Markdown image markup with the alt text
+  unless Decorative is checked. On confirm, Markdown image markup with the alt text
   is inserted and the status reads **"Image inserted (md)."** (In an HTML document
   the dialog offers width/height/caption and the status reads **"…(html)."**) If
   an AI provider is connected, a **Suggest alt text** control may appear — that
@@ -1283,7 +1283,7 @@ sensitivity switch.
 1. **Search menu ▸ Multi Replace…**.
 2. In the form set **Search 1 = `red` / Replace 1 = `one`**, **Search 2 = `green` /
    Replace 2 = `two`**, **Search 3 = `blue` / Replace 3 = `three`**, leave the
-   fourth pair blank, keep **Case sensitive** ticked; press **Replace**.
+   fourth pair blank, keep **Case sensitive** checked; press **Replace**.
 
 **You should see and hear**
 - All three replacements apply in one pass (empty search fields are skipped) giving

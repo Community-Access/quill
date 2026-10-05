@@ -78,7 +78,7 @@
 <li><input type="checkbox" class="so" data-key="SIGNOFF-weather:d2c477039651:0:0" aria-label="Works: W S A Alert sounder: on/off, custom .wav, repeat count, Play preview."> W  <input type="checkbox" class="so" data-key="SIGNOFF-weather:d2c477039651:0:1" aria-label="Surface-exact: W S A Alert sounder: on/off, custom .wav, repeat count, Play preview."> S  <input type="checkbox" class="so" data-key="SIGNOFF-weather:d2c477039651:0:2" aria-label="Accessible: W S A Alert sounder: on/off, custom .wav, repeat count, Play preview."> A  Alert sounder: on/off, custom .wav, repeat count, Play preview.</li>
 <li><input type="checkbox" class="so" data-key="SIGNOFF-weather:5093fa373ea4:0:0" aria-label="Works: W S A Test Alert previews full experience with no network / no state change."> W  <input type="checkbox" class="so" data-key="SIGNOFF-weather:5093fa373ea4:0:1" aria-label="Surface-exact: W S A Test Alert previews full experience with no network / no state change."> S  <input type="checkbox" class="so" data-key="SIGNOFF-weather:5093fa373ea4:0:2" aria-label="Accessible: W S A Test Alert previews full experience with no network / no state change."> A  Test Alert previews full experience with no network / no state change.</li>
 <li><input type="checkbox" class="so" data-key="SIGNOFF-weather:a82799533222:0:0" aria-label="Works: W S A &#x27;Already-told-you&#x27; dedupe shared across the live watch and the background check."> W  <input type="checkbox" class="so" data-key="SIGNOFF-weather:a82799533222:0:1" aria-label="Surface-exact: W S A &#x27;Already-told-you&#x27; dedupe shared across the live watch and the background check."> S  <input type="checkbox" class="so" data-key="SIGNOFF-weather:a82799533222:0:2" aria-label="Accessible: W S A &#x27;Already-told-you&#x27; dedupe shared across the live watch and the background check."> A  'Already-told-you' dedupe shared across the live watch and the background check.</li>
-<li><input type="checkbox" class="so" data-key="SIGNOFF-weather:5bbcf6976496:0:0" aria-label="Works: W S A Tray hotkey (Ctrl+Alt+Shift+W); start-with-Windows minimized."> W  <input type="checkbox" class="so" data-key="SIGNOFF-weather:5bbcf6976496:0:1" aria-label="Surface-exact: W S A Tray hotkey (Ctrl+Alt+Shift+W); start-with-Windows minimized."> S  <input type="checkbox" class="so" data-key="SIGNOFF-weather:5bbcf6976496:0:2" aria-label="Accessible: W S A Tray hotkey (Ctrl+Alt+Shift+W); start-with-Windows minimized."> A  Tray hotkey (Ctrl+Alt+Shift+W); start-with-Windows minimized.</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-weather:7210abaeeee4:0:0" aria-label="Works: W S A Tray hotkey chosen in File &gt; Show and Hide Key (none by default); start-with-Windows minimized."> W  <input type="checkbox" class="so" data-key="SIGNOFF-weather:7210abaeeee4:0:1" aria-label="Surface-exact: W S A Tray hotkey chosen in File &gt; Show and Hide Key (none by default); start-with-Windows minimized."> S  <input type="checkbox" class="so" data-key="SIGNOFF-weather:7210abaeeee4:0:2" aria-label="Accessible: W S A Tray hotkey chosen in File &gt; Show and Hide Key (none by default); start-with-Windows minimized."> A  Tray hotkey chosen in File &gt; Show and Hide Key (none by default); start-with-Windows minimized.</li>
 </ul>
 <script>
 (function () {
@@ -98,7 +98,7 @@
       done + " of " + boxes.length + " boxes checked";
   }
   // An item is "checked off" only when every checkbox on it (Works / Surface /
-  // Accessible) is ticked; a partly-done item stays visible.
+  // Accessible) is checked; a partly-done item stays visible.
   function itemDone(li) {
     var bs = li.querySelectorAll("input.so");
     if (bs.length === 0) return false;
@@ -116,7 +116,7 @@
     if (toggleBtn) toggleBtn.setAttribute("aria-pressed", on ? "true" : "false");
     return hidden;
   }
-  // When ticking a box hides the item the user is standing on, move focus off
+  // When checking a box hides the item the user is standing on, move focus off
   // the now-hidden control to the next visible box (else the previous, else the
   // toggle) so keyboard/screen-reader focus is never stranded.
   function focusAfterHide(box) {

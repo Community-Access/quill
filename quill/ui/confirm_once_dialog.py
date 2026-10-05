@@ -14,7 +14,7 @@ rules are not negotiable and live here:
 if it is still wanted, and persists the answer. A caller that had to read the
 pref itself is a caller that can forget to.
 
-**The checkbox only counts alongside a Yes.** Cancelling with it ticked must
+**The checkbox only counts alongside a Yes.** Cancelling with it checked must
 not silently disable a confirmation that was, in that same gesture, *declined
 rather than answered* -- that is how somebody ends up with a destructive verb
 that stopped asking without them ever agreeing to it.

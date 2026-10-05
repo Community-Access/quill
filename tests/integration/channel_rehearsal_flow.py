@@ -166,13 +166,15 @@ def rehearse(
     # copies that predate the feed look; Dev-only builds go to the dev-builds one.
     argv = ["--app", "radio", "--version", "3.3.0", "--channel", "dev", "--dist", str(dist)]
     argv += ["--repo", "Community-Access/quill"]
-    assert publish.run(argv, now=T0, **common) == 0, log
+    # 3.3.0 is a Stable candidate, built signed; 3.4.0-beta.1 below is not.
+    signed = {"authenticode": lambda path: "-beta." not in path.name}
+    assert publish.run(argv, now=T0, **common, **signed) == 0, log
     deploy(folder)
     seen["dev"] = client(0.1)
 
     # 2. Dev to Beta, then 3. Beta to Stable, as the same files.
     to = ["--app", "radio", "--version", "3.3.0", "--to"]
-    gate = {"docs_gate": lambda: True}
+    gate = {"docs_gate": lambda: True, **signed}
     assert promote.run([*to, "beta"], now=T0 + timedelta(days=2), **common, **gate) == 0, log
     deploy(folder)
     seen["beta"] = client(2.1)
@@ -190,7 +192,7 @@ def rehearse(
     # 4. The next Beta, then 5. withdraw it.
     dist = _dist(root, gh, "3.4.0-beta.1")
     argv = ["--app", "radio", "--version", "3.4.0-beta.1", "--channel", "beta", "--dist", str(dist)]
-    assert publish.run(argv, now=T0 + timedelta(days=11), **common) == 0, log
+    assert publish.run(argv, now=T0 + timedelta(days=11), **common, **signed) == 0, log
     deploy(folder)
     seen["next_beta"] = client(11.1)
     argv = ["--app", "radio", "--version", "3.4.0-beta.1", "--reason", "can lose favorites"]

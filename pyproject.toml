@@ -161,7 +161,14 @@ nemotron = ["sherpa-onnx>=1.13.8", "numpy>=2.5.3"]
 # (no torch), with the microphone read through sounddevice. Shipped, never
 # downloaded -- QUILL Lite's installer and portable zip carry the runtime and,
 # beside the launcher, the models (scripts/fetch_dictation_models.py).
-live-dictation = ["sherpa-onnx>=1.13.8", "numpy>=2.5.1", "sounddevice>=0.5.6"]
+# websockets: OpenAI dictation's live (Realtime) transcription, own key only. It
+# was already in the shared runtime; declared so it cannot quietly leave it.
+live-dictation = [
+  "sherpa-onnx>=1.13.8",
+  "numpy>=2.5.1",
+  "sounddevice>=0.5.6",
+  "websockets>=15.0.1",
+]
 # Optional C++ accelerator for the dictation vocabulary corrector
 # (speech/vocabulary.py). NEVER required: the stdlib implementation is the
 # behavioural contract and always present; this extra only makes the same
@@ -294,7 +301,11 @@ glow = ["quill-glow-core[glow]>=0.1.1", "acb-large-print>=8.0.0"]
 # QUILL Social's application package (standalone/social/quill_social),
 # vendored as a wheel beside the glow wheels until published. Ships inside
 # the shared QuillVille Runtime so `-m quill_social` launches from it.
-social-app = ["quill-social>=0.3.0"]
+# Mastodon.py and python-dateutil are named, not left transitive: QUILL Social's
+# Mastodon adapter imports them, and as transitive packages the runtime inventory
+# gate kept treating dateutil as "swept from this machine" (the baseline flipped
+# five times between 2026-09-09 and 2026-09-30). The runtime takes this extra.
+social-app = ["quill-social>=0.3.0", "Mastodon.py>=2.2.2", "python-dateutil>=2.9.0"]
 # LaTeX -> MathML conversion for quill/core/math/ (docs/planning/math.md, Tier 1-B).
 # Pure Python, no native build. Optional: the math bridge degrades to accepting
 # MathML input only (no LaTeX typing) when this is absent.

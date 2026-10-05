@@ -39,7 +39,7 @@ has the proper introductions.
 > **A note from QUILLBee:** Coming from a QUILL beta? A few keys have moved
 > since then. Type a command's name into the Command Palette
 > (**Ctrl+Shift+P**) to hear its key today, or open the Keymap Editor
-> (**Ctrl+Alt+Shift+R**) to put a key back where your fingers expect it.
+> (**Ctrl+Alt+Shift+Space**) to put a key back where your fingers expect it.
 
 ---
 
@@ -124,7 +124,7 @@ if it does not open within two minutes, it puts back the version you had.
 features a few weeks early, and **Dev** is the work in progress. Moving to
 Beta or Dev saves a copy of your settings and keys first, shows a short
 warning you have to agree to, and can move QUILL Lite, Quill Radio and QUILL
-Cast in the same step if you tick them. Coming back to Stable is the same
+Cast in the same step if you check them. Coming back to Stable is the same
 window, and QUILL tells you plainly if it has to wait for Stable to catch up.
 The same window is a button away in **Settings > Administration**, and its
 **Update History** shows everything the updater has done.
@@ -266,6 +266,43 @@ its guesses.
   when the startup announcements setting was on, which it is not unless you
   turn it on.
 
+### Settings that now do what they say
+
+Eighteen settings could be changed and saved, and nothing ever read them.
+You would check a box, hear nothing different, and reasonably assume it had
+worked. Every one of them now does what its name says. Only one changes
+anything before you touch it: Read Detailed Status in Braille Mode now tells
+you your proofing progress, which it always promised and never did.
+
+- **Keep an announcement history.** Turn it off and QUILL keeps no list of
+  what it said, and clears the one it had. The Spoken Echo tells you it is
+  off.
+- **Interrupt speech for.** Choose whether warnings and errors cut across
+  your screen reader (as they always have), only errors, or nothing at all.
+- **Default export preset.** Export > Other Pandoc Format opens on your
+  usual format, so Enter does the rest.
+- **Markdown clipboard format.** Copy With Source in a Markdown document can
+  add a formatted copy, HTML or Rich text, so pasting into Word or an email
+  keeps the headings, bold and links. Plain text stays the default.
+- **Listen for 'Hey QUILL'** is now the same switch as the Speech menu
+  command, and **Keep listening across restarts** really does bring listening
+  back when QUILL starts, and only then.
+- **Watch Folders.** The default watch folder is watched for real: new files
+  dropped into it open in QUILL. **Start watching automatically**, **Include
+  subfolders** and **Process existing files on start** all apply to it. Your
+  profiles keep their own choices.
+- **File types offered to QUILL** decides which files get QUILL on their
+  right-click menu, and a change takes effect when you press OK.
+- **Python console execution timeout** stops a command that runs away, and
+  tells you it did.
+- **Spelling review context display mode** can show the whole paragraph
+  around a misspelling in the F7 review, in QUILL and in QUILL Lite.
+- **Six Braille Mode settings.** QUILL can say the new braille page, the new
+  print page, or a line that is too long as you move. Read Detailed Status
+  now includes your proofing progress and the continuation letter, and each
+  can be left out. Calculate pages from geometry, and Use form feeds for page
+  breaks, now decide how a braille file is split into pages.
+
 ### Smaller fixes you will feel
 
 - **Updates offer the edition you are running.** Updating a full install used
@@ -395,7 +432,7 @@ The **Command Palette** (**Ctrl+Shift+P**) finds any command by name:
 - When a command is unavailable, the row says why, instead of a bare
   "(unavailable)".
 
-The **Keymap Editor** (**Ctrl+Alt+Shift+R**) changes any key. It can tell you
+The **Keymap Editor** (**Ctrl+Alt+Shift+Space**) changes any key. It can tell you
 what a key does. Its Record Keys mode lets you press a combination instead of
 spelling it out. Its diagnostics find duplicate, orphaned or dead keys, and
 **Heal** fixes them. A whole set of keys can be saved and shared as a
@@ -424,9 +461,17 @@ Nothing that edits a document, deletes anything or works out of sight can be
 a global hotkey, whatever a settings file says. Every press tells you what
 happened, even with QUILL minimized. The show/hide keys start out as
 **Ctrl+Alt+Shift+Q** for QUILL, **Ctrl+Alt+Shift+R** for Quill Radio and
-**Ctrl+Alt+Shift+W** for Quill Weather, and you can change all three. Global
-hotkeys are Windows only, because macOS has nothing like them. The same
-commands are on the menus and in the palette everywhere.
+**Ctrl+Alt+Shift+F12** for Quill Cast. Quill Weather, Quill Converter, Quill
+Media Player and Quill Inkwell start with none, so they never take a key
+another app needs; choose one in that app's **File > Show and Hide Key...**,
+which will not let you pick a key the family already uses. Global hotkeys are
+Windows only, because macOS has nothing like them. The same commands are on
+the menus and in the palette everywhere.
+
+The **Keymap Editor** moved from Ctrl+Alt+Shift+R to **Ctrl+Alt+Shift+Space**
+before release. Ctrl+Alt+Shift+R shows and hides Quill Radio from anywhere, so
+while Quill Radio was running, it never reached QUILL. QUILL Lite's Keyboard
+Manager moved to the same key.
 
 ### Help where you are
 
@@ -733,6 +778,26 @@ notes** (**Alt+Shift+I**) attach to a place in the text, follow your edits,
 come back when you reopen the document, and have their own next, previous,
 hear and edit commands.
 
+**List Inline Notes** (**Alt+Shift+Enter**) shows every note in the document at
+once, with its line and the text it is about, and lets you go to, edit, delete,
+remove, copy or export them. A note whose text was deleted is listed last, so
+it is never lost and never stuck. **Delete Inline Note** (**Alt+Shift+Delete**)
+asks first, and the note window now shows the start of the text it is on.
+
+In Markdown and HTML, a note can be written **into the file** as a hidden
+comment, so the colleague or the AI assistant you hand the file to can read it.
+Undo takes it back like any edit, the file stays valid, and published pages
+leave it out. `quill --notes list`, `check` and `clear` read and tidy those
+notes from the command line, and in Quick Nav, **N** and **Shift+N** move from
+note to note. QUILL Lite has every one of these on the same keys.
+
+**Toggle Task Done** (**Ctrl+Alt+Enter**) checks a `- [ ]` task, or every task
+in a selection, and tells you how many in the list are done. The preview shows
+task lists as real check boxes.
+
+These ideas come from **PlanCake**, by Andre of Oire Software. Thank you,
+Andre.
+
 The **Sticky Notes Browser** is the quick way back to any note. Start typing
 and the list filters as you go, across titles and text, newest first. Down
 Arrow moves into the results. Tab reaches a read-only preview, so you can read
@@ -892,7 +957,7 @@ or one word autocorrect keeps getting wrong. Two ranked views help there:
 
 - **Alt+Shift+R** opens the misspelling list with the most frequent word
   first, and a count in each entry: "teh (Ln 12, Col 4, 8 occurrences)".
-- In the F7 review, tick **Review most-frequent words first** and the review
+- In the F7 review, check **Review most-frequent words first** and the review
   takes the same order. Choose Change All on the top word, and the ranking is
   worked out again, so the next-biggest group of errors comes to the top.
 
@@ -942,7 +1007,7 @@ and, when AI is on, carries on with the AI dictionary.
 **Look Up Word** (**Alt+F10**) is the dictionary without AI. Offline, it uses
 the thesaurus, and nothing leaves this computer.
 
-Tick **Use online sources** in the window and the word is sent to three free
+Check **Use online sources** in the window and the word is sent to three free
 services that need no account. Only the word goes, never the sentence or the
 document.
 
@@ -952,7 +1017,7 @@ document.
 
 The offline answer appears straight away. The online one replaces it when it
 arrives, and QUILL says a sentence to tell you. QUILL remembers the choice.
-Untick it and you are offline again.
+Uncheck it and you are offline again.
 
 ### The AI dictionary
 
@@ -1086,12 +1151,48 @@ Downloads use a checksum-pinned progress dialog you can cancel.
   (**Alt+Shift+F10**) teaches it your names and corrections. Nothing leaves
   your computer and no recording is kept.
 - **You can dictate in Spanish.** In **Dictation Settings** (**Alt+Shift+F6**),
-  set **Dictation language** to Spanish. Your words come out in Spanish,
+  set **Dictation language** to Spanish, or press **Ctrl+Shift+F11** to switch
+  at any time. Your words come out in Spanish,
   accents and all, using a multilingual model that comes with QUILL, so there
   is nothing to download. The wake and stop phrases become "Quill dicta" and
   "deja de dictar", and Spanish punctuation words such as "coma" and "punto"
   work when automatic punctuation is off. Commands stay in English for now.
   This is new, and we would love to hear how it goes.
+- **Better accuracy, if you want it.** Live Dictation works the moment you
+  install. **Better Accuracy: Speech Models...** (**Alt+B** in Dictation
+  Settings) offers the same local models VS Code offers -- NVIDIA's Nemotron
+  3.5 ASR Streaming (our suggestion), Parakeet Unified and Parakeet TDT, and
+  Whisper small and base -- plus the rest of the Whisper family and Moonshine
+  base. Each downloads only when you choose it, after a question naming its
+  source, size, licence and folder; it runs on the processor with no graphics
+  card, resumes if you cancel, is checked before use, and is shared with QUILL
+  Lite (inside the portable folder in a portable copy). The user guide's
+  "Better accuracy: optional speech models" has the published accuracy of
+  each.
+- **Hold Ctrl+F11 to talk, if you like.** Ctrl+F11 starts Live Dictation
+  with one press and stops it with the next. If you would rather hold the keys
+  while you speak and let go to stop, turn on **Hold the dictation key to
+  talk** in **More Dictation Settings**. Either way, stopping never cuts off
+  the phrase you are finishing. **Dictation On** in
+  **Tools > Speech > Live Dictation** is checked while it writes, and the status
+  bar says what it is doing.
+- **See your words while you speak.** With Nemotron or OpenAI, the words heard
+  so far appear in the status bar and on a braille display as you talk; the
+  final words go in at the pause. Nemotron's questions now end with a question
+  mark.
+- **Your words go where you started speaking**, even if you move the cursor
+  or switch tabs while a phrase is being recognised.
+- **"Correct that"** reads Windows speech recognition's other guesses, and
+  "choose two" swaps one in.
+- **Talk to the AI.** **Ctrl+F11** in the AI Conversation window dictates your
+  message; it is sent when you pause, the reply is read aloud, and the
+  microphone waits while it is read.
+- **OpenAI dictation, with your own key**, off until you choose it and agree
+  to a plain question about what is sent. You pick the model from OpenAI's own
+  current list. The local engines stay the default.
+- **My Dictation Instructions** tell Tidy Dictated Text (**Ctrl+F3**) how you
+  like your writing, and **More Dictation Settings...** (**Alt+A** in Dictation
+  Settings) holds every new choice. All of it is shared with QUILL Lite.
 - **Locked Dictation** is the reliable way to speak into a document.
   **Ctrl+F9** starts and stops, **Ctrl+Shift+F9** pauses and resumes, and
   **Alt+F9** tells you where things stand. Everything you dictate arrives as
@@ -1100,6 +1201,17 @@ Downloads use a checksum-pinned progress dialog you can cancel.
   it is transcribed. In the History and Review window you can insert, copy,
   or discard a recovered recording. A failed transcription never costs you a
   dictation session.
+- **Transcribe a Recording** (**Shift+F5**, in **Tools > Speech > Live
+  Dictation**) turns a recording into text in the background with Live
+  Dictation's own engines: the two built in, any speech model you downloaded,
+  or OpenAI with your own key, which asks before each recording is sent. The
+  most accurate model you have is chosen for you, with an estimate of how long
+  it will take. It reads MP3, M4A, AAC, WAV, Ogg, Opus, FLAC and WMA with no
+  ffmpeg, writes paragraphs (with timestamps if you check Add timestamps;
+  they are off unless you do) into a new
+  document or at the cursor, tells you at each quarter and when it is done,
+  and can queue several files. It is the same command, window and key in QUILL
+  Lite.
 - **Transcribe Audio or Video** works from a file instead of a microphone.
   You get plain text, Markdown, or HTML, labelled by speaker when diarization
   is installed. It handles a wide range of formats, and fetches ffmpeg when
@@ -1135,6 +1247,59 @@ optional:
 
 It works everywhere QUILL transcribes dictation, and it does nothing at all
 until you write one.
+
+### Dictation
+
+Live Dictation grew a lot just before 1.0. Everything here is in QUILL Lite
+too, with the same keys and the same words, and you will find it all under
+**Tools > Speech > Live Dictation**. There are five new tutorial lessons in the
+Voice track if you would like to be walked through it.
+
+- **Hear the punctuation.** The read-back now says the marks by name: "Hello
+  comma world period", whatever your screen reader's punctuation level. The
+  status bar and braille show the real characters. Uncheck **Say punctuation
+  marks in the read-back** in **More Dictation Settings** if you would rather
+  hear just the words.
+- **Select and move by voice.** Say "select" and some words, and dictation
+  selects the nearest place they appear; what you say next replaces them. "Go
+  to", "go after", "correct", "select again", "select previous", "select
+  sentence" and "select paragraph" work too. You hear where you landed:
+  "Selected: the cat". If the words are not there, your phrase is written as
+  ordinary text and you hear "Not found, written as text."
+- **Snippets and clips by voice.** "Insert snippet" and a name, "paste clip
+  three", "insert abbreviation" and a trigger, "copy all", "copy that", "show
+  clips" and "show snippets". A snippet goes in as one phrase, so one "scratch
+  that" takes it back out.
+- **Letters, symbols and Markdown.** "Caps on", "all caps on" and "no space on"
+  (handy for web addresses), "spell" and a word, "spell that", punctuation with
+  no spaces while spelling, and new marks for Markdown and code: backtick, code
+  fence, tilde, vertical bar and caret. Start a phrase with "bullet", "numbered
+  item", "block quote" or "heading two" to start that kind of line.
+- **Switch between English and Spanish** with **Ctrl+Shift+F11**, or by saying
+  "switch to Spanish" and "cambiar a inglés". You hear "Español." or
+  "English.", and the choice is kept for next time.
+- **Live transcripts.** **Ctrl+Alt+Shift+PageDown** writes everything you say
+  into a new document of its own, for a meeting, a lecture or a long think out
+  loud. It keeps going while you work elsewhere, starts a new paragraph at each
+  long pause, and can put the time at the start of each paragraph.
+- **Longer pauses.** Two new choices for **Pause before a phrase is written**:
+  Longer (2 seconds) and Longest (3 seconds). And a phrase that stops on a word
+  like "the" or "and" now carries on into the next one instead of ending the
+  sentence.
+- **Dictation context for each document.** **Ctrl+Alt+Shift+PageUp** lets you
+  say what a document is, such as "a formal letter" or "meeting notes", so
+  OpenAI dictation and Tidy Dictated Text get your words right.
+- **Dictation Status.** **Alt+F9** now tells you what Live Dictation is doing
+  whenever Locked Dictation is not recording: on or off, which engine, which
+  language, and any caps or spacing mode.
+- **Dictate in other programs.** **Dictate in Other Programs...** in **More
+  Dictation Settings** hands your settings to Quill Inkwell, so you can dictate
+  into your browser, your email or anything else. See Dictate Anywhere under
+  Quill Inkwell below.
+
+One key moved to make room: **File > Forget Remembered File-Change Answers** is
+now **Ctrl+Shift+0**. It used to be Ctrl+Shift+F11, which is now Switch
+Dictation Language in both editors.
 
 ### Performance
 
@@ -1278,6 +1443,28 @@ Your documents open as your documents. QUILL adds no banner or header to your
 text. What it knows about how a file was read is in the intake report and in
 what it says when the file opens.
 
+### However a document arrives
+
+A document can reach you as a file in File Explorer, a path in a chat, or a
+link in an email. **File > Open from Clipboard** (**Ctrl+Alt+Shift+Enter**)
+opens whichever of those you copied, and says so plainly when there is nothing
+to open. **File > Open from URL...** asks before downloading anything, naming
+the website and the size, and shows the download's progress with a Cancel
+button; a link to a GitHub page opens the file itself. Files dragged onto the
+window open too. These ideas come from **PlanCake**, by Andre of Oire Software.
+
+### Every byte, and every change, kept
+
+- **An older file keeps every byte.** A file that is not UTF-8 is read without
+  replacing a single character, and saved back exactly as it was. QUILL tells
+  you once, as it opens, when a file is not UTF-8.
+- **Reopen with Encoding...**, in **File > File Format...** (**Ctrl+Alt+E**),
+  reads a file again in the encoding you choose when its letters came out
+  wrong. It then saves in that encoding, or in UTF-8 if you choose.
+- **Save never writes over a change it has not seen.** If another program
+  changed your file since you opened it or last saved it, even a moment ago,
+  Save asks first: Save As, Reload from Disk, Overwrite or Cancel.
+
 ### Rich editing
 
 QUILL edits clean plain text, and keeps the formatting beside it as hidden
@@ -1407,6 +1594,11 @@ a progress row for each file as it goes.
 Seven conversion profiles cover the usual destinations: Clean Word Document,
 Accessible HTML Page, EPUB Book, GitHub README, Print PDF, Instructor
 Handout, and Plain Text for Screen Readers.
+
+**File > Export > HTML...** (**Ctrl+Alt+Shift+End**) makes one web page you can
+share: styles inside, no scripts, the document's language set, task lists as
+check boxes and strikethrough kept. It is a copy; the document you are editing
+stays as it is. QUILL Lite has the same command on the same key.
 
 The main formats, for opening and saving, are Markdown, CommonMark,
 GitHub-flavored Markdown, HTML, DOCX, ODT, RTF, plain text, CSV and TSV,
@@ -2331,7 +2523,8 @@ Quill Weather can **start with Windows**, start minimized to the tray, and
 keep watching when you close its window. It can also set up a **per-user
 Windows Scheduled Task**, so alerts are checked with no program running at
 all, and a Windows notification your screen reader reads tells you what it
-found. **Ctrl+Alt+Shift+W** shows and hides it from anywhere.
+found. **File > Show and Hide Key...** lets you choose a key that shows and
+hides it from anywhere; there is none until you choose one.
 
 ---
 
@@ -2363,7 +2556,8 @@ abbreviations, the settings and the results are the same either way.
 
 ### Using it
 
-- **Ctrl+Alt+Shift+I** shows or hides the Inkwell window from anywhere.
+- **File > Show and Hide Key...** lets you choose a key that shows or hides
+  the Inkwell window from anywhere. There is none until you choose one.
 - **Ctrl+Alt+Shift+K** opens Quick Insert from anywhere, so an abbreviation
   you have not memorised is always two keystrokes away.
 - **Ctrl+Alt+Shift+X** expands the word just before the cursor without
@@ -2377,6 +2571,26 @@ window where it happened. After that, Backspace works as usual.
 Expansions that ask you to fill something in work here too. The same fill-in
 form appears, focus goes back to wherever you were typing, and cancelling
 costs nothing, because nothing is erased until you accept.
+
+### Dictate Anywhere
+
+Inkwell can now type what you say, in any program. Choose a key in **File >
+Dictate Anywhere Key...** (there is none until you do), then press it in your
+browser, your email or a form, speak, and pause: each phrase is typed at the
+cursor. Press the key again, or say "stop dictation", to stop. It uses the
+same engines, the same My Words and Phrases and the same voice commands as the
+editors. Inkwell's new **Dictation** menu has **Dictate Anywhere** (**Ctrl+D**)
+and **Dictation Settings...** (**Ctrl+Alt+D**), and in QUILL or QUILL Lite
+**Dictate in Other Programs...** in More Dictation Settings sets it all up for
+you.
+
+Punctuation, spelling, caps, switching language and "scratch that" all work.
+Anything that needs to read the other program's text, such as "select" or
+"insert snippet", is politely declined. Nothing is typed into a password field
+or a program running as administrator, and in QUILL's own windows you are
+reminded that Ctrl+F11 already dictates there. The read-back starts as a tone,
+because your screen reader already reads what is typed. In Safe Mode,
+Dictate Anywhere is off.
 
 ### Where it will not type
 
@@ -2460,8 +2674,9 @@ key wins, and both keymaps are tested against that rule.
 **Nothing reloads under your hands.** When another program changes the file
 you have open, QUILL asks: Reload from Disk, Keep Mine, or Open Disk Version in
 a New Tab. The question has a "do not ask me again for .docx files" checkbox,
-and **File > Forget Remembered File-Change Answers** (**Ctrl+Shift+F11**)
-takes your answers back.
+and **File > Forget Remembered File-Change Answers** (**Ctrl+Shift+0**)
+takes your answers back. A remembered Reload never throws away unsaved edits;
+QUILL asks instead.
 
 **Three things QUILL can now tell you about itself**, all on the View menu:
 
@@ -2485,7 +2700,7 @@ so saving never quietly converts your file.
 
 **Start from the setup you already have.** A **QUILL Lite** feature profile
 gives QUILL the same nine menus as QUILL Lite and nothing else. The other
-features are switched off, not hidden, so getting one back is one tick.
+features are switched off, not hidden, so getting one back is one check box away.
 **Tools > Customize and Support > Bring My QUILL Lite Settings...**
 (**Alt+Shift+F11**) brings your QUILL Lite abbreviations, dictionary, copy
 tray, clip library and bookmarks into QUILL, and from then on the two editors

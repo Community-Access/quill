@@ -15,12 +15,17 @@ than slipping past.
 Everything works from the keyboard and tells you how it went, the way the rest
 of QUILL Lite does.
 
-## Coming from 1.1
+## If you already use QUILL Lite
 
-If you read the QUILL Lite 1.1 notes, you may remember a list of things coming
-in 1.2.0. They are all here, and a few more besides. Your settings, recent
+Your settings, recent
 files and recovered work come with you exactly as they are, and **Help >
 Check for Updates** (**Ctrl+Alt+U**) offers 1.2.0 like any other update.
+
+One key has moved. **Tools > Keyboard Manager** is now
+**Ctrl+Alt+Shift+Space**. Its old key, Ctrl+Alt+Shift+R, shows and hides Quill
+Radio from anywhere, so while Quill Radio was running the Keyboard Manager
+never opened. QUILL moved its Keyboard Manager to the same key, so the two
+still match.
 
 ## Try this first
 
@@ -63,9 +68,9 @@ many meanings it has, the first few replacements, and its opposites.
 Press **Alt+F10**, or choose **Tools > Look Up Word**. Offline, you get
 synonyms, opposites and related words from the word list inside QUILL Lite.
 
-Tick **Use online sources** and you also get definitions with examples, more
+Check **Use online sources** and you also get definitions with examples, more
 words, rhymes and a short Wikipedia summary. Only the word is sent, never your
-sentence or your document, and only after you tick the box. QUILL Lite
+sentence or your document, and only after you check the box. QUILL Lite
 remembers your choice.
 
 Press **Enter** on a word to put it in place of yours. **Add to Dictionary**
@@ -199,7 +204,7 @@ progress, for testers.
 
 Arrowing through the three only explains them. If you choose Beta or Dev, a
 short warning says plainly what could go wrong and how to come back, and
-nothing moves until you tick **I understand** and choose **Move**. Before it
+nothing moves until you check **I understand** and choose **Move**. Before it
 moves, QUILL Lite saves a copy of your settings, keys and recent files list. Your documents are not copied, and updates don't change them.
 
 Coming back to Stable is safe. If Stable can read everything you have saved,
@@ -229,7 +234,8 @@ newer build, and Check for Updates offers it to you.
 
 New, and ready for you to try: you can dictate in Spanish. Open Dictation
 Settings (**Alt+Shift+F6**), choose **Spanish** under **Dictation language**,
-and press Enter.
+and press Enter. Or press **Ctrl+Shift+F11** to switch between English and
+Spanish at any time, even while you are dictating.
 
 - Your words come out in Spanish, accents and all, using Whisper's
   multilingual speech model. It comes with QUILL Lite, so nothing is
@@ -245,6 +251,156 @@ and press Enter.
 QUILL has the same thing, in the same place. The user guide's "Dictating in
 Spanish" has the whole list. If something comes out wrong, tell us through
 **Help > Get Help from Support**. We're keen to hear how it goes.
+
+## Better accuracy: optional speech models
+
+Dictation works the moment you install. If you want more accuracy, you can
+now download a larger model: the same local models VS Code offers for its own
+dictation, plus the rest of the Whisper family.
+
+Open Dictation Settings (**Alt+Shift+F6**) and press **Better Accuracy:
+Speech Models...** (**Alt+B**). The list starts with our suggestion, NVIDIA's
+**Nemotron 3.5 ASR Streaming** (VS Code's default), then NVIDIA's two
+**Parakeet** models, **Whisper** small, base and tiny, the rest of Whisper from
+base.en to large-v3, and a lighter **Moonshine base**. Each one says what it is
+good for, how big it is, which languages it knows, which computers suit it and
+whether yours should keep up.
+
+- Nothing downloads until you press **Download...** and say yes to a question
+  that names where it comes from, its size, its licence and where it will be
+  saved. On a metered connection you are asked first.
+- They are free and run on your computer's processor; no graphics card
+  needed. Your voice never leaves the computer.
+- A download you cancel carries on later from where it stopped, every file is
+  checked before it is used, and **Remove** frees the space.
+- QUILL and QUILL Lite share the models on the same computer. In a portable
+  copy, models are saved inside the portable folder, so everything travels
+  together.
+- Moonshine stays the engine until you choose another. If a downloaded model
+  goes missing, dictation tells you in one sentence and uses the built-in one.
+
+The user guide's "Better accuracy: optional speech models" has every model's
+published accuracy, what we measured, and "Nemotron or Parakeet: which should
+I try?".
+
+## Dictation that keeps up with you
+
+Dictation learned a lot this time, much of it from studying how VS Code does
+it. Everything here is in QUILL too, on the same keys.
+
+- **Hold Ctrl+F11 to talk, if you like.** Ctrl+F11 still starts dictation
+  with one press and stops it with the next. If you would rather hold the keys
+  down while you talk, turn on **Hold the dictation key to talk** in **More
+  Dictation Settings**: say what you want and let go, and your last phrase is
+  written and dictation turns off. A quick press still works either way.
+- **Stopping never cuts you off.** Press or let go of Ctrl+F11 while you are
+  still finishing a sentence, and that phrase is written before dictation
+  stops.
+- **See your words while you speak.** With Nemotron or OpenAI, the words heard
+  so far show in the status bar and on a braille display as you talk, and the
+  final words go in when you pause. Nothing is spoken unless you ask for it,
+  so nothing talks over you. Nemotron's questions now end with a question
+  mark.
+- **Your words go where you started.** Move the cursor, or even switch
+  windows, while a phrase is being recognised, and it still goes where you
+  were speaking. You hear "Written where you started".
+- **"Correct that."** With Windows speech recognition, say "correct that" to
+  hear its other guesses, then "choose two" to swap one in.
+- **Talk to the AI.** Press Ctrl+F11 in the AI Conversation window and ask
+  out loud. Your message is sent when you pause, the reply is read aloud, and
+  the microphone waits until the reading is done. Dictation uses its own
+  Talking to AI settings there by itself.
+- **OpenAI dictation, with your own key.** If you have your own OpenAI key,
+  you can choose OpenAI as the speech engine. It is off until you choose it,
+  it asks you first in plain words, and it says exactly what is sent: your
+  speech goes to OpenAI and is billed to your account. You pick the model from
+  OpenAI's own current list. Your computer's own engines stay the default.
+- **My Dictation Instructions** tell Tidy Dictated Text (**Ctrl+F3**) how you
+  like your writing: "write numbers as digits", "British spelling".
+- **Kinder to an older computer.** Speech models are put away a few minutes
+  after you stop dictating, giving their memory back, and an optional model
+  that cannot keep up hands over to the built-in engine and tells you why.
+
+**More Dictation Settings...** (**Alt+A** in Dictation Settings) holds the new
+choices. The user guide's chapter on writing by voice has a section for each,
+and there is a new lesson, "Write by talking", in **Help > Tutorials...**.
+
+## Dictation: more you can do by voice
+
+There is a lot more you can do just by talking now. All of it is in **Tools >
+Dictation**, all of it is in QUILL too on the same keys, and five new lessons
+in the "Working in a document" track of **Help > Tutorials...** walk you
+through it.
+
+- **Hear the punctuation.** When a phrase is read back, its marks are said by
+  name: "Hello comma world period", whatever your screen reader's punctuation
+  level. The status bar and braille still show the real characters. Uncheck
+  **Say punctuation marks in the read-back** in **More Dictation Settings** to
+  hear just the words.
+- **Select and move by voice.** Say "select" and some words, and dictation
+  selects the nearest place they appear; whatever you say next replaces them.
+  "Go to", "go after", "correct", "select again", "select previous", "select
+  sentence" and "select paragraph" work too. You hear where you landed, such
+  as "Selected: the cat". If the words are not there, your phrase is written
+  as ordinary text and you hear "Not found, written as text."
+- **Snippets and clips by voice.** Say "insert snippet" and its name, "paste
+  clip three", or "insert abbreviation" and the abbreviation. "Copy all",
+  "copy that", "show clips" and "show snippets" work too. A snippet goes in as
+  one phrase, so one "scratch that" takes it back out.
+- **Letters, symbols and Markdown.** "Caps on", "all caps on" and "no space
+  on" (handy for web addresses and file names). "Spell" and a word spells just
+  that word, and "spell that" lets you spell out a word dictation got wrong.
+  New marks for Markdown and code: backtick, code fence, tilde, vertical bar
+  and caret. Start a phrase with "bullet", "numbered item", "block quote" or
+  "heading two" to begin that kind of line.
+- **Switch between English and Spanish** with **Ctrl+Shift+F11**, or by
+  saying "switch to Spanish" and "cambiar a inglés". You hear "Español." or
+  "English.", and dictation remembers your choice.
+- **Live transcripts.** **Ctrl+Alt+Shift+PageDown** writes everything you say
+  into a new document of its own, for a meeting, a lecture or thinking out
+  loud. It keeps going while you work in another document, starts a new
+  paragraph at each long pause, and can put the time at the start of each
+  paragraph if you check **Time stamps in live transcripts**.
+- **More time to think.** **Pause before a phrase is written** has two new
+  choices, Longer (2 seconds) and Longest (3 seconds). And when a phrase stops
+  on a word like "the" or "and", the next phrase carries on the same sentence
+  instead of starting a new one.
+- **Dictation context for each document.** **Ctrl+Alt+Shift+PageUp** lets you
+  say what a document is, such as a formal letter or meeting notes, so OpenAI
+  dictation and Tidy Dictated Text get your words right.
+- **Dictation Status.** **Alt+F9**, also **Tools > Dictation > Dictation
+  Status**, tells you what dictation is doing: on or off, the engine, the
+  language, and any caps or spacing mode.
+- **Dictate in other programs.** Press **Dictate in Other Programs...** in
+  More Dictation Settings, and Quill Inkwell takes your settings and starts.
+  Choose a key, and you can dictate into your browser, your email or any other
+  program.
+
+## Turn a recording into text
+
+Got a voice note, an interview or a lecture you need in writing? Press
+**Shift+F5** (or **Tools > Dictation > Transcribe a Recording...**), choose the
+file, and keep working while QUILL Lite listens to it in the background. It
+uses the same speech engines you dictate with:
+
+- **Any model you have.** The two built-in ones, any you downloaded in Speech
+  Models, or OpenAI's with your own key. The most accurate one on your
+  computer is chosen for you, and the window tells you how long the recording
+  is and about how long it will take.
+- **MP3, M4A, AAC, WAV, Ogg, Opus, FLAC and WMA**, read with parts of Windows
+  already on your computer, so there is nothing to download.
+- **Your text, your way.** It goes into a new document, or at the cursor when
+  it finishes. Paragraphs start where the recording pauses. Timestamps, like
+  [00:01:23], are off unless you check Add timestamps.
+- **Never in your way.** You hear the percentage at each quarter and one
+  sentence when it is done. Press **Shift+F5** again to see how far it has got,
+  or to stop it. Choose several files and they are done one after another.
+- **Private unless you say otherwise.** With the models on your computer,
+  nothing leaves it. OpenAI is never chosen for you, and asks before each
+  recording is sent.
+
+The user guide's "Transcribing an audio file" has the whole story, including
+which model suits which recording.
 
 ## Your recent documents, one key away
 
@@ -266,8 +422,76 @@ and pinned documents now come first there too. QUILL has the same window on
 the same key, and the same quick keys on its Open Recent menu. The user
 guide's "Opening something you worked on recently" has the details.
 
+## Notes on your document
+
+QUILL Lite now has **inline notes**, the same ones QUILL has, on the same keys.
+A note is a comment on a line or a selection: a question, a reminder, or what
+you think of a plan somebody sent you. They are on **Tools > Inline Notes**.
+
+- **Alt+Shift+I** adds a note. The window shows the start of the text it is on,
+  so you know you are in the right place.
+- **Alt+Shift+J** and **Alt+Shift+K** move to the next and previous note, and
+  **Alt+Shift+H** reads the one you are on (twice to change it).
+- **Alt+Shift+Delete** deletes a note, after asking.
+- **Alt+Shift+Enter** lists every note in the document. From there you can go
+  to one, change or delete it, remove them all, copy them all, or save them as
+  a Markdown or JSON file.
+
+Notes are private unless you say otherwise. In a Markdown or HTML document you
+can write a note **into the file** instead, as a hidden comment that anyone who
+opens the file can read, including an AI assistant. That makes QUILL Lite a
+good way to review a plan an AI wrote: leave your notes in it and hand the file
+back. A script can then list or clear them with `QuillLite.exe --notes`.
+
+**Snippets** moved to **Ctrl+Alt+Shift+Home** to make room for the notes on
+the same keys as QUILL. Alt+Shift+I is now Add Inline Note.
+
+## Checking off tasks
+
+Put the cursor on a task line, such as `- [ ] Write the tests`, and press
+**Ctrl+Alt+Enter** (**Format > Toggle Task Done**). The box is checked and you
+hear how many tasks in the list are done. Press it again to uncheck, or select
+several tasks to check them together. **Ctrl+Z** takes it back.
+
+## A web page you can share
+
+**File > Export as HTML...** (**Ctrl+Alt+Shift+End**) saves a copy of your
+document as one web page, ready to email or put on a website. Task lists
+show as check boxes. Your document stays as it was.
+
+## Opening a document however it arrives
+
+Copy a file in File Explorer, a path from a chat or a link from an email, then
+press **Ctrl+Alt+Shift+Enter** (**File > Open from Clipboard**). QUILL Lite
+opens it. **File > Open from URL...** asks before it downloads anything,
+naming the website and the size, and shows you how the download is going. You
+can also drag files onto the window to open them.
+
+## Careful with your files
+
+- An older file that is not UTF-8 now keeps every byte when you save it. Before
+  1.2, five rare characters in such a file could be lost. QUILL Lite also tells
+  you, once, when a file is not UTF-8.
+- If an old file's letters come out wrong, **Reopen with Encoding...** in the
+  File Encoding and Line Endings window (**Ctrl+Alt+E**) reads it again in the
+  encoding you choose.
+- If another program changed your file since you opened it, **Ctrl+S** asks
+  before writing over that change.
+- QUILL Lite now notices that change as it happens, not only when you save.
+  If you have not touched the document, it can reload it for you, keeping
+  your cursor on the same line, and tell you once. Otherwise it asks: **Keep
+  Mine**, **Reload from Disk** or **Save As...**, with Keep Mine on Enter. A
+  file deleted or moved away is said once, and your text stays. The settings
+  are in Preferences under **When another program changes the file**, the same
+  ones QUILL has. A remembered Reload never throws away unsaved edits; QUILL
+  Lite asks instead.
+
+These ideas come from **PlanCake**, a small app by Andre of Oire Software for
+reviewing AI-written plans. Thank you, Andre.
+
 ## Things that work better now
 
+- Portable copies now start from a folder whose name has a space in it.
 - **Coming back with Alt+Tab** puts your focus in your document, even when
   Windows is slow about it. It leaves the Find box and menus alone.
 - **Big files and network drives no longer freeze the window.** You hear
@@ -308,6 +532,20 @@ guide's "Opening something you worked on recently" has the details.
 | **Alt+Shift+0** | Recent Documents |
 | **Shift+F9** | Activity |
 | **F9** | Repeat Last Result |
+| **Alt+Shift+I** | Add Inline Note |
+| **Alt+Shift+J** / **Alt+Shift+K** | Next and Previous Inline Note |
+| **Alt+Shift+H** | Speak Inline Note |
+| **Alt+Shift+Delete** | Delete Inline Note |
+| **Alt+Shift+Enter** | List Inline Notes |
+| **Ctrl+Alt+Shift+Home** | Snippets, on its new key |
+| **Ctrl+Alt+Enter** | Toggle Task Done |
+| **Ctrl+Alt+Shift+End** | Export as HTML |
+| **Ctrl+Alt+Shift+Enter** | Open from Clipboard |
+| **Ctrl+Alt+Shift+Space** | Keyboard Manager, on its new key |
+| **Ctrl+Shift+F11** | Switch Dictation Language |
+| **Ctrl+Alt+Shift+PageDown** | Start or Stop Live Transcript |
+| **Ctrl+Alt+Shift+PageUp** | Dictation Context for This Document |
+| **Alt+F9** | Dictation Status |
 
 The rest of the AI dictionary's keys are in the user guide. All of these are in
 QUILL too, on the same keys.
@@ -320,6 +558,8 @@ everything here in thirteen chapters:
 - Chapter 7, Checking your writing, for the thesaurus, Look Up and the AI
   dictionary.
 - Chapter 8, What you hear, for Activity and Repeat Last Result.
+- Chapter 9, Writing by voice, for holding Ctrl+F11, the live preview,
+  talking to the AI and OpenAI dictation.
 - Chapter 10, AI help, for a Google Gemini key and your ChatGPT plan.
 - Chapter 11, Making QUILL Lite yours, for Find a setting and for making
   QUILL Lite your text editor.

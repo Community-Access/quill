@@ -19,7 +19,7 @@ _PLAYBACK_LABELS = ("Download episodes", "Stream episodes")
 # "Delete after playing" used to be a third *mode* here, so choosing it gave up
 # "keep only the most recent" -- two answers to different questions sharing one
 # control. It is a checkbox below now; an old file carrying the mode arrives
-# with that checkbox ticked (PodcastSettings.from_dict).
+# with that checkbox checked (PodcastSettings.from_dict).
 _RETENTION_MODES = ("keep_all", "keep_last_n")
 _RETENTION_LABELS = (
     "Keep every episode",

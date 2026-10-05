@@ -2559,13 +2559,17 @@ from the shared weather feature set above.
    `core/app_features` model and dialog; a disabled area's menu is omitted.
 6. **NOAA Weather Radio caveat.** Finds the user's local transmitter but, having
    no audio engine, cannot play it; directs the user to Quill Radio for playback.
-7. **Global show/hide hotkey.** A system-wide chord, **Ctrl+Alt+Shift+W**, toggles
-   the app between showing and hidden-to-tray from any application, even without
-   focus -- hiding tucks the window away while alert monitoring keeps running,
-   showing restores and focuses it, and the app speaks "hidden to the tray" or
-   "shown". The chord is unique to Quill Weather within the QuillVille family
-   (QUILL uses Ctrl+Alt+Shift+Q, Quill Radio uses Ctrl+Alt+Shift+R) so the apps
-   never collide. Windows-only, via `RegisterHotKey` (the same mechanism as the
+7. **Global show/hide hotkey.** A system-wide key, chosen by the listener in
+   **File > Show and Hide Key...** (Ctrl+Alt+Shift+H), toggles the app between
+   showing and hidden-to-tray from any application, even without focus --
+   hiding tucks the window away while alert monitoring keeps running, showing
+   restores and focuses it, and the app speaks "hidden to the tray" or "shown".
+   **There is none by default** (2026-10-05): Ctrl+Alt+Shift+W, the key until
+   then, is a menu key in other QuillVille apps, and a registered hotkey takes
+   it from all of them. The picker refuses any key a family app uses as a
+   command or as its own show/hide key, in one sentence naming the app
+   (`quill/core/family_chords.py`), and a listener who had the old key is moved
+   to none and told once at the next launch (`quill/core/show_hide_keys.py`). Windows-only, via `RegisterHotKey` (the same mechanism as the
    family's hardware media keys), and strictly best-effort: if another process
    already owns the chord, Quill Weather does not grab it -- no error, no crash --
    and the tray icon still shows and hides the window. Implemented in

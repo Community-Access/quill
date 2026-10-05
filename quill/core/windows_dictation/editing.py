@@ -68,6 +68,40 @@ _CONTINUATIONS = frozenset({
     "since",
 })
 
+#: Words a sentence does not end on (dict.md 3.6, the mirror of the rule
+#: above): when a phrase the engine closed with a full stop ends with one of
+#: these, the pause was somebody thinking, not the end of the sentence --
+#: "this is a very" [pause] "good test".
+_UNFINISHED = frozenset({
+    "a",
+    "an",
+    "the",
+    "of",
+    "to",
+    "in",
+    "on",
+    "at",
+    "by",
+    "for",
+    "with",
+    "from",
+    "into",
+    "about",
+    "and",
+    "but",
+    "or",
+    "my",
+    "your",
+    "his",
+    "her",
+    "its",
+    "our",
+    "their",
+    "very",
+    "really",
+    "so",
+})
+
 _WORD = re.compile(r"[a-z0-9']+")
 
 
@@ -108,7 +142,8 @@ class EditingMixin:
         if last is None or not last.auto_period or first is None or pieces[0] is not first:
             return None
         word = "".join(_WORD.findall(first.text.lower()))
-        if word not in _CONTINUATIONS:
+        ending = _WORD.findall(last.inserted.lower())
+        if word not in _CONTINUATIONS and (not ending or ending[-1] not in _UNFINISHED):
             return None
         start, end = self._document.selection()
         if start != end or start != last.end:

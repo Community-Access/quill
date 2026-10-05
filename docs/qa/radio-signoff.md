@@ -1,6 +1,6 @@
 # Quill Radio -- sign-off checklist
 
-One pass, top to bottom, ticking boxes. Every step says exactly what to press,
+One pass, top to bottom, checking boxes. Every step says exactly what to press,
 exactly what to type, and the one thing that decides pass or fail. Nothing here
 needs an account or a key except Block M (Spotify), which is optional.
 
@@ -234,9 +234,9 @@ Test feeds that publish none (the honest-absence cases):
 - [ ] pass  [ ] fail: ______
 
 **R-28. Don't ask me again crosses to Cast**
-- Do: on another show, tick **"Don't ask me again"** and accept. Try the same
+- Do: on another show, check **"Don't ask me again"** and accept. Try the same
   command in **QUILL Cast**.
-- Pass: neither app asks again. (Cancelling with the box ticked must change
+- Pass: neither app asks again. (Cancelling with the box checked must change
   nothing.)
 - [ ] pass  [ ] fail: ______
 

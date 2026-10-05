@@ -48,7 +48,7 @@ class AppProfile:
     (:data:`quill.core.features.PROFILE_DEFINITIONS`), and for the same reason:
     a checklist is the right way to change one thing and the wrong way to say
     "give me the small one". A profile is a baseline, not a mode -- applying one
-    ticks and unticks the boxes and then the boxes are the truth, so the very
+    checks and unchecks the boxes and then the boxes are the truth, so the very
     next change is an ordinary per-area override rather than an escape from a
     setting that owns the dialog.
 

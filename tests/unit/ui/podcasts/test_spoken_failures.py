@@ -38,7 +38,7 @@ def test_previews_failure_is_spoken_as_well_as_shown() -> None:
     spoken: list[str] = []
 
     def submit(_name: str, _work: Any, *, on_success: Any, on_failure: Any) -> None:
-        on_failure("podcast-preview", OSError("host unreachable"))
+        on_failure("podcast-preview", OSError("timed out"))
 
     dialog = SimpleNamespace(
         _status=_Label(),
@@ -51,7 +51,8 @@ def test_previews_failure_is_spoken_as_well_as_shown() -> None:
     preview_search_result(dialog, result, 0)
     assert dialog._preview_btn.enabled is True
     # "Loading ..." is said as Preview starts (say_status); the failure follows it.
-    assert spoken[-1] == "That podcast could not be loaded: host unreachable"
+    # The plain sentence, never the exception text (check.md bug 7).
+    assert spoken[-1] == "That podcast could not be loaded: The host took too long to answer."
     assert dialog._status.text == spoken[-1]
 
 

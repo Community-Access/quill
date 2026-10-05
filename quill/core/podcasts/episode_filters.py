@@ -373,7 +373,7 @@ def assess_save(
     * **A duration rule only some episodes can answer** needs confirmation,
       with the exact coverage count, because the rule will work and will also
       reject every episode whose duration is missing.
-    * **On with every scope unticked** cannot be saved either. A filter with
+    * **On with every scope unchecked** cannot be saved either. A filter with
       nowhere to apply is a switch that reports itself as on and does nothing,
       which is the most expensive kind of setting there is.
     * **A hiding scope** -- one that takes episodes out of a list rather than
@@ -416,8 +416,8 @@ def assess_save(
     if not config.active_scopes:
         return SaveAssessment(
             blocked=(
-                "Filtering is on but nothing is ticked under Where this applies, "
-                "so the filter would decide nothing anywhere. Tick at least one "
+                "Filtering is on but nothing is checked under Where this applies, "
+                "so the filter would decide nothing anywhere. Check at least one "
                 "place, or turn filtering off."
             )
         )

@@ -31,6 +31,7 @@ CPython. It:
 | `runtime_resolve.c` | Path-walk + version-marker validation. The never-crash contract. |
 | `runtime_resolve.h` | `QlRuntime` struct + the two public entry points. |
 | `launch_report.c` / `.h` | The "it did not start" report: the launch log the child's stderr goes to, the words for a non-zero exit, and the archive-preview check. See "When the app does not start" below. |
+| `cmdline.c` / `.h` | Builds the one command-line string `CreateProcessW` takes, quoting each argument by the rules the child's C runtime splits it back with. A bare space join broke any folder or file name with a space in it. |
 | `product.h.in` | Per-product identity template. CMake substitutes the values at configure time. |
 | `CMakeLists.txt` | Build script. One executable target per product, configured by `-DPRODUCT_NAME=…` etc. |
 
@@ -129,14 +130,18 @@ Player, Inkwell, Beacon.
 ```powershell
 pytest tests/unit/native/test_runtime_resolver.py -v
 pytest tests/unit/native/test_launch_failure.py -v
+pytest tests/unit/native/test_launcher_cmdline.py -v
 pytest tests/unit/scripts/test_build_native_launcher.py -v
 ```
 
 The first is a Python mirror of the C runtime resolver and exercises
 the algorithm in isolation. The second mirrors `launch_report.c` the same
-way and pins every constant and phrase to the C source. The third is the
-per-product identity contract and the cross-product storage-mode allowlist
-check.
+way and pins every constant and phrase to the C source. The third mirrors
+`cmdline.c`'s quoting and, where MSVC and CMake are installed, compiles the
+real `cmdline.c` into a small harness and checks that shell32's
+`CommandLineToArgvW` reads every command line it builds back to the exact
+arguments. The fourth is the per-product identity contract and the
+cross-product storage-mode allowlist check.
 
 ## What this is NOT
 

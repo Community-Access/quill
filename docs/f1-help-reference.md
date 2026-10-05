@@ -24,7 +24,7 @@ from `topics.json` by `quill/tools/build_docs.py`.
 
 ## Quill Radio
 
-Control coverage: 291 audited sites (177 helped, 114 named-help).
+Control coverage: 294 audited sites (180 helped, 114 named-help).
 
 ### Every window, and what it is for
 
@@ -94,9 +94,9 @@ Control coverage: 291 audited sites (177 helped, 114 named-help).
 
 **Manage Favorite Stations.** Your whole favorites collection in one place: search it, play from it, rename, remove, and arrange stations into folders. Changes save immediately and the main window's tree follows along.
 
-**Move Quill Radio to Beta?.** Says plainly what could go wrong on Beta or Dev, how your settings are protected, and how to come back. Nothing changes unless you tick the box and choose Move.
+**Move Quill Radio to Beta?.** Says plainly what could go wrong on Beta or Dev, how your settings are protected, and how to come back. Nothing changes unless you check the box and choose Move.
 
-**Move Quill Radio to Dev?.** Says plainly what could go wrong on Beta or Dev, how your settings are protected, and how to come back. Nothing changes unless you tick the box and choose Move.
+**Move Quill Radio to Dev?.** Says plainly what could go wrong on Beta or Dev, how your settings are protected, and how to come back. Nothing changes unless you check the box and choose Move.
 
 **Player.** The whole transport in one small window: what is playing, where you are in it, and buttons for play, stop, skipping, speed, chapters and volume. Ctrl+Shift+G opens it from anywhere -- or brings it to the front if it is already open -- and Escape puts you back where you came from.
 
@@ -157,6 +157,8 @@ Control coverage: 291 audited sites (177 helped, 114 named-help).
 **Wake-Up Timer.** Start a station playing at a time you choose -- an alarm clock that wakes you to radio. Quill Radio must be running (or in the tray) at the set time; the status readout here says what is scheduled.
 
 **Welcome to Quill Radio.** A three-screen tour for a first launch. Nothing here is a setting you can get wrong: read, press Next, and Skip leaves at any point.
+
+**What Was Left Out.** Everything a backup, a restore or a setup file left out, one row per item, each with the reason -- stored only in OneDrive, in use by another program, a path too long for Windows. Nothing listed here was deleted. What to do about it is under the list, and Copy List takes the whole thing with you.
 
 **YouTube Comments.** The comments people left on a YouTube video, one per row, with replies right after the comment they answer. Type in Search comments to narrow the list, change Sort by for the newest, read the selected comment in full in Full text, and use Load More for the next hundred. Keys: Alt+M Search comments, Alt+B Sort by, Alt+C the list, Alt+T Full text, Alt+L Load More, Alt+P Copy Comment. Escape closes it and takes you back where you were.
 
@@ -303,6 +305,11 @@ Control coverage: 291 audited sites (177 helped, 114 named-help).
 - `all_btn`: Turns every directory on, the widest possible search.
 - `reset_btn`: Returns the search sources to what a fresh install asks.
 - `close_btn`: Closes this window; your source choices are already saved.
+#### (module level) (`quill/ui/radio/skipped_items_dialog.py`)
+
+- `listbox`: Every file or item that was left out, one per row, with why. Nothing here was deleted; each row is something the backup, restore or setup file does not hold.
+- `copy_btn`: Copies the whole list, with the reasons and what to do, so you can paste it into an email or a note.
+- `close_btn`: Closes this list. Nothing changes when you close it.
 #### SongHistoryDialog (`quill/ui/radio/song_history_dialog.py`)
 
 - `self._copy_btn`: Copies the highlighted song, title and artist, to the clipboard.
@@ -378,7 +385,7 @@ Control coverage: 291 audited sites (177 helped, 114 named-help).
 - `sort`: The order YouTube puts the answers in. Relevance is YouTube's usual order.
 #### (module level) (`quill/ui/radio/youtube_sponsorblock_ui.py`)
 
-- `enabled`: Off by default. When on, Quill Radio jumps over the kinds of segment ticked below while a YouTube video plays, and says what it skipped.
+- `enabled`: Off by default. When on, Quill Radio jumps over the kinds of segment checked below while a YouTube video plays, and says what it skipped.
 #### (module level) (`quill/ui/radio/youtube_video_window.py`)
 
 - `box`: The channel's name, its subscriber count and the description it wrote about itself. Read it with the arrow keys.
@@ -400,7 +407,7 @@ Control coverage: 291 audited sites (177 helped, 114 named-help).
 #### TutorialsWindow (`quill/ui/tutorials_window.py`)
 
 - `self._step_field`: The step you are on: what to do, why, the keys for it, and what you should hear. Read-only, so arrow through it freely and copy from it with Ctrl+C.
-- `self._follow`: While this is ticked, the lesson watches the app and moves you to the next step by itself once it can see you have done this one. It watches what changed, not which key you pressed, so any route counts. Unavailable in an app whose lessons have nothing to watch for, because every step's outcome there is a sentence the app already says.
+- `self._follow`: While this is checked, the lesson watches the app and moves you to the next step by itself once it can see you have done this one. It watches what changed, not which key you pressed, so any route counts. Unavailable in an app whose lessons have nothing to watch for, because every step's outcome there is a sentence the app already says.
 - `self._try_btn`: Runs this step's command for you, exactly as its key would -- so a step that opens a window opens it.
 - `self._next_btn`: Moves to the next step, and reads it.
 - `self._back_btn`: Moves to the previous step, and reads it.
@@ -438,7 +445,7 @@ Control coverage: 291 audited sites (177 helped, 114 named-help).
 
 ## QUILL Cast
 
-Control coverage: 298 audited sites (194 helped, 104 named-help).
+Control coverage: 302 audited sites (198 helped, 104 named-help).
 
 ### Every window, and what it is for
 
@@ -456,9 +463,11 @@ Control coverage: 298 audited sites (194 helped, 104 named-help).
 
 **Episode Filter Test.** One test inside an Episode Filter rule: what it looks at -- the title, the show notes, the people on the episode, its type, length, age, season or number -- how to compare, and the value. Words, wildcards and regular expressions all work on text.
 
-**Feed Check.** Which of the podcasts you follow need something, worst first: failing feeds, then quiet ones, then the healthy rest. Opening it checks nothing; Retry checks the selected feed and Retry All Failed every failing one. A quiet podcast is not necessarily a failing feed, and Cast never stops trying a failing one.
+**Feed Check.** Which of the podcasts you follow need something, worst first: failing feeds with the reason, empty feeds, then quiet ones, then the healthy rest. Opening it checks nothing; Retry checks the selected feed and Retry All Failed every failing one. When a feed has been removed or now leads nowhere, Find This Show's New Feed looks for where the show went. Cast never stops trying a failing feed.
 
 **Feed Credentials.** The user name and password for a private feed -- a paid subscription, a members-only show. They are kept for this feed alone and sent to its own host, never to a directory.
+
+**Find This Show's New Feed.** Feeds that might be this podcast, found by searching the podcast directories for its title and checked to make sure each one answers, with how many episodes it has and the newest one's date. Replace Feed moves the podcast to the one you choose and keeps everything you have already heard; Cancel changes nothing.
 
 **Folder Settings.** Settings that apply to every show in one folder: how it is checked, how much is kept, and what happens when an episode finishes. A show with its own answer keeps it; the folder answers for the rest.
 
@@ -472,9 +481,9 @@ Control coverage: 298 audited sites (194 helped, 104 named-help).
 
 **Mark All as Played.** Confirm marking every episode listed as played. It says how many rows this touches before it does anything, and it changes only the played mark -- no file is deleted.
 
-**Move QUILL Cast to Beta?.** Says plainly what could go wrong on Beta or Dev, how your settings are protected, and how to come back. Nothing changes unless you tick the box and choose Move.
+**Move QUILL Cast to Beta?.** Says plainly what could go wrong on Beta or Dev, how your settings are protected, and how to come back. Nothing changes unless you check the box and choose Move.
 
-**Move QUILL Cast to Dev?.** Says plainly what could go wrong on Beta or Dev, how your settings are protected, and how to come back. Nothing changes unless you tick the box and choose Move.
+**Move QUILL Cast to Dev?.** Says plainly what could go wrong on Beta or Dev, how your settings are protected, and how to come back. Nothing changes unless you check the box and choose Move.
 
 **Move to Folder.** Choose the folder to file into, or make a new one. Folders are yours to invent, and filing changes nothing about what is downloaded or played.
 
@@ -533,6 +542,8 @@ Control coverage: 298 audited sites (194 helped, 104 named-help).
 **Watched Folders.** The folders QUILL Cast keeps an eye on. Anything that lands in one -- from a voice recorder, a download, a shared folder -- arrives in Personal Audio by itself, once, and is announced. Add Folder chooses a new one, Folder Settings changes how it behaves, Pause stops watching for now, and Remove stops for good without touching a single file.
 
 **Welcome to QUILL Cast.** One screen for a first launch: where you would like to land each time Cast opens, whether to hear a tip now and then, and Add Your First Podcast. Nothing here is a setting you can get wrong; Skip, or Escape, leaves at once, and Preferences changes where you land later.
+
+**What Was Left Out.** Everything a backup, a restore or a setup file left out, one row per item, each with the reason -- stored only in OneDrive, in use by another program, a path too long for Windows. Nothing listed here was deleted. What to do about it is under the list, and Copy List takes the whole thing with you.
 
 **Year in Review.** Your listening year as a short report: the shows you gave the most time to, how many episodes you finished, and when you listened. It is built from your own local history.
 
@@ -639,17 +650,18 @@ Control coverage: 298 audited sites (194 helped, 104 named-help).
 - `cancel_btn`: Leaves the test as it was.
 #### EpisodeFiltersWindow (`quill/ui/podcasts/episode_filters_dialog.py`)
 
-- `ok_btn`: Saves these rules for this podcast. Every list you ticked takes effect at once, on episodes you already have as well as new ones; nothing is deleted. The Play Queue is the only thing not touched without asking, and saving asks about it separately.
+- `ok_btn`: Saves these rules for this podcast. Every list you checked takes effect at once, on episodes you already have as well as new ones; nothing is deleted. The Play Queue is the only thing not touched without asking, and saving asks about it separately.
 - `cancel_btn`: Closes this window and returns to where you were. Anything not saved is left exactly as it was.
 #### CastEpisodeListMixin (`quill/ui/podcasts/episode_list.py`)
 
 - `self._episodes`: The episodes (or podcasts) of the place you chose, one per row, read column by column. Enter plays an episode or opens a podcast; Space adds an episode to the queue; Delete removes it from this place; Shift+F10 offers everything else. Left Arrow at the top returns to Places.
 #### FeedCheckWindow (`quill/ui/podcasts/feed_check_dialog.py`)
 
-- `self._list`: Every podcast you follow, worst first: the ones failing to check, then any never checked, then any that have gone quiet, then the healthy ones. Nothing here has been unfollowed and nothing has stopped being checked -- Cast keeps trying a failing feed. Shift+F10 opens what you can do to a row.
+- `self._list`: Every podcast you follow, worst first: the ones failing to check, with the reason, then any whose feed is empty, any never checked, any that have gone quiet, and then the healthy ones. Nothing here has been unfollowed and nothing has stopped being checked -- Cast keeps trying a failing feed. Shift+F10 opens what you can do to a row.
 - `self._retry_btn`: Check the selected feed again, now.
 - `self._retry_all_btn`: Check every failing feed again. Feeds that have gone quiet are left alone -- a quiet feed is working perfectly, and retrying it would report nothing new.
 - `self._copy_btn`: Put the selected podcast's feed address on the clipboard, so you can open it in a browser and see what the publisher is actually sending.
+- `self._find_btn`: For a feed that is not coming back at its address -- removed by the host, a web address that no longer exists, a web page where the feed was, or an empty feed: look up this show's title in the podcast directories and offer the feeds that answer, with their newest episode's date. Replace Feed keeps everything the podcast already has.
 - `close_btn`: Closes Feed Check and returns to where you were, without changing which podcasts you follow.
 #### FirstRunDialog (`quill/ui/podcasts/first_run_dialog.py`)
 
@@ -686,6 +698,12 @@ Control coverage: 298 audited sites (194 helped, 104 named-help).
 - `self._episode_filter_choice`: Which episodes the list shows: all of them, only the unheard ones, only what is downloaded, and so on. It narrows the list you are looking at and changes nothing about the episodes themselves.
 - `self._show_filter_choice`: Which podcasts the folder tree shows -- all of them, or only the ones with something unplayed. Nothing is unfollowed or hidden permanently.
 - `self._episode_search_ctrl`: Narrows the episode list of the podcast you are on, matching episode titles and the show notes. It searches this podcast only -- Search Everywhere is the one that crosses your whole library -- and it narrows whatever the filter and sort above already chose rather than replacing them. Enter says how many matched.
+#### NewFeedDialog (`quill/ui/podcasts/new_feed_dialog.py`)
+
+- `self._summary`: What Cast found for this podcast, and anything a podcast directory could not answer.
+- `self._list`: Each feed was found by looking up this show's title in the podcast directories, and was read to check it answers with episodes. The newest episode's date tells a show that carried on from an older one with the same name. Replace Feed switches this podcast to the selected feed and keeps everything you have already heard.
+- `self._replace_btn`: Switch this podcast to the selected feed. Its episodes, play positions, notes and settings stay as they are; only the feed address changes, and the new feed is checked straight away.
+- `cancel_btn`: Leave this podcast's feed address as it is.
 #### NotificationsWindow (`quill/ui/podcasts/notifications_window.py`)
 
 - `self._list`: What QUILL Cast told you, newest first. A row beginning New has not been read. Enter goes to what it was about; the Applications key offers Play Now, Add to Queue, Go to the Podcast and Mark Read on a new-episode notice. Escape closes the window.
@@ -829,6 +847,8 @@ Control coverage: 36 audited sites (23 helped, 13 named-help).
 **Quick Actions.** Decide what pressing Enter on a row does, and the order of the row's right-click menu. The first action in each list is the default and the whole list is rearranged by position -- Move Up, Move Down, Make Default -- never by checkbox. Cancel leaves every list as it was.
 
 **Quill Media Player.** The main window: what is playing, the transport, and three pages under it -- Chapters, Bookmarks, and the Audio equalizer. Open a file, a folder, a DAISY book, or a free LibriVox title; your place is saved as you listen, so a book resumes where you left it. Nothing here needs an account, and playback stays on this computer.
+
+**Show and Hide Key.** Choose one key that shows and hides the player from any program. Type it, for example with Ctrl, Alt and Shift held, or leave the box empty for no key. A key another QuillVille app already uses is refused, and you are told whose it is.
 
 **Voice Command.** Say or type one natural command -- 'skip back thirty', 'next chapter', 'go to 1:20:00', 'bookmark this', 'sleep in twenty' -- and OK carries it out. The same grammar answers the hands-free Listen for a Command toggle; this field is the way to use it without a microphone.
 
@@ -1113,6 +1133,8 @@ Control coverage: 3 audited sites (3 helped).
 
 **Excluded Applications.** Programs where expansion must never run, one program file name per line -- notepad.exe, for example. Password managers and Windows sign-in prompts are always excluded whether or not you list them. OK saves the list immediately.
 
+**Expand Word Key.** Choose one key that expands the word you just typed, in any program, without waiting for a space or punctuation. There is none until you choose one. Type it, or leave the box empty for no key; a key another QuillVille app already uses is refused, and you are told whose it is.
+
 **Find a Setting or Command.** Every menu command in this app, searchable by name. Type part of a name; Down moves into the matches; Enter does the highlighted one, exactly as choosing it from its menu would. An option says whether it is on, and doing it switches it and says the new state.
 
 **Manage Abbreviations.** Your whole abbreviation library in one place: create, edit, delete, and switch entries on or off, with search and a category filter to find the one you mean. Import and Export move the library as a file. Every change saves immediately and reaches QUILL's editor too, because both apps read the same library.
@@ -1121,7 +1143,11 @@ Control coverage: 3 audited sites (3 helped).
 
 **Quick Insert.** Pick an abbreviation and Inkwell types its expansion into the window you were just working in -- the way to use an entry set to expand only manually, or one whose trigger you cannot recall. Filter, choose, press Enter; focus returns to where you were and the text is typed there. If there is nowhere to type, the expansion is copied to the clipboard instead.
 
+**Quick Insert Key.** Choose one key that opens Quick Insert from any program, so an entry you only insert by hand is always a keystroke away. There is none until you choose one. Type it, or leave the box empty for no key; a key another QuillVille app already uses is refused, and you are told whose it is.
+
 **Quill Inkwell.** The manager window for a service that lives in the system tray: type an abbreviation in any application -- a browser, a mail client, a form -- and Inkwell replaces it with the text you saved. The list shows your library, which is the same library QUILL's editor expands from, so an abbreviation added in either works in both immediately. Closing this window keeps expansion running in the tray unless you turn that off in Options.
+
+**Show and Hide Key.** Choose one key that shows and hides the Inkwell window from any program. Type it, for example with Ctrl, Alt and Shift held, or leave the box empty for no key. A key another QuillVille app already uses is refused, and you are told whose it is.
 
 **Update downloaded.** A new Quill Inkwell is on disk and ready. Install and restart now applies it and relaunches -- your abbreviations and settings are kept -- or Open folder shows you the installer to run later.
 
@@ -1133,7 +1159,7 @@ Control coverage: 3 audited sites (3 helped).
 
 - `self._list`: Your abbreviation library, read-only here: each row is a trigger word, the start of what it expands to, and its category, with disabled entries marked. To add, change, or remove entries press the Manage Abbreviations button (Ctrl+M); this list follows the same library QUILL's editor expands from.
 - `manage_btn`: Open the Manage Abbreviations dialog: create, edit, delete, enable or disable entries, and import or export the whole library. Changes save immediately and work in QUILL too.
-- `quick_btn`: Pick an abbreviation and have its expansion typed into the window you were just working in -- the way to use entries set to expand only manually. Also on Ctrl+K here, or its system-wide hotkey from any application.
+- `quick_btn`: Pick an abbreviation and have its expansion typed into the window you were just working in -- the way to use entries set to expand only manually. Also on Ctrl+K here, and from any program on the key you choose with File, Quick Insert Key.
 
 ## Quill Weather
 
@@ -1148,6 +1174,8 @@ Control coverage: 40 audited sites (40 helped).
 **Quill Weather.** The main window of the weather watcher. Its real work happens in the background: it monitors official National Weather Service alerts for your saved locations and speaks new warnings as they are issued, even from the system tray. The three buttons open the full Weather Center, start or stop the watch, and add a place to watch; closing the window keeps monitoring in the tray by default.
 
 **Quill Weather Tutorials.** Guided lessons, one step at a time, that can run the step for you and notice when you have done it. The contents list is grouped by track and remembers where you stopped; typing 'here' in the filter box narrows it to the tutorials about the window you came from. Follow me watches what the app is doing -- never which key you pressed -- and moves you on by itself.
+
+**Show and Hide Key.** Choose one key that shows and hides Quill Weather from any program. Type it, for example with Ctrl, Alt and Shift held, or leave the box empty for no key. A key another QuillVille app already uses is refused, and you are told whose it is.
 
 **Weather Center.** The full text weather report for one location at a time, in reading order: active alerts first, then current conditions, the period forecast, the hourly forecast, and the extended daily outlook. Each list pairs with a read-only detail box below it that follows your selection, so arrowing a list reads the full official text. The Location chooser switches places, Refresh re-pulls, and Add Location and Settings open their own windows.
 
@@ -1231,6 +1259,8 @@ Control coverage: 26 audited sites (26 helped).
 **Keyboard Shortcuts.** Every key in Quill Converter, grouped by menu, in one read-only list you can arrow through or copy. It is a reference; nothing here changes a key.
 
 **Quill Converter.** Convert audio and video between formats: sound to sound, video to sound, or video to video. Queue your files or folders, choose a format, a preset and any effects -- Preview lets you hear fifteen seconds of the result first -- and Convert. Everything runs on this computer, your originals are never touched, and a file already in the output folder is numbered around, never overwritten.
+
+**Show and Hide Key.** Choose one key that shows and hides Quill Converter from any program. Type it, for example with Ctrl, Alt and Shift held, or leave the box empty for no key. A key another QuillVille app already uses is refused, and you are told whose it is.
 
 **Tag Editor.** Every tag of one MP3, M4A, M4B or MP4 file, over five pages -- title, artist and album, the people, the dates and numbers, sorting, and the cover art. Control+Tab moves between pages. OK writes the tags into the file; the sound itself is not touched.
 
@@ -1495,7 +1525,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## QUILL Lite
 
-Control coverage: 125 audited sites (125 helped).
+Control coverage: 155 audited sites (155 helped).
 
 ### Every window, and what it is for
 
@@ -1510,6 +1540,8 @@ Control coverage: 125 audited sites (125 helped).
 **About QUILL Lite.** What this copy is, and where it keeps your settings and your recovered work. QUILL Lite is a small companion to QUILL for All, not a replacement for it: conversion, comparison, publishing and the rest of QUILL's AI live in QUILL.
 
 **Action Items.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
+
+**Add Inline Note.** Write a note about the line or selection you were on. Note on shows the start of that text, so you can check you are in the right place. In Markdown and HTML, Write this note into the file keeps the note inside the document where others can read it; otherwise it stays private.
 
 **Answer.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
 
@@ -1537,6 +1569,8 @@ Control coverage: 125 audited sites (125 helped).
 
 **Document language.** Which markup this document is written in. It decides what Bold writes, what the heading keys write, which of the two tag pickers the Insert menu offers, and whether the cursor can tell you what list you are in. QUILL Lite reads it from the file name; this is where you say otherwise. Nothing in your document changes -- only what the keys write from now on. The choice lasts as long as this window is open.
 
+**Edit Inline Note.** Change what this note says, or delete it. The text the note is about is never changed. A note written into the file is changed in the file, so Undo takes the change back.
+
 **Email Reply.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
 
 **Explanation.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
@@ -1559,6 +1593,8 @@ Control coverage: 125 audited sites (125 helped).
 
 **Image Description.** What the model saw in the picture, read-only. Insert Below puts it under the paragraph you are in, Copy puts it on the clipboard, and Control Z takes an insert back.
 
+**Inline Notes.** Every note in this document: what it says, the line it is on, the text it is about, and whether it is private or written into the file. A note whose text was deleted is listed last, so you can still read or remove it. Enter goes to a note, Delete deletes one, F2 edits one; Remove All, Copy All and Export are buttons.
+
 **Insert HTML Tag.** Forty HTML tags, searchable by what they do as well as by what they are called -- dropdown finds select, checkbox finds input, collapsible finds details. Choose the tag, then give it attributes if it needs any, or press Enter on the empty box to skip that. Anything selected in your document is wrapped by the tag.
 
 **Insert Image.** Where the image lives. Leave the address as it is to put a placeholder in and fill it in later -- the description is whatever you had selected, and it is what somebody using a screen reader will hear instead of the picture, so it is worth writing.
@@ -1579,11 +1615,13 @@ Control coverage: 125 audited sites (125 helped).
 
 **Marks.** The places you have passed through, newest first, with the line each one is on. Choose one and press Enter to go there. A mark is not a bookmark: a bookmark is somewhere you meant to keep, a mark is where you were standing before you went to look something up.
 
+**More Dictation Settings.** The finer dictation choices: holding the key to talk, the quiet preview of what is being heard, profiles for writing and for talking to the AI, and My Dictation Instructions. Nothing changes until you choose OK.
+
 **More Formal.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
 
-**Move QUILL Lite to Beta?.** Says plainly what could go wrong on Beta or Dev, how your settings are protected, and how to come back. Nothing changes unless you tick the box and choose Move.
+**Move QUILL Lite to Beta?.** Says plainly what could go wrong on Beta or Dev, how your settings are protected, and how to come back. Nothing changes unless you check the box and choose Move.
 
-**Move QUILL Lite to Dev?.** Says plainly what could go wrong on Beta or Dev, how your settings are protected, and how to come back. Nothing changes unless you tick the box and choose Move.
+**Move QUILL Lite to Dev?.** Says plainly what could go wrong on Beta or Dev, how your settings are protected, and how to come back. Nothing changes unless you check the box and choose Move.
 
 **Next Paragraph.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
 
@@ -1611,6 +1649,8 @@ Control coverage: 125 audited sites (125 helped).
 
 **Shorter.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
 
+**Speech Models.** Optional speech models you can download for better accuracy, with each one's size, languages and what it suits. Your voice never leaves the computer with these models; Download asks first, and Remove frees the space again.
+
 **Spelling Announcements.** How a misspelled word is reported to you. A misspelling is the one thing an editor cannot convey by speech alone -- receive and recieve sound identical -- so the letters are the answer, and this window decides when you get them and how they are said. Three groups: what happens while you type, how letters are spoken, and how long each pause is before the spelling follows.
 
 **Spelling Review.** Every word in this document that is not in the dictionary, one at a time, with suggestions you can arrow through. Change it, change every one like it, ignore it, or add it to your dictionary so it is never questioned again.
@@ -1622,6 +1662,8 @@ Control coverage: 125 audited sites (125 helped).
 **Summary.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
 
 **Tidied Dictation.** The dictated text with the recogniser's mistakes corrected -- misheard words, punctuation, fillers -- and nothing else changed. Replace My Selection puts it where the dictated text was; Control Z takes it back.
+
+**Transcribe a Recording.** Turns a recording into text in the background: choose the file, the speech model, the language and where the text goes, then keep working. While one is running, this window says how far it has got and can stop it.
 
 **Translation.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
 
@@ -1644,6 +1686,7 @@ Control coverage: 125 audited sites (125 helped).
 - `close_btn`: Close this window and go back to your document.
 - `entry`: Type part of a name to narrow the list below. Leave it empty to see everything. Press Enter or Down Arrow to move to the list.
 - `listbox`: Markdown makes Bold write two asterisks and the heading keys write hashes. HTML makes them write <strong> and <h2>, and offers the HTML tag picker. Plain text writes no markup at all and is right for a letter, a log or a script. The choice lasts as long as this window is open; the file itself is not changed.
+- `reopen_button`: Read this file again from disk as an encoding you choose, for a file whose letters came out wrong. Unsaved changes are discarded and nothing on disk changes. Afterwards it saves in that encoding, or choose UTF-8 here to convert it when you save.
 #### (module level) (`quill/apps/lite_dialogs_entry.py`)
 
 - `display`: The words the link will read as. Leave it empty to show the address itself.
@@ -1680,6 +1723,7 @@ Control coverage: 125 audited sites (125 helped).
 - `theme_choice`: Follow the system is the default: anybody who needs a particular contrast has already told Windows, and following that beats guessing. Either way it changes the view only and is never saved into your documents.
 - `restore`: Reopen last session's files, in the same numbered order. Different from recovering unsaved work, which happens whether this is on or not.
 - `keep_untitled`: On: work you never saved is offered back whether or not the window had a file. Off: only documents with a file are offered, and the copies of untitled ones are deleted rather than kept -- keeping something that is never offered would be a promise nothing can redeem. Identical copies are folded into one either way, and anything older than a month is dropped. QUILL has the same setting.
+- `notes_in_file`: On: in Markdown and HTML documents, Add Inline Note starts with Write this note into the file checked, so the note is kept in the document as a hidden comment that anyone who opens the file can read. Off: notes stay private to you. Each document remembers your last choice. QUILL has the same setting.
 - `blank`: On: a new Untitled document is waiting when the app opens, the way Notepad and WordPad do it. Off: the app opens with nothing, and Control N or Open makes the first document -- which is what you want if you always open an existing file and were closing an empty one every time. Files you open by double-clicking, last session's documents and recovered work all still appear either way.
 - `share`: Off: abbreviations are QUILL Lite's own. On: read and write the same library QUILL and Quill Inkwell use, so an abbreviation added in any of them works in all of them. Turning this on creates a QUILL data folder if you do not already have one.
 - `share_dict`: Off: words you teach the spell checker are QUILL Lite's own. On: read and write the same dictionary QUILL uses, so a word taught in either is known to both. Turning this on creates a QUILL data folder if you do not already have one.
@@ -1698,6 +1742,14 @@ Control coverage: 125 audited sites (125 helped).
 - `autosave`: How often a modified document is copied to the recovery folder. The copy is beside your file, never over it, and is removed when you save.
 - `font_field`: The face and size the editor draws in. Change Font opens the chooser; this box reads back whatever you pick.
 - `choose_btn`: Open the font chooser and pick a face and size for the editor.
+#### FileChangePrefs (`quill/apps/lite_preferences_files.py`)
+
+- `self.heading`: What QUILL Lite does when another program writes to or deletes a file you have open. QUILL has the same settings.
+- `self.watch`: On: QUILL Lite notices when another program changes or deletes a file you have open, and tells you or asks you. Off: it notices only when you save.
+- `self.auto_reload`: On: if you have not changed the document since it was opened or saved, a changed file is read again by itself, the cursor stays on its line, and QUILL Lite says so once. Off: you are asked first. An answer you asked to have remembered for that kind of file still comes first.
+- `self.prompt`: On: when the file changes while you have unsaved edits, you choose Reload from Disk, Keep Mine or Save As, and a deleted file is reported once. Off: QUILL Lite says nothing in those cases and leaves your text alone.
+- `self.debounce`: How often QUILL Lite looks at your open files, so a program that writes a file in several steps is dealt with once. The default is 750.
+- `self.forget_button`: Takes back every Do not ask me again answer, so QUILL Lite asks again about every kind of file. Happens when you press OK.
 #### ProfileRow (`quill/apps/lite_preferences_profile.py`)
 
 - `self.impact`: What the profile above would change: which parts of the app it keeps, which it removes, and anything else it sets.
@@ -1791,15 +1843,16 @@ Control coverage: 125 audited sites (125 helped).
 - `choice`: Which part of your document to send: what you selected, the paragraph you are in, or the whole section.
 #### WindowsDictationDialog (`quill/ui/windows_dictation_dialog.py`)
 
+- `self.speech_models`: Optional, larger speech models for better accuracy -- the ones VS Code offers and the rest of the Whisper family -- to download, remove or choose. Dictation works without them.
 - `self.speech_language`: The language you dictate in: English, or Spanish, which is new. In Spanish, Moonshine and Whisper both use Whisper's multilingual model; Windows speech recognition needs Spanish installed in Windows. Commands stay in English for now, and Spanish punctuation words such as coma and punto work while automatic punctuation is off.
 - `self.auto_punctuation`: On: Moonshine and Whisper put in full stops, commas and question marks by themselves, and any mark you say still wins. Off: nothing is added for you, and a sentence runs on until you say a mark, as with Windows speech recognition, which never punctuates by itself.
 - `self.language`: Which of the speech languages installed in Windows the Windows speech recognition engine listens for. Moonshine and Whisper ignore this and follow the dictation language. Add languages in Windows Settings, Time and language, Speech.
 - `self.microphone`: The microphone dictation listens on. The Windows default follows whatever Windows Sound settings choose as the default recording device; choose a named microphone to keep using that one whatever the default becomes. If the chosen microphone is unplugged, starting dictation says so rather than quietly listening on another.
-- `self.test_microphone`: Records four seconds on the chosen microphone -- start speaking when you hear Speak now -- then says how loud it was and, with Moonshine or Whisper, what the engine heard. Nothing is kept.
+- `self.test_microphone`: Records four seconds on the chosen microphone -- start speaking when you hear Speak now -- then says how loud it was and, with an engine that runs on this computer, what the engine heard. Nothing is kept.
 - `self.test_result`: What the last microphone test found.
 - `self.feedback`: What you hear each time a phrase goes into the document. A sound is a short tone. Speech reads back the words that were written, so you can hear whether they are the words you said. Use headphones if you choose speech: read back through speakers, the microphone can hear it and write it down again.
 - `self.dash`: What the spoken word dash writes. A hyphen, said as hyphen, is always a plain hyphen that joins two words.
-- `self.pause`: How long you can stop talking before what you said is written. Choose Long if dictation cuts you off while you are still thinking; Short writes sooner after you stop.
+- `self.pause`: How long you can stop talking before what you said is written. Choose Long if dictation cuts you off while you are still thinking; Short writes sooner after you stop. Longer and Longest are for speaking slowly: every phrase then waits two or three seconds before it is written.
 - `self.remove_fillers`: Leave out hesitations -- um, uh, erm, hmm -- instead of writing them. Real words are never removed.
 - `self.continuous`: For talking in one long run and pausing wherever you like. A pause then puts in no full stop, plays no sound and reads nothing back, and voice commands are written as words -- only the stop phrase still stops dictation. Punctuation you say still works.
 - `self.cue_sounds`: A rising pair of tones when dictation starts listening, a falling pair when it stops, and a low double tone when something goes wrong. A failure is always spoken as well, whatever this is set to.
@@ -1810,16 +1863,56 @@ Control coverage: 125 audited sites (125 helped).
 - `self.silence`: Stop dictation by itself when it has heard nothing for this long, so it is not left writing in an empty room. With the wake phrase on, it goes back to waiting for the wake phrase instead.
 - `commands`: The list of everything dictation understands: punctuation, layout, the commands, spelling, and your own phrases. Saying what can I say while dictating opens the same list.
 - `words`: Add, change and remove your own words for dictation in a window: names and jargon to spell your way, phrases that write whatever you choose, and corrections for what the engine keeps hearing wrong. Saves these settings first.
-#### DictationCommandsDialog (`quill/ui/windows_dictation_dialog.py`)
+- `self.more_button`: Holding Ctrl+F11 to talk, the words heard so far while you speak, how dictation behaves when you talk to the AI, OpenAI with your own key, and My Dictation Instructions.
+#### DictationCommandsDialog (`quill/ui/dictation_lists_dialog.py`)
 
 - `self.text`: Every phrase dictation acts on and what it does. Read with the arrow keys; Escape closes. The same list is in the user guide.
 - `close`: Close this list.
-#### RecentPhrasesDialog (`quill/ui/windows_dictation_dialog.py`)
+#### RecentPhrasesDialog (`quill/ui/dictation_lists_dialog.py`)
 
 - `self.list`: What you dictated this session, newest first. Enter inserts the one you are on at the cursor again; Copy puts it on the clipboard.
 - `insert`: Write this phrase at the cursor again, as one undo step.
 - `copy`: Put this phrase on the clipboard without writing it.
 - `close`: Close the list without inserting anything.
+#### MoreDictationDialog (`quill/ui/dictation_more_dialog.py`)
+
+- `self.hold`: Left off, Ctrl+F11 starts dictating with one press and stops with the next. Turned on, you can also hold Ctrl+F11 while you talk, and dictation stops when you let go, keeping your last phrase. A quick press still turns it on and off.
+- `self.preview`: Nemotron and OpenAI recognise while you are still talking. Show puts the words heard so far in the status bar and on a braille display, never in your document, and the final words replace them when you pause. Say also speaks the new words quietly, a few at a time. The built-in engines wait for the pause, so with them the status bar says Hearing you.
+- `self.readback_marks`: When each phrase is read back, say its punctuation by name: Hello comma world period. That way you hear whether the comma or full stop went in, whatever your screen reader's punctuation level is. The status bar and a braille display always show the real marks. On by default.
+- `self.timestamps`: In a live transcript, start each new paragraph with the time, like 10:42 in square brackets, so you can find a moment later. A new paragraph starts when the speaker pauses for four seconds or more. Off by default.
+- `self.send`: In the AI Conversation window, Ctrl+F11 dictates your message. When I pause sends it as soon as you stop talking, the reply is read aloud, and the microphone waits until it has been read before it listens again; Escape listens at once. When I press Enter lets you check the message first.
+- `self.ai_pause`: How long you can stop to think while talking to the AI before what you said is written -- and, with When I pause, sent. Long is the default, so a breath does not send half a question.
+- `self.ai_fillers`: Leave out um, uh and their kin from what you say to the AI. On by default, because the AI does not need them.
+- `self.ai_punctuation`: Let the speech engine put in full stops, commas and question marks in what you say to the AI.
+- `self.consent`: Off unless you agreed when you chose OpenAI as the speech engine. While it is on and OpenAI is the engine, what you say is sent to OpenAI with the OpenAI key saved in Use My Own AI Key and billed to your account. Turn it off to stop that; the built-in engines never send anything.
+- `self.model`: The OpenAI transcription models your key can use, read from OpenAI when this window opens, newest first. Models OpenAI is retiring are left out. gpt-live-transcribe writes as you speak; gpt-transcribe sends each phrase when you pause. If the one you chose goes away, you are told and asked to choose again -- dictation never changes it for you.
+- `self.model_status`: Whether OpenAI's list of models could be read.
+- `add_key`: Saves these settings, then opens Use My Own AI Key, where you paste an OpenAI key or change the one you saved. The key is kept in Windows' secure store, never in a file. Once it is there, OpenAI appears in the speech engine list and its models load here.
+- `instructions`: Opens the file where you tell Tidy Dictated Text how you like your dictation tidied: write numbers as digits, British spelling, names always spelled your way. Saves these settings first.
+- `anywhere`: Saves these settings, then starts Quill Inkwell with them, so you can dictate into your browser, your email or any other program on a key you choose in Inkwell's File menu. Punctuation, spelling and scratch that work there; selecting and correcting words work only in QUILL's own documents.
+#### SpeechModelsDialog (`quill/ui/dictation_models_dialog.py`)
+
+- `self.models`: The optional speech models, the ones VS Code offers first and then the rest of the Whisper family. Each row says what the model is good for, its size and whether it is on this computer. Details below say more.
+- `self.details`: About the chosen model: what it is better at, its languages, download and disk size, what computer suits it and whether this one should keep up, its published accuracy, its licence and where it is saved.
+- `self.progress`: How far the current download has got, or how it ended.
+- `self.gauge`: How far the current download has got.
+- `self.download`: Download the chosen model, after a question that names where it comes from, its size, its licence and where it will be saved. A download that was stopped carries on from where it stopped.
+- `self.cancel_download`: Stop the download. What has arrived is kept, so Download carries on later.
+- `self.remove`: Delete the chosen model from this computer to free the space.
+- `self.use`: Choose this downloaded model as the speech engine. Dictation Settings shows it chosen; press OK there to keep it.
+- `close`: Close this window. A download in progress is stopped and kept.
+#### TranscribeFileDialog (`quill/ui/dictation_transcribe_dialog.py`)
+
+- `self.file`: The recording to turn into text: MP3, M4A, AAC, WAV, Ogg, Opus, FLAC or WMA. Type its full path, choose it with Browse, or drop the file on this window. Choosing several with Browse transcribes them one after another.
+- `browse`: Opens the file picker. Hold Ctrl to choose several recordings; they are transcribed one after another with the same choices.
+- `self.language`: English or Spanish. The model list shows only the models that know the language chosen here.
+- `self.model`: Every speech model on this computer, most accurate first, with the most accurate one chosen for you: the two built into QUILL, any you downloaded in Dictation Settings, Speech Models, and OpenAI's models when your own OpenAI key is saved. A slower model is fine for a recording: nobody is waiting for each phrase, and you can keep working.
+- `self.about`: What the chosen model is good for, how long the recording is, and about how long transcribing it should take on this computer.
+- `self.destination`: A new document is the default: the transcript opens in a document of its own when it is ready. This document puts it where the cursor is in this document at the moment it finishes, as one step Ctrl+Z can take back.
+- `self.timestamps`: Off unless you check it. A new paragraph starts wherever the recording pauses for two seconds or more; with timestamps checked, each paragraph begins with the hours, minutes and seconds into the recording where it was said, like [00:01:23], so you can find it again.
+- `self.obey`: Off by default: in a recording, somebody who says new paragraph or comma usually means the words. Turn it on for a recording you dictated on purpose, and comma, period, new line, new paragraph and scratch that work as they do in dictation. Commands that move the cursor are ignored.
+- `self.running`: What is being transcribed at the moment, how far it has got, and how many recordings are waiting after it.
+- `stop`: Stops the transcription that is running and forgets any recordings waiting after it. Nothing is written into a document.
 #### RecentDocumentsWindow (`quill/ui/recent_documents_dialog.py`)
 
 - `self.listbox`: Every document you opened recently, pinned ones first. Enter opens the one you are on. Delete takes it off this list without touching the file. A row that says not found is a file that has moved or been deleted.
@@ -1829,6 +1922,6 @@ Control coverage: 125 audited sites (125 helped).
 - `self.folder_button`: Show the document you are on in File Explorer, in the folder it lives in.
 - `self.clear_button`: Empty the recent list, after asking. Pinned documents stay, and no file is deleted.
 - `self.limit_spin`: How many recently opened documents to remember, from 1 to 50. Pinned documents are kept on top of this number.
-- `self.auto_clear`: When ticked, a document that has been deleted from this computer's own drives leaves the list at the next start. Files on a USB drive or a network share are kept, because they are usually just unplugged.
+- `self.auto_clear`: When checked, a document that has been deleted from this computer's own drives leaves the list at the next start. Files on a USB drive or a network share are kept, because they are usually just unplugged.
 - `self.status`: What the last button you pressed did.
 - `close`: Close this window. Changes to the list are kept.

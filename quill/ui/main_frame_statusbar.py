@@ -14,7 +14,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import timedelta
 
-from quill.core.braille_statusbar import short_form_from_resolver
+from quill.core.braille_statusbar import page_break_mode, short_form_from_resolver
 from quill.core.document_text import DocumentText
 from quill.core.links import infer_markup_kind
 from quill.core.markdown_sections import current_section_at, parse_heading_blocks
@@ -535,7 +535,7 @@ class StatusBarMixin:
         if meta.get("source_kind") != "brf":
             return None
         text = getattr(document, "text", "") or ""
-        key = (id(document), len(text))
+        key = (id(document), len(text), page_break_mode(getattr(self, "settings", None)))
         cache = getattr(self, "_brf_resolver_cache", None)
         if cache is not None and cache[0] == key:
             return cache[1]
@@ -551,7 +551,7 @@ class StatusBarMixin:
             line_height=int(meta.get("brf_line_height", 25) or 25),
             profile=str(meta.get("brf_profile", "ueb_english")),
         )
-        resolver = BraillePositionResolver(brf_doc)
+        resolver = BraillePositionResolver(brf_doc, mode=key[2])
         self._brf_resolver_cache = (key, resolver)
         return resolver
 

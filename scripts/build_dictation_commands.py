@@ -31,7 +31,9 @@ TARGETS = (
 
 
 def rendered() -> str:
-    return commands_reference(markdown=True)
+    # With the Spanish punctuation words: Spanish dictation shipped in QUILL Lite
+    # 1.2 and QUILL 1.0, so its words belong in the published list too.
+    return commands_reference(markdown=True, language="es")
 
 
 def stale() -> list[Path]:

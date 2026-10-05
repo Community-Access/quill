@@ -316,6 +316,9 @@ class PreferencesMixin:
             refresh_live_policies(self)
         except Exception:  # noqa: BLE001 - a settings-apply side effect must never raise
             pass
+        from quill.ui.settings_live_switches import after_settings_applied
+
+        after_settings_applied(self)  # "Hey QUILL" and the right-click menu, live
         self._apply_soft_wrap(self.settings.soft_wrap)
         self._rebuild_tab_host(self.settings.show_tab_control)
         self._build_menu()
@@ -720,7 +723,7 @@ class PreferencesMixin:
                 if spec.key == "beta_updates":
                     # Release channels (plan 7.1): the channel is shown here and
                     # changed only in the shared Release Channel window, never by
-                    # ticking a box. main_frame_updates.py builds the row.
+                    # checking a box. main_frame_updates.py builds the row.
                     shown = self._add_release_channel_row(parent_panel, sizer)
                     readers[spec.key] = self._release_channel_is_prerelease
                     writers[spec.key] = lambda _v: None

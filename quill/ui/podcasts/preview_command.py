@@ -79,7 +79,14 @@ def preview_search_result(dialog: Any, result: Any, result_index: int) -> None:
         # is fine, and following anyway is still a reasonable thing to do.
         # Spoken as well as shown: a status label is silent to a screen
         # reader, which is how Preview's failure went unheard (qc.md 6b item 4).
-        message = f"That podcast could not be loaded: {error}"
+        from quill.core.podcasts.feed_problems import plain
+
+        # The plain sentence, never the exception text (check.md bug 7).
+        message = (
+            f"That podcast could not be loaded: {plain(error)}"
+            if isinstance(error, BaseException)
+            else f"That podcast could not be loaded: {error}"
+        )
         say_status(dialog._status, message, speak=False)
         from quill.ui.podcasts.failure_report import report_failure
 

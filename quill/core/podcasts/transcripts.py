@@ -23,11 +23,10 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
-from quill import __version__
+from quill.core import http_client
 from quill.core.error_codes import CodedError
 from quill.core.podcasts import feed_auth, transport
 
-_USER_AGENT = f"QUILL/{__version__} (https://github.com/Community-Access/quill)"
 _TIMEOUT_SECONDS = 15.0
 _MAX_BYTES = 10_000_000
 
@@ -65,7 +64,7 @@ def _fetch_transcript_bytes(url: str, *, auth_header: str = "") -> bytes:
     """One HTTPS GET returning raw transcript bytes -- the reviewed egress site."""
     if not transport.is_allowed(url):
         raise TranscriptError("A transcript link must start with https:// or http://.")
-    headers = {"User-Agent": _USER_AGENT}
+    headers = {"User-Agent": http_client.podcast_user_agent()}
     if auth_header:
         headers["Authorization"] = auth_header
     request = urllib.request.Request(url, headers=headers)

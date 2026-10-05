@@ -191,19 +191,34 @@ In scope for 1.0.0:
   shown) and output folder persist between runs.
 - **Menus.** File, Queue, View, Convert, QuillVille, Help and Window.
 - **Tray.** Minimize to tray (Ctrl+W), the shared tray menu, and a system-wide
-  show/hide chord (Ctrl+Alt+Shift+C) claimed best-effort.
+  show/hide key the listener chooses in File > Show and Hide Key...
+  (Ctrl+Alt+Shift+H), claimed best-effort. None by default since 2026-10-05:
+  Ctrl+Alt+Shift+C, the key until then, is a menu key in other QuillVille apps
+  (`quill/core/family_chords.py`).
 - **Family.** The shared QuillVille menu lists the released siblings, and the
   siblings list Quill Converter.
 - **Help.** The family Help menu, on Quill Radio's and QUILL Lite's keys: F1
   help for the window and control, User Guide, Release Notes, Changelog,
   Product Requirements, Keyboard Shortcuts (a read-only list of every key), Get
-  Help from Support, Get FFmpeg (repair), Check for Updates, and About.
+  Help from Support, Get FFmpeg (repair), Check for Updates, and About. Find a
+  Setting or Command (Ctrl+Alt+Shift+S) searches every menu row and runs the
+  one chosen (`quill/ui/menu_palette.py`).
+- **Version and build.** About shows `1.0.0 (build 1)` (`_VERSION` and `_BUILD`
+  in `quill/apps/converter.py`). The installer stamps file version 1.0.0.1 and
+  writes `quill-app-version.ini` (`version`, `version_build`) beside the
+  launcher, and the portable build writes the same file, so About and Check for
+  Updates read the installed Converter rather than the shared runtime's code.
+  Converter is not a release-channel app: it has no Release Channel window and
+  its update check always offers Stable (`quill/core/updater/check.py`).
 - **Support.** Email only, to support@community-access.org, through Get Help
   from Support (Ctrl+Alt+F2), which composes the message in the user's own mail
   program. No GitHub path and no token.
 
 Out of scope, by decision:
 
+- AI of any kind: no AI menu, no sign-in, no key, no AI help. A test keeps the
+  menus and Find a Setting or Command free of it
+  (`tests/unit/apps/test_converter_window.py`).
 - Recording. That is Audio Studio and QUILL Cast territory. (Chapter, tag and
   cover-art editing are in scope only through reused Audio Studio surfaces --
   the Chapter Workbench and the Tag Editor; the Converter builds no editor of

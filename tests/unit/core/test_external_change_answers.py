@@ -128,3 +128,23 @@ def test_nothing_is_answered_for_you_out_of_the_box() -> None:
     assert settings.external_change_auto_reload_when_clean is False
     assert settings.external_change_always_reload == []
     assert settings.external_change_always_keep == []
+
+
+def test_a_remembered_reload_never_discards_unsaved_edits() -> None:
+    """A remembered reload was said about a clean tab; with unsaved edits it would
+    throw them away unasked, so the normal question comes back (rule 4)."""
+    decision = decide_reload(
+        CHANGE_MODIFIED,
+        buffer_dirty=True,
+        file_name="build.md",
+        remembered=REMEMBER_RELOAD,
+    )
+    assert decision.action is ReloadAction.PROMPT_CONFLICT
+    quiet = decide_reload(
+        CHANGE_MODIFIED,
+        buffer_dirty=True,
+        file_name="build.md",
+        remembered=REMEMBER_RELOAD,
+        prompt_on_conflict=False,
+    )
+    assert quiet.action is ReloadAction.NONE

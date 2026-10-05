@@ -170,15 +170,17 @@ def build_apply_update_script(
                 'echo [apply] robocopy exit %ERRORLEVEL% >>"%LOG%" 2>&1',
             ]
     else:
+        from quill.core.updater.apply_script import ps_single_quoted
+
         setup_args = ["'/VERYSILENT'", "'/SUPPRESSMSGBOXES'", "'/NORESTART'"]
         if channel:
             setup_args.append(f"'/CHANNEL={channel}'")
         if setup_log is not None:
-            setup_args.append(f'\'/LOG=""{setup_log}""\'')
+            setup_args.append(ps_single_quoted(f'/LOG=""{setup_log}""'))
         lines += [
             f'echo [apply] running installer "{setup_exe}" >>"%LOG%" 2>&1',
             "powershell -NoProfile -Command "
-            f"\"Start-Process -FilePath '{setup_exe}' "
+            f'"Start-Process -FilePath {ps_single_quoted(setup_exe)} '
             f"-ArgumentList {','.join(setup_args)} "
             f'-Verb RunAs -Wait" >>"%LOG%" 2>&1',
             'echo [apply] installer done %ERRORLEVEL% >>"%LOG%" 2>&1',

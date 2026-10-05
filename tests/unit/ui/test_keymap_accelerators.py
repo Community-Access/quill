@@ -23,8 +23,11 @@ what only a menu bar can show.
 from __future__ import annotations
 
 import collections
+from pathlib import Path
 
 import pytest
+
+_APPS = Path(__file__).resolve().parents[3] / "quill" / "apps"
 
 wx = pytest.importorskip("wx")
 
@@ -78,9 +81,10 @@ def test_every_default_chord_is_one_wx_can_bind(wx_app) -> None:
 
 
 def test_the_sibling_launcher_keys_are_bindable(wx_app) -> None:
-    from quill.core.app_keymaps import SIBLING_APP_ACCELERATORS
+    from quill.core.app_keymaps import SIBLING_APP_ACCELERATORS, SIBLING_APP_FIXED_ACCELERATORS
 
-    broken = [chord for chord in SIBLING_APP_ACCELERATORS if not _binds(chord)]
+    every = [*SIBLING_APP_ACCELERATORS, *SIBLING_APP_FIXED_ACCELERATORS.values()]
+    broken = [chord for chord in every if not _binds(chord)]
     assert broken == [], f"wx cannot bind these QuillVille launcher keys: {broken}"
 
 
@@ -104,10 +108,11 @@ def test_the_sibling_launcher_keys_are_free_in_every_app(wx_app) -> None:
     Quill Radio's quick-play favourites and onto QUILL's Count Occurrences,
     and nothing said so.
     """
-    from quill.core.app_keymaps import SIBLING_APP_ACCELERATORS
+    from quill.core.app_keymaps import SIBLING_APP_ACCELERATORS, SIBLING_APP_FIXED_ACCELERATORS
     from quill.core.keymap_query import canonical_binding
 
-    launchers = {canonical_binding(chord) or chord for chord in SIBLING_APP_ACCELERATORS}
+    every = [*SIBLING_APP_ACCELERATORS, *SIBLING_APP_FIXED_ACCELERATORS.values()]
+    launchers = {canonical_binding(chord) or chord for chord in every}
     collisions = []
     for name, mapping in _all_maps():
         for command, chord in sorted(mapping.items()):
@@ -127,12 +132,24 @@ def test_there_is_a_launcher_key_for_every_row_the_menu_can_show(wx_app) -> None
     An app never lists itself, so the longest possible menu is one row short of
     ``QUILLVILLE_APP_ORDER``. The tuple held three entries against seven apps,
     and the builder silently appended the rest with no accelerator at all.
+
+    A sibling with a key of its own (Quill Cast, on its show/hide key) takes no
+    positional key, so the longest menu needs one positional key per *other*
+    sibling.
     """
-    from quill.core.app_keymaps import SIBLING_APP_ACCELERATORS
+    from quill.core.app_keymaps import SIBLING_APP_ACCELERATORS, SIBLING_APP_FIXED_ACCELERATORS
     from quill.ui.quillville_menu import QUILLVILLE_APP_ORDER
 
-    assert len(SIBLING_APP_ACCELERATORS) >= len(QUILLVILLE_APP_ORDER) - 1, (
-        f"{len(QUILLVILLE_APP_ORDER) - 1} sibling rows are possible but only "
-        f"{len(SIBLING_APP_ACCELERATORS)} launcher keys exist; the rows past the end "
-        "ship with no keyboard route"
+    fixed = set(SIBLING_APP_FIXED_ACCELERATORS)
+    # Quill Cast builds no QuillVille menu, which is the only menu that would
+    # list six positional siblings; if it gains one, it needs a sixth key.
+    assert "build_quillville_menu" not in "".join(
+        path.read_text(encoding="utf-8") for path in _APPS.glob("podcasts*.py")
     )
+    for app in (key for key in QUILLVILLE_APP_ORDER if key not in fixed):
+        counted = [key for key in QUILLVILLE_APP_ORDER if key != app and key not in fixed]
+        assert len(SIBLING_APP_ACCELERATORS) >= len(counted), (
+            f"{app}'s menu can show {len(counted)} positional rows but only "
+            f"{len(SIBLING_APP_ACCELERATORS)} launcher keys exist; the rows past the end "
+            "ship with no keyboard route"
+        )

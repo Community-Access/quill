@@ -149,7 +149,7 @@ class TypingModesMixin:
 
         The menu items live beside the handlers they open rather than inline in
         ``main_frame_menu.py``. That is GATE-11's doing, and it is also simply
-        right: a check item whose tick is set in one module and cleared in
+        right: a check item whose check mark is set in one module and cleared in
         another (:meth:`_sync_tab_mode_menu_check`) is a pair that drifts.
         """
         self._id_toggle_tab_mode = self._wx.NewIdRef()

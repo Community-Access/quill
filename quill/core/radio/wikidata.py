@@ -55,12 +55,11 @@ import urllib.parse
 import urllib.request
 from dataclasses import dataclass
 
-from quill import __version__
+from quill.core import http_client
 from quill.core.error_codes import CodedError
 from quill.core.radio import directory_cache, radio_browser
 from quill.core.radio.models import RadioStation
 
-_USER_AGENT = f"QUILL-Radio/{__version__} (+https://github.com/Community-Access/quill)"
 _TIMEOUT_SECONDS = 45.0
 _MAX_BYTES = 8_000_000
 _ENDPOINT = "https://query.wikidata.org/sparql"
@@ -118,7 +117,11 @@ def _fetch(query: str) -> str:
     """One SPARQL GET -- the reviewed egress site."""
     url = f"{_ENDPOINT}?{urllib.parse.urlencode({'query': query, 'format': 'json'})}"
     request = urllib.request.Request(
-        url, headers={"User-Agent": _USER_AGENT, "Accept": "application/sparql-results+json"}
+        url,
+        headers={
+            "User-Agent": http_client.user_agent(),
+            "Accept": "application/sparql-results+json",
+        },
     )
     context = ssl.create_default_context()
     try:

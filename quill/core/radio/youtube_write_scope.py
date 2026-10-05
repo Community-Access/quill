@@ -102,7 +102,7 @@ def grant_write_access(
     Blocks until the listener answers in the browser, so callers run it off
     the UI thread. Raises :class:`~quill.core.radio.youtube_oauth.YouTubeOAuthError`
     when refused, timed out, or when Google's answer still lacks the scope
-    (somebody unticked it on the consent page).
+    (somebody unchecked it on the consent page).
     """
     oauth.refuse_in_safe_mode(safe_mode)
     client_id, client_secret = oauth.bundled_client()

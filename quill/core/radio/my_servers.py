@@ -44,13 +44,12 @@ import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
 
-from quill import __version__
+from quill.core import http_client
 from quill.core.error_codes import CodedError
 from quill.core.paths import app_data_dir
 from quill.core.radio.models import RadioStation
 from quill.core.storage import read_json, write_json_atomic
 
-_USER_AGENT = f"QUILL-Radio/{__version__} (+https://github.com/Community-Access/quill)"
 _TIMEOUT_SECONDS = 12.0
 _MAX_BYTES = 2_000_000
 _FILE_NAME = "radio-my-servers.json"
@@ -183,7 +182,7 @@ def _fetch(url: str) -> str:
     """
     if not url.startswith(("http://", "https://")):
         raise MyServersError("That does not look like a server address.")
-    request = urllib.request.Request(url, headers={"User-Agent": _USER_AGENT})
+    request = urllib.request.Request(url, headers={"User-Agent": http_client.user_agent()})
     context = ssl.create_default_context()
     try:
         with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:

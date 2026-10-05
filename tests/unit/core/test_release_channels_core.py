@@ -30,7 +30,7 @@ from quill.core.updater.policy import choose_offer, visible_on
 from quill.core.updater.runtime_rule import runtime_verdict
 from quill.core.updater.snapshots import SnapshotError
 from quill.core.updater.switch import SwitchRequest, perform_switch, plan_switch
-from quill.core.updater.wording import risk_text, window_titles
+from quill.core.updater.wording import UNSIGNED_NOTE, risk_text, window_titles
 
 
 def _r(version: str, *, prerelease: bool = False) -> SimpleNamespace:
@@ -396,6 +396,10 @@ def test_the_risk_wording_says_what_could_go_wrong_and_how_to_come_back(tmp_path
     fakes.run(_plan("radio", "dev", "3.2.0"), store)
     dev = risk_text(fakes.asked[1])
     assert "Expect things to break" in dev and "Beta is probably the better choice" in dev
+    # Beta and Dev builds are never code-signed (2026-10-04): both say so, once, kindly.
+    for text in (beta, dev):
+        assert text.count(UNSIGNED_NOTE) == 1
+    assert "unknown publisher" in UNSIGNED_NOTE and "More info, then Run anyway" in UNSIGNED_NOTE
 
 
 def test_every_window_title_has_an_f1_purpose() -> None:

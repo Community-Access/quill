@@ -98,6 +98,28 @@ _NAMES = {
     "*": "an asterisk",
     "+": "a plus sign",
     "=": "an equals sign",
+    "`": "a backtick",
+    "```\n": "a code fence, three backticks on a line of their own",
+    "~": "a tilde",
+    "|": "a vertical bar",
+    "^": "a caret",
+    "- ": "a hyphen and a space, starting a bullet",
+    "1. ": "a 1, a full stop and a space, starting a numbered item",
+    "> ": "a greater-than sign and a space, starting a block quote",
+    **{
+        "#" * level + " ": f"{count} and a space, starting a level {level} heading"
+        for level, count in enumerate(
+            (
+                "one hash sign",
+                "two hash signs",
+                "three hash signs",
+                "four hash signs",
+                "five hash signs",
+                "six hash signs",
+            ),
+            1,
+        )
+    },
 }
 
 #: Where two different phrases write the same character and are not synonyms,
@@ -126,11 +148,32 @@ _INTROS = {
     ),
     "Symbols": "The symbols people dictate most often in ordinary prose and in code.",
     "Lines and layout": ("These change where the next words go rather than adding a character."),
+    "Markdown and code": (
+        "For Markdown and code. A backtick opens or closes depending on how many are "
+        "already on the line, and a code fence goes on a line of its own."
+    ),
+    "Starting a line (say these first)": (
+        "These work only at the start of a phrase, so a sentence that happens to "
+        "contain the words stays words. If the cursor is not at the start of a line, "
+        "a new line is started first."
+    ),
     "Correcting": (
         "Each of these works only as a whole phrase, said on its own after a pause, "
         "and only while the phrase it changes is still exactly as dictation wrote it."
     ),
     "Moving the cursor": "Said on their own, after a pause.",
+    "Selecting": (
+        "Say the words you want, and dictation finds the nearest place they appear. "
+        "If they are not there, your phrase is written as ordinary text and you are told."
+    ),
+    "Capitals and spacing": (
+        "Each one lasts until you turn it off or stop dictation, and the status bar "
+        "shows it while it is on."
+    ),
+    "Clips, snippets and copying": (
+        'A snippet or a clip goes in as one phrase, so one Ctrl+Z or "scratch that" '
+        "takes it back out."
+    ),
     "Dictation itself": "Said on their own, after a pause.",
 }
 
@@ -164,7 +207,9 @@ def _writes(mark: Mark, dash: str = "em") -> str:
             f"screen-reader verbosity level and skipped at another."
         )
     name = _SAME_AS.get(" ".join(mark.phrase)) or _NAMES[mark.text]
-    return f'{name} <code class="glyph">{html.escape(mark.text)}</code>'
+    # The space or line break a line-start mark carries is in the name already;
+    # inside the glyph it would only be an invisible trailing character.
+    return f'{name} <code class="glyph">{html.escape(mark.text.strip())}</code>'
 
 
 def _grouped_marks() -> dict[str, list[Mark]]:
@@ -287,6 +332,15 @@ def rendered() -> str:
         "foxtrot, golf, hotel, india, juliet, kilo, lima, mike, november, oscar, papa, "
         "quebec, romeo, sierra, tango, uniform, victor, whiskey, x-ray, yankee, zulu.</li>",
         f"        <li>Numbers are written as digits: {e(digits)}.</li>",
+        "        <li>Punctuation goes in with no spaces while you spell, so an email "
+        'address works: "jay dot smith at sign example dot com". "Dot" and "point" '
+        "are a full stop only while spelling.</li>",
+        '        <li>Say "all caps" for capitals until you say "no caps" or the phrase ends.</li>',
+        '        <li>To spell just one word, say "spell" and the letters: "spell bravo '
+        'alpha delta" writes <em>bad</em>. A sentence that only starts with the word '
+        '"spell" is still written as words.</li>',
+        '        <li>Say "spell that" to select the phrase you just said. The next '
+        "phrase is spelled and takes its place.</li>",
         "      </ul>",
         '      <h3 id="v-by-voice" tabindex="-1" class="focus-target">Starting and stopping'
         " without the keyboard</h3>",

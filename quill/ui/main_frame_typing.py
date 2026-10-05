@@ -47,6 +47,8 @@ class TypingPathMixin:
     _DEFERRED_EDIT_DELAY_MS = 120
 
     def _on_text_changed(self, _event: object) -> None:
+        if self._text_from_another_tab(_event):
+            return  # a live transcript in a tab behind this one keeps its own tab in step
         text = self.editor.GetValue()
         if (
             not self._abbreviation_expansion_guard
@@ -61,6 +63,14 @@ class TypingPathMixin:
         ):
             return
         self._sync_editor_change("Modified", text=text)
+
+    def _text_from_another_tab(self, event: object) -> bool:
+        """Whether *event* came from a document tab that is not the one in front."""
+        source = getattr(event, "GetEventObject", None)
+        sender = source() if callable(source) else None
+        if sender is None or sender is self.editor:
+            return False
+        return any(tab.editor is sender for tab in getattr(self, "_document_tabs", ()))
 
     def _sync_editor_change(self, status: str = "Modified", *, text: str | None = None) -> None:
         # `status` defaults so this doubles as the WordDocumentSurface on_change

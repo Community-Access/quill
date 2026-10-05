@@ -42,12 +42,11 @@ import urllib.request
 from collections.abc import Callable
 from dataclasses import dataclass
 
-from quill import __version__
+from quill.core import http_client
 from quill.core.error_codes import CodedError
 from quill.core.radio import directory_cache
 from quill.core.radio.models import RadioStation
 
-_USER_AGENT = f"QUILL-Radio/{__version__} (+https://github.com/Community-Access/quill)"
 _TIMEOUT_SECONDS = 20.0
 _MAX_BYTES = 4_000_000
 _MAX_AGE_SECONDS = 6 * 3600
@@ -147,7 +146,7 @@ def _fetch(url: str) -> str:
     """One HTTPS GET -- the single reviewed egress site for all three sources."""
     if not url.startswith("https://"):
         raise FreeMusicError("Only https:// URLs can be fetched.")
-    request = urllib.request.Request(url, headers={"User-Agent": _USER_AGENT})
+    request = urllib.request.Request(url, headers={"User-Agent": http_client.user_agent()})
     context = ssl.create_default_context()
     previous_maxline = http.client._MAXLINE  # type: ignore[attr-defined]
     if previous_maxline < _MAX_HEADER_BYTES:

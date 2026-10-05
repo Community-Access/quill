@@ -374,7 +374,7 @@ named starting points -- **Recommended**, **Everything**, **WordPad**,
 **Notepad** -- and the design rules behind them are worth stating, because each
 one has a cheaper wrong version.
 
-**A profile is a baseline, not a mode.** Applying one ticks and unticks every
+**A profile is a baseline, not a mode.** Applying one checks and unchecks every
 box, and then the boxes are the truth again. There is nothing to escape from:
 the very next change is an ordinary per-area override, and the Choice reads back
 **Custom** the moment the boxes stop matching. The alternative -- a mode that
@@ -437,7 +437,7 @@ Endings, per the paragraph above.
   had one fixed table and that was that. The table is still the *defaults* --
   it is what the uniqueness gates assert against -- but
   `quill/core/lite/keymap.py` puts a resolution layer over it and
-  `Tools > Keyboard Manager` (Ctrl+Alt+Shift+R) edits it. What stays true is the
+  `Tools > Keyboard Manager` (Ctrl+Alt+Shift+Space) edits it. What stays true is the
   reason the non-goal was written: QUILL's chord grammar, its `APP_KEYMAPS`
   overrides and its Key Describer are a writing environment's features and are
   still not here. Rebinding a key is not.
@@ -747,7 +747,7 @@ The agreement is therefore:
 - **Stored as a version, not a boolean.** A material change to what is sent or
   retained asks again, rather than an old yes being read as covering a new thing.
 - **Reachable by three doors** -- `Tools > AI > Privacy Agreement`
-  (`Ctrl+Alt+Shift+K`), a Preferences tick box, and switching the area on in
+  (`Ctrl+Alt+Shift+K`), a Preferences check box, and switching the area on in
   Customize Features -- because which door somebody finds depends on which part
   of the app they already know. All three read and write the same value, so they
   cannot disagree.
@@ -854,7 +854,8 @@ gained it in the same change, which is what rule 10 requires.
 ### 5.8 Dictation: the reliability pass, and words taught in a window (2026-09-28)
 
 Nine sections of the dictation plan (`dict.md` 2.2, 2.3, 2.5, 2.6, 2.7, 2.8,
-3.1, 3.3 and 5), implemented in the shared Live Dictation stack so QUILL has
+3.1, 3.3 and 5; that plan is now `docs/design/2026-10-05-dictation-plan-and-status.md`,
+whose Appendix A maps its section numbers), implemented in the shared Live Dictation stack so QUILL has
 every one of them on the same keys (rule 10). The design constraint from that
 plan holds throughout: nothing here costs the baseline machine anything while
 dictation is idle, and the watchdog's only running cost is one comparison per
@@ -911,6 +912,44 @@ audio block.
 its edits (`test_dictation_words_file.py`), and each Lite handler through the
 window it runs in (`tests/unit/apps/test_lite_dictation.py`); the command
 coverage gate stays at zero `shape_only`.
+
+### 5.9 Dictation: holding the key, live words, the AI, and OpenAI (2026-10-05)
+
+The rest of the dictation plan, after studying VS Code's dictation (credited,
+behaviour by behaviour, in `docs/design/2026-10-05-dictation-plan-and-status.md`,
+which also holds everything still to do). All of it is shared code, and
+`tests/unit/ui/test_dictation_parity.py` fails if QUILL and QUILL Lite differ in
+a dictation command, key or setting.
+
+- **Hold-to-talk** (`hold.py`, `windows_dictation_hold.py`): hold Ctrl+F11 for
+  half a second and talk, let go to stop; a quick press toggles; key repeats are
+  ignored. Off by default (owner, 2026-10-05): one press starts, the next
+  stops; **More Dictation Settings** turns it on.
+- **Finishing, not cutting off**: stopping while a phrase is being heard waits
+  for it (`LiveMixin.finish`, the worker's `finish`), with a four-second limit.
+- **The live preview** (`streaming.py`, `recognizer_worker.py`, `live.py`):
+  Nemotron runs as a streaming model on one stream per session; its provisional
+  words show as "Hearing: ..." in the status cell and on braille, never in the
+  document; the mark it writes once it hears the next phrase corrects the last
+  one (so its questions end in question marks).
+- **Words go where you started** (`EditorDocument.anchor`): measured on speech
+  start, honoured even if the caret moved or the focus left.
+- **"Correct that"** and "choose one" to "choose three", with Windows speech
+  recognition's alternates; every other engine says it has none.
+- **Talk to the AI** (`hosted_ai_chat._talk_to_it`): the AI Conversation
+  window's message box dictates with the **Talking to AI** profile, sends at the
+  pause (or on Enter), and mutes the microphone while the reply is read.
+- **OpenAI dictation, own key only** (`openai_models.py`, `openai_transcribe.py`,
+  `openai_recognizer.py`): off by default, a plain consent, the model chosen
+  from OpenAI's live list without retiring models, Realtime transcription for
+  `gpt-live-transcribe`, never a silent switch, refused in Safe Mode, three
+  reviewed egress entries, and a Dictation section in the privacy statement.
+- **My Dictation Instructions** (`instructions.py`) for Tidy Dictated Text.
+- **Kind to a modest computer** (`keep_up.py`): the keep-up watchdog and models
+  unloaded five minutes after the last session.
+- **Settings**: eight new `windows_dictation_*` fields, and all 24 now declared
+  once (`settings_fields.DictationSettings`), inherited by both editors'
+  `Settings`.
 
 ## 6. Release packaging
 

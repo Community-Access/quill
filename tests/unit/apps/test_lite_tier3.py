@@ -277,9 +277,11 @@ def test_print_preview_says_the_page_count_out_loud(markdown_window, monkeypatch
 
 
 def test_the_tutorials_window_opens(markdown_window, monkeypatch) -> None:
-    """Nine lessons in two tracks, through the window every QuillVille app
-    shares -- so a lesson shows your key rather than the shipped one."""
+    """Every lesson in the book, through the window every QuillVille app
+    shares -- so a lesson shows your key rather than the shipped one. The
+    count comes from the catalogue: a new lesson is not a test edit."""
     from quill.apps import lite_tutorials
+    from quill.core.lite.tutorials import CATALOGUE
 
     opened: list[object] = []
     monkeypatch.setattr(lite_tutorials, "_open", lambda host, app, slug="": opened.append(app))
@@ -287,16 +289,17 @@ def test_the_tutorials_window_opens(markdown_window, monkeypatch) -> None:
     markdown_window.cmd_tutorials()
 
     assert opened and opened[0].app_id == "quilllite"
-    assert len(opened[0].catalogue.tutorials) == 9
+    assert opened[0].catalogue.tutorials == CATALOGUE.tutorials
+    assert len(CATALOGUE.tutorials) >= 10
 
 
 def test_follow_me_is_unavailable_because_no_lesson_here_has_a_check() -> None:
-    """The tick box that watches the app is greyed in QUILL Lite, not shown live.
+    """The check box that watches the app is greyed in QUILL Lite, not shown live.
 
     Every step in an editor lesson ends in a sentence the app already says, so
     there is nothing for Follow me to watch for, and none of the nine lessons
-    carries a check. A tick box that can never do anything is a control somebody
-    ticks, waits on, and concludes is broken -- so the window disables it, which
+    carries a check. A check box that can never do anything is a control somebody
+    checks, waits on, and concludes is broken -- so the window disables it, which
     a screen reader announces on arrival.
     """
     from quill.core.lite.tutorials import CATALOGUE

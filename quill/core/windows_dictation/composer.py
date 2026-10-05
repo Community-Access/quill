@@ -71,6 +71,7 @@ def compose(
     after: str = "",
     dash: str = "em",
     close_paragraphs: bool = False,
+    join_words: bool = False,
 ) -> str:
     """The string to insert for *pieces* between *before* and *after*.
 
@@ -84,6 +85,8 @@ def compose(
     front ends in a word: an engine that punctuates by itself hears "new
     paragraph" as a command and so never ends the sentence before it, which left
     every paragraph but the last without its full stop.
+    *join_words* is "no space on": words run together, with no space before
+    each -- including the first, so a web address can be said in pieces.
     """
     out: list[str] = []
     # What the character in front of the next piece is, across the boundary
@@ -110,9 +113,11 @@ def compose(
         own_space = 0
         previous = out[-1][-1:] if out else (before[-1:] if before else "")
 
-    def space_before() -> None:
+    def space_before(word: bool = False) -> None:
         nonlocal own_space
         if attach or not previous or previous in _HORIZONTAL_SPACE or previous in "\r\n":
+            return
+        if word and join_words:
             return
         emit(" ")
         own_space = 1
@@ -122,8 +127,11 @@ def compose(
         if mark is None:
             if not piece.text:
                 continue
-            space_before()
-            emit(_capitalise(piece.text) if capital and not piece.verbatim else piece.text)
+            space_before(word=True)
+            # Joined words take no capital of their own: "example period com"
+            # is an address, not two sentences.
+            capitalise = capital and not piece.verbatim and not join_words
+            emit(_capitalise(piece.text) if capitalise else piece.text)
             own_space = 0
             capital = False
             attach = False
@@ -135,16 +143,32 @@ def compose(
             own_space = 0
             attach = False
             continue
-        if mark.glue is Glue.LEFT:
+        glue = mark.glue
+        if glue is Glue.TOGGLE:
+            # A backtick closes when an odd number came before it on the line.
+            line = (before + "".join(out)).rsplit("\n", 1)[-1]
+            glue = Glue.LEFT if line.count(text) % 2 else Glue.OPEN
+        if glue is Glue.LINE_START:
+            # A bullet or a heading starts its own line: a new one first when
+            # the cursor is not at the start of one, then the mark, hugging the
+            # word after it. A capital follows, as at any line start.
+            take_back_space()
+            if previous and previous not in "\r\n":
+                emit("\n")
+            emit(text)
+            attach = True
+            capital = True
+            continue
+        if glue is Glue.LEFT:
             take_back_space()
             emit(text)
             attach = False
-        elif mark.glue is Glue.OPEN:
+        elif glue is Glue.OPEN:
             space_before()
             emit(text)
             own_space = 0
             attach = True
-        elif mark.glue is Glue.JOIN:
+        elif glue is Glue.JOIN:
             # A spaced dash brings its own spaces, so any this phrase added go
             # first and nothing more is added after it.
             take_back_space()

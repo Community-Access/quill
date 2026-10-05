@@ -1,29 +1,23 @@
 """Dictation Settings: the engine, the microphone, and what you hear.
 
-Five questions and nothing else, because dictation has to work well without
-anybody opening this window:
+Dictation has to work well without anybody opening this window. It holds:
 
-* **Which speech engine.** Moonshine (the default), Whisper, or Windows' own
-  recogniser -- see :mod:`quill.core.windows_dictation.engines`. The first two
-  are built in and punctuate by themselves.
-* **Which microphone.** By name, with the Windows default first. The name is
-  what is saved, because it is the one thing all three engines can agree on:
-  Windows speech knows a microphone by a registry token and the built-in engines
-  by a sound-device number, and both of those change when a device is replugged.
-* **What happens after each phrase** -- the shared four-way choice from
-  :data:`~quill.core.action_feedback.ACTION_FEEDBACK_LABELS`. Speech here means
-  the words that went into the document are read back, which is the only way to
-  hear whether they were the words you said.
-* **Sounds for on, off and errors.**
-* **Saying "Dictation on" and "Dictation off".**
-* **The finer choices** (:mod:`quill.core.windows_dictation.options`): whether
-  the engine punctuates, how long a pause ends a phrase, whether filler words
-  are dropped, and when silence stops dictation.
-* **Test Microphone**, which records four seconds on the chosen microphone and
-  says how loud it was and, with a built-in engine, what it heard. On a worker
-  thread; the result goes into a read-only field beside the button and is
-  spoken, because a field changing beside the focused button is exactly what a
-  screen reader does not announce.
+* **Which speech engine** -- Moonshine (the default), Whisper, Windows' own
+  recogniser, and any optional model downloaded with **Better Accuracy: Speech
+  Models...** (:mod:`quill.ui.dictation_models_dialog`).
+* **Which microphone**, saved by name: the one thing every engine agrees on,
+  where tokens and device numbers change when a device is replugged.
+* **What happens after each phrase** (the shared
+  :data:`~quill.core.action_feedback.ACTION_FEEDBACK_LABELS`), sounds, and
+  saying "Dictation on" and "Dictation off".
+* **The finer choices** (:mod:`quill.core.windows_dictation.options`).
+* **Test Microphone**: four seconds on a worker; the result goes into a field
+  beside the button and is spoken, because a field changing beside the focused
+  button is exactly what a screen reader does not announce.
+* **More Dictation Settings...** (:mod:`quill.ui.dictation_more_dialog`):
+  holding the key, the live preview, talking to the AI, and OpenAI. Choosing
+  OpenAI as the engine asks first, in plain words, whether your speech may be
+  sent (:data:`~quill.core.windows_dictation.openai_models.CONSENT_TEXT`).
 
 Nothing is applied until OK, and :meth:`WindowsDictationDialog.apply` writes
 only the fields this window owns.
@@ -39,7 +33,12 @@ import wx
 from quill.core.action_feedback import ACTION_FEEDBACK_LABELS
 from quill.core.action_feedback import coerce as coerce_feedback
 from quill.core.windows_dictation.controller import DEFAULT_PHRASE_FEEDBACK
-from quill.core.windows_dictation.engines import ENGINES, coerce_engine, language_model_problem
+from quill.core.windows_dictation.engines import (
+    ENGINES,
+    coerce_engine,
+    engine_choices,
+    language_model_problem,
+)
 from quill.core.windows_dictation.options import (
     PAUSE_CHOICES,
     SILENCE_CHOICES,
@@ -61,12 +60,8 @@ from quill.core.windows_dictation.wake import (
     stop_phrase_problem,
     wake_phrase_problem,
 )
-from quill.ui.dialog_contract import (
-    apply_listbox_activation,
-    apply_modal_ids,
-    bind_close_button,
-    show_message_box,
-)
+from quill.ui.dialog_contract import apply_modal_ids, show_message_box
+from quill.ui.dictation_lists_dialog import DictationCommandsDialog, RecentPhrasesDialog
 from quill.ui.windows_dictation_devices import (
     default_microphone_name,
     microphone_names,
@@ -74,6 +69,9 @@ from quill.ui.windows_dictation_devices import (
 )
 
 __all__ = [
+    "DICTATE_ANYWHERE",
+    "EDIT_INSTRUCTIONS",
+    "EDIT_OPENAI_KEY",
     "EDIT_WORDS",
     "SHOW_COMMANDS",
     "DictationCommandsDialog",
@@ -86,6 +84,9 @@ __all__ = [
 #: should not lose the engine.
 SHOW_COMMANDS = 5801
 EDIT_WORDS = 5802
+EDIT_INSTRUCTIONS = 5803  # quill.ui.dictation_more_dialog's, passed on
+EDIT_OPENAI_KEY = 5804  # quill.ui.dictation_more_dialog's, passed on
+DICTATE_ANYWHERE = 5805  # quill.ui.dictation_more_dialog's, passed on
 
 _PAD = 8
 
@@ -98,6 +99,9 @@ class WindowsDictationDialog(wx.Dialog):
     ) -> None:
         super().__init__(parent, title="Dictation Settings")
         self._announce = announce or (lambda _text: None)
+        self._settings = settings
+        #: More Dictation Settings' choices, applied with this window's OK.
+        self._more: dict[str, object] = {}
         # Two columns, so the window fits a 768-pixel-high screen. Tab order is
         # creation order, which runs down the left column and then the right.
         outer = wx.BoxSizer(wx.VERTICAL)
@@ -105,17 +109,28 @@ class WindowsDictationDialog(wx.Dialog):
         root = wx.BoxSizer(wx.VERTICAL)  # the left column: what is heard and written
 
         engine_label = wx.StaticText(self, label="Speech &engine:")
-        self._engine_ids = [engine.id for engine in ENGINES]
-        self.engine = wx.Choice(self, choices=[engine.label for engine in ENGINES])
+        saved_engine = coerce_engine(getattr(settings, "windows_dictation_engine", ""))
+        rows = engine_choices(saved_engine)
+        self._engine_ids = [engine_id for engine_id, _label in rows]
+        self.engine = wx.Choice(self, choices=[label for _id, label in rows])
         self.engine.SetHelpText(
             "Which speech recogniser dictation uses. "
             + " ".join(f"{engine.label}: {engine.description}" for engine in ENGINES)
+            + " Models you download with Better Accuracy: Speech Models are listed too."
         )
-        self.engine.SetSelection(
-            self._engine_ids.index(coerce_engine(getattr(settings, "windows_dictation_engine", "")))
-        )
+        self.engine.SetSelection(self._engine_ids.index(saved_engine))
+        self._engine_row = self.engine.GetSelection()
+        self.engine.Bind(wx.EVT_CHOICE, self._on_engine)
         root.Add(engine_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
         root.Add(self.engine, 0, wx.EXPAND | wx.ALL, _PAD)
+        self.speech_models = wx.Button(self, label="&Better Accuracy: Speech Models...")
+        self.speech_models.SetHelpText(
+            "Optional, larger speech models for better accuracy -- the ones VS Code "
+            "offers and the rest of the Whisper family -- to download, remove or choose. "
+            "Dictation works without them."
+        )
+        self.speech_models.Bind(wx.EVT_BUTTON, self._on_speech_models)
+        root.Add(self.speech_models, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, _PAD)
 
         speech_label = wx.StaticText(self, label="Dictation lan&guage:")
         self._speech_languages = [value for value, _label in SPEECH_LANGUAGES]
@@ -201,8 +216,8 @@ class WindowsDictationDialog(wx.Dialog):
         self.test_microphone = wx.Button(self, label="Test Micropho&ne")
         self.test_microphone.SetHelpText(
             "Records four seconds on the chosen microphone -- start speaking when "
-            "you hear Speak now -- then says how loud it was and, with Moonshine "
-            "or Whisper, what the engine heard. Nothing is kept."
+            "you hear Speak now -- then says how loud it was and, with an engine that "
+            "runs on this computer, what the engine heard. Nothing is kept."
         )
         self.test_microphone.Bind(wx.EVT_BUTTON, self._on_test_microphone)
         self.test_result = wx.TextCtrl(self, style=wx.TE_READONLY)
@@ -249,7 +264,8 @@ class WindowsDictationDialog(wx.Dialog):
         self.pause.SetHelpText(
             "How long you can stop talking before what you said is written. Choose "
             "Long if dictation cuts you off while you are still thinking; Short "
-            "writes sooner after you stop."
+            "writes sooner after you stop. Longer and Longest are for speaking slowly: "
+            "every phrase then waits two or three seconds before it is written."
         )
         self.pause.SetSelection(
             self._pauses.index(coerce_pause(getattr(settings, "windows_dictation_pause", "")))
@@ -378,6 +394,14 @@ class WindowsDictationDialog(wx.Dialog):
         more.Add(commands, 0, wx.RIGHT, _PAD)
         more.Add(words, 0)
         root.Add(more, 0, wx.ALL, _PAD)
+        self.more_button = wx.Button(self, label="More Dict&ation Settings...")
+        self.more_button.SetHelpText(
+            "Holding Ctrl+F11 to talk, the words heard so far while you speak, how "
+            "dictation behaves when you talk to the AI, OpenAI with your own key, and "
+            "My Dictation Instructions."
+        )
+        self.more_button.Bind(wx.EVT_BUTTON, lambda _e: self.open_more())
+        root.Add(self.more_button, 0, wx.ALL, _PAD)
 
         columns.Add(root, 1, wx.EXPAND)
         outer.Add(columns, 1, wx.EXPAND)
@@ -409,6 +433,66 @@ class WindowsDictationDialog(wx.Dialog):
         problem = language_model_problem(engine, language)
         if problem:
             self._show_test(problem)
+
+    def _on_engine(self, _event: Any) -> None:
+        """Choosing OpenAI asks first whether speech may leave the computer."""
+        from quill.core.windows_dictation.engines import CLOUD_ENGINE
+        from quill.core.windows_dictation.openai_models import CONSENT_TEXT
+
+        row = self.engine.GetSelection()
+        engine = self._engine_ids[row] if 0 <= row < len(self._engine_ids) else ""
+        agreed = self._more.get(
+            "windows_dictation_openai_consent",
+            getattr(self._settings, "windows_dictation_openai_consent", False),
+        )
+        if engine != CLOUD_ENGINE or agreed:
+            self._engine_row = row
+            return
+        answer = show_message_box(
+            CONSENT_TEXT, "OpenAI Dictation", wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION, self
+        )
+        if answer != wx.YES:
+            self.engine.SetSelection(self._engine_row)
+            self._announce("OpenAI was not chosen. Nothing was sent.")
+            return
+        self._engine_row = row
+        self._more["windows_dictation_openai_consent"] = True
+        self.open_more(focus_model=True)
+
+    def open_more(self, *, focus_model: bool = False) -> None:
+        """More Dictation Settings, its choices kept until this window's OK."""
+        from quill.ui.dialog_contract import show_modal_dialog
+        from quill.ui.dictation_more_dialog import DICTATE_ANYWHERE as MORE_ANYWHERE
+        from quill.ui.dictation_more_dialog import EDIT_INSTRUCTIONS as MORE_INSTRUCTIONS
+        from quill.ui.dictation_more_dialog import EDIT_OPENAI_KEY as MORE_KEY
+        from quill.ui.dictation_more_dialog import MoreDictationDialog
+
+        dialog = MoreDictationDialog(self, self._settings, self._announce, pending=self._more)
+        if focus_model:
+            dialog.focus_model()
+        try:
+            answer = show_modal_dialog(dialog, "More Dictation Settings")
+            if answer in (wx.ID_OK, MORE_INSTRUCTIONS, MORE_KEY, MORE_ANYWHERE):
+                self._more.update(dialog.values())
+        finally:
+            dialog.Destroy()
+        if answer == MORE_INSTRUCTIONS:
+            self.EndModal(EDIT_INSTRUCTIONS)
+        elif answer == MORE_KEY:
+            self.EndModal(EDIT_OPENAI_KEY)
+        elif answer == MORE_ANYWHERE:
+            self.EndModal(DICTATE_ANYWHERE)
+
+    def _on_speech_models(self, _event: Any) -> None:
+        """Speech Models, then the engine list again: a model may have come or gone."""
+        from quill.ui.dictation_models_dialog import open_speech_models
+
+        current = self._engine_ids[max(0, self.engine.GetSelection())]
+        chosen = open_speech_models(self, self._announce) or current
+        rows = engine_choices(chosen)
+        self._engine_ids = [engine_id for engine_id, _label in rows]
+        self.engine.Set([label for _id, label in rows])
+        self.engine.SetSelection(self._engine_ids.index(chosen))
 
     # -- Test Microphone -------------------------------------------------- #
 
@@ -496,95 +580,5 @@ class WindowsDictationDialog(wx.Dialog):
         settings.windows_dictation_stop_phrase = (
             stop if stop and not stop_phrase_problem(stop) else DEFAULT_STOP_PHRASE
         )
-
-
-class DictationCommandsDialog(wx.Dialog):
-    """Everything dictation understands, as read-only text to arrow through.
-
-    A text field rather than a list or a label, because a screen reader can only
-    read *through* text it can put a cursor in; a long label is announced once,
-    in one breath, and cannot be reviewed afterwards.
-    """
-
-    def __init__(self, parent: Any, body: str) -> None:
-        super().__init__(
-            parent, title="Dictation Commands", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
-        )
-        root = wx.BoxSizer(wx.VERTICAL)
-        label = wx.StaticText(self, label="&Commands:")
-        self.text = wx.TextCtrl(
-            self, value=body, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2
-        )
-        self.text.SetHelpText(
-            "Every phrase dictation acts on and what it does. Read with the arrow "
-            "keys; Escape closes. The same list is in the user guide."
-        )
-        close = wx.Button(self, wx.ID_CANCEL, "Close")
-        close.SetHelpText("Close this list.")
-        root.Add(label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
-        root.Add(self.text, 1, wx.EXPAND | wx.ALL, _PAD)
-        root.Add(close, 0, wx.ALL, _PAD)
-        self.SetSizer(root)
-        self.SetSize((640, 520))
-        apply_modal_ids(self, cancel_id=wx.ID_CANCEL, escape_id=wx.ID_CANCEL)
-        bind_close_button(self, close, modeless=False)
-        self.text.SetFocus()
-        self.text.SetInsertionPoint(0)
-
-
-class RecentPhrasesDialog(wx.Dialog):
-    """The last phrases dictated this session, newest first (dict.md 3.3).
-
-    Insert Again (Enter) writes the chosen phrase at the cursor as one undo
-    step; Copy puts it on the clipboard. The list is memory only: it is what
-    the user said, and it goes when the app closes.
-    """
-
-    def __init__(self, parent: Any, phrases: list[str]) -> None:
-        super().__init__(
-            parent, title="Recent Phrases", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
-        )
-        self.chosen: str | None = None
-        self.verb = "insert"
-        self._phrases = list(phrases)
-        root = wx.BoxSizer(wx.VERTICAL)
-        label = wx.StaticText(self, label="&Phrases, newest first:")
-        self.list = wx.ListBox(self, choices=self._phrases)
-        self.list.SetHelpText(
-            "What you dictated this session, newest first. Enter inserts the one "
-            "you are on at the cursor again; Copy puts it on the clipboard."
-        )
-        buttons = wx.BoxSizer(wx.HORIZONTAL)
-        insert = wx.Button(self, wx.ID_OK, "&Insert Again")
-        insert.SetHelpText("Write this phrase at the cursor again, as one undo step.")
-        copy = wx.Button(self, label="&Copy")
-        copy.SetHelpText("Put this phrase on the clipboard without writing it.")
-        close = wx.Button(self, wx.ID_CANCEL, "Close")
-        close.SetHelpText("Close the list without inserting anything.")
-        for button in (insert, copy, close):
-            buttons.Add(button, 0, wx.RIGHT, _PAD)
-        root.Add(label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
-        root.Add(self.list, 1, wx.EXPAND | wx.ALL, _PAD)
-        root.Add(buttons, 0, wx.ALL, _PAD)
-        self.SetSizer(root)
-        self.SetSize((560, 400))
-        apply_modal_ids(self, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
-        bind_close_button(self, close, modeless=False)
-        self.Bind(wx.EVT_BUTTON, self._on_insert, id=wx.ID_OK)
-        copy.Bind(wx.EVT_BUTTON, self._on_copy)
-        apply_listbox_activation(self.list, self._on_insert)  # Enter, Space and double-click
-        if self._phrases:
-            self.list.SetSelection(0)
-        self.list.SetFocus()
-
-    def _selected(self) -> str | None:
-        index = self.list.GetSelection()
-        return self._phrases[int(index)] if index != wx.NOT_FOUND else None
-
-    def _on_insert(self, _event: Any) -> None:
-        self.chosen, self.verb = self._selected(), "insert"
-        self.EndModal(wx.ID_OK)
-
-    def _on_copy(self, _event: Any) -> None:
-        self.chosen, self.verb = self._selected(), "copy"
-        self.EndModal(wx.ID_OK)
+        for name, value in self._more.items():
+            setattr(settings, name, value)

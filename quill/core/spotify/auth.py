@@ -32,7 +32,7 @@ import urllib.request
 from collections.abc import Callable
 from dataclasses import dataclass, replace
 
-from quill import __version__
+from quill.core import http_client
 from quill.core.error_codes import CodedError
 from quill.core.net import verified_ssl_context
 
@@ -60,7 +60,6 @@ DEFAULT_SCOPES: tuple[str, ...] = (
     "playlist-read-private",
 )
 
-_USER_AGENT = f"QUILL/{__version__} (https://github.com/Community-Access/quill)"
 _TIMEOUT_SECONDS = 30.0
 
 #: An opener performs one prepared request and returns ``(status, body_bytes)``.
@@ -238,7 +237,7 @@ def _token_request(fields: dict[str, str], *, opener: Opener | None = None) -> T
         headers={
             "Content-Type": "application/x-www-form-urlencoded",
             "Accept": "application/json",
-            "User-Agent": _USER_AGENT,
+            "User-Agent": http_client.user_agent(),
         },
     )
     if opener is not None:

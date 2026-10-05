@@ -17,6 +17,7 @@ nothing else. wx-free, so the rule is testable without a UI.
 
 from __future__ import annotations
 
+from quill.core.family_chords import SHOW_HIDE_DEFAULTS
 from quill.core.keymap import DEFAULT_KEYMAP
 
 #: app id -> {command id: binding}.
@@ -315,8 +316,14 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         # are deliberate, once-in-a-while verbs, and Restore replaces
         # everything -- a short key beside a common one is how somebody
         # restores a six-month-old backup by accident.
+        #
+        # Restore was Ctrl+Alt+Shift+R until 2026-10-05: Quill Radio's
+        # system-wide show/hide key, so with Radio running it never reached
+        # Cast. Ctrl+Alt+F12 is Restore Settings in both editors -- the same
+        # verb on the same key across the family (rule 2) -- and a once-a-year
+        # command belongs on an F-key past F9 (rule 9).
         "app.backup": "Ctrl+Alt+Shift+B",
-        "app.restore": "Ctrl+Alt+Shift+R",
+        "app.restore": "Ctrl+Alt+F12",
         # The guided lessons, on the family key: Ctrl+Alt+F1 opens the tutorials
         # in Quill Radio, Quill Weather and QUILL too. This bar had no F-key
         # accelerator of any kind, so the whole family could be given one chord.
@@ -368,14 +375,35 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
 #: an app never lists itself). Before this the tuple held three, so a QuillVille
 #: menu quietly shipped rows with no key at all while the builder's comment
 #: claimed the house rule was met.
+#:
+#: **F7-F11, and Quill Cast on F12 (2026-10-05).** F12 was the sixth positional
+#: key, and Ctrl+Alt+Shift+F12 is Quill Cast's system-wide show/hide key -- so
+#: in a developer build, where all six siblings are listed, the sixth row
+#: (Inkwell in QUILL, Converter in Inkwell) never fired while Cast ran. Cast's
+#: key stays: its users are taught it, and the sixth row only ever existed in
+#: developer builds, where nobody has learned it (rule 2: the key people use
+#: keeps it). Instead Cast's own row takes F12 wherever it appears
+#: (:data:`SIBLING_APP_FIXED_ACCELERATORS`), which makes the key mean "Quill
+#: Cast" everywhere -- it opens Cast when Cast is closed and brings it up when
+#: it is running -- and the other rows count through F7-F11 without it. No
+#: menu loses a key: an app never lists itself, so the longest menu without
+#: Cast is five rows. (Quill Media Player is not in ``QUILLVILLE_APP_ORDER``,
+#: so its developer-build menu lists all seven and its last row had no key
+#: before this change as well as after.)
 SIBLING_APP_ACCELERATORS: tuple[str, ...] = (
     "Ctrl+Alt+Shift+F7",
     "Ctrl+Alt+Shift+F8",
     "Ctrl+Alt+Shift+F9",
     "Ctrl+Alt+Shift+F10",
     "Ctrl+Alt+Shift+F11",
-    "Ctrl+Alt+Shift+F12",
 )
+
+#: Siblings whose QuillVille row keeps one key wherever it appears instead of
+#: the next positional one: the app's own system-wide show/hide key, so the
+#: launcher and the hotkey are one key, not two that fight.
+SIBLING_APP_FIXED_ACCELERATORS: dict[str, str] = {
+    "cast": SHOW_HIDE_DEFAULTS["cast"],
+}
 
 
 def app_keymap_overrides(app_id: str, keymap: dict[str, str]) -> dict[str, str]:

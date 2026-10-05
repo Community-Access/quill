@@ -41,10 +41,8 @@ __all__ = [
 
 #: Everything a listener would call "my Radio setup": the backup's state files
 #: plus reminders and download preferences.
-COPIED_FILES: tuple[str, ...] = (
-    *RADIO_DATA_FILES,
-    "radio-reminders.json",
-    "radio_downloads.json",
+COPIED_FILES: tuple[str, ...] = tuple(
+    dict.fromkeys((*RADIO_DATA_FILES, "radio-reminders.json", "radio_downloads.json"))
 )
 
 _MARKER = "portable-migration.json"

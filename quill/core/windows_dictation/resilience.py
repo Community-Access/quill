@@ -43,8 +43,10 @@ ENGINE_NAMES: dict[str, str] = {
     "moonshine": "Moonshine",
     "whisper": "Whisper",
     "windows": "Windows speech recognition",
+    "openai": "OpenAI dictation",
 }
 _TRY_INSTEAD: dict[str, str] = {
+    "openai": "Moonshine",
     "moonshine": "Whisper",
     "whisper": "Windows speech recognition",
     "windows": "Moonshine",

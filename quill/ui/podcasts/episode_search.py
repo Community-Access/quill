@@ -97,7 +97,7 @@ class EpisodeSearchMixin:
         What **Filtered out** lists. Asked of the rules rather than of a scope
         because the question somebody is asking there is "what is this filter
         catching?", and the answer must not depend on which surfaces they
-        happened to tick. An exempted episode is never rejected.
+        happened to check. An exempted episode is never rejected.
         """
         from quill.core.podcasts import episode_filters
         from quill.core.podcasts.episode_filter_maintenance import filter_for, is_exempt

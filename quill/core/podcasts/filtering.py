@@ -157,7 +157,7 @@ def search_everywhere(
     # Episode Filters, when the podcast's rules were given the "search" scope.
     # Off by default and deliberately so: search is how somebody looks for a
     # thing they know exists, and a search that silently declines to find it is
-    # a worse failure than a list that declines to show it. Somebody who ticks
+    # a worse failure than a list that declines to show it. Somebody who checks
     # it has said they never want to see the segment again, including here.
     from quill.core.podcasts.episode_filter_maintenance import hide_predicate
     from quill.core.podcasts.models_filters import SCOPE_SEARCH

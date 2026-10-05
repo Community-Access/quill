@@ -28,6 +28,9 @@ import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
+from quill.core.text_decoding import UTF16_BE_BOM_CODEC as _UTF16_BE_BOM_CODEC
+from quill.core.text_decoding import decode_bytes, encoding_display_name
+
 __all__ = [
     "ENCODING_CHOICES",
     "UTF16_BE_BOM_CODEC",
@@ -62,18 +65,17 @@ NEWLINE_CHOICES: tuple[tuple[str, str], ...] = (
     ("\n", "LF (Unix, macOS, most build tools)"),
 )
 
-_UTF8_BOM = b"\xef\xbb\xbf"
-_UTF16_LE_BOM = b"\xff\xfe"
 _UTF16_BE_BOM = b"\xfe\xff"
 
 #: Big-endian UTF-16 with a BOM, which Python has no single codec for: the
 #: ``utf-16`` codec always writes little-endian, and ``utf-16-be`` writes no BOM
-#: at all. Named here so the encoding a document carries can say "big-endian",
+#: at all. Named so the encoding a document carries can say "big-endian",
 #: which is the whole of bad.md F8: both byte orders decoded to "utf-16" and
 #: every big-endian file was quietly rewritten little-endian on a save that
-#: changed nothing else. A byte-order swap is invisible in the editor and
-#: visible to everything downstream that reads the file.
-UTF16_BE_BOM_CODEC = "utf-16-be-bom"
+#: changed nothing else. Defined (and registered as a codec) in the shared
+#: :mod:`quill.core.text_decoding` since 2026-10-04, so QUILL keeps the byte
+#: order too.
+UTF16_BE_BOM_CODEC = _UTF16_BE_BOM_CODEC
 
 
 @dataclass(frozen=True, slots=True)
@@ -91,23 +93,15 @@ class DecodedText:
 def decode_text(data: bytes) -> DecodedText:
     """Decode *data*, remembering its encoding and its line endings.
 
-    The order is deliberate. A BOM is decisive, so it is checked first. Strict
-    UTF-8 is tried next, because a UTF-8 file that also happens to be valid
-    cp1252 must be read as UTF-8. cp1252 is the fallback precisely because it
-    *cannot* fail -- every byte maps to something -- so trying it earlier would
-    mean never detecting anything else.
+    The decoding itself is the family's one decoder,
+    :func:`quill.core.text_decoding.decode_bytes`: a BOM first, then strict
+    UTF-8, then strict Windows-1252, then Latin-1, which cannot fail. This used
+    to fall back to cp1252 with ``errors="replace"``, which turned the five
+    bytes cp1252 leaves undefined into replacement characters and then saved
+    them that way -- a quiet data loss the 2026-10-04 PlanCake note found.
     """
-    if data.startswith(_UTF8_BOM):
-        text, encoding = data[len(_UTF8_BOM) :].decode("utf-8", errors="replace"), "utf-8-sig"
-    elif data.startswith(_UTF16_LE_BOM):
-        text, encoding = data.decode("utf-16", errors="replace"), "utf-16"
-    elif data.startswith(_UTF16_BE_BOM):
-        text, encoding = data.decode("utf-16", errors="replace"), UTF16_BE_BOM_CODEC
-    else:
-        try:
-            text, encoding = data.decode("utf-8"), "utf-8"
-        except UnicodeDecodeError:
-            text, encoding = data.decode("cp1252", errors="replace"), "cp1252"
+    decoded = decode_bytes(data)
+    text, encoding = decoded.text, decoded.encoding
     newline = "\r\n" if "\r\n" in text else ("\r" if "\r" in text else "\n")
     normalized = text.replace("\r\n", "\n").replace("\r", "\n")
     return DecodedText(text=normalized, encoding=encoding, newline=newline)
@@ -133,7 +127,9 @@ def _encoding_name(codec: str) -> str:
     """
     if codec in _READ_ONLY_ENCODING_NAMES:
         return _READ_ONLY_ENCODING_NAMES[codec]
-    return dict(ENCODING_CHOICES).get(codec, codec)
+    # A code page reached through Reopen with Encoding (Latin-1, Windows-1250
+    # and the rest) is named from the shared table rather than spelled out.
+    return dict(ENCODING_CHOICES).get(codec) or encoding_display_name(codec)
 
 
 def encoding_rows(current: str) -> tuple[tuple[str, str], ...]:

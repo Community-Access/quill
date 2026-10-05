@@ -4,6 +4,7 @@ pure logic, no wx construction."""
 from __future__ import annotations
 
 import ast
+import functools
 from pathlib import Path
 
 from quill.core.sticky_notes import StickyNote
@@ -161,133 +162,150 @@ def test_no_editor_chord_is_the_global_show_hide_key() -> None:
     assert claimants == []
 
 
-# -- every app's keys against every family app's show/hide key -------------- #
+# -- every app's keys against every key the family registers system-wide ---- #
 #
 # The test above covers the editors and QUILL's key. The family runs side by
-# side, though, and every app registers a show/hide key of its own, so a menu
-# key in one app equal to another app's show/hide key never fires while that
-# other app runs. QUILL Cast's Mark as Played and Next sat on QUILL's
-# Ctrl+Alt+Shift+Q until 2026-10-04 for exactly that reason.
+# side, though, and a key registered with RegisterHotKey reaches its owner
+# before any window sees it, so a menu key in one app equal to another app's
+# system-wide key never fires while that other app runs. QUILL Cast's Mark as
+# Played and Next sat on QUILL's Ctrl+Alt+Shift+Q until 2026-10-04 for exactly
+# that reason, and nineteen more were found when this gate arrived. On
+# 2026-10-05 Weather, Converter, Media Player and Inkwell gave up their default
+# show/hide keys and Radio's four claimants moved; the same day Inkwell gave up
+# Quick Insert (Ctrl+Alt+Shift+K) and Expand Word (Ctrl+Alt+Shift+X, Quill
+# Radio's Export My Setup), and the gate widened from show/hide keys to EVERY
+# key any family app registers system-wide by default. There is no allowance:
+# one collision fails.
 
 _APPS_DIR = Path(__file__).resolve().parents[3] / "quill" / "apps"
+_QUILL_DIR = _APPS_DIR.parent
 
-#: Collisions with another app's show/hide key that were already there when this
-#: gate arrived (2026-10-04), as ``"<owner>: <claimant>"``. Each one is real: the
-#: key goes to the owner while the owner runs. Shrink this, never grow it -- a
-#: new key takes a chord nobody in the family registers system-wide. QUILL's and
-#: Cast's show/hide keys may never appear here.
-_GRANDFATHERED: frozenset[str] = frozenset({
-    "converter: QUILL Lite cmd_clear_collected",
-    "converter: podcasts_menu.py Choose Columns...",
-    "converter: radio_settings_menu.py Choose Columns...",
-    "inkwell: QUILL Lite cmd_toggle_tab_mode",
-    "inkwell: QUILL format.toggle_tab_insert_mode",
-    "inkwell: podcasts_menu.py Podcast Index Credentials...",
-    "inkwell: radio radio.recording_settings",
-    "player: QUILL Lite cmd_print_preview",
-    "player: cast app.recent_problems",
-    "player: radio app.recent_problems",
-    "player: weather weather.monitor_pause",
-    "radio: QUILL Lite cmd_keyboard_manager",
-    "radio: QUILL tools.keymap_editor",
-    "radio: cast app.restore",
-    "radio: studio.py Resume Last Book on Launch",
-    "weather: QUILL Lite cmd_toggle_overwrite",
-    "weather: QUILL view.toggle_overwrite_mode",
-    "weather: podcasts_menu.py Keyboard Shortcuts...",
-    "weather: radio_menu_bar.py Restore from Backup...",
-})
+#: Empty, and it stays empty: a new key takes a chord nobody in the family
+#: registers system-wide. (It held nineteen entries from 2026-10-04 to -05.)
+_GRANDFATHERED: frozenset[str] = frozenset()
+
+#: Every place under quill/ that names RegisterHotKey, and what it registers out
+#: of the box. A new one fails test_every_register_hotkey_site_is_accounted_for
+#: until its default keys are in family_chords.default_system_wide_keys() (or it
+#: is shown to register nothing by default) and it is added here.
+_REGISTER_HOTKEY_SITES: dict[str, str] = {
+    # The hardware media keys (no modifier: not a shortcut anywhere), and the
+    # show/hide key from SHOW_HIDE_DEFAULTS or the listener's choice.
+    "ui/app_shell.py": "media keys; show/hide key",
+    # QUILL's Global Hotkeys table: Settings().global_hotkeys plus the default
+    # show/hide fallback, both in default_system_wide_keys().
+    "ui/main_frame_hotkeys.py": "Settings.global_hotkeys",
+    # Inkwell's Quick Insert and Expand Word keys: InkwellSettings defaults.
+    "apps/inkwell_keys.py": "InkwellSettings quick_insert_hotkey, expand_now_hotkey",
+    # A momentary probe of who owns a key the listener asked about; registers
+    # nothing that stays.
+    "platform/windows/hotkey_owner.py": "probe only",
+}
 
 
 def _family_show_hide_keys() -> dict[str, str]:
-    """``{chord identity: owner}`` for every family app's system-wide show/hide key.
+    """``{chord identity: owner}`` for every family app's default show/hide key."""
+    from quill.core.family_chords import show_hide_owners
 
-    Read from the source, not listed by hand: each app passes its chord to
-    ``_register_tray_hotkey`` as a literal or a module constant, so a new app
-    is covered the day it registers one. Inkwell's comes from a setting, whose
-    default is read here directly.
-    """
-    from quill.core.expansion.settings import InkwellSettings
+    return show_hide_owners()
+
+
+def _system_wide_owners() -> dict[str, list[str]]:
+    """``{chord identity: [owner app id, ...]}`` for every key any family app
+    registers system-wide by default."""
+    from quill.core.family_chords import default_system_wide_keys
     from quill.core.lite.keymap import chord_identity
-    from quill.ui.main_frame_hotkeys import DEFAULT_SHOW_HIDE_HOTKEY
 
-    keys = {
-        chord_identity(DEFAULT_SHOW_HIDE_HOTKEY): "QUILL",
-        chord_identity(InkwellSettings().tray_hotkey): "inkwell",
-    }
-    for path in sorted(_APPS_DIR.rglob("*.py")):
-        tree = ast.parse(path.read_text(encoding="utf-8"))
-        constants = {
-            target.id: node.value.value
-            for node in ast.walk(tree)
-            if isinstance(node, ast.Assign)
-            and isinstance(node.value, ast.Constant)
-            and isinstance(node.value.value, str)
-            for target in node.targets
-            if isinstance(target, ast.Name)
-        }
-        for node in ast.walk(tree):
-            if not (
-                isinstance(node, ast.Call)
-                and isinstance(node.func, ast.Attribute)
-                and node.func.attr == "_register_tray_hotkey"
-                and node.args
-            ):
-                continue
-            arg = node.args[0]
-            chord = arg.value if isinstance(arg, ast.Constant) else None
-            if isinstance(arg, ast.Name):
-                chord = constants.get(arg.id)
-            if isinstance(chord, str):
-                keys[chord_identity(chord)] = path.stem
-    return keys
+    owners: dict[str, list[str]] = {}
+    for key in default_system_wide_keys():
+        owners.setdefault(chord_identity(key.chord), []).append(key.app_id)
+    return owners
+
+
+@functools.cache
+def _scan() -> tuple:
+    """The menus scanned from the source now -- once a run, since the scan
+    parses every module under quill/."""
+    from quill.core.family_chords import scan_menu_chords
+
+    return tuple(scan_menu_chords())
+
+
+def _fresh_rows() -> list:
+    """Every default key: the tables plus the fresh scan."""
+    from quill.core.family_chords import every_default_chord
+
+    return every_default_chord(list(_scan()))
 
 
 def _every_default_chord() -> list[tuple[str, str]]:
     """``(where, chord)`` for every default key any app in the family ships."""
-    from quill.core.app_keymaps import APP_KEYMAPS
-    from quill.core.keymap import DEFAULT_ALIASES, DEFAULT_KEYMAP
-    from quill.core.lite.commands import COMMANDS
-    from quill.core.lite.keymap import default_aliases as lite_aliases
-
-    found = [(f"QUILL {cid}", chord) for cid, chord in DEFAULT_KEYMAP.items()]
-    found += [(f"QUILL alias {cid}", chord) for cid, chord in DEFAULT_ALIASES.items()]
-    found += [(f"QUILL Lite {row[3]}", row[2]) for row in COMMANDS]
-    found += [(f"QUILL Lite alias {name}", chord) for name, chord in lite_aliases().items()]
-    for app_id, table in APP_KEYMAPS.items():
-        found += [(f"{app_id} {cid}", chord) for cid, chord in table.items()]
-    # Menu labels with the key written in ("Name\tKey"), in every app module:
-    # Cast and Radio still write most of theirs that way.
-    for path in sorted(_APPS_DIR.rglob("*.py")):
-        for node in ast.walk(ast.parse(path.read_text(encoding="utf-8"))):
-            if (
-                isinstance(node, ast.Constant)
-                and isinstance(node.value, str)
-                and "\t" in node.value
-            ):
-                label, _tab, chord = node.value.partition("\t")
-                where = f"{path.relative_to(_APPS_DIR).as_posix()} {label.replace('&', '')}"
-                found.append((where, chord.strip()))
-    return [(where, chord) for where, chord in found if chord]
+    return [(row.where, row.chord) for row in _fresh_rows()]
 
 
 def _show_hide_collisions() -> set[str]:
+    """Every family key that equals a key some family app registers
+    system-wide by default (the name is older than the widening)."""
+    from quill.core.app_launcher import app_name
     from quill.core.lite.keymap import chord_identity
 
-    keys = _family_show_hide_keys()
-    return {
-        f"{keys[chord_identity(chord)]}: {where}"
-        for where, chord in _every_default_chord()
-        if chord_identity(chord) in keys
+    keys = _system_wide_owners()
+    found = set()
+    for where, chord in _every_default_chord():
+        for owner in keys.get(chord_identity(chord), []):
+            # The owner's own QuillVille row is meant to be its key: opening
+            # Cast and bringing Cast up are one intent (app_keymaps.py).
+            if where == f"QuillVille launcher: Open {app_name(owner)}":
+                continue
+            found.add(f"{owner}: {where}")
+    return found
+
+
+def test_the_show_hide_keys_come_from_the_one_table() -> None:
+    """No app registers a literal: every show/hide key is in family_chords, so
+    the gate cannot miss one. Weather, Converter, Media Player and Inkwell
+    register the listener's choice and nothing by default."""
+    from quill.core.family_chords import SHOW_HIDE_DEFAULTS
+    from quill.core.lite.keymap import chord_identity
+
+    literals = []
+    for path in sorted(_APPS_DIR.rglob("*.py")):
+        for node in ast.walk(ast.parse(path.read_text(encoding="utf-8"))):
+            if (
+                isinstance(node, ast.Call)
+                and isinstance(node.func, ast.Attribute)
+                and node.func.attr == "_register_tray_hotkey"
+                and node.args
+                and isinstance(node.args[0], ast.Constant)
+            ):
+                literals.append(f"{path.name}: {node.args[0].value}")
+    assert literals == []
+    assert {app for app, key in SHOW_HIDE_DEFAULTS.items() if key} == {"quill", "radio", "cast"}
+    assert {app for app, key in SHOW_HIDE_DEFAULTS.items() if not key} == {
+        "weather",
+        "converter",
+        "player",
+        "inkwell",
     }
+    owners = _family_show_hide_keys()
+    assert owners[chord_identity("Ctrl+Alt+Shift+R")] == "radio"
+    assert owners[chord_identity("Ctrl+Alt+Shift+Q")] == "quill"
+    assert owners[chord_identity("Ctrl+Alt+Shift+F12")] == "cast"
 
 
-def test_the_show_hide_scan_finds_every_app_that_registers_one() -> None:
-    from quill.core.lite.keymap import chord_identity
-
-    owners = set(_family_show_hide_keys().values())
-    assert {"QUILL", "radio", "weather", "converter", "player", "inkwell"} <= owners
-    assert chord_identity("Ctrl+Alt+Shift+F12") in _family_show_hide_keys()
+def test_the_scan_reaches_launchers_runtime_menus_and_numbered_rows() -> None:
+    """The places a key hides from a plain table walk: the QuillVille launchers,
+    menus built from row tables at runtime (Local Media), QUILL's own Weather
+    menu, and the numbered Alt+Shift+1..9 recent rows."""
+    rows = _every_default_chord()
+    where = " | ".join(place for place, _chord in rows)
+    chords = {(place.split(" ")[0], chord) for place, chord in rows}
+    assert "QuillVille launcher row 1" in where
+    assert "QuillVille launcher: Open Quill Cast" in where
+    assert any(place.startswith("ui/radio/local_media_window_menu.py") for place, _ in rows)
+    assert any(place.startswith("ui/main_frame_weather.py") for place, _ in rows)
+    assert ("core/recent_documents.py", "Alt+Shift+9") in chords
+    assert ("ui/main_frame_radio.py", "Alt+Shift+1") in chords
 
 
 def test_no_app_key_is_a_family_show_hide_key() -> None:
@@ -295,9 +313,138 @@ def test_no_app_key_is_a_family_show_hide_key() -> None:
     assert new == [], "keys another app takes system-wide: " + "; ".join(new)
 
 
-def test_the_grandfathered_collisions_only_shrink() -> None:
-    fixed = sorted(_GRANDFATHERED - _show_hide_collisions())
-    assert fixed == [], "fixed -- remove from _GRANDFATHERED: " + "; ".join(fixed)
-    assert not [
-        entry for entry in _GRANDFATHERED if entry.startswith(("QUILL:", "podcasts_routes:"))
+def test_nothing_is_grandfathered() -> None:
+    assert _GRANDFATHERED == frozenset()
+
+
+def test_every_register_hotkey_site_is_accounted_for() -> None:
+    """A new RegisterHotKey anywhere in quill/ is a new system-wide key the
+    gate cannot see until somebody adds its defaults to the inventory."""
+    found = set()
+    for path in sorted(_QUILL_DIR.rglob("*.py")):
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+        if any(
+            isinstance(node, ast.Attribute) and node.attr == "RegisterHotKey"
+            for node in ast.walk(tree)
+        ):
+            found.add(path.relative_to(_QUILL_DIR).as_posix())
+    assert found == set(_REGISTER_HOTKEY_SITES)
+
+
+def test_no_two_system_wide_keys_are_the_same_key() -> None:
+    clashes = {chord: owners for chord, owners in _system_wide_owners().items() if len(owners) > 1}
+    assert clashes == {}
+
+
+def test_every_system_wide_key_holds_ctrl_or_alt() -> None:
+    """Anything else takes the key away from every program the listener types in."""
+    from quill.core.family_chords import default_system_wide_keys
+    from quill.core.lite.keymap import normalise_chord
+
+    bare = [
+        f"{key.app_id} {key.purpose}: {key.chord}"
+        for key in default_system_wide_keys()
+        if not {part.lower() for part in normalise_chord(key.chord).split("+")[:-1]}
+        & {"ctrl", "alt"}
     ]
+    assert bare == []
+
+
+def test_inkwell_registers_nothing_until_chosen() -> None:
+    from quill.core.expansion.settings import InkwellSettings
+    from quill.core.family_chords import default_system_wide_keys
+
+    settings = InkwellSettings()
+    assert (settings.tray_hotkey, settings.quick_insert_hotkey, settings.expand_now_hotkey) == (
+        "",
+        "",
+        "",
+    )
+    assert [key for key in default_system_wide_keys() if key.app_id == "inkwell"] == []
+
+
+def test_the_media_keys_are_only_the_hardware_media_keys() -> None:
+    """The one default registration left out of the inventory: Play/Pause, Stop,
+    Next and Previous, with no modifier -- keys no app uses as a shortcut."""
+    from quill.ui.app_shell import AppShellFrame
+
+    assert set(AppShellFrame._MEDIA_KEY_CODES.values()) <= {0xB0, 0xB1, 0xB2, 0xB3}
+    source = (_QUILL_DIR / "ui" / "app_shell.py").read_text(encoding="utf-8")
+    assert "RegisterHotKey(hotkey_id, 0, keycode)" in source
+
+
+class _DefaultsHost(GlobalHotkeysMixin):
+    """QUILL's Global Hotkeys mixin on a fresh profile: default settings and
+    the default keymap, nothing chosen."""
+
+    def __init__(self, *, own_show_hide: bool) -> None:
+        from quill.core.settings import Settings
+
+        self.settings = Settings()
+        self._tray_hotkey_registered = own_show_hide
+
+    def _binding_for(self, command_id: str) -> str | None:
+        from quill.core.keymap import DEFAULT_KEYMAP
+
+        return DEFAULT_KEYMAP.get(command_id)
+
+    def _parse_keybinding(self, binding: str | None):
+        from quill.core.lite.keymap import normalise_chord
+
+        if not binding or "," in binding:
+            return None  # a two-step chord cannot be a system-wide key
+        return (1, 65) if normalise_chord(binding) else None
+
+
+def test_quills_default_global_hotkeys_are_in_the_inventory() -> None:
+    """What QUILL, Radio and Cast actually hand RegisterHotKey on a fresh
+    profile is exactly what default_system_wide_keys() says."""
+    from quill.core.family_chords import default_system_wide_keys
+    from quill.core.lite.keymap import chord_identity
+
+    known = {chord_identity(key.chord) for key in default_system_wide_keys()}
+    for own in (False, True):
+        host = _DefaultsHost(own_show_hide=own)
+        registered = [
+            chord
+            for chord in host._global_hotkey_bindings().values()
+            if host._parse_keybinding(chord) is not None
+        ]
+        assert [chord for chord in registered if chord_identity(chord) not in known] == []
+
+
+def test_the_committed_menu_scan_matches_the_source() -> None:
+    """An installed build has no source to scan, so the picker reads the copy.
+    Regenerate with ``python -m quill.tools.family_chords_snapshot --write``."""
+    from quill.core.family_chords import SNAPSHOT_PATH
+    from quill.tools.family_chords_snapshot import rendered
+
+    assert SNAPSHOT_PATH.read_bytes().decode("utf-8") == rendered(list(_scan())), (
+        "stale: python -m quill.tools.family_chords_snapshot --write"
+    )
+
+
+# -- the four moved commands (Radio's Ctrl+Alt+Shift+R, 2026-10-05) ----------- #
+
+
+def test_radios_show_hide_key_is_nobody_elses_command() -> None:
+    from quill.core.app_keymaps import APP_KEYMAPS
+    from quill.core.keymap import DEFAULT_KEYMAP
+    from quill.core.lite.commands import COMMANDS
+
+    lite = {row[3]: row[2] for row in COMMANDS if row[3]}
+    assert APP_KEYMAPS["cast"]["app.restore"] == "Ctrl+Alt+F12"
+    assert DEFAULT_KEYMAP["tools.keymap_editor"] == "Ctrl+Alt+Shift+Space"
+    # Rule 2: the Keyboard Manager is one key in both editors.
+    assert lite["cmd_keyboard_manager"] == DEFAULT_KEYMAP["tools.keymap_editor"]
+    studio = (_APPS_DIR / "studio.py").read_text(encoding="utf-8")
+    assert "Resume Last Book on La&unch\\tCtrl+Alt+F10" in studio
+    assert "\\tCtrl+Alt+Shift+R" not in studio
+
+
+def test_casts_restore_is_the_editors_restore_key() -> None:
+    """Rule 2: one verb, one key -- Restore Settings is Ctrl+Alt+F12 in both editors."""
+    from quill.core.app_keymaps import APP_KEYMAPS
+    from quill.core.keymap import DEFAULT_KEYMAP
+
+    assert APP_KEYMAPS["cast"]["app.restore"] == DEFAULT_KEYMAP["tools.share_import"]

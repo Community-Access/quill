@@ -54,7 +54,7 @@ CATEGORIES: tuple[tuple[str, str], ...] = (
     ("filler", "Off-topic tangents"),
 )
 
-#: What is ticked the first time somebody turns skipping on.
+#: What is checked the first time somebody turns skipping on.
 DEFAULT_CATEGORIES: tuple[str, ...] = ("sponsor", "selfpromo", "interaction")
 
 #: The spoken noun for each category, after "Skipped".

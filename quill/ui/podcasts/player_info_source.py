@@ -65,11 +65,19 @@ def gather(host: Any) -> Any:
     # Plain http is allowed (R29) and therefore has to be *visible*. Only the
     # insecure case is reported: "encrypted" on every other show would be a line
     # that is always there and so never read, and the point is the exception.
+    from quill.core.podcasts import check_state
     from quill.core.podcasts.transport import scheme_note
 
+    library = host._podcast_library
     note = scheme_note(str(getattr(show, "feed_url", "") or ""))
-    if note:
+    # A plain-http address that Cast actually reads over https (the https-first
+    # rule) is not "not encrypted", so the line is not said (check.md bug 14).
+    if note and show is not None and not check_state.read_securely(library, show):
         extras.append(note)
+    # A feed bigger than Cast reads was cut off without a word (check.md bug
+    # 13); the newest episodes are all there, but the oldest are not listed.
+    if show is not None and check_state.is_truncated(library, show):
+        extras.append("Feed: larger than Cast reads; the oldest episodes are not listed")
     try:
         # notes_for_episode filters an already-loaded list; it does not load
         # one. Passing it two arguments raised TypeError on every run.

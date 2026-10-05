@@ -693,7 +693,9 @@ send it there, drive it from the tray, and summon it with a global hotkey.
    **Windows+B** to reach it by keyboard, then Arrow to it and press the **Menu/
    Applications key** or **Enter**) and open its menu.
 3. Arrow through the tray menu items; choose **Open Weather Center**.
-4. Press the global hotkey **Ctrl+Alt+Shift+W** to show/hide the window.
+4. Choose a show and hide key in **File > Show and Hide Key...**
+   (Ctrl+Alt+Shift+H), then press it to show/hide the window. (None is set
+   until you choose one.)
 
 **You should see and hear**
 - Minimizing says **"Quill Weather is monitoring in the system tray."** The tray icon
@@ -702,7 +704,8 @@ send it there, drive it from the tray, and summon it with a global hotkey.
   Weather Center**, **Quick Weather**, **Start/Stop Monitoring**, and entries to
   reach the sibling QuillVille apps. Open Weather Center restores the app and opens
   the Center.
-- **Ctrl+Alt+Shift+W** brings the window forward (and hides it again), from anywhere.
+- The show and hide key you chose brings the window forward (and hides it again),
+  from anywhere. A key another QuillVille app uses is refused, naming the app.
 
 **Sign off** — `[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A`
 `[ ] Works` `[ ] Surface-exact` `[ ] Accessible`  · Notes: ____________________

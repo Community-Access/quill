@@ -164,3 +164,32 @@ def test_the_contents_sentence_reads_as_a_list(tmp_path: Path) -> None:
 def test_an_unknown_entry_is_counted_rather_than_hidden() -> None:
     text = setup_transfer.describe_contents(["quiet-hours.json", "something-new.json"])
     assert "1 item(s) this version does not recognise" in text
+
+
+def test_the_export_names_every_item_it_left_out(tmp_path: Path) -> None:
+    """2026-10-04: "some items were skipped" with no names is not an answer."""
+    from quill.core.skipped_files import REASON_NOT_ON_THIS_COMPUTER
+
+    data = tmp_path / "data"
+    data.mkdir()
+    _seed(data, **{"radio_favorites.json": {"favorites": []}})
+    report = setup_transfer.export_setup_report(
+        data, tmp_path / f"mine{setup_transfer.EXTENSION}", app="Quill Radio", stamped="x"
+    )
+    names = [item.name for item in report.skipped]
+    assert "Your podcast subscriptions, folders and playlists" in names
+    assert "Your favorite stations, folders and saved places" not in names
+    assert all(item.reason == REASON_NOT_ON_THIS_COMPUTER for item in report.skipped)
+    assert len(report.skipped) == report.tally.skipped
+
+
+def test_an_import_names_what_the_file_did_not_hold(tmp_path: Path) -> None:
+    data = tmp_path / "data"
+    data.mkdir()
+    _seed(data, **{"radio_favorites.json": {"favorites": []}})
+    target = tmp_path / f"mine{setup_transfer.EXTENSION}"
+    setup_transfer.export_setup(data, target, app="Quill Radio", stamped="x")
+    report = setup_transfer.import_setup_report(target, tmp_path / "new")
+    assert report.tally.done == 1
+    assert {item.reason for item in report.skipped} == {"not in this setup file"}
+    assert len(report.left_out) == len(setup_transfer.ITEMS) - 1

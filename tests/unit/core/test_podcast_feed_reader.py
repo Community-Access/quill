@@ -167,8 +167,12 @@ def test_fetch_feed_bytes_401_raises_feed_auth_error(monkeypatch) -> None:
         )
 
     monkeypatch.setattr(feed_auth, "urlopen_auth_safe", _raise_401)
+    # A sign-in problem when credentials were sent (check.md bug 6): without
+    # them and without a challenge, a 401 is a locked feed, not a sign-in.
     with pytest.raises(feed_reader.FeedAuthError):
-        feed_reader._fetch_feed_bytes("https://feeds.example.com/p.rss")
+        feed_reader._fetch_feed_bytes(
+            "https://feeds.example.com/p.rss", username="user", password="pw"
+        )
 
 
 def test_fetch_feed_bytes_500_stays_generic_feed_reader_error(monkeypatch) -> None:

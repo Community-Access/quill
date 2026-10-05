@@ -125,21 +125,28 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "feed's raw RSS/Atom bytes (feedparser then parses locally, no "
         "further network activity). Reached only by explicit user actions "
         "(Add by Feed URL, iTunes search result subscribe, a scheduled/"
-        "manual feed refresh for an already-subscribed show). HTTPS-only "
-        "over a verified TLS context with a bounded timeout and response "
-        "size. Private-feed Basic-auth credentials come from the OS "
-        "credential store, sent only to that host. Disabled in Safe Mode via "
-        "refuse_in_safe_mode; _fetch_feed_bytes retries transient failures."
+        "manual feed refresh for an already-subscribed show, and Feed Check's "
+        "Find This Show's New Feed reading each directory candidate once to "
+        "verify it). A plain-http address is tried over https first "
+        "(transport.attempts_for); a verified TLS context, a bounded timeout "
+        "and response size. Sends the family User-Agent (http_client) and, "
+        "for a show already read, the feed's own ETag/Last-Modified back as "
+        "If-None-Match/If-Modified-Since -- values the host itself issued, "
+        "nothing about the listener. Private-feed Basic-auth credentials come "
+        "from the OS credential store, sent only to that host. Disabled in "
+        "Safe Mode via refuse_in_safe_mode; _fetch_feed_bytes retries "
+        "transient failures."
     ),
     "core/podcasts/opml_import.py::_probe_once": (
         "Single egress site for the OPML import reachability check: one "
         "bounded GET per imported feed, reading only the first 2 KB to learn "
         "whether the feed still answers. Never silent and never automatic -- "
-        "reached only when the user ticks 'Check that each feed is "
+        "reached only when the user checks 'Check that each feed is "
         "reachable' in Import OPML, which states that it makes one request "
         "per feed, shows live progress, and can be cancelled mid-sweep. "
         "Concurrency is bounded (8 workers) with a short timeout; a 401/403 "
-        "counts as reachable so a private feed is never reported dead. "
+        "that asks for a sign-in counts as reachable so a private feed is "
+        "never reported dead. "
         "Refused entirely in Safe Mode (validate_feeds returns 'not checked' "
         "for every feed instead of connecting). Its purpose is the pruning "
         "report: which subscriptions died, so they can be pruned. probe_feed "
@@ -208,7 +215,8 @@ _REVIEWED_EGRESS: dict[str, str] = {
     "core/podcasts/itunes_search.py::_fetch_once": (
         "Single egress site for Add Podcast's search: iTunes' free, keyless "
         "podcast search API. Reached only by the explicit Search action in "
-        "the Add Podcast dialog. HTTPS-only over a verified TLS context with "
+        "the Add Podcast dialog, or by Find This Show's New Feed in Feed "
+        "Check (the show's title, nothing else). HTTPS-only over a verified TLS context with "
         "a bounded timeout. Disabled in Safe Mode via refuse_in_safe_mode; "
         "_http_json retries transient failures rather than saying 'no results'."
     ),
@@ -352,6 +360,41 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "urlencoded form to the provider's configured device/token endpoints and "
         "parses the JSON reply (including the OAuth error body on HTTP error)."
     ),
+    "core/windows_dictation/openai_models.py::list_transcription_models": (
+        "OpenAI dictation, own key only (2026-10-05): reads the speech-to-text "
+        "models the person's own OpenAI key can use from OpenAI's /v1/models, so "
+        "they can choose one in More Dictation Settings and no model list is kept "
+        "in QUILL. Runs only when that window is opened on a computer where an "
+        "OpenAI key is saved in Use My Own AI Key (never with QUILL's free hosted "
+        "AI). Sends only the key, in the Authorization header, to api.openai.com "
+        "over verified TLS; nothing of the person's writing or speech. Refused in "
+        "Safe Mode (openai_models.cloud_problem)."
+    ),
+    "core/windows_dictation/openai_transcribe.py::transcribe_phrase": (
+        "OpenAI dictation, own key only (2026-10-05), a phrase at a time: each "
+        "phrase the voice detector heard is sent as a short WAV to OpenAI's "
+        "/v1/audio/transcriptions with the person's own key, and the words stream "
+        "back. Off by default; only after the person chose OpenAI as the speech "
+        "engine and agreed, in a plain consent naming what is sent, that their "
+        "speech goes to OpenAI (windows_dictation_openai_consent), and only while "
+        "dictation is on. Silence is never sent. With the person's words from My "
+        "Words and Phrases as keywords and, since 2026-10-05, the document's own "
+        "dictation context (a short description they wrote) as the prompt; "
+        "nothing else of the document. Verified TLS; the key travels "
+        "only in the Authorization header and is never logged. Refused in Safe "
+        "Mode, and with no key saved. Documented in docs/legal/PRIVACY.md."
+    ),
+    "core/windows_dictation/openai_transcribe.py::open": (
+        "OpenAI dictation, own key only (2026-10-05), live: one WebSocket to "
+        "OpenAI's Realtime transcription (wss://api.openai.com/v1/realtime) for "
+        "the length of a dictation session with a live model "
+        "(gpt-live-transcribe), opened when dictation starts and closed when it "
+        "stops. Only speech the voice detector heard is appended; nothing while "
+        "nobody speaks; the words and the dictation context go in the session "
+        "setup, as with transcribe_phrase. Same gating: chosen engine, explicit "
+        "consent, the person's own key, never in Safe Mode; verified TLS; the key "
+        "only in the Authorization header."
+    ),
     "core/assistant_ai.py::_fetch_models_from_endpoint": (
         "User-initiated model discovery from the AI Connection dialog (Verify "
         "Connection / List Models). HTTPS uses a verified context."
@@ -388,7 +431,14 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "SHA-256-verified GitHub release asset (PRD 10.2.4). HTTPS enforced "
         "(refuses non-https), retry/resumable, bytes verified by SHA-256 before "
         "use, visible progress, blocked in Safe Mode. Supplements the installer "
-        "bundling; capability never depends on it."
+        "bundling; capability never depends on it. Also the one path for "
+        "dictation's optional speech models (2026-10-05, "
+        "quill/core/windows_dictation/model_store.py via download_verified): "
+        "huggingface.co files pinned to a commit and SHA-256, fetched only when the "
+        "person presses Download in Dictation Settings, Speech Models and agrees to "
+        "a question naming source, size, licence and folder (asked first on a "
+        "metered connection); a .part file is kept so a cancelled download resumes. "
+        "Sends nothing but the fixed URL; no audio or QUILL data ever leaves."
     ),
     "core/speech/piper_install.py::_download_piper_voice_files": (
         "Fallback fetch of a Piper voice (.onnx + .onnx.json) from the upstream "
@@ -540,10 +590,15 @@ _REVIEWED_EGRESS: dict[str, str] = {
     # disclose the cloud-voice behavior, and the page is deleted on app exit
     # (_cleanup_browser_reader_files) so no plaintext copy lingers.
     "io/http_transport.py::download_url": (
-        "Open-from-URL action. Triggered by an explicit user action from the "
-        "Remote Sites dialog (Open from URL); fetches the resource the user "
-        "named with a verified TLS context, default _MAX_BYTES cap, and visible "
-        "progress callback."
+        "Open-from-URL action, in QUILL and QUILL Lite. Triggered only by an "
+        "explicit user action: File > Open from URL, or Open from Clipboard "
+        "(Ctrl+Alt+Shift+Enter) when the clipboard holds a link. Fetches only the "
+        "resource the user named, with a verified TLS context and the default "
+        "_MAX_BYTES cap. The confirm callback asks the user, naming the host and "
+        "the size, after the headers arrive and before any of the body is read; "
+        "the download runs on the task manager with a visible progress window "
+        "and a Cancel button (quill/ui/open_from_url.py), and the temp file is "
+        "removed when the document is read or the tab closes."
     ),
     "io/s3_sigv4.py::signed_request": (
         "S3 transport. Triggered only by an explicit user action from the "

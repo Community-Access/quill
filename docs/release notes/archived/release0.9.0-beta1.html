@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.12" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL 0.9.0 - The Last Feature Beta: Everything We Promised, By
 Ear</title>
@@ -12,7 +12,10 @@ Ear</title>
     */
     html {
       color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
       background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
     }
     body {
       margin: 0 auto;
@@ -37,11 +40,16 @@ Ear</title>
     }
     @media print {
       html {
-        background-color: white;
+        color-scheme: light only;
       }
-      body {
+      html, body, pre, code {
         background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
         color: black;
+      }
+      pre, code {
+        padding: 0;
       }
       p, h2, h3 {
         orphans: 3;
@@ -54,11 +62,8 @@ Ear</title>
     p {
       margin: 1em 0;
     }
-    a {
-      color: #1a1a1a;
-    }
-    a:visited {
-      color: #1a1a1a;
+    a, a:visited {
+      color: inherit;
     }
     img {
       max-width: 100%;
@@ -87,8 +92,11 @@ Ear</title>
     blockquote {
       margin: 1em 0 1em 1.7em;
       padding-left: 1em;
-      border-left: 2px solid #e6e6e6;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
       color: #606060;
+      color: light-dark(#606060, #b6b6b6);
     }
     code {
       white-space: pre-wrap;
@@ -112,7 +120,7 @@ Ear</title>
     }
     hr {
       border: none;
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       height: 1px;
       margin: 1em 0;
     }
@@ -129,11 +137,11 @@ Ear</title>
     }
     tbody {
       margin-top: 0.5em;
-      border-top: 1px solid #1a1a1a;
-      border-bottom: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
     }
     th {
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       padding: 0.25em 0.5em 0.25em 0.5em;
     }
     td {
@@ -172,7 +180,6 @@ Ear</title>
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <style>
     /* Accessible skip link: off-screen until it receives keyboard focus. */
@@ -1250,12 +1257,12 @@ accident.</p>
 exactly what it governs: <strong>Enable experimental features</strong> -
 all of them. While it is off, every other control on the tab is disabled
 and drops out of the tab order entirely, so to a screen reader user an
-untouched Experimental tab is one checkbox and silence. Tick it, and the
-individual experiments unlock - each with its own switch: <strong>GLOW
-accessibility review and repair</strong>, <strong>WordPress publishing
-connections</strong> (the read-only inbound tools; the send half stays
-locked no matter what), and <strong>Read the document aloud in your
-browser</strong>.</p>
+untouched Experimental tab is one checkbox and silence. Check it, and
+the individual experiments unlock - each with its own switch:
+<strong>GLOW accessibility review and repair</strong>, <strong>WordPress
+publishing connections</strong> (the read-only inbound tools; the send
+half stays locked no matter what), and <strong>Read the document aloud
+in your browser</strong>.</p>
 <p>The editor-surface options go one layer deeper, behind a second
 acknowledgement that carries its own warning in its own label:
 <strong>Enable experimental editor surfaces (features may degrade based
@@ -1274,7 +1281,7 @@ accessibility review and repair</h2>
 <p>GLOW (Guided Layout and Output Workflow) is QUILL’s accessibility
 review system, and with this beta it graduates from hidden preview to a
 <strong>shipping experimental feature - one switch away</strong>. Open
-<strong>Preferences &gt; Experimental</strong>, tick the master switch
+<strong>Preferences &gt; Experimental</strong>, check the master switch
 and GLOW’s own checkbox, apply, and <strong>Tools &gt; GLOW</strong>
 appears immediately, no restart. (Until then, the GLOW commands stay
 discoverable in the command palette and simply explain how to enable the
@@ -1446,7 +1453,7 @@ behind Notepad++, and the only alternative surface with full multi-level
 undo <em>and</em> redo - it exists to answer one open question: how
 JAWS, NVDA, and braille displays behave on it, and your reports decide
 its future). A read-only panel explains each choice’s user and technical
-impact as you select it, and the options stay ignored until you tick
+impact as you select it, and the options stay ignored until you check
 <strong>“I understand features may degrade based on the control
 selected.”</strong> A <strong>Hide editor border</strong> toggle is here
 too. QUILL warns you to restart when you change these. <strong>Why it
@@ -1479,7 +1486,7 @@ lingers.</p>
 <h3 id="proofread-before-you-publish">Proofread before you publish</h3>
 <ul>
 <li><strong>Proofread Mastodon posts before sending (per
-account)</strong> - tick it and pressing Post opens the F7 Spelling
+account)</strong> - check it and pressing Post opens the F7 Spelling
 Review on the post text first.</li>
 <li><strong>Spell check a document before saving</strong> - opens F7
 automatically on Save / Save As.</li>

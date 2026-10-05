@@ -401,4 +401,86 @@ TUTORIALS: tuple[Tutorial, ...] = (
             "What you wrote, and what came back, is not kept."
         ),
     ),
+    Tutorial(
+        slug="write-by-talking",
+        title="Write by talking",
+        track="working-in-it",
+        minutes=6,
+        surfaces=("QUILL Lite",),
+        summary=(
+            "Dictate a few sentences into a document, take one back, turn it off, "
+            "and find the settings. Everything stays on your computer."
+        ),
+        steps=(
+            Step(
+                title="Start dictation",
+                body=(
+                    "Put the cursor where the words should go, and turn dictation "
+                    "on. The first time, it takes a second or two to get ready."
+                ),
+                command="cmd_toggle_dictation",
+                hear='Two rising tones, and "Dictation on".',
+            ),
+            Step(
+                title="Say a sentence, and pause",
+                body=(
+                    "Talk the way you would to a friend, then stop for a moment. "
+                    "You do not need to say the punctuation: full stops, commas "
+                    "and capitals are put in for you."
+                ),
+                hear=(
+                    "A soft tone, then the words that were written, read back "
+                    "with their punctuation said."
+                ),
+            ),
+            Step(
+                title="Take a phrase back",
+                body=(
+                    "Say scratch that, on its own, after a pause. Only the last "
+                    "phrase you said goes; anything you typed is left alone."
+                ),
+                hear='"Scratched:" and the words that went.',
+            ),
+            Step(
+                title="Turn it off with the same key",
+                body=(
+                    "Press the dictation key again to turn it off. One press "
+                    "starts dictation and the next stops it, and stopping never "
+                    "cuts off a sentence you are still finishing."
+                ),
+                command="cmd_toggle_dictation",
+                hear='Two falling tones, and "Dictation off".',
+            ),
+            Step(
+                title="See the phrases you said",
+                body=(
+                    "Recent Phrases lists what you dictated this session, newest "
+                    "first. Enter writes one at the cursor again, which rescues a "
+                    "scratch that that went one too far."
+                ),
+                command="cmd_dictation_recent",
+                hear="Recent Phrases, on the newest phrase.",
+            ),
+            Step(
+                title="Find the settings",
+                body=(
+                    "Dictation Settings has the speech engine, the microphone and "
+                    "what you hear after each phrase. More Dictation Settings, "
+                    "inside it, lets you hold the key to talk if you prefer, and "
+                    "has the words heard while you speak and talking to the AI."
+                ),
+                command="cmd_dictation_settings",
+                hear="Dictation Settings, on Speech engine.",
+                note=(
+                    "Nothing you say leaves the computer unless you choose OpenAI "
+                    "as the speech engine with your own key, and agree to it."
+                ),
+            ),
+        ),
+        closing=(
+            "You can now write by talking, take back a phrase, and turn dictation "
+            "on and off with one key. Say what can I say while dictating to hear everything it "
+            "understands; the user guide's dictation chapter has the rest."
+        ),
+    ),
 )

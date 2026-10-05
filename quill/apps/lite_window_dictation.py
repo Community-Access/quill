@@ -40,4 +40,7 @@ def dictation_cell(frame: object) -> str:
     """
     state = getattr(frame, "dictation_state_text", None)
     text = str(state()) if callable(state) else ""
-    return text.split(": ", 1)[-1].capitalize() if text else "Off"
+    shown = text.split(": ", 1)[-1] if text else "Off"
+    # Only the first letter: the live preview ("hearing: Can you send it")
+    # carries the speaker's own capitals, which capitalize() would flatten.
+    return shown[:1].upper() + shown[1:]

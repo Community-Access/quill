@@ -508,7 +508,7 @@ class DocumentTypingMixin:
         self._announce("Abbreviations off" if enabled else "Abbreviations on")
 
     def cmd_snippet_gallery(self) -> None:
-        """Ctrl+Shift+Insert: pick a snippet from a list and put it in.
+        """Ctrl+Alt+Shift+Home: pick a snippet from a list and put it in.
 
         The half QUILL Lite did not have. Abbreviations expand when you *type the
         trigger*, which is perfect for the six you use daily and useless for the

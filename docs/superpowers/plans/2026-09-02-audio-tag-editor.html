@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.12" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Full Audio Tag Editor and Complete Chapter Editing —
 Implementation Plan</title>
@@ -12,7 +12,10 @@ Implementation Plan</title>
     */
     html {
       color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
       background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
     }
     body {
       margin: 0 auto;
@@ -37,11 +40,16 @@ Implementation Plan</title>
     }
     @media print {
       html {
-        background-color: white;
+        color-scheme: light only;
       }
-      body {
+      html, body, pre, code {
         background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
         color: black;
+      }
+      pre, code {
+        padding: 0;
       }
       p, h2, h3 {
         orphans: 3;
@@ -54,11 +62,8 @@ Implementation Plan</title>
     p {
       margin: 1em 0;
     }
-    a {
-      color: #1a1a1a;
-    }
-    a:visited {
-      color: #1a1a1a;
+    a, a:visited {
+      color: inherit;
     }
     img {
       max-width: 100%;
@@ -87,8 +92,11 @@ Implementation Plan</title>
     blockquote {
       margin: 1em 0 1em 1.7em;
       padding-left: 1em;
-      border-left: 2px solid #e6e6e6;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
       color: #606060;
+      color: light-dark(#606060, #b6b6b6);
     }
     code {
       white-space: pre-wrap;
@@ -112,7 +120,7 @@ Implementation Plan</title>
     }
     hr {
       border: none;
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       height: 1px;
       margin: 1em 0;
     }
@@ -129,11 +137,11 @@ Implementation Plan</title>
     }
     tbody {
       margin-top: 0.5em;
-      border-top: 1px solid #1a1a1a;
-      border-bottom: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
     }
     th {
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       padding: 0.25em 0.5em 0.25em 0.5em;
     }
     td {
@@ -172,7 +180,6 @@ Implementation Plan</title>
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
     /* CSS for syntax highlighting */
     html { -webkit-text-size-adjust: 100%; }
     pre > code.sourceCode { white-space: pre; position: relative; }
@@ -942,17 +949,17 @@ test</strong></label></li>
 </ul>
 <p>Append to <code>tests/unit/core/speech/test_audio_tags.py</code>:</p>
 <div class="sourceCode" id="cb4"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path  <span class="co"># noqa: E402</span></span>
+class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path  <span class="co"># </span><span class="al">noqa:</span><span class="co"> E402</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>mutagen <span class="op">=</span> pytest.importorskip(<span class="st">&quot;mutagen&quot;</span>)</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.speech.audio_tags <span class="im">import</span> (  <span class="co"># noqa: E402</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.speech.audio_tags <span class="im">import</span> (  <span class="co"># </span><span class="al">noqa:</span><span class="co"> E402</span></span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    CoverArt,</span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    preferred_id3_version,</span>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    read_tags,</span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    write_tags,</span>
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.speech.chapters <span class="im">import</span> (  <span class="co"># noqa: E402</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.speech.chapters <span class="im">import</span> (  <span class="co"># </span><span class="al">noqa:</span><span class="co"> E402</span></span>
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    Chapter,</span>
 <span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    read_mp3_chapters,</span>
 <span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    write_mp3_chapters,</span>
@@ -1124,7 +1131,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a hr
 <span id="cb7-51"><a href="#cb7-51" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> ID3(<span class="bu">str</span>(path))</span>
 <span id="cb7-52"><a href="#cb7-52" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> ID3NoHeaderError:</span>
 <span id="cb7-53"><a href="#cb7-53" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> ID3()</span>
-<span id="cb7-54"><a href="#cb7-54" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> exc:  <span class="co"># noqa: BLE001 - mutagen raises many shapes</span></span>
+<span id="cb7-54"><a href="#cb7-54" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> exc:  <span class="co"># </span><span class="al">noqa:</span><span class="co"> BLE001 - mutagen raises many shapes</span></span>
 <span id="cb7-55"><a href="#cb7-55" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> TagReadError(<span class="ss">f&quot;Could not read tags: </span><span class="sc">{</span>exc<span class="sc">}</span><span class="ss">&quot;</span>) <span class="im">from</span> exc</span>
 <span id="cb7-56"><a href="#cb7-56" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-57"><a href="#cb7-57" aria-hidden="true" tabindex="-1"></a></span>
@@ -1191,7 +1198,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a hr
 <span id="cb7-118"><a href="#cb7-118" aria-hidden="true" tabindex="-1"></a>        )</span>
 <span id="cb7-119"><a href="#cb7-119" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
 <span id="cb7-120"><a href="#cb7-120" aria-hidden="true" tabindex="-1"></a>        id3.save(<span class="bu">str</span>(path), v2_version<span class="op">=</span>preferred_id3_version(tags))</span>
-<span id="cb7-121"><a href="#cb7-121" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> exc:  <span class="co"># noqa: BLE001 - mutagen raises many shapes</span></span>
+<span id="cb7-121"><a href="#cb7-121" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> exc:  <span class="co"># </span><span class="al">noqa:</span><span class="co"> BLE001 - mutagen raises many shapes</span></span>
 <span id="cb7-122"><a href="#cb7-122" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> TagWriteError(<span class="ss">f&quot;Could not write tags: </span><span class="sc">{</span>exc<span class="sc">}</span><span class="ss">&quot;</span>) <span class="im">from</span> exc</span></code></pre></div>
 <p>Add <code>from pathlib import Path</code> to the module’s
 imports.</p>
@@ -1239,7 +1246,7 @@ test</strong></label></li>
 </ul>
 <p>Append to <code>tests/unit/core/speech/test_audio_tags.py</code>:</p>
 <div class="sourceCode" id="cb9"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.speech.audio_tags <span class="im">import</span> (  <span class="co"># noqa: E402</span></span>
+class="sourceCode python"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.speech.audio_tags <span class="im">import</span> (  <span class="co"># </span><span class="al">noqa:</span><span class="co"> E402</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    MAX_COVER_BYTES,</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    cover_extension,</span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    describe_cover,</span>
@@ -1508,7 +1515,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb13-1"><a h
 <span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> TagReadError(<span class="st">&quot;Editing tags requires the &#39;mutagen&#39; package.&quot;</span>) <span class="im">from</span> exc</span>
 <span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
 <span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>        audio <span class="op">=</span> MP4(<span class="bu">str</span>(path))</span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> exc:  <span class="co"># noqa: BLE001 - mutagen raises many shapes</span></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> exc:  <span class="co"># </span><span class="al">noqa:</span><span class="co"> BLE001 - mutagen raises many shapes</span></span>
 <span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> TagReadError(<span class="ss">f&quot;Could not read tags: </span><span class="sc">{</span>exc<span class="sc">}</span><span class="ss">&quot;</span>) <span class="im">from</span> exc</span>
 <span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> audio.tags <span class="kw">is</span> <span class="va">None</span>:</span>
 <span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>        audio.add_tags()</span>
@@ -1599,7 +1606,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb13-1"><a h
 <span id="cb13-104"><a href="#cb13-104" aria-hidden="true" tabindex="-1"></a>        audio.tags[<span class="st">&quot;covr&quot;</span>] <span class="op">=</span> [MP4Cover(tags.cover.data, imageformat<span class="op">=</span>fmt)]</span>
 <span id="cb13-105"><a href="#cb13-105" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
 <span id="cb13-106"><a href="#cb13-106" aria-hidden="true" tabindex="-1"></a>        audio.save()</span>
-<span id="cb13-107"><a href="#cb13-107" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> exc:  <span class="co"># noqa: BLE001 - mutagen raises many shapes</span></span>
+<span id="cb13-107"><a href="#cb13-107" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> exc:  <span class="co"># </span><span class="al">noqa:</span><span class="co"> BLE001 - mutagen raises many shapes</span></span>
 <span id="cb13-108"><a href="#cb13-108" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> TagWriteError(<span class="ss">f&quot;Could not write tags: </span><span class="sc">{</span>exc<span class="sc">}</span><span class="ss">&quot;</span>) <span class="im">from</span> exc</span></code></pre></div>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 4: Run the tests to
@@ -1652,11 +1659,11 @@ test</strong></label></li>
 </ul>
 <p>Append to <code>tests/unit/core/speech/test_audio_tags.py</code>:</p>
 <div class="sourceCode" id="cb15"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.speech.audio_tags <span class="im">import</span> (  <span class="co"># noqa: E402</span></span>
+class="sourceCode python"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.speech.audio_tags <span class="im">import</span> (  <span class="co"># </span><span class="al">noqa:</span><span class="co"> E402</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    merge_audio_metadata,</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    to_audio_metadata,</span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.speech.ffmpeg <span class="im">import</span> AudioMetadata  <span class="co"># noqa: E402</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.speech.ffmpeg <span class="im">import</span> AudioMetadata  <span class="co"># </span><span class="al">noqa:</span><span class="co"> E402</span></span>
 <span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_to_audio_metadata_maps_the_seven_core_fields() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
@@ -1824,7 +1831,7 @@ test</strong></label></li>
 </ul>
 <p>Append to <code>tests/unit/core/speech/test_chapters.py</code>:</p>
 <div class="sourceCode" id="cb21"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.speech.chapters <span class="im">import</span> (  <span class="co"># noqa: E402</span></span>
+class="sourceCode python"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.speech.chapters <span class="im">import</span> (  <span class="co"># </span><span class="al">noqa:</span><span class="co"> E402</span></span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    add_chapter,</span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    delete_chapter,</span>
 <span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    set_chapter_bounds,</span>
@@ -2066,7 +2073,7 @@ test</strong></label></li>
 </ul>
 <p>Append to <code>tests/unit/core/speech/test_chapters.py</code>:</p>
 <div class="sourceCode" id="cb24"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.speech.chapters <span class="im">import</span> NUDGE_STEPS_MS, nudge_chapter_start  <span class="co"># noqa: E402</span></span>
+class="sourceCode python"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.speech.chapters <span class="im">import</span> NUDGE_STEPS_MS, nudge_chapter_start  <span class="co"># </span><span class="al">noqa:</span><span class="co"> E402</span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_nudge_steps_are_ascending_and_sane() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
@@ -2288,13 +2295,13 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb31-1"><a h
 <span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>wx <span class="op">=</span> pytest.importorskip(<span class="st">&quot;wx&quot;</span>)</span>
 <span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.speech.audio_tags <span class="im">import</span> (  <span class="co"># noqa: E402</span></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.speech.audio_tags <span class="im">import</span> (  <span class="co"># </span><span class="al">noqa:</span><span class="co"> E402</span></span>
 <span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>    GROUPS,</span>
 <span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>    TAG_FIELDS,</span>
 <span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>    AudioTags,</span>
 <span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>    CoverArt,</span>
 <span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.ui.audio_studio.tag_editor <span class="im">import</span> TagEditorDialog  <span class="co"># noqa: E402</span></span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.ui.audio_studio.tag_editor <span class="im">import</span> TagEditorDialog  <span class="co"># </span><span class="al">noqa:</span><span class="co"> E402</span></span>
 <span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>pytestmark <span class="op">=</span> pytest.mark.xdist_group(<span class="st">&quot;wx&quot;</span>)</span>
 <span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a></span>
@@ -2657,7 +2664,7 @@ test</strong></label></li>
 </ul>
 <p>Append to <code>tests/unit/ui/test_tag_editor_dialog.py</code>:</p>
 <div class="sourceCode" id="cb33"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.ui.audio_studio.tag_editor <span class="im">import</span> CoverPagePanel  <span class="co"># noqa: E402</span></span>
+class="sourceCode python"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.ui.audio_studio.tag_editor <span class="im">import</span> CoverPagePanel  <span class="co"># </span><span class="al">noqa:</span><span class="co"> E402</span></span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_cover_page_describes_absent_art(wx_app: <span class="bu">object</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
@@ -2803,7 +2810,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb34-1"><a h
 <span id="cb34-79"><a href="#cb34-79" aria-hidden="true" tabindex="-1"></a>                        <span class="bu">max</span>(<span class="dv">1</span>, <span class="bu">int</span>(image.GetHeight() <span class="op">*</span> scale)),</span>
 <span id="cb34-80"><a href="#cb34-80" aria-hidden="true" tabindex="-1"></a>                        wx.IMAGE_QUALITY_HIGH,</span>
 <span id="cb34-81"><a href="#cb34-81" aria-hidden="true" tabindex="-1"></a>                    ).ConvertToBitmap()</span>
-<span id="cb34-82"><a href="#cb34-82" aria-hidden="true" tabindex="-1"></a>            <span class="cf">except</span> <span class="pp">Exception</span>:  <span class="co"># noqa: BLE001 - an undecodable image is not fatal</span></span>
+<span id="cb34-82"><a href="#cb34-82" aria-hidden="true" tabindex="-1"></a>            <span class="cf">except</span> <span class="pp">Exception</span>:  <span class="co"># </span><span class="al">noqa:</span><span class="co"> BLE001 - an undecodable image is not fatal</span></span>
 <span id="cb34-83"><a href="#cb34-83" aria-hidden="true" tabindex="-1"></a>                bitmap <span class="op">=</span> wx.NullBitmap</span>
 <span id="cb34-84"><a href="#cb34-84" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>._thumbnail.SetBitmap(bitmap)</span>
 <span id="cb34-85"><a href="#cb34-85" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.Layout()</span>
@@ -2948,8 +2955,8 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb37-1"><a h
 <span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>wx <span class="op">=</span> pytest.importorskip(<span class="st">&quot;wx&quot;</span>)</span>
 <span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.speech.chapters <span class="im">import</span> Chapter  <span class="co"># noqa: E402</span></span>
-<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.ui.audio_studio.chapter_workbench_edits <span class="im">import</span> (  <span class="co"># noqa: E402</span></span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.speech.chapters <span class="im">import</span> Chapter  <span class="co"># </span><span class="al">noqa:</span><span class="co"> E402</span></span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.ui.audio_studio.chapter_workbench_edits <span class="im">import</span> (  <span class="co"># </span><span class="al">noqa:</span><span class="co"> E402</span></span>
 <span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>    ChapterEditsMixin,</span>
 <span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a></span>
@@ -3529,7 +3536,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb43-1"><a h
 <span id="cb43-36"><a href="#cb43-36" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>._on_hear_boundary()</span>
 <span id="cb43-37"><a href="#cb43-37" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb43-38"><a href="#cb43-38" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> _hear_after_nudge(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="bu">bool</span>:</span>
-<span id="cb43-39"><a href="#cb43-39" aria-hidden="true" tabindex="-1"></a>        <span class="co">&quot;&quot;&quot;Whether the &quot;hear the boundary after each nudge&quot; box is ticked.</span></span>
+<span id="cb43-39"><a href="#cb43-39" aria-hidden="true" tabindex="-1"></a>        <span class="co">&quot;&quot;&quot;Whether the &quot;hear the boundary after each nudge&quot; box is checked.</span></span>
 <span id="cb43-40"><a href="#cb43-40" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb43-41"><a href="#cb43-41" aria-hidden="true" tabindex="-1"></a><span class="co">        Overridden by the Workbench, which owns the checkbox; the default of</span></span>
 <span id="cb43-42"><a href="#cb43-42" aria-hidden="true" tabindex="-1"></a><span class="co">        False keeps the mixin usable without one.</span></span>
@@ -3699,7 +3706,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb48-1"><a h
 <span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>.settings_nudge_ms <span class="op">=</span> <span class="bu">int</span>(</span>
 <span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a>                load_settings().audio_studio_chapter_nudge_ms</span>
 <span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a>            )</span>
-<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> <span class="pp">Exception</span>:  <span class="co"># noqa: BLE001 - a settings failure must not block editing</span></span>
+<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> <span class="pp">Exception</span>:  <span class="co"># </span><span class="al">noqa:</span><span class="co"> BLE001 - a settings failure must not block editing</span></span>
 <span id="cb48-12"><a href="#cb48-12" aria-hidden="true" tabindex="-1"></a>            <span class="cf">pass</span></span></code></pre></div>
 <p>Replace every remaining <code>self._dirty = True</code> with
 <code>self._chapters_dirty = True</code> and every
@@ -3825,7 +3832,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb52-1"><a h
 <span id="cb52-10"><a href="#cb52-10" aria-hidden="true" tabindex="-1"></a>            settings <span class="op">=</span> load_settings()</span>
 <span id="cb52-11"><a href="#cb52-11" aria-hidden="true" tabindex="-1"></a>            settings.audio_studio_chapter_nudge_ms <span class="op">=</span> <span class="va">self</span>.settings_nudge_ms</span>
 <span id="cb52-12"><a href="#cb52-12" aria-hidden="true" tabindex="-1"></a>            save_settings(settings)</span>
-<span id="cb52-13"><a href="#cb52-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> <span class="pp">Exception</span>:  <span class="co"># noqa: BLE001 - failing to persist must not block editing</span></span>
+<span id="cb52-13"><a href="#cb52-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> <span class="pp">Exception</span>:  <span class="co"># </span><span class="al">noqa:</span><span class="co"> BLE001 - failing to persist must not block editing</span></span>
 <span id="cb52-14"><a href="#cb52-14" aria-hidden="true" tabindex="-1"></a>            <span class="cf">pass</span></span>
 <span id="cb52-15"><a href="#cb52-15" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb52-16"><a href="#cb52-16" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> _hear_after_nudge(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="bu">bool</span>:</span>
@@ -3856,7 +3863,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb54-1"><a h
 <span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a>            base <span class="op">=</span> <span class="va">self</span>._full_tags <span class="cf">if</span> <span class="va">self</span>._full_tags <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span> <span class="cf">else</span> read_tags(</span>
 <span id="cb54-8"><a href="#cb54-8" aria-hidden="true" tabindex="-1"></a>                <span class="va">self</span>._book.path</span>
 <span id="cb54-9"><a href="#cb54-9" aria-hidden="true" tabindex="-1"></a>            )</span>
-<span id="cb54-10"><a href="#cb54-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> exc:  <span class="co"># noqa: BLE001 - an untagged file is still editable</span></span>
+<span id="cb54-10"><a href="#cb54-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> exc:  <span class="co"># </span><span class="al">noqa:</span><span class="co"> BLE001 - an untagged file is still editable</span></span>
 <span id="cb54-11"><a href="#cb54-11" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>._announce(<span class="bu">str</span>(_(<span class="st">&quot;Could not read the existing tags: </span><span class="sc">{error}</span><span class="st">&quot;</span>)).<span class="bu">format</span>(</span>
 <span id="cb54-12"><a href="#cb54-12" aria-hidden="true" tabindex="-1"></a>                error<span class="op">=</span>exc</span>
 <span id="cb54-13"><a href="#cb54-13" aria-hidden="true" tabindex="-1"></a>            ))</span>
@@ -4107,7 +4114,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb61-1"><a h
 <span id="cb61-13"><a href="#cb61-13" aria-hidden="true" tabindex="-1"></a>    announce <span class="op">=</span> <span class="bu">getattr</span>(frame, <span class="st">&quot;_announce&quot;</span>, <span class="va">None</span>)</span>
 <span id="cb61-14"><a href="#cb61-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
 <span id="cb61-15"><a href="#cb61-15" aria-hidden="true" tabindex="-1"></a>        tags <span class="op">=</span> read_tags(target)</span>
-<span id="cb61-16"><a href="#cb61-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> exc:  <span class="co"># noqa: BLE001 - an untagged file is still editable</span></span>
+<span id="cb61-16"><a href="#cb61-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> exc:  <span class="co"># </span><span class="al">noqa:</span><span class="co"> BLE001 - an untagged file is still editable</span></span>
 <span id="cb61-17"><a href="#cb61-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> announce <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
 <span id="cb61-18"><a href="#cb61-18" aria-hidden="true" tabindex="-1"></a>            announce(<span class="bu">str</span>(_(<span class="st">&quot;Could not read the existing tags: </span><span class="sc">{error}</span><span class="st">&quot;</span>)).<span class="bu">format</span>(error<span class="op">=</span>exc))</span>
 <span id="cb61-19"><a href="#cb61-19" aria-hidden="true" tabindex="-1"></a>        tags <span class="op">=</span> AudioTags()</span>
@@ -4123,7 +4130,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb61-1"><a h
 <span id="cb61-29"><a href="#cb61-29" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span></span>
 <span id="cb61-30"><a href="#cb61-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
 <span id="cb61-31"><a href="#cb61-31" aria-hidden="true" tabindex="-1"></a>        write_tags(target, edited)</span>
-<span id="cb61-32"><a href="#cb61-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> exc:  <span class="co"># noqa: BLE001 - surfaced, not raised through wx</span></span>
+<span id="cb61-32"><a href="#cb61-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> exc:  <span class="co"># </span><span class="al">noqa:</span><span class="co"> BLE001 - surfaced, not raised through wx</span></span>
 <span id="cb61-33"><a href="#cb61-33" aria-hidden="true" tabindex="-1"></a>        show_message_box(<span class="bu">str</span>(exc), <span class="bu">str</span>(_(<span class="st">&quot;Tag Editor&quot;</span>)), wx.OK <span class="op">|</span> wx.ICON_ERROR, <span class="va">None</span>)</span>
 <span id="cb61-34"><a href="#cb61-34" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span></span>
 <span id="cb61-35"><a href="#cb61-35" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> announce <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>

@@ -14,14 +14,58 @@ Three rules the shape follows, all of them older than the extraction:
   while the listener was in another window said its piece to nobody.
 * **The new-episode announcement respects quiet hours** (11.9). The episodes
   still arrive, are still queued and still download; only the sentence waits.
+
+What a read *does to the record* -- merging, the first-read baseline, the real
+"last published" date, an empty feed, the validators for next time -- is
+``quill/core/podcasts/feed_read.py``, wx-free and tested (check.md bugs 2, 3
+and 9). This module routes what that returns.
+
+Feed checks run on **their own small pool** (check.md bug 10). A Refresh All
+Now over a 1,300-show library took 22 minutes on the four shared workers, and
+every other background job -- a download starting, a transcript, a search --
+waited behind it. Now a big check can be slow without the rest of the app
+being stuck behind it.
 """
 
 from __future__ import annotations
 
+import logging
 from typing import Any
 
 from quill.core.podcasts import feed_auth
-from quill.core.podcasts.subscriptions import merge_episodes
+
+logger = logging.getLogger(__name__)
+
+#: Feed checks in flight at once, on their own pool. Modest on purpose: it is
+#: one listener's app talking to many podcast hosts, and four at a time keeps
+#: it a well-behaved client while a big library still finishes in minutes.
+FEED_CHECK_WORKERS = 4
+
+
+def feed_check_pool(host: Any) -> Any:
+    """The task manager feed checks run on: their own, made on first use.
+
+    A host that is not running the real task manager (a test double) keeps
+    using its own, so every wiring test still sees the submission.
+    """
+    pool = getattr(host, "_podcast_feed_tasks", None)
+    if pool is not None:
+        return pool
+    from quill.stability.task_manager import TaskManager
+
+    shared = host._task_manager
+    if type(shared) is not TaskManager:
+        return shared
+    pool = TaskManager(max_workers=FEED_CHECK_WORKERS)
+    host._podcast_feed_tasks = pool
+    return pool
+
+
+def shutdown_feed_checks(host: Any) -> None:
+    """On close: stop the feed-check pool, dropping checks not yet started."""
+    pool = getattr(host, "_podcast_feed_tasks", None)
+    if pool is not None:
+        pool.shutdown(wait=False, cancel_pending=True)
 
 
 def _follow_redirect(host: Any, show: Any, redirected_to: list[str]) -> None:
@@ -83,11 +127,15 @@ def refresh_feed(host: Any, show_id: str) -> None:
     if show is None or not show.feed_url or host._safe_mode:
         return
     username, password = feed_auth.auth_for_url(show, show.feed_url)
+    from quill.core.podcasts import feed_read
 
-    #: Where the feed actually landed, when the server moved it. Reported by
-    #: the fetch rather than acted on there: rewriting a subscription's stored
-    #: address is a per-podcast decision (7.20).
+    #: Where the feed now lives, when the server said so **permanently** (301
+    #: or 308 on every hop; check.md bug 4). Reported by the fetch rather than
+    #: acted on there: rewriting a subscription's stored address is a
+    #: per-podcast decision (7.20).
     redirected_to: list[str] = []
+    #: The stored ETag / Last-Modified go out, and this response's come back.
+    notes = feed_read.notes_for(host._podcast_library, show)
 
     def _do_refresh(**_kwargs: object) -> feed_reader.FeedInfo:
         return feed_reader.fetch_and_parse_feed(
@@ -96,15 +144,17 @@ def refresh_feed(host: Any, show_id: str) -> None:
             password=password,
             safe_mode=host._safe_mode,
             redirected_to=redirected_to,
+            notes=notes,
         )
 
     def _on_success(_op: str, info: feed_reader.FeedInfo) -> None:
-        known = {episode.guid for episode in show.episodes}
-        republished: list[str] = []
-        if not info.tags.is_empty:
-            show.tags = info.tags
-        merge_episodes(show, info.episodes, republished=republished)
-        arrived = [episode for episode in show.episodes if episode.guid not in known]
+        # Merge, the first-read baseline, the newest episode's real date, an
+        # empty feed, the validators for next time (7.1, 7.19; check.md bugs
+        # 2, 3 and 9). The bookkeeping decides when the *next* check is due
+        # and when the two notices fire; it never decides whether to check.
+        read = feed_read.record_success(host._podcast_library, show, info, notes)
+        arrived = read.arrived
+        republished = read.republished
         # Episode Filters are consulted here, before anything routes -- and
         # each route asks for *its own* scope, because a listener who wants a
         # segment kept out of the queue but still announced has said something
@@ -121,25 +171,16 @@ def refresh_feed(host: Any, show_id: str) -> None:
         # playlist its new episodes join as they arrive (7.16).
         host._podcast_file_to_default_playlist(show, fresh)
         host._podcast_resurface_republished(show, republished)
-        # Per-podcast bookkeeping (7.1, 7.19): when this feed was last read,
-        # when it last carried something, and the failure run this success
-        # ends. It decides when the *next* check is due and when the two
-        # notices fire; it never decides whether to check at all.
         from quill.core.podcasts import check_state
 
-        check_state.record_success(host._podcast_library, show, new_episodes=len(arrived))
-        check_state.record_hint(
-            host._podcast_library,
-            show,
-            int(getattr(info, "hint_minutes", 0) or 0),
-            str(getattr(info, "hint_words", "") or ""),
-        )
         _follow_redirect(host, show, redirected_to)
         # A podcast that has stopped publishing does not announce it, and an
         # absence is precisely the thing nobody notices. Latched, so an hourly
-        # check does not say it hourly (7.19).
+        # check does not say it hourly (7.19). A first read latches it without
+        # a word: a show that was already quiet before you followed it is not
+        # news, and after an import it would be hundreds of sentences.
         quiet = check_state.quiet_notice(host._podcast_library, show)
-        if quiet:
+        if quiet and not read.baseline:
             host._announce(quiet)
             _record(host, "gone_quiet", title="Gone quiet", body=show.title, show=show)
         if new_count:
@@ -204,10 +245,15 @@ def refresh_feed(host: Any, show_id: str) -> None:
         check_run.step(host, str(show.id), failed_title=str(show.title))
         # A run of failures earns one sentence, not one per check (7.19). Cast
         # keeps trying either way -- the notice says so, because "this feed has
-        # failed" otherwise reads as "and I have given up".
+        # failed" otherwise reads as "and I have given up". The plain reason is
+        # kept with it, so Feed Check can say *why* (check.md bugs 7 and 8);
+        # the technical text goes to the log, never to the screen reader.
         from quill.core.podcasts import check_state
 
-        check_state.record_failure(host._podcast_library, show)
+        problem = feed_read.record_failure(
+            host._podcast_library, show, exc, had_credentials=bool(username)
+        )
+        logger.info("Feed check failed for %s: %s", show.feed_url, problem.detail)
         notice = check_state.failure_notice(host._podcast_library, show)
         if notice:
             host._announce(notice, force=True)
@@ -222,11 +268,11 @@ def refresh_feed(host: Any, show_id: str) -> None:
             app_data_dir(),
             problem_log.KIND_FEED,
             show.title or show.feed_url,
-            str(exc) or exc.__class__.__name__,
+            problem.sentence,
             target=show.id,
         )
 
-    host._task_manager.submit(
+    feed_check_pool(host).submit(
         "podcast-refresh",
         _do_refresh,
         on_success=_on_success,

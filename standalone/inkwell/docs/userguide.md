@@ -32,6 +32,7 @@ abbreviations QUILL's editor expands. There is one library, shared.
 17. [Safe Mode](#17-safe-mode)
 18. [Privacy](#18-privacy)
 19. [Troubleshooting](#19-troubleshooting)
+20. [Dictate Anywhere](#20-dictate-anywhere)
 
 ## 1. How expansion works
 
@@ -81,6 +82,32 @@ own picture.
 Turn off **Options > Close button keeps expanding** if you would rather the close
 button really exit. **Options > Start Quill Inkwell with Windows** starts it
 hidden at login, which is how most people run it.
+
+**A key to bring the window back from anywhere.** **File > Show and Hide
+Key...** (Ctrl+Alt+Shift+H) lets you choose one key that shows or hides the
+Inkwell window from any program. There is no key until you choose one. Type the
+key you want, or leave the box empty for none. If another QuillVille app already
+uses it, Inkwell tells you whose it is and lets you try another. If you used an
+earlier version, Ctrl+Alt+Shift+I did this; other QuillVille apps use that key,
+so it is off now, and Inkwell tells you once after you update.
+
+**Two more keys that work from anywhere.** Quick Insert and Expand the Word I
+Just Typed (section 9) can each have a key that works in any program. Choose
+them the same way, in the File menu:
+
+1. Press **Ctrl+Alt+Shift+K** for **File > Quick Insert Key...**, or
+   **Ctrl+Alt+Shift+E** for **File > Expand Word Key...**.
+2. Type the key you want, for example Ctrl+Alt+PageUp, or leave the box
+   empty for none.
+3. Press Enter. Inkwell says the key back. If it is already a shortcut in a
+   QuillVille app, or another program already holds it, Inkwell says so and the
+   old key stays.
+
+A key has to include Ctrl or Alt, and it cannot be one Inkwell already uses for
+something else. Neither key exists until you choose it. If you used an earlier
+version, Quick Insert was Ctrl+Alt+Shift+K and Expand Word was Ctrl+Alt+Shift+X
+from anywhere; QuillVille apps use both for their own commands, so they are off
+now, and Inkwell tells you once after you update.
 
 ## 4. Creating abbreviations
 
@@ -182,16 +209,16 @@ entry expands; it exists to keep a long list navigable.
 
 ## 9. Quick Insert, and expanding on demand
 
-**Ctrl+K** in the window, or **Ctrl+Alt+Shift+K** from anywhere, opens a
-type-to-filter picker over every enabled abbreviation, ordered with the ones you
+**Ctrl+K** in the window, or from anywhere the key you chose in **File > Quick
+Insert Key...** (section 3), opens a type-to-filter picker over every enabled abbreviation, ordered with the ones you
 use most at the top. Type a few letters, arrow down, press Enter, and the
 expansion is typed into whatever window you were working in.
 
 Quick Insert is the only way to reach an entry whose trigger mode is Never, and
 the easiest way to use an abbreviation you have not memorised yet.
 
-**Expand the word I just typed** -- **Ctrl+Alt+Shift+X** from anywhere, or the
-Abbreviations menu -- expands the word before the cursor without waiting for a
+**Expand the word I just typed** -- the key you chose in **File > Expand Word
+Key...** from anywhere, or **Ctrl+Alt+E** in the Abbreviations menu -- expands the word before the cursor without waiting for a
 space or punctuation. Use it mid-word, at the end of a line where you do not want
 a trailing space, or for an abbreviation you have set never to expand on its own.
 
@@ -287,6 +314,11 @@ Inkwell's own preferences live in `inkwell.json` beside the library:
 | Start with Windows | Off | Starts hidden in the tray at login. |
 | Start minimized to the tray | Off | Opens hidden. |
 | Close button keeps expanding | On | Close hides to the tray instead of exiting. |
+| Show and hide key | None | A key that shows or hides the window from anywhere (File > Show and Hide Key). |
+| Quick Insert key | None | A key that opens Quick Insert from anywhere (File > Quick Insert Key). |
+| Expand Word key | None | A key that expands the word just typed, from anywhere (File > Expand Word Key). |
+| Dictate Anywhere key | None | A key that starts and stops dictation in any program (File > Dictate Anywhere Key, section 20). |
+| Dictation settings | The editors' own, with the read-back as a tone | Inkwell's copy of your dictation settings (Dictation > Dictation Settings). |
 
 Abbreviations themselves are not listed here: they are shared, and they live in
 QUILL's `abbreviations.json`.
@@ -295,9 +327,16 @@ QUILL's `abbreviations.json`.
 
 | Action | Keys |
 | --- | --- |
-| Show or hide Inkwell | Ctrl+Alt+Shift+I |
-| Quick Insert from anywhere | Ctrl+Alt+Shift+K |
-| Expand the word I just typed | Ctrl+Alt+Shift+X |
+| Show or hide Inkwell | The key you chose (none at first) |
+| Choose that key | Ctrl+Alt+Shift+H |
+| Quick Insert from anywhere | The key you chose (none at first) |
+| Choose that key | Ctrl+Alt+Shift+K |
+| Expand the word I just typed, from anywhere | The key you chose (none at first) |
+| Choose that key | Ctrl+Alt+Shift+E |
+| Dictate Anywhere, from anywhere | The key you chose (none at first) |
+| Choose that key | Ctrl+Alt+Shift+D |
+| Dictate Anywhere, from Inkwell's window | Ctrl+D |
+| Dictation Settings | Ctrl+Alt+D |
 | Take back the expansion that just fired | Backspace, immediately |
 | Manage abbreviations | Ctrl+M |
 | Quick Insert | Ctrl+K |
@@ -320,7 +359,8 @@ left behind on the machine.
 
 With `QUILL_SAFE_MODE=1` set, Inkwell starts without installing the keyboard
 hook at all and says so. The manager still works, so you can edit abbreviations;
-nothing is watched and nothing is typed.
+nothing is watched and nothing is typed. Dictate Anywhere is off in Safe Mode
+too: pressing its key tells you so, and the microphone is never opened.
 
 ## 18. Privacy
 
@@ -356,7 +396,8 @@ that Windows refused the keyboard hook, see the next item.
 **Nothing expands in one particular application.** If Inkwell announced that the
 application runs as administrator, that is the reason (section 10a). Otherwise the
 application may not report itself as editable, or may be dropping the typed
-keystrokes -- press Ctrl+Alt+Shift+X there to expand on demand, and if that works
+keystrokes -- press your Expand Word key there to expand on demand (choose one
+in File > Expand Word Key if you have not), and if that works
 but ordinary typing does not, add the program to the per-application paste list
 (section 12).
 
@@ -379,6 +420,69 @@ Options > Insert by pasting (section 12).
 
 **An abbreviation fires when I do not want it.** Set that entry's *Expand after*
 to Never; Quick Insert can still reach it.
+
+## 20. Dictate Anywhere
+
+Dictate Anywhere lets you talk instead of type in any program: your email, a web
+page, a chat window, a form. It uses the same speech engines as QUILL and QUILL
+Lite, the same words you have taught them in My Words and Phrases, and the same
+voice commands. Inkwell is its home because Inkwell is already running quietly in
+the background, typing into other programs for you.
+
+**Choosing your key.** Nothing listens until you choose a key.
+
+1. In Inkwell, press **Ctrl+Alt+Shift+D** for **File > Dictate Anywhere Key...**.
+2. Type the key you want, or leave the box empty for none. The key has to
+   include Ctrl or Alt.
+3. Press Enter. Inkwell says the key back. If a QuillVille app or another
+   program already uses it, Inkwell tells you and the old key stays.
+
+**Dictating.**
+
+1. Go to the program you want to write in, and put the cursor where the words
+   should go.
+2. Press your Dictate Anywhere key, speak, and pause. Each phrase is typed at the
+   cursor.
+3. Press the key again, or say "stop dictation", to stop.
+
+You can also start and stop it from Inkwell's own **Dictation** menu:
+**Dictate Anywhere** (Ctrl+D) is a check item, so the menu tells you whether it
+is on. To start it from QUILL or QUILL Lite, open **More Dictation Settings** in
+the editor and press **Dictate in Other Programs...**. The editor hands its
+dictation settings to Inkwell and starts it, and if you have not chosen a key
+yet, the key chooser opens for you.
+
+**Your settings.** Inkwell keeps its own copy of your dictation settings, so it
+works even when no editor is open. Change them in **Dictation > Dictation
+Settings...** (Ctrl+Alt+D), which is the same window the editors use. One
+difference: the read-back after each phrase starts as a tone rather than the
+words, because your screen reader can already read out what is typed, and hearing
+everything twice gets tiring. You can change that in the same window.
+
+**What works in another program.** Spoken punctuation, spelling, "caps on", "all
+caps on" and "no space on", switching between English and Spanish, and "scratch
+that". "Scratch that" erases the phrase that was just typed, but only while you
+are still in the same window, so it can never erase anything you typed yourself.
+
+**What does not.** Anything that needs to read the other program's text: "select"
+and "go to", "correct", clips and snippets. Inkwell cannot see that text, so it
+tells you: "That works in QUILL's own documents. In another program, say the
+words again, or scratch that."
+
+**Where it will not type.** Inkwell refuses, and tells you why, in:
+
+- A password field: "That is a password field, so nothing is typed there."
+- A program running as administrator when Inkwell is not, because Windows will
+  not let Inkwell type into it.
+- QUILL's and QUILL Lite's own windows. Press Ctrl+F11 there instead; the editors
+  dictate into their own documents directly.
+- Inkwell's own window. Switch to the program you want to dictate into first.
+
+**Safe Mode.** With Safe Mode on, Dictate Anywhere is off.
+
+**Privacy.** Your speech is handled exactly as it is in the editors: on this
+computer with the built-in engines, and sent to OpenAI only if you chose OpenAI
+dictation with your own key. Nothing you say is kept.
 
 ## Finding a setting or a command
 

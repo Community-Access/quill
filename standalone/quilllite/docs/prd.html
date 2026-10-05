@@ -766,7 +766,7 @@ starting points – <strong>Recommended</strong>,
 <strong>Notepad</strong> – and the design rules behind them are worth
 stating, because each one has a cheaper wrong version.</p>
 <p><strong>A profile is a baseline, not a mode.</strong> Applying one
-ticks and unticks every box, and then the boxes are the truth again.
+checks and unchecks every box, and then the boxes are the truth again.
 There is nothing to escape from: the very next change is an ordinary
 per-area override, and the Choice reads back <strong>Custom</strong> the
 moment the boxes stop matching. The alternative – a mode that owns the
@@ -862,11 +862,11 @@ QUILL — see §5.3.</li>
 table and that was that. The table is still the <em>defaults</em> – it
 is what the uniqueness gates assert against – but
 <code>quill/core/lite/keymap.py</code> puts a resolution layer over it
-and <code>Tools &gt; Keyboard Manager</code> (Ctrl+Alt+Shift+R) edits
-it. What stays true is the reason the non-goal was written: QUILL’s
-chord grammar, its <code>APP_KEYMAPS</code> overrides and its Key
-Describer are a writing environment’s features and are still not here.
-Rebinding a key is not.</li>
+and <code>Tools &gt; Keyboard Manager</code> (Ctrl+Alt+Shift+Space)
+edits it. What stays true is the reason the non-goal was written:
+QUILL’s chord grammar, its <code>APP_KEYMAPS</code> overrides and its
+Key Describer are a writing environment’s features and are still not
+here. Rebinding a key is not.</li>
 <li><strong>Not a second clipboard manager.</strong> The tray, the
 collector and the library are QUILL’s own stores, kept in QUILL Lite’s
 folder. Nothing is reimplemented.</li>
@@ -1183,7 +1183,7 @@ change to what is sent or retained asks again, rather than an old yes
 being read as covering a new thing.</li>
 <li><strong>Reachable by three doors</strong> –
 <code>Tools &gt; AI &gt; Privacy Agreement</code>
-(<code>Ctrl+Alt+Shift+K</code>), a Preferences tick box, and switching
+(<code>Ctrl+Alt+Shift+K</code>), a Preferences check box, and switching
 the area on in Customize Features – because which door somebody finds
 depends on which part of the app they already know. All three read and
 write the same value, so they cannot disagree.</li>
@@ -1296,7 +1296,9 @@ id="58-dictation-the-reliability-pass-and-words-taught-in-a-window-2026-09-28">5
 Dictation: the reliability pass, and words taught in a window
 (2026-09-28)</h3>
 <p>Nine sections of the dictation plan (<code>dict.md</code> 2.2, 2.3,
-2.5, 2.6, 2.7, 2.8, 3.1, 3.3 and 5), implemented in the shared Live
+2.5, 2.6, 2.7, 2.8, 3.1, 3.3 and 5; that plan is now
+<code>docs/design/2026-10-05-dictation-plan-and-status.md</code>, whose
+Appendix A maps its section numbers), implemented in the shared Live
 Dictation stack so QUILL has every one of them on the same keys (rule
 10). The design constraint from that plan holds throughout: nothing here
 costs the baseline machine anything while dictation is idle, and the
@@ -1367,6 +1369,59 @@ model round-trip and its edits
 through the window it runs in
 (<code>tests/unit/apps/test_lite_dictation.py</code>); the command
 coverage gate stays at zero <code>shape_only</code>.</p>
+<h3
+id="59-dictation-holding-the-key-live-words-the-ai-and-openai-2026-10-05">5.9
+Dictation: holding the key, live words, the AI, and OpenAI
+(2026-10-05)</h3>
+<p>The rest of the dictation plan, after studying VS Code’s dictation
+(credited, behaviour by behaviour, in
+<code>docs/design/2026-10-05-dictation-plan-and-status.md</code>, which
+also holds everything still to do). All of it is shared code, and
+<code>tests/unit/ui/test_dictation_parity.py</code> fails if QUILL and
+QUILL Lite differ in a dictation command, key or setting.</p>
+<ul>
+<li><strong>Hold-to-talk</strong> (<code>hold.py</code>,
+<code>windows_dictation_hold.py</code>): hold Ctrl+F11 for half a second
+and talk, let go to stop; a quick press toggles; key repeats are
+ignored. Off by default (owner, 2026-10-05): one press starts, the next
+stops; <strong>More Dictation Settings</strong> turns it on.</li>
+<li><strong>Finishing, not cutting off</strong>: stopping while a phrase
+is being heard waits for it (<code>LiveMixin.finish</code>, the worker’s
+<code>finish</code>), with a four-second limit.</li>
+<li><strong>The live preview</strong> (<code>streaming.py</code>,
+<code>recognizer_worker.py</code>, <code>live.py</code>): Nemotron runs
+as a streaming model on one stream per session; its provisional words
+show as “Hearing: …” in the status cell and on braille, never in the
+document; the mark it writes once it hears the next phrase corrects the
+last one (so its questions end in question marks).</li>
+<li><strong>Words go where you started</strong>
+(<code>EditorDocument.anchor</code>): measured on speech start, honoured
+even if the caret moved or the focus left.</li>
+<li><strong>“Correct that”</strong> and “choose one” to “choose three”,
+with Windows speech recognition’s alternates; every other engine says it
+has none.</li>
+<li><strong>Talk to the AI</strong>
+(<code>hosted_ai_chat._talk_to_it</code>): the AI Conversation window’s
+message box dictates with the <strong>Talking to AI</strong> profile,
+sends at the pause (or on Enter), and mutes the microphone while the
+reply is read.</li>
+<li><strong>OpenAI dictation, own key only</strong>
+(<code>openai_models.py</code>, <code>openai_transcribe.py</code>,
+<code>openai_recognizer.py</code>): off by default, a plain consent, the
+model chosen from OpenAI’s live list without retiring models, Realtime
+transcription for <code>gpt-live-transcribe</code>, never a silent
+switch, refused in Safe Mode, three reviewed egress entries, and a
+Dictation section in the privacy statement.</li>
+<li><strong>My Dictation Instructions</strong>
+(<code>instructions.py</code>) for Tidy Dictated Text.</li>
+<li><strong>Kind to a modest computer</strong>
+(<code>keep_up.py</code>): the keep-up watchdog and models unloaded five
+minutes after the last session.</li>
+<li><strong>Settings</strong>: eight new
+<code>windows_dictation_*</code> fields, and all 24 now declared once
+(<code>settings_fields.DictationSettings</code>), inherited by both
+editors’ <code>Settings</code>.</li>
+</ul>
 <h2 id="6-release-packaging">6. Release packaging</h2>
 <p><strong>Two</strong> artifacts, where the family contract is four –
 the reason is the paragraph under the table:</p>

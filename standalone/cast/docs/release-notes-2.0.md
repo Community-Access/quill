@@ -41,6 +41,9 @@ A few things work differently now:
   other app calls it.
 - **A new key for showing and hiding Cast.** From any program, it's now
   Ctrl+Alt+Shift+F12.
+- **Restore from a Backup is Ctrl+Alt+F12**, the key QUILL and QUILL Lite
+  use for restoring their settings. It used to be Ctrl+Alt+Shift+R, which
+  shows and hides Quill Radio, so it never worked while Radio was open.
 - **Mark as Played and Next is Ctrl+Alt+Shift+Down**, right beside Next in
   Queue on Ctrl+Alt+Down. It used to be Ctrl+Alt+Shift+Q, which shows and
   hides QUILL, so it never worked while QUILL was open.
@@ -48,6 +51,7 @@ A few things work differently now:
   such as Settings for This Podcast (Ctrl+Alt+,), now have a Save button that
   keeps the window open, so you can try something and adjust it. Ctrl+S saves
   too. Close leaves anything you haven't saved as it was.
+- Portable copies now start from a folder whose name has a space in it.
 - **More windows stay open beside your library.** Add Podcast, Feed Check,
   Show Notes, Notifications and several others are on the Window menu while
   they're open. Escape or Ctrl+W closes one and puts you back where you were.
@@ -125,8 +129,11 @@ password safe for you.
 
 Coming from another podcast app? Save your list from it as an OPML file, then
 press Import OPML in the Add Podcast window (Alt+I). However long your list is,
-Cast brings it across, folders and all, and you can keep listening while it
-works.
+Cast brings it across, folders and all, empty folders included, and you can
+keep listening while it works. Your old shows arrive quietly: Cast does not
+announce their whole back catalogue as new episodes, and each one shows the
+real date of its newest episode, so the ones that stopped years ago are easy
+to spot.
 
 Changed your mind about a podcast? Unfollow it, and if that was a mistake,
 Ctrl+Z brings it back with its episodes and downloads. Ctrl+Z rescues you the
@@ -195,6 +202,13 @@ for anyone who has Cast.
 
 Cast checks your podcasts for you, on a schedule you choose for all of them or
 one at a time. Press F5 whenever you cannot wait.
+
+**Feed Check** (Ctrl+Shift+C) tells you which podcasts need something, and
+why, in plain words: removed by the host, a web address that has lapsed, an
+address that now opens a web page, a feed the publisher emptied, a host that
+turns podcast apps away. When a show has moved, **Find This Show's New Feed**
+looks it up for you and moves it to its new feed, keeping everything you have
+heard.
 
 New episodes wait in the **Inbox** (Ctrl+Shift+I) for you to decide about
 them. You choose which podcasts send episodes there, and you can keep it short
@@ -307,7 +321,7 @@ like it to. Ctrl+W sends it there any time.
 Back up your whole library to one file, with your podcasts, playlists,
 positions, notes and bookmarks, using Podcasts > **Back Up My Podcasts...**
 (Ctrl+Alt+Shift+B), and put it back later with **Restore from a Backup...**
-(Ctrl+Alt+Shift+R). When you get a new computer, Help > Export My Setup
+(Ctrl+Alt+F12). When you get a new computer, Help > Export My Setup
 (Ctrl+Alt+Shift+X) moves your library, settings and keys across in one file.
 
 **Listening Statistics** (Ctrl+Alt+Shift+S) tells you which podcasts you
@@ -324,7 +338,7 @@ If you listen on more than one computer, Cast can keep your place in each
 episode in step through a folder you already sync, such as Dropbox or
 OneDrive. There is no account to make. Podcasts > Carry My Place Between
 Machines is where you set it up. Continue Listening then tells you where a
-place came from, such as "last played on Kitchen laptop". Tick **Also share
+place came from, such as "last played on Kitchen laptop". Check **Also share
 the podcasts I follow, and their folders**, and a podcast you follow on one
 computer turns up on the others, in the same folder. It is off until you
 choose it, and private feeds are never shared.
@@ -368,7 +382,7 @@ progress, for testers.
 
 Arrowing through the three only explains them. If you choose Beta or Dev, a
 short warning says plainly what could go wrong and how to come back, and
-nothing moves until you tick **I understand** and choose **Move**. Before it
+nothing moves until you check **I understand** and choose **Move**. Before it
 moves, Cast saves a copy of your subscriptions, playlists, listening places and settings. Downloaded episodes are not copied, and updates don't change them.
 
 Coming back to Stable is safe. If Stable can read everything you have saved,

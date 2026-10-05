@@ -538,7 +538,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 body=(
                     "Every window in Cast answers F1. You hear what the window is for, "
                     "then what the control you are on does. On a checkbox and not sure "
-                    "what ticking it will change? Press F1 first and find out."
+                    "what checking it will change? Press F1 first and find out."
                 ),
                 keys=("F1",),
                 hear="What the window is for, then what this control does.",

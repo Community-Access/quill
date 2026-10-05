@@ -28,7 +28,7 @@ import urllib.parse
 import urllib.request
 from collections.abc import Callable
 
-from quill import __version__
+from quill.core import http_client
 from quill.core.error_codes import CodedError
 from quill.core.net import verified_ssl_context
 from quill.core.spotify import auth
@@ -42,7 +42,6 @@ from quill.core.spotify.models import (
 from quill.core.spotify.token_store import TokenBundle
 
 _API_ROOT = "https://api.spotify.com/v1"
-_USER_AGENT = f"QUILL/{__version__} (https://github.com/Community-Access/quill)"
 _TIMEOUT_SECONDS = 30.0
 #: Refresh a little before the real expiry so an in-flight request never races
 #: the token going stale on Spotify's side.
@@ -194,7 +193,7 @@ class SpotifyClient:
         headers = {
             "Authorization": f"Bearer {self._tokens.access_token}",
             "Accept": "application/json",
-            "User-Agent": _USER_AGENT,
+            "User-Agent": http_client.user_agent(),
         }
         if data is not None:
             headers["Content-Type"] = "application/json"

@@ -110,6 +110,7 @@ class MenuBuilderMixin:
         self._id_preferences_hub = wx.NewIdRef()
         self._id_menu_editor = wx.NewIdRef()
         self._id_open_url = wx.NewIdRef()
+        self._id_open_from_clipboard = wx.NewIdRef()
         self._id_open_remote = wx.NewIdRef()
         self._id_save_to_remote = wx.NewIdRef()
         self._id_save_copy_to_remote = wx.NewIdRef()
@@ -207,13 +208,21 @@ class MenuBuilderMixin:
             self._menu_label(_("New P&lain Text Document"), "file.new_plain_text_document"),
         )
         file_menu.Append(self._id_open, self._menu_label(_("&Open..."), "file.open"))
+        file_menu.Append(
+            self._id_open_from_clipboard,
+            # No letter written in: none of its name is free, so menu_routes
+            # seats it on a spare one; Ctrl+Alt+Shift+Enter is its real route.
+            self._menu_label(_("Open from Clipboard"), "file.open_from_clipboard"),
+        )
         self._id_file_format = wx.NewIdRef()
         file_menu.Append(
             self._id_file_format,
             self._menu_label(_("&File Format..."), "file.file_format"),
         )
         self._recent_menu = wx.Menu()
-        file_menu.AppendSubMenu(self._recent_menu, _("O&pen Recent"))
+        # No letter of its own: P is Print's (rule 1) and every other letter of
+        # its name is taken, so menu_routes seats it on a free one.
+        file_menu.AppendSubMenu(self._recent_menu, _("Open Recent"))
         self._prepare_recent_documents_item()
         self._refresh_recent_menu()
         self._id_open_from_favorite_folder = wx.NewIdRef()
@@ -531,7 +540,10 @@ class MenuBuilderMixin:
         file_menu.AppendSeparator()
         # --- Print ---
         file_menu.Append(self._id_page_setup, _("Page Setup..."))
-        file_menu.Append(self._id_print, self._menu_label(_("Print..."), "file.print"))
+        # Alt+F, P is Windows' Print (family rule 1). It is explicit because the
+        # File menu holds more rows than there are letters and digits, and
+        # menu_routes seats explicit accelerator-holding letters first.
+        file_menu.Append(self._id_print, self._menu_label(_("&Print..."), "file.print"))
         file_menu.Append(
             self._id_print_studio,
             self._menu_label(_("Print Studio..."), "file.print_studio"),
@@ -1544,6 +1556,7 @@ class MenuBuilderMixin:
             self._id_insert_task_list,
             self._menu_label(_("T&ask"), "format.insert_task_list"),
         )
+        self._append_task_toggle_row(list_menu)  # main_frame_review (shared command)
         list_menu.AppendSeparator()
         list_menu.Append(
             self._id_open_list_manager,
@@ -2200,26 +2213,7 @@ class MenuBuilderMixin:
             self._menu_label(_("Spell Check &Language..."), "tools.spell_language"),
         )
         writing_menu.AppendSeparator()
-        self._id_add_inline_note = wx.NewIdRef()
-        self._id_next_inline_note = wx.NewIdRef()
-        self._id_previous_inline_note = wx.NewIdRef()
-        self._id_speak_inline_note = wx.NewIdRef()
-        writing_menu.Append(
-            self._id_add_inline_note,
-            self._menu_label(_("&Add Inline Note..."), "notes.add_inline_note"),
-        )
-        writing_menu.Append(
-            self._id_next_inline_note,
-            self._menu_label(_("Next Inline &Note"), "notes.next_inline_note"),
-        )
-        writing_menu.Append(
-            self._id_previous_inline_note,
-            self._menu_label(_("Previous Inline No&te"), "notes.previous_inline_note"),
-        )
-        writing_menu.Append(
-            self._id_speak_inline_note,
-            self._menu_label(_("Speak Inline Note (double to &edit)"), "notes.speak_inline_note"),
-        )
+        self._append_inline_note_rows(writing_menu)  # main_frame_inline_notes (shared commands)
         writing_menu.AppendSeparator()
         self._id_thesaurus = wx.NewIdRef()
         writing_menu.Append(

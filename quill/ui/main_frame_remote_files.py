@@ -38,6 +38,8 @@ class RemoteFilesMixin:
             current_tab = self._document_tabs[-1]
             current_tab.source_label = f"from {getattr(download, 'final_url', '')}"
             current_tab.read_only_remote = True
+            # Removed when the tab closes (2026-10-04); it used to stay forever.
+            current_tab.remote_temp_path = str(getattr(download, "local_path", "") or "")
         except (IndexError, AttributeError):
             pass
         self._location_ring = LocationRing()

@@ -42,6 +42,31 @@ def record_spoken(history: deque[str], message: object) -> bool:
     return True
 
 
+#: What the Echo says when the user has turned the history off, so an empty
+#: review is never mistaken for "nothing was said".
+HISTORY_OFF_MESSAGE = (
+    "Announcement history is off, so QUILL is not keeping a list of what it said. "
+    "To turn it back on, open Settings, Accessibility, and check Keep an announcement history."
+)
+
+
+def echo_history_enabled(settings: object) -> bool:
+    """The "Keep an announcement history" setting (announcement_echo_history).
+
+    Off means nothing is recorded and anything already kept is dropped -- it is
+    a privacy switch, so it must not leave the last twenty lines lying around.
+    Settings objects without the field (companion apps) keep the history.
+    """
+    return bool(getattr(settings, "announcement_echo_history", True))
+
+
+def spoken_echo_text(entries: Sequence[str], settings: object) -> str:
+    """The Echo dialog's text: the history, or why there is none."""
+    if not echo_history_enabled(settings):
+        return HISTORY_OFF_MESSAGE
+    return format_spoken_echo(entries)
+
+
 def format_spoken_echo(entries: Sequence[str]) -> str:
     """Render the history newest-first for the review dialog.
 

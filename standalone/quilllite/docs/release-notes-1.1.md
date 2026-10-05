@@ -325,9 +325,9 @@ These are on their way in the next release.
   finds "run", and puts your choice back in the form your sentence needs.
 - Press the Applications key on any word for two new submenus, **Thesaurus
   for** that word and **Dictionary for** that word.
-- **Look Up Word** (**Alt+F10**) works offline. Tick **Use online sources** for
+- **Look Up Word** (**Alt+F10**) works offline. Check **Use online sources** for
   definitions and a short Wikipedia summary too; only the word is sent, and
-  only after you tick the box. **Add to Dictionary** teaches the word to your
+  only after you check the box. **Add to Dictionary** teaches the word to your
   spell checker.
 - **Tools > Dictionary** asks AI help about a word as it is used in your
   sentence: define it, synonyms that fit, a simpler, more formal or more vivid

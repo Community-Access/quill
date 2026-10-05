@@ -1199,7 +1199,7 @@ and keep-matching.
 
 The scopes are the half that matters: the Inbox, Auto-Queue, auto-download, the
 new-episode announcement, the podcast's own episode list, the cross-show views,
-smart playlists, Search Everywhere. Ticked independently, so one feature answers
+smart playlists, Search Everywhere. Checked independently, so one feature answers
 "do not put it in front of me", "do not spend my bandwidth on it" and "I never
 want to see it again" without any of them implying the others. A new filter
 ships with the four **routing** scopes on and the four **hiding** scopes off:
@@ -1209,7 +1209,7 @@ found.
 ### 21.2 Asked, not stamped
 
 The verdict is computed at every point of use rather than written onto an
-episode at ingest. That is why unticking a scope takes effect on the next
+episode at ingest. That is why unchecking a scope takes effect on the next
 redraw with nothing to migrate and nothing to undo. Two things are still
 written down because they are events rather than opinions: a Play Queue slot
 removed by the explicit apply-to-existing pass, and the Needs review warning.
@@ -1236,7 +1236,7 @@ duration. Asked, with exact counts: partial duration coverage, and any hiding
 scope -- with the two ways back named in the question.
 
 Preview evaluates the draft **while the top-level switch is off and while no
-scope is ticked**, because it answers "what do these rules catch?", which is a
+scope is checked**, because it answers "what do these rules catch?", which is a
 question about the rules. The episode list's state filter gains **Filtered
 out**, present for every podcast rather than only for filtered ones; and a
 per-episode **exemption** beats every rule in every scope and survives editing

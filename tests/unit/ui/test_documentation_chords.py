@@ -203,9 +203,17 @@ def _live_chords() -> set[str]:
     # QUILL's system-wide show/hide key is registered with Windows rather than
     # held in a keymap. It was counted only by accident, through Unquote Lines
     # sharing the chord -- which was the bug (2026-10-03).
+    # So are Quill Radio's and Quill Cast's (core/family_chords.py), which were
+    # counted the same accidental way until Radio's four claimants and Cast's
+    # sixth launcher row moved off them (2026-10-05). Cast's QuillVille row
+    # keeps its key wherever it appears (SIBLING_APP_FIXED_ACCELERATORS).
+    from quill.core.app_keymaps import SIBLING_APP_FIXED_ACCELERATORS
+    from quill.core.family_chords import SHOW_HIDE_DEFAULTS
     from quill.ui.main_frame_hotkeys import DEFAULT_SHOW_HIDE_HOTKEY
 
     live.add(_normalise(DEFAULT_SHOW_HIDE_HOTKEY))
+    live |= {_normalise(chord) for chord in SHOW_HIDE_DEFAULTS.values() if chord}
+    live |= {_normalise(chord) for chord in SIBLING_APP_FIXED_ACCELERATORS.values()}
     # Alt+Shift+1 to 9 reopen the first nine recent documents in both editors.
     # They are menu-label accelerators on rows built at run time, worded by the
     # one shared function, so that function is the honest source (2026-10-04).

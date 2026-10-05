@@ -56,10 +56,18 @@ PURPOSES: dict[str, str] = {
     ),
     "Feed Check": (
         "Which of the podcasts you follow need something, worst first: failing "
-        "feeds, then quiet ones, then the healthy rest. Opening it checks "
-        "nothing; Retry checks the selected feed and Retry All Failed every "
-        "failing one. A quiet podcast is not necessarily a failing feed, and Cast "
-        "never stops trying a failing one."
+        "feeds with the reason, empty feeds, then quiet ones, then the healthy "
+        "rest. Opening it checks nothing; Retry checks the selected feed and "
+        "Retry All Failed every failing one. When a feed has been removed or now "
+        "leads nowhere, Find This Show's New Feed looks for where the show went. "
+        "Cast never stops trying a failing feed."
+    ),
+    "Find This Show's New Feed": (
+        "Feeds that might be this podcast, found by searching the podcast "
+        "directories for its title and checked to make sure each one answers, "
+        "with how many episodes it has and the newest one's date. Replace Feed "
+        "moves the podcast to the one you choose and keeps everything you have "
+        "already heard; Cancel changes nothing."
     ),
     "QUILL Cast Tutorials": (
         "Guided lessons, one step at a time, that can run the step for you and "
@@ -274,6 +282,13 @@ PURPOSES: dict[str, str] = {
         "says what the rule catches among the newest episodes. A "
         "rule is a label plus a test; it decides nothing until the filter "
         "itself is saved, and it never deletes an episode."
+    ),
+    "What Was Left Out": (
+        "Everything a backup, a restore or a setup file left out, one row per "
+        "item, each with the reason -- stored only in OneDrive, in use by "
+        "another program, a path too long for Windows. Nothing listed here was "
+        "deleted. What to do about it is under the list, and Copy List takes "
+        "the whole thing with you."
     ),
     "Episode Filter Test": (
         "One test inside an Episode Filter rule: what it looks at -- the "

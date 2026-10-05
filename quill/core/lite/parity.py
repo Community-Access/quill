@@ -106,7 +106,7 @@ DIVERGENCES: dict[str, str] = {
         "QUILL, beside indent and outdent, and on the F9 row in QUILL Lite."
     ),
     "cmd_spelling_voice_settings": (
-        "Ctrl+Alt+Shift+F7 is a QuillVille launcher in QUILL -- the six "
+        "Ctrl+Alt+Shift+F7 is a QuillVille launcher in QUILL -- the "
         "siblings sit on Ctrl+Alt+Shift+F7 through F12, and QUILL Lite, being "
         "the editor on its own, has none to launch. QUILL's Announcements "
         "window is one key down on Ctrl+Alt+Shift+F6: same modifiers, same "
@@ -114,7 +114,7 @@ DIVERGENCES: dict[str, str] = {
         "(bad.md P1.14)."
     ),
     "cmd_ai_usage": (
-        "Ctrl+Alt+Shift+F9 is a QuillVille launcher in QUILL -- the six siblings "
+        "Ctrl+Alt+Shift+F9 is a QuillVille launcher in QUILL -- the siblings "
         "sit on Ctrl+Alt+Shift+F7 through F12 (app_keymaps.SIBLING_APP_ACCELERATORS) "
         "-- and QUILL Lite, being the editor on its own, has none to launch. QUILL's "
         "Free AI Usage is Ctrl+Alt+Shift+F2: same modifiers, same finger shape, and "
@@ -127,11 +127,10 @@ DIVERGENCES: dict[str, str] = {
         "commands kept QUILL Lite's chords unchanged (rule 2); these two could not, "
         "and a chord claimed twice means one of the pair silently never fires."
     ),
-    "cmd_snippet_gallery": (
-        "Alt+Shift+I is Add Inline Note in QUILL -- one of four note chords "
-        "QUILL Lite does not have (bad.md 3.9) -- and a snippet gallery is a "
-        "once-a-session window, so the note keeps the shorter chord (rule 3)."
-    ),
+    # cmd_snippet_gallery was here until 2026-10-04: Alt+Shift+I is Add Inline
+    # Note, and QUILL Lite had no notes. Lite gained all six note commands on
+    # QUILL's chords (rule 2), Snippets moved to Ctrl+Alt+Shift+Home in Lite,
+    # and QUILL aliased that chord for its gallery (rule 5), so they agree.
     "cmd_context_help": (
         "F1 in QUILL is help.help_on_control, the same idea under another id: "
         "the command that answers 'what is this control?' owns F1 in both, and "
@@ -176,6 +175,16 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_ai_image": "tools.hosted_ai_image",
     "cmd_ai_own_key": "tools.hosted_ai_own_key",
     "cmd_dictation_tidy": "tools.dictation_tidy",
+    # Inline notes, Toggle Task Done and Export as HTML (2026-10-04, from
+    # PlanCake): QUILL's code, shared, on QUILL's chords (rule 2).
+    "cmd_add_inline_note": "notes.add_inline_note",
+    "cmd_next_inline_note": "notes.next_inline_note",
+    "cmd_previous_inline_note": "notes.previous_inline_note",
+    "cmd_speak_inline_note": "notes.speak_inline_note",
+    "cmd_delete_inline_note": "notes.delete_inline_note",
+    "cmd_list_inline_notes": "notes.list_inline_notes",
+    "cmd_toggle_task_done": "format.toggle_task_done",
+    "cmd_export_html": "file.export_html",
     "cmd_activity": "app.activity",
     "cmd_look_up": "tools.look_up",
     "cmd_thesaurus": "tools.thesaurus",
@@ -237,6 +246,14 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_dictation_settings": "tools.windows_dictation_settings",
     "cmd_dictation_recent": "tools.windows_dictation_recent",
     "cmd_dictation_words": "tools.windows_dictation_words",
+    "cmd_transcribe_audio_file": "tools.windows_dictation_transcribe_file",
+    # 2026-10-05, the dictation gap plan: the same shared mixins, the same chords.
+    # Dictation Status is QUILL's Locked Dictation status key, which now answers
+    # for live dictation whenever Locked Dictation is idle.
+    "cmd_switch_dictation_language": "tools.windows_dictation_switch_language",
+    "cmd_live_transcript": "tools.windows_dictation_live_transcript",
+    "cmd_dictation_context": "tools.windows_dictation_context",
+    "cmd_dictation_status": "tools.dictation_status",
     "cmd_duplicate_line": "format.duplicate_line",
     "cmd_duplicate_selection": "edit.duplicate_selection",
     "cmd_editor_font": "format.editor_font",
@@ -304,6 +321,8 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_normalize_whitespace": "edit.normalize_whitespace",
     "cmd_number_lines": "power.number_lines",
     "cmd_open": "file.open",
+    "cmd_open_from_clipboard": "file.open_from_clipboard",
+    "cmd_open_from_url": "file.open_url",
     "cmd_open_review_buffer": "edit.open_review_buffer",
     "cmd_outdent": "format.outdent",
     "cmd_page_setup": "file.page_setup",

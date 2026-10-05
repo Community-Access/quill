@@ -32,11 +32,11 @@ _PACKAGE_ROOT = Path(__file__).resolve().parents[1]
 _EGRESS_CALLEES = frozenset({
     "urlopen",
     "urlretrieve",
-    # The ElevenLabs SDK does its HTTP internally (httpx), so no urlopen appears at
-    # the call site. Treat constructing the SDK client as the reviewable egress
-    # marker — it is the single point where QUILL hands off to the SDK's network
-    # path — so the gateway still gets a recorded, reviewed entry below.
+    # SDKs and sockets with no urlopen at the call site: constructing the
+    # ElevenLabs client, and websocket-client's opener (OpenAI dictation's live
+    # transcription), are each the one point QUILL hands off to the network.
     "ElevenLabs",
+    "create_connection",
     # Private/authenticated podcast feeds fetch through this single wrapper
     # (quill/core/podcasts/feed_auth.py) instead of a bare urlopen, so it builds
     # its own opener (opener.open) and no plain ``urlopen`` name appears at the

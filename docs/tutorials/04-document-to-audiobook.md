@@ -91,7 +91,7 @@ On the book page, type a half-remembered title and press **Look up book
 details**. QUILL looks it up in Open Library and MusicBrainz (free, and QUILL
 asks before it goes online the first time), fills in the author, genre and
 year from the match you pick, and offers to download the cover as `cover.jpg`.
-Tick the spoken credits if you want the book to introduce itself.
+Check the spoken credits if you want the book to introduce itself.
 
 Read the summary. If you like, choose **Save a job file** to keep all your
 choices in a `.quilljob` file you can load next time (or edit in Notepad).

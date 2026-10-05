@@ -3515,20 +3515,59 @@ has no folders, so your folders are not carried across. To export one
 folder, use <strong>Export This Folder…</strong> in Manage Favorite
 Stations.</p>
 <h3 id="backing-up-and-restoring">Backing up and restoring</h3>
-<p>A backup is a single <code>.qrbackup</code> file holding your
-favorites, settings, wake-up timer and recording schedule, and your
-recordings too if you choose. It is worth making one now and then.</p>
+<p>A backup is a single <code>.qrbackup</code> file. It is worth making
+one now and then, and always before you reset or replace a computer.</p>
+<h4 id="what-a-backup-holds">What a backup holds</h4>
+<ul>
+<li>Your favorite stations, with their folders and saved places.</li>
+<li>Your Quill Radio settings, and the stations you played
+recently.</li>
+<li>The podcasts you follow, and where you are in each episode.</li>
+<li>Your notes on stations and podcasts, your station tags and your
+bookmarks.</li>
+<li>Your Go To list, Quick Actions and row-action order.</li>
+<li>Scheduled recordings, the wake-up timer and reminders.</li>
+<li>Your recording settings, including which folder recordings go
+to.</li>
+<li>Saved YouTube rows, the YouTube channels you follow, your own
+streaming servers, your Local Media list, quiet hours and download
+choices.</li>
+<li>Your recordings, only if you answer <strong>Yes</strong> when it
+asks.</li>
+</ul>
+<p>It does not hold passwords or sign-ins (private podcast feeds, server
+passwords, your YouTube sign-in), downloaded podcast episodes, or the
+music and audiobook files your Local Media list points to. You type the
+passwords again on the new computer.</p>
+<p>Your favorites, settings and podcasts are never quietly left out. If
+one of them cannot be read, the backup is not saved, and Quill Radio
+tells you which one and why.</p>
 <h4 id="back-up-step-by-step">Back up, step by step</h4>
 <ol type="1">
 <li>Press <strong>Ctrl+Shift+U</strong> (<strong>Station &gt; Back Up
 Stations and Settings…</strong>).</li>
 <li>If you have recordings, Quill Radio asks whether to include them,
-because they can be large. Choose <strong>Yes</strong> or
+and says how many there are, how much space they take and which folder
+they are in. If some are stored only in OneDrive, it says how many;
+Quill Radio asks Windows to download them as it backs up, so stay
+connected to the internet. Choose <strong>Yes</strong> or
 <strong>No</strong>.</li>
 <li>A file window opens: “Save Quill Radio Backup”. Choose a folder and
 a name, then <strong>Save</strong>.</li>
-<li>You should hear that the backup was saved.</li>
+<li>The status bar counts through the recordings as they are copied.
+When it finishes you hear where the backup was saved and what it
+holds.</li>
+<li>If anything was left out, a message says how many and asks
+<strong>Show what was left out, and why?</strong> Choose
+<strong>Yes</strong> for a list with one line per file and the reason:
+stored only in OneDrive and not downloaded, in use by another program, a
+folder path too long for Windows, or could not be read. What to do is
+under the list, and <strong>Copy List</strong> copies it. The same list
+goes into <strong>Help &gt; Recent Problems…</strong>
+(Ctrl+Alt+Shift+P), so you can find it later.</li>
 </ol>
+<p>Backup files are never copied into a backup as recordings, so it is
+fine to keep your backups in the same folder as your recordings.</p>
 <h4 id="restore-step-by-step">Restore, step by step</h4>
 <ol type="1">
 <li>Press <strong>Ctrl+Alt+Shift+W</strong> (<strong>Station &gt;
@@ -3541,7 +3580,51 @@ warns you: “This replaces your current stations and settings.”
 To restore, press <strong>Y</strong>, or Tab to <strong>Yes</strong> and
 press Enter.</li>
 <li>Quill Radio restores the files and reloads, so you have them
-straight away.</li>
+straight away. Recordings go into the folder named in <strong>Record
+&gt; Recording Settings…</strong> (Ctrl+Alt+Shift+I). A recording that
+is already there is left alone, so restoring onto a computer that still
+has your OneDrive folder does not copy everything twice.</li>
+</ol>
+<h3 id="moving-to-a-new-or-reset-computer">Moving to a new or reset
+computer</h3>
+<p>Your favorites, settings and podcasts live on this computer, in your
+Windows user folder, not in OneDrive. A reset removes them. Your
+recordings live wherever <strong>Record &gt; Recording
+Settings…</strong> (Ctrl+Alt+Shift+I) says under <strong>Destination
+folder</strong>; if that is a OneDrive folder, OneDrive keeps them.</p>
+<p>Before the reset:</p>
+<ol type="1">
+<li>Make a backup: <strong>Station &gt; Back Up Stations and
+Settings…</strong> (Ctrl+Shift+U). Save it into your OneDrive
+folder.</li>
+<li>If your recordings are already in OneDrive, you can answer
+<strong>No</strong> to including them; they are safe there. If they are
+on this computer only, answer <strong>Yes</strong>, or copy the
+recordings folder to OneDrive or a USB drive yourself.</li>
+<li>Check the backup is fully uploaded: in File Explorer, the backup
+file’s <strong>Status</strong> column should say it is available or
+synced, not that it is still uploading. Opening onedrive.com in a
+browser and finding the file there is the surest check.</li>
+<li>If you were told anything was left out, read the list and do what it
+says before you reset.</li>
+</ol>
+<p>After the reset:</p>
+<ol type="1">
+<li>Install Quill Radio and sign in to OneDrive. Wait for your OneDrive
+folder to appear.</li>
+<li>If your recordings are in OneDrive, right-click that folder in File
+Explorer and choose <strong>Always keep on this device</strong>, so they
+are on the computer and not only in the cloud.</li>
+<li>In Quill Radio, press <strong>Ctrl+Alt+Shift+W</strong>
+(<strong>Station &gt; Restore from Backup…</strong>), choose your backup
+file and answer <strong>Yes</strong>.</li>
+<li>Press <strong>Ctrl+Alt+Shift+I</strong> (<strong>Record &gt;
+Recording Settings…</strong>) and check <strong>Destination
+folder</strong> (Alt+D) is your OneDrive recordings folder. The backup
+brings this setting back, but the path can change if your Windows user
+name changed; use <strong>Browse…</strong> to choose the folder again if
+needed.</li>
+<li>Retype any podcast or server passwords.</li>
 </ol>
 <h3 id="moving-your-setup-to-another-machine">Moving your setup to
 another machine</h3>
@@ -3567,6 +3650,12 @@ carry on.</li>
 <li>Close Quill Radio and open it again, so everything is read in
 fresh.</li>
 </ol>
+<p>Both Export and Import count what they did. Export My Setup is shared
+with QUILL Cast, so on a computer without Cast some items, such as
+Cast’s podcast settings, were never made and have nothing to carry; that
+is what “skipped” means there, and nothing is lost. When anything is
+left out, a message offers <strong>Show what was left out, and
+why?</strong>, which names every item and its reason.</p>
 <p>The file is an ordinary ZIP with a list inside saying what it holds.
 <strong>Passwords are not in it.</strong> Sign-ins for private podcast
 feeds, server passwords and unlock codes stay on the old computer, and
@@ -4938,6 +5027,109 @@ Choose where to save it and press <strong>Enter</strong>.</li>
 whole folder to another computer, because the files inside that folder
 are written relative to it. An empty playlist has nothing to export, and
 Quill Radio says so.</p>
+<h3 id="playing-files-from-file-explorer">Playing files from File
+Explorer</h3>
+<p>You do not have to open Local Media first. If you are looking at the
+music on your computer or an external drive in File Explorer, you can
+play a song from right there, the same way you might choose VLC or
+Windows Media Player.</p>
+<h4 id="play-a-song-with-open-with-step-by-step">Play a song with Open
+with, step by step</h4>
+<ol type="1">
+<li>In File Explorer, move to the song you want to hear.</li>
+<li>Press <strong>Shift+F10</strong>, or the Applications key, to open
+its menu.</li>
+<li>Choose <strong>Open with</strong>. On Windows 11, if you do not see
+Quill Radio straight away, choose <strong>Choose another
+app</strong>.</li>
+<li>Choose <strong>Quill Radio</strong> and press
+<strong>Enter</strong>. You hear “Playing”, and the song’s name.</li>
+</ol>
+<p>Quill Radio is in the Open with list for music, audiobooks, video,
+and M3U and PLS playlists as soon as it is installed. Nothing else
+changes: whatever opened your music before still opens it when you press
+Enter.</p>
+<h4 id="make-quill-radio-your-media-player-step-by-step">Make Quill
+Radio your media player, step by step</h4>
+<p>If you would like your music to open in Quill Radio every time you
+press Enter on it, you can choose that in Windows. Windows keeps this
+choice for you alone, and no app is allowed to make it for you, so Quill
+Radio takes you to the right page and you choose there.</p>
+<ol type="1">
+<li>In Quill Radio, press <strong>Ctrl+,</strong> to open
+<strong>Preferences</strong>.</li>
+<li>Press <strong>Tab</strong> until you reach the <strong>Windows and
+your files</strong> group, and the <strong>Make Quill Radio My Media
+Player…</strong> button. Its access key is <strong>Alt+Q</strong>. Press
+<strong>Space</strong>.</li>
+<li>Quill Radio explains what happens next. Press <strong>Enter</strong>
+for OK.</li>
+<li>Windows opens <strong>Settings</strong>, on the <strong>Default
+apps</strong> page for Quill Radio. It is a list of file types, each
+with the app that opens it now.</li>
+<li>Press <strong>Tab</strong> until you reach the list, then arrow to
+<strong>.mp3</strong> and press <strong>Enter</strong>. Windows asks
+which app should open .mp3 files.</li>
+<li>Arrow to <strong>Quill Radio</strong>, then press
+<strong>Tab</strong> to the <strong>Set default</strong> button and
+press <strong>Enter</strong>.</li>
+<li>Do the same for any other type you want Quill Radio to open, such as
+.m4a, .m4b for audiobooks, or .flac. Anything you leave alone stays with
+the app that opens it now.</li>
+<li>Press <strong>Alt+F4</strong> to close Settings.</li>
+</ol>
+<p>On Windows 10 the page is the general Default apps page. Choose
+<strong>Choose default apps by file type</strong>, find .mp3, and choose
+Quill Radio there.</p>
+<p>You can also do it from File Explorer: on a song, choose <strong>Open
+with</strong>, then <strong>Choose another app</strong>, pick
+<strong>Quill Radio</strong>, and choose <strong>Always</strong>.</p>
+<p>To change your mind, go back to the same Settings page and choose
+another app. If you use the portable copy of Quill Radio, press the
+button again after you move its folder, so Windows knows where it
+went.</p>
+<h4 id="several-files-at-once">Several files at once</h4>
+<p>Select several songs in File Explorer and press
+<strong>Enter</strong>. Hold <strong>Shift</strong> and arrow down to
+select a run of songs, or hold <strong>Ctrl</strong>, arrow to each song
+you want, and press <strong>Space</strong> to add it. They become one
+list in Local Media called <strong>Opened files</strong>, and the first
+one starts playing. <strong>Ctrl+Shift+.</strong> and
+<strong>Ctrl+Shift+,</strong> move to the next and previous song, just
+as in any playlist.</p>
+<p>Opening a folder plays everything in it, in the same order
+<strong>Add a Folder</strong> uses. Opening an M3U or PLS playlist adds
+it to Local Media as a playlist of its own and plays it; open the same
+playlist again and it plays the copy you already have.</p>
+<p>The Opened files list is a scratch list. The next time you open files
+from File Explorer, it is replaced with the new ones. To keep it, choose
+<strong>Save as Playlist…</strong> on it, in the Local Media window
+(<strong>Ctrl+S</strong>) or on its menu in Browse Stations, and give it
+a name. Then it is a playlist like any other, and the next files you
+open start a new Opened files list.</p>
+<h4 id="when-quill-radio-is-already-open">When Quill Radio is already
+open</h4>
+<p>If Quill Radio is already running, even tucked away in the system
+tray, the file goes to the copy that is open, and it starts playing.
+Quill Radio does not jump in front of File Explorer, so you can carry on
+choosing songs. You hear what is playing once, even when you opened
+several files.</p>
+<p>If a file cannot be played, you hear one sentence saying so, such as
+“Quill Radio could not find song.mp3.” when a drive has been unplugged,
+or “Quill Radio cannot play notes.docx.” for something that is not music
+or video.</p>
+<h4 id="the-right-click-menu">The right-click menu</h4>
+<p>Every song also has two items of its own on its right-click menu:</p>
+<ul>
+<li><strong>Play with Quill Radio</strong> plays it, just like Open
+with.</li>
+<li><strong>Add to Quill Radio Playlist</strong> adds it to the end of
+the Opened files list without stopping what is playing. If nothing is
+playing, it starts.</li>
+</ul>
+<p>On Windows 11, press <strong>Shift+F10</strong> to reach them. The
+shorter menu that the Applications key opens keeps them under
+<strong>Show more options</strong>.</p>
 <h3 id="keys-in-the-local-media-window">Keys in the Local Media
 window</h3>
 <table>
@@ -5015,6 +5207,10 @@ window</h3>
 <tr>
 <td>F2</td>
 <td>Rename Playlist</td>
+</tr>
+<tr>
+<td>Ctrl+S</td>
+<td>Save as Playlist, to keep the Opened files list</td>
 </tr>
 <tr>
 <td>Ctrl+D</td>
@@ -5102,7 +5298,9 @@ can build playlists, slip songs in between others, put everything in
 exactly the order you want, and take back any change you regret. You can
 play, shuffle and repeat, line up what plays next, stop after one more
 item, pick up where you left off, and move through a playlist from any
-window. And when a file goes missing, you know how to find it again.</p>
+window. When a file goes missing, you know how to find it again. And you
+can play a song straight from File Explorer, or make Quill Radio the app
+your music opens in.</p>
 <p>The tutorial <strong>Play your own files in playlists</strong>, in
 the <strong>More than radio</strong> track, walks through it all with
 you. Next, Chapter 11, YouTube, brings in everything YouTube can do
@@ -5543,8 +5741,8 @@ form of the video’s id. It never sends the video’s address or anything
 about you, so SponsorBlock cannot tell what you are watching.</li>
 <li>Check <strong>Skip marked segments in YouTube videos</strong>
 (Alt+S).</li>
-<li>Tick the kinds you want skipped. Sponsor reads, self-promotion and
-reminders to like or subscribe are ticked to start with. You can add
+<li>Check the kinds you want skipped. Sponsor reads, self-promotion and
+reminders to like or subscribe are checked to start with. You can add
 intros, end credits, previews, talking in music videos and off-topic
 tangents.</li>
 <li>Choose <strong>OK</strong>. You hear, for example, “Skipping 3 kinds
@@ -7107,11 +7305,15 @@ each one means and what choosing it would do. Nothing changes yet.</li>
 <li>Press <strong>Switch</strong> to move, or <strong>Close</strong>
 (Escape) to leave things as they are.</li>
 <li>For Beta or Dev, a short warning comes first: what could go wrong,
-how your favorites are protected, and how to come back. Read it, tick
+how your favorites are protected, and how to come back. Read it, check
 the <strong>I understand</strong> box, and choose <strong>Move to
 Beta</strong> (or <strong>Move to Dev</strong>). <strong>Stay on
 Stable</strong>, or Escape, changes nothing.</li>
 </ol>
+<p>Beta and Dev versions aren’t signed, so when you install one, Windows
+SmartScreen may warn that it comes from an unknown publisher; that’s
+expected, and choosing <strong>More info</strong>, then <strong>Run
+anyway</strong>, installs it.</p>
 <p>Before it moves, Quill Radio saves a copy of your favorites, history
 and settings. If it cannot, it stays where it is and tells you why. Your
 recordings are not copied, and updates do not change them. Then it
@@ -7122,7 +7324,7 @@ say so.</p>
 These apps run on one shared engine on your computer. When an app moves
 to Beta or Dev, it gets its own copy of that engine, so the apps you
 leave on Stable are never touched. You can still move several at once:
-tick them under “Also move my other QuillVille apps on this computer”
+check them under “Also move my other QuillVille apps on this computer”
 and choose <strong>Switch</strong>.</p>
 <p><strong>A note about disk space.</strong> That second copy of the
 engine takes about 335 MB. It goes away by itself when your last app

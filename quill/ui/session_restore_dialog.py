@@ -129,8 +129,8 @@ def ask_session_restore(
     panel.SetScrollRate(0, 12)
     panel.SetName("Documents from last time")
     panel.SetHelpText(
-        "The documents that were open last time, one checkbox each. Space ticks and "
-        "unticks. Ticked rows are the ones Open Checked opens and Forget Checked "
+        "The documents that were open last time, one checkbox each. Space checks and "
+        "unchecks. Checked rows are the ones Open Checked opens and Forget Checked "
         "removes from this list. A row whose file has gone says so and cannot be "
         "reopened."
     )
@@ -138,15 +138,15 @@ def ask_session_restore(
     boxes: list[wx.CheckBox] = []
     for entry in entries:
         box = wx.CheckBox(panel, label=entry.label)
-        # Everything that can be opened starts ticked: the person who wants all
-        # of it presses Enter, and the person who wants two unticks two. A row
-        # that cannot be opened starts unticked and stays unticked, so Open
+        # Everything that can be opened starts checked: the person who wants all
+        # of it presses Enter, and the person who wants two unchecks two. A row
+        # that cannot be opened starts unchecked and stays unchecked, so Open
         # Checked never promises something it must then decline.
         box.SetValue(entry.exists)
         box.Enable(True)
         box.SetHelpText(
             (
-                f"{entry.name}, at {entry.path}. Ticked means Open Checked opens it "
+                f"{entry.name}, at {entry.path}. Checked means Open Checked opens it "
                 "and Forget Checked takes it off this list."
             )
             if entry.exists
@@ -180,8 +180,8 @@ def ask_session_restore(
     summary.SetHelpText(
         "A read-only description of this whole window: every remembered "
         "document, whether its file is still there, and exactly what each "
-        "button would do with the boxes as they are ticked right now. It is "
-        "rewritten every time you tick or untick a row. Read it with the arrow "
+        "button would do with the boxes as they are checked right now. It is "
+        "rewritten every time you check or uncheck a row. Read it with the arrow "
         "keys; nothing here can be typed into or changed."
     )
     set_accessible_name(summary, "What this would do")
@@ -205,10 +205,10 @@ def ask_session_restore(
     # somebody came here to do, so it is first and it holds the default.
     opening = wx.BoxSizer(wx.HORIZONTAL)
     open_checked = wx.Button(dialog, _ID_OPEN_CHECKED, "&Open Checked")
-    open_checked.SetHelpText("Open the ticked documents and leave the list as it is.")
+    open_checked.SetHelpText("Open the checked documents and leave the list as it is.")
     open_all = wx.Button(dialog, _ID_OPEN_ALL, "Open &All")
     open_all.SetHelpText(
-        "Open every document whose file is still there, whether or not it is ticked."
+        "Open every document whose file is still there, whether or not it is checked."
     )
     # No access key on Not Now: it is the Escape answer, and Escape already
     # serves it (GATE-14).
@@ -223,7 +223,7 @@ def ask_session_restore(
     keeping = wx.BoxSizer(wx.HORIZONTAL)
     forget_checked = wx.Button(dialog, wx.ID_DELETE, "&Forget Checked")
     forget_checked.SetHelpText(
-        "Remove the ticked rows from this list so they stop being offered. The "
+        "Remove the checked rows from this list so they stop being offered. The "
         "files stay exactly where they are."
     )
     clear_list = wx.Button(dialog, wx.ID_CLEAR, "&Clear the List")
@@ -234,14 +234,14 @@ def ask_session_restore(
     never_ask = wx.Button(dialog, _ID_NEVER_ASK, "&Never Ask Again")
     never_ask.SetHelpText(
         "Reopen last session's documents from now on without asking, and open "
-        "the ticked ones now. Ask Me Next Time, beside this button, is how you "
+        "the checked ones now. Ask Me Next Time, beside this button, is how you "
         "undo it: open this window from File, Reopen Last Session and press that."
     )
     ask_again = wx.Button(dialog, _ID_ASK_AGAIN, "Ask Me Ne&xt Time")
     ask_again.SetHelpText(
         "Undo Never Ask Again: be asked about last session again, the way a new "
         "install does -- when there are several documents, or one whose file has "
-        "moved. The ticked documents open now as well."
+        "moved. The checked documents open now as well."
     )
     # Exactly one of the pair is live, and the other is greyed rather than
     # removed. A button that vanishes leaves somebody hunting the window for it;
@@ -292,7 +292,7 @@ def ask_session_restore(
         """Rewrite the read-only description for the boxes as they stand now.
 
         ``ChangeValue`` rather than ``SetValue``: the latter fires a text event,
-        and a read-only field that announced itself on every tick would talk
+        and a read-only field that announced itself on every check or uncheck would talk
         over the reader saying "checked" -- which is the announcement the person
         asked for by pressing Space (GATE-13).
         """
@@ -342,7 +342,7 @@ def ask_session_restore(
                 if not doomed:
                     # Says so rather than doing nothing: a button that answers
                     # silently is one somebody presses twice.
-                    intro.SetLabel("Nothing is ticked, so nothing was forgotten.")
+                    intro.SetLabel("Nothing is checked, so nothing was forgotten.")
                     continue
                 dropped = {entry.path for entry in doomed}
                 live = [entry for entry in live if entry.path not in dropped]

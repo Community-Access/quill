@@ -163,6 +163,7 @@ def apply_shell_verb_settings(settings: object) -> None:
     attributes (typically :class:`~quill.core.settings.Settings`).
     """
 
+    from quill.core.shell_file_types import DEFAULT_FILE_TYPES, narrow_verbs
     from quill.core.shell_verbs import enabled_verbs
 
     if winreg is None:  # pragma: no cover - non-Windows fallback
@@ -172,6 +173,10 @@ def apply_shell_verb_settings(settings: object) -> None:
         settings_values=settings,
         master_enabled=bool(getattr(settings, "shell_integration_enabled", False)),
         assistant_enabled=bool(getattr(settings, "assistant_enabled", False)),
+    )
+    # "File types offered to QUILL": only the chosen kinds of file get a verb.
+    active = narrow_verbs(
+        active, str(getattr(settings, "shell_file_types", DEFAULT_FILE_TYPES) or "")
     )
     if active:
         install_context_menu(active)

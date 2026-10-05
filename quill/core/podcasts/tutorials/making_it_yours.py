@@ -227,7 +227,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "podcasts it holds. It replaces the library on this computer, and "
                     "you do not need to restart Cast."
                 ),
-                keys=("Ctrl+Alt+Shift+R",),
+                keys=("Ctrl+Alt+F12",),
                 hear="When the backup was made, and how many podcasts it holds.",
             ),
             Step(

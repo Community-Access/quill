@@ -255,7 +255,7 @@ cannot drift from the code. Bindings shown as
 release, then the second key. Every binding here is a <em>default</em> –
 the in-app reference (Help &gt; Open Keyboard Reference) always shows
 your own customised keymap.</p>
-<p>Editor commands with default bindings: 484.</p>
+<p>Editor commands with default bindings: 495.</p>
 <h2 id="the-quill-editor">The QUILL editor</h2>
 <h3 id="files">Files</h3>
 <table>
@@ -304,6 +304,11 @@ your own customised keymap.</p>
 </tr>
 <tr>
 <td>(unbound by default)</td>
+<td>Open from URL…</td>
+<td><code>file.open_url</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
 <td>Save to Remote</td>
 <td><code>file.save_to_remote</code></td>
 </tr>
@@ -343,6 +348,16 @@ your own customised keymap.</p>
 <td><code>file.restore_previous_version</code></td>
 </tr>
 <tr>
+<td>Ctrl+Alt+Shift+End</td>
+<td>HTML…</td>
+<td><code>file.export_html</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+Enter</td>
+<td>Open from Clipboard</td>
+<td><code>file.open_from_clipboard</code></td>
+</tr>
+<tr>
 <td>Ctrl+N</td>
 <td>New</td>
 <td><code>file.new</code></td>
@@ -363,7 +378,7 @@ your own customised keymap.</p>
 <td><code>file.save</code></td>
 </tr>
 <tr>
-<td>Ctrl+Shift+F11</td>
+<td>Ctrl+Shift+0</td>
 <td>Forget Remembered File-Change Answers</td>
 <td><code>file.forget_external_change_answers</code></td>
 </tr>
@@ -995,6 +1010,11 @@ your own customised keymap.</p>
 <td>Ctrl+Alt+6</td>
 <td>Insert Heading 6</td>
 <td><code>format.heading_6</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Enter</td>
+<td>Toggle Task Done</td>
+<td><code>format.toggle_task_done</code></td>
 </tr>
 <tr>
 <td>Ctrl+Alt+F</td>
@@ -1753,7 +1773,17 @@ your own customised keymap.</p>
 <td><code>tools.sound_events</code></td>
 </tr>
 <tr>
-<td>Ctrl+Alt+Shift+R</td>
+<td>Ctrl+Alt+Shift+PageDown</td>
+<td>Windows dictation live transcript</td>
+<td><code>tools.windows_dictation_live_transcript</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+PageUp</td>
+<td>Windows dictation context</td>
+<td><code>tools.windows_dictation_context</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+Space</td>
 <td>Keymap Editor…</td>
 <td><code>tools.keymap_editor</code></td>
 </tr>
@@ -1826,6 +1856,11 @@ your own customised keymap.</p>
 <td>Ctrl+Shift+=</td>
 <td>More Formal Word</td>
 <td><code>tools.word_formal</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+F11</td>
+<td>Windows dictation switch language</td>
+<td><code>tools.windows_dictation_switch_language</code></td>
 </tr>
 <tr>
 <td>Ctrl+Shift+F7</td>
@@ -1916,6 +1951,11 @@ your own customised keymap.</p>
 <td>Shift+F11</td>
 <td>Windows dictation recent</td>
 <td><code>tools.windows_dictation_recent</code></td>
+</tr>
+<tr>
+<td>Shift+F5</td>
+<td>Windows dictation transcribe file</td>
+<td><code>tools.windows_dictation_transcribe_file</code></td>
 </tr>
 <tr>
 <td>Shift+F7</td>
@@ -2531,13 +2571,23 @@ your own customised keymap.</p>
 <td><code>document.summary</code></td>
 </tr>
 <tr>
+<td>Alt+Shift+Delete</td>
+<td>Delete Inline Note…</td>
+<td><code>notes.delete_inline_note</code></td>
+</tr>
+<tr>
+<td>Alt+Shift+Enter</td>
+<td>List Inline Notes…</td>
+<td><code>notes.list_inline_notes</code></td>
+</tr>
+<tr>
 <td>Alt+Shift+H</td>
-<td>Speak Inline Note (double-press to edit)</td>
+<td>Speak Inline Note (double to edit)</td>
 <td><code>notes.speak_inline_note</code></td>
 </tr>
 <tr>
 <td>Alt+Shift+I</td>
-<td>Add Inline Note</td>
+<td>Add Inline Note…</td>
 <td><code>notes.add_inline_note</code></td>
 </tr>
 <tr>
@@ -2681,6 +2731,11 @@ your own customised keymap.</p>
 <td><code>quill.quick_nav.list</code></td>
 </tr>
 <tr>
+<td>N</td>
+<td>QUILL Quick Nav: Inline Note</td>
+<td><code>quill.quick_nav.inline_note</code></td>
+</tr>
+<tr>
 <td>P</td>
 <td>QUILL Quick Nav: Paragraph</td>
 <td><code>quill.quick_nav.paragraph</code></td>
@@ -2746,7 +2801,7 @@ your own customised keymap.</p>
 <td><code>power.paste_html_as_markdown</code></td>
 </tr>
 <tr>
-<td>QUILL Key + Shift+G</td>
+<td>QUILL Key + Shift+G or Ctrl+Alt+Shift+Home</td>
 <td>Snippet Gallery…</td>
 <td><code>power.open_snippet_gallery</code></td>
 </tr>
@@ -3294,6 +3349,11 @@ never inside the QUILL editor.</p>
 <td><code>podcasts.tutorials</code></td>
 </tr>
 <tr>
+<td>Ctrl+Alt+F12</td>
+<td>Restore</td>
+<td><code>app.restore</code></td>
+</tr>
+<tr>
 <td>Ctrl+Alt+G</td>
 <td>Free AI Assistant…</td>
 <td><code>tools.hosted_ai_assistant</code></td>
@@ -3352,11 +3412,6 @@ never inside the QUILL editor.</p>
 <td>Ctrl+Alt+Shift+P</td>
 <td>Recent Problems…</td>
 <td><code>app.recent_problems</code></td>
-</tr>
-<tr>
-<td>Ctrl+Alt+Shift+R</td>
-<td>Restore</td>
-<td><code>app.restore</code></td>
 </tr>
 <tr>
 <td>Ctrl+Alt+Shift+X</td>

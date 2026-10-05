@@ -39,4 +39,4 @@ Weather binds menu handlers directly (no palette/registry ids). **11 menu action
 - [ ] W  [ ] S  [ ] A  Alert sounder: on/off, custom .wav, repeat count, Play preview.
 - [ ] W  [ ] S  [ ] A  Test Alert previews full experience with no network / no state change.
 - [ ] W  [ ] S  [ ] A  'Already-told-you' dedupe shared across the live watch and the background check.
-- [ ] W  [ ] S  [ ] A  Tray hotkey (Ctrl+Alt+Shift+W); start-with-Windows minimized.
+- [ ] W  [ ] S  [ ] A  Tray hotkey chosen in File > Show and Hide Key (none by default); start-with-Windows minimized.

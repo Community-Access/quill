@@ -37,6 +37,14 @@ its launcher, and :func:`model_dir` looks there first. A development checkout
 finds them in ``build/dictation-models``, where
 ``scripts/fetch_dictation_models.py`` puts them.
 
+**Optional downloads** (2026-10-05): the models in
+:mod:`~quill.core.windows_dictation.model_catalog` -- Nemotron, Parakeet and the
+Whisper family -- are engines too once somebody downloads one: their ids are
+valid :func:`coerce_engine` values, :func:`engine_choices` lists the ones on
+this computer, and :func:`model_dir` finds them in the shared downloads folder
+(:mod:`~quill.core.windows_dictation.model_store`). The bundled engines stay
+the default.
+
 wx-free, and free of sherpa-onnx too: this module only knows names and paths,
 so a settings dialog can ask what is installed without loading a model.
 """
@@ -47,9 +55,11 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 
+from quill.core.windows_dictation.model_catalog import downloadable
 from quill.core.windows_dictation.speech_language import coerce_speech_language
 
 __all__ = [
+    "CLOUD_ENGINE",
     "DEFAULT_ENGINE",
     "ENGINES",
     "LANGUAGE_MODELS",
@@ -59,13 +69,16 @@ __all__ = [
     "EngineInfo",
     "ModelFile",
     "coerce_engine",
+    "engine_choices",
     "engine_info",
+    "is_model_engine",
     "language_model_problem",
     "model_dir",
     "model_for",
     "model_roots",
     "package_dirs",
     "vad_model_path",
+    "writes_punctuation",
 ]
 
 MODELS_FOLDER = "dictation-models"
@@ -222,17 +235,73 @@ VAD_URL = _SHERPA_MODELS + "silero_vad.onnx"
 
 DEFAULT_ENGINE = "moonshine"
 
-_BY_ID = {engine.id: engine for engine in ENGINES}
+#: OpenAI's transcription, with the person's own key (2026-10-05). Not in
+#: :data:`ENGINES`: it is listed only on a computer where an OpenAI key is
+#: saved in Use My Own AI Key, and only works after the person has agreed that
+#: their speech goes to OpenAI (:mod:`~quill.core.windows_dictation.openai_models`).
+CLOUD_ENGINE = "openai"
+OPENAI_ENGINE = EngineInfo(
+    CLOUD_ENGINE,
+    "OpenAI (your own key; sends your speech to OpenAI)",
+    "Optional, and off until you choose it. Sends what you say to OpenAI with "
+    "the OpenAI key saved in Use My Own AI Key, billed to your OpenAI account, "
+    "and writes what comes back. Very accurate, punctuates, and needs an "
+    "internet connection. Choose the model in More Dictation Settings.",
+)
+
+_BY_ID = {engine.id: engine for engine in (*ENGINES, OPENAI_ENGINE)}
 
 
 def engine_info(engine_id: str) -> EngineInfo:
-    return _BY_ID[coerce_engine(engine_id)]
+    engine_id = coerce_engine(engine_id)
+    model = downloadable(engine_id)
+    if model is None:
+        return _BY_ID[engine_id]
+    return EngineInfo(
+        model.id,
+        model.engine_label,
+        model.description,
+        folder=model.folder,
+        files=tuple(ModelFile(item.name, item.sha256) for item in model.files),
+    )
 
 
 def coerce_engine(value: object) -> str:
-    """The engine *value* names, or the default for anything else."""
+    """The engine *value* names -- built in, or a downloadable model -- or the
+    default for anything else."""
     text = str(value or "").strip().lower()
-    return text if text in _BY_ID else DEFAULT_ENGINE
+    return text if text in _BY_ID or downloadable(text) is not None else DEFAULT_ENGINE
+
+
+def is_model_engine(engine_id: str) -> bool:
+    """Whether *engine_id* runs a speech model on this computer (built in or
+    downloaded) rather than handing the work to Windows."""
+    return engine_id in {"moonshine", "whisper"} or downloadable(engine_id) is not None
+
+
+def writes_punctuation(engine_id: str) -> bool:
+    """Whether *engine_id* punctuates by itself: every model engine, and OpenAI."""
+    return engine_id == CLOUD_ENGINE or is_model_engine(engine_id)
+
+
+def engine_choices(saved: str = "") -> list[tuple[str, str]]:
+    """``(id, label)`` for the Speech engine list: the built-in engines, every
+    downloaded model, OpenAI where an OpenAI key is saved, and *saved* when it
+    names one no longer here."""
+    from quill.core.windows_dictation.model_store import installed_models
+    from quill.core.windows_dictation.openai_models import cloud_problem
+
+    rows = [(engine.id, engine.label) for engine in ENGINES]
+    rows += [(model.id, model.engine_label) for model in installed_models()]
+    problem = cloud_problem()
+    if not problem:
+        rows.append((OPENAI_ENGINE.id, OPENAI_ENGINE.label))
+    elif saved == CLOUD_ENGINE:
+        rows.append((OPENAI_ENGINE.id, "OpenAI (not available: " + problem.rstrip(".") + ")"))
+    missing = downloadable(saved)
+    if missing is not None and all(row[0] != missing.id for row in rows):
+        rows.append((missing.id, f"{missing.name} (not downloaded; the built-in engine is used)"))
+    return rows
 
 
 def model_roots() -> list[Path]:
@@ -268,10 +337,15 @@ def model_for(engine_id: str, language: str = "en") -> EngineInfo:
     English is the engine's own model. For Spanish both built-in engines use
     :data:`WHISPER_MULTILINGUAL` (Moonshine knows no Spanish); an engine with no
     model of its own (Windows speech, voice typing) is returned unchanged,
-    because Windows does the recognising.
+    because Windows does the recognising. A downloaded model that knows the
+    language runs it itself; one that does not hands it to the same Whisper.
     """
     engine = engine_info(engine_id)
-    if coerce_speech_language(language) == "en" or not engine.folder:
+    language = coerce_speech_language(language)
+    model = downloadable(engine.id)
+    if model is not None and language in model.languages:
+        return engine
+    if language == "en" or not engine.folder:
         return engine
     return WHISPER_MULTILINGUAL
 
@@ -281,6 +355,11 @@ def model_dir(engine_id: str, language: str = "en") -> Path | None:
     engine = model_for(engine_id, language)
     if not engine.folder:
         return None
+    model = downloadable(engine.id)
+    if model is not None:
+        from quill.core.windows_dictation.model_store import installed, model_folder
+
+        return model_folder(model) if installed(model) else None
     for root in model_roots():
         candidate = root / engine.folder
         if _complete(candidate, engine.files):
@@ -297,6 +376,8 @@ def language_model_problem(engine_id: str, language: str) -> str:
     """
     if coerce_speech_language(language) == "en" or not engine_info(engine_id).folder:
         return ""
+    if downloadable(engine_id) is not None:
+        engine_id = DEFAULT_ENGINE  # a missing download gives way to the built-in one
     if model_dir(engine_id, language) is not None:
         return ""
     return (
