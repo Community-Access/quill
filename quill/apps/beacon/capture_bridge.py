@@ -24,7 +24,6 @@ from __future__ import annotations
 import encodings.idna  # noqa: F401 - see below
 import json
 import os
-import re
 import secrets
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -45,7 +44,7 @@ TOKEN_FILE = "bridge_token.txt"
 ALLOWED_ORIGIN_SCHEMES = ("moz-extension://", "chrome-extension://")
 
 
-_ORIGIN_SHAPE = re.compile(r"[a-z][a-z0-9+.-]*://[A-Za-z0-9._-]+(?::[0-9]{1,5})?")
+_ORIGIN_HOST_CHARS = frozenset("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-_:")
 
 
 def _safe_origin(value: str | None) -> str:
@@ -55,8 +54,13 @@ def _safe_origin(value: str | None) -> str:
     the response -- is refused, so the reply simply omits the CORS header.
     """
     origin = (value or "").replace("\r", "").replace("\n", "")
-    if origin.startswith(ALLOWED_ORIGIN_SCHEMES) and _ORIGIN_SHAPE.fullmatch(origin):
-        return origin
+    # A character check, not a regular expression: no backtracking on input
+    # an unauthenticated sender controls.
+    for scheme in ALLOWED_ORIGIN_SCHEMES:
+        if origin.startswith(scheme):
+            host = origin[len(scheme) :]
+            if 0 < len(host) <= 255 and set(host) <= _ORIGIN_HOST_CHARS:
+                return origin
     return ""
 
 
