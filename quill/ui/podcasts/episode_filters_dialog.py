@@ -9,13 +9,13 @@ episodes already stored.
 Four of its behaviours are load-bearing and none of them is obvious:
 
 * **Preview runs against the draft even while the switch is off**, and while
-  no scope is ticked. Previewing before activating is the only safe way to
+  no scope is checked. Previewing before activating is the only safe way to
   write a Keep-only rule, and a preview that agreed with you whenever the
   switch was off would agree right up until it mattered. This was the first
   defect device testing found in the feature it was ported from, and both
   halves are pinned by tests.
 * **The scopes are eight real checkboxes**, not a check-list: a screen reader
-  does not announce a check-list row's ticked state as you arrow past it, and
+  does not announce a check-list row's checked state as you arrow past it, and
   that state is the entire content of these rows (A11Y-SR-1).
 * **Save is gated, not merely validated.** Switched on with nothing switched on
   inside it, an unreadable regular expression, nowhere to apply, or a
@@ -239,7 +239,7 @@ class EpisodeFiltersWindow:
         buttons.AddStretchSpacer()
         ok_btn = wx.Button(self._panel, label="Save")
         ok_btn.SetHelpText(
-            "Saves these rules for this podcast. Every list you ticked takes "
+            "Saves these rules for this podcast. Every list you checked takes "
             "effect at once, on episodes you already have as well as new ones; "
             "nothing is deleted. The Play Queue is the only thing not touched "
             "without asking, and saving asks about it separately."

@@ -12,23 +12,50 @@ engine under `quill/core/audio/` -- so a fix to the engine lands in QUILL's
 Audio Studio at the same time. The `standalone/converter` folder carries only
 the launcher, installer, icon and these documents.
 
-## Unreleased
-
-- **No show and hide key until you choose one** (2026-10-05). The app
-  registered Ctrl+Alt+Shift+C system-wide, and other QuillVille apps use that key for
-  menu commands, so while this app ran theirs never fired. It now has no key by
-  default; **File > Show and Hide Key...** (Ctrl+Alt+Shift+H) lets you type
-  one, or leave it empty for none, and refuses a key any QuillVille app uses as
-  a command or as its own show and hide key, in one sentence naming the app.
-  Somebody who had the old key is moved to none and told once, at the next
-  launch; a key somebody chose is kept (`quill/core/family_chords.py`,
-  `quill/core/show_hide_keys.py`, `quill/ui/show_hide_key_picker.py`).
-
 ## 1.0.0 -- 2026-09-28
 
 The first public release. The app was first built in July 2026 as an audio
 converter; that build was never published as an installer, and everything it
 had is included here.
+
+### Found before release (2026-10-05)
+
+- **No show and hide key until you choose one.** The app registered
+  Ctrl+Alt+Shift+C system-wide, and other QuillVille apps use that key for
+  menu commands, so while this app ran theirs never fired. It now has no key by
+  default; **File > Show and Hide Key...** (Ctrl+Alt+Shift+H) lets you type
+  one, or leave it empty for none, and refuses a key any QuillVille app uses as
+  a command or as its own show and hide key, in one sentence naming the app.
+  Somebody who had the old key from a test copy is moved to none and told
+  once; a key somebody chose is kept (`quill/core/family_chords.py`,
+  `quill/core/show_hide_keys.py`, `quill/ui/show_hide_key_picker.py`).
+- **Find a Setting or Command** (Help menu, Ctrl+Alt+Shift+S) searches every
+  menu at once and runs the row you choose (`quill/ui/menu_palette.py`).
+- **Build numbers.** About says 1.0.0 (build 1); the installer stamps Windows
+  file version 1.0.0.1, and a fix shipped without a new version number is the
+  next build, which Check for Updates offers (`_BUILD` in
+  `quill/apps/converter.py`, `docs/release/RELEASE.md`, "Build numbers").
+- **About and Check for Updates name the Converter you installed.** The
+  installer now writes `quill-app-version.ini` (`version` and `version_build`)
+  beside the launcher, as Quill Radio, QUILL Lite and QUILL Cast do, and the
+  portable copy carries the same file. Without it, an installed Converter
+  reported the version of the code in the shared runtime, which another
+  QuillVille installer may have updated.
+- **Web requests name Quill Converter.** Any request made through the shared
+  HTTP client now says Quill Converter 1.0.0 rather than QUILL
+  (`quill/core/http_client.py`).
+- **A portable copy starts from a folder with a space in its name**, and a
+  file opened from such a folder reaches the app whole: the native launcher
+  now quotes every argument (`quill/native/launcher/cmdline.c`, shared by
+  every QuillVille app).
+- **Stable builds are always code-signed**, and a Beta or Dev build never is;
+  `build_release.ps1` asks `Resolve-QuillSigning` like every family build.
+- **No AI.** Quill Converter has no AI features, and a test keeps its menus and
+  Find a Setting or Command free of them
+  (`tests/unit/apps/test_converter_window.py`).
+- **The user guide is in chapters**, each opening with what it covers and
+  closing with what you learned and where to go next, with an introduction for
+  reading it with a screen reader and a new topic on your version and updates.
 
 ### Found before release (2026-10-01)
 

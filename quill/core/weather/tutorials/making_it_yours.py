@@ -121,10 +121,10 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "index, air quality and the current local time there. "
                     "Temperature and sky always show."
                 ),
-                hear="Each detail as you tick or untick it.",
+                hear="Each detail as you check or uncheck it.",
                 note=(
                     "This is a speech setting wearing a display setting's clothes: "
-                    "every box you leave ticked is a clause you hear on every "
+                    "every box you leave checked is a clause you hear on every "
                     "reading, for the rest of your life with the app."
                 ),
             ),
@@ -181,7 +181,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 body=(
                     "Customize Features leaves out a whole area and every command "
                     "under it -- the NOAA radio rows, for instance, if you never "
-                    "listen. Nothing is deleted; tick it again and it comes back."
+                    "listen. Nothing is deleted; check it again and it comes back."
                 ),
                 keys=("Ctrl+Alt+F",),
                 hear="Each area with a short description of what it covers.",

@@ -2789,7 +2789,7 @@ two near-identical surfaces share one accessible path.)
   (percentage = words processed / total words) that can be minimized to the status bar.
 - **Chapter granularity and review.** In the consolidated flow each document (or
   each pre-recorded file) becomes one chapter, titled from its heading/filename.
-  Ticking **Review chapters before building** (and always, for a folder of
+  Checking **Review chapters before building** (and always, for a folder of
   pre-recorded audio) opens `audiobook_chapter_editor_dialog.py` after synthesis —
   the rename/reorder/merge editor from the old standalone builder — whose edited
   plan flows through `audiobook.chapters_from_plan` (`AudiobookChapter.extra_paths`
@@ -3308,7 +3308,7 @@ The first shipped slice of the QUILL Sync plan (`docs/planning/quill-sync-plan.m
 
 ### 5.41 Search-and-replace preview and saved searches
 
-- **Replace preview**: when a Replace All would change more than 25 occurrences (threshold configurable), Quill shows a preview dialog listing up to the first 50 changes with line numbers and before/after text. Buttons: Replace All, Cancel, Replace Selected (in case the user unticks rows). Always shows the total count.
+- **Replace preview**: when a Replace All would change more than 25 occurrences (threshold configurable), Quill shows a preview dialog listing up to the first 50 changes with line numbers and before/after text. Buttons: Replace All, Cancel, Replace Selected (in case the user unchecks rows). Always shows the total count.
 - **Saved searches**: a search term plus its options (case, whole word, regex, in-selection) can be saved under a name via `Find → Save This Search…`. `Ctrl+Shift+F3` opens the saved-search picker (stock `wx.ListBox`); Enter runs it as if F3 had been pressed. Stored in `%APPDATA%\Quill\saved-searches.json`, exportable/importable.
 
 ### 5.42 Sort and transform details
@@ -12535,7 +12535,7 @@ Windows 11, and directly in the **Shift+F10** keyboard context menu.
 > If a verb does **not** appear, the most likely causes are: the `shellverbs`
 > task was left unchecked at install, or another app owns an overriding
 > per-extension association. Re-run the installer and confirm the task is
-> ticked. The keys are written to **HKCU** (never HKLM), so no elevation is
+> checked. The keys are written to **HKCU** (never HKLM), so no elevation is
 > needed and no other user is affected.
 
 #### Step 4 — Confirm the registry keys exist (optional, precise)
@@ -13042,7 +13042,7 @@ headless.
 ## 17. Sign-off
 
 Final sign-off is recorded by the maintainer against a single named build when
-every section has evidence, `dialogs.md` is fully ticked for that build, and no
+every section has evidence, `dialogs.md` is fully checked for that build, and no
 open Critical or High defect remains. This sign-off closes DLG-3.8 and, with it,
 the deferred SR-verification criteria of DLG-2 and DLG-3.6.
 

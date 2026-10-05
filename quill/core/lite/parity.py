@@ -246,6 +246,14 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_dictation_settings": "tools.windows_dictation_settings",
     "cmd_dictation_recent": "tools.windows_dictation_recent",
     "cmd_dictation_words": "tools.windows_dictation_words",
+    "cmd_transcribe_audio_file": "tools.windows_dictation_transcribe_file",
+    # 2026-10-05, the dictation gap plan: the same shared mixins, the same chords.
+    # Dictation Status is QUILL's Locked Dictation status key, which now answers
+    # for live dictation whenever Locked Dictation is idle.
+    "cmd_switch_dictation_language": "tools.windows_dictation_switch_language",
+    "cmd_live_transcript": "tools.windows_dictation_live_transcript",
+    "cmd_dictation_context": "tools.windows_dictation_context",
+    "cmd_dictation_status": "tools.dictation_status",
     "cmd_duplicate_line": "format.duplicate_line",
     "cmd_duplicate_selection": "edit.duplicate_selection",
     "cmd_editor_font": "format.editor_font",

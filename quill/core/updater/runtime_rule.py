@@ -79,7 +79,7 @@ def runtime_verdict(
 
     *runtime_apps* is every app registered on the shared runtime (profile keys
     or runtime ids; :func:`quill.core.runtime_apps.installed_apps`), *states*
-    each app's current channel, and *moving_too* the siblings the person ticked
+    each app's current channel, and *moving_too* the siblings the person checked
     to move in the same step.
     """
     names = dict(display_names or {})
@@ -123,7 +123,7 @@ def runtime_verdict(
             explanation=(
                 f"{label} for {me} needs an update that is coming soon, because {others} on "
                 f"this computer {verb} {me}'s engine. You can move them together instead: "
-                f'tick them under "Also move my other QuillVille apps" and choose Switch.'
+                f'check them under "Also move my other QuillVille apps" and choose Switch.'
             ),
         )
     return RuntimeVerdict(allowed=True)

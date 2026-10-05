@@ -724,7 +724,7 @@
       done + " of " + boxes.length + " boxes checked";
   }
   // An item is "checked off" only when every checkbox on it (Works / Surface /
-  // Accessible) is ticked; a partly-done item stays visible.
+  // Accessible) is checked; a partly-done item stays visible.
   function itemDone(li) {
     var bs = li.querySelectorAll("input.so");
     if (bs.length === 0) return false;
@@ -742,7 +742,7 @@
     if (toggleBtn) toggleBtn.setAttribute("aria-pressed", on ? "true" : "false");
     return hidden;
   }
-  // When ticking a box hides the item the user is standing on, move focus off
+  // When checking a box hides the item the user is standing on, move focus off
   // the now-hidden control to the next visible box (else the previous, else the
   // toggle) so keyboard/screen-reader focus is never stranded.
   function focusAfterHide(box) {

@@ -5,7 +5,7 @@ rebaseline). They are one family: every one of them is a persisted preference
 that has to be **reflected back** as well as set, because two of them can
 silently refuse -- a locked-down registry can decline the startup entry, and a
 machine without the Windows scheduler cannot register the background check. A
-menu tick that showed what you asked for rather than what happened would be
+menu check mark that showed what you asked for rather than what happened would be
 the app telling you something it does not know.
 """
 
@@ -86,7 +86,7 @@ def set_background_check(host: Any, enabled: bool) -> None:
 
 
 def reflect_background_check(host: Any, checked: bool | None = None) -> None:
-    """Tick the menu item to match what the scheduler actually holds."""
+    """Check the menu item to match what the scheduler actually holds."""
     from quill.platform.windows import scheduled_task
 
     state = scheduled_task.is_registered() if checked is None else checked

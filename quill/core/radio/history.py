@@ -81,7 +81,7 @@ class RadioHistory:
     #: default; View > Show Station Details toggles it, honored by every surface.
     show_station_details: bool = True
     #: Ask before the Delete key removes a browse row. Off means the listener
-    #: ticked "Don't ask me again" in that question -- a preference they set
+    #: checked "Don't ask me again" in that question -- a preference they set
     #: from inside the thing it governs, which is the only place anybody would
     #: look for it.
     confirm_browse_delete: bool = True

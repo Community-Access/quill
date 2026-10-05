@@ -1,4 +1,5 @@
-"""Quill Inkwell's three system-wide keys: show/hide, Quick Insert, Expand Word.
+"""Quill Inkwell's system-wide keys: show/hide, Quick Insert, Expand Word, and
+(2026-10-05) Dictate Anywhere.
 
 None is registered until the listener chooses it (questions.md 37b, option 3,
 widened 2026-10-05): each old default was a menu key somewhere else in the
@@ -22,6 +23,7 @@ __all__ = ["InkwellKeysMixin"]
 #: (the tray toggle's id belongs to AppShellFrame).
 _QUICK_INSERT_HOTKEY_ID = 0x51A1
 _EXPAND_NOW_HOTKEY_ID = 0x51A2
+_DICTATE_ANYWHERE_HOTKEY_ID = 0x51A3
 
 #: field -> (hotkey id, caption, what it does, its name, handler method).
 _KEYS: dict[str, tuple[int, str, str, str, str]] = {
@@ -38,6 +40,13 @@ _KEYS: dict[str, tuple[int, str, str, str, str]] = {
         "expands the word you just typed",
         "Expand Word",
         "expand_now",
+    ),
+    "dictate_anywhere_hotkey": (
+        _DICTATE_ANYWHERE_HOTKEY_ID,
+        "Dictate Anywhere Key",
+        "starts and stops dictating into the program in front",
+        "Dictate Anywhere",
+        "toggle_dictate_anywhere",
     ),
 }
 
@@ -118,6 +127,7 @@ class InkwellKeysMixin:
         rows = (
             ("quick_insert_hotkey", "&Quick Insert Key...\tCtrl+Alt+Shift+K"),
             ("expand_now_hotkey", "Expand &Word Key...\tCtrl+Alt+Shift+E"),
+            ("dictate_anywhere_hotkey", "&Dictate Anywhere Key...\tCtrl+Alt+Shift+D"),
         )
         for field, label in rows:
             item_id = wx.NewIdRef()

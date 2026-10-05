@@ -402,12 +402,12 @@ class WatchFolderRuntimeMixin:
             spec = resolve_spec(load_model_choice())
             return (
                 f"AI actions send each file's text to your selected model "
-                f"({spec.name}). This runs only when consent is ticked."
+                f"({spec.name}). This runs only when consent is checked."
             )
         except Exception:  # noqa: BLE001 - never block the dialog on this lookup
             return (
                 "AI actions send each file's text to your selected AI model. "
-                "This runs only when consent is ticked."
+                "This runs only when consent is checked."
             )
 
     def _watch_dry_run_sample(self, profile: WatchProfile) -> Path:

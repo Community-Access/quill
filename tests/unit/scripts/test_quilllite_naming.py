@@ -1,7 +1,7 @@
 """QUILL Lite is spelled one way everywhere a screen reader will read it.
 
 The name is spoken far more often than it is seen: the Start Menu folder, the
-shortcut in it, the desktop icon, the "Launch QUILL Lite" tick box at the end of
+shortcut in it, the desktop icon, the "Launch QUILL Lite" check box at the end of
 setup, the entry in Add/Remove Programs, the Open With list, and the window
 title. Since 2026-09-25 that name is **QUILL Lite** -- the family name a reader
 already knows, then the word that says which one.

@@ -74,6 +74,8 @@ _SCAN_GLOBS: tuple[str, ...] = (
     "quill/ui/dictation_lists_dialog.py",
     "quill/ui/dictation_more_dialog.py",
     "quill/ui/dictation_models_dialog.py",
+    # Transcribe a Recording, the same window in both editors (2026-10-05).
+    "quill/ui/dictation_transcribe_dialog.py",
     # File > Recent Documents, the same window in both editors (2026-10-04).
     "quill/ui/recent_documents_dialog.py",
 )

@@ -82,7 +82,7 @@ def test_the_filters_window_builds_and_shows_the_stored_configuration(wx_app, tm
             assert dialog._enabled.GetValue() is True
             assert dialog._rules.GetCount() == 1
             assert dialog._rules.GetString(0).startswith("Segments, enabled.")
-            # Eight independent checkboxes, ticked to match what was stored.
+            # Eight independent checkboxes, checked to match what was stored.
             assert len(dialog._scope_boxes) == len(FILTER_SCOPES)
             for scope, box in dialog._scope_boxes.items():
                 assert isinstance(box, wx.CheckBox)

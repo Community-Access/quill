@@ -24,7 +24,8 @@
 # Usage:
 #   .\scripts\build_release.ps1 [-Python <python.exe>] [-FfmpegDir <dir>]
 #                               [-LibmpvDir <dir>] [-Iscc <path>]
-#                               [-SkipSharedRuntime] [-Sign]
+#                               [-SkipSharedRuntime] [-SkipPublishedCheck]
+#                               [-Build <n>] [-Sign]
 
 param(
     [string]$Python = "",
@@ -33,6 +34,7 @@ param(
     [string]$Iscc = "",
     [string]$QuillRepo = "",
     [switch]$SkipSharedRuntime,
+    [switch]$SkipPublishedCheck,
     [int]$Build = 0,
     [switch]$Sign
 )
@@ -57,7 +59,7 @@ $Iscc = Resolve-QuillIscc -Preferred $Iscc
 # The build number: -Build, else the next one after the newest tag published
 # for $version. It must equal the app's build constant in source, which the
 # runtime carries; the installer records it and Windows shows X.Y.Z.B.
-$build, $fileVersion = Resolve-QuillReleaseBuild -QuillRepo $QuillRepo -Python $Python -App "converter" -Version $version -Build $Build
+$build, $fileVersion = Resolve-QuillReleaseBuild -QuillRepo $QuillRepo -Python $Python -App "converter" -Version $version -Build $Build -OfflineOk:$SkipPublishedCheck
 
 # Beta and Dev builds are never code-signed (owner decision 2026-10-04). For a
 # -dev, -alpha, -beta or -rc version, or a Dev build, this says so in one line
@@ -193,6 +195,10 @@ $signer = Join-Path $QuillRepo "scripts\code_signing.py"
 & $Python $signer sign-build $sharedRuntimeDist $appDir --label "converter payload"
 if ($LASTEXITCODE -ne 0) { throw "Code signing (payload) failed." }
 
+# A portable copy names its own version and build, as the installer's
+# quill-app-version.ini does (the same marker Quill Radio, QUILL Lite and QUILL
+# Cast write into theirs; docs\release\RELEASE.md, "Build numbers").
+Set-Content -LiteralPath (Join-Path $appDir "quill-app-version.ini") -Value "[app]`r`nversion=$version`r`nversion_build=$version+$build" -Encoding ascii
 $zipPath = Join-Path $repoRoot "dist\Quill-Converter-Portable-$version.zip"
 if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
 Write-Host "Compressing portable bundle -> $zipPath ..."

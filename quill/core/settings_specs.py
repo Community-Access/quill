@@ -2761,7 +2761,7 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
             "features work, but they are still maturing and may change or have rough "
             "edges. While this is OFF, every experimental option below is ignored and "
             "its controls are disabled (they leave the tab order), so an accidental "
-            "change can never affect QUILL. Tick it to unlock the individual "
+            "change can never affect QUILL. Check it to unlock the individual "
             "experiments below — each one still has its own switch."
         ),
         keywords=(

@@ -10,7 +10,7 @@ row at a time and never answers "what happens when I press the button" -- and
 that second question is the one somebody is actually asking, because the buttons
 are the irreversible part. Sighted users assemble the answer by glancing down
 the list; assembling it by ear costs a pass through every row, and the pass has
-to be repeated after every tick.
+to be repeated after every check or uncheck.
 
 The text is built wx-free in ``quill/core/recovery_triage.py`` and
 ``quill/core/session_restore.py``, so what it says is testable without a
@@ -62,8 +62,8 @@ def test_it_numbers_every_row_and_says_which_are_ticked(tmp_path: Path) -> None:
 
     text = describe_plan(result, (True, False), now=_NOW)
 
-    assert "1. Ticked." in text
-    assert "2. Not ticked." in text
+    assert "1. Checked." in text
+    assert "2. Not checked." in text
 
 
 def test_it_says_what_each_button_would_do_right_now(tmp_path: Path) -> None:
@@ -73,7 +73,7 @@ def test_it_says_what_each_button_would_do_right_now(tmp_path: Path) -> None:
     text = describe_plan(result, (True, False), now=_NOW)
 
     assert "Restore Checked opens 1 document" in text
-    assert "Discard Checked permanently deletes 1 ticked document" in text
+    assert "Discard Checked permanently deletes 1 checked document" in text
     assert "Restore All opens all 2" in text
     assert "Discard Everything permanently deletes all 2" in text
     assert "Not Now changes nothing" in text
@@ -85,8 +85,8 @@ def test_nothing_ticked_says_the_buttons_would_do_nothing(tmp_path: Path) -> Non
 
     text = describe_plan(result, (False,), now=_NOW)
 
-    assert "Restore Checked does nothing: no rows are ticked." in text
-    assert "Discard Checked does nothing: no rows are ticked." in text
+    assert "Restore Checked does nothing: no rows are checked." in text
+    assert "Discard Checked does nothing: no rows are checked." in text
 
 
 def test_it_says_what_survives_a_discard(tmp_path: Path) -> None:
@@ -96,7 +96,7 @@ def test_it_says_what_survives_a_discard(tmp_path: Path) -> None:
 
     text = describe_plan(result, (True, False), now=_NOW)
 
-    assert "1 unticked document stays saved aside" in text
+    assert "1 unchecked document stays saved aside" in text
 
 
 def test_it_leads_with_what_was_tidied_before_the_list_existed(tmp_path: Path) -> None:
@@ -118,7 +118,7 @@ def test_a_clean_list_does_not_invent_a_tidying_line(tmp_path: Path) -> None:
     text = describe_plan(result, (True,), now=_NOW)
 
     assert "Before this list was built" not in text
-    assert text.startswith("1 document of unsaved work, 1 ticked.")
+    assert text.startswith("1 document of unsaved work, 1 checked.")
 
 
 def test_every_row_carries_its_size_and_age(tmp_path: Path) -> None:
@@ -138,7 +138,7 @@ def test_a_short_checked_tuple_reads_the_rest_as_unticked(tmp_path: Path) -> Non
 
     text = describe_plan(result, (True,), now=_NOW)
 
-    assert "2. Not ticked." in text
+    assert "2. Not checked." in text
 
 
 # --------------------------------------------------------------------------- #
@@ -153,12 +153,12 @@ def test_the_session_plan_numbers_rows_and_marks_them(tmp_path: Path) -> None:
 
     text = describe_session_plan(entries, (True, True))
 
-    assert "1. Ticked." in text
-    assert "2. Ticked." in text
+    assert "1. Checked." in text
+    assert "2. Checked." in text
 
 
 def test_the_session_plan_says_what_cannot_be_opened(tmp_path: Path) -> None:
-    """A ticked row whose file has gone is the one case silence misleads about."""
+    """A checked row whose file has gone is the one case silence misleads about."""
     here = tmp_path / "here.md"
     here.write_text("x", encoding="utf-8")
     entries = read_entries([str(here), str(tmp_path / "gone.md")])
@@ -166,7 +166,7 @@ def test_the_session_plan_says_what_cannot_be_opened(tmp_path: Path) -> None:
     text = describe_session_plan(entries, (True, True))
 
     assert "Open Checked reopens 1: here.md." in text
-    assert "1 ticked cannot be opened, because the files have gone: gone.md." in text
+    assert "1 checked cannot be opened, because the files have gone: gone.md." in text
 
 
 def test_the_session_plan_says_forgetting_touches_no_file(tmp_path: Path) -> None:
@@ -187,7 +187,7 @@ def test_the_session_plan_says_when_nothing_would_open(tmp_path: Path) -> None:
     text = describe_session_plan(entries, (False,))
 
     assert "Open Checked opens nothing" in text
-    assert "Forget Checked does nothing: no rows are ticked." in text
+    assert "Forget Checked does nothing: no rows are checked." in text
 
 
 def test_the_session_plan_agrees_with_itself_about_one_missing_file(

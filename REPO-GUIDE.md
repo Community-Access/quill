@@ -112,7 +112,7 @@ accurate summary of the architecture).
     runbooks, macOS signing/notarization runbooks, the clean-install script.
 - `docs/qa/` — cross-release QA. `README.md` is the index: which document to
   run and how long it takes. Sign-off checklists (numbered steps, exact keys
-  and URLs, tick boxes) for Quill Radio (`radio-signoff.md`), QUILL Cast
+  and URLs, check boxes) for Quill Radio (`radio-signoff.md`), QUILL Cast
   (`cast-signoff.md`), the dialog estate (`dialogs.md`), Audio Studio and
   macOS; references behind them — the long-form Radio 3.0 plan, the converter
   bake-off, UI automation notes.

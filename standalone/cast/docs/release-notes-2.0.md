@@ -338,7 +338,7 @@ If you listen on more than one computer, Cast can keep your place in each
 episode in step through a folder you already sync, such as Dropbox or
 OneDrive. There is no account to make. Podcasts > Carry My Place Between
 Machines is where you set it up. Continue Listening then tells you where a
-place came from, such as "last played on Kitchen laptop". Tick **Also share
+place came from, such as "last played on Kitchen laptop". Check **Also share
 the podcasts I follow, and their folders**, and a podcast you follow on one
 computer turns up on the others, in the same folder. It is off until you
 choose it, and private feeds are never shared.
@@ -382,7 +382,7 @@ progress, for testers.
 
 Arrowing through the three only explains them. If you choose Beta or Dev, a
 short warning says plainly what could go wrong and how to come back, and
-nothing moves until you tick **I understand** and choose **Move**. Before it
+nothing moves until you check **I understand** and choose **Move**. Before it
 moves, Cast saves a copy of your subscriptions, playlists, listening places and settings. Downloaded episodes are not copied, and updates don't change them.
 
 Coming back to Stable is safe. If Stable can read everything you have saved,

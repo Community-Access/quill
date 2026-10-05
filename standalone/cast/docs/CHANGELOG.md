@@ -116,7 +116,7 @@ after numbers are in the test report.
 - **Help > Release Channel...** (no key; Alt+H, L), and Change release channel... under
   When Cast opens in Preferences, open the family's shared window
   (`quill/ui/updates/`): the choices only explain as you arrow, Beta and Dev ask
-  first and need "I understand" ticked, and a `.qcbackup` of your library and
+  first and need "I understand" checked, and a `.qcbackup` of your library and
   settings (no episodes) is saved before anything moves. Cast shares the
   QuillVille engine with Quill Radio and QUILL Lite, so for now they join Beta
   together. Coming back never installs an older version; Cast waits for Stable.
@@ -208,7 +208,7 @@ after numbers are in the test report.
   notes of the episode you are on: Free AI Assistant (Ctrl+Alt+G), Ask About
   These Show Notes (Ctrl+Alt+Z), Ask About an Image (Ctrl+F5), Use My Own AI
   Key (Alt+F2) and Use My ChatGPT Subscription (Alt+F5), among others. Off
-  until **AI help** is ticked in Preferences. Your own key can be an OpenAI or
+  until **AI help** is checked in Preferences. Your own key can be an OpenAI or
   a Google Gemini key, chosen in a Provider list; with a Gemini key or a
   ChatGPT plan, Ask About an Image works too (`quill/ui/podcasts/cast_ai_host.py`).
 - **Each app keeps its own ChatGPT sign-in.** Cast signs in as "QUILL Cast",
@@ -374,7 +374,7 @@ against an Inbox limit you set for a different reason.
 
 - **Eight places to mean it.** The Inbox, Auto-Queue, auto-download, the
   new-episode announcement, the podcast's own episode list, New Episodes and
-  Continue Listening, smart playlists, and Search Everywhere -- ticked
+  Continue Listening, smart playlists, and Search Everywhere -- checked
   independently, so "keep it out of my Inbox but still tell me about it" and
   "just do not spend my bandwidth on it" are both things you can have. A new
   filter starts with the four routing places on and the four hiding ones off.
@@ -754,7 +754,7 @@ them here sets them there.
 ### Importing a real subscription list
 
 - **Import OPML rebuilt for lists in the thousands.** Tested against a 1,307-feed export. Reading, parsing, and adding now happen off the UI thread instead of inside a button handler, so the window never freezes. Duplicate detection matches on a normalized address, so the `http://` and `https://` forms of one feed are correctly one feed -- and a file listing the same show twice imports it once. Two shows that merely share a *title* are both imported and flagged for review, because two shows genuinely can be called "The Daily".
-- **QUILL Cast can now tell you which of your feeds are dead.** Tick "Check that each feed is still reachable" and it checks them concurrently after importing, with live progress you can hear (announced every ten per cent) and a **Stop Checking** button that keeps everything already imported. A feed asking for a sign-in counts as alive, so a private feed is never reported dead.
+- **QUILL Cast can now tell you which of your feeds are dead.** Check "Check that each feed is still reachable" and it checks them concurrently after importing, with live progress you can hear (announced every ten per cent) and a **Stop Checking** button that keeps everything already imported. A feed asking for a sign-in counts as alive, so a private feed is never reported dead.
 - **And then prune the file.** The import report has **Save Pruned OPML...**, which writes your original file back without the feeds that no longer answer -- folders, attributes, and all. Knowing that three hundred feeds are dead is only useful if you can do something about it.
 
 ### Winamp keys, the same ones as Quill Radio

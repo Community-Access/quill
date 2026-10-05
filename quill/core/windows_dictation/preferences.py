@@ -59,7 +59,7 @@ class DictationPreferences:
     #: The language dictation listens for: ``en`` or ``es`` (dict.md 9;
     #: :mod:`quill.core.windows_dictation.speech_language`).
     speech_language: str = "en"
-    #: How long a pause ends a phrase: ``short``, ``normal`` or ``long``
+    #: How long a pause ends a phrase: ``short`` to ``longest``
     #: (:data:`quill.core.windows_dictation.options.PAUSE_SECONDS`).
     pause: str = "normal"
     #: Drop "um", "uh" and their kin before anything is written.
@@ -77,8 +77,9 @@ class DictationPreferences:
     hold_to_talk: bool = False
     #: The live preview of a streaming engine: ``show``, ``speak`` or ``off``.
     preview: str = "show"
-    #: ``writing`` (the document) or ``ai`` (the AI Conversation window's
-    #: message box): which profile the pause, fillers and punctuation came from.
+    #: ``writing`` (the document), ``ai`` (the AI Conversation window's
+    #: message box) or ``transcript`` (a live transcript): which profile the
+    #: pause, fillers and punctuation came from.
     profile: str = "writing"
     #: Talking to the AI: send the message at the pause (``True``), or wait for
     #: Enter.
@@ -87,6 +88,14 @@ class DictationPreferences:
     openai_model: str = ""
     #: The person agreed that their speech goes to OpenAI with their own key.
     openai_consent: bool = False
+    #: Say the marks by name in the read-back: "Hello comma world period"
+    #: (dict.md 3.1, question 1: on by default). The status bar keeps the marks.
+    readback_marks: bool = True
+    #: Live transcripts start each paragraph with the time, "[10:42]".
+    transcript_timestamps: bool = False
+    #: What this document is -- "a formal letter", "notes to a friend" -- for
+    #: OpenAI's prompt (contexts.py, dict.md 3.8). Empty for none.
+    context: str = field(default="", compare=False)
     #: Your words from My Words and Phrases, for an engine that can be told
     #: which words to expect (OpenAI's ``keywords``; dict.md 5.3 B).
     keywords: tuple[str, ...] = field(default=(), compare=False)
@@ -141,11 +150,28 @@ class DictationPreferences:
         window's message box has its own pause, fillers and punctuation, a
         pause there sends (or waits for Enter), and "just write what I say"
         does not apply, because there the pause is the send key.
+
+        *profile* ``transcript`` is a **live transcript** (transcript.py): no
+        commands but the stop phrase, nothing said or played per phrase, no
+        wake phrase, never stopped by silence, fillers out, punctuation in.
         """
+        from dataclasses import replace
+
         preferences = cls._writing(settings, rewrite)
+        if profile == "transcript":
+            return replace(
+                preferences,
+                profile="transcript",
+                phrase_feedback="silent",
+                wake_enabled=False,
+                silence_minutes=0,
+                remove_fillers=True,
+                auto_punctuation=True,
+                continuous=False,
+                hold_to_talk=False,
+            )
         if profile != "ai":
             return preferences
-        from dataclasses import replace
 
         return replace(
             preferences,
@@ -201,5 +227,9 @@ class DictationPreferences:
             preview=coerce_preview(getattr(settings, "windows_dictation_preview", "show")),
             openai_model=str(getattr(settings, "windows_dictation_openai_model", "") or ""),
             openai_consent=bool(getattr(settings, "windows_dictation_openai_consent", False)),
+            readback_marks=bool(getattr(settings, "windows_dictation_readback_marks", True)),
+            transcript_timestamps=bool(
+                getattr(settings, "windows_dictation_transcript_timestamps", False)
+            ),
             rewrite=rewrite,
         )

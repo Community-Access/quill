@@ -36,6 +36,7 @@ keyboard reference is a keyboard reference with extra words (bad.md P3.2).
 from __future__ import annotations
 
 from quill.core.lite.tutorials import first_documents, working_in_it
+from quill.core.tutorials.dictation_lessons import dictation_lessons
 from quill.core.tutorials.model import Track, TutorialSet, build
 
 #: QUILL Lite's tracks, in teaching order.
@@ -63,6 +64,17 @@ CATALOGUE: TutorialSet = build(
     TRACKS,
     first_documents.TUTORIALS,
     working_in_it.TUTORIALS,
+    # 2026-10-05 (dict.md 3.10): five short dictation lessons, shared with QUILL.
+    dictation_lessons(
+        {
+            "toggle": "cmd_toggle_dictation",
+            "language": "cmd_switch_dictation_language",
+            "transcript": "cmd_live_transcript",
+            "status": "cmd_dictation_status",
+        },
+        track="working-in-it",
+        surfaces=("QUILL Lite",),
+    ),
 )
 
 __all__ = ["CATALOGUE", "TRACKS"]

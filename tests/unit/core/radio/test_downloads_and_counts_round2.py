@@ -5,7 +5,7 @@ Four reports from the field, each pinned here by the seam that broke:
 * Remove All Downloads deletes only inside the show's own folder, resolved
   through the same path logic that wrote the files.
 * Don't ask me again for Mark All as Played is one shared answer for both
-  apps, and cancelling with the box ticked changes nothing.
+  apps, and cancelling with the box checked changes nothing.
 * The unheard badges subtract Radio's own finished listens, so an episode
   heard to the end here stops counting *before* Cast's next merge.
 * Marking one episode played is an explicit library edit with an honest

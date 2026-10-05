@@ -27,7 +27,7 @@ and because somebody opening this window mid-recording must not have their
 recording disturbed by the act of checking on it.
 
 It also does not grade. There is no health score and no traffic light: each row
-states a fact and, where the fact is bad news, what that costs. A green tick on
+states a fact and, where the fact is bad news, what that costs. A green check mark on
 five rows and a number at the top would be an invitation to trust a summary
 over the sentences underneath it.
 """

@@ -6826,7 +6826,7 @@ class MainFrame(
         # #29: wx.adv.TaskBarIcon constructs without a TaskBarIconType arg works on
         # Windows/Linux (notification area / status notifier) but on macOS it
         # produces a Dock tile, not a menu-bar extra, which is what users expect
-        # when they tick "Enable system tray mode". Honouring the checkbox on
+        # when they check "Enable system tray mode". Honouring the checkbox on
         # macOS would silently misrepresent the behaviour, so refuse the call,
         # surface the limitation once per session via the status bar, and let
         # the Hide-on-close path fall through to a normal close.
@@ -8775,7 +8775,7 @@ class MainFrame(
         self.set_document_language(self._LANGUAGE_AUTO_LABEL if name == "" else name)
 
     def _refresh_language_menu_radio(self, menu_bar: object) -> None:
-        """Tick the radio item for the current tab's effective language."""
+        """Check the radio item for the current tab's effective language."""
         ids = getattr(self, "_language_menu_item_ids", None)
         if not ids:
             return

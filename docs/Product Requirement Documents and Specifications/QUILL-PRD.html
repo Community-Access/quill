@@ -5988,11 +5988,12 @@ build. Progress is shown in a focused, screen-reader-announced
 words) that can be minimized to the status bar.</li>
 <li><strong>Chapter granularity and review.</strong> In the consolidated
 flow each document (or each pre-recorded file) becomes one chapter,
-titled from its heading/filename. Ticking <strong>Review chapters before
-building</strong> (and always, for a folder of pre-recorded audio) opens
-<code>audiobook_chapter_editor_dialog.py</code> after synthesis — the
-rename/reorder/merge editor from the old standalone builder — whose
-edited plan flows through <code>audiobook.chapters_from_plan</code>
+titled from its heading/filename. Checking <strong>Review chapters
+before building</strong> (and always, for a folder of pre-recorded
+audio) opens <code>audiobook_chapter_editor_dialog.py</code> after
+synthesis — the rename/reorder/merge editor from the old standalone
+builder — whose edited plan flows through
+<code>audiobook.chapters_from_plan</code>
 (<code>AudiobookChapter.extra_paths</code> carries merged files). The
 runner shows it by marshalling the modal to the UI thread and blocking
 the background worker until the user closes it.</li>
@@ -7283,7 +7284,7 @@ Search-and-replace preview and saved searches</h3>
 more than 25 occurrences (threshold configurable), Quill shows a preview
 dialog listing up to the first 50 changes with line numbers and
 before/after text. Buttons: Replace All, Cancel, Replace Selected (in
-case the user unticks rows). Always shows the total count.</li>
+case the user unchecks rows). Always shows the total count.</li>
 <li><strong>Saved searches</strong>: a search term plus its options
 (case, whole word, regex, in-selection) can be saved under a name via
 <code>Find → Save This Search…</code>. <code>Ctrl+Shift+F3</code> opens
@@ -22085,7 +22086,7 @@ document handling.</li>
 <p>If a verb does <strong>not</strong> appear, the most likely causes
 are: the <code>shellverbs</code> task was left unchecked at install, or
 another app owns an overriding per-extension association. Re-run the
-installer and confirm the task is ticked. The keys are written to
+installer and confirm the task is checked. The keys are written to
 <strong>HKCU</strong> (never HKLM), so no elevation is needed and no
 other user is affected.</p>
 </blockquote>
@@ -22953,8 +22954,8 @@ name.</li>
 <h2 id="17-sign-off">17. Sign-off</h2>
 <p>Final sign-off is recorded by the maintainer against a single named
 build when every section has evidence, <code>dialogs.md</code> is fully
-ticked for that build, and no open Critical or High defect remains. This
-sign-off closes DLG-3.8 and, with it, the deferred SR-verification
+checked for that build, and no open Critical or High defect remains.
+This sign-off closes DLG-3.8 and, with it, the deferred SR-verification
 criteria of DLG-2 and DLG-3.6.</p>
 <table>
 <thead>

@@ -2,7 +2,7 @@
 
 > **Signing off, not investigating?** Use
 > [radio-signoff.md](radio-signoff.md) instead: the same coverage as numbered
-> steps with tick boxes, about 90 minutes, or 20 for the short run. This
+> steps with check boxes, about 90 minutes, or 20 for the short run. This
 > document is the reference behind it -- read it when a step fails and you want
 > to know why the test exists.
 

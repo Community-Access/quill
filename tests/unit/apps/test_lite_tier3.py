@@ -291,12 +291,12 @@ def test_the_tutorials_window_opens(markdown_window, monkeypatch) -> None:
 
 
 def test_follow_me_is_unavailable_because_no_lesson_here_has_a_check() -> None:
-    """The tick box that watches the app is greyed in QUILL Lite, not shown live.
+    """The check box that watches the app is greyed in QUILL Lite, not shown live.
 
     Every step in an editor lesson ends in a sentence the app already says, so
     there is nothing for Follow me to watch for, and none of the nine lessons
-    carries a check. A tick box that can never do anything is a control somebody
-    ticks, waits on, and concludes is broken -- so the window disables it, which
+    carries a check. A check box that can never do anything is a control somebody
+    checks, waits on, and concludes is broken -- so the window disables it, which
     a screen reader announces on arrival.
     """
     from quill.core.lite.tutorials import CATALOGUE

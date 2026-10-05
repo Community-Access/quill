@@ -69,6 +69,7 @@ from quill.ui.windows_dictation_devices import (
 )
 
 __all__ = [
+    "DICTATE_ANYWHERE",
     "EDIT_INSTRUCTIONS",
     "EDIT_OPENAI_KEY",
     "EDIT_WORDS",
@@ -85,6 +86,7 @@ SHOW_COMMANDS = 5801
 EDIT_WORDS = 5802
 EDIT_INSTRUCTIONS = 5803  # quill.ui.dictation_more_dialog's, passed on
 EDIT_OPENAI_KEY = 5804  # quill.ui.dictation_more_dialog's, passed on
+DICTATE_ANYWHERE = 5805  # quill.ui.dictation_more_dialog's, passed on
 
 _PAD = 8
 
@@ -262,7 +264,8 @@ class WindowsDictationDialog(wx.Dialog):
         self.pause.SetHelpText(
             "How long you can stop talking before what you said is written. Choose "
             "Long if dictation cuts you off while you are still thinking; Short "
-            "writes sooner after you stop."
+            "writes sooner after you stop. Longer and Longest are for speaking slowly: "
+            "every phrase then waits two or three seconds before it is written."
         )
         self.pause.SetSelection(
             self._pauses.index(coerce_pause(getattr(settings, "windows_dictation_pause", "")))
@@ -459,6 +462,7 @@ class WindowsDictationDialog(wx.Dialog):
     def open_more(self, *, focus_model: bool = False) -> None:
         """More Dictation Settings, its choices kept until this window's OK."""
         from quill.ui.dialog_contract import show_modal_dialog
+        from quill.ui.dictation_more_dialog import DICTATE_ANYWHERE as MORE_ANYWHERE
         from quill.ui.dictation_more_dialog import EDIT_INSTRUCTIONS as MORE_INSTRUCTIONS
         from quill.ui.dictation_more_dialog import EDIT_OPENAI_KEY as MORE_KEY
         from quill.ui.dictation_more_dialog import MoreDictationDialog
@@ -468,7 +472,7 @@ class WindowsDictationDialog(wx.Dialog):
             dialog.focus_model()
         try:
             answer = show_modal_dialog(dialog, "More Dictation Settings")
-            if answer in (wx.ID_OK, MORE_INSTRUCTIONS, MORE_KEY):
+            if answer in (wx.ID_OK, MORE_INSTRUCTIONS, MORE_KEY, MORE_ANYWHERE):
                 self._more.update(dialog.values())
         finally:
             dialog.Destroy()
@@ -476,6 +480,8 @@ class WindowsDictationDialog(wx.Dialog):
             self.EndModal(EDIT_INSTRUCTIONS)
         elif answer == MORE_KEY:
             self.EndModal(EDIT_OPENAI_KEY)
+        elif answer == MORE_ANYWHERE:
+            self.EndModal(DICTATE_ANYWHERE)
 
     def _on_speech_models(self, _event: Any) -> None:
         """Speech Models, then the engine list again: a model may have come or gone."""

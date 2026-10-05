@@ -1,6 +1,6 @@
 """The "Listen for 'Hey QUILL'" and "Keep listening across restarts" settings work.
 
-Until 2026-10 the Settings tick box was a second, dead switch: the Tools > Speech
+Until 2026-10 the Settings check box was a second, dead switch: the Tools > Speech
 command kept its own state and nothing read ``voice_wakeword_enabled``. These
 drive the real command through the real mixin with only the microphone, the
 speech provider and the save faked.
@@ -124,7 +124,7 @@ def test_restart_round_trip_honours_keep_listening(persist: bool, saved: list[bo
 def test_settings_tick_box_starts_and_stops_listening(saved: list[bool]) -> None:
     host = _Host(_voice_on())
     wakeword_switch.start_wakeword_if_enabled(host)
-    host.settings.voice_wakeword_enabled = True  # ticked in Settings, OK pressed
+    host.settings.voice_wakeword_enabled = True  # checked in Settings, OK pressed
     wakeword_switch.apply_wakeword_setting(host)
     assert wakeword_switch.wakeword_running(host)
     host.settings.voice_wakeword_enabled = False

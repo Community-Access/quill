@@ -79,7 +79,7 @@ def toggle_global_volume(host: Any) -> None:
 
 
 def _sync_menu_check(host: Any, checked: bool) -> None:
-    """Tick or untick the menu item to match the setting.
+    """Check or uncheck the menu item to match the setting.
 
     wx flips a check item by itself when the *menu* is used, but the Command
     Palette and a rebound chord reach the handler directly -- and then the menu

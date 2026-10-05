@@ -83,9 +83,13 @@ def read(path: Path) -> str:
     return "\n".join(kept).strip()[:_MAX_CHARACTERS]
 
 
-def wrap(text: str, instructions: str) -> str:
-    """What Tidy Dictated Text sends: the text alone, or the text and the
-    instructions as two marked parts (the tidy instruction explains both)."""
+def wrap(text: str, instructions: str, context: str = "") -> str:
+    """What Tidy Dictated Text sends: the text alone, or the text with the
+    instructions and this document's context (contexts.py) as marked parts
+    (the tidy instruction explains them)."""
+    if context.strip():
+        line = f"This document is: {context.strip()}"
+        instructions = f"{instructions.strip()}\n{line}" if instructions.strip() else line
     if not instructions.strip():
         return text
     return (

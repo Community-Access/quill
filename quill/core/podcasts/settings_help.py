@@ -287,7 +287,7 @@ FILTER_HELP: dict[str, str] = {
         "rule that is switched off or has nothing to match never counts."
     ),
     "scopes": (
-        "Which parts of QUILL Cast honour this filter. Tick as few or as many "
+        "Which parts of QUILL Cast honour this filter. Check as few or as many "
         "as you like: keeping an episode out of the Inbox does not hide it "
         "from the podcast's episode list unless you say so. Nothing here "
         "deletes anything, and anything hidden is still listed under Filtered "

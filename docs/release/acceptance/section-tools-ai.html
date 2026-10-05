@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.12" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Section — Tools: AI writing &amp; analysis (`tools.*`, AI
 subset)</title>
@@ -12,7 +12,10 @@ subset)</title>
     */
     html {
       color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
       background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
     }
     body {
       margin: 0 auto;
@@ -37,11 +40,16 @@ subset)</title>
     }
     @media print {
       html {
-        background-color: white;
+        color-scheme: light only;
       }
-      body {
+      html, body, pre, code {
         background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
         color: black;
+      }
+      pre, code {
+        padding: 0;
       }
       p, h2, h3 {
         orphans: 3;
@@ -54,11 +62,8 @@ subset)</title>
     p {
       margin: 1em 0;
     }
-    a {
-      color: #1a1a1a;
-    }
-    a:visited {
-      color: #1a1a1a;
+    a, a:visited {
+      color: inherit;
     }
     img {
       max-width: 100%;
@@ -87,8 +92,11 @@ subset)</title>
     blockquote {
       margin: 1em 0 1em 1.7em;
       padding-left: 1em;
-      border-left: 2px solid #e6e6e6;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
       color: #606060;
+      color: light-dark(#606060, #b6b6b6);
     }
     code {
       white-space: pre-wrap;
@@ -112,7 +120,7 @@ subset)</title>
     }
     hr {
       border: none;
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       height: 1px;
       margin: 1em 0;
     }
@@ -129,11 +137,11 @@ subset)</title>
     }
     tbody {
       margin-top: 0.5em;
-      border-top: 1px solid #1a1a1a;
-      border-bottom: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
     }
     th {
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       padding: 0.25em 0.5em 0.25em 0.5em;
     }
     td {
@@ -172,7 +180,6 @@ subset)</title>
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <style>
     /* Accessible skip link: off-screen until it receives keyboard focus. */
@@ -1305,8 +1312,8 @@ QUILL).</li>
 <li>In the result window press <strong>Replace</strong>, then
 <strong>Ctrl+Z</strong>.</li>
 <li><strong>Ctrl+Alt+Shift+F2</strong> (QUILL Lite:
-<strong>Ctrl+Alt+Shift+F9</strong>); then tick <strong>Show advanced AI
-features</strong>; then untick it.</li>
+<strong>Ctrl+Alt+Shift+F9</strong>); then check <strong>Show advanced AI
+features</strong>; then uncheck it.</li>
 <li><strong>Ctrl+Alt+Shift+K</strong> and withdraw.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
@@ -1329,8 +1336,8 @@ stack</strong>: one Ctrl+Z takes the AI edit back. If you typed over the
 source text while the answer was in flight, Replace is not offered and
 QUILL says why rather than writing the answer over whatever now occupies
 those offsets.</li>
-<li>Ticking <strong>Show advanced AI features</strong> brings the whole
-surface back at once; unticking it hides it again. Nothing is
+<li>Checking <strong>Show advanced AI features</strong> brings the whole
+surface back at once; unchecking it hides it again. Nothing is
 <em>lost</em> in Basic: every advanced command still runs from the
 Command Palette and still answers its chord.</li>
 <li>With <strong>Use Artificial Intelligence</strong> off, the two rows

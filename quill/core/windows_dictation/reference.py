@@ -21,6 +21,7 @@ from quill.core.windows_dictation.vocabulary import (
     COMMAND_HELP,
     DASH_STYLES,
     MARKS,
+    PREFIX_HELP,
     SPELLING_ALPHABET,
     Mark,
 )
@@ -33,6 +34,7 @@ _SHOWN = {
     "\n\n": "a blank line (new paragraph)",
     "\t": "a tab",
     '"': 'the quotation mark "',
+    "```" + chr(10): "a code fence (three backticks) on a line of its own",
 }
 
 
@@ -139,6 +141,11 @@ def commands_reference(
         '"literal comma" writes comma.',
         "Moonshine and Whisper add punctuation by themselves; saying it yourself "
         "always wins. With Windows speech recognition, say all of it.",
+        "Some commands take words after them: select the cat, paste clip three, "
+        "insert snippet sign off. They work only at the start of a phrase.",
+        'The Markdown line marks -- "bullet", "numbered item", "block quote" and '
+        '"heading one" to "heading six" -- count only at the start of a phrase, so '
+        '"the heading two lines down" stays words.',
     ):
         lines.append(("- " + sentence) if markdown else sentence)
 
@@ -150,7 +157,8 @@ def commands_reference(
             if markdown and shows == mark.text:
                 # In a code span, so a backslash or a bracket is shown as itself
                 # instead of being read as Markdown.
-                shows = f"`{shows}`"
+                fence = "``" if "`" in shows else "`"
+                shows = f"{fence} {shows} {fence}" if fence == "``" else f"`{shows}`"
             row(" ".join(mark.phrase), shows)
 
     groups: dict[str, list[tuple[str, str]]] = {}
@@ -163,11 +171,29 @@ def commands_reference(
         for said, does in entries:
             row(said, does)
 
+    prefix_groups: dict[str, list[tuple[str, str]]] = {}
+    for prefix in PREFIX_HELP:
+        said = " or ".join(f'"{opening} ..."' for opening in prefix.prefixes)
+        prefix_groups.setdefault(prefix.group, []).append((
+            f"{said} ({prefix.argument})",
+            prefix.description,
+        ))
+    for group, entries in prefix_groups.items():
+        heading("Commands with words after them: " + group.lower())
+        table_head("Say, at the start of a phrase", "What happens")
+        for said, does in entries:
+            row(said, does)
+
     heading("Spelling")
     for sentence in (
         'Say "start spelling", then letters. Everything you say is written as '
         'letters until you say "stop spelling".',
-        'Say "capital" before a letter for a capital, and "space" for a space.',
+        'Say "capital" before a letter for a capital, and "space" for a space. '
+        'Say "all caps" for capitals until "no caps" or the end of the phrase.',
+        'Punctuation works while spelling, with no spaces: "jay dot smith at sign '
+        'example dot com". "Dot" is a full stop only here.',
+        'Say "spell" and the letters to spell one word without starting spelling '
+        'mode, and "spell that" to spell the last phrase over again.',
         'Letter names work ("bee", "see"), and the phonetic alphabet is '
         "clearer: alpha, bravo, charlie, delta, echo, foxtrot, golf, hotel, india, "
         "juliet, kilo, lima, mike, november, oscar, papa, quebec, romeo, sierra, "

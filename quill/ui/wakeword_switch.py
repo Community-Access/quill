@@ -1,11 +1,11 @@
 """One switch for "Hey QUILL": the setting and the Tools > Speech command agree.
 
-Before this, ``voice_wakeword_enabled`` was a tick box nothing read, and the
+Before this, ``voice_wakeword_enabled`` was a check box nothing read, and the
 command kept its own private state -- two switches for one microphone, and the
 one in Settings did nothing. Now:
 
 * the command records what it did in ``voice_wakeword_enabled`` and saves it;
-* the Settings tick box starts or stops listening when Settings is closed with OK;
+* the Settings check box starts or stops listening when Settings is closed with OK;
 * at startup QUILL resumes listening only when the setting survived loading,
   which it does only when "Keep listening for 'Hey QUILL' across restarts" is on
   (``Settings.from_dict`` drops it otherwise), so a live microphone is never a
@@ -80,7 +80,7 @@ def start_wakeword_if_enabled(host: Any) -> None:
 
 
 def apply_wakeword_setting(host: Any) -> None:
-    """Settings OK: start or stop listening when the tick box changed."""
+    """Settings OK: start or stop listening when the check box changed."""
     try:
         settings = getattr(host, "settings", None)
         wanted = bool(getattr(settings, "voice_wakeword_enabled", False))

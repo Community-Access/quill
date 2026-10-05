@@ -246,8 +246,8 @@
 Try With Your Screen Reader, October 2026</h1>
 <p>These are the hands-on checks for everything built in late September
 and early October 2026 across QUILL Cast, Quill Radio, QUILL Lite and
-QUILL. There are 185 of them. Each one says where to go, what to press
-and what you should hear. Tick a box only after you have tried it
+QUILL. There are 210 of them. Each one says where to go, what to press
+and what you should hear. Check a box only after you have tried it
 yourself with a screen reader; passing automated tests do not count.</p>
 <p>Try them with NVDA, JAWS and Narrator where you can. When something
 is wrong, write down the check, the screen reader and its version, and
@@ -269,7 +269,7 @@ last.</li>
 not a release announcement. Test the current source build; older
 installed builds may not contain these changes. All manual checks below
 are pending. Automated test passes do not mean speech, braille, native
-Alt+Tab, or every app was manually verified. Do not tick a checkbox
+Alt+Tab, or every app was manually verified. Do not check a checkbox
 until a human completes that check.</p>
 <p>Run the keyboard checks separately with NVDA, JAWS, and Narrator.
 Record the reader/version, app/build or commit, result, and exact
@@ -1171,7 +1171,7 @@ Keep Mine leaves your text and your place alone.</label></li>
 program changes the file &gt; Reload automatically when you have no
 unsaved edits turned on, an untouched document reloads quietly, your
 cursor stays on the same line, and you hear it once.</label></li>
-<li><label><input type="checkbox" />Tick Do not ask me again for .md
+<li><label><input type="checkbox" />Check Do not ask me again for .md
 files with Reload. Change the file again: it reloads without asking. Now
 type something (unsaved) and change the file once more: QUILL Lite asks
 rather than reloading over your edits. Try the same in
@@ -1207,6 +1207,133 @@ it and returns you to where you were.</label></li>
 afterwards.</label></li>
 <li><label><input type="checkbox" />A backup with nothing left out says
 nothing about skipped items at all.</label></li>
+</ul>
+<h2 id="dictation-built-2026-10-05-not-yet-tried-live">Dictation, Built
+2026-10-05, Not Yet Tried Live</h2>
+<p>Everything here passed its automated tests on 2026-10-05 and has not
+been tried by hand. Try each one in both QUILL (Tools &gt; Speech &gt;
+Live Dictation) and QUILL Lite (Tools &gt; Dictation), with NVDA and
+with JAWS, at the screen reader’s default punctuation level and again at
+its lowest. Use headphones so the microphone does not hear the
+read-back.</p>
+<h3 id="the-read-back-says-the-punctuation">The read-back says the
+punctuation</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />Dictate “hello comma world period”.
+The read-back says “Hello comma world period” with the marks spoken as
+words, at every punctuation level, and your screen reader does not also
+read the same line a second time. The status bar and a braille display
+show “Dictated: Hello, world.”</label></li>
+<li><label><input type="checkbox" />Dictate a quotation and a question.
+You hear “open quote”, “close quote” and “question mark” in the
+read-back; “new paragraph” is said as words too.</label></li>
+<li><label><input type="checkbox" />Dictate “it’s 3.5 percent of 1,000”
+and “example dot com”: the apostrophe and the marks inside the numbers
+are silent, and the address is read as “example dot com”.</label></li>
+<li><label><input type="checkbox" />Uncheck Say punctuation marks in the
+read-back in More Dictation Settings (Alt+S there). The read-back now
+says only the words.</label></li>
+</ul>
+<h3 id="selecting-and-moving-by-voice">Selecting and moving by
+voice</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />With a few lines of text, say
+“select” and two words that are above the cursor. You hear “Selected:”
+and the words once, not twice, and your screen reader’s own selection
+announcement does not talk over it. Say new words: they replace the
+selection.</label></li>
+<li><label><input type="checkbox" />Say “go to” and words near the
+cursor: you hear “Before” and the words. Say “go after” and words: you
+hear “After” and the words. For words three or more lines away, the line
+number is added, such as “, line 40”.</label></li>
+<li><label><input type="checkbox" />Say “select” and words that are not
+in the document. You hear “Not found, written as text.” and the phrase
+is in the document; “scratch that” removes it.</label></li>
+<li><label><input type="checkbox" />Say “correct” and words: you hear
+“Correcting” and the words, then “Say the new words”.</label></li>
+</ul>
+<h3 id="capitals-spelling-and-language">Capitals, spelling and
+language</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />Say “caps on”. You hear “Caps on.”
+and the status bar shows it. Dictate a sentence: every word starts with
+a capital. “Caps off” ends it.</label></li>
+<li><label><input type="checkbox" />Say “no space on”, dictate “example
+dot com”, then “no space off”. The words are joined with no spaces and
+no capital.</label></li>
+<li><label><input type="checkbox" />Press Ctrl+Shift+F11. You hear
+“Español.” once. Press it again: you hear “English.” once. Say “switch
+to Spanish”, then “cambiar a inglés”: the same two words, once each.
+Restart the program: it starts in the language you left it
+in.</label></li>
+</ul>
+<h3 id="live-transcripts">Live transcripts</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />Press Ctrl+Alt+Shift+PageDown. A new
+untitled document opens and you hear “Live transcript on, in a new
+document.” The first time ever, you then hear “Please record other
+people only when they have agreed.” Start a second transcript later:
+that sentence is not said again.</label></li>
+<li><label><input type="checkbox" />Talk for a minute with a long pause
+in the middle. No tone or read-back after each phrase; the pause starts
+a new paragraph. The status bar says “Live transcript:” with minutes and
+words, and Alt+F9 says the same.</label></li>
+<li><label><input type="checkbox" />Switch to another document and keep
+talking. Nothing is announced in the document you are working in, and
+the words land at the end of the transcript.</label></li>
+<li><label><input type="checkbox" />Press Ctrl+Alt+Shift+PageDown again.
+You hear “Live transcript stopped,” and the number of words, once. The
+transcript stays open and unsaved.</label></li>
+</ul>
+<h3 id="dictation-context">Dictation Context</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />Press Ctrl+Alt+Shift+PageUp. The
+Dictation Context window opens with focus in “This document is:”, and
+its title is read once. Tab reaches “Start from a saved context:”, “Also
+save it as a context named:” and the read-only “Who uses it:” box, each
+with its own name. Escape closes it and returns you to the
+document.</label></li>
+<li><label><input type="checkbox" />With Moonshine or Whisper chosen,
+the window says plainly that this engine cannot use the
+context.</label></li>
+</ul>
+<h3 id="dictation-status">Dictation Status</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />With dictation off, press Alt+F9.
+You hear “Dictation is off.” with the engine and the language,
+once.</label></li>
+<li><label><input type="checkbox" />With dictation on and “caps on”
+said, press Alt+F9. You hear “Dictation on,” the engine, the language
+and “Caps on.” In QUILL Lite, Tools &gt; Dictation</label>
+<blockquote>
+<p>Dictation Status does the same. In QUILL, while Locked Dictation is
+recording, Alt+F9 still answers for Locked Dictation.</p>
+</blockquote></li>
+</ul>
+<h3 id="dictate-anywhere-in-quill-inkwell">Dictate Anywhere, in Quill
+Inkwell</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />In QUILL Lite, open More Dictation
+Settings and press Dictate in Other Programs (Alt+O). Quill Inkwell
+starts and, with no key chosen yet, the Dictate Anywhere Key chooser
+opens with focus in it.</label></li>
+<li><label><input type="checkbox" />Choose a key, go to a text field in
+your web browser, press the key and dictate a sentence. It is typed at
+the cursor. The read-back is a tone only, and your screen reader’s
+typing echo is the only speech you hear for the words.</label></li>
+<li><label><input type="checkbox" />In the browser field, say “scratch
+that”: the phrase is erased. Say “select” and a word: you hear “That
+works in QUILL’s own documents. In another program, say the words again,
+or scratch that.”</label></li>
+<li><label><input type="checkbox" />Move to a password field and press
+the key. You hear “That is a password field, so nothing is typed there.”
+and nothing is typed.</label></li>
+<li><label><input type="checkbox" />Press the key while QUILL or QUILL
+Lite is in front: you hear “This is a QUILL window: press Ctrl+F11 to
+dictate here.”</label></li>
+<li><label><input type="checkbox" />In Inkwell, the Dictation menu reads
+Dictate Anywhere as a checked or unchecked item, and Dictation Settings
+(Ctrl+Alt+D) opens the same window the editors use.</label></li>
 </ul>
 </main>
 </body>

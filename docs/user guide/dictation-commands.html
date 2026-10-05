@@ -261,6 +261,12 @@ phrase still work.</li>
 <li>Moonshine and Whisper add punctuation by themselves; saying it
 yourself always wins. With Windows speech recognition, say all of
 it.</li>
+<li>Some commands take words after them: select the cat, paste clip
+three, insert snippet sign off. They work only at the start of a
+phrase.</li>
+<li>The Markdown line marks – “bullet”, “numbered item”, “block quote”
+and “heading one” to “heading six” – count only at the start of a
+phrase, so “the heading two lines down” stays words.</li>
 </ul>
 <h2 id="punctuation">Punctuation</h2>
 <table>
@@ -525,6 +531,133 @@ it.</li>
 </tr>
 </tbody>
 </table>
+<h2 id="markdown-and-code">Markdown and code</h2>
+<table>
+<thead>
+<tr>
+<th>Say</th>
+<th>Writes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>backtick</td>
+<td><code>`</code></td>
+</tr>
+<tr>
+<td>back quote</td>
+<td><code>`</code></td>
+</tr>
+<tr>
+<td>triple backtick</td>
+<td>a code fence (three backticks) on a line of its own</td>
+</tr>
+<tr>
+<td>code fence</td>
+<td>a code fence (three backticks) on a line of its own</td>
+</tr>
+<tr>
+<td>tilde</td>
+<td><code>~</code></td>
+</tr>
+<tr>
+<td>vertical bar</td>
+<td>`</td>
+</tr>
+<tr>
+<td>pipe symbol</td>
+<td>`</td>
+</tr>
+<tr>
+<td>caret</td>
+<td><code>^</code></td>
+</tr>
+<tr>
+<td>greater than sign</td>
+<td><code>&gt;</code></td>
+</tr>
+<tr>
+<td>less than sign</td>
+<td><code>&lt;</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="starting-a-line-say-these-first">Starting a line (say these
+first)</h2>
+<table>
+<thead>
+<tr>
+<th>Say</th>
+<th>Writes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>bullet</td>
+<td><code>- </code></td>
+</tr>
+<tr>
+<td>list item</td>
+<td><code>- </code></td>
+</tr>
+<tr>
+<td>numbered item</td>
+<td><code>1. </code></td>
+</tr>
+<tr>
+<td>block quote</td>
+<td><code>&gt; </code></td>
+</tr>
+<tr>
+<td>heading one</td>
+<td><code># </code></td>
+</tr>
+<tr>
+<td>heading 1</td>
+<td><code># </code></td>
+</tr>
+<tr>
+<td>heading two</td>
+<td><code>## </code></td>
+</tr>
+<tr>
+<td>heading 2</td>
+<td><code>## </code></td>
+</tr>
+<tr>
+<td>heading three</td>
+<td><code>### </code></td>
+</tr>
+<tr>
+<td>heading 3</td>
+<td><code>### </code></td>
+</tr>
+<tr>
+<td>heading four</td>
+<td><code>#### </code></td>
+</tr>
+<tr>
+<td>heading 4</td>
+<td><code>#### </code></td>
+</tr>
+<tr>
+<td>heading five</td>
+<td><code>##### </code></td>
+</tr>
+<tr>
+<td>heading 5</td>
+<td><code>##### </code></td>
+</tr>
+<tr>
+<td>heading six</td>
+<td><code>###### </code></td>
+</tr>
+<tr>
+<td>heading 6</td>
+<td><code>###### </code></td>
+</tr>
+</tbody>
+</table>
 <h2 id="commands-correcting">Commands: correcting</h2>
 <table>
 <thead>
@@ -593,6 +726,12 @@ the last phrase.</td>
 <td>“choose three” or “choose 3”</td>
 <td>The same, with the third guess.</td>
 </tr>
+<tr>
+<td>“spell that”</td>
+<td>Selects the phrase you dictated last and listens for it spelled out.
+Say the letters and they replace it. The fix for a name the engine keeps
+getting wrong.</td>
+</tr>
 </tbody>
 </table>
 <h2 id="commands-moving-the-cursor">Commands: moving the cursor</h2>
@@ -620,6 +759,14 @@ document”</td>
 <tr>
 <td>“go to bottom” or “go to end of document”</td>
 <td>Moves the cursor to the end of the document.</td>
+</tr>
+<tr>
+<td>“go to start of paragraph” or “go to beginning of paragraph”</td>
+<td>Moves the cursor to the start of the paragraph.</td>
+</tr>
+<tr>
+<td>“go to end of paragraph”</td>
+<td>Moves the cursor to the end of the paragraph.</td>
 </tr>
 </tbody>
 </table>
@@ -650,6 +797,210 @@ stop spelling. See Spelling below.</td>
 <td>Stops dictation. With a wake phrase set, dictation goes back to
 waiting for it.</td>
 </tr>
+<tr>
+<td>“switch to spanish” or “spanish dictation”</td>
+<td>Dictate in Spanish from now on, the same as Switch Dictation
+Language. In Spanish, cambiar a inglés or dictado en inglés comes
+back.</td>
+</tr>
+<tr>
+<td>“switch to english” or “english dictation”</td>
+<td>Dictate in English from now on.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="commands-selecting">Commands: selecting</h2>
+<table>
+<thead>
+<tr>
+<th>Say, on its own</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>“select sentence” or “select this sentence”</td>
+<td>Selects the sentence the cursor is in.</td>
+</tr>
+<tr>
+<td>“select line” or “select this line”</td>
+<td>Selects the line the cursor is on.</td>
+</tr>
+<tr>
+<td>“select paragraph” or “select this paragraph”</td>
+<td>Selects the paragraph the cursor is in.</td>
+</tr>
+<tr>
+<td>“select again” or “select next”</td>
+<td>After select, go to or correct with words, moves on to the next
+place those words appear.</td>
+</tr>
+<tr>
+<td>“select previous”</td>
+<td>The same, going back to the place before.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="commands-capitals-and-spacing">Commands: capitals and
+spacing</h2>
+<table>
+<thead>
+<tr>
+<th>Say, on its own</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>“caps on” or “capitals on”</td>
+<td>Every word you say starts with a capital until you say caps off.
+Handy for titles and names.</td>
+</tr>
+<tr>
+<td>“caps off” or “capitals off”</td>
+<td>Words go back to ordinary capitals.</td>
+</tr>
+<tr>
+<td>“all caps on”</td>
+<td>Everything you say is written in capitals until you say all caps
+off.</td>
+</tr>
+<tr>
+<td>“all caps off”</td>
+<td>Back to ordinary capitals.</td>
+</tr>
+<tr>
+<td>“no space on”</td>
+<td>Words are written joined together with no spaces until you say no
+space off. Handy for web addresses and file names.</td>
+</tr>
+<tr>
+<td>“no space off”</td>
+<td>Spaces between words come back.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="commands-clips-snippets-and-copying">Commands: clips, snippets
+and copying</h2>
+<table>
+<thead>
+<tr>
+<th>Say, on its own</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>“copy all” or “copy everything” or “copy document”</td>
+<td>Copies the whole document, the same as Copy All on the Edit menu.
+Nothing is selected.</td>
+</tr>
+<tr>
+<td>“copy that”</td>
+<td>Copies the phrase you dictated last.</td>
+</tr>
+<tr>
+<td>“show clips” or “open copy tray” or “show copy tray”</td>
+<td>Opens the Copy Tray, where you choose a slot to paste.</td>
+</tr>
+<tr>
+<td>“show snippets”</td>
+<td>Opens the list of snippets to choose from.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="commands-with-words-after-them-selecting">Commands with words
+after them: selecting</h2>
+<table>
+<thead>
+<tr>
+<th>Say, at the start of a phrase</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>“select …” (words in your document)</td>
+<td>Selects those words, looking first just before the cursor and then
+after it. Say select, the first words, through, and the last words to
+select everything between them. What you say next replaces the
+selection. If the words are not there, what you said is written as text
+instead.</td>
+</tr>
+<tr>
+<td>“go to …” or “go before …” (words in your document)</td>
+<td>Puts the cursor just before those words.</td>
+</tr>
+<tr>
+<td>“go after …” (words in your document)</td>
+<td>Puts the cursor just after those words.</td>
+</tr>
+<tr>
+<td>“correct …” (words in your document)</td>
+<td>Selects those words so that what you say next replaces them.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="commands-with-words-after-them-correcting">Commands with words
+after them: correcting</h2>
+<table>
+<thead>
+<tr>
+<th>Say, at the start of a phrase</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>“spell …” (letters)</td>
+<td>Spells one word without going into spelling mode: spell bravo alpha
+delta writes bad.</td>
+</tr>
+</tbody>
+</table>
+<h2
+id="commands-with-words-after-them-clips-snippets-and-copying">Commands
+with words after them: clips, snippets and copying</h2>
+<table>
+<thead>
+<tr>
+<th>Say, at the start of a phrase</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>“paste clip …” or “paste slot …” (a number from one to twelve)</td>
+<td>Pastes that slot of the Copy Tray.</td>
+</tr>
+<tr>
+<td>“insert snippet …” (a snippet’s name)</td>
+<td>Puts in the snippet with that name. If more than one matches, you
+hear how many and the snippet list opens.</td>
+</tr>
+<tr>
+<td>“insert abbreviation …” or “expand abbreviation …” (an
+abbreviation)</td>
+<td>Writes what that abbreviation expands to, as if you had typed
+it.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="commands-with-words-after-them-dictation-itself">Commands with
+words after them: dictation itself</h2>
+<table>
+<thead>
+<tr>
+<th>Say, at the start of a phrase</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>“dictation context …” (the name of a saved context)</td>
+<td>Uses that saved context for this document, as if you had chosen it
+in Dictation Context for This Document.</td>
+</tr>
 </tbody>
 </table>
 <h2 id="spelling">Spelling</h2>
@@ -657,7 +1008,13 @@ waiting for it.</td>
 <li>Say “start spelling”, then letters. Everything you say is written as
 letters until you say “stop spelling”.</li>
 <li>Say “capital” before a letter for a capital, and “space” for a
-space.</li>
+space. Say “all caps” for capitals until “no caps” or the end of the
+phrase.</li>
+<li>Punctuation works while spelling, with no spaces: “jay dot smith at
+sign example dot com”. “Dot” is a full stop only here.</li>
+<li>Say “spell” and the letters to spell one word without starting
+spelling mode, and “spell that” to spell the last phrase over
+again.</li>
 <li>Letter names work (“bee”, “see”), and the phonetic alphabet is
 clearer: alpha, bravo, charlie, delta, echo, foxtrot, golf, hotel,
 india, juliet, kilo, lima, mike, november, oscar, papa, quebec, romeo,

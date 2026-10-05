@@ -35,7 +35,7 @@ import wx
 from quill.apps.converter_actions import ConverterActionsMixin
 from quill.apps.converter_chapters import ConverterChaptersMixin
 from quill.apps.converter_url import ConverterUrlMixin
-from quill.core import converter_settings
+from quill.core import converter_settings, http_client
 from quill.core.audio.chapter_plan import CHAPTER_SOURCES
 from quill.core.audio.convert import available_output_formats
 from quill.core.audio.effect_recipes import CUSTOM_RECIPE_ID, recipe_by_id, recipe_choices
@@ -49,12 +49,12 @@ _VERSION = "1.0.0"
 _BUILD = 1  # this version's build (docs/release/RELEASE.md, "Build numbers")
 _REPO = "Community-Access/quill"
 _IPC_SLOT = "converter"
+http_client.set_product_identity(_TITLE, _VERSION)  # a shared request names Converter
 
 #: Shared-store components this app's job depends on: without ffmpeg, available_output_formats() is
 #: exactly ["wav"] -- a converter that cannot convert -- and mpv is the Chapter Workbench's player,
 #: which needs exact seeking in every format to set a chapter at the playhead (1.0.0). Declared so
-#: the family's refcount registry knows an installed Converter still needs the shared copies
-#: (app-profiles.json).
+#: the family's refcount registry knows an installed Converter still needs the shared ones.
 REQUIRED_COMPONENTS: tuple[str, ...] = ("ffmpeg", "mpv")
 
 

@@ -221,7 +221,7 @@ document cannot see what you have already done. This window can.
 - **Try it runs the step.** Any step that names a command can be performed from
   the lesson, so a tutorial can open a window for you and then talk you through
   what you are standing in.
-- **Follow me notices that you did it.** Tick **Follow me** and the lesson
+- **Follow me notices that you did it.** Check **Follow me** and the lesson
   watches the app -- once a second, and it watches *what changed*, never which
   key you pressed -- so however you do the step, it says what it saw ("Done:
   the watch is running") and reads you the next one. It never takes the keyboard, and

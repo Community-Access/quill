@@ -97,7 +97,7 @@ def virtual_view_pairs(
     # Episode Filters, when the podcast's own rules were given the "views"
     # scope. Applied here rather than in each caller so New Episodes and
     # Continue Listening can never disagree about it, and asked live -- so
-    # unticking the scope brings the episodes back on the next redraw. A
+    # unchecking the scope brings the episodes back on the next redraw. A
     # podcast without a filter costs one dictionary lookup.
     from quill.core.podcasts.episode_filter_maintenance import visible_pairs
     from quill.core.podcasts.models_filters import SCOPE_VIEWS

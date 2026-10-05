@@ -6,7 +6,7 @@ the ones that pin a *promise* rather than a code path. They are all here, plus
 the ones QUILL Cast's own shape added:
 
 * Preview evaluates the draft while the switch is off, and while no scope is
-  ticked -- the defect device testing found first, and its scope-shaped twin.
+  checked -- the defect device testing found first, and its scope-shaped twin.
 * Keep matching with no usable rule can neither be saved nor reject a feed.
 * The duration save gate: refuses no coverage, asks on partial, allows full.
 * Scopes are independent, and a scope that is off behaves exactly like no

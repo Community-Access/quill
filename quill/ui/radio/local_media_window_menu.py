@@ -117,7 +117,7 @@ MENUS: tuple[tuple[str, tuple[tuple[str, str, str, str], ...]], ...] = (
     ),
 )
 
-#: Verbs whose menu item is a check item, ticked when the state is on.
+#: Verbs whose menu item is a check item, checked when the state is on.
 CHECK_VERBS = frozenset({"shuffle", "stop_after", "follow_folder"})
 
 #: Only the modeless window has a Close item: the modal dialog closes with

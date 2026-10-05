@@ -142,6 +142,25 @@ GATE-SIBVER compares builds when both the source and the published tag carry
 one, and GATE-APPVER checks that each app's build constant, its installers'
 `AppBuild` and `AppFileVersion`, and its build script agree.
 
+### A joint release of several apps (decided 2026-10-05)
+
+Every app build ships the shared runtime, and the runtime carries every app's
+version. When several apps release together before any of them is published,
+each app's own GATE-SIBVER check fails on the others, because it names only
+the app it builds. For that case, run the check once naming every app in the
+release:
+
+```powershell
+python scripts/check_sibling_versions.py --releasing radio --releasing quilllite --releasing cast --releasing converter
+```
+
+If it passes, build each app with `-SkipPublishedCheck -Build 1` (or the
+build being shipped). `-SkipPublishedCheck` also lets the build number go
+unchecked against GitHub, so check that by hand first:
+`python scripts/release_build_number.py --app radio --version 3.2.0 --build 1`
+for each app. Outside a joint release, `-SkipPublishedCheck` is for Dev builds
+only.
+
 ### Code signing: Beta and Dev never, Stable always (decided 2026-10-04)
 
 Beta and Dev builds are not code-signed, and Stable always is. The version

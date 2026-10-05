@@ -12,9 +12,9 @@ plain words, and only makes the fixes you agree to. Everything is under
 GLOW is still experimental, so it is off until you turn it on:
 
 1. **Preferences > Experimental.**
-2. Tick **Enable experimental features**. Until this is on, the other
+2. Check **Enable experimental features**. Until this is on, the other
    experimental choices are greyed out and Tab skips them.
-3. Tick **GLOW accessibility review and repair (experimental)**.
+3. Check **GLOW accessibility review and repair (experimental)**.
 4. Apply. The **Tools > GLOW** menu appears right away. You do not need to
    restart.
 

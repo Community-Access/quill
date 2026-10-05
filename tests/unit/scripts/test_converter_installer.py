@@ -69,6 +69,15 @@ def test_installer_version_matches_the_app_and_the_build() -> None:
     assert f'#define AppBuild "{converter._BUILD}"' in iss
 
 
+def test_installer_writes_the_version_marker() -> None:
+    # The shared runtime carries every app's code, so only the installer's
+    # marker says which Converter is installed; without it About and Check
+    # for Updates report the runtime's copy of the code (build numbers).
+    iss = _ISS.read_text(encoding="utf-8")
+    assert '"{app}\\quill-app-version.ini"; Section: "app"; Key: "version"; ' in iss
+    assert 'Key: "version_build"; String: "{#AppVersion}+{#AppBuild}"' in iss
+
+
 def test_installer_ships_ffmpeg_and_the_explorer_verb_task() -> None:
     iss = _ISS.read_text(encoding="utf-8")
     assert "#define ToolFfmpeg" in iss and "#define ToolMpv" in iss  # mpv: the Workbench

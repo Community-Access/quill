@@ -169,7 +169,7 @@ def test_diff_review_reject_all_makes_no_change() -> None:
 
 
 def test_diff_review_accept_all_applies_every_hunk_and_closes() -> None:
-    # Accept All must apply (not merely tick the boxes) and end the dialog.
+    # Accept All must apply (not merely check the boxes) and end the dialog.
     dialog, applied, announcements = _make_diff_dialog("a\nb\nc", "a\nB\nc\nd", checked=set())
 
     dialog._on_accept_all_clicked(object())

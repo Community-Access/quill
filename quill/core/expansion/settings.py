@@ -59,6 +59,12 @@ class InkwellSettings:
     #: mid-word and at the end of a line. None until chosen (File > Expand Word
     #: Key): Ctrl+Alt+Shift+X until 2026-10-05, Quill Radio's Export My Setup.
     expand_now_hotkey: str = ""
+    #: Dictate Anywhere (2026-10-05, dict.md 3.9): QUILL's dictation typed into
+    #: the program in front. None until chosen (File > Dictate Anywhere Key).
+    dictate_anywhere_hotkey: str = ""
+    #: Inkwell's own copy of the dictation settings, under the editors' names
+    #: (windows_dictation_*), so Dictate Anywhere runs without an editor open.
+    dictation: dict[str, object] = field(default_factory=dict)
     #: Set when the file on disk came from a newer build. Not persisted: it is
     #: a fact about *this* load, and saving would be the thing it prevents.
     read_only: bool = False
@@ -187,6 +193,14 @@ def _read_fields(raw: dict) -> InkwellSettings:
     # defaults, so that is what it had; take_system_keys moves them to none.
     for name, old in RETIRED_HOTKEY_DEFAULTS.items():
         setattr(settings, name, str(raw.get(name, old)))
+    settings.dictate_anywhere_hotkey = str(raw.get("dictate_anywhere_hotkey", "") or "")
+    dictation = raw.get("dictation", {})
+    if isinstance(dictation, dict):
+        settings.dictation = {
+            str(name): value
+            for name, value in dictation.items()
+            if str(name).startswith("windows_dictation_")
+        }
     return settings
 
 
@@ -214,6 +228,8 @@ def save_settings(data_dir: Path, settings: InkwellSettings) -> None:
             "tray_hotkey": settings.tray_hotkey,
             "quick_insert_hotkey": settings.quick_insert_hotkey,
             "expand_now_hotkey": settings.expand_now_hotkey,
+            "dictate_anywhere_hotkey": settings.dictate_anywhere_hotkey,
+            "dictation": dict(settings.dictation),
         },
     )
 

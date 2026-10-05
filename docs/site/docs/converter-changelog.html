@@ -256,25 +256,59 @@ and <code>converter_advanced.py</code>, its windows in
 Audio Studio at the same time. The <code>standalone/converter</code>
 folder carries only the launcher, installer, icon and these
 documents.</p>
-<h2 id="unreleased">Unreleased</h2>
-<ul>
-<li><strong>No show and hide key until you choose one</strong>
-(2026-10-05). The app registered Ctrl+Alt+Shift+C system-wide, and other
-QuillVille apps use that key for menu commands, so while this app ran
-theirs never fired. It now has no key by default; <strong>File &gt; Show
-and Hide Key…</strong> (Ctrl+Alt+Shift+H) lets you type one, or leave it
-empty for none, and refuses a key any QuillVille app uses as a command
-or as its own show and hide key, in one sentence naming the app.
-Somebody who had the old key is moved to none and told once, at the next
-launch; a key somebody chose is kept
-(<code>quill/core/family_chords.py</code>,
-<code>quill/core/show_hide_keys.py</code>,
-<code>quill/ui/show_hide_key_picker.py</code>).</li>
-</ul>
 <h2 id="100--2026-09-28">1.0.0 – 2026-09-28</h2>
 <p>The first public release. The app was first built in July 2026 as an
 audio converter; that build was never published as an installer, and
 everything it had is included here.</p>
+<h3 id="found-before-release-2026-10-05">Found before release
+(2026-10-05)</h3>
+<ul>
+<li><strong>No show and hide key until you choose one.</strong> The app
+registered Ctrl+Alt+Shift+C system-wide, and other QuillVille apps use
+that key for menu commands, so while this app ran theirs never fired. It
+now has no key by default; <strong>File &gt; Show and Hide Key…</strong>
+(Ctrl+Alt+Shift+H) lets you type one, or leave it empty for none, and
+refuses a key any QuillVille app uses as a command or as its own show
+and hide key, in one sentence naming the app. Somebody who had the old
+key from a test copy is moved to none and told once; a key somebody
+chose is kept (<code>quill/core/family_chords.py</code>,
+<code>quill/core/show_hide_keys.py</code>,
+<code>quill/ui/show_hide_key_picker.py</code>).</li>
+<li><strong>Find a Setting or Command</strong> (Help menu,
+Ctrl+Alt+Shift+S) searches every menu at once and runs the row you
+choose (<code>quill/ui/menu_palette.py</code>).</li>
+<li><strong>Build numbers.</strong> About says 1.0.0 (build 1); the
+installer stamps Windows file version 1.0.0.1, and a fix shipped without
+a new version number is the next build, which Check for Updates offers
+(<code>_BUILD</code> in <code>quill/apps/converter.py</code>,
+<code>docs/release/RELEASE.md</code>, “Build numbers”).</li>
+<li><strong>About and Check for Updates name the Converter you
+installed.</strong> The installer now writes
+<code>quill-app-version.ini</code> (<code>version</code> and
+<code>version_build</code>) beside the launcher, as Quill Radio, QUILL
+Lite and QUILL Cast do, and the portable copy carries the same file.
+Without it, an installed Converter reported the version of the code in
+the shared runtime, which another QuillVille installer may have
+updated.</li>
+<li><strong>Web requests name Quill Converter.</strong> Any request made
+through the shared HTTP client now says Quill Converter 1.0.0 rather
+than QUILL (<code>quill/core/http_client.py</code>).</li>
+<li><strong>A portable copy starts from a folder with a space in its
+name</strong>, and a file opened from such a folder reaches the app
+whole: the native launcher now quotes every argument
+(<code>quill/native/launcher/cmdline.c</code>, shared by every
+QuillVille app).</li>
+<li><strong>Stable builds are always code-signed</strong>, and a Beta or
+Dev build never is; <code>build_release.ps1</code> asks
+<code>Resolve-QuillSigning</code> like every family build.</li>
+<li><strong>No AI.</strong> Quill Converter has no AI features, and a
+test keeps its menus and Find a Setting or Command free of them
+(<code>tests/unit/apps/test_converter_window.py</code>).</li>
+<li><strong>The user guide is in chapters</strong>, each opening with
+what it covers and closing with what you learned and where to go next,
+with an introduction for reading it with a screen reader and a new topic
+on your version and updates.</li>
+</ul>
 <h3 id="found-before-release-2026-10-01">Found before release
 (2026-10-01)</h3>
 <ul>

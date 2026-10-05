@@ -838,6 +838,11 @@ Dictation Settings), switching by itself in the AI window.</td>
 <td>Built (section 1).</td>
 </tr>
 <tr>
+<td>Transcribing a file (owner, 2026-10-05)</td>
+<td>Built (section 12): Transcribe a Recording, Shift+F5, in both
+editors.</td>
+</tr>
+<tr>
 <td>8 Questions</td>
 <td>Answered 2026-10-05: hold-to-talk off by default (first answered on,
 reversed the same day); send after the pause; the AI pieces ship in
@@ -1006,6 +1011,335 @@ dictation would exhaust and is not built to carry audio.</li>
 network round trip before each phrase is written, slowest exactly where
 QUILL’s users are.</li>
 </ul>
+<h2 id="12-transcribe-a-recording-a-file-through-dictations-engines">12.
+Transcribe a Recording: a file through dictation’s engines</h2>
+<p>Built 2026-10-05 at the owner’s request (“we do need a way to pass a
+mp3 and get it transcribed in the background as a part of the dictation
+logic and they should be able to select a model for this”), in both
+editors on <strong>Shift+F5</strong>, shipping in QUILL Lite 1.2 and
+QUILL 1.0.</p>
+<p><strong>Shared, like the rest of dictation.</strong> One command
+(<code>cmd_transcribe_audio_file</code>,
+<code>tools.windows_dictation_transcribe_file</code>) on
+<code>DictationTranscribeMixin</code>
+(<code>quill/ui/windows_dictation_transcribe.py</code>), which
+<code>WindowsDictationMixin</code> inherits; QUILL’s adapter answers two
+hooks (its task manager, a new tab) and owns no command. One window
+(<code>quill/ui/dictation_transcribe_dialog.py</code>). The parity test
+checks the row, the key, the handler and the help topic in both.</p>
+<p><strong>Why a second way into transcription is not a second
+stack.</strong> QUILL already had two: Tools &gt; Speech &gt; Transcribe
+Audio or Video (Offline) (whisper.cpp or Faster Whisper, ffmpeg,
+captions, speaker labels) and AI &gt; Transcribe Audio File (cloud
+Whisper, Transcript Actions). Neither can ship in QUILL Lite (no ffmpeg,
+no engine packs), and neither uses the dictation models people now
+download. This command uses only dictation’s own pieces: its engines and
+loaded-model cache (<code>local_recognizer._load</code>,
+<code>transcribe</code>), its Silero voice detector (<code>_vad</code>),
+its OpenAI path (<code>openai_transcribe.transcribe_phrase</code>, the
+same <code>/v1/audio/transcriptions</code> endpoint, so no new egress
+entry), and its text tidying (<code>options.clean_phrase</code>,
+<code>parser</code>, <code>composer</code>, the continuation words from
+<code>editing.py</code>). The visible name is “Transcribe a Recording”,
+not “Transcribe Audio File”, because QUILL’s AI menu already has that
+name.</p>
+<p><strong>Decoding without ffmpeg</strong> (<code>audio_file.py</code>,
+<code>media_foundation.py</code>). The shared runtime already carries
+libsndfile 1.2.2 (<code>soundfile</code>), which reads WAV, FLAC, Ogg
+Vorbis, Opus and MP3; Windows Media Foundation, on every Windows, reads
+MP3, M4A, AAC, MP4 sound, WMA, WAV and FLAC through its Source Reader,
+called with <code>ctypes</code> (no COM package). Media Foundation goes
+first for M4A, AAC, MP4 and WMA, libsndfile first for the rest, and
+ffmpeg is tried last only where the program has it. Checked 2026-10-05
+on Windows 11 with one recording encoded seven ways: every format
+decoded to the same 20.3 seconds; Media Foundation refused Ogg and Opus
+(unsupported byte stream, 0xC00D36C4), which libsndfile reads. So QUILL
+Lite has no format it must refuse. Sound is mixed to one channel and
+resampled to 16 kHz a second at a time (a windowed-sinc low-pass, then
+linear interpolation, state kept across blocks), so an hour of stereo
+MP3 never sits in memory.</p>
+<p><strong>The model list</strong> (<code>file_models.py</code>) is
+every engine this computer has for the chosen language: Moonshine tiny
+and Whisper tiny, every downloaded model, and OpenAI’s models (read
+live, less the live-only <code>gpt-live-transcribe</code>) where a key
+is saved and Safe Mode is off. Windows speech and voice typing are not
+offered: both listen to a microphone. The suggestion is the most
+accurate local model by the catalogue’s published figures, preferring
+models that hear a whole phrase: Parakeet TDT 0.6B v3, Parakeet Unified,
+Nemotron, the Whisper family large to small, Moonshine base, then the
+built-in two. OpenAI is never suggested.</p>
+<p><strong>The estimate</strong> is Moonshine tiny’s speed on this
+computer’s class (the two-second check’s hardware fallback, 0.12 on a
+modest computer, 0.05 on a capable one; no model is run to work it out)
+times the model’s measured <code>cost_factor</code>, over 1.6 for the
+two threads used, plus 0.02 for decoding and voice detection. For an
+hour on the baseline machine: Moonshine tiny 6 minutes, Whisper tiny 19,
+Parakeet TDT 30, Nemotron 37, Whisper small 1 hour 49, large-v3-turbo
+about 6 hours.</p>
+<p><strong>What the person hears (GATE-13).</strong> One sentence at the
+start, the percentage quietly at 25, 50 and 75
+(<code>activity.ProgressAnnouncer</code>), every percent only in the
+status bar, one sentence at the end with the length, words, time taken
+and where the text went, the error tone and the reason on failure. Every
+result is kept in Activity. Shift+F5 while one runs shows its progress
+and Stop Transcribing; several files queue.</p>
+<p><strong>End to end, 2026-10-05</strong> (no interface; real decoders,
+real Silero, real models; recordings made with Windows’ Zira voice,
+development machine, two threads):</p>
+<table>
+<thead>
+<tr>
+<th>Recording</th>
+<th>Model</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>20 s, seven formats</td>
+<td>Moonshine tiny</td>
+<td>all seven read; 41 words, two paragraphs split at the 3-second
+pause, timestamps 00:00:00 and 00:00:08</td>
+</tr>
+<tr>
+<td>20 s MP3</td>
+<td>Whisper tiny, Parakeet TDT, Nemotron</td>
+<td>the same text; Nemotron heard “Drive Smith” for “Doctor Smith”</td>
+</tr>
+<tr>
+<td>171 s MP3</td>
+<td>Moonshine tiny</td>
+<td>10.5 s (0.06 of the recording’s length), 380 words, 3
+paragraphs</td>
+</tr>
+<tr>
+<td>171 s MP3</td>
+<td>Whisper tiny</td>
+<td>20.0 s (0.12), 374 words</td>
+</tr>
+<tr>
+<td>171 s MP3</td>
+<td>Parakeet TDT 0.6B v3</td>
+<td>24.6 s (0.14) after a 4.5 s load, 368 words</td>
+</tr>
+</tbody>
+</table>
+<p>Parakeet glues a currency sign to the word before it
+(<code>about$12,000</code>); the writer puts the space back after a
+lower-case letter, leaving <code>US$</code> alone.</p>
+<p><strong>Not built, and what each needs:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Needs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Speaker labels (“Speaker 1:”)</td>
+<td>A diarization model in sherpa-onnx’s set, measured on the baseline
+machine; QUILL’s offline transcription already labels speakers with its
+own engine</td>
+</tr>
+<tr>
+<td>Open with, from File Explorer, straight into this window</td>
+<td>A shell verb in both installers; the window already takes a dropped
+file and the command takes paths</td>
+</tr>
+<tr>
+<td>The real-voice check</td>
+<td>The same recordings section 10 asks for, read as files</td>
+</tr>
+<tr>
+<td>Translation to English while transcribing</td>
+<td>Whisper’s translate task through sherpa-onnx, and a decision on
+whether it belongs here</td>
+</tr>
+</tbody>
+</table>
+<h2
+id="13-the-gap-plan-twelve-published-capabilities-checked-and-built">13.
+The gap plan: twelve published capabilities, checked and built</h2>
+<p>Later on 2026-10-05 a second working note (also called
+<code>dict.md</code>, gitignored, now retired) checked both editors
+against twelve capabilities another product announced for its dictation,
+and planned every gap. Jeff approved all of it, taking the
+recommendation on all eleven questions. Everything below is built, in
+shared code, in both editors on the same keys, held equal by
+<code>tests/unit/ui/test_dictation_parity.py</code>.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Capability</th>
+<th>Status</th>
+<th>Where</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Automatic and spoken punctuation</td>
+<td>Was already there</td>
+<td><code>vocabulary.py</code>, <code>options.py</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>Live transcript mode</td>
+<td>Built: Start or Stop Live Transcript, Ctrl+Alt+Shift+PageDown; new
+document, no commands but the stop phrase, nothing said per phrase, a
+paragraph at a four-second pause, optional time stamps, keeps writing
+while you work elsewhere</td>
+<td><code>transcript.py</code>,
+<code>windows_dictation_extras.py</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td>Marks spoken in the read-back</td>
+<td>Built: Say punctuation marks in the read-back, on by default
+(question 1); braille and the status bar keep the characters</td>
+<td><code>readback.py</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td>Adjustable pause</td>
+<td>Built: Longer (2 s) and Longest (3 s), labelled with the cost; a
+phrase ending on “a”, “the”, “very” and kin runs on into the next</td>
+<td><code>options.py</code>, <code>editing.py</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td>Go to, select and correct words</td>
+<td>Built: select, go to, go before, go after, correct, “through”
+ranges, select next and previous, sentence, line and paragraph units;
+not found is written as text (question 3)</td>
+<td><code>targets.py</code>, <code>voice_commands.py</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td>Characters, caps, spelling, Markdown</td>
+<td>Built: punctuation and all caps in spelling, spell one word, spell
+that, caps on, all caps on, no space on, backtick, code fence, tilde,
+pipe, caret, the comparison signs, and bullet, numbered item, block
+quote and heading one to six at the start of a phrase only (question
+4)</td>
+<td><code>vocabulary.py</code>, <code>parser.py</code>,
+<code>composer.py</code></td>
+</tr>
+<tr>
+<td>7</td>
+<td>Snippets, clips and Copy All by voice</td>
+<td>Built: copy all, copy that, show clips, show snippets, paste clip
+one to twelve, insert snippet, insert or expand abbreviation, each
+through the editor’s own feature</td>
+<td><code>voice_commands.py</code>,
+<code>windows_dictation_library.py</code></td>
+</tr>
+<tr>
+<td>8</td>
+<td>Dictation beyond one window</td>
+<td>Built: Dictate Anywhere in Quill Inkwell (question 9), with a key
+chosen by the person, the shared controller and
+<code>ExternalDocument</code>; started from either editor’s More
+Dictation Settings</td>
+<td><code>anywhere.py</code>,
+<code>windows_dictation_external.py</code>,
+<code>apps/inkwell_dictation.py</code></td>
+</tr>
+<tr>
+<td>9</td>
+<td>Per-document context</td>
+<td>Built: Dictation Context for This Document, Ctrl+Alt+Shift+PageUp,
+per document by path with saved contexts (question 10); OpenAI’s prompt
+and Tidy Dictated Text</td>
+<td><code>contexts.py</code>,
+<code>dictation_context_dialog.py</code></td>
+</tr>
+<tr>
+<td>10</td>
+<td>Instant language switch</td>
+<td>Built: Switch Dictation Language, Ctrl+Shift+F11 in both (question
+5; QUILL’s Forget External Change Answers moved to Ctrl+Shift+0 under
+rule 9), and by voice both ways</td>
+<td><code>voice_commands.py</code>,
+<code>windows_dictation_extras.py</code></td>
+</tr>
+<tr>
+<td>11</td>
+<td>An online option</td>
+<td>Was already there</td>
+<td><code>openai_*.py</code></td>
+</tr>
+<tr>
+<td>12</td>
+<td>Guide and tutorials</td>
+<td>Built: “Dictating well” in both guides, a section per feature, five
+new lessons in both editors</td>
+<td><code>quill/core/tutorials/dictation_lessons.py</code></td>
+</tr>
+</tbody>
+</table>
+<p>Also built: <strong>Dictation Status</strong> in QUILL Lite on
+Alt+F9, the key QUILL’s Locked Dictation status already had, which now
+answers for live dictation whenever Locked Dictation is idle.</p>
+<p><strong>Decided against, on purpose.</strong> Automatic language
+detection per phrase (question 6: wrong-language text written silently
+is worse than one command). Bare “expand <word>”, “next one” and
+“previous one” as voice commands: each is also ordinary English said on
+its own (“Expand the budget.”), so “insert abbreviation”, “expand
+abbreviation”, “select next” and “select previous” stand in for
+them.</p>
+<p><strong>Still to do.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Needs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The longer pauses measured with a slow real speaker (question
+11)</td>
+<td>A recording or a session with somebody who speaks slowly</td>
+</tr>
+<tr>
+<td>Memory with Moonshine and multilingual Whisper both loaded after a
+language switch, against the 600 MB budget</td>
+<td>The baseline machine (section 10)</td>
+</tr>
+<tr>
+<td>Live transcripts of the computer’s own sound (an online
+meeting)</td>
+<td>WASAPI loopback capture; question 7 says after the microphone
+version has been used for a while</td>
+</tr>
+<tr>
+<td>Native-speaker review of the drafted Spanish twins of the new
+commands (<code>vocabulary_es.SPANISH_COMMAND_HELP</code>,
+<code>SPANISH_PREFIX_HELP</code>), still behind the development flag;
+only “cambiar a inglés” and its kin are on in every build</td>
+<td>A native speaker, with the rest of section 10’s review</td>
+</tr>
+<tr>
+<td>NVDA and JAWS checks of every new spoken line</td>
+<td><code>docs/qa/screen-reader-checks-2026-10.md</code></td>
+</tr>
+<tr>
+<td>Dictate Anywhere reads only what it typed itself, so select and
+correct stay inside QUILL; reading another program’s text would need UI
+Automation text patterns per program</td>
+<td>A decision whether it is worth it</td>
+</tr>
+<tr>
+<td>Inkwell keeps its own copy of the dictation settings, refreshed only
+when an editor hands them over</td>
+<td>A shared settings store across the family, if one is ever
+wanted</td>
+</tr>
+</tbody>
+</table>
 <h2
 id="appendix-a-the-dictmd-section-numbers-and-where-they-live-now">Appendix
 A: the dict.md section numbers, and where they live now</h2>

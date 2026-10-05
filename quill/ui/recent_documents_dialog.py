@@ -177,7 +177,7 @@ class RecentDocumentsWindow:
         self.auto_clear = wx.CheckBox(dialog, label="Forget &missing files when the app starts")
         self.auto_clear.SetValue(bool(auto_clear_missing))
         self.auto_clear.SetHelpText(
-            "When ticked, a document that has been deleted from this computer's own "
+            "When checked, a document that has been deleted from this computer's own "
             "drives leaves the list at the next start. Files on a USB drive or a "
             "network share are kept, because they are usually just unplugged."
         )

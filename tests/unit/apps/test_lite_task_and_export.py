@@ -1,6 +1,6 @@
 """Toggle Task Done and Export as HTML in QUILL Lite: QUILL's shared commands.
 
-Each handler is called (GATE-LITE-COVER). The tick is one edit, so Ctrl+Z takes
+Each handler is called (GATE-LITE-COVER). The check is one edit, so Ctrl+Z takes
 it back; the export writes a whole page and leaves the document as it was.
 """
 

@@ -52,6 +52,11 @@ _CLASSIFICATIONS: dict[str, str] = {
 _REVIEWED_PERSISTENCE: dict[str, str] = {
     # --- versioned (the contract) ---
     "core/settings.py::save_settings": "versioned",
+    # 2026-10-05, dictation: each document's context (user-written descriptions,
+    # schema-stamped, additive) and the one-shot hand-off of an editor's dictation
+    # settings to Quill Inkwell (read once and deleted).
+    "core/windows_dictation/contexts.py::save": "content",
+    "core/windows_dictation/anywhere.py::write_handoff": "cache",
     # qc.md X-03 and X-05 (2026-10-03): small, self-describing, "version": 1 stamped;
     # an unreadable file reads as nothing on and nothing shared.
     "core/settings_recipes.py::save_state": "marker",

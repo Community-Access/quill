@@ -310,7 +310,7 @@ def test_menu_open_rebuilds_only_the_window_menu() -> None:
     event = _FakeMenuOpenEvent(window_menu)
     frame.menu_open_handler(event)
     assert [item.label for item in window_menu.items] == ["&1 Quill Radio\tCtrl+1"]
-    assert window_menu.items[0].checked  # the current window is ticked
+    assert window_menu.items[0].checked  # the current window is checked
     assert event.skipped
 
 

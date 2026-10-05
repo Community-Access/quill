@@ -41,8 +41,6 @@ from __future__ import annotations
 
 from collections import deque
 from collections.abc import Callable
-from enum import StrEnum
-from typing import Protocol
 
 from quill.core.action_feedback import resolve
 from quill.core.error_codes import CodedError
@@ -58,12 +56,22 @@ from quill.core.windows_dictation.parser import (
     parse,
     words_from_text,
 )
+from quill.core.windows_dictation.ports import (
+    DictationState,
+    DocumentPort,
+    FeedbackPort,
+    Moment,
+    RecognizerPort,
+)
 from quill.core.windows_dictation.preferences import (
     DEFAULT_PHRASE_FEEDBACK,
     DictationPreferences,
 )
+from quill.core.windows_dictation.readback import spoken_marks
 from quill.core.windows_dictation.resilience import ResilienceMixin, engine_failure_message
+from quill.core.windows_dictation.transcript import TranscriptMixin
 from quill.core.windows_dictation.vocabulary import Command
+from quill.core.windows_dictation.voice_commands import VoiceCommandsMixin
 from quill.core.windows_dictation.wake import is_stop_phrase, match_wake, wake_words
 
 __all__ = [
@@ -90,17 +98,6 @@ class DictationStartError(CodedError):
     )
 
 
-class DictationState(StrEnum):
-    OFF = "off"
-    STARTING = "starting"
-    STANDBY = "standby"
-    LISTENING = "listening"
-    RECOGNIZING = "recognizing"
-    PROCESSING = "processing"
-    PAUSED = "paused"  # the microphone went away; still on, writing nothing
-    STOPPING = "stopping"
-
-
 #: The states in which dictation writes what it hears.
 _LIVE = frozenset({
     DictationState.LISTENING,
@@ -109,91 +106,9 @@ _LIVE = frozenset({
 })
 
 
-class Moment(StrEnum):
-    """The four moments dictation has a sound for."""
-
-    ON = "on"
-    PHRASE = "phrase"
-    OFF = "off"
-    ERROR = "error"
-
-
-class RecognizerPort(Protocol):
-    """A running recogniser. :meth:`start` raises :class:`DictationStartError`."""
-
-    def start(self, microphone: str) -> None: ...
-
-    def stop(self) -> None: ...
-
-
-class DocumentPort(Protocol):
-    """The document a session writes into."""
-
-    def unavailable_reason(self, *, writing: bool) -> str:
-        """Why nothing can be written, or ``""`` when it can.
-
-        *writing* is ``False`` when a session is starting and ``True`` when a
-        phrase is about to go in. The difference is focus: the key that starts
-        dictation may arrive while a menu or the Command Palette still holds
-        it, but a phrase must only ever land in the document the user is in.
-        """
-        ...
-
-    def context(self) -> tuple[str, str]:
-        """The text just before the selection, and just after it."""
-        ...
-
-    def selection(self) -> tuple[int, int]: ...
-
-    def select(self, start: int, end: int) -> None: ...
-
-    def insert(self, text: str) -> tuple[int, int]:
-        """Replace the selection with *text*; return the range it now occupies."""
-        ...
-
-    def text_between(self, start: int, end: int) -> str: ...
-
-    def remove(self, start: int, end: int) -> None: ...
-
-    def replace(self, start: int, end: int, text: str) -> tuple[int, int]:
-        """Put *text* where ``start..end`` was; return the range it occupies."""
-        ...
-
-    def line_bounds(self) -> tuple[int, int]:
-        """Where the caret's line starts and ends."""
-        ...
-
-    def last_position(self) -> int: ...
-
-    def undo(self) -> bool:
-        """Undo the last edit; ``False`` when there was nothing to undo."""
-        ...
-
-
-class FeedbackPort(Protocol):
-    """Sounds, speech, the status line, and the commands list."""
-
-    def has_cue(self, moment: Moment) -> bool: ...
-
-    def cue(self, moment: Moment) -> None: ...
-
-    def say(self, text: str) -> None: ...
-
-    def read_back(self, text: str) -> None:
-        """Speak the words a phrase wrote. Separate from :meth:`say` because the
-        host has to time it against the editor's own reaction to the edit."""
-        ...
-
-    def show(self, text: str) -> None: ...
-
-    def state_changed(self, state: DictationState) -> None: ...
-
-    def show_commands(self) -> None:
-        """Open the list of everything dictation understands."""
-        ...
-
-
-class DictationController(ResilienceMixin, EditingMixin, LiveMixin):
+class DictationController(
+    ResilienceMixin, EditingMixin, LiveMixin, VoiceCommandsMixin, TranscriptMixin
+):
     """One app's dictation session: one microphone, one document at a time."""
 
     def __init__(
@@ -218,6 +133,8 @@ class DictationController(ResilienceMixin, EditingMixin, LiveMixin):
         self._restarted = False  # the one silent engine restart, spent
         self._last_spoken = ""
         self._init_live()  # live.py: preview, anchor, finishing, muting
+        self._init_voice_commands()  # voice_commands.py: modes, targets, the library
+        self._init_transcript()  # transcript.py: live transcripts
         #: Called when the wake phrase is heard, before dictation starts: the
         #: host points the controller at whichever document is in front now.
         self.on_wake: Callable[[], None] | None = None
@@ -273,7 +190,7 @@ class DictationController(ResilienceMixin, EditingMixin, LiveMixin):
         else:
             self.start()
 
-    def start(self) -> None:
+    def start(self, message: str = "Dictation on.") -> None:
         """Start dictating now -- from off, or from waiting for the wake phrase."""
         if self.active:
             return
@@ -288,7 +205,7 @@ class DictationController(ResilienceMixin, EditingMixin, LiveMixin):
         self.spelling = False
         self._restarted = False
         self._set_state(DictationState.LISTENING)
-        self._announce_edge(Moment.ON, "Dictation on.", preferences)
+        self._announce_edge(Moment.ON, message, preferences)
 
     def arm(self) -> None:
         """Wait for the wake phrase: microphone open, nothing written."""
@@ -309,11 +226,13 @@ class DictationController(ResilienceMixin, EditingMixin, LiveMixin):
         """Stop writing. With the wake phrase on, go back to waiting for it."""
         if not self.active:
             return
+        message = self._transcript_stopping(message)  # transcript.py: how much it wrote
         preferences = self._preferences()
         self._set_state(DictationState.STOPPING)
         self.history.clear()
         self.spelling = False
         self._end_live()
+        self._end_voice_modes()
         if preferences.wake_enabled and self._recognizer is not None:
             self._set_state(DictationState.STANDBY)
             self._announce_edge(
@@ -404,6 +323,8 @@ class DictationController(ResilienceMixin, EditingMixin, LiveMixin):
 
     def _parse(self, phrase: RecognizedPhrase, preferences: DictationPreferences) -> ParsedPhrase:
         """What *phrase* means -- which, when writing straight through, is only words."""
+        if preferences.profile == "transcript":
+            return self._transcript_parse(phrase, preferences)
         if not preferences.continuous:
             return parse(phrase, spelling=self.spelling, vocabulary=preferences.vocabulary)
         phrase = flow_on(phrase, strip_period=preferences.engine_punctuates)
@@ -495,19 +416,24 @@ class DictationController(ResilienceMixin, EditingMixin, LiveMixin):
             self.spelling = False
             self._say("Spelling off.")
             return
+        if self._mode_command(parsed, preferences):
+            return  # caps, no space, the language: nothing written (voice_commands.py)
         reason = self._writing_reason()
         if reason:
             self._abandon(reason)
             return
-        if self._live_command(command):
+        if self._live_command(command) or self._voice_command(parsed, preferences):
             return
         if command is not None:
             self._edit(command)
             return
         if not parsed.pieces:
             return
+        if preferences.profile == "transcript":
+            self._write_transcript(parsed, preferences)
+            return
         self._go_to_anchor()
-        pieces = parsed.pieces
+        pieces = self._in_mode(parsed.pieces)
         continued = self._continue_sentence(pieces)
         if continued is not None:
             pieces = continued
@@ -518,6 +444,7 @@ class DictationController(ResilienceMixin, EditingMixin, LiveMixin):
             after=after,
             dash=preferences.dash,
             close_paragraphs=preferences.engine_punctuates and not self._one_line(),
+            join_words=self.no_space,
         )
         if not text:
             return
@@ -526,7 +453,11 @@ class DictationController(ResilienceMixin, EditingMixin, LiveMixin):
         self._after_insert(text)
         self.recent.appendleft(" ".join(text.split()))
         spoken = spoken_form(pieces, text)
-        self._last_spoken = spoken
+        heard = spoken_marks(text, preferences.speech_language)
+        if not preferences.readback_marks or not any(c.isalnum() for c in text):
+            heard = spoken  # a line break alone already says its name
+        self._last_spoken = heard
+        self._after_phrase()  # "spell that" lasts one phrase (voice_commands.py)
         play, speak = resolve(
             preferences.phrase_feedback,
             has_sound=self._feedback.has_cue(Moment.PHRASE),
@@ -537,8 +468,8 @@ class DictationController(ResilienceMixin, EditingMixin, LiveMixin):
         # document", so it cannot be played before the insert has happened.
         if play:
             self._feedback.cue(Moment.PHRASE)
-        if speak and spoken:
-            self._feedback.read_back(spoken)
+        if speak and heard:
+            self._feedback.read_back(heard)
         self._feedback.show(f"Dictated: {spoken}" if spoken else "Dictated.")
 
     def _one_line(self) -> bool:

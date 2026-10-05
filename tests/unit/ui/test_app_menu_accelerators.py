@@ -50,6 +50,8 @@ APP_MENU_FILES = (
     "player_menus.py",
     "studio.py",
     "inkwell.py",
+    # Inkwell's Dictation menu, Dictate Anywhere (2026-10-05).
+    "inkwell_dictation.py",
     "weather.py",
     "converter.py",
     "beacon/app.py",

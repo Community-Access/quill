@@ -375,6 +375,12 @@ PURPOSES.update({
         "leaves the computer with these models; Download asks first, and "
         "Remove frees the space again."
     ),
+    "Transcribe a Recording": (
+        "Turns a recording into text in the background: choose the file, the "
+        "speech model, the language and where the text goes, then keep working. "
+        "While one is running, this window says how far it has got and can stop "
+        "it."
+    ),
 })
 
 #: Titles of the windows QUILL opens from the same shared modules. QUILL's F1
@@ -394,6 +400,7 @@ SHARED_WITH_QUILL: frozenset[str] = frozenset({
     "Recent Phrases",
     "More Dictation Settings",
     "Speech Models",
+    "Transcribe a Recording",
     "Recent Documents",
     "Clear Recent Documents",
     "Inline Notes",

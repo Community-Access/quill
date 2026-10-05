@@ -28,6 +28,7 @@ from typing import Any
 
 import wx
 
+from quill.apps.inkwell_dictation import InkwellDictationMixin
 from quill.apps.inkwell_keys import InkwellKeysMixin
 from quill.core.abbreviations import (
     AbbreviationLibrary,
@@ -52,7 +53,9 @@ _REPO = "Community-Access/quill"
 _IPC_SLOT = "inkwell"
 
 
-class QuillInkwellFrame(AppShellFrame, InkwellExpansionMixin, InkwellKeysMixin):
+class QuillInkwellFrame(
+    AppShellFrame, InkwellExpansionMixin, InkwellKeysMixin, InkwellDictationMixin
+):
     """The manager window for a system-wide expander that runs in the tray."""
 
     def __init__(self, *, safe_mode: bool = False) -> None:
@@ -187,6 +190,7 @@ class QuillInkwellFrame(AppShellFrame, InkwellExpansionMixin, InkwellKeysMixin):
         options_menu.Append(excluded_id, "E&xcluded Applications...\tCtrl+Alt+X")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.edit_exclusions(), id=excluded_id)
         menu_bar.Append(options_menu, "&Options")
+        self._append_dictation_menu(menu_bar)  # Dictate Anywhere (inkwell_dictation.py)
 
         from quill.ui.quillville_menu import build_quillville_menu
 
@@ -531,6 +535,7 @@ class QuillInkwellFrame(AppShellFrame, InkwellExpansionMixin, InkwellKeysMixin):
 
         if drain_open_requests(slot=_IPC_SLOT):
             self._restore_from_tray()
+            self.take_dictation_handoff()  # an editor's Dictate in Other Programs
 
     def _on_close(self, event: wx.CloseEvent) -> None:
         # Closing the window must not stop expansion: the service is the point,
@@ -544,6 +549,7 @@ class QuillInkwellFrame(AppShellFrame, InkwellExpansionMixin, InkwellKeysMixin):
         event.Skip()
 
     def _exit_application(self) -> None:
+        self._stop_dictate_anywhere()
         self._stop_expansion()
         super()._exit_application()
 
@@ -577,6 +583,8 @@ def main() -> int:
         frame.frame.Show()
         frame.frame.Raise()
         wx.CallAfter(frame._focus_initial_control)
+    if "--dictate-anywhere" in sys.argv:
+        wx.CallAfter(frame.take_dictation_handoff)
     try:
         app.MainLoop()
     finally:

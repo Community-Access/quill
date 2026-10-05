@@ -24,6 +24,7 @@ this without a display.
 from __future__ import annotations
 
 from quill.core.lite import APP_NAME, APP_VERSION
+from quill.core.lite.commands_dictation import DICTATION_ROWS
 from quill.core.lite.commands_review import EXPORT_ROWS, NOTE_ROWS, NOTE_SUBMENU_ROWS, TASK_ROWS
 from quill.core.lite.commands_words import DICTIONARY_ROWS, DICTIONARY_STATUS_ROWS, WORD_ROWS
 
@@ -944,17 +945,9 @@ COMMANDS: list[CommandRow] = [
     # Ctrl+F3 was free in both editors and is nothing in Word QUILL has.
     ("&Tools|&AI", "Tidy Dictated Te&xt...", "Ctrl+F3", "cmd_dictation_tidy", ""),
     *DICTIONARY_ROWS,  # Tools > Dictionary, the AI word tools (commands_words.py)
-    # -- Tools > Dictation, shared with QUILL (quill/ui/windows_dictation_commands.py).
-    # Ctrl+F11: Word's Alt+grave is a dead key on many layouts, and QUILL's Ctrl+F9
-    # is Locked Dictation, another engine (rule 2). Checkable: "am I heard?"
     *NOTE_ROWS,  # QUILL's six inline-note chords (rule 2; commands_review.py)
-    ("&Tools|&Dictation", "Dictation &On", "Ctrl+F11", "cmd_toggle_dictation", "check"),
-    ("&Tools|&Dictation", "Dictation &Settings...", "Alt+Shift+F6", "cmd_dictation_settings", ""),
-    # 2026-09-28 (dict.md 3.3, 5): the last phrases said, and the window that
-    # teaches dictation your words. Alt+Shift+F10 sits beside Settings' Alt+Shift+F6;
-    # Shift+F11 keeps the recent phrases on the key dictation runs on (Ctrl+F11).
-    ("&Tools|&Dictation", "Recent &Phrases...", "Shift+F11", "cmd_dictation_recent", ""),
-    ("&Tools|&Dictation", "My &Words and Phrases...", "Alt+Shift+F10", "cmd_dictation_words", ""),
+    # Tools > Dictation, shared with QUILL; each key's reason is in commands_dictation.py.
+    *DICTATION_ROWS,
     ("&Tools|&Change Case", "&UPPERCASE", "Ctrl+Shift+U", "cmd_upper_case", ""),
     ("&Tools|&Change Case", "&lowercase", "Ctrl+Shift+K", "cmd_lower_case", ""),
     # Ctrl+Shift+T since 2026-09-16: Ctrl+Shift+G is Word Count in Word, and

@@ -179,7 +179,7 @@ class DocumentViewCommandsMixin:
 
         The list is searchable and comes with profiles, because nineteen
         checkboxes is a long way to Tab and "give me the small one" should not
-        require ticking most of them. Both live in the shared dialog; what is
+        require checking most of them. Both live in the shared dialog; what is
         QUILL Lite's is which areas exist and what the four profiles mean
         (:mod:`quill.core.lite.features`).
 

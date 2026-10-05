@@ -320,8 +320,8 @@ Units, how much forecast, and which details are in the paragraph -- the settings
    - You should hear: Each length read back.
 
 3. **Choose what is in the conditions paragraph.** A checkbox each for feels-like, humidity, dew point, wind and gusts, cloud cover, pressure, visibility, chance of precipitation, sunrise and sunset, the moon, the ultraviolet index, air quality and the current local time there. Temperature and sky always show.
-   - You should hear: Each detail as you tick or untick it.
-   - Worth knowing: This is a speech setting wearing a display setting's clothes: every box you leave ticked is a clause you hear on every reading, for the rest of your life with the app.
+   - You should hear: Each detail as you check or uncheck it.
+   - Worth knowing: This is a speech setting wearing a display setting's clothes: every box you leave checked is a clause you hear on every reading, for the rest of your life with the app.
 
 4. **Keep the moon, or drop it.** Phase, how full it is, moonrise and moonset are computed on your own machine with no extra lookup, so keeping them costs no time and no network -- only the seconds it takes to speak them.
    - You should hear: The moon's phase and times, if you kept them.
@@ -343,7 +343,7 @@ Reaching QUILL and Quill Radio, turning off whole areas you never use, keeping t
    - Keys: Alt+Q
    - You should hear: The other apps, listed by name.
 
-2. **Turn off an area you never use.** Customize Features leaves out a whole area and every command under it -- the NOAA radio rows, for instance, if you never listen. Nothing is deleted; tick it again and it comes back.
+2. **Turn off an area you never use.** Customize Features leaves out a whole area and every command under it -- the NOAA radio rows, for instance, if you never listen. Nothing is deleted; check it again and it comes back.
    - Keys: Ctrl+Alt+F
    - You should hear: Each area with a short description of what it covers.
 

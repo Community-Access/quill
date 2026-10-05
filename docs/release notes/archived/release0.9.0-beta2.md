@@ -50,10 +50,10 @@ do not yet know if this fixes the offset or the missing dots on real hardware
 **How to try it, step by step:**
 
 1. Open **Preferences > Experimental**.
-2. Tick **Enable experimental features** (the master switch).
-3. Tick **Enable experimental editor surfaces**.
+2. Check **Enable experimental features** (the master switch).
+3. Check **Enable experimental editor surfaces**.
 4. Set **Editor surface** to **QuillRichEdit**.
-5. Tick **QuillRichEdit: emulate a system edit control (braille test)**.
+5. Check **QuillRichEdit: emulate a system edit control (braille test)**.
 6. **Apply Settings, then restart QUILL** — all three of these settings take
    effect on the next launch, not immediately.
 7. With your braille display attached, open or type into a document and check:
@@ -66,7 +66,7 @@ differ between screen readers, so a result under one does not guarantee the
 same under the other. Tell us what you see, for each screen reader you tried,
 along with your braille display model, through **Help > Report a Bug**, either
 way: helped, no difference, or worse. This is still an open question, and
-real-hardware reports are the only way to answer it. **To go back**, untick the
+real-hardware reports are the only way to answer it. **To go back**, uncheck the
 two experimental-editor checkboxes (or set **Editor surface** back to its
 default) and restart QUILL.
 

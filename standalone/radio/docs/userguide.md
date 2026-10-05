@@ -4705,8 +4705,8 @@ turn it on.
    the video's id. It never sends the video's address or anything about you,
    so SponsorBlock cannot tell what you are watching.
 3. Check **Skip marked segments in YouTube videos** (Alt+S).
-4. Tick the kinds you want skipped. Sponsor reads, self-promotion and
-   reminders to like or subscribe are ticked to start with. You can add
+4. Check the kinds you want skipped. Sponsor reads, self-promotion and
+   reminders to like or subscribe are checked to start with. You can add
    intros, end credits, previews, talking in music videos and off-topic
    tangents.
 5. Choose **OK**. You hear, for example, "Skipping 3 kinds of segment in
@@ -6117,7 +6117,7 @@ follows. They are called release channels.
    means and what choosing it would do. Nothing changes yet.
 3. Press **Switch** to move, or **Close** (Escape) to leave things as they are.
 4. For Beta or Dev, a short warning comes first: what could go wrong, how your
-   favorites are protected, and how to come back. Read it, tick the **I
+   favorites are protected, and how to come back. Read it, check the **I
    understand** box, and choose **Move to Beta** (or **Move to Dev**). **Stay on
    Stable**, or Escape, changes nothing.
 
@@ -6134,7 +6134,7 @@ there, if there is one. Nothing is installed unless you say so.
 **When QUILL Lite or QUILL Cast is installed too.** These apps run on one shared engine on
 your computer. When an app moves to Beta or Dev, it gets its own copy of that
 engine, so the apps you leave on Stable are never touched. You can still move
-several at once: tick them under "Also move my other QuillVille apps on this
+several at once: check them under "Also move my other QuillVille apps on this
 computer" and choose **Switch**.
 
 **A note about disk space.** That second copy of the engine takes about 335 MB.

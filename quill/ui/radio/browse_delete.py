@@ -98,12 +98,12 @@ def _remember(dialog: Any, setting: str) -> None:
 
 
 def _ask(dialog: Any, message: str, *, setting: str, question: bool, checkbox: str) -> bool:
-    """One dialog with a "don't ask again" tick. True = go ahead / was shown.
+    """One dialog with a "don't ask again" check box. True = go ahead / was shown.
 
     ``wx.RichMessageDialog`` because it is the platform's own message box
     *with* the checkbox -- the alternative is a bespoke dialog, which would be
     a new surface in the inventory, a new tab order to test with a screen
-    reader, and no better for it. The checkbox starts **unticked** and the
+    reader, and no better for it. The checkbox starts **unchecked** and the
     default button is **No**: a destructive key sitting beside the navigation
     keys must not be one mis-press from both deleting a row and switching the
     question off forever.

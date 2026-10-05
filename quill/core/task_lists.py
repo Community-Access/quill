@@ -1,18 +1,18 @@
-"""Task lists: tick ``- [ ]`` off, and say how many are done (wx-free).
+"""Task lists: check ``- [ ]`` off, and say how many are done (wx-free).
 
 A Markdown task line is a list item whose text starts with a box: ``- [ ]``
 for a task still to do and ``- [x]`` for one that is done. Bullets ``-``,
 ``*`` and ``+`` and numbered items ``1.`` / ``1)`` all count, at any depth.
 
 The idea is PlanCake's (Andre of Oire Software): an AI-written plan is full of
-checklists, and ticking one should be two keys rather than an arrow, a delete
+checklists, and checking one should be two keys rather than an arrow, a delete
 and a retype. What a listener cannot get any other way is the *count* -- "3 of
 7 tasks complete" means reading every line otherwise -- so the announcement is
 :func:`quill.core.lists.announce.checklist_toggle_announcement`, the Structured
 List Studio's own sentence, which nothing called until this module.
 
 Both editors call :func:`toggle_tasks` and apply the one edit it returns
-through the ordinary undo stack, so Ctrl+Z takes the tick back like any typing.
+through the ordinary undo stack, so Ctrl+Z takes the check mark back like any typing.
 The preview and the HTML export call :func:`task_item_html` so a task renders as
 a real, read-only check box with the item's text as its label.
 """
@@ -54,7 +54,7 @@ class TaskToggle:
 
 
 def is_task_line(line: str) -> bool:
-    """True when *line* is a Markdown task item, ticked or not."""
+    """True when *line* is a Markdown task item, checked or not."""
     return _TASK_RE.match(line) is not None
 
 
@@ -83,10 +83,10 @@ def _list_run(lines: list[tuple[int, str]], index: int) -> range:
 
 
 def toggle_tasks(text: str, start: int, end: int) -> TaskToggle | None:
-    """Tick or untick the task on the caret's line, or every task in a selection.
+    """Check or uncheck the task on the caret's line, or every task in a selection.
 
     Returns ``None`` when no line in range is a task. With several task lines
-    selected, the group is ticked if any of them is open, and unticked only
+    selected, the group is checked if any of them is open, and unchecked only
     when all of them were already done -- the way a group check box behaves.
     The returned span is the smallest one covering every changed box, so the
     edit disturbs nothing else on the lines.

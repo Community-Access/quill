@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.12" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Quill Cast -- the standalone podcast app (not part of public
 QUILL 1.0)</title>
@@ -12,7 +12,10 @@ QUILL 1.0)</title>
     */
     html {
       color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
       background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
     }
     body {
       margin: 0 auto;
@@ -37,11 +40,16 @@ QUILL 1.0)</title>
     }
     @media print {
       html {
-        background-color: white;
+        color-scheme: light only;
       }
-      body {
+      html, body, pre, code {
         background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
         color: black;
+      }
+      pre, code {
+        padding: 0;
       }
       p, h2, h3 {
         orphans: 3;
@@ -54,11 +62,8 @@ QUILL 1.0)</title>
     p {
       margin: 1em 0;
     }
-    a {
-      color: #1a1a1a;
-    }
-    a:visited {
-      color: #1a1a1a;
+    a, a:visited {
+      color: inherit;
     }
     img {
       max-width: 100%;
@@ -87,8 +92,11 @@ QUILL 1.0)</title>
     blockquote {
       margin: 1em 0 1em 1.7em;
       padding-left: 1em;
-      border-left: 2px solid #e6e6e6;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
       color: #606060;
+      color: light-dark(#606060, #b6b6b6);
     }
     code {
       white-space: pre-wrap;
@@ -112,7 +120,7 @@ QUILL 1.0)</title>
     }
     hr {
       border: none;
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       height: 1px;
       margin: 1em 0;
     }
@@ -129,11 +137,11 @@ QUILL 1.0)</title>
     }
     tbody {
       margin-top: 0.5em;
-      border-top: 1px solid #1a1a1a;
-      border-bottom: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
     }
     th {
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       padding: 0.25em 0.5em 0.25em 0.5em;
     }
     td {
@@ -172,7 +180,6 @@ QUILL 1.0)</title>
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <style>
     /* Accessible skip link: off-screen until it receives keyboard focus. */
@@ -781,7 +788,7 @@ character, and every other punctuation mark means itself, so
 <code>Q+A*</code> finds the segment actually called “Q+A”. <em>Regular
 expression</em> is there for people who want one. A pattern has to
 describe the <strong>whole</strong> title, so put a star at each end to
-mean “contains”. Matching ignores capital letters unless you tick
+mean “contains”. Matching ignores capital letters unless you check
 <strong>Capital letters have to match too</strong>.</li>
 <li><strong>Minimum length</strong>, in minutes. An episode whose feed
 does not say how long it is never matches a length rule — a missing
@@ -796,11 +803,11 @@ matches</em> is the sharp one — it is how you follow a single strand of
 a feed that carries several, and every safety rule below exists because
 of it.</p>
 <p><strong>Where this applies</strong> is the part that makes one
-feature do the work of eight. Tick as many or as few as you like:</p>
+feature do the work of eight. Check as many or as few as you like:</p>
 <table>
 <thead>
 <tr>
-<th>Ticked</th>
+<th>Checked</th>
 <th>What it means</th>
 </tr>
 </thead>
@@ -839,15 +846,15 @@ feature do the work of eight. Tick as many or as few as you like:</p>
 </tr>
 </tbody>
 </table>
-<p>A new filter starts with the first four ticked and the last four
+<p>A new filter starts with the first four checked and the last four
 clear. The first four decline to <em>route</em> an episode and are
 invisible when they are wrong; the last four <em>hide</em> it, which is
 a stronger thing to do to somebody’s library, so they are opt-in one
-tick at a time. Saving with any of them ticked asks you once, and says
-where the hidden episodes still are.</p>
+check box at a time. Saving with any of them checked asks you once, and
+says where the hidden episodes still are.</p>
 <p><strong>Everything except the Play Queue takes effect the moment you
 save</strong>, including on episodes you already had — the lists ask the
-filter as they are drawn, so unticking a scope later brings those
+filter as they are drawn, so unchecking a scope later brings those
 episodes straight back. The Play Queue is the exception: it is the one
 list you built by hand, so saving offers, separately, to clear this
 podcast’s matching episodes out of it. That never deletes anything, and
@@ -861,7 +868,7 @@ is in force.</p>
 <p><strong>Saving is gated, not merely checked.</strong> QUILL Cast
 refuses to save a filter that is switched on with no rule switched on,
 one whose regular expression cannot be read (it quotes the reason), one
-with nothing ticked under Where this applies, or a minimum-length rule
+with nothing checked under Where this applies, or a minimum-length rule
 against a feed where not one of the 50 newest episodes publishes a
 length. Where only <em>some</em> episodes publish a length, it says
 exactly how many and asks.</p>
@@ -957,7 +964,7 @@ downloaded-audio processing</h4>
 <strong>Always sync the full catalog</strong>: beyond the routine
 “what’s new” refresh, a download-mode show backfills and downloads every
 episode the live feed still offers — and because backfilling a catalog
-while keep-last-N retention prunes it would fight itself, ticking it
+while keep-last-N retention prunes it would fight itself, checking it
 nudges retention to keep-all (announced, never silent).
 <strong>Auto-trim silence</strong> and <strong>Normalize
 loudness</strong> process each finished download using the same ffmpeg
@@ -1711,16 +1718,17 @@ design it was ported from. A rule set says <em>what</em> an episode is;
 the scopes say <em>where that means anything</em>: the Inbox,
 Auto-Queue, auto-download, the new-episode announcement, the podcast’s
 own episode list, the cross-show views, smart playlists, and Search
-Everywhere. Eight independent ticks, so one feature answers “do not put
-it in front of me”, “do not spend my bandwidth on it” and “I never want
-to see it again” without any of them implying the others. A new filter
-ships with the four <strong>routing</strong> scopes on and the four
-<strong>hiding</strong> scopes off: declining to route is invisible and
-reversible; hiding changes what a person can find, and is opt-in.</li>
+Everywhere. Eight independent check boxes, so one feature answers “do
+not put it in front of me”, “do not spend my bandwidth on it” and “I
+never want to see it again” without any of them implying the others. A
+new filter ships with the four <strong>routing</strong> scopes on and
+the four <strong>hiding</strong> scopes off: declining to route is
+invisible and reversible; hiding changes what a person can find, and is
+opt-in.</li>
 </ul>
 <p><strong>Asked, not stamped.</strong> The verdict is computed at every
 point of use rather than written onto an episode at ingest. That is why
-unticking a scope takes effect on the next redraw with no sweep, no
+unchecking a scope takes effect on the next redraw with no sweep, no
 migration and nothing to undo – and it is the correction to the first
 cut, which stamped an Inbox dismissal at refresh time and could
 therefore only ever be undone episode by episode. Two things are still
@@ -1753,7 +1761,7 @@ duration rule where <strong>none</strong> of the 50 publish a duration –
 the empty sample included – is refused outright.</p>
 <p><strong>Preview</strong> is a dry run over the newest 50 stored
 episodes that mutates nothing, and it <strong>evaluates the draft while
-the top-level switch is off and while no scope is ticked</strong>.
+the top-level switch is off and while no scope is checked</strong>.
 Preview answers “what do these rules catch?”, which is a question about
 the rules; a preview that agreed with you whenever the switch was off
 would agree right up until it mattered. This was the first defect device

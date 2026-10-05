@@ -93,7 +93,7 @@ you press Enter on it.
 
 **Help > Tutorials...** (Ctrl+Alt+F1) opens 41 guided tutorials, 281 steps in
 all, in six groups. A lesson goes one step at a time and tells you what you
-should *hear* when the step worked. It can even do the step for you. Tick
+should *hear* when the step worked. It can even do the step for you. Check
 **Follow me** and it notices when you have done the step, and moves on. The
 keys a tutorial teaches are your own keys, so if you change a key, every
 lesson that mentions it tells you your new key.

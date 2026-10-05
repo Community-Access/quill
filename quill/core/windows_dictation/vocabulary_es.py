@@ -31,13 +31,16 @@ from quill.core.windows_dictation.vocabulary import (
     CommandHelp,
     Glue,
     Mark,
+    PrefixHelp,
 )
 
 __all__ = [
     "SPANISH_CAPITAL_WORDS",
     "SPANISH_COMMAND_HELP",
     "SPANISH_MARKS",
+    "SPANISH_PREFIX_HELP",
     "SPANISH_SPACE_WORDS",
+    "SPANISH_SWITCH_HELP",
     "spanish_mark_rows",
 ]
 
@@ -231,6 +234,150 @@ SPANISH_COMMAND_HELP: tuple[CommandHelp, ...] = (
         Command.STOP,
         ("deja de dictar", "para de dictar", "detén el dictado"),
         "Stops dictation.",
+        "Dictation itself",
+    ),
+    CommandHelp(
+        Command.SPELL_THAT,
+        ("deletrea eso",),
+        "Spells the last phrase again.",
+        "Correcting",
+    ),
+    CommandHelp(
+        Command.COPY_ALL,
+        ("copia todo", "copiar todo"),
+        "Copies the whole document.",
+        "Clips",
+    ),
+    CommandHelp(
+        Command.COPY_THAT,
+        ("copia eso",),
+        "Copies the last phrase.",
+        "Clips",
+    ),
+    CommandHelp(
+        Command.SHOW_CLIPS,
+        ("muestra la bandeja",),
+        "Opens the Copy Tray.",
+        "Clips",
+    ),
+    CommandHelp(
+        Command.SHOW_SNIPPETS,
+        ("muestra los fragmentos",),
+        "Opens the snippets.",
+        "Clips",
+    ),
+    CommandHelp(
+        Command.CAPS_ON,
+        ("mayúsculas iniciales",),
+        "Capitals at the start of each word.",
+        "Caps",
+    ),
+    CommandHelp(
+        Command.CAPS_OFF,
+        ("sin mayúsculas iniciales",),
+        "Ordinary capitals again.",
+        "Caps",
+    ),
+    CommandHelp(
+        Command.SELECT_SENTENCE,
+        ("selecciona la frase",),
+        "Selects the sentence.",
+        "Selecting",
+    ),
+    CommandHelp(
+        Command.SELECT_LINE,
+        ("selecciona la línea",),
+        "Selects the line.",
+        "Selecting",
+    ),
+    CommandHelp(
+        Command.SELECT_PARAGRAPH,
+        ("selecciona el párrafo",),
+        "Selects the paragraph.",
+        "Selecting",
+    ),
+    CommandHelp(
+        Command.SELECT_NEXT,
+        ("selecciona la siguiente",),
+        "The next match.",
+        "Selecting",
+    ),
+    CommandHelp(
+        Command.SELECT_PREVIOUS,
+        ("selecciona la anterior",),
+        "The match before.",
+        "Selecting",
+    ),
+)
+
+#: The drafted Spanish commands that take words after them. Awaiting review,
+#: switched off with the rest.
+SPANISH_PREFIX_HELP: tuple[PrefixHelp, ...] = (
+    PrefixHelp(
+        Command.SELECT_WORDS,
+        ("selecciona",),
+        "words",
+        "Selects those words.",
+        "Selecting",
+    ),
+    PrefixHelp(
+        Command.GO_TO_WORDS,
+        ("ve a", "ir a"),
+        "words",
+        "Before those words.",
+        "Selecting",
+    ),
+    PrefixHelp(
+        Command.GO_AFTER_WORDS,
+        ("ve después de",),
+        "words",
+        "After them.",
+        "Selecting",
+    ),
+    PrefixHelp(
+        Command.CORRECT_WORDS,
+        ("corrige",),
+        "words",
+        "Selects them to replace.",
+        "Selecting",
+    ),
+    PrefixHelp(
+        Command.SPELL_WORDS,
+        ("deletrea",),
+        "letters",
+        "Spells one word.",
+        "Correcting",
+    ),
+    PrefixHelp(
+        Command.PASTE_SLOT,
+        ("pega la ranura",),
+        "a number",
+        "Pastes that slot.",
+        "Clips",
+    ),
+    PrefixHelp(
+        Command.INSERT_SNIPPET,
+        ("inserta fragmento",),
+        "a name",
+        "A snippet.",
+        "Clips",
+    ),
+)
+
+#: The way between the two languages by voice. **On in every build** -- unlike
+#: the drafted table above -- because somebody who said "switch to Spanish" must
+#: be able to come back without the keyboard. Accents optional when matched.
+SPANISH_SWITCH_HELP: tuple[CommandHelp, ...] = (
+    CommandHelp(
+        Command.SWITCH_ENGLISH,
+        ("cambiar a inglés", "cambia a inglés", "dictado en inglés"),
+        "Back to English dictation.",
+        "Dictation itself",
+    ),
+    CommandHelp(
+        Command.SWITCH_SPANISH,
+        ("cambiar a español", "dictado en español"),
+        "Stays in Spanish.",
         "Dictation itself",
     ),
 )

@@ -36,6 +36,48 @@ _TOGGLE = "tools.windows_dictation_toggle"
 _SETTINGS = "tools.windows_dictation_settings"
 _RECENT = "tools.windows_dictation_recent"
 _WORDS = "tools.windows_dictation_words"
+_TRANSCRIBE = "tools.windows_dictation_transcribe_file"
+_LANGUAGE = "tools.windows_dictation_switch_language"
+_LIVE_TRANSCRIPT = "tools.windows_dictation_live_transcript"
+_CONTEXT = "tools.windows_dictation_context"
+
+#: ``(command id, menu label, palette title, handler)``, in menu order. The
+#: first is a check item. The labels are QUILL Lite's (commands_dictation.py).
+_ROWS: tuple[tuple[str, str, str, str], ...] = (
+    (_TOGGLE, "Dictation &On", "Start or Stop Live Dictation", "cmd_toggle_dictation"),
+    (_SETTINGS, "Dictation &Settings...", "Live Dictation Settings", "cmd_dictation_settings"),
+    (_RECENT, "Recent &Phrases...", "Live Dictation: Recent Phrases", "cmd_dictation_recent"),
+    (
+        _WORDS,
+        "My &Words and Phrases...",
+        "Live Dictation: My Words and Phrases",
+        "cmd_dictation_words",
+    ),
+    (
+        _TRANSCRIBE,
+        "Transcribe a &Recording...",
+        "Transcribe a Recording",
+        "cmd_transcribe_audio_file",
+    ),
+    (
+        _LANGUAGE,
+        "Switch Dictation &Language",
+        "Switch Dictation Language",
+        "cmd_switch_dictation_language",
+    ),
+    (
+        _LIVE_TRANSCRIPT,
+        "Start or Stop Live &Transcript",
+        "Start or Stop Live Transcript",
+        "cmd_live_transcript",
+    ),
+    (
+        _CONTEXT,
+        "Dictation &Context for This Document...",
+        "Dictation Context for This Document",
+        "cmd_dictation_context",
+    ),
+)
 
 
 class WindowsDictationCommandsMixin(WindowsDictationMixin):
@@ -102,6 +144,13 @@ class WindowsDictationCommandsMixin(WindowsDictationMixin):
         # the verbosity settings may hold back.
         self._announce(text)
 
+    def _dictation_task_manager(self) -> Any:
+        return self._task_manager
+
+    def _dictation_new_document(self, text: str, name: str) -> None:
+        del name  # a new tab is Untitled until it is saved, as in QUILL Lite
+        self._power_tools_open_text_in_new_buffer(text, "Transcript opened in a new document.")
+
     def _dictation_state_changed(self, state: Any) -> None:
         """QUILL's mirror of the state: the menu's check mark, and the status
         bar, quietly (QUILL Lite has a Dictation cell for the same words)."""
@@ -118,16 +167,84 @@ class WindowsDictationCommandsMixin(WindowsDictationMixin):
         if text:
             self._set_status_quiet(text)
 
+    # -- the 2026-10-05 voice commands' answers (windows_dictation_library.py) -- #
+
+    def _dictation_copy_all(self) -> None:
+        self.copy_all()
+
+    def _dictation_set_clipboard(self, text: str) -> bool:
+        return bool(self._copy_to_clipboard(text))
+
+    def _dictation_show_clips(self) -> None:
+        self.open_copy_tray()
+
+    def _dictation_show_snippets(self) -> None:
+        self.insert_snippet()
+
+    def _dictation_slot_text(self, number: int) -> str | None:
+        tray = self._tray()
+        if not 1 <= number <= tray.SLOT_COUNT:
+            return None
+        return str(tray.slot(number).text or "")
+
+    def _dictation_snippet_names(self) -> list[str]:
+        library = getattr(self, "_snippet_library", None)
+        snippets = getattr(library, "snippets", []) or []
+        return [snippet.name for snippet in snippets if snippet.enabled and snippet.name]
+
+    def _dictation_snippet_text(self, name: str) -> tuple[str, int] | None:
+        from quill.ui.windows_dictation_library import snippet_with_blanks
+
+        library = getattr(self, "_snippet_library", None)
+        for snippet in getattr(library, "snippets", []) or []:
+            if snippet.enabled and snippet.name == name:
+                try:
+                    return snippet_with_blanks(snippet.body)
+                except ValueError:
+                    return None
+        return None
+
+    def _dictation_abbreviation_entries(self) -> list[Any]:
+        library = getattr(self, "_abbreviation_library", None)
+        return list(library.enabled_only()) if library is not None else []
+
+    def _dictation_clipboard_text(self) -> str:
+        return str(self._get_clipboard_text_for_abbreviation() or "")
+
+    # -- live transcripts and the document (windows_dictation_extras.py) -------- #
+
+    def _dictation_document_path(self) -> Path | None:
+        path = getattr(getattr(self, "document", None), "path", None)
+        return Path(path) if path else None
+
+    def _dictation_open_transcript_document(self) -> tuple[Any, Any]:
+        from quill.core.document import Document
+
+        self._clear_empty_workspace_state()
+        self._create_document_tab(Document(text=""), select=True)
+        return self, self.editor
+
+    def _dictation_background_edit(self, control: Any) -> None:
+        """A live transcript wrote into *control*: keep its tab's document in
+        step when it is not the tab in front (the front tab's own text event
+        does that for it)."""
+        if control is self.editor:
+            return
+        for tab in getattr(self, "_document_tabs", []):
+            if tab.editor is control:
+                tab.document.set_text(control.GetValue())
+                return
+
     # -- wiring ----------------------------------------------------------- #
 
-    def _windows_dictation_ids(self) -> tuple[Any, Any, Any, Any]:
-        """The two menu ids, made once: a menu rebuild must reuse them, because
-        the bindings were made against the first pair."""
+    def _windows_dictation_ids(self) -> tuple[Any, ...]:
+        """The menu ids, made once: a menu rebuild must reuse them, because
+        the bindings were made against the first set."""
         ids = getattr(self, "_windows_dictation_menu_ids", None)
         if ids is None:
             import wx
 
-            ids = (wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef())
+            ids = tuple(wx.NewIdRef() for _row in _ROWS)
             self._windows_dictation_menu_ids = ids
         return ids
 
@@ -139,57 +256,34 @@ class WindowsDictationCommandsMixin(WindowsDictationMixin):
 
         from quill.core.i18n import _
 
-        toggle_id, settings_id, recent_id, words_id = self._windows_dictation_ids()
         menu = wx.Menu()
-        # A check item, as in QUILL Lite: "am I heard?" answered by the menu.
-        menu.AppendCheckItem(toggle_id, self._menu_label(_("Dictation &On"), _TOGGLE))
-        menu.Append(settings_id, self._menu_label(_("Dictation &Settings..."), _SETTINGS))
-        menu.Append(recent_id, self._menu_label(_("Recent &Phrases..."), _RECENT))
-        menu.Append(words_id, self._menu_label(_("My &Words and Phrases..."), _WORDS))
+        for index, (command_id, label, _title, _handler) in enumerate(_ROWS):
+            item_id = self._windows_dictation_ids()[index]
+            # The first is a check item, as in QUILL Lite: "am I heard?"
+            append = menu.AppendCheckItem if index == 0 else menu.Append
+            append(item_id, self._menu_label(_(label), command_id))
         speech_menu.AppendSubMenu(menu, _("L&ive Dictation"))
 
     def _bind_windows_dictation_menu(self) -> None:
         import wx
 
-        toggle_id, settings_id, recent_id, words_id = self._windows_dictation_ids()
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.cmd_toggle_dictation(), id=toggle_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.cmd_dictation_settings(), id=settings_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.cmd_dictation_recent(), id=recent_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.cmd_dictation_words(), id=words_id)
+        for item_id, (_id, _label, _title, handler) in zip(
+            self._windows_dictation_ids(), _ROWS, strict=True
+        ):
+            self.frame.Bind(wx.EVT_MENU, lambda _e, h=handler: getattr(self, h)(), id=item_id)
         # And follow the frame's activation, for the wake phrase.
         self._dictation_install()
 
     def _register_windows_dictation_commands(self) -> None:
-        self.commands.try_register(
-            _TOGGLE,
-            "Start or Stop Live Dictation",
-            self.cmd_toggle_dictation,
-            self._binding_for(_TOGGLE),
-        )
-        self.commands.try_register(
-            _SETTINGS,
-            "Live Dictation Settings",
-            self.cmd_dictation_settings,
-            self._binding_for(_SETTINGS),
-        )
-        self.commands.try_register(
-            _RECENT,
-            "Live Dictation: Recent Phrases",
-            self.cmd_dictation_recent,
-            self._binding_for(_RECENT),
-        )
-        self.commands.try_register(
-            _WORDS,
-            "Live Dictation: My Words and Phrases",
-            self.cmd_dictation_words,
-            self._binding_for(_WORDS),
-        )
+        for command_id, _label, title, handler in _ROWS:
+            self.commands.try_register(
+                command_id, title, getattr(self, handler), self._binding_for(command_id)
+            )
 
     def _command_to_menu_id_map(self) -> dict[str, int]:
         mapping: dict[str, int] = super()._command_to_menu_id_map()  # type: ignore[misc]
-        toggle_id, settings_id, recent_id, words_id = self._windows_dictation_ids()
-        mapping[_TOGGLE] = toggle_id
-        mapping[_SETTINGS] = settings_id
-        mapping[_RECENT] = recent_id
-        mapping[_WORDS] = words_id
+        for item_id, (command_id, _label, _title, _handler) in zip(
+            self._windows_dictation_ids(), _ROWS, strict=True
+        ):
+            mapping[command_id] = item_id
         return mapping

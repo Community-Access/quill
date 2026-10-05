@@ -676,7 +676,7 @@ progress, for testers.
 
 Arrowing through the three only explains them. If you choose Beta or Dev, a
 short warning says plainly what could go wrong and how to come back, and
-nothing moves until you tick **I understand** and choose **Move**. Before it
+nothing moves until you check **I understand** and choose **Move**. Before it
 moves, Quill Radio saves a copy of your favorites, history and settings. Your recordings are not copied, and updates don't change them.
 
 Coming back to Stable is safe. If Stable can read everything you have saved,

@@ -284,7 +284,7 @@ def includes_prereleases(state: ChannelState) -> bool:
 
     Stable never does. Beta and Dev do -- unless the person asked to come back
     to Stable and is waiting for it to catch up, when offers stop unless they
-    ticked "keep getting Beta fixes while I wait".
+    checked "keep getting Beta fixes while I wait".
     """
     if state.channel == STABLE:
         return False

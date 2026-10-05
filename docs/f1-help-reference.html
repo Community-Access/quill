@@ -418,10 +418,10 @@ arrange stations into folders. Changes save immediately and the main
 window’s tree follows along.</p>
 <p><strong>Move Quill Radio to Beta?.</strong> Says plainly what could
 go wrong on Beta or Dev, how your settings are protected, and how to
-come back. Nothing changes unless you tick the box and choose Move.</p>
+come back. Nothing changes unless you check the box and choose Move.</p>
 <p><strong>Move Quill Radio to Dev?.</strong> Says plainly what could go
 wrong on Beta or Dev, how your settings are protected, and how to come
-back. Nothing changes unless you tick the box and choose Move.</p>
+back. Nothing changes unless you check the box and choose Move.</p>
 <p><strong>Player.</strong> The whole transport in one small window:
 what is playing, where you are in it, and buttons for play, stop,
 skipping, speed, chapters and volume. Ctrl+Shift+G opens it from
@@ -1095,7 +1095,7 @@ is YouTube’s usual order.</li>
 level) (<code>quill/ui/radio/youtube_sponsorblock_ui.py</code>)</h4>
 <ul>
 <li><code>enabled</code>: Off by default. When on, Quill Radio jumps
-over the kinds of segment ticked below while a YouTube video plays, and
+over the kinds of segment checked below while a YouTube video plays, and
 says what it skipped.</li>
 </ul>
 <h4 id="module-level-quilluiradioyoutube_video_windowpy">(module level)
@@ -1145,7 +1145,7 @@ is playing has chapters, and runs the same command as its key.</li>
 <li><code>self._step_field</code>: The step you are on: what to do, why,
 the keys for it, and what you should hear. Read-only, so arrow through
 it freely and copy from it with Ctrl+C.</li>
-<li><code>self._follow</code>: While this is ticked, the lesson watches
+<li><code>self._follow</code>: While this is checked, the lesson watches
 the app and moves you to the next step by itself once it can see you
 have done this one. It watches what changed, not which key you pressed,
 so any route counts. Unavailable in an app whose lessons have nothing to
@@ -1305,10 +1305,10 @@ listed as played. It says how many rows this touches before it does
 anything, and it changes only the played mark – no file is deleted.</p>
 <p><strong>Move QUILL Cast to Beta?.</strong> Says plainly what could go
 wrong on Beta or Dev, how your settings are protected, and how to come
-back. Nothing changes unless you tick the box and choose Move.</p>
+back. Nothing changes unless you check the box and choose Move.</p>
 <p><strong>Move QUILL Cast to Dev?.</strong> Says plainly what could go
 wrong on Beta or Dev, how your settings are protected, and how to come
-back. Nothing changes unless you tick the box and choose Move.</p>
+back. Nothing changes unless you check the box and choose Move.</p>
 <p><strong>Move to Folder.</strong> Choose the folder to file into, or
 make a new one. Folders are yours to invent, and filing changes nothing
 about what is downloaded or played.</p>
@@ -1667,8 +1667,8 @@ id="episodefilterswindow-quilluipodcastsepisode_filters_dialogpy">EpisodeFilters
 (<code>quill/ui/podcasts/episode_filters_dialog.py</code>)</h4>
 <ul>
 <li><code>ok_btn</code>: Saves these rules for this podcast. Every list
-you ticked takes effect at once, on episodes you already have as well as
-new ones; nothing is deleted. The Play Queue is the only thing not
+you checked takes effect at once, on episodes you already have as well
+as new ones; nothing is deleted. The Play Queue is the only thing not
 touched without asking, and saving asks about it separately.</li>
 <li><code>cancel_btn</code>: Closes this window and returns to where you
 were. Anything not saved is left exactly as it was.</li>
@@ -3872,7 +3872,7 @@ playback to its start.</li>
 text, when one is available. Empty otherwise.</li>
 </ul>
 <h2 id="quill-lite">QUILL Lite</h2>
-<p>Control coverage: 146 audited sites (146 helped).</p>
+<p>Control coverage: 155 audited sites (155 helped).</p>
 <h3 id="every-window-and-what-it-is-for-8">Every window, and what it is
 for</h3>
 <p><strong>AI Assistant.</strong> Ask QUILL’s free AI to summarize,
@@ -4077,10 +4077,10 @@ Selection or Insert Below, and either of those is a single edit that
 Control Z takes back.</p>
 <p><strong>Move QUILL Lite to Beta?.</strong> Says plainly what could go
 wrong on Beta or Dev, how your settings are protected, and how to come
-back. Nothing changes unless you tick the box and choose Move.</p>
+back. Nothing changes unless you check the box and choose Move.</p>
 <p><strong>Move QUILL Lite to Dev?.</strong> Says plainly what could go
 wrong on Beta or Dev, how your settings are protected, and how to come
-back. Nothing changes unless you tick the box and choose Move.</p>
+back. Nothing changes unless you check the box and choose Move.</p>
 <p><strong>Next Paragraph.</strong> What the AI sent back. It is
 read-only on purpose: nothing goes into your document until you choose
 Replace My Selection or Insert Below, and either of those is a single
@@ -4175,6 +4175,10 @@ Control Z takes back.</p>
 recogniser’s mistakes corrected – misheard words, punctuation, fillers –
 and nothing else changed. Replace My Selection puts it where the
 dictated text was; Control Z takes it back.</p>
+<p><strong>Transcribe a Recording.</strong> Turns a recording into text
+in the background: choose the file, the speech model, the language and
+where the text goes, then keep working. While one is running, this
+window says how far it has got and can stop it.</p>
 <p><strong>Translation.</strong> What the AI sent back. It is read-only
 on purpose: nothing goes into your document until you choose Replace My
 Selection or Insert Below, and either of those is a single edit that
@@ -4675,7 +4679,9 @@ microphone can hear it and write it down again.</li>
 said as hyphen, is always a plain hyphen that joins two words.</li>
 <li><code>self.pause</code>: How long you can stop talking before what
 you said is written. Choose Long if dictation cuts you off while you are
-still thinking; Short writes sooner after you stop.</li>
+still thinking; Short writes sooner after you stop. Longer and Longest
+are for speaking slowly: every phrase then waits two or three seconds
+before it is written.</li>
 <li><code>self.remove_fillers</code>: Leave out hesitations – um, uh,
 erm, hmm – instead of writing them. Real words are never removed.</li>
 <li><code>self.continuous</code>: For talking in one long run and
@@ -4755,6 +4761,15 @@ and on a braille display, never in your document, and the final words
 replace them when you pause. Say also speaks the new words quietly, a
 few at a time. The built-in engines wait for the pause, so with them the
 status bar says Hearing you.</li>
+<li><code>self.readback_marks</code>: When each phrase is read back, say
+its punctuation by name: Hello comma world period. That way you hear
+whether the comma or full stop went in, whatever your screen reader’s
+punctuation level is. The status bar and a braille display always show
+the real marks. On by default.</li>
+<li><code>self.timestamps</code>: In a live transcript, start each new
+paragraph with the time, like 10:42 in square brackets, so you can find
+a moment later. A new paragraph starts when the speaker pauses for four
+seconds or more. Off by default.</li>
 <li><code>self.send</code>: In the AI Conversation window, Ctrl+F11
 dictates your message. When I pause sends it as soon as you stop
 talking, the reply is read aloud, and the microphone waits until it has
@@ -4790,6 +4805,11 @@ OpenAI appears in the speech engine list and its models load here.</li>
 Dictated Text how you like your dictation tidied: write numbers as
 digits, British spelling, names always spelled your way. Saves these
 settings first.</li>
+<li><code>anywhere</code>: Saves these settings, then starts Quill
+Inkwell with them, so you can dictate into your browser, your email or
+any other program on a key you choose in Inkwell’s File menu.
+Punctuation, spelling and scratch that work there; selecting and
+correcting words work only in QUILL’s own documents.</li>
 </ul>
 <h4
 id="speechmodelsdialog-quilluidictation_models_dialogpy">SpeechModelsDialog
@@ -4821,6 +4841,48 @@ it.</li>
 stopped and kept.</li>
 </ul>
 <h4
+id="transcribefiledialog-quilluidictation_transcribe_dialogpy">TranscribeFileDialog
+(<code>quill/ui/dictation_transcribe_dialog.py</code>)</h4>
+<ul>
+<li><code>self.file</code>: The recording to turn into text: MP3, M4A,
+AAC, WAV, Ogg, Opus, FLAC or WMA. Type its full path, choose it with
+Browse, or drop the file on this window. Choosing several with Browse
+transcribes them one after another.</li>
+<li><code>browse</code>: Opens the file picker. Hold Ctrl to choose
+several recordings; they are transcribed one after another with the same
+choices.</li>
+<li><code>self.language</code>: English or Spanish. The model list shows
+only the models that know the language chosen here.</li>
+<li><code>self.model</code>: Every speech model on this computer, most
+accurate first, with the most accurate one chosen for you: the two built
+into QUILL, any you downloaded in Dictation Settings, Speech Models, and
+OpenAI’s models when your own OpenAI key is saved. A slower model is
+fine for a recording: nobody is waiting for each phrase, and you can
+keep working.</li>
+<li><code>self.about</code>: What the chosen model is good for, how long
+the recording is, and about how long transcribing it should take on this
+computer.</li>
+<li><code>self.destination</code>: A new document is the default: the
+transcript opens in a document of its own when it is ready. This
+document puts it where the cursor is in this document at the moment it
+finishes, as one step Ctrl+Z can take back.</li>
+<li><code>self.timestamps</code>: Off unless you check it. A new
+paragraph starts wherever the recording pauses for two seconds or more;
+with timestamps checked, each paragraph begins with the hours, minutes
+and seconds into the recording where it was said, like [00:01:23], so
+you can find it again.</li>
+<li><code>self.obey</code>: Off by default: in a recording, somebody who
+says new paragraph or comma usually means the words. Turn it on for a
+recording you dictated on purpose, and comma, period, new line, new
+paragraph and scratch that work as they do in dictation. Commands that
+move the cursor are ignored.</li>
+<li><code>self.running</code>: What is being transcribed at the moment,
+how far it has got, and how many recordings are waiting after it.</li>
+<li><code>stop</code>: Stops the transcription that is running and
+forgets any recordings waiting after it. Nothing is written into a
+document.</li>
+</ul>
+<h4
 id="recentdocumentswindow-quilluirecent_documents_dialogpy">RecentDocumentsWindow
 (<code>quill/ui/recent_documents_dialog.py</code>)</h4>
 <ul>
@@ -4842,7 +4904,7 @@ Pinned documents stay, and no file is deleted.</li>
 <li><code>self.limit_spin</code>: How many recently opened documents to
 remember, from 1 to 50. Pinned documents are kept on top of this
 number.</li>
-<li><code>self.auto_clear</code>: When ticked, a document that has been
+<li><code>self.auto_clear</code>: When checked, a document that has been
 deleted from this computer’s own drives leaves the list at the next
 start. Files on a USB drive or a network share are kept, because they
 are usually just unplugged.</li>

@@ -195,7 +195,7 @@ def test_the_guide_says_what_a_profile_that_claims_a_format_creates(guide: str) 
 
 
 def test_every_switchable_area_is_named_by_its_checkbox_label(guide: str) -> None:
-    """Somebody reading the guide has to be able to find the box to untick."""
+    """Somebody reading the guide has to be able to find the box to uncheck."""
     missing = sorted(area.label for area in AREAS if area.label not in guide)
     assert missing == [], (
         "Customize Features offers these and the guide does not name them: " + ", ".join(missing)

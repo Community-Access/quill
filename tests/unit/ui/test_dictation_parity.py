@@ -110,11 +110,34 @@ def test_the_dictation_windows_are_shared_modules() -> None:
     import quill.ui.dictation_lists_dialog as lists
     import quill.ui.dictation_models_dialog as models
     import quill.ui.dictation_more_dialog as more
+    import quill.ui.dictation_transcribe_dialog as transcribe
     import quill.ui.dictation_words_dialog as words
     import quill.ui.windows_dictation_dialog as settings
 
-    for module in (lists, models, more, words, settings):
+    for module in (lists, models, more, transcribe, words, settings):
         assert module.__name__.startswith("quill.ui."), module.__name__
+
+
+def test_transcribe_audio_file_is_one_command_on_one_key_in_both() -> None:
+    """2026-10-05: a recording into text with dictation's engines. One handler,
+    on the shared mixin both editors inherit; one key; one window; one help topic."""
+    from quill.apps.lite_window_dictation import DocumentDictationMixin
+    from quill.core.help.renderer import load_topics
+    from quill.ui.main_frame_windows_dictation import WindowsDictationCommandsMixin
+    from quill.ui.windows_dictation_transcribe import DictationTranscribeMixin
+
+    rows = _lite_dictation_rows()
+    assert rows["cmd_transcribe_audio_file"] == "Shift+F5"
+    quill_id = COMMAND_EQUIVALENTS["cmd_transcribe_audio_file"]
+    assert quill_id == "tools.windows_dictation_transcribe_file"
+    assert DEFAULT_KEYMAP[quill_id] == "Shift+F5"
+    for adapter in (DocumentDictationMixin, WindowsDictationCommandsMixin):
+        assert issubclass(adapter, DictationTranscribeMixin)
+        assert (
+            adapter.cmd_transcribe_audio_file is DictationTranscribeMixin.cmd_transcribe_audio_file
+        )
+    topic = load_topics()[quill_id]
+    assert "Shift+F5" in topic.keystrokes
 
 
 def test_the_ai_conversation_window_dictates_in_both() -> None:

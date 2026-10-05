@@ -831,8 +831,8 @@ itself the defect.
 4. Select a paragraph, **Ctrl+Alt+G**, choose Summarize, **Enter**. Keep typing
    while it thinks.
 5. In the result window press **Replace**, then **Ctrl+Z**.
-6. **Ctrl+Alt+Shift+F2** (QUILL Lite: **Ctrl+Alt+Shift+F9**); then tick **Show
-   advanced AI features**; then untick it.
+6. **Ctrl+Alt+Shift+F2** (QUILL Lite: **Ctrl+Alt+Shift+F9**); then check **Show
+   advanced AI features**; then uncheck it.
 7. **Ctrl+Alt+Shift+K** and withdraw.
 
 **You should see and hear**
@@ -851,8 +851,8 @@ itself the defect.
   AI edit back. If you typed over the source text while the answer was in
   flight, Replace is not offered and QUILL says why rather than writing the
   answer over whatever now occupies those offsets.
-- Ticking **Show advanced AI features** brings the whole surface back at once;
-  unticking it hides it again. Nothing is *lost* in Basic: every advanced command
+- Checking **Show advanced AI features** brings the whole surface back at once;
+  unchecking it hides it again. Nothing is *lost* in Basic: every advanced command
   still runs from the Command Palette and still answers its chord.
 - With **Use Artificial Intelligence** off, the two rows that spend a request are
   dimmed, **Usage and Connect or Sign Out stay live**, and **Privacy Agreement is

@@ -77,9 +77,12 @@ class PhraseAnchor:
 class EditorDocument:
     """The document port: one text control, reached through its host."""
 
-    def __init__(self, host: Any, control: Any) -> None:
+    def __init__(self, host: Any, control: Any, *, background: bool = False) -> None:
         self._host = host
         self._control = control
+        #: A live transcript: written into whether or not it has the focus, so
+        #: the person can keep working elsewhere (dict.md 3.7).
+        self.background = background
 
     def unavailable_reason(self, *, writing: bool) -> str:
         control = self._control
@@ -87,7 +90,7 @@ class EditorDocument:
             return "Dictation stopped: the document it was writing into has closed or changed."
         if not control.IsEditable():
             return "This document is read-only, so dictation cannot write here."
-        if writing and wx.Window.FindFocus() is not control:
+        if writing and not self.background and wx.Window.FindFocus() is not control:
             return "Dictation stopped because the document no longer has the focus."
         return ""
 
@@ -179,8 +182,17 @@ class EditorDocument:
         # (dict.md 2.5): select the range and write over it, which the native
         # control records as one reversible edit -- Remove then WriteText was two.
         replace_as_one_undo(control, start, end, text)
-        self._host._dictation_after_edit()
+        self._edited()
         return start, control.GetInsertionPoint()
+
+    def _edited(self) -> None:
+        """Tell the host its document changed -- naming the control when it is
+        not the one in front (a live transcript in a background tab)."""
+        elsewhere = getattr(self._host, "_dictation_background_edit", None)
+        if self.background and callable(elsewhere):
+            elsewhere(self._control)
+            return
+        self._host._dictation_after_edit()
 
     def text_between(self, start: int, end: int) -> str:
         return str(self._control.GetRange(max(0, start), end))
@@ -188,7 +200,7 @@ class EditorDocument:
     def remove(self, start: int, end: int) -> None:
         self._control.Remove(start, end)
         self._control.SetInsertionPoint(start)
-        self._host._dictation_after_edit()
+        self._edited()
 
     def line_bounds(self) -> tuple[int, int]:
         control = self._control
@@ -298,7 +310,27 @@ class HostFeedback:
         from quill.ui.windows_dictation_silence import note_activity
 
         note_activity(state, lambda: _shared()._controller)
+        if state is DictationState.OFF:
+            from quill.ui.windows_dictation_extras import finished_transcript
+
+            finished_transcript(self._host._dictation_targeted())
         self._host._dictation_state_changed(state)
+
+    # -- the 2026-10-05 voice commands (voice_commands.py) --------------------- #
+
+    def library(self) -> Any:
+        """The editor's Copy All, Copy Tray, snippets and abbreviations."""
+        from quill.ui.windows_dictation_library import DictationLibrary
+
+        return DictationLibrary(self._host)
+
+    def set_speech_language(self, language: str) -> None:
+        """Switch the dictation language, and save it (a choice, not a mode)."""
+        self._host._dictation_set_speech_language(language)
+
+    def use_context(self, words: tuple[str, ...]) -> str:
+        """Pick a saved dictation context by name; what to say about it."""
+        return str(self._host._dictation_use_context_by_name(words))
 
     def show_commands(self) -> None:
         # After the phrase has been handled, not in the middle of it: the list is

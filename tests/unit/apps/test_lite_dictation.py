@@ -87,8 +87,9 @@ def test_dictation_on_writes_each_phrase_and_reads_it_back(lite_window, recogniz
     made[0].hear("hello everyone period new paragraph welcome back")
     assert win.control.GetValue() == "Hello everyone.\n\nWelcome back"
     assert SoundEvent.WINDOWS_DICTATION_PHRASE in win.cues
-    # The read-back: the words that went in, not a count and not "inserted".
-    assert "Hello everyone. Welcome back" in win.announcements
+    # The read-back: the words that went in, not a count and not "inserted" --
+    # and the marks by name (dict.md 3.1), whatever the reader's punctuation level.
+    assert "Hello everyone period new paragraph Welcome back" in win.announcements
 
 
 def test_the_next_phrase_joins_the_last_with_one_space(lite_window, recognizers, focused):

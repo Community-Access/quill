@@ -3,7 +3,7 @@
 The decisions are tested without wx in tests/unit/core; this file pins what a
 keyboard and screen-reader user meets: the titles F1 knows, focus landing on
 the words rather than a button, choosing never happening on a selection
-change, Move refusing until the box is ticked, Escape meaning "change nothing",
+change, Move refusing until the box is checked, Escape meaning "change nothing",
 and the flow running the core with the person's answers.
 """
 
@@ -78,7 +78,7 @@ def test_the_chooser_explains_without_changing_anything(wx_app, family) -> None:
         dialog._refresh(None)
         assert dialog.chosen() == "dev"
         assert "will move to Dev" in dialog._meaning.GetValue()
-        assert dialog.also_move() == ()  # every sibling unticked by default
+        assert dialog.also_move() == ()  # every sibling unchecked by default
         assert not load_channels().apps  # nothing was written
         for control in (dialog._choices, dialog._meaning, dialog._switch):
             assert control.GetHelpText().strip()

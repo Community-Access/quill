@@ -5,7 +5,7 @@ the reason the window exists. The risk is carried by words and button text,
 never by colour or an icon.
 
 **An explicit confirmation is required.** Move does nothing until the "I
-understand" box is ticked; pressing it early moves focus to the box and says
+understand" box is checked; pressing it early moves focus to the box and says
 why -- an outcome the screen reader cannot know, so saying it is allowed
 (GATE-13). Stay on Stable is the default and Escape. Typing a phrase is not
 asked for: that costs a braille or speech user far more than it proves.
@@ -27,8 +27,8 @@ __all__ = ["RiskAnswer", "RiskDialog", "TICK_FIRST"]
 
 RiskAnswer = Literal["move", "beta_instead", "stay"]
 
-#: Said when Move is pressed before the box is ticked.
-TICK_FIRST = "Tick the box first, so we know you've read this."
+#: Said when Move is pressed before the box is checked.
+TICK_FIRST = "Check the box first, so we know you've read this."
 
 _BETA_INSTEAD = 5101
 
@@ -64,8 +64,8 @@ class RiskDialog(wx.Dialog):  # type: ignore[misc]
         sizer.Add(self._text, 1, wx.EXPAND | wx.ALL, 12)
         self._understood = wx.CheckBox(self, label=risk_confirm_label(context.target))
         self._understood.SetHelpText(
-            f"Tick this to say you have read the warning. Move to {label} does "
-            "nothing until it is ticked."
+            f"Check this to say you have read the warning. Move to {label} does "
+            "nothing until it is checked."
         )
         sizer.Add(self._understood, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 12)
 
@@ -78,7 +78,7 @@ class RiskDialog(wx.Dialog):  # type: ignore[misc]
             buttons.Add(instead, 0, wx.RIGHT, 6)
         move = wx.Button(self, wx.ID_OK, label=f"&Move to {label}")
         move.SetHelpText(
-            f"Save a copy of your settings, then move to {label}. Needs the box above ticked."
+            f"Save a copy of your settings, then move to {label}. Needs the box above checked."
         )
         move.Bind(wx.EVT_BUTTON, self._on_move)
         buttons.Add(move, 0, wx.RIGHT, 6)

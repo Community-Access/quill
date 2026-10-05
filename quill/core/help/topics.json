@@ -979,7 +979,7 @@
     "title": "Forget Remembered File-Change Answers",
     "body": "Clears every \"don't ask me again\" answer you have given to the question QUILL asks when a file changes on disk while you have it open. After this, QUILL asks again. This is the only way to undo that checkbox; if you have not answered it for any file format, it tells you there is nothing to forget.",
     "keystrokes": [
-      "Ctrl+Shift+F11"
+      "Ctrl+Shift+0"
     ]
   },
   {
@@ -1076,7 +1076,7 @@
   {
     "id": "file.open_from_favorite_folder",
     "title": "Open From Favorite Folder",
-    "body": "Finds a file across your favorite folders: type part of a filename, arrow the results, press Enter to open. It looks at the top level of each favorite; tick Include subfolders to search deeper. If you have not added any favorites yet it says so and points at Add Favorite Folder.",
+    "body": "Finds a file across your favorite folders: type part of a filename, arrow the results, press Enter to open. It looks at the top level of each favorite; check Include subfolders to search deeper. If you have not added any favorites yet it says so and points at Add Favorite Folder.",
     "keystrokes": [
       "QUILL Key + G"
     ]
@@ -1738,7 +1738,7 @@
   {
     "id": "format.toggle_task_done",
     "title": "Toggle Task Done",
-    "body": "Tick or untick the task on the line you are on, or every task in the selection, and hear how many tasks in that list are done. A task is a list item that starts with a box: - [ ] to do, - [x] done. Undo takes it back.",
+    "body": "Check or uncheck the task on the line you are on, or every task in the selection, and hear how many tasks in that list are done. A task is a list item that starts with a box: - [ ] to do, - [x] done. Undo takes it back.",
     "keystrokes": [
       "Ctrl+Alt+Enter"
     ],
@@ -3270,6 +3270,15 @@
     "user_guide_section": "tools"
   },
   {
+    "id": "tools.windows_dictation_transcribe_file",
+    "title": "Transcribe a Recording",
+    "body": "Turns a recording into text in the background while you keep working: MP3, M4A, AAC, WAV, Ogg, Opus, FLAC or WMA. Choose the file, the speech model (the most accurate one on this computer is chosen for you, with an estimate of how long it will take), the language, and whether the text goes into a new document or at the cursor. Paragraphs start where the recording pauses. Timestamps, like [00:01:23], are off unless you check Add timestamps. You hear the percentage at each quarter and one sentence when it is done. Press Shift+F5 again to see how far it has got, or to stop it. OpenAI is offered only with your own key, and asks before the recording is sent.",
+    "keystrokes": [
+      "Shift+F5"
+    ],
+    "user_guide_section": "tools"
+  },
+  {
     "id": "tools.dictation_tidy",
     "title": "Tidy Dictated Text",
     "body": "Sends the selection, or the paragraph the cursor is in, to the AI to fix what speech recognition misheard, with your own My Dictation Instructions if you wrote any. Needs a ChatGPT subscription or your own AI key. Nothing changes until you choose Replace My Selection.",
@@ -4144,5 +4153,32 @@
       "Ctrl+Shift+G - Open Word Count"
     ],
     "user_guide_section": "tools-for-reading-review-and-inspection"
+  },
+  {
+    "id": "tools.windows_dictation_switch_language",
+    "title": "Switch Dictation Language",
+    "body": "Switches dictation between English and Spanish without opening Dictation Settings, and remembers the choice, so the next time you dictate it starts in the language you used last. You hear English or Español. While you are dictating you can also say switch to Spanish, and in Spanish say cambiar a inglés to come back. The engine is reopened in the new language; if a model has to load the first time, there is a short wait.",
+    "keystrokes": [
+      "Ctrl+Shift+F11"
+    ],
+    "user_guide_section": "tools"
+  },
+  {
+    "id": "tools.windows_dictation_live_transcript",
+    "title": "Start or Stop Live Transcript",
+    "body": "For a lecture, a talk or a meeting. Opens a new, untitled document and writes everything it hears into it, quietly: no tone and no read-back for each phrase, and voice commands are written as words, except the stop phrase. A pause of four seconds starts a new paragraph, and Time stamps in live transcripts (More Dictation Settings) puts the time at the start of each one. You can keep working in other documents while it writes; the status bar shows how long it has run and how many words it has written, and Dictation Status says the same. Press this key again, or Ctrl+F11, to stop; the document stays open for you to save. Please record other people only when they have agreed.",
+    "keystrokes": [
+      "Ctrl+Alt+Shift+PageDown"
+    ],
+    "user_guide_section": "tools"
+  },
+  {
+    "id": "tools.windows_dictation_context",
+    "title": "Dictation Context for This Document",
+    "body": "Tell dictation what this document is, in a sentence: a formal letter to a client, notes to a friend, technical writing. It is remembered for this document. OpenAI dictation uses it to get names, titles and style right, and Tidy Dictated Text follows it with your instructions. The engines on this computer cannot be given a context. You can save a context under a name and pick it again later, or say dictation context and the name while dictating.",
+    "keystrokes": [
+      "Ctrl+Alt+Shift+PageUp"
+    ],
+    "user_guide_section": "tools"
   }
 ]

@@ -1,6 +1,6 @@
 """Toggle Task Done, shared by QUILL and QUILL Lite (Ctrl+Alt+Enter in both).
 
-Ticks ``- [ ]`` to ``- [x]`` (and back) on the caret's line, or on every task
+Checks ``- [ ]`` to ``- [x]`` (and back) on the caret's line, or on every task
 line in a selection, and says the one thing a listener cannot get by reading:
 how many of the list are done. The idea is PlanCake's (Andre of Oire
 Software); the logic is :mod:`quill.core.task_lists`; this is the edit.
@@ -23,7 +23,7 @@ class TaskListCommandsMixin(EditorHostMixin):
     """``cmd_toggle_task_done``. Mixed into both editors."""
 
     def cmd_toggle_task_done(self) -> None:
-        """Ctrl+Alt+Enter: tick or untick the task on this line or in the selection."""
+        """Ctrl+Alt+Enter: check or uncheck the task on this line or in the selection."""
         if self._host_read_only():
             self._host_say("Document is read-only")
             return

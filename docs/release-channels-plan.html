@@ -841,8 +841,8 @@ Preferences, Help menus and accessibility conventions</h3>
 defines <code>auto_check_updates</code> and <code>beta_updates</code>
 (“Get beta updates”, admin page).
 <code>main_frame_preferences.py:725-730</code> pops
-<code>_confirm_beta_channel</code> when the box is ticked. The Help menu
-has “Check for &amp;Updates…” and “Chec&amp;k for GLOW Updates…”
+<code>_confirm_beta_channel</code> when the box is checked. The Help
+menu has “Check for &amp;Updates…” and “Chec&amp;k for GLOW Updates…”
 (<code>main_frame_menu.py:3324-3327</code>). The consent dialog is
 <code>main_frame_updates.py:583-608</code>. QUILL also
 <strong>auto-enrolls into Beta</strong> when it finds it is running a
@@ -952,7 +952,7 @@ testing.”</td>
 <ul>
 <li><strong>Per app, default Stable.</strong> The chooser also offers
 “Also move my other QuillVille apps on this computer” with one checkbox
-per installed app, all unticked by default.</li>
+per installed app, all unchecked by default.</li>
 <li><strong>A build never chooses a channel for you without telling
 you.</strong> This replaces today’s silent auto-enroll
 (<code>main_frame_updates.py:214-222</code>). If a pre-release build is
@@ -1398,7 +1398,7 @@ instead of tags</td>
 <td><strong>Screen-reader sign-off</strong> for Stable:
 <code>docs/qa/signoffs/&lt;app&gt;-&lt;version&gt;.md</code> exists with
 <code>Result: pass</code>, a tester, screen readers and versions, and a
-date, plus at least the 20-minute pass IDs ticked (for Radio: R-02,
+date, plus at least the 20-minute pass IDs checked (for Radio: R-02,
 R-04, R-08, R-14, R-18, R-37, R-45, R-55, R-69, R-73 from
 <code>docs/qa/radio-signoff.md</code>). New sign-off sheets are
 generated from the checklists by
@@ -1588,8 +1588,8 @@ is offered when it’s not safe</h3>
 <li><strong>“Wait for Stable”</strong> (the default). Sets
 <code>pending_return = true</code>. The channel <em>shown</em> is
 “Stable (waiting for it to catch up with your version)”. The app
-<strong>stops taking Beta updates</strong> unless the user ticks “Keep
-getting Beta fixes while I wait” (unticked by default; ticking it may
+<strong>stops taking Beta updates</strong> unless the user checks “Keep
+getting Beta fixes while I wait” (unchecked by default; checking it may
 move the goalposts, and the dialog says so). When
 <code>channels.stable.current &gt;= installed version</code> and the
 downgrade verdict for that build is no longer needed (it is an
@@ -2123,7 +2123,7 @@ version, or a return (with the safety answer from 5.1 already
 computed).</li>
 <li>A group “Also move my other QuillVille apps on this computer”, with
 one checkbox per installed app (“QUILL Lite, now on Stable”) and every
-box unticked by default.</li>
+box unchecked by default.</li>
 <li>“Read about release channels” (opens the site page).</li>
 <li>Buttons: “Switch” (not default when the choice is riskier than the
 current one), and Close (Escape, no access key).</li>
@@ -2195,8 +2195,8 @@ choice.</p>
 <p>There is a checkbox: “I understand that Dev versions can break and
 that going back may lose recent changes.” Buttons: “Choose Beta
 instead”, “Stay on Stable” (the default, Escape), and “Move to Dev”. If
-“Move to Dev” is pressed with the box unticked, focus moves to the
-checkbox and the app says “Tick the box first, so we know you’ve read
+“Move to Dev” is pressed with the box unchecked, focus moves to the
+checkbox and the app says “Check the box first, so we know you’ve read
 this.” That is an outcome the reader can’t know, so it is allowed.
 Typing a confirmation phrase is avoided because of what it costs a
 braille or speech user.</p>
@@ -2205,7 +2205,7 @@ to Beta or Dev does, step by step</h3>
 <ol type="1">
 <li>Show the risk dialog. Cancel changes nothing.</li>
 <li>Take a <code>joined-beta</code> snapshot for this app and each
-ticked sibling. Announce “Saved a copy of your settings.” If the
+checked sibling. Announce “Saved a copy of your settings.” If the
 snapshot fails, stop with: “Quill Radio couldn’t save a copy of your
 favorites, so it stayed on Stable. <reason>.”</li>
 <li>Write <code>channels.json</code> and the mirror settings key. Record

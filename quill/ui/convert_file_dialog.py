@@ -11,7 +11,7 @@ prompt, and the remembered-settings writes. Keeping the conversion out of here
 means the dialog stays testable as a widget and the policy lives in one place.
 
 Format list is hybrid (issue: Convert File): the curated
-:data:`quill.core.convert_formats.CURATED_OUTPUTS` is shown by default; ticking
+:data:`quill.core.convert_formats.CURATED_OUTPUTS` is shown by default; checking
 "Show all Pandoc formats" repopulates the choice from a runtime probe of the
 installed Pandoc's writers.
 """

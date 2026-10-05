@@ -93,7 +93,7 @@ MODE_LABELS: dict[str, str] = {
 # it has to be *theirs to say* rather than a decision the app makes for them.
 #
 # So a filter carries a set of scopes: the places its verdict is honoured.
-# Every scope is independent, every one is reversible by unticking it, and
+# Every scope is independent, every one is reversible by unchecking it, and
 # **not one of them deletes anything** -- a scope that is off simply means the
 # episode is visible there, which is what it always was.
 
@@ -166,8 +166,8 @@ SCOPE_SUMMARIES: dict[str, str] = {
 #: entirely undoable, because an episode that was not queued can still be
 #: queued. Hiding an episode from a list is a stronger act: it changes what
 #: somebody can find, and a person who has not asked for that should not
-#: discover it. So the strong half is opt-in, one tick at a time, and every
-#: tick is reversible.
+#: discover it. So the strong half is opt-in, one check box at a time, and every
+#: check box is reversible.
 DEFAULT_SCOPES: frozenset[str] = frozenset({SCOPE_INBOX, SCOPE_QUEUE, SCOPE_DOWNLOAD, SCOPE_NOTIFY})
 
 #: The scopes that *hide* an episode from a list rather than merely declining
@@ -398,7 +398,7 @@ class EpisodeFilterConfiguration:
         every list that hides an episode can all read it.
 
         Scopes are part of the same sentence: a filter with every scope
-        unticked has been told to change nothing anywhere, and the honest
+        unchecked has been told to change nothing anywhere, and the honest
         reading of that is "not active" rather than "active but invisible".
         """
         return self.enabled and bool(self.usable_rules) and bool(self.active_scopes)

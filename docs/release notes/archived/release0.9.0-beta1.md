@@ -907,7 +907,7 @@ The first checkbox is now a true master switch, relabeled to say exactly what
 it governs: **Enable experimental features** - all of them. While it is off,
 every other control on the tab is disabled and drops out of the tab order
 entirely, so to a screen reader user an untouched Experimental tab is one
-checkbox and silence. Tick it, and the individual experiments unlock - each
+checkbox and silence. Check it, and the individual experiments unlock - each
 with its own switch: **GLOW accessibility review and repair**, **WordPress
 publishing connections** (the read-only inbound tools; the send half stays
 locked no matter what), and **Read the document aloud in your browser**.
@@ -931,7 +931,7 @@ consents first. Opt-in, layer by layer, is the whole design.
 GLOW (Guided Layout and Output Workflow) is QUILL's accessibility review
 system, and with this beta it graduates from hidden preview to a **shipping
 experimental feature - one switch away**. Open **Preferences > Experimental**,
-tick the master switch and GLOW's own checkbox, apply, and **Tools > GLOW**
+check the master switch and GLOW's own checkbox, apply, and **Tools > GLOW**
 appears immediately, no restart. (Until then, the GLOW commands stay
 discoverable in the command palette and simply explain how to enable the
 feature.) The idea is guided confidence, not a compliance dashboard: GLOW
@@ -1093,7 +1093,7 @@ control (the engine behind Notepad++, and the only alternative surface with full
 multi-level undo *and* redo - it exists to answer one open question: how JAWS,
 NVDA, and braille displays behave on it, and your reports decide its future). A
 read-only panel explains each choice's user and technical impact as you select
-it, and the options stay ignored until you tick **"I understand features may
+it, and the options stay ignored until you check **"I understand features may
 degrade based on the control selected."** A **Hide editor border** toggle is here
 too. QUILL warns you to restart when you change these.
 **Why it matters:** a safe sandbox for power users and testers to help shape the
@@ -1122,7 +1122,7 @@ copy of your document lingers.
 
 ### Proofread before you publish
 
-- **Proofread Mastodon posts before sending (per account)** - tick it and pressing
+- **Proofread Mastodon posts before sending (per account)** - check it and pressing
   Post opens the F7 Spelling Review on the post text first.
 - **Spell check a document before saving** - opens F7 automatically on Save / Save As.
 

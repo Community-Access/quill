@@ -34,7 +34,13 @@ from quill.core.windows_dictation.options import PAUSE_CHOICES, coerce_pause
 from quill.core.windows_dictation.preview import PREVIEW_CHOICES, coerce_preview
 from quill.ui.dialog_contract import apply_modal_ids
 
-__all__ = ["EDIT_INSTRUCTIONS", "EDIT_OPENAI_KEY", "MoreDictationDialog", "SEND_CHOICES"]
+__all__ = [
+    "DICTATE_ANYWHERE",
+    "EDIT_INSTRUCTIONS",
+    "EDIT_OPENAI_KEY",
+    "MoreDictationDialog",
+    "SEND_CHOICES",
+]
 
 #: What My Dictation Instructions... ends both windows with.
 EDIT_INSTRUCTIONS = 5803
@@ -42,6 +48,10 @@ EDIT_INSTRUCTIONS = 5803
 #: What Add or Change OpenAI Key... ends both windows with: the caller saves
 #: these settings, then opens the shared Use My Own AI Key window.
 EDIT_OPENAI_KEY = 5804
+
+#: What Dictate in Other Programs... ends both windows with: the caller saves
+#: these settings, hands them to Quill Inkwell and starts it (dict.md 3.9).
+DICTATE_ANYWHERE = 5805
 
 #: (value, label) for when a dictated message goes to the AI.
 SEND_CHOICES: tuple[tuple[str, str], ...] = (
@@ -99,6 +109,25 @@ class MoreDictationDialog(wx.Dialog):
         )
         root.Add(preview_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
         root.Add(self.preview, 0, wx.EXPAND | wx.ALL, _PAD)
+
+        self.readback_marks = wx.CheckBox(self, label="&Say punctuation marks in the read-back")
+        self.readback_marks.SetValue(bool(value("windows_dictation_readback_marks", True)))
+        self.readback_marks.SetHelpText(
+            "When each phrase is read back, say its punctuation by name: Hello comma "
+            "world period. That way you hear whether the comma or full stop went in, "
+            "whatever your screen reader's punctuation level is. The status bar and a "
+            "braille display always show the real marks. On by default."
+        )
+        root.Add(self.readback_marks, 0, wx.ALL, _PAD)
+
+        self.timestamps = wx.CheckBox(self, label="&Time stamps in live transcripts")
+        self.timestamps.SetValue(bool(value("windows_dictation_transcript_timestamps", False)))
+        self.timestamps.SetHelpText(
+            "In a live transcript, start each new paragraph with the time, like 10:42 "
+            "in square brackets, so you can find a moment later. A new paragraph starts "
+            "when the speaker pauses for four seconds or more. Off by default."
+        )
+        root.Add(self.timestamps, 0, wx.ALL, _PAD)
 
         ai_box = wx.StaticBoxSizer(wx.VERTICAL, self, "Talking to the AI")
         ai = ai_box.GetStaticBox()
@@ -193,7 +222,18 @@ class MoreDictationDialog(wx.Dialog):
             "always spelled your way. Saves these settings first."
         )
         instructions.Bind(wx.EVT_BUTTON, lambda _e: self.EndModal(EDIT_INSTRUCTIONS))
-        root.Add(instructions, 0, wx.ALL, _PAD)
+        anywhere = wx.Button(self, label="Dictate in &Other Programs...")
+        anywhere.SetHelpText(
+            "Saves these settings, then starts Quill Inkwell with them, so you can "
+            "dictate into your browser, your email or any other program on a key you "
+            "choose in Inkwell's File menu. Punctuation, spelling and scratch that work "
+            "there; selecting and correcting words work only in QUILL's own documents."
+        )
+        anywhere.Bind(wx.EVT_BUTTON, lambda _e: self.EndModal(DICTATE_ANYWHERE))
+        row = wx.BoxSizer(wx.HORIZONTAL)
+        row.Add(instructions, 0, wx.RIGHT, _PAD)
+        row.Add(anywhere, 0)
+        root.Add(row, 0, wx.ALL, _PAD)
 
         buttons = self.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL)
         root.Add(buttons, 0, wx.EXPAND | wx.ALL, _PAD)
@@ -273,4 +313,6 @@ class MoreDictationDialog(wx.Dialog):
             "windows_dictation_ai_auto_punctuation": self.ai_punctuation.GetValue(),
             "windows_dictation_openai_consent": self.consent.GetValue(),
             "windows_dictation_openai_model": model,
+            "windows_dictation_readback_marks": self.readback_marks.GetValue(),
+            "windows_dictation_transcript_timestamps": self.timestamps.GetValue(),
         }

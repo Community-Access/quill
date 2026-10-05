@@ -36,7 +36,7 @@ Wording rules for the content modules, so the set stays worth reading:
 * Say **why**, not only what. A tutorial that lists keystrokes is a keyboard
   reference with extra words; the guide already has one of those.
 * Say what you should **hear**. A screen-reader user's confirmation that a
-  step worked is a sentence, not a green tick, and a step that does not say
+  step worked is a sentence, not a green check mark, and a step that does not say
   what to listen for cannot be checked by the person doing it.
 * Never promise a key in prose. Name the command and let the key render.
 """

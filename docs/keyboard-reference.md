@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 491.
+Editor commands with default bindings: 495.
 
 ## The QUILL editor
 
@@ -41,7 +41,7 @@ Editor commands with default bindings: 491.
 | Ctrl+O or Ctrl+F12 | Open... | `file.open` |
 | Ctrl+P or Ctrl+Shift+F12 | Print... | `file.print` |
 | Ctrl+S | Save | `file.save` |
-| Ctrl+Shift+F11 | Forget Remembered File-Change Answers | `file.forget_external_change_answers` |
+| Ctrl+Shift+0 | Forget Remembered File-Change Answers | `file.forget_external_change_answers` |
 | Ctrl+Shift+S or F12 | Save As... | `file.save_as` |
 | Ctrl+W | Close Document | `file.close_document` |
 | QUILL Key + B | Batch conversion | `file.batch_conversion` |
@@ -333,6 +333,8 @@ Editor commands with default bindings: 491.
 | Ctrl+Alt+Shift+F6 | Spelling Announcements | `tools.spelling_announcements` |
 | Ctrl+Alt+Shift+K | Privacy Agreement... | `tools.hosted_ai_privacy` |
 | Ctrl+Alt+Shift+O | Sound Scheme | `tools.sound_events` |
+| Ctrl+Alt+Shift+PageDown | Windows dictation live transcript | `tools.windows_dictation_live_transcript` |
+| Ctrl+Alt+Shift+PageUp | Windows dictation context | `tools.windows_dictation_context` |
 | Ctrl+Alt+Shift+Space | Keymap Editor... | `tools.keymap_editor` |
 | Ctrl+Alt+Shift+[ | Word Summary | `tools.word_summary` |
 | Ctrl+Alt+Shift+] | Find the Word For... | `tools.find_word` |
@@ -348,6 +350,7 @@ Editor commands with default bindings: 491.
 | Ctrl+Shift+- | Simpler Word | `tools.word_simpler` |
 | Ctrl+Shift+; | Synonyms That Fit | `tools.word_synonyms` |
 | Ctrl+Shift+= | More Formal Word | `tools.word_formal` |
+| Ctrl+Shift+F11 | Windows dictation switch language | `tools.windows_dictation_switch_language` |
 | Ctrl+Shift+F7 | Previous Misspelling | `tools.previous_misspelling` |
 | Ctrl+Shift+F9 | Pause or Resume Dictation | `tools.dictation_pause` |
 | Ctrl+Shift+G | Document Statistics... | `tools.word_count` |
@@ -366,6 +369,7 @@ Editor commands with default bindings: 491.
 | QUILL Key + Y | Audiobook  Batch Speech... | `tools.speech_batch_export` |
 | Shift+Escape | Cancel Dictation (discard) | `tools.dictation_cancel` |
 | Shift+F11 | Windows dictation recent | `tools.windows_dictation_recent` |
+| Shift+F5 | Windows dictation transcribe file | `tools.windows_dictation_transcribe_file` |
 | Shift+F7 | Thesaurus... | `tools.thesaurus` |
 
 ### Windows and Tabs

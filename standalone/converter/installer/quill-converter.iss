@@ -139,6 +139,17 @@ Name: "runtime"; Description: "Shared QuillVille runtime (Python) -- installed o
 Name: "main"; Description: "{#AppName} (required)"; Types: full compact custom; Flags: fixed
 Name: "docs"; Description: "Documentation (User Guide, Release Notes, Changelog, Product Requirements)"; Types: full custom
 
+[INI]
+; The version THIS installer installed, read by quill.core.app_version for
+; Check for Updates and About. The shared runtime carries every app's code, so
+; the code's own constant says which runtime is here, not which app installer
+; ran (the same marker Quill Radio, QUILL Lite and QUILL Cast write;
+; release-channels plan, Phase 0).
+Filename: "{app}\quill-app-version.ini"; Section: "app"; Key: "version"; String: "{#AppVersion}"
+; The build, beside the version it belongs to (quill.core.app_version says
+; why it repeats the version rather than holding the bare number).
+Filename: "{app}\quill-app-version.ini"; Section: "app"; Key: "version_build"; String: "{#AppVersion}+{#AppBuild}"
+
 [Files]
 ; Converter's own payload is tiny: its icon, the per-app C launcher (the
 ; portable-mode anchor), and (optionally) its docs. The program itself lives in

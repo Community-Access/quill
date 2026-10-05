@@ -87,7 +87,7 @@ class MarkPlayedConfirmDialog:
             answer = show_modal_dialog(self.dialog, "Mark All as Played", announce=self._announce)
             confirmed = answer == wx.ID_OK
             # The checkbox only counts alongside a Yes: cancelling with it
-            # ticked must not silently disable a confirmation that was, in
+            # checked must not silently disable a confirmation that was, in
             # that same gesture, declined rather than answered.
             return (confirmed, confirmed and self._dont_ask_check.GetValue())
         finally:

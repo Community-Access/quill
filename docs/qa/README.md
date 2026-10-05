@@ -1,7 +1,7 @@
 # QA documents -- what to run, and when
 
 Two kinds of document live here. **Sign-off checklists** are for a human at a
-keyboard with a screen reader, ticking boxes: numbered steps, exact keys, exact
+keyboard with a screen reader, checking boxes: numbered steps, exact keys, exact
 URLs, one line saying what decides pass or fail. **References** are the longer
 documents behind them -- why a test exists, what a bake-off measured, what the
 automated suites already cover.

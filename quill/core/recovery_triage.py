@@ -338,7 +338,7 @@ def describe_plan(
     question is the one somebody is actually asking, because the buttons are
     the irreversible part. Sighted users assemble the answer by glancing down
     the list; assembling it by ear costs a pass through every row, and the pass
-    has to be repeated after every tick. So it is written out, in one place, and
+    has to be repeated after every check or uncheck. So it is written out, in one place, and
     rewritten whenever a box changes.
 
     Three sections, in the order somebody needs them: what was tidied before the
@@ -355,11 +355,11 @@ def describe_plan(
 
     total = len(result.offer)
     noun = "document" if total == 1 else "documents"
-    lines.append(f"{total} {noun} of unsaved work, {len(ticked)} ticked.")
+    lines.append(f"{total} {noun} of unsaved work, {len(ticked)} checked.")
     lines.append("")
     for index, slot in enumerate(result.offer, start=1):
         on = checked[index - 1] if index - 1 < len(checked) else False
-        mark = "Ticked" if on else "Not ticked"
+        mark = "Checked" if on else "Not checked"
         lines.append(f"{index}. {mark}. {row_label(slot, result.copies_of(slot), now)}")
     lines.append("")
 
@@ -368,19 +368,19 @@ def describe_plan(
         names = ", ".join(slot.title for slot in ticked)
         lines.append(f"  Restore Checked opens {_count(len(ticked), 'document')}: {names}.")
         lines.append(
-            f"  Discard Checked permanently deletes {_count(len(ticked), 'ticked document')}. "
+            f"  Discard Checked permanently deletes {_count(len(ticked), 'checked document')}. "
             "Nothing else has a copy."
         )
     else:
-        lines.append("  Restore Checked does nothing: no rows are ticked.")
-        lines.append("  Discard Checked does nothing: no rows are ticked.")
-    lines.append(f"  Restore All opens all {total}, ticked or not.")
+        lines.append("  Restore Checked does nothing: no rows are checked.")
+        lines.append("  Discard Checked does nothing: no rows are checked.")
+    lines.append(f"  Restore All opens all {total}, checked or not.")
     lines.append(f"  Discard Everything permanently deletes all {total}. It asks first.")
     if unticked:
         kept = ", ".join(slot.title for slot in unticked)
         stays = "stays" if len(unticked) == 1 else "stay"
         lines.append(
-            f"  Either way, {_count(len(unticked), 'unticked document')} {stays} "
+            f"  Either way, {_count(len(unticked), 'unchecked document')} {stays} "
             f"saved aside: {kept}."
         )
     lines.append("  Not Now changes nothing. Everything here is offered again next time.")

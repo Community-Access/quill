@@ -197,7 +197,7 @@ def load_history(data_dir: Path) -> RadioHistory:
         from quill.core.radio import startup_window as startup
 
         # The choice if it has been made, else the old checkbox once -- somebody
-        # who ticked "open Browse at startup" still gets Browse.
+        # who checked "open Browse at startup" still gets Browse.
         history.startup_window = (
             startup.normalize(raw.get("startup_window"))
             if "startup_window" in raw

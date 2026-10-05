@@ -67,6 +67,17 @@ QUILL asks OpenAI which speech models your key can use. That request sends
 your key and nothing else. QUILL's free hosted AI is never used for dictation.
 OpenAI dictation is refused in Safe Mode.
 
+**Transcribe a Recording** (Shift+F5, added October 2026) reads a recording
+you choose on your own computer, with the same engines, and keeps only the
+text. If your own OpenAI key is saved, OpenAI's speech models are offered in
+its list too (the list is asked of OpenAI the same way, sending only your
+key). They are never chosen for you, and are refused in Safe Mode. Choosing
+one asks, for each recording, whether to send it; the answer is No unless you
+choose Yes. If you agree, the speech in that recording is sent to OpenAI's
+transcription service about a minute at a time, over an encrypted connection,
+with your key and the words from My Words and Phrases, and OpenAI bills your
+account. Nothing goes through QUILL's servers and QUILL keeps no copy.
+
 **Tidy Dictated Text** sends the passage you choose, and your My Dictation
 Instructions if you wrote any, to the AI service you use with your own key or
 ChatGPT subscription, only when you press it.

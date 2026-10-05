@@ -41,10 +41,13 @@ from quill.core.windows_dictation.controller import (
     DictationState,
     Moment,
 )
+from quill.ui.windows_dictation_extras import DictationExtrasMixin
 from quill.ui.windows_dictation_hold import DictationHoldMixin
+from quill.ui.windows_dictation_library import DictationLibraryMixin
 from quill.ui.windows_dictation_ports import EditorDocument as _EditorDocument
 from quill.ui.windows_dictation_ports import HostFeedback as _HostFeedback
 from quill.ui.windows_dictation_tools import DictationToolsMixin
+from quill.ui.windows_dictation_transcribe import DictationTranscribeMixin
 
 __all__ = [
     "DICTATION_CUES",
@@ -81,7 +84,13 @@ def dictation_standing_by() -> bool:
     return _controller is not None and _controller.standing_by
 
 
-class WindowsDictationMixin(DictationToolsMixin, DictationHoldMixin):
+class WindowsDictationMixin(
+    DictationToolsMixin,
+    DictationHoldMixin,
+    DictationTranscribeMixin,
+    DictationExtrasMixin,
+    DictationLibraryMixin,
+):
     """The dictation commands. Mixed into both editors' document windows."""
 
     # ------------------------------------------------------------------ #
@@ -177,6 +186,11 @@ class WindowsDictationMixin(DictationToolsMixin, DictationHoldMixin):
             self._dictation_voice_typing()
             return
         controller = self._dictation_controller()
+        if controller.transcribing:
+            # The key that starts dictation anywhere stops it everywhere --
+            # a live transcript included, wherever it is being written.
+            controller.stop()
+            return
         if controller.active and _host is not self:
             # One session at a time (dict.md 2.8): the microphone follows the
             # key to this document instead of stopping, and says so.
@@ -190,6 +204,7 @@ class WindowsDictationMixin(DictationToolsMixin, DictationHoldMixin):
     def cmd_dictation_settings(self) -> None:
         """Choose the engine, the microphone, the wake phrase and what is heard."""
         from quill.ui.windows_dictation_dialog import (
+            DICTATE_ANYWHERE,
             EDIT_INSTRUCTIONS,
             EDIT_OPENAI_KEY,
             EDIT_WORDS,
@@ -199,7 +214,7 @@ class WindowsDictationMixin(DictationToolsMixin, DictationHoldMixin):
 
         settings = self._dictation_settings()
         dialog = WindowsDictationDialog(self._dictation_parent(), settings, self._dictation_say)
-        saving = (wx.ID_OK, EDIT_WORDS, EDIT_INSTRUCTIONS, EDIT_OPENAI_KEY)
+        saving = (wx.ID_OK, EDIT_WORDS, EDIT_INSTRUCTIONS, EDIT_OPENAI_KEY, DICTATE_ANYWHERE)
         try:
             answer = self._dictation_run_modal(dialog, "Dictation Settings")
             if answer in saving:
@@ -220,6 +235,8 @@ class WindowsDictationMixin(DictationToolsMixin, DictationHoldMixin):
             self._dictation_edit_instructions()
         elif answer == EDIT_OPENAI_KEY:
             self._dictation_add_openai_key()
+        elif answer == DICTATE_ANYWHERE:
+            self._dictation_start_anywhere()
 
     def _dictation_add_openai_key(self) -> None:
         """The shared Use My Own AI Key window, from Dictation Settings.
@@ -247,10 +264,14 @@ class WindowsDictationMixin(DictationToolsMixin, DictationHoldMixin):
         state = _controller.state
         if state is DictationState.STANDBY:
             return "Dictation: waiting for wake phrase"
+        if _controller.transcribing and _host is self:
+            return _controller.transcript_status()
         if not _controller.active or _host is not self:
             return ""
         if _controller.spelling:
             return "Dictation: spelling"
+        if _controller.mode_text and _controller.state is DictationState.LISTENING:
+            return f"Dictation: listening, {_controller.mode_text}"
         return {
             DictationState.STARTING: "Dictation: starting",
             DictationState.LISTENING: "Dictation: listening",
@@ -289,6 +310,8 @@ class WindowsDictationMixin(DictationToolsMixin, DictationHoldMixin):
         controller = _controller
         if controller is None:
             return
+        if controller.transcribing:
+            return  # a live transcript keeps writing while you work in another program
         if controller.active:
             controller.stop("Dictation off, because QUILL is no longer the window in front.")
         controller.disarm()
@@ -346,7 +369,11 @@ class WindowsDictationMixin(DictationToolsMixin, DictationHoldMixin):
             words = tuple(load(self._dictation_profile_path()).vocabulary)
         except Exception:  # noqa: BLE001 - no words is a fine answer
             words = ()
-        return replace(preferences, keywords=words)
+        try:
+            context = (_host or self)._dictation_document_context()
+        except Exception:  # noqa: BLE001 - no context is a fine answer
+            context = ""
+        return replace(preferences, keywords=words, context=context)
 
     def _dictation_controller(self) -> DictationController:
         global _controller
@@ -362,15 +389,24 @@ class WindowsDictationMixin(DictationToolsMixin, DictationHoldMixin):
             )
         return _controller
 
-    def _dictation_target(self, host: Any, control: Any = None) -> None:
-        """Point the controller at *host*'s document, or at one of its fields."""
+    def _dictation_target(
+        self, host: Any, control: Any = None, *, pin: bool = False, background: bool = False
+    ) -> None:
+        """Point the controller at *host*'s document, or at one of its fields.
+
+        *pin* keeps *control* the target even when another tab's editor comes
+        to the front; *background* writes into it without the focus. Both are a
+        live transcript's (windows_dictation_extras.py).
+        """
         global _host
         controller = self._dictation_controller()
         control = control if control is not None else host._dictation_control()
         # A field is remembered as the target only while it is one; the
         # document is the default and needs no record.
-        host._dictation_targeted_control = None if control is host._dictation_control() else control
-        controller.retarget(_EditorDocument(host, control), _HostFeedback(host))
+        own = control is host._dictation_control() and not pin
+        host._dictation_targeted_control = None if own else control
+        document = _EditorDocument(host, control, background=background)
+        controller.retarget(document, _HostFeedback(host))
         if host is not _host:
             _host = host
         bound = getattr(control, "_quill_dictation_destroy_bound", False)
@@ -480,6 +516,7 @@ def _make_recognizer(controller: DictationController, preferences: DictationPref
             keywords=preferences.keywords,
             pause_seconds=preferences.pause_seconds,
             language=preferences.speech_language,
+            prompt=preferences.context,
         )
     from quill.core.windows_dictation.local_recognizer import LocalDictationRecognizer
 

@@ -22,7 +22,7 @@ Windows already uses.
 
 **Profiles, because "the small one" is a real request.** A profile is a named
 set of areas to switch off (:class:`~quill.core.app_features.AppProfile`).
-Applying one ticks and unticks every box and then the boxes are the truth again:
+Applying one checks and unchecks every box and then the boxes are the truth again:
 there is no mode to escape from, and the next change is an ordinary per-area
 override. The Choice reads back which profile the current boxes match, or
 "Custom" when they match none, so the control answers "what am I on?" as well as
@@ -97,7 +97,7 @@ CUSTOM_PROFILE = "Custom"
 #: just heard "Custom" where they expected "Notepad" should be told that is a
 #: normal place to be, not left to wonder what they broke.
 _CUSTOM_DESCRIPTION = (
-    "Your own mix. You get this as soon as you tick or untick anything yourself, "
+    "Your own mix. You get this as soon as you check or uncheck anything yourself, "
     "and it is a perfectly good place to stay -- picking your own is what the "
     "list below is for."
 )
@@ -106,7 +106,7 @@ _CUSTOM_DESCRIPTION = (
 #: selected profile's own description is appended, so F1 answers both "what is
 #: this control" and "what is this one".
 _PROFILE_HELP = (
-    "A named starting point. Choosing one ticks and unticks every box below "
+    "A named starting point. Choosing one checks and unchecks every box below "
     "straight away, and Custom puts them back to how you found them. After that "
     "the boxes are the truth, so you can change any one of them without having "
     "to leave the profile first. Nothing is saved until you press Save."

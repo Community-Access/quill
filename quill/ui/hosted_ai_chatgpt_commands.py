@@ -156,8 +156,10 @@ class ChatGptAiMixin(WordToolsMixin):
         profile = getattr(self, "_dictation_profile_path", None)
         if not callable(profile):
             return text
+        context = getattr(self, "_dictation_document_context", None)
         try:
-            return wrap(text, read(instructions_path(profile())))
+            about = str(context()) if callable(context) else ""
+            return wrap(text, read(instructions_path(profile())), about)
         except Exception:  # noqa: BLE001 - instructions are a preference, never a blocker
             return text
 

@@ -29,8 +29,8 @@ menu that honours them.
 visibility is a View-menu check item, exactly as Radio's is.
 
 One rule this menu follows and the rest of the bar should: **a check item's label
-states the thing, and its tick states the answer.** "Hide Caught-Up Podcasts,
-ticked" is unambiguous read aloud; "Show All Podcasts" with a tick is a double
+states the thing, and its check mark states the answer.** "Hide Caught-Up Podcasts,
+checked" is unambiguous read aloud; "Show All Podcasts" with a check mark is a double
 negative somebody has to work out while listening.
 """
 

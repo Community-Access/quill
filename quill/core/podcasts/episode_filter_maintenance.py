@@ -9,7 +9,7 @@ does, and the one runtime warning the feature can raise.
 **A filter is asked, not remembered.** The verdict is computed wherever it is
 needed -- the Inbox, the episode list, New Episodes, a smart playlist, Search
 Everywhere -- rather than stamped onto an episode when it arrived. That is the
-whole reason the scopes work: untick "hide them from the episode list" and the
+whole reason the scopes work: uncheck "hide them from the episode list" and the
 episodes are back in the list on the next redraw, with no migration, no
 sweep, and nothing to undo. A decision written down at ingest could not do
 that, and the first cut of this feature -- which did exactly that, for the
@@ -313,7 +313,7 @@ def route_refresh(
 
     It **changes nothing**. It returns a verdict, and the caller routes: the
     Inbox and every list ask the same question for themselves whenever they
-    are drawn, which is what lets a scope be unticked later and take effect at
+    are drawn, which is what lets a scope be unchecked later and take effect at
     once.
 
     Unlike Earshot, which had to cap how many items one refresh could insert to

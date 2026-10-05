@@ -2,6 +2,117 @@
 
 ## 1.0.0
 
+### Dictation gap plan: read-back marks, voice editing, live transcripts, Dictate Anywhere (2026-10-05)
+
+Everything below is shared code, in both editors on the same keys and the same
+words (QUILL: Tools > Speech > Live Dictation; QUILL Lite: Tools > Dictation).
+
+- **Punctuation in the read-back** (`readback.py`): marks are said by their
+  dictation names ("Hello comma world period", "open quote", "new paragraph")
+  whatever the screen reader's punctuation level; Spanish names in Spanish.
+  Apostrophes and hyphens inside words and the separators inside numbers stay
+  silent; "example.com" is "example dot com". The status bar and braille keep
+  the real characters. Setting **Say punctuation marks in the read-back**
+  (`windows_dictation_readback_marks`, on), in More Dictation Settings.
+- **Clips, snippets, abbreviations and copying by voice**
+  (`voice_commands.py`): "copy all", "copy that", "show clips", "show
+  snippets", "paste clip N" (1 to 12), "insert snippet <name>" (exact, then a
+  unique start, then contained words; several open the list, none says "No
+  snippet called X."), "insert abbreviation" / "expand abbreviation". One
+  phrase, one undo step; the read-back names it ("Snippet sign off", "Pasted
+  slot 3"). Bare "expand <word>" was rejected as a command: it is ordinary
+  English.
+- **Characters and Markdown** (`vocabulary.py`): spelling mode writes
+  punctuation with no spaces; "spell <letters>" spells one word; "spell that"
+  respells the last phrase; "caps on/off", "all caps on/off", "no space on/off"
+  last until turned off or dictation stops and show in the status bar. New
+  "Markdown and code" marks (backtick by count on the line, code fence, tilde,
+  vertical bar, caret, greater/less than sign) and phrase-start line marks
+  (bullet, numbered item, block quote, heading one to six).
+- **Moving and selecting by words** (`editing.py`): "select <words>",
+  "select <words> through <words>", "go to / go before / go after <words>",
+  "correct <words>", "select again / next / previous", "select sentence /
+  line / paragraph", "go to start / end of paragraph". Matching ignores case,
+  punctuation and accents, and numbers match both ways; outcome said once
+  ("Selected: the cat", with ", line 40" when three or more lines away). Not
+  found: the phrase is written and "Not found, written as text." is said.
+- **Live transcripts** (`transcript.py`, `windows_dictation_extras.py`):
+  Start or Stop Live Transcript (Ctrl+Alt+Shift+PageDown) writes into a new
+  untitled document, always at its end, with no commands but the stop phrase,
+  no per-phrase cue, no silence stop, fillers removed; a paragraph per pause of
+  four seconds, optionally time-stamped (`windows_dictation_transcript_timestamps`,
+  off). "Live transcript stopped, N words." on stop; the consent sentence is
+  said once (`windows_dictation_transcript_told`). Microphone only.
+- **Switch Dictation Language** (Ctrl+Shift+F11), also "switch to Spanish" /
+  "cambiar a inglés": saved as the setting, "Español." / "English.", loaded
+  models kept for the session. No automatic language detection, on purpose.
+- **Pauses**: Longer (2 s) and Longest (3 s) choices; a phrase ending on a
+  word a sentence does not end on ("a", "the", "of", "and", "very" and so on)
+  is joined to the next, and a spoken full stop is never taken back.
+- **Dictation Context for This Document...** (Ctrl+Alt+Shift+PageUp,
+  `contexts.py`): per-document description and saved contexts with five
+  starters, kept in `dictation-contexts.json` beside `dictation.md`; the
+  OpenAI engine's prompt and part of Tidy Dictated Text's instructions; voice
+  "dictation context <name>". Local engines cannot use it and the window says
+  so. The OpenAI consent text now mentions it.
+- **Dictation Status** (Alt+F9): QUILL Lite gains the row; in QUILL, Alt+F9
+  answers for Live Dictation whenever Locked Dictation is idle.
+- **Dictate in Other Programs...** (More Dictation Settings, Alt+O) hands the
+  editor's dictation settings to Quill Inkwell and starts it
+  (`anywhere.py`, `dictate-anywhere.json`).
+- **Keys**: QUILL's **Forget Remembered File-Change Answers** moved from
+  Ctrl+Shift+F11 to Ctrl+Shift+0 (rule 9) to free Ctrl+Shift+F11 for Switch
+  Dictation Language in both editors.
+- **Tutorials**: five new lessons in both editors (punctuation and symbols,
+  fixing a word, snippets and clips, Spanish and back, a live transcript).
+- **Docs**: `docs/site/dictation.html` gains a section per feature and a
+  "Dictating well" section; `scripts/build_dictation_page.py` names the new
+  marks and introduces the new groups.
+
+### Transcribe a Recording: a recording into text with dictation's engines (2026-10-05)
+
+- **Transcribe a Recording...** (Shift+F5; QUILL Lite: Tools > Dictation;
+  QUILL: Tools > Speech > Live Dictation), one shared command
+  (`cmd_transcribe_audio_file`, `tools.windows_dictation_transcribe_file`) in
+  `quill/ui/windows_dictation_transcribe.py`, inherited by both editors through
+  `WindowsDictationMixin`; QUILL's adapter answers two hooks (its task manager,
+  a new tab) and has no command of its own. Shift+F5 under rule 9: free in both
+  editors and nothing either does in Word, Notepad or WordPad. The visible name
+  is not "Transcribe Audio File" because QUILL's AI menu already has a command
+  of that name (cloud Whisper, Transcript Actions).
+- **The window** (`dictation_transcribe_dialog.py`): the recording (typed,
+  Browse with several at once, or dropped), the language, the speech model --
+  every engine this computer has, most accurate first, the most accurate local
+  one chosen (`file_models.py`: Parakeet TDT, Parakeet Unified, Nemotron, the
+  Whisper family large to small, then the built-in two), OpenAI's file models
+  added live for a saved key outside Safe Mode and never preselected -- an
+  estimate from the measured speeds, where the text goes (a new document, or
+  the cursor when it finishes), Add timestamps (off unless checked), and Obey spoken
+  punctuation and commands (off: "new paragraph" in a recording is words).
+- **The pipeline** (`file_transcribe.py`), on the task manager: decode to 16 kHz
+  mono a second at a time (`audio_file.py`: libsndfile for WAV, FLAC, Ogg, Opus
+  and MP3, Windows Media Foundation through `ctypes` for M4A, AAC, MP4 sound,
+  WMA and as a fallback, `media_foundation.py`; ffmpeg only as a last resort
+  where the program has one, so QUILL Lite needs none), Silero phrases,
+  dictation's engines and model cache (`local_recognizer.transcribe`), OpenAI
+  through dictation's own `/v1/audio/transcriptions` path about a minute at a
+  time, the composer's spacing and capitals, filler removal and My Words
+  corrections as dictation has them, breath full stops taken back, paragraphs
+  at two-second pauses. Never the whole recording in memory.
+- **Heard and kept**: one sentence at the start, the percentage quietly at each
+  quarter and in the status bar as it moves, one sentence at the end
+  ("Transcribed meeting.mp3: 12 minutes, 1,804 words, in 6 minutes."), the
+  error tone and the reason on failure; every result in Activity. Shift+F5 while
+  one runs shows its progress and Stop Transcribing; several files queue.
+- **OpenAI** asks before each recording is sent (`FILE_CONSENT_TEXT`, No by
+  default); no new endpoint, so no new egress entry.
+- Four error codes (`QUILL-DICTATION-FILE-FAILED`, `-CANCELLED`, `-UNREADABLE`,
+  `-MEDIAFOUNDATION`); Lite's dictation rows moved to
+  `quill/core/lite/commands_dictation.py` (GATE-11); tests in
+  `tests/unit/core/test_windows_dictation_file_transcribe.py`,
+  `tests/unit/apps/test_lite_transcribe_audio_file.py`,
+  `tests/unit/ui/test_dictation_transcribe_dialog.py` and the parity test.
+
 ### Dictation: hold-to-talk, live words, talking to the AI, and OpenAI with your own key (2026-10-05)
 
 - **Hold Ctrl+F11 to talk**, after VS Code's hold mode, as an option: held for
@@ -92,6 +203,26 @@
   ("YTJD1956...", Yours Truly, Johnny Dollar) never appeared. Searches now use
   the Archive's relevance order; browsing keeps its stable order for paging.
 
+### Quill Converter 1.0.0 in step with the family (2026-10-05)
+
+Quill Converter has not been published yet, so this lands in 1.0.0 (build 1).
+
+- **The installer writes the version marker.** `quill-converter.iss` now
+  writes `quill-app-version.ini` (`version` and `version_build`), as Quill
+  Radio, QUILL Lite and QUILL Cast do, and `build_release.ps1` writes the same
+  file into the portable copy; without it an installed Converter's About and
+  Check for Updates reported the shared runtime's code version. A test holds it
+  (`tests/unit/scripts/test_converter_installer.py`). `build_release.ps1` also
+  takes `-SkipPublishedCheck`, like its siblings.
+- **Web requests name Quill Converter** (`http_client.set_product_identity`).
+- **No AI in Quill Converter** (owner decision): a test keeps its menus and
+  Find a Setting or Command free of AI rows and of a Release Channel row, and
+  another that its update check is Stable-only and offers a newer build.
+- **Docs:** the user guide is reorganised into eight chapters with an
+  introduction and a closing summary in each; the release notes gain Try this
+  first, the show and hide key, Find a Setting or Command, and the build
+  number; the changelog's Unreleased entry folds into 1.0.0.
+
 ### Show and hide keys that never take another app's key (2026-10-05)
 
 - **Nineteen keys that never fired, fixed at the root.** A show and hide key
@@ -179,7 +310,7 @@
   text in a Markdown document (`quill/core/markdown_clipboard.py`,
   `quill/ui/markdown_clipboard_copy.py`).
 - **Hey QUILL.** *Listen for 'Hey QUILL'* and Tools > Speech > Listen for Hey
-  QUILL are one switch: the command saves the setting, the tick box starts or
+  QUILL are one switch: the command saves the setting, the check box starts or
   stops listening on OK, and launch resumes it only when *Keep listening across
   restarts* is on, as the guide promised (`quill/ui/wakeword_switch.py`,
   `quill/ui/settings_live_switches.py`).
@@ -319,7 +450,7 @@ Software** for reviewing the plans AI coding assistants write. Thank you,
 Andre. Every one of them works the same way in both editors, from one shared
 copy of the code.
 
-- **Toggle Task Done** (`Ctrl+Alt+Enter`, both editors): ticks `- [ ]` to
+- **Toggle Task Done** (`Ctrl+Alt+Enter`, both editors): checks `- [ ]` to
   `- [x]` and back on the line you are on, or on every task in a selection, and
   says how many tasks in that list are done ("Checked: Write the tests. 3 of 7
   tasks complete."). Bullets `-`, `*`, `+` and numbered items all count. Undo
@@ -673,10 +804,10 @@ copy of the code.
 - **Help > Release Channel... in all four apps**, plus a row in each
   app's Preferences, opens one shared window (`quill/ui/updates/`): Stable, Beta and
   Dev as a radio group that only *explains* as you arrow (nothing changes until
-  Switch), a read-only "What this means" box, and unticked "Also move my other
+  Switch), a read-only "What this means" box, and unchecked "Also move my other
   QuillVille apps" checkboxes. Beta and Dev go through a risk window in plain words
   (what could go wrong, how your settings are protected, how to come back) that does
-  nothing until "I understand" is ticked; Stay on Stable is the default and Escape.
+  nothing until "I understand" is checked; Stay on Stable is the default and Escape.
   Joining saves a `joined-beta`/`joined-dev` copy first through each app's own
   backup (`.qrbackup`, `.qcbackup`, or a zip of QUILL's and QUILL Lite's settings
   files) and aborts with the reason if it cannot. Coming back to Stable is a
@@ -1790,8 +1921,8 @@ because a caller that does not is a window that greys out the only way home.
 it can see you did this one. That needs lessons whose steps carry a check, and
 an app can reasonably have none -- QUILL Lite is one: every step there ends in a
 sentence the editor already says out loud, so there is nothing to poll for. The
-tick box is now disabled in that case rather than sitting there doing nothing,
-because a control that can never act is one somebody ticks, waits on, and
+check box is now disabled in that case rather than sitting there doing nothing,
+because a control that can never act is one somebody checks, waits on, and
 concludes is broken. Disabled, not hidden: a reader arriving on it is told it is
 unavailable.
 
@@ -2254,7 +2385,7 @@ two things ordinary Ctrl+Z reports identically, which is to say not at all.
 
 **A QUILL Lite profile** (Preferences > Profiles and Features): QUILL with
 QUILL Lite's nine menus and nothing else, switching features *off* rather than
-hiding them so wanting one back is one tick. **Bring My QUILL Lite Settings...**
+hiding them so wanting one back is one check box away. **Bring My QUILL Lite Settings...**
 (`Alt+Shift+F11`) starts you from the setup you already have: your
 abbreviations, dictionary, copy tray, clip library and bookmarks are shared from
 then on, your preferences and rebound keys are copied once, and nothing already
@@ -3491,7 +3622,7 @@ happened: choose Notepad, hear what Notepad is, press Save, and get back every
 feature you had, including the Format menu the description had just told you
 would be gone.
 
-**The Choice applies as you move through it now.** Ticking and unticking
+**The Choice applies as you move through it now.** Checking and unchecking
 seventeen boxes is what choosing a profile *means*, so that is what choosing one
 does. Nothing is written until Save, exactly as before, and **Custom** is a real
 destination rather than only a readback: select it and every box goes back to
@@ -4090,7 +4221,7 @@ Actions, so it can be reordered onto Ctrl+1.
   episode *is*; the scopes say where that means anything -- the Inbox,
   Auto-Queue, auto-download, the new-episode announcement, the podcast's own
   episode list, New Episodes and Continue Listening, smart playlists, and
-  Search Everywhere. Ticked independently, so "keep it out of my Inbox but
+  Search Everywhere. Checked independently, so "keep it out of my Inbox but
   still tell me about it" and "just do not spend my bandwidth on it" are both
   things you can actually have. A new filter starts with the four **routing**
   scopes on and the four **hiding** scopes off: declining to route an episode
@@ -4102,7 +4233,7 @@ Actions, so it can be reordered onto Ctrl+1.
   decision.
 
 - **The verdict is asked, not stamped.** Every list consults the filter as it
-  is drawn, so unticking a scope puts those episodes back on the next redraw --
+  is drawn, so unchecking a scope puts those episodes back on the next redraw --
   no sweep, no migration, nothing to undo. The **Play Queue** is the one
   exception, because it is the one list you built by hand: saving offers,
   separately, to clear this podcast's matching episodes out of it, and the
@@ -4111,7 +4242,7 @@ Actions, so it can be reordered onto Ctrl+1.
 - **Preview** tries the rules against the 50 newest episodes you already have
   and says what each would be -- decision first, then title and length. It
   changes nothing, and it runs **while the filter is switched off and while no
-  scope is ticked**, because "what do these rules catch?" is a question about
+  scope is checked**, because "what do these rules catch?" is a question about
   the rules. A preview that agreed with you whenever the switch was off would
   agree right up until it mattered.
 
@@ -4738,7 +4869,7 @@ a host-shaped assumption that only the app frame satisfied.
   instruction too late: the branch reloaded straight back to its old rows.
 - **`RadioHistory.confirm_browse_delete` / `explain_browse_delete`**: the Delete
   question and the not-deletable explanation each carry a "don't ask again"
-  checkbox (`wx.RichMessageDialog`), unticked, No-defaulted, persisted.
+  checkbox (`wx.RichMessageDialog`), unchecked, No-defaulted, persisted.
 
 ### F1 context help, family-wide (2026-08-23)
 
@@ -6865,7 +6996,7 @@ The headline: **One Editor, Every Format** — the braille fix is on for everyon
 - **Accessible code folding.** Fold a heading section or a fenced code block with **Ctrl+Alt+Shift+F**; jump between foldable regions with **Alt+Shift+[** / **Alt+Shift+]**; see every fold at once with **Ctrl+Alt+Shift+L** (List Folds). Folding here is spoken state, never visual line-hiding — the document text is never touched, and ordinary arrow/word/line navigation is never intercepted, so nothing a screen reader user can reach is ever made silently unreachable.
 - **Insert > Emoji... (Alt+Period) — browse or search all 3,781 standard emoji by name, keyword, a typed smiley like `:)` or `<3`, or the symbol itself, with a real spoken description of what each one looks like.** No visual grid — that's exactly the pattern that shuts screen reader users out of every other emoji picker — just a category list (Favorites and Recent first, then Unicode's own nine groupings) and a named results list, same shape as QUILL's other browse/search dialogs. **Favorites** and **Recent** (your last 30 inserted, automatically) sit at the top of the category list for one-step access to the emoji you actually use; an Add/Remove Favorites button acts on whatever's selected, and un-favoriting or clearing Recent never removes the emoji from the picker itself — it's still there under its usual category or search terms either way. Every description is original text QUILL generates itself from official Unicode data (not scraped from a picker site, for licensing reasons), so the catalog is fully self-hosted and works entirely offline once built.
 - **Favorite folders — a short, curated list for instant access (Kurzweil-1000-style).** **Ctrl+Alt+Shift+A** adds the current document's folder to your favorites; **Ctrl+Alt+Shift+R** removes one; **Ctrl+Alt+Shift+O** opens the type-to-filter Quick Open dialog. Distinct from Windows' recent-folders list, which tracks what you *recently* touched — a folder you use constantly but haven't opened in months (the classic "boss might ask about this any minute" folder) stays in favorites regardless of recency.
-- **Open From Favorite Folder — VSCode-style Quick Open, scoped to favorites.** Type to filter by filename across every favorite folder at once, arrow to a match, Enter to open. Defaults to top-level files only so it stays instant even if a favorite hides a huge tree; tick the **Include subfolders** checkbox to search recursively when you need to. Quill has no single-project-root "workspace" the way VSCode does, so this is scoped to your curated favorites list rather than a whole tree.
+- **Open From Favorite Folder — VSCode-style Quick Open, scoped to favorites.** Type to filter by filename across every favorite folder at once, arrow to a match, Enter to open. Defaults to top-level files only so it stays instant even if a favorite hides a huge tree; check the **Include subfolders** checkbox to search recursively when you need to. Quill has no single-project-root "workspace" the way VSCode does, so this is scoped to your curated favorites list rather than a whole tree.
 - **Ranked spelling (Ctrl+Shift+L) — misspellings sorted by how often they recur.** Kurzweil-1000-style: instead of reviewing errors in document order, the most-frequent misspelling comes first. A single OCR misread or a repeated typo (`teh` for `the`) is usually the fastest way to clear the bulk of a long list, since fixing one entry resolves every occurrence at once. The regular, document-order **Misspelling List** (Alt+Shift+L) is unchanged and remains the default.
 - **GitHub Items, tranche two: accessible PR diffs through QUILL's own compare engine, batch operations, and AI thread summaries.** Select a pull request and press **Diff...** to browse its changed files — each file's before/after content is fetched and run through the same compare engine as Compare Documents, so changes read as a spoken difference walk ("Difference 2 of 5. Text changed at line 41...") instead of a raw patch; binary or oversized files degrade honestly to their +/- counts and GitHub's patch text. **Batch...** applies close, reopen, or add-label to every selected row at once — the one deliberate exception to the viewer's read-only rule, and tightly fenced: it requires a signed-in account (anonymous stays fully read-only), and a consent dialog names the exact action and the exact item numbers before anything touches GitHub, with per-item error reporting after. **Summarize** condenses a long issue or PR discussion to a screen-reader-friendly TL;DR (what it's about, current state, open questions, next step) through the same AI connection and consent gates as every other QUILL AI feature — nothing runs until you press the button.
 - **GitHub Items grows up: pinned repositories, favorites, real search, local git sync, and View Upstream (the GHManage/fastgh merge).** The read-only GitHub Items viewer (File > Open from Remote) gains five power features from the Unified GitHub Management review. **Pinned repositories**: the Pinned... button pins the loaded repo or jumps to any pinned one — a curated list, no retyping owner/repo. **Favorites**: Ctrl+D bookmarks the selected issue, PR, branch, or release; the Favorites... menu reopens any bookmark in your browser, across every repo. **Advanced search**: Ctrl+F focuses a search box that takes full GitHub search syntax (`label:bug author:x is:pr created:>2026-01-01`), scoped to the loaded repository; an empty search restores the normal list. **Local git sync**: the repository field now also prefills from the document's own git checkout — open any file inside a clone whose origin points at GitHub and the viewer knows the repo, even if the file never came through Open-from-GitHub. **View Upstream**: loading a repository that's a fork enables a View Upstream button that jumps straight to the repository it was forked from — previously the only way there was retyping the parent's name by hand. Everything stays read-only against GitHub itself and behind the same consent, token, and Safe Mode gates; the only writes are your local bookmarks.
@@ -6898,7 +7029,7 @@ A community bug report (Kokoro voices needing an internet connection despite run
 
 Bug-fix and polish release, driven by beta 1 user reports. Rolls up on top of 0.9.0 Beta 1 (below).
 
-- **QuillRichEdit: a native Rich Edit wrapper, real RTF, and a candidate braille fix (experimental) — feedback wanted from braille display owners.** A new experimental editor surface wraps the same native Rich Edit control QUILL already ships as its default editor, adding native RTF load/save, in-place bold/italic/underline/font/alignment formatting, and — the part we most need your help with — a candidate fix for two long-standing braille reports: the "cell-two" line-start offset and missing selection dots (7-8) on some displays. Turn it on from **Preferences > Experimental**: tick **Enable experimental features**, tick **Enable experimental editor surfaces**, set **Editor surface** to **QuillRichEdit**, tick **QuillRichEdit: emulate a system edit control (braille test)**, then **restart QUILL**. If you use a braille display, please try it and tell us what you see (cell 1 or 2, selection dots or not, still reads correctly) via Help > Report a Bug — we genuinely don't yet know if this fixes it on real hardware. See the user guide's "QuillRichEdit (experimental)" section for the full walkthrough.
+- **QuillRichEdit: a native Rich Edit wrapper, real RTF, and a candidate braille fix (experimental) — feedback wanted from braille display owners.** A new experimental editor surface wraps the same native Rich Edit control QUILL already ships as its default editor, adding native RTF load/save, in-place bold/italic/underline/font/alignment formatting, and — the part we most need your help with — a candidate fix for two long-standing braille reports: the "cell-two" line-start offset and missing selection dots (7-8) on some displays. Turn it on from **Preferences > Experimental**: check **Enable experimental features**, check **Enable experimental editor surfaces**, set **Editor surface** to **QuillRichEdit**, check **QuillRichEdit: emulate a system edit control (braille test)**, then **restart QUILL**. If you use a braille display, please try it and tell us what you see (cell 1 or 2, selection dots or not, still reads correctly) via Help > Report a Bug — we genuinely don't yet know if this fixes it on real hardware. See the user guide's "QuillRichEdit (experimental)" section for the full walkthrough.
 - **Wikipedia added to the non-AI Look Up dictionary/thesaurus (#897).** Look Up now includes a short encyclopedia summary alongside definitions and synonyms when you're online, with a link back to the source article. Same consent gate and offline fallback as the existing Free Dictionary/Datamuse lookups — nothing changes if you keep Look Up offline-only.
 - **Clip Library: a rolling clip history beneath Copy Tray's curated 12 slots (#895).** Edit > Keep Selection in Clip Library remembers a selection (up to 200, de-duplicated, favorites protected from eviction); Edit > Open Clip Library... lets you search, favorite, remove, copy to the clipboard, or promote an entry into a specific Copy Tray slot. Copy Tray itself is unchanged — this is a second, complementary tier, not a replacement. An optional **Preferences > Editing > "Automatically keep everything you copy in the Clip Library"** setting (off by default) captures every copy made inside QUILL automatically, no separate Keep action needed.
 - **Work Personas: named, launchable bundles of a feature profile, working folder, favorite files, and keymap (#896).** Tools > Work Personas... creates named bundles ("School," "Novel," "Freelance Client X") that switch your feature profile, change your working folder, reopen your favorite files, and apply a keymap profile in one action — Apply Now in the dialog, or `quill --persona NAME` from the command line, or a generated launch shortcut so a persona is reachable without QUILL already running.
@@ -7059,7 +7190,7 @@ release notes; the log, newest first:
 - **Hey QUILL — talk to your editor, hands-free.** A complete voice-interaction experience that drives QUILL by speaking, entirely on-device with nothing uploaded, in four levels you can use as much or as little as you like. **(1) Speak a command:** **Tools → Speech → Voice Command (Offline)** — run it, say "save file", "word count", or "next heading", and QUILL acts. **(2) Hold a conversation:** **Voice Conversation Mode** keeps listening after each command through a follow-up window so you can chain commands, with warm musical **audio cues** for every state (a rising chime on, a soft two-note listening, a sparkle when done, a quiet "working" tick, a calm fall on no-match) — nine cues that are real **Sound Events** you can retune in any sound pack. Your turn ends **when you stop speaking** (voice-activity detection that calibrates to your room so a noisy mic isn't mistaken for talking); prompts can carry **your name** ("Listening, Jeff.") and be **spoken aloud** (staying silent when a screen reader is running, so QUILL never talks over it); and the pause, cancel, follow-up, and tick timings are all tunable. **(3) Just say "Hey QUILL":** **Listen for Hey QUILL** turns on always-listening — "Hey QUILL, save file" runs a command outright, the status bar and a periodic reminder keep the live mic perceivable, a new **Speak Voice Status** command reports what voice is doing, and it turns itself off when QUILL closes unless you opt to keep it on. **(4) Ask a question:** questions like "how do I save my document" are handed to **Ask Quill** with the text pre-filled — you press Enter, so a person is always in the loop for anything that reaches the AI. You can **choose the engine** (Settings → Voice recognition engine): whisper.cpp for accuracy or **Vosk** for a fast, light engine ideal for the wake word, with automatic fallback. One promise holds throughout: a misheard phrase can never do harm — voice only runs a curated, non-destructive allowlist, everything is off by default, off in Safe Mode, and abortable with "cancel". See the new **Voice Interaction** page in the user guide for the full reference.
 - **Table Studio — accessible tables (experimental).** One new grid surface makes editing tables by ear genuinely workable. **Tools → Table Studio** builds a table from scratch, and **Open CSV in Table Studio** opens a CSV/TSV straight into the same fully keyboard-accessible grid. The arrow keys move by cell and **Left/Right speak the column heading** as you cross a row; F2 edits a cell, Alt+arrows move a row or column, Ctrl+Insert adds a row. Insert the result as a properly-headed **Markdown or HTML** table, or **save it back out as CSV** so a file you opened makes a full round trip. The grid announces cells through Windows accessibility for NVDA and JAWS, with an optional compiled native UIA provider for richer cell events on builds that include it (a built-in fallback works without it). An opt-in on the **Experimental** tab.
 - **A rebuilt Experimental tab — consent in layers.** **Preferences → Experimental** is now the honest front door for features that work but are still maturing. The first checkbox is a true master switch, relabeled to say exactly what it does: **Enable experimental features** governs *everything* on the tab, and while it is off every other control is disabled and drops out of the tab order — an untouched Experimental tab is one checkbox to a screen reader. Each experiment then has its own switch: **GLOW accessibility review and repair**, **WordPress publishing connections** (the read-only inbound tools; the send half stays locked regardless), and **Read the document aloud in your browser**. The editor-surface options sit behind a *second* acknowledgement of their own — **Enable experimental editor surfaces (features may degrade based on the control selected)** — which separately gates the surface choice, the border option, and the surface explainer. Nothing experimental can ever be reached, focused, or applied by accident.
-- **GLOW — guided accessibility review and repair, one switch away.** GLOW (Guided Layout and Output Workflow) graduates from hidden preview to an **experimental opt-in**: tick two checkboxes under **Preferences → Experimental** (the master switch and GLOW's own) and the **Tools → GLOW** menu appears immediately, no restart. Audit the document or just the paragraph in front of you — findings open as a readable tab, each with a rule, a severity, and a plain-language suggestion — and apply safe, deterministic fixes with a before/after compare, never a silent rewrite. New alongside the opt-in: **GLOW Audit File...** and **GLOW Fix File...** review and repair structured documents on disk (Word, PowerPoint, Excel, PDF, EPUB, Markdown) through the shared GLOW engine, with a scored, graded report; fixing always writes a repaired copy beside the original — your source file is never touched. Everything runs on your machine by default; the engine's optional networked helpers stay off unless you explicitly consent, and **Help → Check for GLOW Updates...** fetches a newer engine only when you ask, signature-verified with automatic rollback.
+- **GLOW — guided accessibility review and repair, one switch away.** GLOW (Guided Layout and Output Workflow) graduates from hidden preview to an **experimental opt-in**: check two checkboxes under **Preferences → Experimental** (the master switch and GLOW's own) and the **Tools → GLOW** menu appears immediately, no restart. Audit the document or just the paragraph in front of you — findings open as a readable tab, each with a rule, a severity, and a plain-language suggestion — and apply safe, deterministic fixes with a before/after compare, never a silent rewrite. New alongside the opt-in: **GLOW Audit File...** and **GLOW Fix File...** review and repair structured documents on disk (Word, PowerPoint, Excel, PDF, EPUB, Markdown) through the shared GLOW engine, with a scored, graded report; fixing always writes a repaired copy beside the original — your source file is never touched. Everything runs on your machine by default; the engine's optional networked helpers stay off unless you explicitly consent, and **Help → Check for GLOW Updates...** fetches a newer engine only when you ask, signature-verified with automatic rollback.
 - **Golden Quills — a thank-you to those who support QUILL.** A new **Golden Quills** tab in **Help → About QUILL** recognizes the people who have chosen to support the project financially, listed in alphabetical order, with our heartfelt thanks. It includes an optional **Donate** button (opens PayPal in your browser). To be crystal clear: **donating is completely optional and is never required** — every feature of QUILL is, and will remain, free and fully available to everyone.
 - **Smaller installer: Pandoc downloads on demand.** Pandoc — the engine behind Word, ODT, EPUB, and RTF import and export — was the single largest bundled component (~220 MB unpacked), yet plain-text and Markdown editing never use it. It is no longer bundled: the first time you import or export one of those formats (or run **Convert File**), QUILL **offers to download the official, pinned Pandoc build right there** — about 45 MB, checksum-verified, with a cancelable progress bar (disabled in Safe Mode) — and you can also get it any time from **Help → Download Optional Components**. This roughly halves the installer. Upgrading from a release that bundled Pandoc? Your existing copy keeps working.
 - **Smaller installer: the braille translation pack downloads on demand.** The liblouis translation tables and BRF profiles that power the Translation submenu and BRF/embossing export (~68 MB unpacked) are no longer bundled. Reading with a braille display never needed them (that is your screen reader); QUILL's own *translation and embossing* did. The Braille menu now offers **Download Braille Translation Pack...** the first time you reach it without the pack — about 9 MB, checksum-verified, Safe-Mode-blocked, with live progress in the status bar — and it also appears in **Help → Download Optional Components**. Upgrading from a release that bundled it? Your existing copy keeps working.
@@ -7122,7 +7253,7 @@ release notes; the log, newest first:
 - **The Python snippet sandbox is harder to escape.** Snippets that AI features or Quillins run in QUILL's isolated Python sandbox are now also statically blocked from dunder attribute access (the classic route from a harmless-looking expression to the underlying OS), on top of the existing separate-process isolation, import allowlist, scrubbed environment, and time/memory caps. If the operating system refuses a memory or CPU cap, QUILL now logs that the run was time-bounded only instead of staying silent.
 - **Quieter dialogs by default — less duplicated chatter.** The spoken "Entered / Exited *name* dialog" cues (**Preferences → Accessibility → Announce entering and leaving dialogs**) now default to **off**, because every supported screen reader already announces a dialog and reads its title on focus, so the extra cue was redundant noise. The setting stays exactly where it was for anyone who wants it back, and because settings are stored as a delta from QUILL's defaults, existing users who never deliberately switched it on pick up the quieter default automatically on upgrade.
 - **Open your WordPress posts and pages in QUILL (read-only, Full Quill profile).** A new **read-only publishing connection** lets you sign in to a WordPress site with your username and an application password, **browse a listing of your posts and pages**, and **open one into the editor** to read and edit it locally. This first step is deliberately read-only: **QUILL does not send anything back to the site yet** — there is no publish, update, or schedule. It is available in the **Full Quill** profile (and can be turned on for any profile via **Preferences → Profiles and Features → Manage Individual Features**); connections live under **File → Publish → Publishing Connections...**, and your application password is stored securely in the Windows Credential Manager. Connections only ever talk to your site over HTTPS (plain HTTP is allowed only for local/loopback addresses).
-- **New Experimental settings tab — try different editor surfaces (for testing).** A new **Settings → Experimental** tab adds an **Editor surface** chooser so you can test how QUILL feels on different controls: **RichEdit 3.0**, **RichEdit 2.0**, **Notepad** (a plain edit control), **Rich text** (an experimental `wx.RichTextCtrl`), or **Native Win32 EDIT** (a pywin32 spike that hosts the very control Notepad uses, Windows only); "Default" follows your Accessibility *Editor control type* setting. A **Hide editor border** toggle draws the editor with no border for a cleaner, Notepad-like frame. A built-in **read-only explanation panel updates as you change the chooser**, describing what each surface does and its impact from both a user and a technical perspective, and the experimental options stay **ignored until you tick "I understand features may degrade based on the control selected"** — a safety gate so nothing changes by accident. These change how the editor is built, so QUILL **warns you to restart** when you change them and applies them to documents opened after restart.
+- **New Experimental settings tab — try different editor surfaces (for testing).** A new **Settings → Experimental** tab adds an **Editor surface** chooser so you can test how QUILL feels on different controls: **RichEdit 3.0**, **RichEdit 2.0**, **Notepad** (a plain edit control), **Rich text** (an experimental `wx.RichTextCtrl`), or **Native Win32 EDIT** (a pywin32 spike that hosts the very control Notepad uses, Windows only); "Default" follows your Accessibility *Editor control type* setting. A **Hide editor border** toggle draws the editor with no border for a cleaner, Notepad-like frame. A built-in **read-only explanation panel updates as you change the chooser**, describing what each surface does and its impact from both a user and a technical perspective, and the experimental options stay **ignored until you check "I understand features may degrade based on the control selected"** — a safety gate so nothing changes by accident. These change how the editor is built, so QUILL **warns you to restart** when you change them and applies them to documents opened after restart.
 - **Smaller installer: the offline speech engine downloads on demand.** The private, on-device speech engine (whisper.cpp) is no longer bundled in the installer. The first time you use offline dictation or transcription, QUILL **offers to download it right there** — about 8 MB, checksum-verified, with a cancelable progress bar (disabled in Safe Mode) — and you can also get it any time from **Tools > Speech > Download Offline Speech Engine...**. **Upgrading from a release that bundled the engine? Your existing copy is kept and keeps working** — nothing to re-download. (First step of the AI footprint/optimization plan: a pinned, SHA-256-verified release-asset acquisition path.)
 - **Smaller installer: Kokoro neural voices now download on demand.** The ~120 MB Kokoro voice models are no longer bundled in the installer (it is that much smaller to download and install). The first time you choose a Kokoro voice, QUILL downloads it for you — checksum-verified, with a cancelable progress bar — and other read-aloud voices (DECtalk, eSpeak NG, Piper, SAPI) work in the meantime. **If you are upgrading from a release that bundled Kokoro, your existing copy is kept and keeps working** — nothing to re-download. (Proof-of-concept for the AI footprint/optimization plan's "host redistributable components as verified release assets.")
 - **Smaller installer: the DECtalk and eSpeak NG voices download on demand too.** The classic DECtalk runtime (~2 MB) and the eSpeak NG engine and its voice data (~40 MB) are no longer bundled in the installer. When you choose one of these voices, QUILL downloads it for you — checksum-verified, with a cancelable progress bar (disabled in Safe Mode) — and Windows' built-in SAPI voices remain available immediately as the always-present offline voice. **If you are upgrading from a release that bundled DECtalk or eSpeak NG, your existing copies are kept and keep working** — nothing to re-download. (Same pinned, SHA-256-verified release-asset path as whisper.cpp and Kokoro.)
@@ -7130,7 +7261,7 @@ release notes; the log, newest first:
 - **Runs light on modest machines: idle-model unloading and a Low-resource mode.** Two new options under **Settings → Performance and Memory** let the full AI and speech feature set fit on limited-memory, CPU-only machines — never by disabling features, only by managing memory. **Unload idle models after** *N* minutes frees an AI, read-aloud, or dictation model you have stopped using (it reloads on next use); **Low-resource mode** keeps only one model loaded at a time and prefers the smallest that fits, and turns on automatically (with a one-time spoken notice) on very-low-RAM machines. Peak memory drops when you move between features, at the cost of a brief reload. (`quill/core/model_lifecycle.py`, wired through `lifecycle_service` to the speech, Kokoro, and llama.cpp model holders.)
 - **AI model guidance that fits your machine.** The on-device **AI model** dialog now surfaces a one-step, screen-reader-announced upgrade suggestion when your computer can comfortably run a more accurate model than the one currently selected — take it or ignore it; new installs still default to the smallest model that fits.
 - **A way forward when the cloud is unreachable.** If a cloud AI request cannot reach the internet (offline, timeout, rate-limit) and you have an on-device model installed, QUILL now tells you — out loud — that you can switch to it and keep working offline. It never switches for you, so your privacy posture never changes without your say-so.
-- **Proofread Mastodon posts before sending (per account).** In **Tools → Share → Mastodon Accounts...**, select an account and tick **Spell-check posts before sending** to have QUILL open the Spelling Review (F7) on the post text when you press Post, so you can fix misspellings before it goes out. Off by default and per account, so existing accounts are unaffected until you turn it on.
+- **Proofread Mastodon posts before sending (per account).** In **Tools → Share → Mastodon Accounts...**, select an account and check **Spell-check posts before sending** to have QUILL open the Spelling Review (F7) on the post text when you press Post, so you can fix misspellings before it goes out. Off by default and per account, so existing accounts are unaffected until you turn it on.
 - **Spell check a document before saving.** A new **Settings → Editing → Spell check a document before saving** option (off by default) opens the Spelling Review (F7) automatically when you Save or Save As, so you can correct the document before the file is written, then the save proceeds.
 - **Spell-check in other languages, downloaded on demand.** A new **Tools → Spell Check Language...** lets you pick the language QUILL checks against. English works out of the box; choosing **Spanish (Spain)** or **French (France)** downloads that dictionary the first time from QUILL's own verified source (checksum-checked, with a cancelable progress window), then it works offline. Your choice is remembered, and the spell checker uses it for the F7 review and check-as-you-type. (More languages can follow; this first release proves the path with Spanish and French.)
 - **Hear how deep your indentation is.** Press **Tab** or **Shift+Tab** and QUILL can now speak the new indentation depth — "4 spaces", "8 spaces", "1 tab" — instead of just "Indented lines", so you always know where the line sits. It honours your tabs-vs-spaces and width choices (**Insert tab characters instead of spaces** and **Number of spaces per indent level** in Settings). Prefer the terse message? Turn off **Announce indentation depth on Tab** (Settings, Accessibility).
@@ -7175,12 +7306,12 @@ First public 0.8.0 beta. Rolls up the 0.7.0 line plus the changes below. This se
 
 ### One dialog for batch speech and audiobooks
 
-- **Build Audiobook from Folder is folded into Batch Export to Speech Audio.** The two near-identical dialogs are now one. In **Tools > Speech > Batch Export to Speech Audio...**, tick **Assemble the results into one audiobook** to reveal the book tags (title/author/narrator/genre/year), a cover-image picker, the book format (M4B/MP3), an ACX-loudness option, and a save-as path. After your documents are synthesized — one chapter each — the produced (and any pre-recorded) audio in the folder is combined into a single chaptered book. The standalone Build Audiobook dialog and its menu item were removed; the build logic (`quill/core/speech/audiobook.py`) is unchanged.
+- **Build Audiobook from Folder is folded into Batch Export to Speech Audio.** The two near-identical dialogs are now one. In **Tools > Speech > Batch Export to Speech Audio...**, check **Assemble the results into one audiobook** to reveal the book tags (title/author/narrator/genre/year), a cover-image picker, the book format (M4B/MP3), an ACX-loudness option, and a save-as path. After your documents are synthesized — one chapter each — the produced (and any pre-recorded) audio in the folder is combined into a single chaptered book. The standalone Build Audiobook dialog and its menu item were removed; the build logic (`quill/core/speech/audiobook.py`) is unchanged.
 - **The "Kokoro speed" control now announces its name.** The speed spinner is a `SpinCtrlDouble`, whose embedded edit field did not inherit its adjacent label, so screen readers read it unnamed on Tab; it (and the Rate spinner) now carry explicit accessible names.
 - **Choose where temporary files live, and keep a log.** A new **Temporary files folder** field puts each run's scratch dir under a folder you pick (blank = system temp). A timestamped diagnostic log is created in the output folder *before* conversion starts and records discovery, per-document progress and timings, skips, errors, and the audiobook build. An optional **Save the text sent to speech** checkbox writes a `<doc>.spoken.txt` sidecar of the exact text each document speaks.
 - **A real progress dialog with a percentage.** Conversion now shows a focused, screen-reader-announced progress dialog whose percentage is words processed divided by total words, and which can be **minimized to the status bar** like other long operations. It opens after the configuration dialog closes so screen-reader focus reliably lands on it, and it advances **per audio chunk** — so even a single long document (or one with no headings) shows real movement instead of sitting on "Preparing...".
 - **Fixed a heading-less document appearing to hang.** A Word document with no headings is one large section; it was handed to Kokoro in one oversized call (far past Kokoro's small context window), which stalled. Neural engines now synthesize in much smaller chunks (Kokoro especially), so these documents complete and report steady progress.
-- **Review chapters before building.** Tick **Review chapters (rename/reorder/merge) before building** to open a chapter editor after synthesis; assembling a folder of pre-recorded audio always opens it. Rename, reorder, and merge chapters, then build. (This is the editor from the old standalone Build Audiobook dialog, brought back into the consolidated flow.)
+- **Review chapters before building.** Check **Review chapters (rename/reorder/merge) before building** to open a chapter editor after synthesis; assembling a folder of pre-recorded audio always opens it. Rename, reorder, and merge chapters, then build. (This is the editor from the old standalone Build Audiobook dialog, brought back into the consolidated flow.)
 - **Accessibility: spinner and list labels.** The "Kokoro speed" control is a composite whose inner edit field is what a screen reader focuses; its accessible name now reaches that inner field. The round-robin voice list and translated-languages list got adjacent labels so they are announced by name on Tab.
 
 ### Community fixes

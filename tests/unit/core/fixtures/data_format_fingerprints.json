@@ -355,6 +355,33 @@
       "shape": {
         "dataclass:quill.core.lite.settings:Settings": {
           "quill.core.lite.settings:Settings": {
+            "windows_dictation_microphone": "str",
+            "windows_dictation_engine": "str",
+            "windows_dictation_language": "str",
+            "windows_dictation_speech_language": "str",
+            "windows_dictation_dash": "str",
+            "windows_dictation_wake_enabled": "bool",
+            "windows_dictation_wake_phrase": "str",
+            "windows_dictation_stop_phrase": "str",
+            "windows_dictation_phrase_feedback": "str",
+            "windows_dictation_cue_sounds": "bool",
+            "windows_dictation_announce": "bool",
+            "windows_dictation_pause": "str",
+            "windows_dictation_remove_fillers": "bool",
+            "windows_dictation_auto_punctuation": "bool",
+            "windows_dictation_silence_minutes": "int",
+            "windows_dictation_continuous": "bool",
+            "windows_dictation_hold_to_talk": "bool",
+            "windows_dictation_preview": "str",
+            "windows_dictation_ai_send": "str",
+            "windows_dictation_ai_pause": "str",
+            "windows_dictation_ai_remove_fillers": "bool",
+            "windows_dictation_ai_auto_punctuation": "bool",
+            "windows_dictation_openai_model": "str",
+            "windows_dictation_openai_consent": "bool",
+            "windows_dictation_readback_marks": "bool",
+            "windows_dictation_transcript_timestamps": "bool",
+            "windows_dictation_transcript_told": "bool",
             "theme": "str",
             "font_name": "str",
             "font_size": "int",
@@ -420,6 +447,29 @@
             "action_feedback": "str",
             "find_not_found_feedback": "str",
             "wrap_find": "bool",
+            "check_updates_on_launch": "bool",
+            "last_update_check": "str"
+          }
+        },
+        "constant:quill.core.lite.settings:SCHEMA": "1"
+      },
+      "classification": "additive, compatible",
+      "note": "three optional dictation fields (read-back marks, transcript time stamps, the once-only transcript sentence); older builds ignore them and every one defaults"
+    },
+    "quill.keymap": {
+      "current": 1,
+      "shape": {
+        "function:quill.core.keymap:_persisted_keymap_document": "sha256:a5c54fc8f894ca2f",
+        "constant:quill.core.keymap:KEYMAP_DEFAULTS_EPOCH": "1"
+      },
+      "classification": "additive, compatible",
+      "note": "fingerprint method moved from ast.dump to ast.unparse (Python 3.12/3.13 stable); shape unchanged"
+    },
+    "quill.settings": {
+      "current": 2,
+      "shape": {
+        "dataclass:quill.core.settings:Settings": {
+          "quill.core.settings:Settings": {
             "windows_dictation_microphone": "str",
             "windows_dictation_engine": "str",
             "windows_dictation_language": "str",
@@ -444,29 +494,9 @@
             "windows_dictation_ai_auto_punctuation": "bool",
             "windows_dictation_openai_model": "str",
             "windows_dictation_openai_consent": "bool",
-            "check_updates_on_launch": "bool",
-            "last_update_check": "str"
-          }
-        },
-        "constant:quill.core.lite.settings:SCHEMA": "1"
-      },
-      "classification": "additive, compatible",
-      "note": "2026-10-05 dictation: eight optional windows_dictation_* fields (hold-to-talk, live preview, Talking to AI profile, OpenAI model and consent); older builds ignore unknown keys and these default safely"
-    },
-    "quill.keymap": {
-      "current": 1,
-      "shape": {
-        "function:quill.core.keymap:_persisted_keymap_document": "sha256:a5c54fc8f894ca2f",
-        "constant:quill.core.keymap:KEYMAP_DEFAULTS_EPOCH": "1"
-      },
-      "classification": "additive, compatible",
-      "note": "fingerprint method moved from ast.dump to ast.unparse (Python 3.12/3.13 stable); shape unchanged"
-    },
-    "quill.settings": {
-      "current": 2,
-      "shape": {
-        "dataclass:quill.core.settings:Settings": {
-          "quill.core.settings:Settings": {
+            "windows_dictation_readback_marks": "bool",
+            "windows_dictation_transcript_timestamps": "bool",
+            "windows_dictation_transcript_told": "bool",
             "theme": "str",
             "keyboard_pack": "str",
             "soft_wrap": "bool",
@@ -588,30 +618,6 @@
             "dictation_onboarding_shown": "bool",
             "dictation_min_hold_seconds": "float",
             "dictation_remove_fillers": "bool",
-            "windows_dictation_microphone": "str",
-            "windows_dictation_engine": "str",
-            "windows_dictation_language": "str",
-            "windows_dictation_speech_language": "str",
-            "windows_dictation_dash": "str",
-            "windows_dictation_wake_enabled": "bool",
-            "windows_dictation_wake_phrase": "str",
-            "windows_dictation_stop_phrase": "str",
-            "windows_dictation_phrase_feedback": "str",
-            "windows_dictation_cue_sounds": "bool",
-            "windows_dictation_announce": "bool",
-            "windows_dictation_pause": "str",
-            "windows_dictation_remove_fillers": "bool",
-            "windows_dictation_auto_punctuation": "bool",
-            "windows_dictation_silence_minutes": "int",
-            "windows_dictation_continuous": "bool",
-            "windows_dictation_hold_to_talk": "bool",
-            "windows_dictation_preview": "str",
-            "windows_dictation_ai_send": "str",
-            "windows_dictation_ai_pause": "str",
-            "windows_dictation_ai_remove_fillers": "bool",
-            "windows_dictation_ai_auto_punctuation": "bool",
-            "windows_dictation_openai_model": "str",
-            "windows_dictation_openai_consent": "bool",
             "announce_formatting_on_move": "bool",
             "find_use_quill_dialog": "bool",
             "dictionary_online_lookups": "bool",
@@ -849,6 +855,33 @@
           }
         },
         "groups:quill.core.settings_migration:to_versioned": {
+          "windows_dictation_microphone": "_ungrouped",
+          "windows_dictation_engine": "_ungrouped",
+          "windows_dictation_language": "_ungrouped",
+          "windows_dictation_speech_language": "_ungrouped",
+          "windows_dictation_dash": "_ungrouped",
+          "windows_dictation_wake_enabled": "_ungrouped",
+          "windows_dictation_wake_phrase": "_ungrouped",
+          "windows_dictation_stop_phrase": "_ungrouped",
+          "windows_dictation_phrase_feedback": "_ungrouped",
+          "windows_dictation_cue_sounds": "_ungrouped",
+          "windows_dictation_announce": "_ungrouped",
+          "windows_dictation_pause": "_ungrouped",
+          "windows_dictation_remove_fillers": "_ungrouped",
+          "windows_dictation_auto_punctuation": "_ungrouped",
+          "windows_dictation_silence_minutes": "_ungrouped",
+          "windows_dictation_continuous": "_ungrouped",
+          "windows_dictation_hold_to_talk": "_ungrouped",
+          "windows_dictation_preview": "_ungrouped",
+          "windows_dictation_ai_send": "_ungrouped",
+          "windows_dictation_ai_pause": "_ungrouped",
+          "windows_dictation_ai_remove_fillers": "_ungrouped",
+          "windows_dictation_ai_auto_punctuation": "_ungrouped",
+          "windows_dictation_openai_model": "_ungrouped",
+          "windows_dictation_openai_consent": "_ungrouped",
+          "windows_dictation_readback_marks": "_ungrouped",
+          "windows_dictation_transcript_timestamps": "_ungrouped",
+          "windows_dictation_transcript_told": "_ungrouped",
           "theme": "general",
           "keyboard_pack": "_ungrouped",
           "soft_wrap": "editing",
@@ -970,30 +1003,6 @@
           "dictation_onboarding_shown": "_ungrouped",
           "dictation_min_hold_seconds": "_ungrouped",
           "dictation_remove_fillers": "_ungrouped",
-          "windows_dictation_microphone": "_ungrouped",
-          "windows_dictation_engine": "_ungrouped",
-          "windows_dictation_language": "_ungrouped",
-          "windows_dictation_speech_language": "_ungrouped",
-          "windows_dictation_dash": "_ungrouped",
-          "windows_dictation_wake_enabled": "_ungrouped",
-          "windows_dictation_wake_phrase": "_ungrouped",
-          "windows_dictation_stop_phrase": "_ungrouped",
-          "windows_dictation_phrase_feedback": "_ungrouped",
-          "windows_dictation_cue_sounds": "_ungrouped",
-          "windows_dictation_announce": "_ungrouped",
-          "windows_dictation_pause": "_ungrouped",
-          "windows_dictation_remove_fillers": "_ungrouped",
-          "windows_dictation_auto_punctuation": "_ungrouped",
-          "windows_dictation_silence_minutes": "_ungrouped",
-          "windows_dictation_continuous": "_ungrouped",
-          "windows_dictation_hold_to_talk": "_ungrouped",
-          "windows_dictation_preview": "_ungrouped",
-          "windows_dictation_ai_send": "_ungrouped",
-          "windows_dictation_ai_pause": "_ungrouped",
-          "windows_dictation_ai_remove_fillers": "_ungrouped",
-          "windows_dictation_ai_auto_punctuation": "_ungrouped",
-          "windows_dictation_openai_model": "_ungrouped",
-          "windows_dictation_openai_consent": "_ungrouped",
           "announce_formatting_on_move": "_ungrouped",
           "find_use_quill_dialog": "navigation",
           "dictionary_online_lookups": "_ungrouped",
@@ -1232,7 +1241,7 @@
         "constant:quill.core.settings_migration:SETTINGS_SCHEMA_VERSION": "2"
       },
       "classification": "additive, compatible",
-      "note": "2026-10-05 dictation: eight optional windows_dictation_* fields (hold-to-talk, live preview, Talking to AI profile, OpenAI model and consent); older builds ignore unknown keys and these default safely"
+      "note": "three optional dictation fields (read-back marks, transcript time stamps, the once-only transcript sentence); older builds ignore them and every one defaults"
     },
     "radio.favorites": {
       "current": 1,

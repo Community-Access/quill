@@ -299,12 +299,12 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 title="Decide where the filter applies",
                 body=(
                     "Where this applies has eight checkboxes. The first four start "
-                    "ticked. They keep matching episodes out of the Inbox, and never "
+                    "checked. They keep matching episodes out of the Inbox, and never "
                     "queue, download or announce them for you. The other four hide "
-                    "them from lists, and start unticked."
+                    "them from lists, and start unchecked."
                 ),
                 keys=("Alt+H",),
-                hear="Each checkbox, and whether it is ticked.",
+                hear="Each checkbox, and whether it is checked.",
             ),
             Step(
                 title="Save it",
@@ -322,7 +322,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 body=(
                     "Changed your mind about one episode? Choose Always Keep This "
                     "Episode (Ignore the Filter) from its menu, and the filter leaves "
-                    "it alone. Or untick a box under Where this applies, or switch a "
+                    "it alone. Or uncheck a box under Where this applies, or switch a "
                     "rule off, and its episodes come back at once."
                 ),
                 keys=("Shift+F10",),

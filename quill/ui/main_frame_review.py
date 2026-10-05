@@ -2,7 +2,7 @@
 
 Both commands are shared with QUILL Lite (:mod:`quill.ui.task_list_commands`,
 :mod:`quill.ui.html_export_commands`) and both came from reviewing plans the
-way PlanCake (Andre of Oire Software) does: tick a task, and hand somebody a
+way PlanCake (Andre of Oire Software) does: check a task, and hand somebody a
 page. This mixin registers them under QUILL's command ids, puts Toggle Task
 Done in **Insert > List** beside Task, and gives Export as HTML a Pandoc path.
 

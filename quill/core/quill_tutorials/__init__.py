@@ -20,6 +20,7 @@ from quill.core.quill_tutorials import (
     voice_and_ai,
     writing,
 )
+from quill.core.tutorials.dictation_lessons import dictation_lessons
 from quill.core.tutorials.model import Track, TutorialSet, build
 
 #: QUILL's tracks, in teaching order.
@@ -74,5 +75,16 @@ CATALOGUE: TutorialSet = build(
     writing.TUTORIALS,
     reading.TUTORIALS,
     voice_and_ai.TUTORIALS,
+    # 2026-10-05 (dict.md 3.10): five short dictation lessons, shared with QUILL Lite.
+    dictation_lessons(
+        {
+            "toggle": "tools.windows_dictation_toggle",
+            "language": "tools.windows_dictation_switch_language",
+            "transcript": "tools.windows_dictation_live_transcript",
+            "status": "tools.dictation_status",
+        },
+        track="voice",
+        surfaces=("QUILL",),
+    ),
     living_with_it.TUTORIALS,
 )

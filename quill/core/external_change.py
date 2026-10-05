@@ -394,7 +394,7 @@ def remember_answer(settings: object, file_name: str, value: str) -> bool:
     """Keep "always reload" or "always keep" for *file_name*'s format.
 
     One answer per format: the other list gives the key up, so changing your
-    mind later is one tick rather than a contradiction on disk. ``True`` when
+    mind later is one check box rather than a contradiction on disk. ``True`` when
     something was recorded, so the caller knows to save.
     """
     key = format_key(file_name) if value else ""

@@ -60,6 +60,11 @@ class DictationSettings:
     windows_dictation_ai_auto_punctuation: bool = True
     windows_dictation_openai_model: str = ""
     windows_dictation_openai_consent: bool = False
+    # 2026-10-05, the gap plan: marks said in the read-back, transcript times,
+    # and the one-time sentence about recording other people.
+    windows_dictation_readback_marks: bool = True
+    windows_dictation_transcript_timestamps: bool = False
+    windows_dictation_transcript_told: bool = False
 
 
 def load_fields(data: Mapping[str, Any]) -> dict[str, Any]:
@@ -112,5 +117,14 @@ def load_fields(data: Mapping[str, Any]) -> dict[str, Any]:
         "windows_dictation_openai_model": str(data.get("windows_dictation_openai_model", "") or ""),
         "windows_dictation_openai_consent": bool(
             data.get("windows_dictation_openai_consent", False)
+        ),
+        "windows_dictation_readback_marks": bool(
+            data.get("windows_dictation_readback_marks", True)
+        ),
+        "windows_dictation_transcript_timestamps": bool(
+            data.get("windows_dictation_transcript_timestamps", False)
+        ),
+        "windows_dictation_transcript_told": bool(
+            data.get("windows_dictation_transcript_told", False)
         ),
     }

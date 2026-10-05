@@ -284,6 +284,7 @@ after the pause.
 | 6 "Correct that" | Built: "correct that" reads up to three other guesses where the engine offers them, numbered, and "choose one" to "choose three" swaps the last phrase. Windows speech recognition offers them (SAPI `Alternates`); Moonshine, Whisper, the downloaded models and OpenAI give one answer, and the command says so. |
 | 6 Profiles | Built: "Writing" (Dictation Settings) and "Talking to AI" (More Dictation Settings), switching by itself in the AI window. |
 | Section 1 safeguards | Built (section 1). |
+| Transcribing a file (owner, 2026-10-05) | Built (section 12): Transcribe a Recording, Shift+F5, in both editors. |
 | 8 Questions | Answered 2026-10-05: hold-to-talk off by default (first answered on, reversed the same day); send after the pause; the AI pieces ship in QUILL Lite 1.2 and QUILL 1.0; the baseline machine as in section 1; speech models as optional downloads (section 6). |
 
 **Parity gaps closed on 2026-10-05.** QUILL's menu row was "Start or Stop
@@ -382,6 +383,144 @@ which marks were written (including "¿" and "¡"), speed per thread against the
   and is not built to carry audio.
 - **Why not clean every phrase.** Cost, privacy and a network round trip
   before each phrase is written, slowest exactly where QUILL's users are.
+
+## 12. Transcribe a Recording: a file through dictation's engines
+
+Built 2026-10-05 at the owner's request ("we do need a way to pass a mp3 and
+get it transcribed in the background as a part of the dictation logic and
+they should be able to select a model for this"), in both editors on
+**Shift+F5**, shipping in QUILL Lite 1.2 and QUILL 1.0.
+
+**Shared, like the rest of dictation.** One command
+(`cmd_transcribe_audio_file`, `tools.windows_dictation_transcribe_file`) on
+`DictationTranscribeMixin` (`quill/ui/windows_dictation_transcribe.py`),
+which `WindowsDictationMixin` inherits; QUILL's adapter answers two hooks (its
+task manager, a new tab) and owns no command. One window
+(`quill/ui/dictation_transcribe_dialog.py`). The parity test checks the row,
+the key, the handler and the help topic in both.
+
+**Why a second way into transcription is not a second stack.** QUILL already
+had two: Tools > Speech > Transcribe Audio or Video (Offline) (whisper.cpp or
+Faster Whisper, ffmpeg, captions, speaker labels) and AI > Transcribe Audio
+File (cloud Whisper, Transcript Actions). Neither can ship in QUILL Lite (no
+ffmpeg, no engine packs), and neither uses the dictation models people now
+download. This command uses only dictation's own pieces: its engines and
+loaded-model cache (`local_recognizer._load`, `transcribe`), its Silero
+voice detector (`_vad`), its OpenAI path (`openai_transcribe.transcribe_phrase`,
+the same `/v1/audio/transcriptions` endpoint, so no new egress entry), and its
+text tidying (`options.clean_phrase`, `parser`, `composer`, the continuation
+words from `editing.py`). The visible name is "Transcribe a Recording", not
+"Transcribe Audio File", because QUILL's AI menu already has that name.
+
+**Decoding without ffmpeg** (`audio_file.py`, `media_foundation.py`). The
+shared runtime already carries libsndfile 1.2.2 (`soundfile`), which reads
+WAV, FLAC, Ogg Vorbis, Opus and MP3; Windows Media Foundation, on every
+Windows, reads MP3, M4A, AAC, MP4 sound, WMA, WAV and FLAC through its Source
+Reader, called with `ctypes` (no COM package). Media Foundation goes first for
+M4A, AAC, MP4 and WMA, libsndfile first for the rest, and ffmpeg is tried last
+only where the program has it. Checked 2026-10-05 on Windows 11 with one
+recording encoded seven ways: every format decoded to the same 20.3 seconds;
+Media Foundation refused Ogg and Opus (unsupported byte stream, 0xC00D36C4),
+which libsndfile reads. So QUILL Lite has no format it must
+refuse. Sound is mixed to one channel and resampled to 16 kHz a second at a
+time (a windowed-sinc low-pass, then linear interpolation, state kept across
+blocks), so an hour of stereo MP3 never sits in memory.
+
+**The model list** (`file_models.py`) is every engine this computer has for
+the chosen language: Moonshine tiny and Whisper tiny, every downloaded model,
+and OpenAI's models (read live, less the live-only `gpt-live-transcribe`)
+where a key is saved and Safe Mode is off. Windows speech and voice typing are
+not offered: both listen to a microphone. The suggestion is the most accurate
+local model by the catalogue's published figures, preferring models that hear
+a whole phrase: Parakeet TDT 0.6B v3, Parakeet Unified, Nemotron, the Whisper
+family large to small, Moonshine base, then the built-in two. OpenAI is never
+suggested.
+
+**The estimate** is Moonshine tiny's speed on this computer's class (the
+two-second check's hardware fallback, 0.12 on a modest computer, 0.05 on a
+capable one; no model is run to work it out) times the model's measured
+`cost_factor`, over 1.6 for the two threads used, plus 0.02 for decoding and
+voice detection. For an hour on the baseline machine: Moonshine tiny 6
+minutes, Whisper tiny 19, Parakeet TDT 30, Nemotron 37, Whisper small 1 hour
+49, large-v3-turbo about 6 hours.
+
+**What the person hears (GATE-13).** One sentence at the start, the
+percentage quietly at 25, 50 and 75 (`activity.ProgressAnnouncer`), every
+percent only in the status bar, one sentence at the end with the length,
+words, time taken and where the text went, the error tone and the reason on
+failure. Every result is kept in Activity. Shift+F5 while one runs shows its
+progress and Stop Transcribing; several files queue.
+
+**End to end, 2026-10-05** (no interface; real decoders, real Silero, real
+models; recordings made with Windows' Zira voice, development machine, two
+threads):
+
+| Recording | Model | Result |
+|---|---|---|
+| 20 s, seven formats | Moonshine tiny | all seven read; 41 words, two paragraphs split at the 3-second pause, timestamps 00:00:00 and 00:00:08 |
+| 20 s MP3 | Whisper tiny, Parakeet TDT, Nemotron | the same text; Nemotron heard "Drive Smith" for "Doctor Smith" |
+| 171 s MP3 | Moonshine tiny | 10.5 s (0.06 of the recording's length), 380 words, 3 paragraphs |
+| 171 s MP3 | Whisper tiny | 20.0 s (0.12), 374 words |
+| 171 s MP3 | Parakeet TDT 0.6B v3 | 24.6 s (0.14) after a 4.5 s load, 368 words |
+
+Parakeet glues a currency sign to the word before it (`about$12,000`); the
+writer puts the space back after a lower-case letter, leaving `US$` alone.
+
+**Not built, and what each needs:**
+
+| Item | Needs |
+|---|---|
+| Speaker labels ("Speaker 1:") | A diarization model in sherpa-onnx's set, measured on the baseline machine; QUILL's offline transcription already labels speakers with its own engine |
+| Open with, from File Explorer, straight into this window | A shell verb in both installers; the window already takes a dropped file and the command takes paths |
+| The real-voice check | The same recordings section 10 asks for, read as files |
+| Translation to English while transcribing | Whisper's translate task through sherpa-onnx, and a decision on whether it belongs here |
+
+## 13. The gap plan: twelve published capabilities, checked and built
+
+Later on 2026-10-05 a second working note (also called `dict.md`, gitignored,
+now retired) checked both editors against twelve capabilities another product
+announced for its dictation, and planned every gap. Jeff approved all of it,
+taking the recommendation on all eleven questions. Everything below is built,
+in shared code, in both editors on the same keys, held equal by
+`tests/unit/ui/test_dictation_parity.py`.
+
+| # | Capability | Status | Where |
+|---|---|---|---|
+| 1 | Automatic and spoken punctuation | Was already there | `vocabulary.py`, `options.py` |
+| 2 | Live transcript mode | Built: Start or Stop Live Transcript, Ctrl+Alt+Shift+PageDown; new document, no commands but the stop phrase, nothing said per phrase, a paragraph at a four-second pause, optional time stamps, keeps writing while you work elsewhere | `transcript.py`, `windows_dictation_extras.py` |
+| 3 | Marks spoken in the read-back | Built: Say punctuation marks in the read-back, on by default (question 1); braille and the status bar keep the characters | `readback.py` |
+| 4 | Adjustable pause | Built: Longer (2 s) and Longest (3 s), labelled with the cost; a phrase ending on "a", "the", "very" and kin runs on into the next | `options.py`, `editing.py` |
+| 5 | Go to, select and correct words | Built: select, go to, go before, go after, correct, "through" ranges, select next and previous, sentence, line and paragraph units; not found is written as text (question 3) | `targets.py`, `voice_commands.py` |
+| 6 | Characters, caps, spelling, Markdown | Built: punctuation and all caps in spelling, spell one word, spell that, caps on, all caps on, no space on, backtick, code fence, tilde, pipe, caret, the comparison signs, and bullet, numbered item, block quote and heading one to six at the start of a phrase only (question 4) | `vocabulary.py`, `parser.py`, `composer.py` |
+| 7 | Snippets, clips and Copy All by voice | Built: copy all, copy that, show clips, show snippets, paste clip one to twelve, insert snippet, insert or expand abbreviation, each through the editor's own feature | `voice_commands.py`, `windows_dictation_library.py` |
+| 8 | Dictation beyond one window | Built: Dictate Anywhere in Quill Inkwell (question 9), with a key chosen by the person, the shared controller and `ExternalDocument`; started from either editor's More Dictation Settings | `anywhere.py`, `windows_dictation_external.py`, `apps/inkwell_dictation.py` |
+| 9 | Per-document context | Built: Dictation Context for This Document, Ctrl+Alt+Shift+PageUp, per document by path with saved contexts (question 10); OpenAI's prompt and Tidy Dictated Text | `contexts.py`, `dictation_context_dialog.py` |
+| 10 | Instant language switch | Built: Switch Dictation Language, Ctrl+Shift+F11 in both (question 5; QUILL's Forget External Change Answers moved to Ctrl+Shift+0 under rule 9), and by voice both ways | `voice_commands.py`, `windows_dictation_extras.py` |
+| 11 | An online option | Was already there | `openai_*.py` |
+| 12 | Guide and tutorials | Built: "Dictating well" in both guides, a section per feature, five new lessons in both editors | `quill/core/tutorials/dictation_lessons.py` |
+
+Also built: **Dictation Status** in QUILL Lite on Alt+F9, the key QUILL's
+Locked Dictation status already had, which now answers for live dictation
+whenever Locked Dictation is idle.
+
+**Decided against, on purpose.** Automatic language detection per phrase
+(question 6: wrong-language text written silently is worse than one command).
+Bare "expand <word>", "next one" and "previous one" as voice commands: each is
+also ordinary English said on its own ("Expand the budget."), so "insert
+abbreviation", "expand abbreviation", "select next" and "select previous" stand
+in for them.
+
+**Still to do.**
+
+| Item | Needs |
+|---|---|
+| The longer pauses measured with a slow real speaker (question 11) | A recording or a session with somebody who speaks slowly |
+| Memory with Moonshine and multilingual Whisper both loaded after a language switch, against the 600 MB budget | The baseline machine (section 10) |
+| Live transcripts of the computer's own sound (an online meeting) | WASAPI loopback capture; question 7 says after the microphone version has been used for a while |
+| Native-speaker review of the drafted Spanish twins of the new commands (`vocabulary_es.SPANISH_COMMAND_HELP`, `SPANISH_PREFIX_HELP`), still behind the development flag; only "cambiar a inglés" and its kin are on in every build | A native speaker, with the rest of section 10's review |
+| NVDA and JAWS checks of every new spoken line | `docs/qa/screen-reader-checks-2026-10.md` |
+| Dictate Anywhere reads only what it typed itself, so select and correct stay inside QUILL; reading another program's text would need UI Automation text patterns per program | A decision whether it is worth it |
+| Inkwell keeps its own copy of the dictation settings, refreshed only when an editor hands them over | A shared settings store across the family, if one is ever wanted |
 
 ## Appendix A: the dict.md section numbers, and where they live now
 

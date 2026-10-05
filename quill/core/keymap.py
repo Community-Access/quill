@@ -421,7 +421,6 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # app in the family is held to (bad.md H4a, decided 2026-09-16).
     "help.help_on_control": "F1",
     # --- Once a year, and therefore on the F-keys (bad.md rule 9, P2.9) -----
-    #
     # Back up your settings, restore them, choose which features exist, rebind
     # your keys. Nobody does these in the editing loop, and each was holding a
     # three-modifier LETTER chord in QUILL Lite that an editing verb wanted --
@@ -535,20 +534,22 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "radio.record_toggle": "Ctrl+Shift+Grave, 6",  # Internet Radio (Record Now / Stop Recording)
     "podcasts.skip_forward": "Ctrl+Shift+Grave, 5",  # Podcasts
     "podcasts.skip_back": "Ctrl+Shift+Grave, 4",  # Podcasts
-    # Locked Dictation (offline Whisper). All remappable; the
-    # these are matched in the editor key handlers rather than the accelerator
-    # table (no menu accelerators) so Escape can be consumed only while recording.
+    # Locked Dictation (offline Whisper). All remappable; matched in the editor key
+    # handlers, not the accelerator table, so Escape is consumed only while recording.
     "tools.dictation_lock_toggle": "Ctrl+F9",
     "tools.dictation_pause": "Ctrl+Shift+F9",
     "tools.dictation_status": "Alt+F9",
     "tools.dictation_emergency_stop": "Escape",  # consumed only while recording
     "tools.dictation_cancel": "Shift+Escape",  # consumed only while recording
-    # Windows Dictation, shared with QUILL Lite on the same chords (rule 2); why
-    # Ctrl+F11 and not Ctrl+F9 or Word's Alt+grave is in quill/core/lite/commands.py.
+    # Live Dictation: QUILL Lite's chords (rule 2); each reason: lite/commands_dictation.py.
     "tools.windows_dictation_toggle": "Ctrl+F11",
     "tools.windows_dictation_settings": "Alt+Shift+F6",
     "tools.windows_dictation_recent": "Shift+F11",
     "tools.windows_dictation_words": "Alt+Shift+F10",
+    "tools.windows_dictation_transcribe_file": "Shift+F5",
+    "tools.windows_dictation_switch_language": "Ctrl+Shift+F11",
+    "tools.windows_dictation_live_transcript": "Ctrl+Alt+Shift+PageDown",
+    "tools.windows_dictation_context": "Ctrl+Alt+Shift+PageUp",
     "tools.describe_image": "Ctrl+Shift+Grave, I",
     # To the leader (bad.md 3.7): read once when a file arrives, not an
     # editing-loop verb -- and Ctrl+Shift+I is where Insert Image goes, so
@@ -757,10 +758,9 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # place, which QUILL could read in the status bar and change nowhere
     # (bad.md 3.7, P1.8, F6).
     "file.file_format": "Ctrl+Alt+E",
-    # Rule 9: a once-a-year command needs A key, not a short one. This undoes
-    # the "do not ask me again for .docx files" checkbox in the File Changed on
-    # Disk dialog, which is the only way back from it (bad.md F5).
-    "file.forget_external_change_answers": "Ctrl+Shift+F11",
+    # Rule 9: once a year needs A key, not a short one; it undoes File Changed on Disk's "do not
+    # ask again" box (bad.md F5). Off Ctrl+Shift+F11 2026-10-05: Switch Dictation Language, both.
+    "file.forget_external_change_answers": "Ctrl+Shift+0",
     # The session chooser on demand, so "Not Now" is deferrable rather than
     # lost (rule 9: a once-in-a-while command gets a key, not a short one).
     "file.reopen_last_session": "Alt+Shift+F12",
@@ -1505,11 +1505,10 @@ def merge_keymaps(raw: object) -> dict[str, str]:
         # NOTE: edit.find is handled separately by the 0.8.0 beta force below,
         # which overwrites *any* stale QUILL-key-leader Find binding with Ctrl+F
         # (several pre-release builds defaulted it to different leader chords).
-        # #608: Quote Lines moves from Ctrl+Q to Ctrl+Shift+Q so Cmd+Q
-        # can quit on macOS. Unquote Lines moves from Ctrl+Shift+Q to
-        # Ctrl+Shift+K to stay in the home row and free Ctrl+Q entirely.
-        # Rewrite the prior pair on load for users who saved them.
+        # #608: Quote Lines moves from Ctrl+Q to Ctrl+Shift+Q so Cmd+Q can quit on
+        # macOS; Unquote Lines left Ctrl+Shift+Q. Rewrite a saved prior pair on load.
         "edit.quote_lines": ("Ctrl+Q", "Ctrl+Shift+Q"),
+        "file.forget_external_change_answers": ("CTRL+SHIFT+F11", "Ctrl+Shift+0"),
         # Two hops now (#608, then the 2026-09-18 blockquote merge): a saved
         # Ctrl+Shift+Q or Ctrl+Shift+K both mean "wherever Unquote Lines lives",
         # and it lives on Alt+Shift+. since 2026-10-03 (Ctrl+Alt+Shift+Q, its

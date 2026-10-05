@@ -46,7 +46,7 @@ def record_spoken(history: deque[str], message: object) -> bool:
 #: review is never mistaken for "nothing was said".
 HISTORY_OFF_MESSAGE = (
     "Announcement history is off, so QUILL is not keeping a list of what it said. "
-    "To turn it back on, open Settings, Accessibility, and tick Keep an announcement history."
+    "To turn it back on, open Settings, Accessibility, and check Keep an announcement history."
 )
 
 

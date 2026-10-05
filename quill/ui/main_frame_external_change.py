@@ -120,7 +120,7 @@ class ExternalChangeMixin:
         """The answer this person asked to keep for this file's format, or "".
 
         The "do not ask me again" checkbox in the File Changed on Disk dialog
-        (bad.md F5). Read fresh on every poll rather than cached, so ticking the
+        (bad.md F5). Read fresh on every poll rather than cached, so checking the
         box takes effect on the very next change rather than the next launch.
         """
         if self.document.path is None:
@@ -141,7 +141,7 @@ class ExternalChangeMixin:
 
         The only way back from the "do not ask me again" checkbox, and it has to
         exist: a question that can be switched off and not on is a trap, and the
-        person most likely to tick it in a hurry is the one who cannot see the
+        person most likely to check it in a hurry is the one who cannot see the
         dialog they are dismissing.
         """
         from quill.core.settings import save_settings

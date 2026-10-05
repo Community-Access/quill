@@ -122,7 +122,7 @@ Seven steps: Start, What should I read?, Who should read it?, How should chapter
 ### What should I read?
 
 - **Source folder** - a combo box seeded with your recent source folders, plus a **Browse...** button. **Include subfolders** widens discovery.
-- **File types to include** - Word (`.docx`), Markdown (`.md`), HTML (`.html`, `.htm`), plain text (`.txt`). Tick any combination.
+- **File types to include** - Word (`.docx`), Markdown (`.md`), HTML (`.html`, `.htm`), plain text (`.txt`). Check any combination.
 - **Include / Exclude files matching** - optional glob filters, semicolon- or comma-separated.
 - **Skip files larger than (MB)** - a size cap so one accidental 400 MB export cannot hijack a run (0 = no limit).
 - **Count documents** - counts the matching files and their words off-thread and announces the settled number: "12 document(s) found, about 84,000 words." The count also refreshes automatically when you browse to a folder or arrive on the page.

@@ -11,24 +11,22 @@ Quill Converter is the product wrapper; the application code lives in the
 `quill/ui/converter_dialogs.py`, the shared conversion engine under
 `quill/core/audio/`, the shared Convert Audio dialog, and this folder.
 
-## Unreleased
-
-- **No show and hide key until you choose one** (2026-10-05). The app
-  registered Ctrl+Alt+Shift+C system-wide, and other QuillVille apps use that key for
-  menu commands, so while this app ran theirs never fired. It now has no key by
-  default; **File > Show and Hide Key...** (Ctrl+Alt+Shift+H) lets you type
-  one, or leave it empty for none, and refuses a key any QuillVille app uses as
-  a command or as its own show and hide key, in one sentence naming the app.
-  Somebody who had the old key is moved to none and told once, at the next
-  launch; a key somebody chose is kept (`quill/core/family_chords.py`,
-  `quill/core/show_hide_keys.py`, `quill/ui/show_hide_key_picker.py`).
-
 ## 1.0.0 - 2026-09-28
 
 The first public release. The app was first built in July 2026 as an audio
 converter (an entry here once dated it 2026-07-31); that build was never
 published as an installer, and everything in it is part of 1.0.0.
 
+- **Found before release (2026-10-05):** no show and hide key until you choose
+  one in File > Show and Hide Key... (Ctrl+Alt+Shift+H), which refuses a key
+  another QuillVille app uses; Find a Setting or Command (Ctrl+Alt+Shift+S);
+  build numbers (About says 1.0.0 (build 1), file version 1.0.0.1); the
+  installer and the portable copy write `quill-app-version.ini`, so About and
+  Check for Updates name the Converter you installed rather than the shared
+  runtime's code; web requests name Quill Converter; a portable copy starts
+  from a folder with a space in its name; Stable is always code-signed and
+  Beta and Dev never; no AI, kept so by a test; and the user guide is in
+  chapters.
 - **Two downloads**, both with everything bundled and nothing downloaded on
   first use: `Quill-Converter-Setup-Shared-1.0.0.exe` (Inno Setup 7; installs
   the shared QuillVille runtime if it is absent) and

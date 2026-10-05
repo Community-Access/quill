@@ -7,7 +7,7 @@ would be hostile to exactly the people this family is for.
 
 Tab order: the three choices (one radio group, announced with its label), the
 read-only "What this means" box, the "Also move my other QuillVille apps"
-checkboxes (every one unticked), Update History, Switch, Close. Escape is
+checkboxes (every one unchecked), Update History, Switch, Close. Escape is
 Close. Focus starts on the current choice.
 """
 
@@ -94,7 +94,7 @@ class ReleaseChannelDialog(wx.Dialog):  # type: ignore[misc]
                     label=f"{name}, now on {channel_label(sibling_state.channel)}",
                 )
                 box.SetHelpText(
-                    f"Tick to move {name} to the same channel in the same step. "
+                    f"Check to move {name} to the same channel in the same step. "
                     "Apps that share the QuillVille engine are safest moved together."
                 )
                 box.Bind(wx.EVT_CHECKBOX, self._refresh)

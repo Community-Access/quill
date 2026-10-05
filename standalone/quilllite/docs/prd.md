@@ -374,7 +374,7 @@ named starting points -- **Recommended**, **Everything**, **WordPad**,
 **Notepad** -- and the design rules behind them are worth stating, because each
 one has a cheaper wrong version.
 
-**A profile is a baseline, not a mode.** Applying one ticks and unticks every
+**A profile is a baseline, not a mode.** Applying one checks and unchecks every
 box, and then the boxes are the truth again. There is nothing to escape from:
 the very next change is an ordinary per-area override, and the Choice reads back
 **Custom** the moment the boxes stop matching. The alternative -- a mode that
@@ -747,7 +747,7 @@ The agreement is therefore:
 - **Stored as a version, not a boolean.** A material change to what is sent or
   retained asks again, rather than an old yes being read as covering a new thing.
 - **Reachable by three doors** -- `Tools > AI > Privacy Agreement`
-  (`Ctrl+Alt+Shift+K`), a Preferences tick box, and switching the area on in
+  (`Ctrl+Alt+Shift+K`), a Preferences check box, and switching the area on in
   Customize Features -- because which door somebody finds depends on which part
   of the app they already know. All three read and write the same value, so they
   cannot disagree.

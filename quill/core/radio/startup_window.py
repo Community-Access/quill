@@ -79,7 +79,7 @@ def from_index(position: object) -> str:
 def migrate_from_checkbox(open_browse: object) -> str:
     """The old ``open_browse_at_startup`` flag, as a choice (pure).
 
-    Somebody who ticked the box asked for Browse and still gets Browse: an
+    Somebody who checked the box asked for Browse and still gets Browse: an
     upgrade must not quietly take away a window somebody chose to have.
     """
     return "browse" if bool(open_browse) else NONE

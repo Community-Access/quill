@@ -355,7 +355,10 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "You do not need to say the punctuation: full stops, commas "
                     "and capitals are put in for you."
                 ),
-                hear="A soft tone, then the words that were written, read back.",
+                hear=(
+                    "A soft tone, then the words that were written, read back "
+                    "with their punctuation said."
+                ),
             ),
             Step(
                 title="Take a phrase back",

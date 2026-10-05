@@ -2,6 +2,25 @@
 
 ## Unreleased
 
+- **Dictate Anywhere** (2026-10-05). Inkwell now hosts dictation into other
+  programs, with the editors' shared controller, engines, My Words and Phrases
+  (`dictation.md` in the shared data folder) and commands
+  (`quill/apps/inkwell_dictation.py`, `quill/core/windows_dictation/anywhere.py`,
+  `quill/ui/windows_dictation_external.py`). **File > Dictate Anywhere Key...**
+  (Ctrl+Alt+Shift+D) chooses the system-wide key, none by default, with the
+  same picker and refusals as the other keys. A new **Dictation** menu has
+  **Dictate Anywhere** (Ctrl+D, a check item) and **Dictation Settings...**
+  (Ctrl+Alt+D), the editors' own window over Inkwell's stored copy. Each phrase
+  is typed at the cursor of the program in front; "scratch that" sends
+  backspaces only while the same window keeps the focus. Commands that need to
+  read the other program's text (select, go to, correct, clips, snippets) are
+  answered "That works in QUILL's own documents...". Refused with a sentence:
+  password fields, programs running as administrator when Inkwell is not,
+  QUILL's own windows (Ctrl+F11 there) and Inkwell's own window. The read-back
+  defaults to a tone, since the screen reader echoes typing. An editor's
+  **Dictate in Other Programs...** hands its settings over once
+  (`dictate-anywhere.json`) and starts Inkwell, opening the key chooser if no
+  key is set. Off in Safe Mode.
 - **No show and hide key until you choose one** (2026-10-05). The app
   registered Ctrl+Alt+Shift+I system-wide, and other QuillVille apps use that key for
   menu commands, so while this app ran theirs never fired. It now has no key by

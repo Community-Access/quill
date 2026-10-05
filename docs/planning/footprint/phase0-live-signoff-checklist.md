@@ -37,7 +37,7 @@ raise the per-engine cap on a slow machine.
 ## 3. Live runtime behaviors (manual — a few minutes)
 
 These exercise the now-wired runtime policies that only show up in the running
-app. Tick each; note the observed behavior next to it.
+app. Check each; note the observed behavior next to it.
 
 - [ ] **Idle-sweep unloads a model.** Load a model (run any AI or transcription
       action), then leave QUILL idle past the idle-unload interval. Confirm the

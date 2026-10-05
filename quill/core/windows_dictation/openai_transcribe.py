@@ -160,10 +160,12 @@ def transcribe_phrase(
     keywords: Sequence[str] = (),
     on_delta: Callable[[str], None] | None = None,
     timeout: float = 30.0,
+    prompt: str = "",
 ) -> str:
     """One phrase through ``/v1/audio/transcriptions``, streamed. Blocking.
 
-    *on_delta* hears the text so far as it streams in (the preview).
+    *on_delta* hears the text so far as it streams in (the preview). *prompt*
+    is this document's dictation context (contexts.py), sent when there is one.
     """
     from urllib.error import HTTPError, URLError
     from urllib.request import Request, urlopen
@@ -175,6 +177,8 @@ def transcribe_phrase(
         fields.append(("language", language))
     for word in keywords_for(keywords):
         fields.append(("keywords[]", word))
+    if prompt.strip():
+        fields.append(("prompt", prompt.strip()))
     body, content_type = _multipart(fields, wav_bytes(samples))
     request = Request(
         f"{API_ROOT}/audio/transcriptions",
@@ -270,8 +274,10 @@ class LiveTranscription:
         keywords: Sequence[str] = (),
         on_delta: Callable[[str], None] | None = None,
         connect: Callable[..., Any] | None = None,
+        prompt: str = "",
     ) -> None:
         self._key = key
+        self._prompt = prompt.strip()
         self._model = model
         self._language = language
         self._keywords = keywords_for(keywords)
@@ -308,6 +314,8 @@ class LiveTranscription:
             transcription["language"] = self._language
         if self._keywords:
             transcription["keywords"] = self._keywords
+        if self._prompt:
+            transcription["prompt"] = self._prompt
         self._send({
             "type": "session.update",
             "session": {

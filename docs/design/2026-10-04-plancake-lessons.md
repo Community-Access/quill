@@ -49,7 +49,7 @@ them in turn.
    count, always asked), undo any of it, and a command line (`list`, `check`,
    `clear`, `export`) lets an AI assistant read your notes, work through them
    and prove none are left, with exit code 3 meaning "notes still open".
-5. **Task lists you can tick.** A `- [ ]` item is a real checkbox; Space or
+5. **Task lists you can check.** A `- [ ]` item is a real checkbox; Space or
    Enter asks, writes `[x]` on that one line, says "Task checked", and undo
    reverses it.
 6. **Plans arrive however they arrive.** Ctrl+V with a file copied in File
@@ -277,7 +277,7 @@ ranks low. Sidecar notes stay out of it: they are private by design.
 (also `QuillLite.exe --notes ...`), `quill/core/inline_notes_cli.py`. Exit 0
 done, 3 notes left, 1 read or write error, 2 usage.
 
-### 5. Task lists you can tick
+### 5. Task lists you can check
 
 **PlanCake.** A `- [ ]` item is a real checkbox; Space or Enter asks
 (optional), writes `[x]` on that one line, says "Task checked", and undo
@@ -535,7 +535,7 @@ cannot put Lite ahead.
 ## The three to do first
 
 - **Toggle Task Done (item 2).** The smallest change with the most daily
-  value: AI plans are full of checklists, ticking one is two keys, and the
+  value: AI plans are full of checklists, checking one is two keys, and the
   spoken count ("3 of 7 tasks done") is information a listener otherwise has
   to count line by line.
 - **Open from Clipboard (item 3), together with the Open from URL fix (item

@@ -301,7 +301,11 @@ glow = ["quill-glow-core[glow]>=0.1.1", "acb-large-print>=8.0.0"]
 # QUILL Social's application package (standalone/social/quill_social),
 # vendored as a wheel beside the glow wheels until published. Ships inside
 # the shared QuillVille Runtime so `-m quill_social` launches from it.
-social-app = ["quill-social>=0.3.0"]
+# Mastodon.py and python-dateutil are named, not left transitive: QUILL Social's
+# Mastodon adapter imports them, and as transitive packages the runtime inventory
+# gate kept treating dateutil as "swept from this machine" (the baseline flipped
+# five times between 2026-09-09 and 2026-09-30). The runtime takes this extra.
+social-app = ["quill-social>=0.3.0", "Mastodon.py>=2.2.2", "python-dateutil>=2.9.0"]
 # LaTeX -> MathML conversion for quill/core/math/ (docs/planning/math.md, Tier 1-B).
 # Pure Python, no native build. Optional: the math bridge degrades to accepting
 # MathML input only (no LaTeX typing) when this is absent.

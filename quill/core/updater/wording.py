@@ -49,7 +49,7 @@ CHOOSER_PURPOSE = (
 )
 RISK_PURPOSE = (
     "Says plainly what could go wrong on Beta or Dev, how your settings are "
-    "protected, and how to come back. Nothing changes unless you tick the box "
+    "protected, and how to come back. Nothing changes unless you check the box "
     "and choose Move."
 )
 WAIT_PURPOSE = (
@@ -96,7 +96,7 @@ def _joined(names: tuple[str, ...]) -> str:
 
 
 def risk_confirm_label(channel: str) -> str:
-    """The tick box the risk dialog needs before Move does anything."""
+    """The check box the risk dialog needs before Move does anything."""
     if channel == DEV:
         return (
             "I &understand that Dev versions can break and that going back may lose recent changes."

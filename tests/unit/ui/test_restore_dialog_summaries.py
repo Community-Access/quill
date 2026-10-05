@@ -72,7 +72,7 @@ def test_the_field_is_refilled_after_rows_are_rebuilt(chooser: str) -> None:
 def test_it_uses_changevalue_so_it_does_not_talk_over_the_reader(chooser: str) -> None:
     """``SetValue`` fires a text event; ``ChangeValue`` does not.
 
-    A read-only field that announced itself on every tick would talk over the
+    A read-only field that announced itself on every check or uncheck would talk over the
     reader saying "checked", which is the announcement the person asked for by
     pressing Space (GATE-13).
     """

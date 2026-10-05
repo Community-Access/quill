@@ -723,7 +723,7 @@ class PreferencesMixin:
                 if spec.key == "beta_updates":
                     # Release channels (plan 7.1): the channel is shown here and
                     # changed only in the shared Release Channel window, never by
-                    # ticking a box. main_frame_updates.py builds the row.
+                    # checking a box. main_frame_updates.py builds the row.
                     shown = self._add_release_channel_row(parent_panel, sizer)
                     readers[spec.key] = self._release_channel_is_prerelease
                     writers[spec.key] = lambda _v: None

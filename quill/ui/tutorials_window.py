@@ -274,7 +274,7 @@ class TutorialsWindow:
         self._follow = wx.CheckBox(parent, label="Follow &me")
         # Greyed, not hidden, in an app whose lessons carry no checks at all --
         # QUILL Lite is one: every step's outcome there is a sentence the app
-        # already says, so there is nothing to watch for. A tick box that can
+        # already says, so there is nothing to watch for. A check box that can
         # never do anything is worse than an absent one only if nothing says so,
         # and a disabled control announces itself as unavailable the moment a
         # reader arrives on it. Hiding it would leave somebody who had used
@@ -283,7 +283,7 @@ class TutorialsWindow:
         self._follow.Enable(watchable)
         self._follow.SetValue(self._progress.guide_me and watchable)
         self._follow.SetHelpText(
-            "While this is ticked, the lesson watches the app and moves you to the "
+            "While this is checked, the lesson watches the app and moves you to the "
             "next step by itself once it can see you have done this one. It watches "
             "what changed, not which key you pressed, so any route counts. "
             "Unavailable in an app whose lessons have nothing to watch for, because "

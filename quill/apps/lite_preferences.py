@@ -472,12 +472,12 @@ def edit_preferences(
     root.Add(ai_note, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, _PAD)
 
     def _toggle_ai(_event: wx.CommandEvent) -> None:
-        """Ticking it asks; unticking it withdraws, and both take effect at once.
+        """Checking it asks; unchecking it withdraws, and both take effect at once.
 
         Not deferred to OK like the rest of this window. The other controls here
         are preferences and a preference can wait; this is consent, and consent
         recorded because somebody pressed OK on an unrelated dialog is consent
-        of a worse kind. Cancelling the agreement puts the tick back where it
+        of a worse kind. Cancelling the agreement puts the check mark back where it
         was rather than leaving a box that claims something untrue.
         """
         from quill.ui.hosted_ai_dialogs import ask_ai_privacy_agreement
@@ -490,7 +490,7 @@ def edit_preferences(
         if ask_ai_privacy_agreement(dialog):
             settings.ai_privacy_accepted_version = AGREEMENT_VERSION
             return
-        # The tick goes back by itself, and a checkbox changed in code is not a
+        # The check mark goes back by itself, and a checkbox changed in code is not a
         # checkbox the reader announces -- so this is the one door where
         # declining has to be spoken. It says what the box now says, not
         # "cancelled": the state is the part that cannot be heard.

@@ -1,6 +1,6 @@
 # QUILL Lite -- sign-off checklist
 
-One pass, top to bottom, ticking boxes. Every step says exactly what to press,
+One pass, top to bottom, checking boxes. Every step says exactly what to press,
 exactly what to type, and the one thing that decides pass or fail.
 
 The narrative version of every feature below is
@@ -57,7 +57,7 @@ document they are in. **L-157**: Ctrl+Home onto a heading announced nothing,
 because a cue queued behind the screen reader is cancelled outright on a big
 jump. **L-160** is the counterweight -- everything added in Block Q is speech,
 and over-announcing is absorbed as "this app is chatty" and never filed, which
-is exactly why it needs a box to tick.
+is exactly why it needs a box to check.
 
 **L-226** joined on 2026-09-18, and it is the same defect as L-90 one more time:
 the Encoding and Line Endings cells read "UTF-8" and "CRLF" in a rich text
@@ -874,7 +874,7 @@ person can check that pressing the key afterwards does the thing.
 - [ ] pass  [ ] fail: ______
 
 **L-106. Five features that had no switch now have one**
-- Do: **Ctrl+Alt+F10**, and untick **The Command Palette**. Save. Press
+- Do: **Ctrl+Alt+F10**, and uncheck **The Command Palette**. Save. Press
   **Ctrl+Shift+P**.
 - Pass: nothing happens, and the palette is gone from the menus -- the key is
   unhooked, not just the row hidden.
@@ -892,7 +892,7 @@ person can check that pressing the key afterwards does the thing.
 - [ ] pass  [ ] fail: ______
 
 **L-108. The daily look is silent**
-- Do: with "Look for updates when QUILL Lite starts" ticked in Settings, close
+- Do: with "Look for updates when QUILL Lite starts" checked in Settings, close
   QUILL Lite and open it again. Then unplug the network and open it again.
 - Pass: nothing is said either time -- no "checking", no "up to date", no
   network error. A launch is not the place to report that nothing happened.
@@ -971,7 +971,7 @@ person can check that pressing the key afterwards does the thing.
   heading and back onto it. Press Ctrl+Alt+F3 again.
 - Pass: the first press says "Headings will not be announced" and the heading
   is then silent on arrival; the second says "Headings announced on arrival"
-  and it comes back. **View ▸ Announce Headings** shows a tick that matches.
+  and it comes back. **View ▸ Announce Headings** shows a check mark that matches.
 - Pass: closing and reopening QUILL Lite remembers the choice.
 - [ ] pass  [ ] fail: ______
 
@@ -1825,7 +1825,7 @@ here, so what these check is the door and the sentence, not the engine.
 **L-218. Every step says what you should hear**
 - Do: arrow through any lesson's steps.
 - Pass: each one ends with what to listen for. A screen-reader user's
-  confirmation that a step worked is a sentence, not a green tick.
+  confirmation that a step worked is a sentence, not a green check mark.
 - [ ] pass  [ ] fail: ______
 
 **L-219. The book says the same thing as the window**
@@ -2015,13 +2015,13 @@ one of the three from outside the app.
 - Fail if three windows simply appear, or if the missing one is not mentioned.
 - [ ] pass  [ ] fail: ______
 
-**L-238. The row for the missing file says so and cannot be ticked**
+**L-238. The row for the missing file says so and cannot be checked**
 - Do: arrow to the row naming the file you deleted. Press **Space**.
-- Pass: the row reads "(the file is no longer there)" and stays unticked.
+- Pass: the row reads "(the file is no longer there)" and stays unchecked.
 - [ ] pass  [ ] fail: ______
 
 **L-239. The answer can be partial**
-- Do: untick one of the two that are still there. Press **Open Checked**.
+- Do: uncheck one of the two that are still there. Press **Open Checked**.
 - Pass: exactly one document opens, and you hear "Reopened all 1 document."
 - Fail if both open. The whole point of the window is that "yes" and "no" are per
   document.
@@ -2034,7 +2034,7 @@ one of the three from outside the app.
 - [ ] pass  [ ] fail: ______
 
 **L-241. Forget takes a row off the list and leaves the file alone**
-- Do: at the window, tick the missing one, press **Forget Checked**, then **Not
+- Do: at the window, check the missing one, press **Forget Checked**, then **Not
   Now**. Relaunch.
 - Pass: two documents are offered, not three. **Every file you started with is
   still on disk** -- check the folder.

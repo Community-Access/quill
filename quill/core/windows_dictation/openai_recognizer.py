@@ -108,10 +108,13 @@ class OpenAIDictationRecognizer(LocalDictationRecognizer):
         keywords: Sequence[str] = (),
         pause_seconds: float = 0.8,
         language: str = "en",
+        prompt: str = "",
     ) -> None:
         super().__init__(
             listener, CLOUD_ENGINE, post=post, pause_seconds=pause_seconds, language=language
         )
+        #: This document's dictation context (contexts.py), OpenAI's ``prompt``.
+        self._prompt = prompt
         self._model = model
         self._consent = consent
         self._keywords = list(keywords)
@@ -136,6 +139,7 @@ class OpenAIDictationRecognizer(LocalDictationRecognizer):
             language=self._language,
             keywords=self._keywords,
             on_delta=live.on_delta,
+            prompt=self._prompt,
         )
         live.attach(session)
         try:
@@ -160,6 +164,7 @@ class OpenAIDictationRecognizer(LocalDictationRecognizer):
                 language=self._language,
                 keywords=self._keywords,
                 on_delta=delta,
+                prompt=self._prompt,
             )
         except OpenAIDictationError as error:
             self._problem(error)

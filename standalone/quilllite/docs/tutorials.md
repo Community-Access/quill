@@ -1,6 +1,6 @@
 # QUILL Lite Tutorials
 
-Welcome. There are 10 short lessons here, about 48 minutes in all, and you can take them in any order. Each one is a few small steps, and each step tells you what to press and what you should hear.
+Welcome. There are 15 short lessons here, about 69 minutes in all, and you can take them in any order. Each one is a few small steps, and each step tells you what to press and what you should hear.
 
 This page is the lessons written out, so you can read them anywhere. If you would rather be walked through, open **Help > Tutorials... (Ctrl+Alt+F1)** in QUILL Lite. It does a step for you when you ask, and moves on by itself once it hears you have done one.
 
@@ -20,6 +20,11 @@ The keys here are the ones QUILL Lite comes with. If you have changed a key, the
   - Spelling, without a red squiggle (5 minutes)
   - Asking a question about a document (6 minutes)
   - Write by talking (6 minutes)
+  - Punctuation and symbols by voice (5 minutes)
+  - Fix a word by voice (5 minutes)
+  - Snippets and clips by voice (4 minutes)
+  - Switch to Spanish and back (3 minutes)
+  - Make a live transcript (4 minutes)
 
 ## Your first documents
 
@@ -285,7 +290,7 @@ Dictate a few sentences into a document, take one back, turn it off, and find th
    - You should hear: Two rising tones, and "Dictation on".
 
 2. **Say a sentence, and pause.** Talk the way you would to a friend, then stop for a moment. You do not need to say the punctuation: full stops, commas and capitals are put in for you.
-   - You should hear: A soft tone, then the words that were written, read back.
+   - You should hear: A soft tone, then the words that were written, read back with their punctuation said.
 
 3. **Take a phrase back.** Say scratch that, on its own, after a pause. Only the last phrase you said goes; anything you typed is left alone.
    - You should hear: "Scratched:" and the words that went.
@@ -304,3 +309,101 @@ Dictate a few sentences into a document, take one back, turn it off, and find th
    - Worth knowing: Nothing you say leaves the computer unless you choose OpenAI as the speech engine with your own key, and agree to it.
 
 You can now write by talking, take back a phrase, and turn dictation on and off with one key. Say what can I say while dictating to hear everything it understands; the user guide's dictation chapter has the rest.
+
+### Punctuation and symbols by voice
+
+Say punctuation, start a bulleted list and a heading, and spell a web address, and hear every mark read back so you know it went in.
+
+*4 steps, about 5 minutes.*
+
+1. **Start dictation.** Open a new document, so nothing you care about is in the way, and turn dictation on.
+   - Keys: Ctrl+F11
+   - You should hear: Two rising tones, and "Dictation on".
+
+2. **Say a sentence with its punctuation.** Say: dear Sam comma thank you for the letter period. Then pause. Saying a mark always wins over the one the engine would add.
+   - You should hear: Dear Sam comma thank you for the letter period.
+   - Worth knowing: The marks are read back by name whatever your screen reader's punctuation level is. Say punctuation marks in the read-back, in More Dictation Settings turns that off.
+
+3. **Start a heading and a list.** Say heading two, then the heading's words, and pause. Then say bullet and an item. These marks count only at the start of what you say, so ordinary sentences are never turned into lists.
+   - You should hear: Hash sign hash sign, then your heading; hyphen, then your item.
+
+4. **Spell a web address.** Say spell, then the letters with dot and at sign between them: spell sierra alpha mike at sign echo dot charlie oscar. Spelling writes punctuation with no spaces.
+   - You should hear: The address, read back with its marks.
+
+Say what can I say at any time for every mark and symbol, including the Markdown ones: backtick, vertical bar and block quote.
+
+### Fix a word by voice
+
+Find words you said earlier, select them or put the cursor beside them, and correct them without touching the keyboard.
+
+*4 steps, about 5 minutes.*
+
+1. **Dictate a couple of sentences.** Turn dictation on and say two short sentences, pausing after each, so there are words to find.
+   - Keys: Ctrl+F11
+   - You should hear: Each sentence read back.
+
+2. **Select a word you said.** Say select, then a word from the first sentence. The nearest one before the cursor is found first, because that is usually the one you are fixing.
+   - You should hear: "Selected:" and the words.
+
+3. **Say the right word.** Just say the word you meant. What you say next replaces the selection, in one step that Undo or scratch that takes back.
+   - You should hear: The new word read back.
+
+4. **Correct and spell a name.** Say correct and a name the engine got wrong, then spell it, or say spell that straight after dictating it: the letters you say next replace it.
+   - You should hear: "Correcting" and the words, then the spelled word.
+   - Worth knowing: If the words are not in the document, what you said is written as text and you hear Not found, written as text. Scratch that removes it.
+
+Go to and go after put the cursor beside words instead of selecting them, and select again moves on to the next place the words appear.
+
+### Snippets and clips by voice
+
+Copy the whole document, paste a Copy Tray slot and put in a snippet, all by saying so.
+
+*3 steps, about 4 minutes.*
+
+1. **Copy the whole document.** With dictation on, say copy all. Nothing is selected, so nothing can be typed over by accident.
+   - Keys: Ctrl+F11
+   - You should hear: "Copied the whole document" and how many characters.
+
+2. **Paste a slot from the Copy Tray.** Say paste clip and a slot number, like paste clip one. It goes in as one phrase, so scratch that takes it out again.
+   - You should hear: "Pasted slot 1", or that the slot is empty.
+
+3. **Put in a snippet by name.** Say insert snippet and its name. If more than one snippet matches you hear how many, and the list opens so you can choose.
+   - You should hear: "Snippet" and its name.
+
+Say show clips or show snippets to open either list by voice.
+
+### Switch to Spanish and back
+
+Move between English and Spanish dictation without opening a window.
+
+*2 steps, about 3 minutes.*
+
+1. **Switch the language.** Use Switch Dictation Language. The choice is remembered, so the next time you dictate it starts in the language you used last.
+   - Keys: Ctrl+Shift+F11
+   - You should hear: "Español".
+
+2. **Come back by voice.** While dictating in Spanish, say cambiar a inglés. In English, say switch to Spanish to go the other way.
+   - You should hear: "English".
+   - Worth knowing: The first switch can take a moment while the Spanish model loads; after that it stays ready for the session.
+
+Dictation Status tells you which language and engine are in use.
+
+### Make a live transcript
+
+Write down a talk or a meeting as it happens, in its own document, while you keep working.
+
+*3 steps, about 4 minutes.*
+
+1. **Start a live transcript.** A new document opens and everything the microphone hears is written into it, quietly. Please record other people only when they have agreed.
+   - Keys: Ctrl+Alt+Shift+PageDown
+   - You should hear: "Live transcript on, in a new document".
+
+2. **Ask how it is going.** Use Dictation Status at any time; the status bar and a braille display show the same thing.
+   - Keys: Alt+F9
+   - You should hear: How many minutes and how many words.
+
+3. **Stop and save.** Use the same command again to stop. The document stays open, unsaved, for you to name.
+   - Keys: Ctrl+Alt+Shift+PageDown
+   - You should hear: "Live transcript stopped" and the number of words.
+
+Time stamps in live transcripts, in More Dictation Settings, puts the time at the start of each paragraph.
