@@ -408,8 +408,8 @@ TUTORIALS: tuple[Tutorial, ...] = (
         minutes=6,
         surfaces=("QUILL Lite",),
         summary=(
-            "Dictate a few sentences into a document, take one back, hold the key "
-            "to talk, and find the settings. Everything stays on your computer."
+            "Dictate a few sentences into a document, take one back, turn it off, "
+            "and find the settings. Everything stays on your computer."
         ),
         steps=(
             Step(
@@ -439,15 +439,14 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 hear='"Scratched:" and the words that went.',
             ),
             Step(
-                title="Turn it off, then hold the key and talk",
+                title="Turn it off with the same key",
                 body=(
-                    "Press the dictation key once to turn it off. Now hold the "
-                    "same key down, say a sentence, and let go. Dictation writes "
-                    "your last phrase and turns itself off. A quick press still "
-                    "turns it on and leaves it on."
+                    "Press the dictation key again to turn it off. One press "
+                    "starts dictation and the next stops it, and stopping never "
+                    "cuts off a sentence you are still finishing."
                 ),
                 command="cmd_toggle_dictation",
-                hear='"Dictation on" while you hold, then "Dictation off" after your words.',
+                hear='Two falling tones, and "Dictation off".',
             ),
             Step(
                 title="See the phrases you said",
@@ -464,8 +463,8 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 body=(
                     "Dictation Settings has the speech engine, the microphone and "
                     "what you hear after each phrase. More Dictation Settings, "
-                    "inside it, has holding the key, the words heard while you "
-                    "speak, and talking to the AI."
+                    "inside it, lets you hold the key to talk if you prefer, and "
+                    "has the words heard while you speak and talking to the AI."
                 ),
                 command="cmd_dictation_settings",
                 hear="Dictation Settings, on Speech engine.",
@@ -476,8 +475,8 @@ TUTORIALS: tuple[Tutorial, ...] = (
             ),
         ),
         closing=(
-            "You can now write by talking, take back a phrase, and hold the key to "
-            "talk. Say what can I say while dictating to hear everything it "
+            "You can now write by talking, take back a phrase, and turn dictation "
+            "on and off with one key. Say what can I say while dictating to hear everything it "
             "understands; the user guide's dictation chapter has the rest."
         ),
     ),

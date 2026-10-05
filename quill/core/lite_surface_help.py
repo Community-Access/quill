@@ -363,6 +363,18 @@ PURPOSES.update({
         "Again writes the phrase you are on at the cursor, and Copy puts it on "
         "the clipboard. The list is forgotten when you close the app."
     ),
+    "More Dictation Settings": (
+        "The finer dictation choices: holding the key to talk, the quiet "
+        "preview of what is being heard, profiles for writing and for talking "
+        "to the AI, and My Dictation Instructions. Nothing changes until you "
+        "choose OK."
+    ),
+    "Speech Models": (
+        "Optional speech models you can download for better accuracy, with "
+        "each one's size, languages and what it suits. Your voice never "
+        "leaves the computer with these models; Download asks first, and "
+        "Remove frees the space again."
+    ),
 })
 
 #: Titles of the windows QUILL opens from the same shared modules. QUILL's F1
@@ -380,6 +392,8 @@ SHARED_WITH_QUILL: frozenset[str] = frozenset({
     "Dictation Settings",
     "Dictation Commands",
     "Recent Phrases",
+    "More Dictation Settings",
+    "Speech Models",
     "Recent Documents",
     "Clear Recent Documents",
     "Inline Notes",

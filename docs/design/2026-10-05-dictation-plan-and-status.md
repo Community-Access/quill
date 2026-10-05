@@ -74,7 +74,7 @@ copied; QUILL's version is written in its own code and words.
 
 | VS Code behaviour | What QUILL does |
 |---|---|
-| **Hold mode.** The start key starts dictation; if the key is still held 500 ms later, letting go stops it. A quick press toggles. | Taken. `hold.py`, `windows_dictation_hold.py`. Hold Ctrl+F11 (whatever the key is bound to) for half a second and talk; let go to stop. A quick press still toggles. Key repeats while held are ignored. Setting **Hold the dictation key to talk**, on by default (dict.md question 1). |
+| **Hold mode.** The start key starts dictation; if the key is still held 500 ms later, letting go stops it. A quick press toggles. | Taken. `hold.py`, `windows_dictation_hold.py`. Hold Ctrl+F11 (whatever the key is bound to) for half a second and talk; let go to stop. A quick press still toggles. Key repeats while held are ignored. Setting **Hold the dictation key to talk**, off by default (owner, 2026-10-05; dict.md question 1 first answered on, then reversed before any release): one press starts, the next stops. |
 | **Toggle on the same key.** Pressing the start key while dictating stops it. | Already QUILL's behaviour. |
 | **Stop applies the final transcript.** | Taken. Stopping while a phrase is being heard now waits for it (`LiveMixin.finish`, the worker's `finish`), so letting go of the key never loses the last phrase. A timer stops anyway after four seconds. |
 | **Interim text in grey, replaced by the final segment.** | Taken, accessibly. Provisional words never enter the document or the undo history; they show as "Hearing: ..." in the status bar's Dictation part and on a braille display, throttled to a few updates a second, and the final words replace them. Spoken only if the person chooses **Show it, and say new words quietly** (new words only, no more than every two seconds). GATE-13 holds: nothing the screen reader already says is repeated. |
@@ -268,7 +268,7 @@ after the pause.
 
 | dict.md item | Status |
 |---|---|
-| 2.1 Hold-to-talk | Built 2026-10-05 (section 2). On by default. |
+| 2.1 Hold-to-talk | Built 2026-10-05 (section 2). Off by default (owner, 2026-10-05). |
 | 2.2 Escape cancels the phrase | Shipped 2026-09-28; now also throws away the preview, and listens at once while an AI reply is read. |
 | 2.3 Microphone watchdog | Shipped 2026-09-28. |
 | 2.4 Words go where you started | Built 2026-10-05 (`LiveMixin`, `EditorDocument.anchor`): the caret is remembered when speech starts; if it moves, or the focus goes to another window, before the phrase is written, the words still go there, the person's caret is put back (moved along), and they hear "Written where you started" (with the document's name when it was another window). If that spot changed, the words go at the cursor and they are told. |
@@ -284,7 +284,7 @@ after the pause.
 | 6 "Correct that" | Built: "correct that" reads up to three other guesses where the engine offers them, numbered, and "choose one" to "choose three" swaps the last phrase. Windows speech recognition offers them (SAPI `Alternates`); Moonshine, Whisper, the downloaded models and OpenAI give one answer, and the command says so. |
 | 6 Profiles | Built: "Writing" (Dictation Settings) and "Talking to AI" (More Dictation Settings), switching by itself in the AI window. |
 | Section 1 safeguards | Built (section 1). |
-| 8 Questions | Answered 2026-10-05: hold-to-talk on; send after the pause; the AI pieces ship in QUILL Lite 1.2 and QUILL 1.0; the baseline machine as in section 1; speech models as optional downloads (section 6). |
+| 8 Questions | Answered 2026-10-05: hold-to-talk off by default (first answered on, reversed the same day); send after the pause; the AI pieces ship in QUILL Lite 1.2 and QUILL 1.0; the baseline machine as in section 1; speech models as optional downloads (section 6). |
 
 **Parity gaps closed on 2026-10-05.** QUILL's menu row was "Start or Stop
 Dictation" with no check mark, where QUILL Lite's is the checkable "Dictation

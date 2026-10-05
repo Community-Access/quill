@@ -191,6 +191,7 @@ class WindowsDictationMixin(DictationToolsMixin, DictationHoldMixin):
         """Choose the engine, the microphone, the wake phrase and what is heard."""
         from quill.ui.windows_dictation_dialog import (
             EDIT_INSTRUCTIONS,
+            EDIT_OPENAI_KEY,
             EDIT_WORDS,
             SHOW_COMMANDS,
             WindowsDictationDialog,
@@ -198,7 +199,7 @@ class WindowsDictationMixin(DictationToolsMixin, DictationHoldMixin):
 
         settings = self._dictation_settings()
         dialog = WindowsDictationDialog(self._dictation_parent(), settings, self._dictation_say)
-        saving = (wx.ID_OK, EDIT_WORDS, EDIT_INSTRUCTIONS)
+        saving = (wx.ID_OK, EDIT_WORDS, EDIT_INSTRUCTIONS, EDIT_OPENAI_KEY)
         try:
             answer = self._dictation_run_modal(dialog, "Dictation Settings")
             if answer in saving:
@@ -217,6 +218,19 @@ class WindowsDictationMixin(DictationToolsMixin, DictationHoldMixin):
             self.cmd_dictation_words()
         elif answer == EDIT_INSTRUCTIONS:
             self._dictation_edit_instructions()
+        elif answer == EDIT_OPENAI_KEY:
+            self._dictation_add_openai_key()
+
+    def _dictation_add_openai_key(self) -> None:
+        """The shared Use My Own AI Key window, from Dictation Settings.
+
+        Both editors have it (Alt+F2); dictation adds no second key store.
+        """
+        own_key = getattr(self, "cmd_ai_own_key", None)
+        if callable(own_key):
+            own_key()
+        else:
+            self._dictation_say("Use My Own AI Key is not available here.")
 
     # ------------------------------------------------------------------ #
     # Plumbing

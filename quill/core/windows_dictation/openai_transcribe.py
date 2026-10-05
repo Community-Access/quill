@@ -115,7 +115,8 @@ def pcm16(samples: Any, rate: int = _RATE) -> bytes:
     if rate != _RATE and data.size:
         positions = np.linspace(0, data.size - 1, int(data.size * rate / _RATE))
         data = np.interp(positions, np.arange(data.size), data).astype(np.float32)
-    return (np.clip(data, -1.0, 1.0) * 32767).astype("<i2").tobytes()
+    pcm: bytes = (np.clip(data, -1.0, 1.0) * 32767).astype("<i2").tobytes()
+    return pcm
 
 
 def wav_bytes(samples: Any) -> bytes:
@@ -235,7 +236,9 @@ def create_connection(url: str, key: str) -> Any:
     from quill.core.net import verified_ssl_context
 
     try:
-        from websockets.sync.client import connect
+        from websockets.sync.client import (  # type: ignore[import-not-found,unused-ignore]
+            connect,
+        )
     except ImportError as error:
         raise OpenAIDictationError(
             "Live OpenAI dictation needs a part that is missing from this copy "

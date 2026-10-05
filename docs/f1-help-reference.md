@@ -1525,7 +1525,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## QUILL Lite
 
-Control coverage: 128 audited sites (128 helped).
+Control coverage: 146 audited sites (146 helped).
 
 ### Every window, and what it is for
 
@@ -1615,6 +1615,8 @@ Control coverage: 128 audited sites (128 helped).
 
 **Marks.** The places you have passed through, newest first, with the line each one is on. Choose one and press Enter to go there. A mark is not a bookmark: a bookmark is somewhere you meant to keep, a mark is where you were standing before you went to look something up.
 
+**More Dictation Settings.** The finer dictation choices: holding the key to talk, the quiet preview of what is being heard, profiles for writing and for talking to the AI, and My Dictation Instructions. Nothing changes until you choose OK.
+
 **More Formal.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
 
 **Move QUILL Lite to Beta?.** Says plainly what could go wrong on Beta or Dev, how your settings are protected, and how to come back. Nothing changes unless you tick the box and choose Move.
@@ -1646,6 +1648,8 @@ Control coverage: 128 audited sites (128 helped).
 **Rewrite.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
 
 **Shorter.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
+
+**Speech Models.** Optional speech models you can download for better accuracy, with each one's size, languages and what it suits. Your voice never leaves the computer with these models; Download asks first, and Remove frees the space again.
 
 **Spelling Announcements.** How a misspelled word is reported to you. A misspelling is the one thing an editor cannot convey by speech alone -- receive and recieve sound identical -- so the letters are the answer, and this window decides when you get them and how they are said. Three groups: what happens while you type, how letters are spoken, and how long each pause is before the spelling follows.
 
@@ -1858,6 +1862,40 @@ Control coverage: 128 audited sites (128 helped).
 - `commands`: The list of everything dictation understands: punctuation, layout, the commands, spelling, and your own phrases. Saying what can I say while dictating opens the same list.
 - `words`: Add, change and remove your own words for dictation in a window: names and jargon to spell your way, phrases that write whatever you choose, and corrections for what the engine keeps hearing wrong. Saves these settings first.
 - `self.more_button`: Holding Ctrl+F11 to talk, the words heard so far while you speak, how dictation behaves when you talk to the AI, OpenAI with your own key, and My Dictation Instructions.
+#### DictationCommandsDialog (`quill/ui/dictation_lists_dialog.py`)
+
+- `self.text`: Every phrase dictation acts on and what it does. Read with the arrow keys; Escape closes. The same list is in the user guide.
+- `close`: Close this list.
+#### RecentPhrasesDialog (`quill/ui/dictation_lists_dialog.py`)
+
+- `self.list`: What you dictated this session, newest first. Enter inserts the one you are on at the cursor again; Copy puts it on the clipboard.
+- `insert`: Write this phrase at the cursor again, as one undo step.
+- `copy`: Put this phrase on the clipboard without writing it.
+- `close`: Close the list without inserting anything.
+#### MoreDictationDialog (`quill/ui/dictation_more_dialog.py`)
+
+- `self.hold`: Left off, Ctrl+F11 starts dictating with one press and stops with the next. Turned on, you can also hold Ctrl+F11 while you talk, and dictation stops when you let go, keeping your last phrase. A quick press still turns it on and off.
+- `self.preview`: Nemotron and OpenAI recognise while you are still talking. Show puts the words heard so far in the status bar and on a braille display, never in your document, and the final words replace them when you pause. Say also speaks the new words quietly, a few at a time. The built-in engines wait for the pause, so with them the status bar says Hearing you.
+- `self.send`: In the AI Conversation window, Ctrl+F11 dictates your message. When I pause sends it as soon as you stop talking, the reply is read aloud, and the microphone waits until it has been read before it listens again; Escape listens at once. When I press Enter lets you check the message first.
+- `self.ai_pause`: How long you can stop to think while talking to the AI before what you said is written -- and, with When I pause, sent. Long is the default, so a breath does not send half a question.
+- `self.ai_fillers`: Leave out um, uh and their kin from what you say to the AI. On by default, because the AI does not need them.
+- `self.ai_punctuation`: Let the speech engine put in full stops, commas and question marks in what you say to the AI.
+- `self.consent`: Off unless you agreed when you chose OpenAI as the speech engine. While it is on and OpenAI is the engine, what you say is sent to OpenAI with the OpenAI key saved in Use My Own AI Key and billed to your account. Turn it off to stop that; the built-in engines never send anything.
+- `self.model`: The OpenAI transcription models your key can use, read from OpenAI when this window opens, newest first. Models OpenAI is retiring are left out. gpt-live-transcribe writes as you speak; gpt-transcribe sends each phrase when you pause. If the one you chose goes away, you are told and asked to choose again -- dictation never changes it for you.
+- `self.model_status`: Whether OpenAI's list of models could be read.
+- `add_key`: Saves these settings, then opens Use My Own AI Key, where you paste an OpenAI key or change the one you saved. The key is kept in Windows' secure store, never in a file. Once it is there, OpenAI appears in the speech engine list and its models load here.
+- `instructions`: Opens the file where you tell Tidy Dictated Text how you like your dictation tidied: write numbers as digits, British spelling, names always spelled your way. Saves these settings first.
+#### SpeechModelsDialog (`quill/ui/dictation_models_dialog.py`)
+
+- `self.models`: The optional speech models, the ones VS Code offers first and then the rest of the Whisper family. Each row says what the model is good for, its size and whether it is on this computer. Details below say more.
+- `self.details`: About the chosen model: what it is better at, its languages, download and disk size, what computer suits it and whether this one should keep up, its published accuracy, its licence and where it is saved.
+- `self.progress`: How far the current download has got, or how it ended.
+- `self.gauge`: How far the current download has got.
+- `self.download`: Download the chosen model, after a question that names where it comes from, its size, its licence and where it will be saved. A download that was stopped carries on from where it stopped.
+- `self.cancel_download`: Stop the download. What has arrived is kept, so Download carries on later.
+- `self.remove`: Delete the chosen model from this computer to free the space.
+- `self.use`: Choose this downloaded model as the speech engine. Dictation Settings shows it chosen; press OK there to keep it.
+- `close`: Close this window. A download in progress is stopped and kept.
 #### RecentDocumentsWindow (`quill/ui/recent_documents_dialog.py`)
 
 - `self.listbox`: Every document you opened recently, pinned ones first. Enter opens the one you are on. Delete takes it off this list without touching the file. A row that says not found is a file that has moved or been deleted.

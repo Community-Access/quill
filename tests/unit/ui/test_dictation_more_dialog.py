@@ -31,17 +31,17 @@ def test_the_defaults_and_every_choice_come_back_under_the_settings_names(wx_app
     dialog, _said = _dialog()
     try:
         values = dialog.values()
-        assert values["windows_dictation_hold_to_talk"] is True
+        assert values["windows_dictation_hold_to_talk"] is False
         assert values["windows_dictation_preview"] == "show"
         assert values["windows_dictation_ai_send"] == "pause"
         assert values["windows_dictation_ai_pause"] == "long"
         assert values["windows_dictation_openai_consent"] is False
-        dialog.hold.SetValue(False)
+        dialog.hold.SetValue(True)
         dialog.preview.SetSelection(1)
         dialog.send.SetSelection(1)
         dialog.consent.SetValue(True)
         values = dialog.values()
-        assert values["windows_dictation_hold_to_talk"] is False
+        assert values["windows_dictation_hold_to_talk"] is True
         assert values["windows_dictation_preview"] == "speak"
         assert values["windows_dictation_ai_send"] == "enter"
         assert values["windows_dictation_openai_consent"] is True

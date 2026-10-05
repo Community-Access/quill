@@ -923,7 +923,8 @@ a dictation command, key or setting.
 
 - **Hold-to-talk** (`hold.py`, `windows_dictation_hold.py`): hold Ctrl+F11 for
   half a second and talk, let go to stop; a quick press toggles; key repeats are
-  ignored. On by default; **More Dictation Settings** turns it off.
+  ignored. Off by default (owner, 2026-10-05): one press starts, the next
+  stops; **More Dictation Settings** turns it on.
 - **Finishing, not cutting off**: stopping while a phrase is being heard waits
   for it (`LiveMixin.finish`, the worker's `finish`), with a four-second limit.
 - **The live preview** (`streaming.py`, `recognizer_worker.py`, `live.py`):

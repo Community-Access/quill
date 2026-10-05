@@ -52,7 +52,7 @@ class DictationSettings:
     windows_dictation_silence_minutes: int = 0
     windows_dictation_continuous: bool = False
     # 2026-10-05: hold-to-talk, the live preview, Talking to AI, and OpenAI.
-    windows_dictation_hold_to_talk: bool = True
+    windows_dictation_hold_to_talk: bool = False
     windows_dictation_preview: str = "show"
     windows_dictation_ai_send: str = "pause"
     windows_dictation_ai_pause: str = "long"
@@ -97,7 +97,7 @@ def load_fields(data: Mapping[str, Any]) -> dict[str, Any]:
         ),
         "windows_dictation_continuous": bool(data.get("windows_dictation_continuous", False)),
         # 2026-10-05: hold-to-talk, the live preview, Talking to AI, OpenAI.
-        "windows_dictation_hold_to_talk": bool(data.get("windows_dictation_hold_to_talk", True)),
+        "windows_dictation_hold_to_talk": bool(data.get("windows_dictation_hold_to_talk", False)),
         "windows_dictation_preview": coerce_preview(data.get("windows_dictation_preview", "show")),
         "windows_dictation_ai_send": (
             "enter" if data.get("windows_dictation_ai_send") == "enter" else "pause"

@@ -72,8 +72,9 @@ class DictationPreferences:
     #: read-back, no command but the stop phrase.
     continuous: bool = False
     #: Holding the dictation key talks until it is let go (hold.py); a quick
-    #: press toggles either way.
-    hold_to_talk: bool = True
+    #: press toggles either way. Off by default (owner, 2026-10-05): one press
+    #: starts, the next stops.
+    hold_to_talk: bool = False
     #: The live preview of a streaming engine: ``show``, ``speak`` or ``off``.
     preview: str = "show"
     #: ``writing`` (the document) or ``ai`` (the AI Conversation window's
@@ -196,7 +197,7 @@ class DictationPreferences:
                 getattr(settings, "windows_dictation_silence_minutes", 0)
             ),
             continuous=bool(getattr(settings, "windows_dictation_continuous", False)),
-            hold_to_talk=bool(getattr(settings, "windows_dictation_hold_to_talk", True)),
+            hold_to_talk=bool(getattr(settings, "windows_dictation_hold_to_talk", False)),
             preview=coerce_preview(getattr(settings, "windows_dictation_preview", "show")),
             openai_model=str(getattr(settings, "windows_dictation_openai_model", "") or ""),
             openai_consent=bool(getattr(settings, "windows_dictation_openai_consent", False)),

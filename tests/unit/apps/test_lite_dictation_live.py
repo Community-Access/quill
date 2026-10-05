@@ -1,5 +1,6 @@
 """The 2026-10-05 dictation pass in QUILL Lite, through the handlers the menu
-binds: hold-to-talk on Ctrl+F11, the live preview in the status cell, talking
+binds: Ctrl+F11 pressed to start and again to stop (hold-to-talk when it is
+turned on), the live preview in the status cell, talking
 to the AI, More Dictation Settings, OpenAI's consent and My Dictation
 Instructions. QUILL runs the same mixins (test_dictation_parity.py).
 """
@@ -82,6 +83,7 @@ def keyboard(monkeypatch):
 
 
 def test_holding_ctrl_f11_talks_until_it_is_let_go(window, made, keyboard):
+    window.app.settings.windows_dictation_hold_to_talk = True  # off by default
     keyboard.down = True
     window.cmd_toggle_dictation()
     assert window.dictation_active()
@@ -112,8 +114,8 @@ def test_a_quick_press_leaves_dictation_on(window, made, keyboard):
     assert not window.dictation_active()
 
 
-def test_with_hold_switched_off_letting_go_does_not_stop(window, made, keyboard):
-    window.app.settings.windows_dictation_hold_to_talk = False
+def test_by_default_letting_go_of_a_long_press_does_not_stop(window, made, keyboard):
+    assert window.app.settings.windows_dictation_hold_to_talk is False
     keyboard.down = True
     window.cmd_toggle_dictation()
     keyboard.now += 2.0

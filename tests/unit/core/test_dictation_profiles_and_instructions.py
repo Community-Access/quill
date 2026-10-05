@@ -18,7 +18,7 @@ from quill.core.windows_dictation.settings_fields import load_fields
 
 def test_new_settings_load_with_their_defaults_and_are_cleaned() -> None:
     fields = load_fields({})
-    assert fields["windows_dictation_hold_to_talk"] is True
+    assert fields["windows_dictation_hold_to_talk"] is False  # press to start, press to stop
     assert fields["windows_dictation_preview"] == "show"
     assert fields["windows_dictation_ai_send"] == "pause"
     assert fields["windows_dictation_ai_pause"] == "long"

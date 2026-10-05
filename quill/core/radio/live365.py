@@ -87,10 +87,15 @@ _LIVE365_ID_RE = re.compile(r"[aA]\d{3,8}")
 _STREAM_BASE = "https://streaming.live365.com/"
 
 
+_LIVE365_HOST = re.compile(r"(?:^|//|\.)live365\.com(?:$|[/:?#])")
+
+
 def _looks_live365(text: str) -> bool:
     """True when *text* references Live365 (any host) or is a bare station id."""
     lowered = text.lower()
-    if "live365.com" in lowered:
+    # A host match, not a substring: "notlive365.com" and a query string that
+    # merely mentions it are not Live365.
+    if _LIVE365_HOST.search(lowered):
         return True
     return re.fullmatch(r"[aA]\d{3,8}", text.strip()) is not None
 

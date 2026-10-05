@@ -3247,8 +3247,9 @@ Dictation lets you write by talking. Press **Ctrl+F11**, say a sentence, and
 pause. When you pause, your words appear in the document at the cursor. You
 hear a short, soft tone, and QUILL Lite reads the words back so you know they
 came out right. Then it keeps listening, so you can go straight on to the next
-sentence. To stop, press **Ctrl+F11** again or say "stop dictation". Or hold
-**Ctrl+F11** down while you talk, and let go when you have finished.
+sentence. To stop, press **Ctrl+F11** again or say "stop dictation". If you
+would rather hold **Ctrl+F11** down while you talk and let go to stop, you can
+turn that on; see Holding Ctrl+F11 to talk, below.
 
 You do not have to say punctuation. The speech engines that come with QUILL
 Lite put in full stops, commas, question marks and capital letters for you.
@@ -3290,8 +3291,12 @@ in, and the sentence carries on.
 
 #### Holding Ctrl+F11 to talk
 
-You do not have to press Ctrl+F11 twice. You can hold it down while you talk,
-like the button on a walkie-talkie:
+Press **Ctrl+F11** to start dictating and press it again to stop. That is
+all most people ever need, and it is how dictation starts out.
+
+If you prefer to hold the key while you talk, like the button on a
+walkie-talkie, turn on **Hold the dictation key to talk; a quick press still
+turns it on and off** in **More Dictation Settings**. Then:
 
 1. Put the cursor where you want the words.
 2. Press and hold **Ctrl+F11**. You hear the two rising tones and "Dictation
@@ -3300,18 +3305,13 @@ like the button on a walkie-talkie:
 4. Let go. Dictation writes your last phrase, then you hear the two falling
    tones and "Dictation off".
 
-A quick press still works the way it always has: dictation turns on and stays
-on until you press Ctrl+F11 again. QUILL Lite tells the two apart by how long you
-hold the keys. Half a second or more is a hold.
+With that turned on, a quick press still works just the same: dictation turns
+on and stays on until you press Ctrl+F11 again. QUILL Lite tells the two apart by
+how long you hold the keys. Half a second or more is a hold.
 
 Stopping never cuts you off. If you press or let go of Ctrl+F11 while you are
 still finishing a sentence, dictation waits for that phrase, writes it, and
 then stops.
-
-If holding keys down is hard for you, open **More Dictation Settings** and
-turn off **Hold the dictation key to talk; a quick press still turns it on and
-off**. Ctrl+F11 then only turns dictation on and off, however long you hold
-it.
 
 #### What you hear
 
@@ -3616,7 +3616,7 @@ you change here is saved when you press OK in Dictation Settings.
 
 | Option | What it does | Starts as |
 |---|---|---|
-| Hold the dictation key to talk; a quick press still turns it on and off | Hold Ctrl+F11 and talk, let go to stop | On |
+| Hold the dictation key to talk; a quick press still turns it on and off | Also lets you hold Ctrl+F11 while you talk and let go to stop | Off |
 | While you speak, the words heard so far | Show them in the status bar and on braille, also say new words quietly, or do not show them | Show them |
 | Send a dictated message to the AI | When I pause, or When I press Enter | When I pause |
 | Pause before the message is written | Short, Normal or Long, when talking to the AI | Long |
@@ -3904,6 +3904,13 @@ speech dictation heard. The built-in engines never send anything anywhere.
 the AI help chapter). QUILL's free AI is never used for dictation. OpenAI
 dictation does not work in Safe Mode.
 
+**Adding your key from here.** You don't have to go looking for it: in
+Dictation Settings (Alt+Shift+F6), choose **More Dictation Settings...**, and
+under "OpenAI, with your own key" press **Add or Change OpenAI Key...**
+(Alt+K). Your settings are saved, Use My Own AI Key opens, and once you paste
+your key, OpenAI appears in the speech engine list. You can also open Use My
+Own AI Key any time with Alt+F2.
+
 **Setting it up, step by step:**
 
 1. Open **Dictation Settings** (**Alt+Shift+F6**).
@@ -4152,8 +4159,8 @@ keys and the wake phrase.
 
 ### What you learned, and where to go next
 
-You can now dictate with **Ctrl+F11**, by pressing it or by holding it while
-you talk. You can fix what you said with "scratch that" or "correct that",
+You can now dictate with **Ctrl+F11**, pressing it to start and again to
+stop, or holding it while you talk once you turn that on. You can fix what you said with "scratch that" or "correct that",
 spell a hard name, and start and stop by voice with the wake and stop phrases.
 You know that your words go where you started speaking, how to see them while
 you talk with Nemotron or OpenAI, and how to talk to the AI out loud. You also

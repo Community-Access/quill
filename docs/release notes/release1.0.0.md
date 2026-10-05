@@ -1168,9 +1168,11 @@ Downloads use a checksum-pinned progress dialog you can cancel.
   Lite (inside the portable folder in a portable copy). The user guide's
   "Better accuracy: optional speech models" has the published accuracy of
   each.
-- **Hold Ctrl+F11 to talk.** Hold the keys, speak, and let go: your last
-  phrase is written and Live Dictation turns off. A quick press still toggles,
-  and stopping never cuts off the phrase you are finishing. **Dictation On** in
+- **Hold Ctrl+F11 to talk, if you like.** Ctrl+F11 starts Live Dictation
+  with one press and stops it with the next. If you would rather hold the keys
+  while you speak and let go to stop, turn on **Hold the dictation key to
+  talk** in **More Dictation Settings**. Either way, stopping never cuts off
+  the phrase you are finishing. **Dictation On** in
   **Tools > Speech > Live Dictation** is checked while it writes, and the status
   bar says what it is doing.
 - **See your words while you speak.** With Nemotron or OpenAI, the words heard

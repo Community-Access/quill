@@ -70,6 +70,10 @@ _SCAN_GLOBS: tuple[str, ...] = (
     "quill/ui/text_editor_prefs.py",
     "quill/ui/text_editor_commands.py",
     "quill/ui/windows_dictation_*.py",
+    # The shared dictation windows QUILL Lite opens (lists, more settings, models).
+    "quill/ui/dictation_lists_dialog.py",
+    "quill/ui/dictation_more_dialog.py",
+    "quill/ui/dictation_models_dialog.py",
     # File > Recent Documents, the same window in both editors (2026-10-04).
     "quill/ui/recent_documents_dialog.py",
 )

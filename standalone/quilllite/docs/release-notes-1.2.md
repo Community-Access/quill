@@ -288,10 +288,11 @@ I try?".
 Dictation learned a lot this time, much of it from studying how VS Code does
 it. Everything here is in QUILL too, on the same keys.
 
-- **Hold Ctrl+F11 to talk.** Hold the keys down, say what you want, and let
-  go: your last phrase is written and dictation turns off. A quick press still
-  turns it on and leaves it on. If holding keys is hard for you, turn it off in
-  **More Dictation Settings**.
+- **Hold Ctrl+F11 to talk, if you like.** Ctrl+F11 still starts dictation
+  with one press and stops it with the next. If you would rather hold the keys
+  down while you talk, turn on **Hold the dictation key to talk** in **More
+  Dictation Settings**: say what you want and let go, and your last phrase is
+  written and dictation turns off. A quick press still works either way.
 - **Stopping never cuts you off.** Press or let go of Ctrl+F11 while you are
   still finishing a sentence, and that phrase is written before dictation
   stops.

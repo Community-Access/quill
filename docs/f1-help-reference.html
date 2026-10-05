@@ -3872,7 +3872,7 @@ playback to its start.</li>
 text, when one is available. Empty otherwise.</li>
 </ul>
 <h2 id="quill-lite">QUILL Lite</h2>
-<p>Control coverage: 128 audited sites (128 helped).</p>
+<p>Control coverage: 146 audited sites (146 helped).</p>
 <h3 id="every-window-and-what-it-is-for-8">Every window, and what it is
 for</h3>
 <p><strong>AI Assistant.</strong> Ask QUILL’s free AI to summarize,
@@ -4067,6 +4067,10 @@ first, with the line each one is on. Choose one and press Enter to go
 there. A mark is not a bookmark: a bookmark is somewhere you meant to
 keep, a mark is where you were standing before you went to look
 something up.</p>
+<p><strong>More Dictation Settings.</strong> The finer dictation
+choices: holding the key to talk, the quiet preview of what is being
+heard, profiles for writing and for talking to the AI, and My Dictation
+Instructions. Nothing changes until you choose OK.</p>
 <p><strong>More Formal.</strong> What the AI sent back. It is read-only
 on purpose: nothing goes into your document until you choose Replace My
 Selection or Insert Below, and either of those is a single edit that
@@ -4141,6 +4145,10 @@ Control Z takes back.</p>
 purpose: nothing goes into your document until you choose Replace My
 Selection or Insert Below, and either of those is a single edit that
 Control Z takes back.</p>
+<p><strong>Speech Models.</strong> Optional speech models you can
+download for better accuracy, with each one’s size, languages and what
+it suits. Your voice never leaves the computer with these models;
+Download asks first, and Remove frees the space again.</p>
 <p><strong>Spelling Announcements.</strong> How a misspelled word is
 reported to you. A misspelling is the one thing an editor cannot convey
 by speech alone – receive and recieve sound identical – so the letters
@@ -4710,6 +4718,107 @@ hearing wrong. Saves these settings first.</li>
 <li><code>self.more_button</code>: Holding Ctrl+F11 to talk, the words
 heard so far while you speak, how dictation behaves when you talk to the
 AI, OpenAI with your own key, and My Dictation Instructions.</li>
+</ul>
+<h4
+id="dictationcommandsdialog-quilluidictation_lists_dialogpy">DictationCommandsDialog
+(<code>quill/ui/dictation_lists_dialog.py</code>)</h4>
+<ul>
+<li><code>self.text</code>: Every phrase dictation acts on and what it
+does. Read with the arrow keys; Escape closes. The same list is in the
+user guide.</li>
+<li><code>close</code>: Close this list.</li>
+</ul>
+<h4
+id="recentphrasesdialog-quilluidictation_lists_dialogpy">RecentPhrasesDialog
+(<code>quill/ui/dictation_lists_dialog.py</code>)</h4>
+<ul>
+<li><code>self.list</code>: What you dictated this session, newest
+first. Enter inserts the one you are on at the cursor again; Copy puts
+it on the clipboard.</li>
+<li><code>insert</code>: Write this phrase at the cursor again, as one
+undo step.</li>
+<li><code>copy</code>: Put this phrase on the clipboard without writing
+it.</li>
+<li><code>close</code>: Close the list without inserting anything.</li>
+</ul>
+<h4
+id="moredictationdialog-quilluidictation_more_dialogpy">MoreDictationDialog
+(<code>quill/ui/dictation_more_dialog.py</code>)</h4>
+<ul>
+<li><code>self.hold</code>: Left off, Ctrl+F11 starts dictating with one
+press and stops with the next. Turned on, you can also hold Ctrl+F11
+while you talk, and dictation stops when you let go, keeping your last
+phrase. A quick press still turns it on and off.</li>
+<li><code>self.preview</code>: Nemotron and OpenAI recognise while you
+are still talking. Show puts the words heard so far in the status bar
+and on a braille display, never in your document, and the final words
+replace them when you pause. Say also speaks the new words quietly, a
+few at a time. The built-in engines wait for the pause, so with them the
+status bar says Hearing you.</li>
+<li><code>self.send</code>: In the AI Conversation window, Ctrl+F11
+dictates your message. When I pause sends it as soon as you stop
+talking, the reply is read aloud, and the microphone waits until it has
+been read before it listens again; Escape listens at once. When I press
+Enter lets you check the message first.</li>
+<li><code>self.ai_pause</code>: How long you can stop to think while
+talking to the AI before what you said is written – and, with When I
+pause, sent. Long is the default, so a breath does not send half a
+question.</li>
+<li><code>self.ai_fillers</code>: Leave out um, uh and their kin from
+what you say to the AI. On by default, because the AI does not need
+them.</li>
+<li><code>self.ai_punctuation</code>: Let the speech engine put in full
+stops, commas and question marks in what you say to the AI.</li>
+<li><code>self.consent</code>: Off unless you agreed when you chose
+OpenAI as the speech engine. While it is on and OpenAI is the engine,
+what you say is sent to OpenAI with the OpenAI key saved in Use My Own
+AI Key and billed to your account. Turn it off to stop that; the
+built-in engines never send anything.</li>
+<li><code>self.model</code>: The OpenAI transcription models your key
+can use, read from OpenAI when this window opens, newest first. Models
+OpenAI is retiring are left out. gpt-live-transcribe writes as you
+speak; gpt-transcribe sends each phrase when you pause. If the one you
+chose goes away, you are told and asked to choose again – dictation
+never changes it for you.</li>
+<li><code>self.model_status</code>: Whether OpenAI’s list of models
+could be read.</li>
+<li><code>add_key</code>: Saves these settings, then opens Use My Own AI
+Key, where you paste an OpenAI key or change the one you saved. The key
+is kept in Windows’ secure store, never in a file. Once it is there,
+OpenAI appears in the speech engine list and its models load here.</li>
+<li><code>instructions</code>: Opens the file where you tell Tidy
+Dictated Text how you like your dictation tidied: write numbers as
+digits, British spelling, names always spelled your way. Saves these
+settings first.</li>
+</ul>
+<h4
+id="speechmodelsdialog-quilluidictation_models_dialogpy">SpeechModelsDialog
+(<code>quill/ui/dictation_models_dialog.py</code>)</h4>
+<ul>
+<li><code>self.models</code>: The optional speech models, the ones VS
+Code offers first and then the rest of the Whisper family. Each row says
+what the model is good for, its size and whether it is on this computer.
+Details below say more.</li>
+<li><code>self.details</code>: About the chosen model: what it is better
+at, its languages, download and disk size, what computer suits it and
+whether this one should keep up, its published accuracy, its licence and
+where it is saved.</li>
+<li><code>self.progress</code>: How far the current download has got, or
+how it ended.</li>
+<li><code>self.gauge</code>: How far the current download has got.</li>
+<li><code>self.download</code>: Download the chosen model, after a
+question that names where it comes from, its size, its licence and where
+it will be saved. A download that was stopped carries on from where it
+stopped.</li>
+<li><code>self.cancel_download</code>: Stop the download. What has
+arrived is kept, so Download carries on later.</li>
+<li><code>self.remove</code>: Delete the chosen model from this computer
+to free the space.</li>
+<li><code>self.use</code>: Choose this downloaded model as the speech
+engine. Dictation Settings shows it chosen; press OK there to keep
+it.</li>
+<li><code>close</code>: Close this window. A download in progress is
+stopped and kept.</li>
 </ul>
 <h4
 id="recentdocumentswindow-quilluirecent_documents_dialogpy">RecentDocumentsWindow

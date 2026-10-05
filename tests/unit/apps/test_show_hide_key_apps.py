@@ -11,6 +11,10 @@ from __future__ import annotations
 import pytest
 import wx
 
+#: Serialized onto one worker under ``-n --dist loadgroup``: these tests build
+#: real app windows that register system-wide hotkeys (RegisterHotKey is
+#: per-desktop, not per-process).
+#: See ``pytest_collection_modifyitems`` in ``tests/conftest.py``.
 pytestmark = pytest.mark.machine_global
 
 

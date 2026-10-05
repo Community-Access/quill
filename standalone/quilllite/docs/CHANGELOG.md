@@ -4,10 +4,10 @@
 
 ### Dictation: hold-to-talk, live words, talking to the AI, and OpenAI with your own key (2026-10-05)
 
-- **Hold Ctrl+F11 to talk**, after VS Code's hold mode: held for half a second,
-  letting go stops; a quick press still toggles; key repeats are ignored. On by
-  default; **More Dictation Settings** turns it off (`hold.py`,
-  `windows_dictation_hold.py`). Stopping while a phrase is being heard now waits
+- **Hold Ctrl+F11 to talk**, after VS Code's hold mode, as an option: held for
+  half a second, letting go stops; a quick press still toggles; key repeats are
+  ignored. Off by default, so one press starts and the next stops; **More
+  Dictation Settings** turns it on (`hold.py`, `windows_dictation_hold.py`). Stopping while a phrase is being heard now waits
   for it and writes it (`live.py`, `recognizer_worker.py`).
 - **Live preview with Nemotron**: run as a streaming model on one stream per
   session, its words while you speak go to the status bar and braille as

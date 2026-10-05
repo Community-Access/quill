@@ -20,8 +20,15 @@ def test_a_quick_press_starts_and_dictation_stays_on() -> None:
     assert not hold.watching
 
 
-def test_holding_past_half_a_second_stops_on_release() -> None:
+def test_hold_is_off_until_it_is_asked_for() -> None:
     hold = HoldToTalk()
+    assert not hold.hold_enabled
+    hold.press(now=0.0, active=False, key_down=True)
+    assert hold.poll(now=2.0, key_down=False) is HoldAction.DONE  # still on
+
+
+def test_holding_past_half_a_second_stops_on_release() -> None:
+    hold = HoldToTalk(hold_enabled=True)
     hold.press(now=0.0, active=False, key_down=True)
     assert hold.poll(now=HOLD_SECONDS + 0.01, key_down=True) is HoldAction.WATCH
     assert hold.holding

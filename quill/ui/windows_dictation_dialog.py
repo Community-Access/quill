@@ -70,6 +70,7 @@ from quill.ui.windows_dictation_devices import (
 
 __all__ = [
     "EDIT_INSTRUCTIONS",
+    "EDIT_OPENAI_KEY",
     "EDIT_WORDS",
     "SHOW_COMMANDS",
     "DictationCommandsDialog",
@@ -83,6 +84,7 @@ __all__ = [
 SHOW_COMMANDS = 5801
 EDIT_WORDS = 5802
 EDIT_INSTRUCTIONS = 5803  # quill.ui.dictation_more_dialog's, passed on
+EDIT_OPENAI_KEY = 5804  # quill.ui.dictation_more_dialog's, passed on
 
 _PAD = 8
 
@@ -458,6 +460,7 @@ class WindowsDictationDialog(wx.Dialog):
         """More Dictation Settings, its choices kept until this window's OK."""
         from quill.ui.dialog_contract import show_modal_dialog
         from quill.ui.dictation_more_dialog import EDIT_INSTRUCTIONS as MORE_INSTRUCTIONS
+        from quill.ui.dictation_more_dialog import EDIT_OPENAI_KEY as MORE_KEY
         from quill.ui.dictation_more_dialog import MoreDictationDialog
 
         dialog = MoreDictationDialog(self, self._settings, self._announce, pending=self._more)
@@ -465,12 +468,14 @@ class WindowsDictationDialog(wx.Dialog):
             dialog.focus_model()
         try:
             answer = show_modal_dialog(dialog, "More Dictation Settings")
-            if answer in (wx.ID_OK, MORE_INSTRUCTIONS):
+            if answer in (wx.ID_OK, MORE_INSTRUCTIONS, MORE_KEY):
                 self._more.update(dialog.values())
         finally:
             dialog.Destroy()
         if answer == MORE_INSTRUCTIONS:
             self.EndModal(EDIT_INSTRUCTIONS)
+        elif answer == MORE_KEY:
+            self.EndModal(EDIT_OPENAI_KEY)
 
     def _on_speech_models(self, _event: Any) -> None:
         """Speech Models, then the engine list again: a model may have come or gone."""

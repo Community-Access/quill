@@ -14,11 +14,12 @@ stops when it comes up. QUILL's own words and code; credited in
   accelerator about thirty times a second; without this, holding the key would
   start and stop dictation over and over.
 
-The setting **Hold Ctrl+F11 to talk** (on by default) only decides whether
-letting go of a long press stops dictation; with it off, the key is a pure
-toggle for anybody for whom holding a key is hard, and repeats are still
-ignored. A press that did not come from the key -- a menu, the Command
-Palette, a test -- is always a plain toggle, because there is no key to hold.
+The setting **Hold the dictation key to talk** (off by default -- owner,
+2026-10-05) only decides whether letting go of a long press stops dictation.
+Off, the key is a pure toggle -- press once to start, again to stop -- and
+repeats are still ignored; on, holding the key talks until it comes up. A
+press that did not come from the key -- a menu, the Command Palette, a test --
+is always a plain toggle, because there is no key to hold.
 
 Pure and wx-free: the host reports the key's state and the time, and does what
 :class:`HoldToTalk` answers.
@@ -52,7 +53,7 @@ class HoldAction(StrEnum):
 class HoldToTalk:
     """One key's presses, as a tiny state machine."""
 
-    def __init__(self, *, hold_enabled: bool = True) -> None:
+    def __init__(self, *, hold_enabled: bool = False) -> None:
         self.hold_enabled = hold_enabled
         self._down_at: float | None = None
         self._started = False

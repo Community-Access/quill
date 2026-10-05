@@ -6,8 +6,9 @@ editors. A window of its own because Dictation Settings is full -- every letter
 a screen-reader user can reach with Alt is taken there -- and because these are
 the choices nobody needs on the first day:
 
-* **Hold the dictation key to talk** (on by default): hold Ctrl+F11 and speak,
-  let go to stop; a quick press still turns dictation on and off.
+* **Hold the dictation key to talk** (off by default): when on, hold Ctrl+F11
+  and speak, let go to stop; a quick press still turns dictation on and off.
+  Off, one press starts dictation and the next stops it.
 * **While you speak, the words heard so far**: the live preview of a streaming
   engine (Nemotron, OpenAI) in the status bar and on a braille display, said
   quietly as well, or not at all.
@@ -33,10 +34,14 @@ from quill.core.windows_dictation.options import PAUSE_CHOICES, coerce_pause
 from quill.core.windows_dictation.preview import PREVIEW_CHOICES, coerce_preview
 from quill.ui.dialog_contract import apply_modal_ids
 
-__all__ = ["EDIT_INSTRUCTIONS", "MoreDictationDialog", "SEND_CHOICES"]
+__all__ = ["EDIT_INSTRUCTIONS", "EDIT_OPENAI_KEY", "MoreDictationDialog", "SEND_CHOICES"]
 
 #: What My Dictation Instructions... ends both windows with.
 EDIT_INSTRUCTIONS = 5803
+
+#: What Add or Change OpenAI Key... ends both windows with: the caller saves
+#: these settings, then opens the shared Use My Own AI Key window.
+EDIT_OPENAI_KEY = 5804
 
 #: (value, label) for when a dictated message goes to the AI.
 SEND_CHOICES: tuple[tuple[str, str], ...] = (
@@ -71,12 +76,11 @@ class MoreDictationDialog(wx.Dialog):
         self.hold = wx.CheckBox(
             self, label="&Hold the dictation key to talk; a quick press still turns it on and off"
         )
-        self.hold.SetValue(bool(value("windows_dictation_hold_to_talk", True)))
+        self.hold.SetValue(bool(value("windows_dictation_hold_to_talk", False)))
         self.hold.SetHelpText(
-            "On: hold Ctrl+F11 for half a second and dictation listens until you let go, "
-            "then writes your last phrase and stops. A quick press still turns dictation "
-            "on, and a second press turns it off. Off: the key only turns dictation on "
-            "and off, for anybody who finds holding a key hard."
+            "Left off, Ctrl+F11 starts dictating with one press and stops with the next. "
+            "Turned on, you can also hold Ctrl+F11 while you talk, and dictation stops when "
+            "you let go, keeping your last phrase. A quick press still turns it on and off."
         )
         root.Add(self.hold, 0, wx.ALL, _PAD)
 
@@ -171,6 +175,15 @@ class MoreDictationDialog(wx.Dialog):
         cloud_box.Add(self.model, 0, wx.EXPAND | wx.ALL, _PAD)
         cloud_box.Add(status_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
         cloud_box.Add(self.model_status, 0, wx.EXPAND | wx.ALL, _PAD)
+        add_key = wx.Button(cloud, label="Add or Change OpenAI &Key...")
+        add_key.SetHelpText(
+            "Saves these settings, then opens Use My Own AI Key, where you paste an "
+            "OpenAI key or change the one you saved. The key is kept in Windows' "
+            "secure store, never in a file. Once it is there, OpenAI appears in the "
+            "speech engine list and its models load here."
+        )
+        add_key.Bind(wx.EVT_BUTTON, lambda _e: self.EndModal(EDIT_OPENAI_KEY))
+        cloud_box.Add(add_key, 0, wx.ALL, _PAD)
         root.Add(cloud_box, 0, wx.EXPAND | wx.ALL, _PAD)
 
         instructions = wx.Button(self, label="My Dictation &Instructions...")
