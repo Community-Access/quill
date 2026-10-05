@@ -10,7 +10,6 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-import numpy as np
 import pytest
 
 from quill.core.windows_dictation import audio_file, file_models, file_transcribe
@@ -33,8 +32,15 @@ from quill.core.windows_dictation.file_transcribe import (
 # --------------------------------------------------------------------------- #
 
 
+def _numpy() -> Any:
+    """numpy, or a skip: it comes with the dictation extra, which CI does not
+    install, and the tests that need no samples should still run there."""
+    return pytest.importorskip("numpy")
+
+
 def _source(seconds: float, path: Path = Path("talk.mp3")) -> AudioSource:
     """A recording of *seconds* of quiet, a second at a time."""
+    np = _numpy()
 
     def blocks() -> Any:
         whole = int(seconds * RATE)
@@ -57,6 +63,7 @@ class _Phrases:
         self.words: dict[int, str] = {}
 
     def _due(self, final: bool) -> list[Segment]:
+        np = _numpy()
         out = []
         while self._phrases:
             start, length, words = self._phrases[0]
@@ -86,6 +93,7 @@ def _run(
     model: str = "moonshine",
     **job: Any,
 ) -> tuple[FileTranscript, list[Any]]:
+    np = _numpy()  # skip here, not inside the transcriber's own loop
     detector = _Phrases(phrases)
     sent: list[Any] = []
 
@@ -222,6 +230,8 @@ def test_the_real_engine_is_asked_for_when_none_is_given(monkeypatch) -> None:
 
 
 def test_silero_segmenter_feeds_whole_windows_and_flushes() -> None:
+    np = _numpy()
+
     class Vad:
         def __init__(self) -> None:
             self.windows: list[int] = []
@@ -271,6 +281,7 @@ def test_sentences_and_timestamps() -> None:
 
 
 def test_resampling_in_pieces_matches_resampling_whole() -> None:
+    np = _numpy()
     tone = np.sin(np.arange(44_100 * 2) / 44_100 * 2 * np.pi * 300).astype(np.float32)
     whole = Resampler(44_100).process(tone)
     pieces = Resampler(44_100)
@@ -281,6 +292,7 @@ def test_resampling_in_pieces_matches_resampling_whole() -> None:
 
 
 def test_16_khz_passes_straight_through() -> None:
+    np = _numpy()
     samples = np.arange(10, dtype=np.float32)
     assert np.array_equal(Resampler(16_000).process(samples), samples)
 

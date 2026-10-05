@@ -16,3 +16,8 @@ tests/corpus/** -text
 # disables every EOL conversion, exactly as it does for tests/corpus/ above.
 quill/core/speech/audio_tags_core.py -text
 quill/core/speech/audio_tags_core.sha256 -text
+
+# The family menu-key snapshot is compared byte for byte with a fresh scan
+# (tests/unit/ui/test_global_hotkeys.py and family_chords_snapshot), which
+# writes LF. A Windows runner's autocrlf checkout made it CRLF and stale.
+quill/core/data/family_menu_chords.json text eol=lf

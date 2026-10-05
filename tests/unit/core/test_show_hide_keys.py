@@ -192,11 +192,11 @@ def test_an_inkwell_key_is_refused_when_it_is_one_of_inkwells_others() -> None:
         family_chords.suggest_show_hide_key(
             "inkwell",
             own={
-                "show and hide key": "Ctrl+Alt+Shift+PageUp",
-                "Expand Word key": "Ctrl+Alt+Shift+PageDown",
+                "show and hide key": "Ctrl+Alt+PageUp",
+                "Expand Word key": "Ctrl+Alt+PageDown",
             },
         )
-        == "Ctrl+Alt+PageUp"
+        == "Alt+Shift+PageUp"
     )
 
 
@@ -259,8 +259,16 @@ def test_a_key_another_family_app_was_given_is_refused() -> None:
 
 def test_no_key_and_a_free_key_are_both_fine() -> None:
     assert family_chords.show_hide_key_problem("", app_id="inkwell") == ""
-    assert family_chords.show_hide_key_problem("Ctrl+Alt+Shift+PageUp", app_id="inkwell") == ""
-    assert family_chords.suggest_show_hide_key("inkwell") == "Ctrl+Alt+Shift+PageUp"
+    assert family_chords.show_hide_key_problem("Ctrl+Alt+PageUp", app_id="inkwell") == ""
+    assert family_chords.suggest_show_hide_key("inkwell") == "Ctrl+Alt+PageUp"
+
+
+@pytest.mark.parametrize("chord", family_chords._SUGGESTIONS)
+def test_every_key_the_picker_suggests_is_free(chord: str) -> None:
+    # A suggestion the family later claims is skipped quietly, and once all of
+    # them are claimed the picker offers none -- so a claim must fail here.
+    for app_id in ("inkwell", "weather", "converter", "player"):
+        assert family_chords.show_hide_key_problem(chord, app_id=app_id) == ""
 
 
 def test_a_key_with_no_ctrl_or_alt_is_refused() -> None:

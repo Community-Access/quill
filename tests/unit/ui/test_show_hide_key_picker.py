@@ -68,16 +68,16 @@ def _answers(*pairs: tuple[int, str]) -> None:
 
 def test_a_refused_key_is_said_and_the_box_comes_back_with_it() -> None:
     host = _Host()
-    _answers((_WX.ID_OK, "Ctrl+Alt+Shift+R"), (_WX.ID_OK, "Ctrl+Alt+Shift+PageUp"))
+    _answers((_WX.ID_OK, "Ctrl+Alt+Shift+R"), (_WX.ID_OK, "Ctrl+Alt+PageUp"))
     chosen = choose_show_hide_key(host, _WX, app_id="weather", current="")
-    assert chosen == "Ctrl+Alt+Shift+PageUp"
+    assert chosen == "Ctrl+Alt+PageUp"
     assert host.boxes == ["Ctrl+Alt+Shift+R is already Quill Radio's show and hide key."]
     assert _Dialog.shown == ["", "Ctrl+Alt+Shift+R"]
 
 
 def test_cancel_changes_nothing() -> None:
     host = _Host()
-    _answers((_WX.ID_CANCEL, "Ctrl+Alt+Shift+PageUp"))
+    _answers((_WX.ID_CANCEL, "Ctrl+Alt+PageUp"))
     assert choose_show_hide_key(host, _WX, app_id="player", current="") is None
     assert host.boxes == []
 
@@ -96,20 +96,20 @@ def test_an_empty_box_means_no_key() -> None:
 def test_a_chosen_key_is_registered_kept_and_said() -> None:
     host = _Host()
     kept: list[str] = []
-    _answers((_WX.ID_OK, "Ctrl+Alt+Shift+PageDown"))
+    _answers((_WX.ID_OK, "Ctrl+Alt+PageDown"))
     run_show_hide_key_command(host, _WX, app_id="inkwell", save=kept.append)
-    assert kept == ["Ctrl+Alt+Shift+PageDown"]
-    assert host.said == ["Ctrl+Alt+Shift+PageDown now shows and hides Quill Inkwell."]
+    assert kept == ["Ctrl+Alt+PageDown"]
+    assert host.said == ["Ctrl+Alt+PageDown now shows and hides Quill Inkwell."]
 
 
 def test_a_key_windows_will_not_give_is_not_kept() -> None:
     host = _Host(registers=False)
     kept: list[str] = []
-    _answers((_WX.ID_OK, "Ctrl+Alt+Shift+PageDown"))
+    _answers((_WX.ID_OK, "Ctrl+Alt+PageDown"))
     run_show_hide_key_command(host, _WX, app_id="weather", save=kept.append)
     assert kept == []
     assert host.said == [
-        "Another program already uses Ctrl+Alt+Shift+PageDown, so Quill Weather kept its old key."
+        "Another program already uses Ctrl+Alt+PageDown, so Quill Weather kept its old key."
     ]
 
 
@@ -144,10 +144,10 @@ def _quick_insert(host: _Host, keys: _Keys, current: str = "", own=None) -> None
 
 def test_inkwells_quick_insert_key_is_chosen_through_the_same_picker() -> None:
     host, keys = _Host(), _Keys()
-    _answers((_WX.ID_OK, "ctrl+shift+alt+pageup"))
+    _answers((_WX.ID_OK, "ctrl+alt+pageup"))
     _quick_insert(host, keys)
-    assert keys.kept == keys.registered == ["Ctrl+Alt+Shift+PageUp"]
-    assert host.said == ["Ctrl+Alt+Shift+PageUp now opens Quill Inkwell's Quick Insert."]
+    assert keys.kept == keys.registered == ["Ctrl+Alt+PageUp"]
+    assert host.said == ["Ctrl+Alt+PageUp now opens Quill Inkwell's Quick Insert."]
 
 
 def test_inkwells_old_key_is_refused_with_whose_it_is() -> None:
@@ -161,11 +161,11 @@ def test_inkwells_old_key_is_refused_with_whose_it_is() -> None:
 
 def test_a_key_inkwell_already_uses_for_something_else_is_refused() -> None:
     host, keys = _Host(), _Keys()
-    _answers((_WX.ID_OK, "Ctrl+Alt+Shift+PageDown"), (_WX.ID_OK, ""))
+    _answers((_WX.ID_OK, "Ctrl+Alt+PageDown"), (_WX.ID_OK, ""))
     _quick_insert(
-        host, keys, current="Ctrl+Alt+PageUp", own={"Expand Word key": "Ctrl+Alt+Shift+PageDown"}
+        host, keys, current="Alt+Shift+PageUp", own={"Expand Word key": "Ctrl+Alt+PageDown"}
     )
-    assert host.boxes == ["Ctrl+Alt+Shift+PageDown is already Quill Inkwell's Expand Word key."]
+    assert host.boxes == ["Ctrl+Alt+PageDown is already Quill Inkwell's Expand Word key."]
     assert keys.kept == [""]
     assert host.said == ["Quick Insert has no key."]
 
@@ -179,11 +179,11 @@ def test_a_quick_insert_key_without_ctrl_or_alt_is_refused() -> None:
 
 def test_a_quick_insert_key_windows_will_not_give_is_not_kept() -> None:
     host, keys = _Host(), _Keys(registers=False)
-    _answers((_WX.ID_OK, "Ctrl+Alt+Shift+PageUp"))
+    _answers((_WX.ID_OK, "Ctrl+Alt+PageUp"))
     _quick_insert(host, keys)
     assert keys.kept == []
     assert host.said == [
-        "Another program already uses Ctrl+Alt+Shift+PageUp, so Quick Insert kept its old key."
+        "Another program already uses Ctrl+Alt+PageUp, so Quick Insert kept its old key."
     ]
 
 
@@ -198,7 +198,7 @@ def test_the_prompt_says_what_the_key_is_now_and_offers_a_free_one() -> None:
     from quill.ui.show_hide_key_picker import _prompt
 
     said = _prompt("weather", "")
-    assert "for example Ctrl+Alt+Shift+PageUp" in said
+    assert "for example Ctrl+Alt+PageUp" in said
     assert "Leave the box empty for no key." in said
     assert "It has no key now." in said
     assert "It is Ctrl+Alt+Shift+Left now." in _prompt("weather", "Ctrl+Alt+Shift+Left")

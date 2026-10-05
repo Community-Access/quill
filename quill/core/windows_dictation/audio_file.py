@@ -182,8 +182,20 @@ def duration_of(path: Path) -> float:
             return length
     except Exception:  # noqa: BLE001 - mutagen is a convenience
         pass
+    if path.suffix.lower() == ".wav":
+        # The standard library reads a PCM WAV header, so a plain WAV has a
+        # length even where neither mutagen nor soundfile is installed.
+        try:
+            import wave
+
+            with wave.open(str(path), "rb") as header:
+                rate = header.getframerate()
+                if rate > 0 and header.getnframes() > 0:
+                    return header.getnframes() / rate
+        except Exception:  # noqa: BLE001 - float WAVs and the like fall through
+            pass
     try:
-        import soundfile  # type: ignore[import-untyped,unused-ignore]
+        import soundfile  # type: ignore[import-not-found,import-untyped,unused-ignore]
 
         info = soundfile.info(str(path))
         return float(info.frames) / float(info.samplerate or 1)
@@ -192,7 +204,7 @@ def duration_of(path: Path) -> float:
 
 
 def _soundfile_source(path: Path) -> AudioSource:
-    import soundfile  # type: ignore[import-untyped,unused-ignore]
+    import soundfile  # type: ignore[import-not-found,import-untyped,unused-ignore]
 
     with soundfile.SoundFile(str(path)) as probe:  # raises when it cannot read the file
         rate = int(probe.samplerate)
@@ -242,7 +254,7 @@ def _ffmpeg_source(path: Path) -> AudioSource:
     def blocks() -> Iterator[Any]:
         import tempfile
 
-        import soundfile  # type: ignore[import-untyped,unused-ignore]
+        import soundfile  # type: ignore[import-not-found,import-untyped,unused-ignore]
 
         from quill.core.speech.ffmpeg import transcode_to_wav
 

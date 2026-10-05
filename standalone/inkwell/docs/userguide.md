@@ -97,7 +97,7 @@ them the same way, in the File menu:
 
 1. Press **Ctrl+Alt+Shift+K** for **File > Quick Insert Key...**, or
    **Ctrl+Alt+Shift+E** for **File > Expand Word Key...**.
-2. Type the key you want, for example Ctrl+Alt+Shift+PageUp, or leave the box
+2. Type the key you want, for example Ctrl+Alt+PageUp, or leave the box
    empty for none.
 3. Press Enter. Inkwell says the key back. If it is already a shortcut in a
    QuillVille app, or another program already holds it, Inkwell says so and the

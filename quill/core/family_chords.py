@@ -398,13 +398,16 @@ def show_hide_key_problem(
 
 
 #: Keys offered as an example in the picker, first free one wins. Not the
-#: arrows: the screen-reader keymap profile walks table cells with them.
+#: arrows: the screen-reader keymap profile walks table cells with them. Not
+#: Ctrl+Alt+Shift+PageUp/PageDown either: dictation took both in 2026-10.
+#: Not Ctrl+Alt with a letter or digit: on an AltGr keyboard that types a
+#: character. tests/unit/core/test_show_hide_keys.py checks each is still free.
 _SUGGESTIONS = (
-    "Ctrl+Alt+Shift+PageUp",
-    "Ctrl+Alt+Shift+PageDown",
-    # Inkwell has three keys to choose, so the picker needs more than two to offer.
     "Ctrl+Alt+PageUp",
     "Ctrl+Alt+PageDown",
+    # Inkwell has three keys to choose, so the picker needs more than two to offer.
+    "Alt+Shift+PageUp",
+    "Alt+Shift+PageDown",
 )
 
 
