@@ -191,7 +191,10 @@ In scope for 1.0.0:
   shown) and output folder persist between runs.
 - **Menus.** File, Queue, View, Convert, QuillVille, Help and Window.
 - **Tray.** Minimize to tray (Ctrl+W), the shared tray menu, and a system-wide
-  show/hide chord (Ctrl+Alt+Shift+C) claimed best-effort.
+  show/hide key the listener chooses in File > Show and Hide Key...
+  (Ctrl+Alt+Shift+H), claimed best-effort. None by default since 2026-10-05:
+  Ctrl+Alt+Shift+C, the key until then, is a menu key in other QuillVille apps
+  (`quill/core/family_chords.py`).
 - **Family.** The shared QuillVille menu lists the released siblings, and the
   siblings list Quill Converter.
 - **Help.** The family Help menu, on Quill Radio's and QUILL Lite's keys: F1

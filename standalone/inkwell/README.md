@@ -53,8 +53,9 @@ self-contained: nothing is downloaded on first run.
 
 | Action | Keys |
 | --- | --- |
-| Show or hide Inkwell | Ctrl+Alt+Shift+I |
-| Quick Insert (from anywhere) | Ctrl+Alt+Shift+K |
+| Show or hide Inkwell | The key you choose in File > Show and Hide Key (Ctrl+Alt+Shift+H); none at first |
+| Quick Insert (from anywhere) | The key you choose in File > Quick Insert Key (Ctrl+Alt+Shift+K); none at first |
+| Expand the word just typed (from anywhere) | The key you choose in File > Expand Word Key (Ctrl+Alt+Shift+E); none at first |
 | Manage abbreviations | Ctrl+M |
 | Quick Insert (in the window) | Ctrl+K |
 | New abbreviation from the clipboard | Ctrl+Shift+N |

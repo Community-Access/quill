@@ -843,11 +843,10 @@ COMMANDS: list[CommandRow] = [
     ("&Tools", "C&ustomize Features...", "Ctrl+Alt+F10", "cmd_customize_features", ""),
     # Which keys do what, beside which features exist. Never switchable, for
     # the same reason as its two neighbours: the surface that repairs a key
-    # somebody broke cannot be behind a key. Ctrl+Alt+Shift+R rather than a
-    # K chord: K is Set Mark, lowercase and Remove Blank Lines three times
-    # over, and moving a real command to make room for the dialog that moves
-    # commands would be a poor trade. R is for rebind; the mnemonic is K.
-    ("&Tools", "&Keyboard Manager...", "Ctrl+Alt+Shift+R", "cmd_keyboard_manager", ""),
+    # somebody broke cannot be behind a key. Not K: K is Set Mark, lowercase and
+    # Remove Blank Lines three times over. Ctrl+Alt+Shift+R until 2026-10-05,
+    # Quill Radio's show/hide key; Space is free family-wide, as in QUILL (rule 2).
+    ("&Tools", "&Keyboard Manager...", "Ctrl+Alt+Shift+Space", "cmd_keyboard_manager", ""),
     # -- Tools > Spelling ----------------------------------------------------
     # A submenu rather than a menu on the bar: neither Notepad nor WordPad has a
     # Spelling menu, and Word keeps spelling under Tools. The whole area still

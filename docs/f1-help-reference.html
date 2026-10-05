@@ -2161,6 +2161,11 @@ and the Audio equalizer. Open a file, a folder, a DAISY book, or a free
 LibriVox title; your place is saved as you listen, so a book resumes
 where you left it. Nothing here needs an account, and playback stays on
 this computer.</p>
+<p><strong>Show and Hide Key.</strong> Choose one key that shows and
+hides the player from any program. Type it, for example with Ctrl, Alt
+and Shift held, or leave the box empty for no key. A key another
+QuillVille app already uses is refused, and you are told whose it
+is.</p>
 <p><strong>Voice Command.</strong> Say or type one natural command –
 ‘skip back thirty’, ‘next chapter’, ‘go to 1:20:00’, ‘bookmark this’,
 ‘sleep in twenty’ – and OK carries it out. The same grammar answers the
@@ -2919,6 +2924,11 @@ the shared library at once.</p>
 never run, one program file name per line – notepad.exe, for example.
 Password managers and Windows sign-in prompts are always excluded
 whether or not you list them. OK saves the list immediately.</p>
+<p><strong>Expand Word Key.</strong> Choose one key that expands the
+word you just typed, in any program, without waiting for a space or
+punctuation. There is none until you choose one. Type it, or leave the
+box empty for no key; a key another QuillVille app already uses is
+refused, and you are told whose it is.</p>
 <p><strong>Find a Setting or Command.</strong> Every menu command in
 this app, searchable by name. Type part of a name; Down moves into the
 matches; Enter does the highlighted one, exactly as choosing it from its
@@ -2942,6 +2952,11 @@ an entry set to expand only manually, or one whose trigger you cannot
 recall. Filter, choose, press Enter; focus returns to where you were and
 the text is typed there. If there is nowhere to type, the expansion is
 copied to the clipboard instead.</p>
+<p><strong>Quick Insert Key.</strong> Choose one key that opens Quick
+Insert from any program, so an entry you only insert by hand is always a
+keystroke away. There is none until you choose one. Type it, or leave
+the box empty for no key; a key another QuillVille app already uses is
+refused, and you are told whose it is.</p>
 <p><strong>Quill Inkwell.</strong> The manager window for a service that
 lives in the system tray: type an abbreviation in any application – a
 browser, a mail client, a form – and Inkwell replaces it with the text
@@ -2949,6 +2964,11 @@ you saved. The list shows your library, which is the same library
 QUILL’s editor expands from, so an abbreviation added in either works in
 both immediately. Closing this window keeps expansion running in the
 tray unless you turn that off in Options.</p>
+<p><strong>Show and Hide Key.</strong> Choose one key that shows and
+hides the Inkwell window from any program. Type it, for example with
+Ctrl, Alt and Shift held, or leave the box empty for no key. A key
+another QuillVille app already uses is refused, and you are told whose
+it is.</p>
 <p><strong>Update downloaded.</strong> A new Quill Inkwell is on disk
 and ready. Install and restart now applies it and relaunches – your
 abbreviations and settings are kept – or Open folder shows you the
@@ -2971,8 +2991,8 @@ create, edit, delete, enable or disable entries, and import or export
 the whole library. Changes save immediately and work in QUILL too.</li>
 <li><code>quick_btn</code>: Pick an abbreviation and have its expansion
 typed into the window you were just working in – the way to use entries
-set to expand only manually. Also on Ctrl+K here, or its system-wide
-hotkey from any application.</li>
+set to expand only manually. Also on Ctrl+K here, and from any program
+on the key you choose with File, Quick Insert Key.</li>
 </ul>
 <h2 id="quill-weather">Quill Weather</h2>
 <p>Control coverage: 40 audited sites (40 helped).</p>
@@ -3000,6 +3020,11 @@ The contents list is grouped by track and remembers where you stopped;
 typing ‘here’ in the filter box narrows it to the tutorials about the
 window you came from. Follow me watches what the app is doing – never
 which key you pressed – and moves you on by itself.</p>
+<p><strong>Show and Hide Key.</strong> Choose one key that shows and
+hides Quill Weather from any program. Type it, for example with Ctrl,
+Alt and Shift held, or leave the box empty for no key. A key another
+QuillVille app already uses is refused, and you are told whose it
+is.</p>
 <p><strong>Weather Center.</strong> The full text weather report for one
 location at a time, in reading order: active alerts first, then current
 conditions, the period forecast, the hourly forecast, and the extended
@@ -3231,6 +3256,11 @@ lets you hear fifteen seconds of the result first – and Convert.
 Everything runs on this computer, your originals are never touched, and
 a file already in the output folder is numbered around, never
 overwritten.</p>
+<p><strong>Show and Hide Key.</strong> Choose one key that shows and
+hides Quill Converter from any program. Type it, for example with Ctrl,
+Alt and Shift held, or leave the box empty for no key. A key another
+QuillVille app already uses is refused, and you are told whose it
+is.</p>
 <p><strong>Tag Editor.</strong> Every tag of one MP3, M4A, M4B or MP4
 file, over five pages – title, artist and album, the people, the dates
 and numbers, sorting, and the cover art. Control+Tab moves between
@@ -4597,6 +4627,10 @@ selected, the paragraph you are in, or the whole section.</li>
 id="windowsdictationdialog-quilluiwindows_dictation_dialogpy">WindowsDictationDialog
 (<code>quill/ui/windows_dictation_dialog.py</code>)</h4>
 <ul>
+<li><code>self.speech_models</code>: Optional, larger speech models for
+better accuracy – the ones VS Code offers and the rest of the Whisper
+family – to download, remove or choose. Dictation works without
+them.</li>
 <li><code>self.speech_language</code>: The language you dictate in:
 English, or Spanish, which is new. In Spanish, Moonshine and Whisper
 both use Whisper’s multilingual model; Windows speech recognition needs
@@ -4620,8 +4654,8 @@ unplugged, starting dictation says so rather than quietly listening on
 another.</li>
 <li><code>self.test_microphone</code>: Records four seconds on the
 chosen microphone – start speaking when you hear Speak now – then says
-how loud it was and, with Moonshine or Whisper, what the engine heard.
-Nothing is kept.</li>
+how loud it was and, with an engine that runs on this computer, what the
+engine heard. Nothing is kept.</li>
 <li><code>self.test_result</code>: What the last microphone test
 found.</li>
 <li><code>self.feedback</code>: What you hear each time a phrase goes
@@ -4673,28 +4707,9 @@ Saying what can I say while dictating opens the same list.</li>
 dictation in a window: names and jargon to spell your way, phrases that
 write whatever you choose, and corrections for what the engine keeps
 hearing wrong. Saves these settings first.</li>
-</ul>
-<h4
-id="dictationcommandsdialog-quilluiwindows_dictation_dialogpy">DictationCommandsDialog
-(<code>quill/ui/windows_dictation_dialog.py</code>)</h4>
-<ul>
-<li><code>self.text</code>: Every phrase dictation acts on and what it
-does. Read with the arrow keys; Escape closes. The same list is in the
-user guide.</li>
-<li><code>close</code>: Close this list.</li>
-</ul>
-<h4
-id="recentphrasesdialog-quilluiwindows_dictation_dialogpy">RecentPhrasesDialog
-(<code>quill/ui/windows_dictation_dialog.py</code>)</h4>
-<ul>
-<li><code>self.list</code>: What you dictated this session, newest
-first. Enter inserts the one you are on at the cursor again; Copy puts
-it on the clipboard.</li>
-<li><code>insert</code>: Write this phrase at the cursor again, as one
-undo step.</li>
-<li><code>copy</code>: Put this phrase on the clipboard without writing
-it.</li>
-<li><code>close</code>: Close the list without inserting anything.</li>
+<li><code>self.more_button</code>: Holding Ctrl+F11 to talk, the words
+heard so far while you speak, how dictation behaves when you talk to the
+AI, OpenAI with your own key, and My Dictation Instructions.</li>
 </ul>
 <h4
 id="recentdocumentswindow-quilluirecent_documents_dialogpy">RecentDocumentsWindow

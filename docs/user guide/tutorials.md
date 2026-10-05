@@ -1,6 +1,6 @@
 # QUILL Tutorials
 
-Welcome. There are 23 short lessons here, about 120 minutes in all, and you can take them in any order. Each one is a few small steps, and each step tells you what to press and what you should hear.
+Welcome. There are 24 short lessons here, about 126 minutes in all, and you can take them in any order. Each one is a few small steps, and each step tells you what to press and what you should hear.
 
 This page is the lessons written out, so you can read them anywhere. If you would rather be walked through, open **Help > Tutorials...** in QUILL. It does a step for you when you ask, and moves on by itself once it hears you have done one.
 
@@ -27,6 +27,7 @@ The keys here are the ones QUILL comes with. If you have changed a key, the less
   - Inspect a document you did not write (5 minutes)
 - **How much QUILL says**: Verbosity profiles, the channels that carry an announcement, and the echo of everything QUILL has just said.
   - Decide how much QUILL says (6 minutes)
+  - Write by talking (6 minutes)
 - **The assistant, if you want one**: Optional, explicit, and honest about what it did: setting up a provider or running on-device, asking a question, and the commands that work on one selection at a time.
   - Set up the assistant, or do not (6 minutes)
   - Ask, and run a prompt (6 minutes)
@@ -542,6 +543,37 @@ Verbosity profiles, the channels that carry an announcement, and the two setting
 QUILL speaks alongside your screen reader rather than instead of it. Every setting here is about how much of its own voice you want.
 
 Next: Make QUILL the size you need.
+
+### Write by talking
+
+Dictate a few sentences into a document, take one back, hold the key to talk, and find the settings. Everything stays on your computer.
+
+*6 steps, about 6 minutes.*
+
+1. **Start dictation.** Put the cursor where the words should go, and turn dictation on. The first time, it takes a second or two to get ready.
+   - Keys: Ctrl+F11
+   - You should hear: Two rising tones, and "Dictation on".
+
+2. **Say a sentence, and pause.** Talk the way you would to a friend, then stop for a moment. You do not need to say the punctuation: full stops, commas and capitals are put in for you.
+   - You should hear: A soft tone, then the words that were written, read back.
+
+3. **Take a phrase back.** Say scratch that, on its own, after a pause. Only the last phrase you said goes; anything you typed is left alone.
+   - You should hear: "Scratched:" and the words that went.
+
+4. **Turn it off, then hold the key and talk.** Press the dictation key once to turn it off. Now hold the same key down, say a sentence, and let go. Dictation writes your last phrase and turns itself off. A quick press still turns it on and leaves it on.
+   - Keys: Ctrl+F11
+   - You should hear: "Dictation on" while you hold, then "Dictation off" after your words.
+
+5. **See the phrases you said.** Recent Phrases lists what you dictated this session, newest first. Enter writes one at the cursor again, which rescues a scratch that that went one too far.
+   - Keys: Shift+F11
+   - You should hear: Recent Phrases, on the newest phrase.
+
+6. **Find the settings.** Dictation Settings has the speech engine, the microphone and what you hear after each phrase. More Dictation Settings, inside it, has holding the key, the words heard while you speak, and talking to the AI.
+   - Keys: Alt+Shift+F6
+   - You should hear: Dictation Settings, on Speech engine.
+   - Worth knowing: Nothing you say leaves the computer unless you choose OpenAI as the speech engine with your own key, and agree to it.
+
+You can now write by talking, take back a phrase, and hold the key to talk. Say what can I say while dictating to hear everything it understands; the user guide's dictation chapter has the rest.
 
 ## The assistant, if you want one
 

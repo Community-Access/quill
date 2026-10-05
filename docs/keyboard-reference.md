@@ -333,7 +333,7 @@ Editor commands with default bindings: 491.
 | Ctrl+Alt+Shift+F6 | Spelling Announcements | `tools.spelling_announcements` |
 | Ctrl+Alt+Shift+K | Privacy Agreement... | `tools.hosted_ai_privacy` |
 | Ctrl+Alt+Shift+O | Sound Scheme | `tools.sound_events` |
-| Ctrl+Alt+Shift+R | Keymap Editor... | `tools.keymap_editor` |
+| Ctrl+Alt+Shift+Space | Keymap Editor... | `tools.keymap_editor` |
 | Ctrl+Alt+Shift+[ | Word Summary | `tools.word_summary` |
 | Ctrl+Alt+Shift+] | Find the Word For... | `tools.find_word` |
 | Ctrl+Alt+U | Check for Updates... | `tools.check_updates` |
@@ -663,6 +663,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+2 | Podcasts: Now Playing window | `podcasts.now_playing` |
 | Ctrl+Alt+A | Bookmark This Moment | `app.bookmark_moment` |
 | Ctrl+Alt+F1 | Podcasts: Tutorials... | `podcasts.tutorials` |
+| Ctrl+Alt+F12 | Restore | `app.restore` |
 | Ctrl+Alt+G | Free AI Assistant... | `tools.hosted_ai_assistant` |
 | Ctrl+Alt+J | Podcasts: Go to Position... | `podcasts.go_to_position` |
 | Ctrl+Alt+Shift+B | Backup | `app.backup` |
@@ -675,7 +676,6 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+Shift+M | Media tools | `app.media_tools` |
 | Ctrl+Alt+Shift+N | Import My Setup... | `app.import_setup` |
 | Ctrl+Alt+Shift+P | Recent Problems... | `app.recent_problems` |
-| Ctrl+Alt+Shift+R | Restore | `app.restore` |
 | Ctrl+Alt+Shift+X | Export My Setup... | `app.export_setup` |
 | Ctrl+Alt+Shift+Z | Quiet Hours... | `app.quiet_hours` |
 | Ctrl+Alt+Z | Ask About This Document... | `tools.hosted_ai_ask_document` |

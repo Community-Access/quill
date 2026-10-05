@@ -15,8 +15,9 @@ from dataclasses import dataclass, field
 
 from quill.core.action_feedback import ActionFeedback
 from quill.core.action_feedback import coerce as coerce_feedback
-from quill.core.windows_dictation.engines import coerce_engine
+from quill.core.windows_dictation.engines import coerce_engine, writes_punctuation
 from quill.core.windows_dictation.options import PAUSE_SECONDS, coerce_pause, coerce_silence
+from quill.core.windows_dictation.preview import coerce_preview
 from quill.core.windows_dictation.speech_language import (
     STOP_PHRASES,
     WAKE_PHRASES,
@@ -39,8 +40,8 @@ class DictationPreferences:
 
     #: The microphone's name; empty means the Windows default microphone.
     microphone: str = ""
-    #: ``moonshine``, ``whisper``, ``windows`` or ``voice_typing`` -- see
-    #: :mod:`quill.core.windows_dictation.engines`.
+    #: ``moonshine``, ``whisper``, ``windows``, ``voice_typing`` or a downloaded
+    #: model's id -- see :mod:`quill.core.windows_dictation.engines`.
     engine: str = "moonshine"
     phrase_feedback: str = DEFAULT_PHRASE_FEEDBACK
     cue_sounds: bool = True
@@ -70,6 +71,24 @@ class DictationPreferences:
     #: Just write what I say: a pause does nothing -- no full stop, no tone, no
     #: read-back, no command but the stop phrase.
     continuous: bool = False
+    #: Holding the dictation key talks until it is let go (hold.py); a quick
+    #: press toggles either way.
+    hold_to_talk: bool = True
+    #: The live preview of a streaming engine: ``show``, ``speak`` or ``off``.
+    preview: str = "show"
+    #: ``writing`` (the document) or ``ai`` (the AI Conversation window's
+    #: message box): which profile the pause, fillers and punctuation came from.
+    profile: str = "writing"
+    #: Talking to the AI: send the message at the pause (``True``), or wait for
+    #: Enter.
+    send_after_pause: bool = True
+    #: The OpenAI transcription model chosen in More Dictation Settings.
+    openai_model: str = ""
+    #: The person agreed that their speech goes to OpenAI with their own key.
+    openai_consent: bool = False
+    #: Your words from My Words and Phrases, for an engine that can be told
+    #: which words to expect (OpenAI's ``keywords``; dict.md 5.3 B).
+    keywords: tuple[str, ...] = field(default=(), compare=False)
     #: ``text -> text``, the user's own replacements and vocabulary
     #: (quill.core.speech.dictation_profile). Identity when they have none.
     rewrite: Callable[[str], str] | None = field(default=None, compare=False)
@@ -77,12 +96,12 @@ class DictationPreferences:
     @property
     def engine_punctuates(self) -> bool:
         """Whether the engine adds punctuation by itself, and is allowed to."""
-        return self.engine in {"moonshine", "whisper"} and self.auto_punctuation
+        return writes_punctuation(self.engine) and self.auto_punctuation
 
     @property
     def strips_punctuation(self) -> bool:
         """Whether the engine's own marks are to be taken out again."""
-        return self.engine in {"moonshine", "whisper"} and not self.auto_punctuation
+        return writes_punctuation(self.engine) and not self.auto_punctuation
 
     @property
     def pause_seconds(self) -> float:
@@ -97,7 +116,7 @@ class DictationPreferences:
         be running whatever recogniser the user picked, so it stays unknown and
         only the universal hesitations go.
         """
-        if self.speech_language != "en" or self.engine in {"moonshine", "whisper"}:
+        if self.speech_language != "en" or writes_punctuation(self.engine):
             return self.speech_language
         return ""
 
@@ -109,9 +128,39 @@ class DictationPreferences:
 
     @classmethod
     def from_settings(
-        cls, settings: object, *, rewrite: Callable[[str], str] | None = None
+        cls,
+        settings: object,
+        *,
+        rewrite: Callable[[str], str] | None = None,
+        profile: str = "writing",
     ) -> DictationPreferences:
-        """The preferences *settings* holds, under the names both editors share."""
+        """The preferences *settings* holds, under the names both editors share.
+
+        *profile* ``ai`` is **Talking to AI** (dict.md 6): the AI Conversation
+        window's message box has its own pause, fillers and punctuation, a
+        pause there sends (or waits for Enter), and "just write what I say"
+        does not apply, because there the pause is the send key.
+        """
+        preferences = cls._writing(settings, rewrite)
+        if profile != "ai":
+            return preferences
+        from dataclasses import replace
+
+        return replace(
+            preferences,
+            profile="ai",
+            pause=coerce_pause(getattr(settings, "windows_dictation_ai_pause", "long")),
+            remove_fillers=bool(getattr(settings, "windows_dictation_ai_remove_fillers", True)),
+            auto_punctuation=bool(getattr(settings, "windows_dictation_ai_auto_punctuation", True)),
+            continuous=False,
+            send_after_pause=str(getattr(settings, "windows_dictation_ai_send", "pause"))
+            != "enter",
+        )
+
+    @classmethod
+    def _writing(
+        cls, settings: object, rewrite: Callable[[str], str] | None
+    ) -> DictationPreferences:
         dash = str(getattr(settings, "windows_dictation_dash", "em") or "em")
         language = coerce_speech_language(
             getattr(settings, "windows_dictation_speech_language", "")
@@ -147,5 +196,9 @@ class DictationPreferences:
                 getattr(settings, "windows_dictation_silence_minutes", 0)
             ),
             continuous=bool(getattr(settings, "windows_dictation_continuous", False)),
+            hold_to_talk=bool(getattr(settings, "windows_dictation_hold_to_talk", True)),
+            preview=coerce_preview(getattr(settings, "windows_dictation_preview", "show")),
+            openai_model=str(getattr(settings, "windows_dictation_openai_model", "") or ""),
+            openai_consent=bool(getattr(settings, "windows_dictation_openai_consent", False)),
             rewrite=rewrite,
         )

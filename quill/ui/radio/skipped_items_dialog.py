@@ -16,7 +16,12 @@ from collections.abc import Callable, Iterable
 from typing import Any
 
 from quill.core.skipped_files import SkippedFile, report_lines, what_to_do
-from quill.ui.dialog_contract import apply_modal_ids, bind_close_button, show_modal_dialog
+from quill.ui.dialog_contract import (
+    apply_modal_ids,
+    bind_close_button,
+    set_accessible_name,
+    show_modal_dialog,
+)
 
 TITLE = "What Was Left Out"
 
@@ -87,6 +92,7 @@ def show_skipped_items(
 
     root.Add(wx.StaticText(dialog, label="&Left out, with the reason:"), 0, wx.LEFT | wx.RIGHT, 8)
     listbox = wx.ListBox(dialog, choices=report_lines(rows), style=wx.LB_SINGLE)
+    set_accessible_name(listbox, "Left out, with the reason")
     listbox.SetHelpText(
         "Every file or item that was left out, one per row, with why. Nothing "
         "here was deleted; each row is something the backup, restore or setup "

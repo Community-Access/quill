@@ -1,6 +1,6 @@
 """QUILL Lite's guided tutorials: its tracks, and its lessons assembled.
 
-Nine lessons in two tracks, and the number is the point. QUILL has twenty-one
+Ten lessons in two tracks, and the number is the point. QUILL has twenty-four
 in six, because QUILL is an environment somebody moves into; QUILL Lite is a
 Notepad replacement, and a Notepad replacement with a twenty-one-lesson course
 attached to it is advertising that it is not one.
@@ -24,7 +24,9 @@ Two tracks, and they answer the two questions this product exists for:
   end to end to find one fact. That last one earns a lesson despite the
   restraint above, because it is the only feature here that sends anything off
   the machine -- a thing somebody should be taught deliberately rather than
-  discover.
+  discover. The tenth, writing by talking (2026-10-05), is there because
+  dictation is the other way in that has no sighted equivalent for somebody
+  who would rather speak than type.
 
 What is deliberately not here: a tour of everything. The menus, the command
 palette and the user guide cover the rest, and a lesson that duplicates the
@@ -50,7 +52,8 @@ TRACKS: tuple[Track, ...] = (
         "Working in a document",
         "Once you are comfortable: select more than a few words, find your "
         "way back to where you were, skim something long, fix spelling without "
-        "a red squiggle, and ask a question about the document in front of you.",
+        "a red squiggle, ask a question about the document in front of you, and "
+        "write by talking.",
     ),
 )
 

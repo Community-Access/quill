@@ -949,7 +949,7 @@ Save your whole library in one file and put it back again. Then move everything 
    - You should hear: Cast telling you the backup is written.
 
 2. **Put it back.** Restore from a Backup asks for the file. Before it changes anything, it tells you when the backup was made and how many podcasts it holds. It replaces the library on this computer, and you do not need to restart Cast.
-   - Keys: Ctrl+Alt+Shift+R
+   - Keys: Ctrl+Alt+F12
    - You should hear: When the backup was made, and how many podcasts it holds.
 
 3. **Move your setup to a new computer.** Export My Setup carries what a backup does not: your settings, your Go To and Quick Action order, and any keys you changed. On the new computer, Import My Setup tells you what the file holds and asks before it changes anything. Passwords are never included.

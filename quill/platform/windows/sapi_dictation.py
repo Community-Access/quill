@@ -212,7 +212,26 @@ def _phrase_from(result: Any) -> RecognizedPhrase:
     for index in range(int(elements.Count) if elements is not None else 0):
         element = elements.Item(index)
         words.append(RecognizedWord(str(element.LexicalForm), str(element.DisplayText)))
-    return RecognizedPhrase(tuple(words), text=str(info.GetText()))
+    text = str(info.GetText())
+    return RecognizedPhrase(tuple(words), text=text, alternatives=_alternatives(result, text))
+
+
+def _alternatives(result: Any, best: str) -> tuple[str, ...]:
+    """Up to three other things Windows thought was said, for "correct that".
+
+    SAPI's dictation grammar keeps its runner-up guesses (``Alternates``); the
+    first is usually the best guess again, so it is skipped by text.
+    """
+    found: list[str] = []
+    try:
+        alternates = result.Alternates(4)
+        for index in range(int(alternates.Count)):
+            text = str(alternates.Item(index).PhraseInfo.GetText()).strip()
+            if text and text != best and text not in found:
+                found.append(text)
+    except Exception:  # noqa: BLE001 - no alternates is an ordinary answer
+        return ()
+    return tuple(found[:3])
 
 
 def _as_dispatch(result: Any) -> Any:

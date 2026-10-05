@@ -963,9 +963,9 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
         self._rebuild_recent_submenu(self._recent_submenu)
         studio.AppendSubMenu(self._recent_submenu, "Re&cently Played")
         self._resume_menu_item_id = wx.NewIdRef()
-        studio.AppendCheckItem(
+        studio.AppendCheckItem(  # not Ctrl+Alt+Shift+R, Radio's show/hide; rule 9
             self._resume_menu_item_id,
-            "Resume Last Book on La&unch\tCtrl+Alt+Shift+R",
+            "Resume Last Book on La&unch\tCtrl+Alt+F10",
             "Reopen the most recently played book when the Studio starts",
         )
         studio.Check(self._resume_menu_item_id, self._history.resume_on_launch)

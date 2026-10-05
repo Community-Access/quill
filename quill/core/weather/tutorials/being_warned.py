@@ -251,17 +251,18 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Get it back from anywhere",
                 body=(
-                    "Ctrl+Alt+Shift+W shows and hides Quill Weather from any "
-                    "program, even without focus, and says which it did. The chord "
-                    "is unique to this app -- QUILL is Ctrl+Alt+Shift+Q and Quill "
-                    "Radio is Ctrl+Alt+Shift+R -- so the three never collide."
+                    "Quill Weather has no show and hide key until you choose one, so "
+                    "it never takes a key another program needs. Show and Hide Key, "
+                    "in the File menu, asks for the key you want. After that, the "
+                    "key shows and hides Quill Weather from any program and says "
+                    "which it did."
                 ),
-                keys=("Ctrl+Alt+Shift+W",),
-                hear="Shown -- and Hidden to the tray when you press it again.",
+                keys=("Ctrl+Alt+Shift+H",),
+                hear="A box asking for the key, and what the key is now.",
                 note=(
-                    "If another program already owns that chord, Quill Weather "
-                    "leaves it alone rather than fighting for it, and the tray icon "
-                    "still works."
+                    "If another QuillVille app already uses the key you type, Quill "
+                    "Weather says whose it is and asks again. Until you choose one, "
+                    "the tray icon brings the window back."
                 ),
             ),
             Step(

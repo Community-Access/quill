@@ -1,6 +1,6 @@
 # QUILL Lite Tutorials
 
-Welcome. There are 9 short lessons here, about 42 minutes in all, and you can take them in any order. Each one is a few small steps, and each step tells you what to press and what you should hear.
+Welcome. There are 10 short lessons here, about 48 minutes in all, and you can take them in any order. Each one is a few small steps, and each step tells you what to press and what you should hear.
 
 This page is the lessons written out, so you can read them anywhere. If you would rather be walked through, open **Help > Tutorials... (Ctrl+Alt+F1)** in QUILL Lite. It does a step for you when you ask, and moves on by itself once it hears you have done one.
 
@@ -13,12 +13,13 @@ The keys here are the ones QUILL Lite comes with. If you have changed a key, the
   - Four kinds of document, and how to say which (4 minutes)
   - Your documents are numbered (3 minutes)
   - What to press when you are lost (3 minutes)
-- **Working in a document**: Once you are comfortable: select more than a few words, find your way back to where you were, skim something long, fix spelling without a red squiggle, and ask a question about the document in front of you.
+- **Working in a document**: Once you are comfortable: select more than a few words, find your way back to where you were, skim something long, fix spelling without a red squiggle, ask a question about the document in front of you, and write by talking.
   - Selecting more than a few words (6 minutes)
   - Finding your way back (5 minutes)
   - Skimming something long (5 minutes)
   - Spelling, without a red squiggle (5 minutes)
   - Asking a question about a document (6 minutes)
+  - Write by talking (6 minutes)
 
 ## Your first documents
 
@@ -125,7 +126,7 @@ Whenever you are unsure, one of these three keys will explain where you are.
 
 ## Working in a document
 
-Once you are comfortable: select more than a few words, find your way back to where you were, skim something long, fix spelling without a red squiggle, and ask a question about the document in front of you.
+Once you are comfortable: select more than a few words, find your way back to where you were, skim something long, fix spelling without a red squiggle, ask a question about the document in front of you, and write by talking.
 
 ### Selecting more than a few words
 
@@ -272,3 +273,34 @@ AI help is the one feature that sends anything off your computer. Here is how to
    - Worth knowing: The limits can change from time to time. Usage always shows the numbers that apply to you right now.
 
 What is kept is how many requests you made and how big they were. What you wrote, and what came back, is not kept.
+
+### Write by talking
+
+Dictate a few sentences into a document, take one back, hold the key to talk, and find the settings. Everything stays on your computer.
+
+*6 steps, about 6 minutes.*
+
+1. **Start dictation.** Put the cursor where the words should go, and turn dictation on. The first time, it takes a second or two to get ready.
+   - Keys: Ctrl+F11
+   - You should hear: Two rising tones, and "Dictation on".
+
+2. **Say a sentence, and pause.** Talk the way you would to a friend, then stop for a moment. You do not need to say the punctuation: full stops, commas and capitals are put in for you.
+   - You should hear: A soft tone, then the words that were written, read back.
+
+3. **Take a phrase back.** Say scratch that, on its own, after a pause. Only the last phrase you said goes; anything you typed is left alone.
+   - You should hear: "Scratched:" and the words that went.
+
+4. **Turn it off, then hold the key and talk.** Press the dictation key once to turn it off. Now hold the same key down, say a sentence, and let go. Dictation writes your last phrase and turns itself off. A quick press still turns it on and leaves it on.
+   - Keys: Ctrl+F11
+   - You should hear: "Dictation on" while you hold, then "Dictation off" after your words.
+
+5. **See the phrases you said.** Recent Phrases lists what you dictated this session, newest first. Enter writes one at the cursor again, which rescues a scratch that that went one too far.
+   - Keys: Shift+F11
+   - You should hear: Recent Phrases, on the newest phrase.
+
+6. **Find the settings.** Dictation Settings has the speech engine, the microphone and what you hear after each phrase. More Dictation Settings, inside it, has holding the key, the words heard while you speak, and talking to the AI.
+   - Keys: Alt+Shift+F6
+   - You should hear: Dictation Settings, on Speech engine.
+   - Worth knowing: Nothing you say leaves the computer unless you choose OpenAI as the speech engine with your own key, and agree to it.
+
+You can now write by talking, take back a phrase, and hold the key to talk. Say what can I say while dictating to hear everything it understands; the user guide's dictation chapter has the rest.

@@ -49,6 +49,7 @@ from quill.core.error_codes import CodedError
 from quill.core.windows_dictation.composer import compose, spoken_form
 from quill.core.windows_dictation.editing import EditingMixin
 from quill.core.windows_dictation.history import DictatedPhrase, PhraseHistory
+from quill.core.windows_dictation.live import LiveMixin
 from quill.core.windows_dictation.options import clean_phrase, flow_on
 from quill.core.windows_dictation.parser import (
     ParsedPhrase,
@@ -192,7 +193,7 @@ class FeedbackPort(Protocol):
         ...
 
 
-class DictationController(ResilienceMixin, EditingMixin):
+class DictationController(ResilienceMixin, EditingMixin, LiveMixin):
     """One app's dictation session: one microphone, one document at a time."""
 
     def __init__(
@@ -216,6 +217,7 @@ class DictationController(ResilienceMixin, EditingMixin):
         self._ignore_until_speech = False  # Escape threw the phrase being heard away
         self._restarted = False  # the one silent engine restart, spent
         self._last_spoken = ""
+        self._init_live()  # live.py: preview, anchor, finishing, muting
         #: Called when the wake phrase is heard, before dictation starts: the
         #: host points the controller at whichever document is in front now.
         self.on_wake: Callable[[], None] | None = None
@@ -267,7 +269,7 @@ class DictationController(ResilienceMixin, EditingMixin):
 
     def toggle(self) -> None:
         if self.active:
-            self.stop()
+            self.finish()  # keeps the phrase being spoken (live.py)
         else:
             self.start()
 
@@ -311,6 +313,7 @@ class DictationController(ResilienceMixin, EditingMixin):
         self._set_state(DictationState.STOPPING)
         self.history.clear()
         self.spelling = False
+        self._end_live()
         if preferences.wake_enabled and self._recognizer is not None:
             self._set_state(DictationState.STANDBY)
             self._announce_edge(
@@ -352,6 +355,10 @@ class DictationController(ResilienceMixin, EditingMixin):
             self._fail(f"Dictation could not start: {error}", preferences)
             return False
         self._recognizer = recognizer
+        # A downloaded model that gave way to the built-in engine: never silently.
+        notice = str(getattr(recognizer, "fallback_notice", "") or "")
+        if notice:
+            self._say(notice)
         return True
 
     # -- recogniser events ------------------------------------------------ #
@@ -360,9 +367,12 @@ class DictationController(ResilienceMixin, EditingMixin):
         self._ignore_until_speech = False
         if self._state is DictationState.LISTENING:
             self._set_state(DictationState.RECOGNIZING)
+            self._capture_anchor()
 
     def on_phrase(self, phrase: RecognizedPhrase) -> None:
         """A finalised phrase. Applied, then straight back to listening."""
+        if not self._receive(phrase):
+            return  # the microphone is muted while the AI's reply is read
         preferences = self._preferences()
         phrase = clean_phrase(
             phrase,
@@ -382,6 +392,7 @@ class DictationController(ResilienceMixin, EditingMixin):
         if is_stop_phrase(heard, preferences.stop_phrase):
             self.stop()
             return
+        self._revise_mark()
         self._set_state(DictationState.PROCESSING)
         try:
             self._apply(self._parse(phrase, preferences), preferences)
@@ -484,15 +495,18 @@ class DictationController(ResilienceMixin, EditingMixin):
             self.spelling = False
             self._say("Spelling off.")
             return
-        reason = self._document.unavailable_reason(writing=True)
+        reason = self._writing_reason()
         if reason:
             self._abandon(reason)
+            return
+        if self._live_command(command):
             return
         if command is not None:
             self._edit(command)
             return
         if not parsed.pieces:
             return
+        self._go_to_anchor()
         pieces = parsed.pieces
         continued = self._continue_sentence(pieces)
         if continued is not None:
@@ -509,6 +523,7 @@ class DictationController(ResilienceMixin, EditingMixin):
             return
         start, end = self._document.insert(text)
         self.history.push(DictatedPhrase(text, start, end, auto_period=parsed.auto_period))
+        self._after_insert(text)
         self.recent.appendleft(" ".join(text.split()))
         spoken = spoken_form(pieces, text)
         self._last_spoken = spoken

@@ -59,3 +59,40 @@ Voice detection trims each phrase tight to the speech, and Moonshine sizes its
 answer from the audio's length, so "three o'clock" came back as "3 o'". Padding
 each phrase with a fifth of a second of silence before and half a second after
 fixed it (`quill/core/windows_dictation/local_recognizer.py`).
+
+## Optional downloads (2026-10-05)
+
+The bundled engines above stay the default and stay inside every installer.
+Since 2026-10-05 Dictation Settings also offers optional, larger models to
+download on request, the same local models VS Code offers (Nemotron 3.5 ASR
+Streaming, Parakeet Unified, Parakeet TDT v3, Whisper small and base) plus the
+rest of the Whisper family and Moonshine base. The plan of record, the full
+catalogue and every measurement are in `docs/design/2026-10-05-dictation-plan-and-status.md`, section 6.
+
+**Is downloading them from the source on the user's request fine? Yes.**
+NVIDIA's OpenMDW-1.1 (Nemotron) grants permission "to deal in the Model
+Materials without restriction"; its conditions (include the licence, keep the
+notices) apply only to whoever distributes the model, and it restricts nothing
+about outputs. QUILL does not distribute: the person's own computer downloads
+the files from Hugging Face after a question that names the licence and links
+to it (https://openmdw.ai/license/1-1/). The same reasoning covers the NVIDIA
+Open Model License (Parakeet Unified), CC BY 4.0 (Parakeet TDT v3) and MIT
+(Whisper, Distil-Whisper, English Moonshine). If a model is ever mirrored on
+QUILL's own release assets or bundled, its licence copy and notices must go
+with it.
+
+**The runtime stays sherpa-onnx**, for the downloads as for the bundled
+engines. Against whisper.cpp v1.9.1 (the build QUILL already fetches for file
+transcription), on the same ten sentences, one thread, CPU only:
+
+| Whisper | sherpa-onnx int8 (seconds of computing per second of speech) | whisper.cpp q5 |
+|---|---|---|
+| base | 0.30 | 1.64 |
+| small | 1.12 | 4.87 |
+| medium | 3.67 | 18.5 |
+| large-v3-turbo | 3.60 | 25.1 |
+
+whisper.cpp loaded faster and used about half the memory, but it was four to
+seven times slower per thread, and in QUILL it is a command-line program that
+would reload the model for every phrase. Every engine, bundled or downloaded,
+runs on the CPU only.

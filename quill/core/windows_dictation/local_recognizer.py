@@ -1,4 +1,4 @@
-"""The built-in engines: Moonshine or Whisper, on this computer, as you pause.
+"""The model engines -- built in or downloaded -- on this computer, as you pause.
 
 Microphone audio arrives on PortAudio's thread (``sounddevice``), goes through
 Silero voice-activity detection to find where a phrase ends, and each finished
@@ -7,22 +7,22 @@ crosses to the UI thread, through the ``post`` function the caller supplies
 (``wx.CallAfter`` in both editors) -- so the controller, and everything it
 touches in the document, only ever runs on the UI thread.
 
-**When a phrase ends.** After 0.8 seconds of quiet. Shorter splits a sentence at
-every breath, and each fragment is then recognised without the words around
-it, which is where every engine is at its worst -- the first thing measured to
-matter when the Windows engine was being tuned. Longer makes a phrase land late.
-A phrase is also cut at 20 seconds whatever happens, so somebody reading a long
-paragraph without pausing still sees it arrive.
+**When a phrase ends.** After 0.8 seconds of quiet: shorter splits a sentence at
+every breath, and a fragment recognised without the words around it is where
+every engine is at its worst; longer makes a phrase land late. A phrase is also
+cut at 20 seconds, so a long paragraph read without pausing still arrives.
 
-**Models are loaded once per session** and kept: Moonshine takes about a second
-to load, Whisper a little less, and paying that on every Ctrl+F11 would make
-starting dictation feel broken. The cache is keyed by engine *and* language,
-because Spanish loads a different model (multilingual Whisper, told
-``language="es"``; :func:`~quill.core.windows_dictation.engines.model_for`).
+**Models are loaded on the first start** and kept while dictation is in use,
+keyed by engine *and* language (Spanish loads multilingual Whisper;
+``engines.model_for``), then unloaded a few minutes after the last session
+(``keep_up.IdleUnloader``). Nemotron runs live -- words while you speak --
+through ``streaming.py``; the worker loop is ``recognizer_worker.py``. A
+downloaded model is built by :mod:`~quill.core.windows_dictation.model_loader`;
+if it is missing or will not load, the built-in engine takes over and
+:attr:`LocalDictationRecognizer.fallback_notice` says so in one sentence.
 
-Needs ``sherpa-onnx``, ``numpy`` and ``sounddevice``, all imported lazily -- a
-copy without them raises :class:`DictationStartError` with a sentence, never an
-import error.
+Needs ``sherpa-onnx``, ``numpy`` and ``sounddevice``, imported lazily: a copy
+without them raises :class:`DictationStartError` with a sentence.
 """
 
 from __future__ import annotations
@@ -35,13 +35,18 @@ from typing import Any, Protocol
 
 from quill.core.windows_dictation.controller import DictationStartError
 from quill.core.windows_dictation.engines import (
+    DEFAULT_ENGINE,
+    is_model_engine,
     language_model_problem,
     model_dir,
     model_for,
     package_dirs,
     vad_model_path,
 )
-from quill.core.windows_dictation.parser import RecognizedPhrase, words_from_text
+from quill.core.windows_dictation.keep_up import IdleUnloader, KeepUpWatchdog
+from quill.core.windows_dictation.model_catalog import downloadable
+from quill.core.windows_dictation.parser import RecognizedPhrase
+from quill.core.windows_dictation.recognizer_worker import WorkerMixin
 from quill.core.windows_dictation.speech_language import coerce_speech_language
 
 __all__ = [
@@ -79,6 +84,15 @@ _cache_lock = threading.Lock()
 #: ``(engine, language) -> recogniser``.
 _recognizers: dict[tuple[str, str], Any] = {}
 
+
+def _unload_all() -> None:
+    """Give the models' memory back (keep_up.IdleUnloader, dict.md section 1)."""
+    with _cache_lock:
+        _recognizers.clear()
+
+
+_UNLOADER = IdleUnloader(lambda: _unload_all())
+
 Poster = Callable[..., None]
 
 
@@ -104,9 +118,8 @@ class _Listener(Protocol):
 def _mme_inputs() -> list[tuple[int, str]]:
     """``(index, name)`` for each input on the MME host API, Windows' own list.
 
-    MME rather than every host API because sounddevice reports each physical
-    microphone once per API (MME, DirectSound, WASAPI, WDM-KS), and a list with
-    every headset in it four times is a list nobody can choose from.
+    MME only: sounddevice reports each microphone once per host API, and a list
+    with every headset in it four times is a list nobody can choose from.
     """
     import sounddevice as sd
 
@@ -197,8 +210,11 @@ def _load(engine_id: str, language: str = "en") -> Any:
                 "of QUILL. Choose another speech engine in Dictation Settings."
             )
         sherpa_onnx = _import_sherpa()
+        if (downloaded := downloadable(model.id)) is not None:
+            from quill.core.windows_dictation.model_loader import build
 
-        if model.id == "moonshine":
+            recognizer = build(downloaded, folder, sherpa_onnx, language=language)
+        elif model.id == "moonshine":
             recognizer = sherpa_onnx.OfflineRecognizer.from_moonshine(
                 preprocessor=str(folder / "preprocess.onnx"),
                 encoder=str(folder / "encode.int8.onnx"),
@@ -206,6 +222,7 @@ def _load(engine_id: str, language: str = "en") -> Any:
                 cached_decoder=str(folder / "cached_decode.int8.onnx"),
                 tokens=str(folder / "tokens.txt"),
                 num_threads=2,
+                provider="cpu",
             )
         else:
             recognizer = sherpa_onnx.OfflineRecognizer.from_whisper(
@@ -214,6 +231,7 @@ def _load(engine_id: str, language: str = "en") -> Any:
                 tokens=str(folder / "tokens.txt"),
                 language=language,
                 num_threads=2,
+                provider="cpu",
             )
         _recognizers[key] = recognizer
         return recognizer
@@ -263,12 +281,9 @@ def transcribe(engine_id: str, samples: Any, language: str = "en") -> str:
 class _History:
     """The last few seconds of microphone audio, so a phrase can start earlier.
 
-    Voice detection decides speech has begun a moment *after* it has: the first
-    syllable of a quietly started word -- "can", "so", "please" -- is below its
-    threshold until the vowel arrives. A phrase cut at the point of detection
-    therefore lost its first word, which is what the first real test reported
-    ("Can you send me" came back as "You send me"). Each phrase is taken from a
-    little before the detector's start instead.
+    Voice detection decides speech has begun a moment *after* it has, so a
+    phrase cut there lost a quietly started first word ("Can you send me" came
+    back as "You send me"). Each phrase starts a little before instead.
     """
 
     def __init__(self) -> None:
@@ -341,26 +356,22 @@ def record_and_hear(
         ) from error
     mono = np.asarray(samples, dtype=np.float32)[:, 0]
     peak = float(np.max(np.abs(mono))) if mono.size else 0.0
-    if engine_id not in {"moonshine", "whisper"} or peak < 0.02:
+    if not is_model_engine(engine_id) or peak < 0.02:
         return peak, ""
     return peak, transcribe(engine_id, mono, language)
 
 
-class LocalDictationRecognizer:
-    """One listening session on one microphone, with a built-in engine.
+class LocalDictationRecognizer(WorkerMixin):
+    """One listening session on one microphone, with a model engine.
 
-    Three things from the 2026-09-28 reliability pass live here, beside the
-    audio they need (dict.md 2.2, 2.3, 2.7):
+    From the 2026-09-28 reliability pass (dict.md 2.2, 2.3, 2.7):
 
-    * :meth:`discard` throws away the phrase being heard: the queued audio,
-      the voice detector's half-finished segment, and any transcription that
-      was already under way when Escape was pressed (a generation counter,
-      checked after the engine answers).
-    * The **microphone watchdog**: a device that stops delivering blocks, or
-      delivers digital silence (every sample exactly zero) for a few seconds,
-      is reported lost; a watcher then tries the device every two seconds and
-      reports it back the moment a stream opens again. A quiet room is not
-      silence -- real microphones never produce exact zeros.
+    * :meth:`discard` throws away the phrase being heard -- queued audio, the
+      detector's half-finished segment, and a transcription already under way
+      (a generation counter, checked after the engine answers).
+    * The **microphone watchdog**: no blocks, or digital silence (exact zeros,
+      which a quiet room never produces), for a few seconds is a lost device;
+      a watcher tries it every two seconds and reports it back.
     * The engine is **reloaded once** when a transcription raises, and the same
       phrase is tried again, so one bad decode costs nothing anyone hears.
     """
@@ -390,8 +401,19 @@ class LocalDictationRecognizer:
         self._silent_blocks = 0  # consecutive all-zero blocks from the device
         self._device_lost = threading.Event()
         self._watcher: threading.Thread | None = None
+        #: Set by :meth:`start` when a downloaded model gave way to the built-in one.
+        self.fallback_notice = ""
+        self._live: Any = None  # a streaming engine's live half (streaming.py)
+        self._finish_requested: Any = None
+        self._watchdog: Any = None
+        self._in_session = False
 
     def start(self, microphone: str) -> None:
+        self._check_audio_stack()
+        self._prepare_engine()
+        self._listen(microphone)
+
+    def _check_audio_stack(self) -> None:
         try:
             _import_sherpa()
             import numpy  # noqa: F401
@@ -401,7 +423,22 @@ class LocalDictationRecognizer:
                 "The built-in speech engines are not included in this copy of QUILL. "
                 "Choose Windows speech recognition in Dictation Settings."
             ) from error
-        _load(self._engine, self._language)  # before the microphone opens: fail cleanly
+
+    def _prepare_engine(self) -> None:
+        try:  # before the microphone opens: fail cleanly
+            _load(self._engine, self._language)
+        except Exception:
+            if downloadable(self._engine) is None:
+                raise
+            from quill.core.windows_dictation.model_loader import fallback_sentence
+
+            self.fallback_notice = fallback_sentence(self._engine)
+            self._engine = DEFAULT_ENGINE
+            _load(self._engine, self._language)
+        self._prepare_live()
+
+    def _listen(self, microphone: str) -> None:
+        """Open the microphone and start the worker."""
         vad = _vad(self._pause)
         self._microphone = microphone
         try:
@@ -412,6 +449,8 @@ class LocalDictationRecognizer:
             )
             self._worker.start()
             self._stream.start()
+            _UNLOADER.busy()
+            self._in_session = True
         except Exception as error:  # noqa: BLE001 - the microphone refused
             self.stop()
             raise DictationStartError(
@@ -431,6 +470,25 @@ class LocalDictationRecognizer:
         watcher, self._watcher = self._watcher, None
         if watcher is not None and watcher is not threading.current_thread():
             watcher.join(timeout=0.5)
+        live, self._live = self._live, None
+        if live is not None:
+            live.close()
+        if self._in_session:
+            self._in_session = False
+            _UNLOADER.idle()
+
+    def _prepare_live(self) -> None:
+        """Nemotron runs live (streaming.py); a downloaded model is watched for
+        keeping up (keep_up.py). The built-in engines are neither."""
+        model = downloadable(self._engine)
+        if model is None:
+            return
+        self._watchdog = KeepUpWatchdog()
+        online = getattr(_load(self._engine, self._language), "online", None)
+        if model.kind == "nemotron" and online is not None:
+            from quill.core.windows_dictation.streaming import NemotronLive
+
+            self._live = NemotronLive(online, self._language)
 
     def discard(self) -> None:
         """Throw away the phrase being heard (Escape). Nothing already written moves."""
@@ -508,76 +566,6 @@ class LocalDictationRecognizer:
         # delivering blocks of nothing; a quiet room never produces them.
         self._silent_blocks = self._silent_blocks + 1 if not chunk.any() else 0
         self._audio.put(chunk)
-
-    def _work(self, vad: Any) -> None:
-        was_speaking = False
-        history = _History()
-        stalled = 0
-        try:
-            while self._running.is_set():
-                if self._discard_requested.is_set():
-                    self._discard_requested.clear()
-                    self._drain()
-                    _reset(vad)
-                    history = _History()
-                    was_speaking = False
-                try:
-                    chunk = self._audio.get(timeout=_POLL_SECONDS)
-                except queue.Empty:
-                    stalled += 1
-                    if stalled * _POLL_SECONDS >= _STALL_SECONDS:
-                        self._lose_microphone()
-                    continue
-                if chunk is None:
-                    break
-                stalled = 0
-                if self._silent_blocks >= _SILENCE_BLOCKS:
-                    self._lose_microphone()
-                    continue
-                history.add(chunk)
-                vad.accept_waveform(chunk)
-                speaking = bool(vad.is_speech_detected())
-                if speaking and not was_speaking:
-                    self._post(self._listener.on_speech_started)
-                was_speaking = speaking
-                while not vad.empty():
-                    segment = vad.front
-                    samples = history.with_lead_in(segment)
-                    vad.pop()
-                    generation = self._generation
-                    text = self._transcribe_healing(samples)
-                    if generation != self._generation:
-                        continue  # Escape was pressed while this was being decoded
-                    if text and self._running.is_set():
-                        self._post(
-                            self._listener.on_phrase,
-                            RecognizedPhrase(words_from_text(text), text=text),
-                        )
-        except Exception:  # noqa: BLE001 - reported as a sentence, never a traceback
-            if self._running.is_set():
-                self._running.clear()
-                self._post(
-                    self._listener.on_failure,
-                    "Dictation stopped: the speech engine could not go on. Start "
-                    "dictation again, or choose another engine in Dictation Settings.",
-                )
-
-    def _transcribe_healing(self, samples: Any) -> str:
-        """One phrase, with the engine reloaded and the phrase retried once if the
-        first decode raises. A second failure propagates to the worker's handler."""
-        try:
-            return transcribe(self._engine, samples, self._language)
-        except Exception:  # noqa: BLE001 - one retry, then it is reported
-            with _cache_lock:
-                _recognizers.pop((self._engine, self._language), None)
-            return transcribe(self._engine, samples, self._language)
-
-    def _drain(self) -> None:
-        while True:
-            try:
-                self._audio.get_nowait()
-            except queue.Empty:
-                return
 
 
 def _reset(vad: Any) -> None:

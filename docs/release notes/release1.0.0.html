@@ -286,8 +286,8 @@ it ever since.</p>
 <p><strong>A note from QUILLBee:</strong> Coming from a QUILL beta? A
 few keys have moved since then. Type a command’s name into the Command
 Palette (<strong>Ctrl+Shift+P</strong>) to hear its key today, or open
-the Keymap Editor (<strong>Ctrl+Alt+Shift+R</strong>) to put a key back
-where your fingers expect it.</p>
+the Keymap Editor (<strong>Ctrl+Alt+Shift+Space</strong>) to put a key
+back where your fingers expect it.</p>
 </blockquote>
 <hr />
 <h2 id="what-ships-in-100">What ships in 1.0.0</h2>
@@ -680,7 +680,7 @@ job.</li>
 “(unavailable)”.</li>
 </ul>
 <p>The <strong>Keymap Editor</strong>
-(<strong>Ctrl+Alt+Shift+R</strong>) changes any key. It can tell you
+(<strong>Ctrl+Alt+Shift+Space</strong>) changes any key. It can tell you
 what a key does. Its Record Keys mode lets you press a combination
 instead of spelling it out. Its diagnostics find duplicate, orphaned or
 dead keys, and <strong>Heal</strong> fixes them. A whole set of keys can
@@ -709,10 +709,18 @@ can be a global hotkey, whatever a settings file says. Every press tells
 you what happened, even with QUILL minimized. The show/hide keys start
 out as <strong>Ctrl+Alt+Shift+Q</strong> for QUILL,
 <strong>Ctrl+Alt+Shift+R</strong> for Quill Radio and
-<strong>Ctrl+Alt+Shift+W</strong> for Quill Weather, and you can change
-all three. Global hotkeys are Windows only, because macOS has nothing
-like them. The same commands are on the menus and in the palette
-everywhere.</p>
+<strong>Ctrl+Alt+Shift+F12</strong> for Quill Cast. Quill Weather, Quill
+Converter, Quill Media Player and Quill Inkwell start with none, so they
+never take a key another app needs; choose one in that app’s
+<strong>File &gt; Show and Hide Key…</strong>, which will not let you
+pick a key the family already uses. Global hotkeys are Windows only,
+because macOS has nothing like them. The same commands are on the menus
+and in the palette everywhere.</p>
+<p>The <strong>Keymap Editor</strong> moved from Ctrl+Alt+Shift+R to
+<strong>Ctrl+Alt+Shift+Space</strong> before release. Ctrl+Alt+Shift+R
+shows and hides Quill Radio from anywhere, so while Quill Radio was
+running, it never reached QUILL. QUILL Lite’s Keyboard Manager moved to
+the same key.</p>
 <h3 id="help-where-you-are">Help where you are</h3>
 <p><strong>F1</strong> gives help on the control you are on.
 <strong>What Can I Do Here?</strong>
@@ -1447,6 +1455,45 @@ nothing to download. The wake and stop phrases become “Quill dicta” and
 “deja de dictar”, and Spanish punctuation words such as “coma” and
 “punto” work when automatic punctuation is off. Commands stay in English
 for now. This is new, and we would love to hear how it goes.</li>
+<li><strong>Better accuracy, if you want it.</strong> Live Dictation
+works the moment you install. <strong>Better Accuracy: Speech
+Models…</strong> (<strong>Alt+B</strong> in Dictation Settings) offers
+the same local models VS Code offers – NVIDIA’s Nemotron 3.5 ASR
+Streaming (our suggestion), Parakeet Unified and Parakeet TDT, and
+Whisper small and base – plus the rest of the Whisper family and
+Moonshine base. Each downloads only when you choose it, after a question
+naming its source, size, licence and folder; it runs on the processor
+with no graphics card, resumes if you cancel, is checked before use, and
+is shared with QUILL Lite (inside the portable folder in a portable
+copy). The user guide’s “Better accuracy: optional speech models” has
+the published accuracy of each.</li>
+<li><strong>Hold Ctrl+F11 to talk.</strong> Hold the keys, speak, and
+let go: your last phrase is written and Live Dictation turns off. A
+quick press still toggles, and stopping never cuts off the phrase you
+are finishing. <strong>Dictation On</strong> in <strong>Tools &gt;
+Speech &gt; Live Dictation</strong> is checked while it writes, and the
+status bar says what it is doing.</li>
+<li><strong>See your words while you speak.</strong> With Nemotron or
+OpenAI, the words heard so far appear in the status bar and on a braille
+display as you talk; the final words go in at the pause. Nemotron’s
+questions now end with a question mark.</li>
+<li><strong>Your words go where you started speaking</strong>, even if
+you move the cursor or switch tabs while a phrase is being
+recognised.</li>
+<li><strong>“Correct that”</strong> reads Windows speech recognition’s
+other guesses, and “choose two” swaps one in.</li>
+<li><strong>Talk to the AI.</strong> <strong>Ctrl+F11</strong> in the AI
+Conversation window dictates your message; it is sent when you pause,
+the reply is read aloud, and the microphone waits while it is read.</li>
+<li><strong>OpenAI dictation, with your own key</strong>, off until you
+choose it and agree to a plain question about what is sent. You pick the
+model from OpenAI’s own current list. The local engines stay the
+default.</li>
+<li><strong>My Dictation Instructions</strong> tell Tidy Dictated Text
+(<strong>Ctrl+F3</strong>) how you like your writing, and <strong>More
+Dictation Settings…</strong> (<strong>Alt+A</strong> in Dictation
+Settings) holds every new choice. All of it is shared with QUILL
+Lite.</li>
 <li><strong>Locked Dictation</strong> is the reliable way to speak into
 a document. <strong>Ctrl+F9</strong> starts and stops,
 <strong>Ctrl+Shift+F9</strong> pauses and resumes, and
@@ -2718,7 +2765,9 @@ minimized to the tray, and keep watching when you close its window. It
 can also set up a <strong>per-user Windows Scheduled Task</strong>, so
 alerts are checked with no program running at all, and a Windows
 notification your screen reader reads tells you what it found.
-<strong>Ctrl+Alt+Shift+W</strong> shows and hides it from anywhere.</p>
+<strong>File &gt; Show and Hide Key…</strong> lets you choose a key that
+shows and hides it from anywhere; there is none until you choose
+one.</p>
 <hr />
 <h2 id="quill-inkwell">Quill Inkwell</h2>
 <p>QUILL has always expanded abbreviations in its own editor. But as
@@ -2745,8 +2794,9 @@ difference: the abbreviations, the settings and the results are the same
 either way.</p>
 <h3 id="using-it">Using it</h3>
 <ul>
-<li><strong>Ctrl+Alt+Shift+I</strong> shows or hides the Inkwell window
-from anywhere.</li>
+<li><strong>File &gt; Show and Hide Key…</strong> lets you choose a key
+that shows or hides the Inkwell window from anywhere. There is none
+until you choose one.</li>
 <li><strong>Ctrl+Alt+Shift+K</strong> opens Quick Insert from anywhere,
 so an abbreviation you have not memorised is always two keystrokes
 away.</li>

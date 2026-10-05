@@ -3800,7 +3800,7 @@ Then do it again whenever you have spent an evening sorting folders.
 
 When you need your library back, from a backup you made earlier:
 
-1. Press **Ctrl+Alt+Shift+R** (Podcasts > Restore from a Backup).
+1. Press **Ctrl+Alt+F12** (Podcasts > Restore from a Backup).
 2. Pick the backup file.
 3. Before it does anything, Cast tells you when the backup was made and how
    many podcasts it holds. If that is the one you meant, confirm.
@@ -4525,7 +4525,7 @@ they keep doing that.
 | Free Up Space (Advanced) | Ctrl+Alt+F |
 | Run Housekeeping Now (Advanced) | Ctrl+Alt+H |
 | Back Up My Podcasts (Advanced) | Ctrl+Alt+Shift+B |
-| Restore from a Backup (Advanced) | Ctrl+Alt+Shift+R |
+| Restore from a Backup (Advanced) | Ctrl+Alt+F12 |
 | Export My Data (Advanced) | Ctrl+Alt+Shift+E |
 | Clear All Podcast Data from This Computer (Advanced) | Ctrl+Alt+Shift+D |
 | Export My Setup | Ctrl+Alt+Shift+X |

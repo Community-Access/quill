@@ -317,12 +317,14 @@ def _search_url(query: str, *, rows: int, page: int, sort: str = "identifier asc
         ("fl[]", "year"),
         ("rows", str(rows)),
         ("page", str(page)),
-        # A stable sort is what makes "page 2 does not repeat page 1" true.
-        # Callers that want newest-first (LibriVox's "Recently Added", served
-        # from here when librivox.org is down) pass their own.
-        ("sort[]", sort),
         ("output", "json"),
     ]
+    # A stable sort is what makes "page 2 does not repeat page 1" true for
+    # browsing. Callers that want newest-first (LibriVox's "Recently Added",
+    # served from here when librivox.org is down) pass their own. An empty sort
+    # asks for the Archive's own relevance order -- what a search wants.
+    if sort:
+        params.insert(-1, ("sort[]", sort))
     return f"{_SEARCH_URL}?{urllib.parse.urlencode(params)}"
 
 
@@ -371,7 +373,7 @@ def search(
     query: str,
     *,
     limit: int = 40,
-    sort: str = "identifier asc",
+    sort: str = "",
     safe_mode: bool = False,
 ) -> list[ArchiveItem]:
     """Free-text search across the Archive's audio, for federated search.
@@ -380,6 +382,11 @@ def search(
     -- this adds a query shape, not a new way out of the process. Scoped to
     ``mediatype:audio`` because a federated *radio* search that returned scanned
     books would be answering a question nobody asked.
+
+    Best matches first (the Archive's relevance order), not alphabetical by
+    identifier: sorted by identifier, the first *limit* results were whatever
+    happened to start with "0" to "O", so a series uploaded on 2026-10-01 as
+    "YTJD1956..." never appeared in a search for it (a listener's report).
     """
     refuse_in_safe_mode(safe_mode)
     wanted = query.strip()

@@ -62,7 +62,10 @@ def by_genre(genre: str, *, limit: int = 40, safe_mode: bool = False) -> list:
     if not wanted:
         return []
     return internet_archive.search(
-        f"{COLLECTION} AND subject:{_quoted(wanted)}", limit=limit, safe_mode=safe_mode
+        f"{COLLECTION} AND subject:{_quoted(wanted)}",
+        limit=limit,
+        sort="identifier asc",
+        safe_mode=safe_mode,
     )
 
 
@@ -72,5 +75,8 @@ def by_author(author: str, *, limit: int = 40, safe_mode: bool = False) -> list:
     if not wanted:
         return []
     return internet_archive.search(
-        f"{COLLECTION} AND creator:{_quoted(wanted)}", limit=limit, safe_mode=safe_mode
+        f"{COLLECTION} AND creator:{_quoted(wanted)}",
+        limit=limit,
+        sort="identifier asc",
+        safe_mode=safe_mode,
     )

@@ -39,7 +39,7 @@ has the proper introductions.
 > **A note from QUILLBee:** Coming from a QUILL beta? A few keys have moved
 > since then. Type a command's name into the Command Palette
 > (**Ctrl+Shift+P**) to hear its key today, or open the Keymap Editor
-> (**Ctrl+Alt+Shift+R**) to put a key back where your fingers expect it.
+> (**Ctrl+Alt+Shift+Space**) to put a key back where your fingers expect it.
 
 ---
 
@@ -432,7 +432,7 @@ The **Command Palette** (**Ctrl+Shift+P**) finds any command by name:
 - When a command is unavailable, the row says why, instead of a bare
   "(unavailable)".
 
-The **Keymap Editor** (**Ctrl+Alt+Shift+R**) changes any key. It can tell you
+The **Keymap Editor** (**Ctrl+Alt+Shift+Space**) changes any key. It can tell you
 what a key does. Its Record Keys mode lets you press a combination instead of
 spelling it out. Its diagnostics find duplicate, orphaned or dead keys, and
 **Heal** fixes them. A whole set of keys can be saved and shared as a
@@ -461,9 +461,17 @@ Nothing that edits a document, deletes anything or works out of sight can be
 a global hotkey, whatever a settings file says. Every press tells you what
 happened, even with QUILL minimized. The show/hide keys start out as
 **Ctrl+Alt+Shift+Q** for QUILL, **Ctrl+Alt+Shift+R** for Quill Radio and
-**Ctrl+Alt+Shift+W** for Quill Weather, and you can change all three. Global
-hotkeys are Windows only, because macOS has nothing like them. The same
-commands are on the menus and in the palette everywhere.
+**Ctrl+Alt+Shift+F12** for Quill Cast. Quill Weather, Quill Converter, Quill
+Media Player and Quill Inkwell start with none, so they never take a key
+another app needs; choose one in that app's **File > Show and Hide Key...**,
+which will not let you pick a key the family already uses. Global hotkeys are
+Windows only, because macOS has nothing like them. The same commands are on
+the menus and in the palette everywhere.
+
+The **Keymap Editor** moved from Ctrl+Alt+Shift+R to **Ctrl+Alt+Shift+Space**
+before release. Ctrl+Alt+Shift+R shows and hides Quill Radio from anywhere, so
+while Quill Radio was running, it never reached QUILL. QUILL Lite's Keyboard
+Manager moved to the same key.
 
 ### Help where you are
 
@@ -1149,6 +1157,39 @@ Downloads use a checksum-pinned progress dialog you can cancel.
   "deja de dictar", and Spanish punctuation words such as "coma" and "punto"
   work when automatic punctuation is off. Commands stay in English for now.
   This is new, and we would love to hear how it goes.
+- **Better accuracy, if you want it.** Live Dictation works the moment you
+  install. **Better Accuracy: Speech Models...** (**Alt+B** in Dictation
+  Settings) offers the same local models VS Code offers -- NVIDIA's Nemotron
+  3.5 ASR Streaming (our suggestion), Parakeet Unified and Parakeet TDT, and
+  Whisper small and base -- plus the rest of the Whisper family and Moonshine
+  base. Each downloads only when you choose it, after a question naming its
+  source, size, licence and folder; it runs on the processor with no graphics
+  card, resumes if you cancel, is checked before use, and is shared with QUILL
+  Lite (inside the portable folder in a portable copy). The user guide's
+  "Better accuracy: optional speech models" has the published accuracy of
+  each.
+- **Hold Ctrl+F11 to talk.** Hold the keys, speak, and let go: your last
+  phrase is written and Live Dictation turns off. A quick press still toggles,
+  and stopping never cuts off the phrase you are finishing. **Dictation On** in
+  **Tools > Speech > Live Dictation** is checked while it writes, and the status
+  bar says what it is doing.
+- **See your words while you speak.** With Nemotron or OpenAI, the words heard
+  so far appear in the status bar and on a braille display as you talk; the
+  final words go in at the pause. Nemotron's questions now end with a question
+  mark.
+- **Your words go where you started speaking**, even if you move the cursor
+  or switch tabs while a phrase is being recognised.
+- **"Correct that"** reads Windows speech recognition's other guesses, and
+  "choose two" swaps one in.
+- **Talk to the AI.** **Ctrl+F11** in the AI Conversation window dictates your
+  message; it is sent when you pause, the reply is read aloud, and the
+  microphone waits while it is read.
+- **OpenAI dictation, with your own key**, off until you choose it and agree
+  to a plain question about what is sent. You pick the model from OpenAI's own
+  current list. The local engines stay the default.
+- **My Dictation Instructions** tell Tidy Dictated Text (**Ctrl+F3**) how you
+  like your writing, and **More Dictation Settings...** (**Alt+A** in Dictation
+  Settings) holds every new choice. All of it is shared with QUILL Lite.
 - **Locked Dictation** is the reliable way to speak into a document.
   **Ctrl+F9** starts and stops, **Ctrl+Shift+F9** pauses and resumes, and
   **Alt+F9** tells you where things stand. Everything you dictate arrives as
@@ -2415,7 +2456,8 @@ Quill Weather can **start with Windows**, start minimized to the tray, and
 keep watching when you close its window. It can also set up a **per-user
 Windows Scheduled Task**, so alerts are checked with no program running at
 all, and a Windows notification your screen reader reads tells you what it
-found. **Ctrl+Alt+Shift+W** shows and hides it from anywhere.
+found. **File > Show and Hide Key...** lets you choose a key that shows and
+hides it from anywhere; there is none until you choose one.
 
 ---
 
@@ -2447,7 +2489,8 @@ abbreviations, the settings and the results are the same either way.
 
 ### Using it
 
-- **Ctrl+Alt+Shift+I** shows or hides the Inkwell window from anywhere.
+- **File > Show and Hide Key...** lets you choose a key that shows or hides
+  the Inkwell window from anywhere. There is none until you choose one.
 - **Ctrl+Alt+Shift+K** opens Quick Insert from anywhere, so an abbreviation
   you have not memorised is always two keystrokes away.
 - **Ctrl+Alt+Shift+X** expands the word just before the cursor without

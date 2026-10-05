@@ -67,6 +67,7 @@ def build_menu_bar(host: Any, wx: Any, *, title: str, version: str, repo: str) -
     file_menu.AppendSeparator()
     add(file_menu, "Open Output &Folder\tCtrl+Shift+F", host.open_output_folder)
     add(file_menu, "Minimize to &Tray\tCtrl+W", host.toggle_window_to_tray)
+    host._append_show_hide_key_item(file_menu, "converter")
     add(file_menu, "E&xit\tCtrl+Q", host._exit_application)
     bar.Append(file_menu, "&File")
 
@@ -148,8 +149,9 @@ def build_menu_bar(host: Any, wx: Any, *, title: str, version: str, repo: str) -
     return bar
 
 
-def shortcut_list(bar: Any) -> str:
-    """Every menu item and its key, grouped by menu, as plain text."""
+def shortcut_list(bar: Any, show_hide_key: str = "") -> str:
+    """Every menu item and its key, grouped by menu, as plain text, and the
+    show/hide key the listener chose, when there is one."""
     lines: list[str] = []
     for index in range(bar.GetMenuCount()):
         menu = bar.GetMenu(index)
@@ -168,5 +170,6 @@ def shortcut_list(bar: Any) -> str:
     lines.append(
         "In the queue: Delete removes the highlighted row; Alt+Up and Alt+Down reorder it."
     )
-    lines.append("Anywhere: Ctrl+Alt+Shift+C shows or hides Quill Converter from the tray.")
+    if show_hide_key:
+        lines.append(f"Anywhere: {show_hide_key} shows or hides Quill Converter from the tray.")
     return "\n".join(lines).strip()

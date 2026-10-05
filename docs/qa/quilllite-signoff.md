@@ -803,7 +803,7 @@ A machine can check that the Keyboard Manager stores what it was told; only a
 person can check that pressing the key afterwards does the thing.
 
 **L-99. The Keyboard Manager finds a command, and says what a key does**
-- Do: **Ctrl+Alt+Shift+R**. Type `sort lines`. Listen to the count line under
+- Do: **Ctrl+Alt+Shift+Space**. Type `sort lines`. Listen to the count line under
   the box, then press **Down** into the list.
 - Pass: focus lands in the search box on opening; the count says how many
   commands are shown; **Down** puts you on the first matching row, and the row

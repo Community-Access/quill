@@ -20,6 +20,13 @@ such limit, and it says that instead.
 
 Nothing here edits the document without a button press, and that edit goes
 through the ordinary undo stack like every other AI edit.
+
+**Talking to it** (dict.md 3.2): Ctrl+F11 in the message box dictates there,
+with dictation's **Talking to AI** profile -- its own pause, fillers and
+punctuation -- and by default the message is sent at the pause, the reply is
+read aloud as always, and the microphone is muted while it is read, so the
+reply is not heard as the next message. Dictation Settings can make it wait
+for Enter instead.
 """
 
 from __future__ import annotations
@@ -50,6 +57,8 @@ class AiChatFrame(wx.Frame):
         first_message: str = "",
     ) -> None:
         super().__init__(parent, title="AI Conversation")
+        #: Told each reply as it is read aloud: dictation mutes its microphone.
+        self.on_reply: Callable[[str], None] | None = None
         self._service = service
         self._announce = announce
         self._on_insert = on_insert
@@ -219,7 +228,11 @@ class AiChatFrame(wx.Frame):
         self._conversation.set_aside += max(0, int(dropped or 0))
         self._transcript.SetValue(self._conversation.transcript())
         self._transcript.SetInsertionPointEnd()
-        self._message.Clear()
+        # Only what was sent goes: anything said or typed while waiting stays.
+        current = self._message.GetValue().strip()
+        if current.startswith(message):
+            self._message.SetValue(current[len(message) :].strip())
+        self._message.SetInsertionPointEnd()
         self._send_button.Enable()
         used = "Ready."
         if quota is not None:
@@ -234,7 +247,19 @@ class AiChatFrame(wx.Frame):
             spoken += " " + self._set_aside_sentence()
         # The transcript does not have focus, so the reader will not read the
         # reply on its own: this is the one thing here the app must say.
+        if self.on_reply is not None:
+            self.on_reply(spoken)
         self._announce(spoken)
+
+    @property
+    def message_box(self) -> wx.TextCtrl:
+        """Where a message is written -- and dictated (Ctrl+F11)."""
+        return self._message
+
+    def send_dictated(self) -> None:
+        """Dictation wrote a phrase and paused: send it (Talking to AI)."""
+        if self._message.GetValue().strip():
+            self._send()
 
     def _set_aside_sentence(self) -> str:
         if self._direct():
@@ -321,7 +346,23 @@ def open_for(host: Any, *, first_message: str = "", seed: Conversation | None = 
         conversation=seed,
         first_message=first_message,
     )
+    _talk_to_it(frame, host)
     host._after_agreement(lambda: host._show_ai_window(frame))
+
+
+def _talk_to_it(frame: AiChatFrame, host: Any) -> None:
+    """Dictation in the message box, on the Talking to AI profile (dict.md 3.2)."""
+    if not callable(getattr(host, "cmd_dictation_into", None)):
+        return
+    from quill.ui.windows_dictation_tools import bind_field_dictation
+
+    box = frame.message_box
+    box._quill_dictation_profile = "ai"  # type: ignore[attr-defined]
+    box._quill_dictation_after_phrase = frame.send_dictated  # type: ignore[attr-defined]
+    bind_field_dictation(frame, [box], host)
+    mute = getattr(host, "_dictation_mute_for_reply", None)
+    if callable(mute):
+        frame.on_reply = lambda text: mute(text, box)
 
 
 def _direct_service(service: Any) -> bool:

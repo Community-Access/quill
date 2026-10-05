@@ -9,6 +9,16 @@ library and the rest of this release are described for listeners in
 `docs/release-notes-2.0.md`. (The app had carried 1.1.0 in its own menus
 until this release; 2.0.0 is the version everywhere now.)
 
+### Restore from a Backup on Ctrl+Alt+F12 (2026-10-05)
+
+- **Podcasts > Restore from a Backup moves from Ctrl+Alt+Shift+R to
+  Ctrl+Alt+F12**, the key both editors give Restore Settings (family rules 2
+  and 9). Ctrl+Alt+Shift+R is Quill Radio's system-wide show and hide key, so
+  with Radio running, Restore never fired (`quill/core/app_keymaps.py`).
+- Quill Cast's QuillVille row in the other apps is now Ctrl+Alt+Shift+F12,
+  Cast's own show and hide key, so the launcher and the hotkey are one key
+  (`SIBLING_APP_FIXED_ACCELERATORS`).
+
 ### OPML import and Feed Check, after a 1,307-podcast import test (2026-10-04)
 
 A real Downcast export (1,307 feeds) was imported into an isolated library and

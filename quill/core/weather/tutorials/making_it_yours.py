@@ -170,9 +170,8 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 title="Open the family",
                 body=(
                     "The QuillVille menu opens the other apps -- QUILL, Quill "
-                    "Radio, and the rest -- and each has its own show/hide chord so "
-                    "they never fight. Quill Weather never launches something you "
-                    "did not ask for."
+                    "Radio, and the rest -- and none of them takes another's keys. "
+                    "Quill Weather never launches something you did not ask for."
                 ),
                 keys=("Alt+Q",),
                 hear="The other apps, listed by name.",

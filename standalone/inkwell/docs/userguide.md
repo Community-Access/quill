@@ -82,6 +82,32 @@ Turn off **Options > Close button keeps expanding** if you would rather the clos
 button really exit. **Options > Start Quill Inkwell with Windows** starts it
 hidden at login, which is how most people run it.
 
+**A key to bring the window back from anywhere.** **File > Show and Hide
+Key...** (Ctrl+Alt+Shift+H) lets you choose one key that shows or hides the
+Inkwell window from any program. There is no key until you choose one. Type the
+key you want, or leave the box empty for none. If another QuillVille app already
+uses it, Inkwell tells you whose it is and lets you try another. If you used an
+earlier version, Ctrl+Alt+Shift+I did this; other QuillVille apps use that key,
+so it is off now, and Inkwell tells you once after you update.
+
+**Two more keys that work from anywhere.** Quick Insert and Expand the Word I
+Just Typed (section 9) can each have a key that works in any program. Choose
+them the same way, in the File menu:
+
+1. Press **Ctrl+Alt+Shift+K** for **File > Quick Insert Key...**, or
+   **Ctrl+Alt+Shift+E** for **File > Expand Word Key...**.
+2. Type the key you want, for example Ctrl+Alt+Shift+PageUp, or leave the box
+   empty for none.
+3. Press Enter. Inkwell says the key back. If it is already a shortcut in a
+   QuillVille app, or another program already holds it, Inkwell says so and the
+   old key stays.
+
+A key has to include Ctrl or Alt, and it cannot be one Inkwell already uses for
+something else. Neither key exists until you choose it. If you used an earlier
+version, Quick Insert was Ctrl+Alt+Shift+K and Expand Word was Ctrl+Alt+Shift+X
+from anywhere; QuillVille apps use both for their own commands, so they are off
+now, and Inkwell tells you once after you update.
+
 ## 4. Creating abbreviations
 
 **Abbreviations > Manage Abbreviations...** (Ctrl+M) is the full list: search it,
@@ -182,16 +208,16 @@ entry expands; it exists to keep a long list navigable.
 
 ## 9. Quick Insert, and expanding on demand
 
-**Ctrl+K** in the window, or **Ctrl+Alt+Shift+K** from anywhere, opens a
-type-to-filter picker over every enabled abbreviation, ordered with the ones you
+**Ctrl+K** in the window, or from anywhere the key you chose in **File > Quick
+Insert Key...** (section 3), opens a type-to-filter picker over every enabled abbreviation, ordered with the ones you
 use most at the top. Type a few letters, arrow down, press Enter, and the
 expansion is typed into whatever window you were working in.
 
 Quick Insert is the only way to reach an entry whose trigger mode is Never, and
 the easiest way to use an abbreviation you have not memorised yet.
 
-**Expand the word I just typed** -- **Ctrl+Alt+Shift+X** from anywhere, or the
-Abbreviations menu -- expands the word before the cursor without waiting for a
+**Expand the word I just typed** -- the key you chose in **File > Expand Word
+Key...** from anywhere, or **Ctrl+Alt+E** in the Abbreviations menu -- expands the word before the cursor without waiting for a
 space or punctuation. Use it mid-word, at the end of a line where you do not want
 a trailing space, or for an abbreviation you have set never to expand on its own.
 
@@ -287,6 +313,9 @@ Inkwell's own preferences live in `inkwell.json` beside the library:
 | Start with Windows | Off | Starts hidden in the tray at login. |
 | Start minimized to the tray | Off | Opens hidden. |
 | Close button keeps expanding | On | Close hides to the tray instead of exiting. |
+| Show and hide key | None | A key that shows or hides the window from anywhere (File > Show and Hide Key). |
+| Quick Insert key | None | A key that opens Quick Insert from anywhere (File > Quick Insert Key). |
+| Expand Word key | None | A key that expands the word just typed, from anywhere (File > Expand Word Key). |
 
 Abbreviations themselves are not listed here: they are shared, and they live in
 QUILL's `abbreviations.json`.
@@ -295,9 +324,12 @@ QUILL's `abbreviations.json`.
 
 | Action | Keys |
 | --- | --- |
-| Show or hide Inkwell | Ctrl+Alt+Shift+I |
-| Quick Insert from anywhere | Ctrl+Alt+Shift+K |
-| Expand the word I just typed | Ctrl+Alt+Shift+X |
+| Show or hide Inkwell | The key you chose (none at first) |
+| Choose that key | Ctrl+Alt+Shift+H |
+| Quick Insert from anywhere | The key you chose (none at first) |
+| Choose that key | Ctrl+Alt+Shift+K |
+| Expand the word I just typed, from anywhere | The key you chose (none at first) |
+| Choose that key | Ctrl+Alt+Shift+E |
 | Take back the expansion that just fired | Backspace, immediately |
 | Manage abbreviations | Ctrl+M |
 | Quick Insert | Ctrl+K |
@@ -356,7 +388,8 @@ that Windows refused the keyboard hook, see the next item.
 **Nothing expands in one particular application.** If Inkwell announced that the
 application runs as administrator, that is the reason (section 10a). Otherwise the
 application may not report itself as editable, or may be dropping the typed
-keystrokes -- press Ctrl+Alt+Shift+X there to expand on demand, and if that works
+keystrokes -- press your Expand Word key there to expand on demand (choose one
+in File > Expand Word Key if you have not), and if that works
 but ordinary typing does not, add the program to the per-application paste list
 (section 12).
 

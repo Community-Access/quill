@@ -103,7 +103,7 @@ class QuillMediaPlayerFrame(
         self._build_menu_bar()
         self._build_main_panel()
         self._ensure_tray_icon(self._build_tray_menu, tooltip=_TITLE)
-        self._register_tray_hotkey("Ctrl+Alt+Shift+P")
+        self._start_show_hide_key("player")  # none until chosen (family_chords.py)
         # Persist the listening position periodically so resume works next launch.
         self._resume_timer = wx.Timer(self.frame)
         self.frame.Bind(wx.EVT_TIMER, lambda _e: self._save_resume(), self._resume_timer)

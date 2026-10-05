@@ -74,3 +74,14 @@ def test_omml_fragment_returns_none_without_pandoc(monkeypatch: pytest.MonkeyPat
     monkeypatch.setattr("quill.io.docx_math.convert_file_with_pandoc", _raise_unavailable)
     assert omml_fragment_for_latex("a^2+b^2=c^2", display=False) is None
     omml_fragment_for_latex.cache_clear()
+
+
+@pytest.mark.skipif(not _pandoc_available(), reason="Pandoc not installed")
+def test_omml_fragment_without_defusedxml(monkeypatch: pytest.MonkeyPatch) -> None:
+    omml_fragment_for_latex.cache_clear()
+    monkeypatch.setattr("quill.core.safe_xml._HAVE_DEFUSED", False)
+    monkeypatch.setattr("quill.core.safe_xml._defused_fromstring", None)
+    fragment = omml_fragment_for_latex("a^2+b^2=c^2", display=False)
+    assert fragment is not None
+    assert "oMath" in fragment
+    omml_fragment_for_latex.cache_clear()

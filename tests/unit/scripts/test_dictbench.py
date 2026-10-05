@@ -55,3 +55,34 @@ def test_the_summary_reports_rates_punctuation_and_speed() -> None:
     assert overall["speed_per_thread"] == 0.2
     assert overall["punctuation_found"][chr(0xBF)] == "1/1"
     assert overall["punctuation_found"][","] == "0/1"
+
+
+def test_a_spoken_command_is_scored_as_recognised_or_not() -> None:
+    bench = _bench()
+    hit = bench.score("11.wav", "!new paragraph", "New paragraph.")
+    miss = bench.score("12.wav", "!scratch that", "Scratch hat.")
+    assert hit.command and hit.errors == 0 and hit.reference == "new paragraph"
+    assert bench.summary([hit, miss])["commands_recognised"] == "1/2"
+
+
+def test_list_models_names_every_optional_model(capsys) -> None:
+    from quill.core.windows_dictation.model_catalog import CATALOGUE
+
+    assert _bench().main(["--list-models"]) == 0
+    out = capsys.readouterr().out
+    for model in CATALOGUE:
+        assert model.id in out
+
+
+def test_an_unknown_model_is_refused_by_name() -> None:
+    with pytest.raises(SystemExit, match="dragon"):
+        _bench().main(["--model", "dragon"])
+
+
+def test_a_model_that_is_not_downloaded_says_how_to_get_it(tmp_path, monkeypatch) -> None:
+    pytest.importorskip("sherpa_onnx")
+    from quill.core.windows_dictation import model_store
+
+    monkeypatch.setenv(model_store.DOWNLOADS_VARIABLE, str(tmp_path))
+    with pytest.raises(SystemExit, match="--fetch"):
+        _bench().load_engine("whisper_small", "en", 1)

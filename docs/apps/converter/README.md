@@ -32,7 +32,7 @@ from URL) instead of five._
 
 ## The standalone app, as a door onto the shared engine
 
-- **Quill Converter** -- a standalone tray app, launched with `python -m quill.apps.converter` (or its own icon). It carries the QuillVille menu like the other family apps, minimizes to the tray, and has its own show/hide hotkey (Ctrl+Alt+Shift+C).
+- **Quill Converter** -- a standalone tray app, launched with `python -m quill.apps.converter` (or its own icon). It carries the QuillVille menu like the other family apps, minimizes to the tray, and can have a show/hide hotkey of your choosing (File > Show and Hide Key, Ctrl+Alt+Shift+H; none by default).
 - **Windows Explorer** -- turn on **Settings -> Integration -> Offer "Convert with QUILL"** and right-clicking an audio or video file gains a **Convert with Quill** entry that opens the standalone converter with that file already queued.
 
 ## Advanced mode in the standalone app

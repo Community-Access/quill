@@ -29,6 +29,7 @@ from quill.core.settings_normalizers import (
 from quill.core.storage import write_json_atomic
 from quill.core.structure_announce import HEADING_POSITIONS as _HEADING_POSITIONS
 from quill.core.versioned_store import load_with_migration
+from quill.core.windows_dictation.settings_fields import DictationSettings
 from quill.core.windows_dictation.settings_fields import (
     load_fields as load_windows_dictation_fields,
 )
@@ -82,7 +83,7 @@ def _suffix_list(value: object) -> list[str]:
 
 
 @dataclass(slots=True)
-class Settings:
+class Settings(DictationSettings):  # the windows_dictation_* fields, shared with QUILL Lite
     theme: str = "system"
     keyboard_pack: str = "Quill Default"
     soft_wrap: bool = True
@@ -318,23 +319,6 @@ class Settings:
     # one authoring surface for the user's terms, and its list feeds both the
     # Whisper initial_prompt bias and the fuzzy corrector.
     dictation_remove_fillers: bool = False
-    # Windows Dictation, shared with QUILL Lite by name (its own microphone setting).
-    windows_dictation_microphone: str = ""
-    windows_dictation_engine: str = "moonshine"
-    windows_dictation_language: str = ""
-    windows_dictation_speech_language: str = "en"
-    windows_dictation_dash: str = "em"
-    windows_dictation_wake_enabled: bool = False
-    windows_dictation_wake_phrase: str = "Quill dictate"
-    windows_dictation_stop_phrase: str = "stop dictation"
-    windows_dictation_phrase_feedback: str = "both"
-    windows_dictation_cue_sounds: bool = True
-    windows_dictation_announce: bool = True
-    windows_dictation_pause: str = "normal"
-    windows_dictation_remove_fillers: bool = False
-    windows_dictation_auto_punctuation: bool = True
-    windows_dictation_silence_minutes: int = 0
-    windows_dictation_continuous: bool = False
     # Speak the formatting delta as the caret moves (hidden-codes interrogation);
     # off by default so navigation stays quiet (Describe Formatting is on-demand).
     announce_formatting_on_move: bool = False

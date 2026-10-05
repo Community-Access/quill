@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [2.2.0] - built, not yet released
 
+- **Resume Last Book on Launch is Ctrl+Alt+F10** (2026-10-05). It was
+  Ctrl+Alt+Shift+R, Quill Radio's system-wide show and hide key, so with
+  Radio running the menu key never fired. A set-once preference belongs on
+  an F-key past F9 (family rule 9).
+
 Audio Studio jumps from 1.0.0 to 2.2.0 with no 2.0 or 2.1 in between. On 2026-07-21 the standalone build shell was rebuilt from the shared QuillVille template and adopted the family version number, the same number Quill Radio (2026-07-24) and Quill Weather (2026-07-23) carry, because all of them now install and run on one shared runtime. The number is aligned; the releases are still independent.
 
 This version is built but not yet published: Audio Studio is not offered in the QuillVille menu, and there is no 2.2.0 download page. Everything below is in the build.

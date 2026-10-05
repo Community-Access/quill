@@ -39,6 +39,12 @@ from quill.core.control_help import (
 
 #: Surface purposes by exact window title.
 PURPOSES: dict[str, str] = {
+    "Show and Hide Key": (
+        "Choose one key that shows and hides Quill Weather from any program. Type it, "
+        "for example with Ctrl, Alt and Shift held, or leave the box empty for "
+        "no key. A key another QuillVille app already uses is refused, and you "
+        "are told whose it is."
+    ),
     # -- the windows -------------------------------------------------------------
     "Quill Weather": (
         "The main window of the weather watcher. Its real work happens in "

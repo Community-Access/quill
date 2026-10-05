@@ -3234,6 +3234,51 @@
     "user_guide_section": "tools"
   },
   {
+    "id": "tools.windows_dictation_toggle",
+    "title": "Dictation On",
+    "body": "Live dictation: speak and each phrase is written when you pause. Press Ctrl+F11 to turn it on and again to turn it off, or hold Ctrl+F11 and talk, and let go to stop; the last phrase is always kept. Escape throws away the phrase being heard. In a text field such as Find or the AI Conversation window's message box, Ctrl+F11 dictates into that field. With Nemotron or OpenAI, the words heard so far show in the status bar and on a braille display while you speak.",
+    "keystrokes": [
+      "Ctrl+F11"
+    ],
+    "user_guide_section": "tools"
+  },
+  {
+    "id": "tools.windows_dictation_settings",
+    "title": "Dictation Settings",
+    "body": "Choose the speech engine, the microphone, the dictation language and what you hear after each phrase. More Dictation Settings holds hold-to-talk, the live preview, Talking to the AI, OpenAI with your own key, and My Dictation Instructions.",
+    "keystrokes": [
+      "Alt+Shift+F6"
+    ],
+    "user_guide_section": "tools"
+  },
+  {
+    "id": "tools.windows_dictation_recent",
+    "title": "Recent Phrases",
+    "body": "The last twenty phrases you dictated this session, newest first. Enter writes the chosen phrase at the cursor again; Copy puts it on the clipboard.",
+    "keystrokes": [
+      "Shift+F11"
+    ],
+    "user_guide_section": "tools"
+  },
+  {
+    "id": "tools.windows_dictation_words",
+    "title": "My Words and Phrases",
+    "body": "Teach dictation your words: names and jargon spelled your way, your own spoken phrases, and corrections for what the engine keeps hearing wrong. With OpenAI dictation your words are also sent as words to expect.",
+    "keystrokes": [
+      "Alt+Shift+F10"
+    ],
+    "user_guide_section": "tools"
+  },
+  {
+    "id": "tools.dictation_tidy",
+    "title": "Tidy Dictated Text",
+    "body": "Sends the selection, or the paragraph the cursor is in, to the AI to fix what speech recognition misheard, with your own My Dictation Instructions if you wrote any. Needs a ChatGPT subscription or your own AI key. Nothing changes until you choose Replace My Selection.",
+    "keystrokes": [
+      "Ctrl+F3"
+    ],
+    "user_guide_section": "tools"
+  },
+  {
     "id": "tools.dictionary_status",
     "title": "Dictionary Status...",
     "body": "Show which spell-check dictionaries are installed and active, and how to add more languages.",
@@ -3316,7 +3361,7 @@
     "title": "Keymap Editor...",
     "body": "Open the Keymap Editor to view, search, and change any keyboard shortcut. You can search by command name or by pressing a shortcut to see what owns it.",
     "keystrokes": [
-      "Ctrl+Alt+Shift+R"
+      "Ctrl+Alt+Shift+Space"
     ],
     "user_guide_section": "tools"
   },

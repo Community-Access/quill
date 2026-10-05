@@ -17,6 +17,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from quill.core.family_chords import SHOW_HIDE_DEFAULTS
 from quill.ui.podcasts.palette_commands import CAST_PALETTE_TITLES
 
 __all__ = ["CastPlaceRoutesMixin"]
@@ -33,7 +34,7 @@ _CELL_AREAS: dict[str, str] = {
 
 
 #: Show or hide QUILL Cast from any program (qc.md C2-01).
-CAST_TRAY_HOTKEY = "Ctrl+Alt+Shift+F12"
+CAST_TRAY_HOTKEY = SHOW_HIDE_DEFAULTS["cast"]
 
 
 class CastPlaceRoutesMixin:
@@ -95,8 +96,8 @@ class CastPlaceRoutesMixin:
         self._keep_menu_ids(bookmark_id, silence_id, say_id)  # type: ignore[attr-defined]
 
     def _register_cast_tray_hotkey(self) -> None:
-        """Cast's own show/hide chord, like every family app's (Radio R, Weather
-        W, Converter C, Player P). Without it the shared default added
+        """Cast's own show/hide chord, like QUILL's and Quill Radio's
+        (core/family_chords.py). Without it the shared default added
         Ctrl+Alt+Shift+Q system-wide, QUILL's own show/hide key (and then Cast's
         Mark as Played and Next, which has since moved) (qc.md C2-01). Every
         Ctrl+Alt+Shift letter already belongs to some family app, so Cast takes

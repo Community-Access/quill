@@ -100,6 +100,10 @@ Everything QUILL Lite and QUILL's Live Dictation understand, generated from the 
 | "delete word" or "delete last word" | Deletes the word just before the cursor. |
 | "delete sentence" or "delete last sentence" | Deletes from the start of the sentence the cursor is in up to the cursor. |
 | "read that" or "repeat that" | Reads the last phrase aloud again. |
+| "correct that" | Reads the other things the speech engine thought you said, numbered, when it offers them (Windows speech recognition does). Then say choose and a number. |
+| "choose one" or "choose 1" | After correct that, puts the first of the other guesses in place of the last phrase. |
+| "choose two" or "choose 2" | The same, with the second guess. |
+| "choose three" or "choose 3" | The same, with the third guess. |
 
 ## Commands: moving the cursor
 
@@ -131,3 +135,30 @@ Everything QUILL Lite and QUILL's Live Dictation understand, generated from the 
 - With the wake phrase switched on in Dictation Settings, say "Quill dictate" to start dictation without touching the keyboard. Anything you say after it in the same breath is written.
 - Say "stop dictation" on its own, after a pause, to stop dictation. "Stop dictation" always works too. With the wake phrase on, stopping goes back to waiting for the wake phrase.
 - You choose both phrases in Dictation Settings; each needs at least two words.
+
+## Spanish punctuation
+
+With the dictation language set to Spanish, these words write punctuation only while automatic punctuation is off (or with Windows speech recognition): coma and punto are everyday words too. Commands are the English ones above.
+
+| Say | Writes |
+|---|---|
+| "punto" or "punto y seguido" or "punto final" | . |
+| "punto y aparte" | . and a new paragraph |
+| "coma" | , |
+| "punto y coma" | ; |
+| "dos puntos" | : |
+| "puntos suspensivos" | ... |
+| "abrir interrogación" or "abre interrogación" or "signo de interrogación abierto" or "abrir signo de interrogación" | ¿ |
+| "cerrar interrogación" or "cierra interrogación" or "signo de interrogación cerrado" or "cerrar signo de interrogación" or "signo de interrogación" | ? |
+| "abrir exclamación" or "abre exclamación" or "signo de exclamación abierto" or "abrir signo de exclamación" | ¡ |
+| "cerrar exclamación" or "cierra exclamación" or "signo de exclamación cerrado" or "cerrar signo de exclamación" or "signo de exclamación" | ! |
+| "abrir paréntesis" or "abre paréntesis" | ( |
+| "cerrar paréntesis" or "cierra paréntesis" | ) |
+| "abrir comillas" or "abre comillas" | the quotation mark " |
+| "cerrar comillas" or "cierra comillas" | the quotation mark " |
+| "guion" or "guión" | - |
+| "guion largo" or "guión largo" | a dash, in the style chosen for dash |
+| "arroba" | @ |
+| "nueva línea" or "nuevo renglón" | a line break |
+| "nuevo párrafo" | a blank line (new paragraph) |
+| "tabulador" | a tab |

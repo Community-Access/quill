@@ -41,6 +41,9 @@ A few things work differently now:
   other app calls it.
 - **A new key for showing and hiding Cast.** From any program, it's now
   Ctrl+Alt+Shift+F12.
+- **Restore from a Backup is Ctrl+Alt+F12**, the key QUILL and QUILL Lite
+  use for restoring their settings. It used to be Ctrl+Alt+Shift+R, which
+  shows and hides Quill Radio, so it never worked while Radio was open.
 - **Mark as Played and Next is Ctrl+Alt+Shift+Down**, right beside Next in
   Queue on Ctrl+Alt+Down. It used to be Ctrl+Alt+Shift+Q, which shows and
   hides QUILL, so it never worked while QUILL was open.
@@ -318,7 +321,7 @@ like it to. Ctrl+W sends it there any time.
 Back up your whole library to one file, with your podcasts, playlists,
 positions, notes and bookmarks, using Podcasts > **Back Up My Podcasts...**
 (Ctrl+Alt+Shift+B), and put it back later with **Restore from a Backup...**
-(Ctrl+Alt+Shift+R). When you get a new computer, Help > Export My Setup
+(Ctrl+Alt+F12). When you get a new computer, Help > Export My Setup
 (Ctrl+Alt+Shift+X) moves your library, settings and keys across in one file.
 
 **Listening Statistics** (Ctrl+Alt+Shift+S) tells you which podcasts you

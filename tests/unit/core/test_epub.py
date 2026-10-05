@@ -172,3 +172,17 @@ def test_epub_math_parsing_extracts_latex_delimiters(tmp_path: Path) -> None:
     equations = _math_equations(book.chapters[0].text)
     assert len(equations) == 2
     assert all(equation.strip() for equation in equations)
+
+
+def test_epub_math_parsing_handles_entities(tmp_path: Path) -> None:
+    target = tmp_path / "math_entities.epub"
+    chapter = (
+        '<html><body><p>Comparison: <math xmlns="http://www.w3.org/1998/Math/MathML">'
+        "<mi>x</mi><mo>&lt;</mo><mi>y</mi></math>.</p></body></html>"
+    )
+    with zipfile.ZipFile(target, "w") as archive:
+        archive.writestr("chapters/one.xhtml", chapter)
+    book = load_epub_book(target)
+    equations = _math_equations(book.chapters[0].text)
+    assert len(equations) == 1
+    assert "less than" in equations[0] or "<" in equations[0]

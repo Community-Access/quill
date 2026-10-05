@@ -90,6 +90,34 @@ class WindowsDictationCommandsMixin(WindowsDictationMixin):
     def _dictation_open_file(self, path: Path) -> None:
         self.open_file(path)
 
+    def _dictation_document_name(self) -> str:
+        path = getattr(getattr(self, "document", None), "path", None)
+        return Path(path).name if path else "Untitled"
+
+    def _dictation_toggle_chord(self) -> str:
+        return str(self._binding_for(_TOGGLE) or "Ctrl+F11")
+
+    def _dictation_say_quietly(self, text: str) -> None:
+        # Not forced: the spoken preview is the one thing dictation says that
+        # the verbosity settings may hold back.
+        self._announce(text)
+
+    def _dictation_state_changed(self, state: Any) -> None:
+        """QUILL's mirror of the state: the menu's check mark, and the status
+        bar, quietly (QUILL Lite has a Dictation cell for the same words)."""
+        del state
+        toggle_id = self._windows_dictation_ids()[0]
+        try:
+            menu_bar = self.frame.GetMenuBar()
+            item = menu_bar.FindItemById(int(toggle_id)) if menu_bar is not None else None
+            if item is not None and item.IsCheckable():
+                item.Check(self.dictation_active())
+        except Exception:  # noqa: BLE001 - a mirror is never worth a session
+            pass
+        text = self.dictation_state_text()
+        if text:
+            self._set_status_quiet(text)
+
     # -- wiring ----------------------------------------------------------- #
 
     def _windows_dictation_ids(self) -> tuple[Any, Any, Any, Any]:
@@ -113,7 +141,8 @@ class WindowsDictationCommandsMixin(WindowsDictationMixin):
 
         toggle_id, settings_id, recent_id, words_id = self._windows_dictation_ids()
         menu = wx.Menu()
-        menu.Append(toggle_id, self._menu_label(_("Start or Stop &Dictation"), _TOGGLE))
+        # A check item, as in QUILL Lite: "am I heard?" answered by the menu.
+        menu.AppendCheckItem(toggle_id, self._menu_label(_("Dictation &On"), _TOGGLE))
         menu.Append(settings_id, self._menu_label(_("Dictation &Settings..."), _SETTINGS))
         menu.Append(recent_id, self._menu_label(_("Recent &Phrases..."), _RECENT))
         menu.Append(words_id, self._menu_label(_("My &Words and Phrases..."), _WORDS))

@@ -466,7 +466,7 @@
   "_rebaseline_2026_06_27_main_resync_merge": "Merge of origin/main (0.8.0 line: Python 3.13 runtime, upgrade hardening, legacy-import + startup-maintenance, winrt OCR, bundled Kokoro) into 2.0-dev. Seven modules touched independently on both branches now hold the union of both sides' additions, so the max-of-both budget no longer fits: __main__.py 640->651 (both startup hooks: apply_pending_legacy_import + run_pending_startup_maintenance from main, consolidate_provider_keys/prompts from 2.0-dev), keymap.py 682->683, settings.py 1226->1231, ai_hub_dialog.py 924->927, assistant_panel.py 943->947, main_frame.py 26172->26218, main_frame_statusbar.py 956->967. These are merge combinations of pre-approved per-branch growth, not new feature work; CQ-1 decomposition remains the path down for the large UI modules. Budgets re-baselined to current size.",
   "_rebaseline_2026_07_23_beacon_dialog_hardening": "beacon/dialogs.py 2497 -> 2516 (+19): DLG-3 accessibility contract -- every hardened_custom Beacon dialog now calls apply_modal_ids(self, ...) at the end of __init__ so Escape/Enter map to the real Cancel/OK/Close buttons (fixing a keyboard-trap class, WCAG 2.1.2), which the dialog-hardening test and the dialog_button_contract gate both enforce. 19 one-line wirings across the file's dialogs (the 20th is CommandPalette in commands.py). Pure a11y contract wiring, one line each, not extractable; matches the same wiring every other QUILL dialog already carries.",
   "budgets": {
-    "quill/core/lite/settings.py": 602,
+    "quill/core/lite/settings.py": 569,
     "quill/ui/hosted_ai_commands.py": 626,
     "quill/apps/lite_window_format.py": 514,
     "quill/apps/lite_window_markup.py": 627,
@@ -642,7 +642,7 @@
     "_rebaseline_2026_07_03_hey_quill_voice_engine": "Hey QUILL: user-selectable voice recognition engine (whisper.cpp or Vosk). _voice_provider() resolver + 6 voice paths routed through it in main_frame_speech.py (1954 -> 1977); voice_recognition_engine field+parse in settings.py (1470 -> 1480); its choice SettingSpec in settings_specs.py (2140 -> 2158).",
     "_rebaseline_2026_07_03_table_csv_studio": "Table Studio + CSV Studio (experimental): two table_studio/csv_studio settings fields+parse in settings.py (1480 -> 1492); their two experimental SettingSpecs in settings_specs.py (2158 -> 2185); the conditional menu items + ids + binds in main_frame_menu.py (4434 -> 4451). The launchers live in main_frame.py (within budget); the grid UI + wx-free core are new modules (quill/ui/table_studio*.py, quill/core/table_studio/).",
     "_rebaseline_2026_07_08_speech_default_model_id": "settings.py 1527 -> 1533 (+6): speech_default_model_id field + parse/round-trip, and speech_provider's valid-value set gained \"vosk\" (it was being silently rejected back to \"\" -- a real bug once Vosk became a guided-picker engine choice). Backs \"Set as Default\" for the offline speech model (Dictate/Transcribe/Captions use it via SpeechCommandsMixin._default_model_id).",
-    "quill/core/settings.py": 2070,
+    "quill/core/settings.py": 2054,
     "quill/core/settings_registry.py": 231,
     "quill/core/spellcheck.py": 850,
     "_rebaseline_2026_07_02_hey_quill_phase1": "Hey QUILL Phase 1: the voice-commands setting spec grew two lines describing push-to-talk reality (2041 -> 2043) while main_frame.py and main_frame_menu.py shrank from retiring the legacy dictation scanner.",

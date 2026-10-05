@@ -701,8 +701,13 @@ explanation. Convert from URL is unavailable in Safe Mode.
 - **Minimize to Tray** (File > Minimize to Tray, Ctrl+W) hides the window to the
   notification area; the same command brings it back. A conversion keeps
   running.
-- **Ctrl+Alt+Shift+C** shows or hides Quill Converter from anywhere in Windows.
-  If another program already owns that key, Quill Converter leaves it alone.
+- **File > Show and Hide Key...** (Ctrl+Alt+Shift+H) lets you choose one key
+  that shows or hides Quill Converter from anywhere in Windows. There is no key
+  until you choose one. Type the key you want, or leave the box empty for none.
+  If another QuillVille app already uses it, Quill Converter tells you whose it
+  is and lets you try another. If you used an earlier version, Ctrl+Alt+Shift+C
+  did this; other QuillVille apps use that key, so it is off now, and Quill
+  Converter tells you once after you update.
 - The tray icon's menu has Show and Exit.
 - **Exit** (File > Exit, Ctrl+Q) really exits. Alt+F4 closes the window.
 
@@ -737,6 +742,7 @@ every key in a read-only window you can arrow through.
 | Convert from URL... | Ctrl+U |
 | Open Output Folder | Ctrl+Shift+F |
 | Minimize to Tray | Ctrl+W |
+| Show and Hide Key... | Ctrl+Alt+Shift+H |
 | Exit | Ctrl+Q |
 
 ### Queue menu
@@ -794,7 +800,7 @@ without a new version number, it is a newer build, and Check for Updates offers 
 
 | Action | Key |
 | --- | --- |
-| Show or hide Quill Converter | Ctrl+Alt+Shift+C |
+| Show or hide Quill Converter | The key you chose (none at first) |
 | Remove the highlighted queue row | Delete |
 | Next window, previous window | Ctrl+Tab, Ctrl+Shift+Tab |
 | Go to window 1 to 9 | Ctrl+1 to Ctrl+9 |

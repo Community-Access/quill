@@ -43,6 +43,7 @@ from quill.ui.dialog_contract import (
     show_modal_dialog,
 )
 from quill.ui.keybinding_parse import KeybindingParseMixin
+from quill.ui.show_hide_key_picker import ShowHideKeyMixin
 
 
 class AppShellFrame(
@@ -51,6 +52,7 @@ class AppShellFrame(
     ComponentDownloadsMixin,
     KeybindingParseMixin,
     CommandAvailabilityMixin,
+    ShowHideKeyMixin,
 ):
     """Mixin: implements the MainFrame host protocol for standalone apps.
 
@@ -585,27 +587,37 @@ class AppShellFrame(
     #: media-key id space above).
     _TRAY_TOGGLE_HOTKEY_ID = 0x7B00
 
-    def _register_tray_hotkey(self, chord: str) -> None:
+    def _register_tray_hotkey(self, chord: str) -> bool:
         """Register a unique system-wide chord that shows this app or hides it to
         the tray, so it is one keystroke away even when another window has focus.
-        Best-effort and Windows-only; a chord another app owns stays theirs."""
+        Best-effort and Windows-only; a chord another app owns stays theirs, and
+        is the only case answered False (no chord, or not Windows, is True)."""
         if not sys.platform.startswith("win") or not chord:
-            return
+            return True
         from quill.ui.tray_hotkey import parse_hotkey
 
         parsed = parse_hotkey(wx, chord)
         if parsed is None:
-            return
+            return False
         flags, key_code = parsed
         try:
             if not self.frame.RegisterHotKey(self._TRAY_TOGGLE_HOTKEY_ID, flags, key_code):
-                return
+                return False
         except Exception:  # noqa: BLE001 - a denied chord must never block startup
-            return
+            return False
         self.frame.Bind(
             wx.EVT_HOTKEY, lambda _e: self.toggle_window_to_tray(), id=self._TRAY_TOGGLE_HOTKEY_ID
         )
         self._tray_hotkey_registered = True
+        return True
+
+    def _release_tray_hotkey(self) -> None:
+        if getattr(self, "_tray_hotkey_registered", False):
+            try:
+                self.frame.UnregisterHotKey(self._TRAY_TOGGLE_HOTKEY_ID)
+            except Exception:  # noqa: BLE001 - shutdown must never block
+                pass
+            self._tray_hotkey_registered = False
 
     def toggle_window_to_tray(self) -> None:
         """Hide the window to the tray if it is showing, or bring it back if it is
@@ -619,12 +631,7 @@ class AppShellFrame(
             self._announce(f"{frame.GetTitle()} shown.")
 
     def _unregister_media_keys(self) -> None:
-        if getattr(self, "_tray_hotkey_registered", False):
-            try:
-                self.frame.UnregisterHotKey(self._TRAY_TOGGLE_HOTKEY_ID)
-            except Exception:  # noqa: BLE001 - shutdown must never block
-                pass
-            self._tray_hotkey_registered = False
+        self._release_tray_hotkey()
         for hotkey_id in getattr(self, "_media_key_ids", []):
             try:
                 self.frame.UnregisterHotKey(hotkey_id)

@@ -256,6 +256,21 @@ and <code>converter_advanced.py</code>, its windows in
 Audio Studio at the same time. The <code>standalone/converter</code>
 folder carries only the launcher, installer, icon and these
 documents.</p>
+<h2 id="unreleased">Unreleased</h2>
+<ul>
+<li><strong>No show and hide key until you choose one</strong>
+(2026-10-05). The app registered Ctrl+Alt+Shift+C system-wide, and other
+QuillVille apps use that key for menu commands, so while this app ran
+theirs never fired. It now has no key by default; <strong>File &gt; Show
+and Hide Key…</strong> (Ctrl+Alt+Shift+H) lets you type one, or leave it
+empty for none, and refuses a key any QuillVille app uses as a command
+or as its own show and hide key, in one sentence naming the app.
+Somebody who had the old key is moved to none and told once, at the next
+launch; a key somebody chose is kept
+(<code>quill/core/family_chords.py</code>,
+<code>quill/core/show_hide_keys.py</code>,
+<code>quill/ui/show_hide_key_picker.py</code>).</li>
+</ul>
 <h2 id="100--2026-09-28">1.0.0 – 2026-09-28</h2>
 <p>The first public release. The app was first built in July 2026 as an
 audio converter; that build was never published as an installer, and

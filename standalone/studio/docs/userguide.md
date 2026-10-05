@@ -356,7 +356,7 @@ Two listening aids live on the **Book Tools** menu:
 
 Two items on the **Studio** menu track your listening across launches:
 
-- **Resume on launch** (a check item, off by default) - when set, launching the Studio reopens the most recently played book at its saved position. If that file no longer exists, it stays closed silently.
+- **Resume Last Book on Launch** (Ctrl+Alt+F10, a check item, off by default) - when set, launching the Studio reopens the most recently played book at its saved position. If that file no longer exists, it stays closed silently.
 - **Recently Played** (a submenu, rebuilt each time you open it) - the books you have played most recently. Pick one to open it in the Workbench.
 
 ## Preferences

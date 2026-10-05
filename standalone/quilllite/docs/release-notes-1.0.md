@@ -413,7 +413,7 @@ Four start switched off, in the same list:
 
 ### Every key is yours to change
 
-**Tools > Keyboard Manager** (**Ctrl+Alt+Shift+R**) lists every command with
+**Tools > Keyboard Manager** (**Ctrl+Alt+Shift+Space**) lists every command with
 its key. Type part of a name to find one, and press **Enter** on its row to
 give it a different key. If something else already has that key, QUILL Lite
 tells you which command and asks what you want to do.

@@ -329,7 +329,7 @@ change a key.
 
 ### Every key is yours to change
 
-**Tools > Keyboard Manager** (**Ctrl+Alt+Shift+R**) lists every command with
+**Tools > Keyboard Manager** (**Ctrl+Alt+Shift+Space**) lists every command with
 its key. Type part of a name to find one, press **Enter** on it, and give it the
 key you want. If another command already has that key, QUILL Lite tells you
 which one and asks what you want to do.

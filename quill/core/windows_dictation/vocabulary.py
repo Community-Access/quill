@@ -97,6 +97,10 @@ class Command(StrEnum):
     SPELL_ON = "spell_on"
     SPELL_OFF = "spell_off"
     HELP = "help"
+    CORRECT = "correct"
+    CHOOSE_1 = "choose_1"
+    CHOOSE_2 = "choose_2"
+    CHOOSE_3 = "choose_3"
 
 
 @dataclass(frozen=True, slots=True)
@@ -276,6 +280,32 @@ COMMAND_HELP: tuple[CommandHelp, ...] = (
         Command.READ_BACK,
         ("read that", "repeat that"),
         "Reads the last phrase aloud again.",
+        "Correcting",
+    ),
+    CommandHelp(
+        Command.CORRECT,
+        ("correct that",),
+        "Reads the other things the speech engine thought you said, numbered, "
+        "when it offers them (Windows speech recognition does). Then say choose "
+        "and a number.",
+        "Correcting",
+    ),
+    CommandHelp(
+        Command.CHOOSE_1,
+        ("choose one", "choose 1"),
+        "After correct that, puts the first of the other guesses in place of the last phrase.",
+        "Correcting",
+    ),
+    CommandHelp(
+        Command.CHOOSE_2,
+        ("choose two", "choose 2"),
+        "The same, with the second guess.",
+        "Correcting",
+    ),
+    CommandHelp(
+        Command.CHOOSE_3,
+        ("choose three", "choose 3"),
+        "The same, with the third guess.",
         "Correcting",
     ),
     CommandHelp(

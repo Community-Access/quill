@@ -61,6 +61,9 @@ class NewFeedDialog:
         self._list = wx.ListBox(
             self.dialog, choices=[candidate.describe() for candidate in self._candidates]
         )
+        from quill.ui.dialog_contract import set_accessible_name
+
+        set_accessible_name(self._list, f"Feeds that might be {show_title}")
         self._list.SetHelpText(
             "Each feed was found by looking up this show's title in the podcast "
             "directories, and was read to check it answers with episodes. The "

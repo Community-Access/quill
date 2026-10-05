@@ -153,6 +153,12 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # default is that a build which changes its mind about it reaches everybody
     # who never chose otherwise, which a migration contract would freeze.
     "core/window_geometry.py::save_geometry": "marker",
+    # The show/hide key the listener chose for Weather, Converter or Media
+    # Player (2026-10-05), schema-stamped. An app missing from the file has not
+    # decided yet, which is what makes the "your key is now off" sentence a
+    # once-only thing; a key that is present is the listener's and is never
+    # rewritten by a later build.
+    "core/show_hide_keys.py::save_show_hide_key": "versioned",
     # The sound card a player app was last sent to: one machine-local string
     # per app ("" = whatever Windows gives it). Trivially defaulted, and a
     # lost file means the system default, which is where every app starts

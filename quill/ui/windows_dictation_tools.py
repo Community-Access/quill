@@ -94,6 +94,8 @@ class DictationToolsMixin:
 
     def cmd_dictation_into(self, control: Any) -> None:
         """Ctrl+F11 in a text field: dictate into *control*, or stop if it is."""
+        if self._dictation_repeat():  # type: ignore[attr-defined]
+            return  # Windows repeating the held key
         shared = _shared()
         preferences = self._dictation_preferences()  # type: ignore[attr-defined]
         if preferences.engine == "voice_typing":
@@ -101,13 +103,13 @@ class DictationToolsMixin:
             return
         controller = self._dictation_controller()  # type: ignore[attr-defined]
         if controller.active and shared._host is self and self._dictation_targeted() is control:
-            controller.stop()
+            self._dictation_press(controller)  # type: ignore[attr-defined]
             return
         self._dictation_target(self, control=control)  # type: ignore[attr-defined]
         if controller.active:
             self._dictation_say("Dictation moved to this field.")  # type: ignore[attr-defined]
             return
-        controller.start()
+        self._dictation_press(controller)  # type: ignore[attr-defined]
 
     # -- keys ------------------------------------------------------------------ #
 
@@ -123,6 +125,10 @@ class DictationToolsMixin:
         controller = shared._controller
         if controller is None or shared._host is not self:
             return False
+        if controller.muted:  # Escape while the AI's reply is read: listen now
+            controller.unmute()
+            self._dictation_say("Listening.")  # type: ignore[attr-defined]
+            return True
         return bool(controller.cancel_phrase())
 
     # -- plumbing ---------------------------------------------------------------- #

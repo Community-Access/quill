@@ -11,6 +11,18 @@ Quill Converter is the product wrapper; the application code lives in the
 `quill/ui/converter_dialogs.py`, the shared conversion engine under
 `quill/core/audio/`, the shared Convert Audio dialog, and this folder.
 
+## Unreleased
+
+- **No show and hide key until you choose one** (2026-10-05). The app
+  registered Ctrl+Alt+Shift+C system-wide, and other QuillVille apps use that key for
+  menu commands, so while this app ran theirs never fired. It now has no key by
+  default; **File > Show and Hide Key...** (Ctrl+Alt+Shift+H) lets you type
+  one, or leave it empty for none, and refuses a key any QuillVille app uses as
+  a command or as its own show and hide key, in one sentence naming the app.
+  Somebody who had the old key is moved to none and told once, at the next
+  launch; a key somebody chose is kept (`quill/core/family_chords.py`,
+  `quill/core/show_hide_keys.py`, `quill/ui/show_hide_key_picker.py`).
+
 ## 1.0.0 - 2026-09-28
 
 The first public release. The app was first built in July 2026 as an audio

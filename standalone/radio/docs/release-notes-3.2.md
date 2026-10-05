@@ -313,6 +313,10 @@ longer loads every show you pass. It waits until you stop on one. The list
 stays quick to move through with your screen reader, and a big folder fills
 in all at once.
 
+- **Searching the Internet Archive finds new uploads.** Find on an Internet
+  Archive folder now puts the best matches first, so a series uploaded last
+  week turns up instead of being lost behind older items.
+
 ## YouTube
 
 A listener asked for two things, searching YouTube properly and reading a
@@ -732,6 +736,15 @@ newer build, and Check for Updates offers it to you.
   or reset computer" in the user guide.
 - **Live stations stay close to live.** After a hiccup in the connection, a
   live station now catches up rather than playing further and further behind.
+- **Four keys work even with the other QuillVille apps open.** Restore from
+  Backup (Ctrl+Alt+Shift+W), Recording Settings (Ctrl+Alt+Shift+I), Recent
+  Problems (Ctrl+Alt+Shift+P) and Choose Columns (Ctrl+Alt+Shift+C) did
+  nothing while Quill Weather, Inkwell, the Media Player or Converter was
+  running, because each of those apps took one of these keys for itself. Those
+  apps now have no show and hide key until you choose one, so the keys are
+  Quill Radio's again. And Ctrl+Alt+Shift+R stays Quill Radio's own: QUILL,
+  QUILL Lite, QUILL Cast and Audio Studio each had a command on it, and those
+  commands have moved.
 
 ## Where to learn more
 

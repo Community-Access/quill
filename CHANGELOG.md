@@ -2,6 +2,139 @@
 
 ## 1.0.0
 
+### Dictation: hold-to-talk, live words, talking to the AI, and OpenAI with your own key (2026-10-05)
+
+- **Hold Ctrl+F11 to talk**, after VS Code's hold mode: held for half a second,
+  letting go stops; a quick press still toggles; key repeats are ignored. On by
+  default; **More Dictation Settings** turns it off (`hold.py`,
+  `windows_dictation_hold.py`). Stopping while a phrase is being heard now waits
+  for it and writes it (`live.py`, `recognizer_worker.py`).
+- **Live preview with Nemotron**: run as a streaming model on one stream per
+  session, its words while you speak go to the status bar and braille as
+  "Hearing: ...", never into the document or the undo history; spoken only on
+  request, new words only (`streaming.py`, `preview.py`). Nemotron's questions
+  now end in question marks: the mark it writes on hearing the next phrase
+  corrects the last one, and a phrase that opens like a question closes with one.
+- **Words go where you started speaking**, even if the caret moved or the focus
+  left while the phrase was recognised ("Written where you started"); the
+  caret is put back (`windows_dictation_ports.py`).
+- **"Correct that"** and "choose one" to "choose three", with Windows speech
+  recognition's alternates; other engines say they have none.
+- **Talk to the AI**: Ctrl+F11 in the AI Conversation window's message box,
+  with its own **Talking to AI** profile (long pause, fillers removed); sent at
+  the pause or on Enter; the microphone is muted while the reply is read, and
+  Escape listens at once (`hosted_ai_chat.py`).
+- **OpenAI dictation, own key only**: a new speech engine listed only where an
+  OpenAI key is saved, off until chosen, with a plain consent; models read live
+  from OpenAI's `/v1/models` without the ones OpenAI is retiring, the newest
+  pre-selected, never switched silently; Realtime transcription for
+  `gpt-live-transcribe`, streamed file transcription otherwise; My Words sent as
+  `keywords`; refused in Safe Mode; three reviewed egress entries; a Dictation
+  section in `docs/legal/PRIVACY.md` (`openai_models.py`, `openai_transcribe.py`,
+  `openai_recognizer.py`).
+- **My Dictation Instructions** for Tidy Dictated Text (Ctrl+F3), sent as a
+  marked part, with the dictated text treated as data (`instructions.py`).
+- **Kind to a modest computer**: the keep-up watchdog gives way to Moonshine
+  when a downloaded model falls behind, and models are unloaded five minutes
+  after the last session (`keep_up.py`).
+- **More Dictation Settings...** (Alt+A in Dictation Settings), a new shared
+  window (`dictation_more_dialog.py`); eight new settings; all 24
+  `windows_dictation_*` settings now declared once and inherited by both
+  editors' settings (`settings_fields.DictationSettings`).
+- **Parity**: QUILL's Live Dictation row is now the checkable **Dictation On**,
+  as in QUILL Lite, and QUILL shows dictation's state in the status bar; F1
+  topics for the live dictation commands; `test_dictation_parity.py` fails on any
+  difference in dictation commands, keys or settings.
+- A new lesson, **Write by talking**, in both editors' tutorials.
+- The dictation plan (`dict.md`) is retired into
+  `docs/design/2026-10-05-dictation-plan-and-status.md`, with what is still to
+  do (the Spanish recordings and review, baseline-machine measurements, word
+  biasing for the local models).
+
+### Optional speech models for dictation, in QUILL and QUILL Lite (2026-10-05)
+
+- **Better Accuracy: Speech Models...** in Dictation Settings (**Alt+B**), both
+  editors, through the shared dialog: the same local models VS Code offers --
+  NVIDIA Nemotron 3.5 ASR Streaming 0.6B (suggested), Parakeet Unified 0.6B,
+  Parakeet TDT 0.6B v3, Whisper small and base, with tiny already bundled --
+  then the rest of the Whisper family (base.en, small.en, medium.en, medium,
+  large-v3-turbo, large-v3, Distil-Whisper small.en, medium.en and large-v3)
+  and Moonshine base. All sherpa-onnx int8 CPU builds from Hugging Face, each
+  pinned to a commit with every file's size and SHA-256
+  (`quill/core/windows_dictation/model_catalog.py`, `model_catalog_whisper.py`).
+- **On request only**: a question names source, size, licence (with a link)
+  and folder; metered connections are asked about first; free space is
+  checked; progress with Cancel Download; resume from a `.part` file through
+  the shared `release_assets.download_verified` (new `partial` argument);
+  checksum failures delete the file and say so; Remove frees the space
+  (`model_store.py`, `quill/ui/dictation_models_dialog.py`).
+- **Shared folder**: `%LOCALAPPDATA%\QuillVille\Dictation\models`, or
+  `data\dictation\models` inside a portable copy.
+- **Engines**: downloaded models join the Speech engine list; the bundled
+  Moonshine stays the default. A missing or failing download gives way to the
+  built-in engine with one spoken sentence (`model_loader.py`,
+  `local_recognizer.py`, `controller.py`). Nemotron runs a phrase at a time for
+  now; the streaming session is built for the live preview to follow.
+- **The two-second check** from dict.md section 1, built at last
+  (`speed_check.py`): it times Moonshine tiny here and says plainly when a
+  model "may lag behind your speech on this computer".
+- **`scripts/dictbench.py --model ID`** benchmarks any of them (`--fetch`,
+  `--list-models`), logging word errors, commands recognised, first-word and
+  final latency, speed, peak memory, CPU use, size, startup and failures.
+- Measured sherpa-onnx against whisper.cpp for Whisper on one thread:
+  sherpa-onnx four to five times faster, so it runs every model (dict.md 4.5).
+
+### Internet Archive searches put the best matches first (2026-10-05)
+
+- Find on an Internet Archive folder in Quill Radio (and QUILL's radio), and the
+  libraries part of Search, used to take the first 40 results in alphabetical
+  order of the Archive's item names, so a series uploaded on 1 October 2026
+  ("YTJD1956...", Yours Truly, Johnny Dollar) never appeared. Searches now use
+  the Archive's relevance order; browsing keeps its stable order for paging.
+
+### Show and hide keys that never take another app's key (2026-10-05)
+
+- **Nineteen keys that never fired, fixed at the root.** A show and hide key
+  is registered with Windows, so it reaches its app before any window sees the
+  key, and a menu key elsewhere in the family that equals it never fires while
+  that app runs. Quill Weather (Ctrl+Alt+Shift+W), Quill Converter (C), Quill
+  Media Player (P) and Quill Inkwell (I) each held a key that was a menu
+  command somewhere else. Those four now have **no show and hide key until you
+  choose one** in their new **File > Show and Hide Key...**
+  (Ctrl+Alt+Shift+H), which refuses a key any QuillVille app uses, naming the
+  app in one sentence. Somebody who had the old key is moved to none and told
+  once; a key somebody chose is kept. QUILL keeps Ctrl+Alt+Shift+Q, Quill Radio
+  Ctrl+Alt+Shift+R and Quill Cast Ctrl+Alt+Shift+F12
+  (`quill/core/family_chords.py`, `quill/core/show_hide_keys.py`,
+  `quill/ui/show_hide_key_picker.py`).
+- **Four commands off Quill Radio's key.** The Keymap Editor in QUILL and the
+  Keyboard Manager in QUILL Lite move to **Ctrl+Alt+Shift+Space**, together
+  (family rule 2); QUILL Cast's Restore from a Backup moves to
+  **Ctrl+Alt+F12**, the editors' Restore Settings key (rules 2 and 9); Audio
+  Studio's Resume Last Book on Launch moves to **Ctrl+Alt+F10** (rule 9).
+- **The QuillVille launchers.** Quill Cast's row is Ctrl+Alt+Shift+F12 in every
+  app, the same key that shows and hides Cast, and the other rows count through
+  F7 to F11. Before, a developer build's sixth row sat on Cast's key
+  (`quill/core/app_keymaps.py`, `quill/ui/quillville_menu.py`).
+- **Inkwell's other two system-wide keys, too.** Quick Insert
+  (Ctrl+Alt+Shift+K) and Expand Word (Ctrl+Alt+Shift+X, Quill Radio's Export My
+  Setup) were registered system-wide by default and took keys from commands
+  in QUILL, QUILL Lite, Quill Radio and Quill Cast. Both are now off until chosen in **File > Quick Insert
+  Key...** (Ctrl+Alt+Shift+K) and **File > Expand Word Key...**
+  (Ctrl+Alt+Shift+E), through the same picker and refusals; somebody on the
+  old keys is moved to none and told once (`quill/apps/inkwell_keys.py`).
+- **The gate has no allowance left.** `tests/unit/ui/test_global_hotkeys.py`
+  fails on any default key in any app that equals any key a family app
+  registers system-wide by default -- the show and hide keys, Inkwell's keys
+  and QUILL's Global Hotkeys table, listed in
+  `family_chords.default_system_wide_keys()` -- and on any new
+  `RegisterHotKey` call site nobody has accounted for. It now reads the launchers, menus built from row tables at
+  runtime (Local Media), QUILL's Weather menu and the numbered Alt+Shift+1 to 9
+  rows. The menu keys it scans from the source are committed as
+  `quill/core/data/family_menu_chords.json`, because an installed app has no
+  source to scan; `python -m quill.tools.family_chords_snapshot --write`
+  regenerates it and the gate fails on drift.
+
 ### Podcasts: OPML import and feed checks tell the truth (2026-10-04)
 
 - **One User-Agent for the family** (`quill/core/http_client.py`):

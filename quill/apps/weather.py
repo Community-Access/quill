@@ -86,7 +86,9 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin):
 
         register_weather_commands(self)
         self._ensure_tray_icon(self._build_weather_tray_menu, tooltip=_TITLE)
-        self._register_tray_hotkey("Ctrl+Alt+Shift+W")  # show/hide Weather to the tray
+        # Show/hide to the tray: no key until the listener chooses one in File >
+        # Show and Hide Key (Ctrl+Alt+Shift+W until 2026-10-05; family_chords.py).
+        self._start_show_hide_key("weather", self._weather_data_dir() / "weather_settings.json")
         self._refresh_statusbar()
         self.frame.Bind(wx.EVT_CLOSE, self._on_weather_app_close)
         # Resume/start the alert watch once the frame and task manager are up
@@ -117,6 +119,7 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin):
         file_menu = wx.Menu()
         tray_id, exit_id = wx.NewIdRef(), wx.NewIdRef()
         file_menu.Append(tray_id, "Minimize to &Tray\tCtrl+W")
+        self._append_show_hide_key_item(file_menu, "weather")
         file_menu.Append(exit_id, "E&xit\tCtrl+Q")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._send_to_tray(), id=tray_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._exit_application(), id=exit_id)

@@ -22,6 +22,12 @@ in 1.2.0. They are all here, and a few more besides. Your settings, recent
 files and recovered work come with you exactly as they are, and **Help >
 Check for Updates** (**Ctrl+Alt+U**) offers 1.2.0 like any other update.
 
+One key has moved. **Tools > Keyboard Manager** is now
+**Ctrl+Alt+Shift+Space**. Its old key, Ctrl+Alt+Shift+R, shows and hides Quill
+Radio from anywhere, so while Quill Radio was running the Keyboard Manager
+never opened. QUILL moved its Keyboard Manager to the same key, so the two
+still match.
+
 ## Try this first
 
 1. Put the cursor on a word you are not happy with and press **Shift+F7**.
@@ -246,6 +252,78 @@ QUILL has the same thing, in the same place. The user guide's "Dictating in
 Spanish" has the whole list. If something comes out wrong, tell us through
 **Help > Get Help from Support**. We're keen to hear how it goes.
 
+## Better accuracy: optional speech models
+
+Dictation works the moment you install. If you want more accuracy, you can
+now download a larger model: the same local models VS Code offers for its own
+dictation, plus the rest of the Whisper family.
+
+Open Dictation Settings (**Alt+Shift+F6**) and press **Better Accuracy:
+Speech Models...** (**Alt+B**). The list starts with our suggestion, NVIDIA's
+**Nemotron 3.5 ASR Streaming** (VS Code's default), then NVIDIA's two
+**Parakeet** models, **Whisper** small, base and tiny, the rest of Whisper from
+base.en to large-v3, and a lighter **Moonshine base**. Each one says what it is
+good for, how big it is, which languages it knows, which computers suit it and
+whether yours should keep up.
+
+- Nothing downloads until you press **Download...** and say yes to a question
+  that names where it comes from, its size, its licence and where it will be
+  saved. On a metered connection you are asked first.
+- They are free and run on your computer's processor; no graphics card
+  needed. Your voice never leaves the computer.
+- A download you cancel carries on later from where it stopped, every file is
+  checked before it is used, and **Remove** frees the space.
+- QUILL and QUILL Lite share the models on the same computer. In a portable
+  copy, models are saved inside the portable folder, so everything travels
+  together.
+- Moonshine stays the engine until you choose another. If a downloaded model
+  goes missing, dictation tells you in one sentence and uses the built-in one.
+
+The user guide's "Better accuracy: optional speech models" has every model's
+published accuracy, what we measured, and "Nemotron or Parakeet: which should
+I try?".
+
+## Dictation that keeps up with you
+
+Dictation learned a lot this time, much of it from studying how VS Code does
+it. Everything here is in QUILL too, on the same keys.
+
+- **Hold Ctrl+F11 to talk.** Hold the keys down, say what you want, and let
+  go: your last phrase is written and dictation turns off. A quick press still
+  turns it on and leaves it on. If holding keys is hard for you, turn it off in
+  **More Dictation Settings**.
+- **Stopping never cuts you off.** Press or let go of Ctrl+F11 while you are
+  still finishing a sentence, and that phrase is written before dictation
+  stops.
+- **See your words while you speak.** With Nemotron or OpenAI, the words heard
+  so far show in the status bar and on a braille display as you talk, and the
+  final words go in when you pause. Nothing is spoken unless you ask for it,
+  so nothing talks over you. Nemotron's questions now end with a question
+  mark.
+- **Your words go where you started.** Move the cursor, or even switch
+  windows, while a phrase is being recognised, and it still goes where you
+  were speaking. You hear "Written where you started".
+- **"Correct that."** With Windows speech recognition, say "correct that" to
+  hear its other guesses, then "choose two" to swap one in.
+- **Talk to the AI.** Press Ctrl+F11 in the AI Conversation window and ask
+  out loud. Your message is sent when you pause, the reply is read aloud, and
+  the microphone waits until the reading is done. Dictation uses its own
+  Talking to AI settings there by itself.
+- **OpenAI dictation, with your own key.** If you have your own OpenAI key,
+  you can choose OpenAI as the speech engine. It is off until you choose it,
+  it asks you first in plain words, and it says exactly what is sent: your
+  speech goes to OpenAI and is billed to your account. You pick the model from
+  OpenAI's own current list. Your computer's own engines stay the default.
+- **My Dictation Instructions** tell Tidy Dictated Text (**Ctrl+F3**) how you
+  like your writing: "write numbers as digits", "British spelling".
+- **Kinder to an older computer.** Speech models are put away a few minutes
+  after you stop dictating, giving their memory back, and an optional model
+  that cannot keep up hands over to the built-in engine and tells you why.
+
+**More Dictation Settings...** (**Alt+A** in Dictation Settings) holds the new
+choices. The user guide's chapter on writing by voice has a section for each,
+and there is a new lesson, "Write by talking", in **Help > Tutorials...**.
+
 ## Your recent documents, one key away
 
 New: press **Alt+Shift+0** (or choose **File > Recent Documents...**) to see
@@ -385,6 +463,7 @@ reviewing AI-written plans. Thank you, Andre.
 | **Ctrl+Alt+Enter** | Toggle Task Done |
 | **Ctrl+Alt+Shift+End** | Export as HTML |
 | **Ctrl+Alt+Shift+Enter** | Open from Clipboard |
+| **Ctrl+Alt+Shift+Space** | Keyboard Manager, on its new key |
 
 The rest of the AI dictionary's keys are in the user guide. All of these are in
 QUILL too, on the same keys.
@@ -397,6 +476,8 @@ everything here in thirteen chapters:
 - Chapter 7, Checking your writing, for the thesaurus, Look Up and the AI
   dictionary.
 - Chapter 8, What you hear, for Activity and Repeat Last Result.
+- Chapter 9, Writing by voice, for holding Ctrl+F11, the live preview,
+  talking to the AI and OpenAI dictation.
 - Chapter 10, AI help, for a Google Gemini key and your ChatGPT plan.
 - Chapter 11, Making QUILL Lite yours, for Find a setting and for making
   QUILL Lite your text editor.

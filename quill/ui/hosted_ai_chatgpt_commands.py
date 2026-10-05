@@ -22,9 +22,11 @@ recognition writes what it heard, and what it heard is not always the word
 meant. The selection, else the paragraph the cursor is in, goes to the model
 with an instruction to fix misheard words, punctuation and fillers and change
 nothing else, and the answer arrives with Replace My Selection ready -- one
-keystroke to accept, Control Z to take it back. It runs only on a direct route
-(a ChatGPT plan or an own key): the free service has no such template, and a
-person who dictates a page at a time should not spend an allowance on it.
+keystroke to accept, Control Z to take it back. My Dictation Instructions
+(``quill.core.windows_dictation.instructions``) go with it when there are
+any. It runs only on a direct route (a ChatGPT plan or an own key): the free
+service has no such template, and a person who dictates a page at a time
+should not spend an allowance on it.
 """
 
 from __future__ import annotations
@@ -137,7 +139,7 @@ class ChatGptAiMixin(WordToolsMixin):
         self._announce("Working.")
         service.ask(
             "tidy_dictation",
-            original,
+            self._with_dictation_instructions(original),
             None,
             on_done=lambda text, _quota: self._show_ai_result(
                 "tidy_dictation", text, "", start, end, original, ""
@@ -146,6 +148,18 @@ class ChatGptAiMixin(WordToolsMixin):
         )
 
     # -- plumbing -------------------------------------------------------- #
+
+    def _with_dictation_instructions(self, text: str) -> str:
+        """*text*, with My Dictation Instructions when there are any (dict.md 5.3 C)."""
+        from quill.core.windows_dictation.instructions import instructions_path, read, wrap
+
+        profile = getattr(self, "_dictation_profile_path", None)
+        if not callable(profile):
+            return text
+        try:
+            return wrap(text, read(instructions_path(profile())))
+        except Exception:  # noqa: BLE001 - instructions are a preference, never a blocker
+            return text
 
     def _ai_direct(self) -> bool:
         """Whether requests skip QUILL's service: a ChatGPT sign-in, or an own key.

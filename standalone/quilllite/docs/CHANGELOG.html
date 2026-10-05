@@ -244,6 +244,108 @@
 <main id="main-content" tabindex="-1">
 <h1 id="quill-lite-changelog">QUILL Lite changelog</h1>
 <h2 id="120--2026-10-03">1.2.0 – 2026-10-03</h2>
+<h3
+id="dictation-hold-to-talk-live-words-talking-to-the-ai-and-openai-with-your-own-key-2026-10-05">Dictation:
+hold-to-talk, live words, talking to the AI, and OpenAI with your own
+key (2026-10-05)</h3>
+<ul>
+<li><strong>Hold Ctrl+F11 to talk</strong>, after VS Code’s hold mode:
+held for half a second, letting go stops; a quick press still toggles;
+key repeats are ignored. On by default; <strong>More Dictation
+Settings</strong> turns it off (<code>hold.py</code>,
+<code>windows_dictation_hold.py</code>). Stopping while a phrase is
+being heard now waits for it and writes it (<code>live.py</code>,
+<code>recognizer_worker.py</code>).</li>
+<li><strong>Live preview with Nemotron</strong>: run as a streaming
+model on one stream per session, its words while you speak go to the
+status bar and braille as “Hearing: …”, never into the document or the
+undo history; spoken only on request, new words only
+(<code>streaming.py</code>, <code>preview.py</code>). Nemotron’s
+questions now end in question marks: the mark it writes on hearing the
+next phrase corrects the last one, and a phrase that opens like a
+question closes with one.</li>
+<li><strong>Words go where you started speaking</strong>, even if the
+caret moved or the focus left while the phrase was recognised (“Written
+where you started”); the caret is put back
+(<code>windows_dictation_ports.py</code>).</li>
+<li><strong>“Correct that”</strong> and “choose one” to “choose three”,
+with Windows speech recognition’s alternates; other engines say they
+have none.</li>
+<li><strong>Talk to the AI</strong>: Ctrl+F11 in the AI Conversation
+window’s message box, with its own <strong>Talking to AI</strong>
+profile (long pause, fillers removed); sent at the pause or on Enter;
+the microphone is muted while the reply is read, and Escape listens at
+once (<code>hosted_ai_chat.py</code>).</li>
+<li><strong>OpenAI dictation, own key only</strong>: a new speech engine
+listed only where an OpenAI key is saved, off until chosen, with a plain
+consent; models read live from OpenAI’s <code>/v1/models</code> without
+the ones OpenAI is retiring, the newest pre-selected, never switched
+silently; Realtime transcription for <code>gpt-live-transcribe</code>,
+streamed file transcription otherwise; My Words sent as
+<code>keywords</code>; refused in Safe Mode; three reviewed egress
+entries; a Dictation section in <code>docs/legal/PRIVACY.md</code>
+(<code>openai_models.py</code>, <code>openai_transcribe.py</code>,
+<code>openai_recognizer.py</code>).</li>
+<li><strong>My Dictation Instructions</strong> for Tidy Dictated Text
+(Ctrl+F3), sent as a marked part, with the dictated text treated as data
+(<code>instructions.py</code>).</li>
+<li><strong>Kind to a modest computer</strong>: the keep-up watchdog
+gives way to Moonshine when a downloaded model falls behind, and models
+are unloaded five minutes after the last session
+(<code>keep_up.py</code>).</li>
+<li><strong>More Dictation Settings…</strong> (Alt+A in Dictation
+Settings), a new shared window (<code>dictation_more_dialog.py</code>);
+eight new settings; all 24 <code>windows_dictation_*</code> settings now
+declared once and inherited by both editors’ settings
+(<code>settings_fields.DictationSettings</code>).</li>
+<li><strong>Parity</strong>: QUILL’s Live Dictation row is now the
+checkable <strong>Dictation On</strong>, as in QUILL Lite, and QUILL
+shows dictation’s state in the status bar; F1 topics for the live
+dictation commands; <code>test_dictation_parity.py</code> fails on any
+difference in dictation commands, keys or settings.</li>
+<li>A new lesson, <strong>Write by talking</strong>, in both editors’
+tutorials.</li>
+<li>The dictation plan (<code>dict.md</code>) is retired into
+<code>docs/design/2026-10-05-dictation-plan-and-status.md</code>, with
+what is still to do (the Spanish recordings and review, baseline-machine
+measurements, word biasing for the local models).</li>
+</ul>
+<h3 id="better-accuracy-optional-speech-models-2026-10-05">Better
+accuracy: optional speech models (2026-10-05)</h3>
+<ul>
+<li><strong>Dictation Settings &gt; Better Accuracy: Speech
+Models…</strong> (<strong>Alt+B</strong>): the same local models VS Code
+offers – NVIDIA Nemotron 3.5 ASR Streaming 0.6B (the suggested
+download), Parakeet Unified 0.6B, Parakeet TDT 0.6B v3, Whisper small
+and base (tiny is built in) – then Whisper base.en to large-v3,
+Distil-Whisper, and Moonshine base. Downloaded only on request, after a
+question naming source, size, licence and folder; metered connections
+asked first; free space checked; Cancel Download keeps what arrived and
+Download resumes; every file checked against a pinned SHA-256; Remove
+frees the space. CPU only.</li>
+<li>One folder for QUILL and QUILL Lite
+(<code>%LOCALAPPDATA%\QuillVille\Dictation\models</code>), or inside the
+portable folder in a portable copy.</li>
+<li>A downloaded model joins the Speech engine list; Moonshine stays the
+default. A missing or broken download gives way to the built-in engine
+with one sentence. A two-second speed check says whether this computer
+should keep up.</li>
+<li>Shared with QUILL, through the same code
+(<code>quill/core/windows_dictation/model_catalog.py</code>,
+<code>model_store.py</code>, <code>model_loader.py</code>,
+<code>speed_check.py</code>,
+<code>quill/ui/dictation_models_dialog.py</code>).</li>
+</ul>
+<h3 id="keyboard-manager-on-ctrlaltshiftspace-2026-10-05">Keyboard
+Manager on Ctrl+Alt+Shift+Space (2026-10-05)</h3>
+<ul>
+<li><strong>Tools &gt; Keyboard Manager moves from Ctrl+Alt+Shift+R to
+Ctrl+Alt+Shift+Space</strong>, with QUILL’s Keymap Editor (family rule
+2). The old key is Quill Radio’s system-wide show and hide key, so while
+Radio ran the Keyboard Manager never opened
+(<code>quill/core/lite/commands.py</code>,
+<code>quill/core/keymap.py</code>).</li>
+</ul>
 <h3 id="dictating-in-spanish-2026-10-04">Dictating in Spanish
 (2026-10-04)</h3>
 <ul>

@@ -17,6 +17,7 @@ from quill.apps.radio_favorites_tree import RadioFavoritesTreeMixin
 from quill.apps.radio_menu_bar import RadioMenuBarMixin
 from quill.core import http_client
 from quill.core.app_features import AppArea, load_app_features
+from quill.core.family_chords import SHOW_HIDE_DEFAULTS
 from quill.core.radio import reading_services
 from quill.core.radio.radio_browser import RadioBrowserError
 from quill.core.sound_events import SoundEvent
@@ -214,7 +215,8 @@ class RadioAppFrame(
             "play_pause": self._on_play_stop_button,
             "stop": self.radio_stop,
         })
-        self._register_tray_hotkey("Ctrl+Alt+Shift+R")  # show/hide Radio to the tray
+        # Show/hide Radio to the tray: Ctrl+Alt+Shift+R (core/family_chords.py).
+        self._register_tray_hotkey(SHOW_HIDE_DEFAULTS["radio"])
         # Per-command system-wide hotkeys (Help > Global Hotkeys...). Register
         # the show/hide command the default table binds so its Ctrl+Alt+Shift+Q
         # actually dispatches; the transport commands (radio.play_pause/stop/...)

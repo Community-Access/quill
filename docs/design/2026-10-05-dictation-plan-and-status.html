@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Dictation in QUILL and QUILL Lite: plan, status and what is
+left</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1
+id="dictation-in-quill-and-quill-lite-plan-status-and-what-is-left">Dictation
+in QUILL and QUILL Lite: plan, status and what is left</h1>
+<p><em>Written 2026-10-05. This note replaces the working plan that
+lived in a gitignored <code>dict.md</code> at the repository root from
+2026-09-28 to 2026-10-05. It keeps that plan’s design history, records
+what was built, and holds everything that could not be built yet, so
+nothing in it is lost when <code>dict.md</code> goes.</em></p>
+<p>Dictation is one feature in two editors. Everything below lives in
+shared code (<code>quill/core/windows_dictation/</code>,
+<code>quill/ui/windows_dictation_*.py</code>,
+<code>quill/ui/dictation_*_dialog.py</code>), so QUILL and QUILL Lite
+have the same commands, keys, settings and windows.
+<code>tests/unit/ui/test_dictation_parity.py</code> fails on any
+difference. QUILL’s Locked Dictation (F9, Ctrl+F9) is a separate, older
+engine that records first and transcribes afterwards; it is QUILL’s own
+and outside this note.</p>
+<p>Code comments, tests and older documents cite the retired plan by
+section (“dict.md 2.4”, “dict.md section 1”). Appendix A maps every one
+of those numbers to where its content lives now.</p>
+<p>Companion documents:
+<code>docs/design/dictation for windows only/engine-comparison.md</code>
+(the 2026-09-25 engine measurements),
+<code>quill-lite-dictation-prd.md</code> and
+<code>implementation.md</code> in the same folder.</p>
+<h2 id="1-the-rule-that-decides-everything-a-modest-computer">1. The
+rule that decides everything: a modest computer</h2>
+<p>QUILL Lite is often used on the computer somebody was given, not the
+one they would choose, with a screen reader running that must stay
+instantly responsive.</p>
+<p><strong>The baseline machine</strong> (decided 2026-10-05, Jeff’s
+answer to dict.md question 4): Windows 10, 64-bit, 4 GB of memory, an
+older dual-core processor with no graphics help, NVDA or JAWS running
+beside a browser or mail program, possibly on battery.</p>
+<p><strong>The budgets</strong> every default must meet there:</p>
+<table>
+<thead>
+<tr>
+<th>Budget</th>
+<th>Limit</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Speed</td>
+<td>0.25 or less (seconds of computing per second of speech, one
+thread)</td>
+<td>leaves three quarters of a core for the screen reader</td>
+</tr>
+<tr>
+<td>Memory while dictating</td>
+<td>600 MB or less for dictation</td>
+<td>a 4 GB machine already pages with a browser open</td>
+</tr>
+<tr>
+<td>Screen-reader delay</td>
+<td>no audible lag in speech or braille</td>
+<td>the reader is the person’s whole interface</td>
+</tr>
+<tr>
+<td>Idle cost</td>
+<td>nothing when dictation is off</td>
+<td>no model loaded, no microphone open, no thread spinning</td>
+</tr>
+<tr>
+<td>First word written</td>
+<td>within 1.5 seconds of the pause</td>
+<td>the pause is the Enter key; longer feels broken</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The safeguards, all built:</strong></p>
+<ul>
+<li><strong>The two-second check</strong> (<code>speed_check.py</code>,
+2026-10-05): Speech Models times Moonshine tiny on this computer and
+says, for each optional model, whether it should keep up.</li>
+<li><strong>The keep-up watchdog</strong>
+(<code>keep_up.KeepUpWatchdog</code>, wired into
+<code>recognizer_worker.py</code>): when audio waits four seconds or
+more, or two phrases in a row take more than one and a half times their
+length to recognise, a downloaded model gives way to Moonshine for the
+rest of the session and the person hears why, once. The saved choice is
+not changed. Built-in engines are not watched (they are the fast ones);
+OpenAI is not watched (its speed is the network’s).</li>
+<li><strong>Nothing loaded when dictation is off</strong>
+(<code>keep_up.IdleUnloader</code>): models load on the first start,
+stay loaded while dictation is in use, and are unloaded five minutes
+after the last session ends.</li>
+</ul>
+<p>Measured: Moonshine tiny 0.04 to 0.05 and Whisper tiny.en 0.15 to
+0.20; every optional model except Moonshine base is over 0.25 on one
+thread (section 6).</p>
+<h2 id="2-what-vs-code-does-and-what-quill-took">2. What VS Code does,
+and what QUILL took</h2>
+<p>VS Code’s dictation was studied from its public MIT-licensed source
+and its documentation on 2026-10-05:
+<code>src/vs/workbench/contrib/codeEditor/browser/dictation/editorDictation.ts</code>,
+<code>src/vs/workbench/contrib/chat/browser/speechToText/dictationSession.ts</code>
+and <code>chatSpeechToTextService.ts</code>,
+<code>src/vs/workbench/contrib/speech/browser/speechService.ts</code>,
+<code>src/vs/workbench/contrib/accessibility/browser/accessibilityConfiguration.ts</code>,
+and code.visualstudio.com/docs/configure/accessibility/voice. Thanks to
+the VS Code team: several of the best ideas below are theirs. No VS Code
+code was copied; QUILL’s version is written in its own code and
+words.</p>
+<table>
+<thead>
+<tr>
+<th>VS Code behaviour</th>
+<th>What QUILL does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hold mode.</strong> The start key starts dictation; if the
+key is still held 500 ms later, letting go stops it. A quick press
+toggles.</td>
+<td>Taken. <code>hold.py</code>, <code>windows_dictation_hold.py</code>.
+Hold Ctrl+F11 (whatever the key is bound to) for half a second and talk;
+let go to stop. A quick press still toggles. Key repeats while held are
+ignored. Setting <strong>Hold the dictation key to talk</strong>, on by
+default (dict.md question 1).</td>
+</tr>
+<tr>
+<td><strong>Toggle on the same key.</strong> Pressing the start key
+while dictating stops it.</td>
+<td>Already QUILL’s behaviour.</td>
+</tr>
+<tr>
+<td><strong>Stop applies the final transcript.</strong></td>
+<td>Taken. Stopping while a phrase is being heard now waits for it
+(<code>LiveMixin.finish</code>, the worker’s <code>finish</code>), so
+letting go of the key never loses the last phrase. A timer stops anyway
+after four seconds.</td>
+</tr>
+<tr>
+<td><strong>Interim text in grey, replaced by the final
+segment.</strong></td>
+<td>Taken, accessibly. Provisional words never enter the document or the
+undo history; they show as “Hearing: …” in the status bar’s Dictation
+part and on a braille display, throttled to a few updates a second, and
+the final words replace them. Spoken only if the person chooses
+<strong>Show it, and say new words quietly</strong> (new words only, no
+more than every two seconds). GATE-13 holds: nothing the screen reader
+already says is repeated.</td>
+</tr>
+<tr>
+<td><strong>Start and stop signals</strong>
+(<code>voiceRecordingStarted</code>,
+<code>voiceRecordingStopped</code>).</td>
+<td>Already QUILL’s (tones and words, each switchable).</td>
+</tr>
+<tr>
+<td><strong>Read-only refusal</strong> (the start command is disabled in
+a read-only editor).</td>
+<td>Already QUILL’s: it refuses with a sentence and the microphone stays
+closed.</td>
+</tr>
+<tr>
+<td><strong>Dictation into any text input</strong> (chat, terminal,
+editor).</td>
+<td>Already QUILL’s (Find, Replace, the AI pad); the AI Conversation
+window’s message box joined it (section 4).</td>
+</tr>
+<tr>
+<td><strong>Cancel removes the session’s text.</strong></td>
+<td>Considered and not taken as is. For a screen-reader user, Escape
+removing a whole session of dictation is too destructive. QUILL’s Escape
+throws away the phrase being heard and its preview; nothing written
+moves. “Scratch that” and Ctrl+Z take back written phrases one at a
+time.</td>
+</tr>
+<tr>
+<td><strong>Keyword activation (“Hey Code”) paused when the window loses
+focus.</strong></td>
+<td>Already QUILL’s wake phrase rule: it listens only while QUILL is the
+window in front.</td>
+</tr>
+<tr>
+<td><strong>Speech timeout</strong>
+(<code>accessibility.voice.speechTimeout</code>).</td>
+<td>Already QUILL’s <strong>Stop dictation after silence</strong>.</td>
+</tr>
+<tr>
+<td><strong>Auto-synthesize: read the reply aloud when voice was
+used.</strong></td>
+<td>Taken for the AI Conversation window (section 4), with the
+microphone muted while it is read.</td>
+</tr>
+<tr>
+<td><strong>20-minute maximum session.</strong></td>
+<td>Not taken: QUILL’s silence timeout and microphone watchdog cover the
+same risk without cutting off somebody who is still talking.</td>
+</tr>
+<tr>
+<td><strong>LLM cleanup of every transcript</strong>
+(<code>dictation.experimental.llmCleanup</code>, default on,
+4000-character cap, 5-second timeout).</td>
+<td>Not taken (dict.md 5.3 D): every phrase would go to the internet and
+cost money. QUILL tidies only when asked (Tidy Dictated Text, section
+5).</td>
+</tr>
+<tr>
+<td><strong>Dictation instructions</strong>
+(<code>~/.copilot/dictation.md</code>,
+<code>.github/dictation.md</code>) and a cleanup prompt that treats the
+transcript as data, never a request.</td>
+<td>Taken: <strong>My Dictation Instructions</strong>
+(<code>dictation-instructions.md</code> beside My Words and Phrases),
+sent with Tidy Dictated Text as a marked part; the tidy instruction says
+the text is data and must not be answered.</td>
+</tr>
+<tr>
+<td><strong>On-device Nemotron 3.5 ASR Streaming</strong>, downloaded on
+first use.</td>
+<td>Offered as an optional download since 2026-10-05 (section 6), never
+the default. Now run live (section 3).</td>
+</tr>
+<tr>
+<td><strong>A cloud model option</strong> (MAI, web only).</td>
+<td>QUILL’s equivalent is OpenAI with the person’s own key (section 7):
+optional, off by default, with consent.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-live-streaming-with-nemotron-dictmd-44">3. Live streaming with
+Nemotron (dict.md 4.4)</h2>
+<p>Built 2026-10-05: <code>streaming.NemotronLive</code>, fed by
+<code>recognizer_worker.py</code>.</p>
+<ul>
+<li>While the voice detector hears speech, the audio goes to Nemotron as
+it arrives; its provisional words are posted to the controller’s
+<code>on_partial</code> only when they change, and the controller
+decides what to show and say.</li>
+<li>At the pause the final words go through the normaliser and the
+command processor exactly as any engine’s do, so a preview can never run
+a command.</li>
+<li><strong>One stream per session, not per phrase.</strong> Measured on
+Nemotron with recorded speech (Windows’ Zira voice, 16 kHz): given each
+phrase on its own, Nemotron left the end open (“Can you send me the
+report by Friday” with no mark). Kept running into the next phrase, it
+wrote the right mark at the start of what it heard next (“? The meeting
+moved to Thursday”), with the question mark, full stop and exclamation
+mark right on all five test sentences. So each phrase is written at the
+pause, closed with a question mark when it opens like one (“Can you”,
+“Where did”) and a full stop otherwise
+(<code>preview.close_sentence</code>, deliberately narrow: “Do the
+dishes” and “When I get home” stay statements), and the mark Nemotron
+gives the next phrase corrects it in place
+(<code>LiveMixin._revise_mark</code>). A mark Nemotron confirms is
+final, so a next phrase opening with “where” or “and” does not undo
+it.</li>
+<li><strong>Only a little quiet is decoded.</strong> After speech, 0.6
+seconds of quiet is fed, then nothing until the next speech (with its
+0.4-second lead-in). Measured: 0.6 seconds of quiet plus the lead-in
+keeps the punctuation; 1.2 seconds made Nemotron start afresh,
+unpunctuated. A silent room costs nothing.</li>
+<li><strong>End to end</strong> (real Silero voice detector, real worker
+and controller, 22.5 seconds of recorded speech fed at live pace,
+12-core test machine): the document read “Can you send me the report by
+Friday? The meeting moved to Thursday afternoon. Where did you put the
+keys? What a wonderful surprise! Is the meeting still at three
+o’clock?”, ten previews were shown, and the worker kept up with no
+backlog.</li>
+<li>The question that ended with a full stop (dict.md 4.5) is
+fixed.</li>
+</ul>
+<h2 id="4-talk-to-the-ai-and-dictation-profiles-dictmd-32-and-6">4. Talk
+to the AI, and dictation profiles (dict.md 3.2 and 6)</h2>
+<p>Built 2026-10-05 in <code>hosted_ai_chat.py</code>
+(<code>_talk_to_it</code>) and the shared mixins.</p>
+<ul>
+<li>Ctrl+F11 in the AI Conversation window’s message box dictates
+there.</li>
+<li>The box carries the <strong>Talking to AI</strong> profile, which
+switches on by itself while it is dictation’s target: its own pause
+(Long by default), filler removal (on), automatic punctuation (on), and
+no “just write what I say”.</li>
+<li><strong>Send after the pause</strong> is the default (dict.md
+question 2); <strong>When I press Enter</strong> is the
+alternative.</li>
+<li>The reply is read aloud, as it always was, and the microphone is
+muted while it is read, for an estimate of its length at a brisk
+screen-reader rate plus a second
+(<code>windows_dictation_hold.reply_seconds</code>). Escape listens at
+once.</li>
+<li>Text said or typed while waiting for a reply stays in the box.</li>
+</ul>
+<h2 id="5-teaching-dictation-your-words-dictmd-5">5. Teaching dictation
+your words (dict.md 5)</h2>
+<ul>
+<li><strong>A. Corrections in the words file</strong>: shipped
+2026-09-28 (My Words and Phrases).</li>
+<li><strong>B. Word biasing.</strong> Built where an engine supports it:
+OpenAI dictation sends your My Words vocabulary as <code>keywords</code>
+(live check: “Doctor Okonkwo” and “Kubernetes”, which every local model
+misheard as “Akonko” and “Cuba Ernets”, came back right). For the local
+transducers it is <strong>not buildable today</strong>, measured
+2026-10-05 with sherpa-onnx 1.13.8: Nemotron’s streaming NeMo decoder
+supports greedy search only (“Unsupported decoding method:
+modified_beam_search”), and Parakeet’s offline NeMo hotwords path
+upper-cases the words for icefall’s upper-case BPE, so biasing either
+did nothing or wrote capital-letter garbage (“DOCO OKONKWOT”). Revisit
+when sherpa-onnx encodes hotwords for mixed-case SentencePiece
+vocabularies.</li>
+<li><strong>C. Clean up my dictation</strong>: built as <strong>Tidy
+Dictated Text</strong> (Ctrl+F3, 2026-09-29) plus <strong>My Dictation
+Instructions</strong> (2026-10-05). One request when asked, on a ChatGPT
+plan or the person’s own key, nothing replaced until Replace My
+Selection. The free hosted AI is not used for it (an allowance would be
+gone in a morning of dictation).</li>
+<li><strong>D. Clean up every phrase automatically</strong>: not built,
+by decision (cost, privacy, latency on modest connections).</li>
+</ul>
+<h2 id="6-optional-speech-models-dictmd-45">6. Optional speech models
+(dict.md 4.5)</h2>
+<p>Built 2026-10-05 and unchanged here except that Nemotron now runs
+live. Moonshine tiny and Whisper tiny stay bundled in every installer
+and portable copy and stay the default; nothing downloads unless the
+person chooses it.</p>
+<p><strong>The catalogue</strong> (<code>model_catalog.py</code>, every
+file pinned to a Hugging Face commit and SHA-256): Nemotron 3.5 ASR
+Streaming 0.6B (682 MB, en, es, NVIDIA OpenMDW-1.1), Parakeet Unified
+0.6B (663 MB, en), Parakeet TDT 0.6B v3 (670 MB, en, es and 23 more, CC
+BY 4.0), Whisper small, base, base.en, small.en, medium.en, medium,
+large-v3-turbo, large-v3, Distil-Whisper small.en, medium.en and
+large-v3 (MIT), and Moonshine base (141 MB, en). Not offered: Moonshine
+“small” (no sherpa-onnx build), non-English Moonshine (non-commercial
+licence), Nemotron at full precision (2.6 GB), the onnx-community 4-bit
+Nemotron (onnxruntime-genai only), large-v2 and distil-large-v2
+(superseded).</p>
+<p><strong>Licences.</strong> The person’s own computer downloads each
+model from the publisher at their request after a question that names
+the licence: use, not redistribution. If QUILL ever mirrors or bundles
+one, its licence and notices must travel with it.</p>
+<p><strong>The runtime is sherpa-onnx for everything.</strong> Whisper
+through sherpa-onnx int8 ran four to seven times faster per thread than
+whisper.cpp v1.9.1 q5 on the same recordings; whisper.cpp loaded faster
+and used about half the memory, but would have been a second native
+runtime and a process per phrase. parakeet.cpp was not adopted (no
+Python binding).</p>
+<p><strong>What dictbench measured</strong> (ten recordings, one thread,
+2026-10-05):</p>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Word errors</th>
+<th>Computing per second of speech</th>
+<th>Text after the pause</th>
+<th>Most memory</th>
+<th>Load</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Moonshine tiny (built in)</td>
+<td>3.4%</td>
+<td>0.05</td>
+<td>0.2 s</td>
+<td>210 MB</td>
+<td>2.2 s</td>
+</tr>
+<tr>
+<td>Whisper tiny.en (built in)</td>
+<td>3.4%</td>
+<td>0.20</td>
+<td>0.7 s</td>
+<td>303 MB</td>
+<td>1.3 s</td>
+</tr>
+<tr>
+<td>Moonshine base</td>
+<td>3.4%</td>
+<td>0.08</td>
+<td>0.3 s</td>
+<td>365 MB</td>
+<td>2.0 s</td>
+</tr>
+<tr>
+<td>Whisper base</td>
+<td>5.1%</td>
+<td>0.37</td>
+<td>1.4 s</td>
+<td>417 MB</td>
+<td>1.5 s</td>
+</tr>
+<tr>
+<td>Parakeet Unified 0.6B</td>
+<td>3.4%</td>
+<td>0.33</td>
+<td>1.2 s</td>
+<td>844 MB</td>
+<td>5.2 s</td>
+</tr>
+<tr>
+<td>Parakeet TDT 0.6B v3</td>
+<td>4.2%</td>
+<td>0.34</td>
+<td>1.2 s</td>
+<td>805 MB</td>
+<td>5.1 s</td>
+</tr>
+<tr>
+<td>Nemotron 3.5 ASR Streaming</td>
+<td>2.5%</td>
+<td>0.40</td>
+<td>1.5 s</td>
+<td>about 790 MB</td>
+<td>3.2 s</td>
+</tr>
+<tr>
+<td>Whisper small</td>
+<td>5.1%</td>
+<td>1.29</td>
+<td>4.7 s</td>
+<td>859 MB</td>
+<td>4.4 s</td>
+</tr>
+<tr>
+<td>Whisper medium</td>
+<td>3.4%</td>
+<td>3.04</td>
+<td>11.2 s</td>
+<td>2.1 GB</td>
+<td>9.6 s</td>
+</tr>
+<tr>
+<td>Whisper large-v3-turbo</td>
+<td>3.4%</td>
+<td>4.20</td>
+<td>15.4 s</td>
+<td>1.4 GB</td>
+<td>5.3 s</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Storage.</strong> Installed copies:
+<code>%LOCALAPPDATA%\QuillVille\Dictation\models</code>, shared by both
+editors. Portable copies:
+<code>&lt;portable folder&gt;\data\dictation\models</code>.
+<code>QUILL_DICTATION_DOWNLOADS</code> overrides both, for tests.</p>
+<p><strong>Never a silent switch.</strong> A downloaded model that is
+missing or will not load gives way to the built-in engine with one
+sentence; the keep-up watchdog does the same and says so.</p>
+<h2 id="7-openai-dictation-own-key-only">7. OpenAI dictation, own key
+only</h2>
+<p>Built 2026-10-05. The rules are the owner’s.</p>
+<ul>
+<li><strong>Only with the person’s own OpenAI key</strong>, saved in Use
+My Own AI Key (the same store QUILL’s AI help uses). QUILL’s free hosted
+AI never carries audio. The engine is listed only where a key is saved;
+Safe Mode refuses it.</li>
+<li><strong>Off by default, with consent.</strong> Choosing OpenAI in
+Dictation Settings shows a plain question
+(<code>openai_models.CONSENT_TEXT</code>): what is sent, to whom, who
+pays, that QUILL keeps no copy, OpenAI’s own retention, and that the
+built-in engines send nothing. No is the default. The agreement can be
+taken back in More Dictation Settings. Local dictation stays the
+default.</li>
+<li><strong>The model list is read live</strong> from
+<code>/v1/models</code> when More Dictation Settings opens, filtered to
+transcription models (<code>transcribe</code> in the id, or a Whisper
+id; speaker-labelling “diarize” models left out) and without the models
+OpenAI is retiring. OpenAI’s API does not mark deprecation, so the
+retiring list is copied from OpenAI’s deprecations page, read
+2026-10-05: whisper-1, gpt-4o-transcribe, gpt-4o-mini-transcribe and
+gpt-4o-transcribe-diarize shut down on 2027-02-26, replaced by
+gpt-live-transcribe and gpt-transcribe. It is a list of what to leave
+out, never of what to offer. Newest first; the newest is pre-selected
+when nothing was chosen.</li>
+<li><strong>If the chosen model disappears</strong>, More Dictation
+Settings says so once and leaves the choice empty until the person picks
+again; dictation that meets a missing model stops with a sentence. It
+never moves to another model.</li>
+<li><strong>The newest API.</strong> OpenAI’s speech-to-text guide (read
+2026-10-05) recommends Realtime transcription for live microphone audio,
+with <code>gpt-live-transcribe</code>, turn detection off (QUILL’s own
+voice detector finds the pause, and only speech is sent). That is the
+live path: one WebSocket per session
+(<code>wss://api.openai.com/v1/realtime?intent=transcription</code>,
+through the <code>websockets</code> package already in the shared
+runtime), audio appended while you speak (the live preview comes from
+its deltas), committed at the pause. Other models use
+<code>/v1/audio/transcriptions</code> with <code>stream=true</code>, one
+short WAV per phrase. Both send the dictation language and your words as
+<code>keywords</code>.</li>
+<li><strong>The key</strong> travels only in the Authorization header
+over verified TLS, is never logged or put in a sentence, and
+<code>quill.stability.redaction</code> scrubs <code>sk-</code> keys from
+any bundle. Three reviewed entries in
+<code>quill/tools/network_egress_entries.py</code>; the privacy
+statement (<code>docs/legal/PRIVACY.md</code>) says what is sent.</li>
+</ul>
+<p><strong>Live check, 2026-10-05</strong> (the owner’s key read at run
+time into an environment variable for a scratchpad script only; never
+written anywhere): the account’s list offered exactly
+<code>gpt-live-transcribe</code> and <code>gpt-transcribe</code>. Both
+paths, through the real voice detector, worker and controller, wrote
+“Can you send me the report by Friday? The meeting moved to Thursday
+afternoon. Please call Dr. Okonkwo about the Kubernetes cluster.” and
+the exclamation (gpt-transcribe wrote “!”, gpt-live-transcribe “.”); the
+live path showed 18 previews while speaking and answered each phrase
+about 0.6 seconds after the pause.</p>
+<h2 id="8-the-rest-of-the-reliability-and-magic-work">8. The rest of the
+reliability and magic work</h2>
+<table>
+<thead>
+<tr>
+<th>dict.md item</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2.1 Hold-to-talk</td>
+<td>Built 2026-10-05 (section 2). On by default.</td>
+</tr>
+<tr>
+<td>2.2 Escape cancels the phrase</td>
+<td>Shipped 2026-09-28; now also throws away the preview, and listens at
+once while an AI reply is read.</td>
+</tr>
+<tr>
+<td>2.3 Microphone watchdog</td>
+<td>Shipped 2026-09-28.</td>
+</tr>
+<tr>
+<td>2.4 Words go where you started</td>
+<td>Built 2026-10-05 (<code>LiveMixin</code>,
+<code>EditorDocument.anchor</code>): the caret is remembered when speech
+starts; if it moves, or the focus goes to another window, before the
+phrase is written, the words still go there, the person’s caret is put
+back (moved along), and they hear “Written where you started” (with the
+document’s name when it was another window). If that spot changed, the
+words go at the cursor and they are told.</td>
+</tr>
+<tr>
+<td>2.5 One Ctrl+Z per phrase</td>
+<td>Shipped. A late mark correction (section 3) is its own undo
+step.</td>
+</tr>
+<tr>
+<td>2.7 Self-healing engine</td>
+<td>Shipped.</td>
+</tr>
+<tr>
+<td>2.8 One session at a time</td>
+<td>Shipped.</td>
+</tr>
+<tr>
+<td>3.1 Dictate into any text field</td>
+<td>Shipped; the AI Conversation window joined it.</td>
+</tr>
+<tr>
+<td>3.2 Talk to the AI</td>
+<td>Built (section 4).</td>
+</tr>
+<tr>
+<td>3.3 Recent phrases</td>
+<td>Shipped.</td>
+</tr>
+<tr>
+<td>4.4 Live preview</td>
+<td>Built (section 3), with OpenAI’s live model too.</td>
+</tr>
+<tr>
+<td>4.5 Optional models</td>
+<td>Built (section 6).</td>
+</tr>
+<tr>
+<td>5.3 A, B, C, D</td>
+<td>Section 5.</td>
+</tr>
+<tr>
+<td>6 “Correct that”</td>
+<td>Built: “correct that” reads up to three other guesses where the
+engine offers them, numbered, and “choose one” to “choose three” swaps
+the last phrase. Windows speech recognition offers them (SAPI
+<code>Alternates</code>); Moonshine, Whisper, the downloaded models and
+OpenAI give one answer, and the command says so.</td>
+</tr>
+<tr>
+<td>6 Profiles</td>
+<td>Built: “Writing” (Dictation Settings) and “Talking to AI” (More
+Dictation Settings), switching by itself in the AI window.</td>
+</tr>
+<tr>
+<td>Section 1 safeguards</td>
+<td>Built (section 1).</td>
+</tr>
+<tr>
+<td>8 Questions</td>
+<td>Answered 2026-10-05: hold-to-talk on; send after the pause; the AI
+pieces ship in QUILL Lite 1.2 and QUILL 1.0; the baseline machine as in
+section 1; speech models as optional downloads (section 6).</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Parity gaps closed on 2026-10-05.</strong> QUILL’s menu row
+was “Start or Stop Dictation” with no check mark, where QUILL Lite’s is
+the checkable “Dictation On”: QUILL now has “Dictation On”, checked
+while dictation writes. QUILL had no status-bar trace of dictation’s
+state; it now shows the state, and the live preview, quietly. The 24
+<code>windows_dictation_*</code> settings were declared twice; they are
+now one <code>DictationSettings</code> dataclass both editors’
+<code>Settings</code> inherit. The live dictation commands had no F1
+topics in <code>topics.json</code>; they have them now. The parity test
+fails on any new difference.</p>
+<h2 id="9-spanish-dictmd-9">9. Spanish (dict.md 9)</h2>
+<p><strong>Built 2026-10-04</strong> (the cheaper first step: Spanish
+text, English commands), in both editors: the <strong>Dictation
+language</strong> setting (Alt+G); Whisper tiny multilingual bundled
+(about 104 MB; tiny, not base, because base.en already measured 0.28
+against the 0.25 budget); <code>language="es"</code> everywhere it
+matters; Spanish filler removal (“este” left out, being the word
+“this”); Windows speech asked for a Spanish recogniser; “Quill dicta”
+and “deja de dictar” as the default wake and stop phrases; Spanish
+punctuation words (coma, punto, punto y aparte, abrir interrogación and
+the rest) counted only while the engine is not punctuating (option 1 of
+the “coma” problem, decided 2026-10-03), matched without accents; the
+three text bugs fixed (accents cut by the parser, no capital after “¿”,
+“¿” and “¡” not stripped). The drafted Spanish commands
+(<code>SPANISH_COMMAND_HELP</code>) are off unless
+<code>QUILL_DEV_BUILD=1</code> and
+<code>QUILL_DICTATION_SPANISH_COMMANDS=1</code>. Nemotron and Parakeet
+TDT dictate Spanish too, as downloads.</p>
+<p><strong>The Spanish punctuation design, kept.</strong> Marks are
+recognised anywhere in a phrase, and “coma” (“que coma”) and “punto”
+(“el punto es”) are ordinary Spanish words, which is why they count only
+while automatic punctuation is off. “colon” is not an English mark in
+Spanish (Colón). “¿” and “¡” hug the next word like an opening
+bracket.</p>
+<h2 id="10-not-done-yet-and-what-each-needs">10. Not done yet, and what
+each needs</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Needs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>The Spanish measurement</strong> (dict.md 9.7 step 2):
+accuracy, speed and memory of multilingual Whisper tiny on Spanish
+against the section 1 budgets, and whether Whisper writes “¿” and “¡”
+itself</td>
+<td>Ten Spanish recordings from a native speaker (instructions
+below)</td>
+</tr>
+<tr>
+<td><strong>Native-speaker review</strong> of the wake and stop phrases,
+the Spanish punctuation words, and the Spanish command table, before the
+commands are switched on</td>
+<td>A native speaker’s time</td>
+</tr>
+<tr>
+<td><strong>The real-voice test</strong> for every engine and model (the
+2026-10-05 numbers are on a synthetic voice, which flatters every
+engine)</td>
+<td>Recordings of real voices, ideally several</td>
+</tr>
+<tr>
+<td><strong>Measurements on the baseline machine</strong> with NVDA and
+JAWS running: speed, memory high-water mark, screen-reader lag, battery
+draw over ten minutes, for every offered model; then tightening each
+model’s <code>cost_factor</code> (the Distil-Whisper and large-v3
+factors are estimates)</td>
+<td>A 4 GB dual-core Windows 10 computer and a person to listen</td>
+</tr>
+<tr>
+<td><strong>A CI-runnable benchmark gate</strong>
+(<code>dictbench.py</code> baseline mode): every engine offered must
+meet the speed budget on one thread on recorded speech</td>
+<td>Recorded speech checked into a test-asset location, and a CI runner
+whose speed is stable enough to gate on</td>
+</tr>
+<tr>
+<td><strong>Word biasing for the local models</strong> (section 5
+B)</td>
+<td>A sherpa-onnx that encodes hotwords for mixed-case SentencePiece
+vocabularies, or a hotword-capable Nemotron decoder</td>
+</tr>
+<tr>
+<td><strong>One folder for Parakeet</strong> shared by QUILL’s Locked
+Dictation (<code>quill/core/speech/providers/parakeet_onnx.py</code>)
+and live dictation, so it is not downloaded twice</td>
+<td>A small migration; deferred</td>
+</tr>
+<tr>
+<td><strong>Interface translation</strong> (menus and spoken replies in
+Spanish)</td>
+<td>Its own decision (dict.md 9.6)</td>
+</tr>
+<tr>
+<td>Held for Jeff, untouched: removing the bundled models from the
+installers, and Nemotron as the first-run default</td>
+<td>Jeff</td>
+</tr>
+</tbody>
+</table>
+<h3 id="recording-the-spanish-test-set-from-dictmd-910">Recording the
+Spanish test set (from dict.md 9.10)</h3>
+<p>For the native speaker. Ten sentences, ten files, one text file:</p>
+<ol type="1">
+<li><strong>Ten sentences</strong> of ordinary written Spanish, the kind
+of thing somebody dictates: a short email, a note, a question or two (so
+“¿” appears), one exclamation, a few names and numbers, a few accented
+words (está, información, mañana), and one longer sentence of 20 words
+or so.</li>
+<li><strong>Record each one as its own WAV file: 16 kHz, mono,
+16-bit.</strong> In Audacity: Project Rate 16000, record in mono, File
+&gt; Export &gt; Export as WAV, “Signed 16-bit PCM”. Name them
+<code>01.wav</code> to <code>10.wav</code>. Speak naturally, at normal
+speed, in a normal room, on an ordinary headset or laptop microphone. Do
+not say the punctuation.</li>
+<li><strong><code>transcripts.txt</code></strong> in the same folder,
+UTF-8, one line per file: the name, a tab, and exactly what was said,
+written properly, with accents, capitals and punctuation, for example
+<code>01.wav</code>, a tab, then
+<code>Hola, Ana. ¿Puedes enviarme el informe mañana?</code></li>
+</ol>
+<p>Then the benchmark is one command each:</p>
+<pre><code>python scripts/dictbench.py &quot;path\to\folder&quot; --language es --json es-tiny.json
+python scripts/dictbench.py &quot;path\to\folder&quot; --engine whisper --json en-check.json</code></pre>
+<p>It prints, per file and overall, word errors (and again ignoring
+accents), which marks were written (including “¿” and “¡”), speed per
+thread against the 0.25 budget, and peak memory when <code>psutil</code>
+is installed.</p>
+<h2 id="11-design-history-worth-keeping">11. Design history worth
+keeping</h2>
+<ul>
+<li><strong>Why the default stays local and small.</strong> Moonshine
+tiny and Whisper tiny meet every budget with room to spare on the
+baseline machine; every larger model is over the speed budget on one
+thread. The reliability work (Escape, the watchdog, one Ctrl+Z per
+phrase, words where you started, finishing the last phrase) does more
+for everyday dictation than a bigger model.</li>
+<li><strong>Why downloads after all.</strong> dict.md 4.3 recommended a
+separate signed “Speech Pack” installer to keep “nothing downloads
+inside the app”. Jeff asked on 2026-10-05 for VS Code’s models “as on
+demand offerings”, which overrides that rule for the optional models
+only; the bundled engines and the no-download default are
+unchanged.</li>
+<li><strong>Why streaming costs.</strong> A streaming model works
+continuously while you talk, competing with the screen reader on two
+cores and draining a battery. Feeding only speech plus 0.6 seconds of
+quiet (section 3) is how live dictation keeps that cost to the speaking
+itself.</li>
+<li><strong>Why OpenAI dictation is opt-in and own-key only.</strong>
+Audio is the most personal thing QUILL handles. It leaves the computer
+only when the person chose the engine, agreed in plain words, and pays
+for it themselves; the free hosted AI has an allowance that a morning of
+dictation would exhaust and is not built to carry audio.</li>
+<li><strong>Why not clean every phrase.</strong> Cost, privacy and a
+network round trip before each phrase is written, slowest exactly where
+QUILL’s users are.</li>
+</ul>
+<h2
+id="appendix-a-the-dictmd-section-numbers-and-where-they-live-now">Appendix
+A: the dict.md section numbers, and where they live now</h2>
+<table>
+<thead>
+<tr>
+<th>dict.md</th>
+<th>What it was</th>
+<th>Here</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>section 1</td>
+<td>The modest-computer rule: baseline machine, budgets, two-second
+check, keep-up watchdog, unloading when idle</td>
+<td>Section 1</td>
+</tr>
+<tr>
+<td>2.1</td>
+<td>Hold-to-talk on Ctrl+F11</td>
+<td>Sections 2 and 8</td>
+</tr>
+<tr>
+<td>2.2</td>
+<td>Escape cancels the phrase being heard</td>
+<td>Section 8</td>
+</tr>
+<tr>
+<td>2.3</td>
+<td>The microphone watchdog</td>
+<td>Section 8</td>
+</tr>
+<tr>
+<td>2.4</td>
+<td>Words go where you started speaking</td>
+<td>Section 8</td>
+</tr>
+<tr>
+<td>2.5</td>
+<td>One Ctrl+Z per phrase</td>
+<td>Section 8</td>
+</tr>
+<tr>
+<td>2.6</td>
+<td>The read-only refusal</td>
+<td>Sections 2 and 8 (shipped 2026-09-28)</td>
+</tr>
+<tr>
+<td>2.7</td>
+<td>The self-healing engine</td>
+<td>Section 8</td>
+</tr>
+<tr>
+<td>2.8</td>
+<td>One session at a time</td>
+<td>Section 8</td>
+</tr>
+<tr>
+<td>3.1</td>
+<td>Dictate into any text field</td>
+<td>Section 8</td>
+</tr>
+<tr>
+<td>3.2</td>
+<td>Talk to the AI</td>
+<td>Section 4</td>
+</tr>
+<tr>
+<td>3.3</td>
+<td>Recent phrases</td>
+<td>Section 8</td>
+</tr>
+<tr>
+<td>4.1 to 4.3</td>
+<td>What VS Code uses, what it means on the baseline machine, the
+options</td>
+<td>Sections 6 and 11</td>
+</tr>
+<tr>
+<td>4.4</td>
+<td>The live preview</td>
+<td>Section 3</td>
+</tr>
+<tr>
+<td>4.5</td>
+<td>Optional speech models, as built</td>
+<td>Section 6</td>
+</tr>
+<tr>
+<td>5, 5.1, 5.3 A to D</td>
+<td>Teaching dictation your words</td>
+<td>Section 5</td>
+</tr>
+<tr>
+<td>6</td>
+<td>“Correct that”, dictation profiles, the live preview</td>
+<td>Sections 3, 4 and 8</td>
+</tr>
+<tr>
+<td>7, 8</td>
+<td>The recommendation order and the questions for Jeff</td>
+<td>Section 8</td>
+</tr>
+<tr>
+<td>9, 9.1 to 9.10</td>
+<td>Spanish dictation</td>
+<td>Sections 9 and 10</td>
+</tr>
+</tbody>
+</table>
+<h2 id="sources">Sources</h2>
+<ul>
+<li>VS Code (MIT): the files named in section 2, read from
+github.com/microsoft/vscode on 2026-10-05;
+code.visualstudio.com/docs/configure/accessibility/voice.</li>
+<li>OpenAI: developers.openai.com/api/docs/guides/speech-to-text,
+/guides/realtime-transcription, /guides/realtime-websocket and
+/deprecations, read 2026-10-05.</li>
+<li>NVIDIA Nemotron 3.5 ASR Streaming 0.6B model card; sherpa-onnx
+1.13.8.</li>
+<li>QUILL:
+<code>docs/design/dictation for windows only/engine-comparison.md</code>,
+<code>quill/core/windows_dictation/</code>,
+<code>scripts/dictbench.py</code>.</li>
+</ul>
+</main>
+</body>
+</html>

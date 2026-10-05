@@ -63,3 +63,9 @@ class PhraseHistory:
 
     def clear(self) -> None:
         self._phrases.clear()
+
+    def recent_text(self, limit: int = 200) -> str:
+        """The rolling context: the last *limit* characters dictated this
+        session, oldest first. For the command processor, and for any engine
+        that accepts a prompt (none offered today does; model_loader.py)."""
+        return " ".join(phrase.inserted.strip() for phrase in self._phrases)[-limit:]

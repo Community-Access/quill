@@ -106,7 +106,7 @@ DIVERGENCES: dict[str, str] = {
         "QUILL, beside indent and outdent, and on the F9 row in QUILL Lite."
     ),
     "cmd_spelling_voice_settings": (
-        "Ctrl+Alt+Shift+F7 is a QuillVille launcher in QUILL -- the six "
+        "Ctrl+Alt+Shift+F7 is a QuillVille launcher in QUILL -- the "
         "siblings sit on Ctrl+Alt+Shift+F7 through F12, and QUILL Lite, being "
         "the editor on its own, has none to launch. QUILL's Announcements "
         "window is one key down on Ctrl+Alt+Shift+F6: same modifiers, same "
@@ -114,7 +114,7 @@ DIVERGENCES: dict[str, str] = {
         "(bad.md P1.14)."
     ),
     "cmd_ai_usage": (
-        "Ctrl+Alt+Shift+F9 is a QuillVille launcher in QUILL -- the six siblings "
+        "Ctrl+Alt+Shift+F9 is a QuillVille launcher in QUILL -- the siblings "
         "sit on Ctrl+Alt+Shift+F7 through F12 (app_keymaps.SIBLING_APP_ACCELERATORS) "
         "-- and QUILL Lite, being the editor on its own, has none to launch. QUILL's "
         "Free AI Usage is Ctrl+Alt+Shift+F2: same modifiers, same finger shape, and "

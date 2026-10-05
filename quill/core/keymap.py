@@ -448,12 +448,12 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # their menu rows. Rule 9 is about once-a-year commands needing *a* key, not
     # the same key, and a menu row is a key route.
     "file.open_from_favorite_folder": "Ctrl+Shift+Grave, G",
-    # Two of P1.1's keyless names, each waiting on exactly one of the chords
-    # the move above frees, and each taking QUILL Lite's own chord for it so the
-    # two products agree. Both are once-in-a-while commands, which is where
-    # three-modifier chords belong (rule 9) -- and "reachable only by walking a
-    # menu" is a cost a screen-reader user pays on every visit, not once.
-    "tools.keymap_editor": "Ctrl+Alt+Shift+R",
+    # Two once-in-a-while commands on QUILL Lite's own chords, so the products
+    # agree (rule 2; three modifiers is where rule 9 puts them). Keyboard Manager
+    # left Ctrl+Alt+Shift+R on 2026-10-05, Quill Radio's system-wide show/hide
+    # key, which never reached here while Radio ran: Space is free in both editors
+    # and across the family, and every three-modifier F-key past F9 is not.
+    "tools.keymap_editor": "Ctrl+Alt+Shift+Space",
     "tools.sound_events": "Ctrl+Alt+Shift+O",
     # Open is leader G; its two managing verbs take two positions the reclaim
     # freed (bad.md 3.5). Keyless before, because the leader was full.

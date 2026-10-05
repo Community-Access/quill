@@ -28,6 +28,7 @@ from typing import Any
 
 import wx
 
+from quill.apps.inkwell_keys import InkwellKeysMixin
 from quill.core.abbreviations import (
     AbbreviationLibrary,
     load_abbreviation_library,
@@ -50,13 +51,8 @@ _BUILD = 1  # this version's build (docs/release/RELEASE.md, "Build numbers")
 _REPO = "Community-Access/quill"
 _IPC_SLOT = "inkwell"
 
-#: Hotkey ids for the two system-wide chords this app registers of its own
-#: (the tray toggle's id belongs to AppShellFrame).
-_QUICK_INSERT_HOTKEY_ID = 0x51A1
-_EXPAND_NOW_HOTKEY_ID = 0x51A2
 
-
-class QuillInkwellFrame(AppShellFrame, InkwellExpansionMixin):
+class QuillInkwellFrame(AppShellFrame, InkwellExpansionMixin, InkwellKeysMixin):
     """The manager window for a system-wide expander that runs in the tray."""
 
     def __init__(self, *, safe_mode: bool = False) -> None:
@@ -81,15 +77,8 @@ class QuillInkwellFrame(AppShellFrame, InkwellExpansionMixin):
         self._build_menu_bar()
         self._build_main_panel()
         self._ensure_tray_icon(self._build_tray_menu, tooltip=_TITLE)
-        self._register_tray_hotkey(self._settings.tray_hotkey)
-        # Two more system-wide chords, so the expander is reachable from
-        # whatever application you are typing in -- which is the whole point.
-        self._register_global_hotkey(
-            _QUICK_INSERT_HOTKEY_ID, self._settings.quick_insert_hotkey, self.open_quick_insert
-        )
-        self._register_global_hotkey(
-            _EXPAND_NOW_HOTKEY_ID, self._settings.expand_now_hotkey, self.expand_now
-        )
+        # Show/hide, Quick Insert and Expand Word: none until chosen.
+        self._start_inkwell_keys()
         self.frame.Bind(wx.EVT_CLOSE, self._on_close)
         # Safe Mode means "do the minimum and touch nothing": a global keyboard
         # hook is exactly the kind of thing it exists to keep switched off.
@@ -99,8 +88,7 @@ class QuillInkwellFrame(AppShellFrame, InkwellExpansionMixin):
             wx.CallAfter(self._start_expansion)
         self._start_ipc_poll()
         self._refresh_status()
-        # Repair "start with Windows" if an older build wrote it as the bare
-        # runtime exe (launch_heal, 2026-09-27).
+        # Repair "start with Windows" written as the bare runtime exe (launch_heal).
         if not safe_mode:
             from quill.platform.windows import inkwell_startup, launch_heal
 
@@ -115,6 +103,7 @@ class QuillInkwellFrame(AppShellFrame, InkwellExpansionMixin):
         file_menu = wx.Menu()
         tray_id, exit_id = wx.NewIdRef(), wx.NewIdRef()
         file_menu.Append(tray_id, "Minimize to &Tray\tCtrl+W")
+        self._append_inkwell_key_items(file_menu)
         file_menu.Append(exit_id, "E&xit\tCtrl+Q")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.toggle_window_to_tray(), id=tray_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._exit_application(), id=exit_id)
@@ -313,8 +302,8 @@ class QuillInkwellFrame(AppShellFrame, InkwellExpansionMixin):
         quick_btn.SetHelpText(
             "Pick an abbreviation and have its expansion typed into the "
             "window you were just working in -- the way to use entries set "
-            "to expand only manually. Also on Ctrl+K here, or its "
-            "system-wide hotkey from any application."
+            "to expand only manually. Also on Ctrl+K here, and from any "
+            "program on the key you choose with File, Quick Insert Key."
         )
         manage_btn.Bind(wx.EVT_BUTTON, lambda _e: self.open_manager())
         quick_btn.Bind(wx.EVT_BUTTON, lambda _e: self.open_quick_insert())
@@ -480,29 +469,6 @@ class QuillInkwellFrame(AppShellFrame, InkwellExpansionMixin):
             save_settings(self._data_dir, self._settings)
             self._announce(f"{len(self._settings.excluded_processes)} applications excluded.")
         dialog.Destroy()
-
-    def _register_global_hotkey(self, hotkey_id: int, chord: str, handler: object) -> None:
-        """Claim one system-wide chord, best effort.
-
-        A chord another program already owns stays theirs -- Inkwell says so
-        rather than appearing to work. Failing to register must never stop the
-        app from starting.
-        """
-        if not sys.platform.startswith("win") or not chord:
-            return
-        from quill.ui.tray_hotkey import parse_hotkey
-
-        parsed = parse_hotkey(wx, chord)
-        if parsed is None:
-            return
-        flags, key_code = parsed
-        try:
-            if not self.frame.RegisterHotKey(hotkey_id, flags, key_code):
-                self._set_status(f"{chord} is already in use by another program.")
-                return
-        except Exception:  # noqa: BLE001
-            return
-        self.frame.Bind(wx.EVT_HOTKEY, lambda _e: handler(), id=hotkey_id)
 
     # -- preferences -------------------------------------------------------------
 

@@ -68,6 +68,11 @@ class RecognizedPhrase:
     words: tuple[RecognizedWord, ...]
     text: str = ""
     confidence: float = 1.0
+    #: The mark a streaming engine put at the end of the *previous* phrase once
+    #: it heard this one ("?" after "Can you send it"): live.py revises it.
+    previous_mark: str = ""
+    #: Other things the engine thought was said, best first, for "correct that".
+    alternatives: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)

@@ -59,3 +59,20 @@ def test_wrap_preserves_display_attribute() -> None:
     wrapped = wrap_with_tex_annotation(_SIMPLE, "x")
     root = parse_mathml(wrapped)
     assert root.get("display") == "inline"
+
+
+def test_parse_mathml_without_defusedxml(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr("quill.core.safe_xml._HAVE_DEFUSED", False)
+    monkeypatch.setattr("quill.core.safe_xml._defused_fromstring", None)
+    root = parse_mathml(_SIMPLE)
+    assert root.tag.endswith("math")
+
+
+def test_parse_mathml_without_defusedxml_rejects_unsafe_dtd(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr("quill.core.safe_xml._HAVE_DEFUSED", False)
+    monkeypatch.setattr("quill.core.safe_xml._defused_fromstring", None)
+    unsafe = '<!DOCTYPE math [ <!ENTITY test "x"> ]><math><mi>&test;</mi></math>'
+    with pytest.raises(MathMLError):
+        parse_mathml(unsafe)

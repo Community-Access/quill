@@ -848,6 +848,8 @@ Control coverage: 36 audited sites (23 helped, 13 named-help).
 
 **Quill Media Player.** The main window: what is playing, the transport, and three pages under it -- Chapters, Bookmarks, and the Audio equalizer. Open a file, a folder, a DAISY book, or a free LibriVox title; your place is saved as you listen, so a book resumes where you left it. Nothing here needs an account, and playback stays on this computer.
 
+**Show and Hide Key.** Choose one key that shows and hides the player from any program. Type it, for example with Ctrl, Alt and Shift held, or leave the box empty for no key. A key another QuillVille app already uses is refused, and you are told whose it is.
+
 **Voice Command.** Say or type one natural command -- 'skip back thirty', 'next chapter', 'go to 1:20:00', 'bookmark this', 'sleep in twenty' -- and OK carries it out. The same grammar answers the hands-free Listen for a Command toggle; this field is the way to use it without a microphone.
 
 **Windows titled "Help:...".** This is the help window itself: the purpose of the window you were in, then the control you were on. Escape returns you to it.
@@ -1131,6 +1133,8 @@ Control coverage: 3 audited sites (3 helped).
 
 **Excluded Applications.** Programs where expansion must never run, one program file name per line -- notepad.exe, for example. Password managers and Windows sign-in prompts are always excluded whether or not you list them. OK saves the list immediately.
 
+**Expand Word Key.** Choose one key that expands the word you just typed, in any program, without waiting for a space or punctuation. There is none until you choose one. Type it, or leave the box empty for no key; a key another QuillVille app already uses is refused, and you are told whose it is.
+
 **Find a Setting or Command.** Every menu command in this app, searchable by name. Type part of a name; Down moves into the matches; Enter does the highlighted one, exactly as choosing it from its menu would. An option says whether it is on, and doing it switches it and says the new state.
 
 **Manage Abbreviations.** Your whole abbreviation library in one place: create, edit, delete, and switch entries on or off, with search and a category filter to find the one you mean. Import and Export move the library as a file. Every change saves immediately and reaches QUILL's editor too, because both apps read the same library.
@@ -1139,7 +1143,11 @@ Control coverage: 3 audited sites (3 helped).
 
 **Quick Insert.** Pick an abbreviation and Inkwell types its expansion into the window you were just working in -- the way to use an entry set to expand only manually, or one whose trigger you cannot recall. Filter, choose, press Enter; focus returns to where you were and the text is typed there. If there is nowhere to type, the expansion is copied to the clipboard instead.
 
+**Quick Insert Key.** Choose one key that opens Quick Insert from any program, so an entry you only insert by hand is always a keystroke away. There is none until you choose one. Type it, or leave the box empty for no key; a key another QuillVille app already uses is refused, and you are told whose it is.
+
 **Quill Inkwell.** The manager window for a service that lives in the system tray: type an abbreviation in any application -- a browser, a mail client, a form -- and Inkwell replaces it with the text you saved. The list shows your library, which is the same library QUILL's editor expands from, so an abbreviation added in either works in both immediately. Closing this window keeps expansion running in the tray unless you turn that off in Options.
+
+**Show and Hide Key.** Choose one key that shows and hides the Inkwell window from any program. Type it, for example with Ctrl, Alt and Shift held, or leave the box empty for no key. A key another QuillVille app already uses is refused, and you are told whose it is.
 
 **Update downloaded.** A new Quill Inkwell is on disk and ready. Install and restart now applies it and relaunches -- your abbreviations and settings are kept -- or Open folder shows you the installer to run later.
 
@@ -1151,7 +1159,7 @@ Control coverage: 3 audited sites (3 helped).
 
 - `self._list`: Your abbreviation library, read-only here: each row is a trigger word, the start of what it expands to, and its category, with disabled entries marked. To add, change, or remove entries press the Manage Abbreviations button (Ctrl+M); this list follows the same library QUILL's editor expands from.
 - `manage_btn`: Open the Manage Abbreviations dialog: create, edit, delete, enable or disable entries, and import or export the whole library. Changes save immediately and work in QUILL too.
-- `quick_btn`: Pick an abbreviation and have its expansion typed into the window you were just working in -- the way to use entries set to expand only manually. Also on Ctrl+K here, or its system-wide hotkey from any application.
+- `quick_btn`: Pick an abbreviation and have its expansion typed into the window you were just working in -- the way to use entries set to expand only manually. Also on Ctrl+K here, and from any program on the key you choose with File, Quick Insert Key.
 
 ## Quill Weather
 
@@ -1166,6 +1174,8 @@ Control coverage: 40 audited sites (40 helped).
 **Quill Weather.** The main window of the weather watcher. Its real work happens in the background: it monitors official National Weather Service alerts for your saved locations and speaks new warnings as they are issued, even from the system tray. The three buttons open the full Weather Center, start or stop the watch, and add a place to watch; closing the window keeps monitoring in the tray by default.
 
 **Quill Weather Tutorials.** Guided lessons, one step at a time, that can run the step for you and notice when you have done it. The contents list is grouped by track and remembers where you stopped; typing 'here' in the filter box narrows it to the tutorials about the window you came from. Follow me watches what the app is doing -- never which key you pressed -- and moves you on by itself.
+
+**Show and Hide Key.** Choose one key that shows and hides Quill Weather from any program. Type it, for example with Ctrl, Alt and Shift held, or leave the box empty for no key. A key another QuillVille app already uses is refused, and you are told whose it is.
 
 **Weather Center.** The full text weather report for one location at a time, in reading order: active alerts first, then current conditions, the period forecast, the hourly forecast, and the extended daily outlook. Each list pairs with a read-only detail box below it that follows your selection, so arrowing a list reads the full official text. The Location chooser switches places, Refresh re-pulls, and Add Location and Settings open their own windows.
 
@@ -1249,6 +1259,8 @@ Control coverage: 26 audited sites (26 helped).
 **Keyboard Shortcuts.** Every key in Quill Converter, grouped by menu, in one read-only list you can arrow through or copy. It is a reference; nothing here changes a key.
 
 **Quill Converter.** Convert audio and video between formats: sound to sound, video to sound, or video to video. Queue your files or folders, choose a format, a preset and any effects -- Preview lets you hear fifteen seconds of the result first -- and Convert. Everything runs on this computer, your originals are never touched, and a file already in the output folder is numbered around, never overwritten.
+
+**Show and Hide Key.** Choose one key that shows and hides Quill Converter from any program. Type it, for example with Ctrl, Alt and Shift held, or leave the box empty for no key. A key another QuillVille app already uses is refused, and you are told whose it is.
 
 **Tag Editor.** Every tag of one MP3, M4A, M4B or MP4 file, over five pages -- title, artist and album, the people, the dates and numbers, sorting, and the cover art. Control+Tab moves between pages. OK writes the tags into the file; the sound itself is not touched.
 
@@ -1825,11 +1837,12 @@ Control coverage: 128 audited sites (128 helped).
 - `choice`: Which part of your document to send: what you selected, the paragraph you are in, or the whole section.
 #### WindowsDictationDialog (`quill/ui/windows_dictation_dialog.py`)
 
+- `self.speech_models`: Optional, larger speech models for better accuracy -- the ones VS Code offers and the rest of the Whisper family -- to download, remove or choose. Dictation works without them.
 - `self.speech_language`: The language you dictate in: English, or Spanish, which is new. In Spanish, Moonshine and Whisper both use Whisper's multilingual model; Windows speech recognition needs Spanish installed in Windows. Commands stay in English for now, and Spanish punctuation words such as coma and punto work while automatic punctuation is off.
 - `self.auto_punctuation`: On: Moonshine and Whisper put in full stops, commas and question marks by themselves, and any mark you say still wins. Off: nothing is added for you, and a sentence runs on until you say a mark, as with Windows speech recognition, which never punctuates by itself.
 - `self.language`: Which of the speech languages installed in Windows the Windows speech recognition engine listens for. Moonshine and Whisper ignore this and follow the dictation language. Add languages in Windows Settings, Time and language, Speech.
 - `self.microphone`: The microphone dictation listens on. The Windows default follows whatever Windows Sound settings choose as the default recording device; choose a named microphone to keep using that one whatever the default becomes. If the chosen microphone is unplugged, starting dictation says so rather than quietly listening on another.
-- `self.test_microphone`: Records four seconds on the chosen microphone -- start speaking when you hear Speak now -- then says how loud it was and, with Moonshine or Whisper, what the engine heard. Nothing is kept.
+- `self.test_microphone`: Records four seconds on the chosen microphone -- start speaking when you hear Speak now -- then says how loud it was and, with an engine that runs on this computer, what the engine heard. Nothing is kept.
 - `self.test_result`: What the last microphone test found.
 - `self.feedback`: What you hear each time a phrase goes into the document. A sound is a short tone. Speech reads back the words that were written, so you can hear whether they are the words you said. Use headphones if you choose speech: read back through speakers, the microphone can hear it and write it down again.
 - `self.dash`: What the spoken word dash writes. A hyphen, said as hyphen, is always a plain hyphen that joins two words.
@@ -1844,16 +1857,7 @@ Control coverage: 128 audited sites (128 helped).
 - `self.silence`: Stop dictation by itself when it has heard nothing for this long, so it is not left writing in an empty room. With the wake phrase on, it goes back to waiting for the wake phrase instead.
 - `commands`: The list of everything dictation understands: punctuation, layout, the commands, spelling, and your own phrases. Saying what can I say while dictating opens the same list.
 - `words`: Add, change and remove your own words for dictation in a window: names and jargon to spell your way, phrases that write whatever you choose, and corrections for what the engine keeps hearing wrong. Saves these settings first.
-#### DictationCommandsDialog (`quill/ui/windows_dictation_dialog.py`)
-
-- `self.text`: Every phrase dictation acts on and what it does. Read with the arrow keys; Escape closes. The same list is in the user guide.
-- `close`: Close this list.
-#### RecentPhrasesDialog (`quill/ui/windows_dictation_dialog.py`)
-
-- `self.list`: What you dictated this session, newest first. Enter inserts the one you are on at the cursor again; Copy puts it on the clipboard.
-- `insert`: Write this phrase at the cursor again, as one undo step.
-- `copy`: Put this phrase on the clipboard without writing it.
-- `close`: Close the list without inserting anything.
+- `self.more_button`: Holding Ctrl+F11 to talk, the words heard so far while you speak, how dictation behaves when you talk to the AI, OpenAI with your own key, and My Dictation Instructions.
 #### RecentDocumentsWindow (`quill/ui/recent_documents_dialog.py`)
 
 - `self.listbox`: Every document you opened recently, pinned ones first. Enter opens the one you are on. Delete takes it off this list without touching the file. A row that says not found is a file that has moved or been deleted.

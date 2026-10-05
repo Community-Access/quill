@@ -1,6 +1,6 @@
 """QUILL's own guided tutorials: its tracks, and its lessons assembled.
 
-Twenty-one lessons in six tracks. The engine -- what a step is, how one
+Twenty-four lessons in six tracks. The engine -- what a step is, how one
 renders, where progress is kept -- is shared with Quill Radio, QUILL Cast and
 Quill Weather in :mod:`quill.core.tutorials`; this is QUILL's content.
 

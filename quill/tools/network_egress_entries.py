@@ -360,6 +360,37 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "urlencoded form to the provider's configured device/token endpoints and "
         "parses the JSON reply (including the OAuth error body on HTTP error)."
     ),
+    "core/windows_dictation/openai_models.py::list_transcription_models": (
+        "OpenAI dictation, own key only (2026-10-05): reads the speech-to-text "
+        "models the person's own OpenAI key can use from OpenAI's /v1/models, so "
+        "they can choose one in More Dictation Settings and no model list is kept "
+        "in QUILL. Runs only when that window is opened on a computer where an "
+        "OpenAI key is saved in Use My Own AI Key (never with QUILL's free hosted "
+        "AI). Sends only the key, in the Authorization header, to api.openai.com "
+        "over verified TLS; nothing of the person's writing or speech. Refused in "
+        "Safe Mode (openai_models.cloud_problem)."
+    ),
+    "core/windows_dictation/openai_transcribe.py::transcribe_phrase": (
+        "OpenAI dictation, own key only (2026-10-05), a phrase at a time: each "
+        "phrase the voice detector heard is sent as a short WAV to OpenAI's "
+        "/v1/audio/transcriptions with the person's own key, and the words stream "
+        "back. Off by default; only after the person chose OpenAI as the speech "
+        "engine and agreed, in a plain consent naming what is sent, that their "
+        "speech goes to OpenAI (windows_dictation_openai_consent), and only while "
+        "dictation is on. Silence is never sent. Verified TLS; the key travels "
+        "only in the Authorization header and is never logged. Refused in Safe "
+        "Mode, and with no key saved. Documented in docs/legal/PRIVACY.md."
+    ),
+    "core/windows_dictation/openai_transcribe.py::open": (
+        "OpenAI dictation, own key only (2026-10-05), live: one WebSocket to "
+        "OpenAI's Realtime transcription (wss://api.openai.com/v1/realtime) for "
+        "the length of a dictation session with a live model "
+        "(gpt-live-transcribe), opened when dictation starts and closed when it "
+        "stops. Only speech the voice detector heard is appended; nothing while "
+        "nobody speaks. Same gating as transcribe_phrase: chosen engine, explicit "
+        "consent, the person's own key, never in Safe Mode; verified TLS; the key "
+        "only in the Authorization header."
+    ),
     "core/assistant_ai.py::_fetch_models_from_endpoint": (
         "User-initiated model discovery from the AI Connection dialog (Verify "
         "Connection / List Models). HTTPS uses a verified context."
@@ -396,7 +427,14 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "SHA-256-verified GitHub release asset (PRD 10.2.4). HTTPS enforced "
         "(refuses non-https), retry/resumable, bytes verified by SHA-256 before "
         "use, visible progress, blocked in Safe Mode. Supplements the installer "
-        "bundling; capability never depends on it."
+        "bundling; capability never depends on it. Also the one path for "
+        "dictation's optional speech models (2026-10-05, "
+        "quill/core/windows_dictation/model_store.py via download_verified): "
+        "huggingface.co files pinned to a commit and SHA-256, fetched only when the "
+        "person presses Download in Dictation Settings, Speech Models and agrees to "
+        "a question naming source, size, licence and folder (asked first on a "
+        "metered connection); a .part file is kept so a cancelled download resumes. "
+        "Sends nothing but the fixed URL; no audio or QUILL data ever leaves."
     ),
     "core/speech/piper_install.py::_download_piper_voice_files": (
         "Fallback fetch of a Piper voice (.onnx + .onnx.json) from the upstream "

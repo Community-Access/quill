@@ -632,7 +632,7 @@ without reading its manual. Escape backs you out, and nothing changes unless
 you changed it.
 
 The second adjustment is the keyboard itself. Every shortcut this book has
-taught is a default, not a law. `Ctrl+Alt+Shift+R` opens the Keymap Editor,
+taught is a default, not a law. `Ctrl+Alt+Shift+Space` opens the Keymap Editor,
 where you can search for any command and give it the key you wish it had.
 Two details make it trustworthy. You can choose Record Keys and simply press
 the combination you want, rather than spelling it out. And if the key you

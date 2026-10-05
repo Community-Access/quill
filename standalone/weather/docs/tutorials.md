@@ -223,10 +223,10 @@ The tray, the global key, starting with Windows, and the background check that w
    - Keys: Ctrl+W
    - You should hear: Hidden to the tray.
 
-2. **Get it back from anywhere.** Ctrl+Alt+Shift+W shows and hides Quill Weather from any program, even without focus, and says which it did. The chord is unique to this app -- QUILL is Ctrl+Alt+Shift+Q and Quill Radio is Ctrl+Alt+Shift+R -- so the three never collide.
-   - Keys: Ctrl+Alt+Shift+W
-   - You should hear: Shown -- and Hidden to the tray when you press it again.
-   - Worth knowing: If another program already owns that chord, Quill Weather leaves it alone rather than fighting for it, and the tray icon still works.
+2. **Get it back from anywhere.** Quill Weather has no show and hide key until you choose one, so it never takes a key another program needs. Show and Hide Key, in the File menu, asks for the key you want. After that, the key shows and hides Quill Weather from any program and says which it did.
+   - Keys: Ctrl+Alt+Shift+H
+   - You should hear: A box asking for the key, and what the key is now.
+   - Worth knowing: If another QuillVille app already uses the key you type, Quill Weather says whose it is and asks again. Until you choose one, the tray icon brings the window back.
 
 3. **Make closing safe.** By default the close button also goes to the tray rather than quitting, so a stray Alt+F4 does not end your watch. Only Exit truly quits. Options has the switch if you would rather close mean close.
    - Keys: Ctrl+Alt+C
@@ -339,7 +339,7 @@ Reaching QUILL and Quill Radio, turning off whole areas you never use, keeping t
 
 *5 steps, about 4 minutes.*
 
-1. **Open the family.** The QuillVille menu opens the other apps -- QUILL, Quill Radio, and the rest -- and each has its own show/hide chord so they never fight. Quill Weather never launches something you did not ask for.
+1. **Open the family.** The QuillVille menu opens the other apps -- QUILL, Quill Radio, and the rest -- and none of them takes another's keys. Quill Weather never launches something you did not ask for.
    - Keys: Alt+Q
    - You should hear: The other apps, listed by name.
 

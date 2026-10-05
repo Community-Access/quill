@@ -90,6 +90,21 @@ class ScreenReaderVoice:
         except Exception:  # noqa: BLE001 - the status bar still carries the message
             self._engine = None
 
+    def braille(self, message: str) -> None:
+        """Write *message* to a braille display only -- dictation's live preview.
+        Never spoken, and never raises."""
+        text = (message or "").strip()
+        if not text or not self._reader_running():
+            return
+        try:
+            if self._engine is None:
+                from quill.platform.windows.prism_bridge import AnnouncementEngine
+
+                self._engine = AnnouncementEngine("prism")
+            self._engine.braille(text)
+        except Exception:  # noqa: BLE001 - the status bar still carries it
+            pass
+
     def backend_name(self) -> str:
         """What is serving speech right now, for the ``--check`` diagnostic."""
         if not self._reader_running():

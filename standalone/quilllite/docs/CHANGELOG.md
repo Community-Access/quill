@@ -2,6 +2,84 @@
 
 ## 1.2.0 -- 2026-10-03
 
+### Dictation: hold-to-talk, live words, talking to the AI, and OpenAI with your own key (2026-10-05)
+
+- **Hold Ctrl+F11 to talk**, after VS Code's hold mode: held for half a second,
+  letting go stops; a quick press still toggles; key repeats are ignored. On by
+  default; **More Dictation Settings** turns it off (`hold.py`,
+  `windows_dictation_hold.py`). Stopping while a phrase is being heard now waits
+  for it and writes it (`live.py`, `recognizer_worker.py`).
+- **Live preview with Nemotron**: run as a streaming model on one stream per
+  session, its words while you speak go to the status bar and braille as
+  "Hearing: ...", never into the document or the undo history; spoken only on
+  request, new words only (`streaming.py`, `preview.py`). Nemotron's questions
+  now end in question marks: the mark it writes on hearing the next phrase
+  corrects the last one, and a phrase that opens like a question closes with one.
+- **Words go where you started speaking**, even if the caret moved or the focus
+  left while the phrase was recognised ("Written where you started"); the
+  caret is put back (`windows_dictation_ports.py`).
+- **"Correct that"** and "choose one" to "choose three", with Windows speech
+  recognition's alternates; other engines say they have none.
+- **Talk to the AI**: Ctrl+F11 in the AI Conversation window's message box,
+  with its own **Talking to AI** profile (long pause, fillers removed); sent at
+  the pause or on Enter; the microphone is muted while the reply is read, and
+  Escape listens at once (`hosted_ai_chat.py`).
+- **OpenAI dictation, own key only**: a new speech engine listed only where an
+  OpenAI key is saved, off until chosen, with a plain consent; models read live
+  from OpenAI's `/v1/models` without the ones OpenAI is retiring, the newest
+  pre-selected, never switched silently; Realtime transcription for
+  `gpt-live-transcribe`, streamed file transcription otherwise; My Words sent as
+  `keywords`; refused in Safe Mode; three reviewed egress entries; a Dictation
+  section in `docs/legal/PRIVACY.md` (`openai_models.py`, `openai_transcribe.py`,
+  `openai_recognizer.py`).
+- **My Dictation Instructions** for Tidy Dictated Text (Ctrl+F3), sent as a
+  marked part, with the dictated text treated as data (`instructions.py`).
+- **Kind to a modest computer**: the keep-up watchdog gives way to Moonshine
+  when a downloaded model falls behind, and models are unloaded five minutes
+  after the last session (`keep_up.py`).
+- **More Dictation Settings...** (Alt+A in Dictation Settings), a new shared
+  window (`dictation_more_dialog.py`); eight new settings; all 24
+  `windows_dictation_*` settings now declared once and inherited by both
+  editors' settings (`settings_fields.DictationSettings`).
+- **Parity**: QUILL's Live Dictation row is now the checkable **Dictation On**,
+  as in QUILL Lite, and QUILL shows dictation's state in the status bar; F1
+  topics for the live dictation commands; `test_dictation_parity.py` fails on any
+  difference in dictation commands, keys or settings.
+- A new lesson, **Write by talking**, in both editors' tutorials.
+- The dictation plan (`dict.md`) is retired into
+  `docs/design/2026-10-05-dictation-plan-and-status.md`, with what is still to
+  do (the Spanish recordings and review, baseline-machine measurements, word
+  biasing for the local models).
+
+### Better accuracy: optional speech models (2026-10-05)
+
+- **Dictation Settings > Better Accuracy: Speech Models...** (**Alt+B**): the
+  same local models VS Code offers -- NVIDIA Nemotron 3.5 ASR Streaming 0.6B
+  (the suggested download), Parakeet Unified 0.6B, Parakeet TDT 0.6B v3,
+  Whisper small and base (tiny is built in) -- then Whisper base.en to
+  large-v3, Distil-Whisper, and Moonshine base. Downloaded only on request,
+  after a question naming source, size, licence and folder; metered
+  connections asked first; free space checked; Cancel Download keeps what
+  arrived and Download resumes; every file checked against a pinned SHA-256;
+  Remove frees the space. CPU only.
+- One folder for QUILL and QUILL Lite (`%LOCALAPPDATA%\QuillVille\Dictation\models`),
+  or inside the portable folder in a portable copy.
+- A downloaded model joins the Speech engine list; Moonshine stays the
+  default. A missing or broken download gives way to the built-in engine
+  with one sentence. A two-second speed check says whether this computer
+  should keep up.
+- Shared with QUILL, through the same code
+  (`quill/core/windows_dictation/model_catalog.py`, `model_store.py`,
+  `model_loader.py`, `speed_check.py`, `quill/ui/dictation_models_dialog.py`).
+
+### Keyboard Manager on Ctrl+Alt+Shift+Space (2026-10-05)
+
+- **Tools > Keyboard Manager moves from Ctrl+Alt+Shift+R to
+  Ctrl+Alt+Shift+Space**, with QUILL's Keymap Editor (family rule 2). The old
+  key is Quill Radio's system-wide show and hide key, so while Radio ran the
+  Keyboard Manager never opened (`quill/core/lite/commands.py`,
+  `quill/core/keymap.py`).
+
 ### Dictating in Spanish (2026-10-04)
 
 - **Dictation language** in Dictation Settings (**Alt+Shift+F6**): English or

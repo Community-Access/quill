@@ -436,6 +436,14 @@
             "windows_dictation_auto_punctuation": "bool",
             "windows_dictation_silence_minutes": "int",
             "windows_dictation_continuous": "bool",
+            "windows_dictation_hold_to_talk": "bool",
+            "windows_dictation_preview": "str",
+            "windows_dictation_ai_send": "str",
+            "windows_dictation_ai_pause": "str",
+            "windows_dictation_ai_remove_fillers": "bool",
+            "windows_dictation_ai_auto_punctuation": "bool",
+            "windows_dictation_openai_model": "str",
+            "windows_dictation_openai_consent": "bool",
             "check_updates_on_launch": "bool",
             "last_update_check": "str"
           }
@@ -443,7 +451,7 @@
         "constant:quill.core.lite.settings:SCHEMA": "1"
       },
       "classification": "additive, compatible",
-      "note": "dictation language, additive, defaults to English; 2026-10-04 spell_review_context_mode (QUILL's field, read by the shared F7 review) and the external-change fields added, additive"
+      "note": "2026-10-05 dictation: eight optional windows_dictation_* fields (hold-to-talk, live preview, Talking to AI profile, OpenAI model and consent); older builds ignore unknown keys and these default safely"
     },
     "quill.keymap": {
       "current": 1,
@@ -596,6 +604,14 @@
             "windows_dictation_auto_punctuation": "bool",
             "windows_dictation_silence_minutes": "int",
             "windows_dictation_continuous": "bool",
+            "windows_dictation_hold_to_talk": "bool",
+            "windows_dictation_preview": "str",
+            "windows_dictation_ai_send": "str",
+            "windows_dictation_ai_pause": "str",
+            "windows_dictation_ai_remove_fillers": "bool",
+            "windows_dictation_ai_auto_punctuation": "bool",
+            "windows_dictation_openai_model": "str",
+            "windows_dictation_openai_consent": "bool",
             "announce_formatting_on_move": "bool",
             "find_use_quill_dialog": "bool",
             "dictionary_online_lookups": "bool",
@@ -970,6 +986,14 @@
           "windows_dictation_auto_punctuation": "_ungrouped",
           "windows_dictation_silence_minutes": "_ungrouped",
           "windows_dictation_continuous": "_ungrouped",
+          "windows_dictation_hold_to_talk": "_ungrouped",
+          "windows_dictation_preview": "_ungrouped",
+          "windows_dictation_ai_send": "_ungrouped",
+          "windows_dictation_ai_pause": "_ungrouped",
+          "windows_dictation_ai_remove_fillers": "_ungrouped",
+          "windows_dictation_ai_auto_punctuation": "_ungrouped",
+          "windows_dictation_openai_model": "_ungrouped",
+          "windows_dictation_openai_consent": "_ungrouped",
           "announce_formatting_on_move": "_ungrouped",
           "find_use_quill_dialog": "navigation",
           "dictionary_online_lookups": "_ungrouped",
@@ -1208,7 +1232,7 @@
         "constant:quill.core.settings_migration:SETTINGS_SCHEMA_VERSION": "2"
       },
       "classification": "additive, compatible",
-      "note": ""
+      "note": "2026-10-05 dictation: eight optional windows_dictation_* fields (hold-to-talk, live preview, Talking to AI profile, OpenAI model and consent); older builds ignore unknown keys and these default safely"
     },
     "radio.favorites": {
       "current": 1,

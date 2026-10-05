@@ -99,7 +99,7 @@ class QuillConverterFrame(
         self._build_menu_bar()
         self._build_main_panel()
         self._ensure_tray_icon(self._build_tray_menu, tooltip=_TITLE)
-        self._register_tray_hotkey("Ctrl+Alt+Shift+C")  # show/hide to the tray
+        self._start_show_hide_key("converter", converter_settings.settings_path())  # off by default
         # Seed from the command line (the Explorer verb, or `python -m
         # quill.apps.converter <files>`): queue each existing path.
         self.add_paths(initial_paths or [], announce=False)

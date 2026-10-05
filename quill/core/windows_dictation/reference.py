@@ -63,7 +63,9 @@ def _spanish_sections(heading: Any, row: Any, table_head: Any, lines: list[str],
         "while automatic punctuation is off (or with Windows speech recognition): coma "
         "and punto are everyday words too. Commands are the English ones above."
     )
-    lines.append(("- " + note) if md else note)
+    lines.append(note)
+    if md:
+        lines.append("")  # a table needs a blank line before it
     table_head("Say", "Writes")
     for said, writes in spanish_mark_rows():
         writes = "a dash, in the style chosen for dash" if writes == "{dash}" else writes

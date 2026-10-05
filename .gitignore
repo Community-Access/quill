@@ -144,17 +144,20 @@ radio.md
 radio2.md
 # The 2026-09 working notes, same class as fixes.md and the magic/radio
 # papers above: they describe the work rather than being it. add.md is the
-# AI-features note (own-key limits, Leasey parity), dict.md the revised
-# dictation plan, testkspn.md the KSPN stream-drop test plan. Two of the
-# three say so in their own first lines. Listed here because they were
-# untracked by intention and a `git add -A` staging a merge resolution
-# committed them anyway (2026-09-29); the root layout gate exempts a
+# AI-features note (own-key limits, Leasey parity), testkspn.md the KSPN
+# stream-drop test plan. (dict.md, the dictation plan, was retired on
+# 2026-10-05 into docs/design/2026-10-05-dictation-plan-and-status.md.)
+# Listed here because they were untracked by intention and a
+# `git add -A` staging a merge resolution committed them anyway
+# (2026-09-29); the root layout gate exempts a
 # gitignored root file, so this both keeps them out and keeps the gate
 # quiet while they sit in the working copy.
 add.md
 add2.md
-dict.md
 questions.md
+Leasey.md
+email.md
+email2.md
 # check.md: the 2026-10-04 Downcast OPML import and Cast feed-check report.
 check.md
 testkspn.md

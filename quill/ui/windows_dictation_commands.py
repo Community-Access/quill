@@ -41,7 +41,9 @@ from quill.core.windows_dictation.controller import (
     DictationState,
     Moment,
 )
-from quill.ui.atomic_edit import replace_as_one_undo
+from quill.ui.windows_dictation_hold import DictationHoldMixin
+from quill.ui.windows_dictation_ports import EditorDocument as _EditorDocument
+from quill.ui.windows_dictation_ports import HostFeedback as _HostFeedback
 from quill.ui.windows_dictation_tools import DictationToolsMixin
 
 __all__ = [
@@ -59,15 +61,6 @@ DICTATION_CUES: dict[Moment, str] = {
     Moment.OFF: SoundEvent.WINDOWS_DICTATION_OFF,
     Moment.ERROR: SoundEvent.WINDOWS_DICTATION_ERROR,
 }
-
-#: How much text in front of the caret the spacing rules look at. A sentence is
-#: plenty; the whole document would be a copy of it across the wx boundary for
-#: every phrase.
-_CONTEXT_CHARS = 80
-
-#: How long after a phrase is written its words are read back -- long enough
-#: for the editor's own reaction to the edit to have been said first.
-_READ_BACK_DELAY_MS = 250
 
 #: The one controller, the host window it writes into, and the top-level
 #: windows whose activation it follows.
@@ -88,175 +81,7 @@ def dictation_standing_by() -> bool:
     return _controller is not None and _controller.standing_by
 
 
-def _alive(window: Any) -> bool:
-    """Whether *window* still exists. A destroyed wx object is falsy."""
-    try:
-        being_deleted = getattr(window, "IsBeingDeleted", None)
-        return bool(window) and not (callable(being_deleted) and being_deleted())
-    except Exception:  # noqa: BLE001 - a dead wx object raises on any call
-        return False
-
-
-class _EditorDocument:
-    """The document port: one text control, reached through its host."""
-
-    def __init__(self, host: Any, control: Any) -> None:
-        self._host = host
-        self._control = control
-
-    def unavailable_reason(self, *, writing: bool) -> str:
-        control = self._control
-        if not _alive(control) or control is not self._host._dictation_targeted():
-            return "Dictation stopped: the document it was writing into has closed or changed."
-        if not control.IsEditable():
-            return "This document is read-only, so dictation cannot write here."
-        if writing and wx.Window.FindFocus() is not control:
-            return "Dictation stopped because the document no longer has the focus."
-        return ""
-
-    def single_line(self) -> bool:
-        multiline = getattr(self._control, "IsMultiLine", None)
-        return callable(multiline) and not multiline()
-
-    def context(self) -> tuple[str, str]:
-        control = self._control
-        start, end = control.GetSelection()
-        before = control.GetRange(max(0, start - _CONTEXT_CHARS), start)
-        after = control.GetRange(end, min(end + 2, control.GetLastPosition()))
-        return before, after
-
-    def selection(self) -> tuple[int, int]:
-        start, end = self._control.GetSelection()
-        return int(start), int(end)
-
-    def select(self, start: int, end: int) -> None:
-        self._control.SetSelection(start, end)
-
-    def insert(self, text: str) -> tuple[int, int]:
-        start, end = self._control.GetSelection()
-        return self.replace(int(start), int(end), text)
-
-    def replace(self, start: int, end: int, text: str) -> tuple[int, int]:
-        control = self._control
-        multiline = getattr(control, "IsMultiLine", None)
-        if callable(multiline) and not multiline():
-            # A one-line box (Find, the AI question): a new paragraph is a space.
-            text = " ".join(text.replace("\n", " ").split()) or text.strip()
-        # One undo step per phrase, the same path the AI inserts and paste take
-        # (dict.md 2.5): select the range and write over it, which the native
-        # control records as one reversible edit -- Remove then WriteText was two.
-        replace_as_one_undo(control, start, end, text)
-        self._host._dictation_after_edit()
-        return start, control.GetInsertionPoint()
-
-    def text_between(self, start: int, end: int) -> str:
-        return str(self._control.GetRange(max(0, start), end))
-
-    def remove(self, start: int, end: int) -> None:
-        self._control.Remove(start, end)
-        self._control.SetInsertionPoint(start)
-        self._host._dictation_after_edit()
-
-    def line_bounds(self) -> tuple[int, int]:
-        control = self._control
-        caret = control.GetInsertionPoint()
-        last = control.GetLastPosition()
-        before = control.GetRange(max(0, caret - 4000), caret)
-        after = control.GetRange(caret, min(last, caret + 4000))
-        start = caret - (len(before) - (before.rfind("\n") + 1))
-        newline = after.find("\n")
-        end = caret + (newline if newline >= 0 else len(after))
-        return start, end
-
-    def last_position(self) -> int:
-        return int(self._control.GetLastPosition())
-
-    def undo(self) -> bool:
-        control = self._control
-        if not control.CanUndo():
-            return False
-        control.Undo()
-        self._host._dictation_after_edit()
-        return True
-
-
-class _HostFeedback:
-    """The feedback port: the host's own cues, speech and status line."""
-
-    def __init__(self, host: Any) -> None:
-        self._host = host
-        self._pending: list[str] = []
-        self._timer: Any = None
-
-    def has_cue(self, moment: Moment) -> bool:
-        try:
-            return bool(self._host._dictation_has_cue(DICTATION_CUES[moment]))
-        except Exception:  # noqa: BLE001 - no sound stack is an answer
-            return False
-
-    def cue(self, moment: Moment) -> None:
-        try:
-            self._host._dictation_cue(DICTATION_CUES[moment])
-        except Exception:  # noqa: BLE001 - a cue must never break dictation
-            pass
-
-    def say(self, text: str) -> None:
-        try:
-            self._host._dictation_say(text)
-        except Exception:  # noqa: BLE001 - a closing window cannot speak; never crash
-            pass
-
-    def read_back(self, text: str) -> None:
-        """Say what a phrase wrote, a moment after it was written.
-
-        Reported unreliable when it was spoken at once (2026-09-25). Inserting
-        text into a focused edit control is itself something a screen reader
-        may react to -- the caret moved, the line changed, the editor's own
-        caret cues fire off the same text event -- and a sentence handed over in
-        the same instant raced all of that, so sometimes it was heard and
-        sometimes it was cut off by whatever the reader said next. Speaking it
-        after the edit has settled lets it arrive last and interrupt the rest.
-
-        Phrases that land while one is still waiting are joined rather than
-        dropped, so quick speech is read back whole, once.
-        """
-        self._pending.append(text)
-        if self._timer is not None:
-            return
-        try:
-            self._timer = wx.CallLater(_READ_BACK_DELAY_MS, self._speak_pending)
-        except Exception:  # noqa: BLE001 - no event loop (tests): say it now
-            self._speak_pending()
-
-    def _speak_pending(self) -> None:
-        self._timer = None
-        text, self._pending = " ".join(self._pending).strip(), []
-        if text:
-            self.say(text)
-
-    def show(self, text: str) -> None:
-        try:
-            self._host._dictation_status(text)
-        except Exception:  # noqa: BLE001 - the status line is a record, not a need
-            pass
-
-    def state_changed(self, state: DictationState) -> None:
-        from quill.ui.windows_dictation_silence import note_activity
-
-        note_activity(state, lambda: _controller)
-        self._host._dictation_state_changed(state)
-
-    def show_commands(self) -> None:
-        # After the phrase has been handled, not in the middle of it: the list is
-        # a modal window, and a modal window opened inside a recogniser callback
-        # would hold that callback open until it closed.
-        try:
-            wx.CallAfter(self._host._dictation_show_commands)
-        except Exception:  # noqa: BLE001 - no event loop (tests)
-            self._host._dictation_show_commands()
-
-
-class WindowsDictationMixin(DictationToolsMixin):
+class WindowsDictationMixin(DictationToolsMixin, DictationHoldMixin):
     """The dictation commands. Mixed into both editors' document windows."""
 
     # ------------------------------------------------------------------ #
@@ -343,7 +168,10 @@ class WindowsDictationMixin(DictationToolsMixin):
     # ------------------------------------------------------------------ #
 
     def cmd_toggle_dictation(self) -> None:
-        """Start dictation here, or stop it wherever it is running."""
+        """Start dictation here, or stop it wherever it is running. Held down,
+        it talks until the key comes up (windows_dictation_hold.py)."""
+        if self._dictation_repeat():
+            return  # Windows repeating the held key: the press is being followed
         preferences = self._dictation_preferences()
         if preferences.engine == "voice_typing":
             self._dictation_voice_typing()
@@ -357,11 +185,12 @@ class WindowsDictationMixin(DictationToolsMixin):
             return
         if not controller.active:
             self._dictation_target(self)
-        controller.toggle()
+        self._dictation_press(controller)
 
     def cmd_dictation_settings(self) -> None:
         """Choose the engine, the microphone, the wake phrase and what is heard."""
         from quill.ui.windows_dictation_dialog import (
+            EDIT_INSTRUCTIONS,
             EDIT_WORDS,
             SHOW_COMMANDS,
             WindowsDictationDialog,
@@ -369,22 +198,25 @@ class WindowsDictationMixin(DictationToolsMixin):
 
         settings = self._dictation_settings()
         dialog = WindowsDictationDialog(self._dictation_parent(), settings, self._dictation_say)
+        saving = (wx.ID_OK, EDIT_WORDS, EDIT_INSTRUCTIONS)
         try:
             answer = self._dictation_run_modal(dialog, "Dictation Settings")
-            if answer in (wx.ID_OK, EDIT_WORDS):
+            if answer in saving:
                 dialog.apply(settings)
         finally:
             dialog.Destroy()
         if answer == SHOW_COMMANDS:
             self._dictation_show_commands()
             return
-        if answer not in (wx.ID_OK, EDIT_WORDS):
+        if answer not in saving:
             return
         self._dictation_save_settings()
         self._dictation_status("Dictation settings saved.")
         self._dictation_rearm()
         if answer == EDIT_WORDS:
             self.cmd_dictation_words()
+        elif answer == EDIT_INSTRUCTIONS:
+            self._dictation_edit_instructions()
 
     # ------------------------------------------------------------------ #
     # Plumbing
@@ -408,7 +240,11 @@ class WindowsDictationMixin(DictationToolsMixin):
         return {
             DictationState.STARTING: "Dictation: starting",
             DictationState.LISTENING: "Dictation: listening",
-            DictationState.RECOGNIZING: "Dictation: hearing you",
+            DictationState.RECOGNIZING: (
+                f"Dictation: hearing: {self._dictation_preview_text}"
+                if getattr(self, "_dictation_preview_text", "")
+                else "Dictation: hearing you"
+            ),
             DictationState.PROCESSING: "Dictation: writing",
             DictationState.PAUSED: "Dictation: paused, microphone lost",
         }.get(state, "")
@@ -480,7 +316,23 @@ class WindowsDictationMixin(DictationToolsMixin):
             rewrite = rewriter(self._dictation_profile_path())
         except Exception:  # noqa: BLE001 - a broken profile never stops dictation
             rewrite = None
-        return DictationPreferences.from_settings(self._dictation_settings(), rewrite=rewrite)
+        # Talking to AI (dict.md 6): the AI Conversation window's message box
+        # carries its own profile, so it switches by itself while it is the target.
+        profile = str(getattr(self._dictation_targeted(), "_quill_dictation_profile", "writing"))
+        preferences = DictationPreferences.from_settings(
+            self._dictation_settings(), rewrite=rewrite, profile=profile
+        )
+        if preferences.engine != "openai":
+            return preferences
+        from dataclasses import replace
+
+        from quill.core.windows_dictation.profile import load
+
+        try:
+            words = tuple(load(self._dictation_profile_path()).vocabulary)
+        except Exception:  # noqa: BLE001 - no words is a fine answer
+            words = ()
+        return replace(preferences, keywords=words)
 
     def _dictation_controller(self) -> DictationController:
         global _controller
@@ -563,6 +415,20 @@ class WindowsDictationMixin(DictationToolsMixin):
         finally:
             dialog.Destroy()
 
+    def _dictation_edit_instructions(self) -> None:
+        """Open My Dictation Instructions, the file Tidy Dictated Text follows."""
+        from quill.core.windows_dictation.instructions import (
+            ensure_instructions,
+            instructions_path,
+        )
+
+        try:
+            path = ensure_instructions(instructions_path(self._dictation_profile_path()))
+        except OSError as error:
+            self._dictation_say(f"Your dictation instructions could not be opened: {error}")
+            return
+        self._dictation_open_file(path)
+
     def _dictation_edit_words(self) -> None:
         """Open ``dictation.md`` itself, for whoever prefers a file (the words
         window's Open the File button). The window is the front door now."""
@@ -588,6 +454,18 @@ def _make_recognizer(controller: DictationController, preferences: DictationPref
             language=preferences.language,
             pause_ms=int(preferences.pause_seconds * 1000),
             speech_language=preferences.speech_language,
+        )
+    if preferences.engine == "openai":
+        from quill.core.windows_dictation.openai_recognizer import OpenAIDictationRecognizer
+
+        return OpenAIDictationRecognizer(
+            controller,
+            post=wx.CallAfter,
+            model=preferences.openai_model,
+            consent=preferences.openai_consent,
+            keywords=preferences.keywords,
+            pause_seconds=preferences.pause_seconds,
+            language=preferences.speech_language,
         )
     from quill.core.windows_dictation.local_recognizer import LocalDictationRecognizer
 

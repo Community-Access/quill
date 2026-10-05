@@ -277,7 +277,7 @@ def test_print_preview_says_the_page_count_out_loud(markdown_window, monkeypatch
 
 
 def test_the_tutorials_window_opens(markdown_window, monkeypatch) -> None:
-    """Nine lessons in two tracks, through the window every QuillVille app
+    """Ten lessons in two tracks, through the window every QuillVille app
     shares -- so a lesson shows your key rather than the shipped one."""
     from quill.apps import lite_tutorials
 
@@ -287,7 +287,7 @@ def test_the_tutorials_window_opens(markdown_window, monkeypatch) -> None:
     markdown_window.cmd_tutorials()
 
     assert opened and opened[0].app_id == "quilllite"
-    assert len(opened[0].catalogue.tutorials) == 9
+    assert len(opened[0].catalogue.tutorials) == 10
 
 
 def test_follow_me_is_unavailable_because_no_lesson_here_has_a_check() -> None:
