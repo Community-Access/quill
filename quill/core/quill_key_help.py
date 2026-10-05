@@ -47,6 +47,7 @@ _DEFAULT_KEYS: dict[str, str] = {
     "quill.quick_nav.block": "Tab",
     "quill.quick_nav.skip_forward": "]",
     "quill.quick_nav.skip_backward": "[",
+    "quill.quick_nav.inline_note": "N",
 }
 
 
@@ -168,6 +169,7 @@ def _build_browse_groups(
             entry("quill.quick_nav.block_quote", "Next or previous block quote", "block_quotes"),
             entry("quill.quick_nav.bookmark", "Next or previous bookmark", "bookmarks"),
             entry("quill.quick_nav.code_block", "Next or previous code block", "code_blocks"),
+            entry("quill.quick_nav.inline_note", "Next or previous inline note", None),
             entry(
                 "quill.quick_nav.table_of_contents",
                 "Open the table of contents",

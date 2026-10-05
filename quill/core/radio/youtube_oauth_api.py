@@ -21,10 +21,10 @@ import urllib.parse
 import urllib.request
 from dataclasses import dataclass
 
+from quill.core import http_client
 from quill.core.radio.youtube_channels import ChannelStore
 from quill.core.radio.youtube_oauth import (
     _TIMEOUT_SECONDS,
-    _USER_AGENT,
     Opener,
     YouTubeOAuthError,
     _context_for,
@@ -67,7 +67,7 @@ def _authed_get(
         headers={
             "Authorization": f"Bearer {access_token}",
             "Accept": "application/json",
-            "User-Agent": _USER_AGENT,
+            "User-Agent": http_client.user_agent(),
         },
     )
     try:

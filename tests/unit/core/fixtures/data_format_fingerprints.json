@@ -379,6 +379,13 @@
             "session_restore_ask": "str",
             "session_files": "list[str]",
             "recover_untitled_documents": "bool",
+            "inline_notes_in_file": "bool",
+            "external_change_watch_enabled": "bool",
+            "external_change_auto_reload_when_clean": "bool",
+            "external_change_prompt_on_conflict": "bool",
+            "external_change_always_reload": "list[str]",
+            "external_change_always_keep": "list[str]",
+            "external_change_debounce_ms": "int",
             "recovery_keep_days": "int",
             "share_quill_abbreviations": "bool",
             "share_quill_dictionary": "bool",
@@ -396,6 +403,7 @@
             "spell_review_spell_word": "bool",
             "spell_review_spell_word_pause_ms": "int",
             "spell_review_wrap_to_beginning": "bool",
+            "spell_review_context_mode": "str",
             "open_blank_document_at_startup": "bool",
             "spell_aloud_enabled": "bool",
             "spell_aloud_delay_ms": "int",
@@ -435,7 +443,7 @@
         "constant:quill.core.lite.settings:SCHEMA": "1"
       },
       "classification": "additive, compatible",
-      "note": "dictation language, additive, defaults to English"
+      "note": "dictation language, additive, defaults to English; 2026-10-04 spell_review_context_mode (QUILL's field, read by the shared F7 review) and the external-change fields added, additive"
     },
     "quill.keymap": {
       "current": 1,
@@ -721,6 +729,7 @@
             "session_restore_ask": "str",
             "session_files": "list[str]",
             "recover_untitled_documents": "bool",
+            "inline_notes_in_file": "bool",
             "recovery_keep_days": "int",
             "markdown_hard_break_style": "str",
             "autoformat_smart_quotes": "bool",
@@ -1094,6 +1103,7 @@
           "session_restore_ask": "_ungrouped",
           "session_files": "_ungrouped",
           "recover_untitled_documents": "general",
+          "inline_notes_in_file": "editing",
           "recovery_keep_days": "general",
           "markdown_hard_break_style": "editing",
           "autoformat_smart_quotes": "editing",
@@ -1198,7 +1208,7 @@
         "constant:quill.core.settings_migration:SETTINGS_SCHEMA_VERSION": "2"
       },
       "classification": "additive, compatible",
-      "note": "dictation language, additive, defaults to English; 2026-10-04 the four hygiene_* fields gained a Settings page (regrouped only, no field added or retyped)"
+      "note": ""
     },
     "radio.favorites": {
       "current": 1,

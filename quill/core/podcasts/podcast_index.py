@@ -61,7 +61,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-from quill import __version__
+from quill.core import http_client
 from quill.core.error_codes import CodedError
 from quill.core.net_retry import retry_transient
 from quill.core.podcasts.itunes_search import PodcastSearchResult
@@ -81,7 +81,6 @@ __all__ = [
     "search_podcasts",
 ]
 
-_USER_AGENT = f"QUILL/{__version__} (https://github.com/Community-Access/quill)"
 #: The API root; every endpoint below hangs off it. Documented in full at
 #: https://podcastindex-org.github.io/docs-api/ -- the project the About box
 #: credits, because a free open index deserves the attribution.
@@ -212,7 +211,7 @@ def auth_headers(key: str, secret: str, *, now: int | None = None) -> dict[str, 
         "X-Auth-Key": key,
         "X-Auth-Date": stamp,
         "Authorization": digest,
-        "User-Agent": _USER_AGENT,
+        "User-Agent": http_client.podcast_user_agent(),
         "Accept": "application/json",
     }
 

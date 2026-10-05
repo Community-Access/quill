@@ -32,9 +32,10 @@ import ssl
 import urllib.parse
 import urllib.request
 
+from quill.core import http_client
+
 _TIMEOUT_SECONDS = 8.0
 _MAX_BYTES = 256 * 1024
-_USER_AGENT = "QUILL Radio"
 
 #: Strip HTML tags from a SHOUTcast v1 ``/7.html`` body before splitting fields.
 _TAG_RE = re.compile(r"<[^>]+>")
@@ -125,7 +126,7 @@ def _http_get_text(url: str, timeout: float) -> str:
     """One GET returning decoded text, verified TLS; "" on any failure."""
     if not url.lower().startswith(("http://", "https://")):
         return ""
-    request = urllib.request.Request(url, headers={"User-Agent": _USER_AGENT})
+    request = urllib.request.Request(url, headers={"User-Agent": http_client.user_agent()})
     context = ssl.create_default_context()
     try:
         with urllib.request.urlopen(  # noqa: S310 - http(s) checked above

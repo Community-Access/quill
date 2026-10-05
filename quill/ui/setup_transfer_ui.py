@@ -61,14 +61,16 @@ class SetupTransferMixin:
                 self._announce("Export cancelled. Nothing was written.")
                 return
             target = Path(chooser.GetPath())
-        tally = setup_transfer.export_setup(
+        report = setup_transfer.export_setup_report(
             app_data_dir(),
             target,
             app=self._setup_transfer_app_name(),
             stamped=datetime.now(UTC).isoformat(),
         )
-        sentence = tally.sentence("Exported", target.name, noun="item")
-        self._announce(f"{sentence} {setup_transfer.SECRETS_NOTE}")
+        sentence = report.tally.sentence("Exported", target.name, noun="item")
+        self._say_with_left_out(
+            f"{sentence} {setup_transfer.SECRETS_NOTE}", report.left_out, "Export My Setup"
+        )
 
     # -- import ---------------------------------------------------------------
 
@@ -109,9 +111,31 @@ class SetupTransferMixin:
         if answer != wx.YES:
             self._announce("Import cancelled. Nothing was changed.")
             return
-        tally = setup_transfer.import_setup(source, app_data_dir())
-        sentence = tally.sentence("Restored", source.name, noun="item")
-        self._announce(f"{sentence} Close and reopen the app for everything to be read back in.")
+        report = setup_transfer.import_setup_report(source, app_data_dir())
+        sentence = report.tally.sentence("Restored", source.name, noun="item")
+        self._say_with_left_out(
+            f"{sentence} Close and reopen the app for everything to be read back in.",
+            report.left_out,
+            "Import My Setup",
+        )
+
+    # -- what was left out ----------------------------------------------------
+
+    def _say_with_left_out(self, outcome: str, left_out: Any, caption: str) -> None:
+        """Announce *outcome*; when anything was left out, offer the named list.
+
+        "11 skipped" with no names is what made a listener about to reset their
+        computer ask whether their favorites had gone (2026-10-04), so a count
+        is never the whole answer: the message box carries the outcome and
+        offers What Was Left Out, one row per item with its reason.
+        """
+        rows = tuple(left_out or ())
+        if not rows:
+            self._announce(outcome)
+            return
+        from quill.ui.radio.skipped_items_dialog import offer_skipped_list
+
+        offer_skipped_list(self.frame, outcome, rows, caption=caption, announce=self._announce)
 
     # -- identity -------------------------------------------------------------
 

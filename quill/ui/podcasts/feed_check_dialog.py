@@ -29,6 +29,12 @@ Four decisions in the window worth naming:
 * **Retry says what it found**, per feed, rather than only refreshing. A button that
   silently does the thing the app does in the background anyway is a button nobody
   can tell worked.
+
+A failing row says **why**, in a plain sentence, and a feed that is not coming back
+at its address -- removed, a domain gone, a web page where the feed was, an empty
+feed -- offers **Find This Show's New Feed** (check.md bug 8): a search of the
+podcast directories by the show's title, verified candidates, and Replace Feed,
+which keeps everything the podcast already has.
 """
 
 from __future__ import annotations
@@ -70,6 +76,7 @@ class FeedCheckWindow:
         retry: Callable[[str], None],
         safe_mode: bool = False,
         change_schedule: Callable[[str], bool] | None = None,
+        find_new_feed: Callable[[str], None] | None = None,
     ) -> None:
         import wx
 
@@ -79,6 +86,7 @@ class FeedCheckWindow:
         self._retry = retry
         self._safe_mode = safe_mode
         self._change_schedule = change_schedule
+        self._find_new_feed = find_new_feed
         self._rows: list[Any] = []
 
         self.frame = wx.Frame(parent, title="Feed Check", size=(1000, 480))
@@ -97,11 +105,11 @@ class FeedCheckWindow:
         root.Add(list_label, 0, wx.LEFT | wx.RIGHT, 10)
         self._list = wx.ListCtrl(panel, style=wx.LC_REPORT | wx.BORDER_SIMPLE)
         self._list.SetHelpText(
-            "Every podcast you follow, worst first: the ones failing to check, then "
-            "any never checked, then any that have gone quiet, then the healthy "
-            "ones. Nothing here has been unfollowed and nothing has stopped being "
-            "checked -- Cast keeps trying a failing feed. Shift+F10 opens what you "
-            "can do to a row."
+            "Every podcast you follow, worst first: the ones failing to check, with "
+            "the reason, then any whose feed is empty, any never checked, any that "
+            "have gone quiet, and then the healthy ones. Nothing here has been "
+            "unfollowed and nothing has stopped being checked -- Cast keeps trying a "
+            "failing feed. Shift+F10 opens what you can do to a row."
         )
         for index, (heading, width) in enumerate(_COLUMNS):
             self._list.InsertColumn(index, heading, width=width)
@@ -123,6 +131,15 @@ class FeedCheckWindow:
             "open it in a browser and see what the publisher is actually sending."
         )
         self._copy_btn.Enable(False)
+        self._find_btn = wx.Button(panel, label="Find This Show's &New Feed...")
+        self._find_btn.SetHelpText(
+            "For a feed that is not coming back at its address -- removed by the "
+            "host, a web address that no longer exists, a web page where the feed "
+            "was, or an empty feed: look up this show's title in the podcast "
+            "directories and offer the feeds that answer, with their newest episode's "
+            "date. Replace Feed keeps everything the podcast already has."
+        )
+        self._find_btn.Enable(False)
         # No access key on Close: Escape already serves it, and the letter it gives
         # up resolves a collision elsewhere (GATE-14's first rule).
         close_btn = wx.Button(panel, label="Close")
@@ -133,7 +150,7 @@ class FeedCheckWindow:
         from quill.ui.dialog_contract import bind_close_button
 
         bind_close_button(self.frame, close_btn, modeless=True)
-        for button in (self._retry_btn, self._retry_all_btn, self._copy_btn):
+        for button in (self._retry_btn, self._retry_all_btn, self._copy_btn, self._find_btn):
             buttons.Add(button, 0, wx.RIGHT, 6)
         buttons.AddStretchSpacer()
         buttons.Add(close_btn, 0)
@@ -150,6 +167,7 @@ class FeedCheckWindow:
         self._retry_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_retry())
         self._retry_all_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_retry_all())
         self._copy_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_copy())
+        self._find_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_find_new_feed())
 
         self.frame.CentreOnParent()
         self._reload()
@@ -195,10 +213,36 @@ class FeedCheckWindow:
         usable = row is not None and not row.is_local
         self._retry_btn.Enable(usable)
         self._copy_btn.Enable(usable)
+        self._find_btn.Enable(self._can_find(row))
 
     def _on_deselected(self, _event: object) -> None:
         self._retry_btn.Enable(False)
         self._copy_btn.Enable(False)
+        self._find_btn.Enable(False)
+
+    def _can_find(self, row: Any) -> bool:
+        return bool(
+            row is not None
+            and row.worth_a_search
+            and self._find_new_feed is not None
+            and not self._safe_mode
+        )
+
+    def _on_find_new_feed(self) -> None:
+        """Find This Show's New Feed on the selected row."""
+        row = self._selected_row()
+        if row is None or self._find_new_feed is None:
+            return
+        if self._safe_mode:
+            self._announce("Finding podcasts is disabled in Safe Mode.")
+            return
+        if not row.worth_a_search:
+            self._announce(
+                f"{row.title}'s feed is not lost, so there is nothing to look for. "
+                "Retry checks it again."
+            )
+            return
+        self._find_new_feed(row.show_id)
 
     # -- the actions ------------------------------------------------------- #
 
@@ -277,13 +321,17 @@ class FeedCheckWindow:
             return
         menu = wx.Menu()
         retry_id, copy_id, schedule_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
+        find_id = wx.NewIdRef()
         menu.Append(retry_id, "Chec&k Now")
+        menu.Append(find_id, "Find This Show's &New Feed...")
         menu.Append(schedule_id, "Change Sc&hedule...")
         menu.Append(copy_id, "&Copy Feed Address")
         menu.Enable(retry_id, not row.is_local and not self._safe_mode)
+        menu.Enable(find_id, self._can_find(row))
         menu.Enable(schedule_id, not row.is_local and self._change_schedule is not None)
         menu.Enable(copy_id, bool(row.feed_url))
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._on_retry(), id=retry_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self._on_find_new_feed(), id=find_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._on_change_schedule(), id=schedule_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._on_copy(), id=copy_id)
         try:
@@ -316,6 +364,20 @@ def _change_schedule(host: Any, show_id: str) -> bool:
     return bool(show is not None and change_schedule(host, show))
 
 
+def _find_new_feed(host: Any, show_id: str) -> None:
+    from quill.ui.podcasts.new_feed_dialog import find_new_feed_for
+
+    def _replaced() -> None:
+        window = getattr(host, "_feed_check_window", None)
+        if window is not None:
+            try:
+                window.refresh()
+            except RuntimeError:  # the window was closed while the search ran
+                pass
+
+    find_new_feed_for(host, show_id, on_replaced=_replaced)
+
+
 def open_feed_check(host: Any, *, focus: bool = True, opener: Any = None) -> FeedCheckWindow:
     """Podcasts > Feed Check...: the report, with Retry wired to the real refresh."""
     from quill.ui.podcasts.feed_refresh import refresh_feed
@@ -329,6 +391,7 @@ def open_feed_check(host: Any, *, focus: bool = True, opener: Any = None) -> Fee
             retry=lambda show_id: refresh_feed(owner, show_id),
             safe_mode=bool(getattr(owner, "_safe_mode", False)),
             change_schedule=lambda show_id: _change_schedule(owner, show_id),
+            find_new_feed=lambda show_id: _find_new_feed(owner, show_id),
         )
 
     window: FeedCheckWindow = open_peer(

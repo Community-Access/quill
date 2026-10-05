@@ -58,7 +58,7 @@ import webbrowser
 from collections.abc import Callable
 from dataclasses import dataclass, replace
 
-from quill import __version__
+from quill.core import http_client
 from quill.core.auth.token_bundle import TokenBundle
 from quill.core.error_codes import CodedError
 from quill.core.net import verified_ssl_context
@@ -104,7 +104,6 @@ SCOPE = "https://www.googleapis.com/auth/youtube.readonly"
 #: port (RFC 8252), so a fixed value here is a convenience, not a requirement.
 DEFAULT_REDIRECT_URI = "http://127.0.0.1:8912/callback"
 
-_USER_AGENT = f"QUILL/{__version__} (https://github.com/Community-Access/quill)"
 _TIMEOUT_SECONDS = 30.0
 _CALLBACK_TIMEOUT_SECONDS = 600.0
 
@@ -337,7 +336,7 @@ def _token_request(fields: dict[str, str], *, opener: Opener | None = None) -> T
         headers={
             "Content-Type": "application/x-www-form-urlencoded",
             "Accept": "application/json",
-            "User-Agent": _USER_AGENT,
+            "User-Agent": http_client.user_agent(),
         },
     )
     if opener is not None:
@@ -488,7 +487,10 @@ def revoke(token: str, *, opener: Opener | None = None) -> bool:
         REVOKE_URL,
         data=body,
         method="POST",
-        headers={"Content-Type": "application/x-www-form-urlencoded", "User-Agent": _USER_AGENT},
+        headers={
+            "Content-Type": "application/x-www-form-urlencoded",
+            "User-Agent": http_client.user_agent(),
+        },
     )
     try:
         if opener is not None:

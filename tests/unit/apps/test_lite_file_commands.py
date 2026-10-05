@@ -296,6 +296,8 @@ def test_file_format_is_offered_what_the_document_currently_uses(lite_window, li
     assert lite_dialogs.kwargs_for("edit_file_format") == {
         "encoding": "cp1252",
         "newline": "\n",
+        # An untitled window has no file to read again (2026-10-04).
+        "on_reopen": None,
     }
 
 

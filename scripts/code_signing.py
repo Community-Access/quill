@@ -30,6 +30,10 @@ Design rules:
   but the toolchain or credential is unavailable, the build logs a warning and
   continues -- UNLESS ``QUILL_SIGN_REQUIRED=1``, which turns any signing failure
   into a hard error (use this in the release pipeline).
+* **Never a Beta or Dev build.** Only a final-numbered version (``3.2.0``,
+  ``3.2.0+2``) is signed; ``-dev``, ``-alpha``, ``-beta`` and ``-rc`` versions
+  and Dev builds never are, and nothing can force it (owner decision,
+  2026-10-04; :func:`build_decision`).
 * **No shell.** ``signtool`` is always invoked with an argv list via
   ``subprocess``. Passing ``/fd``-style switches through a shell (notably Git
   Bash / MSYS) mangles them into paths and yields the misleading "No file digest
@@ -42,6 +46,7 @@ CLI::
     python scripts/code_signing.py sign a.exe b.dll       # sign specific files
     python scripts/code_signing.py sign-tree dist\\portable   # sign every exe/dll under a tree
     python scripts/code_signing.py verify a.exe           # verify an Authenticode signature
+    python scripts/code_signing.py build-decision --version 3.3.0-beta.1   # sign or skip?
 """
 
 from __future__ import annotations
@@ -54,7 +59,7 @@ import subprocess
 import sys
 import urllib.request
 import zipfile
-from collections.abc import Iterable, Sequence
+from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -102,6 +107,81 @@ class SigningConfig:
     metadata: Path
     timestamp_url: str = DEFAULT_TIMESTAMP_URL
     extra_args: tuple[str, ...] = field(default_factory=tuple)
+
+
+# -- which builds may be signed (owner decision, 2026-10-04) --------------------
+#
+# "Beta and developer builds should not be digitally signed." Only a
+# final-numbered build (3.2.0, 3.2.0+2) is signed: it is a Stable candidate, and
+# Stable takes the very files that were on Beta, so a candidate has to be signed
+# when it is built (an Inno Setup.exe carries its payload compressed inside it,
+# so nothing can be signed later without rebuilding). Anything with a
+# pre-release part (-dev, -alpha, -beta, -rc) and every Dev build is never
+# signed, and neither QUILL_SIGN nor QUILL_SIGN_REQUIRED nor --require can force
+# it. See docs/code-signing.md, "Which builds are signed".
+
+UNSIGNED_BUILD_MESSAGE = "Beta and Dev builds are not code-signed; signing skipped."
+
+# Set by the build (scripts/BuildEnv.ps1 Resolve-QuillSigning) so every later
+# signing call in the same build -- sign-build, and the `sign` command Inno runs
+# for Setup.exe -- knows which version it is signing and can refuse.
+VERSION_ENV = "QUILL_SIGN_VERSION"
+DEV_ENV = "QUILL_SIGN_DEV"
+
+
+def version_may_be_signed(version: str, *, dev: bool = False) -> bool:
+    """True only for a final-numbered, non-Dev version.
+
+    ``3.2.0`` and ``3.2.0+2`` (a build number) may be signed; ``3.3.0-beta.2``,
+    ``1.0.0-rc.1``, ``3.3.0-alpha.1``, ``3.3.0-dev.20261003.2``, the display
+    forms ("1.0.0 Beta 1", "1.0.0 Dev") and anything that does not parse may
+    not. ``dev=True`` (a Dev build) is never signed, whatever its number says.
+    """
+    if dev:
+        return False
+    if str(_REPO_ROOT) not in sys.path:
+        sys.path.insert(0, str(_REPO_ROOT))
+    from quill.core.versioning import ReleaseVersion
+
+    parsed = ReleaseVersion.try_parse(version.strip()) if version.strip() else None
+    return parsed is not None and not parsed.is_prerelease
+
+
+def build_version_from_env() -> tuple[str, bool]:
+    """The version this build declared (``QUILL_SIGN_VERSION``) and whether it is Dev."""
+    return os.environ.get(VERSION_ENV, "").strip(), _env_flag(DEV_ENV)
+
+
+def signing_refused(version: str | None = None, *, dev: bool | None = None) -> bool:
+    """True when this build's version must never be signed.
+
+    *version* / *dev* default to what the build declared in the environment. A
+    caller that declares no version at all (a person running ``sign a.exe`` by
+    hand) is not refused: the rule is about builds, and a build always declares.
+    """
+    env_version, env_dev = build_version_from_env()
+    version = env_version if version is None else version
+    dev = env_dev if dev is None else dev
+    if dev:
+        return True
+    if not version:
+        return False
+    return not version_may_be_signed(version)
+
+
+def build_decision(version: str, *, dev: bool = False, out: Callable[[str], None] = print) -> bool:
+    """Whether a build of *version* signs; says so in one plain line when it does not.
+
+    The one helper every build asks (``build_release.ps1`` through
+    ``Resolve-QuillSigning``, ``build_windows_distribution.py`` directly). It
+    returns False for a Beta, Release Candidate, Alpha or Dev version even when
+    signing was requested or required, and True for a final-numbered build
+    only when signing was requested (``QUILL_SIGN``), exactly as before.
+    """
+    if not version_may_be_signed(version, dev=dev):
+        out(UNSIGNED_BUILD_MESSAGE)
+        return False
+    return signing_requested()
 
 
 def signing_requested() -> bool:
@@ -440,11 +520,19 @@ def sign_paths(
     label: str = "artifacts",
     patterns: Sequence[str] | None = None,
     require: bool | None = None,
+    version: str | None = None,
+    dev: bool | None = None,
 ) -> list[Path]:
     """Sign files and/or trees, honouring the opt-in / fail-open contract.
 
     This is the function build scripts call. Behaviour:
 
+    * First, a Beta, Release Candidate, Alpha or Dev build is never signed:
+      *version* / *dev* (or, left out, ``QUILL_SIGN_VERSION`` /
+      ``QUILL_SIGN_DEV`` from the build) name a version that may not be signed,
+      so nothing happens and ``[]`` comes back -- whatever ``QUILL_SIGN``,
+      ``QUILL_SIGN_REQUIRED`` or *require* say. The build's one line saying so
+      came from :func:`build_decision`; this is the backstop, and it is quiet.
     * When signing is not requested (``QUILL_SIGN`` unset and ``require`` not
       True), do nothing and return ``[]`` -- a plain build is unchanged.
     * When requested, sign every path (directories are walked with *patterns*).
@@ -455,6 +543,8 @@ def sign_paths(
     Passing ``require=True`` forces signing on even without ``QUILL_SIGN`` -- the
     CLI's ``--require`` and an explicit release step use this.
     """
+    if signing_refused(version, dev=dev):
+        return []
     force = bool(require)
     if not force and not signing_requested():
         print(f"[sign] skipped ({label}): set QUILL_SIGN=1 to enable code signing.")
@@ -500,6 +590,65 @@ def _handle_failure(exc: SigningError, must_succeed: bool, label: str) -> list[P
     return []
 
 
+# -- is a released file signed? (publish and promotion checks) ---------------------
+
+
+def has_embedded_signature(data: bytes) -> bool:
+    """True when a PE image carries an embedded Authenticode signature.
+
+    Structural only: the optional header's Certificate Table (data directory 4)
+    points at a ``WIN_CERTIFICATE`` of type PKCS#7 that lies inside the file.
+    It runs anywhere -- the promote workflow is on Linux, with no signtool --
+    and it is what tells a signed build from an unsigned one; whether the
+    signature is *valid* is :func:`verify_file`'s question, asked when
+    signtool is there.
+    """
+    try:
+        if data[:2] != b"MZ":
+            return False
+        e_lfanew = int.from_bytes(data[0x3C:0x40], "little")
+        if data[e_lfanew : e_lfanew + 4] != b"PE\x00\x00":
+            return False
+        opt = e_lfanew + 24
+        magic = int.from_bytes(data[opt : opt + 2], "little")
+        if magic not in (0x10B, 0x20B):
+            return False
+        cert = opt + (112 if magic == 0x20B else 96) + 4 * 8
+        offset = int.from_bytes(data[cert : cert + 4], "little")
+        size = int.from_bytes(data[cert + 4 : cert + 8], "little")
+        if not offset or size < 8 or offset + size > len(data):
+            return False
+        length = int.from_bytes(data[offset : offset + 4], "little")
+        cert_type = int.from_bytes(data[offset + 6 : offset + 8], "little")
+        return 8 < length <= size and cert_type == 0x0002  # WIN_CERT_TYPE_PKCS_SIGNED_DATA
+    except (IndexError, ValueError):
+        return False
+
+
+def asset_is_signed(path: Path) -> bool:
+    """True when a release file is Authenticode-signed throughout.
+
+    An ``.exe`` (an installer) must carry a signature -- and, where signtool is
+    available (Windows), a valid one. A ``.zip`` (a portable build) must hold at
+    least one ``.exe`` and every ``.exe`` in it must carry one. Anything else is
+    not signed.
+    """
+    suffix = path.suffix.lower()
+    if suffix == ".exe":
+        if not has_embedded_signature(path.read_bytes()):
+            return False
+        if sys.platform == "win32" and find_signtool() is not None:
+            return verify_file(path)
+        return True
+    if suffix == ".zip":
+        if not zipfile.is_zipfile(path):
+            return False
+        with zipfile.ZipFile(path) as archive:
+            exes = [n for n in archive.namelist() if n.lower().endswith(".exe")]
+            return bool(exes) and all(has_embedded_signature(archive.read(n)) for n in exes)
+    return False
+
+
 # -- CLI ----------------------------------------------------------------------
 
 
@@ -526,7 +675,20 @@ def _cmd_ensure_dlib(args: argparse.Namespace) -> int:
     return 0
 
 
+def _refuse_declared_prerelease() -> None:
+    """``sign`` / ``sign-tree`` inside a Beta or Dev build is an error, not a skip.
+
+    Inno only runs ``sign`` when the build passed ``/DSign``, which a Beta or Dev
+    build never does; reaching here with such a version declared is a wiring
+    bug, and failing the compile is the honest answer to it.
+    """
+    if signing_refused():
+        version, _dev = build_version_from_env()
+        raise SigningError(f"{UNSIGNED_BUILD_MESSAGE} (this build is {version or 'Dev'})")
+
+
 def _cmd_sign(args: argparse.Namespace) -> int:
+    _refuse_declared_prerelease()
     config = resolve_config()
     signed = sign_files([Path(p) for p in args.paths], config)
     for path in signed:
@@ -535,6 +697,7 @@ def _cmd_sign(args: argparse.Namespace) -> int:
 
 
 def _cmd_sign_tree(args: argparse.Namespace) -> int:
+    _refuse_declared_prerelease()
     config = resolve_config()
     patterns = tuple(args.pattern) if args.pattern else default_patterns()
     signed = sign_tree(Path(args.root), config, patterns=patterns)
@@ -559,6 +722,15 @@ def _cmd_sign_build(args: argparse.Namespace) -> int:
         label=args.label,
         require=args.require or None,
     )
+    return 0
+
+
+def _cmd_build_decision(args: argparse.Namespace) -> int:
+    """Print the one plain line (when skipping), then ``sign`` or ``skip`` last.
+
+    ``scripts/BuildEnv.ps1`` ``Resolve-QuillSigning`` reads the last line.
+    """
+    print("sign" if build_decision(args.version, dev=args.dev) else "skip")
     return 0
 
 
@@ -604,6 +776,13 @@ def main(argv: list[str] | None = None) -> int:
         help="Force signing on and fail the build if it cannot sign.",
     )
 
+    p_decide = sub.add_parser(
+        "build-decision",
+        help="Say whether a build of this version signs (last line: sign or skip).",
+    )
+    p_decide.add_argument("--version", required=True, help="The version being built.")
+    p_decide.add_argument("--dev", action="store_true", help="This is a Dev build.")
+
     p_verify = sub.add_parser("verify", help="Verify an Authenticode signature.")
     p_verify.add_argument("paths", nargs="+", help="Files to verify.")
 
@@ -614,6 +793,7 @@ def main(argv: list[str] | None = None) -> int:
         "sign": _cmd_sign,
         "sign-tree": _cmd_sign_tree,
         "sign-build": _cmd_sign_build,
+        "build-decision": _cmd_build_decision,
         "verify": _cmd_verify,
     }
     try:

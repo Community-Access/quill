@@ -53,6 +53,7 @@ MENUS: tuple[tuple[str, tuple[tuple[str, str, str, str], ...]], ...] = (
             ("export_playlist", "&Export as M3U...", "Ctrl+Shift+X", "Save for other players."),
             ("", "", "", ""),
             ("rename", "&Rename Playlist...", "F2", "Give the playlist a new name."),
+            ("save_opened", "Sa&ve as Playlist...", "Ctrl+S", "Keep the Opened files list."),
             ("duplicate", "D&uplicate Playlist", "Ctrl+D", "Make a copy of the playlist."),
             ("delete_playlist", "&Delete Playlist...", "Shift+Delete", "Asks first."),
             ("follow_folder", "F&ollow the Folder", "Ctrl+Alt+F", "Add new files as they appear."),

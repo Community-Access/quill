@@ -11,11 +11,11 @@ import urllib.error
 import urllib.request
 from typing import Any
 
-from quill import __version__
+from quill.core import http_client
 
-#: NWS asks every client to identify itself; a contact URL is the documented
-#: convention. Reused for Zippopotam too (harmless, and honest).
-USER_AGENT = f"QUILLWeather/{__version__} (https://github.com/Community-Access/quill)"
+# NWS asks every client to identify itself; a contact URL is the documented
+# convention, and http_client.user_agent carries the project site. Reused for
+# Zippopotam too (harmless, and honest).
 _TIMEOUT_SECONDS = 15.0
 
 
@@ -25,7 +25,9 @@ def http_json(url: str, *, accept: str = "application/json") -> Any:
     own :class:`CodedError`. Refuses non-HTTPS URLs outright."""
     if not url.startswith("https://"):
         raise ValueError("Only https:// URLs can be fetched.")
-    request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT, "Accept": accept})
+    request = urllib.request.Request(
+        url, headers={"User-Agent": http_client.user_agent(), "Accept": accept}
+    )
     context = ssl.create_default_context()
     with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:
         payload = resp.read().decode("utf-8", errors="replace")

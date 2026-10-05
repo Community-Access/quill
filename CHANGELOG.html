@@ -245,6 +245,372 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="podcasts-opml-import-and-feed-checks-tell-the-truth-2026-10-04">Podcasts:
+OPML import and feed checks tell the truth (2026-10-04)</h3>
+<ul>
+<li><strong>One User-Agent for the family</strong>
+(<code>quill/core/http_client.py</code>):
+<code>&lt;app&gt;/&lt;version&gt; (+https://www.quillforall.org)</code>,
+and for podcast requests
+<code>&lt;app&gt;/&lt;version&gt; (podcast app; +https://www.quillforall.org)</code>.
+About forty modules sent their own copy naming the GitHub repository.
+CBC’s servers stall any User-Agent of that crawler shape and answer one
+that says it is a podcast app, so every CBC podcast failed in QUILL,
+Cast and Radio.</li>
+<li><strong>Podcast feed checks</strong> (shared by QUILL’s Podcasts,
+QUILL Cast and Quill Radio): a show’s first read is a starting point,
+not hundreds of new episodes; “last new episode” is the newest episode’s
+own date; a web page or an empty feed is reported, not called healthy;
+only a permanent (301 or 308) redirect changes a feed’s address; every
+failure is a plain sentence; conditional requests (ETag and
+Last-Modified); feed checks on their own pool; https first for
+plain-http feeds; a 48 MB feed cap with a note when a feed is cut off.
+Feed Check gains Find This Show’s New Feed. Details in QUILL Cast’s
+changelog.</li>
+<li><strong>OPML import</strong> keeps empty folders and file order,
+flags same-name feeds within one file, refuses addresses with no real
+host, keeps description, language and category, and its report no longer
+claims iTunes corrections that never ran.</li>
+</ul>
+<h3
+id="eighteen-settings-that-did-nothing-now-do-what-they-say-2026-10-04">Eighteen
+settings that did nothing now do what they say (2026-10-04)</h3>
+<ul>
+<li><strong>Why.</strong> Eighteen settings were drawn in Settings and
+saved, and no code read them. A switch that does nothing is worse than
+no switch: a screen-reader user cannot see that nothing happened. Each
+is now read where its feature decides, with an on-versus-off behaviour
+test.</li>
+<li><strong>Accessibility and Announcements.</strong> <em>Keep an
+announcement history</em> off now records nothing and drops what was
+kept; the Spoken Echo says the history is off
+(<code>quill/core/spoken_echo.py</code>,
+<code>MainFrame._record_spoken</code>). <em>Interrupt speech for</em>
+now decides interruption: the policy computes it per severity
+(<code>severity_interrupts</code> in
+<code>quill/core/announce/policy.py</code>) and the service hands it to
+the speech sink through the new <code>Announcement.interrupt</code>. Its
+default moves from <code>"errors"</code> to <code>"warnings"</code>,
+which is what QUILL always did (a legacy <code>force=True</code> is a
+WARNING); settings are saved as a delta, so nobody who chose a value
+loses it. Applies live through
+<code>refresh_announcement_policy</code>.</li>
+<li><strong>Export and copy.</strong> <em>Default export preset</em>
+selects its format when Export &gt; Other Pandoc Format opens
+(<code>quill/core/export_preset.py</code>). <em>Markdown clipboard
+format</em> gains a <code>"text"</code> choice, now the default (today’s
+plain-text Copy With Source); HTML or Rich text puts a formatted copy
+beside the plain text in a Markdown document
+(<code>quill/core/markdown_clipboard.py</code>,
+<code>quill/ui/markdown_clipboard_copy.py</code>).</li>
+<li><strong>Hey QUILL.</strong> <em>Listen for ‘Hey QUILL’</em> and
+Tools &gt; Speech &gt; Listen for Hey QUILL are one switch: the command
+saves the setting, the tick box starts or stops listening on OK, and
+launch resumes it only when <em>Keep listening across restarts</em> is
+on, as the guide promised (<code>quill/ui/wakeword_switch.py</code>,
+<code>quill/ui/settings_live_switches.py</code>).</li>
+<li><strong>Watch Folders.</strong> <em>Default watch folder</em> is now
+a real watch: a built-in “Default watch folder” rule that opens each new
+supported file, run by the same manager, queue and worker as profiles
+(<code>quill/core/watch_default.py</code>). <em>Start watching
+automatically</em> starts it at launch and live (never in Safe Mode,
+never without a folder); <em>Include subfolders</em> and <em>Process
+existing files on start</em> apply to it. Profiles keep their own
+copies.</li>
+<li><strong>Integration.</strong> <em>File types offered to QUILL</em>
+narrows the OCR, Open and Read verbs to images, images and PDF, or
+images, PDF and text documents; a change on the page re-registers verbs
+(current user only) when you press OK
+(<code>quill/core/shell_file_types.py</code>). The default becomes
+<code>"images_pdf_docs"</code>, which is what registration always
+did.</li>
+<li><strong>Developer Console.</strong> <em>Python console execution
+timeout</em> stops a runaway command (“Stopped after N seconds”) by
+raising an asynchronous <code>BaseException</code> in the UI thread, so
+a script’s own <code>except Exception</code> cannot keep it alive; a
+command blocked in one long system call stops when that call returns
+(<code>quill/devtools/python_timeout.py</code>).</li>
+<li><strong>Spelling.</strong> <em>Spelling review context display
+mode</em> “Full paragraph” shows the paragraph around the word (capped
+at 2000 characters) in the F7 Context field, in QUILL and through the
+shared <code>review_textctrl</code> in QUILL Lite, which now stores the
+same field (<code>quill/core/spelling/paragraph_context.py</code>).</li>
+<li><strong>Braille Mode.</strong> <em>Calculate pages from
+geometry</em> and <em>Use form feeds for page breaks</em> (also dead)
+now choose the page-map mode; <em>Announce page changes</em>, <em>print
+page changes</em> and <em>line overflow</em> speak on a change at the
+caret, once, and never echo Next/Go to Braille Page; <em>Include
+proofing status</em> and <em>Include continuation</em> shape Read
+Detailed Status, which now reads the proofing state from the companion
+file – so with the default on, it names proofing for the first time
+(<code>quill/core/braille_cues.py</code>,
+<code>quill/ui/main_frame_braille_cues.py</code>).</li>
+<li><strong>Help text</strong> for each was rewritten to say what it now
+does.</li>
+</ul>
+<h3
+id="a-remembered-reload-keeps-unsaved-edits-and-three-smaller-fixes-2026-10-04">A
+remembered Reload keeps unsaved edits, and three smaller fixes
+(2026-10-04)</h3>
+<ul>
+<li><strong>A remembered Reload never throws away unsaved
+edits.</strong> “Do not ask me again” with Reload was an answer about an
+untouched document; with unsaved edits QUILL and QUILL Lite now ask the
+normal question instead (family rule 4, shared in
+<code>quill/core/external_change.py</code>).</li>
+<li><strong>Alt+F, P prints again in QUILL.</strong> Open from Clipboard
+left the File menu with more rows than letters and digits, and Print was
+the row left without one. Print keeps its P, as in every Windows
+program.</li>
+<li><strong>An update can go back from a folder with an apostrophe in
+its name.</strong> The kept installer’s path is now quoted correctly for
+PowerShell, so a profile folder like O’Brien no longer stops the undo,
+or the installer itself.</li>
+<li><strong>Open from URL</strong> drops a download that finishes after
+its window has closed, instead of opening it into a window that is
+gone.</li>
+</ul>
+<h3
+id="quill-radio-backups-say-what-they-hold-and-name-what-they-leave-out-2026-10-04">Quill
+Radio backups say what they hold, and name what they leave out
+(2026-10-04)</h3>
+<ul>
+<li><strong>Reported by a listener</strong> about to reset two
+computers, with recordings and backups in a OneDrive folder: Quill Radio
+“said some items were skipped” and never said which. The message was
+Export My Setup’s count: the setup file is shared with QUILL Cast, and
+the Cast stores a Radio-only computer has never made were counted as
+skipped. Nothing was lost, and nothing said so.</li>
+<li><strong>Every item left out is named, with its reason.</strong> Back
+Up, Restore, Export My Setup and Import My Setup (Radio and Cast) offer
+<strong>Show what was left out, and why?</strong> whenever anything was:
+one row per item – stored only in OneDrive, in use by another program, a
+path too long for Windows, could not be read – with what to do under the
+list and Copy List beside it. A Radio backup also writes the list to
+Recent Problems. Shared vocabulary in
+<code>quill/core/skipped_files.py</code>; the window is
+<code>quill/ui/radio/skipped_items_dialog.py</code>.</li>
+<li><strong>A Radio backup carries what a Radio listener
+builds.</strong> Podcast subscriptions and episode state
+(<code>podcasts_library.json</code>, where Radio’s Follow writes),
+notes, tags, bookmarks, Go To, reminders, recording settings, YouTube
+rows and channels, own servers, Local Media list, Quick Actions, quiet
+hours and download choices, besides favorites, settings, wake-up timer
+and recording schedule. Update snapshots keep the original Radio-only
+list, so going back from a beta never puts back Cast’s library.</li>
+<li><strong>Never a success without the essentials.</strong> If
+favorites, settings or podcast subscriptions exist and cannot be read,
+the backup fails, deletes its partial file and says which and why; the
+finished zip is read back before success.</li>
+<li><strong>Recordings from the right folder, OneDrive
+included.</strong> The backup read the recordings folder from the app
+settings, which have no such field, so it always looked in the default
+Music folder. It now uses Recording Settings’ destination. OneDrive-only
+recordings (Files On-Demand placeholders) are read through, which
+downloads them, with progress in the status bar, unless there is not
+room; backup files in the same folder are not carried; a restore leaves
+a recording already there alone, and names any it could not write.
+Tests: <code>tests/unit/core/test_skipped_files.py</code>,
+<code>tests/unit/core/radio/test_radio_backup_skipped.py</code>.</li>
+</ul>
+<h3
+id="plans-open-however-they-arrive-and-nothing-is-lost-on-the-way-in-quill-and-quill-lite-2026-10-04">Plans
+open however they arrive, and nothing is lost on the way, in QUILL and
+QUILL Lite (2026-10-04)</h3>
+<p>More ideas from <strong>PlanCake</strong>, by <strong>Andre of Oire
+Software</strong>: a reader for the plans AI coding assistants write,
+which opens a plan however it arrives and refuses to destroy what it
+cannot read. Thank you, Andre. Every item works the same way in both
+editors, from one shared copy of the code.</p>
+<ul>
+<li><strong>Open from URL is fixed, and QUILL Lite has it too.</strong>
+It now asks before downloading, naming the website, the file and its
+size, as the user guide had always promised. The download runs in the
+background with a progress window and a Cancel button, instead of
+freezing the window. A network failure is one plain sentence instead of
+an unhandled error, and the temporary copy is deleted when the tab
+closes (QUILL Lite deletes it as soon as it is read). A GitHub page link
+opens the raw file behind it.</li>
+<li><strong>Open from Clipboard</strong>
+(<code>Ctrl+Alt+Shift+Enter</code>, File menu, both editors): opens
+files copied in File Explorer, a file path copied as text (quotes and
+all), or a web link through Open from URL. When there is nothing to open
+it says “The clipboard holds no file, path or link.” <code>Ctrl+V</code>
+still pastes.</li>
+<li><strong>Drag and drop to open</strong>, both editors: files dropped
+on the window or the editor open, with one sentence saying how many.
+Dropped text is still inserted where it lands.</li>
+<li><strong>Honest legacy encodings.</strong> Both editors now read text
+through one shared decoder that never replaces a byte. QUILL Lite used
+to read a non-UTF-8 file as Windows-1252 with replacement characters, so
+five byte values were lost on the next save; that is fixed. A file that
+is not UTF-8 is said once as it opens (“Opened as Windows-1252, not
+UTF-8.”), and big-endian UTF-16 now stays big-endian in QUILL as it
+already did in QUILL Lite.</li>
+<li><strong>Reopen with Encoding</strong>, inside the File Format window
+in both editors: reads the same file again from disk as a code page you
+choose, strictly, and saves back in it unless you choose UTF-8.</li>
+<li><strong>Never overwrite an unseen change.</strong> Right before Save
+writes, both editors check the file on disk (size, time and a hash). If
+another program changed it since it was opened or last saved, Save asks
+instead: Save As (the default), Reload from Disk, Overwrite or Cancel.
+QUILL’s watcher could miss a change that landed between two polls; QUILL
+Lite had no check at all.</li>
+<li><strong>QUILL Lite watches for outside changes too,</strong> from
+QUILL’s own watcher. What to do (reload, ask, a remembered answer per
+file format), the clock that polls (it now waits while any modal window
+is open, in both editors) and the File Changed on Disk question all
+moved into shared code, and QUILL Lite gained QUILL’s four settings
+under the same names, in its Preferences under <strong>When another
+program changes the file</strong>. Lite’s question offers Save As
+instead of a second tab and puts Keep Mine on Enter; an unchanged
+document can reload quietly, keeping the cursor’s line; a deleted file
+is said once. QUILL’s help in that question now names the File menu,
+where Forget Remembered File-Change Answers actually is.</li>
+<li>Small fixes found on the way: the user guide’s <strong>Tools &gt;
+Writing</strong> is now <strong>Tools &gt; Writing and
+Language</strong>; the QUILL Lite guide no longer says the Heading
+Organizer cannot work in rich text; and two stale key names in QUILL
+Lite’s source comments now name Switch Document Mode’s real key,
+<code>Alt+Shift+F</code>.</li>
+</ul>
+<h3
+id="reviewing-a-plan-notes-tasks-and-a-page-to-share-in-quill-and-quill-lite-2026-10-04">Reviewing
+a plan: notes, tasks and a page to share, in QUILL and QUILL Lite
+(2026-10-04)</h3>
+<p>These ideas come from <strong>PlanCake</strong>, a small Windows app
+by <strong>Andre of Oire Software</strong> for reviewing the plans AI
+coding assistants write. Thank you, Andre. Every one of them works the
+same way in both editors, from one shared copy of the code.</p>
+<ul>
+<li><strong>Toggle Task Done</strong> (<code>Ctrl+Alt+Enter</code>, both
+editors): ticks <code>- [ ]</code> to <code>- [x]</code> and back on the
+line you are on, or on every task in a selection, and says how many
+tasks in that list are done (“Checked: Write the tests. 3 of 7 tasks
+complete.”). Bullets <code>-</code>, <code>*</code>, <code>+</code> and
+numbered items all count. Undo takes it back. QUILL has it in
+<strong>Insert &gt; List</strong>, QUILL Lite in
+<strong>Format</strong>.</li>
+<li><strong>Task lists and strikethrough in the preview and in
+HTML:</strong> a task is now a real, read-only check box with its text
+as the label, and <code>~~text~~</code> is struck out.</li>
+<li><strong>Export as HTML</strong> (<code>Ctrl+Alt+Shift+End</code>):
+one self-contained page with its styles inside, no scripts, and the
+document’s language set. QUILL’s <strong>File &gt; Export &gt;
+HTML…</strong> used to write a fragment rather than a page and had no
+key; it now runs Pandoc with <code>--standalone</code>, a title and the
+same small accessible stylesheet, and falls back to QUILL’s own renderer
+when Pandoc is not installed. QUILL Lite gains <strong>File &gt; Export
+as HTML…</strong>. The document you are editing stays the document you
+are editing.</li>
+<li><strong>List Inline Notes</strong> (<code>Alt+Shift+Enter</code>):
+every note in one window, with its line, the text it is about and its
+kind. Go To, Edit, Delete, Remove All (asks first, No by default), Copy
+All and Export to Markdown or JSON. A note whose text was deleted is
+listed last as “the text it was on is gone”, so it can finally be found
+and removed.</li>
+<li><strong>Delete Inline Note</strong> (<code>Alt+Shift+Delete</code>):
+names the note and asks first. The note windows also gain a read-only
+<strong>Note on</strong> line showing the start of the text the note is
+about.</li>
+<li><strong>Inline notes in QUILL Lite:</strong> all six note commands
+on QUILL’s keys, in <strong>Tools &gt; Inline Notes</strong>. QUILL
+Lite’s <strong>Snippets</strong> moves from <code>Alt+Shift+I</code> to
+<code>Ctrl+Alt+Shift+Home</code> to make room, and QUILL answers the
+same chord for its Snippet Gallery.</li>
+<li><strong>Notes in the file</strong> for Markdown and HTML: check
+<strong>Write this note into the file</strong> and the note is kept in
+the document as a hidden <code>&lt;!-- quill-note: ... --&gt;</code>
+comment after its text, so a colleague or an AI assistant reading the
+file sees it. The file stays valid Markdown or HTML, and
+<code>Ctrl+Z</code> undoes adding, changing or deleting one. Private
+notes stay the default; a new shared setting, <strong>Write new inline
+notes into the file</strong> (<code>inline_notes_in_file</code>),
+changes that.</li>
+<li><strong>Notes on the command line:</strong>
+<code>quill --notes list|check|clear FILE</code> (and
+<code>QuillLite.exe --notes ...</code>) lists, counts or clears the
+notes written into a file. <code>check</code> exits 3 while notes are
+left, so a script or an assistant can prove every note was dealt
+with.</li>
+<li><strong>Quick Nav <code>N</code> and <code>Shift+N</code></strong>
+(QUILL) move to the next and previous note.</li>
+<li><strong>Fixed in the guide:</strong> Sticky Notes live on
+<strong>Navigate &gt; Sticky Notes</strong>, not Tools; Quick Nav
+(Landmarks) is <code>Ctrl+Shift+Z</code>, not QUILL key then
+<code>G</code>; inline notes are on <strong>Tools &gt; Writing and
+Language</strong>.</li>
+</ul>
+<h3
+id="portable-copies-start-from-a-folder-with-a-space-in-its-name-2026-10-04">Portable
+copies start from a folder with a space in its name (2026-10-04)</h3>
+<ul>
+<li><strong>QuillVille launcher, every app:</strong> the native launcher
+joined the interpreter’s arguments with bare spaces when it built the
+command line for <code>CreateProcessW</code>, so a portable copy
+unpacked to <code>C:\portable\Quill Radio</code> reached Python as two
+words and failed with “can’t open file ‘…\Radio\pythonw.exe’”. The same
+join split any file opened from Explorer out of a folder with a space in
+its name, and an installed app whose Windows user folder has a space.
+Every argument is now quoted by the rules the child’s C runtime splits
+it back with (<code>quill/native/launcher/cmdline.c</code>), and the
+interpreter path, which comes from the ANSI file APIs, is no longer read
+as UTF-8, so a folder name with an accented letter works too. Present in
+every launcher since it shipped: Quill Radio 3.0.0 to 3.0.4 and QUILL
+Lite 1.0.0 to 1.1.2. Tests:
+<code>tests/unit/native/test_launcher_cmdline.py</code> compiles the
+real quoting code and reads it back through shell32’s
+<code>CommandLineToArgvW</code>.</li>
+</ul>
+<h3 id="safer-local-connections-and-logs-2026-10-04">Safer local
+connections and logs (2026-10-04)</h3>
+<ul>
+<li><strong>QUILL Beacon:</strong> the local capture server now reads a
+refused request’s body before answering, so the browser extension always
+gets the refusal instead of a dropped connection, and it only echoes a
+browser extension’s address back when that address is a plain extension
+origin. Anything else, including a value with line breaks in it, is
+simply not echoed.</li>
+<li><strong>Credentials:</strong> QUILL’s debug log no longer names
+which saved credential it looked up.</li>
+<li><strong>Behind the scenes:</strong> the check that records how each
+app saves its data now gives the same answer on every supported Python
+version.</li>
+</ul>
+<h3
+id="beta-and-dev-builds-are-not-code-signed-stable-always-is-2026-10-04">Beta
+and Dev builds are not code-signed; Stable always is (2026-10-04)</h3>
+<ul>
+<li><strong>Owner decision:</strong> Authenticode signing is refused for
+any version with a pre-release part (<code>-dev</code>,
+<code>-alpha</code>, <code>-beta</code>, <code>-rc</code>) and for every
+Dev build. <code>-Sign</code>, <code>QUILL_SIGN</code> and
+<code>QUILL_SIGN_REQUIRED</code> cannot force it; the build says “Beta
+and Dev builds are not code-signed; signing skipped.” and carries on
+unsigned. One helper decides
+(<code>scripts/code_signing.py build-decision</code>), asked by every
+<code>build_release.ps1</code> through <code>Resolve-QuillSigning</code>
+in <code>scripts/BuildEnv.ps1</code>, by
+<code>build_runtime_installer.ps1</code> (the Beta runtime slot is never
+signed) and by <code>build_windows_distribution.py</code>.</li>
+<li><strong>Stable candidates are signed when they are built.</strong> A
+final-numbered build (<code>3.3.0</code>) waits on Beta as a release
+candidate of Stable and is promoted as the same files, so it is signed
+at build time: an installer carries its programs inside
+<code>Setup.exe</code>, and signing at promotion would have meant new
+files or unsigned programs on Stable.</li>
+<li><code>publish_release.py</code> refuses an unsigned final-numbered
+build and a signed Beta or Dev build before creating anything. Promotion
+check <strong>P5</strong> now always runs for Stable (it used to need
+<code>QUILL_SIGN_REQUIRED=1</code>): the installer and every program in
+the portable zip must carry a signature, read from the file itself so
+the Linux promote runner can check it too.</li>
+<li>The Beta and Dev risk windows in all four apps, and their user
+guides, say in one kind sentence that Windows may warn about an unknown
+publisher and that <strong>More info</strong>, then <strong>Run
+anyway</strong>, is the way through.</li>
+</ul>
+<h3
 id="settings-you-could-not-reach-keys-that-did-nothing-and-one-echo-2026-10-04">Settings
 you could not reach, keys that did nothing, and one echo
 (2026-10-04)</h3>
@@ -431,6 +797,47 @@ unless you changed it).</li>
 It used to write single $ signs, which neither the preview nor Word
 export recognised, so the equation stayed as plain text. Select an old
 one and insert it again to update it.</li>
+</ul>
+<h3
+id="quill-radio-as-a-media-player-open-with-default-apps-and-opened-files-2026-10-04">Quill
+Radio as a media player: Open with, Default apps and Opened files
+(2026-10-04)</h3>
+<ul>
+<li><strong>Asked for by Julie:</strong> pick a song on an external
+drive in File Explorer and choose Quill Radio to play it, as you would
+VLC, or make Quill Radio the default media player. Both now work, and
+Windows still makes the choice.</li>
+<li><strong>The editors’ registration, generalised rather than
+copied.</strong> <code>quill/core/windows_editor.py</code>’s profile is
+now the general <code>AppProfile</code> (role, example type, ProgID name
+and right-click verbs); Quill Radio’s is
+<code>quill/core/windows_media.py</code> (<code>RADIO</code>, its type
+list held by a test to what Local Media plays). The installer lines come
+from one generator, <code>quill/core/windows_installer_lines.py</code>,
+which QUILL’s <code>build_text_editor_registry_lines()</code> now calls
+(its output unchanged) and which writes Quill Radio’s generated block in
+<code>quill-radio.iss</code>
+(<code>scripts/sync_radio_installer_registry.py</code>, drift-tested).
+Always written, never <code>UserChoice</code>, every key removed on
+uninstall, <code>ChangesAssociations=yes</code>.</li>
+<li><strong>Make Quill Radio My Media Player…</strong> in Radio’s
+Preferences &gt; Windows and your files and the Command Palette runs the
+shared <code>TextEditorCommandsMixin</code> command with Radio’s profile
+(<code>quill/ui/radio/media_player_registration.py</code>): per-user
+registration for a portable copy, then Windows’ Default apps page for
+Quill Radio. No key (family rule 9).</li>
+<li><strong>Files on the command line play, and reach a running
+copy.</strong> A second launch hands its files over the existing radio
+IPC queue (<code>quill/core/radio/opened_files.py</code>,
+<code>hand_over</code>); the running window plays them without coming to
+the front (<code>quill/ui/radio/opened_files_ui.py</code>). Files that
+arrive within three seconds of each other (Explorer starts one process
+per selected file) make one <strong>Opened files</strong> list in Local
+Media, a temporary playlist that the next opening replaces unless
+<strong>Save as Playlist…</strong> keeps it. Folders play like Add a
+Folder; M3U and PLS files import once. <strong>Play with Quill
+Radio</strong> and <strong>Add to Quill Radio Playlist</strong> verbs on
+every supported type.</li>
 </ul>
 <h3
 id="quill-radio-local-media-your-own-files-in-playlists-2026-10-03">Quill

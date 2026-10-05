@@ -39,25 +39,24 @@ import ssl
 import urllib.error
 import urllib.parse
 import urllib.request
-import xml.etree.ElementTree as ET
 from collections.abc import Callable, Iterable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from quill import __version__
+from quill.core import http_client
+from quill.core.counted import plural
 from quill.core.net_retry import retry_transient
+from quill.core.podcasts import feed_auth, feed_problems
 from quill.core.podcasts.models import PodcastSettings, PodcastShow
 from quill.core.podcasts.opml import (
     ImportedShow,
     OpmlValidationResult,
     parse_opml,
+    parse_opml_folders,
 )
 from quill.core.podcasts.subscriptions import PodcastLibrary, new_id
-from quill.core.safe_xml import ParseError, UnsafeXMLError
-from quill.core.safe_xml import fromstring as safe_fromstring
 
-_USER_AGENT = f"QUILL/{__version__} (https://github.com/Community-Access/quill)"
 #: Short by design. A probe answers "is anything there", and a feed that
 #: takes longer than this to say hello is one worth flagging anyway.
 PROBE_TIMEOUT_SECONDS = 8.0
@@ -73,6 +72,8 @@ _PROBE_READ_BYTES = 2048
 #: feeds cannot afford it per feed, so the sweep buys the same protection
 #: against a false "dead" verdict at a third of the cost.
 _PROBE_BACKOFF: tuple[float, ...] = (0.5, 1.0)
+#: Said for an entry whose address is not http or https at all.
+_NOT_WEB = "not a web address; it must start with http or https"
 
 
 def normalize_feed_url(url: str) -> str:
@@ -110,6 +111,33 @@ class ImportCandidate:
     feed_url: str
     homepage: str
     folder_path: list[str]
+    #: What the file said about the show, carried through to the new
+    #: subscription (check.md bug 15). Downcast's export has none of these;
+    #: plenty of other apps' exports do, and the older one-at-a-time import
+    #: already kept them -- so the Import OPML window was the one that lost them.
+    description: str = ""
+    language: str = ""
+    category: str = ""
+
+
+def _host_problem(feed_url: str) -> str:
+    """Why *feed_url* is not a complete web address, or ``""``.
+
+    One real Downcast export carried ``http://feed/`` for Braillecast: a
+    scheme and a word, which imported fine and then failed every check for
+    ever with "getaddrinfo failed" (check.md bug 12). A podcast host has a dot
+    in its name (or is an IP address); ``localhost`` is allowed for somebody
+    testing their own feed.
+    """
+    try:
+        host = urllib.parse.urlsplit(feed_url).hostname or ""
+    except ValueError:
+        return "not a complete web address"
+    if not host:
+        return "not a complete web address"
+    if host == "localhost" or "." in host or ":" in host:
+        return ""
+    return "not a complete web address"
 
 
 @dataclass(slots=True)
@@ -132,6 +160,9 @@ class ImportPlan:
     same_title_different_feed: list[str] = field(default_factory=list)
     #: Entries that could not be used at all, with the reason.
     unusable: list[tuple[str, str]] = field(default_factory=list)
+    #: Every folder the file has, as name paths in document order -- empty
+    #: ones included, so the file's structure arrives whole.
+    folders: list[list[str]] = field(default_factory=list)
 
     @property
     def total_seen(self) -> int:
@@ -144,20 +175,30 @@ class ImportPlan:
 
     def summary(self) -> str:
         return (
-            f"{self.total_seen} entr(ies) read: {len(self.new)} new, "
-            f"{len(self.duplicates_in_library)} already subscribed, "
+            f"{plural(self.total_seen, 'entry', 'entries')} read: {len(self.new)} new, "
+            f"{len(self.duplicates_in_library)} already followed, "
             f"{len(self.duplicates_in_file)} listed twice in the file, "
             f"{len(self.unusable)} unusable."
         )
 
 
-def plan_import(library: PodcastLibrary, entries: Iterable[ImportedShow]) -> ImportPlan:
+def _where(path: list[str]) -> str:
+    return " / ".join(path) if path else "the top level"
+
+
+def plan_import(
+    library: PodcastLibrary,
+    entries: Iterable[ImportedShow],
+    *,
+    folders: Iterable[list[str]] = (),
+) -> ImportPlan:
     """Decide what to import, in one pass over *entries*.
 
     Indexes the library once (two dicts), so each entry costs a couple of
     hash lookups regardless of how large either side is. Nothing is mutated.
+    *folders* is the file's own folder list (:func:`parse_opml_folders`).
     """
-    plan = ImportPlan()
+    plan = ImportPlan(folders=[list(path) for path in folders])
     subscribed: dict[str, str] = {}
     titles: dict[str, str] = {}
     for show in library.shows:
@@ -165,7 +206,19 @@ def plan_import(library: PodcastLibrary, entries: Iterable[ImportedShow]) -> Imp
             subscribed[normalize_feed_url(show.feed_url)] = show.title
         if show.title:
             titles.setdefault(show.title.casefold(), show.feed_url)
-    seen_in_file: dict[str, str] = {}
+    seen_in_file: dict[str, list[str]] = {}
+    #: Titles already met *in this file*, with the entry that first used it --
+    #: one Downcast export had eleven pairs of different feeds sharing a name
+    #: (Dateline NBC twice, The Mayan Crystal on two hosts), and in six of them
+    #: one copy was dead. Only the library was compared before (check.md bug 11).
+    titles_in_file: dict[str, tuple[str, str]] = {}
+    flagged: set[str] = set()
+
+    def flag(label: str) -> None:
+        if label not in flagged:
+            flagged.add(label)
+            plan.same_title_different_feed.append(label)
+
     for entry in entries:
         feed_url = (entry.feed_url or "").strip()
         title = (entry.title or "").strip() or feed_url
@@ -173,25 +226,48 @@ def plan_import(library: PodcastLibrary, entries: Iterable[ImportedShow]) -> Imp
             plan.unusable.append((title or "(untitled)", "no feed URL"))
             continue
         if not feed_url.lower().startswith(("http://", "https://")):
-            plan.unusable.append((f"{title} ({feed_url})", "not an http(s) URL"))
+            plan.unusable.append((f"{title} ({feed_url})", _NOT_WEB))
+            continue
+        bad_host = _host_problem(feed_url)
+        if bad_host:
+            plan.unusable.append((f"{title} ({feed_url})", bad_host))
             continue
         key = normalize_feed_url(feed_url)
         if key in subscribed:
             plan.duplicates_in_library.append(f"{title} ({feed_url})")
             continue
         if key in seen_in_file:
-            plan.duplicates_in_file.append(f"{title} ({feed_url})")
+            # One podcast filed in two folders: it is followed once, in the
+            # first place the file lists it, and the report says both places.
+            first = seen_in_file[key]
+            entry_path = list(entry.folder_path)
+            if entry_path != first:
+                plan.duplicates_in_file.append(
+                    f"{title} ({feed_url}), also listed in {_where(entry_path)}; "
+                    f"kept in {_where(first)}"
+                )
+            else:
+                plan.duplicates_in_file.append(f"{title} ({feed_url})")
             continue
-        seen_in_file[key] = title
+        seen_in_file[key] = list(entry.folder_path)
+        label = f"{title} ({feed_url})"
         existing_feed = titles.get(title.casefold())
         if existing_feed and normalize_feed_url(existing_feed) != key:
-            plan.same_title_different_feed.append(f"{title} ({feed_url})")
+            flag(label)
+        earlier = titles_in_file.get(title.casefold())
+        if earlier is not None and earlier[0] != key:
+            flag(earlier[1])
+            flag(label)
+        titles_in_file.setdefault(title.casefold(), (key, label))
         plan.new.append(
             ImportCandidate(
                 title=title,
                 feed_url=feed_url,
                 homepage=(entry.homepage or "").strip(),
                 folder_path=list(entry.folder_path),
+                description=str(getattr(entry, "description", "") or ""),
+                language=str(getattr(entry, "language", "") or ""),
+                category=str(getattr(entry, "category", "") or ""),
             )
         )
     return plan
@@ -225,6 +301,10 @@ def apply_plan(
         folder_cache[full] = folder_id
         return folder_id
 
+    # The file's folders first, in its own order, so empty ones exist and the
+    # tree reads in the order the file gave it.
+    for path in plan.folders:
+        resolve_folder(path)
     for candidate in plan.new:
         show = PodcastShow(
             id=new_id(),
@@ -232,6 +312,9 @@ def apply_plan(
             feed_url=candidate.feed_url,
             homepage=candidate.homepage,
             folder_id=resolve_folder(candidate.folder_path),
+            description=candidate.description,
+            language=candidate.language,
+            category=candidate.category,
         )
         if stream_only:
             show.settings = PodcastSettings(playback_mode="stream")
@@ -286,9 +369,10 @@ def import_opml_file(data_dir: Path | str, opml_path: Path | str) -> OpmlImportO
     text = Path(opml_path).read_text(encoding="utf-8", errors="replace")
     entries = parse_opml(text)
     library = load_library(Path(data_dir))
-    plan = plan_import(library, entries)
+    plan = plan_import(library, entries, folders=parse_opml_folders(text))
+    folders_before = len(library.folders)
     added = apply_plan(library, plan)
-    if added or plan.new:
+    if added or plan.new or len(library.folders) != folders_before:
         save_library(Path(data_dir), library)
     return OpmlImportOutcome(
         added=len(added),
@@ -309,9 +393,19 @@ def probe_feed(url: str, *, timeout: float = PROBE_TIMEOUT_SECONDS) -> OpmlValid
     Only the first couple of kilobytes are read, so the cost is a round trip
     and not a download.
 
-    A 401/403 counts as **reachable**: a private feed demanding a sign-in is
-    alive and worth keeping, and pruning it would delete exactly the
-    subscriptions that are hardest to get back.
+    A 401/403 **with a sign-in challenge** (``WWW-Authenticate``) counts as
+    reachable: a private feed demanding a sign-in is alive and worth keeping,
+    and pruning it would delete exactly the subscriptions that are hardest to
+    get back. Without one it is not a sign-in at all -- a 403 is a host
+    refusing podcast apps (a bot check), a 401 a publisher that has locked the
+    feed -- and it is reported, in plain words (check.md bug 6).
+
+    The couple of kilobytes read are *looked at* (check.md bug 3): a web page
+    where the feed should be is reported, and so is a feed whose whole text
+    fits in that sample with no episode in it.
+
+    ``corrected_url`` is set only for a **permanent** move -- 301 or 308 on
+    every hop. A temporary redirect is not a new address (check.md bugs 4, 5).
 
     A transient failure is retried (:mod:`quill.core.net_retry`), and this is
     the call site that most needs it: a "dead feed" verdict here is what the
@@ -324,13 +418,15 @@ def probe_feed(url: str, *, timeout: float = PROBE_TIMEOUT_SECONDS) -> OpmlValid
     does not resolve are still one round trip each, which is what keeps a
     genuinely dead list fast to sweep.
     """
+    from quill.core.podcasts.feed_reader import permanent_landing
+
     title = url
     if not url.lower().startswith(("http://", "https://")):
-        return OpmlValidationResult(title, url, False, "not an http(s) URL")
+        return OpmlValidationResult(title, url, False, _NOT_WEB)
     request = urllib.request.Request(
         url,
         headers={
-            "User-Agent": _USER_AGENT,
+            "User-Agent": http_client.podcast_user_agent(),
             "Accept": "application/rss+xml, application/xml, */*",
         },
     )
@@ -338,26 +434,44 @@ def probe_feed(url: str, *, timeout: float = PROBE_TIMEOUT_SECONDS) -> OpmlValid
 
     def _probe_once() -> OpmlValidationResult:
         """One attempt. The reviewed egress site; the retry wraps it."""
-        with urllib.request.urlopen(  # noqa: S310 - scheme checked above
-            request, timeout=timeout, context=context
-        ) as response:
-            response.read(_PROBE_READ_BYTES)
-            final_url = str(getattr(response, "url", "") or url)
-            corrected = (
-                final_url
-                if final_url and normalize_feed_url(final_url) != normalize_feed_url(url)
-                else ""
-            )
-            return OpmlValidationResult(title, url, True, "", corrected)
+        with feed_auth.recording_redirects() as hops:
+            with feed_auth.urlopen_auth_safe(request, timeout=timeout, context=context) as response:
+                head: bytes = response.read(_PROBE_READ_BYTES)
+        verdict = sniff(head)
+        if verdict:
+            return OpmlValidationResult(title, url, False, feed_problems.sentence_for(verdict))
+        landed = permanent_landing(url, list(hops))
+        corrected = (
+            landed if landed and normalize_feed_url(landed) != normalize_feed_url(url) else ""
+        )
+        return OpmlValidationResult(title, url, True, "", corrected)
 
     try:
         return retry_transient(_probe_once, backoff=_PROBE_BACKOFF)
     except urllib.error.HTTPError as error:
-        if error.code in (401, 403):
+        problem = feed_problems.classify(error)
+        if problem.kind == feed_problems.SIGN_IN:
             return OpmlValidationResult(title, url, True, "", "")
-        return OpmlValidationResult(title, url, False, f"HTTP {error.code} {error.reason}")
+        return OpmlValidationResult(title, url, False, problem.sentence)
     except (urllib.error.URLError, TimeoutError, ssl.SSLError, OSError, ValueError) as error:
-        return OpmlValidationResult(title, url, False, str(error) or "could not connect")
+        return OpmlValidationResult(title, url, False, feed_problems.plain(error))
+
+
+def sniff(head: bytes) -> str:
+    """What the first bytes of a 200 answer say is wrong, or ``""``.
+
+    ``web_page`` when it is HTML rather than a feed. ``empty`` when the whole
+    feed fits in the sample and carries no item or entry -- the cheap half of
+    "this feed has no episodes"; a bigger empty feed is caught by the first
+    check after the import, which reads the whole thing.
+    """
+    if feed_problems.looks_like_html(head):
+        return feed_problems.WEB_PAGE
+    text = head.decode("utf-8", errors="replace").lower()
+    closed = "</rss>" in text or "</feed>" in text or "</channel>" in text
+    if closed and "<item" not in text and "<entry" not in text:
+        return feed_problems.EMPTY
+    return ""
 
 
 def validate_feeds(
@@ -398,7 +512,7 @@ def validate_feeds(
             try:
                 result = future.result()
             except Exception as error:  # noqa: BLE001 - one bad probe never stops the sweep
-                result = OpmlValidationResult(title, url, False, str(error))
+                result = OpmlValidationResult(title, url, False, feed_problems.plain(error))
             # probe_feed only knows the URL; restore the show's own title so
             # the report reads as a list of shows, not a list of URLs.
             results.append(
@@ -416,59 +530,31 @@ def validate_feeds(
     return results
 
 
-# -- pruning -----------------------------------------------------------------
-
-
-def prune_opml(text: str, dead_urls: Iterable[str]) -> str:
-    """The same OPML with every unreachable feed's outline removed.
-
-    Structure, attributes, folder nesting, and anything the original file
-    carried that QUILL does not model are all preserved -- this edits the
-    document rather than re-exporting the library, so the pruned file is
-    still recognisably the listener's own file and can go straight back to
-    wherever it came from. A folder outline left with no feeds in it is
-    dropped too, since an empty folder is not a subscription list.
-    """
-    dead = {normalize_feed_url(url) for url in dead_urls if url}
-    if not dead:
-        return text
-    try:
-        root = safe_fromstring(text)
-    except (ParseError, UnsafeXMLError):
-        return text
-
-    def prune_element(element: ET.Element) -> None:
-        for child in list(element.findall("outline")):
-            xml_url = (child.get("xmlUrl") or "").strip()
-            if xml_url:
-                if normalize_feed_url(xml_url) in dead:
-                    element.remove(child)
-                continue
-            prune_element(child)
-            if not child.findall("outline"):
-                element.remove(child)
-
-    body = root.find("body")
-    if body is not None:
-        prune_element(body)
-    return ET.tostring(root, encoding="unicode", xml_declaration=False)
-
-
 def parse_and_plan(library: PodcastLibrary, text: str) -> ImportPlan:
     """Parse OPML text and plan the import in one call (the worker entry)."""
-    return plan_import(library, parse_opml(text))
+    return plan_import(library, parse_opml(text), folders=parse_opml_folders(text))
 
+
+# Re-exported: the import window and its tests reach both through this module.
+from quill.core.podcasts.opml_import_after import (  # noqa: E402
+    apply_permanent_moves as apply_permanent_moves,
+)
+from quill.core.podcasts.opml_import_after import (  # noqa: E402
+    prune_opml as prune_opml,
+)
 
 __all__ = [
     "DEFAULT_WORKERS",
     "PROBE_TIMEOUT_SECONDS",
     "ImportCandidate",
     "ImportPlan",
+    "apply_permanent_moves",
     "apply_plan",
     "normalize_feed_url",
     "parse_and_plan",
     "plan_import",
     "probe_feed",
     "prune_opml",
+    "sniff",
     "validate_feeds",
 ]

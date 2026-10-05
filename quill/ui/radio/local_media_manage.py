@@ -39,6 +39,7 @@ __all__ = [
     "properties",
     "remove_missing",
     "rename_playlist",
+    "save_opened",
     "show_in_folder",
 ]
 
@@ -76,9 +77,41 @@ def rename_playlist(host: Any, playlist_id: str) -> bool:
     old = playlist.name
     others = [p for p in ui.library(host).playlists if p.id != playlist_id]
     playlist.name = local_media.LocalMediaLibrary(others).unique_name(name)
+    playlist.temporary = False  # a name of your own is a list you mean to keep
     _remember("Rename", playlist.name, f"its old name, {old}", host, playlist_id, "name", old)
     ui.commit(host, browse_select=f"localplaylist:{playlist.id}")
     ui.announce(host, f"Renamed to {playlist.name}.")
+    return True
+
+
+def save_opened(host: Any, playlist_id: str) -> bool:
+    """Save as Playlist...: keep the Opened files list, under a name of your own.
+
+    Until then it is the list File Explorer last handed Quill Radio, and the
+    next files opened that way replace it. Saved, it is an ordinary playlist,
+    and the next files opened from File Explorer start a new Opened files list.
+    """
+    from quill.core.radio.local_media_files import name_for_files
+
+    playlist = _playlist(host, playlist_id)
+    if playlist is None:
+        return False
+    if not playlist.temporary:
+        ui.announce(host, f"{playlist.name} is already saved. Rename gives it another name.")
+        return False
+    suggestion = name_for_files([item.path for item in playlist.items])
+    name = ui.ask_text(host, "Name for the playlist:", "Save as Playlist", suggestion)
+    if name is None:
+        return False
+    others = [p for p in ui.library(host).playlists if p.id != playlist_id]
+    playlist.name = local_media.LocalMediaLibrary(others).unique_name(name or suggestion)
+    playlist.temporary = False
+    ui.commit(host, browse_select=f"localplaylist:{playlist.id}")
+    ui.announce(
+        host,
+        f"Saved as {playlist.name}. Files you open from File Explorer next make a new "
+        "Opened files list.",
+    )
     return True
 
 

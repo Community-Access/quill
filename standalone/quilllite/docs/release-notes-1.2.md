@@ -266,8 +266,76 @@ and pinned documents now come first there too. QUILL has the same window on
 the same key, and the same quick keys on its Open Recent menu. The user
 guide's "Opening something you worked on recently" has the details.
 
+## Notes on your document
+
+QUILL Lite now has **inline notes**, the same ones QUILL has, on the same keys.
+A note is a comment on a line or a selection: a question, a reminder, or what
+you think of a plan somebody sent you. They are on **Tools > Inline Notes**.
+
+- **Alt+Shift+I** adds a note. The window shows the start of the text it is on,
+  so you know you are in the right place.
+- **Alt+Shift+J** and **Alt+Shift+K** move to the next and previous note, and
+  **Alt+Shift+H** reads the one you are on (twice to change it).
+- **Alt+Shift+Delete** deletes a note, after asking.
+- **Alt+Shift+Enter** lists every note in the document. From there you can go
+  to one, change or delete it, remove them all, copy them all, or save them as
+  a Markdown or JSON file.
+
+Notes are private unless you say otherwise. In a Markdown or HTML document you
+can write a note **into the file** instead, as a hidden comment that anyone who
+opens the file can read, including an AI assistant. That makes QUILL Lite a
+good way to review a plan an AI wrote: leave your notes in it and hand the file
+back. A script can then list or clear them with `QuillLite.exe --notes`.
+
+**Snippets** moved to **Ctrl+Alt+Shift+Home** to make room for the notes on
+the same keys as QUILL. Alt+Shift+I is now Add Inline Note.
+
+## Ticking off tasks
+
+Put the cursor on a task line, such as `- [ ] Write the tests`, and press
+**Ctrl+Alt+Enter** (**Format > Toggle Task Done**). The box is ticked and you
+hear how many tasks in the list are done. Press it again to untick, or select
+several tasks to tick them together. **Ctrl+Z** takes it back.
+
+## A web page you can share
+
+**File > Export as HTML...** (**Ctrl+Alt+Shift+End**) saves a copy of your
+document as one web page, ready to email or put on a website. Task lists
+show as check boxes. Your document stays as it was.
+
+## Opening a document however it arrives
+
+Copy a file in File Explorer, a path from a chat or a link from an email, then
+press **Ctrl+Alt+Shift+Enter** (**File > Open from Clipboard**). QUILL Lite
+opens it. **File > Open from URL...** asks before it downloads anything,
+naming the website and the size, and shows you how the download is going. You
+can also drag files onto the window to open them.
+
+## Careful with your files
+
+- An older file that is not UTF-8 now keeps every byte when you save it. Before
+  1.2, five rare characters in such a file could be lost. QUILL Lite also tells
+  you, once, when a file is not UTF-8.
+- If an old file's letters come out wrong, **Reopen with Encoding...** in the
+  File Encoding and Line Endings window (**Ctrl+Alt+E**) reads it again in the
+  encoding you choose.
+- If another program changed your file since you opened it, **Ctrl+S** asks
+  before writing over that change.
+- QUILL Lite now notices that change as it happens, not only when you save.
+  If you have not touched the document, it can reload it for you, keeping
+  your cursor on the same line, and tell you once. Otherwise it asks: **Keep
+  Mine**, **Reload from Disk** or **Save As...**, with Keep Mine on Enter. A
+  file deleted or moved away is said once, and your text stays. The settings
+  are in Preferences under **When another program changes the file**, the same
+  ones QUILL has. A remembered Reload never throws away unsaved edits; QUILL
+  Lite asks instead.
+
+These ideas come from **PlanCake**, a small app by Andre of Oire Software for
+reviewing AI-written plans. Thank you, Andre.
+
 ## Things that work better now
 
+- Portable copies now start from a folder whose name has a space in it.
 - **Coming back with Alt+Tab** puts your focus in your document, even when
   Windows is slow about it. It leaves the Find box and menus alone.
 - **Big files and network drives no longer freeze the window.** You hear
@@ -308,6 +376,15 @@ guide's "Opening something you worked on recently" has the details.
 | **Alt+Shift+0** | Recent Documents |
 | **Shift+F9** | Activity |
 | **F9** | Repeat Last Result |
+| **Alt+Shift+I** | Add Inline Note |
+| **Alt+Shift+J** / **Alt+Shift+K** | Next and Previous Inline Note |
+| **Alt+Shift+H** | Speak Inline Note |
+| **Alt+Shift+Delete** | Delete Inline Note |
+| **Alt+Shift+Enter** | List Inline Notes |
+| **Ctrl+Alt+Shift+Home** | Snippets, on its new key |
+| **Ctrl+Alt+Enter** | Toggle Task Done |
+| **Ctrl+Alt+Shift+End** | Export as HTML |
+| **Ctrl+Alt+Shift+Enter** | Open from Clipboard |
 
 The rest of the AI dictionary's keys are in the user guide. All of these are in
 QUILL too, on the same keys.

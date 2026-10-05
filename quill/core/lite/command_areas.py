@@ -129,6 +129,9 @@ COMMAND_AREA: dict[str, str] = {
     # never a trade anybody would have chosen. "" is "always present"; see
     # area_for on why the empty string has to be written down.
     "cmd_file_format": "",
+    # In Format beside Lists, and not rich text: a task line is Markdown text,
+    # and the plain-text documents are exactly where AI-written plans arrive.
+    "cmd_toggle_task_done": "",
     # In the Format menu and *not* rich text: it sets the face the whole editor
     # draws in, plain text included, which is why it is the one item the Format
     # menu keeps when rich text is switched off. "" means always present; the

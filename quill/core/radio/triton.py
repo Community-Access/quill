@@ -46,13 +46,11 @@ from collections.abc import Iterator
 from dataclasses import dataclass
 from xml.etree.ElementTree import Element
 
-from quill import __version__
-from quill.core import safe_xml
+from quill.core import http_client, safe_xml
 from quill.core.error_codes import CodedError
 
 logger = logging.getLogger(__name__)
 
-_USER_AGENT = f"QUILL/{__version__} (https://github.com/Community-Access/quill)"
 _TIMEOUT_SECONDS = 12.0
 _MAX_BYTES = 1_000_000
 
@@ -155,7 +153,9 @@ def _fetch_api(callsign: str) -> str:
 
     HTTPS-only over a verified TLS context, bounded timeout and response size.
     """
-    request = urllib.request.Request(_api_url(callsign), headers={"User-Agent": _USER_AGENT})
+    request = urllib.request.Request(
+        _api_url(callsign), headers={"User-Agent": http_client.user_agent()}
+    )
     context = ssl.create_default_context()
     try:
         with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:

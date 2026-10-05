@@ -59,6 +59,13 @@ $Iscc = Resolve-QuillIscc -Preferred $Iscc
 # runtime carries; the installer records it and Windows shows X.Y.Z.B.
 $build, $fileVersion = Resolve-QuillReleaseBuild -QuillRepo $QuillRepo -Python $Python -App "converter" -Version $version -Build $Build
 
+# Beta and Dev builds are never code-signed (owner decision 2026-10-04). For a
+# -dev, -alpha, -beta or -rc version, or a Dev build, this says so in one line
+# and switches -Sign off for the whole build, Inno's /DSign included; a
+# final-numbered build (a Stable candidate) signs as before. The rule is
+# scripts\code_signing.py build-decision; see docs\code-signing.md.
+$null = Resolve-QuillSigning -QuillRepo $QuillRepo -Python $Python -Version $version
+
 # -- the version is one number ---------------------------------------------
 # The app's _VERSION, this script's $version and the .iss fallback must agree,
 # or Check for Updates compares against the wrong number.

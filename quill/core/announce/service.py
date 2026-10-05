@@ -21,7 +21,7 @@ wx-free, strict-typed.
 from __future__ import annotations
 
 from collections.abc import Iterable
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 
 from quill.core.announce.message import Announcement, Channel
 from quill.core.announce.policy import AnnouncementPolicy, Decision
@@ -136,10 +136,12 @@ class AnnouncementService:
     def _shaped(announcement: Announcement, decision: Decision, channel: Channel) -> Announcement:
         """The announcement as this channel should receive it.
 
-        Only braille differs today: the policy may hand a channel its own text
-        (the compact form, or a sticky error), and a sink should not have to
-        reach back into the policy to find it.
+        Braille may get its own text (the compact form, or a sticky error), and
+        speech gets the policy's interrupt decision (the "Interrupt speech for"
+        setting), so a sink never has to reach back into the policy.
         """
+        if channel is Channel.SPEECH and announcement.force_speech != decision.interrupt:
+            return replace(announcement, interrupt=decision.interrupt)
         if channel is Channel.BRAILLE and decision.braille_text:
             return Announcement(
                 text=announcement.text,

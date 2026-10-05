@@ -23,8 +23,10 @@ file (``_active_brf_resolver`` returns None) or when there is no editor.
 
 from __future__ import annotations
 
+from quill.ui.main_frame_braille_cues import BrailleCuesMixin
 
-class BraillePhase2CommandsMixin:
+
+class BraillePhase2CommandsMixin(BrailleCuesMixin):
     """Phase 2 Braille command handlers (print pages, running heads)."""
 
     # Phase 2 IDs are populated in :meth:`_mint_phase2_braille_ids` and
@@ -236,13 +238,16 @@ class BraillePhase2CommandsMixin:
             running_head=running_head,
             confidence=ConfidenceLevel(label=confidence_label, score=confidence_score),
         )
+        # The include-continuation and include-proofing switches are honoured
+        # inside detailed_status; this only supplies the real proofing state.
+        proofing = self._braille_proofing_status(page_count)
         return detailed_status(
             position,
             page_count,
             print_page,
             None,
             None,
-            ProofingStatus(),
+            proofing if isinstance(proofing, ProofingStatus) else ProofingStatus(),
             print_page.confidence,
             self.settings,
         )

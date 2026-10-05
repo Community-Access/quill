@@ -39,6 +39,7 @@
 #include "runtime_resolve.h"
 #include "runtime_bootstrap.h"
 #include "launch_report.h"
+#include "cmdline.h"
 #include "product.h"
 
 #include <stdio.h>
@@ -396,32 +397,42 @@ int wmain(int argc, wchar_t *wargv[])
         free(argv);
         return 1;
     }
+    /* The interpreter path (argv[0]) was built from GetModuleFileNameA and
+     * getenv, so it is in the ANSI code page; the user's arguments came from
+     * the wide command line through WideCharToMultiByte above, so they are
+     * UTF-8. Reading the path as UTF-8 garbled any folder name outside ASCII
+     * ("C:\Users\Jose" with an accent) into a path that does not exist. */
     for (int i = 0; i < child_argc; ++i) {
-        int needed = MultiByteToWideChar(CP_UTF8, 0, child_argv[i], -1, NULL, 0);
-        wchild[i] = (wchar_t *)malloc(((size_t)needed) * sizeof(wchar_t));
-        MultiByteToWideChar(CP_UTF8, 0, child_argv[i], -1, wchild[i], needed);
+        UINT cp = (i == 0) ? CP_ACP : CP_UTF8;
+        int needed = MultiByteToWideChar(cp, 0, child_argv[i], -1, NULL, 0);
+        wchild[i] = (needed > 0)
+            ? (wchar_t *)malloc(((size_t)needed) * sizeof(wchar_t)) : NULL;
+        if (!wchild[i]) {
+            for (int j = 0; j < i; ++j) free(wchild[j]);
+            free(wchild);
+            for (int j = 0; j < argc; ++j) free(argv[j]);
+            free(argv);
+            return 1;
+        }
+        MultiByteToWideChar(cp, 0, child_argv[i], -1, wchild[i], needed);
     }
     wchild[child_argc] = NULL;
 
     /* Build wide python path and command line. */
     wchar_t wpython[QL_PATH_MAX];
-    MultiByteToWideChar(CP_UTF8, 0, runtime.python, -1, wpython, QL_PATH_MAX);
+    MultiByteToWideChar(CP_ACP, 0, runtime.python, -1, wpython, QL_PATH_MAX);
 
-    /* Build a single command-line string for CreateProcessW. */
-    size_t cmdlen = 0;
-    for (int i = 0; i < child_argc; ++i) cmdlen += strlen(child_argv[i]) + 1;
-    wchar_t *wcmdline = (wchar_t *)calloc(cmdlen + 1, sizeof(wchar_t));
+    /* One command-line string for CreateProcessW, every argument quoted the
+     * way the child's CRT will split it back (cmdline.c). These were joined
+     * with bare spaces until 2026-10-04, so an interpreter under
+     * "C:\portable\Quill Radio" reached Python as two words and Python tried
+     * to run "...\Radio\pythonw.exe" as a script; a file opened from
+     * "C:\My Music" arrived as two arguments. */
+    wchar_t *wcmdline = ql_build_command_line((const wchar_t *const *)wchild, child_argc);
     if (!wcmdline) {
         for (int i = 0; i < argc; ++i) free(argv[i]);
         free(argv);
         return 1;
-    }
-    wchar_t *wp = wcmdline;
-    for (int i = 0; i < child_argc; ++i) {
-        int needed = MultiByteToWideChar(CP_UTF8, 0, child_argv[i], -1, NULL, 0);
-        MultiByteToWideChar(CP_UTF8, 0, child_argv[i], -1, wp, needed);
-        wp += needed - 1;
-        *wp++ = (i + 1 == child_argc) ? L'\0' : L' ';
     }
 
     /* Spawn. */

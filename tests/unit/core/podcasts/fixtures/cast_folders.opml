@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0"><head><title>Folder test</title></head><body>
+<outline text="TED Talks Daily" type="rss" title="TED Talks Daily" xmlUrl="http://feeds.feedburner.com/TEDTalks_audio" htmlUrl="https://www.ted.com" />
+<outline text="News &amp; Politics">
+<outline text="The Moth" type="rss" title="The Moth" xmlUrl="http://feeds.feedburner.com/themothpodcast" htmlUrl="http://themoth.org/" />
+<outline text="Daily">
+<outline text="The Best of Car Talk" type="rss" title="The Best of Car Talk" xmlUrl="https://feeds.npr.org/510208/podcast.xml" htmlUrl="https://www.npr.org/podcasts/510208/car-talk" />
+<outline text='Morning "Briefs"'>
+<outline text="Today in iOS Podcast - The Unofficial iOS, iPhone, iPad, and Apple Watch News and iPhone Apps Podcast" type="rss" title="Today in iOS Podcast - The Unofficial iOS, iPhone, iPad, and Apple Watch News and iPhone Apps Podcast" xmlUrl="https://feeds.captivate.fm/tii/" htmlUrl="https://www.todayinios.com" />
+</outline>
+</outline>
+<outline text="MacBites" type="rss" title="MacBites" xmlUrl="http://macbites.co.uk/feeds/macbites.xml" htmlUrl="http://www.macbites.co.uk" />
+</outline>
+<outline text="Café Français">
+<outline text="LDS Talks - John Bytheway" type="rss" title="LDS Talks - John Bytheway" xmlUrl="https://feeds.feedburner.com/ldspodcasts-Talks-JBytheway" htmlUrl="http://ldspodcasts.blogspot.com/search/label/LDS%20Talks%20-%20John%20Bytheway" />
+<outline text="The Moth" type="rss" title="The Moth" xmlUrl="http://feeds.feedburner.com/themothpodcast" htmlUrl="http://themoth.org/" />
+</outline>
+<outline text="Empty Folder"></outline>
+<outline text="Outer">
+<outline text="Inner Empty" />
+</outline>
+<outline text="LightningBolt Theater of the Mind" type="rss" title="LightningBolt Theater of the Mind" xmlUrl="https://feed.podbean.com/lightningbolt/feed.xml" htmlUrl="https://lightningbolt.podbean.com" />
+<outline text="We&amp;apos;re Folder">
+<outline text="The Blind Geek Zone" type="rss" title="The Blind Geek Zone" xmlUrl="https://alimentaciondelavida.com/mermelada-de-manzana-especiada/" htmlUrl="https://www.blind-geek-zone.net" />
+</outline>
+</body></opml>

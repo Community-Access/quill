@@ -70,6 +70,7 @@ import urllib.error
 import urllib.request
 from typing import Any
 
+from quill.core import http_client
 from quill.core.error_codes import CodedError
 from quill.core.radio import directory_cache
 from quill.core.radio.models import RadioStation
@@ -86,7 +87,6 @@ _MAX_SMALL_BYTES = 1_000_000
 #: feeds.json measured 7.9 MB and cities.json 5.6 MB on 2026-08-27.
 _MAX_FEEDS_BYTES = 24_000_000
 _MAX_CITIES_BYTES = 16_000_000
-_USER_AGENT: str | None = None
 
 CATEGORY_LABEL = "TV"
 #: Spoken/shown attribution. It names the filtering because "9,900 channels"
@@ -270,12 +270,7 @@ def to_station(row: dict[str, Any], *, now_next: str = "") -> RadioStation:
 
 
 def _user_agent() -> str:
-    global _USER_AGENT
-    if _USER_AGENT is None:
-        from quill import __version__
-
-        _USER_AGENT = f"QUILL/{__version__} (https://github.com/Community-Access/quill)"
-    return _USER_AGENT
+    return http_client.user_agent()
 
 
 def _fetch(name: str, max_bytes: int) -> str:

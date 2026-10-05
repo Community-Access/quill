@@ -22,7 +22,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from quill.core.brf_document import BRFDocument
-from quill.core.brf_page_map import BRFPageMap, build_page_map
+from quill.core.brf_page_map import BRFPageMap, PageBreakMode, build_page_map
 
 
 @dataclass(slots=True, frozen=True)
@@ -60,9 +60,9 @@ class BraillePositionResolver:
     counts; the page map is the source of truth for page/line geometry.
     """
 
-    def __init__(self, document: BRFDocument) -> None:
+    def __init__(self, document: BRFDocument, *, mode: PageBreakMode = "hybrid") -> None:
         self._document = document
-        self._page_map = build_page_map(document)
+        self._page_map = build_page_map(document, mode=mode)
 
     @property
     def document(self) -> BRFDocument:

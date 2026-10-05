@@ -27,6 +27,11 @@ Three rules the shape follows:
 * **Import is counted, and says what it did not do.** Restored, skipped (not
   in the file), and failed, each with a number -- the same rule every other
   bulk verb in this family follows (11.4).
+* **And it names them.** A count alone ("11 skipped") is what made a Quill
+  Radio listener about to reset their computer ask whether their favorites had
+  gone missing (2026-10-04). :func:`export_setup_report` and
+  :func:`import_setup_report` return each item left out by name, with the
+  reason, so the window can offer the list.
 
 Pure: no wx, no clock of its own for the *decision* (the caller stamps the
 manifest), and every failure is reported rather than raised.
@@ -40,15 +45,19 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from quill.core.counted import Counted
+from quill.core.skipped_files import REASON_NOT_ON_THIS_COMPUTER, SkippedFile, classify_error
 
 __all__ = [
     "EXTENSION",
     "ITEMS",
     "MANIFEST_NAME",
     "SetupItem",
+    "TransferReport",
     "describe_contents",
     "export_setup",
+    "export_setup_report",
     "import_setup",
+    "import_setup_report",
     "read_manifest",
 ]
 
@@ -122,29 +131,57 @@ def describe_contents(present: list[str]) -> str:
     return f"It carries {parts}{tail}."
 
 
+@dataclass(frozen=True, slots=True)
+class TransferReport:
+    """The counted tally, plus every item left out by name and reason."""
+
+    tally: Counted
+    #: Items deliberately left (not on this computer, not in the file).
+    skipped: tuple[SkippedFile, ...] = ()
+    #: Items attempted that could not be read or written.
+    failed: tuple[SkippedFile, ...] = ()
+
+    @property
+    def left_out(self) -> tuple[SkippedFile, ...]:
+        return self.failed + self.skipped
+
+
+def _capital(label: str) -> str:
+    return f"{label[:1].upper()}{label[1:]}"
+
+
 def export_setup(data_dir: Path, target: Path, *, app: str, stamped: str) -> Counted:
+    """The tally of :func:`export_setup_report`."""
+    return export_setup_report(data_dir, target, app=app, stamped=stamped).tally
+
+
+def export_setup_report(data_dir: Path, target: Path, *, app: str, stamped: str) -> TransferReport:
     """Write *target* holding every item of :data:`ITEMS` that exists.
 
-    Returns the tally: how many stores were found and written, and how many
-    were skipped because this machine has never made one. *stamped* is an
-    ISO-8601 timestamp the caller supplies, so this stays clock-free.
+    Returns the tally -- how many stores were found and written, and how many
+    were skipped because this machine has never made one -- and each skipped
+    or failed store by name. *stamped* is an ISO-8601 timestamp the caller
+    supplies, so this stays clock-free.
     """
     written: list[str] = []
-    skipped = 0
-    failed = 0
+    skipped: list[SkippedFile] = []
+    failures: list[SkippedFile] = []
     try:
         target.parent.mkdir(parents=True, exist_ok=True)
         with zipfile.ZipFile(target, "w", compression=zipfile.ZIP_DEFLATED) as archive:
             for item in ITEMS:
                 source = data_dir / item.filename
                 if not source.is_file():
-                    skipped += 1
+                    skipped.append(SkippedFile(_capital(item.label), REASON_NOT_ON_THIS_COMPUTER))
                     continue
                 try:
-                    archive.write(source, arcname=item.filename)
-                    written.append(item.filename)
-                except OSError:
-                    failed += 1
+                    payload = source.read_bytes()
+                except OSError as exc:
+                    reason = classify_error(exc, source)
+                    failures.append(SkippedFile(_capital(item.label), reason, str(exc)))
+                    continue
+                archive.writestr(item.filename, payload)
+                written.append(item.filename)
             archive.writestr(
                 MANIFEST_NAME,
                 json.dumps(
@@ -159,13 +196,19 @@ def export_setup(data_dir: Path, target: Path, *, app: str, stamped: str) -> Cou
                 ),
             )
     except OSError:
-        return Counted(done=0, skipped=0, failed=1, nothing_because="the file could not be written")
-    return Counted(
-        done=len(written),
-        skipped=skipped,
-        failed=failed,
-        skipped_because="this machine has never made one",
-        nothing_because="there is nothing here to carry yet",
+        return TransferReport(
+            Counted(done=0, skipped=0, failed=1, nothing_because="the file could not be written")
+        )
+    return TransferReport(
+        Counted(
+            done=len(written),
+            skipped=len(skipped),
+            failed=len(failures),
+            skipped_because="this machine has never made one",
+            nothing_because="there is nothing here to carry yet",
+        ),
+        tuple(skipped),
+        tuple(failures),
     )
 
 
@@ -184,6 +227,13 @@ def read_manifest(source: Path) -> dict:
 
 
 def import_setup(source: Path, data_dir: Path, *, only: set[str] | None = None) -> Counted:
+    """The tally of :func:`import_setup_report`."""
+    return import_setup_report(source, data_dir, only=only).tally
+
+
+def import_setup_report(
+    source: Path, data_dir: Path, *, only: set[str] | None = None
+) -> TransferReport:
     """Restore the stores in *source* into *data_dir*, overwriting.
 
     Overwriting is the point -- "move my setup to another machine" means the
@@ -197,39 +247,47 @@ def import_setup(source: Path, data_dir: Path, *, only: set[str] | None = None) 
     somebody's data folder.
     """
     restored = 0
-    skipped = 0
-    failed = 0
+    skipped: list[SkippedFile] = []
+    failures: list[SkippedFile] = []
     try:
         with zipfile.ZipFile(source) as archive:
             names = set(archive.namelist())
             for item in ITEMS:
+                label = _capital(item.label)
                 if item.filename not in names:
-                    skipped += 1
+                    skipped.append(SkippedFile(label, "not in this setup file"))
                     continue
                 if only is not None and item.filename not in only:
-                    skipped += 1
+                    skipped.append(SkippedFile(label, "not chosen for this import"))
                     continue
                 try:
                     payload = archive.read(item.filename)
                     json.loads(payload.decode("utf-8"))  # refuse to write junk
                 except (OSError, KeyError, UnicodeDecodeError, ValueError):
-                    failed += 1
+                    failures.append(SkippedFile(label, "damaged in the setup file"))
                     continue
+                target = data_dir / item.filename
                 try:
                     from quill.core.storage import write_json_atomic
 
-                    write_json_atomic(data_dir / item.filename, json.loads(payload.decode("utf-8")))
+                    write_json_atomic(target, json.loads(payload.decode("utf-8")))
                     restored += 1
-                except OSError:
-                    failed += 1
+                except OSError as exc:
+                    failures.append(SkippedFile(label, classify_error(exc, target), str(exc)))
     except (OSError, zipfile.BadZipFile):
-        return Counted(
-            done=0, skipped=0, failed=1, nothing_because="that file is not a Quill setup file"
+        return TransferReport(
+            Counted(
+                done=0, skipped=0, failed=1, nothing_because="that file is not a Quill setup file"
+            )
         )
-    return Counted(
-        done=restored,
-        skipped=skipped,
-        failed=failed,
-        skipped_because="not in this setup file",
-        nothing_because="that setup file holds nothing this version can restore",
+    return TransferReport(
+        Counted(
+            done=restored,
+            skipped=len(skipped),
+            failed=len(failures),
+            skipped_because="not in this setup file",
+            nothing_because="that setup file holds nothing this version can restore",
+        ),
+        tuple(skipped),
+        tuple(failures),
     )

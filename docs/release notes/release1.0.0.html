@@ -503,6 +503,51 @@ is unavailable.</li>
 used to speak only when the startup announcements setting was on, which
 it is not unless you turn it on.</li>
 </ul>
+<h3 id="settings-that-now-do-what-they-say">Settings that now do what
+they say</h3>
+<p>Eighteen settings could be changed and saved, and nothing ever read
+them. You would tick a box, hear nothing different, and reasonably
+assume it had worked. Every one of them now does what its name says.
+Only one changes anything before you touch it: Read Detailed Status in
+Braille Mode now tells you your proofing progress, which it always
+promised and never did.</p>
+<ul>
+<li><strong>Keep an announcement history.</strong> Turn it off and QUILL
+keeps no list of what it said, and clears the one it had. The Spoken
+Echo tells you it is off.</li>
+<li><strong>Interrupt speech for.</strong> Choose whether warnings and
+errors cut across your screen reader (as they always have), only errors,
+or nothing at all.</li>
+<li><strong>Default export preset.</strong> Export &gt; Other Pandoc
+Format opens on your usual format, so Enter does the rest.</li>
+<li><strong>Markdown clipboard format.</strong> Copy With Source in a
+Markdown document can add a formatted copy, HTML or Rich text, so
+pasting into Word or an email keeps the headings, bold and links. Plain
+text stays the default.</li>
+<li><strong>Listen for ‘Hey QUILL’</strong> is now the same switch as
+the Speech menu command, and <strong>Keep listening across
+restarts</strong> really does bring listening back when QUILL starts,
+and only then.</li>
+<li><strong>Watch Folders.</strong> The default watch folder is watched
+for real: new files dropped into it open in QUILL. <strong>Start
+watching automatically</strong>, <strong>Include subfolders</strong> and
+<strong>Process existing files on start</strong> all apply to it. Your
+profiles keep their own choices.</li>
+<li><strong>File types offered to QUILL</strong> decides which files get
+QUILL on their right-click menu, and a change takes effect when you
+press OK.</li>
+<li><strong>Python console execution timeout</strong> stops a command
+that runs away, and tells you it did.</li>
+<li><strong>Spelling review context display mode</strong> can show the
+whole paragraph around a misspelling in the F7 review, in QUILL and in
+QUILL Lite.</li>
+<li><strong>Six Braille Mode settings.</strong> QUILL can say the new
+braille page, the new print page, or a line that is too long as you
+move. Read Detailed Status now includes your proofing progress and the
+continuation letter, and each can be left out. Calculate pages from
+geometry, and Use form feeds for page breaks, now decide how a braille
+file is split into pages.</li>
+</ul>
 <h3 id="smaller-fixes-you-will-feel">Smaller fixes you will feel</h3>
 <ul>
 <li><strong>Updates offer the edition you are running.</strong> Updating
@@ -995,6 +1040,27 @@ exportable. <strong>Inline anchored notes</strong>
 (<strong>Alt+Shift+I</strong>) attach to a place in the text, follow
 your edits, come back when you reopen the document, and have their own
 next, previous, hear and edit commands.</p>
+<p><strong>List Inline Notes</strong> (<strong>Alt+Shift+Enter</strong>)
+shows every note in the document at once, with its line and the text it
+is about, and lets you go to, edit, delete, remove, copy or export them.
+A note whose text was deleted is listed last, so it is never lost and
+never stuck. <strong>Delete Inline Note</strong>
+(<strong>Alt+Shift+Delete</strong>) asks first, and the note window now
+shows the start of the text it is on.</p>
+<p>In Markdown and HTML, a note can be written <strong>into the
+file</strong> as a hidden comment, so the colleague or the AI assistant
+you hand the file to can read it. Undo takes it back like any edit, the
+file stays valid, and published pages leave it out.
+<code>quill --notes list</code>, <code>check</code> and
+<code>clear</code> read and tidy those notes from the command line, and
+in Quick Nav, <strong>N</strong> and <strong>Shift+N</strong> move from
+note to note. QUILL Lite has every one of these on the same keys.</p>
+<p><strong>Toggle Task Done</strong> (<strong>Ctrl+Alt+Enter</strong>)
+ticks a <code>- [ ]</code> task, or every task in a selection, and tells
+you how many in the list are done. The preview shows task lists as real
+check boxes.</p>
+<p>These ideas come from <strong>PlanCake</strong>, by Andre of Oire
+Software. Thank you, Andre.</p>
 <p>The <strong>Sticky Notes Browser</strong> is the quick way back to
 any note. Start typing and the list filters as you go, across titles and
 text, newest first. Down Arrow moves into the results. Tab reaches a
@@ -1565,6 +1631,32 @@ along.</li>
 <p>Your documents open as your documents. QUILL adds no banner or header
 to your text. What it knows about how a file was read is in the intake
 report and in what it says when the file opens.</p>
+<h3 id="however-a-document-arrives">However a document arrives</h3>
+<p>A document can reach you as a file in File Explorer, a path in a
+chat, or a link in an email. <strong>File &gt; Open from
+Clipboard</strong> (<strong>Ctrl+Alt+Shift+Enter</strong>) opens
+whichever of those you copied, and says so plainly when there is nothing
+to open. <strong>File &gt; Open from URL…</strong> asks before
+downloading anything, naming the website and the size, and shows the
+download’s progress with a Cancel button; a link to a GitHub page opens
+the file itself. Files dragged onto the window open too. These ideas
+come from <strong>PlanCake</strong>, by Andre of Oire Software.</p>
+<h3 id="every-byte-and-every-change-kept">Every byte, and every change,
+kept</h3>
+<ul>
+<li><strong>An older file keeps every byte.</strong> A file that is not
+UTF-8 is read without replacing a single character, and saved back
+exactly as it was. QUILL tells you once, as it opens, when a file is not
+UTF-8.</li>
+<li><strong>Reopen with Encoding…</strong>, in <strong>File &gt; File
+Format…</strong> (<strong>Ctrl+Alt+E</strong>), reads a file again in
+the encoding you choose when its letters came out wrong. It then saves
+in that encoding, or in UTF-8 if you choose.</li>
+<li><strong>Save never writes over a change it has not seen.</strong> If
+another program changed your file since you opened it or last saved it,
+even a moment ago, Save asks first: Save As, Reload from Disk, Overwrite
+or Cancel.</li>
+</ul>
 <h3 id="rich-editing">Rich editing</h3>
 <p>QUILL edits clean plain text, and keeps the formatting beside it as
 hidden codes. That is why search, spell check, AI commands, read aloud,
@@ -1686,6 +1778,12 @@ with a progress row for each file as it goes.</p>
 <p>Seven conversion profiles cover the usual destinations: Clean Word
 Document, Accessible HTML Page, EPUB Book, GitHub README, Print PDF,
 Instructor Handout, and Plain Text for Screen Readers.</p>
+<p><strong>File &gt; Export &gt; HTML…</strong>
+(<strong>Ctrl+Alt+Shift+End</strong>) makes one web page you can share:
+styles inside, no scripts, the document’s language set, task lists as
+check boxes and strikethrough kept. It is a copy; the document you are
+editing stays as it is. QUILL Lite has the same command on the same
+key.</p>
 <p>The main formats, for opening and saving, are Markdown, CommonMark,
 GitHub-flavored Markdown, HTML, DOCX, ODT, RTF, plain text, CSV and TSV,
 EPUB, and LaTeX. QUILL can also save PDF.</p>
@@ -2742,7 +2840,8 @@ program changes the file you have open, QUILL asks: Reload from Disk,
 Keep Mine, or Open Disk Version in a New Tab. The question has a “do not
 ask me again for .docx files” checkbox, and <strong>File &gt; Forget
 Remembered File-Change Answers</strong>
-(<strong>Ctrl+Shift+F11</strong>) takes your answers back.</p>
+(<strong>Ctrl+Shift+F11</strong>) takes your answers back. A remembered
+Reload never throws away unsaved edits; QUILL asks instead.</p>
 <p><strong>Three things QUILL can now tell you about itself</strong>,
 all on the View menu:</p>
 <ul>

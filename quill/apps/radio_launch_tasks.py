@@ -14,7 +14,9 @@ They are ordered, and the order is the argument:
 2. **Media health**, when this installation has lost the engine that plays
    Ogg/Opus/HLS or the one that records. Spoken for the same reason, and
    silent on a healthy install by design (#259).
-3. **The startup window**, whichever one the listener chose -- or none.
+3. **The startup window**, whichever one the listener chose -- or none. When
+   Quill Radio was started *with files* (File Explorer's Open with, or a
+   double-click once it is the media player), those files play instead.
 4. **The first-run flow**, modal, because on a genuinely first launch it is
    the whole content of the window and Skip leaves in one keystroke. It comes
    after the startup window so it opens over a settled app rather than racing
@@ -51,7 +53,18 @@ def schedule(app: Any, wx: Any, *, safe_mode: bool = False) -> Any:
 
     wx.CallAfter(surface_data_folder_startup, app)
     wx.CallAfter(surface_media_health_startup, app)
-    wx.CallAfter(open_startup_window, app)
+    # 3. Files Quill Radio was opened with (Open with, a double-click) play in
+    #    place of the startup window: they are what this launch is for.
+    import sys
+
+    from quill.core.radio.opened_files import parse_argv
+    from quill.ui.radio.opened_files_ui import open_launch_files
+
+    launch = parse_argv(sys.argv[1:])
+    if launch.paths:
+        wx.CallAfter(open_launch_files, app, launch)
+    else:
+        wx.CallAfter(open_startup_window, app)
     wx.CallAfter(maybe_run_first_run, app)
     # The previous session's closing failure, said once, with its Retry (F-06).
     from quill.apps.radio_shutdown import radio_launch_notice
@@ -94,6 +107,11 @@ def register_surfaces(app: Any) -> None:
 
     bookmarks_wiring.register(app)
     calendar_wiring.register(app)
+    # Make Quill Radio My Media Player (2026-10-04): standalone only, because
+    # it registers *this* program, and embedded QUILL is a different one.
+    from quill.ui.radio import media_player_registration
+
+    media_player_registration.register(app)
     # Ask QUILL Radio (2026-09-29): the assistant on the listener's ChatGPT plan.
     ask_radio_wiring.register(app)
     # Alt+1..0, Stop and Ctrl+Shift+O: keys the main window answers that no

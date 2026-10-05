@@ -377,6 +377,12 @@ def main() -> int:
         from quill.core.audio.convert_cli import run_cli
 
         return run_cli(sys.argv[2:])
+    # `quill --notes list|check|clear FILE`: notes written into a Markdown or
+    # HTML file, for a script or an AI assistant. wx-free, nothing opens.
+    if sys.argv[1:2] in (["--notes"], ["notes"]):
+        from quill.core.inline_notes_cli import run as run_notes
+
+        return run_notes(sys.argv[2:])
 
     # Windows started QUILL *as* Notepad (Tools > Open QUILL Instead of
     # Notepad): turn Notepad's command line into QUILL's, exactly as QUILL Lite does.

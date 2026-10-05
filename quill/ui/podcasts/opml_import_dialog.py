@@ -190,8 +190,10 @@ class OpmlImportDialog:
         self._source_text = text
         self._plan = plan
         self._on_library_changed()
+        from quill.core.counted import plural
+
         summary = (
-            f"Imported {added} podcast(s). {len(plan.duplicates_in_library)} already "
+            f"Imported {plural(added, 'podcast')}. {len(plan.duplicates_in_library)} already "
             f"followed, {len(plan.duplicates_in_file)} listed twice in the file, "
             f"{len(plan.unusable)} unusable."
         )
@@ -214,9 +216,11 @@ class OpmlImportDialog:
         self._last_announced_percent = 0
         self._cancel_check_btn.Enable(True)
         self._gauge.SetRange(len(feeds))
-        self._set_status(f"Checking {len(feeds)} feed(s)...")
+        from quill.core.counted import plural
+
+        self._set_status(f"Checking {plural(len(feeds), 'feed')}...")
         self._announce(
-            f"Checking {len(feeds)} feed(s). This runs in the background; "
+            f"Checking {plural(len(feeds), 'feed')}. This runs in the background; "
             "Stop Checking reports what has been checked so far."
         )
         safe_mode = self._safe_mode
@@ -256,15 +260,23 @@ class OpmlImportDialog:
         self._announce("Stopping the feed check; everything already imported is kept.")
 
     def _on_validated(self, results: list[OpmlValidationResult]) -> None:
-        self._results = list(results)
+        # A feed the server says has moved for good is pointed at its new
+        # address -- where that podcast's "Follow permanent feed redirects"
+        # allows it, the same rule a refresh follows -- and the report says
+        # which were updated and which were left alone (check.md bug 5).
+        self._results = opml_import.apply_permanent_moves(self._library, list(results))
+        if any(result.applied for result in self._results):
+            self._on_library_changed()
         self._running = False
         try:
             self._cancel_check_btn.Enable(False)
         except RuntimeError:
             return
+        from quill.core.counted import plural
+
         unreachable = sum(1 for result in self._results if not result.ok)
         self._set_status(
-            f"Checked {len(self._results)} feed(s): {unreachable} unreachable."
+            f"Checked {plural(len(self._results), 'feed')}: {unreachable} unreachable."
             + (" (Stopped early.)" if self._cancelled else "")
         )
         self._finish()

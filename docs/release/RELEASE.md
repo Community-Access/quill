@@ -142,6 +142,34 @@ GATE-SIBVER compares builds when both the source and the published tag carry
 one, and GATE-APPVER checks that each app's build constant, its installers'
 `AppBuild` and `AppFileVersion`, and its build script agree.
 
+### Code signing: Beta and Dev never, Stable always (decided 2026-10-04)
+
+Beta and Dev builds are not code-signed, and Stable always is. The version
+number decides:
+
+- A **Beta, Release Candidate, Alpha or Dev** build (`3.3.0-beta.1`,
+  `1.0.0-rc.1`, `3.3.1-dev.20261003.1`, anything built with `-DevVersion`) is
+  never signed. `-Sign` and `QUILL_SIGN_REQUIRED=1` are ignored, and the build
+  says so in one line: "Beta and Dev builds are not code-signed; signing
+  skipped."
+- A **final-numbered** build (`3.3.0`) is a Stable candidate. Build it with
+  `-Sign` (or `QUILL_SIGN=1`): it is signed when it is built, listed on Beta
+  for its soak, and promoted to Stable as the same files.
+
+Why the candidate is signed at build time rather than at promotion: Stable
+takes the same files that were on Beta, and an installer carries its programs
+packed inside `Setup.exe`. Signing them at promotion would mean building a new
+installer, which is not what was tested on Beta; signing only the outer
+`Setup.exe` would put unsigned programs on Stable. A final-numbered build
+waiting on Beta is a release candidate of Stable, not a Beta build, so signing
+it keeps both promises.
+
+`publish_release.py` refuses an unsigned final-numbered build (and a signed
+Beta or Dev one) before creating anything, and promotion check P5 refuses
+Stable for anything unsigned. If P5 fails, rebuild with `-Sign`; the rebuild
+gets the next build number, goes on Beta, and is promoted from there. Details:
+`docs/code-signing.md`, "Which builds are signed".
+
 ### Publishing to Beta
 
 A sibling app built on this computer:
@@ -163,7 +191,11 @@ python scripts/publish_release.py --app quill --version 1.0.0-rc.1 --channel bet
 ```
 
 QUILL 1.0.0 becomes Stable this way: tag `v1.0.0-rc.1`, list it on Beta, then
-build the final `v1.0.0` candidate, list it on Beta, and promote it.
+build the final `v1.0.0` candidate, list it on Beta, and promote it. CI cannot
+sign, so the `v1.0.0` candidate is built on your computer with `QUILL_SIGN=1`
+and its signed installer and portable zip are uploaded over the CI files
+(`gh release upload v1.0.0 <files> --clobber`) before you list it; the
+release candidate stays unsigned.
 
 **The page budget.** Installed Quill Radio 3.0.4 and QUILL Lite 1.1.2 read only
 the first 30 releases of `Community-Access/quill`. `publish_release.py`
@@ -185,8 +217,9 @@ python scripts/promote_release.py --app radio --version 3.3.0 --to stable
 Every check is printed as PASS, WARN or FAIL, and one FAIL stops it: the
 release exists; every file downloads again with the size and SHA-256 in the
 list; the list's signature is valid; Stable takes only a final-numbered build
-that was on Beta first; Authenticode when `QUILL_SIGN_REQUIRED=1`; tag, version
-and file names agree; nothing the build carries is ahead of that app's own
+that was on Beta first; for Stable, every installer and every program in the
+portable zip carries an Authenticode signature (always -- Stable is never
+unsigned); tag, version and file names agree; nothing the build carries is ahead of that app's own
 channel; the changelog has the version; for Stable, a screen-reader sign-off
 sheet at `docs/qa/signoffs/<app>-<version>.md` with `Result: pass`, `Tester:`,
 `Screen readers:` and `Date:` lines; at least 7 days on Beta (1 on Dev before

@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 484.
+Editor commands with default bindings: 491.
 
 ## The QUILL editor
 
@@ -26,6 +26,7 @@ Editor commands with default bindings: 484.
 | (unbound by default) | Open Remote GitHub File URL... | `file.open_github_file_url` |
 | (unbound by default) | Open GitHub Items... | `file.open_github_items` |
 | (unbound by default) | Open Remote GitHub Repository... | `file.open_github_repository` |
+| (unbound by default) | Open from URL... | `file.open_url` |
 | (unbound by default) | Save to Remote | `file.save_to_remote` |
 | Alt+Shift+0 | Recent Documents | `file.recent_documents` |
 | Alt+Shift+F12 | Reopen Last Session | `file.reopen_last_session` |
@@ -34,6 +35,8 @@ Editor commands with default bindings: 484.
 | Ctrl+Alt+N | New Plain Text Document | `file.new_plain_text_document` |
 | Ctrl+Alt+P | Page Setup... | `file.page_setup` |
 | Ctrl+Alt+Shift+E | Restore Previous Version... | `file.restore_previous_version` |
+| Ctrl+Alt+Shift+End | HTML... | `file.export_html` |
+| Ctrl+Alt+Shift+Enter | Open from Clipboard | `file.open_from_clipboard` |
 | Ctrl+N | New | `file.new` |
 | Ctrl+O or Ctrl+F12 | Open... | `file.open` |
 | Ctrl+P or Ctrl+Shift+F12 | Print... | `file.print` |
@@ -170,6 +173,7 @@ Editor commands with default bindings: 484.
 | Ctrl+Alt+4 | Insert Heading 4 | `format.heading_4` |
 | Ctrl+Alt+5 | Insert Heading 5 | `format.heading_5` |
 | Ctrl+Alt+6 | Insert Heading 6 | `format.heading_6` |
+| Ctrl+Alt+Enter | Toggle Task Done | `format.toggle_task_done` |
 | Ctrl+Alt+F | Font... | `format.editor_font` |
 | Ctrl+Alt+I | Insert Markdown Tag... | `format.insert_markdown_tag` |
 | Ctrl+Alt+Shift+F5 | Move Section To | `format.move_section_to` |
@@ -495,8 +499,10 @@ Editor commands with default bindings: 484.
 | Alt+End | Table: Last Cell in Row | `table.row_end` |
 | Alt+Home | Table: First Cell in Row | `table.row_start` |
 | Alt+I | Document Summary | `document.summary` |
-| Alt+Shift+H | Speak Inline Note (double-press to edit) | `notes.speak_inline_note` |
-| Alt+Shift+I | Add Inline Note | `notes.add_inline_note` |
+| Alt+Shift+Delete | Delete Inline Note... | `notes.delete_inline_note` |
+| Alt+Shift+Enter | List Inline Notes... | `notes.list_inline_notes` |
+| Alt+Shift+H | Speak Inline Note (double to edit) | `notes.speak_inline_note` |
+| Alt+Shift+I | Add Inline Note... | `notes.add_inline_note` |
 | Alt+Shift+J | Next Inline Note | `notes.next_inline_note` |
 | Alt+Shift+K | Previous Inline Note | `notes.previous_inline_note` |
 | Alt+Shift+N | Number lines | `power.number_lines` |
@@ -525,6 +531,7 @@ Editor commands with default bindings: 484.
 | H | QUILL Quick Nav: Heading | `quill.quick_nav.heading` |
 | I | QUILL Quick Nav: List Item | `quill.quick_nav.list_item` |
 | L | QUILL Quick Nav: List | `quill.quick_nav.list` |
+| N | QUILL Quick Nav: Inline Note | `quill.quick_nav.inline_note` |
 | P | QUILL Quick Nav: Paragraph | `quill.quick_nav.paragraph` |
 | Q | QUILL Quick Nav: Block Quote | `quill.quick_nav.block_quote` |
 | QUILL Key + 0 | Radio: Stop | `radio.stop` |
@@ -538,7 +545,7 @@ Editor commands with default bindings: 484.
 | QUILL Key + 8 | Podcasts: Play/Pause | `podcasts.play_pause` |
 | QUILL Key + 9 | Radio: Mute/Unmute | `radio.mute_toggle` |
 | QUILL Key + M | Paste html as markdown | `power.paste_html_as_markdown` |
-| QUILL Key + Shift+G | Snippet Gallery... | `power.open_snippet_gallery` |
+| QUILL Key + Shift+G or Ctrl+Alt+Shift+Home | Snippet Gallery... | `power.open_snippet_gallery` |
 | QUILL Key + Shift+M | Toggle Meeting Mode | `verbosity.toggle_meeting` |
 | QUILL Key + Shift+Q | Toggle Quiet Mode | `verbosity.toggle_quiet` |
 | QUILL Key + Shift+Z | Undo Verbosity Change | `verbosity.undo` |

@@ -57,6 +57,7 @@ import urllib.parse
 import urllib.request
 from typing import Any
 
+from quill.core import http_client
 from quill.core.error_codes import CodedError
 from quill.core.radio import directory_cache
 from quill.core.radio.models import RadioStation
@@ -82,7 +83,6 @@ _TIMEOUT_SECONDS = 20.0
 #: Two megabytes is generous enough that growth is not a surprise and small
 #: enough that a redirect to something else entirely is caught.
 _MAX_BYTES = 2_000_000
-_USER_AGENT: str | None = None
 
 CATEGORY_LABEL = "SHOUTcast"
 #: Spoken/shown attribution. It names the cap because a listener hearing "500
@@ -290,12 +290,7 @@ def genre_display(name: str) -> str:
 
 
 def _user_agent() -> str:
-    global _USER_AGENT
-    if _USER_AGENT is None:
-        from quill import __version__
-
-        _USER_AGENT = f"QUILL/{__version__} (https://github.com/Community-Access/quill)"
-    return _USER_AGENT
+    return http_client.user_agent()
 
 
 def _request(url: str, fields: dict[str, str] | None = None) -> str:

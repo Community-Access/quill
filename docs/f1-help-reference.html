@@ -266,7 +266,7 @@ separately in <a href="CONTROL_REFERENCE.md">CONTROL_REFERENCE.md</a>,
 generated from <code>topics.json</code> by
 <code>quill/tools/build_docs.py</code>.</p>
 <h2 id="quill-radio">Quill Radio</h2>
-<p>Control coverage: 291 audited sites (177 helped, 114 named-help).</p>
+<p>Control coverage: 294 audited sites (180 helped, 114 named-help).</p>
 <h3 id="every-window-and-what-it-is-for">Every window, and what it is
 for</h3>
 <p><strong>ACB Media Podcasts.</strong> Everything ACB Media publishes,
@@ -560,6 +560,11 @@ what is scheduled.</p>
 <p><strong>Welcome to Quill Radio.</strong> A three-screen tour for a
 first launch. Nothing here is a setting you can get wrong: read, press
 Next, and Skip leaves at any point.</p>
+<p><strong>What Was Left Out.</strong> Everything a backup, a restore or
+a setup file left out, one row per item, each with the reason – stored
+only in OneDrive, in use by another program, a path too long for
+Windows. Nothing listed here was deleted. What to do about it is under
+the list, and Copy List takes the whole thing with you.</p>
 <p><strong>YouTube Comments.</strong> The comments people left on a
 YouTube video, one per row, with replies right after the comment they
 answer. Type in Search comments to narrow the list, change Sort by for
@@ -885,6 +890,17 @@ search.</li>
 install asks.</li>
 <li><code>close_btn</code>: Closes this window; your source choices are
 already saved.</li>
+</ul>
+<h4 id="module-level-quilluiradioskipped_items_dialogpy">(module level)
+(<code>quill/ui/radio/skipped_items_dialog.py</code>)</h4>
+<ul>
+<li><code>listbox</code>: Every file or item that was left out, one per
+row, with why. Nothing here was deleted; each row is something the
+backup, restore or setup file does not hold.</li>
+<li><code>copy_btn</code>: Copies the whole list, with the reasons and
+what to do, so you can paste it into an email or a note.</li>
+<li><code>close_btn</code>: Closes this list. Nothing changes when you
+close it.</li>
 </ul>
 <h4
 id="songhistorydialog-quilluiradiosong_history_dialogpy">SongHistoryDialog
@@ -1213,7 +1229,7 @@ Read-only.</li>
 <li><code>close</code>: Close Update History.</li>
 </ul>
 <h2 id="quill-cast">QUILL Cast</h2>
-<p>Control coverage: 298 audited sites (194 helped, 104 named-help).</p>
+<p>Control coverage: 302 audited sites (198 helped, 104 named-help).</p>
 <h3 id="every-window-and-what-it-is-for-1">Every window, and what it is
 for</h3>
 <p><strong>About This Episode.</strong> Everything the feed says about
@@ -1250,13 +1266,21 @@ the episode, its type, length, age, season or number – how to compare,
 and the value. Words, wildcards and regular expressions all work on
 text.</p>
 <p><strong>Feed Check.</strong> Which of the podcasts you follow need
-something, worst first: failing feeds, then quiet ones, then the healthy
-rest. Opening it checks nothing; Retry checks the selected feed and
-Retry All Failed every failing one. A quiet podcast is not necessarily a
-failing feed, and Cast never stops trying a failing one.</p>
+something, worst first: failing feeds with the reason, empty feeds, then
+quiet ones, then the healthy rest. Opening it checks nothing; Retry
+checks the selected feed and Retry All Failed every failing one. When a
+feed has been removed or now leads nowhere, Find This Show’s New Feed
+looks for where the show went. Cast never stops trying a failing
+feed.</p>
 <p><strong>Feed Credentials.</strong> The user name and password for a
 private feed – a paid subscription, a members-only show. They are kept
 for this feed alone and sent to its own host, never to a directory.</p>
+<p><strong>Find This Show’s New Feed.</strong> Feeds that might be this
+podcast, found by searching the podcast directories for its title and
+checked to make sure each one answers, with how many episodes it has and
+the newest one’s date. Replace Feed moves the podcast to the one you
+choose and keeps everything you have already heard; Cancel changes
+nothing.</p>
 <p><strong>Folder Settings.</strong> Settings that apply to every show
 in one folder: how it is checked, how much is kept, and what happens
 when an episode finishes. A show with its own answer keeps it; the
@@ -1420,6 +1444,11 @@ launch: where you would like to land each time Cast opens, whether to
 hear a tip now and then, and Add Your First Podcast. Nothing here is a
 setting you can get wrong; Skip, or Escape, leaves at once, and
 Preferences changes where you land later.</p>
+<p><strong>What Was Left Out.</strong> Everything a backup, a restore or
+a setup file left out, one row per item, each with the reason – stored
+only in OneDrive, in use by another program, a path too long for
+Windows. Nothing listed here was deleted. What to do about it is under
+the list, and Copy List takes the whole thing with you.</p>
 <p><strong>Year in Review.</strong> Your listening year as a short
 report: the shows you gave the most time to, how many episodes you
 finished, and when you listened. It is built from your own local
@@ -1659,10 +1688,11 @@ id="feedcheckwindow-quilluipodcastsfeed_check_dialogpy">FeedCheckWindow
 (<code>quill/ui/podcasts/feed_check_dialog.py</code>)</h4>
 <ul>
 <li><code>self._list</code>: Every podcast you follow, worst first: the
-ones failing to check, then any never checked, then any that have gone
-quiet, then the healthy ones. Nothing here has been unfollowed and
-nothing has stopped being checked – Cast keeps trying a failing feed.
-Shift+F10 opens what you can do to a row.</li>
+ones failing to check, with the reason, then any whose feed is empty,
+any never checked, any that have gone quiet, and then the healthy ones.
+Nothing here has been unfollowed and nothing has stopped being checked –
+Cast keeps trying a failing feed. Shift+F10 opens what you can do to a
+row.</li>
 <li><code>self._retry_btn</code>: Check the selected feed again,
 now.</li>
 <li><code>self._retry_all_btn</code>: Check every failing feed again.
@@ -1671,6 +1701,12 @@ perfectly, and retrying it would report nothing new.</li>
 <li><code>self._copy_btn</code>: Put the selected podcast’s feed address
 on the clipboard, so you can open it in a browser and see what the
 publisher is actually sending.</li>
+<li><code>self._find_btn</code>: For a feed that is not coming back at
+its address – removed by the host, a web address that no longer exists,
+a web page where the feed was, or an empty feed: look up this show’s
+title in the podcast directories and offer the feeds that answer, with
+their newest episode’s date. Replace Feed keeps everything the podcast
+already has.</li>
 <li><code>close_btn</code>: Closes Feed Check and returns to where you
 were, without changing which podcasts you follow.</li>
 </ul>
@@ -1769,6 +1805,24 @@ searches this podcast only – Search Everywhere is the one that crosses
 your whole library – and it narrows whatever the filter and sort above
 already chose rather than replacing them. Enter says how many
 matched.</li>
+</ul>
+<h4 id="newfeeddialog-quilluipodcastsnew_feed_dialogpy">NewFeedDialog
+(<code>quill/ui/podcasts/new_feed_dialog.py</code>)</h4>
+<ul>
+<li><code>self._summary</code>: What Cast found for this podcast, and
+anything a podcast directory could not answer.</li>
+<li><code>self._list</code>: Each feed was found by looking up this
+show’s title in the podcast directories, and was read to check it
+answers with episodes. The newest episode’s date tells a show that
+carried on from an older one with the same name. Replace Feed switches
+this podcast to the selected feed and keeps everything you have already
+heard.</li>
+<li><code>self._replace_btn</code>: Switch this podcast to the selected
+feed. Its episodes, play positions, notes and settings stay as they are;
+only the feed address changes, and the new feed is checked straight
+away.</li>
+<li><code>cancel_btn</code>: Leave this podcast’s feed address as it
+is.</li>
 </ul>
 <h4
 id="notificationswindow-quilluipodcastsnotifications_windowpy">NotificationsWindow
@@ -3788,7 +3842,7 @@ playback to its start.</li>
 text, when one is available. Empty otherwise.</li>
 </ul>
 <h2 id="quill-lite">QUILL Lite</h2>
-<p>Control coverage: 125 audited sites (125 helped).</p>
+<p>Control coverage: 128 audited sites (128 helped).</p>
 <h3 id="every-window-and-what-it-is-for-8">Every window, and what it is
 for</h3>
 <p><strong>AI Assistant.</strong> Ask QUILL’s free AI to summarize,
@@ -3817,6 +3871,11 @@ comparison, publishing and the rest of QUILL’s AI live in QUILL.</p>
 on purpose: nothing goes into your document until you choose Replace My
 Selection or Insert Below, and either of those is a single edit that
 Control Z takes back.</p>
+<p><strong>Add Inline Note.</strong> Write a note about the line or
+selection you were on. Note on shows the start of that text, so you can
+check you are in the right place. In Markdown and HTML, Write this note
+into the file keeps the note inside the document where others can read
+it; otherwise it stays private.</p>
 <p><strong>Answer.</strong> What the AI sent back. It is read-only on
 purpose: nothing goes into your document until you choose Replace My
 Selection or Insert Below, and either of those is a single edit that
@@ -3874,6 +3933,9 @@ cursor can tell you what list you are in. QUILL Lite reads it from the
 file name; this is where you say otherwise. Nothing in your document
 changes – only what the keys write from now on. The choice lasts as long
 as this window is open.</p>
+<p><strong>Edit Inline Note.</strong> Change what this note says, or
+delete it. The text the note is about is never changed. A note written
+into the file is changed in the file, so Undo takes the change back.</p>
 <p><strong>Email Reply.</strong> What the AI sent back. It is read-only
 on purpose: nothing goes into your document until you choose Replace My
 Selection or Insert Below, and either of those is a single edit that
@@ -3918,6 +3980,11 @@ navigation pane.</p>
 <p><strong>Image Description.</strong> What the model saw in the
 picture, read-only. Insert Below puts it under the paragraph you are in,
 Copy puts it on the clipboard, and Control Z takes an insert back.</p>
+<p><strong>Inline Notes.</strong> Every note in this document: what it
+says, the line it is on, the text it is about, and whether it is private
+or written into the file. A note whose text was deleted is listed last,
+so you can still read or remove it. Enter goes to a note, Delete deletes
+one, F2 edits one; Remove All, Copy All and Export are buttons.</p>
 <p><strong>Insert HTML Tag.</strong> Forty HTML tags, searchable by what
 they do as well as by what they are called – dropdown finds select,
 checkbox finds input, collapsible finds details. Choose the tag, then
@@ -4119,6 +4186,10 @@ the heading keys write hashes. HTML makes them write <strong> and <h2>,
 and offers the HTML tag picker. Plain text writes no markup at all and
 is right for a letter, a log or a script. The choice lasts as long as
 this window is open; the file itself is not changed.</li>
+<li><code>reopen_button</code>: Read this file again from disk as an
+encoding you choose, for a file whose letters came out wrong. Unsaved
+changes are discarded and nothing on disk changes. Afterwards it saves
+in that encoding, or choose UTF-8 here to convert it when you save.</li>
 </ul>
 <h4 id="module-level-quillappslite_dialogs_entrypy">(module level)
 (<code>quill/apps/lite_dialogs_entry.py</code>)</h4>
@@ -4200,6 +4271,11 @@ are offered, and the copies of untitled ones are deleted rather than
 kept – keeping something that is never offered would be a promise
 nothing can redeem. Identical copies are folded into one either way, and
 anything older than a month is dropped. QUILL has the same setting.</li>
+<li><code>notes_in_file</code>: On: in Markdown and HTML documents, Add
+Inline Note starts with Write this note into the file checked, so the
+note is kept in the document as a hidden comment that anyone who opens
+the file can read. Off: notes stay private to you. Each document
+remembers your last choice. QUILL has the same setting.</li>
 <li><code>blank</code>: On: a new Untitled document is waiting when the
 app opens, the way Notepad and WordPad do it. Off: the app opens with
 nothing, and Control N or Open makes the first document – which is what
@@ -4279,6 +4355,32 @@ Change Font opens the chooser; this box reads back whatever you
 pick.</li>
 <li><code>choose_btn</code>: Open the font chooser and pick a face and
 size for the editor.</li>
+</ul>
+<h4
+id="filechangeprefs-quillappslite_preferences_filespy">FileChangePrefs
+(<code>quill/apps/lite_preferences_files.py</code>)</h4>
+<ul>
+<li><code>self.heading</code>: What QUILL Lite does when another program
+writes to or deletes a file you have open. QUILL has the same
+settings.</li>
+<li><code>self.watch</code>: On: QUILL Lite notices when another program
+changes or deletes a file you have open, and tells you or asks you. Off:
+it notices only when you save.</li>
+<li><code>self.auto_reload</code>: On: if you have not changed the
+document since it was opened or saved, a changed file is read again by
+itself, the cursor stays on its line, and QUILL Lite says so once. Off:
+you are asked first. An answer you asked to have remembered for that
+kind of file still comes first.</li>
+<li><code>self.prompt</code>: On: when the file changes while you have
+unsaved edits, you choose Reload from Disk, Keep Mine or Save As, and a
+deleted file is reported once. Off: QUILL Lite says nothing in those
+cases and leaves your text alone.</li>
+<li><code>self.debounce</code>: How often QUILL Lite looks at your open
+files, so a program that writes a file in several steps is dealt with
+once. The default is 750.</li>
+<li><code>self.forget_button</code>: Takes back every Do not ask me
+again answer, so QUILL Lite asks again about every kind of file. Happens
+when you press OK.</li>
 </ul>
 <h4 id="profilerow-quillappslite_preferences_profilepy">ProfileRow
 (<code>quill/apps/lite_preferences_profile.py</code>)</h4>

@@ -45,12 +45,11 @@ import urllib.parse
 import urllib.request
 from dataclasses import dataclass
 
-from quill import __version__
+from quill.core import http_client
 from quill.core.error_codes import CodedError
 from quill.core.radio import directory_cache
 from quill.core.radio.models import RadioStation
 
-_USER_AGENT = f"QUILL-Radio/{__version__} (+https://github.com/Community-Access/quill)"
 _TIMEOUT_SECONDS = 25.0
 _MAX_BYTES = 8_000_000
 
@@ -143,7 +142,7 @@ def _fetch(url: str) -> str:
     """
     if not url.startswith("https://"):
         raise InternetArchiveError("Only https:// URLs can be fetched.")
-    request = urllib.request.Request(url, headers={"User-Agent": _USER_AGENT})
+    request = urllib.request.Request(url, headers={"User-Agent": http_client.user_agent()})
     context = ssl.create_default_context()
     for attempt in (1, 2):
         try:

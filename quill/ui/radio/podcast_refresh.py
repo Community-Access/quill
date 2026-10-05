@@ -481,6 +481,9 @@ def refresh_subscribed_feeds(
         save_library(data_dir, library)
     found: list[FeedCheck] = []
     gained = 0
+    #: A first read adds episodes without counting them as new, and those
+    #: still have to be saved.
+    seeded = False
     shows = list(getattr(library, "shows", []) or [])
     # *force* has to reach here, not just the docstring: it is the whole
     # difference between "check the shows on the schedule" and "check the
@@ -505,7 +508,14 @@ def refresh_subscribed_feeds(
             info = feed_reader.fetch_and_parse_feed(
                 show.feed_url, username=username, password=password, safe_mode=safe_mode
             )
+            # A show's first read is a starting point, not news (check.md bug
+            # 2): a podcast imported from an OPML file has no episodes yet, and
+            # its whole back catalogue is not "new episodes" to alert about.
+            first_read = not show.episodes
             count = merge_episodes(show, info.episodes)
+            if first_read:
+                seeded = seeded or bool(show.episodes)
+                count = 0
             if not info.tags.is_empty:
                 show.tags = info.tags
         except Exception:  # noqa: BLE001 - one bad feed never stops the rest
@@ -521,7 +531,7 @@ def refresh_subscribed_feeds(
                 show_id=str(getattr(show, "id", "") or ""),
             )
         )
-    if gained:
+    if gained or seeded:
         save_library(data_dir, library)
     return found
 

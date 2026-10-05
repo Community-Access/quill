@@ -1198,9 +1198,13 @@ stay. Your files stay where they are; only the list goes. Just above
 Clear, <strong>Recent Documents…</strong> (<code>Alt+Shift+0</code>)
 shows the whole list in a window of its own. More on that just
 below.</li>
-<li><strong>Open from URL…</strong> downloads a document or text
-resource from the web. QUILL checks with you first, naming the host and
-the expected size.</li>
+<li><strong>Open from Clipboard</strong>
+(<code>Ctrl+Alt+Shift+Enter</code>) opens whatever you copied: a file
+copied in File Explorer, a file path copied as text, or a web link. More
+on it just below.</li>
+<li><strong>Open from URL…</strong> downloads a document from the web.
+Before anything is downloaded, QUILL asks you, naming the website and
+the size of the file.</li>
 <li><strong>New Document from Clipboard</strong> opens a new document
 that already holds whatever text is on the clipboard. It is on the Edit
 menu too.</li>
@@ -1212,6 +1216,41 @@ there.</li>
 <p>Files on a server or on GitHub have their own commands. They are
 covered later in this chapter, under Remote access and GitHub remote
 files.</p>
+<h4 id="opening-what-you-copied-a-link-or-a-file-you-drag-in">Opening
+what you copied, a link, or a file you drag in</h4>
+<p>Documents reach you in all sorts of ways: a file in File Explorer, a
+path somebody pasted into a chat, a link in an email. QUILL opens all
+three without a trip through the Open dialog. The idea comes from
+PlanCake, a small reading app by Andre of Oire Software.</p>
+<p><strong>Open from Clipboard</strong>
+(<code>Ctrl+Alt+Shift+Enter</code>, on the File menu). Copy first, then
+press it. QUILL looks at what you copied:</p>
+<ul>
+<li>Files copied in File Explorer open, one after another. If you copied
+several, QUILL tells you how many it opened.</li>
+<li>A file path copied as text opens that file. The quotes File
+Explorer’s “Copy as path” puts around it are fine. Several paths, one
+per line, open in turn.</li>
+<li>A web link goes to Open from URL, described next.</li>
+</ul>
+<p>If the clipboard holds none of those, QUILL says “The clipboard holds
+no file, path or link.” and nothing else happens. <code>Ctrl+V</code>
+still pastes, as always.</p>
+<p><strong>Open from URL…</strong> (on the File menu). Type or paste a
+web address. QUILL finds out the file’s name and size, then asks before
+downloading anything, for example “Download plan.md from example.com? It
+is 12 KB.” Say Yes and a small window shows how the download is going.
+Its Cancel button stops it. If something goes wrong, you hear one plain
+sentence, such as “Nothing was found at that address on example.com.” A
+link to a file’s page on GitHub opens the file itself rather than the
+web page around it.</p>
+<p>The document opens read-only, with its web address in the tab name.
+To keep it, save a copy. QUILL works from a temporary copy of the
+download and deletes it when you close the tab.</p>
+<p><strong>Drag and drop.</strong> Drag files from File Explorer onto
+the QUILL window and they open, and QUILL says how many. Text you drag
+into the document is still inserted where you drop it.</p>
+<p>QUILL Lite has all three, on the same key.</p>
 <h4 id="opening-something-you-worked-on-recently">Opening something you
 worked on recently</h4>
 <p>QUILL remembers the documents you open, newest first. There are two
@@ -1431,6 +1470,23 @@ them, in its own <strong>keep as is</strong> row.</li>
 encoding you chose cannot hold a character in your document, the save
 names that character and offers Save As. It never quietly turns it into
 a question mark.</p>
+<p><strong>When a file is not UTF-8.</strong> Most files today are
+UTF-8. When QUILL opens one that is not, such as an older Windows file,
+it tells you once: “Opened as Windows-1252, not UTF-8.” Nothing about
+the file has changed. QUILL reads every byte, and a save puts every byte
+back as it was.</p>
+<p><strong>Reopen with Encoding…</strong> Now and then an old file’s
+accented letters come out wrong, because it was written in an encoding
+nobody can guess from the file alone, such as Cyrillic Windows-1251. In
+the File Format window, choose <strong>Reopen with Encoding…</strong>,
+pick the encoding the file was written in, and QUILL reads the same file
+again from disk that way. If you have unsaved changes, QUILL asks first,
+because reopening throws them away. Nothing on disk changes. If the file
+is not valid in the encoding you picked, QUILL says so and leaves your
+document as it was.</p>
+<p>After a reopen, the file saves back in that same encoding, so the
+next program that reads it sees what it always saw. To turn it into
+UTF-8 instead, open File Format again, choose UTF-8, and save.</p>
 <h4 id="when-another-program-changes-the-file-you-are-editing">When
 another program changes the file you are editing</h4>
 <p>QUILL keeps an eye on the file you have open. When something else
@@ -1458,11 +1514,29 @@ reading every few seconds is answered once, not every time. Reload and
 Keep Mine can be remembered. Opening the disk version in a new tab is a
 one-off comparison, so it never is. To take every remembered answer
 back, choose <strong>File &gt; Forget Remembered File-Change
-Answers</strong> (<code>Ctrl+Shift+F11</code>).</p>
+Answers</strong> (<code>Ctrl+Shift+F11</code>). A remembered Reload
+never throws away unsaved edits; QUILL asks instead.</p>
 <p>If the file changes while you <em>do</em> have unsaved edits, the
 same question spells out what is at stake: reloading throws away your
 edits, and keeping yours overwrites the disk version the next time you
 save.</p>
+<p><strong>Save looks once more.</strong> Right before Save writes your
+file, QUILL checks the file on disk again. If another program changed it
+since you opened it or last saved it, even a moment ago, QUILL stops and
+asks instead of writing over that change:</p>
+<ul>
+<li><strong>Save As…</strong> keeps both: yours under a new name, theirs
+untouched. Enter gives this answer.</li>
+<li><strong>Reload from Disk</strong> shows the version on disk and
+throws away your unsaved edits.</li>
+<li><strong>Overwrite</strong> saves your version over theirs.</li>
+<li><strong>Cancel</strong>, or Escape, saves nothing.</li>
+</ul>
+<p>This matters most when an AI assistant or a sync tool is rewriting a
+file while you read it. If you already answered Keep Mine for that
+change, Save does not ask again. QUILL Lite checks the same way, and
+watches the same way, with the same four settings in its
+Preferences.</p>
 <p>Two related commands are on the File menu:</p>
 <ul>
 <li><strong>Reload from Disk</strong> throws away your changes in memory
@@ -1925,6 +1999,15 @@ folder, and QUILL writes an EPUB next to your current file.</li>
 <li>Choose <strong>File &gt; Export &gt; PDF</strong> to publish a
 finished document.</li>
 </ul>
+<p><strong>A web page you can share.</strong> <strong>File &gt; Export
+&gt; HTML…</strong> (<code>Ctrl+Alt+Shift+End</code>) saves a copy of
+your document as one web page: its styles are inside it, it has no
+scripts, and it says what language it is in, so you can email it or put
+it on a website as it is. Task lists show as check boxes and
+<del>struck-out</del> text is struck out. The document you are editing
+stays the document you are editing. If notes are written into the file,
+QUILL asks whether to include them in the page, marked as notes; No is
+the default, so a note never ends up in a page by accident.</p>
 <p><strong>Getting there by keyboard.</strong>
 <code>File &gt; Import</code> and <code>File &gt; Export</code> are
 ordinary menus: open the menu, arrow down and press Enter. There is no
@@ -1944,7 +2027,10 @@ File Explorer.</p>
 Pandoc Format…</strong>. It shows a list of every other format Pandoc
 can read (on Import) or write (on Export), such as CommonMark and
 GitHub-Flavored Markdown. Arrow to the one you want and press Enter, and
-the conversion runs just like the named ones above.</p>
+the conversion runs just like the named ones above. On Export, the list
+opens on your <strong>Default export preset</strong> (Settings &gt;
+General; HTML unless you change it), so if you nearly always export the
+same way, Enter alone does it.</p>
 <p><strong>What it does not do.</strong> Importing a PDF this way is not
 supported, because Pandoc cannot do it reliably. Use Import / Convert
 Document, described below, and for print-to-braille work, the braille
@@ -3371,6 +3457,13 @@ manager alongside QUILL. The two do different jobs.</p>
 where it came from in the document. With nothing selected, QUILL copies
 the current line. This is handy for notes, reviews and gathering
 evidence.</p>
+<p>In a Markdown document you can choose what goes on the clipboard,
+under <strong>Settings &gt; Editing &gt; Markdown clipboard
+format</strong>. <strong>Plain text only</strong> (the default) copies
+the Markdown just as you wrote it. <strong>HTML</strong> or <strong>Rich
+text</strong> adds a formatted copy as well, so when you paste into Word
+or an email the headings, bold and links arrive formatted. Notepad and
+other plain-text programs still get the plain text.</p>
 <h3 id="links">Links</h3>
 <p><code>Ctrl+K</code> adds a link written the right way for the
 document’s format. <code>Ctrl+Enter</code> follows the link under the
@@ -4084,14 +4177,14 @@ dictionary items described under the AI menu.</li>
 of the one at the cursor.</p>
 <h4 id="thesaurus-shiftf7">Thesaurus (Shift+F7)</h4>
 <p><strong>Thesaurus…</strong> (<code>Shift+F7</code>, <strong>Tools
-&gt; Writing</strong>) opens a two-part window for the word you are on,
-or asks you for one. It finds your word even when it is not in its plain
-form. The thesaurus knows “run”, not “running”, and “happy”, not
-“happier”, so QUILL works back to the plain word and tells you: in the
-title (“running (as run)”) and on each meaning (“verb, from run:
-sprinting, dashing, …”). It then gives each replacement back in the form
-your sentence needs, with the same capitals: “sprinting” for “running”,
-“More glad” for “Happier”, “sought” for “sought”.</p>
+&gt; Writing and Language</strong>) opens a two-part window for the word
+you are on, or asks you for one. It finds your word even when it is not
+in its plain form. The thesaurus knows “run”, not “running”, and
+“happy”, not “happier”, so QUILL works back to the plain word and tells
+you: in the title (“running (as run)”) and on each meaning (“verb, from
+run: sprinting, dashing, …”). It then gives each replacement back in the
+form your sentence needs, with the same capitals: “sprinting” for
+“running”, “More glad” for “Happier”, “sought” for “sought”.</p>
 <p>You start in the Senses list, with the part of speech first, so type
 <strong>n</strong> for the nouns or <strong>v</strong> for the verbs.
 Tab moves to the words for the chosen meaning: replacements, then
@@ -4104,11 +4197,12 @@ first few replacements and the opposites, without opening anything.
 QUILL Lite has the same thesaurus.</p>
 <h4 id="look-up-word-altf10">Look Up Word (Alt+F10)</h4>
 <p><strong>Look Up Word…</strong> (<code>Alt+F10</code>, <strong>Tools
-&gt; Writing</strong>) is the dictionary without AI, in a window QUILL
-Lite shares. You start in the <strong>Result</strong>, a read-only box
-you arrow through: the word, then a labelled section for each kind of
-answer. Below it, <strong>Words you can use</strong> lists every
-synonym, opposite, related word and rhyme, each saying which it is.</p>
+&gt; Writing and Language</strong>) is the dictionary without AI, in a
+window QUILL Lite shares. You start in the <strong>Result</strong>, a
+read-only box you arrow through: the word, then a labelled section for
+each kind of answer. Below it, <strong>Words you can use</strong> lists
+every synonym, opposite, related word and rhyme, each saying which it
+is.</p>
 <ul>
 <li>Enter or <strong>Replace Word</strong> puts the chosen word in place
 of yours.</li>
@@ -4801,6 +4895,24 @@ Character used to be on <code>Shift+F2</code>. Today <code>F2</code> and
 <code>Shift+F2</code> move between bookmarks, and Insert Special
 Character is on <code>Ctrl+Shift+F2</code>. You can change any of these
 keys in the Keymap Editor.</p>
+<h4 id="ticking-off-tasks">Ticking off tasks</h4>
+<p>A task list is a list whose items start with a box:
+<code>- [ ]</code> for something still to do and <code>- [x]</code> for
+something done. <strong>Insert &gt; List &gt; Task</strong> makes one,
+and plans written by AI assistants are usually full of them.</p>
+<p>To tick a task, put the cursor on its line and press
+<code>Ctrl+Alt+Enter</code> (**Insert</p>
+<blockquote>
+<p>List &gt; Toggle Task Done**). Press it again to untick it. QUILL
+tells you what changed and how many tasks in that list are done, for
+example “Checked: Write the tests. 3 of 7 tasks complete.” Select
+several lines first to tick them all at once. <code>Ctrl+Z</code> takes
+it back like any other edit. On a line that is not a task, QUILL says so
+and changes nothing.</p>
+</blockquote>
+<p>In the preview and in <strong>File &gt; Export &gt; HTML</strong>, a
+task shows as a real check box, ticked or not, with the task’s text as
+its label.</p>
 <h3 id="markdown-profiles-and-table-of-contents">Markdown profiles and
 table of contents</h3>
 <p>Markdown means different things to different writers. A poet wants
@@ -5254,10 +5366,18 @@ under your fingers instead of letting the next message replace it.</li>
 Radio and Quill Weather.</li>
 <li><strong>Confirm with a sound in Quiet Mode</strong>: hear that
 something worked without QUILL speaking.</li>
-<li><strong>Keep an announcement history</strong>: what Repeat Last
-Announcement plays back.</li>
-<li><strong>Interrupt speech for</strong>: errors only, warnings and
-errors, or never.</li>
+<li><strong>Keep an announcement history</strong>: on by default. QUILL
+keeps a short list of what it has said, for the Spoken Echo and Repeat
+Last Announcement. Turn it off and nothing is kept, and the list is
+cleared straight away; Repeat Last Announcement can then only repeat the
+message still on the status bar.</li>
+<li><strong>Interrupt speech for</strong>: which messages cut across
+whatever your screen reader is saying. <strong>Warnings and
+errors</strong> is the default: problems, and the answer to something
+you just asked for, cut in. <strong>Errors only</strong> lets everything
+except a failure wait its turn. <strong>Never interrupt</strong> lets
+every message wait. The change takes effect as soon as you press
+OK.</li>
 </ul>
 <p>Quiet Mode and Meeting Mode silence braille along with speech:
 nothing is said and nothing is flashed to the display. The status bar
@@ -5624,6 +5744,7 @@ previous one.</li>
 <li><code>Q</code> and <code>Shift+Q</code> move by block quote.</li>
 <li><code>B</code> and <code>Shift+B</code> move by bookmark.</li>
 <li><code>'</code> and <code>Shift+'</code> move by code block.</li>
+<li><code>N</code> and <code>Shift+N</code> move by inline note.</li>
 <li><code>P</code> and <code>Shift+P</code> move by paragraph.</li>
 <li><code>S</code> and <code>Shift+S</code> move by sentence.</li>
 <li><code>Tab</code> and <code>Shift+Tab</code> move by block.</li>
@@ -5677,13 +5798,6 @@ briefly for a second key:</p>
 <li><code>N</code> turns on Quick Nav, as described above. Pressing the
 QUILL key a second time instead locks it on whatever the setting
 says.</li>
-<li><code>G</code> opens Quick Nav (Landmarks), also on
-<code>Ctrl+Shift+Z</code>. It lists everything in the document you can
-move to (headings, links, lists, tables, block quotes, bookmarks, code
-blocks) with a filter that shows how many of each there are. It also
-lists the document’s misspellings and, while a search is active, the
-search hits, so you can jump to a misspelled word or a match from the
-same place.</li>
 <li><code>M</code> pastes web content as Markdown. QUILL reads the rich
 HTML on the clipboard (the <code>HTML Format</code> copied from web
 pages and word processors), turns headings, lists, links, bold and
@@ -5698,6 +5812,13 @@ check where you are.</li>
 <li><code>?</code> shows the QUILL key cheat sheet, and <code>Esc</code>
 cancels.</li>
 </ul>
+<p>Quick Nav (Landmarks) has a key of its own,
+<code>Ctrl+Shift+Z</code>, rather than a QUILL key letter. It lists
+everything in the document you can move to (headings, links, lists,
+tables, block quotes, bookmarks, code blocks) with a filter that shows
+how many of each there are. It also lists the document’s misspellings
+and, while a search is active, the search hits, so you can jump to a
+misspelled word or a match from the same place.</p>
 <h4 id="quick-nav-and-quill-key-settings">Quick Nav and QUILL key
 settings</h4>
 <p>The <strong>Navigation and QUILL Key</strong> page in Settings holds
@@ -5924,30 +6045,82 @@ arrowing by character, word or line works exactly as before. Arrow
 through a folded region and you will read every word of it. Folding only
 changes where the jump commands take you.</p>
 <h4 id="inline-notes">Inline notes</h4>
-<p>Inline notes are private comments you attach to a line or a
-selection: a question, a reminder, a note to yourself while you draft.
-They are on **Tools</p>
-<blockquote>
-<p>Writing**, and you can change any of their keys in the Keymap
-Editor.</p>
-</blockquote>
+<p>Inline notes are comments you attach to a line or a selection: a
+question, a reminder, a note to yourself while you draft, or your
+thoughts on a plan somebody sent you. They are on <strong>Tools &gt;
+Writing and Language</strong>, and you can change any of their keys in
+the Keymap Editor.</p>
 <ul>
 <li><strong>Add Inline Note…</strong> (<code>Alt+Shift+I</code>)
 attaches a note to the selected text, or to the current line if nothing
-is selected. Type the note and choose Save.</li>
+is selected. The <strong>Note on</strong> line at the top shows the
+start of that text, so you can check you are in the right place. Type
+the note and choose Save.</li>
 <li><strong>Next Inline Note</strong> (<code>Alt+Shift+J</code>) and
 <strong>Previous Inline Note</strong> (<code>Alt+Shift+K</code>) move to
 the next or previous noted text, and QUILL reads the note.</li>
 <li><strong>Speak Inline Note</strong> (<code>Alt+Shift+H</code>) reads
 the note at the cursor. Press it twice quickly to open the note so you
 can read, change or delete it.</li>
+<li><strong>Delete Inline Note…</strong> (<code>Alt+Shift+Delete</code>)
+deletes the note at the cursor. QUILL reads you the note and asks first,
+and No is the default.</li>
+<li><strong>List Inline Notes…</strong> (<code>Alt+Shift+Enter</code>)
+shows every note in the document in one list: the note, the line it is
+on, the text it is about, and whether it is private or in the file.
+Press <code>Enter</code> to go to a note, <code>Delete</code> to delete
+one and <code>F2</code> to edit one. The buttons also let you
+<strong>Remove All</strong> notes (QUILL asks first), <strong>Copy
+All</strong> of them as plain text, or <strong>Export</strong> them to a
+Markdown or JSON file.</li>
+<li>In Quick Nav, <code>N</code> and <code>Shift+N</code> move to the
+next and previous note too.</li>
 </ul>
 <p>Each note remembers the exact text it was placed on, plus a little
-around it, so it follows that text as you edit. Notes are kept with each
-document between sessions, just like bookmarks. If the text a note was
-on is deleted, the note is kept, not lost. A new document keeps its
-notes until you close it; save it and they are kept. Notes are yours
-alone and are never written into the document.</p>
+around it, so it follows that text as you edit. If that text is deleted,
+the note is kept, not lost: the list shows it last, marked “the text it
+was on is gone”, so you can read it and remove it. A new document keeps
+its notes until you close it; save it and they are kept.</p>
+<h5 id="private-notes-and-notes-in-the-file">Private notes and notes in
+the file</h5>
+<p>Normally a note is private. It is kept in QUILL’s own settings
+folder, the document itself is never changed, and nobody else ever sees
+it. That works in every kind of document.</p>
+<p>In a Markdown or HTML document you can also write a note <strong>into
+the file</strong>. Check <strong>Write this note into the file</strong>
+in the Add Inline Note window, and the note goes into the document as a
+hidden comment on its own line, right after the text it is about:</p>
+<pre><code>Back up the uploads folder.
+&lt;!-- quill-note: And the database dump. --&gt;</code></pre>
+<p>The file is still a perfectly good Markdown or HTML file. Web pages,
+GitHub and other programs hide the comment, but anyone who opens the
+file in a text editor, and any AI assistant you hand the file to, can
+read your note. That makes it the way to review a plan an AI assistant
+wrote: read it, leave your notes in the file, and give the file back.
+Because a note in the file is part of the text, <code>Ctrl+Z</code>
+takes back adding, changing or deleting one.</p>
+<p>The check box remembers your last choice for each document. To start
+every new note in the file, turn on <strong>Write new inline notes into
+the file</strong> (the <code>inline_notes_in_file</code> setting) on the
+<strong>Editing</strong> page in Settings. It is off unless you change
+it.</p>
+<h5 id="notes-on-the-command-line">Notes on the command line</h5>
+<p>A script, or an AI assistant working in a terminal, can read and
+clear the notes written into a file without opening QUILL:</p>
+<ul>
+<li><code>quill --notes list plan.md</code> prints every note with its
+line and the text it is about. Add <code>--json</code> for a list a
+program can read.</li>
+<li><code>quill --notes check plan.md</code> says how many notes are
+left.</li>
+<li><code>quill --notes clear plan.md</code> removes them all and saves
+the file, keeping its encoding and line endings.</li>
+</ul>
+<p>The exit code tells a script what happened: 0 means done (or, for
+<code>check</code>, no notes left), 3 means <code>check</code> found
+notes still in the file, 1 means the file could not be read or written,
+and 2 means the command was mistyped. Private notes are never shown
+here; they stay yours.</p>
 <h3 id="working-in-code">Working in code</h3>
 <h4 id="code-aware-editing">Code-aware editing</h4>
 <p>When you open a source file, QUILL loads a language profile based on
@@ -6326,17 +6499,22 @@ current word, your progress and the results.</li>
 <li><strong>Detailed</strong>: all of that, plus hints about the
 controls and reminders of what you are checking.</li>
 </ul>
-<p>Three more settings on the same page belong to the review:</p>
+<p>Four more settings on the same page belong to the review:</p>
 <ul>
-<li><strong>Spell out the misspelled word letter by letter</strong>:
+<li><p><strong>Spelling review context display mode</strong>: the
+Context box usually shows the sentence with the misspelling plus the
+sentences either side. Choose <strong>Full paragraph</strong> to see the
+whole paragraph instead; Read Sentence then reads the
+paragraph.</p></li>
+<li><p><strong>Spell out the misspelled word letter by letter</strong>:
 after telling you the misspelling, QUILL reads it letter by letter. On
-to begin with.</li>
-<li><strong>Pause before spelling the word (milliseconds)</strong> is
+to begin with.</p></li>
+<li><p><strong>Pause before spelling the word (milliseconds)</strong> is
 how long it waits before spelling starts, from 100 to 3000. The default
-is 800.</li>
-<li><strong>Wrap spelling review to the beginning</strong>: when the
+is 800.</p></li>
+<li><p><strong>Wrap spelling review to the beginning</strong>: when the
 review reaches the end of the document, it offers to carry on from the
-top back to where you started. On to begin with.</li>
+top back to where you started. On to begin with.</p></li>
 </ul>
 <h4 id="spell-check-word-altshiftf7">Spell Check Word
 (Alt+Shift+F7)</h4>
@@ -6998,9 +7176,15 @@ on your computer, for the phrase “Hey QUILL”. Say “Hey QUILL, save file”
 to run a command straight away, or just “Hey QUILL” to start one. The
 status bar shows that the microphone is live and plays a reminder now
 and then, so an open microphone never takes you by surprise. Run the
-command again, or say “stop”, to end it. It turns itself off when QUILL
-closes, unless you turn on <strong>Keep listening for “Hey QUILL” across
-restarts</strong>. Off in Safe Mode.</li>
+command again, or say “stop”, to end it. The <strong>Listen for ‘Hey
+QUILL’ (wake word)</strong> tick box on the Transcription page of
+Settings is the same switch, so turning it on in either place turns it
+on in both; tick it and press OK, and QUILL starts listening straight
+away. If voice commands are off, QUILL tells you and leaves the box
+unticked. Normally listening stops when you close QUILL, so the
+microphone is never on by surprise the next time. Turn on <strong>Keep
+listening for “Hey QUILL” across restarts</strong> and QUILL picks up
+listening again when it starts. Off in Safe Mode.</li>
 <li><strong>Speak Voice Status</strong> (<strong>Tools &gt;
 Speech</strong>) tells you what the voice features are doing right now:
 whether QUILL is listening for “Hey QUILL”, whether conversation mode is
@@ -8541,6 +8725,26 @@ Settings</h4>
 your enabled profiles each time QUILL starts. It is off to begin with.
 <strong>Watch Folder Monitoring (in Settings)…</strong> brings you to
 Settings so you can turn it on.</li>
+<li><strong>Default watch folder</strong>: if you just want one folder
+where anything you drop gets opened, you don’t need a profile. Put the
+folder here, and QUILL opens each new supported file that lands in it.
+Blank to begin with.</li>
+<li><strong>Start watching automatically</strong> is the switch that
+watches your default folder, from the moment QUILL opens and for as long
+as it runs. It works on its own, so you can watch the default folder
+without turning on Enable folder watching by default, which starts your
+profiles. Safe Mode turns both off. Off to begin with.</li>
+<li><strong>Include subfolders</strong>: turn this on and files in
+folders inside your default folder count too. Off to begin with.</li>
+<li><strong>Process existing files on start</strong>: normally QUILL
+only opens files that arrive after it starts watching. Turn this on to
+have it open what’s already waiting in the default folder as well. Off
+to begin with.</li>
+</ul>
+<p>Your profiles each have their own folder and their own Include
+subfolders, existing files and startup choices; these four only decide
+for the default folder.</p>
+<ul>
 <li><strong>Poll interval (seconds)</strong> is how often a watched
 folder is checked, from 2 to 300 seconds. The default is 5.</li>
 <li><strong>Watch folder: play a sound on each check</strong> plays a
@@ -9752,18 +9956,18 @@ skipped.</li>
 a <code>.pqp</code> file you can share or keep as a backup.</li>
 </ul>
 <p>A <code>.pqp</code> file is plain JSON that is easy to read:</p>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode json"><code class="sourceCode json"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;schema&quot;</span><span class="fu">:</span> <span class="st">&quot;quill.prompt-pack/1&quot;</span><span class="fu">,</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;My Writing Prompts&quot;</span><span class="fu">,</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;prompts&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;Make Punchy&quot;</span><span class="fu">,</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;text&quot;</span><span class="fu">:</span> <span class="st">&quot;Rewrite this as a punchy one-liner: {selection}&quot;</span><span class="fu">,</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;category&quot;</span><span class="fu">:</span> <span class="st">&quot;Editing&quot;</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;schema&quot;</span><span class="fu">:</span> <span class="st">&quot;quill.prompt-pack/1&quot;</span><span class="fu">,</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;My Writing Prompts&quot;</span><span class="fu">,</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;prompts&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;Make Punchy&quot;</span><span class="fu">,</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;text&quot;</span><span class="fu">:</span> <span class="st">&quot;Rewrite this as a punchy one-liner: {selection}&quot;</span><span class="fu">,</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;category&quot;</span><span class="fu">:</span> <span class="st">&quot;Editing&quot;</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
 <h4 id="skill-library">Skill Library</h4>
 <p>A prompt is one instruction. A skill is a series of steps, and each
 step can use what the step before it produced.</p>
@@ -10892,7 +11096,11 @@ it.</p>
 &gt; Show Spoken Echo</strong>. It works after any announcement, even
 one from an ordinary editing key such as Tab. So you can hear “8
 spaces”, then open the Echo to read and copy it. The Echo only records
-what QUILL speaks, never your typing.</p>
+what QUILL speaks, never your typing. If you would rather QUILL kept no
+record at all, turn off <strong>Settings &gt; Accessibility and
+Announcements &gt; Keep an announcement history</strong>: the list is
+cleared, nothing new is added, and the Echo tells you the history is
+off.</p>
 <p>If you are used to pressing a screen reader’s reporting command
 twice, you can do the same here. Double-press an informational command
 (Describe Formatting, Document Summary, Context Help or Announce
@@ -11550,12 +11758,36 @@ you do not need to install liblouis for Python separately. If you do
 have it, QUILL uses it, because it is a little faster.</p>
 <h4 id="the-braille-mode-page-in-settings">The Braille Mode page in
 Settings</h4>
-<p>Most of the <strong>Braille Mode</strong> page is covered above.
-Three more settings:</p>
+<p>Most of the <strong>Braille Mode</strong> page is covered above. The
+rest:</p>
 <ul>
 <li><strong>Use form feeds for page breaks</strong> treats the
 page-break characters in a braille file as real page breaks. Leave it on
-unless the file never used them.</li>
+unless the file never used them. Turn it off and QUILL counts pages by
+your page size instead.</li>
+<li><strong>Calculate pages from geometry</strong>: when a braille file
+has no page breaks, QUILL works out the pages from your page size. Turn
+this off and a file like that is read as one long page. On to begin
+with.</li>
+<li><strong>Announce page changes automatically</strong>: turn this on
+and QUILL says “Braille page 5” as your cursor moves onto a new page. If
+you got there with Next Braille Page or Go to Braille Page, you only
+hear it once. Off to begin with.</li>
+<li><strong>Announce print page changes</strong>: turn this on to hear
+“Print page 7” when you move onto a new print page. Files without print
+page numbers stay quiet. Off to begin with.</li>
+<li><strong>Announce line overflow</strong>: turn this on and QUILL
+tells you when a line is longer than your Cells per line, for example
+“Line too long: 45 cells, limit 40”. You hear it once when you reach the
+line, or when your typing pushes it past the limit. Off to begin
+with.</li>
+<li><strong>Include proofing status in status string</strong>: Read
+Detailed Status tells you the last page you proofed and how many pages
+still need review, from the companion file. On to begin with; turn it
+off for a shorter status.</li>
+<li><strong>Include continuation in status string</strong>: Read
+Detailed Status names the continuation letter (7a, 7b) when a print page
+runs on. On to begin with.</li>
 <li><strong>Write sidecar on save</strong> saves a small companion file
 next to a braille file when you save it, recording the page size and
 line endings, so other tools can pick up where you left off. On to begin
@@ -12358,7 +12590,13 @@ reading it aloud. Off to begin with.</li>
 <li><strong>Offer “Convert with QUILL”</strong> opens an audio or video
 file in Quill Converter so you can change its format. Off to begin
 with.</li>
+<li><strong>File types offered to QUILL</strong> chooses which files get
+QUILL on their right-click menu: images only, images and PDFs, or
+images, PDFs and text documents (the default). Audio and video files
+have their own Convert switch above.</li>
 </ul>
+<p>Your choices take effect as soon as you press OK, with no need to
+install shell integration again.</p>
 <h3 id="quillins">Quillins</h3>
 <p>Quillins are extensions. They add commands, snippets, menus,
 abbreviations, smart triggers, settings pages, status bar cells and
@@ -13444,13 +13682,14 @@ other apps in the QuillVille family. Dip in when you need a piece of it;
 none of it changes how ordinary editing works.</p>
 <h3 id="sticky-notes">Sticky Notes</h3>
 <p>Sticky notes are the quickest way to catch a thought before it gets
-away. <strong>Tools &gt; New Sticky Note…</strong> (or its system-wide
-hotkey) opens a small editor with a title and a body, from anywhere.
-<strong>Tools &gt; Sticky Notes…</strong> manages the whole
-collection.</p>
+away. <strong>Navigate &gt; Sticky Notes &gt; New Sticky Note…</strong>
+(or its system-wide hotkey) opens a small editor with a title and a
+body, from anywhere. <strong>Navigate &gt; Sticky Notes &gt; Sticky
+Notes…</strong> manages the whole collection.</p>
 <h4 id="the-sticky-notes-browser">The Sticky Notes Browser</h4>
-<p><strong>Tools &gt; Sticky Notes Browser…</strong> is the fast way
-back to a note you wrote last week.</p>
+<p><strong>Navigate &gt; Sticky Notes &gt; Sticky Notes
+Browser…</strong> is the fast way back to a note you wrote last
+week.</p>
 <ol type="1">
 <li>Open the browser. Focus starts in a <strong>search
 field</strong>.</li>
@@ -14787,6 +15026,10 @@ could go wrong, how your settings are protected, and how to come back.
 Read it, tick the <strong>I understand</strong> box, then choose
 <strong>Move to Beta</strong> (or <strong>Move to Dev</strong>).
 <strong>Stay on Stable</strong> changes nothing, and so does Escape.</p>
+<p>Beta and Dev versions aren’t signed, so when you install one, Windows
+SmartScreen may warn that it comes from an unknown publisher; that’s
+expected, and choosing <strong>More info</strong>, then <strong>Run
+anyway</strong>, installs it.</p>
 <h4 id="what-happens-when-you-move-to-beta-or-dev">What happens when you
 move to Beta or Dev</h4>
 <ul>
@@ -14912,8 +15155,8 @@ depth.</p>
 Reference</a>.</p>
 <p>If you build QUILL yourself, you can regenerate it after adding new
 help topics:</p>
-<div class="sourceCode" id="cb4"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>python <span class="op">-</span>m quill<span class="op">.</span><span class="fu">tools</span><span class="op">.</span><span class="fu">build_docs</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>python <span class="op">-</span>m quill<span class="op">.</span><span class="fu">tools</span><span class="op">.</span><span class="fu">build_docs</span></span></code></pre></div>
 <h3 id="what-you-learned-and-where-to-go-next-14">What you learned, and
 where to go next</h3>
 <p>You now know your way around the Help menu, including Activity
@@ -15138,69 +15381,76 @@ refresh when the active document changes. Otherwise, call
 <code>q.support</code>, plus <code>q.describe_command</code>.</p>
 <h4 id="basic-operations">Basic operations</h4>
 <p>Insert text at the cursor:</p>
-<div class="sourceCode" id="cb5"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.insert_text(<span class="st">&quot;Hello from QUILL.&quot;</span>)</span></code></pre></div>
-<p>Replace the current selection:</p>
 <div class="sourceCode" id="cb6"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.replace_selection(<span class="st">&quot;Replacement text&quot;</span>)</span></code></pre></div>
-<p>Jump to a line:</p>
+class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.insert_text(<span class="st">&quot;Hello from QUILL.&quot;</span>)</span></code></pre></div>
+<p>Replace the current selection:</p>
 <div class="sourceCode" id="cb7"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.goto_line(<span class="dv">42</span>)</span></code></pre></div>
-<p>Run a built-in command by its ID:</p>
+class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.replace_selection(<span class="st">&quot;Replacement text&quot;</span>)</span></code></pre></div>
+<p>Jump to a line:</p>
 <div class="sourceCode" id="cb8"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.run_command(<span class="st">&quot;quill.document.wordCount&quot;</span>)</span></code></pre></div>
-<p>Send a screen-reader announcement:</p>
+class="sourceCode python"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.goto_line(<span class="dv">42</span>)</span></code></pre></div>
+<p>Run a built-in command by its ID:</p>
 <div class="sourceCode" id="cb9"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.a11y.announce(<span class="st">&quot;Test announcement.&quot;</span>)</span></code></pre></div>
+class="sourceCode python"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.run_command(<span class="st">&quot;quill.document.wordCount&quot;</span>)</span></code></pre></div>
+<p>Send a screen-reader announcement:</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.a11y.announce(<span class="st">&quot;Test announcement.&quot;</span>)</span></code></pre></div>
 <h4 id="inspecting-state">Inspecting state</h4>
 <p>Read the name of the active document:</p>
-<div class="sourceCode" id="cb10"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> doc.name</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co">&#39;notes.txt&#39;</span></span></code></pre></div>
-<p>Read the current selection:</p>
 <div class="sourceCode" id="cb11"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> sel.text</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co">&#39;selected words here&#39;</span></span></code></pre></div>
-<p>Read where the caret is (line and column both start at 1):</p>
+class="sourceCode python"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> doc.name</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co">&#39;notes.txt&#39;</span></span></code></pre></div>
+<p>Read the current selection:</p>
 <div class="sourceCode" id="cb12"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> caret.line, caret.column</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>(<span class="dv">12</span>, <span class="dv">5</span>)</span></code></pre></div>
-<p>Search for commands by keyword:</p>
+class="sourceCode python"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> sel.text</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co">&#39;selected words here&#39;</span></span></code></pre></div>
+<p>Read where the caret is (line and column both start at 1):</p>
 <div class="sourceCode" id="cb13"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> commands.search(<span class="st">&quot;spell&quot;</span>)</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>[<span class="st">&#39;quill.spell.check&#39;</span>, <span class="st">&#39;quill.spell.addWord&#39;</span>, <span class="st">&#39;quill.spell.nextError&#39;</span>]</span></code></pre></div>
+class="sourceCode python"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> caret.line, caret.column</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>(<span class="dv">12</span>, <span class="dv">5</span>)</span></code></pre></div>
+<p>Search for commands by keyword:</p>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> commands.search(<span class="st">&quot;spell&quot;</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>[<span class="st">&#39;quill.spell.check&#39;</span>, <span class="st">&#39;quill.spell.addWord&#39;</span>, <span class="st">&#39;quill.spell.nextError&#39;</span>]</span></code></pre></div>
 <p>Get a diagnostic summary, which is handy when you are asking for
 support:</p>
-<div class="sourceCode" id="cb14"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.support.diagnostic_summary()</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.support.diagnostic_summary()</span></code></pre></div>
 <h4 id="accessibility-diagnostics">Accessibility diagnostics</h4>
 <p>Hear again what QUILL last announced:</p>
-<div class="sourceCode" id="cb15"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.a11y.last_announcements()</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>[<span class="st">&#39;Title Case applied&#39;</span>, <span class="st">&#39;5 words selected&#39;</span>]</span></code></pre></div>
-<p>Describe where focus is right now:</p>
 <div class="sourceCode" id="cb16"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.focus.describe()</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co">&#39;Editor: notes.txt, line 12, col 5, no selection&#39;</span></span></code></pre></div>
+class="sourceCode python"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.a11y.last_announcements()</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>[<span class="st">&#39;Title Case applied&#39;</span>, <span class="st">&#39;5 words selected&#39;</span>]</span></code></pre></div>
+<p>Describe where focus is right now:</p>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.focus.describe()</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="co">&#39;Editor: notes.txt, line 12, col 5, no selection&#39;</span></span></code></pre></div>
 <h4 id="multi-line-blocks">Multi-line blocks</h4>
 <p>Press <code>Shift+Enter</code> to add new lines, then
 <code>Enter</code> or <code>Ctrl+Enter</code> to run the block:</p>
-<div class="sourceCode" id="cb17"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="kw">def</span> count_words(text):</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>...     <span class="cf">return</span> <span class="bu">len</span>(text.split())</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>...</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> count_words(doc.text)</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="dv">487</span></span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="kw">def</span> count_words(text):</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>...     <span class="cf">return</span> <span class="bu">len</span>(text.split())</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>...</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> count_words(doc.text)</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="dv">487</span></span></code></pre></div>
+<h4 id="when-a-command-runs-too-long">When a command runs too long</h4>
+<p>If something you type into the Python console runs away, a loop that
+never ends say, QUILL stops it after <strong>Python console execution
+timeout</strong> seconds (Settings &gt; Administration) and tells you
+“Stopped after 30 seconds.” It is 30 to begin with, and you can set
+anything from 5 to 300. A command that is waiting on the system, such as
+a long sleep, stops as soon as that wait is over.</p>
 <h4 id="macro-recording">Macro recording</h4>
 <p>You can record a run of commands as a macro and use it again
 later:</p>
-<div class="sourceCode" id="cb18"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.begin_macro(<span class="st">&quot;Clean OCR text&quot;</span>)</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.run_command(<span class="st">&quot;quill.text.normalizeUnicode&quot;</span>)</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.run_command(<span class="st">&quot;quill.text.dehyphenateLines&quot;</span>)</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.run_command(<span class="st">&quot;quill.text.reflowParagraphs&quot;</span>)</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.end_macro()</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>Macro saved: <span class="st">&quot;Clean OCR text&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.begin_macro(<span class="st">&quot;Clean OCR text&quot;</span>)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.run_command(<span class="st">&quot;quill.text.normalizeUnicode&quot;</span>)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.run_command(<span class="st">&quot;quill.text.dehyphenateLines&quot;</span>)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.run_command(<span class="st">&quot;quill.text.reflowParagraphs&quot;</span>)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.end_macro()</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>Macro saved: <span class="st">&quot;Clean OCR text&quot;</span></span></code></pre></div>
 <h3 id="typescript-console">TypeScript console</h3>
 <p>The TypeScript console needs Node.js on your PATH. If QUILL cannot
 find it, it tells you so and offers to help you install it.</p>
@@ -15241,49 +15491,49 @@ the transcript by themselves.</p>
 </table>
 <h4 id="basic-typescript-operations">Basic TypeScript operations</h4>
 <p>Insert text:</p>
-<div class="sourceCode" id="cb20"><pre
-class="sourceCode ts"><code class="sourceCode typescript"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">insertText</span>(<span class="st">&quot;Hello from TypeScript.&quot;</span>)<span class="op">;</span></span></code></pre></div>
-<p>Replace the selection:</p>
 <div class="sourceCode" id="cb21"><pre
-class="sourceCode ts"><code class="sourceCode typescript"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">replaceSelection</span>(<span class="st">&quot;Replacement text&quot;</span>)<span class="op">;</span></span></code></pre></div>
-<p>Jump to a line:</p>
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">insertText</span>(<span class="st">&quot;Hello from TypeScript.&quot;</span>)<span class="op">;</span></span></code></pre></div>
+<p>Replace the selection:</p>
 <div class="sourceCode" id="cb22"><pre
-class="sourceCode ts"><code class="sourceCode typescript"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">gotoLine</span>(<span class="dv">42</span>)<span class="op">;</span></span></code></pre></div>
-<p>Run a built-in command:</p>
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">replaceSelection</span>(<span class="st">&quot;Replacement text&quot;</span>)<span class="op">;</span></span></code></pre></div>
+<p>Jump to a line:</p>
 <div class="sourceCode" id="cb23"><pre
-class="sourceCode ts"><code class="sourceCode typescript"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">runCommand</span>(<span class="st">&quot;quill.markdown.normalizeHeadings&quot;</span>)<span class="op">;</span></span></code></pre></div>
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">gotoLine</span>(<span class="dv">42</span>)<span class="op">;</span></span></code></pre></div>
+<p>Run a built-in command:</p>
+<div class="sourceCode" id="cb24"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">runCommand</span>(<span class="st">&quot;quill.markdown.normalizeHeadings&quot;</span>)<span class="op">;</span></span></code></pre></div>
 <h4 id="inspecting-state-from-typescript">Inspecting state from
 TypeScript</h4>
-<div class="sourceCode" id="cb24"><pre
-class="sourceCode ts"><code class="sourceCode typescript"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="kw">const</span> doc <span class="op">=</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">activeDocument</span>()<span class="op">;</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(doc<span class="op">.</span><span class="at">name</span>)<span class="op">;</span></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>notes<span class="op">.</span><span class="at">txt</span></span></code></pre></div>
 <div class="sourceCode" id="cb25"><pre
-class="sourceCode ts"><code class="sourceCode typescript"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="kw">const</span> stats <span class="op">=</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">documentStats</span>()<span class="op">;</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="vs">`</span><span class="sc">${</span>stats<span class="op">.</span><span class="at">words</span><span class="sc">}</span><span class="vs"> words, </span><span class="sc">${</span>stats<span class="op">.</span><span class="at">lines</span><span class="sc">}</span><span class="vs"> lines`</span>)<span class="op">;</span></span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="dv">487</span> words<span class="op">,</span> <span class="dv">38</span> lines</span></code></pre></div>
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="kw">const</span> doc <span class="op">=</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">activeDocument</span>()<span class="op">;</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(doc<span class="op">.</span><span class="at">name</span>)<span class="op">;</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>notes<span class="op">.</span><span class="at">txt</span></span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="kw">const</span> stats <span class="op">=</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">documentStats</span>()<span class="op">;</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="vs">`</span><span class="sc">${</span>stats<span class="op">.</span><span class="at">words</span><span class="sc">}</span><span class="vs"> words, </span><span class="sc">${</span>stats<span class="op">.</span><span class="at">lines</span><span class="sc">}</span><span class="vs"> lines`</span>)<span class="op">;</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="dv">487</span> words<span class="op">,</span> <span class="dv">38</span> lines</span></code></pre></div>
 <h4 id="multi-line-typescript">Multi-line TypeScript</h4>
 <p>Press <code>Shift+Enter</code> to build a block over several lines,
 then <code>Ctrl+Enter</code> to run it:</p>
-<div class="sourceCode" id="cb26"><pre
-class="sourceCode ts"><code class="sourceCode typescript"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="kw">const</span> text <span class="op">=</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">getText</span>()<span class="op">;</span></span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="kw">const</span> words <span class="op">=</span> text<span class="op">.</span><span class="fu">trim</span>()<span class="op">.</span><span class="fu">split</span>(<span class="ss">/</span><span class="sc">\s+</span><span class="ss">/</span>)<span class="op">.</span><span class="fu">filter</span>(<span class="bu">Boolean</span>)<span class="op">;</span></span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">announce</span>(<span class="vs">`</span><span class="sc">${</span>words<span class="op">.</span><span class="at">length</span><span class="sc">}</span><span class="vs"> words`</span>)<span class="op">;</span></span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="kw">const</span> text <span class="op">=</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">getText</span>()<span class="op">;</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="kw">const</span> words <span class="op">=</span> text<span class="op">.</span><span class="fu">trim</span>()<span class="op">.</span><span class="fu">split</span>(<span class="ss">/</span><span class="sc">\s+</span><span class="ss">/</span>)<span class="op">.</span><span class="fu">filter</span>(<span class="bu">Boolean</span>)<span class="op">;</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">announce</span>(<span class="vs">`</span><span class="sc">${</span>words<span class="op">.</span><span class="at">length</span><span class="sc">}</span><span class="vs"> words`</span>)<span class="op">;</span></span></code></pre></div>
 <h4 id="typescript-type-definitions">TypeScript type definitions</h4>
 <p>QUILL comes with a file called <code>quill-console.d.ts</code>. If
 you have Node.js and a code editor that understands TypeScript, copy the
 file into your project and you get completion:</p>
-<div class="sourceCode" id="cb27"><pre
-class="sourceCode ts"><code class="sourceCode typescript"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co">// quill is typed as:</span></span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="kw">interface</span> QuillConsoleApi {</span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">insertText</span>(text<span class="op">:</span> <span class="dt">string</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">replaceSelection</span>(text<span class="op">:</span> <span class="dt">string</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gotoLine</span>(line<span class="op">:</span> <span class="dt">number</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
-<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">runCommand</span>(commandId<span class="op">:</span> <span class="dt">string</span><span class="op">,</span> args<span class="op">?:</span> <span class="bu">Record</span><span class="op">&lt;</span><span class="dt">string</span><span class="op">,</span> <span class="dt">unknown</span><span class="op">&gt;</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">unknown</span><span class="op">&gt;;</span></span>
-<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">activeDocument</span>()<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span>QuillDocumentSnapshot<span class="op">&gt;;</span></span>
-<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">documentStats</span>()<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span>QuillDocumentStats<span class="op">&gt;;</span></span>
-<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">announce</span>(text<span class="op">:</span> <span class="dt">string</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
-<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co">// quill is typed as:</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="kw">interface</span> QuillConsoleApi {</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">insertText</span>(text<span class="op">:</span> <span class="dt">string</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">replaceSelection</span>(text<span class="op">:</span> <span class="dt">string</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gotoLine</span>(line<span class="op">:</span> <span class="dt">number</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">runCommand</span>(commandId<span class="op">:</span> <span class="dt">string</span><span class="op">,</span> args<span class="op">?:</span> <span class="bu">Record</span><span class="op">&lt;</span><span class="dt">string</span><span class="op">,</span> <span class="dt">unknown</span><span class="op">&gt;</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">unknown</span><span class="op">&gt;;</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">activeDocument</span>()<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span>QuillDocumentSnapshot<span class="op">&gt;;</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">documentStats</span>()<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span>QuillDocumentStats<span class="op">&gt;;</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">announce</span>(text<span class="op">:</span> <span class="dt">string</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 <h3 id="screen-reader-notes">Screen-reader notes</h3>
 <ul>
 <li>New output in the transcript is announced, and focus stays where it
@@ -15405,28 +15655,28 @@ open.</p>
 <p>The console is a good place to try out a Quillin while you build it.
 Load your Quillin, open the Python console, and look at its manifest and
 the commands it adds:</p>
-<div class="sourceCode" id="cb28"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> quill.core.quillins.loader <span class="im">import</span> get_loader</span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> loader <span class="op">=</span> get_loader()</span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> ext <span class="op">=</span> loader.get_extension(<span class="st">&quot;com.example.myextension&quot;</span>)</span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> ext.manifest</span>
-<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>ExtensionManifest(<span class="bu">id</span><span class="op">=</span><span class="st">&#39;com.example.myextension&#39;</span>, runtime<span class="op">=</span><span class="st">&#39;python&#39;</span>, ...)</span>
-<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> ext.manifest.contributes.commands</span>
-<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>(ExtensionCommand(<span class="bu">id</span><span class="op">=</span><span class="st">&#39;ext.myext.run&#39;</span>, title<span class="op">=</span><span class="st">&#39;My Command&#39;</span>, ...),)</span></code></pre></div>
-<p>Run one of its commands straight through the command registry:</p>
 <div class="sourceCode" id="cb29"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.run_command(<span class="st">&quot;ext.myext.run&quot;</span>)</span></code></pre></div>
-<p>Then check what it announced:</p>
+class="sourceCode python"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> quill.core.quillins.loader <span class="im">import</span> get_loader</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> loader <span class="op">=</span> get_loader()</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> ext <span class="op">=</span> loader.get_extension(<span class="st">&quot;com.example.myextension&quot;</span>)</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> ext.manifest</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>ExtensionManifest(<span class="bu">id</span><span class="op">=</span><span class="st">&#39;com.example.myextension&#39;</span>, runtime<span class="op">=</span><span class="st">&#39;python&#39;</span>, ...)</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> ext.manifest.contributes.commands</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>(ExtensionCommand(<span class="bu">id</span><span class="op">=</span><span class="st">&#39;ext.myext.run&#39;</span>, title<span class="op">=</span><span class="st">&#39;My Command&#39;</span>, ...),)</span></code></pre></div>
+<p>Run one of its commands straight through the command registry:</p>
 <div class="sourceCode" id="cb30"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.a11y.last_announcements()</span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>[<span class="st">&#39;My command completed: 3 items processed&#39;</span>]</span></code></pre></div>
+class="sourceCode python"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.run_command(<span class="st">&quot;ext.myext.run&quot;</span>)</span></code></pre></div>
+<p>Then check what it announced:</p>
+<div class="sourceCode" id="cb31"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> q.a11y.last_announcements()</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>[<span class="st">&#39;My command completed: 3 items processed&#39;</span>]</span></code></pre></div>
 <p>For a Node.js Quillin, the TypeScript console is the natural place to
 test:</p>
-<div class="sourceCode" id="cb31"><pre
-class="sourceCode ts"><code class="sourceCode typescript"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">runCommand</span>(<span class="st">&quot;ext.myext.nodeHandler&quot;</span>)<span class="op">;</span></span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="co">// Check the last announcement</span></span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="kw">const</span> ann <span class="op">=</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">lastAnnouncement</span>()<span class="op">;</span></span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(ann)<span class="op">;</span></span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">runCommand</span>(<span class="st">&quot;ext.myext.nodeHandler&quot;</span>)<span class="op">;</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="co">// Check the last announcement</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="kw">const</span> ann <span class="op">=</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">lastAnnouncement</span>()<span class="op">;</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(ann)<span class="op">;</span></span></code></pre></div>
 <h3 id="what-the-console-can-and-cannot-do-yet">What the console can and
 cannot do yet</h3>
 <p>The console is built and working under the Developer, Power Text and
@@ -15476,35 +15726,35 @@ context it built for itself in an earlier step.</li>
 <h3 id="your-first-skill">Your first skill</h3>
 <p>Create a file called <code>my-first-skill.sqp</code> and open it in
 QUILL. Type this in:</p>
-<div class="sourceCode" id="cb32"><pre
-class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="an">schema:</span><span class="co"> quill.skill/1</span></span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="an">name:</span><span class="co"> Explain Then Simplify</span></span>
-<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="an">description:</span><span class="co"> Explains the selected text in plain terms, then simplifies it further.</span></span>
-<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> Your Name</span></span>
-<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a><span class="an">version:</span><span class="co"> 1.0.0</span></span>
-<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a><span class="fu"># Step 1: Explain</span></span>
-<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>Explain the following text as if the reader has no prior knowledge. Use simple</span>
-<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>vocabulary and short sentences. Aim for 50-80 words.</span>
-<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>Text to explain:</span>
-<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>{selection}</span>
-<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a><span class="fu"># Step 2: Simplify further</span></span>
-<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a>The explanation below is good, but we need it even simpler. Rewrite it so a</span>
-<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a>twelve-year-old would understand it immediately. Keep the core meaning.</span>
-<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a>Explanation to simplify:</span>
-<span id="cb32-23"><a href="#cb32-23" aria-hidden="true" tabindex="-1"></a>{step1.output}</span>
-<span id="cb32-24"><a href="#cb32-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-25"><a href="#cb32-25" aria-hidden="true" tabindex="-1"></a><span class="in">```output</span></span>
-<span id="cb32-26"><a href="#cb32-26" aria-hidden="true" tabindex="-1"></a><span class="in">format: text</span></span>
-<span id="cb32-27"><a href="#cb32-27" aria-hidden="true" tabindex="-1"></a><span class="in">label: Plain-language explanation</span></span>
-<span id="cb32-28"><a href="#cb32-28" aria-hidden="true" tabindex="-1"></a><span class="in">accept_into: clipboard</span></span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="an">schema:</span><span class="co"> quill.skill/1</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="an">name:</span><span class="co"> Explain Then Simplify</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="an">description:</span><span class="co"> Explains the selected text in plain terms, then simplifies it further.</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> Your Name</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a><span class="an">version:</span><span class="co"> 1.0.0</span></span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a><span class="fu"># Step 1: Explain</span></span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>Explain the following text as if the reader has no prior knowledge. Use simple</span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>vocabulary and short sentences. Aim for 50-80 words.</span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a>Text to explain:</span>
+<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a>{selection}</span>
+<span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-17"><a href="#cb33-17" aria-hidden="true" tabindex="-1"></a><span class="fu"># Step 2: Simplify further</span></span>
+<span id="cb33-18"><a href="#cb33-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-19"><a href="#cb33-19" aria-hidden="true" tabindex="-1"></a>The explanation below is good, but we need it even simpler. Rewrite it so a</span>
+<span id="cb33-20"><a href="#cb33-20" aria-hidden="true" tabindex="-1"></a>twelve-year-old would understand it immediately. Keep the core meaning.</span>
+<span id="cb33-21"><a href="#cb33-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-22"><a href="#cb33-22" aria-hidden="true" tabindex="-1"></a>Explanation to simplify:</span>
+<span id="cb33-23"><a href="#cb33-23" aria-hidden="true" tabindex="-1"></a>{step1.output}</span>
+<span id="cb33-24"><a href="#cb33-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-25"><a href="#cb33-25" aria-hidden="true" tabindex="-1"></a><span class="in">```output</span></span>
+<span id="cb33-26"><a href="#cb33-26" aria-hidden="true" tabindex="-1"></a><span class="in">format: text</span></span>
+<span id="cb33-27"><a href="#cb33-27" aria-hidden="true" tabindex="-1"></a><span class="in">label: Plain-language explanation</span></span>
+<span id="cb33-28"><a href="#cb33-28" aria-hidden="true" tabindex="-1"></a><span class="in">accept_into: clipboard</span></span></code></pre></div>
 <pre><code>
 The part between the two `---` lines is the front matter: the skill&#39;s name and
 details. Each line that starts with `# Step` begins a new step. `{selection}`
@@ -15521,40 +15771,40 @@ python -m quill.tools.sqp_validator my-first-skill.sqp</code></pre>
 Before step 1 begins, QUILL shows a small dialog that asks for those
 choices.</p>
 <p>Here is the same skill with a choice of reading level added:</p>
-<div class="sourceCode" id="cb35"><pre
-class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="an">schema:</span><span class="co"> quill.skill/1</span></span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="an">name:</span><span class="co"> Explain Then Simplify</span></span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a><span class="an">description:</span><span class="co"> Explains and simplifies selected text at a chosen reading level.</span></span>
-<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> Your Name</span></span>
-<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a><span class="an">version:</span><span class="co"> 1.0.0</span></span>
-<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a><span class="an">parameters:</span></span>
-<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a><span class="co">  - name: level</span></span>
-<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a><span class="co">    label: Target reading level</span></span>
-<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a><span class="co">    type: choice</span></span>
-<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a><span class="co">    choices: [Grade 4, Grade 6, Grade 8]</span></span>
-<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a><span class="co">    default: Grade 6</span></span>
-<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a><span class="fu"># Step 1: Explain</span></span>
-<span id="cb35-16"><a href="#cb35-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-17"><a href="#cb35-17" aria-hidden="true" tabindex="-1"></a>Explain the following text so it is accessible at {parameters.level} reading level.</span>
-<span id="cb35-18"><a href="#cb35-18" aria-hidden="true" tabindex="-1"></a>Use simple vocabulary and short sentences. Aim for 50-80 words.</span>
-<span id="cb35-19"><a href="#cb35-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-20"><a href="#cb35-20" aria-hidden="true" tabindex="-1"></a>Text to explain:</span>
-<span id="cb35-21"><a href="#cb35-21" aria-hidden="true" tabindex="-1"></a>{selection}</span>
-<span id="cb35-22"><a href="#cb35-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-23"><a href="#cb35-23" aria-hidden="true" tabindex="-1"></a><span class="fu"># Step 2: Simplify further</span></span>
-<span id="cb35-24"><a href="#cb35-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-25"><a href="#cb35-25" aria-hidden="true" tabindex="-1"></a>Rewrite the explanation below to be even clearer. Target: {parameters.level}.</span>
-<span id="cb35-26"><a href="#cb35-26" aria-hidden="true" tabindex="-1"></a>Keep the core meaning intact.</span>
-<span id="cb35-27"><a href="#cb35-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-28"><a href="#cb35-28" aria-hidden="true" tabindex="-1"></a>{step1.output}</span>
-<span id="cb35-29"><a href="#cb35-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-30"><a href="#cb35-30" aria-hidden="true" tabindex="-1"></a><span class="in">```output</span></span>
-<span id="cb35-31"><a href="#cb35-31" aria-hidden="true" tabindex="-1"></a><span class="in">format: text</span></span>
-<span id="cb35-32"><a href="#cb35-32" aria-hidden="true" tabindex="-1"></a><span class="in">label: Plain-language explanation</span></span>
-<span id="cb35-33"><a href="#cb35-33" aria-hidden="true" tabindex="-1"></a><span class="in">accept_into: clipboard</span></span></code></pre></div>
+<div class="sourceCode" id="cb36"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="an">schema:</span><span class="co"> quill.skill/1</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="an">name:</span><span class="co"> Explain Then Simplify</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="an">description:</span><span class="co"> Explains and simplifies selected text at a chosen reading level.</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> Your Name</span></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="an">version:</span><span class="co"> 1.0.0</span></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a><span class="an">parameters:</span></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a><span class="co">  - name: level</span></span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a><span class="co">    label: Target reading level</span></span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a><span class="co">    type: choice</span></span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a><span class="co">    choices: [Grade 4, Grade 6, Grade 8]</span></span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a><span class="co">    default: Grade 6</span></span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a><span class="fu"># Step 1: Explain</span></span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a>Explain the following text so it is accessible at {parameters.level} reading level.</span>
+<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a>Use simple vocabulary and short sentences. Aim for 50-80 words.</span>
+<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a>Text to explain:</span>
+<span id="cb36-21"><a href="#cb36-21" aria-hidden="true" tabindex="-1"></a>{selection}</span>
+<span id="cb36-22"><a href="#cb36-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-23"><a href="#cb36-23" aria-hidden="true" tabindex="-1"></a><span class="fu"># Step 2: Simplify further</span></span>
+<span id="cb36-24"><a href="#cb36-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-25"><a href="#cb36-25" aria-hidden="true" tabindex="-1"></a>Rewrite the explanation below to be even clearer. Target: {parameters.level}.</span>
+<span id="cb36-26"><a href="#cb36-26" aria-hidden="true" tabindex="-1"></a>Keep the core meaning intact.</span>
+<span id="cb36-27"><a href="#cb36-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-28"><a href="#cb36-28" aria-hidden="true" tabindex="-1"></a>{step1.output}</span>
+<span id="cb36-29"><a href="#cb36-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-30"><a href="#cb36-30" aria-hidden="true" tabindex="-1"></a><span class="in">```output</span></span>
+<span id="cb36-31"><a href="#cb36-31" aria-hidden="true" tabindex="-1"></a><span class="in">format: text</span></span>
+<span id="cb36-32"><a href="#cb36-32" aria-hidden="true" tabindex="-1"></a><span class="in">label: Plain-language explanation</span></span>
+<span id="cb36-33"><a href="#cb36-33" aria-hidden="true" tabindex="-1"></a><span class="in">accept_into: clipboard</span></span></code></pre></div>
 <pre><code>
 Now `{parameters.level}` can be used in both steps. Its value is whatever the
 user picked in the dialog.
@@ -15598,14 +15848,14 @@ when the data is long.</p>
 <h3 id="branching-on-an-answer">Branching on an answer</h3>
 <p>A <code>condition</code> block sends the skill down one path or
 another, depending on what a step produced.</p>
-<div class="sourceCode" id="cb38"><pre
-class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Step 1: Detect intent</span></span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>Read the following text. Is it asking a question, or making a statement?</span>
-<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>Answer with exactly one word: &quot;question&quot; or &quot;statement&quot;.</span>
-<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a><span class="in">```input</span></span>
-<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a><span class="in">{selection}</span></span></code></pre></div>
+<div class="sourceCode" id="cb39"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Step 1: Detect intent</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>Read the following text. Is it asking a question, or making a statement?</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>Answer with exactly one word: &quot;question&quot; or &quot;statement&quot;.</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a><span class="in">```input</span></span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a><span class="in">{selection}</span></span></code></pre></div>
 <pre class="condition"><code>if: &quot;{step1.output}&quot; contains &quot;question&quot;
 then: step2
 else: step3</code></pre>
@@ -15714,8 +15964,8 @@ Always run the validator before you share a skill:
 ```powershell
 python -m quill.tools.sqp_validator my-skill.sqp</code></pre>
 <p>For a stricter check:</p>
-<div class="sourceCode" id="cb46"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>python <span class="op">-</span>m quill<span class="op">.</span><span class="fu">tools</span><span class="op">.</span><span class="fu">sqp_validator</span> my-skill<span class="op">.</span><span class="fu">sqp</span> <span class="op">--</span>strict</span></code></pre></div>
+<div class="sourceCode" id="cb47"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>python <span class="op">-</span>m quill<span class="op">.</span><span class="fu">tools</span><span class="op">.</span><span class="fu">sqp_validator</span> my-skill<span class="op">.</span><span class="fu">sqp</span> <span class="op">--</span>strict</span></code></pre></div>
 <p>With <code>--strict</code>, it also warns you if
 <code>description</code> or <code>author</code> is missing.</p>
 <p>These are the errors people meet most, and how to fix them:</p>
@@ -39120,17 +39370,17 @@ diagnostics, and accessibility announcement pipeline in a predictable
 way.</p>
 <p>The goal is to let a developer or power user type commands such
 as:</p>
-<div class="sourceCode" id="cb47"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>q.insert_text(<span class="st">&quot;Hello from QUILL.&quot;</span>)</span>
-<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>q.goto_line(<span class="dv">42</span>)</span>
-<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>q.run_command(<span class="st">&quot;quill.document.wordCount&quot;</span>)</span>
-<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>q.run_command(<span class="st">&quot;quill.markdown.normalizeHeadings&quot;</span>)</span></code></pre></div>
-<p>or, in TypeScript:</p>
 <div class="sourceCode" id="cb48"><pre
-class="sourceCode ts"><code class="sourceCode typescript"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> quill<span class="op">.</span><span class="fu">insertText</span>(<span class="st">&quot;Hello from TypeScript.&quot;</span>)<span class="op">;</span></span>
-<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> quill<span class="op">.</span><span class="fu">gotoLine</span>(<span class="dv">42</span>)<span class="op">;</span></span>
-<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> stats <span class="op">=</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">documentStats</span>()<span class="op">;</span></span>
-<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a><span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(stats<span class="op">.</span><span class="at">words</span>)<span class="op">;</span></span></code></pre></div>
+class="sourceCode python"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>q.insert_text(<span class="st">&quot;Hello from QUILL.&quot;</span>)</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>q.goto_line(<span class="dv">42</span>)</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>q.run_command(<span class="st">&quot;quill.document.wordCount&quot;</span>)</span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>q.run_command(<span class="st">&quot;quill.markdown.normalizeHeadings&quot;</span>)</span></code></pre></div>
+<p>or, in TypeScript:</p>
+<div class="sourceCode" id="cb49"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> quill<span class="op">.</span><span class="fu">insertText</span>(<span class="st">&quot;Hello from TypeScript.&quot;</span>)<span class="op">;</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> quill<span class="op">.</span><span class="fu">gotoLine</span>(<span class="dv">42</span>)<span class="op">;</span></span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> stats <span class="op">=</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">documentStats</span>()<span class="op">;</span></span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a><span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(stats<span class="op">.</span><span class="at">words</span>)<span class="op">;</span></span></code></pre></div>
 <p>Every editor-changing action must go through the QUILL command
 registry or official scripting API so undo, dirty-state tracking,
 accessibility announcements, status bar updates, telemetry, and tests
@@ -39198,44 +39448,44 @@ safety, cloud-consent prompts, or profile safety rules.</li>
 document, run commands, and test editor behavior without rebuilding or
 adding temporary menu items.</p>
 <p>Example:</p>
-<div class="sourceCode" id="cb49"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>q.doc.name</span>
-<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>q.selection.text</span>
-<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>q.goto_line(<span class="dv">100</span>)</span>
-<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>q.run_command(<span class="st">&quot;quill.find.next&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb50"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>q.doc.name</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>q.selection.text</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>q.goto_line(<span class="dv">100</span>)</span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>q.run_command(<span class="st">&quot;quill.find.next&quot;</span>)</span></code></pre></div>
 <h5 id="52-accessibility-tester">5.2 Accessibility tester</h5>
 <p>As an accessibility tester, I want to inspect the focused region,
 active command, current screen-reader announcement backend, and the last
 announcements so I can diagnose what a user experienced.</p>
 <p>Example:</p>
-<div class="sourceCode" id="cb50"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>q.a11y.last_announcements()</span>
-<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>q.a11y.announce(<span class="st">&quot;Testing announcement path.&quot;</span>)</span>
-<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>q.focus.describe()</span></code></pre></div>
+<div class="sourceCode" id="cb51"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>q.a11y.last_announcements()</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>q.a11y.announce(<span class="st">&quot;Testing announcement path.&quot;</span>)</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>q.focus.describe()</span></code></pre></div>
 <h5 id="53-macro-author">5.3 Macro author</h5>
 <p>As a power user, I want to experiment with commands interactively and
 save successful sequences as a macro.</p>
 <p>Example:</p>
-<div class="sourceCode" id="cb51"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>q.begin_macro(<span class="st">&quot;Clean OCR text&quot;</span>)</span>
-<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>q.run_command(<span class="st">&quot;quill.text.normalizeUnicode&quot;</span>)</span>
-<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>q.run_command(<span class="st">&quot;quill.text.dehyphenateLines&quot;</span>)</span>
-<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>q.run_command(<span class="st">&quot;quill.text.reflowParagraphs&quot;</span>)</span>
-<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>q.end_macro()</span></code></pre></div>
+<div class="sourceCode" id="cb52"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>q.begin_macro(<span class="st">&quot;Clean OCR text&quot;</span>)</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>q.run_command(<span class="st">&quot;quill.text.normalizeUnicode&quot;</span>)</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>q.run_command(<span class="st">&quot;quill.text.dehyphenateLines&quot;</span>)</span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>q.run_command(<span class="st">&quot;quill.text.reflowParagraphs&quot;</span>)</span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>q.end_macro()</span></code></pre></div>
 <h5 id="54-support-technician">5.4 Support technician</h5>
 <p>As a support technician, I want a user to run a safe diagnostic
 command and copy the output into an email or support ticket.</p>
 <p>Example:</p>
-<div class="sourceCode" id="cb52"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>q.support.diagnostic_summary()</span></code></pre></div>
+<div class="sourceCode" id="cb53"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>q.support.diagnostic_summary()</span></code></pre></div>
 <h5 id="55-typescript-user">5.5 TypeScript user</h5>
 <p>As a developer more comfortable with TypeScript, I want to run async
 commands against QUILL using a typed API and receive clear errors.</p>
 <p>Example:</p>
-<div class="sourceCode" id="cb53"><pre
-class="sourceCode ts"><code class="sourceCode typescript"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> doc <span class="op">=</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">activeDocument</span>()<span class="op">;</span></span>
-<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> quill<span class="op">.</span><span class="fu">gotoLine</span>(<span class="dv">25</span>)<span class="op">;</span></span>
-<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a><span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(doc<span class="op">.</span><span class="at">name</span>)<span class="op">;</span></span></code></pre></div>
+<div class="sourceCode" id="cb54"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> doc <span class="op">=</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">activeDocument</span>()<span class="op">;</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> quill<span class="op">.</span><span class="fu">gotoLine</span>(<span class="dv">25</span>)<span class="op">;</span></span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a><span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(doc<span class="op">.</span><span class="at">name</span>)<span class="op">;</span></span></code></pre></div>
 <h4 id="6-feature-placement">6. Feature placement</h4>
 <p>The feature appears in the following command surfaces:</p>
 <h5 id="tools-menu">Tools menu</h5>
@@ -39487,21 +39737,21 @@ the console does not destroy the namespace unless the user explicitly
 resets it.</p>
 <h5 id="82-default-namespace">8.2 Default namespace</h5>
 <p>The following names are available by default:</p>
-<div class="sourceCode" id="cb58"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>q              <span class="co"># Primary QUILL scripting API</span></span>
-<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>app            <span class="co"># Application-level read-mostly object</span></span>
-<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>frame          <span class="co"># Main frame, available for debugging</span></span>
-<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>commands       <span class="co"># Command registry read/execute facade</span></span>
-<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>doc            <span class="co"># Active document snapshot</span></span>
-<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>editor         <span class="co"># Active editor snapshot</span></span>
-<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>sel            <span class="co"># Current selection snapshot</span></span>
-<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a>caret          <span class="co"># Current caret snapshot</span></span>
-<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a>profile        <span class="co"># Active feature profile snapshot</span></span>
-<span id="cb58-10"><a href="#cb58-10" aria-hidden="true" tabindex="-1"></a>settings       <span class="co"># Safe settings facade</span></span>
-<span id="cb58-11"><a href="#cb58-11" aria-hidden="true" tabindex="-1"></a>diagnostics    <span class="co"># Diagnostics facade</span></span>
-<span id="cb58-12"><a href="#cb58-12" aria-hidden="true" tabindex="-1"></a>a11y           <span class="co"># Announcement/testing facade</span></span>
-<span id="cb58-13"><a href="#cb58-13" aria-hidden="true" tabindex="-1"></a>log            <span class="co"># Console-safe logger</span></span>
-<span id="cb58-14"><a href="#cb58-14" aria-hidden="true" tabindex="-1"></a>wx             <span class="co"># wx module, developer profile only</span></span></code></pre></div>
+<div class="sourceCode" id="cb59"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>q              <span class="co"># Primary QUILL scripting API</span></span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>app            <span class="co"># Application-level read-mostly object</span></span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>frame          <span class="co"># Main frame, available for debugging</span></span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>commands       <span class="co"># Command registry read/execute facade</span></span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>doc            <span class="co"># Active document snapshot</span></span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a>editor         <span class="co"># Active editor snapshot</span></span>
+<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a>sel            <span class="co"># Current selection snapshot</span></span>
+<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a>caret          <span class="co"># Current caret snapshot</span></span>
+<span id="cb59-9"><a href="#cb59-9" aria-hidden="true" tabindex="-1"></a>profile        <span class="co"># Active feature profile snapshot</span></span>
+<span id="cb59-10"><a href="#cb59-10" aria-hidden="true" tabindex="-1"></a>settings       <span class="co"># Safe settings facade</span></span>
+<span id="cb59-11"><a href="#cb59-11" aria-hidden="true" tabindex="-1"></a>diagnostics    <span class="co"># Diagnostics facade</span></span>
+<span id="cb59-12"><a href="#cb59-12" aria-hidden="true" tabindex="-1"></a>a11y           <span class="co"># Announcement/testing facade</span></span>
+<span id="cb59-13"><a href="#cb59-13" aria-hidden="true" tabindex="-1"></a>log            <span class="co"># Console-safe logger</span></span>
+<span id="cb59-14"><a href="#cb59-14" aria-hidden="true" tabindex="-1"></a>wx             <span class="co"># wx module, developer profile only</span></span></code></pre></div>
 <h5 id="83-snapshot-refresh">8.3 Snapshot refresh</h5>
 <p>The console updates snapshot variables when:</p>
 <ul>
@@ -39515,20 +39765,20 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb58-1"><a h
 <code>caret</code> are safe read-only snapshots unless explicitly
 documented otherwise.</p>
 <h5 id="84-python-examples">8.4 Python examples</h5>
-<div class="sourceCode" id="cb59"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>q.insert_text(<span class="st">&quot;Hello from QUILL.&quot;</span>)</span></code></pre></div>
 <div class="sourceCode" id="cb60"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>q.replace_selection(<span class="st">&quot;Replacement text&quot;</span>)</span></code></pre></div>
+class="sourceCode python"><code class="sourceCode python"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>q.insert_text(<span class="st">&quot;Hello from QUILL.&quot;</span>)</span></code></pre></div>
 <div class="sourceCode" id="cb61"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>q.goto_line(<span class="dv">42</span>)</span></code></pre></div>
+class="sourceCode python"><code class="sourceCode python"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>q.replace_selection(<span class="st">&quot;Replacement text&quot;</span>)</span></code></pre></div>
 <div class="sourceCode" id="cb62"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>q.run_command(<span class="st">&quot;quill.document.wordCount&quot;</span>)</span></code></pre></div>
+class="sourceCode python"><code class="sourceCode python"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>q.goto_line(<span class="dv">42</span>)</span></code></pre></div>
 <div class="sourceCode" id="cb63"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>q.a11y.announce(<span class="st">&quot;This is a test announcement.&quot;</span>)</span></code></pre></div>
+class="sourceCode python"><code class="sourceCode python"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>q.run_command(<span class="st">&quot;quill.document.wordCount&quot;</span>)</span></code></pre></div>
 <div class="sourceCode" id="cb64"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>q.diagnostics.document_summary()</span></code></pre></div>
+class="sourceCode python"><code class="sourceCode python"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>q.a11y.announce(<span class="st">&quot;This is a test announcement.&quot;</span>)</span></code></pre></div>
 <div class="sourceCode" id="cb65"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>q.commands.search(<span class="st">&quot;spell&quot;</span>)</span></code></pre></div>
+class="sourceCode python"><code class="sourceCode python"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>q.diagnostics.document_summary()</span></code></pre></div>
+<div class="sourceCode" id="cb66"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>q.commands.search(<span class="st">&quot;spell&quot;</span>)</span></code></pre></div>
 <h4 id="9-typescript-console-requirements">9. TypeScript console
 requirements</h4>
 <h5 id="91-execution-model">9.1 Execution model</h5>
@@ -39553,41 +39803,41 @@ values.</li>
 </ul>
 <h5 id="92-typescript-global-api">9.2 TypeScript global API</h5>
 <p>The TypeScript console exposes:</p>
-<div class="sourceCode" id="cb66"><pre
-class="sourceCode ts"><code class="sourceCode typescript"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>quill</span>
-<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a><span class="bu">console</span></span>
-<span id="cb66-3"><a href="#cb66-3" aria-hidden="true" tabindex="-1"></a>setTimeout</span>
-<span id="cb66-4"><a href="#cb66-4" aria-hidden="true" tabindex="-1"></a>clearTimeout</span>
-<span id="cb66-5"><a href="#cb66-5" aria-hidden="true" tabindex="-1"></a>AbortController</span></code></pre></div>
+<div class="sourceCode" id="cb67"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>quill</span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a><span class="bu">console</span></span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a>setTimeout</span>
+<span id="cb67-4"><a href="#cb67-4" aria-hidden="true" tabindex="-1"></a>clearTimeout</span>
+<span id="cb67-5"><a href="#cb67-5" aria-hidden="true" tabindex="-1"></a>AbortController</span></code></pre></div>
 <p>The TypeScript worker must not expose unrestricted filesystem,
 network, process, or shell access through the default console
 environment.</p>
 <h5 id="93-typescript-examples">9.3 TypeScript examples</h5>
-<div class="sourceCode" id="cb67"><pre
-class="sourceCode ts"><code class="sourceCode typescript"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> quill<span class="op">.</span><span class="fu">insertText</span>(<span class="st">&quot;Hello from TypeScript.&quot;</span>)<span class="op">;</span></span></code></pre></div>
 <div class="sourceCode" id="cb68"><pre
-class="sourceCode ts"><code class="sourceCode typescript"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> quill<span class="op">.</span><span class="fu">replaceSelection</span>(<span class="st">&quot;Replacement text&quot;</span>)<span class="op">;</span></span></code></pre></div>
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> quill<span class="op">.</span><span class="fu">insertText</span>(<span class="st">&quot;Hello from TypeScript.&quot;</span>)<span class="op">;</span></span></code></pre></div>
 <div class="sourceCode" id="cb69"><pre
-class="sourceCode ts"><code class="sourceCode typescript"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> quill<span class="op">.</span><span class="fu">gotoLine</span>(<span class="dv">42</span>)<span class="op">;</span></span></code></pre></div>
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> quill<span class="op">.</span><span class="fu">replaceSelection</span>(<span class="st">&quot;Replacement text&quot;</span>)<span class="op">;</span></span></code></pre></div>
 <div class="sourceCode" id="cb70"><pre
-class="sourceCode ts"><code class="sourceCode typescript"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> stats <span class="op">=</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">documentStats</span>()<span class="op">;</span></span>
-<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a><span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="vs">`</span><span class="sc">${</span>stats<span class="op">.</span><span class="at">words</span><span class="sc">}</span><span class="vs"> words`</span>)<span class="op">;</span></span></code></pre></div>
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> quill<span class="op">.</span><span class="fu">gotoLine</span>(<span class="dv">42</span>)<span class="op">;</span></span></code></pre></div>
 <div class="sourceCode" id="cb71"><pre
-class="sourceCode ts"><code class="sourceCode typescript"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> quill<span class="op">.</span><span class="fu">runCommand</span>(<span class="st">&quot;quill.markdown.normalizeHeadings&quot;</span>)<span class="op">;</span></span></code></pre></div>
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> stats <span class="op">=</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">documentStats</span>()<span class="op">;</span></span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a><span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="vs">`</span><span class="sc">${</span>stats<span class="op">.</span><span class="at">words</span><span class="sc">}</span><span class="vs"> words`</span>)<span class="op">;</span></span></code></pre></div>
+<div class="sourceCode" id="cb72"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> quill<span class="op">.</span><span class="fu">runCommand</span>(<span class="st">&quot;quill.markdown.normalizeHeadings&quot;</span>)<span class="op">;</span></span></code></pre></div>
 <h5 id="94-type-definitions">9.4 Type definitions</h5>
 <p>QUILL ships a <code>quill-console.d.ts</code> type definition file so
 TypeScript users get completion and documentation.</p>
 <p>Example:</p>
-<div class="sourceCode" id="cb72"><pre
-class="sourceCode ts"><code class="sourceCode typescript"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="kw">interface</span> QuillConsoleApi {</span>
-<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">insertText</span>(text<span class="op">:</span> <span class="dt">string</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
-<span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">replaceSelection</span>(text<span class="op">:</span> <span class="dt">string</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
-<span id="cb72-4"><a href="#cb72-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gotoLine</span>(line<span class="op">:</span> <span class="dt">number</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
-<span id="cb72-5"><a href="#cb72-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">runCommand</span>(commandId<span class="op">:</span> <span class="dt">string</span><span class="op">,</span> args<span class="op">?:</span> <span class="bu">Record</span><span class="op">&lt;</span><span class="dt">string</span><span class="op">,</span> <span class="dt">unknown</span><span class="op">&gt;</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">unknown</span><span class="op">&gt;;</span></span>
-<span id="cb72-6"><a href="#cb72-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">activeDocument</span>()<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span>QuillDocumentSnapshot<span class="op">&gt;;</span></span>
-<span id="cb72-7"><a href="#cb72-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">documentStats</span>()<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span>QuillDocumentStats<span class="op">&gt;;</span></span>
-<span id="cb72-8"><a href="#cb72-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">announce</span>(text<span class="op">:</span> <span class="dt">string</span><span class="op">,</span> options<span class="op">?:</span> AnnouncementOptions)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
-<span id="cb72-9"><a href="#cb72-9" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb73"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="kw">interface</span> QuillConsoleApi {</span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">insertText</span>(text<span class="op">:</span> <span class="dt">string</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
+<span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">replaceSelection</span>(text<span class="op">:</span> <span class="dt">string</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
+<span id="cb73-4"><a href="#cb73-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gotoLine</span>(line<span class="op">:</span> <span class="dt">number</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
+<span id="cb73-5"><a href="#cb73-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">runCommand</span>(commandId<span class="op">:</span> <span class="dt">string</span><span class="op">,</span> args<span class="op">?:</span> <span class="bu">Record</span><span class="op">&lt;</span><span class="dt">string</span><span class="op">,</span> <span class="dt">unknown</span><span class="op">&gt;</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">unknown</span><span class="op">&gt;;</span></span>
+<span id="cb73-6"><a href="#cb73-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">activeDocument</span>()<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span>QuillDocumentSnapshot<span class="op">&gt;;</span></span>
+<span id="cb73-7"><a href="#cb73-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">documentStats</span>()<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span>QuillDocumentStats<span class="op">&gt;;</span></span>
+<span id="cb73-8"><a href="#cb73-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">announce</span>(text<span class="op">:</span> <span class="dt">string</span><span class="op">,</span> options<span class="op">?:</span> AnnouncementOptions)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
+<span id="cb73-9"><a href="#cb73-9" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 <h5 id="95-worker-lifecycle">9.5 Worker lifecycle</h5>
 <p>The TypeScript worker starts only when the TypeScript console is
 opened.</p>
@@ -39617,38 +39867,38 @@ opened.</p>
 <li>Errors must be plain-language first, traceback second.</li>
 </ol>
 <h5 id="102-python-api-shape">10.2 Python API shape</h5>
-<div class="sourceCode" id="cb73"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> QuillScriptAPI:</span>
-<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> insert_text(<span class="va">self</span>, text: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="va">None</span>: ...</span>
-<span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> replace_selection(<span class="va">self</span>, text: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="va">None</span>: ...</span>
-<span id="cb73-4"><a href="#cb73-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> selected_text(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="bu">str</span>: ...</span>
-<span id="cb73-5"><a href="#cb73-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> document_text(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="bu">str</span>: ...</span>
-<span id="cb73-6"><a href="#cb73-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> set_document_text(<span class="va">self</span>, text: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="va">None</span>: ...</span>
-<span id="cb73-7"><a href="#cb73-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> goto_line(<span class="va">self</span>, line: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="va">None</span>: ...</span>
-<span id="cb73-8"><a href="#cb73-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> goto_offset(<span class="va">self</span>, offset: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="va">None</span>: ...</span>
-<span id="cb73-9"><a href="#cb73-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> run_command(<span class="va">self</span>, command_id: <span class="bu">str</span>, <span class="op">**</span>kwargs): ...</span>
-<span id="cb73-10"><a href="#cb73-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> command_exists(<span class="va">self</span>, command_id: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="bu">bool</span>: ...</span>
-<span id="cb73-11"><a href="#cb73-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> list_commands(<span class="va">self</span>, query: <span class="bu">str</span> <span class="op">|</span> <span class="va">None</span> <span class="op">=</span> <span class="va">None</span>) <span class="op">-&gt;</span> <span class="bu">list</span>[CommandInfo]: ...</span>
-<span id="cb73-12"><a href="#cb73-12" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> active_document(<span class="va">self</span>) <span class="op">-&gt;</span> DocumentSnapshot: ...</span>
-<span id="cb73-13"><a href="#cb73-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> document_stats(<span class="va">self</span>) <span class="op">-&gt;</span> DocumentStats: ...</span>
-<span id="cb73-14"><a href="#cb73-14" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> refresh_context(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="va">None</span>: ...</span></code></pre></div>
-<h5 id="103-typescript-api-shape">10.3 TypeScript API shape</h5>
 <div class="sourceCode" id="cb74"><pre
-class="sourceCode ts"><code class="sourceCode typescript"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="kw">interface</span> QuillApi {</span>
-<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">insertText</span>(text<span class="op">:</span> <span class="dt">string</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
-<span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">replaceSelection</span>(text<span class="op">:</span> <span class="dt">string</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
-<span id="cb74-4"><a href="#cb74-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">selectedText</span>()<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">string</span><span class="op">&gt;;</span></span>
-<span id="cb74-5"><a href="#cb74-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">documentText</span>()<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">string</span><span class="op">&gt;;</span></span>
-<span id="cb74-6"><a href="#cb74-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">setDocumentText</span>(text<span class="op">:</span> <span class="dt">string</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
-<span id="cb74-7"><a href="#cb74-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gotoLine</span>(line<span class="op">:</span> <span class="dt">number</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
-<span id="cb74-8"><a href="#cb74-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gotoOffset</span>(offset<span class="op">:</span> <span class="dt">number</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
-<span id="cb74-9"><a href="#cb74-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">runCommand</span>(commandId<span class="op">:</span> <span class="dt">string</span><span class="op">,</span> args<span class="op">?:</span> <span class="bu">Record</span><span class="op">&lt;</span><span class="dt">string</span><span class="op">,</span> <span class="dt">unknown</span><span class="op">&gt;</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">unknown</span><span class="op">&gt;;</span></span>
-<span id="cb74-10"><a href="#cb74-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">commandExists</span>(commandId<span class="op">:</span> <span class="dt">string</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">boolean</span><span class="op">&gt;;</span></span>
-<span id="cb74-11"><a href="#cb74-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">listCommands</span>(query<span class="op">?:</span> <span class="dt">string</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span>CommandInfo[]<span class="op">&gt;;</span></span>
-<span id="cb74-12"><a href="#cb74-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">activeDocument</span>()<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span>DocumentSnapshot<span class="op">&gt;;</span></span>
-<span id="cb74-13"><a href="#cb74-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">documentStats</span>()<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span>DocumentStats<span class="op">&gt;;</span></span>
-<span id="cb74-14"><a href="#cb74-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">refreshContext</span>()<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
-<span id="cb74-15"><a href="#cb74-15" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+class="sourceCode python"><code class="sourceCode python"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> QuillScriptAPI:</span>
+<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> insert_text(<span class="va">self</span>, text: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="va">None</span>: ...</span>
+<span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> replace_selection(<span class="va">self</span>, text: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="va">None</span>: ...</span>
+<span id="cb74-4"><a href="#cb74-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> selected_text(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="bu">str</span>: ...</span>
+<span id="cb74-5"><a href="#cb74-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> document_text(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="bu">str</span>: ...</span>
+<span id="cb74-6"><a href="#cb74-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> set_document_text(<span class="va">self</span>, text: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="va">None</span>: ...</span>
+<span id="cb74-7"><a href="#cb74-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> goto_line(<span class="va">self</span>, line: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="va">None</span>: ...</span>
+<span id="cb74-8"><a href="#cb74-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> goto_offset(<span class="va">self</span>, offset: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="va">None</span>: ...</span>
+<span id="cb74-9"><a href="#cb74-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> run_command(<span class="va">self</span>, command_id: <span class="bu">str</span>, <span class="op">**</span>kwargs): ...</span>
+<span id="cb74-10"><a href="#cb74-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> command_exists(<span class="va">self</span>, command_id: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="bu">bool</span>: ...</span>
+<span id="cb74-11"><a href="#cb74-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> list_commands(<span class="va">self</span>, query: <span class="bu">str</span> <span class="op">|</span> <span class="va">None</span> <span class="op">=</span> <span class="va">None</span>) <span class="op">-&gt;</span> <span class="bu">list</span>[CommandInfo]: ...</span>
+<span id="cb74-12"><a href="#cb74-12" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> active_document(<span class="va">self</span>) <span class="op">-&gt;</span> DocumentSnapshot: ...</span>
+<span id="cb74-13"><a href="#cb74-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> document_stats(<span class="va">self</span>) <span class="op">-&gt;</span> DocumentStats: ...</span>
+<span id="cb74-14"><a href="#cb74-14" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> refresh_context(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="va">None</span>: ...</span></code></pre></div>
+<h5 id="103-typescript-api-shape">10.3 TypeScript API shape</h5>
+<div class="sourceCode" id="cb75"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="kw">interface</span> QuillApi {</span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">insertText</span>(text<span class="op">:</span> <span class="dt">string</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
+<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">replaceSelection</span>(text<span class="op">:</span> <span class="dt">string</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
+<span id="cb75-4"><a href="#cb75-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">selectedText</span>()<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">string</span><span class="op">&gt;;</span></span>
+<span id="cb75-5"><a href="#cb75-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">documentText</span>()<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">string</span><span class="op">&gt;;</span></span>
+<span id="cb75-6"><a href="#cb75-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">setDocumentText</span>(text<span class="op">:</span> <span class="dt">string</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
+<span id="cb75-7"><a href="#cb75-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gotoLine</span>(line<span class="op">:</span> <span class="dt">number</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
+<span id="cb75-8"><a href="#cb75-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gotoOffset</span>(offset<span class="op">:</span> <span class="dt">number</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
+<span id="cb75-9"><a href="#cb75-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">runCommand</span>(commandId<span class="op">:</span> <span class="dt">string</span><span class="op">,</span> args<span class="op">?:</span> <span class="bu">Record</span><span class="op">&lt;</span><span class="dt">string</span><span class="op">,</span> <span class="dt">unknown</span><span class="op">&gt;</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">unknown</span><span class="op">&gt;;</span></span>
+<span id="cb75-10"><a href="#cb75-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">commandExists</span>(commandId<span class="op">:</span> <span class="dt">string</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">boolean</span><span class="op">&gt;;</span></span>
+<span id="cb75-11"><a href="#cb75-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">listCommands</span>(query<span class="op">?:</span> <span class="dt">string</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span>CommandInfo[]<span class="op">&gt;;</span></span>
+<span id="cb75-12"><a href="#cb75-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">activeDocument</span>()<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span>DocumentSnapshot<span class="op">&gt;;</span></span>
+<span id="cb75-13"><a href="#cb75-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">documentStats</span>()<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span>DocumentStats<span class="op">&gt;;</span></span>
+<span id="cb75-14"><a href="#cb75-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">refreshContext</span>()<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
+<span id="cb75-15"><a href="#cb75-15" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 <h5 id="104-safe-facades">10.4 Safe facades</h5>
 <p>The console exposes safe facades instead of raw internals wherever
 possible.</p>
@@ -39674,20 +39924,20 @@ possible.</p>
 <h4 id="11-command-registry-integration">11. Command registry
 integration</h4>
 <p>Every console-callable command must declare metadata:</p>
-<div class="sourceCode" id="cb75"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a>Command(</span>
-<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">id</span><span class="op">=</span><span class="st">&quot;quill.editor.insertText&quot;</span>,</span>
-<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">&quot;Insert Text&quot;</span>,</span>
-<span id="cb75-4"><a href="#cb75-4" aria-hidden="true" tabindex="-1"></a>    description<span class="op">=</span><span class="st">&quot;Insert text at the current caret position.&quot;</span>,</span>
-<span id="cb75-5"><a href="#cb75-5" aria-hidden="true" tabindex="-1"></a>    handler<span class="op">=</span>insert_text_handler,</span>
-<span id="cb75-6"><a href="#cb75-6" aria-hidden="true" tabindex="-1"></a>    default_key<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb75-7"><a href="#cb75-7" aria-hidden="true" tabindex="-1"></a>    when<span class="op">=</span><span class="st">&quot;editorFocus&quot;</span>,</span>
-<span id="cb75-8"><a href="#cb75-8" aria-hidden="true" tabindex="-1"></a>    scriptable<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb75-9"><a href="#cb75-9" aria-hidden="true" tabindex="-1"></a>    mutates_document<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb75-10"><a href="#cb75-10" aria-hidden="true" tabindex="-1"></a>    undo_group<span class="op">=</span><span class="st">&quot;typing&quot;</span>,</span>
-<span id="cb75-11"><a href="#cb75-11" aria-hidden="true" tabindex="-1"></a>    requires_consent<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb75-12"><a href="#cb75-12" aria-hidden="true" tabindex="-1"></a>    profile_feature<span class="op">=</span><span class="st">&quot;developer.console&quot;</span>,</span>
-<span id="cb75-13"><a href="#cb75-13" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb76"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>Command(</span>
+<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">id</span><span class="op">=</span><span class="st">&quot;quill.editor.insertText&quot;</span>,</span>
+<span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">&quot;Insert Text&quot;</span>,</span>
+<span id="cb76-4"><a href="#cb76-4" aria-hidden="true" tabindex="-1"></a>    description<span class="op">=</span><span class="st">&quot;Insert text at the current caret position.&quot;</span>,</span>
+<span id="cb76-5"><a href="#cb76-5" aria-hidden="true" tabindex="-1"></a>    handler<span class="op">=</span>insert_text_handler,</span>
+<span id="cb76-6"><a href="#cb76-6" aria-hidden="true" tabindex="-1"></a>    default_key<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb76-7"><a href="#cb76-7" aria-hidden="true" tabindex="-1"></a>    when<span class="op">=</span><span class="st">&quot;editorFocus&quot;</span>,</span>
+<span id="cb76-8"><a href="#cb76-8" aria-hidden="true" tabindex="-1"></a>    scriptable<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb76-9"><a href="#cb76-9" aria-hidden="true" tabindex="-1"></a>    mutates_document<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb76-10"><a href="#cb76-10" aria-hidden="true" tabindex="-1"></a>    undo_group<span class="op">=</span><span class="st">&quot;typing&quot;</span>,</span>
+<span id="cb76-11"><a href="#cb76-11" aria-hidden="true" tabindex="-1"></a>    requires_consent<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb76-12"><a href="#cb76-12" aria-hidden="true" tabindex="-1"></a>    profile_feature<span class="op">=</span><span class="st">&quot;developer.console&quot;</span>,</span>
+<span id="cb76-13"><a href="#cb76-13" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 <p>Required metadata fields for scriptable commands:</p>
 <ul>
 <li><code>id</code></li>
@@ -39723,15 +39973,15 @@ splits undo groups.</li>
 <li>Macro failures stop execution and announce the failed step.</li>
 </ul>
 <p>Example command-sequence macro:</p>
-<div class="sourceCode" id="cb76"><pre
-class="sourceCode json"><code class="sourceCode json"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
-<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;Clean OCR text&quot;</span><span class="fu">,</span></span>
-<span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;steps&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
-<span id="cb76-4"><a href="#cb76-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span><span class="dt">&quot;command&quot;</span><span class="fu">:</span> <span class="st">&quot;quill.text.normalizeUnicode&quot;</span><span class="fu">}</span><span class="ot">,</span></span>
-<span id="cb76-5"><a href="#cb76-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span><span class="dt">&quot;command&quot;</span><span class="fu">:</span> <span class="st">&quot;quill.text.dehyphenateLines&quot;</span><span class="fu">}</span><span class="ot">,</span></span>
-<span id="cb76-6"><a href="#cb76-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span><span class="dt">&quot;command&quot;</span><span class="fu">:</span> <span class="st">&quot;quill.text.reflowParagraphs&quot;</span><span class="fu">}</span></span>
-<span id="cb76-7"><a href="#cb76-7" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
-<span id="cb76-8"><a href="#cb76-8" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb77"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;Clean OCR text&quot;</span><span class="fu">,</span></span>
+<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;steps&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span><span class="dt">&quot;command&quot;</span><span class="fu">:</span> <span class="st">&quot;quill.text.normalizeUnicode&quot;</span><span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb77-5"><a href="#cb77-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span><span class="dt">&quot;command&quot;</span><span class="fu">:</span> <span class="st">&quot;quill.text.dehyphenateLines&quot;</span><span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb77-6"><a href="#cb77-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span><span class="dt">&quot;command&quot;</span><span class="fu">:</span> <span class="st">&quot;quill.text.reflowParagraphs&quot;</span><span class="fu">}</span></span>
+<span id="cb77-7"><a href="#cb77-7" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
+<span id="cb77-8"><a href="#cb77-8" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
 <h4 id="13-security-and-safety">13. Security and safety</h4>
 <h5 id="131-local-trust-model">13.1 Local trust model</h5>
 <p>The Python console is trusted local code execution.</p>
@@ -39902,13 +40152,13 @@ Full Quill profiles.</p>
 <p>Portable mode stores the same structure next to the portable QUILL
 configuration directory.</p>
 <p>History entries contain:</p>
-<div class="sourceCode" id="cb80"><pre
-class="sourceCode json"><code class="sourceCode json"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
-<span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;timestamp&quot;</span><span class="fu">:</span> <span class="st">&quot;2026-06-10T00:00:00Z&quot;</span><span class="fu">,</span></span>
-<span id="cb80-3"><a href="#cb80-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;language&quot;</span><span class="fu">:</span> <span class="st">&quot;python&quot;</span><span class="fu">,</span></span>
-<span id="cb80-4"><a href="#cb80-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;input&quot;</span><span class="fu">:</span> <span class="st">&quot;q.document_stats()&quot;</span><span class="fu">,</span></span>
-<span id="cb80-5"><a href="#cb80-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;success&quot;</span><span class="fu">:</span> <span class="kw">true</span></span>
-<span id="cb80-6"><a href="#cb80-6" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb81"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;timestamp&quot;</span><span class="fu">:</span> <span class="st">&quot;2026-06-10T00:00:00Z&quot;</span><span class="fu">,</span></span>
+<span id="cb81-3"><a href="#cb81-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;language&quot;</span><span class="fu">:</span> <span class="st">&quot;python&quot;</span><span class="fu">,</span></span>
+<span id="cb81-4"><a href="#cb81-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;input&quot;</span><span class="fu">:</span> <span class="st">&quot;q.document_stats()&quot;</span><span class="fu">,</span></span>
+<span id="cb81-5"><a href="#cb81-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;success&quot;</span><span class="fu">:</span> <span class="kw">true</span></span>
+<span id="cb81-6"><a href="#cb81-6" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
 <p>History must not store command output by default.</p>
 <h4 id="19-technical-architecture">19. Technical architecture</h4>
 <h5 id="191-new-modules">19.1 New modules</h5>
@@ -39976,17 +40226,17 @@ memorize APIs.</p>
 <li>feature ids</li>
 </ul>
 <p>Help commands:</p>
-<div class="sourceCode" id="cb83"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a>q.<span class="bu">help</span>()</span>
-<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a>q.<span class="bu">help</span>(<span class="st">&quot;insert_text&quot;</span>)</span>
-<span id="cb83-3"><a href="#cb83-3" aria-hidden="true" tabindex="-1"></a>q.commands.search(<span class="st">&quot;bookmark&quot;</span>)</span>
-<span id="cb83-4"><a href="#cb83-4" aria-hidden="true" tabindex="-1"></a>q.describe_command(<span class="st">&quot;quill.editor.gotoLine&quot;</span>)</span>
-<span id="cb83-5"><a href="#cb83-5" aria-hidden="true" tabindex="-1"></a>q.examples(<span class="st">&quot;markdown&quot;</span>)</span></code></pre></div>
-<p>TypeScript equivalents:</p>
 <div class="sourceCode" id="cb84"><pre
-class="sourceCode ts"><code class="sourceCode typescript"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> quill<span class="op">.</span><span class="fu">help</span>()<span class="op">;</span></span>
-<span id="cb84-2"><a href="#cb84-2" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> quill<span class="op">.</span><span class="at">commands</span><span class="op">.</span><span class="fu">search</span>(<span class="st">&quot;bookmark&quot;</span>)<span class="op">;</span></span>
-<span id="cb84-3"><a href="#cb84-3" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> quill<span class="op">.</span><span class="fu">describeCommand</span>(<span class="st">&quot;quill.editor.gotoLine&quot;</span>)<span class="op">;</span></span></code></pre></div>
+class="sourceCode python"><code class="sourceCode python"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a>q.<span class="bu">help</span>()</span>
+<span id="cb84-2"><a href="#cb84-2" aria-hidden="true" tabindex="-1"></a>q.<span class="bu">help</span>(<span class="st">&quot;insert_text&quot;</span>)</span>
+<span id="cb84-3"><a href="#cb84-3" aria-hidden="true" tabindex="-1"></a>q.commands.search(<span class="st">&quot;bookmark&quot;</span>)</span>
+<span id="cb84-4"><a href="#cb84-4" aria-hidden="true" tabindex="-1"></a>q.describe_command(<span class="st">&quot;quill.editor.gotoLine&quot;</span>)</span>
+<span id="cb84-5"><a href="#cb84-5" aria-hidden="true" tabindex="-1"></a>q.examples(<span class="st">&quot;markdown&quot;</span>)</span></code></pre></div>
+<p>TypeScript equivalents:</p>
+<div class="sourceCode" id="cb85"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> quill<span class="op">.</span><span class="fu">help</span>()<span class="op">;</span></span>
+<span id="cb85-2"><a href="#cb85-2" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> quill<span class="op">.</span><span class="at">commands</span><span class="op">.</span><span class="fu">search</span>(<span class="st">&quot;bookmark&quot;</span>)<span class="op">;</span></span>
+<span id="cb85-3"><a href="#cb85-3" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> quill<span class="op">.</span><span class="fu">describeCommand</span>(<span class="st">&quot;quill.editor.gotoLine&quot;</span>)<span class="op">;</span></span></code></pre></div>
 <h4 id="21-testing-strategy">21. Testing strategy</h4>
 <h5 id="211-unit-tests">21.1 Unit tests</h5>
 <ul>
@@ -40141,8 +40391,8 @@ Recommended:
 <h4 id="26-example-diagnostic-summary-command">26. Example diagnostic
 summary command</h4>
 <p>Python:</p>
-<div class="sourceCode" id="cb86"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb86-1"><a href="#cb86-1" aria-hidden="true" tabindex="-1"></a>q.support.diagnostic_summary()</span></code></pre></div>
+<div class="sourceCode" id="cb87"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a>q.support.diagnostic_summary()</span></code></pre></div>
 <p>Output:</p>
 <pre class="text"><code>QUILL diagnostic summary
 Version: 1.1.0-dev

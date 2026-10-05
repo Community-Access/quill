@@ -228,6 +228,9 @@ class Playlist:
     #: The item that last started playing, for Continue Where I Left Off.
     last_item_id: int = 0
     created_at: float = 0.0
+    #: The Opened files list: what File Explorer last handed Quill Radio. The
+    #: next files opened that way replace it, until Save as Playlist keeps it.
+    temporary: bool = False
 
     # -- items ------------------------------------------------------------------
 
@@ -297,6 +300,8 @@ class Playlist:
             data["last_item_id"] = self.last_item_id
         if self.created_at:
             data["created_at"] = round(self.created_at, 3)
+        if self.temporary:
+            data["temporary"] = True
         return data
 
 
@@ -395,6 +400,7 @@ def _parse_playlist(raw: object, used_ids: set[str]) -> Playlist | None:
         repeat=normalize_repeat_mode(raw.get("repeat")),
         last_item_id=_int(raw.get("last_item_id")),
         created_at=_float(raw.get("created_at")),
+        temporary=bool(raw.get("temporary", False)),
     )
     # The pre-release shape kept bare path strings under "files"; the shipped
     # shape keeps dicts under "items". Both are read, and either way an item
@@ -516,4 +522,6 @@ def summary(playlist: Playlist) -> str:
     missing = sum(1 for item in playlist.items if not item.exists())
     if missing:
         words += f", {missing} missing"
+    if playlist.temporary:
+        words += ", not saved"
     return words

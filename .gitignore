@@ -155,6 +155,8 @@ add.md
 add2.md
 dict.md
 questions.md
+# check.md: the 2026-10-04 Downcast OPML import and Cast feed-check report.
+check.md
 testkspn.md
 # The suggest1-7 strategy/plan papers lived here until 2026-08-28, when their
 # last residue shipped (PR #1463) and all seven were deleted.

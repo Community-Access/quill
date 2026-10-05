@@ -9,6 +9,72 @@ library and the rest of this release are described for listeners in
 `docs/release-notes-2.0.md`. (The app had carried 1.1.0 in its own menus
 until this release; 2.0.0 is the version everywhere now.)
 
+### OPML import and Feed Check, after a 1,307-podcast import test (2026-10-04)
+
+A real Downcast export (1,307 feeds) was imported into an isolated library and
+checked with Cast's own code; every bug it found is fixed here. Before and
+after numbers are in the test report.
+
+- **One honest User-Agent for the whole family.** Cast's feed, episode,
+  chapter, transcript and directory requests now send `QUILL Cast/2.0.0
+  (podcast app; +https://www.quillforall.org)`; each app sends its own name
+  and version. All 18 CBC podcasts in the test timed out on every check: CBC
+  stalls any User-Agent of the crawler shape `Name/1.0 (+https://site)`,
+  whatever the site, and answers in half a second one that says it is a
+  podcast app. About forty modules carried their own GitHub-bearing copy;
+  they now all call `quill.core.http_client.user_agent()` or
+  `podcast_user_agent()`, and a test rejects a new copy.
+- **A show's first read is a starting point.** An imported show has no
+  episodes, so its first check used to report the whole back catalogue as new
+  (360,316 episodes in the test), feeding Episode Filters, routing and the
+  new-episode notice. It now applies only the show's own "also fetch" setting.
+  **"Last new episode" is the newest episode's own date**, not the time of the
+  check, so gone-quiet works for imported shows and an older library heals on
+  its next check (`quill/core/podcasts/feed_read.py`, `check_state.py`). Quill
+  Radio's podcast check follows the same rule.
+- **A web page or an empty feed is no longer "OK".** A web page where the feed
+  was is a failure; a feed with no episodes has its own Feed Check status,
+  "Empty", ranked under failing feeds. The import check looks at what it reads
+  too.
+- **Only a permanent redirect changes an address.** A redirect handler records
+  every hop; the address is updated only when every hop was 301 or 308, and
+  only when Follow permanent feed redirects is on. Libsyn's and FeedBurner's
+  temporary bounces no longer rewrite subscriptions.
+- **The import report tells the truth.** "Corrected feed URLs (found working
+  replacements via iTunes)" is gone: no lookup ever ran. The report now lists
+  feeds that moved for good, says whether each was updated, and reads "now at"
+  rather than an arrow.
+- **Every failure is a plain sentence** (`quill/core/podcasts/feed_problems.py`):
+  removed, no longer exists, refusing connections, broken certificate, web
+  page, empty, locked behind a subscription, refusing podcast apps, too slow.
+  A sign-in problem is reported only when the podcast has saved credentials
+  or the server asked for them. The technical text goes to the log.
+- **Feed Check says why, and can find a show's new feed.** Find This Show's
+  New Feed looks the title up in the directories Add Podcast uses, verifies
+  each candidate, and Replace Feed keeps the show's history. The next read of
+  the new address is a starting point, and episodes it shares with the old
+  feed are not listed twice.
+- **Conditional requests**: each show keeps its feed's ETag and Last-Modified
+  and sends them back, so an unchanged feed answers 304.
+- **Feed checks have their own pool** of four workers, so Refresh All Now
+  never holds up downloads and other background work.
+- **Import planning**: different feeds sharing a name inside one file are
+  flagged; an address with no real host ("http://feed/") is not imported;
+  description, language and category reach the new subscription; empty
+  folders are imported, in file order; a podcast filed in two folders is
+  followed once and the report says where the other copy was.
+- **Feeds over 20 MB**: the cap is now 48 MB, and a feed still cut off is
+  noted in Player Information. A plain-http address is tried over https first.
+- Spoken counts say "1 entry" and "2 entries", never "entr(ies)". A refresh
+  undoes a double-escaped title such as "We&apos;re Alive".
+
+### Portable copies start from a folder with a space in its name (2026-10-04)
+
+- The QuillVille launcher passed its own path to Python unquoted, so a
+  portable copy in a folder whose name has a space in it did not start, and a
+  file opened from such a folder arrived as two arguments
+  (`quill/native/launcher/cmdline.c`).
+
 ### Mark as Played and Next moves to Ctrl+Alt+Shift+Down (2026-10-04)
 
 - **Episode > Play Queue Run > Mark as Played and Next is Ctrl+Alt+Shift+Down**,

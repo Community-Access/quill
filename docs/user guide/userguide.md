@@ -859,8 +859,11 @@ menu has a few other ways in, and each one is handy at the right moment:
   the list goes.
   Just above Clear, **Recent Documents...** (`Alt+Shift+0`) shows the whole
   list in a window of its own. More on that just below.
-- **Open from URL...** downloads a document or text resource from the web. QUILL
-  checks with you first, naming the host and the expected size.
+- **Open from Clipboard** (`Ctrl+Alt+Shift+Enter`) opens whatever you copied: a
+  file copied in File Explorer, a file path copied as text, or a web link. More
+  on it just below.
+- **Open from URL...** downloads a document from the web. Before anything is
+  downloaded, QUILL asks you, naming the website and the size of the file.
 - **New Document from Clipboard** opens a new document that already holds
   whatever text is on the clipboard. It is on the Edit menu too.
 - **Snapshots** saves a group of open documents as one workspace snapshot, so
@@ -869,6 +872,44 @@ menu has a few other ways in, and each one is handy at the right moment:
 
 Files on a server or on GitHub have their own commands. They are covered later
 in this chapter, under Remote access and GitHub remote files.
+
+#### Opening what you copied, a link, or a file you drag in
+
+Documents reach you in all sorts of ways: a file in File Explorer, a path
+somebody pasted into a chat, a link in an email. QUILL opens all three without
+a trip through the Open dialog. The idea comes from PlanCake, a small reading
+app by Andre of Oire Software.
+
+**Open from Clipboard** (`Ctrl+Alt+Shift+Enter`, on the File menu). Copy first,
+then press it. QUILL looks at what you copied:
+
+- Files copied in File Explorer open, one after another. If you copied
+  several, QUILL tells you how many it opened.
+- A file path copied as text opens that file. The quotes File Explorer's
+  "Copy as path" puts around it are fine. Several paths, one per line, open in
+  turn.
+- A web link goes to Open from URL, described next.
+
+If the clipboard holds none of those, QUILL says "The clipboard holds no file,
+path or link." and nothing else happens. `Ctrl+V` still pastes, as always.
+
+**Open from URL...** (on the File menu). Type or paste a web address. QUILL
+finds out the file's name and size, then asks before downloading anything, for
+example "Download plan.md from example.com? It is 12 KB." Say Yes and a small
+window shows how the download is going. Its Cancel button stops it. If
+something goes wrong, you hear one plain sentence, such as "Nothing was found
+at that address on example.com." A link to a file's page on GitHub opens the
+file itself rather than the web page around it.
+
+The document opens read-only, with its web address in the tab name. To keep
+it, save a copy. QUILL works from a temporary copy of the download and deletes
+it when you close the tab.
+
+**Drag and drop.** Drag files from File Explorer onto the QUILL window and
+they open, and QUILL says how many. Text you drag into the document is still
+inserted where you drop it.
+
+QUILL Lite has all three, on the same key.
 
 #### Opening something you worked on recently
 
@@ -1072,6 +1113,24 @@ Nothing changes until you save, and the window tells you so. If the encoding you
 chose cannot hold a character in your document, the save names that character
 and offers Save As. It never quietly turns it into a question mark.
 
+**When a file is not UTF-8.** Most files today are UTF-8. When QUILL opens one
+that is not, such as an older Windows file, it tells you once: "Opened as
+Windows-1252, not UTF-8." Nothing about the file has changed. QUILL reads every
+byte, and a save puts every byte back as it was.
+
+**Reopen with Encoding...** Now and then an old file's accented letters come
+out wrong, because it was written in an encoding nobody can guess from the
+file alone, such as Cyrillic Windows-1251. In the File Format window, choose
+**Reopen with Encoding...**, pick the encoding the file was written in, and
+QUILL reads the same file again from disk that way. If you have unsaved
+changes, QUILL asks first, because reopening throws them away. Nothing on disk
+changes. If the file is not valid in the encoding you picked, QUILL says so and
+leaves your document as it was.
+
+After a reopen, the file saves back in that same encoding, so the next program
+that reads it sees what it always saw. To turn it into UTF-8 instead, open File
+Format again, choose UTF-8, and save.
+
 #### When another program changes the file you are editing
 
 QUILL keeps an eye on the file you have open. When something else writes to it
@@ -1096,11 +1155,29 @@ a build that rewrites the file you are reading every few seconds is answered
 once, not every time. Reload and Keep Mine can be remembered. Opening the disk
 version in a new tab is a one-off comparison, so it never is. To take every
 remembered answer back, choose **File > Forget Remembered File-Change Answers**
-(`Ctrl+Shift+F11`).
+(`Ctrl+Shift+F11`). A remembered Reload never throws away unsaved edits; QUILL
+asks instead.
 
 If the file changes while you *do* have unsaved edits, the same question spells
 out what is at stake: reloading throws away your edits, and keeping yours
 overwrites the disk version the next time you save.
+
+**Save looks once more.** Right before Save writes your file, QUILL checks the
+file on disk again. If another program changed it since you opened it or last
+saved it, even a moment ago, QUILL stops and asks instead of writing over that
+change:
+
+- **Save As...** keeps both: yours under a new name, theirs untouched. Enter
+  gives this answer.
+- **Reload from Disk** shows the version on disk and throws away your unsaved
+  edits.
+- **Overwrite** saves your version over theirs.
+- **Cancel**, or Escape, saves nothing.
+
+This matters most when an AI assistant or a sync tool is rewriting a file
+while you read it. If you already answered Keep Mine for that change, Save
+does not ask again. QUILL Lite checks the same way, and watches the same way,
+with the same four settings in its Preferences.
 
 Two related commands are on the File menu:
 
@@ -1426,6 +1503,15 @@ A few examples cover most of what people do:
   next to your current file.
 - Choose **File > Export > PDF** to publish a finished document.
 
+**A web page you can share.** **File > Export > HTML...** (`Ctrl+Alt+Shift+End`)
+saves a copy of your document as one web page: its styles are inside it, it has
+no scripts, and it says what language it is in, so you can email it or put it on
+a website as it is. Task lists show as check boxes and ~~struck-out~~ text is
+struck out. The document you are editing stays the document you are editing.
+If notes are written into the file, QUILL asks whether to include them in the
+page, marked as notes; No is the default, so a note never ends up in a page by
+accident.
+
 **Getting there by keyboard.** `File > Import` and `File > Export` are ordinary
 menus: open the menu, arrow down and press Enter. There is no single key for the
 whole list, because choosing the format is the point of the command. The
@@ -1442,7 +1528,10 @@ path to the clipboard, so you can paste it into File Explorer.
 **Other formats.** Both menus end with **Other Pandoc Format...**. It shows a
 list of every other format Pandoc can read (on Import) or write (on Export),
 such as CommonMark and GitHub-Flavored Markdown. Arrow to the one you want and
-press Enter, and the conversion runs just like the named ones above.
+press Enter, and the conversion runs just like the named ones above. On
+Export, the list opens on your **Default export preset** (Settings > General;
+HTML unless you change it), so if you nearly always export the same way,
+Enter alone does it.
 
 **What it does not do.** Importing a PDF this way is not supported, because
 Pandoc cannot do it reliably. Use Import / Convert Document, described below,
@@ -2640,6 +2729,13 @@ you do, use a clipboard manager alongside QUILL. The two do different jobs.
 the document. With nothing selected, QUILL copies the current line. This is
 handy for notes, reviews and gathering evidence.
 
+In a Markdown document you can choose what goes on the clipboard, under
+**Settings > Editing > Markdown clipboard format**. **Plain text only** (the
+default) copies the Markdown just as you wrote it. **HTML** or **Rich text**
+adds a formatted copy as well, so when you paste into Word or an email the
+headings, bold and links arrive formatted. Notepad and other plain-text
+programs still get the plain text.
+
 ### Links
 
 `Ctrl+K` adds a link written the right way for the document's format.
@@ -3165,7 +3261,7 @@ one at the cursor.
 
 #### Thesaurus (Shift+F7)
 
-**Thesaurus...** (`Shift+F7`, **Tools > Writing**) opens a two-part window for
+**Thesaurus...** (`Shift+F7`, **Tools > Writing and Language**) opens a two-part window for
 the word you are on, or asks you for one. It finds your word even when it is
 not in its plain form. The thesaurus knows "run", not "running", and "happy",
 not "happier", so QUILL works back to the plain word and tells you: in the
@@ -3185,7 +3281,7 @@ opposites, without opening anything. QUILL Lite has the same thesaurus.
 
 #### Look Up Word (Alt+F10)
 
-**Look Up Word...** (`Alt+F10`, **Tools > Writing**) is the dictionary
+**Look Up Word...** (`Alt+F10`, **Tools > Writing and Language**) is the dictionary
 without AI, in a window QUILL Lite shares. You start in the **Result**, a
 read-only box you arrow through: the word, then a labelled section for each
 kind of answer. Below it, **Words you can use** lists every synonym,
@@ -3838,6 +3934,22 @@ The studio used to open with `F2`, and Insert Special Character used to be on
 Special Character is on `Ctrl+Shift+F2`. You can change any of these keys in
 the Keymap Editor.
 
+#### Ticking off tasks
+
+A task list is a list whose items start with a box: `- [ ]` for something
+still to do and `- [x]` for something done. **Insert > List > Task** makes
+one, and plans written by AI assistants are usually full of them.
+
+To tick a task, put the cursor on its line and press `Ctrl+Alt+Enter` (**Insert
+> List > Toggle Task Done**). Press it again to untick it. QUILL tells you what
+changed and how many tasks in that list are done, for example "Checked: Write
+the tests. 3 of 7 tasks complete." Select several lines first to tick them all
+at once. `Ctrl+Z` takes it back like any other edit. On a line that is not a
+task, QUILL says so and changes nothing.
+
+In the preview and in **File > Export > HTML**, a task shows as a real check
+box, ticked or not, with the task's text as its label.
+
 ### Markdown profiles and table of contents
 
 Markdown means different things to different writers. A poet wants every line
@@ -4261,8 +4373,15 @@ These are in **Settings > Accessibility and Announcements**, and you can search 
   Weather.
 - **Confirm with a sound in Quiet Mode**: hear that something worked without
   QUILL speaking.
-- **Keep an announcement history**: what Repeat Last Announcement plays back.
-- **Interrupt speech for**: errors only, warnings and errors, or never.
+- **Keep an announcement history**: on by default. QUILL keeps a short list
+  of what it has said, for the Spoken Echo and Repeat Last Announcement. Turn
+  it off and nothing is kept, and the list is cleared straight away; Repeat
+  Last Announcement can then only repeat the message still on the status bar.
+- **Interrupt speech for**: which messages cut across whatever your screen
+  reader is saying. **Warnings and errors** is the default: problems, and the
+  answer to something you just asked for, cut in. **Errors only** lets
+  everything except a failure wait its turn. **Never interrupt** lets every
+  message wait. The change takes effect as soon as you press OK.
 
 Quiet Mode and Meeting Mode silence braille along with speech: nothing is
 said and nothing is flashed to the display. The status bar keeps updating,
@@ -4605,6 +4724,7 @@ Once Quick Nav is on, the keys are the same either way:
 - `Q` and `Shift+Q` move by block quote.
 - `B` and `Shift+B` move by bookmark.
 - `'` and `Shift+'` move by code block.
+- `N` and `Shift+N` move by inline note.
 - `P` and `Shift+P` move by paragraph.
 - `S` and `Shift+S` move by sentence.
 - `Tab` and `Shift+Tab` move by block.
@@ -4653,12 +4773,6 @@ second key:
 
 - `N` turns on Quick Nav, as described above. Pressing the QUILL key a second
   time instead locks it on whatever the setting says.
-- `G` opens Quick Nav (Landmarks), also on `Ctrl+Shift+Z`. It lists everything
-  in the document you can move to (headings, links, lists, tables, block
-  quotes, bookmarks, code blocks) with a filter that shows how many of each
-  there are. It also lists the document's misspellings and, while a search is
-  active, the search hits, so you can jump to a misspelled word or a match from
-  the same place.
 - `M` pastes web content as Markdown. QUILL reads the rich HTML on the
   clipboard (the `HTML Format` copied from web pages and word processors),
   turns headings, lists, links, bold and italic, code and block quotes into
@@ -4670,6 +4784,13 @@ second key:
   and `Q` speaks a short status summary. These are handy when several
   documents are open and you want to check where you are.
 - `?` shows the QUILL key cheat sheet, and `Esc` cancels.
+
+Quick Nav (Landmarks) has a key of its own, `Ctrl+Shift+Z`, rather than a QUILL
+key letter. It lists everything in the document you can move to (headings,
+links, lists, tables, block quotes, bookmarks, code blocks) with a filter that
+shows how many of each there are. It also lists the document's misspellings
+and, while a search is active, the search hits, so you can jump to a misspelled
+word or a match from the same place.
 
 #### Quick Nav and QUILL key settings
 
@@ -4878,25 +4999,77 @@ you.
 
 #### Inline notes
 
-Inline notes are private comments you attach to a line or a selection: a
-question, a reminder, a note to yourself while you draft. They are on **Tools
-> Writing**, and you can change any of their keys in the Keymap Editor.
+Inline notes are comments you attach to a line or a selection: a question, a
+reminder, a note to yourself while you draft, or your thoughts on a plan
+somebody sent you. They are on **Tools > Writing and Language**, and you can
+change any of their keys in the Keymap Editor.
 
 - **Add Inline Note...** (`Alt+Shift+I`) attaches a note to the selected text,
-  or to the current line if nothing is selected. Type the note and choose
-  Save.
+  or to the current line if nothing is selected. The **Note on** line at the
+  top shows the start of that text, so you can check you are in the right
+  place. Type the note and choose Save.
 - **Next Inline Note** (`Alt+Shift+J`) and **Previous Inline Note**
   (`Alt+Shift+K`) move to the next or previous noted text, and QUILL reads the
   note.
 - **Speak Inline Note** (`Alt+Shift+H`) reads the note at the cursor. Press it
   twice quickly to open the note so you can read, change or delete it.
+- **Delete Inline Note...** (`Alt+Shift+Delete`) deletes the note at the
+  cursor. QUILL reads you the note and asks first, and No is the default.
+- **List Inline Notes...** (`Alt+Shift+Enter`) shows every note in the
+  document in one list: the note, the line it is on, the text it is about, and
+  whether it is private or in the file. Press `Enter` to go to a note,
+  `Delete` to delete one and `F2` to edit one. The buttons also let you
+  **Remove All** notes (QUILL asks first), **Copy All** of them as plain text,
+  or **Export** them to a Markdown or JSON file.
+- In Quick Nav, `N` and `Shift+N` move to the next and previous note too.
 
 Each note remembers the exact text it was placed on, plus a little around it,
-so it follows that text as you edit. Notes are kept with each document between
-sessions, just like bookmarks. If the text a note was on is deleted, the note
-is kept, not lost. A new document keeps its notes until you close it; save it
-and they are kept. Notes are yours alone and are never written into the
-document.
+so it follows that text as you edit. If that text is deleted, the note is kept,
+not lost: the list shows it last, marked "the text it was on is gone", so you
+can read it and remove it. A new document keeps its notes until you close it;
+save it and they are kept.
+
+##### Private notes and notes in the file
+
+Normally a note is private. It is kept in QUILL's own settings folder, the
+document itself is never changed, and nobody else ever sees it. That works in
+every kind of document.
+
+In a Markdown or HTML document you can also write a note **into the file**.
+Check **Write this note into the file** in the Add Inline Note window, and the
+note goes into the document as a hidden comment on its own line, right after
+the text it is about:
+
+    Back up the uploads folder.
+    <!-- quill-note: And the database dump. -->
+
+The file is still a perfectly good Markdown or HTML file. Web pages, GitHub and
+other programs hide the comment, but anyone who opens the file in a text
+editor, and any AI assistant you hand the file to, can read your note. That
+makes it the way to review a plan an AI assistant wrote: read it, leave your
+notes in the file, and give the file back. Because a note in the file is part
+of the text, `Ctrl+Z` takes back adding, changing or deleting one.
+
+The check box remembers your last choice for each document. To start every
+new note in the file, turn on **Write new inline notes into the file** (the
+`inline_notes_in_file` setting) on the **Editing** page in Settings. It is off
+unless you change it.
+
+##### Notes on the command line
+
+A script, or an AI assistant working in a terminal, can read and clear the
+notes written into a file without opening QUILL:
+
+- `quill --notes list plan.md` prints every note with its line and the text
+  it is about. Add `--json` for a list a program can read.
+- `quill --notes check plan.md` says how many notes are left.
+- `quill --notes clear plan.md` removes them all and saves the file, keeping
+  its encoding and line endings.
+
+The exit code tells a script what happened: 0 means done (or, for `check`, no
+notes left), 3 means `check` found notes still in the file, 1 means the file
+could not be read or written, and 2 means the command was mistyped. Private
+notes are never shown here; they stay yours.
 
 ### Working in code
 
@@ -5191,7 +5364,12 @@ Settings, chooses how much the review tells you:
 - **Detailed**: all of that, plus hints about the controls and reminders of
   what you are checking.
 
-Three more settings on the same page belong to the review:
+Four more settings on the same page belong to the review:
+
+- **Spelling review context display mode**: the Context box usually shows
+  the sentence with the misspelling plus the sentences either side. Choose
+  **Full paragraph** to see the whole paragraph instead; Read Sentence then
+  reads the paragraph.
 
 - **Spell out the misspelled word letter by letter**: after telling you the
   misspelling, QUILL reads it letter by letter. On to begin with.
@@ -5785,9 +5963,14 @@ transcription, covers them properly.
   Say "Hey QUILL, save file" to run a command straight away, or just "Hey
   QUILL" to start one. The status bar shows that the microphone is live and
   plays a reminder now and then, so an open microphone never takes you by
-  surprise. Run the command again, or say "stop", to end it. It turns itself
-  off when QUILL closes, unless you turn on **Keep listening for "Hey QUILL"
-  across restarts**. Off in Safe Mode.
+  surprise. Run the command again, or say "stop", to end it. The **Listen for
+  'Hey QUILL' (wake word)** tick box on the Transcription page of Settings is
+  the same switch, so turning it on in either place turns it on in both; tick
+  it and press OK, and QUILL starts listening straight away. If voice commands
+  are off, QUILL tells you and leaves the box unticked. Normally listening
+  stops when you close QUILL, so the microphone is never on by surprise the
+  next time. Turn on **Keep listening for "Hey QUILL" across restarts** and
+  QUILL picks up listening again when it starts. Off in Safe Mode.
 - **Speak Voice Status** (**Tools > Speech**) tells you what the voice
   features are doing right now: whether QUILL is listening for "Hey QUILL",
   whether conversation mode is on, and whether it is listening for a command.
@@ -7259,6 +7442,23 @@ get the transcript. The action step is skipped with a note, never an error.
 - **Enable folder watching by default** starts watching your enabled
   profiles each time QUILL starts. It is off to begin with. **Watch Folder
   Monitoring (in Settings)...** brings you to Settings so you can turn it on.
+- **Default watch folder**: if you just want one folder where anything you
+  drop gets opened, you don't need a profile. Put the folder here, and QUILL
+  opens each new supported file that lands in it. Blank to begin with.
+- **Start watching automatically** is the switch that watches your default
+  folder, from the moment QUILL opens and for as long as it runs. It works on
+  its own, so you can watch the default folder without turning on Enable
+  folder watching by default, which starts your profiles. Safe Mode turns
+  both off. Off to begin with.
+- **Include subfolders**: turn this on and files in folders inside your
+  default folder count too. Off to begin with.
+- **Process existing files on start**: normally QUILL only opens files that
+  arrive after it starts watching. Turn this on to have it open what's
+  already waiting in the default folder as well. Off to begin with.
+
+Your profiles each have their own folder and their own Include subfolders,
+existing files and startup choices; these four only decide for the default
+folder.
 - **Poll interval (seconds)** is how often a watched folder is checked, from
   2 to 300 seconds. The default is 5.
 - **Watch folder: play a sound on each check** plays a short tick every time
@@ -9312,7 +9512,10 @@ text and copy it.
 Open it any time with `Alt+Shift+E`, or from **Help > Show Spoken Echo**. It
 works after any announcement, even one from an ordinary editing key such as
 Tab. So you can hear "8 spaces", then open the Echo to read and copy it. The
-Echo only records what QUILL speaks, never your typing.
+Echo only records what QUILL speaks, never your typing. If you would rather
+QUILL kept no record at all, turn off **Settings > Accessibility and
+Announcements > Keep an announcement history**: the list is cleared, nothing
+new is added, and the Echo tells you the history is off.
 
 If you are used to pressing a screen reader's reporting command twice, you can
 do the same here. Double-press an informational command (Describe Formatting,
@@ -9924,11 +10127,30 @@ is a little faster.
 
 #### The Braille Mode page in Settings
 
-Most of the **Braille Mode** page is covered above. Three more settings:
+Most of the **Braille Mode** page is covered above. The rest:
 
 - **Use form feeds for page breaks** treats the page-break characters in a
   braille file as real page breaks. Leave it on unless the file never used
-  them.
+  them. Turn it off and QUILL counts pages by your page size instead.
+- **Calculate pages from geometry**: when a braille file has no page breaks,
+  QUILL works out the pages from your page size. Turn this off and a file
+  like that is read as one long page. On to begin with.
+- **Announce page changes automatically**: turn this on and QUILL says
+  "Braille page 5" as your cursor moves onto a new page. If you got there
+  with Next Braille Page or Go to Braille Page, you only hear it once. Off to
+  begin with.
+- **Announce print page changes**: turn this on to hear "Print page 7" when
+  you move onto a new print page. Files without print page numbers stay
+  quiet. Off to begin with.
+- **Announce line overflow**: turn this on and QUILL tells you when a line is
+  longer than your Cells per line, for example "Line too long: 45 cells,
+  limit 40". You hear it once when you reach the line, or when your typing
+  pushes it past the limit. Off to begin with.
+- **Include proofing status in status string**: Read Detailed Status tells
+  you the last page you proofed and how many pages still need review, from
+  the companion file. On to begin with; turn it off for a shorter status.
+- **Include continuation in status string**: Read Detailed Status names the
+  continuation letter (7a, 7b) when a print page runs on. On to begin with.
 - **Write sidecar on save** saves a small companion file next to a braille
   file when you save it, recording the page size and line endings, so other
   tools can pick up where you left off. On to begin with.
@@ -10673,6 +10895,13 @@ that right-click menu:
   Off to begin with.
 - **Offer “Convert with QUILL”** opens an audio or video file in Quill
   Converter so you can change its format. Off to begin with.
+- **File types offered to QUILL** chooses which files get QUILL on their
+  right-click menu: images only, images and PDFs, or images, PDFs and text
+  documents (the default). Audio and video files have their own Convert
+  switch above.
+
+Your choices take effect as soon as you press OK, with no need to install
+shell integration again.
 
 ### Quillins
 
@@ -11615,13 +11844,14 @@ editing works.
 ### Sticky Notes
 
 Sticky notes are the quickest way to catch a thought before it gets away.
-**Tools > New Sticky Note...** (or its system-wide hotkey) opens a small
-editor with a title and a body, from anywhere. **Tools > Sticky Notes...**
+**Navigate > Sticky Notes > New Sticky Note...** (or its system-wide hotkey)
+opens a small editor with a title and a body, from anywhere.
+**Navigate > Sticky Notes > Sticky Notes...**
 manages the whole collection.
 
 #### The Sticky Notes Browser
 
-**Tools > Sticky Notes Browser...** is the fast way back to a note you wrote
+**Navigate > Sticky Notes > Sticky Notes Browser...** is the fast way back to a note you wrote
 last week.
 
 1. Open the browser. Focus starts in a **search field**.
@@ -12855,6 +13085,8 @@ QUILL comes in three flavours, and you choose which one this copy follows. They'
 
 If you choose Beta or Dev, QUILL shows a short warning first: what could go wrong, how your settings are protected, and how to come back. Read it, tick the **I understand** box, then choose **Move to Beta** (or **Move to Dev**). **Stay on Stable** changes nothing, and so does Escape.
 
+Beta and Dev versions aren't signed, so when you install one, Windows SmartScreen may warn that it comes from an unknown publisher; that's expected, and choosing **More info**, then **Run anyway**, installs it.
+
 #### What happens when you move to Beta or Dev
 
 - QUILL saves a copy of your settings, keys and preferences first. If it can't, it stays where it is and tells you why. Your documents aren't copied, and updates don't change them.
@@ -13205,6 +13437,15 @@ block:
 >>> count_words(doc.text)
 487
 ```
+
+#### When a command runs too long
+
+If something you type into the Python console runs away, a loop that never
+ends say, QUILL stops it after **Python console execution timeout** seconds
+(Settings > Administration) and tells you "Stopped after 30 seconds." It is
+30 to begin with, and you can set anything from 5 to 300. A command that is
+waiting on the system, such as a long sleep, stops as soon as that wait is
+over.
 
 #### Macro recording
 

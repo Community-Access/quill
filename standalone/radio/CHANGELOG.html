@@ -298,6 +298,36 @@ Playlists are kept as paths and tags in a versioned
 (<code>quill/core/radio/local_media*.py</code>,
 <code>quill/core/radio/browse_local_media.py</code>,
 <code>quill/ui/radio/local_media_*.py</code>).</p></li>
+<li><p><strong>Play files from File Explorer, and make Quill Radio your
+media player.</strong> Julie asked whether she could pick a song on her
+external drive and choose Quill Radio to play it, as you would choose
+VLC. The installer now registers Quill Radio in Open with for music,
+audiobooks, video and playlists (MP3, M4A, M4B, AAC, Ogg, Opus, FLAC,
+WAV, WMA, AIFF, MKA, MP4, MKV, WebM, MOV, M3U, M3U8, PLS), and in
+Settings &gt; Apps &gt; Default apps, without ever taking a type over;
+uninstalling removes every key. Preferences &gt; Windows and your files
+&gt; <strong>Make Quill Radio My Media Player…</strong> (also in the
+Command Palette) registers a portable copy for your account and opens
+Windows’ Default apps page for Quill Radio, where you choose – the same
+shared command, words and registration as the editors’ Make QUILL My
+Text Editor. <code>quill-radio &lt;file&gt; ...</code> plays the files;
+when Quill Radio is already running they go to that copy through its
+single-instance queue and play without pulling the window in front.
+Several files at once (Explorer starts the app once per file) become one
+<strong>Opened files</strong> list in Local Media that plays from the
+first, so Next and Previous work; the next files opened replace it
+unless <strong>Save as Playlist…</strong> (Ctrl+S in the Local Media
+window, or on its Browse menu) keeps it. What is playing is said once; a
+missing or unplayable file is one plain sentence. A folder plays like
+Add a Folder, and an M3U or PLS is imported into Local Media once and
+played. Two right-click verbs on every supported type: <strong>Play with
+Quill Radio</strong> and <strong>Add to Quill Radio Playlist</strong>.
+(<code>quill/core/windows_media.py</code>,
+<code>quill/core/windows_installer_lines.py</code>,
+<code>quill/core/radio/opened_files.py</code>,
+<code>quill/ui/radio/opened_files_ui.py</code>,
+<code>quill/ui/radio/media_player_registration.py</code>,
+<code>standalone/radio/installer/quill-radio.iss</code>.)</p></li>
 <li><p><strong>Activity (Help, Shift+F9) and Repeat Last Result
 (F9).</strong> Everything the radio told you this session, newest first,
 each with its next actions – Retry, Open Folder, Copy Details – and one
@@ -348,6 +378,43 @@ release replaces – so Install and restart cannot install 3.2.0
 <code>Quill-Radio-Setup-Shared-3.2.0.exe</code> and run it, or unpack
 the portable zip over your copy, this once. Every update after this one
 installs itself.</p></li>
+<li><p><strong>Backups say what they hold, and name anything they leave
+out.</strong> A listener about to reset two computers, with recordings
+and backups in a OneDrive folder, heard that some items were skipped and
+nothing about which. That was Export My Setup, which is shared with
+QUILL Cast and counted the Cast stores a Radio-only computer has never
+made as “skipped”; nothing was lost, but nothing said so. Now every
+backup, restore, Export My Setup and Import My Setup that leaves
+anything out says how many and offers <strong>Show what was left out,
+and why?</strong> – one row per item with its reason (stored only in
+OneDrive, in use by another program, a path too long for Windows, could
+not be read) and what to do – and a backup also writes the list to
+Recent Problems. Back Up Stations and Settings (Ctrl+Shift+U) now
+carries everything a Radio listener builds: the podcasts you follow and
+where you are in each episode, notes, tags, bookmarks, Go To, reminders,
+recording settings and more, where it used to carry only favorites,
+settings, the wake-up timer, the recording schedule and tags. If your
+favorites, settings or podcasts cannot be read the backup fails and says
+why, rather than saving one without them, and the finished file is read
+back before success is announced. Recordings come from the folder
+Recording Settings names – the backup used to look in the default Music
+folder whatever you had chosen – and a recording stored only in OneDrive
+is downloaded as it is copied, with progress, unless there is not room
+for it. Backups in the recordings folder are not copied into the next
+one, and a restore leaves a recording that is already there alone
+(<code>quill/core/radio/backup.py</code>,
+<code>quill/core/radio/backup_recordings.py</code>,
+<code>quill/core/skipped_files.py</code>,
+<code>quill/ui/radio/skipped_items_dialog.py</code>).</p></li>
+<li><p><strong>Portable copies start from a folder whose name has a
+space in it.</strong> A portable copy unpacked to a folder such as
+<code>C:\portable\Quill Radio</code> said it did not start, with “can’t
+open file …pythonw.exe”. The QuillVille launcher passed its own path to
+Python unquoted, so Python read it as two words. The same mistake split
+a file opened from File Explorer out of a folder with a space in its
+name, which Play with Quill Radio depends on. Every 3.0 release had it
+(<code>quill/native/launcher/cmdline.c</code>,
+<code>quill/native/launcher/launcher.c</code>).</p></li>
 <li><p><strong>Why 3.2.0, straight from 3.0.4.</strong> This release was
 prepared as 3.1.1 (and before that 3.1.0) and never published under
 either number, so there was never a public 3.1 and the next published

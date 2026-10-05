@@ -1742,7 +1742,7 @@ here, so what these check is the door and the sentence, not the engine.
 - [ ] pass  [ ] fail: ______
 
 **L-208. Snippets lists them with a preview**
-- Do: press **Alt+Shift+I**.
+- Do: press **Ctrl+Alt+Shift+Home**.
 - Pass: a **Snippets** list opens with every abbreviation, each row reading its
   trigger and the beginning of what it writes. Enter on one puts it in at the
   cursor and says "Inserted" with its name.

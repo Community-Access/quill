@@ -14,9 +14,9 @@ import ssl
 import urllib.error
 import urllib.request
 
+from quill.core import http_client
 from quill.core.library.model import LibraryHTTPError
 
-_USER_AGENT = "QUILL-Library/0.1 (+https://github.com/Community-Access/quill)"
 _TIMEOUT_S = 20.0
 # Books (EPUB/PDF) are larger than feeds; cap generously but bounded.
 _MAX_BYTES = 80_000_000
@@ -46,7 +46,7 @@ def fetch_bytes(
     refuse_in_safe_mode(safe_mode)
     if not url.lower().startswith("https://"):
         raise LibraryHTTPError(f"Library URL must be https://: {url}")
-    headers = {"User-Agent": _USER_AGENT}
+    headers = {"User-Agent": http_client.user_agent()}
     if accept:
         headers["Accept"] = accept
     if content_type:

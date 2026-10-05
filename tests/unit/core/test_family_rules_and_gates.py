@@ -179,6 +179,9 @@ UNBOUND_WITH_REASON: dict[str, str] = {
     "repository setting is not an editor command.",
     "tools.voice_status": "The user binds it: whether a spoken status readout is "
     "worth a chord depends entirely on whether you use voice at all.",
+    "file.open_url": "Reached another way: File > Open from URL..., in both editors. "
+    "The address has to be typed into its window anyway, so a chord would only "
+    "open a box that still needs the whole URL (rule 9).",
     "help.release_channel": "Deliberately vacated 2026-10-03 in all four channel apps. "
     "Alt+Shift+F4 closed the window it was pressed in wherever Windows read it as "
     "Alt+F4 -- a dialog, a separate Quill Radio window -- and rule 4 fixes "

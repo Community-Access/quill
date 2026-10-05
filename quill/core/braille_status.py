@@ -220,8 +220,19 @@ def detailed_status(
     the same-named fields on ``print_page`` (call-site values win).
     """
     del page_count
-    del profile
     merged = _merge_print_page(print_page, continuation, running_head)
+    if not _flag(profile, "braille_include_continuation"):
+        # Settings > Braille Mode > Include continuation in status string.
+        merged = PrintPageInfo(
+            number=merged.number,
+            is_implied=merged.is_implied,
+            continuation=None,
+            running_head=merged.running_head,
+            confidence=merged.confidence,
+        )
+    if not _flag(profile, "braille_include_proofing_status"):
+        # Settings > Braille Mode > Include proofing status in status string.
+        proofing = ProofingStatus()
     prefix = (
         f"{_page_segment(position)} {_line_cell_segment(position)} {_print_page_segment(merged)}"
     )
@@ -245,6 +256,12 @@ def detailed_status(
     if prefix.endswith("."):
         prefix = prefix[:-1]
     return f"{prefix}. {body}."
+
+
+def _flag(profile: object, name: str) -> bool:
+    """A boolean braille setting on *profile*; on when the profile lacks it."""
+    value = getattr(profile, name, True)
+    return value if isinstance(value, bool) else True
 
 
 def _merge_print_page(

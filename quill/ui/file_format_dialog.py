@@ -24,7 +24,17 @@ from quill.core.lite.textfile import (
 )
 from quill.ui.dialog_contract import apply_modal_ids
 
-__all__ = ["FileFormatDialog", "describe_encoding", "describe_line_ending"]
+__all__ = [
+    "REOPEN_ID",
+    "FileFormatDialog",
+    "choose_reopen_encoding",
+    "describe_encoding",
+    "describe_line_ending",
+]
+
+#: What the File Format window returns when the person chose Reopen with
+#: Encoding: re-read the file from disk, rather than change how it saves.
+REOPEN_ID = wx.ID_REVERT_TO_SAVED
 
 _PAD = 8
 
@@ -49,6 +59,34 @@ def describe_encoding(codec: str) -> str:
     return codec
 
 
+def choose_reopen_encoding(parent: object, current: str) -> str | None:
+    """Ask which code page to re-read the file as; ``None`` on Cancel.
+
+    Shared by both editors' File Format windows (2026-10-04). The list is wider
+    than the save chooser's four, because these are the encodings old files are
+    actually found in, and the current one is selected so a person who opened
+    this by mistake can press Enter on what is already true.
+    """
+    from quill.core.text_decoding import REOPEN_ENCODINGS
+    from quill.ui.dialog_contract import show_modal_dialog
+
+    names = [name for _codec, name in REOPEN_ENCODINGS]
+    dialog = wx.SingleChoiceDialog(
+        parent,
+        "Read the file again from disk as which encoding? Unsaved changes are "
+        "discarded, and nothing on disk changes.",
+        "Reopen with Encoding",
+        names,
+    )
+    try:
+        dialog.SetSelection(_index_of(REOPEN_ENCODINGS, current))
+        if show_modal_dialog(dialog, "Reopen with Encoding") != wx.ID_OK:
+            return None
+        return REOPEN_ENCODINGS[max(0, dialog.GetSelection())][0]
+    finally:
+        dialog.Destroy()
+
+
 def describe_line_ending(value: str) -> str:
     """The speakable name for a line ending, e.g. "CRLF (Windows)"."""
     if not value:
@@ -62,7 +100,18 @@ def describe_line_ending(value: str) -> str:
 class FileFormatDialog:
     """Choose the encoding and the line endings this document saves with."""
 
-    def __init__(self, parent: object, *, encoding: str, line_ending: str) -> None:
+    def __init__(
+        self,
+        parent: object,
+        *,
+        encoding: str,
+        line_ending: str,
+        can_reopen: bool = False,
+    ) -> None:
+        #: The code page Reopen with Encoding chose, when :meth:`show` returned
+        #: :data:`REOPEN_ID`; ``""`` otherwise.
+        self.reopen_encoding = ""
+        self._current_encoding = encoding
         self.dialog = wx.Dialog(parent, title="File Format", style=wx.DEFAULT_DIALOG_STYLE)
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(
@@ -111,6 +160,19 @@ class FileFormatDialog:
         self._line_ending.SetSelection(_index_of(self._newline_rows, line_ending))
         root.Add(self._line_ending, 0, wx.EXPAND | wx.ALL, _PAD)
 
+        # Only for a plain text file that is on disk: there is nothing to
+        # re-read otherwise, and a button that cannot work is a stop for nothing.
+        if can_reopen:
+            reopen = wx.Button(self.dialog, label="&Reopen with Encoding...")
+            reopen.SetHelpText(
+                "Read this file again from disk as an encoding you choose, for a "
+                "file whose letters came out wrong. Unsaved changes are discarded "
+                "and nothing on disk changes. Afterwards it saves in that encoding, "
+                "or choose UTF-8 here to convert it when you save."
+            )
+            reopen.Bind(wx.EVT_BUTTON, self._on_reopen)
+            root.Add(reopen, 0, wx.ALL, _PAD)
+
         buttons = self.dialog.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL)
         # EXPAND, not ALIGN_RIGHT: the dialog contract (A11Y-4) wants the button
         # row to span, so the tab order and the reading order agree.
@@ -118,6 +180,13 @@ class FileFormatDialog:
         self.dialog.SetSizerAndFit(root)
         apply_modal_ids(self.dialog, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
         self._encoding.SetFocus()
+
+    def _on_reopen(self, _event: object) -> None:
+        codec = choose_reopen_encoding(self.dialog, self._current_encoding)
+        if codec is None:
+            return
+        self.reopen_encoding = codec
+        self.dialog.EndModal(REOPEN_ID)
 
     def show(self) -> int:
         """Show it through the shared modal path, and return the answer.

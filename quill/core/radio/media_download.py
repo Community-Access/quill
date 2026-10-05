@@ -41,9 +41,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from quill.core import http_client
 from quill.core.error_codes import CodedError
 
-_USER_AGENT = "Quill Radio"
 _TIMEOUT_SECONDS = 30.0
 _CHUNK_BYTES = 256 * 1024
 
@@ -110,7 +110,7 @@ def _fetch_to_file(
     partial = destination.with_suffix(destination.suffix + ".part")
     resume_from = partial.stat().st_size if partial.exists() else 0
 
-    headers = {"User-Agent": _USER_AGENT}
+    headers = {"User-Agent": http_client.user_agent()}
     if resume_from:
         headers["Range"] = f"bytes={resume_from}-"
     request = urllib.request.Request(url, headers=headers)

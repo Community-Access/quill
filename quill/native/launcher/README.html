@@ -1,17 +1,20 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.12" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>README</title>
+  <title>QuillVille native launcher (C source)</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
     */
     html {
       color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
       background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
     }
     body {
       margin: 0 auto;
@@ -36,12 +39,16 @@
     }
     @media print {
       html {
-        background-color: white;
+        color-scheme: light only;
       }
-      body {
+      html, body, pre, code {
         background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
         color: black;
-        font-size: 12pt;
+      }
+      pre, code {
+        padding: 0;
       }
       p, h2, h3 {
         orphans: 3;
@@ -54,11 +61,8 @@
     p {
       margin: 1em 0;
     }
-    a {
-      color: #1a1a1a;
-    }
-    a:visited {
-      color: #1a1a1a;
+    a, a:visited {
+      color: inherit;
     }
     img {
       max-width: 100%;
@@ -87,8 +91,11 @@
     blockquote {
       margin: 1em 0 1em 1.7em;
       padding-left: 1em;
-      border-left: 2px solid #e6e6e6;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
       color: #606060;
+      color: light-dark(#606060, #b6b6b6);
     }
     code {
       white-space: pre-wrap;
@@ -112,7 +119,7 @@
     }
     hr {
       border: none;
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       height: 1px;
       margin: 1em 0;
     }
@@ -129,11 +136,11 @@
     }
     tbody {
       margin-top: 0.5em;
-      border-top: 1px solid #1a1a1a;
-      border-bottom: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
     }
     th {
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       padding: 0.25em 0.5em 0.25em 0.5em;
     }
     td {
@@ -172,7 +179,6 @@
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
     /* CSS for syntax highlighting */
     html { -webkit-text-size-adjust: 100%; }
     pre > code.sourceCode { white-space: pre; position: relative; }
@@ -239,8 +245,68 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
 <h1 id="quillville-native-launcher-c-source">QuillVille native launcher
 (C source)</h1>
 <blockquote>
@@ -258,8 +324,13 @@ user-facing exe.</p>
 does not embed CPython. It:</p>
 <ol type="1">
 <li>Computes its own install root from its executable path.</li>
-<li>Resolves a Python interpreter (shared QuillVille runtime → private
-embedded runtime → legacy <code>pythonw.exe</code> fallback).</li>
+<li>Resolves a Python interpreter (private embedded runtime beside the
+launcher, including the legacy <code>pythonw.exe</code> fallback →
+shared QuillVille runtime). Private first since 2026-09-15: a bundle
+that ships its own interpreter is self-contained, and preferring the
+machine-wide runtime made every portable zip stop being portable — and
+crash outright when that runtime predated the app. See the “WHY PRIVATE
+FIRST” note in <code>runtime_resolve.c</code>.</li>
 <li>Spawns the resolved interpreter with the right
 <code>-m quill.apps.&lt;product&gt;</code> argv and the
 <code>QUILL_APP_ROOT</code> / <code>QUILL_PORTABLE</code> env vars.</li>
@@ -267,10 +338,6 @@ embedded runtime → legacy <code>pythonw.exe</code> fallback).</li>
 </ol>
 <h2 id="files">Files</h2>
 <table>
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
 <thead>
 <tr>
 <th>File</th>
@@ -291,6 +358,19 @@ contract.</td>
 <tr>
 <td><code>runtime_resolve.h</code></td>
 <td><code>QlRuntime</code> struct + the two public entry points.</td>
+</tr>
+<tr>
+<td><code>launch_report.c</code> / <code>.h</code></td>
+<td>The “it did not start” report: the launch log the child’s stderr
+goes to, the words for a non-zero exit, and the archive-preview check.
+See “When the app does not start” below.</td>
+</tr>
+<tr>
+<td><code>cmdline.c</code> / <code>.h</code></td>
+<td>Builds the one command-line string <code>CreateProcessW</code>
+takes, quoting each argument by the rules the child’s C runtime splits
+it back with. A bare space join broke any folder or file name with a
+space in it.</td>
 </tr>
 <tr>
 <td><code>product.h.in</code></td>
@@ -348,13 +428,66 @@ class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="op">..</span></span>
 <span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>cmake <span class="op">--</span>build <span class="op">.</span> <span class="op">--</span>config Release</span>
 <span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Result: build/Release/QuillRadio.exe</span></span></code></pre></div>
+<h2 id="when-the-app-does-not-start">When the app does not start</h2>
+<p>Until 2026-09-28 the launcher waited for <code>pythonw.exe</code> and
+threw its exit code away. <code>pythonw.exe</code> has no console, so a
+traceback at import time went nowhere, and a DLL Windows refused to load
+ended the child before Python ran, with no text at all. A portable Quill
+Radio that “just doesn’t return anything” was the first report.
+<code>launch_report.c</code> closes that gap:</p>
+<ul>
+<li><strong>Launch log.</strong> Before the spawn, the launcher opens
+(truncating) a log and hands its inheritable handle to the child as
+stdout and stderr. The first line is the launcher’s own header (product,
+version, interpreter, module). Portable copies
+(<code>&lt;dir&gt;\data</code> exists) log to
+<code>data\logs\launch.log</code>; installed ones to
+<code>%APPDATA%\Quill\logs\&lt;PRODUCT_NAME&gt;-launch.log</code>,
+beside <code>quill.log</code>; <code>%TEMP%</code> is the last resort.
+Opened with <code>FILE_SHARE_READ</code> only, so a second launcher (the
+single-instance hand-off) cannot truncate a running instance’s log; it
+launches unlogged instead.</li>
+<li><strong>The dialog.</strong> On a non-zero exit the launcher reads
+the log’s last non-blank line and shows one <code>MessageBox</code>:
+“<App> did not start.” (or “stopped unexpectedly.” after
+<code>QL_STARTED_AFTER_MS</code>), the reason, the log’s path, and the
+support address. NTSTATUS exits that leave no text
+(<code>0xC0000135</code> DLL not found, <code>0xC0000142</code>,
+<code>0xC000007B</code>, <code>0xC0000022</code>, the memory faults) are
+translated to words; a Python line is quoted with a hint for “No module
+named”, “DLL load failed” and “Permission denied”. Exit 0 stays silent:
+an ordinary close and the hand-off both exit 0.</li>
+<li><strong>Archive preview.</strong> If the launcher’s own path runs
+through an archive tool’s scratch folder
+(<code>Temp&lt;n&gt;_&lt;name&gt;.zip</code>,
+<code>7zO&lt;hex&gt;</code>, <code>Rar$...</code>), the user pressed
+Enter on the exe <em>inside</em> the zip and only that file exists on
+disk. <code>fail_no_runtime</code> says so and walks through Extract
+All, instead of “this portable copy is incomplete”.</li>
+</ul>
+<p><strong>Rollout (2026-09-28).</strong> The change is in the shared
+source, so every product picks it up at its next launcher build; nothing
+per product is needed in C. What each product still owes when it ships:
+a changelog entry and a user-guide “If <App> does not start” section
+naming its own log file. Done: Quill Radio (3.0.4), Quill Converter
+(1.0.0, unreleased at the time), QUILL Lite (1.1.0 docs, ahead of its
+next build). Owed: QUILL, Cast, Weather, Audio Studio, Player, Inkwell,
+Beacon.</p>
 <h2 id="tests">Tests</h2>
 <div class="sourceCode" id="cb3"><pre
 class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>pytest tests<span class="op">/</span>unit<span class="op">/</span>native<span class="op">/</span>test_runtime_resolver<span class="op">.</span><span class="fu">py</span> <span class="op">-</span>v</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>pytest tests<span class="op">/</span>unit<span class="op">/</span>scripts<span class="op">/</span>test_build_native_launcher<span class="op">.</span><span class="fu">py</span> <span class="op">-</span>v</span></code></pre></div>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>pytest tests<span class="op">/</span>unit<span class="op">/</span>native<span class="op">/</span>test_launch_failure<span class="op">.</span><span class="fu">py</span> <span class="op">-</span>v</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>pytest tests<span class="op">/</span>unit<span class="op">/</span>native<span class="op">/</span>test_launcher_cmdline<span class="op">.</span><span class="fu">py</span> <span class="op">-</span>v</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>pytest tests<span class="op">/</span>unit<span class="op">/</span>scripts<span class="op">/</span>test_build_native_launcher<span class="op">.</span><span class="fu">py</span> <span class="op">-</span>v</span></code></pre></div>
 <p>The first is a Python mirror of the C runtime resolver and exercises
-the algorithm in isolation. The second is the per-product identity
-contract and the cross-product storage-mode allowlist check.</p>
+the algorithm in isolation. The second mirrors
+<code>launch_report.c</code> the same way and pins every constant and
+phrase to the C source. The third mirrors <code>cmdline.c</code>’s
+quoting and, where MSVC and CMake are installed, compiles the real
+<code>cmdline.c</code> into a small harness and checks that shell32’s
+<code>CommandLineToArgvW</code> reads every command line it builds back
+to the exact arguments. The fourth is the per-product identity contract
+and the cross-product storage-mode allowlist check.</p>
 <h2 id="what-this-is-not">What this is NOT</h2>
 <ul>
 <li><strong>Not a Python C-API host.</strong> The launcher does not link
@@ -371,5 +504,6 @@ href="../../core/runtime_marker.py"><code>quill/core/runtime_marker.py</code></a
 The C side reads the marker; the Python side writes it. Update
 both.</li>
 </ul>
+</main>
 </body>
 </html>

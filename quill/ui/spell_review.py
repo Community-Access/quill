@@ -58,6 +58,7 @@ def review_textctrl(
         # The caret, and the wrap that then has somewhere to happen (bad.md S7).
         start_at=text_ctrl.GetInsertionPoint(),
         wrap=bool(getattr(settings, "spell_review_wrap_to_beginning", True)),
+        context_mode=str(getattr(settings, "spell_review_context_mode", "sentence")),
     )
     if session.is_complete():
         announce_fn("No misspellings found.")

@@ -61,6 +61,7 @@ from quill.apps.lite_window_open import DocumentBackgroundOpenMixin
 from quill.apps.lite_window_recent import DocumentRecentMixin
 from quill.apps.lite_window_sections import DocumentSectionCommandsMixin
 from quill.apps.lite_window_selection import DocumentSelectionMixin
+from quill.apps.lite_window_sources import DocumentSourcesMixin
 from quill.apps.lite_window_spelling import DocumentSpellingMixin
 from quill.apps.lite_window_status import DocumentStatusMixin
 from quill.apps.lite_window_text_editor import DocumentTextEditorMixin
@@ -68,6 +69,7 @@ from quill.apps.lite_window_theme import DocumentAppearanceMixin
 from quill.apps.lite_window_tools import DocumentToolsMixin
 from quill.apps.lite_window_typing import DocumentTypingMixin
 from quill.apps.lite_window_view import DocumentViewCommandsMixin
+from quill.apps.lite_window_watch import DocumentDiskWatchMixin
 from quill.apps.lite_window_words import DocumentWordsMixin
 from quill.core.document_text import DocumentText
 from quill.core.lite import APP_NAME
@@ -78,7 +80,10 @@ from quill.core.sound_events import SoundEvent
 from quill.ui.dialog_contract import show_message_box
 from quill.ui.extend_selection_mode import ExtendSelectionMixin
 from quill.ui.hosted_ai_commands import HostedAiMixin
+from quill.ui.html_export_commands import HtmlExportCommandsMixin
+from quill.ui.inline_notes_commands import InlineNotesCommandsMixin
 from quill.ui.richedit_editing import RICH, create_richedit_document
+from quill.ui.task_list_commands import TaskListCommandsMixin
 
 __all__ = ["DocumentFrame"]
 
@@ -92,6 +97,11 @@ class DocumentFrame(
     # Before HostedAiMixin: it answers _thesaurus_enabled with the feature area.
     DocumentWordsMixin,
     HostedAiMixin,
+    # Inline notes, Toggle Task Done and Export as HTML: QUILL's code, shared
+    # (2026-10-04). Their hooks' defaults are this window's own attributes.
+    InlineNotesCommandsMixin,
+    TaskListCommandsMixin,
+    HtmlExportCommandsMixin,
     DocumentActivityMixin,
     # Tools > Dictation, from the module QUILL shares (2026-09-25).
     DocumentDictationMixin,
@@ -116,6 +126,11 @@ class DocumentFrame(
     DocumentTypingMixin,
     DocumentSpellingMixin,
     DocumentFileMixin,
+    # Open from URL and the clipboard, drops, Reopen with Encoding and the
+    # save-time disk check, shared with QUILL (2026-10-04).
+    DocumentSourcesMixin,
+    # Watching the file for other programs' changes, QUILL's code (2026-10-04).
+    DocumentDiskWatchMixin,
     DocumentRecentMixin,
     # Large and networked files open off the UI thread (F-05).
     DocumentBackgroundOpenMixin,
@@ -264,6 +279,8 @@ class DocumentFrame(
 
         self.control.Bind(wx.EVT_TEXT, self._on_text)
         self.control.Bind(wx.EVT_TEXT, self._track_bookmarks)
+        # Files dropped on the window or the editor open; dropped text inserts.
+        self._install_file_drop()
         self.control.Bind(wx.EVT_CHAR, self._on_char)
         # Watching the Insert key go past to the control, which does the
         # overtype itself. Never a binding: Insert is the screen reader's
@@ -322,6 +339,7 @@ class DocumentFrame(
             self._remember_clean_text()
         self._update_title()
         self._touch_status()
+        self._start_disk_watch()
         self.control.SetFocus()
 
     # ------------------------------------------------------------------ #
@@ -329,7 +347,10 @@ class DocumentFrame(
     # ------------------------------------------------------------------ #
 
     def document_name(self) -> str:
-        return self.path.name if self.path else "Untitled"
+        if self.path:
+            return self.path.name
+        # A document opened from a link is named after the file (2026-10-04).
+        return getattr(self, "download_name", "") or "Untitled"
 
     def _update_title(self) -> None:
         """Retitle after the document. The reader announces this; nothing else does.

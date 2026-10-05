@@ -36,6 +36,7 @@ from typing import Any, NamedTuple
 import wx
 
 from quill.apps.lite_dialogs import _stack
+from quill.apps.lite_preferences_files import FileChangePrefs
 from quill.apps.lite_preferences_profile import ProfileRow
 from quill.core.action_feedback import ACTION_FEEDBACK_LABELS
 from quill.core.action_feedback import coerce as coerce_feedback
@@ -168,6 +169,16 @@ def edit_preferences(
     )
     keep_untitled.SetValue(bool(getattr(settings, "recover_untitled_documents", True)))
     root.Add(keep_untitled, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
+
+    notes_in_file = wx.CheckBox(dialog, label="Write new inline notes into the file")
+    notes_in_file.SetHelpText(
+        "On: in Markdown and HTML documents, Add Inline Note starts with Write this "
+        "note into the file checked, so the note is kept in the document as a hidden "
+        "comment that anyone who opens the file can read. Off: notes stay private to "
+        "you. Each document remembers your last choice. QUILL has the same setting."
+    )
+    notes_in_file.SetValue(bool(getattr(settings, "inline_notes_in_file", False)))
+    root.Add(notes_in_file, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
 
     # Beside Reopen last session's documents, because the two together are the
     # whole answer to "what do I get when I start?" -- and somebody turning one
@@ -488,6 +499,7 @@ def edit_preferences(
 
     ai_check.Bind(wx.EVT_CHECKBOX, _toggle_ai)
 
+    file_prefs = FileChangePrefs(dialog, root, settings, announce=announce, pad=_PAD)
     if hasattr(parent, "cmd_toggle_notepad_replacement"):  # quill/ui/text_editor_prefs.py
         TextEditorPrefs(dialog, dialog, root, parent, make_key="x", notepad_key="o", pad=_PAD)
 
@@ -500,6 +512,7 @@ def edit_preferences(
         if show_modal_dialog(dialog, "Preferences") != wx.ID_OK:
             return PreferencesResult(False, False)
         features_changed = profile_row.apply()
+        files_changed = file_prefs.apply()
         before = (
             settings.default_mode,
             settings.theme,
@@ -521,12 +534,14 @@ def edit_preferences(
             getattr(settings, "wrap_find", True),
             getattr(settings, "announcement_throttle_ms", 0),
             getattr(settings, "recover_untitled_documents", True),
+            getattr(settings, "inline_notes_in_file", False),
         )
         settings.default_mode = "rich" if mode_choice.GetSelection() == 1 else "plain"
         settings.theme = "dark" if theme_choice.GetSelection() == 0 else "system"
         settings.word_wrap = bool(wrap.GetValue())
         settings.restore_session = bool(restore.GetValue())
         settings.recover_untitled_documents = bool(keep_untitled.GetValue())
+        settings.inline_notes_in_file = bool(notes_in_file.GetValue())
         settings.share_quill_abbreviations = bool(share.GetValue())
         settings.share_quill_dictionary = bool(share_dict.GetValue())
         settings.clip_library_autocapture = bool(keep_clips.GetValue())
@@ -547,7 +562,8 @@ def edit_preferences(
         settings.font_size = int(chosen["size"])
         settings.normalized()
         return PreferencesResult(
-            features_changed
+            files_changed
+            or features_changed
             or before
             != (
                 settings.default_mode,
@@ -570,6 +586,7 @@ def edit_preferences(
                 settings.wrap_find,
                 settings.announcement_throttle_ms,
                 settings.recover_untitled_documents,
+                settings.inline_notes_in_file,
             ),
             features_changed,
         )

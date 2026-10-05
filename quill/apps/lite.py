@@ -568,6 +568,10 @@ _USAGE = f"""{APP_NAME} {APP_VERSION} -- a notepad-scale editor built for screen
 
 
 def main() -> int:
+    if sys.argv[1:2] in (["--notes"], ["notes"]):  # the same notes CLI as QUILL
+        from quill.core.inline_notes_cli import run as run_notes
+
+        return run_notes(sys.argv[2:])
     from quill.core.data_location import apply_pending_at_launch
     from quill.core.paths import use_running_app_data_dir
 

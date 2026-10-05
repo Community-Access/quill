@@ -42,7 +42,7 @@ scratch file is an entirely reasonable thing to do, so the window keeps an
 override, reachable three ways, and every consumer reads it before the file
 name:
 
-* **Ctrl+Shift+M** rings through all four kinds of document -- plain, Markdown,
+* **Alt+Shift+F** rings through all four kinds of document -- plain, Markdown,
   HTML, rich -- which is the fast way when you do not mind hearing the ones in
   between. See :data:`DOCUMENT_KINDS`.
 * **Ctrl+Alt+F6** (Format > Document Language) goes straight to one, and says
@@ -83,7 +83,7 @@ from quill.ui.richedit_editing import PLAIN, RICH
 
 __all__ = ["DOCUMENT_KINDS", "DocumentMarkupMixin", "MARKUP_COMMANDS"]
 
-#: The ring Ctrl+Shift+M walks, in order, and what each stop is called.
+#: The ring Alt+Shift+F walks, in order, and what each stop is called.
 #:
 #: Four kinds of document, not two. The key has always meant "this document is
 #: the wrong kind, make it the other one", and once a plain document has a
@@ -179,7 +179,7 @@ class DocumentMarkupMixin:
         """ "Markdown", "HTML", "Plain text" or "Rich text" -- all four kinds.
 
         The status bar's Format cell reads this. It used to read "Plain text" or
-        "Rich text" and nothing else, which meant ringing Ctrl+Shift+M from plain
+        "Rich text" and nothing else, which meant ringing Alt+Shift+F from plain
         to Markdown to HTML changed the document's behaviour three times and
         changed the cell not at all -- the one place somebody would look to check
         what had just happened. A cell that cannot see two thirds of the states
@@ -205,7 +205,7 @@ class DocumentMarkupMixin:
         """Adopt *language* for this window, and tell everything that cares.
 
         Deliberately **no conversion**: the language says what you are typing,
-        not what the buffer holds. Ctrl+Shift+M rings through four stops, and
+        not what the buffer holds. Alt+Shift+F rings through four stops, and
         converting at each would rewrite the document three times on the way to
         the one you wanted. Rich text is the stop that costs something, and
         ``switch_mode`` is the one that asks first.
@@ -286,7 +286,7 @@ class DocumentMarkupMixin:
         self._announce("Converted HTML to Markdown")
 
     def cmd_switch_document_kind(self) -> None:
-        """Ctrl+Shift+M: ring on to the next kind of document.
+        """Alt+Shift+F: ring on to the next kind of document.
 
         Plain text, then Markdown, then HTML, then rich text, then round again.
         Each stop announces itself, which is the whole point of a ring rather

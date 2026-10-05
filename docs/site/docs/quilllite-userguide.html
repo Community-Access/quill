@@ -576,7 +576,7 @@ short.</strong></p>
 Abbreviations</strong>). Add a short trigger and the text it should
 write.</li>
 <li>In your document, type the trigger and a space.</li>
-<li>Forgotten a trigger? Press <strong>Alt+Shift+I</strong>
+<li>Forgotten a trigger? Press <strong>Ctrl+Alt+Shift+Home</strong>
 (<strong>Snippets</strong>). It lists them all with a preview, the ones
 you use most at the top.</li>
 </ol>
@@ -1237,6 +1237,80 @@ Encoding and Line Endings</strong> (<strong>Ctrl+Alt+E</strong>). The
 change takes effect the next time you save.</p>
 <p>The tutorial <em>Open a file, and give it back unchanged</em> lets
 you see this promise for yourself, with the app guiding you.</p>
+<p>When a file is not UTF-8, which many older Windows files are not,
+QUILL Lite tells you once as it opens: “Opened as Windows-1252, not
+UTF-8.” That is all it does. Every byte of the file is read, and a save
+puts every byte back.</p>
+<h4 id="when-another-program-changes-your-file">When another program
+changes your file</h4>
+<p>QUILL Lite keeps an eye on every file you have open. When something
+else writes to one, such as Word saving a document, a sync tool bringing
+down a newer copy, or an AI assistant rewriting a plan while you read
+it, QUILL Lite notices within a second or so.</p>
+<p>If you have not changed the document yourself, and you have turned on
+<strong>Reload automatically when you have no unsaved edits</strong>, it
+simply reads the file again. Your cursor stays on the same line, and you
+hear once: “Reloaded plan.md: changed by another program.”</p>
+<p>Otherwise it asks you, once for each change:</p>
+<ul>
+<li><strong>Keep Mine</strong> leaves your document exactly as it is.
+Enter and Escape both give this answer, because doing nothing to your
+text is the safe choice. The next time you save, your version replaces
+the one on disk, without another question.</li>
+<li><strong>Reload from Disk</strong> reads the file again and keeps
+your cursor on the same line. If you had unsaved changes, they are
+replaced.</li>
+<li><strong>Save As…</strong> saves your version under a new name and
+leaves theirs alone.</li>
+</ul>
+<p>The question has a checkbox, such as <strong>Do not ask me again for
+.md files</strong>. Tick it and QUILL Lite remembers your answer, Reload
+or Keep Mine, for every file of that kind. That is handy when a tool
+rewrites the same file every few seconds. To take every remembered
+answer back, open Preferences and press <strong>Forget remembered
+file-change answers</strong>, then OK. A remembered Reload never throws
+away unsaved edits; QUILL Lite asks instead.</p>
+<p>If you are looking at a different document when the change happens,
+QUILL Lite waits and asks when you come back to that one. It also waits
+while any other window, such as Preferences or a Save question, is
+open.</p>
+<p>If the file is deleted or moved away, QUILL Lite tells you once,
+keeps your text, and marks the document as not saved, so you can use
+<strong>Save As</strong> to keep it somewhere.</p>
+<p>You can change all of this in Preferences, under <strong>When another
+program changes the file</strong>:</p>
+<ul>
+<li><strong>Watch the open file for external changes</strong> is on to
+begin with. Turn it off and QUILL Lite only checks when you save.</li>
+<li><strong>Reload automatically when you have no unsaved edits</strong>
+is off to begin with. Turn it on and an unchanged document is reloaded
+without asking. An answer you asked QUILL Lite to remember still comes
+first.</li>
+<li><strong>Ask before discarding unsaved edits on a conflict</strong>
+is on to begin with. Turn it off and QUILL Lite says nothing when a file
+you have changed is changed or deleted on disk, and leaves your text
+exactly as it is.</li>
+<li><strong>External-change debounce (milliseconds)</strong> is how
+often QUILL Lite looks, so a program that writes a file in several steps
+is dealt with once. The default is 750.</li>
+</ul>
+<p>These are QUILL’s settings too, with the same names, and QUILL asks
+the same question.</p>
+<h4 id="save-checks-once-more">Save checks once more</h4>
+<p>Right before <strong>Ctrl+S</strong> writes your file, QUILL Lite
+checks the file on disk once more. If another program changed it since
+you opened it or last saved it, an AI assistant rewriting a plan while
+you read it, say, QUILL Lite stops and asks instead of writing over that
+change:</p>
+<ul>
+<li><strong>Save As…</strong> keeps both: yours under a new name, theirs
+untouched. Enter gives this answer.</li>
+<li><strong>Reload from Disk</strong> shows the version on disk and
+throws away your unsaved edits.</li>
+<li><strong>Overwrite</strong> saves your version over theirs.</li>
+<li><strong>Cancel</strong>, or Escape, saves nothing.</li>
+</ul>
+<p>QUILL asks the same question.</p>
 <h4 id="how-this-file-is-written-encoding-and-line-endings">How this
 file is written: encoding and line endings</h4>
 <p><strong>Tools &gt; File Encoding and Line Endings…</strong>
@@ -1267,6 +1341,19 @@ did. Such a file keeps what it has. You see a <strong>keep as
 is</strong> row at the top of the list, and it is already chosen. So if
 you open this window and just press Enter, nothing in the file
 changes.</p>
+<h5 id="reopen-with-encoding">Reopen with Encoding</h5>
+<p>Now and then an old file’s accented letters come out wrong, because
+it was written in an encoding nobody can guess from the file alone, such
+as Cyrillic Windows-1251. Press <strong>Reopen with Encoding…</strong>
+in this window, pick the encoding the file was written in, and QUILL
+Lite reads the same file again from disk that way. If you have unsaved
+changes it asks first, because reopening throws them away. Nothing on
+disk changes, and if the file is not valid in the encoding you picked,
+QUILL Lite says so and leaves your document alone.</p>
+<p>After a reopen the file saves back in that same encoding. To turn it
+into UTF-8 instead, open this window again, choose UTF-8, and save. The
+button is there for a plain text file you opened from disk; QUILL has
+the same one.</p>
 <h4 id="when-a-character-will-not-fit">When a character will not
 fit</h4>
 <p>Older files can only store a limited set of letters. If you type an
@@ -1391,6 +1478,51 @@ you just want to see what it said yesterday.</li>
 </ul>
 <p>If you had backups switched on before version 1.0, those older copies
 are in the list too.</p>
+<h4 id="a-web-page-you-can-share">A web page you can share</h4>
+<p><strong>File &gt; Export as HTML…</strong>
+(<strong>Ctrl+Alt+Shift+End</strong>) saves a copy of your document as a
+single web page. Its styles are inside it, it has no scripts, and it
+says which language it is in, so you can email it or put it on a website
+as it is. Headings, lists and tables come out as real headings, lists
+and tables, task lists show as check boxes, and <del>struck-out</del>
+text is struck out. Your document stays as it was; only the copy is a
+web page.</p>
+<p>If the document has notes written into the file, QUILL Lite asks
+whether to include them in the page, marked as notes. No is the default,
+so a note never ends up in a page by accident. QUILL has the same
+command on the same key.</p>
+<h3 id="opening-what-you-copied-a-link-or-a-file-you-drag-in">Opening
+what you copied, a link, or a file you drag in</h3>
+<p>Documents reach you in all sorts of ways: a file in File Explorer, a
+path somebody pasted into a chat, a link in an email. QUILL Lite opens
+all three without a trip through the Open dialog. The idea comes from
+PlanCake, a small reading app by Andre of Oire Software.</p>
+<p><strong>Open from Clipboard</strong>
+(<strong>Ctrl+Alt+Shift+Enter</strong>, on the File menu). Copy first,
+then press it:</p>
+<ul>
+<li>Files copied in File Explorer open, each in its own window. If you
+copied several, QUILL Lite tells you how many it opened.</li>
+<li>A file path copied as text opens that file, quotes and all. Several
+paths, one per line, open in turn.</li>
+<li>A web link goes to Open from URL, below.</li>
+</ul>
+<p>If the clipboard holds none of those, you hear “The clipboard holds
+no file, path or link.” <strong>Ctrl+V</strong> still pastes.</p>
+<p><strong>Open from URL…</strong> (<strong>Alt+F, F</strong>). Type or
+paste a web address. QUILL Lite finds out the file’s name and size and
+asks before downloading anything, for example “Download plan.md from
+example.com? It is 12 KB.” Say Yes and a small window shows how the
+download is going; its Cancel button stops it. If something goes wrong,
+you hear one plain sentence instead of an error. A link to a file’s page
+on GitHub opens the file itself.</p>
+<p>The download opens as a new, unsaved document named after the file.
+Save it wherever you like. The temporary copy is deleted as soon as it
+is read.</p>
+<p><strong>Drag and drop.</strong> Drag files from File Explorer onto
+the QUILL Lite window and they open. Text you drag into a document is
+still inserted where you drop it.</p>
+<p>QUILL has the same three, on the same key.</p>
 <h3 id="opening-something-you-worked-on-recently">Opening something you
 worked on recently</h3>
 <p>QUILL Lite remembers the documents you open, newest first, so getting
@@ -2311,8 +2443,10 @@ usually what you want for code.</p>
 <p><strong>Shift+Tab</strong> outdents in either mode, so one key always
 takes back a tab you typed by accident. The <strong>Tab Mode</strong>
 part of the status bar tells you which mode is on.</p>
-<h4 id="snippets-altshifti">Snippets (Alt+Shift+I)</h4>
-<p><strong>Alt+Shift+I</strong> opens <strong>Snippets…</strong>. It
+<h4 id="snippets-ctrlaltshifthome">Snippets (Ctrl+Alt+Shift+Home)</h4>
+<p><strong>Ctrl+Alt+Shift+Home</strong> opens
+<strong>Snippets…</strong>. (It was <strong>Alt+Shift+I</strong> before
+version 1.2, which is now Add Inline Note, the same as in QUILL.) It
 lists every abbreviation you have, the ones you use most at the top,
 with a preview of what each one writes. Pick one and press
 <strong>Enter</strong>, and it goes in at your cursor.</p>
@@ -2773,9 +2907,9 @@ you are on, which helps when two headings have similar names.</p>
 <p>Nothing changes in your document until you press
 <strong>Apply</strong>. Everything you did counts as one change, so one
 <strong>Ctrl+Z</strong> puts it all back. QUILL has the same window.</p>
-<p>The Heading Organizer works in Markdown and HTML documents. In rich
-text, a heading is just a font size, so it cannot be reordered this
-way.</p>
+<p>The Heading Organizer works in Markdown, HTML and rich text
+documents. In rich text it moves each heading with its formatting, so
+bold and sizes come along.</p>
 <h4
 id="rearranging-headings-one-at-a-time-format--structure">Rearranging
 headings one at a time (Format &gt; Structure)</h4>
@@ -2900,6 +3034,20 @@ and they work in both editors, and you hear the same words in each.</li>
 </ul>
 <p>The tutorial <em>Skimming something long</em> ends with rearranging a
 document, if you would like to try these keys with some guidance.</p>
+<h4 id="ticking-off-tasks">Ticking off tasks</h4>
+<p>A task list is a list whose items start with a box:
+<code>- [ ]</code> for something to do and <code>- [x]</code> for
+something done. AI-written plans are full of them, and
+<strong>Ctrl+Alt+I</strong> (<strong>Markdown Tag…</strong>) can insert
+one.</p>
+<p>Put the cursor on a task and press <strong>Ctrl+Alt+Enter</strong>
+(<strong>Format &gt; Toggle Task Done</strong>) to tick it. Press it
+again to untick it. You hear what changed and how many tasks in that
+list are done, for example “Checked: Write the tests. 3 of 7 tasks
+complete.” Select several tasks first to tick them all at once.
+<strong>Ctrl+Z</strong> takes it back. On a line that is not a task,
+QUILL Lite says so and changes nothing. This is the same key as in
+QUILL.</p>
 <h3 id="links">Links</h3>
 <p>To add a link, press <strong>Ctrl+K</strong>. A box opens asking for
 the address and the words to show.</p>
@@ -3652,6 +3800,75 @@ up the free allowance quickly. If you have neither, every row tells you
 so and opens the account window. All of these rows switch off together
 when you turn off <strong>AI help</strong> in Customize Features.
 Chapter 10, AI help, explains how to connect a key or sign in.</p>
+<h3 id="inline-notes">Inline notes</h3>
+<p>An inline note is a comment you attach to a line or a selection: a
+question, a reminder, or what you think of a plan somebody sent you.
+They are on <strong>Tools &gt; Inline Notes</strong>, on the same keys
+as in QUILL.</p>
+<ul>
+<li><strong>Alt+Shift+I</strong> (<strong>Add Inline Note…</strong>)
+adds a note to the selected text, or to the line you are on if nothing
+is selected. The <strong>Note on</strong> line at the top shows the
+start of that text, so you can check you are in the right place before
+you save.</li>
+<li><strong>Alt+Shift+J</strong> and <strong>Alt+Shift+K</strong>
+(<strong>Next Inline Note</strong> and <strong>Previous Inline
+Note</strong>) move to the next or previous note and read it to you.
+They go round from the end to the start.</li>
+<li><strong>Alt+Shift+H</strong> (<strong>Speak Inline Note</strong>)
+reads the note you are on. Press it twice quickly to change or delete
+the note.</li>
+<li><strong>Alt+Shift+Delete</strong> (<strong>Delete Inline
+Note…</strong>) deletes the note you are on. QUILL Lite reads you the
+note and asks first; No is the default.</li>
+<li><strong>Alt+Shift+Enter</strong> (<strong>List Inline
+Notes…</strong>) shows every note in the document: the note, the line it
+is on, the text it is about, and whether it is private or in the file.
+<strong>Enter</strong> goes to a note, <strong>Delete</strong> deletes
+one and <strong>F2</strong> edits one. The buttons let you
+<strong>Remove All</strong> of them (you are asked first), <strong>Copy
+All</strong> of them as plain text, or <strong>Export</strong> them to a
+Markdown or JSON file.</li>
+</ul>
+<p>A note follows its text as you edit. If the text is deleted, the note
+is not lost: the list shows it at the end, marked “the text it was on is
+gone”, so you can read it and remove it.</p>
+<h4 id="private-notes-and-notes-in-the-file">Private notes and notes in
+the file</h4>
+<p>Normally a note is private. It is kept in QUILL Lite’s own folder,
+the document is never changed, and nobody else sees it. That works in
+every kind of document.</p>
+<p>In a Markdown or HTML document, you can check <strong>Write this note
+into the file</strong> instead. The note goes into the document as a
+hidden comment on its own line, right after the text it is about:</p>
+<pre><code>Back up the uploads folder.
+&lt;!-- quill-note: And the database dump. --&gt;</code></pre>
+<p>The file is still a proper Markdown or HTML file, and web pages hide
+the comment. But anyone who opens the file in a text editor, or an AI
+assistant you give it to, can read your note. That is the way to review
+a plan an AI assistant wrote for you: leave your notes in the file and
+hand it back. Because the note is part of the text,
+<strong>Ctrl+Z</strong> takes back adding, changing or deleting it.</p>
+<p>The check box remembers your choice for each document. To start every
+new note in the file, turn on <strong>Write new inline notes into the
+file</strong> in <strong>Preferences</strong>. It is off unless you
+change it.</p>
+<h4 id="notes-from-the-command-line">Notes from the command line</h4>
+<p>A script, or an AI assistant working in a terminal, can read and
+clear the notes in a file without opening a window:</p>
+<ul>
+<li><code>QuillLite.exe --notes list plan.md</code> prints every note,
+its line and the text it is about. Add <code>--json</code> for a list a
+program can read.</li>
+<li><code>QuillLite.exe --notes check plan.md</code> says how many notes
+are left.</li>
+<li><code>QuillLite.exe --notes clear plan.md</code> removes them all
+and saves the file.</li>
+</ul>
+<p>The exit code is 0 when it worked (or, for <code>check</code>, when
+no notes are left), 3 when <code>check</code> finds notes still there, 1
+when the file cannot be read or written, and 2 when the command is
+mistyped. Private notes never appear here.</p>
 <h3 id="what-is-this-character">What is this character?</h3>
 <p>Press <strong>Ctrl+Shift+C</strong> to hear exactly which character
 your cursor is on: its name, and how it behaves when you search.</p>
@@ -5443,6 +5660,16 @@ agreement right then and saves your answer. Unticking it takes your
 agreement back right then. If you decline the agreement, the tick goes
 away again and QUILL Lite tells you so. See <a
 href="#chapter-10-ai-help">Chapter 10, AI help</a>.</p>
+<h5 id="when-another-program-changes-the-file">When another program
+changes the file</h5>
+<p><strong>Watch the open file for external changes</strong> is on.
+<strong>Reload automatically when you have no unsaved edits</strong> is
+off. <strong>Ask before discarding unsaved edits on a conflict</strong>
+is on. <strong>External-change debounce (milliseconds)</strong> is 750.
+<strong>Forget remembered file-change answers</strong> takes back every
+“Do not ask me again” answer when you press OK. What each one does is in
+<a href="#when-another-program-changes-your-file">When another program
+changes your file</a>, in Chapter 3.</p>
 <h4 id="what-is-not-in-here-and-where-it-is-instead">What is not in
 here, and where it is instead</h4>
 <p>Some switches are on a key instead, because you change them while you
@@ -6169,6 +6396,10 @@ wrong, how your settings are protected, and how to come back. Read it,
 tick the <strong>I understand</strong> box, then choose <strong>Move to
 Beta</strong> (or <strong>Move to Dev</strong>). <strong>Stay on
 Stable</strong>, or Escape, changes nothing.</p>
+<p>Beta and Dev versions aren’t signed, so when you install one, Windows
+SmartScreen may warn that it comes from an unknown publisher; that’s
+expected, and choosing <strong>More info</strong>, then <strong>Run
+anyway</strong>, installs it.</p>
 <p>Before it moves, QUILL Lite saves a copy of your settings, keys and
 recent files list. If it cannot, it stays where it is and tells you why.
 Your documents are not copied, and updates do not change them. Then it
@@ -6668,6 +6899,10 @@ list inside the app.</p>
 <td>Open…</td>
 </tr>
 <tr>
+<td><strong>Ctrl+Alt+Shift+Enter</strong></td>
+<td>Open from Clipboard</td>
+</tr>
+<tr>
 <td><strong>Alt+Shift+0</strong></td>
 <td>Recent Documents…</td>
 </tr>
@@ -6686,6 +6921,10 @@ list inside the app.</p>
 <tr>
 <td><strong>Alt+Shift+F12</strong></td>
 <td>Reopen Last Session…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+End</strong></td>
+<td>Export as HTML…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+P</strong></td>
@@ -7204,6 +7443,10 @@ list inside the app.</p>
 <td>Lists</td>
 </tr>
 <tr>
+<td><strong>Ctrl+Alt+Enter</strong></td>
+<td>Toggle Task Done</td>
+</tr>
+<tr>
 <td><strong>Ctrl+Alt+F</strong></td>
 <td>Editor Font…</td>
 </tr>
@@ -7482,7 +7725,7 @@ list inside the app.</p>
 <td>File Encoding and Line Endings…</td>
 </tr>
 <tr>
-<td><strong>Alt+Shift+I</strong></td>
+<td><strong>Ctrl+Alt+Shift+Home</strong></td>
 <td>Snippets…</td>
 </tr>
 <tr>
@@ -7677,6 +7920,41 @@ list inside the app.</p>
 <tr>
 <td><strong>Ctrl+Alt+Shift+]</strong></td>
 <td>Find the Word For…</td>
+</tr>
+</tbody>
+</table>
+<h4 id="inline-notes-in-tools">Inline Notes (in Tools)</h4>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Alt+Shift+I</strong></td>
+<td>Add Inline Note…</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+J</strong></td>
+<td>Next Inline Note</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+K</strong></td>
+<td>Previous Inline Note</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+H</strong></td>
+<td>Speak Inline Note (Twice to Edit)</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+Delete</strong></td>
+<td>Delete Inline Note…</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+Enter</strong></td>
+<td>List Inline Notes…</td>
 </tr>
 </tbody>
 </table>

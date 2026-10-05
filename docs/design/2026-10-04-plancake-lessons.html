@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>What PlanCake teaches us about reviewing a document by
+ear</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="what-plancake-teaches-us-about-reviewing-a-document-by-ear">What
+PlanCake teaches us about reviewing a document by ear</h1>
+<p>Date: 2026-10-04. An internal design note: what QUILL and QUILL Lite
+can learn from PlanCake, and what we should build because of it.</p>
+<h2 id="where-the-ideas-come-from">Where the ideas come from</h2>
+<p>PlanCake is a small Windows app by Andre of Oire Software (Menelion
+on GitHub), announced by its author on a blind-tech mailing list;
+website plan-cake.oire.dev, source github.com/Oire/plan-cake, Apache
+License 2.0. It opens a Markdown file, shows it as a rendered page, and
+lets you leave a note after any block by pressing Enter on it. It was
+built for one job: reviewing the long implementation plans that AI
+coding assistants write. Every idea in this note that is not already in
+QUILL is PlanCake’s, and the credit is Andre’s.</p>
+<p>How this was researched: PlanCake’s README, its 1.0.0 release notes,
+its English user manual (<code>src/PlanCake/help/en/manual.html</code>)
+and a design note in its repository about JAWS behaviour inside WebView2
+(<code>docs/jaws-spike.md</code>). We looked at the repository’s layout
+to understand how notes are stored, and read no further into the code.
+Nothing of theirs is copied here, and nothing in this note proposes
+reading or importing PlanCake’s files. That is the standing family rule
+for competitors: learn from the idea, never from the data.</p>
+<p>On the QUILL side, every menu path and key below was checked against
+the code on 2026-10-04 (<code>quill/core/keymap.py</code>,
+<code>quill/core/lite/commands.py</code>,
+<code>quill/ui/main_frame_menu.py</code> and the modules named in each
+section), and every key proposed was checked free in both
+<code>DEFAULT_KEYMAP</code> (with <code>DEFAULT_ALIASES</code>) and
+QUILL Lite’s command table, and against the dynamic rows those tables do
+not show (Recent Documents on Alt+Shift+1 to 9, the QuillVille launchers
+on Ctrl+Alt+Shift+F7 to F12).</p>
+<h2 id="what-plancake-does-well-for-a-screen-reader-user">What PlanCake
+does well for a screen-reader user</h2>
+<p>Each of these is one sentence on purpose; the sections after this one
+take them in turn.</p>
+<ol type="1">
+<li><strong>Enter is the note key.</strong> You read the plan in your
+screen reader’s own browse mode, and pressing Enter on whatever block
+you are on opens a tiny note dialog, already focused, that shows the
+start of the block so you can check you picked the right one.</li>
+<li><strong>The note lives in the file, right after the block it is
+about.</strong> Nothing to save, no side file; whoever opens the file
+next, a colleague or an AI assistant, finds each note exactly where it
+belongs.</li>
+<li><strong>One place lists every note.</strong> A notes list beside the
+document gives each note’s first sentence, its lines, and the first
+sentence of the block it follows, and F9 and Shift+F9 walk the notes
+from anywhere.</li>
+<li><strong>Notes are a review loop, not just text.</strong> Delete one,
+delete all (with a count, always asked), undo any of it, and a command
+line (<code>list</code>, <code>check</code>, <code>clear</code>,
+<code>export</code>) lets an AI assistant read your notes, work through
+them and prove none are left, with exit code 3 meaning “notes still
+open”.</li>
+<li><strong>Task lists you can tick.</strong> A <code>- [ ]</code> item
+is a real checkbox; Space or Enter asks, writes <code>[x]</code> on that
+one line, says “Task checked”, and undo reverses it.</li>
+<li><strong>Plans arrive however they arrive.</strong> Ctrl+V with a
+file copied in File Explorer, a path copied as text (quotes and all), or
+a web link; Ctrl+L for a link, which understands an ordinary GitHub page
+link and fetches the raw Markdown behind it; the command line; drag and
+drop.</li>
+<li><strong>It refuses to destroy what it cannot read.</strong> A file
+in a legacy encoding opens read-only and says which encoding it is;
+conversion to UTF-8 is an opt-in setting; a file whose encoding is
+uncertain is never written.</li>
+<li><strong>It never overwrites a change it has not seen.</strong> When
+an AI assistant rewrites the plan while you read, PlanCake reloads in
+place and keeps your reading position; if the file changed while you
+typed a note, the write is refused and nothing is lost on either
+side.</li>
+<li><strong>Every outcome is spoken, and only the outcome.</strong>
+“Note added”, “No more notes”, “File reloaded”, “Undone: note added” –
+through the status bar and a UI Automation notification, so they are
+heard wherever focus is.</li>
+<li><strong>A shareable page.</strong> Export to a single self-contained
+HTML file with the notes marked and no scripts, and notes to JSON for
+other tools.</li>
+<li><strong>Privacy stated plainly.</strong> Two network uses, named:
+downloading a file you asked for, and the update check. No usage
+data.</li>
+</ol>
+<p>Two smaller touches are worth remembering even though they are not
+proposals: each note in the rendered page is a region named “User note”,
+so a screen reader can tell your words from the plan’s; and PlanCake’s
+JAWS notes record that giving every block a permanent
+<code>tabindex</code> threw JAWS into forms mode on Enter, so blocks
+only become focusable for the moment the app moves the virtual cursor.
+That is a hard-won lesson for anyone who ever builds a web view with
+per-block actions.</p>
+<h2 id="idea-by-idea-what-we-have-the-gap-and-what-to-build">Idea by
+idea: what we have, the gap, and what to build</h2>
+<p>A note on keys before the detail. The family keyspace is close to
+full, so every key below was chosen from the short list of chords that
+are free in <em>both</em> <code>DEFAULT_KEYMAP</code> and QUILL Lite’s
+command table. PlanCake’s own keys mostly cannot come across: Ctrl+L and
+Ctrl+E are Word’s Align Left and Centre in both editors (rule 1), F9 is
+Repeat Last Result and Shift+F9 is Activity in both, Alt+Shift+Up and
+Down are Move Section in both, F5 is Date and Time, and in an editor
+Ctrl+V has to paste. That is not a criticism of PlanCake – it is a
+reader, and a reader can spend its keys differently – but it is why none
+of its chords appear here.</p>
+<h3 id="1-a-note-is-one-keystroke-away-and-the-dialog-is-tiny">1. A note
+is one keystroke away, and the dialog is tiny</h3>
+<p><strong>PlanCake.</strong> Enter on any block opens Add note, focused
+on the note box, with “Note on” showing the start of the block. Enter
+saves, Ctrl+Enter is a new line, Escape cancels, and the setting can
+swap Enter and Ctrl+Enter.</p>
+<p><strong>QUILL today.</strong> Inline notes
+(<code>quill/ui/main_frame_inline_notes.py</code>, core in
+<code>quill/core/inline_notes.py</code>). On <strong>Tools &gt; Writing
+and Language</strong>:</p>
+<ul>
+<li><strong>Add Inline Note…</strong> <code>Alt+Shift+I</code> – notes
+the selection, or the current line if nothing is selected. Says “Inline
+note added.”</li>
+<li><strong>Next Inline Note</strong> <code>Alt+Shift+J</code> and
+<strong>Previous Inline Note</strong> <code>Alt+Shift+K</code> – wrap,
+and say “Inline note 2 of 5: …”.</li>
+<li><strong>Speak Inline Note (double to edit)</strong>
+<code>Alt+Shift+H</code> – says the note at the caret; pressed twice
+within 0.6 seconds it opens Edit Inline Note, which has Save, Delete and
+Cancel. That double press is the only way to edit or delete a note.</li>
+</ul>
+<p><strong>QUILL Lite today.</strong> No inline notes at all.
+<code>quill/core/lite/parity.py</code> records this as one of four note
+chords Lite does not have, and Lite spends <code>Alt+Shift+I</code> on
+<strong>Tools &gt; Snippets…</strong>.</p>
+<p><strong>The gap.</strong> The QUILL dialog is already small and
+already anchored, so the gap is not the dialog. It is that Lite has
+none, that the dialog does not show which text the note is on
+(PlanCake’s “Note on” line is a good check before saving), and that the
+only way to delete a note is a timed double press.</p>
+<p><strong>Proposal.</strong></p>
+<ul>
+<li>Bring inline notes to QUILL Lite (shortlist item 6). The core is
+already wx-free and shared; Lite needs four rows in its command table on
+the same four chords (rule 2: the command both products have keeps the
+chord). Lite’s Snippets moves off <code>Alt+Shift+I</code> to
+<code>Ctrl+Alt+Shift+Home</code>, free in both, and QUILL gains the same
+chord as an alias for its snippet gallery (rule 5), which also eases the
+existing rule 6 strain of Lite reaching on a plain chord what QUILL
+keeps on the leader. Update the <code>cmd_snippet_gallery</code> entry
+in <code>parity.py</code> in the same change. (Any chord ending in
+Insert would be the mnemonic and is out: Insert is the screen reader’s
+modifier and <code>quill/core/reserved_keys.py</code> refuses it in
+every combination. The <code>cmd_snippet_gallery</code> docstring in
+<code>quill/apps/lite_window_typing.py</code> still names
+<code>Ctrl+Shift+Insert</code>, which is stale.)</li>
+<li>Add a read-only <strong>Note on</strong> line to the Add/Edit Inline
+Note dialog showing the first sentence of the anchor text, with
+<code>SetHelpText</code> at construction. The screen reader reads it as
+part of the dialog; the app announces nothing extra (GATE-13).</li>
+<li>Add <strong>Delete Inline Note</strong> on
+<code>Alt+Shift+Delete</code> (free in both), on the same menu. It
+deletes the note at the caret after a Yes/No that names the note, and
+says “Inline note deleted.” The double press stays as a shortcut to
+editing.</li>
+</ul>
+<p><strong>Status: built (2026-10-04).</strong> Lite has all four chords
+plus Delete and List, from the shared
+<code>quill/ui/inline_notes_commands.py</code>; Snippets moved to
+<code>Ctrl+Alt+Shift+Home</code> in Lite and QUILL aliases it; the note
+dialog has the Note on line; Delete Inline Note is on
+<code>Alt+Shift+Delete</code>.</p>
+<h3 id="2-the-note-lives-in-the-file">2. The note lives in the file</h3>
+<p><strong>PlanCake.</strong> Notes are plain text inside the Markdown
+file, right after the block, between <code>[usernote]</code> and
+<code>[/usernote]</code> (markers changeable in Settings). Markers
+inside code spans, code blocks and HTML comments are ignored, so a
+document that shows the markers as an example is left alone.</p>
+<p><strong>QUILL today.</strong> The opposite choice, made deliberately:
+notes go to a sidecar, <code>inline_notes.json</code> in the app data
+folder, keyed by the document’s path like bookmarks. Each note keeps its
+quote and 40 characters of context either side, so it follows its text
+through edits; if the text is deleted the note is kept, orphaned. The
+user guide says “Notes are yours alone and are never written into the
+document.” It works in every format because it never touches the
+file.</p>
+<p><strong>The gap.</strong> A sidecar note cannot be handed to anybody.
+The PlanCake use case – read an AI-written plan, leave notes, hand the
+file back to the assistant – is impossible: the assistant never sees
+them. Moving or renaming the file loses them too, since the key is the
+path.</p>
+<p><strong>Storage options, with trade-offs.</strong></p>
+<ul>
+<li><em>Sidecar JSON (what we have).</em> Private, format-agnostic,
+never alters the document, survives any edit. But invisible to
+collaborators and tools, lost on rename, not in version control, and not
+in backups of the document.</li>
+<li><em>Visible custom markers in the text (PlanCake’s choice).</em>
+Everyone sees them: a text editor, GitHub’s rendered view, an AI
+assistant. Simple to parse. But they show in every rendering, including
+a published one if somebody forgets to clear them; they need their own
+escaping rules; and making the markers configurable means changing them
+hides every existing note, which PlanCake’s manual has to warn about at
+length.</li>
+<li><em>HTML comments in Markdown.</em> <code>&lt;!-- ... --&gt;</code>
+is valid CommonMark and GFM, so the file stays a correct Markdown
+document. Renderers (GitHub, Pandoc’s HTML writer) hide comments, so a
+forgotten note never shows up in a published page. Plain-text editors
+and AI assistants still see them. Costs: a sighted reviewer on GitHub
+does not see them either; the text cannot contain <code>--&gt;</code>;
+and our own preview and Save As HTML currently print comments as literal
+text (<code>quill/core/browser_preview.py</code> escapes raw HTML),
+which would need fixing anyway.</li>
+</ul>
+<p><strong>Proposal (shortlist item 8).</strong> Keep the sidecar as the
+default, and add a second kind of note for Markdown and HTML documents
+only: a <strong>note in the file</strong>, written as an HTML comment on
+its own line after the paragraph or list item the note is on, in one
+fixed, QUILL-owned form, for example:</p>
+<pre><code>&lt;!-- quill-note: Back up the uploads folder too. --&gt;</code></pre>
+<ul>
+<li>The form is fixed, not configurable, for the reason above.</li>
+<li><code>--&gt;</code> in the note text is written as
+<code>--&amp;gt;</code> and read back; a note never spans a code fence,
+and one placed on a code block goes after the fence.</li>
+<li>A checkbox in the Add Inline Note dialog, <strong>Write this note
+into the file</strong>, defaults from one new shared setting (both
+editors’ <code>Settings</code>, so the settings-vocabulary gate sees
+<code>shared</code>). It is disabled with a reason in its help text for
+formats other than Markdown and HTML.</li>
+<li>Next, Previous, Speak and the notes list treat both kinds the same
+and say which kind a note is only in the list’s column, not in every
+announcement.</li>
+<li>Because the note is now document text, adding, editing and deleting
+it go through the editor’s undo stack – Ctrl+Z undoes it like any
+typing, which sidecar notes cannot offer today.</li>
+<li>We recognise only our own <code>quill-note:</code> comments. No
+reading of PlanCake’s markers or anyone else’s (the competitor-data
+rule).</li>
+<li>Preview and Save As HTML render a <code>quill-note</code> comment as
+a visibly marked <code>aside</code> with an accessible name “Note”
+(PlanCake’s “User note” region is the model), behind an export option
+that defaults to leaving notes out.</li>
+</ul>
+<p><strong>Status: built (2026-10-04).</strong>
+<code>quill/core/inline_notes_file.py</code>; the check box defaults
+from the shared <code>inline_notes_in_file</code> setting and then from
+each document’s last choice. Preview shows notes as asides; export
+leaves them out unless the user says Yes.</p>
+<h3 id="3-one-place-lists-every-note-and-keys-walk-them">3. One place
+lists every note, and keys walk them</h3>
+<p><strong>PlanCake.</strong> A notes list beside the document (note,
+lines, the block it follows), Enter to go there, Delete to delete with
+the selection moving to the nearest note, F6 between list and document,
+F9 and Shift+F9 from anywhere.</p>
+<p><strong>QUILL today.</strong> Next and previous
+(<code>Alt+Shift+J</code> / <code>Alt+Shift+K</code>) and speak
+(<code>Alt+Shift+H</code>). No list, no count, no export, no remove-all.
+Nothing in Lite. (<code>quill/ui/notes_reader.py</code> is unrelated: it
+is the podcast show-notes viewer.)</p>
+<p><strong>Proposal (shortlist item 5).</strong> <strong>List Inline
+Notes…</strong> on <code>Alt+Shift+Enter</code> (free in both; it sits
+with the other four note chords on Alt+Shift), on the same menu, through
+<code>_show_modal_dialog</code> in QUILL and Lite’s dialog entry.</p>
+<ul>
+<li>A list view with columns Note, Line, and On (the first sentence of
+the anchor text, or “Text deleted” for an orphaned note – which finally
+gives orphans a way to be seen and removed).</li>
+<li>Enter goes to the note and closes the list; Delete deletes, asking
+per a shared “Ask before deleting a note” setting, and keeps the
+selection on the nearest note; F2 or the Edit button edits.</li>
+<li>Buttons: <strong>Edit</strong>, <strong>Delete</strong>,
+<strong>Remove All</strong> (always asks, naming the count),
+<strong>Copy All</strong> (plain text, one note per paragraph with its
+line and anchor), <strong>Export…</strong> (JSON or Markdown). Close
+carries no access key (GATE-14).</li>
+<li>Spoken: only outcomes the reader cannot see – “3 notes removed”,
+“Notes copied”. The list’s own rows are read by the screen reader.</li>
+<li>F1: every control gets inline <code>SetHelpText</code>; the window’s
+purpose goes in QUILL’s and Lite’s <code>surface_help</code>
+catalogues.</li>
+<li>Remove All and Export have no keys of their own, with the written
+reason that they live in the list (rule 8 allows a reason).</li>
+<li>An empty document answers <code>Alt+Shift+Enter</code> with “No
+inline notes in this document”, the same sentence Next already uses,
+rather than an empty window.</li>
+</ul>
+<p>QUILL also has browse mode (leader then N), where single letters move
+by structure and <code>N</code> is unused inside the mode. Adding
+<strong>N / Shift+N: next and previous note</strong> there is a small
+QUILL-only nicety (shortlist item 12); QUILL may be ahead of Lite, never
+the reverse.</p>
+<p><strong>Status: built (2026-10-04),</strong> including browse mode
+<code>N</code> / <code>Shift+N</code>. The list’s Delete asks every time
+(Yes/No naming the note) rather than through a separate “Ask before
+deleting” setting, which was not added.</p>
+<h3 id="4-notes-as-a-review-loop-for-ai-written-plans">4. Notes as a
+review loop for AI-written plans</h3>
+<p><strong>PlanCake.</strong> <code>plancake list FILE --json</code>,
+<code>check</code> (exit 0 none, 3 some, 1 error), <code>clear</code>
+and <code>export</code>, documented as the way Claude reads a review and
+proves every note is dealt with.</p>
+<p><strong>QUILL today.</strong> The command line opens files
+(<code>quill/__main__.py</code>: paths, <code>--line</code>,
+<code>--goto</code>, <code>--diff</code>, <code>--wait</code> and more)
+but has nothing for notes.</p>
+<p><strong>Proposal (shortlist item 11, later).</strong> Once notes can
+live in the file,
+<code>python -m quill notes list|check|clear FILE [--json]</code>,
+wx-free, in <code>quill/core</code>, reading only
+<code>quill-note:</code> comments. It is a small module but it is a new
+public surface, and it only makes sense after item 8 ships, so it ranks
+low. Sidecar notes stay out of it: they are private by design.</p>
+<p><strong>Status: built (2026-10-04)</strong> as
+<code>quill --notes list|check|clear FILE [--json]</code> (also
+<code>QuillLite.exe --notes ...</code>),
+<code>quill/core/inline_notes_cli.py</code>. Exit 0 done, 3 notes left,
+1 read or write error, 2 usage.</p>
+<h3 id="5-task-lists-you-can-tick">5. Task lists you can tick</h3>
+<p><strong>PlanCake.</strong> A <code>- [ ]</code> item is a real
+checkbox; Space or Enter asks (optional), writes <code>[x]</code> on
+that one line, says “Task checked”, and undo reverses it. A parent with
+mixed children shows as partly checked but writes nothing.</p>
+<p><strong>QUILL today.</strong> <strong>Insert &gt; List &gt;
+Task</strong> (no key) inserts <code>- [ ] </code> per line; Enter on a
+task line continues the list. Structured List Studio
+(<code>Ctrl+Alt+Shift+L</code>) has a “Task is complete” checkbox for
+one item at a time. <code>quill/core/lists/announce.py</code> already
+has <code>checklist_toggle_announcement</code> (“Checked: X. 2 of 7
+tasks complete.”) and nothing calls it. The preview’s renderer does not
+render task lists at all; <code>- [ ]</code> shows as literal text.</p>
+<p><strong>QUILL Lite today.</strong> <strong>Insert &gt; Markdown
+Tag…</strong> (<code>Ctrl+Alt+I</code>) can insert a task list. No
+toggle.</p>
+<p><strong>Proposal (shortlist item 2).</strong> <strong>Toggle Task
+Done</strong> on <code>Ctrl+Alt+Enter</code>, free in both editors, in
+both Format menus beside the list commands. On a Markdown task line (or
+every task line in a selection) it flips <code>[ ]</code> and
+<code>[x]</code> through the ordinary editor edit, so Ctrl+Z undoes it.
+Spoken, via the existing announcement: “Done: Write the tests. 3 of 7
+tasks done.” – the count is the part a listener cannot get any other
+way. On a line that is not a task it says “Not a task line” and changes
+nothing. No confirmation: in an editor the change is visible, undoable
+and unsaved until you save, which is why PlanCake needs a question and
+we do not. Two small companions: the preview and Save As HTML render
+task items as disabled checkboxes with their state in the accessible
+name, and the Markdown Tag picker’s task entry and this command use the
+same core function. (Ctrl+Alt+Enter is Word’s style separator; neither
+editor has that function, so rule 1 does not bite. It is also Add to Up
+Next inside Quill Radio’s Local Media window, a different app window,
+which rule 7 allows.)</p>
+<p><strong>Status: built (2026-10-04).</strong>
+<code>quill/core/task_lists.py</code> and the shared
+<code>quill/ui/task_list_commands.py</code>; QUILL has the row in Insert
+&gt; List, Lite in Format. The Markdown Tag picker was not changed.</p>
+<h3 id="6-plans-arrive-however-they-arrive">6. Plans arrive however they
+arrive</h3>
+<p><strong>PlanCake.</strong> Ctrl+V opens a file copied in File
+Explorer, a path copied as text (with or without quotes), or an http(s)
+link. Ctrl+L opens a link, prefilled from the clipboard, understands
+GitHub page links, saves to Downloads with <code>.md</code> forced and
+the mark of the web, 30 seconds and 10 MB limits. Command line and drag
+and drop too. One window per file.</p>
+<p><strong>QUILL today.</strong></p>
+<ul>
+<li>Command line: yes, many files, single instance with forwarding, and
+an already-open file selects its tab. <strong>Lite</strong> likewise,
+one window per file.</li>
+<li><strong>File &gt; New Document from Clipboard</strong> (no key)
+makes a new buffer from clipboard <em>text</em>. Nothing opens a file
+copied in Explorer or a copied path, in either editor.</li>
+<li><strong>File &gt; Open from URL…</strong> (no key). It has real
+problems, found while researching this note, and they are bugs rather
+than gaps:
+<ul>
+<li>the user guide promises “QUILL checks with you first, naming the
+host and the expected size”; the code asks for the URL and downloads
+immediately;</li>
+<li><code>download_url</code> raises <code>RemoteTransportError</code>,
+but <code>open_url</code> catches only <code>HTTPError</code> and
+<code>URLError</code>, so a network failure most likely escapes as an
+unhandled error instead of a message
+(<code>quill/ui/main_frame.py</code> around line 7370,
+<code>quill/io/http_transport.py</code> line 115);</li>
+<li>the download runs on the UI thread, and the egress audit entry for
+<code>download_url</code> claims a visible progress callback that is not
+passed;</li>
+<li>the temp file (<code>quill-url-*</code>) is never removed.</li>
+</ul></li>
+<li><strong>File &gt; Open from Remote &gt; GitHub File URL…</strong>
+takes github.com blob links only.</li>
+<li><strong>Lite</strong>: no Open from URL. Neither editor accepts drag
+and drop.</li>
+</ul>
+<p><strong>Proposal.</strong></p>
+<ul>
+<li><em>Fix Open from URL first</em> (shortlist item 1): add the consent
+the guide promises (host and size, asked before any bytes), catch the
+coded error and say it plainly, run on <code>QuillTaskManager</code>
+with a cancellable progress dialog, delete the temp file when the tab
+closes, and route github.com blob links through the raw URL as PlanCake
+does.</li>
+<li><em>Open from Clipboard</em> (shortlist item 3) on
+<code>Ctrl+Alt+Shift+Enter</code>, free in both (every letter chord with
+Ctrl+Alt+Shift is taken, and <code>Ctrl+Alt+Shift+Q</code> is QUILL’s
+global show-and-hide hotkey; Enter at least says “open”). On
+<strong>File</strong>, beside Open, in both editors. It looks at the
+clipboard in order: files copied in Explorer
+(<code>wx.FileDataObject</code>; open each, or the first if there are
+many and say how many were skipped), a path as text (quotes stripped),
+an http(s) link (handed to Open from URL, consent and all). Otherwise it
+says “The clipboard holds no file, path or link.” Ctrl+V stays paste.
+The shared logic – the classification – goes in <code>quill/core</code>
+so both editors call one function.</li>
+<li><em>Lite gets Open from URL</em> on the same terms as QUILL, through
+the same <code>quill/io/http_transport</code> and the same egress entry;
+no new outbound call site.</li>
+<li><em>Drag and drop open</em> (shortlist item 10), a
+<code>wx.FileDropTarget</code> on the frame of each editor. Small, and
+mostly for low-vision and sighted users.</li>
+</ul>
+<p><strong>Status: built (2026-10-04), items 1, 3 and 10.</strong> Open
+from URL is <code>quill/ui/open_from_url.py</code>, shared:
+<code>download_url</code> gained <code>confirm</code> (called after the
+headers, before the body) and <code>should_cancel</code>, removes a
+partial file on any failure, and runs on the task manager with an
+<code>AIProgressDialog</code>; GitHub blob links become raw links;
+failures are one sentence from
+<code>open_sources.failure_sentence</code>; QUILL removes the temp file
+when the tab closes, Lite as soon as it is read, and
+<code>sweep_stale_downloads</code> clears day-old leftovers. Lite gains
+the command (no key, as in QUILL, with a written reason). Open from
+Clipboard is <code>Ctrl+Alt+Shift+Enter</code> in both, classification
+in <code>quill/core/open_sources.py</code>. Drops use
+<code>quill/ui/open_sources_ui.py</code>: a <code>FileDropTarget</code>
+on the frame and a composite target on the editor that still inserts
+dropped text.</p>
+<h3 id="7-refusing-to-destroy-what-it-cannot-read">7. Refusing to
+destroy what it cannot read</h3>
+<p><strong>PlanCake.</strong> Legacy-encoding files open read-only,
+naming the encoding; conversion to UTF-8 is opt-in; an uncertain
+encoding is never written.</p>
+<p><strong>QUILL today.</strong> <code>quill/io/text.py</code> tries the
+BOMs, strict UTF-8, then cp1252, then latin-1, and says “Opened using
+cp1252 text encoding (not UTF-8).” in the status bar. <strong>File &gt;
+File Format…</strong> (<code>Ctrl+Alt+E</code>) changes how the file is
+saved. There is no “reopen with encoding”.</p>
+<p><strong>QUILL Lite today.</strong>
+<code>quill/core/lite/textfile.py</code> falls back to cp1252 with
+<code>errors="replace"</code>. That is lossy: bytes 0x81, 0x8D, 0x8F,
+0x90 and 0x9D become U+FFFD, and saving writes the replacement
+characters back. Nothing is said on open. This is the one place in this
+note where PlanCake’s caution points at a real data-loss risk in the
+family.</p>
+<p><strong>Proposal (shortlist item 4).</strong> One shared decoder for
+both editors (QUILL’s, which never needs <code>replace</code>), and one
+rule from PlanCake: a file decoded by a fallback is announced on open in
+both editors, “Opened as Windows-1252, not UTF-8”, once, as an outcome
+(GATE-13 allows it; the reader cannot know). A <strong>Reopen with
+Encoding…</strong> button inside the File Format dialog (no new key)
+re-reads the bytes from disk under a chosen code page. We do not convert
+on open; the buffer becomes UTF-8 only when the user saves, and the
+existing “characters cannot be saved” prompt covers the reverse.</p>
+<p><strong>Status: built (2026-10-04).</strong>
+<code>quill/core/text_decoding.py</code> is the one decoder (BOM, strict
+UTF-8, strict cp1252, latin-1; never <code>replace</code>), used by
+<code>quill/io/text.py</code> and
+<code>quill/core/lite/textfile.py</code>; Lite’s RTF read went to
+latin-1 both ways for the same reason. It also registers a
+<code>utf-16-be-bom</code> codec, so QUILL keeps big-endian UTF-16 as
+Lite already did. Both editors say <code>open_notice()</code> once on
+open. <strong>Reopen with Encoding…</strong> is a button in both File
+Format windows (<code>choose_reopen_encoding</code> in
+<code>quill/ui/file_format_dialog.py</code>), strict, saving back in the
+chosen code page until the person picks UTF-8. Byte-fixture round trips:
+<code>tests/unit/core/test_text_decoding_lossless.py</code>.</p>
+<h3 id="8-never-overwrite-a-change-it-has-not-seen">8. Never overwrite a
+change it has not seen</h3>
+<p><strong>PlanCake.</strong> Reloads in place on outside change,
+keeping position; refuses a note write if the file changed underneath
+and says “The file changed. Please try again.”</p>
+<p><strong>QUILL today.</strong> A real watcher
+(<code>quill/core/external_change.py</code>,
+<code>quill/ui/main_frame_external_change.py</code>): it asks Reload /
+Keep Mine / Open Disk Version in New Tab, with <strong>File &gt; Reload
+from Disk</strong>, <strong>File &gt; Check for External
+Changes…</strong> and <strong>File &gt; Forget Remembered File-Change
+Answers</strong> (<code>Ctrl+Shift+F11</code>). But Save does not
+re-check the disk before writing, so a change landing between two polls
+is overwritten silently.</p>
+<p><strong>QUILL Lite today.</strong> No watcher, no prompt, no
+save-time check.</p>
+<p><strong>Proposal (shortlist item 7).</strong> A save-time check in
+shared code: compare the file’s snapshot with the one taken at open or
+last save, and if it differs, ask before writing, with the same choices
+the watcher offers. Then move the watcher’s decision logic, which is
+already wx-free, into Lite. This is the PlanCake idea that matters most
+for the “AI assistant rewrites the plan while I read it” workflow, and
+it is correctness, not a feature. Reload should keep the caret where it
+was, as PlanCake keeps the reading position.</p>
+<p><strong>Status: built (2026-10-04), the save-time check in
+both.</strong> <code>external_change.changed_since</code> compares size,
+mtime and SHA-256 with the baseline taken at open, save, reload, reopen
+and Keep Mine; <code>quill/ui/save_conflict_dialog.py</code> asks Save
+As (Enter) / Reload from Disk / Overwrite / Cancel (Escape) in both
+editors.</p>
+<p><strong>Status: built (2026-10-04), the watcher in Lite too.</strong>
+The decisions QUILL’s mixin still held moved into
+<code>quill/core/external_change.py</code> (<code>decide_for</code>,
+<code>remember_answer</code>, <code>forget_answers</code>,
+<code>poll_disk</code>, which stats every tick and hashes only when size
+or mtime moved); the clock is the shared
+<code>quill/ui/external_change_timer.py</code>, which pauses under any
+modal window; the question is the shared
+<code>external_change_dialog.py</code>, with Save As as Lite’s third
+answer and Keep Mine on Enter. Lite stores QUILL’s six
+<code>external_change_*</code> fields (four in Preferences, plus Forget
+remembered file-change answers), watches each document from
+<code>quill/apps/lite_window_watch.py</code> on the save check’s own
+baseline, reloads an unchanged document quietly keeping the caret line,
+and says a deletion once.</p>
+<h3 id="9-a-page-you-can-share">9. A page you can share</h3>
+<p><strong>PlanCake.</strong> Export to one self-contained HTML file,
+styles inside, no scripts, local images embedded, notes marked; notes to
+JSON.</p>
+<p><strong>QUILL today.</strong> <strong>File &gt; Export &gt;
+HTML…</strong> runs Pandoc (<code>gfm</code>), but without
+<code>--standalone</code>, so it most likely writes a fragment rather
+than a page. Save As <code>.html</code> uses the in-house renderer: a
+full page, no CSS, no task lists, strikethrough or nested lists, and it
+makes the open document become the <code>.html</code> file.
+<strong>QUILL Lite</strong>: no HTML export.</p>
+<p><strong>Proposal (shortlist item 9).</strong> Make Export &gt; HTML
+pass <code>--standalone</code> with a small built-in accessible
+stylesheet and the document language, offer “include inline notes”
+(marked asides, item 2) and bring the same command to Lite through the
+same shared function. Teach the in-house renderer task lists and
+strikethrough, which the Markdown Tag picker already inserts.</p>
+<p><strong>Status: built (2026-10-04).</strong>
+<code>quill/io/html_page.py</code> and the shared
+<code>quill/ui/html_export_commands.py</code>, on
+<code>Ctrl+Alt+Shift+End</code> in both editors. Notes are included as
+marked asides only when the user says Yes.</p>
+<h3 id="10-every-outcome-is-spoken-and-only-the-outcome">10. Every
+outcome is spoken, and only the outcome</h3>
+<p>PlanCake’s status messages are a good fit with our GATE-13: it says
+“Note added”, “No more notes”, “Undone: note added” and nothing about
+focus or titles. Every proposal above follows the same rule, and we
+already have the machinery (<code>action_feedback</code>, failures and
+counts always spoken). One borrowed detail is worth adopting everywhere:
+when undo reverses a note or task change, say what was undone (“Undone:
+task done”), which QUILL already does for text through Undo and Say
+(<code>Alt+Shift+F3</code>).</p>
+<h3 id="11-privacy-stated-plainly">11. Privacy stated plainly</h3>
+<p>PlanCake’s manual has a short “What goes over the network” section
+naming exactly two uses. QUILL has far more network features and an
+egress audit, so the equivalent is a generated page, not a paragraph;
+nothing to build here beyond making sure every proposal above adds no
+new call site (they do not: Open from Clipboard reuses Open from
+URL’s).</p>
+<h2 id="ranked-shortlist">Ranked shortlist</h2>
+<p>Highest value for the lowest cost first. S is a day or less, M a few
+days with tests and docs, L a week or more. Every item lands in shared
+code and reaches both editors in the same change, except item 12, which
+is QUILL-only and so cannot put Lite ahead.</p>
+<ol type="1">
+<li><strong>Fix Open from URL</strong> (S). The consent the user guide
+already promises, catch <code>RemoteTransportError</code>, run off the
+UI thread with progress, delete the temp file, rewrite GitHub blob links
+to raw. A bug fix, not a feature.</li>
+<li><strong>Toggle Task Done</strong>, <code>Ctrl+Alt+Enter</code>, both
+editors (S). Plus task items rendered in preview and Save As HTML. Uses
+the announcement that already exists and is never called.</li>
+<li><strong>Open from Clipboard</strong>,
+<code>Ctrl+Alt+Shift+Enter</code>, both editors (S). File copied in
+Explorer, path as text, or link (via item 1).</li>
+<li><strong>Honest legacy encodings</strong> (M). One shared, lossless
+decoder; announce a fallback on open in both editors; Reopen with
+Encoding inside the File Format dialog. Removes a real data-loss path in
+Lite.</li>
+<li><strong>List Inline Notes</strong>, <code>Alt+Shift+Enter</code>
+(M). Go to, edit, delete, remove all, copy all, export; orphaned notes
+finally visible. Plus Delete Inline Note on
+<code>Alt+Shift+Delete</code> and the “Note on” line in the note
+dialog.</li>
+<li><strong>Inline notes in QUILL Lite</strong> (M). Same four chords;
+Lite’s Snippets moves to <code>Ctrl+Alt+Shift+Home</code>, aliased in
+QUILL. Can ship with or after item 5.</li>
+<li><strong>Never overwrite an unseen change</strong> (M). Save-time
+disk check in both; the external-change watcher comes to Lite.</li>
+<li><strong>Notes in the file</strong> for Markdown and HTML, as
+<code>&lt;!-- quill-note: ... --&gt;</code> (M to L). The PlanCake idea
+proper: notes an AI assistant or a colleague can read. Includes preview
+and export rendering, and undo for free.</li>
+<li><strong>A page you can share</strong> (M). Standalone Pandoc HTML
+export with a small accessible stylesheet and an “include notes” option,
+in both editors; task lists and strikethrough in the in-house
+renderer.</li>
+<li><strong>Drag and drop open</strong> in both editors (S).</li>
+<li><strong>Notes on the command line</strong>, <code>list</code> /
+<code>check</code> / <code>clear</code> with <code>--json</code>, for
+in-file notes only (M). Only after item 8.</li>
+<li><strong>Browse mode N and Shift+N</strong> for next and previous
+note, QUILL only (S).</li>
+</ol>
+<h2 id="the-three-to-do-first">The three to do first</h2>
+<ul>
+<li><strong>Toggle Task Done (item 2).</strong> The smallest change with
+the most daily value: AI plans are full of checklists, ticking one is
+two keys, and the spoken count (“3 of 7 tasks done”) is information a
+listener otherwise has to count line by line.</li>
+<li><strong>Open from Clipboard (item 3), together with the Open from
+URL fix (item 1).</strong> Plans arrive as a file in Explorer, a path in
+a chat, or a link. Today none of the three opens in one step in either
+editor, and the one URL path we have is broken in ways that will bite
+the first time a network hiccups. The fix is a prerequisite anyway.</li>
+<li><strong>List Inline Notes (item 5).</strong> It turns notes from
+something you can only meet one at a time into a review you can see
+whole, remove when done, and hand on as text or JSON. It is also the
+surface item 8 needs, so building it first means “notes in the file”
+becomes a storage change rather than a new feature.</li>
+</ul>
+<h2 id="what-we-should-not-copy-and-why">What we should not copy, and
+why</h2>
+<ul>
+<li><strong>Enter as the note key in the editor.</strong> PlanCake is a
+reader; in an editor Enter must make a new line. The idea survives where
+it fits: Enter on a block in our preview pane could offer Add Inline
+Note later, but not in the edit control.</li>
+<li><strong>Ctrl+V meaning “open”.</strong> Paste has to paste (rule 1).
+Open from Clipboard gets its own key.</li>
+<li><strong>Configurable note markers.</strong> PlanCake’s own manual
+spends a warning and a troubleshooting entry on the fact that changing
+the markers hides every existing note. One fixed form avoids the whole
+class of problem. We also do not adopt <code>[usernote]</code> or any
+other tool’s form, and do not read them: notes in the file are ours,
+written and read in our own form only.</li>
+<li><strong>Visible plain-text markers as the default.</strong> They
+show in every rendering, including a published page if somebody forgets
+to clear them. An HTML comment keeps the file valid and the published
+page clean.</li>
+<li><strong>Reloading silently on outside change.</strong> Right for a
+reader that never has unsaved edits; wrong for an editor, where a silent
+reload throws away work. QUILL already asks, and Lite should too.</li>
+<li><strong>Converting the file on disk at open.</strong> PlanCake’s
+opt-in conversion rewrites the file the moment it opens. An editor
+should convert in the buffer and write only on Save, so opening a file
+never changes it.</li>
+<li><strong>A web view as the main reading surface.</strong> It is right
+for PlanCake, and PlanCake’s JAWS notes show what it costs (forms mode
+on Enter, a click and Enter indistinguishable). Our edit control with
+Quick Nav and the preview pane already give both kinds of reading
+without that cost.</li>
+<li><strong>Its keys.</strong> Ctrl+L, Ctrl+E, F5, F9, Shift+F9 and
+Alt+Shift+Up and Down all mean something else in both editors, mostly by
+rule 1 (see the start of the detailed section).</li>
+<li><strong>A forced <code>.md</code> suffix on downloads as a safety
+measure.</strong> Clever for a Markdown-only reader; QUILL opens many
+formats, and its downloads already open as read-only remote tabs that
+save only as a copy, which is the same protection without renaming the
+user’s file.</li>
+</ul>
+<h2 id="keys-proposed-and-how-they-were-checked">Keys proposed, and how
+they were checked</h2>
+<p>All checked on 2026-10-04 against <code>DEFAULT_KEYMAP</code> and
+<code>DEFAULT_ALIASES</code> (<code>quill/core/keymap.py</code>),
+<code>APP_KEYMAPS</code> and the QuillVille launcher row
+(<code>quill/core/app_keymaps.py</code>), QUILL Lite’s
+<code>COMMANDS</code> (<code>quill/core/lite/commands.py</code>), the
+Recent Documents rows on Alt+Shift+1 to 9, QUILL’s global show-and-hide
+hotkey (<code>quill/ui/main_frame_hotkeys.py</code>) and the reserved
+Insert key (<code>quill/core/reserved_keys.py</code>). Each is free in
+both editors, so each is a rule 5 adoption rather than a move.</p>
+<ul>
+<li><code>Ctrl+Alt+Enter</code> – Toggle Task Done.</li>
+<li><code>Ctrl+Alt+Shift+Enter</code> – Open from Clipboard.</li>
+<li><code>Alt+Shift+Enter</code> – List Inline Notes.</li>
+<li><code>Alt+Shift+Delete</code> – Delete Inline Note.</li>
+<li><code>Alt+Shift+I</code>, <code>J</code>, <code>K</code>,
+<code>H</code> – the existing inline-note chords, adopted by Lite (rule
+2), which moves Lite’s Snippets to <code>Ctrl+Alt+Shift+Home</code>
+(free in both; QUILL aliases it for its own gallery).</li>
+</ul>
+<p>Each new command also needs, in the same change: a menu row in both
+editors built from the bound key (<code>_menu_label</code> in QUILL, the
+table in Lite), a Key Describer title (GATE-DESCRIBE), behavioural tests
+that call the Lite handler (GATE-LITE-COVER), inline
+<code>SetHelpText</code> on any new dialog control, regenerated
+<code>docs/keyboard-reference.md</code>, and user-guide text in both
+guides.</p>
+<h2 id="small-things-found-along-the-way">Small things found along the
+way</h2>
+<p>These are not PlanCake lessons, but the research turned them up and
+they should not be lost.</p>
+<ul>
+<li><code>docs/user guide/userguide.md</code> says inline notes are on
+“Tools &gt; Writing”; the menu is <strong>Tools &gt; Writing and
+Language</strong>. (Fixed 2026-10-04.)</li>
+<li>The same guide puts Sticky Notes under Tools; the code has them
+under <strong>Navigate &gt; Sticky Notes</strong>. (Fixed
+2026-10-04.)</li>
+<li>The <code>quill/ui/main_frame_inline_notes.py</code> docstring still
+says the previous note key is G; it is K. (Fixed 2026-10-04.)</li>
+<li>QUILL’s guide says leader then G opens Quick Nav (Landmarks); since
+2026-10-03 it is <code>Ctrl+Shift+Z</code>, and G is an ordinary chord
+key. (Fixed 2026-10-04.)</li>
+<li>The Lite guide says the Heading Organizer does not work in rich
+text; it has since 2026-09-22.</li>
+<li><code>quill/apps/lite_window_markup.py</code> docstrings name
+<code>Ctrl+Shift+M</code> for Switch Document Mode; it is
+<code>Alt+Shift+F</code> (<code>Ctrl+Shift+M</code> is Set Mark).</li>
+<li>Save As <code>.html</code> makes the open document become the HTML
+file (<code>document.mark_saved</code>), which surprises anyone who
+meant “export”.</li>
+</ul>
+</main>
+</body>
+</html>

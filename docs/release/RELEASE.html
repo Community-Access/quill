@@ -475,6 +475,38 @@ A version without a build is refused with the builds it could mean.</li>
 tag carry one, and GATE-APPVER checks that each app’s build constant,
 its installers’ <code>AppBuild</code> and <code>AppFileVersion</code>,
 and its build script agree.</p>
+<h3
+id="code-signing-beta-and-dev-never-stable-always-decided-2026-10-04">Code
+signing: Beta and Dev never, Stable always (decided 2026-10-04)</h3>
+<p>Beta and Dev builds are not code-signed, and Stable always is. The
+version number decides:</p>
+<ul>
+<li>A <strong>Beta, Release Candidate, Alpha or Dev</strong> build
+(<code>3.3.0-beta.1</code>, <code>1.0.0-rc.1</code>,
+<code>3.3.1-dev.20261003.1</code>, anything built with
+<code>-DevVersion</code>) is never signed. <code>-Sign</code> and
+<code>QUILL_SIGN_REQUIRED=1</code> are ignored, and the build says so in
+one line: “Beta and Dev builds are not code-signed; signing
+skipped.”</li>
+<li>A <strong>final-numbered</strong> build (<code>3.3.0</code>) is a
+Stable candidate. Build it with <code>-Sign</code> (or
+<code>QUILL_SIGN=1</code>): it is signed when it is built, listed on
+Beta for its soak, and promoted to Stable as the same files.</li>
+</ul>
+<p>Why the candidate is signed at build time rather than at promotion:
+Stable takes the same files that were on Beta, and an installer carries
+its programs packed inside <code>Setup.exe</code>. Signing them at
+promotion would mean building a new installer, which is not what was
+tested on Beta; signing only the outer <code>Setup.exe</code> would put
+unsigned programs on Stable. A final-numbered build waiting on Beta is a
+release candidate of Stable, not a Beta build, so signing it keeps both
+promises.</p>
+<p><code>publish_release.py</code> refuses an unsigned final-numbered
+build (and a signed Beta or Dev one) before creating anything, and
+promotion check P5 refuses Stable for anything unsigned. If P5 fails,
+rebuild with <code>-Sign</code>; the rebuild gets the next build number,
+goes on Beta, and is promoted from there. Details:
+<code>docs/code-signing.md</code>, “Which builds are signed”.</p>
 <h3 id="publishing-to-beta">Publishing to Beta</h3>
 <p>A sibling app built on this computer:</p>
 <div class="sourceCode" id="cb1"><pre
@@ -491,7 +523,12 @@ rather than trusting GitHub’s numbers:</p>
 class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>publish_release<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>app quill <span class="op">--</span>version <span class="dv">1.0</span><span class="op">.</span><span class="dv">0</span><span class="op">-</span>rc<span class="op">.</span><span class="dv">1</span> <span class="op">--</span>channel beta <span class="op">--</span>existing</span></code></pre></div>
 <p>QUILL 1.0.0 becomes Stable this way: tag <code>v1.0.0-rc.1</code>,
 list it on Beta, then build the final <code>v1.0.0</code> candidate,
-list it on Beta, and promote it.</p>
+list it on Beta, and promote it. CI cannot sign, so the
+<code>v1.0.0</code> candidate is built on your computer with
+<code>QUILL_SIGN=1</code> and its signed installer and portable zip are
+uploaded over the CI files
+(<code>gh release upload v1.0.0 &lt;files&gt; --clobber</code>) before
+you list it; the release candidate stays unsigned.</p>
 <p><strong>The page budget.</strong> Installed Quill Radio 3.0.4 and
 QUILL Lite 1.1.2 read only the first 30 releases of
 <code>Community-Access/quill</code>. <code>publish_release.py</code>
@@ -509,8 +546,9 @@ class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-
 <p>Every check is printed as PASS, WARN or FAIL, and one FAIL stops it:
 the release exists; every file downloads again with the size and SHA-256
 in the list; the list’s signature is valid; Stable takes only a
-final-numbered build that was on Beta first; Authenticode when
-<code>QUILL_SIGN_REQUIRED=1</code>; tag, version and file names agree;
+final-numbered build that was on Beta first; for Stable, every installer
+and every program in the portable zip carries an Authenticode signature
+(always – Stable is never unsigned); tag, version and file names agree;
 nothing the build carries is ahead of that app’s own channel; the
 changelog has the version; for Stable, a screen-reader sign-off sheet at
 <code>docs/qa/signoffs/&lt;app&gt;-&lt;version&gt;.md</code> with

@@ -254,7 +254,12 @@ from quill.core.spellcheck import (
 from quill.core.spellcheck import (
     set_active_language as spellcheck_set_active_language,
 )
-from quill.core.spoken_echo import format_spoken_echo, new_history, record_spoken
+from quill.core.spoken_echo import (
+    echo_history_enabled,
+    new_history,
+    record_spoken,
+    spoken_echo_text,
+)
 from quill.core.sticky_notes import save_sticky_note
 from quill.core.structure_announce import describe_heading_arrival
 from quill.core.structure_nav import (
@@ -411,6 +416,7 @@ from quill.ui.main_frame_native_keys import NativeKeyGuardMixin
 from quill.ui.main_frame_notebook import NotebookUIMixin
 from quill.ui.main_frame_numbered_bookmarks import NumberedBookmarksMixin
 from quill.ui.main_frame_onboarding_flow import OnboardingFlowMixin
+from quill.ui.main_frame_open_sources import OpenSourcesMixin
 from quill.ui.main_frame_palette_labels import PaletteToggleLabelsMixin
 from quill.ui.main_frame_podcasts import PodcastsMixin
 from quill.ui.main_frame_power_tools import PowerToolsActionsMixin
@@ -428,6 +434,7 @@ from quill.ui.main_frame_recent_documents import RecentDocumentsMixin
 from quill.ui.main_frame_remote_files import RemoteFilesMixin
 from quill.ui.main_frame_restore_points import RestorePointsMixin
 from quill.ui.main_frame_reveal_codes import RevealCodesMixin
+from quill.ui.main_frame_review import ReviewToolsMixin
 from quill.ui.main_frame_rich_mode import RichModeMixin
 from quill.ui.main_frame_rich_paragraph import RichParagraphMixin
 from quill.ui.main_frame_search import SearchCommandsMixin
@@ -468,6 +475,7 @@ from quill.ui.main_frame_worktrees import WorktreesMixin
 from quill.ui.main_frame_write_safety import WriteSafetyMixin
 from quill.ui.markdown_tag_row import MARKDOWN_TAG_REFUSAL, sync_menu_row
 from quill.ui.notebook_panel import NotebookEntriesPanel
+from quill.ui.settings_live_switches import at_startup as start_live_settings
 from quill.ui.sound_manager import post_sound
 from quill.ui.status_bar_role import mark_as_status_bar
 from quill.ui.word_view import WordDocumentSurface
@@ -522,6 +530,10 @@ class _DocumentTab:
     preview: object = None
     source_label: str = ""
     read_only_remote: bool = False
+    # Open from URL's temp file, removed when the tab closes (2026-10-04).
+    remote_temp_path: str = ""
+    # The file on disk as this tab last saw it; Save re-checks it (2026-10-04).
+    disk_baseline: object = None
     # One Editor, Every Format: how this tab presents its document.
     #   "markup"         — the buffer is canonical QUILL markup (default).
     #   "rich"           — the native control holds real formatting (TOM/RTF);
@@ -727,6 +739,7 @@ class MainFrame(
     LiteBridgeMixin,
     NativeKeyGuardMixin,
     ExternalChangeMixin,
+    OpenSourcesMixin,
     ExtendSelectionMixin,
     SelectionSpanMixin,
     RichParagraphMixin,
@@ -821,6 +834,7 @@ class MainFrame(
     PowerToolsMenuMixin,
     RevealCodesMixin,
     InlineNotesMixin,
+    ReviewToolsMixin,
     RestorePointsMixin,
     QuillinsMenuMixin,
     CommandRegistryMixin,
@@ -1586,6 +1600,7 @@ class MainFrame(
             ("kokoro package prompt", self._maybe_prompt_kokoro_package_install),
             ("startup profile prompt", self.run_startup_profile_prompt),
             ("watch-folder startup", self._maybe_start_watch_folder),
+            ("live settings (wake word, right-click menu)", lambda: start_live_settings(self)),
             # Apply the saved spell-check language before the cache warms so the
             # first F7 validates against it (downloaded dicts via Tools > Spelling).
             (
@@ -2144,6 +2159,7 @@ class MainFrame(
         self._bind_editor_events(editor)
         tab = _DocumentTab(panel=panel, editor=editor, document=document, splitter=splitter)
         tab.source_label = str(document.source_metadata.get("source_label", "")).strip()
+        self._prepare_tab_sources(tab)
         # Load this document's saved bookmarks and restore its last cursor position.
         self._restore_document_memory(tab)
         # Load this document's saved inline notes.
@@ -2512,6 +2528,7 @@ class MainFrame(
             self._maybe_play_indent_tone()
             self._maybe_announce_format_transition()
             self.announce_structure_at_caret()
+            self._maybe_announce_braille_movement()
         except RuntimeError:  # #603/#269: editor can be a dead TextCtrl mid-event.
             pass
         event.Skip()
@@ -4749,8 +4766,12 @@ class MainFrame(
         Called from the announcement choke points (``_announce`` and
         ``_set_status``). The history is created lazily so stub frames in tests
         that never run ``__init__`` stay safe, and empty/consecutive-duplicate
-        lines are dropped by ``record_spoken``.
+        lines are dropped by ``record_spoken``. With "Keep an announcement
+        history" off nothing is kept, and what was kept is dropped.
         """
+        if not echo_history_enabled(getattr(self, "settings", None)):
+            self._spoken_echo_history = None
+            return
         history = getattr(self, "_spoken_echo_history", None)
         if history is None:
             history = new_history()
@@ -4768,7 +4789,7 @@ class MainFrame(
         """
         wx = self._wx
         history = getattr(self, "_spoken_echo_history", None)
-        text = format_spoken_echo(list(history) if history else [])
+        text = spoken_echo_text(list(history) if history else [], getattr(self, "settings", None))
         title = "Spoken Echo"
         dialog = wx.Dialog(
             self.frame,
@@ -5430,19 +5451,21 @@ class MainFrame(
         """Prompt the user for an arbitrary Tier-1 export format."""
 
         from quill.core import pandoc_formats
+        from quill.core.export_preset import preset_index
 
         wx = self._wx
-        choices = [fmt.display_name for fmt in pandoc_formats.formats_for_direction("export")]
+        formats = pandoc_formats.formats_for_direction("export")
         with wx.SingleChoiceDialog(
             self.frame,
             "Choose a Tier-1 Pandoc output format",
             "Other Pandoc Format",
-            choices,
+            [fmt.display_name for fmt in formats],
         ) as dialog:
+            # The Default export format setting: Enter exports in it.
+            dialog.SetSelection(preset_index([fmt.name for fmt in formats], self.settings))
             if self._show_modal_dialog(dialog, "Other Pandoc Format") != wx.ID_OK:
                 return
             index = dialog.GetSelection()
-        formats = pandoc_formats.formats_for_direction("export")
         if 0 <= index < len(formats):
             self.export_document(formats[index].name)
 
@@ -5752,6 +5775,7 @@ class MainFrame(
         }
         self._fire_quillin_event("document.before_close", close_context)
         self.notebook.DeletePage(index)
+        self._discard_remote_download(self._document_tabs[index])
         del self._document_tabs[index]
         self._fire_quillin_event("document.after_close", close_context)
         self.cue_document_closed()
@@ -6064,6 +6088,7 @@ class MainFrame(
             tab = self._document_tabs[existing_index]
             tab.document = loaded
             tab.editor.ChangeValue(loaded.text)
+            self._remember_disk_baseline(tab)
             self._load_persistent_undo_state(selected_path, loaded.text)
             self._select_tab(existing_index)
         else:
@@ -6368,11 +6393,12 @@ class MainFrame(
         self._set_status(" ".join(parts))
 
     def _announce_encoding_fallback(self, document: Document) -> None:
-        """Tell the user when #867's non-UTF-8 fallback decoded this file."""
-        detected = document.source_metadata.get("encoding_detected")
-        if not detected:
-            return
-        self._set_status(f"Opened using {detected} text encoding (not UTF-8).")
+        """Say, once, that this file is not UTF-8 -- the sentence QUILL Lite says too."""
+        from quill.core.text_decoding import open_notice
+
+        notice = open_notice(str(document.source_metadata.get("encoding_detected") or ""))
+        if notice:
+            self._announce(notice)
 
     def next_document(self) -> None:
         self._switch_document(reverse=False)
@@ -6575,6 +6601,7 @@ class MainFrame(
         closed it to "no changes to save" and lost the fix without being told.
         """
         from quill.ui.file_format_dialog import (
+            REOPEN_ID,
             FileFormatDialog,
             describe_encoding,
             describe_line_ending,
@@ -6585,9 +6612,14 @@ class MainFrame(
             self.frame,
             encoding=self.document.encoding,
             line_ending=self.document.line_ending,
+            can_reopen=self._can_reopen_with_encoding(),
         )
         try:
-            if dialog.show() != self._wx.ID_OK:
+            answer = dialog.show()
+            if answer == REOPEN_ID:
+                self.reopen_with_encoding(dialog.reopen_encoding)
+                return
+            if answer != self._wx.ID_OK:
                 self._set_status("File format unchanged")
                 return
             encoding, line_ending = dialog.choices
@@ -6845,6 +6877,7 @@ class MainFrame(
         # Restore points: snapshot the canonical text of every successful save
         # (best-effort by contract; can never be the reason a save fails).
         self._record_save_restore_point(document)
+        self._remember_disk_baseline_for(document)
 
     def _sync_publishing_linkage_for_document(self, document: Document) -> None:
         """Persist or refresh this document's publishing linkage, keyed by its path.
@@ -6905,6 +6938,8 @@ class MainFrame(
         # editor before the file is written. save_file_as runs its own copy.
         if getattr(self.settings, "spell_check_before_save", False):
             self.open_spell_check_dialog()
+        if not self._confirm_unseen_disk_change():
+            return
         if self.document.modified:
             self._backup_before_save(self.document)
         try:
@@ -7335,101 +7370,6 @@ class MainFrame(
             if self._show_modal_dialog(dialog, "Save as plain text") != wx.ID_OK:
                 return None
             return ("keep", "illuminate", "plain")[dialog.GetSelection()]
-
-    def open_url(self) -> None:
-        wx = self._wx
-        from quill.io.http_transport import download_url
-        from quill.io.open_read import read_open_document
-
-        with wx.TextEntryDialog(
-            self.frame,
-            "Enter URL (http or https):",
-            "Open from URL",
-            value="https://",
-        ) as dialog:
-            if self._show_modal_dialog(dialog, "Open from URL") != wx.ID_OK:
-                return
-            raw_url = dialog.GetValue().strip()
-        if not raw_url:
-            self._set_status("Open from URL cancelled")
-            return
-
-        from urllib.error import HTTPError, URLError
-        from urllib.parse import urlparse
-
-        parsed = urlparse(raw_url)
-        if parsed.scheme not in {"http", "https"}:
-            self._show_message_box(
-                "Only http and https URLs are supported.",
-                "Open from URL",
-                wx.ICON_ERROR | wx.OK,
-            )
-            return
-
-        try:
-            download = download_url(raw_url)
-        except HTTPError as exc:  # pragma: no cover - exercised through error path
-            self._show_message_box(
-                f"Could not open URL: HTTP {exc.code} from {parsed.netloc or raw_url}.",
-                "Open from URL",
-                wx.ICON_ERROR | wx.OK,
-            )
-            return
-        except URLError as exc:
-            self._show_message_box(
-                f"Could not open URL: {exc.reason}",
-                "Open from URL",
-                wx.ICON_ERROR | wx.OK,
-            )
-            return
-
-        from pathlib import Path
-
-        from quill.io.detect import STRUCTURED_EXTENSIONS, TEXT_EXTENSIONS
-
-        suffix = Path(download.filename).suffix.lower()
-        selected_path = Path(download.local_path)
-        try:
-            if suffix in STRUCTURED_EXTENSIONS or suffix in {".odt", ".rtf", ".pages"}:
-                # Heavy formats use the office-stream path. Run on a worker so
-                # the UI thread does not block on PDF/DOCX parses.
-                from quill.io.open_read import OFFICE_STREAM_SUFFIXES
-
-                if suffix in OFFICE_STREAM_SUFFIXES:
-                    word_mode = (
-                        self._resolve_word_open_mode(selected_path)
-                        if suffix in {".doc", ".docx"}
-                        else None
-                    )
-
-                    docx_engine = self._docx_read_engine()
-
-                    def _worker(_progress: object) -> tuple[object, object]:
-                        return read_open_document(
-                            selected_path, suffix, word_mode=word_mode, docx_engine=docx_engine
-                        )
-
-                    self._run_background_task(
-                        f"Opening {download.filename}",
-                        _worker,
-                        lambda result: self._install_remote_document(result, suffix, download),
-                    )
-                    return
-                loaded, epub_book = read_open_document(selected_path, suffix)
-            elif suffix in TEXT_EXTENSIONS:
-                loaded, epub_book = read_open_document(selected_path, suffix)
-            else:
-                # Unknown extension — treat as text via the new format pipeline.
-                loaded, epub_book = read_open_document(selected_path, suffix or ".txt")
-        except Exception as exc:  # noqa: BLE001 - format dispatch can fail
-            self._show_message_box(
-                f"Could not parse downloaded file: {exc}",
-                "Open from URL",
-                wx.ICON_ERROR | wx.OK,
-            )
-            return
-
-        self._install_remote_document((loaded, epub_book), suffix, download)
 
     def _maybe_autosave(self) -> None:
         if self._autosave_interval.total_seconds() <= 0:
@@ -15887,8 +15827,9 @@ class MainFrame(
         source = build_source_reference(
             self.document, self.editor.GetInsertionPoint(), self.editor.GetValue()
         )
-        payload = f"{selection}\n\n{source}"
-        if not self._copy_to_clipboard(payload):
+        from quill.ui.markdown_clipboard_copy import copy_with_source_payload
+
+        if not copy_with_source_payload(self, f"{selection}\n\n{source}"):
             self._set_status("Could not copy with source")
             return
         self._set_status("Copied selection with source")

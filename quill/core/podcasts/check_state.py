@@ -14,8 +14,18 @@ for fall out of them almost for free:
   daily coexist without either waiting on the other.
 * ``failures`` -- consecutive failed checks, reset by any success. **The check
   never gives up**; this only decides when you are told (7.19).
-* ``published`` -- when this feed last carried something new. A podcast that
-  ends does so silently, and this is the only notice anybody gets that it did.
+* ``published`` -- when this feed last carried something new: the newest
+  episode's **own** date, not the time of the check (check.md bug 2). A podcast
+  that ends does so silently, and this is the only notice anybody gets that it
+  did -- so stamping it with the clock, as the first check after an import used
+  to, made a show that stopped in 2005 read as "just now".
+
+And a few facts about the last answer, so Feed Check can say *why* and a check
+can be cheap: the plain reason for the last failure and its kind (bugs 7 and
+8), whether the feed was empty or cut off (bugs 3 and 13), whether a plain-http
+address was read over https (bug 14), and the ETag / Last-Modified validators
+for a conditional request next time (bug 9). All additive keys in the same
+per-podcast dict; an older file simply lacks them.
 
 Two rules run through it:
 
@@ -44,6 +54,16 @@ _FAILURES = "failures"
 _PUBLISHED = "published"
 _NOTIFIED_QUIET = "quiet_notified"
 _NOTIFIED_FAILED = "failed_notified"
+_REASON = "failure_reason"
+_KIND = "failure_kind"
+_EMPTY = "empty"
+_TRUNCATED = "truncated"
+_SECURE = "read_securely"
+_ETAG = "etag"
+_LAST_MODIFIED = "last_modified"
+_VALIDATED_URL = "validated_url"
+_REBASE = "rebase"
+_TWINS = "twin_guids"
 
 
 def _state(library: PodcastLibrary, show: PodcastShow) -> dict[str, object]:
@@ -93,35 +113,141 @@ def is_due(library: PodcastLibrary, show: PodcastShow, *, now: datetime | None =
     return (now or datetime.now(UTC)) - previous >= timedelta(minutes=minutes)
 
 
+def newest_episode_date(show: PodcastShow) -> datetime | None:
+    """The newest date any of this podcast's episodes carries, or None."""
+    from quill.core.podcasts.row_speech import _parse  # noqa: PLC2701 - one parser, not two
+
+    moments = [_parse(episode.published) for episode in show.episodes]
+    real = [moment for moment in moments if moment is not None]
+    return max(real) if real else None
+
+
 def record_success(
     library: PodcastLibrary,
     show: PodcastShow,
     *,
     new_episodes: int = 0,
     now: datetime | None = None,
+    published: datetime | None = None,
 ) -> None:
     """A check finished. Clears the failure run, and the notices it earned.
 
-    Publishing something clears the gone-quiet latch as well as the stamp, so a
-    podcast that goes quiet, comes back and goes quiet again is reported both
-    times rather than once.
+    *published* is the newest episode's own date. When given it **is** the
+    "last published" stamp -- overwriting, so a library whose stamps were set
+    from the clock by an older Cast is healed by its next check. Only when the
+    feed gives no dates at all does a check that brought something new fall
+    back to the clock, because "something arrived just now" is then the best
+    anybody knows.
+
+    Publishing something clears the gone-quiet latch as well, so a podcast that
+    goes quiet, comes back and goes quiet again is reported both times rather
+    than once.
     """
     moment = (now or datetime.now(UTC)).isoformat()
     state = _state(library, show)
     state[_CHECKED] = moment
     state[_FAILURES] = 0
     state.pop(_NOTIFIED_FAILED, None)
-    if new_episodes:
+    state.pop(_REASON, None)
+    state.pop(_KIND, None)
+    if published is not None:
+        stamp = published if published.tzinfo is not None else published.replace(tzinfo=UTC)
+        state[_PUBLISHED] = stamp.isoformat()
+    elif new_episodes:
         state[_PUBLISHED] = moment
+    if new_episodes:
         state.pop(_NOTIFIED_QUIET, None)
 
 
+def record_shape(
+    library: PodcastLibrary,
+    show: PodcastShow,
+    *,
+    empty: bool,
+    truncated: bool = False,
+    read_securely: bool = False,
+) -> None:
+    """What the last successful read looked like (bugs 3, 13 and 14).
+
+    Stored only when true, so the common case -- a feed with episodes, under
+    the size cap, read as given -- adds nothing to the saved file.
+    """
+    state = _state(library, show)
+    for key, value in ((_EMPTY, empty), (_TRUNCATED, truncated), (_SECURE, read_securely)):
+        if value:
+            state[key] = True
+        else:
+            state.pop(key, None)
+
+
+def is_empty(library: PodcastLibrary, show: PodcastShow) -> bool:
+    """The last read found a feed with no episodes in it."""
+    return bool(_read(library, show).get(_EMPTY))
+
+
+def is_truncated(library: PodcastLibrary, show: PodcastShow) -> bool:
+    """The last read was cut off at the size cap; the oldest episodes are missing."""
+    return bool(_read(library, show).get(_TRUNCATED))
+
+
+def read_securely(library: PodcastLibrary, show: PodcastShow) -> bool:
+    """A plain-http address was last read over https."""
+    return bool(_read(library, show).get(_SECURE))
+
+
+def record_validators(
+    library: PodcastLibrary, show: PodcastShow, etag: str, last_modified: str
+) -> None:
+    """Keep the response's ETag and Last-Modified for a conditional request.
+
+    Tied to the address they came from: a podcast whose feed address changes
+    must be read in full once, not asked "has this changed" about a feed the
+    validators never described.
+    """
+    state = _state(library, show)
+    if etag or last_modified:
+        state[_ETAG] = str(etag or "")
+        state[_LAST_MODIFIED] = str(last_modified or "")
+        state[_VALIDATED_URL] = str(show.feed_url or "")
+    else:
+        for key in (_ETAG, _LAST_MODIFIED, _VALIDATED_URL):
+            state.pop(key, None)
+
+
+def validators(library: PodcastLibrary, show: PodcastShow) -> tuple[str, str]:
+    """``(etag, last_modified)`` to send, or two empty strings.
+
+    Empty when the podcast has no episodes yet -- a "not modified" answer is
+    only useful to somebody who already has the feed -- or when the stored pair
+    describes a different address.
+    """
+    read = _read(library, show)
+    if not show.episodes or str(read.get(_VALIDATED_URL, "") or "") != str(show.feed_url or ""):
+        return ("", "")
+    return (str(read.get(_ETAG, "") or ""), str(read.get(_LAST_MODIFIED, "") or ""))
+
+
 def record_failure(
-    library: PodcastLibrary, show: PodcastShow, *, now: datetime | None = None
+    library: PodcastLibrary,
+    show: PodcastShow,
+    *,
+    now: datetime | None = None,
+    reason: str = "",
+    kind: str = "",
 ) -> int:
-    """A check failed; returns the length of the run it is part of."""
+    """A check failed; returns the length of the run it is part of.
+
+    *reason* is the plain sentence for this failure and *kind* its sort
+    (:mod:`quill.core.podcasts.feed_problems`). Kept so Feed Check can say
+    *why* a feed is failing, and offer to find the show's new feed when the
+    old one is not coming back (check.md bug 8).
+    """
     state = _state(library, show)
     state[_CHECKED] = (now or datetime.now(UTC)).isoformat()
+    if reason:
+        state[_REASON] = str(reason)
+    if kind:
+        state[_KIND] = str(kind)
     # coerce_int already answers 0 for a stored value that is not a number, so
     # a hand-edited state file cannot stop a podcast being checked.
     failures = coerce_int(state.get(_FAILURES, 0), 0) + 1
@@ -131,6 +257,16 @@ def record_failure(
 
 def failure_run(library: PodcastLibrary, show: PodcastShow) -> int:
     return max(0, coerce_int(_read(library, show).get(_FAILURES, 0), 0))
+
+
+def failure_reason(library: PodcastLibrary, show: PodcastShow) -> str:
+    """The plain sentence for the last failure, or ``""``."""
+    return str(_read(library, show).get(_REASON, "") or "")
+
+
+def failure_kind(library: PodcastLibrary, show: PodcastShow) -> str:
+    """The sort of the last failure (a :mod:`feed_problems` kind), or ``""``."""
+    return str(_read(library, show).get(_KIND, "") or "")
 
 
 _HINT_MINUTES = "hint_minutes"
@@ -194,11 +330,20 @@ def failure_notice(library: PodcastLibrary, show: PodcastShow) -> str:
     if run < wanted:
         return ""
     state[_NOTIFIED_FAILED] = True
-    return (
-        f"{show.title} has failed to check {run} times in a row. Cast is still "
-        "trying, and nothing has been unfollowed or deleted -- the feed's "
-        "address may have changed."
-    )
+    from quill.core.podcasts.feed_problems import WORTH_A_SEARCH
+
+    reason = failure_reason(library, show)
+    said = f"{show.title} has failed to check {run} times in a row."
+    if reason:
+        said += f" {reason}"
+    said += " Cast is still trying, and nothing has been unfollowed or deleted."
+    # "Look for its new feed" only where that is the likely story -- a removed
+    # feed, a domain that is gone, a web page where the feed was. Said about a
+    # slow host, "the address may have changed" sent people looking for a feed
+    # that had not moved (check.md bug 8).
+    if failure_kind(library, show) in WORTH_A_SEARCH:
+        said += " Find This Show's New Feed, in Feed Check, can look for where it went."
+    return said
 
 
 def quiet_notice(library: PodcastLibrary, show: PodcastShow, *, now: datetime | None = None) -> str:
@@ -230,19 +375,85 @@ def quiet_notice(library: PodcastLibrary, show: PodcastShow, *, now: datetime | 
     )
 
 
+def mark_rebase(library: PodcastLibrary, show: PodcastShow) -> None:
+    """The podcast's feed address was replaced: start its bookkeeping afresh.
+
+    Everything that described the old address goes -- the failure run and its
+    reason, the validators, "empty", the latched notices -- and the next
+    successful read is marked as a starting point (:func:`take_rebase`).
+    """
+    state = _state(library, show)
+    for key in (
+        _FAILURES,
+        _REASON,
+        _KIND,
+        _EMPTY,
+        _TRUNCATED,
+        _SECURE,
+        _ETAG,
+        _LAST_MODIFIED,
+        _VALIDATED_URL,
+        _NOTIFIED_FAILED,
+        _NOTIFIED_QUIET,
+        _TWINS,
+    ):
+        state.pop(key, None)
+    state[_REBASE] = True
+
+
+def twin_guids(library: PodcastLibrary, show: PodcastShow) -> frozenset[str]:
+    """Episode ids on a replaced feed that are episodes the podcast already has.
+
+    After Replace Feed the new host lists the same episodes under its own ids.
+    The podcast keeps its own copies (with what you have heard of them), and
+    these ids are remembered so a later read does not add them back as new.
+    """
+    raw = _read(library, show).get(_TWINS)
+    return frozenset(str(item) for item in raw) if isinstance(raw, list) else frozenset()
+
+
+def add_twin_guids(library: PodcastLibrary, show: PodcastShow, guids: set[str]) -> None:
+    if not guids:
+        return
+    state = _state(library, show)
+    state[_TWINS] = sorted(twin_guids(library, show) | guids)
+
+
+def take_rebase(library: PodcastLibrary, show: PodcastShow) -> bool:
+    """Whether this read is the first since the address was replaced; clears it."""
+    state = library.show_check_state.get(show.id)
+    if not state or not state.get(_REBASE):
+        return False
+    state.pop(_REBASE, None)
+    return True
+
+
 def forget(library: PodcastLibrary, show_id: str) -> None:
     """Drop a podcast's bookkeeping -- on unsubscribe, and nowhere else."""
     library.show_check_state.pop(show_id, None)
 
 
 __all__ = [
+    "add_twin_guids",
+    "failure_kind",
     "failure_notice",
+    "failure_reason",
     "failure_run",
     "forget",
     "is_due",
+    "is_empty",
+    "is_truncated",
     "last_checked",
     "last_published",
+    "mark_rebase",
+    "newest_episode_date",
     "quiet_notice",
+    "read_securely",
     "record_failure",
+    "record_shape",
     "record_success",
+    "record_validators",
+    "take_rebase",
+    "twin_guids",
+    "validators",
 ]

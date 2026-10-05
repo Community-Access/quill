@@ -1698,20 +1698,41 @@ built up over years.
      ticked unless you know you want downloads.
 5. Press **Import**.
 
-Your folders come across as folders. A podcast listed twice is imported once,
-even if one copy has a slightly different address. Two different podcasts
-that happen to share a name are both imported, and the report points them out
-so you can check.
+Your folders come across as folders, exactly as the file has them: folders
+inside folders as deep as they go, in the same order, and empty folders too.
+Podcasts that sit outside any folder stay at the top level. Folder names with
+an ampersand, accents or quotation marks come across as written, and so do
+names that another app saved with its punctuation spelled out twice.
+
+A podcast listed twice is imported once, even if one copy has a slightly
+different address. If the file puts one podcast in two folders, Cast follows
+it once, in the first folder it appears in, and the report says where the
+other copy was. Two different podcasts that happen to share a name are both
+imported, whether the other one is already in your list or elsewhere in the
+same file, and the report points them out so you can check. A line in the file
+whose address is not a complete web address, like "http://feed/", is not
+imported; the report lists it with the reason.
+
+The first time Cast reads each new podcast, it takes that as a starting
+point. You will not be told about hundreds of "new" episodes from shows you
+have just brought across, and nothing is downloaded or added to a playlist
+because of it. The only exception is what you asked for under "When I follow
+a podcast, also fetch" in the podcast's settings.
 
 The import runs in the background, so carry on listening while it works. If
 you asked for the reachability check, Cast tells you how far along it is as
 it goes. **Stop Checking** (Alt+T) ends the check early and keeps everything
-already imported. A private feed that asks for a sign-in counts as working.
+already imported. A private feed that asks you to sign in counts as working.
+An address that now opens a web page, a feed with nothing in it, and a host
+that turns podcast apps away do not.
 
 When it is done, the **OPML Import Report** window lists anything worth your
-attention: corrections,
-feeds that did not answer, duplicates it skipped, and anything it could not
-import. Two buttons sit under it:
+attention. It names feeds that did not answer, each with the reason in
+plain words, and duplicates it skipped. It lists anything it could not
+import, and feeds whose host says they have moved for good. Cast moves a
+podcast to its new address only when **Follow permanent feed redirects** is
+on (Preferences > Fetching). Otherwise the report says the address was left
+alone. Two buttons sit under it:
 
 - **Export Report...** (Alt+E) saves the whole report as a text file.
 - **Save Pruned OPML...** (Alt+P) writes your original file back out without
@@ -1723,7 +1744,12 @@ You can ask about dead feeds again any time with Podcasts > **Feed Check...**
 read it.
 
 To go the other way, choose Podcasts > **Export OPML...** (Ctrl+Alt+E,
-Advanced) and save the file. Any other podcast app can read it.
+Advanced) and save the file. Any other podcast app can read it. Your folders
+go into the file as folders, empty ones included, so importing it again, in
+Cast or anywhere else, gives you the same arrangement. Inside each folder the
+folders are written first and then the podcasts. A file that mixed the two in
+another order comes back with the same folders and podcasts in the same
+places, just grouped that way.
 
 If you ticked the box for it when you installed Cast, pressing Enter on an
 OPML file in File Explorer opens Cast straight into the import, and Cast
@@ -2406,16 +2432,58 @@ Cast updates the podcast's address for you when it finds one. It starts off.
 A saved username and password are never sent on to the new address.
 
 1. Focus is in **Your feeds, worst first** (Alt+W). Failing feeds come first,
-   then quiet ones, then healthy ones.
-2. Read from the top and stop when the rows turn healthy. Each row also says
-   when Cast will check it next.
+   then feeds that are empty, then quiet ones, then healthy ones.
+2. Read from the top and stop when the rows turn healthy. A failing row says
+   why, in plain words, and each row says when Cast will check it next. The
+   "last new episode" column is the date of the podcast's newest episode, so
+   a show that stopped years ago says so.
 3. On a failing row, press **Retry** (Alt+R). To try every failing feed
    again, press **Retry All Failed** (Alt+F).
 
+The reasons you may hear:
+
+- **The host no longer has a feed at this address**, or **has removed it for
+  good**. The podcast has probably moved or ended.
+- **This podcast's web address no longer exists.** The website's name has
+  lapsed.
+- **The podcast's site is refusing every connection**, **the site's secure
+  connection is broken**, or **its security certificate is not valid**. The
+  site itself is broken.
+- **This address returns a web page, not a podcast feed.** The address now
+  leads somewhere else entirely.
+- **The feed is there, but it has no episodes.** The publisher has emptied
+  it. These rows read "Empty".
+- **The publisher has locked this feed.** It may now need a paid
+  subscription.
+- **The feed's host is refusing podcast apps.** This is usually a bot check
+  that only the publisher can switch off.
+- **This feed needs a sign-in.** Use Feed Credentials on the podcast's menu.
+- **The host took too long to answer**, or **is having trouble right now**.
+  This usually passes by itself.
+
+For a podcast that has moved, ended up somewhere unexpected or emptied its
+feed, press **Find This Show's New Feed...** (Alt+N). Cast looks the show's
+title up in the podcast directories you use in Add Podcast. It reads each feed
+it finds to make sure it answers, and lists the ones that do, with how many
+episodes each has and the date of the newest. That date is the quickest way
+to tell the show you know from a different one with the same name. Choose one
+and press **Replace Feed** (Alt+R). The podcast keeps everything: what you
+have heard, where you stopped, your notes and its settings. Only its address
+changes, and episodes the new feed shares with the old one are not listed
+twice. Nothing is looked up until you press the button.
+
 Opening Feed Check checks nothing by itself. **Copy Feed Address** (Alt+C)
-puts a row's address on the clipboard, handy for looking up whether a podcast
-has moved. On a row, the Applications key also offers **Check Now** and
-**Change Schedule...**. A failing feed is not given up on: Cast keeps trying.
+puts a row's address on the clipboard. On a row, the Applications key also
+offers **Check Now**, **Find This Show's New Feed...** and **Change
+Schedule...**. A failing feed is not given up on: Cast keeps trying.
+
+Checking is kind to your connection. After the first time, Cast asks each
+host whether the feed has changed, and a feed that has not changed costs
+almost nothing to check. A plain "http" address is tried over a secure
+connection first. Feed checks also run on their own, so a big check never
+holds up a download or anything else you are doing. If a feed is so large
+that Cast cannot read all of it, Player Information says so; the newest
+episodes are always there.
 
 ### Being told about new episodes
 
@@ -4094,6 +4162,10 @@ They are called release channels.
    podcasts are protected, and how to come back. Read it, tick the **I
    understand** box, and choose **Move to Beta** (or **Move to Dev**). **Stay
    on Stable**, or Escape, changes nothing.
+
+Beta and Dev versions aren't signed, so when you install one, Windows
+SmartScreen may warn that it comes from an unknown publisher; that's expected,
+and choosing **More info**, then **Run anyway**, installs it.
 
 Before it moves, Cast saves a copy of your subscriptions, playlists, listening
 places and settings. If it cannot, it stays where it is and tells you why.

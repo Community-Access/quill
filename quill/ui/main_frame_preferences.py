@@ -316,6 +316,9 @@ class PreferencesMixin:
             refresh_live_policies(self)
         except Exception:  # noqa: BLE001 - a settings-apply side effect must never raise
             pass
+        from quill.ui.settings_live_switches import after_settings_applied
+
+        after_settings_applied(self)  # "Hey QUILL" and the right-click menu, live
         self._apply_soft_wrap(self.settings.soft_wrap)
         self._rebuild_tab_host(self.settings.show_tab_control)
         self._build_menu()

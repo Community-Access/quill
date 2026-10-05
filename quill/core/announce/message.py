@@ -85,6 +85,10 @@ class Announcement:
     region: str = ""
     dedupe_key: str = ""
     context: dict[str, object] = field(default_factory=dict)
+    #: Whether speech should cut across the reader. ``None`` means "as the
+    #: severity says"; the policy fills it in from the user's "Interrupt speech
+    #: for" setting before the speech sink sees the announcement.
+    interrupt: bool | None = None
 
     @property
     def force_speech(self) -> bool:
@@ -93,6 +97,8 @@ class Announcement:
         ``AnnouncementEngine.announce(..., force_speech=)`` still speaks this
         language, and the speech sink still has to.
         """
+        if self.interrupt is not None:
+            return self.interrupt
         return self.severity.interrupts
 
     @property

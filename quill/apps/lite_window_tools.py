@@ -453,7 +453,12 @@ class DocumentToolsMixin(DocumentBackupsMixin):
                 "Markdown and HTML."
             )
             return
-        chosen = edit_file_format(self, encoding=self.encoding, newline=self.newline)
+        chosen = edit_file_format(
+            self,
+            encoding=self.encoding,
+            newline=self.newline,
+            on_reopen=self.reopen_with_encoding if self._can_reopen_with_encoding() else None,
+        )
         if chosen is None:
             self.control.SetFocus()
             return

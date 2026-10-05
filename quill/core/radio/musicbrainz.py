@@ -34,13 +34,13 @@ import urllib.parse
 import urllib.request
 from dataclasses import dataclass
 
-from quill import __version__
+from quill.core import http_client
 from quill.core.error_codes import CodedError
 from quill.core.radio import directory_cache
 
-#: MusicBrainz asks that the agent identify the application *and* offer a way to
-#: get in touch. This is not politeness -- an anonymous agent is blocked.
-_USER_AGENT = f"QUILL-Radio/{__version__} (https://github.com/Community-Access/quill)"
+# MusicBrainz asks that the agent identify the application *and* offer a way to
+# get in touch; http_client.user_agent carries both (the project site). This is
+# not politeness -- an anonymous agent is blocked.
 _TIMEOUT_SECONDS = 15.0
 _MAX_BYTES = 2_000_000
 _ENDPOINT = "https://musicbrainz.org/ws/2/recording"
@@ -116,7 +116,7 @@ def _fetch(url: str) -> str:
     """One HTTPS GET of MusicBrainz -- the reviewed egress site, rate-limited."""
     _throttle()
     request = urllib.request.Request(
-        url, headers={"User-Agent": _USER_AGENT, "Accept": "application/json"}
+        url, headers={"User-Agent": http_client.user_agent(), "Accept": "application/json"}
     )
     context = ssl.create_default_context()
     try:

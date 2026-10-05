@@ -230,8 +230,8 @@ class Settings:
     announcement_sound_instead_of_speech_when_quiet: bool = True
     #: Keep the Spoken Echo / announcement history in every app.
     announcement_echo_history: bool = True
-    #: Which severities interrupt speech: "errors", "warnings" or "never".
-    announcement_severity_interrupt: str = "errors"
+    #: Which severities interrupt speech: "errors", "warnings" (always did) or "never".
+    announcement_severity_interrupt: str = "warnings"
     read_aloud_piper_model_dir: str = ""
     read_aloud_kokoro_voice: str = "af_heart"
     read_aloud_kokoro_speed: float = 1.0
@@ -290,7 +290,7 @@ class Settings:
     # Which company the own key belongs to: "openai" or "gemini". An explicit
     # choice made in Use My Own AI Key, never inferred (core/ai/own_key.py).
     ai_own_key_provider: str = "openai"
-    markdown_clipboard_format: str = "html"
+    markdown_clipboard_format: str = "text"  # Copy With Source: "text", "html" or "rtf"
     markdown_profile_id: str = "standard"
     citation_style: str = "footnotes"
     auto_clean_html_paste: bool = False
@@ -561,7 +561,7 @@ class Settings:
     shell_verb_open: bool = True
     shell_verb_read: bool = False
     shell_verb_convert: bool = False
-    shell_file_types: str = "images_pdf"
+    shell_file_types: str = "images_pdf_docs"
     ocr_structured: bool = False
     ocr_capture_geometry: bool = False
     # FEAT-19: external file-change watch and safe reload
@@ -646,6 +646,9 @@ class Settings:
     #: showed up first -- see ``quill/core/recovery_triage.py``. QUILL can
     #: answer it because an untitled document autosaves under a known key.
     recover_untitled_documents: bool = True
+    #: New inline notes in Markdown and HTML go into the file as quill-note
+    #: comments, not the private sidecar. Off by default; shared with Lite.
+    inline_notes_in_file: bool = False
     #: How many days of autosave history to keep. Only the previous session is
     #: ever offered back, so older directories are unreachable by design and
     #: were nevertheless kept for ever -- a real install had eighty-six days of
@@ -1079,10 +1082,10 @@ class Settings:
         )
         announcement_echo_history = bool(data.get("announcement_echo_history", True))
         announcement_severity_interrupt = (
-            str(data.get("announcement_severity_interrupt", "errors")).strip().lower()
+            str(data.get("announcement_severity_interrupt", "warnings")).strip().lower()
         )
         if announcement_severity_interrupt not in {"errors", "warnings", "never"}:
-            announcement_severity_interrupt = "errors"
+            announcement_severity_interrupt = "warnings"
         announcement_trace_enabled = bool(data.get("announcement_trace_enabled", False))
         announcement_startup_tips_enabled = bool(
             data.get("announcement_startup_tips_enabled", False)
@@ -1097,10 +1100,10 @@ class Settings:
         if assistant_prompt_style not in {"balanced", "concise", "gentle", "technical"}:
             assistant_prompt_style = "balanced"
         markdown_clipboard_format = (
-            str(data.get("markdown_clipboard_format", "html")).strip().lower() or "html"
+            str(data.get("markdown_clipboard_format", "text")).strip().lower() or "text"
         )
-        if markdown_clipboard_format not in {"html", "rtf"}:
-            markdown_clipboard_format = "html"
+        if markdown_clipboard_format not in {"text", "html", "rtf"}:
+            markdown_clipboard_format = "text"
         engine = str(data.get("dictation_engine", "windows")).strip().lower()
         engine = "offline" if engine in {"vosk", "whisper"} else engine  # #617 migrate
         dictation_engine = engine if engine in {"offline", "windows", "cloud"} else "windows"
@@ -1317,9 +1320,9 @@ class Settings:
         shell_verb_open = bool(data.get("shell_verb_open", True))
         shell_verb_read = bool(data.get("shell_verb_read", False))
         shell_verb_convert = bool(data.get("shell_verb_convert", False))
-        shell_file_types = str(data.get("shell_file_types", "images_pdf")).strip().lower()
+        shell_file_types = str(data.get("shell_file_types", "images_pdf_docs")).strip().lower()
         if shell_file_types not in {"images", "images_pdf", "images_pdf_docs"}:
-            shell_file_types = "images_pdf"
+            shell_file_types = "images_pdf_docs"
         ocr_structured = bool(data.get("ocr_structured", False))
         ocr_capture_geometry = bool(data.get("ocr_capture_geometry", False))
         # FEAT-19: external file-change watch and safe reload
@@ -1400,6 +1403,7 @@ class Settings:
         if session_restore_ask not in ASK_MODES:
             session_restore_ask = "when_it_matters"
         recover_untitled_documents = bool(data.get("recover_untitled_documents", True))
+        inline_notes_in_file = bool(data.get("inline_notes_in_file", False))
         # Upper bound of ten years rather than none: this field deletes, and a
         # hand-edited 1e999 would otherwise become an int() crash at launch.
         recovery_keep_days = _clamp_int(
@@ -1914,6 +1918,7 @@ class Settings:
             session_restore_ask=session_restore_ask,
             session_files=session_files,
             recover_untitled_documents=recover_untitled_documents,
+            inline_notes_in_file=inline_notes_in_file,
             recovery_keep_days=recovery_keep_days,
             markdown_hard_break_style=markdown_hard_break_style,
             autoformat_smart_quotes=autoformat_smart_quotes,

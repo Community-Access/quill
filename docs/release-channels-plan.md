@@ -13,6 +13,8 @@
 > **Also implemented, 2026-10-04:** `scripts/revoke_release.py` (the documented way to withdraw a build; `feed_tool.py revoke` calls the same `release_feed.withdraw`), `scripts/rollup_release_notes.py` over `quill/core/updater/notes_rollup.py` (run by `promote_release.py` at every promotion to Stable, printed by its `--dry-run`, and used for the GitHub release body and the feed's `notes_summary`), GATE-DATAFMT (`quill/tools/data_format_audit.py`, `tests/unit/core/test_data_formats.py`, `tests/unit/core/fixtures/data_format_fingerprints.json`, in `platform_report`), and the rehearsal (`tests/unit/scripts/test_channel_rehearsal_offline.py` in CI, `tests/integration/test_channel_rehearsal.py` opt-in with `QUILL_CHANNEL_REHEARSAL=1`).
 >
 > **Decisions, 2026-10-04.** (questions.md 32) The installer kept so that a failed update can undo itself is kept **always on Beta and Dev**, and **on Stable only for 7 days or 3 successful starts after each update** (`quill/core/updater/apply.py`, `keeps_installer`), so a Stable computer gets its roughly 200 MB back; this narrows decision 7 for the running version's installer, while the *previous* version's installer still ages out after 3 starts or 7 days on every channel. And the old v1 update list stays signed in CI by `windows-release.yml` with the `QUILL_FEED_SIGNING_KEY` secret for now. Remove that secret from CI and stop v1 signing once every app's channel-aware release (QUILL 1.0.0, QUILL Lite 1.2.0, Quill Radio 3.2.0, QUILL Cast 2.0.0) has been out for one full release cycle; until then, leave it alone (`docs/release/RELEASE.md`).
+>
+> **Decisions, 2026-10-04 (code signing).** "Beta and developer builds should not be digitally signed." Authenticode signing is refused for any version with a pre-release part (`-dev`, `-alpha`, `-beta`, `-rc`) and for every Dev build: `-Sign`, `QUILL_SIGN` and `QUILL_SIGN_REQUIRED` cannot force it, and the build says "Beta and Dev builds are not code-signed; signing skipped." (`scripts/code_signing.py` `build_decision`, asked by every `build_release.ps1` through `Resolve-QuillSigning` and by `build_windows_distribution.py`). Stable is always signed. The conflict with "Stable takes the same files that were on Beta" is resolved by signing the **final-numbered candidate when it is built**, not at promotion: an Inno `Setup.exe` carries its payload compressed inside it, so signing at promotion would mean either rebuilding the installer (new files, never tested on Beta) or signing only the outer `Setup.exe` (unsigned programs on Stable). A final-numbered build waiting on Beta is a release candidate of Stable, not a Beta build. `publish_release.py` refuses an unsigned final-numbered build and a signed Beta or Dev one; P5 is no longer conditional on `QUILL_SIGN_REQUIRED` and always runs for Stable, reading the embedded signature from the installer and from every `.exe` in the portable zip (so it works on the Linux promote runner), and verifying with `signtool` where it is installed. QUILL's own `v1.0.0` candidate is built and signed on the owner's computer, because `windows-release.yml` has no Azure credential (`docs/code-signing.md`).
 
 ---
 
@@ -312,7 +314,7 @@ New, wx-free, unit-tested:
 | P2 | Every asset re-downloaded or HEADed: size and **SHA-256 match the feed entry** | `release_assets._download_resumable` + hash |
 | P3 | Feed signature valid; `sequence` will increase | `feed_tool verify` |
 | P4 | For Stable: version is final (`ReleaseVersion.stage == "final"`) | `versioning.py` |
-| P5 | For Stable: Authenticode-signed installer and payload `.exe` (`code_signing.py verify`) when `QUILL_SIGN_REQUIRED` policy is on | `scripts/code_signing.py` |
+| P5 | For Stable, always: Authenticode-signed installer and every `.exe` in the portable zip (embedded signature; `signtool verify` where installed). Decided 2026-10-04: Stable is never unsigned | `scripts/code_signing.py` `asset_is_signed` |
 | P6 | Version agreement inside the bits: `app-build.json.version` == the tag == `quill-app-version.ini` inside the portable zip == the Inno `VersionInfo` | GATE-APPVER logic, applied to *artifacts* rather than source |
 | P7 | **Sibling check, channel-aware (GATE-SIBVER-CH):** for Stable, every entry in `carries` must be ≤ that sibling's newest *Stable* listing; for Beta, ≤ its newest Beta-or-Stable. The promoted runtime lands in that channel's runtime slot, where siblings on the channel will run it (6.5). | `check_sibling_versions.disagreements`, fed by the feed instead of tags |
 | P8 | Release notes present: a CHANGELOG section for this version (`release_notes.extract_version_section` returns non-empty) **and**, for Stable, a rolled-up `standalone/<app>/docs/release-notes-<x.y>.md` | `scripts/extract_release_body.py` |
@@ -623,6 +625,7 @@ The **Check for Updates** result dialog gains a line, "You are on the Beta chann
 > - Something might stop working, or Quill Radio might close unexpectedly.
 > - Your screen reader might miss something it should announce. We test every Stable version with JAWS and NVDA. Beta versions are tested less.
 > - Your favorites and settings may be saved in a newer way that the Stable version can't read yet.
+> - Beta and Dev versions aren't signed, so Windows may warn that the installer comes from an unknown publisher; that's expected, and you can choose More info, then Run anyway.
 >
 > **How you're protected**
 > - Before switching, Quill Radio saves a copy of your favorites, history and settings. Your recordings are not copied, and updates don't change them.
@@ -642,7 +645,7 @@ Buttons: **"Stay on Stable"** (the default, and Escape) and **"Move to Beta"**. 
 > - Expect things to break. Some days a Dev version may not start at all.
 > - Dev versions are not checked with screen readers before they go out.
 > - Dev versions may change how your data is saved more than once. Going back to Stable may mean using the copy saved today and losing changes you made since.
-> - Windows may warn that a Dev version is from an unknown publisher.
+> - Beta and Dev versions aren't signed, so Windows may warn that the installer comes from an unknown publisher; that's expected, and you can choose More info, then Run anyway.
 >
 > If a developer didn't ask you to try Dev, Beta is probably the better choice.
 

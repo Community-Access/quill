@@ -24,10 +24,9 @@ import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
 
-from quill import __version__
+from quill.core import http_client
 from quill.core.error_codes import CodedError
 
-_USER_AGENT = f"QUILL/{__version__} (https://github.com/Community-Access/quill)"
 _MB_BASE = "https://musicbrainz.org/ws/2"
 _OL_BASE = "https://openlibrary.org"
 _OL_COVERS_BASE = "https://covers.openlibrary.org"
@@ -75,7 +74,7 @@ def _http_json(url: str) -> dict[str, object]:
     if not url.startswith("https://"):
         raise LookupError_("Refusing a non-HTTPS lookup request.")
     request = urllib.request.Request(
-        url, headers={"User-Agent": _USER_AGENT, "Accept": "application/json"}
+        url, headers={"User-Agent": http_client.user_agent(), "Accept": "application/json"}
     )
     context = ssl.create_default_context()
     try:
@@ -197,7 +196,7 @@ def fetch_cover(cover_id: int, target: Path) -> Path:
     if cover_id <= 0:
         raise LookupError_("That match has no cover image.")
     url = cover_url(cover_id)
-    request = urllib.request.Request(url, headers={"User-Agent": _USER_AGENT})
+    request = urllib.request.Request(url, headers={"User-Agent": http_client.user_agent()})
     context = ssl.create_default_context()
     try:
         with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:

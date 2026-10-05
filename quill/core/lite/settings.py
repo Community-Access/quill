@@ -38,6 +38,9 @@ from typing import Any
 
 from quill.core.action_feedback import coerce as _coerce_action_feedback
 from quill.core.lite.paths import settings_path
+from quill.core.lite.settings_values import clamp_ms as _clamp_ms
+from quill.core.lite.settings_values import coerce as _coerce
+from quill.core.lite.settings_values import suffix_list
 from quill.core.markdown_breaks import normalise_hard_break_style
 from quill.core.recent_documents import clamp_limit, remember
 from quill.core.recovery_triage import DEFAULT_KEEP_DAYS as RECOVERY_KEEP_DAYS
@@ -75,12 +78,7 @@ _HEADING_POSITIONS = frozenset(HEADING_POSITIONS)
 #: apps put the same words on screen.
 _LETTER_STYLES = frozenset({"letters", "phonetic", "both"})
 
-#: Bounds for the spell-aloud pauses. The ceiling is deliberately generous: a
-#: listener on a slow synthesiser genuinely waits longer than three seconds to
-#: hear a word out, and the number that makes the feature usable for them should
-#: not be un-typeable.
-_MIN_SPELL_MS = 100
-_MAX_SPELL_MS = 5000
+#: The spell-aloud pause bounds are clamp_ms's defaults (settings_values.py).
 _MAX_ALERT_REPEAT_MS = 10000
 #: The announcement throttle's ceiling. Two seconds, the same as QUILL's,
 #: because past that a throttle stops being a throttle and becomes a mute with
@@ -233,6 +231,18 @@ class Settings:
     #: the preference's own wording says so. Same field name as QUILL, which
     #: can tell an untitled snapshot by its document key.
     recover_untitled_documents: bool = True
+    #: New inline notes in Markdown and HTML go into the file (same as QUILL).
+    inline_notes_in_file: bool = False
+    # -- When another program changes the file (2026-10-04) -----------------
+    # QUILL's six fields, names, defaults and meanings, read by the shared
+    # quill.core.external_change.decide_for. The two lists are the per-format
+    # "do not ask me again" answers, kept by file suffix.
+    external_change_watch_enabled: bool = True
+    external_change_auto_reload_when_clean: bool = False
+    external_change_prompt_on_conflict: bool = True
+    external_change_always_reload: list[str] = field(default_factory=list)
+    external_change_always_keep: list[str] = field(default_factory=list)
+    external_change_debounce_ms: int = 750
     #: How many days a copy of unsaved work is kept before it stops being
     #: offered. 0 keeps everything for ever, which is what both editors did
     #: until 2026-09-21 -- and is how one user arrived at sixty-nine documents
@@ -334,6 +344,9 @@ class Settings:
     #: carries on, saying so first. Word's behaviour, and the reason the review
     #: can start at the caret at all.
     spell_review_wrap_to_beginning: bool = True
+    #: The F7 review's Context field: "sentence" (the word's sentence and one
+    #: either side) or "paragraph". QUILL's name; the shared review reads it.
+    spell_review_context_mode: str = "sentence"
     #: Open a blank document when nothing else is being opened. On, because that
     #: is what Notepad and WordPad do and what most people expect -- but off is a
     #: real preference and it had no way to be expressed: somebody who always
@@ -440,9 +453,16 @@ class Settings:
         # mean "expire everything immediately", which is the one value of this
         # field that can destroy work. 0 (never expire) is the floor.
         self.recovery_keep_days = max(0, int(self.recovery_keep_days))
+        self.external_change_always_reload = suffix_list(self.external_change_always_reload)
+        self.external_change_always_keep = suffix_list(self.external_change_always_keep)
+        self.external_change_debounce_ms = _clamp_ms(
+            self.external_change_debounce_ms, 750, low=0, high=10000
+        )
         self.markdown_hard_break_style = normalise_hard_break_style(self.markdown_hard_break_style)
         if self.spell_aloud_style not in _LETTER_STYLES:
             self.spell_aloud_style = "letters"
+        if self.spell_review_context_mode not in {"sentence", "paragraph"}:
+            self.spell_review_context_mode = "sentence"
         # Back to "before" rather than to "after", because "before" is the one
         # that works on every kind of caret move: a hand-edited file with a typo
         # in it should not quietly cost somebody the cue on every Ctrl+Home.
@@ -481,43 +501,6 @@ class Settings:
             _coerce_action_feedback(self.windows_dictation_phrase_feedback)
         )
         return self
-
-
-def _clamp_ms(
-    value: Any, fallback: int, *, low: int = _MIN_SPELL_MS, high: int = _MAX_SPELL_MS
-) -> int:
-    """A millisecond field forced into range, falling back on nonsense."""
-    try:
-        number = int(value)
-    except (TypeError, ValueError):
-        return fallback
-    return max(low, min(high, number))
-
-
-def _coerce(current: Any, value: Any) -> Any | None:
-    """*value* if it can stand in for *current*, else ``None`` (keep the default).
-
-    ``bool`` is checked before ``int`` because ``isinstance(True, int)`` is true
-    in Python, and a ``word_wrap`` of ``3`` should not be accepted as truthy.
-    """
-    if isinstance(current, bool):
-        return value if isinstance(value, bool) else None
-    if isinstance(current, int):
-        return value if isinstance(value, int) and not isinstance(value, bool) else None
-    if isinstance(current, str):
-        return value if isinstance(value, str) else None
-    if isinstance(current, list):
-        if not isinstance(value, list):
-            return None
-        # The element type comes from the default, because the two kinds of list
-        # this store holds are not interchangeable: the recent-files lists are
-        # strings and the print margins are numbers, and coercing everything to
-        # str silently turned four saved margins into four strings the
-        # validator then threw away (bad.md F13).
-        if current and isinstance(current[0], int) and not isinstance(current[0], bool):
-            return [int(item) for item in value if isinstance(item, int)]
-        return [str(item) for item in value]
-    return None
 
 
 #: Settings that describe *this machine* rather than how QUILL Lite behaves, and

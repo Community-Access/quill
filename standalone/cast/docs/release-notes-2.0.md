@@ -48,6 +48,7 @@ A few things work differently now:
   such as Settings for This Podcast (Ctrl+Alt+,), now have a Save button that
   keeps the window open, so you can try something and adjust it. Ctrl+S saves
   too. Close leaves anything you haven't saved as it was.
+- Portable copies now start from a folder whose name has a space in it.
 - **More windows stay open beside your library.** Add Podcast, Feed Check,
   Show Notes, Notifications and several others are on the Window menu while
   they're open. Escape or Ctrl+W closes one and puts you back where you were.
@@ -125,8 +126,11 @@ password safe for you.
 
 Coming from another podcast app? Save your list from it as an OPML file, then
 press Import OPML in the Add Podcast window (Alt+I). However long your list is,
-Cast brings it across, folders and all, and you can keep listening while it
-works.
+Cast brings it across, folders and all, empty folders included, and you can
+keep listening while it works. Your old shows arrive quietly: Cast does not
+announce their whole back catalogue as new episodes, and each one shows the
+real date of its newest episode, so the ones that stopped years ago are easy
+to spot.
 
 Changed your mind about a podcast? Unfollow it, and if that was a mistake,
 Ctrl+Z brings it back with its episodes and downloads. Ctrl+Z rescues you the
@@ -195,6 +199,13 @@ for anyone who has Cast.
 
 Cast checks your podcasts for you, on a schedule you choose for all of them or
 one at a time. Press F5 whenever you cannot wait.
+
+**Feed Check** (Ctrl+Shift+C) tells you which podcasts need something, and
+why, in plain words: removed by the host, a web address that has lapsed, an
+address that now opens a web page, a feed the publisher emptied, a host that
+turns podcast apps away. When a show has moved, **Find This Show's New Feed**
+looks it up for you and moves it to its new feed, keeping everything you have
+heard.
 
 New episodes wait in the **Inbox** (Ctrl+Shift+I) for you to decide about
 them. You choose which podcasts send episodes there, and you can keep it short

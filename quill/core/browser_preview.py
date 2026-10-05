@@ -9,8 +9,10 @@ import webbrowser
 from dataclasses import dataclass
 from pathlib import Path
 
+from quill.core.inline_notes_file import NOTE_LINE_MARK, mark_notes_for_render
 from quill.core.markdown_breaks import line_ends_with_hard_break, strip_hard_break
 from quill.core.navigation import previous_heading_start
+from quill.core.task_lists import task_item_html
 
 
 @dataclass(frozen=True, slots=True)
@@ -141,7 +143,7 @@ def _maybe_dark(body: str, dark: bool) -> str:
 
 
 def render_preview_body(
-    text: str, kind: str, dark: bool = False, *, source_map: bool = False
+    text: str, kind: str, dark: bool = False, *, source_map: bool = False, notes: bool = False
 ) -> str:
     """Render just the body fragment (no <html> wrapper) for a preview surface.
 
@@ -151,8 +153,13 @@ def render_preview_body(
     block back to a caret offset in the editor (#1257). It is off by default so
     every other consumer — HTML export, clipboard, publish, vault — keeps
     emitting clean markup with no editor-only attributes.
+
+    ``notes`` shows ``quill-note`` comments as marked asides (the preview);
+    off, they are left out, so no page that leaves QUILL carries one.
     """
     text = _sanitize_preview_text(text)
+    if kind in {"markdown", "html"} and "quill-note:" in text:
+        text = mark_notes_for_render(text, kind, notes)
     if kind == "markdown":
         return _maybe_dark(_render_markdown(text, source_map=source_map), dark)
     if kind == "html":
@@ -195,7 +202,7 @@ def render_preview_html(title: str, text: str, kind: str, start_anchor: str | No
     # preview is re-opened by QUILL after edits (debounced, not per keystroke),
     # and this page restores scroll position on reload so the reader is not
     # thrown back to the top each time.
-    body = render_preview_body(text, kind)
+    body = render_preview_body(text, kind, notes=True)
     anchor_script = ""
     if start_anchor:
         anchor_script = (
@@ -238,6 +245,7 @@ def render_preview_html(title: str, text: str, kind: str, start_anchor: str | No
         "table{border-collapse:collapse;}"
         "th,td{border:1px solid #ccc;padding:0.4rem 0.6rem;}"
         "h1,h2,h3,h4,h5,h6{scroll-margin-top:1.5rem;}"
+        ".quill-note{border-left:4px solid #b8860b;padding-left:1rem;}"
         # Dark mode (#126): the default browser link blue (#0000ee) fails contrast
         # on a dark background, so pair light text with a light-blue link colour
         # and darken the code/quote/table chrome to keep everything readable.
@@ -597,6 +605,12 @@ def _render_markdown(text: str, *, source_map: bool = False) -> str:
     while index < total:
         line = lines[index]
         stripped = line.rstrip()
+        if not in_code and line.startswith(NOTE_LINE_MARK):  # a note's aside
+            flush_paragraph()
+            flush_list()
+            blocks.append(line[1:])
+            index += 1
+            continue
         if in_code:
             if stripped.startswith("```"):
                 blocks.append(
@@ -708,9 +722,9 @@ def _render_markdown(text: str, *, source_map: bool = False) -> str:
                     list_start = int(numbered.group(2))
             item_match = bullet or numbered
             assert item_match is not None  # one of the two matched
-            list_items.append(
-                f"<li{_src_attr(source_map, index)}>{_render_inline(item_match.group(3))}</li>"
-            )
+            content = _render_inline(item_match.group(3))
+            content = task_item_html(content) or content  # - [ ] as a check box
+            list_items.append(f"<li{_src_attr(source_map, index)}>{content}</li>")
             index += 1
             continue
         if not stripped:
@@ -805,6 +819,7 @@ def _render_inline(text: str) -> str:
         escaped,
     )
     escaped = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", escaped)
+    escaped = re.sub(r"~~([^~]+)~~", r"<del>\1</del>", escaped)
     escaped = re.sub(r"(?<!\*)\*([^*]+)\*(?!\*)", r"<em>\1</em>", escaped)
     return re.sub(r"\x00(\d+)\x00", lambda m: placeholders[int(m.group(1))], escaped)
 

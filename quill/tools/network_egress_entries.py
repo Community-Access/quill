@@ -125,11 +125,17 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "feed's raw RSS/Atom bytes (feedparser then parses locally, no "
         "further network activity). Reached only by explicit user actions "
         "(Add by Feed URL, iTunes search result subscribe, a scheduled/"
-        "manual feed refresh for an already-subscribed show). HTTPS-only "
-        "over a verified TLS context with a bounded timeout and response "
-        "size. Private-feed Basic-auth credentials come from the OS "
-        "credential store, sent only to that host. Disabled in Safe Mode via "
-        "refuse_in_safe_mode; _fetch_feed_bytes retries transient failures."
+        "manual feed refresh for an already-subscribed show, and Feed Check's "
+        "Find This Show's New Feed reading each directory candidate once to "
+        "verify it). A plain-http address is tried over https first "
+        "(transport.attempts_for); a verified TLS context, a bounded timeout "
+        "and response size. Sends the family User-Agent (http_client) and, "
+        "for a show already read, the feed's own ETag/Last-Modified back as "
+        "If-None-Match/If-Modified-Since -- values the host itself issued, "
+        "nothing about the listener. Private-feed Basic-auth credentials come "
+        "from the OS credential store, sent only to that host. Disabled in "
+        "Safe Mode via refuse_in_safe_mode; _fetch_feed_bytes retries "
+        "transient failures."
     ),
     "core/podcasts/opml_import.py::_probe_once": (
         "Single egress site for the OPML import reachability check: one "
@@ -139,7 +145,8 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "reachable' in Import OPML, which states that it makes one request "
         "per feed, shows live progress, and can be cancelled mid-sweep. "
         "Concurrency is bounded (8 workers) with a short timeout; a 401/403 "
-        "counts as reachable so a private feed is never reported dead. "
+        "that asks for a sign-in counts as reachable so a private feed is "
+        "never reported dead. "
         "Refused entirely in Safe Mode (validate_feeds returns 'not checked' "
         "for every feed instead of connecting). Its purpose is the pruning "
         "report: which subscriptions died, so they can be pruned. probe_feed "
@@ -208,7 +215,8 @@ _REVIEWED_EGRESS: dict[str, str] = {
     "core/podcasts/itunes_search.py::_fetch_once": (
         "Single egress site for Add Podcast's search: iTunes' free, keyless "
         "podcast search API. Reached only by the explicit Search action in "
-        "the Add Podcast dialog. HTTPS-only over a verified TLS context with "
+        "the Add Podcast dialog, or by Find This Show's New Feed in Feed "
+        "Check (the show's title, nothing else). HTTPS-only over a verified TLS context with "
         "a bounded timeout. Disabled in Safe Mode via refuse_in_safe_mode; "
         "_http_json retries transient failures rather than saying 'no results'."
     ),
@@ -540,10 +548,15 @@ _REVIEWED_EGRESS: dict[str, str] = {
     # disclose the cloud-voice behavior, and the page is deleted on app exit
     # (_cleanup_browser_reader_files) so no plaintext copy lingers.
     "io/http_transport.py::download_url": (
-        "Open-from-URL action. Triggered by an explicit user action from the "
-        "Remote Sites dialog (Open from URL); fetches the resource the user "
-        "named with a verified TLS context, default _MAX_BYTES cap, and visible "
-        "progress callback."
+        "Open-from-URL action, in QUILL and QUILL Lite. Triggered only by an "
+        "explicit user action: File > Open from URL, or Open from Clipboard "
+        "(Ctrl+Alt+Shift+Enter) when the clipboard holds a link. Fetches only the "
+        "resource the user named, with a verified TLS context and the default "
+        "_MAX_BYTES cap. The confirm callback asks the user, naming the host and "
+        "the size, after the headers arrive and before any of the body is read; "
+        "the download runs on the task manager with a visible progress window "
+        "and a Cancel button (quill/ui/open_from_url.py), and the temp file is "
+        "removed when the document is read or the tab closes."
     ),
     "io/s3_sigv4.py::signed_request": (
         "S3 transport. Triggered only by an explicit user action from the "

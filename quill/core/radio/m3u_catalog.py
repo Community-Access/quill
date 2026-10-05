@@ -24,6 +24,7 @@ import ssl
 import urllib.error
 import urllib.request
 
+from quill.core import http_client
 from quill.core.error_codes import CodedError
 from quill.core.radio.models import RadioStation
 from quill.core.radio.playlist_import import parse_m3u
@@ -32,7 +33,6 @@ _OWNER_REPO = "junguler/m3u-radio-music-playlists"
 _BRANCH = "main"
 _TREE_URL = f"https://api.github.com/repos/{_OWNER_REPO}/git/trees/{_BRANCH}"
 _RAW_BASE = f"https://raw.githubusercontent.com/{_OWNER_REPO}/{_BRANCH}/"
-_USER_AGENT: str | None = None
 _TIMEOUT_SECONDS = 15.0
 _MAX_BYTES = 8_000_000
 
@@ -152,12 +152,7 @@ def stations_from_m3u(text: str, genre_slug: str) -> list[RadioStation]:
 
 
 def _user_agent() -> str:
-    global _USER_AGENT
-    if _USER_AGENT is None:
-        from quill import __version__
-
-        _USER_AGENT = f"QUILL/{__version__} (https://github.com/Community-Access/quill)"
-    return _USER_AGENT
+    return http_client.user_agent()
 
 
 def _fetch(url: str) -> str:

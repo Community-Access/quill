@@ -2,6 +2,89 @@
 
 ## 1.2.0 -- 2026-10-03
 
+### Dictating in Spanish (2026-10-04)
+
+- **Dictation language** in Dictation Settings (**Alt+Shift+F6**): English or
+  Spanish. In Spanish your words come out in Spanish, accents and all, using
+  Whisper's multilingual model, which comes with QUILL Lite; Windows speech
+  recognition uses a Spanish recogniser when Windows has one.
+- Commands stay in English for now. Spanish punctuation words ("coma",
+  "punto", "punto y aparte" and the rest) work when automatic punctuation
+  is off. The wake and stop phrases become "Quill dicta" and "deja de
+  dictar".
+- Shared with QUILL, through the same code.
+
+### Open from the clipboard, a link or a drop, honest encodings, and a careful Save (2026-10-04)
+
+More ideas from **PlanCake**, by **Andre of Oire Software**. Thank you, Andre.
+All of it is shared with QUILL, on QUILL's keys.
+
+- **Open from Clipboard** (**Ctrl+Alt+Shift+Enter**, **File** menu): files
+  copied in File Explorer, a file path copied as text, or a web link.
+- **Open from URL...** (**Alt+F, F**), new in QUILL Lite: asks before
+  downloading, naming the website and the size, shows progress with a Cancel
+  button, and opens the download as a new unsaved document.
+- **Drag and drop to open:** drop files on the window or the editor. Dropped
+  text is still inserted.
+- **A remembered Reload never throws away unsaved edits.** "Do not ask me
+  again" with Reload was an answer about an untouched document; with unsaved
+  edits QUILL Lite now asks the normal question instead. Shared with QUILL.
+- **No more lost bytes in older files.** A file that was not UTF-8 used to be
+  read as Windows-1252 with replacement characters, which the next save wrote
+  over five byte values. Now every byte is read and saved back, and QUILL Lite
+  says once as it opens when a file is not UTF-8.
+- **Reopen with Encoding...** in the File Encoding and Line Endings window
+  reads the file again as a code page you choose.
+- **Save checks first:** if another program changed the file since you opened
+  or last saved it, Save asks: Save As, Reload from Disk, Overwrite or Cancel.
+- **Watching for outside changes as you work,** the way QUILL does and from
+  QUILL's code. Each open document notices when another program changes or
+  deletes its file. An unchanged document can reload by itself, keeping the
+  cursor's line, and says once "Reloaded plan.md: changed by another program."
+  Otherwise QUILL Lite asks once per change: Keep Mine (Enter and Escape),
+  Reload from Disk or Save As..., with a "Do not ask me again" box per kind of
+  file. A deleted file is said once and the document is marked not saved.
+- Four new settings in Preferences, under **When another program changes the
+  file**, with QUILL's names: **Watch the open file for external changes**,
+  **Reload automatically when you have no unsaved edits**, **Ask before
+  discarding unsaved edits on a conflict** and **External-change debounce
+  (milliseconds)**, plus **Forget remembered file-change answers**.
+- The user guide no longer says the Heading Organizer cannot work in rich text.
+  It has since 1.2.0.
+
+### Inline notes, task lists and a page to share (2026-10-04)
+
+The ideas here come from **PlanCake**, a small Windows app by **Andre of Oire
+Software** for reviewing the plans AI assistants write. Thank you, Andre. All
+of it is QUILL's own code, shared, on QUILL's keys.
+
+- **Inline notes**, on **Tools > Inline Notes**: **Add Inline Note...**
+  (**Alt+Shift+I**), **Next Inline Note** (**Alt+Shift+J**), **Previous Inline
+  Note** (**Alt+Shift+K**), **Speak Inline Note** (**Alt+Shift+H**; twice to edit),
+  **Delete Inline Note...** (**Alt+Shift+Delete**) and **List Inline Notes...**
+  (**Alt+Shift+Enter**), which shows every note and can go to, edit, delete,
+  remove all, copy all and export them as Markdown or JSON.
+- **Notes in the file:** in Markdown and HTML, a note can be written into the
+  document as a hidden comment that anyone reading the file can see, instead of
+  staying private. Turn it on per note, or for every new note with
+  **Write new inline notes into the file** in Preferences.
+- **Notes from the command line:** `QuillLite.exe --notes list|check|clear
+  FILE`.
+- **Snippets moved** from **Alt+Shift+I** to **Ctrl+Alt+Shift+Home**, so the
+  note keys are the same as QUILL's. QUILL answers the new key too.
+- **Toggle Task Done** (**Ctrl+Alt+Enter**, **Format** menu) ticks `- [ ]`
+  tasks and says how many in the list are done.
+- **File > Export as HTML...** (**Ctrl+Alt+Shift+End**) saves a copy as one web
+  page you can share, with task lists as check boxes.
+
+### Portable copies start from a folder with a space in its name (2026-10-04)
+
+- A portable copy unpacked to a folder whose name has a space in it said it did
+  not start. The QuillVille launcher passed its own path to Python unquoted,
+  so Python read it as two words; the same mistake split a document opened
+  from File Explorer out of such a folder. Every release before 1.2 had it
+  (`quill/native/launcher/cmdline.c`).
+
 ### Recent Documents: the whole list on Alt+Shift+0 (2026-10-04)
 
 - **File > Recent Documents...** (**Alt+Shift+0**) lists every document you
@@ -1075,8 +1158,8 @@ in the same release.
 
 #### Abbreviations and snippets
 
-- **Snippets — Alt+Shift+I.** A list of every abbreviation, most used
-  first, with a preview of what each one writes. Abbreviations expand when you
+- **Snippets — Ctrl+Alt+Shift+Home.** (It was Alt+Shift+I until 1.2.) A list
+  of every abbreviation, most used first, with a preview of what each one writes. Abbreviations expand when you
   type the trigger, which is perfect for the six you use daily and no help at
   all for the fortieth one, whose trigger you cannot remember.
 

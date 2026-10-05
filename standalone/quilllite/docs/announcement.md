@@ -373,7 +373,7 @@ puts it in a new window and leaves your current work alone.
   twelve numbered slots, a collector that gathers several copies into one paste,
   and a library of clips you chose to keep.
 - **Abbreviations and snippets.** Type a short form and get the long one. Or
-  open Snippets (Alt+Shift+I) and pick the one whose short form you have
+  open Snippets (Ctrl+Alt+Shift+Home) and pick the one whose short form you have
   forgotten.
 - **Selecting by structure.** A word, a line, a sentence, a paragraph or a
   block, each with one key. Or press F8 to mark where a selection starts and

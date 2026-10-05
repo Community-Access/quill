@@ -8,12 +8,11 @@ import urllib.error
 import urllib.request
 from collections.abc import Callable
 
-from quill import __version__
+from quill.core import http_client
 from quill.core.error_codes import CodedError
 
 _BASE = "https://api.wxindex.org"
 _TIMEOUT_SECONDS = 15.0
-_USER_AGENT = f"QUILL-Radio/{__version__} (+https://github.com/Community-Access/quill)"
 
 Fetcher = Callable[[str], str]
 
@@ -35,7 +34,7 @@ def refuse_in_safe_mode(safe_mode: bool) -> None:
 def _default_fetch(url: str) -> str:
     # NETWORK-EGRESS: reviewed site (see quill/tools/network_egress_audit.py).
     request = urllib.request.Request(
-        url, headers={"User-Agent": _USER_AGENT, "Accept": "application/json"}
+        url, headers={"User-Agent": http_client.user_agent(), "Accept": "application/json"}
     )
     context = ssl.create_default_context()
     try:

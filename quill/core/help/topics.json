@@ -958,9 +958,18 @@
     "user_guide_section": "the-rest-of-the-file-menu"
   },
   {
+    "id": "file.export_html",
+    "title": "Export as HTML",
+    "body": "Save a copy of the document as one web page you can share: styles inside, no scripts, the document's language set, and task lists shown as check boxes. The document you are editing stays as it is. If notes are written into the file, QUILL asks whether to include them, marked as notes.",
+    "keystrokes": [
+      "Ctrl+Alt+Shift+End"
+    ],
+    "user_guide_section": "writing-and-editing"
+  },
+  {
     "id": "file.file_format",
     "title": "File Format",
-    "body": "Sets how this file will be written to disk: its character encoding and its line endings, in one dialog. Changing either marks the document modified on purpose -- otherwise fixing an encoding and closing the document would throw the fix away without a word. Cancelling, or choosing the values it already had, reports that nothing changed.",
+    "body": "Sets how this file will be written to disk: its character encoding and its line endings, in one dialog. Changing either marks the document modified on purpose -- otherwise fixing an encoding and closing the document would throw the fix away without a word. Cancelling, or choosing the values it already had, reports that nothing changed. If the letters in an older file came out wrong, Reopen with Encoding reads the same file again from disk as the encoding you choose; it then saves in that encoding, or choose UTF-8 here to convert it when you save.",
     "keystrokes": [
       "Ctrl+Alt+E"
     ]
@@ -1056,6 +1065,15 @@
     "user_guide_section": "the-rest-of-the-file-menu"
   },
   {
+    "id": "file.open_from_clipboard",
+    "title": "Open from Clipboard",
+    "body": "Opens whatever you copied: a file (or several) copied in File Explorer, a file path copied as text, or a web link, which goes through Open from URL and asks before downloading. If the clipboard holds none of those, QUILL says so and nothing else happens.",
+    "keystrokes": [
+      "Ctrl+Alt+Shift+Enter"
+    ],
+    "user_guide_section": "opening-files"
+  },
+  {
     "id": "file.open_from_favorite_folder",
     "title": "Open From Favorite Folder",
     "body": "Finds a file across your favorite folders: type part of a filename, arrow the results, press Enter to open. It looks at the top level of each favorite; tick Include subfolders to search deeper. If you have not added any favorites yet it says so and points at Add Favorite Folder.",
@@ -1101,7 +1119,7 @@
   {
     "id": "file.open_url",
     "title": "Open from URL...",
-    "body": "Download and open a document from a web address you paste in.",
+    "body": "Download and open a document from a web address you type or paste. QUILL asks first, naming the website and the size, and shows the download's progress with a Cancel button. A GitHub page link opens the file behind it. The document opens read-only; use Save Copy to keep it.",
     "user_guide_section": "the-rest-of-the-file-menu"
   },
   {
@@ -1718,6 +1736,15 @@
     "user_guide_section": "writing-and-editing"
   },
   {
+    "id": "format.toggle_task_done",
+    "title": "Toggle Task Done",
+    "body": "Tick or untick the task on the line you are on, or every task in the selection, and hear how many tasks in that list are done. A task is a list item that starts with a box: - [ ] to do, - [x] done. Undo takes it back.",
+    "keystrokes": [
+      "Ctrl+Alt+Enter"
+    ],
+    "user_guide_section": "writing-and-editing"
+  },
+  {
     "id": "format.underline",
     "title": "Underline",
     "body": "Underline the selected text, or turn underline on for what you type next.",
@@ -2292,6 +2319,33 @@
       "QUILL Key + F"
     ],
     "user_guide_section": "navigation"
+  },
+  {
+    "id": "notes.list_inline_notes",
+    "title": "List Inline Notes",
+    "body": "Every note in this document in one window: the note, its line, the text it is about, and whether it is private or written into the file. A note whose text was deleted is listed last. Enter goes to a note, Delete deletes one, F2 edits one, and the buttons remove all, copy all, or export the notes as Markdown or JSON.",
+    "keystrokes": [
+      "Alt+Shift+Enter"
+    ],
+    "user_guide_section": "writing-and-editing"
+  },
+  {
+    "id": "notes.delete_inline_note",
+    "title": "Delete Inline Note",
+    "body": "Delete the note at the cursor. QUILL names the note and asks first, with No as the default. The text the note is on is never changed.",
+    "keystrokes": [
+      "Alt+Shift+Delete"
+    ],
+    "user_guide_section": "writing-and-editing"
+  },
+  {
+    "id": "notes.add_inline_note",
+    "title": "Add Inline Note",
+    "body": "Write a note about the selection, or about the line you are on. The Note on line shows the start of that text so you can check the place before saving. A note follows its text as you edit. In Markdown and HTML documents you can check Write this note into the file, and the note is kept in the document as a hidden comment that a colleague or an AI assistant can read; otherwise it stays private to you.",
+    "keystrokes": [
+      "Alt+Shift+I"
+    ],
+    "user_guide_section": "writing-and-editing"
   },
   {
     "id": "player_information",

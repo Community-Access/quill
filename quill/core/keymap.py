@@ -476,6 +476,15 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # Alt+Shift+K came free when keep_unique_lines retired the same day.
     "notes.previous_inline_note": "Alt+Shift+K",
     "notes.speak_inline_note": "Alt+Shift+H",
+    # PlanCake's ideas (2026-10-04): delete one, list them all. Free in both
+    # editors, so adopted in both (rule 5), and Lite has all six on these keys
+    # (rule 2). Remove All and Export live in the list, so no keys (rule 8).
+    "notes.delete_inline_note": "Alt+Shift+Delete",
+    "notes.list_inline_notes": "Alt+Shift+Enter",
+    # Word's style separator, a function neither editor has (rule 1 does not
+    # bite); free in both (rule 5). Export as HTML: a key, not a short one (9).
+    "format.toggle_task_done": "Ctrl+Alt+Enter",  # §edsharp-ok: no AltGr char, no SR command
+    "file.export_html": "Ctrl+Alt+Shift+End",
     "tools.read_aloud_start_pause": "Ctrl+Shift+Grave, R",  # §10.8.2: P→R
     "tools.read_aloud_stop": "Ctrl+Shift+Grave, Shift+R",  # §10.8.2: Shift+P→Shift+R
     "tools.dictation_toggle": "Ctrl+Shift+Grave, D",
@@ -756,6 +765,8 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # lost (rule 9: a once-in-a-while command gets a key, not a short one).
     "file.reopen_last_session": "Alt+Shift+F12",
     "file.recent_documents": "Alt+Shift+0",  # beside Alt+Shift+1-9; free in both (rule 5)
+    "file.open_from_clipboard": "Ctrl+Alt+Shift+Enter",  # Ctrl+V pastes (rule 1); rule 5
+    "file.open_url": "",  # no key in either editor; rule 8 reason in the family gate
     # Once in a lifetime, so an F-key past F9 (rule 9). Reachable without
     # switching profiles, because somebody can want their QUILL Lite
     # abbreviations in QUILL without wanting QUILL Lite's menus (bad.md P2.4).
@@ -1121,6 +1132,7 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "quill.quick_nav.block": "TAB",
     "quill.quick_nav.skip_forward": "]",
     "quill.quick_nav.skip_backward": "[",
+    "quill.quick_nav.inline_note": "N",  # browse mode N: next note (QUILL only)
     # §8.1 — context help for current mode and doc summary (Alt+I).
     # Alt+H is reserved for the Help menu mnemonic; Ctrl+Shift+H is edit.replace_all;
     # Ctrl+Alt+ is banned by §10.8 (screen-reader-hostile). Use the QUILL-key chord.
@@ -1269,6 +1281,9 @@ DEFAULT_ALIASES: dict[str, str] = {
     # which one moves rather than an alias (bad.md 3c).
     "format.insert_html_tag": "Ctrl+Alt+O",
     "format.manage_abbreviations": "Ctrl+Alt+A",
+    # QUILL Lite's Snippets moved here from Alt+Shift+I on 2026-10-04 so the note
+    # chords match (rule 2); free in both, so QUILL adopts it (rules 5 and 6).
+    "power.open_snippet_gallery": "Ctrl+Alt+Shift+Home",
 }
 
 

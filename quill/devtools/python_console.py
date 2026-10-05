@@ -14,14 +14,29 @@ from contextlib import redirect_stderr, redirect_stdout
 from typing import Any
 
 from quill.core.script_results import ScriptError, ScriptResult, ScriptSuccess
+from quill.devtools.python_timeout import ConsoleTimedOut, run_with_timeout
+
+#: Used when no settings are reachable; matches console_python_timeout's default.
+DEFAULT_TIMEOUT_SECONDS = 30.0
 
 
 class PythonConsole:
     """Wraps :class:`code.InteractiveConsole` with output capture."""
 
-    def __init__(self, namespace: dict[str, Any]) -> None:
+    def __init__(self, namespace: dict[str, Any], *, settings_host: Any = None) -> None:
         self._ns = dict(namespace)
         self._ic = code.InteractiveConsole(self._ns)
+        #: Whatever owns ``.settings``; read on every command so a changed
+        #: *Python console execution timeout* applies to the next one.
+        self._settings_host = settings_host
+
+    def timeout_seconds(self) -> float:
+        """The current limit from ``console_python_timeout`` (seconds)."""
+        settings = getattr(self._settings_host, "settings", None)
+        try:
+            return float(getattr(settings, "console_python_timeout", DEFAULT_TIMEOUT_SECONDS))
+        except (TypeError, ValueError):
+            return DEFAULT_TIMEOUT_SECONDS
 
     # ------------------------------------------------------------------
     # Public API
@@ -56,10 +71,25 @@ class PythonConsole:
                     detail=traceback.format_exc(),
                     suggestion="Check indentation and matching brackets.",
                 )
-        try:
+        limit = self.timeout_seconds()
+        compiled = code_obj
+
+        def _run() -> None:
             with redirect_stdout(buf), redirect_stderr(buf):
-                exec(code_obj, self._ns)  # noqa: S102
+                exec(compiled, self._ns)  # noqa: S102
+
+        try:
+            run_with_timeout(_run, limit)
             return ScriptSuccess(value=None, output=buf.getvalue())
+        except ConsoleTimedOut:
+            return ScriptError(
+                message=f"Stopped after {limit:g} seconds.",
+                detail=buf.getvalue(),
+                suggestion=(
+                    "The command ran longer than the Python console execution "
+                    "timeout in Settings, Administration."
+                ),
+            )
         except SystemExit:
             return ScriptError(
                 message="sys.exit() is not allowed in the console.",

@@ -55,6 +55,13 @@ def _close_action_index(value: str) -> int:
         return 1
 
 
+def _shutdown_feed_checks(host: object) -> None:
+    """Stop the feed checks' own pool (check.md bug 10), dropping unstarted ones."""
+    from quill.ui.podcasts.feed_refresh import shutdown_feed_checks
+
+    shutdown_feed_checks(host)
+
+
 def _close_action_value(index: int) -> str:
     """The stored answer for a combo row; out of range is Exit."""
     return _CLOSE_ACTION_VALUES[index] if 0 <= index < len(_CLOSE_ACTION_VALUES) else "exit"
@@ -160,6 +167,7 @@ class CastCloseMixin:
         ):
             report.step(name, BEST_EFFORT, action)
         report.step("tasks", BACKGROUND, lambda: self._task_manager.shutdown(wait=False))
+        report.step("feed_checks", BACKGROUND, lambda: _shutdown_feed_checks(self))
         report.step("media_keys", BEST_EFFORT, lambda: self._unregister_media_keys())
         report.step("global_hotkeys", BEST_EFFORT, lambda: self._unregister_global_hotkeys())
         report.step("tray", BEST_EFFORT, lambda: self._remove_tray_icon())

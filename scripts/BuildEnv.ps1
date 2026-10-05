@@ -454,3 +454,47 @@ function Resolve-QuillReleaseBuild {
     Write-Host "Building $App $Version build $($parts[0]) (file version $($parts[1]))."
     return @([int]$parts[0], $parts[1])
 }
+
+function Resolve-QuillSigning {
+    <#
+    .SYNOPSIS
+    Decide, once per build, whether this build may be Authenticode-signed.
+
+    .DESCRIPTION
+    Owner decision 2026-10-04: Beta and Dev builds are never code-signed. Only
+    a final-numbered version (3.2.0, a Stable candidate) is, and only when -Sign
+    or QUILL_SIGN asked for it. Call this right after Resolve-QuillReleaseBuild
+    and before the first sign-build.
+
+    The decision is scripts\code_signing.py build-decision, the same helper
+    build_windows_distribution.py asks, so the rule lives in one place and is
+    tested there. For a -dev, -alpha, -beta or -rc version, or a Dev build, it
+    prints "Beta and Dev builds are not code-signed; signing skipped." and this
+    clears QUILL_SIGN and QUILL_SIGN_REQUIRED, so the sign-build steps do
+    nothing and Inno gets no /DSign. It also leaves QUILL_SIGN_VERSION (and
+    QUILL_SIGN_DEV) set for the rest of the build: the signer refuses those
+    versions by itself, so nothing later can force a signature either.
+
+    Returns $true when this build signs.
+    #>
+    param(
+        [Parameter(Mandatory)][string]$QuillRepo,
+        [Parameter(Mandatory)][string]$Python,
+        [Parameter(Mandatory)][string]$Version,
+        [switch]$Dev
+    )
+    $env:QUILL_SIGN_VERSION = $Version
+    if ($Dev) { $env:QUILL_SIGN_DEV = "1" } else { $env:QUILL_SIGN_DEV = "" }
+    $signer = Join-Path $QuillRepo "scripts\code_signing.py"
+    $decideArgs = @($signer, "build-decision", "--version", $Version)
+    if ($Dev) { $decideArgs += "--dev" }
+    $lines = @(& $Python @decideArgs)
+    if ($LASTEXITCODE -ne 0 -or $lines.Count -eq 0) {
+        throw "Code signing: could not decide whether $Version is signed (see above)."
+    }
+    $lines | Select-Object -SkipLast 1 | ForEach-Object { Write-Host $_ }
+    if ("$($lines[-1])".Trim() -eq "sign") { return $true }
+    $env:QUILL_SIGN = ""
+    $env:QUILL_SIGN_REQUIRED = ""
+    return $false
+}

@@ -23,13 +23,13 @@ import ssl
 import urllib.error
 import urllib.request
 
+from quill.core import http_client
 from quill.core.error_codes import CodedError
 from quill.core.radio import directory_cache
 from quill.core.radio.models import RadioStation
 
 _BASE = "https://dir.xiph.org"
 _GENRES_URL = f"{_BASE}/genres"
-_USER_AGENT: str | None = None
 _TIMEOUT_SECONDS = 15.0
 _MAX_BYTES = 4_000_000
 #: The ``/genres`` index alone is far bigger than a genre page -- 5.3 MB and
@@ -187,12 +187,7 @@ def parse_stations(page_html: str) -> list[RadioStation]:
 
 
 def _user_agent() -> str:
-    global _USER_AGENT
-    if _USER_AGENT is None:
-        from quill import __version__
-
-        _USER_AGENT = f"QUILL/{__version__} (https://github.com/Community-Access/quill)"
-    return _USER_AGENT
+    return http_client.user_agent()
 
 
 def _fetch(url: str, *, max_bytes: int = _MAX_BYTES, allow_partial: bool = False) -> str:

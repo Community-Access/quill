@@ -438,6 +438,33 @@ from CI and stop v1 signing once every app’s channel-aware release
 (QUILL 1.0.0, QUILL Lite 1.2.0, Quill Radio 3.2.0, QUILL Cast 2.0.0) has
 been out for one full release cycle; until then, leave it alone
 (<code>docs/release/RELEASE.md</code>).</p>
+<p><strong>Decisions, 2026-10-04 (code signing).</strong> “Beta and
+developer builds should not be digitally signed.” Authenticode signing
+is refused for any version with a pre-release part (<code>-dev</code>,
+<code>-alpha</code>, <code>-beta</code>, <code>-rc</code>) and for every
+Dev build: <code>-Sign</code>, <code>QUILL_SIGN</code> and
+<code>QUILL_SIGN_REQUIRED</code> cannot force it, and the build says
+“Beta and Dev builds are not code-signed; signing skipped.”
+(<code>scripts/code_signing.py</code> <code>build_decision</code>, asked
+by every <code>build_release.ps1</code> through
+<code>Resolve-QuillSigning</code> and by
+<code>build_windows_distribution.py</code>). Stable is always signed.
+The conflict with “Stable takes the same files that were on Beta” is
+resolved by signing the <strong>final-numbered candidate when it is
+built</strong>, not at promotion: an Inno <code>Setup.exe</code> carries
+its payload compressed inside it, so signing at promotion would mean
+either rebuilding the installer (new files, never tested on Beta) or
+signing only the outer <code>Setup.exe</code> (unsigned programs on
+Stable). A final-numbered build waiting on Beta is a release candidate
+of Stable, not a Beta build. <code>publish_release.py</code> refuses an
+unsigned final-numbered build and a signed Beta or Dev one; P5 is no
+longer conditional on <code>QUILL_SIGN_REQUIRED</code> and always runs
+for Stable, reading the embedded signature from the installer and from
+every <code>.exe</code> in the portable zip (so it works on the Linux
+promote runner), and verifying with <code>signtool</code> where it is
+installed. QUILL’s own <code>v1.0.0</code> candidate is built and signed
+on the owner’s computer, because <code>windows-release.yml</code> has no
+Azure credential (<code>docs/code-signing.md</code>).</p>
 </blockquote>
 <hr />
 <h2 id="0-the-short-version">0. The short version</h2>
@@ -1332,10 +1359,12 @@ the feed entry</strong></td>
 </tr>
 <tr>
 <td>P5</td>
-<td>For Stable: Authenticode-signed installer and payload
-<code>.exe</code> (<code>code_signing.py verify</code>) when
-<code>QUILL_SIGN_REQUIRED</code> policy is on</td>
-<td><code>scripts/code_signing.py</code></td>
+<td>For Stable, always: Authenticode-signed installer and every
+<code>.exe</code> in the portable zip (embedded signature;
+<code>signtool verify</code> where installed). Decided 2026-10-04:
+Stable is never unsigned</td>
+<td><code>scripts/code_signing.py</code>
+<code>asset_is_signed</code></td>
 </tr>
 <tr>
 <td>P6</td>
@@ -2117,6 +2146,9 @@ every Stable version with JAWS and NVDA. Beta versions are tested
 less.</li>
 <li>Your favorites and settings may be saved in a newer way that the
 Stable version can’t read yet.</li>
+<li>Beta and Dev versions aren’t signed, so Windows may warn that the
+installer comes from an unknown publisher; that’s expected, and you can
+choose More info, then Run anyway.</li>
 </ul>
 <p><strong>How you’re protected</strong></p>
 <ul>
@@ -2153,8 +2185,9 @@ out.</li>
 <li>Dev versions may change how your data is saved more than once. Going
 back to Stable may mean using the copy saved today and losing changes
 you made since.</li>
-<li>Windows may warn that a Dev version is from an unknown
-publisher.</li>
+<li>Beta and Dev versions aren’t signed, so Windows may warn that the
+installer comes from an unknown publisher; that’s expected, and you can
+choose More info, then Run anyway.</li>
 </ul>
 <p>If a developer didn’t ask you to try Dev, Beta is probably the better
 choice.</p>

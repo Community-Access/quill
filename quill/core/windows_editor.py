@@ -41,6 +41,13 @@ opens in place of Notepad now" rather than reading out a command line.
 wx-free and registry-free: every function here builds or reads data, and the
 registry itself is reached through the small reader and writer protocols, so
 the tests never touch a real hive.
+
+**Not only editors.** Registering is the same polite act for any app that
+opens files, so the profile is the general one (:data:`AppProfile` is its
+other name): Quill Radio registers as a media player from the same plan
+(:mod:`quill.core.windows_media`), with a :attr:`EditorProfile.role` of "Media
+Player" and two right-click verbs of its own. Replacing Notepad stays an
+editor's business -- :data:`FAMILY` names the only apps that may own that hook.
 """
 
 from __future__ import annotations
@@ -60,6 +67,8 @@ __all__ = [
     "NOTEPAD_FLAG",
     "QUILL",
     "QUILL_LITE",
+    "AppProfile",
+    "ContextVerb",
     "EditorProfile",
     "NotepadState",
     "RegKey",
@@ -83,13 +92,33 @@ __all__ = [
     "translate_notepad_argv",
     "turn_off_commands",
     "turn_on_commands",
+    "verb_command",
     "write_plan",
 ]
 
 
 @dataclass(frozen=True, slots=True)
+class ContextVerb:
+    """A right-click command on every supported type, whichever app owns it.
+
+    Written under ``SystemFileAssociations\\<ext>\\shell\\<key>``, which Windows
+    shows beside the default app's own verbs rather than instead of them -- so
+    it is there without taking anything over. *arguments* come between the
+    app and the file.
+    """
+
+    key: str
+    label: str
+    arguments: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
 class EditorProfile:
-    """Everything that differs between the two editors' registrations."""
+    """Everything that differs between two apps' registrations.
+
+    Named for the editors it was written for; :data:`AppProfile` is the same
+    class under the name that fits Quill Radio.
+    """
 
     #: The name Windows shows: Default apps, Open With, the RegisteredApplications value.
     app_name: str
@@ -112,7 +141,22 @@ class EditorProfile:
     exe_stems: tuple[str, ...] = ()
     #: The same types in a sentence, for the dialog that explains registering.
     types_phrase: str = ""
+    #: What the app is to Windows, as the command names it: Make <app> My <role>.
+    role: str = "Text Editor"
+    #: The type the explanation walks through choosing first.
+    example_type: str = ".txt"
+    #: The second word of the ProgID's name: "QUILL Document".
+    document_kind: str = "Document"
+    #: Right-click verbs on every supported type (none for the editors).
+    verbs: tuple[ContextVerb, ...] = ()
 
+    @property
+    def document_name(self) -> str:
+        return f"{self.app_name} {self.document_kind}"
+
+
+#: The general name: a profile is for any app that registers to open files.
+AppProfile = EditorProfile
 
 #: The types QUILL Lite really opens (``quill.core.lite.filetypes``): plain
 #: text and its usual spellings, Markdown, rich text, HTML, and CSV, which it
@@ -248,6 +292,11 @@ def open_command(launcher_argv: Sequence[str]) -> str:
     return f'{to_command_line(launcher_argv)} "%1"'
 
 
+def verb_command(launcher_argv: Sequence[str], verb: ContextVerb) -> str:
+    """``"<exe>" <verb arguments> "%1"``, the command one right-click verb runs."""
+    return f'{to_command_line([*launcher_argv, *verb.arguments])} "%1"'
+
+
 def registration_plan(
     profile: EditorProfile, launcher_argv: Sequence[str], icon: str
 ) -> list[RegKey]:
@@ -263,8 +312,8 @@ def registration_plan(
         RegKey(
             rf"{_CLASSES}\{progid}",
             (
-                RegValue("", f"{profile.app_name} Document"),
-                RegValue("FriendlyTypeName", f"{profile.app_name} Document"),
+                RegValue("", profile.document_name),
+                RegValue("FriendlyTypeName", profile.document_name),
             ),
         ),
         RegKey(rf"{_CLASSES}\{progid}\DefaultIcon", (RegValue("", icon),)),
@@ -299,6 +348,13 @@ def registration_plan(
             (RegValue(profile.app_name, profile.capabilities_key),),
         ),
     ]
+    for verb in profile.verbs:
+        for ext in profile.extensions:
+            base = rf"{_CLASSES}\SystemFileAssociations\{ext}\shell\{verb.key}"
+            plan.append(RegKey(base, (RegValue("", verb.label),)))
+            plan.append(
+                RegKey(rf"{base}\command", (RegValue("", verb_command(launcher_argv, verb)),))
+            )
     return plan
 
 

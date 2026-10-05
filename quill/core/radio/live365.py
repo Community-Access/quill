@@ -71,6 +71,7 @@ import ssl
 import urllib.error
 import urllib.request
 
+from quill.core import http_client
 from quill.core.error_codes import CodedError
 from quill.core.radio import directory_cache
 from quill.core.radio.models import RadioStation
@@ -144,7 +145,6 @@ _TIMEOUT_SECONDS = 25.0
 #: megabytes leaves room for that without leaving room for a redirect to
 #: something that is not a sitemap at all.
 _MAX_BYTES = 4_000_000
-_USER_AGENT: str | None = None
 
 CATEGORY_LABEL = "Live365"
 #: Spoken/shown attribution. It names the source of the list because "5,493
@@ -258,12 +258,7 @@ def letters() -> list[str]:
 
 
 def _user_agent() -> str:
-    global _USER_AGENT
-    if _USER_AGENT is None:
-        from quill import __version__
-
-        _USER_AGENT = f"QUILL/{__version__} (https://github.com/Community-Access/quill)"
-    return _USER_AGENT
+    return http_client.user_agent()
 
 
 def _fetch(url: str) -> str:

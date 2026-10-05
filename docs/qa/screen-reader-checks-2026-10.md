@@ -2,7 +2,7 @@
 
 These are the hands-on checks for everything built in late September and early
 October 2026 across QUILL Cast, Quill Radio, QUILL Lite and QUILL. There are
-149 of them. Each one says where to go, what to press and what you should
+185 of them. Each one says where to go, what to press and what you should
 hear. Tick a box only after you have tried it yourself with a screen reader;
 passing automated tests do not count.
 
@@ -689,3 +689,86 @@ your place when it should not.
   build: Connect YouTube Account, Reply / Add a Comment / Delete My Comment, a
   Send box in Live Chat, Like / Dislike / Add to Playlist in the YouTube Video
   window.
+
+## Built 2026-10-04, Not Yet Tried Live
+
+Everything here passed its automated tests on 2026-10-04 and has not been tried
+by hand. Use an installed build for the Quill Radio checks, because Open with,
+Default apps and the right-click verbs come from the installer.
+
+### Quill Radio as a media player
+
+- [ ] In File Explorer, select an MP3 and press Shift+F10, then choose Open with.
+  Quill Radio is in the list, with its own name and icon. Choosing it plays the
+  file and what is playing is said once.
+- [ ] Settings > Apps > Default apps lists Quill Radio. Nothing changed which
+  app opens any type until you chose it there.
+- [ ] Preferences > Windows and your files > Make Quill Radio My Media
+  Player... (Alt+Q) on a portable copy: Windows' Default apps page opens on
+  Quill Radio, and the button's result is said in one sentence.
+- [ ] With Quill Radio already running and minimised, open a file from
+  Explorer. It plays in the running copy, the window does not jump in front,
+  and no second copy starts.
+- [ ] Select five files in Explorer and press Enter. They become one Opened
+  files list in Local Media, playing from the first; Next and Previous move
+  through them. Opening another file afterwards replaces the list, unless you
+  kept it with Save as Playlist... (Ctrl+S in Local Media).
+- [ ] A file in a folder with a space in its name (for example C:\My Music)
+  plays, rather than being said as missing.
+- [ ] Right-click verbs, on an MP3 and on an M3U: Play with Quill Radio plays
+  it; Add to Quill Radio Playlist adds it to the end of the Opened files list
+  without interrupting what is playing, and says how many were added.
+- [ ] A missing or unplayable file is one plain sentence, not a dialog.
+- [ ] Uninstall Quill Radio, then check Open with and the right-click menu:
+  neither mentions Quill Radio any more, and other players are untouched.
+
+### Opening files in QUILL and QUILL Lite
+
+- [ ] Drag and drop, in both editors: drag one file, then three, from File
+  Explorer onto the window. Each opens in its own document and one sentence
+  says how many opened. Dropping selected text on the editor still inserts it.
+- [ ] Open from Clipboard (Ctrl+Alt+Shift+Enter), in both editors: with files
+  copied in Explorer (Ctrl+C), each opens. With a file path copied as text, it
+  opens. With a web link copied, Open from URL asks first, naming the website
+  and the size. With nothing usable copied, one plain sentence says so.
+- [ ] QUILL's File menu: Alt+F, P opens Print. Alt+F, X still exits and Alt+F, E
+  still opens Export.
+- [ ] QUILL, File > Open Recent: Alt+Shift+1 reopens the most recent document,
+  Alt+Shift+2 the one before, through Alt+Shift+9; Alt+Shift+0 opens Recent
+  Documents. Each row of Open Recent says the file's name first, then its
+  folder, and says how to reach it from the keyboard.
+
+### QUILL Lite's outside-change watcher
+
+- [ ] Open a .md file in QUILL Lite, then change and save it in Notepad. Within a
+  second or two QUILL Lite asks once: Keep Mine, Reload from Disk or Save As...,
+  with Keep Mine on Enter. Keep Mine leaves your text and your place alone.
+- [ ] With Preferences > When another program changes the file > Reload
+  automatically when you have no unsaved edits turned on, an untouched document
+  reloads quietly, your cursor stays on the same line, and you hear it once.
+- [ ] Tick Do not ask me again for .md files with Reload. Change the file
+  again: it reloads without asking. Now type something (unsaved) and change the
+  file once more: QUILL Lite asks rather than reloading over your edits. Try the
+  same in QUILL.
+- [ ] Change a file that belongs to a document in the background: nothing is
+  said until you switch to that document, then the question comes once.
+- [ ] Delete the file in Explorer: QUILL Lite says so once, keeps your text, and
+  Save As is offered next time you save.
+
+### The launcher, from a folder with a space
+
+- [ ] Unpack a portable Quill Radio, QUILL Lite and QUILL Cast to a folder such
+  as C:\Portable Apps\Quill Radio and start each from there. Each starts; none
+  shows the "did not start" window.
+- [ ] From that folder, open a file whose own path has a space through Open
+  with. It opens as one file.
+
+### Quill Radio backup: What Was Left Out
+
+- [ ] Back up Quill Radio with one recording kept only in OneDrive (not on this
+  computer) and one file open in another program. The result offers Show what
+  was left out, and why?. Yes opens What Was Left Out: one row per item, the
+  reason read with each, what to do under the list, and Copy List beside it.
+  Escape closes it and returns you to where you were.
+- [ ] The same list is in Recent Problems afterwards.
+- [ ] A backup with nothing left out says nothing about skipped items at all.

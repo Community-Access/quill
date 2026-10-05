@@ -24,6 +24,7 @@ this without a display.
 from __future__ import annotations
 
 from quill.core.lite import APP_NAME, APP_VERSION
+from quill.core.lite.commands_review import EXPORT_ROWS, NOTE_ROWS, NOTE_SUBMENU_ROWS, TASK_ROWS
 from quill.core.lite.commands_words import DICTIONARY_ROWS, DICTIONARY_STATUS_ROWS, WORD_ROWS
 
 __all__ = [
@@ -106,6 +107,8 @@ COMMANDS: list[CommandRow] = [
     ("&File", "New &Rich Text Document", "Alt+Shift+T", "cmd_new_rich", ""),
     ("&File", "New P&lain Text Document", "Ctrl+Alt+N", "cmd_new_plain", ""),
     ("&File", "&Open...", "Ctrl+O", "cmd_open", ""),
+    ("&File", "Open from Clip&board", "Ctrl+Alt+Shift+Enter", "cmd_open_from_clipboard", ""),
+    ("&File", "Open &from URL...", "", "cmd_open_from_url", ""),  # no key, as in QUILL
     ("&File", "Recent &Documents...", "Alt+Shift+0", "cmd_recent_documents", ""),
     ("&File", "", "", "", "sep"),
     ("&File", "&Save", "Ctrl+S", "cmd_save", ""),
@@ -124,6 +127,7 @@ COMMANDS: list[CommandRow] = [
     # "Not Now" at launch is deferrable rather than lost (rule 9: the F-keys
     # past F9 are where a once-in-a-while command goes).
     ("&File", "Reopen Last S&ession...", "Alt+Shift+F12", "cmd_reopen_last_session", ""),
+    *EXPORT_ROWS,  # Export as HTML, shared with QUILL (commands_review.py)
     ("&File", "", "", "", "sep"),
     # Ctrl+Alt+P, not the Ctrl+Alt+U it used to hold: that key is Check
     # for Updates in the eight other QuillVille apps, and P suits Page Setup.
@@ -558,6 +562,7 @@ COMMANDS: list[CommandRow] = [
     # (bad.md P1.5). The label says "Lists" because the row is now about all
     # three answers rather than about bullets.
     ("F&ormat", "List&s", "Ctrl+Shift+L", "cmd_cycle_list_style", ""),
+    *TASK_ROWS,  # Toggle Task Done, shared with QUILL (commands_review.py)
     # The three spacings are one decision with three answers, so they are one
     # row that opens rather than three rows to arrow past -- and between them
     # they were holding G, H and P, three of the four letters Headings and
@@ -784,6 +789,7 @@ COMMANDS: list[CommandRow] = [
     ("&Tools", "&AI", "", "", "sub"),
     ("&Tools", "Dictionar&y", "", "", "sub"),  # the AI dictionary (commands_words.py)
     ("&Tools", "&Dictation", "", "", "sub"),
+    *NOTE_SUBMENU_ROWS,  # Tools > Inline Notes (commands_review.py)
     ("&Tools", "", "", "", "sep"),
     # Both are shown in the status bar and both used to be read-only: QUILL Lite
     # wrote back whatever it read, which is the right default and a dead end for
@@ -798,8 +804,9 @@ COMMANDS: list[CommandRow] = [
     # snippet gallery since its snippets shipped (bad.md 4.2 Tier 3).
     # Not Insert: QUILL Lite reserves it, because it is the screen reader's
     # own modifier and a binding on it is a binding the reader eats. Not
-    # &S either -- Spelling has it in this menu (GATE-14).
-    ("&Tools", "Snippe&ts...", "Alt+Shift+I", "cmd_snippet_gallery", ""),
+    # &S either -- Spelling has it in this menu (GATE-14). Ctrl+Alt+Shift+Home
+    # since 2026-10-04: Alt+Shift+I is Add Inline Note in both editors (rule 2).
+    ("&Tools", "Snippe&ts...", "Ctrl+Alt+Shift+Home", "cmd_snippet_gallery", ""),
     ("&Tools", "&Manage Abbreviations...", "Ctrl+Alt+A", "cmd_manage_abbreviations", ""),
     # The switch beside the manager, and not the same thing as the Customize
     # Features checkbox even though it moves it: expansion is the one feature
@@ -941,6 +948,7 @@ COMMANDS: list[CommandRow] = [
     # -- Tools > Dictation, shared with QUILL (quill/ui/windows_dictation_commands.py).
     # Ctrl+F11: Word's Alt+grave is a dead key on many layouts, and QUILL's Ctrl+F9
     # is Locked Dictation, another engine (rule 2). Checkable: "am I heard?"
+    *NOTE_ROWS,  # QUILL's six inline-note chords (rule 2; commands_review.py)
     ("&Tools|&Dictation", "Dictation &On", "Ctrl+F11", "cmd_toggle_dictation", "check"),
     ("&Tools|&Dictation", "Dictation &Settings...", "Alt+Shift+F6", "cmd_dictation_settings", ""),
     # 2026-09-28 (dict.md 3.3, 5): the last phrases said, and the window that

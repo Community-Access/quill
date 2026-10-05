@@ -111,7 +111,7 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # the user chose to bring, from a file they chose, over a declared
     # inventory -- the read half of an export rather than a store of its own.
     # Every file it writes is one the audit already classifies on its own line.
-    "core/setup_transfer.py::import_setup": "export",
+    "core/setup_transfer.py::import_setup_report": "export",
     "core/keymap.py::export_keyboard_pack": "export",
     "core/keymap.py::export_keymap": "export",
     "core/features.py::export_feature_profile_file": "export",

@@ -40,7 +40,13 @@ from quill.core.external_change import (
     ExternalChangeWatcher,
     FileSnapshot,
     ReloadAction,
+    decide_for,
     decide_reload,
+    forget_answers,
+    forget_answers_sentence,
+    poll_interval_ms,
+    remember_answer,
+    remembered_for,
 )
 
 __all__ = ["ExternalChangeMixin"]
@@ -67,57 +73,46 @@ class ExternalChangeMixin:
         self._external_change_watcher = ExternalChangeWatcher(self.document.path)
         self._external_change_watcher.prime(FileSnapshot.of(self.document.path))
 
-        # Poll every N milliseconds (debounce interval from settings).
-        debounce_ms = int(getattr(self.settings, "external_change_debounce_ms", 1000))
+        # The shared clock (quill/ui/external_change_timer.py), which QUILL Lite
+        # watches on too: it polls every external_change_debounce_ms, never
+        # re-enters, and waits while a modal window -- this watcher's own
+        # question included -- is up.
+        from quill.ui.external_change_timer import ExternalChangeTimer
 
-        def poll_external_change() -> None:
-            if self._external_change_watcher is None:
-                return
-            change = self._external_change_watcher.poll()
-            if change == "none":
-                return
-
-            decision = decide_reload(
-                change,
-                buffer_dirty=self.document.modified,
-                watch_enabled=getattr(self.settings, "external_change_watch_enabled", True),
-                auto_reload_when_clean=getattr(
-                    self.settings, "external_change_auto_reload_when_clean", False
-                ),
-                prompt_on_conflict=getattr(
-                    self.settings, "external_change_prompt_on_conflict", True
-                ),
-                file_name=self.document.path.name if self.document.path else "",
-                remembered=self._remembered_external_change_answer(),
-            )
-
-            if decision.action == ReloadAction.RELOAD:
-                self._reload_from_disk_preserving_cursor()
-                self._announce(decision.announcement)
-            elif decision.action == ReloadAction.KEEP_MINE:
-                self._keep_my_version_of_external_change()
-                self._announce(decision.announcement)
-            elif decision.needs_prompt:
-                # Pause the timer while the dialog is open to prevent re-entrancy.
-                timer = self._external_change_timer
-                if timer is not None:
-                    timer.Stop()
-                self._announce(decision.announcement)
-                self._show_external_change_prompt(decision.action)
-                # Restart the timer unless the user closed or replaced the document.
-                if timer is not None and self._external_change_watcher is not None:
-                    timer.Start(debounce_ms)
-
-        self._external_change_timer = wx.Timer(self.frame)
-        self.frame.Bind(
-            wx.EVT_TIMER, lambda _e: poll_external_change(), self._external_change_timer
+        self._external_change_timer = ExternalChangeTimer(
+            self.frame,
+            self._poll_external_change,
+            interval=lambda: poll_interval_ms(self.settings),
         )
-        self._external_change_timer.Start(debounce_ms)
+        self._external_change_timer.start()
+
+    def _poll_external_change(self) -> None:
+        """One tick: what changed, and what the settings say to do about it."""
+        if self._external_change_watcher is None:
+            return
+        change = self._external_change_watcher.poll()
+        if change == "none":
+            return
+        decision = decide_for(
+            change,
+            self.settings,
+            buffer_dirty=self.document.modified,
+            file_name=self.document.path.name if self.document.path else "",
+        )
+        if decision.action == ReloadAction.RELOAD:
+            self._reload_from_disk_preserving_cursor()
+            self._announce(decision.announcement)
+        elif decision.action == ReloadAction.KEEP_MINE:
+            self._keep_my_version_of_external_change()
+            self._announce(decision.announcement)
+        elif decision.needs_prompt:
+            self._announce(decision.announcement)
+            self._show_external_change_prompt(decision.action)
 
     def _stop_external_change_watcher(self) -> None:
         """Stop the FEAT-19 external file-change watcher."""
         if self._external_change_timer is not None:
-            self._external_change_timer.Stop()
+            self._external_change_timer.stop()
             self._external_change_timer = None
         self._external_change_watcher = None
 
@@ -128,40 +123,18 @@ class ExternalChangeMixin:
         (bad.md F5). Read fresh on every poll rather than cached, so ticking the
         box takes effect on the very next change rather than the next launch.
         """
-        from quill.core.external_change import remembered_answer
-
         if self.document.path is None:
             return ""
-        return remembered_answer(
-            self.document.path.name,
-            always_reload=getattr(self.settings, "external_change_always_reload", []),
-            always_keep=getattr(self.settings, "external_change_always_keep", []),
-        )
+        return remembered_for(self.settings, self.document.path.name)
 
     def _remember_external_change_answer(self, value: str) -> None:
         """Record "always reload" or "always keep" for this file's format."""
-        from quill.core.external_change import REMEMBER_RELOAD, format_key
         from quill.core.settings import save_settings
 
-        if self.document.path is None or not value:
+        if self.document.path is None:
             return
-        key = format_key(self.document.path.name)
-        if not key:
-            return
-        reload_list = list(getattr(self.settings, "external_change_always_reload", []))
-        keep_list = list(getattr(self.settings, "external_change_always_keep", []))
-        # One answer per format: the other list gives the key up, so changing
-        # your mind later is one tick rather than a contradiction on disk.
-        target, other = (
-            (reload_list, keep_list) if value == REMEMBER_RELOAD else (keep_list, reload_list)
-        )
-        if key not in target:
-            target.append(key)
-        if key in other:
-            other.remove(key)
-        self.settings.external_change_always_reload = reload_list
-        self.settings.external_change_always_keep = keep_list
-        save_settings(self.settings)
+        if remember_answer(self.settings, self.document.path.name, value):
+            save_settings(self.settings)
 
     def forget_external_change_answers(self) -> None:
         """Ask again about every file format (bad.md F5).
@@ -173,25 +146,18 @@ class ExternalChangeMixin:
         """
         from quill.core.settings import save_settings
 
-        forgotten = len(getattr(self.settings, "external_change_always_reload", [])) + len(
-            getattr(self.settings, "external_change_always_keep", [])
-        )
-        if not forgotten:
-            self._set_status("No file formats are being answered for you.")
-            return
-        self.settings.external_change_always_reload = []
-        self.settings.external_change_always_keep = []
-        save_settings(self.settings)
-        self._set_status(
-            f"Forgot {forgotten} remembered file-format answer"
-            f"{'s' if forgotten != 1 else ''}. "
-            "QUILL will ask again when a file changes on disk."
-        )
+        forgotten = forget_answers(self.settings)
+        if forgotten:
+            save_settings(self.settings)
+        self._set_status(forget_answers_sentence(forgotten, "QUILL"))
 
     def _keep_my_version_of_external_change(self) -> None:
         """Leave the buffer alone and stop the watcher re-reporting this change."""
         if self._external_change_watcher is not None and self.document.path is not None:
             self._external_change_watcher.prime(FileSnapshot.of(self.document.path))
+        # Keeping mine is a decision about this change: Save may overwrite it
+        # without asking again (the save-time check, 2026-10-04).
+        self._remember_disk_baseline(self._active_tab())
 
     def _read_disk_version_text(self) -> str | None:
         """What is on disk now, read through the reader for this file's format.
@@ -243,6 +209,7 @@ class ExternalChangeMixin:
         # Prime the watcher with the new snapshot so the reload is not re-reported.
         if self._external_change_watcher is not None:
             self._external_change_watcher.prime(FileSnapshot.of(self.document.path))
+        self._remember_disk_baseline(self._active_tab())
 
     def _show_external_change_prompt(self, action: ReloadAction) -> None:
         """Show the FEAT-19 conflict or deleted-file dialog and act on the user's choice.

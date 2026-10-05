@@ -45,10 +45,10 @@ class TestNormalizeFeedUrl:
 class TestPlanImport:
     def test_an_already_subscribed_feed_is_skipped_across_schemes(self) -> None:
         library = PodcastLibrary(
-            shows=[PodcastShow(id="s1", title="Show", feed_url="https://x/feed")]
+            shows=[PodcastShow(id="s1", title="Show", feed_url="https://x.example/feed")]
         )
 
-        plan = opml_import.plan_import(library, [_entry("Show", "http://x/feed")])
+        plan = opml_import.plan_import(library, [_entry("Show", "http://x.example/feed")])
 
         assert plan.new == []
         assert len(plan.duplicates_in_library) == 1
@@ -56,7 +56,10 @@ class TestPlanImport:
     def test_a_feed_listed_twice_in_the_file_is_imported_once(self) -> None:
         plan = opml_import.plan_import(
             PodcastLibrary(),
-            [_entry("Show", "https://x/feed"), _entry("Show again", "https://x/feed/")],
+            [
+                _entry("Show", "https://x.example/feed"),
+                _entry("Show again", "https://x.example/feed/"),
+            ],
         )
 
         assert len(plan.new) == 1
@@ -64,17 +67,17 @@ class TestPlanImport:
 
     def test_two_shows_sharing_a_title_are_both_imported_and_flagged(self) -> None:
         library = PodcastLibrary(
-            shows=[PodcastShow(id="s1", title="The Daily", feed_url="https://a/feed")]
+            shows=[PodcastShow(id="s1", title="The Daily", feed_url="https://a.example/feed")]
         )
 
-        plan = opml_import.plan_import(library, [_entry("The Daily", "https://b/feed")])
+        plan = opml_import.plan_import(library, [_entry("The Daily", "https://b.example/feed")])
 
         assert len(plan.new) == 1  # never silently dropped
-        assert plan.same_title_different_feed == ["The Daily (https://b/feed)"]
+        assert plan.same_title_different_feed == ["The Daily (https://b.example/feed)"]
 
     def test_a_non_http_entry_is_reported_rather_than_imported(self) -> None:
         plan = opml_import.plan_import(
-            PodcastLibrary(), [_entry("Odd", "ftp://x/feed"), _entry("Empty", "")]
+            PodcastLibrary(), [_entry("Odd", "ftp://x.example/feed"), _entry("Empty", "")]
         )
 
         assert plan.new == []
@@ -83,7 +86,7 @@ class TestPlanImport:
     def test_planning_mutates_nothing(self) -> None:
         library = PodcastLibrary()
 
-        opml_import.plan_import(library, [_entry("Show", "https://x/feed")])
+        opml_import.plan_import(library, [_entry("Show", "https://x.example/feed")])
 
         assert library.shows == []
 
@@ -92,7 +95,7 @@ class TestApplyPlan:
     def test_adds_every_planned_show(self) -> None:
         library = PodcastLibrary()
         plan = opml_import.plan_import(
-            library, [_entry("A", "https://a/feed"), _entry("B", "https://b/feed")]
+            library, [_entry("A", "https://a.example/feed"), _entry("B", "https://b.example/feed")]
         )
 
         added = opml_import.apply_plan(library, plan)
@@ -103,22 +106,22 @@ class TestApplyPlan:
     def test_folder_paths_are_created_once_and_reused(self) -> None:
         library = PodcastLibrary()
         entries = [
-            _entry("A", "https://a/feed", ["News", "Daily"]),
-            _entry("B", "https://b/feed", ["News", "Daily"]),
-            _entry("C", "https://c/feed", ["News"]),
+            _entry("A", "https://a.example/feed", ["News", "Daily"]),
+            _entry("B", "https://b.example/feed", ["News", "Daily"]),
+            _entry("C", "https://c.example/feed", ["News"]),
         ]
         plan = opml_import.plan_import(library, entries)
 
         opml_import.apply_plan(library, plan)
 
         assert sorted(f.name for f in library.folders) == ["Daily", "News"]
-        assert library.find_show_by_feed_url("https://a/feed").folder_id == (
-            library.find_show_by_feed_url("https://b/feed").folder_id
+        assert library.find_show_by_feed_url("https://a.example/feed").folder_id == (
+            library.find_show_by_feed_url("https://b.example/feed").folder_id
         )
 
     def test_stream_only_marks_every_added_show(self) -> None:
         library = PodcastLibrary()
-        plan = opml_import.plan_import(library, [_entry("A", "https://a/feed")])
+        plan = opml_import.plan_import(library, [_entry("A", "https://a.example/feed")])
 
         added = opml_import.apply_plan(library, plan, stream_only=True)
 
@@ -127,7 +130,7 @@ class TestApplyPlan:
 
     def test_into_folder_nests_the_whole_import(self) -> None:
         library = PodcastLibrary()
-        plan = opml_import.plan_import(library, [_entry("A", "https://a/feed", ["Sub"])])
+        plan = opml_import.plan_import(library, [_entry("A", "https://a.example/feed", ["Sub"])])
 
         opml_import.apply_plan(library, plan, into_folder="Imported")
 
@@ -139,7 +142,7 @@ class TestScale:
     """The behaviour a 1,300-feed export actually depends on."""
 
     def test_a_large_import_stays_linear_and_correct(self) -> None:
-        entries = [_entry(f"Show {i}", f"https://host{i}/feed") for i in range(2000)]
+        entries = [_entry(f"Show {i}", f"https://host{i}.example/feed") for i in range(2000)]
         library = PodcastLibrary()
 
         plan = opml_import.plan_import(library, entries)

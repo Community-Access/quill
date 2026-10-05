@@ -128,6 +128,11 @@ class LocalMediaCommandsMixin:
         if playlist is not None and manage.rename_playlist(self._host, playlist.id):
             self.reload(select_playlist=playlist.id)
 
+    def cmd_save_opened(self) -> None:
+        playlist = self._need_playlist()
+        if playlist is not None and manage.save_opened(self._host, playlist.id):
+            self.reload(select_playlist=playlist.id)
+
     def cmd_duplicate(self) -> None:
         playlist = self._need_playlist()
         if playlist is not None:

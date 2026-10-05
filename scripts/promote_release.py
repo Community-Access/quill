@@ -12,7 +12,13 @@ the promotion. ``--dry-run`` prints the list and changes nothing.
 * P2  every file is downloaded again and matches the feed's size and SHA-256
 * P3  the feed's signature is valid and its sequence will go up
 * P4  Stable: a final-numbered build (never ``-beta.N``), and it was on Beta first
-* P5  Stable: Authenticode-signed files, when ``QUILL_SIGN_REQUIRED=1``
+* P5  Stable: every installer and every program in the portable zip is
+      Authenticode-signed. Always: Stable is never unsigned. A Stable candidate
+      is signed when it is built (its final number lets it be; Beta and Dev
+      builds never are), so a build that fails here is rebuilt with ``-Sign``
+      as the next build and listed on Beta again -- never signed now, because
+      an installer carries its programs packed inside it and signing it now
+      would make different files from the ones that were tested on Beta.
 * P6  the tag, the feed version and the file names agree
 * P7  nothing this build carries is ahead of that app on the channel
 * P8  the changelog has a section for this version
@@ -39,7 +45,6 @@ left unsigned with ``--no-sign`` (the promote workflow), to be signed with
 from __future__ import annotations
 
 import argparse
-import os
 import subprocess
 import sys
 import tempfile
@@ -62,6 +67,14 @@ from quill.core.updater.notes_rollup import notes_summary  # noqa: E402
 from quill.tools import release_feed as rf  # noqa: E402
 
 DocsGate = Callable[[], bool]
+#: Is this release file Authenticode-signed throughout? (code_signing.asset_is_signed)
+Authenticode = Callable[[Path], bool]
+
+
+def _asset_is_signed(path: Path) -> bool:
+    from scripts.code_signing import asset_is_signed
+
+    return asset_is_signed(path)
 
 
 def _docs_gate() -> bool:
@@ -94,6 +107,7 @@ def gather_checks(
     root: Path,
     now: datetime,
     docs_gate: DocsGate,
+    authenticode: Authenticode = _asset_is_signed,
 ) -> tuple[ReleaseFeed, list[Check]]:
     feed = rf.load_feed(args.app, root)
     siblings = {key: rf.load_feed(key, root) for key in rf.APPS if key != args.app}
@@ -132,10 +146,10 @@ def gather_checks(
             size, sha = rf.hash_file(path)
             if size != asset.size or sha != asset.sha256:
                 mismatched.append(f"{asset.name} does not match the feed")
-        if args.to == "stable" and os.environ.get("QUILL_SIGN_REQUIRED") == "1":
-            checks.append(_authenticode(Path(scratch), release.assets))
+        if args.to == "stable":
+            checks.append(_authenticode(Path(scratch), release.assets, authenticode))
         else:
-            checks.append(Check("P5", "Authenticode", True, "not required for this promotion"))
+            checks.append(Check("P5", "Authenticode", True, "only Stable must be signed"))
     checks.append(Check("P2", "every file matches the feed", not mismatched, "; ".join(mismatched)))
     # A build (3.2.0+2) is promoted as itself, but its files, changelog section
     # and sign-off sheet carry the release number alone (3.2.0).
@@ -152,24 +166,22 @@ def gather_checks(
     return feed, checks
 
 
-def _authenticode(folder: Path, assets: object) -> Check:
+def _authenticode(folder: Path, assets: object, signed: Authenticode) -> Check:
+    """P5: Stable is always signed -- every installer, every program in the zip."""
     unsigned = []
     for asset in assets:  # type: ignore[attr-defined]
-        if not asset.name.lower().endswith(".exe"):
+        if asset.kind not in ("installer", "portable"):
             continue
-        result = subprocess.run(  # noqa: S603 - fixed script, argument list
-            [
-                sys.executable,
-                str(REPO_ROOT / "scripts" / "code_signing.py"),
-                "verify",
-                str(folder / asset.name),
-            ],
-            check=False,
-            capture_output=True,
-        )
-        if result.returncode != 0:
+        path = folder / asset.name
+        if path.is_file() and not signed(path):  # a missing file is P2's failure
             unsigned.append(asset.name)
-    return Check("P5", "Authenticode-signed installers", not unsigned, ", ".join(unsigned))
+    detail = ""
+    if unsigned:
+        detail = (
+            f"not signed: {', '.join(unsigned)}. Stable is never unsigned; rebuild this "
+            "version with -Sign as the next build, list it on Beta, and promote that"
+        )
+    return Check("P5", "Authenticode-signed installer and portable files", not unsigned, detail)
 
 
 def _rolled_up(
@@ -198,10 +210,13 @@ def run(
     seed_reader: Callable[[Path | None], bytes] = rf.read_seed,
     docs_gate: DocsGate = _docs_gate,
     out: Callable[[str], None] = print,
+    authenticode: Authenticode = _asset_is_signed,
 ) -> int:
     args = build_parser().parse_args(argv)
     moment = now or datetime.now(UTC)
-    feed, checks = gather_checks(args, gh=gh, root=root, now=moment, docs_gate=docs_gate)
+    feed, checks = gather_checks(
+        args, gh=gh, root=root, now=moment, docs_gate=docs_gate, authenticode=authenticode
+    )
     lines = [check.line() for check in checks]
     for line in lines:
         out(line)

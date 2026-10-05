@@ -50,6 +50,9 @@ class MenuBindingsMixin:
         )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_url(), id=self._id_open_url)
         self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.open_from_clipboard(), id=self._id_open_from_clipboard
+        )
+        self.frame.Bind(
             wx.EVT_MENU,
             lambda _e: self.open_from_favorite_folder(),
             id=self._id_open_from_favorite_folder,
@@ -214,9 +217,7 @@ class MenuBindingsMixin:
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.export_document("markdown"), id=self._id_export_markdown
         )
-        self.frame.Bind(
-            wx.EVT_MENU, lambda _e: self.export_document("html"), id=self._id_export_html
-        )
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.cmd_export_html(), id=self._id_export_html)
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.export_document("docx"), id=self._id_export_docx
         )
@@ -1578,16 +1579,6 @@ class MenuBindingsMixin:
             wx.EVT_MENU,
             lambda _e: self.choose_spell_language(),
             id=self._id_spell_language,
-        )
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.add_inline_note(), id=self._id_add_inline_note)
-        self.frame.Bind(
-            wx.EVT_MENU, lambda _e: self.next_inline_note(), id=self._id_next_inline_note
-        )
-        self.frame.Bind(
-            wx.EVT_MENU, lambda _e: self.previous_inline_note(), id=self._id_previous_inline_note
-        )
-        self.frame.Bind(
-            wx.EVT_MENU, lambda _e: self.speak_inline_note(), id=self._id_speak_inline_note
         )
         self.frame.Bind(
             wx.EVT_MENU,

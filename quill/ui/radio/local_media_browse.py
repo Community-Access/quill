@@ -79,6 +79,7 @@ def perform(source: Any, playlist_id: str, action_id: str, item_id: int = 0) -> 
         rows.NEW: lambda: manage.new_playlist(host),
         rows.IMPORT_PLAYLIST: lambda: manage.import_playlist(host),
         rows.RENAME: lambda: manage.rename_playlist(host, playlist_id),
+        rows.SAVE_OPENED: lambda: manage.save_opened(host, playlist_id),
         rows.DUPLICATE: lambda: manage.duplicate_playlist(host, playlist_id),
         rows.DELETE: lambda: manage.delete_playlist(host, playlist_id),
         rows.EXPORT: lambda: manage.export_playlist(host, playlist_id),

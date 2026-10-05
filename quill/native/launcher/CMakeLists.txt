@@ -120,6 +120,7 @@ add_executable(${PRODUCT_NAME}
     runtime_resolve.c
     runtime_bootstrap.c
     launch_report.c
+    cmdline.c
 )
 
 if(WIN32)

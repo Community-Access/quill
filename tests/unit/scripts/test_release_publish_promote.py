@@ -274,6 +274,8 @@ def test_publish_then_promote_to_stable_end_to_end(tmp_path: Path, key) -> None:
         now=T0,
         seed_reader=lambda _p: seed,
         out=out.append,
+        # 3.3.0 is a Stable candidate, so it was built signed (code signing).
+        authenticode=lambda _p: True,
     )
     assert code == 0, out
     create = next(c for c in gh.calls if c[:2] == ["release", "create"])
@@ -290,7 +292,13 @@ def test_publish_then_promote_to_stable_end_to_end(tmp_path: Path, key) -> None:
     assert feed.release(listed).data_formats.get("radio.favorites") == 1
 
     _changelog(tmp_path, version)
-    common = dict(gh=gh, root=tmp_path, seed_reader=lambda _p: seed, docs_gate=lambda: True)
+    common = dict(
+        gh=gh,
+        root=tmp_path,
+        seed_reader=lambda _p: seed,
+        docs_gate=lambda: True,
+        authenticode=lambda _p: True,
+    )
     monkey_keys = [bytes(key.verify_key)]
     original = rf.feed_signature_ok
     rf.feed_signature_ok = lambda path, keys=None: original(path, monkey_keys)  # type: ignore[assignment]

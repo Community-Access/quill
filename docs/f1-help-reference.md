@@ -24,7 +24,7 @@ from `topics.json` by `quill/tools/build_docs.py`.
 
 ## Quill Radio
 
-Control coverage: 291 audited sites (177 helped, 114 named-help).
+Control coverage: 294 audited sites (180 helped, 114 named-help).
 
 ### Every window, and what it is for
 
@@ -157,6 +157,8 @@ Control coverage: 291 audited sites (177 helped, 114 named-help).
 **Wake-Up Timer.** Start a station playing at a time you choose -- an alarm clock that wakes you to radio. Quill Radio must be running (or in the tray) at the set time; the status readout here says what is scheduled.
 
 **Welcome to Quill Radio.** A three-screen tour for a first launch. Nothing here is a setting you can get wrong: read, press Next, and Skip leaves at any point.
+
+**What Was Left Out.** Everything a backup, a restore or a setup file left out, one row per item, each with the reason -- stored only in OneDrive, in use by another program, a path too long for Windows. Nothing listed here was deleted. What to do about it is under the list, and Copy List takes the whole thing with you.
 
 **YouTube Comments.** The comments people left on a YouTube video, one per row, with replies right after the comment they answer. Type in Search comments to narrow the list, change Sort by for the newest, read the selected comment in full in Full text, and use Load More for the next hundred. Keys: Alt+M Search comments, Alt+B Sort by, Alt+C the list, Alt+T Full text, Alt+L Load More, Alt+P Copy Comment. Escape closes it and takes you back where you were.
 
@@ -303,6 +305,11 @@ Control coverage: 291 audited sites (177 helped, 114 named-help).
 - `all_btn`: Turns every directory on, the widest possible search.
 - `reset_btn`: Returns the search sources to what a fresh install asks.
 - `close_btn`: Closes this window; your source choices are already saved.
+#### (module level) (`quill/ui/radio/skipped_items_dialog.py`)
+
+- `listbox`: Every file or item that was left out, one per row, with why. Nothing here was deleted; each row is something the backup, restore or setup file does not hold.
+- `copy_btn`: Copies the whole list, with the reasons and what to do, so you can paste it into an email or a note.
+- `close_btn`: Closes this list. Nothing changes when you close it.
 #### SongHistoryDialog (`quill/ui/radio/song_history_dialog.py`)
 
 - `self._copy_btn`: Copies the highlighted song, title and artist, to the clipboard.
@@ -438,7 +445,7 @@ Control coverage: 291 audited sites (177 helped, 114 named-help).
 
 ## QUILL Cast
 
-Control coverage: 298 audited sites (194 helped, 104 named-help).
+Control coverage: 302 audited sites (198 helped, 104 named-help).
 
 ### Every window, and what it is for
 
@@ -456,9 +463,11 @@ Control coverage: 298 audited sites (194 helped, 104 named-help).
 
 **Episode Filter Test.** One test inside an Episode Filter rule: what it looks at -- the title, the show notes, the people on the episode, its type, length, age, season or number -- how to compare, and the value. Words, wildcards and regular expressions all work on text.
 
-**Feed Check.** Which of the podcasts you follow need something, worst first: failing feeds, then quiet ones, then the healthy rest. Opening it checks nothing; Retry checks the selected feed and Retry All Failed every failing one. A quiet podcast is not necessarily a failing feed, and Cast never stops trying a failing one.
+**Feed Check.** Which of the podcasts you follow need something, worst first: failing feeds with the reason, empty feeds, then quiet ones, then the healthy rest. Opening it checks nothing; Retry checks the selected feed and Retry All Failed every failing one. When a feed has been removed or now leads nowhere, Find This Show's New Feed looks for where the show went. Cast never stops trying a failing feed.
 
 **Feed Credentials.** The user name and password for a private feed -- a paid subscription, a members-only show. They are kept for this feed alone and sent to its own host, never to a directory.
+
+**Find This Show's New Feed.** Feeds that might be this podcast, found by searching the podcast directories for its title and checked to make sure each one answers, with how many episodes it has and the newest one's date. Replace Feed moves the podcast to the one you choose and keeps everything you have already heard; Cancel changes nothing.
 
 **Folder Settings.** Settings that apply to every show in one folder: how it is checked, how much is kept, and what happens when an episode finishes. A show with its own answer keeps it; the folder answers for the rest.
 
@@ -533,6 +542,8 @@ Control coverage: 298 audited sites (194 helped, 104 named-help).
 **Watched Folders.** The folders QUILL Cast keeps an eye on. Anything that lands in one -- from a voice recorder, a download, a shared folder -- arrives in Personal Audio by itself, once, and is announced. Add Folder chooses a new one, Folder Settings changes how it behaves, Pause stops watching for now, and Remove stops for good without touching a single file.
 
 **Welcome to QUILL Cast.** One screen for a first launch: where you would like to land each time Cast opens, whether to hear a tip now and then, and Add Your First Podcast. Nothing here is a setting you can get wrong; Skip, or Escape, leaves at once, and Preferences changes where you land later.
+
+**What Was Left Out.** Everything a backup, a restore or a setup file left out, one row per item, each with the reason -- stored only in OneDrive, in use by another program, a path too long for Windows. Nothing listed here was deleted. What to do about it is under the list, and Copy List takes the whole thing with you.
 
 **Year in Review.** Your listening year as a short report: the shows you gave the most time to, how many episodes you finished, and when you listened. It is built from your own local history.
 
@@ -646,10 +657,11 @@ Control coverage: 298 audited sites (194 helped, 104 named-help).
 - `self._episodes`: The episodes (or podcasts) of the place you chose, one per row, read column by column. Enter plays an episode or opens a podcast; Space adds an episode to the queue; Delete removes it from this place; Shift+F10 offers everything else. Left Arrow at the top returns to Places.
 #### FeedCheckWindow (`quill/ui/podcasts/feed_check_dialog.py`)
 
-- `self._list`: Every podcast you follow, worst first: the ones failing to check, then any never checked, then any that have gone quiet, then the healthy ones. Nothing here has been unfollowed and nothing has stopped being checked -- Cast keeps trying a failing feed. Shift+F10 opens what you can do to a row.
+- `self._list`: Every podcast you follow, worst first: the ones failing to check, with the reason, then any whose feed is empty, any never checked, any that have gone quiet, and then the healthy ones. Nothing here has been unfollowed and nothing has stopped being checked -- Cast keeps trying a failing feed. Shift+F10 opens what you can do to a row.
 - `self._retry_btn`: Check the selected feed again, now.
 - `self._retry_all_btn`: Check every failing feed again. Feeds that have gone quiet are left alone -- a quiet feed is working perfectly, and retrying it would report nothing new.
 - `self._copy_btn`: Put the selected podcast's feed address on the clipboard, so you can open it in a browser and see what the publisher is actually sending.
+- `self._find_btn`: For a feed that is not coming back at its address -- removed by the host, a web address that no longer exists, a web page where the feed was, or an empty feed: look up this show's title in the podcast directories and offer the feeds that answer, with their newest episode's date. Replace Feed keeps everything the podcast already has.
 - `close_btn`: Closes Feed Check and returns to where you were, without changing which podcasts you follow.
 #### FirstRunDialog (`quill/ui/podcasts/first_run_dialog.py`)
 
@@ -686,6 +698,12 @@ Control coverage: 298 audited sites (194 helped, 104 named-help).
 - `self._episode_filter_choice`: Which episodes the list shows: all of them, only the unheard ones, only what is downloaded, and so on. It narrows the list you are looking at and changes nothing about the episodes themselves.
 - `self._show_filter_choice`: Which podcasts the folder tree shows -- all of them, or only the ones with something unplayed. Nothing is unfollowed or hidden permanently.
 - `self._episode_search_ctrl`: Narrows the episode list of the podcast you are on, matching episode titles and the show notes. It searches this podcast only -- Search Everywhere is the one that crosses your whole library -- and it narrows whatever the filter and sort above already chose rather than replacing them. Enter says how many matched.
+#### NewFeedDialog (`quill/ui/podcasts/new_feed_dialog.py`)
+
+- `self._summary`: What Cast found for this podcast, and anything a podcast directory could not answer.
+- `self._list`: Each feed was found by looking up this show's title in the podcast directories, and was read to check it answers with episodes. The newest episode's date tells a show that carried on from an older one with the same name. Replace Feed switches this podcast to the selected feed and keeps everything you have already heard.
+- `self._replace_btn`: Switch this podcast to the selected feed. Its episodes, play positions, notes and settings stay as they are; only the feed address changes, and the new feed is checked straight away.
+- `cancel_btn`: Leave this podcast's feed address as it is.
 #### NotificationsWindow (`quill/ui/podcasts/notifications_window.py`)
 
 - `self._list`: What QUILL Cast told you, newest first. A row beginning New has not been read. Enter goes to what it was about; the Applications key offers Play Now, Add to Queue, Go to the Podcast and Mark Read on a new-episode notice. Escape closes the window.
@@ -1495,7 +1513,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## QUILL Lite
 
-Control coverage: 125 audited sites (125 helped).
+Control coverage: 128 audited sites (128 helped).
 
 ### Every window, and what it is for
 
@@ -1510,6 +1528,8 @@ Control coverage: 125 audited sites (125 helped).
 **About QUILL Lite.** What this copy is, and where it keeps your settings and your recovered work. QUILL Lite is a small companion to QUILL for All, not a replacement for it: conversion, comparison, publishing and the rest of QUILL's AI live in QUILL.
 
 **Action Items.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
+
+**Add Inline Note.** Write a note about the line or selection you were on. Note on shows the start of that text, so you can check you are in the right place. In Markdown and HTML, Write this note into the file keeps the note inside the document where others can read it; otherwise it stays private.
 
 **Answer.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
 
@@ -1537,6 +1557,8 @@ Control coverage: 125 audited sites (125 helped).
 
 **Document language.** Which markup this document is written in. It decides what Bold writes, what the heading keys write, which of the two tag pickers the Insert menu offers, and whether the cursor can tell you what list you are in. QUILL Lite reads it from the file name; this is where you say otherwise. Nothing in your document changes -- only what the keys write from now on. The choice lasts as long as this window is open.
 
+**Edit Inline Note.** Change what this note says, or delete it. The text the note is about is never changed. A note written into the file is changed in the file, so Undo takes the change back.
+
 **Email Reply.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
 
 **Explanation.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
@@ -1558,6 +1580,8 @@ Control coverage: 125 audited sites (125 helped).
 **Headings.** Every heading in this document, in the order they appear. Choose one and the cursor lands at the start of it. Headings exist in rich text only: they are the bold-plus-point-size ladder QUILL uses, so this list is also what Word will show in its navigation pane.
 
 **Image Description.** What the model saw in the picture, read-only. Insert Below puts it under the paragraph you are in, Copy puts it on the clipboard, and Control Z takes an insert back.
+
+**Inline Notes.** Every note in this document: what it says, the line it is on, the text it is about, and whether it is private or written into the file. A note whose text was deleted is listed last, so you can still read or remove it. Enter goes to a note, Delete deletes one, F2 edits one; Remove All, Copy All and Export are buttons.
 
 **Insert HTML Tag.** Forty HTML tags, searchable by what they do as well as by what they are called -- dropdown finds select, checkbox finds input, collapsible finds details. Choose the tag, then give it attributes if it needs any, or press Enter on the empty box to skip that. Anything selected in your document is wrapped by the tag.
 
@@ -1644,6 +1668,7 @@ Control coverage: 125 audited sites (125 helped).
 - `close_btn`: Close this window and go back to your document.
 - `entry`: Type part of a name to narrow the list below. Leave it empty to see everything. Press Enter or Down Arrow to move to the list.
 - `listbox`: Markdown makes Bold write two asterisks and the heading keys write hashes. HTML makes them write <strong> and <h2>, and offers the HTML tag picker. Plain text writes no markup at all and is right for a letter, a log or a script. The choice lasts as long as this window is open; the file itself is not changed.
+- `reopen_button`: Read this file again from disk as an encoding you choose, for a file whose letters came out wrong. Unsaved changes are discarded and nothing on disk changes. Afterwards it saves in that encoding, or choose UTF-8 here to convert it when you save.
 #### (module level) (`quill/apps/lite_dialogs_entry.py`)
 
 - `display`: The words the link will read as. Leave it empty to show the address itself.
@@ -1680,6 +1705,7 @@ Control coverage: 125 audited sites (125 helped).
 - `theme_choice`: Follow the system is the default: anybody who needs a particular contrast has already told Windows, and following that beats guessing. Either way it changes the view only and is never saved into your documents.
 - `restore`: Reopen last session's files, in the same numbered order. Different from recovering unsaved work, which happens whether this is on or not.
 - `keep_untitled`: On: work you never saved is offered back whether or not the window had a file. Off: only documents with a file are offered, and the copies of untitled ones are deleted rather than kept -- keeping something that is never offered would be a promise nothing can redeem. Identical copies are folded into one either way, and anything older than a month is dropped. QUILL has the same setting.
+- `notes_in_file`: On: in Markdown and HTML documents, Add Inline Note starts with Write this note into the file checked, so the note is kept in the document as a hidden comment that anyone who opens the file can read. Off: notes stay private to you. Each document remembers your last choice. QUILL has the same setting.
 - `blank`: On: a new Untitled document is waiting when the app opens, the way Notepad and WordPad do it. Off: the app opens with nothing, and Control N or Open makes the first document -- which is what you want if you always open an existing file and were closing an empty one every time. Files you open by double-clicking, last session's documents and recovered work all still appear either way.
 - `share`: Off: abbreviations are QUILL Lite's own. On: read and write the same library QUILL and Quill Inkwell use, so an abbreviation added in any of them works in all of them. Turning this on creates a QUILL data folder if you do not already have one.
 - `share_dict`: Off: words you teach the spell checker are QUILL Lite's own. On: read and write the same dictionary QUILL uses, so a word taught in either is known to both. Turning this on creates a QUILL data folder if you do not already have one.
@@ -1698,6 +1724,14 @@ Control coverage: 125 audited sites (125 helped).
 - `autosave`: How often a modified document is copied to the recovery folder. The copy is beside your file, never over it, and is removed when you save.
 - `font_field`: The face and size the editor draws in. Change Font opens the chooser; this box reads back whatever you pick.
 - `choose_btn`: Open the font chooser and pick a face and size for the editor.
+#### FileChangePrefs (`quill/apps/lite_preferences_files.py`)
+
+- `self.heading`: What QUILL Lite does when another program writes to or deletes a file you have open. QUILL has the same settings.
+- `self.watch`: On: QUILL Lite notices when another program changes or deletes a file you have open, and tells you or asks you. Off: it notices only when you save.
+- `self.auto_reload`: On: if you have not changed the document since it was opened or saved, a changed file is read again by itself, the cursor stays on its line, and QUILL Lite says so once. Off: you are asked first. An answer you asked to have remembered for that kind of file still comes first.
+- `self.prompt`: On: when the file changes while you have unsaved edits, you choose Reload from Disk, Keep Mine or Save As, and a deleted file is reported once. Off: QUILL Lite says nothing in those cases and leaves your text alone.
+- `self.debounce`: How often QUILL Lite looks at your open files, so a program that writes a file in several steps is dealt with once. The default is 750.
+- `self.forget_button`: Takes back every Do not ask me again answer, so QUILL Lite asks again about every kind of file. Happens when you press OK.
 #### ProfileRow (`quill/apps/lite_preferences_profile.py`)
 
 - `self.impact`: What the profile above would change: which parts of the app it keeps, which it removes, and anything else it sets.

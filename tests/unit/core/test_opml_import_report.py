@@ -25,7 +25,7 @@ def test_report_summarizes_counts() -> None:
         OpmlValidationResult("C", "https://c", False, "timeout"),
     ]
     text = format_report_text(results)
-    assert "3 feed(s) checked" in text
+    assert "3 feeds checked" in text
     assert "2 reachable" in text
     assert "1 unreachable" in text
 

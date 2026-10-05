@@ -36,6 +36,7 @@ import re
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
+from quill.core import http_client
 from quill.core.radio.ics import CalendarEvent, parse_calendar
 
 #: ACB's My Calendar ICS export (confirmed against acbmedia.org, 2026-08-24).
@@ -95,9 +96,9 @@ def cache_key(moment: datetime) -> str:
     return f"{CACHE_KEY_PREFIX}-{moment.year:04d}-{moment.month:02d}"
 
 
-#: Named, because a server that logs its callers should be able to tell who
-#: this is -- and because an unattributed reader is the kind a site blocks.
-_USER_AGENT = "QuillRadio/3.0 (+https://github.com/Community-Access/quill)"
+# Requests are named (http_client.user_agent), because a server that logs its
+# callers should be able to tell who this is -- and because an unattributed
+# reader is the kind a site blocks.
 
 #: Twenty seconds. A calendar is not urgent, but a window waiting on one is.
 _TIMEOUT_SECONDS = 20.0
@@ -184,7 +185,7 @@ def _fetch_ics(moment: datetime, *, no_cache: bool = False) -> list[dict[str, An
     import ssl
     import urllib.request
 
-    headers = {"User-Agent": _USER_AGENT, "Accept": "text/calendar, text/plain"}
+    headers = {"User-Agent": http_client.user_agent(), "Accept": "text/calendar, text/plain"}
     if no_cache:
         headers["Cache-Control"] = "no-cache"
         headers["Pragma"] = "no-cache"

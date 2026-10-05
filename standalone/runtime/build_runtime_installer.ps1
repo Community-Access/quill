@@ -82,6 +82,12 @@ $buildDate = ([datetime]$markerData.build).ToString("yyyyMMdd")
 $pythonMinor = ($markerData.python -split "\.")[0..1] -join "."
 $version = "$pythonMinor.$buildDate"
 
+# Beta and Dev builds are never code-signed (owner decision 2026-10-04): the
+# Beta runtime slot is a Beta build, so -Sign is switched off for it with one
+# line saying so. The Stable runtime signs as before. docs/code-signing.md.
+$signVersion = if ($Channel -eq "beta") { "$version-beta" } else { $version }
+$null = Resolve-QuillSigning -QuillRepo $QuillRepo -Python $Python -Version $signVersion
+
 # Sign the runtime payload before it is embedded (a no-op unless QUILL_SIGN=1).
 $signer = Join-Path $QuillRepo "scripts\code_signing.py"
 & $Python $signer sign-build $dist --label "runtime payload"

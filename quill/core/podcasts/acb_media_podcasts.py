@@ -19,6 +19,7 @@ import ssl
 import urllib.error
 import urllib.request
 
+from quill.core import http_client
 from quill.core.error_codes import CodedError
 from quill.core.podcasts.feed_reader import refuse_in_safe_mode
 from quill.core.podcasts.opml import (
@@ -56,7 +57,6 @@ ACB_PICKED_FOLDER = "ACB Media Podcasts"
 
 _TIMEOUT_SECONDS = 20
 _MAX_BYTES = 2 * 1024 * 1024  # the directory is ~10 KB; 2 MB is generous
-_USER_AGENT = "QUILL (podcast client; +https://github.com/Community-Access/quill)"
 
 
 class AcbMediaPodcastsError(CodedError):
@@ -70,7 +70,7 @@ def _fetch_opml_bytes(url: str = ACB_PODCASTS_OPML_URL) -> bytes:
     ``urlopen``: the egress audit inventories call *sites*, and one site with a
     parameter is one thing to review instead of two things to keep in step.
     """
-    request = urllib.request.Request(url, headers={"User-Agent": _USER_AGENT})
+    request = urllib.request.Request(url, headers={"User-Agent": http_client.podcast_user_agent()})
     context = ssl.create_default_context()
     try:
         with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:
