@@ -62,10 +62,10 @@
             "tips_enabled": "bool"
           }
         },
-        "function:quill.core.podcasts.history:save_history": "sha256:09696a6deeaf54a9"
+        "function:quill.core.podcasts.history:save_history": "sha256:ebaefb0dfc6efa3a"
       },
-      "classification": "baseline",
-      "note": ""
+      "classification": "additive, compatible",
+      "note": "fingerprint method moved from ast.dump to ast.unparse (Python 3.12/3.13 stable); shape unchanged"
     },
     "cast.library": {
       "current": 1,
@@ -337,18 +337,18 @@
             "seen": "dict[str, str]"
           }
         },
-        "function:quill.core.podcasts.subscriptions:save_library": "sha256:781ef52b41a1742f"
+        "function:quill.core.podcasts.subscriptions:save_library": "sha256:db84609879b574fa"
       },
-      "classification": "baseline",
-      "note": ""
+      "classification": "additive, compatible",
+      "note": "fingerprint method moved from ast.dump to ast.unparse (Python 3.12/3.13 stable); shape unchanged"
     },
     "lite.keymap": {
       "current": 1,
       "shape": {
-        "function:quill.core.lite.keymap:save_keymap": "sha256:cd8f2de0a42c03f8"
+        "function:quill.core.lite.keymap:save_keymap": "sha256:a82f522238b8f338"
       },
-      "classification": "baseline",
-      "note": ""
+      "classification": "additive, compatible",
+      "note": "fingerprint method moved from ast.dump to ast.unparse (Python 3.12/3.13 stable); shape unchanged"
     },
     "lite.settings": {
       "current": 1,
@@ -440,11 +440,11 @@
     "quill.keymap": {
       "current": 1,
       "shape": {
-        "function:quill.core.keymap:_persisted_keymap_document": "sha256:cbe94c0d03d77ea6",
+        "function:quill.core.keymap:_persisted_keymap_document": "sha256:a5c54fc8f894ca2f",
         "constant:quill.core.keymap:KEYMAP_DEFAULTS_EPOCH": "1"
       },
-      "classification": "baseline",
-      "note": ""
+      "classification": "additive, compatible",
+      "note": "fingerprint method moved from ast.dump to ast.unparse (Python 3.12/3.13 stable); shape unchanged"
     },
     "quill.settings": {
       "current": 2,
@@ -1251,10 +1251,10 @@
             "match_reason": "str"
           }
         },
-        "function:quill.core.radio.favorites:save_favorites": "sha256:a7010c7a09f9e86f"
+        "function:quill.core.radio.favorites:save_favorites": "sha256:07ac4b1c29bb2410"
       },
-      "classification": "baseline",
-      "note": ""
+      "classification": "additive, compatible",
+      "note": "fingerprint method moved from ast.dump to ast.unparse (Python 3.12/3.13 stable); shape unchanged"
     },
     "radio.history": {
       "current": 1,
@@ -1366,18 +1366,18 @@
             "country": "str"
           }
         },
-        "function:quill.core.radio.history_store:save_history": "sha256:1e09eb3f88eaf6e2"
+        "function:quill.core.radio.history_store:save_history": "sha256:f19259917c7e17ad"
       },
-      "classification": "baseline",
-      "note": ""
+      "classification": "additive, compatible",
+      "note": "fingerprint method moved from ast.dump to ast.unparse (Python 3.12/3.13 stable); shape unchanged"
     },
     "shared.listens": {
       "current": 1,
       "shape": {
-        "function:quill.core.podcasts.radio_listens:record_listen": "sha256:04c1f15f78650499"
+        "function:quill.core.podcasts.radio_listens:record_listen": "sha256:0247a744c1303695"
       },
-      "classification": "baseline",
-      "note": ""
+      "classification": "additive, compatible",
+      "note": "fingerprint method moved from ast.dump to ast.unparse (Python 3.12/3.13 stable); shape unchanged"
     },
     "shared.media_bookmarks": {
       "current": 1,
@@ -1390,10 +1390,10 @@
             "title": "str"
           }
         },
-        "function:quill.core.media.bookmarks:MediaBookmark.to_dict": "sha256:729d185b137ae7aa"
+        "function:quill.core.media.bookmarks:MediaBookmark.to_dict": "sha256:eafdefc81c4b51f4"
       },
-      "classification": "baseline",
-      "note": ""
+      "classification": "additive, compatible",
+      "note": "fingerprint method moved from ast.dump to ast.unparse (Python 3.12/3.13 stable); shape unchanged"
     }
   }
 }

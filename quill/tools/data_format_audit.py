@@ -162,7 +162,9 @@ def source_hash(source: str) -> str:
             and isinstance(body[0].value.value, str)
         ):
             node.body = body[1:] or [ast.Pass()]
-    dump = ast.dump(tree, annotate_fields=False, include_attributes=False)
+    # ast.unparse, not ast.dump: dump's output changed in Python 3.13 (empty
+    # fields omitted), so the same code hashed differently on CI (3.12).
+    dump = ast.unparse(tree)
     return "sha256:" + hashlib.sha256(dump.encode("utf-8")).hexdigest()[:16]
 
 

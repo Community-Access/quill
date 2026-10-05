@@ -93,13 +93,13 @@ def load_generic_credential(target_name: str) -> StoredCredential | None:
     credential_ptr = _PCREDENTIALW()
     ok = _cred_read(target_name, _CRED_TYPE_GENERIC, 0, ctypes.byref(credential_ptr))
     if not ok:
-        logger.debug("No credential found for target_name=%r (absent)", target_name)
+        logger.debug("No credential found for the requested target (absent)")
         return None
     try:
         credential = credential_ptr.contents
         blob_size = int(credential.CredentialBlobSize)
         if blob_size <= 0:
-            logger.debug("Credential for target_name=%r has an empty secret blob", target_name)
+            logger.debug("Credential for the requested target has an empty secret blob")
             return StoredCredential(
                 target_name=target_name,
                 user_name=str(credential.UserName or ""),

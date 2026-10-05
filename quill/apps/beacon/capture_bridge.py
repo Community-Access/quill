@@ -24,6 +24,7 @@ from __future__ import annotations
 import encodings.idna  # noqa: F401 - see below
 import json
 import os
+import re
 import secrets
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -42,6 +43,21 @@ from quill.apps.beacon import capture, routing
 DEFAULT_PORT = 8752
 TOKEN_FILE = "bridge_token.txt"
 ALLOWED_ORIGIN_SCHEMES = ("moz-extension://", "chrome-extension://")
+
+
+_ORIGIN_SHAPE = re.compile(r"[a-z][a-z0-9+.-]*://[A-Za-z0-9._-]+(?::[0-9]{1,5})?")
+
+
+def _safe_origin(value: str | None) -> str:
+    """An Origin header fit to echo back: an allowed scheme and a plain host.
+
+    Anything else -- including a value carrying CR or LF, which would split
+    the response -- is refused, so the reply simply omits the CORS header.
+    """
+    origin = (value or "").replace("\r", "").replace("\n", "")
+    if origin.startswith(ALLOWED_ORIGIN_SCHEMES) and _ORIGIN_SHAPE.fullmatch(origin):
+        return origin
+    return ""
 
 
 class CaptureBridge:
@@ -216,8 +232,8 @@ def _make_handler(bridge: CaptureBridge):
             self.send_header("Content-Type", "application/json")
             self.send_header("Content-Length", str(len(body)))
             # Permissive CORS for extension origins.
-            origin = self.headers.get("Origin") or ""
-            if origin.startswith(ALLOWED_ORIGIN_SCHEMES):
+            origin = _safe_origin(self.headers.get("Origin"))
+            if origin:
                 self.send_header("Access-Control-Allow-Origin", origin)
             self.send_header("Vary", "Origin")
             self.end_headers()
@@ -227,8 +243,8 @@ def _make_handler(bridge: CaptureBridge):
             self.send_response(code)
             self.send_header("Content-Type", "text/html; charset=utf-8")
             self.send_header("Content-Length", str(len(body)))
-            origin = self.headers.get("Origin") or ""
-            if origin.startswith(ALLOWED_ORIGIN_SCHEMES):
+            origin = _safe_origin(self.headers.get("Origin"))
+            if origin:
                 self.send_header("Access-Control-Allow-Origin", origin)
             self.send_header("Vary", "Origin")
             self.end_headers()
@@ -263,8 +279,8 @@ def _make_handler(bridge: CaptureBridge):
         # -- routes ---------------------------------------------------------
         def do_OPTIONS(self) -> None:
             self.send_response(204)
-            origin = self.headers.get("Origin") or ""
-            if origin.startswith(ALLOWED_ORIGIN_SCHEMES):
+            origin = _safe_origin(self.headers.get("Origin"))
+            if origin:
                 self.send_header("Access-Control-Allow-Origin", origin)
                 self.send_header(
                     "Access-Control-Allow-Headers", "Content-Type, X-QuillBeacon-Token"
