@@ -107,6 +107,7 @@ def _handlers(dialog: Any, node: Any, data: dict, kind: str, args: list[str]) ->
         dialog, kind, args, station
     )
     handlers.update(yt_menu.add_handlers(dialog))
+    handlers.update(yt_menu.channel_handlers(dialog, node, args, station))
     # The subscription-library verbs (folders, OPML, Mark All as Played) live
     # in browse_podcast_actions -- one concern, one module (GATE-11).
     from quill.ui.radio import browse_podcast_actions as podcast_acts
@@ -138,6 +139,9 @@ def _handlers(dialog: Any, node: Any, data: dict, kind: str, args: list[str]) ->
     )
     # Why it takes the row rather than the station: see edit_row_note.
     handlers[row_actions.EDIT_NOTE] = lambda: item_note_dialog.edit_row_note(dialog, data, station)
+    from quill.ui.radio import station_tags_dialog as tags_dialog
+
+    handlers[row_actions.EDIT_TAGS] = lambda: tags_dialog.edit_row_tags(dialog, data, station)
     handlers[row_actions.ADD_PODCAST_URL] = lambda: podcast_acts.add_podcast_by_url_prompt(dialog)
     handlers[row_actions.DOWNLOAD_ALL_EPISODES] = lambda: podcast_acts.download_all_episodes(
         dialog, args
@@ -191,7 +195,9 @@ def _speak_details(dialog: Any, station: Any) -> None:
     Station Details), and when it is hidden there was no way to hear any of
     this. Speaking it is the version that works either way.
     """
-    dialog._announce(station.details_text.replace(chr(10), ". "))
+    from quill.ui.radio.station_tags_dialog import details_for
+
+    dialog._announce(details_for(dialog, station).replace(chr(10), ". "))
 
 
 def target_node(dialog: Any, event: Any) -> Any:
@@ -243,6 +249,11 @@ def show_for_event(dialog: Any, event: Any) -> None:
             _popup(dialog, row_actions.youtube_add_actions(), yt_menu.add_handlers(dialog))
         return
     kind, args = split_id(node_id)
+    # Local Media rows have verbs of their own (Play Next, Rename Playlist...).
+    from quill.ui.radio import local_media_browse
+
+    if local_media_browse.show_menu(dialog, node, data, kind, args):
+        return
     station = data.get("station")
     from quill.ui.radio import browse_podcast_actions, download_command
 

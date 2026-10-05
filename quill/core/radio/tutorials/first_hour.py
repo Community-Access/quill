@@ -29,68 +29,68 @@ TUTORIALS: tuple[Tutorial, ...] = (
         minutes=5,
         surfaces=("Quill Radio", "Browse Stations"),
         summary=(
-            "Open the browse tree, find a station that is on the air right now, "
-            "and hear it. This is the loop the whole app is built on: arrow to a "
-            "thing, press Enter."
+            "In five minutes you will have a station playing that you picked "
+            "yourself. You will open the list of stations, find one that is on "
+            "the air, and hear it. Along the way you will learn the one move you "
+            "use everywhere in Quill Radio: arrow to something, press Enter."
         ),
         steps=(
             Step(
                 title="Start where the app puts you",
                 body=(
-                    "Launch Quill Radio. The very first time, three short welcome "
-                    "screens come up -- read them with the arrow keys, or press "
-                    "Alt+K to Skip. After that, focus lands in the Favorite "
-                    "stations tree, and on a new installation that tree is empty. "
-                    "An empty list here is not a fault; it is a list you have not "
-                    "filled in yet, and the next few minutes fill it."
+                    "Open Quill Radio. The very first time, you get three short "
+                    "welcome screens. Read them with the arrow keys, or press "
+                    "Alt+K to skip them. After that you land in the Favorite "
+                    "stations list. On a new install it is empty, and that is "
+                    "fine. Nothing is wrong. You are about to fill it."
                 ),
                 keys=("Alt+K",),
                 hear=(
-                    "Welcome to Quill Radio, screen 1 of 3 on a first launch; then Favorite "
-                    "stations, tree -- or whatever your screen reader calls an empty tree."
+                    "Welcome to Quill Radio, screen 1 of 3 the first time. Then Favorite "
+                    "stations, tree, or whatever your screen reader says for an empty tree."
                 ),
             ),
             Step(
                 title="Open Browse Stations",
                 body=(
-                    "Browse Stations is one window with one large tree in it. The "
-                    "first row is Search All Sources; below it the top-level "
-                    "branches are the sources: your favorites, popular stations, "
-                    "whole world directories, weather radio, podcasts, audiobooks. "
-                    "Nothing has been fetched yet -- these are only the doors."
+                    "Browse Stations is one window with one big list in it, laid "
+                    "out like a tree. The first row is Search All Sources. Below it "
+                    "are the places stations come from: your favorites, popular "
+                    "stations, directories from all over the world, weather radio, "
+                    "podcasts and audiobooks. Nothing is loaded yet, so take your "
+                    "time."
                 ),
                 keys=("Ctrl+B",),
-                hear="Browse Stations, then the first row of the tree: Search All Sources.",
+                hear="Browse Stations, then the first row: Search All Sources.",
                 check="window:Browse Stations",
             ),
             Step(
                 title="Walk the branches before opening one",
                 body=(
-                    "Press Down arrow half a dozen times and just listen. Each "
-                    "press reads one source. This costs nothing and no branch is "
-                    "contacted until you open it, so it is the cheapest way to "
-                    "learn what this app can reach."
+                    "Press Down Arrow six or seven times and just listen. Each "
+                    "press reads the name of one source. Nothing opens until you "
+                    "ask it to, so this is a safe and quick way to get a feel for "
+                    "everything Quill Radio can reach."
                 ),
                 keys=("Down arrow",),
                 hear=(
                     "One source name per press: Favorites, Popular Stations, Trending Now, "
-                    "Recently Added or Changed, By Country, and on down."
+                    "Recently Added or Changed, By Country, and so on."
                 ),
                 note=(
-                    "More than thirty sources is a lot to arrow past. When you "
-                    "know which ones you actually use, Hide This Source on a "
-                    "branch's own menu turns the rest off -- the lesson called "
-                    "Wander the browse tree shows how."
+                    "There are more than thirty sources, which is a lot to arrow "
+                    "past. Once you know the ones you like, you can hide the rest "
+                    "with Hide This Source on a branch's own menu. The lesson "
+                    "called Wander the browse tree shows you how."
                 ),
             ),
             Step(
                 title="Open Popular Stations",
                 body=(
-                    "Stop on Popular Stations and press Right arrow. This is the "
-                    "one branch worth starting with when you have no idea what you "
-                    "want: it is ranked by votes cast over years, so it is stations "
-                    "that have been worth listening to for a long time rather than "
-                    "whatever is loud today."
+                    "Stop on Popular Stations and press Right Arrow. This is a "
+                    "great place to start when you have no idea what you want. "
+                    "Listeners have voted for these stations over many years, so "
+                    "they are ones people keep coming back to."
                 ),
                 keys=("Right arrow",),
                 hear="Loading Popular Stations, then how many arrived: 100 items.",
@@ -98,68 +98,68 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Play one",
                 body=(
-                    "Press Down arrow onto a station and press Enter. That is the "
-                    "whole gesture, and it is the same gesture on every row in "
-                    "every branch of this tree for the rest of your life with the "
-                    "app -- a station, a podcast episode, a book chapter, a "
-                    "television channel."
+                    "Press Down Arrow onto a station and press Enter. That is all "
+                    "there is to it. The same move works on every row in this "
+                    "list: a station, a podcast episode, a chapter of a book or a "
+                    "television channel. Arrow to it, press Enter."
                 ),
                 keys=("Down arrow", "Enter"),
                 hear=(
-                    "Playing, and the station's name, over a short connecting sound; then the "
-                    "station itself."
+                    "Playing, and the station's name, over a short connecting sound. Then "
+                    "the station itself."
                 ),
                 check="playing",
             ),
             Step(
                 title="Set the volume without leaving the tree",
                 body=(
-                    "Press Volume Down twice. The volume moves in steps of ten and "
-                    "says the new number every time, in every window -- so you "
-                    "never have to guess whether the key landed, and you never have "
-                    "to go back to the main window to turn it down."
+                    "Press Volume Down twice. The volume moves ten steps at a time "
+                    "and says the new number each time. This works in every "
+                    "window, so you never have to go looking for a volume control "
+                    "or wonder whether the key worked."
                 ),
                 command="radio.volume_down",
                 keys=("Ctrl+Down",),
-                hear="Volume, and a number, then a number ten lower: Volume 70 percent, say.",
+                hear="Volume and a number, then a number ten lower. Volume 70 percent, say.",
                 check="volume-changed",
                 note=(
-                    "A favorite remembers the volume you set while it plays, and "
-                    "gets it back next time. Stations are mastered wildly "
-                    "differently, and you should only have to fix that once."
+                    "Once a station is a favorite, it remembers the volume you "
+                    "set while it played and uses it again next time. Some "
+                    "stations are much louder than others, and this way you only "
+                    "fix that once."
                 ),
             ),
             Step(
                 title="Stop it, and start it again",
                 body=(
                     "Press Enter on the same row again. Enter on the station that "
-                    "is already playing stops it, and Enter once more starts it. "
-                    "It says which way it went, both times. A toggle that stays "
-                    "silent leaves you pressing it twice to find out where you "
-                    "are, which is how you end up back where you started."
+                    "is playing stops it, and Enter once more starts it again. "
+                    "Quill Radio tells you which one happened each time, so you "
+                    "always know where you are."
                 ),
                 keys=("Enter",),
                 hear="Radio stopped. Then Playing, and the station's name.",
                 note=(
-                    "Ctrl+Period is Stop in every window except the main one, "
-                    "where Ctrl+P is Play and Stop on the Playback menu."
+                    "Ctrl+Period is Stop in every window except the main one. In "
+                    "the main window, Ctrl+P is Play and Stop on the Playback menu."
                 ),
             ),
             Step(
                 title="Close the tree, keep the music",
                 body=(
-                    "Press Escape. Browse Stations closes and focus returns to the "
-                    "favorites tree in the main window -- and the station keeps "
+                    "Press Escape. Browse Stations closes and you are back in the "
+                    "favorites list in the main window, with the station still "
                     "playing. Closing a window in Quill Radio never stops the "
-                    "audio; only Stop does that."
+                    "sound. Only Stop does that."
                 ),
                 keys=("Escape",),
-                hear="Quill Radio, the favorites tree, and the station still playing underneath.",
+                hear="Quill Radio, the favorites list, and the station still playing.",
             ),
         ),
         closing=(
-            "You have played a station and you know the gesture. Keep it playing "
-            "for the next lesson, which is about not having to find it again."
+            "Well done. You found a station and played it, and you know the move "
+            "that works everywhere. Leave it playing for the next lesson, which "
+            "shows you how to keep it so you never have to search for it again."
         ),
         then=("keep-a-station",),
     ),
@@ -170,45 +170,45 @@ TUTORIALS: tuple[Tutorial, ...] = (
         minutes=4,
         surfaces=("Quill Radio",),
         summary=(
-            "Turn the station you are listening to into a favorite, then reduce "
-            "getting back to it to two keystrokes: launch, Enter."
+            "Save the station you are listening to as a favorite. After this, "
+            "getting back to it tomorrow takes two keys: open Quill Radio, press "
+            "Enter."
         ),
         steps=(
             Step(
                 title="Save what is playing",
                 body=(
-                    "With a station on, add it to your favorites from the main "
-                    "window. You do not have to find the row it came from, and you "
-                    "do not have to go back to the window you found it in -- this "
-                    "command follows what is playing, not what is selected. It is "
-                    "on the Station menu as Add Playing Station to Favorites."
+                    "With a station playing, add it to your favorites from the "
+                    "main window. You do not need to find the row it came from or "
+                    "go back to the window where you found it. This command always "
+                    "saves whatever is playing right now. It is on the Station "
+                    "menu as Add Playing Station to Favorites."
                 ),
                 command="radio.toggle_playing_favorite",
                 hear="Added, the station's name, to favorites.",
                 check="favorite-added",
                 note=(
-                    "The same command removes it again, and the menu item "
-                    "relabels itself to say so. It reads what is true now rather "
-                    "than offering both, so it can never add a second copy."
+                    "The same command takes it out again, and the menu item "
+                    "changes its name to say so. That way you can never end up "
+                    "with two copies of the same station."
                 ),
             ),
             Step(
                 title="Find it in the tree",
                 body=(
-                    "Move focus to the favorites tree in the main window and arrow "
-                    "down. Your station is there. This tree is the main window's "
-                    "whole purpose: it is a list you play from, not a second copy "
-                    "of the player."
+                    "Move to the favorites list in the main window and arrow "
+                    "down. There is your station. This list is what the main "
+                    "window is for: the stations you love, ready to play."
                 ),
                 keys=("Down arrow",),
-                hear="The station's name, in the favorites tree.",
+                hear="The station's name, in the favorites list.",
             ),
             Step(
                 title="Play it from the list",
                 body=(
-                    "Press Enter on it. From now on this is your route to that "
-                    "station: open the app, arrow to it, press Enter. Two "
-                    "keystrokes and no navigation."
+                    "Press Enter on it. From now on, this is how you get to that "
+                    "station: open Quill Radio, arrow to it, press Enter. No "
+                    "searching, no menus."
                 ),
                 keys=("Enter",),
                 hear="Playing, and the station's name.",
@@ -216,42 +216,40 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Give it a name you would actually say",
                 body=(
-                    "Press F2 on the row and type whatever you call the station. "
-                    "Directory names are written by whoever registered the stream, "
-                    "so they are full of bitrates, call signs and capital letters. "
-                    "Your name is used everywhere in the app from that moment; "
-                    "clearing the field puts the directory's name back."
+                    "Press F2 on the row and type the name you use for the "
+                    "station. Names in the directories are often full of numbers, "
+                    "call letters and capitals. Your name is the one Quill Radio "
+                    "uses from now on. If you clear the box, the original name "
+                    "comes back."
                 ),
                 keys=("F2",),
                 hear=(
-                    "Rename Station, an edit box with your name for it; then Station renamed, and "
-                    "your new name."
+                    "Rename Station, an edit box with the current name. Then Station "
+                    "renamed, and your new name."
                 ),
             ),
             Step(
                 title="Make the radio switch itself on",
                 body=(
-                    "Open the Station menu and tick Resume Last Station on Launch. "
-                    "With that on, Quill Radio stops being a program you operate "
-                    "and becomes an appliance: you open it, and your station is "
-                    "already playing."
+                    "Open the Station menu and check Resume Last Station on "
+                    "Launch. Now when you open Quill Radio, your station is "
+                    "already playing, just like turning on a radio in the kitchen."
                 ),
                 keys=("Alt+S", "Ctrl+Alt+L"),
                 hear="Quill Radio will pick up where you left off at launch.",
                 note=(
-                    "Pair it with Start Quill Radio with Windows, on the same menu "
+                    "Turn on Start Quill Radio with Windows too, on the same menu "
                     "(Ctrl+Alt+W), and the radio is simply on when you sit down. "
-                    "That entry is for your own account only and needs no "
-                    "administrator rights."
+                    "It only affects your own Windows account, and you do not "
+                    "need to be an administrator."
                 ),
             ),
             Step(
                 title="Learn the one-key way back",
                 body=(
-                    "Play Last Station resumes whatever you had on, with no "
-                    "navigation at all. It is the key to reach for when you "
-                    "stopped something by accident, or came back to the machine "
-                    "after lunch."
+                    "Play Last Station starts whatever you had on last, with no "
+                    "searching at all. Reach for it when you stopped something by "
+                    "mistake, or when you come back to the computer after lunch."
                 ),
                 command="radio.play_last",
                 keys=("Ctrl+L",),
@@ -259,8 +257,9 @@ TUTORIALS: tuple[Tutorial, ...] = (
             ),
         ),
         closing=(
-            "You have a favorite, under a name you chose, that comes back on its "
-            "own. Everything after this is about doing more with less searching."
+            "Now you have a favorite, with a name you chose, and it can even "
+            "start on its own. From here on, everything is about finding more "
+            "of what you like with less effort."
         ),
         then=("player-follows-you", "do-it-by-name"),
     ),
@@ -271,59 +270,57 @@ TUTORIALS: tuple[Tutorial, ...] = (
         minutes=6,
         surfaces=("Quill Radio", "Player", "Browse Stations"),
         summary=(
-            "Learn the handful of keys that work in every window, and the window "
-            "that holds the whole player. This is the part of Quill Radio that is "
-            "unlike other radio programs, and the part worth ten minutes."
+            "Learn the handful of keys that work in every window, and meet the "
+            "Player window, which has every control in one place. This is worth "
+            "ten minutes of your time, because it is what makes Quill Radio feel "
+            "easy."
         ),
         steps=(
             Step(
                 title="Start something and go somewhere else",
                 body=(
-                    "Play a favorite, then open Browse Stations so that you are "
-                    "standing somewhere other than the window you started the "
-                    "audio from. Older versions of Quill Radio would have left you "
-                    "with half a player here; the whole point of this lesson is "
-                    "that they no longer do."
+                    "Play one of your favorites, then open Browse Stations. Now "
+                    "you are in a different window from the one where you "
+                    "started the music. Watch what happens: all the player keys "
+                    "still work right here."
                 ),
                 keys=("Ctrl+B",),
-                hear="Browse Stations, over the top of the station still playing.",
+                hear="Browse Stations, with your station still playing.",
             ),
             Step(
                 title="Change the volume from the wrong window",
                 body=(
-                    "Press Volume Up. It works, and it says the new level -- from "
-                    "the browse window. There is one table of transport keys and "
-                    "every window installs it, so a key means the same thing and "
-                    "moves the same distance wherever you press it."
+                    "Press Volume Up. It works, right here in the browse window, "
+                    "and it tells you the new level. The player keys do the same "
+                    "thing in every window, so you only have to learn them once."
                 ),
                 command="radio.volume_up",
                 keys=("Ctrl+Up",),
-                hear="Volume, and a number ten higher than the last one.",
+                hear="Volume, and a number ten higher than before.",
                 check="volume-changed",
             ),
             Step(
                 title="Mute, and hear that you muted",
                 body=(
-                    "Press Mute and then press it again. Silence is what muting is "
-                    "for, so without a word there is no way to tell muting apart "
-                    "from the stream dropping -- which is exactly why this one "
-                    "speaks both ways."
+                    "Press Mute, then press it again. Quill Radio says Muted, and "
+                    "then says the volume when you come back. That way you can "
+                    "always tell a mute apart from a station that has dropped out."
                 ),
                 keys=("Ctrl+Shift+O",),
-                hear="Muted, then the volume you came back to: Volume 70 percent, say.",
+                hear="Muted, then the volume you came back to. Volume 70 percent, say.",
                 check="muted",
                 note=(
-                    "Ctrl+Shift+O is Mute in every window but the main one, where "
-                    "the Audio menu's Mute/Unmute is Ctrl+M."
+                    "Ctrl+Shift+O is Mute in every window except the main one. "
+                    "In the main window, Mute/Unmute on the Audio menu is Ctrl+M."
                 ),
             ),
             Step(
                 title="Summon the player",
                 body=(
-                    "Go to Player opens the Player window -- and if it is already "
-                    "open behind something, the same key brings it to the front "
-                    "rather than opening a second copy. One key, one player, "
-                    "always."
+                    "Go to Player opens the Player window. If it is already open "
+                    "behind something else, the same key brings it to the front "
+                    "instead of opening a second one. One key, one player, every "
+                    "time."
                 ),
                 command="radio.transport.go_to_player",
                 keys=("Ctrl+Shift+G",),
@@ -333,13 +330,12 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Tab through what the player holds",
                 body=(
-                    "Tab from the top. First a read-only Now playing box saying "
-                    "what is on, where you are in it, how fast it is playing and "
-                    "how loud; then the buttons in the order people reach for "
-                    "them -- Play or Stop, Pause, Skip Back, Skip Forward, Where "
-                    "Am I, the three chapter buttons, Slower, Faster, Normal "
-                    "Speed, Skip Silence, Volume Down, Volume Up, Mute, and last "
-                    "Add to Favorites."
+                    "Press Tab from the top. First you reach the Now playing box, "
+                    "which tells you what is on, where you are in it, how fast it "
+                    "is playing and how loud. Then come the buttons: Play or Stop, "
+                    "Pause, Skip Back, Skip Forward, Where Am I, the three chapter "
+                    "buttons, Slower, Faster, Normal Speed, Skip Silence, Volume "
+                    "Down, Volume Up, Mute, and last of all Add to Favorites."
                 ),
                 keys=("Tab",),
                 hear="Each control's name and state, one per press.",
@@ -347,51 +343,53 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Ask where you are",
                 body=(
-                    "Press Where Am I. On a recording or an episode it tells you "
-                    "the position, the length and the chapter. On live radio it "
-                    "tells you that this is live radio, which plays at broadcast "
-                    "speed and has no position to move through -- a refusal with a "
-                    "reason, rather than a key that quietly does nothing."
+                    "Press Where Am I. On a recording or a podcast episode, you "
+                    "hear how far in you are, how long it is and which chapter "
+                    "you are in. On live radio, Quill Radio tells you it is live, "
+                    "so there is no position to move through. Either way, you "
+                    "always get an answer."
                 ),
                 command="radio.transport.announce_position",
                 keys=("Ctrl+Shift+W",),
-                hear="Either a position, or the sentence explaining why a live stream has none.",
+                hear="Either your position, or a sentence saying a live stream has none.",
             ),
             Step(
                 title="Leave the player where it is",
                 body=(
-                    "Press Escape to close it, or leave it open and press Ctrl+Tab "
-                    "to move to the next window. The Player is a real window: it "
-                    "stands in the Window menu, in the taskbar and in the Ctrl+Tab "
-                    "rotation, so you can keep it beside whatever you are doing."
+                    "Press Escape to close it, or leave it open and press "
+                    "Ctrl+Tab to move to the next window. The Player is a real "
+                    "window. You will find it on the Window menu, on the taskbar "
+                    "and in the Ctrl+Tab order, so you can keep it handy beside "
+                    "whatever else you are doing."
                 ),
                 keys=("Escape", "Ctrl+Tab"),
-                hear="The name of the window you are back in, or of the window you moved to.",
+                hear="The name of the window you are back in, or the one you moved to.",
             ),
             Step(
                 title="Find the status bar, which Tab never reaches",
                 body=(
-                    "Press F6 in the main window. Focus lands in the status strip "
-                    "along the bottom: Play, Mute, Volume, Record, the sleep timer "
-                    "and the time, as buttons you arrow across with Left and "
-                    "Right. Tab deliberately never detours through it, so F6 is "
-                    "the door -- and a second F6 or Escape is the way back."
+                    "Go back to the main window and press F6. You land in the "
+                    "status bar along the bottom: Play, Mute, Volume, Record, the "
+                    "sleep timer and the time. Move across them with Left and "
+                    "Right Arrow. Tab never goes there, so F6 is the way in, and "
+                    "F6 again or Escape is the way back."
                 ),
                 keys=("F6", "Left arrow", "Right arrow"),
-                hear="The cell you land on, then each cell as you arrow across.",
+                hear="The item you land on, then each item as you arrow across.",
                 note=(
-                    "Each cell has its own Applications-key menu, and that is "
-                    "where the depth is: the Play cell offers your favorites and "
-                    "recent stations, Record offers scheduling and the Recordings "
-                    "window, Volume offers boost, the output device and Sound "
-                    "Enhancements."
+                    "Each item has its own menu on the Applications key, and "
+                    "there is a lot in there. The Play item offers your favorites "
+                    "and recent stations. Record offers scheduling and the "
+                    "Recordings window. Volume offers boost, the output device "
+                    "and Sound Enhancements."
                 ),
             ),
         ),
         closing=(
-            "The transport keys are the same in Browse Stations, Find Stations, "
-            "Manage Favorites, the Recordings list, Song History, the chapter "
-            "list, Now Playing and the download queue. Learn them once."
+            "Nicely done. The player keys work the same in Browse Stations, Find "
+            "Stations, Manage Favorites, the Recordings list, Song History, the "
+            "chapter list, Now Playing and the download queue. Learn them once "
+            "and they are yours everywhere."
         ),
         then=("do-it-by-name",),
     ),
@@ -402,42 +400,44 @@ TUTORIALS: tuple[Tutorial, ...] = (
         minutes=4,
         surfaces=("Quill Radio", "Browse Stations", "Player"),
         summary=(
-            "Three ways to reach anything without remembering a key: the command "
-            "palette, the numbered list of places, and the sheet that lists every "
-            "key you actually have."
+            "Forgot a key? No problem. You will learn three ways to reach "
+            "anything without remembering a key: the command palette, the "
+            "numbered list of places, and a sheet that lists every key you have."
         ),
         steps=(
             Step(
                 title="Open the command palette",
                 body=(
-                    "The palette opens from every window and lists every command "
-                    "in the app, including the whole player -- so it can pause "
-                    "what is playing, not just change a setting."
+                    "The command palette opens from any window and lists every "
+                    "command in Quill Radio, including all the player controls. "
+                    "So you can pause what is playing from here, as well as "
+                    "change a setting."
                 ),
                 command="app.command_palette",
-                hear="A search box, with the number of commands available.",
+                hear="A search box, and how many commands are available.",
             ),
             Step(
                 title="Type what you want, not what it is called",
                 body=(
-                    "Type a few letters -- vol, or record, or chapter -- and the "
-                    "list narrows as you type. Arrow to the one you want and press "
-                    "Enter; it runs exactly as its key or its menu item would."
+                    "Type a few letters, such as vol, or record, or chapter. The "
+                    "list gets shorter as you type. Arrow to the one you want and "
+                    "press Enter. It does exactly what its key or menu item "
+                    "would do."
                 ),
                 keys=("Down arrow", "Enter"),
-                hear="The matching commands, each read with its own keystroke.",
+                hear="The matching commands, each read with its own key.",
                 note=(
-                    "Each entry shows its key, so the palette teaches you the "
-                    "shortcut while you use it. That is deliberate: the palette is "
-                    "meant to make itself less necessary."
+                    "Each command in the list says its key, so you pick up the "
+                    "shortcuts just by using the palette. Before long you may "
+                    "find you hardly need it."
                 ),
             ),
             Step(
                 title="Open the list of places",
                 body=(
-                    "Go To is a short numbered list of the ten places in the app. "
-                    "Press the number and you are there; Escape puts you back "
-                    "exactly where you were, on the same control."
+                    "Go To is a short numbered list of the ten main places in "
+                    "Quill Radio. Press a number and you are there. Press Escape "
+                    "and you are back exactly where you were."
                 ),
                 command="radio.go_to",
                 keys=("Ctrl+G",),
@@ -446,48 +446,47 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Understand why the numbers are worth learning",
                 body=(
-                    "A place's number never changes on its own. Recordings is 4 "
-                    "today and 4 next year, whether or not it is open. That is "
-                    "what Ctrl+1 to Ctrl+9 cannot promise -- those reach the "
-                    "windows you have open, in the order you opened them, so the "
-                    "numbering shifts under you all day."
+                    "Each place keeps its number. Recordings is 4 today and it "
+                    "will still be 4 next year, whether or not it is open. That "
+                    "is different from Ctrl+1 to Ctrl+9, which go to the windows "
+                    "you have open in the order you opened them, so those "
+                    "numbers change as you work."
                 ),
                 keys=("Escape",),
-                hear="Nothing new: this step is a fact, not an action.",
+                hear="Nothing new. This step is just good to know.",
             ),
             Step(
                 title="Open the sheet of every key",
                 body=(
-                    "The Keyboard Shortcuts Sheet lists every key the app answers "
-                    "to, filterable. Type what you want to do -- record -- or a "
-                    "key you found and cannot place -- Ctrl+B -- and the list "
-                    "narrows to it."
+                    "The Keyboard Shortcuts Sheet lists every key Quill Radio "
+                    "answers to. Type what you want to do, such as record, or a "
+                    "key you found and cannot place, such as Ctrl+B, and the list "
+                    "shrinks to just that."
                 ),
                 keys=("Ctrl+Alt+Shift+K",),
-                hear="A filter box, then the number of shortcuts listed.",
+                hear="A filter box, then how many shortcuts are listed.",
                 note=(
-                    "The sheet is built by reading the menu bar in front of you, "
-                    "so it shows the keys you actually have. Rebind something and "
-                    "the sheet says your key, not the default."
+                    "The sheet always shows the keys you really have. If you "
+                    "change a key, the sheet shows your key, not the original one."
                 ),
             ),
             Step(
                 title="Ask what the thing under your fingers is",
                 body=(
-                    "Press F1 anywhere. A window opens with two parts read as one "
-                    "pass: what the window you are in is for, then what the "
-                    "control under focus does and how to drive it. The text sits "
-                    "in a field you can arrow through and copy, and Escape returns "
-                    "you exactly where you were."
+                    "Press F1 anywhere. A window opens that tells you what the "
+                    "window you are in is for, and then what the control you are "
+                    "on does and how to use it. You can arrow through the text "
+                    "and copy it. Press Escape and you are right back where you "
+                    "were."
                 ),
                 keys=("F1",),
-                hear="The window's purpose, then the control's own help.",
+                hear="What the window is for, then help for the control you are on.",
             ),
         ),
         closing=(
-            "Between the palette, Go To, the sheet and F1, there is no state of "
-            "this app you can be in and not have a way out of. That is the point "
-            "of all four."
+            "With the palette, Go To, the sheet and F1, you always have a way to "
+            "find what you need, wherever you are in Quill Radio. You never have "
+            "to feel stuck."
         ),
         then=("getting-unstuck",),
     ),

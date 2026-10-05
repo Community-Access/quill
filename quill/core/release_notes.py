@@ -32,6 +32,9 @@ def _canon(value: str) -> str:
     to ``0.8.0 beta 1``.
     """
     text = value.split("(", 1)[0].strip().lower()
+    # A build number names one build of a release, not a release: v1.0.0-build.2
+    # and 1.0.0+2 read the 1.0.0 section (docs/release/RELEASE.md, "Build numbers").
+    text = re.sub(r"(?:\+.*|[.\-_\s]build[.\-_\s]*\d+)$", "", text)
     if text.startswith("v"):
         text = text[1:]
     text = re.sub(r"[-_]", " ", text)

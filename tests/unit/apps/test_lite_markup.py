@@ -330,15 +330,19 @@ def test_the_markdown_picker_refuses_in_an_html_document() -> None:
     win = _Window("", name="page.html")
     win.cmd_insert_markdown_tag()
     assert win.text == ""
-    assert "Markdown document" in win.said[0]
+    assert win.said == ["Markdown tags are for Markdown documents."]
 
 
-def test_both_pickers_refuse_in_rich_text_and_say_how_to_leave_it() -> None:
+def test_both_pickers_refuse_in_rich_text() -> None:
+    # The HTML picker still says how to leave rich text; the Markdown picker
+    # says the one sentence both editors share, because its row is not even on
+    # the menu outside a Markdown document (quill/ui/markdown_tag_row.py).
     for name in ("notes.md", "page.html"):
         win = _Window("", name=name, mode=RICH)
         win.cmd_insert_html_tag()
         win.cmd_insert_markdown_tag()
-        assert all("Alt Shift F" in message for message in win.said)
+        assert "Alt Shift F" in win.said[0]
+        assert win.said[1] == "Markdown tags are for Markdown documents."
 
 
 def test_the_menu_map_pairs_each_picker_with_exactly_one_language() -> None:

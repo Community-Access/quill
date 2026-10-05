@@ -137,6 +137,11 @@ GATES: tuple[Gate, ...] = (
         (sys.executable, "-m", "quill.tools.cast_words_audit"),
     ),
     Gate(
+        "cast-silent",
+        "GATE-CAST-SILENT: every QUILL Cast status line and failure is said",
+        (sys.executable, "-m", "quill.tools.check_cast_silence"),
+    ),
+    Gate(
         "player-help",
         "GATE-PLAYER-HELP: every Media Player surface and control answers F1",
         (sys.executable, "-m", "quill.tools.player_help_audit"),
@@ -281,6 +286,16 @@ GATES: tuple[Gate, ...] = (
         "the two editors do not name one idea two things",
         (sys.executable, "-m", "quill.tools.settings_vocabulary_audit"),
     ),
+    Gate(
+        "release-feeds",
+        "GATE-FEED: signed v2 update feeds; warns 14 days before one expires",
+        (sys.executable, "-m", "quill.tools.release_feed_audit"),
+    ),
+    Gate(
+        "data-formats",
+        "GATE-DATAFMT: a saved shape changes only with a bumped version or a review",
+        (sys.executable, "-m", "quill.tools.data_format_audit"),
+    ),
 )
 
 
@@ -291,6 +306,8 @@ class GateResult:
     seconds: float
     detail: str  # last output line on failure, "" on success
     skipped: bool = False
+    #: Passed, but printed "Warning:" lines worth reading (a feed near expiry).
+    warning: bool = False
 
 
 def run_gate(gate: Gate) -> GateResult:
@@ -313,6 +330,9 @@ def run_gate(gate: Gate) -> GateResult:
         return GateResult(gate, False, time.perf_counter() - started, str(exc))
     elapsed = time.perf_counter() - started
     if proc.returncode == 0:
+        warnings = [ln for ln in proc.stdout.splitlines() if ln.startswith("Warning:")]
+        if warnings:
+            return GateResult(gate, True, elapsed, " ".join(warnings), warning=True)
         return GateResult(gate, True, elapsed, "")
     tail = (proc.stdout.strip() or proc.stderr.strip()).splitlines()
     return GateResult(gate, False, elapsed, tail[-1] if tail else f"exit {proc.returncode}")
@@ -332,10 +352,16 @@ def render_markdown(results: list[GateResult]) -> str:
     ]
     for r in results:
         state = "skipped" if r.skipped else ("pass" if r.passed else "**FAIL**")
+        if r.passed and r.warning:
+            state = "pass, with a warning"
         lines.append(f"| {r.gate.name} | {r.gate.protects} | {state} | {r.seconds:.1f}s |")
     if failed:
         lines += ["", "## Failures", ""]
         lines += [f"- **{r.gate.name}**: {r.detail}" for r in failed]
+    warned = [r for r in results if r.passed and r.warning]
+    if warned:
+        lines += ["", "## Warnings", ""]
+        lines += [f"- **{r.gate.name}**: {r.detail}" for r in warned]
     lines.append("")
     return "\n".join(lines)
 

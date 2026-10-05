@@ -706,6 +706,22 @@ explanation. Convert from URL is unavailable in Safe Mode.
 - The tray icon's menu has Show and Exit.
 - **Exit** (File > Exit, Ctrl+Q) really exits. Alt+F4 closes the window.
 
+## Finding a setting or a command
+
+Quill Converter keeps its options in its menus, so there is no settings window to search.
+Instead, **Help > Find a Setting or Command** (**Ctrl+Alt+Shift+S**) searches
+every menu at once.
+
+1. Press **Ctrl+Alt+Shift+S**.
+2. Type part of what you are looking for, such as "tags". The list
+   below narrows as you type, and each row says which menu the command is in.
+   An option also says whether it is on or off.
+3. Press **Down** to move into the list, and **Enter** on the one you want.
+
+Enter does exactly what choosing that row from its menu would do. For an
+option, it switches it and tells you whether it is now on or off. Escape
+closes the window without doing anything.
+
 ## Keyboard reference
 
 The same list is in the app: Help > Keyboard Shortcuts... (Ctrl+Alt+K) shows
@@ -759,6 +775,7 @@ every key in a read-only window you can arrow through.
 | Command | Key |
 | --- | --- |
 | Help for This Window | F1 |
+| Find a Setting or Command... | Ctrl+Alt+Shift+S |
 | User Guide | Ctrl+F1 |
 | Release Notes | Shift+F1 |
 | Changelog | Ctrl+Shift+F1 |
@@ -768,6 +785,10 @@ every key in a read-only window you can arrow through.
 | Get FFmpeg... | Ctrl+Alt+F |
 | Check for Updates... | Ctrl+Alt+U |
 | About Quill Converter | Alt+F1 |
+
+Help > About shows your version with a build number, such as 3.2.0 (build 2). The
+build number tells you which build of a version you have: when a fix comes out
+without a new version number, it is a newer build, and Check for Updates offers it.
 
 ### Anywhere
 

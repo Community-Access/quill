@@ -322,6 +322,7 @@ class Settings:
     windows_dictation_microphone: str = ""
     windows_dictation_engine: str = "moonshine"
     windows_dictation_language: str = ""
+    windows_dictation_speech_language: str = "en"
     windows_dictation_dash: str = "em"
     windows_dictation_wake_enabled: bool = False
     windows_dictation_wake_phrase: str = "Quill dictate"

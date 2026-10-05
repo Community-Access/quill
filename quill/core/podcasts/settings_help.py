@@ -31,14 +31,14 @@ from __future__ import annotations
 #: Shared defaults, on the Podcast Settings dialog.
 HELP: dict[str, str] = {
     "playback_default": (
-        "Whether a newly subscribed podcast downloads its episodes or streams "
-        "them. It changes new subscriptions only -- podcasts you already follow "
-        "keep whatever they are set to, and you can still download or stream "
-        "any single episode whatever this says."
+        "Whether a podcast you have just followed downloads its episodes or "
+        "streams them. It changes only podcasts you follow from now on -- ones "
+        "you already follow keep whatever they are set to, and you can still "
+        "download or stream any single episode whatever this says."
     ),
     "retention": (
         "What happens to downloaded *files* as they age. It never removes an "
-        "episode from a show's list, unsubscribes you, or forgets where you had "
+        "episode from a podcast's list, unfollows anything, or forgets where you had "
         "got to: a deleted file downloads again on request, in the same place "
         "in the same list."
     ),
@@ -48,14 +48,14 @@ HELP: dict[str, str] = {
         "stay playable -- what goes is the file, not the episode."
     ),
     "auto_download": (
-        "How many of a show's newest episodes to fetch without being asked, on "
-        "subscribe and on every refresh. Newest first, and never backwards: it "
-        "does not go and collect a show's back catalogue, which is what Always "
+        "How many of a podcast's newest episodes to fetch without being asked, when "
+        "you follow it and on every refresh. Newest first, and never backwards: it "
+        "does not go and collect a podcast's back catalogue, which is what Always "
         "Sync is for."
     ),
     "inbox_max": (
-        "At most this many episodes in the Inbox per show; 0 means no limit. "
-        "Trimming never deletes -- episodes stay unplayed in their show's own "
+        "At most this many episodes in the Inbox per podcast; 0 means no limit. "
+        "Trimming never deletes -- episodes stay unheard in their podcast's own "
         "list, and anything played, started or queued is never trimmed."
     ),
     "history_days": (
@@ -129,8 +129,8 @@ HELP: dict[str, str] = {
     ),
     "download_folder_button": "Choose a download location",
     "unsubscribe_files": (
-        "What to do with a show's downloaded episode files when you unsubscribe "
-        "from it. It is asked at the moment you unsubscribe either way; this "
+        "What to do with a podcast's downloaded episode files when you stop "
+        "following it. It is asked at the moment you unfollow either way; this "
         "only decides what the answer starts as."
     ),
     "download_queued": (
@@ -161,8 +161,8 @@ HELP: dict[str, str] = {
         "not a download and keeps nothing."
     ),
     "continue_group": (
-        "Carry on with the show's next unplayed episode once the queue runs "
-        "out. It never starts a show you were not already listening to, and "
+        "Carry on with the podcast's next unheard episode once the queue runs "
+        "out. It never starts a podcast you were not already listening to, and "
         "with this and auto-advance both off, playback stops at the end of the "
         "episode you started."
     ),
@@ -232,13 +232,13 @@ SHOW_HELP: dict[str, str] = {
     ),
     "inbox_max": (
         "At most this many of this show's episodes in the Inbox; 0 means no "
-        "limit. Trimming never deletes: episodes stay unplayed in the show's "
+        "limit. Trimming never deletes: episodes stay unheard in the podcast's "
         "own list."
     ),
     "inbox_age": (
         "Drop this show's episodes out of the Inbox once they are older than "
         "this. Out of the Inbox, not out of the library -- they stay in the "
-        "show's own list, unplayed."
+        "podcast's own list, unheard."
     ),
     "delete_after_days": (
         "Delete this show's downloaded files once they are this many days old; "

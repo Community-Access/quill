@@ -209,17 +209,16 @@
     <div class="wrap">
       <h1>Quillin Snippet Wizard</h1>
       <p class="lede">
-        Build a snippet-only (Layer 1) Quillin without writing a single line of
-        code. Fill in the form, then copy or download your
-        <code>manifest.json</code>.
+        Make your own snippet Quillin without writing any code. Fill in the form
+        below, then copy or download your <code>manifest.json</code> file.
       </p>
       <p>
-        A snippet Quillin adds menu items and keyboard shortcuts that insert
-        text - with optional placeholders like <code>${selection}</code>,
-        <code>${date}</code>, <code>${word_at_cursor}</code>, and
-        <code>${uuid}</code> - into your document. No Python required.
-        <a href="/docs/quillins.html">Follow the tutorial</a> to go
-        further with Python handlers.
+        A snippet Quillin adds menu items and keyboard shortcuts that type text
+        into your document for you. The text can include placeholders, such as
+        <code>${selection}</code> for the text you have selected or
+        <code>${date}</code> for today's date. When you want to do more, the
+        <a href="/docs/quillins.html">Quillin tutorial</a> shows you how to add
+        Python.
       </p>
 
       <form id="wizard" novalidate autocomplete="off">
@@ -319,9 +318,9 @@
         <section class="wiz-section" aria-labelledby="sec-commands">
           <h2 id="sec-commands">2. Commands and snippets</h2>
           <p style="margin:0 0 1rem;color:var(--muted);font-size:0.95rem;">
-            Each command adds one item to a menu. The snippet is the text
-            inserted when the command runs. Use the placeholder buttons to add
-            dynamic tokens.
+            Each command adds one item to a menu. The snippet is the text it
+            types when you choose that item. Use the placeholder buttons to add
+            things that change each time, like the date.
           </p>
 
           <div id="cmd-list" aria-live="polite" aria-label="Command list"></div>
@@ -336,13 +335,11 @@
         <section class="wiz-section" aria-labelledby="sec-caps">
           <h2 id="sec-caps">3. Capabilities (auto-derived)</h2>
           <p style="margin:0 0 0.75rem;color:var(--muted);font-size:0.95rem;">
-            Snippet-only Quillins need no capabilities unless they use
-            <code>${clipboard}</code>, which requires the
-            <code>clipboard.read</code> capability. All other placeholders
-            - including <code>${title}</code>,
-            <code>${line_number}</code>, <code>${word_at_cursor}</code>, and
-            <code>${uuid}</code> - need no capabilities. The wizard
-            derives the correct set automatically from your snippets.
+            Capabilities are the permissions a Quillin asks for. A snippet
+            Quillin needs none, unless it uses <code>${clipboard}</code>, which
+            needs permission to read the clipboard (<code>clipboard.read</code>).
+            You do not have to set this yourself; the wizard works it out from
+            your snippets.
           </p>
           <div class="cap-badges" id="cap-badges" aria-live="polite" aria-label="Required capabilities">
             <span class="cap-badge" id="cap-none" style="font-style:italic;">None required</span>
@@ -353,8 +350,8 @@
         <section class="wiz-section" aria-labelledby="sec-output">
           <h2 id="sec-output">4. Your manifest.json</h2>
           <p style="margin:0 0 0.75rem;color:var(--muted);font-size:0.95rem;">
-            The manifest updates as you type. Fix any errors above, then copy
-            or download.
+            This updates as you type. If anything needs fixing, it is listed
+            here first. When there is nothing to fix, copy it or download it.
           </p>
 
           <ul class="err-list" id="err-list" aria-live="polite" aria-label="Validation errors"></ul>
@@ -376,11 +373,11 @@
   <footer class="site">
     <div class="wrap">
       <p class="note">
-        <strong class="quill" style="color:var(--accent)">QUILL</strong> -
+        <strong class="quill" style="color:var(--accent)">QUILL</strong> stands for
         Quality, Usable, Inclusive, Lightweight, Literate.
       </p>
       <nav aria-label="Documentation">
-        <h4>Documentation</h4>
+        <h2>Documentation</h2>
         <ul>
           <li><a href="/docs/quillins.html">Quillin tutorial</a></li>
           <li><a href="/docs/quillins.html">Authoring reference</a></li>
@@ -388,7 +385,7 @@
         </ul>
       </nav>
       <nav aria-label="Project">
-        <h4>Project</h4>
+        <h2>Project</h2>
         <ul>
           <li><a href="https://hub.quillforall.org">Quillin Hub</a></li>
           <li><a href="/docs/quillins.html">Submit a Quillin</a></li>
@@ -500,7 +497,7 @@ function addCommandBlock() {
         <label for="cmd-id-${n}">
           Command ID <span class="required-mark" aria-label="required">*</span>
         </label>
-        <span class="hint">Must start with <code>ext.</code> — e.g. <code>ext.wraptools.fence</code></span>
+        <span class="hint">Must start with <code>ext.</code>, for example <code>ext.wraptools.fence</code></span>
         <input type="text" id="cmd-id-${n}" class="cmd-id-field"
                maxlength="128" placeholder="ext.yourext.commandname"
                data-cmd="${n}" autocomplete="off">

@@ -187,6 +187,9 @@ def refresh_feed(host: Any, show_id: str) -> None:
         # (effective_auto_download_count == -1), so the single
         # acquisition pass below covers both -- calling the old backfill
         # as well would queue the same items twice and say so twice.
+        from quill.ui.podcasts import check_run
+
+        check_run.step(host, str(show.id), new_episodes=new_count)
         host._podcast_apply_auto_download(show)
         # Aging the queue and trimming the Inbox belong right after new
         # episodes arrive: that is the moment the counts actually change.
@@ -196,6 +199,9 @@ def refresh_feed(host: Any, show_id: str) -> None:
 
     def _on_failure(_op: str, exc: BaseException) -> None:
         announce_if_feed_auth_failure(exc, show, announce=host._announce)
+        from quill.ui.podcasts import check_run
+
+        check_run.step(host, str(show.id), failed_title=str(show.title))
         # A run of failures earns one sentence, not one per check (7.19). Cast
         # keeps trying either way -- the notice says so, because "this feed has
         # failed" otherwise reads as "and I have given up".

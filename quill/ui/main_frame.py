@@ -8,17 +8,12 @@ import sys
 import threading
 import time
 import webbrowser
-from collections.abc import Callable, Mapping
+from collections.abc import Callable
 from dataclasses import asdict, dataclass, field, replace
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING
 from uuid import uuid4
-
-try:
-    import winsound as _winsound  # type: ignore[import]
-except ImportError:  # pragma: no cover - non-Windows fallback
-    _winsound = None  # type: ignore[assignment]
 
 if TYPE_CHECKING:  # imports kept out of cold-start path
     from quill.core.accessibility_agent import AgentRunResult
@@ -49,8 +44,6 @@ from quill.core.browser_preview import (
     guess_preview_kind,
     normalize_browser_choice,
     open_preview_url,
-    preview_anchor_for_text,
-    render_preview_body,
     render_preview_html,
 )
 from quill.core.code_folding import (
@@ -85,15 +78,12 @@ from quill.core.custom_profiles import (
 )
 from quill.core.deletion_ring import DeletionRing, removed_span
 from quill.core.diagnostics import (
-    build_diagnostics_review_text,
     record_diagnostic_event,
-    write_diagnostics_bundle,
 )
 from quill.core.dictation import (
     DictationController,
 )
 from quill.core.document import Document
-from quill.core.error_codes import user_facing_message
 from quill.core.external_change import (
     ExternalChangeWatcher,
     FileSnapshot,
@@ -123,7 +113,6 @@ from quill.core.format_ops import (
     toggle_block_comment,
     toggle_line_comment,
 )
-from quill.core.glow import build_audit_report, build_fix_report, fix_text
 from quill.core.guides import (
     build_keyboard_shortcut_html,
     build_welcome_guide,
@@ -191,8 +180,6 @@ from quill.core.notifications import add_notification, clear_notifications, load
 from quill.core.onboarding import (
     load_trust_consent_complete,
     load_trust_consent_status,
-    mark_trust_consent_complete,
-    trust_consent_change_log,
 )
 from quill.core.outline import OutlineEntry, extract_outline_entries
 from quill.core.paths import app_data_dir, ensure_app_directories
@@ -219,34 +206,25 @@ from quill.core.read_aloud import (
     discover_dectalk_executable,
     discover_espeak_executable,
     discover_piper_executable,
-    resolve_piper_model_path,
     synthesize_to_file_with_dectalk,
     synthesize_to_file_with_sapi5,
     synthesize_with_espeak,
     synthesize_with_kokoro,
-    synthesize_with_macos,
     synthesize_with_piper,
 )
 from quill.core.recent import (
-    add_recent_file,
-    clear_recent_files,
     load_recent_files,
     prune_missing_recent_files,
     save_recent_files,
 )
 from quill.core.recovery import (
     begin_session_for,
-    latest_crash_report,
     mark_clean_exit,
-    mark_recovery_offer_dismissed,
-    mark_recovery_offer_recovered,
-    read_recovery_snapshot,
 )
 from quill.core.search import SearchOptions
 from quill.core.search_history import load_search_history
 from quill.core.selection import (
     line_span,
-    paragraph_span,
 )
 from quill.core.sessions import (
     load_recent_sessions,
@@ -300,20 +278,6 @@ from quill.core.tagging import (
 from quill.core.token_nav import classify_token, next_token_position, prev_token_position
 from quill.core.transforms import to_lower, to_sentence_case, to_title, to_toggle_case, to_upper
 from quill.core.trust import is_trusted_location, load_trusted_locations, save_trusted_locations
-from quill.core.url_ops import format_content_length
-from quill.core.watch_actions import WatchActionOutcome
-from quill.core.watch_profiles import (
-    WatchProfile,
-    iter_matching_files,
-)
-from quill.core.watch_queue import (
-    STATE_DONE,
-    STATE_FAILED,
-    STATE_PROCESSING,
-    STATE_QUEUED,
-    STATE_SKIPPED,
-    QueueItem,
-)
 from quill.core.watch_service import WatchService
 from quill.core.yaml_structure import (
     YamlNode,
@@ -394,9 +358,12 @@ from quill.ui.main_frame_clip_library import ClipLibraryMixin
 from quill.ui.main_frame_close_others import CloseOthersMixin
 from quill.ui.main_frame_commands import CommandRegistryMixin
 from quill.ui.main_frame_compare import CompareMixin
+from quill.ui.main_frame_convert_file import ConvertFileMixin
 from quill.ui.main_frame_copy_tray import CopyTrayMixin
+from quill.ui.main_frame_crash_recovery import CrashRecoveryMixin
 from quill.ui.main_frame_cues import CueMixin
 from quill.ui.main_frame_devtools import DevToolsMixin
+from quill.ui.main_frame_diagnostics import DiagnosticsMixin
 from quill.ui.main_frame_dictation_hotkeys import DictationHotkeysMixin
 from quill.ui.main_frame_docconvert import DocConvertMixin
 from quill.ui.main_frame_editor_font import EditorFontMixin
@@ -410,7 +377,7 @@ from quill.ui.main_frame_github import GitHubRemoteMixin
 from quill.ui.main_frame_github_admin import GitHubAdminMixin
 from quill.ui.main_frame_github_extras import GitHubExtrasMixin
 from quill.ui.main_frame_github_items import GitHubItemsMixin
-from quill.ui.main_frame_glow import GlowFileMixin
+from quill.ui.main_frame_glow import GlowEditorMixin, GlowFileMixin
 from quill.ui.main_frame_go_to import GoToMixin
 from quill.ui.main_frame_headings import HeadingLevelsMixin
 from quill.ui.main_frame_hosted_ai import HostedAiCommandsMixin
@@ -424,6 +391,7 @@ from quill.ui.main_frame_keymap_io import KeymapIoMixin
 from quill.ui.main_frame_language_detect import LanguageDetectMixin
 from quill.ui.main_frame_library import LibraryMixin
 from quill.ui.main_frame_line_commands import LineCommandsMixin
+from quill.ui.main_frame_list_manager import ListManagerMixin
 from quill.ui.main_frame_list_studio import ListStudioMixin
 from quill.ui.main_frame_lite_bridge import LiteBridgeMixin
 from quill.ui.main_frame_local_git import LocalGitMixin
@@ -442,11 +410,13 @@ from quill.ui.main_frame_metadata_ai import MetadataAiMixin
 from quill.ui.main_frame_native_keys import NativeKeyGuardMixin
 from quill.ui.main_frame_notebook import NotebookUIMixin
 from quill.ui.main_frame_numbered_bookmarks import NumberedBookmarksMixin
+from quill.ui.main_frame_onboarding_flow import OnboardingFlowMixin
 from quill.ui.main_frame_palette_labels import PaletteToggleLabelsMixin
 from quill.ui.main_frame_podcasts import PodcastsMixin
 from quill.ui.main_frame_power_tools import PowerToolsActionsMixin
 from quill.ui.main_frame_power_tools_menu import PowerToolsMenuMixin
 from quill.ui.main_frame_preferences import PreferencesMixin
+from quill.ui.main_frame_preview import PreviewMixin, _BrowserPreviewSession
 from quill.ui.main_frame_print import PrintMixin
 from quill.ui.main_frame_profile_picker import ProfilePickerMixin
 from quill.ui.main_frame_publishing import PublishingCommandsMixin
@@ -454,6 +424,8 @@ from quill.ui.main_frame_quick_insert import QuickInsertMixin
 from quill.ui.main_frame_quill_key import QuillKeyMixin
 from quill.ui.main_frame_quillins import QuillinsMenuMixin
 from quill.ui.main_frame_radio import RadioMixin
+from quill.ui.main_frame_recent_documents import RecentDocumentsMixin
+from quill.ui.main_frame_remote_files import RemoteFilesMixin
 from quill.ui.main_frame_restore_points import RestorePointsMixin
 from quill.ui.main_frame_reveal_codes import RevealCodesMixin
 from quill.ui.main_frame_rich_mode import RichModeMixin
@@ -477,6 +449,7 @@ from quill.ui.main_frame_statusbar import StatusBarMixin, _StatusBarCell
 from quill.ui.main_frame_story_studio import StoryStudioMixin
 from quill.ui.main_frame_structure import StructureAnnounceMixin
 from quill.ui.main_frame_table_nav import TableNavMixin
+from quill.ui.main_frame_text_editor import TextEditorMixin
 from quill.ui.main_frame_tutorials import TutorialsMixin
 from quill.ui.main_frame_typing import TypingPathMixin
 from quill.ui.main_frame_typing_modes import TypingModesMixin
@@ -485,10 +458,15 @@ from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
 from quill.ui.main_frame_updates import UpdatesMixin
 from quill.ui.main_frame_vault import VaultMixin
 from quill.ui.main_frame_verbosity import VerbosityCommandsMixin
+from quill.ui.main_frame_voice_preview import (
+    VoicePreviewMixin,
+)
+from quill.ui.main_frame_watch_folder import WatchFolderRuntimeMixin
 from quill.ui.main_frame_watch_profile import WatchProfileDialogMixin
 from quill.ui.main_frame_work_persona import WorkPersonaMixin
 from quill.ui.main_frame_worktrees import WorktreesMixin
 from quill.ui.main_frame_write_safety import WriteSafetyMixin
+from quill.ui.markdown_tag_row import MARKDOWN_TAG_REFUSAL, sync_menu_row
 from quill.ui.notebook_panel import NotebookEntriesPanel
 from quill.ui.sound_manager import post_sound
 from quill.ui.status_bar_role import mark_as_status_bar
@@ -532,71 +510,6 @@ def _csv_feature_enabled() -> bool:
     Experimental and not ready for users: hard-disabled,
     so CSV files always open in the normal text editor and there is no env-var
     override. Developed on the feature/structured-surfaces branch."""
-    return False
-
-
-def _sapi5_voice_short_name(voice_id: str) -> str:
-    """Normalize a SAPI5 registry voice ID to a lowercase short name.
-
-    Windows SAPI 5 voices have IDs like:
-      'HKEY_LOCAL_MACHINE\\...\\TTS_MS_EN-US_DAVID_11.0'
-    This extracts 'david' so we can look up a bundled preview sample.
-    """
-    last = voice_id.replace("/", "\\").rsplit("\\", 1)[-1]
-    skip = {"TTS", "MS"}
-    for part in last.upper().split("_"):
-        if not part or part in skip:
-            continue
-        if "-" in part:  # language codes: EN-US, EN-GB
-            continue
-        try:
-            float(part)
-            continue  # version numbers: 11.0
-        except ValueError:
-            pass
-        if part.isalpha():
-            return part.lower()
-    return last.lower()
-
-
-def _wav_duration_seconds(path: Path, *, fallback: float = 12.0) -> float:
-    """Length of a PCM wav in seconds; a safe cap when it cannot be read so the
-    preview wait loop never blocks the worker indefinitely."""
-    try:
-        import wave
-
-        with wave.open(str(path), "rb") as handle:
-            frames = handle.getnframes()
-            rate = handle.getframerate()
-            if rate:
-                return frames / float(rate)
-    except Exception:  # noqa: BLE001 - an unreadable header degrades to the cap
-        pass
-    return fallback
-
-
-def _await_playback(
-    *,
-    duration: float,
-    still_current: Callable[[], bool],
-    purge: Callable[[], None],
-    sleep: Callable[[float], None],
-    now: Callable[[], float],
-    poll: float = 0.05,
-) -> bool:
-    """Wait out an asynchronously-playing preview clip, cutting it short the
-    moment it is superseded.
-
-    Returns True if playback was interrupted (Stop pressed / a newer preview
-    started): ``purge`` is called to cut the audio. Returns False when the clip
-    plays to its natural end. Pure (time and sleep are injected) so the
-    interruption logic is unit-tested without winsound or real threads."""
-    deadline = now() + duration
-    while now() < deadline:
-        if not still_current():
-            purge()
-            return True
-        sleep(poll)
     return False
 
 
@@ -669,32 +582,6 @@ class _NavigatorNode:
 class _EpubNavigatorTarget:
     chapter_index: int
     heading_index: int | None = None
-
-
-@dataclass(slots=True)
-class _BrowserPreviewSession:
-    tab_index: int
-    preview_path: Path
-    browser_choice: str
-    title: str
-
-
-@dataclass(slots=True)
-class _ListManagerItem:
-    kind: str
-    text: str
-    level: int
-    bullet: str = "-"
-    checked: bool = False
-
-
-@dataclass(slots=True)
-class _ListManagerState:
-    start: int
-    end: int
-    trailing_newline: bool
-    base_indent: str
-    items: list[_ListManagerItem]
 
 
 class _IntellisensePopup:
@@ -834,6 +721,7 @@ _DIGIT_KEY_CODES: dict[int, int] = {ord(str(digit)): digit for digit in range(10
 
 class MainFrame(
     CloseOthersMixin,
+    RecentDocumentsMixin,
     SessionRestoreMixin,
     MagicalTierMixin,
     LiteBridgeMixin,
@@ -913,6 +801,7 @@ class MainFrame(
     # frame and editor. Five commands, no implementation of its own.
     MainFrameActivityMixin,
     HostedAiCommandsMixin,
+    TextEditorMixin,
     SectionMoveMixin,
     CopyTrayMixin,
     ClipLibraryMixin,
@@ -949,6 +838,16 @@ class MainFrame(
     PreferencesMixin,
     ContextHelpMixin,
     WatchProfileDialogMixin,
+    WatchFolderRuntimeMixin,
+    OnboardingFlowMixin,
+    PreviewMixin,
+    VoicePreviewMixin,
+    ListManagerMixin,
+    RemoteFilesMixin,
+    CrashRecoveryMixin,
+    DiagnosticsMixin,
+    ConvertFileMixin,
+    GlowEditorMixin,
     KeymapEditorMixin,
     KeybindingParseMixin,
 ):
@@ -1137,6 +1036,9 @@ class MainFrame(
         self.features = FeatureManager.load(persistent=not safe_mode)
         self.macros = MacroManager.load(persistent=not safe_mode)
         self.settings = load_settings()
+        from quill.core.settings_recipes import undo_session_profiles  # qc.md X-03
+
+        undo_session_profiles(self.settings, app_data_dir())
         # Standalone dialogs announce Entered/Exited via dialog_contract directly,
         # bypassing the gated wrappers; register the live setting to cover them.
         from quill.ui.dialog_contract import set_transition_announcement_policy
@@ -1835,9 +1737,7 @@ class MainFrame(
 
         self.frame.SetAcceleratorTable(wx.AcceleratorTable(entries))
 
-    # Global hotkeys (registration/dispatch/dialogs) live in GlobalHotkeysMixin
-    # (main_frame_hotkeys.py): a user-configurable, allowlist-bounded table
-    # that generalized the original single sticky-note RegisterHotKey.
+    # Global hotkeys (registration, dispatch, dialogs) live in GlobalHotkeysMixin.
 
     def _on_command_run(self, command_id: str) -> None:
         if self._command_should_commit_extend_selection(command_id):
@@ -3719,424 +3619,6 @@ class MainFrame(
         enabled = bool(event.IsChecked())
         self.toggle_extend_selection_mode(enabled)
 
-    def _clear_recovery_logs(self, logs_path: Path) -> int:
-        """Delete log files in *logs_path*; return how many were removed.
-
-        A file held open by the active logger (typically the current
-        ``quill.log`` on Windows) cannot be unlinked, so it is truncated to zero
-        bytes instead and still counted as cleared. Best effort: anything that
-        can be neither removed nor truncated is skipped.
-        """
-        removed = 0
-        try:
-            entries = [entry for entry in logs_path.iterdir() if entry.is_file()]
-        except OSError:
-            return 0
-        for entry in entries:
-            try:
-                entry.unlink()
-                removed += 1
-            except OSError:
-                try:
-                    entry.write_bytes(b"")
-                    removed += 1
-                except OSError:
-                    continue
-        return removed
-
-    def _unclean_exit_context(self) -> str:
-        """The session facts an unclean-exit report has to carry (#1464/#1466/#1480).
-
-        Everything here is already gathered for a crash *with* a traceback --
-        version, portable flag, screen reader, the last commands. An unclean
-        exit has no traceback by definition, so this context is the only
-        evidence it can offer, and three reports arrived without any of it.
-        Built through the same builder the tracebacked path uses, so the two
-        kinds of report cannot describe one session two ways.
-
-        Every lookup is defensive: a report that raises while describing a
-        crash is a report nobody gets.
-        """
-        import platform as platform_module
-
-        from quill import __version__
-        from quill.stability.crash_submit import build_session_context
-
-        try:
-            from quill.core.diagnostics import load_diagnostic_events
-
-            recent = [event.name for event in load_diagnostic_events(limit=50)]
-        except Exception:  # noqa: BLE001 - a missing command log is not a reason to file nothing
-            recent = []
-        try:
-            from quill.core.storage_mode import portable_root_dir
-
-            portable = portable_root_dir() is not None
-        except Exception:  # noqa: BLE001 - see above
-            portable = False
-        reader = ""
-        if sys.platform == "win32":
-            try:
-                from quill.platform.windows.sr_detect import detect_screen_reader
-
-                detected = detect_screen_reader()
-                if detected is not None and getattr(detected, "detected", False):
-                    reader = str(getattr(detected, "name", "") or "")
-            except Exception:  # noqa: BLE001 - see above
-                reader = ""
-        return build_session_context(
-            app_version=__version__ or "",
-            portable=portable,
-            screen_reader_name=reader or None,
-            recent_commands=recent,
-            platform_name=platform_module.platform(),
-        )
-
-    def _send_crash_report(self, offer: object, logs_path: Path) -> bool:
-        """Email Support from the Crash Recovery dialog. Returns True to close it.
-
-        Opens the user's own mail program with a redacted report of the
-        unclean exit addressed to support@community-access.org -- the same
-        handoff as Help > Get Help from Support. Nothing is sent until the
-        user sends it there. Returns True when a mail program answered (the
-        dialog closes); False when none did, in which case the report is on
-        the clipboard and the dialog stays open. Until 2026-09-26 this filed
-        a public GitHub issue with a bundled token; neither exists now.
-        """
-        from quill.stability.crash_email import (
-            NEWLINE,
-            build_crash_support_message,
-            build_log_summary,
-            find_stall_evidence,
-        )
-        from quill.ui.support_dialog import send_by_mail
-
-        # #1013/#1045/#1046: quote the evidence begin_session() captured on
-        # the offer, not a fresh scan -- by now this session's own logging can
-        # have pushed the original evidence out of the scan window.
-        evidence = getattr(offer, "error_evidence", None)
-        evidence_section = (
-            f"Error evidence that triggered this offer:\n{evidence}\n\n" if evidence else ""
-        )
-        # Group D (#1079/#1085/#1095): stitch the real traceback from the last
-        # crash-*.txt, bounded near the crashed session's snapshot mtime so an
-        # ancient crash is never attached.
-        snapshot = getattr(offer, "snapshot", None)
-        try:
-            floor = snapshot.stat().st_mtime - 300 if snapshot is not None else None
-        except OSError:
-            floor = None
-        crash_report = latest_crash_report(app_data_dir() / "crash-reports", min_mtime=floor)
-        crash_section = (
-            f"Last local crash report (full traceback):\n{crash_report}\n\n" if crash_report else ""
-        )
-        # #1464/#1466/#1480: an unclean exit has no traceback, so the session
-        # context and any UI-stall lines are the evidence; stalls go first.
-        stall = find_stall_evidence(logs_path)
-        stall_section = (
-            "UI stalls recorded before the exit:" + NEWLINE + stall + NEWLINE * 2 if stall else ""
-        )
-        body = (
-            "QUILL offered crash recovery after an unclean exit. Written from "
-            "the Crash Recovery dialog.\n\n"
-            + self._unclean_exit_context()
-            + stall_section
-            + crash_section
-            + evidence_section
-            + build_log_summary(logs_path)
-        )
-        import platform as platform_module
-
-        facts_of = getattr(self, "ai_support_facts", None)
-        message = build_crash_support_message(
-            summary="QUILL detected an unclean exit",
-            body=body,
-            app_version=__version__ or "0.0.0",
-            platform_name=platform_module.platform(),
-            extra=facts_of() if callable(facts_of) else {},
-        )
-        if send_by_mail(self, message, title="Crash Recovery"):
-            self._record_notification("Crash report opened in your mail program", "support")
-            self._set_status("Crash report ready in your mail program")
-            return True
-        self._set_status("No mail program: crash report copied to the clipboard")
-        return False
-
-    def _prepare_crash_recovery_payload(
-        self,
-        offer: object,
-        cancellation_token: object = None,
-        operation_id: object = None,
-        progress_callback: object = None,
-    ) -> dict[str, object]:
-        """Read the recovery snapshot + ensure the logs dir exist on a worker.
-
-        This is the slow bit that used to block the UI thread for >30s on
-        machines with large autosave files (#179).  No ``wx`` calls happen
-        here, so the result is safe to deliver back through
-        :class:`TaskManager` for the UI thread to render.
-        """
-        from quill.core.recovery import read_recovery_snapshot
-
-        logs_path = app_data_dir() / "logs"
-        logs_path.mkdir(parents=True, exist_ok=True)
-
-        preview_text = ""
-        try:
-            full, _had_rep = read_recovery_snapshot(offer.snapshot)
-            lines = full.splitlines()
-            preview_text = "\n".join(lines[:30])
-            if len(lines) > 30:
-                preview_text += f"\n\n... ({len(lines) - 30} more lines)"
-        except OSError:
-            preview_text = "(Could not read snapshot preview)"
-
-        return {
-            "logs_path": logs_path,
-            "preview_text": preview_text,
-        }
-
-    def _offer_crash_recovery(self) -> None:
-        """Show the crash-recovery dialog after offloading snapshot I/O.
-
-        The pre-modal ``mkdir`` + ``read_recovery_snapshot`` work is submitted
-        to :class:`TaskManager` so the UI thread stays responsive while the
-        autosave file is being read (#179).  The actual ``wx.Dialog`` +
-        ``ShowModal`` calls still run inside this method (on the UI thread,
-        after the worker delivers its result), so the dialog-inventory
-        qualname ``MainFrame._offer_crash_recovery`` is preserved.
-        """
-        if not self._recovery_offers:
-            return
-        offer = self._recovery_offers[0]
-
-        # M-28 / §8.2: adaptive prompt text after repeated dismissals.
-        if offer.dismissal_count >= 3:
-            intro = (
-                "You have dismissed this recovery offer "
-                f"{offer.dismissal_count} time(s). "
-                "Press Restore to keep the recovered version, "
-                "or Skip to discard it and continue with a blank document. "
-                "Pressing Skip again will keep the in-memory version; "
-                "press Restore now to save your work."
-            )
-        else:
-            intro = (
-                "Quill detected an unclean exit. Restore the latest autosave snapshot, "
-                "open the logs folder, or save diagnostics before continuing."
-            )
-
-        # Hold a slot so the ``TaskManager`` callback can reach the offer and
-        # intro without re-reading instance state.  The callback runs on the
-        # UI thread (via ``call_ui_safely``), so it is safe to call back into
-        # ``self._show_crash_recovery_dialog`` from inside the modal loop.
-        ctx: dict[str, object] = {"offer": offer, "intro": intro}
-
-        def _on_prepared(_operation_id: str, prepared: object) -> None:
-            if not isinstance(prepared, dict):
-                return
-            self._show_crash_recovery_dialog(ctx, prepared)
-
-        def _on_failed(_operation_id: str, _exc: BaseException) -> None:
-            self._report_startup_task_failure("crash recovery")
-
-        self._task_manager.submit(
-            name="crash-recovery-prepare",
-            func=self._prepare_crash_recovery_payload,
-            on_success=_on_prepared,
-            on_failure=_on_failed,
-            offer=offer,
-        )
-
-    def _show_crash_recovery_dialog(
-        self, ctx: dict[str, object], prepared: dict[str, object]
-    ) -> None:
-        """Build the crash-recovery modal and run the click loop on the UI thread.
-
-        Kept in its own method so the dialog-inventory gate can attribute the
-        ``wx.Dialog`` + ``wx.MessageDialog`` constructions to a stable qualname
-        (``MainFrame._show_crash_recovery_dialog``).  Called by
-        :meth:`_offer_crash_recovery` once ``TaskManager`` reports the
-        snapshot read is done.
-        """
-        wx = self._wx
-        offer = ctx["offer"]
-        intro = ctx["intro"]
-        logs_path = prepared["logs_path"]
-        preview_text = prepared["preview_text"]
-
-        dialog = wx.Dialog(self.frame, title="Crash Recovery", size=(780, 520))
-        root = wx.BoxSizer(wx.VERTICAL)
-        root.Add(
-            wx.StaticText(dialog, label=intro),
-            0,
-            wx.ALL | wx.EXPAND,
-            8,
-        )
-
-        # §8.2: read-only snapshot preview so the user can decide before restoring.
-        root.Add(
-            wx.StaticText(dialog, label="Snapshot preview (first 30 lines):"),
-            0,
-            wx.LEFT | wx.RIGHT | wx.TOP,
-            8,
-        )
-        # TE_RICH2 is required for screen-reader accessibility on Windows. A plain
-        # ES_READONLY EDIT control (the default for TE_MULTILINE | TE_READONLY) does
-        # not expose its value through UIA or IA2 when read-only, so NVDA and JAWS
-        # announce the field but read no content. Switching to a RichEdit control via
-        # TE_RICH2 fixes this — the accessible value is correctly reported.
-        # SetName gives the control a programmatic accessible name; the preceding
-        # StaticText label is not automatically associated with the TextCtrl on Windows
-        # so without SetName screen readers announce "edit" with no context.
-        # If the snapshot file was empty (e.g. Quill crashed before writing any
-        # content), preview_text is "". An empty string is indistinguishable from a
-        # control that failed to populate, so we show a descriptive fallback instead.
-        preview_ctrl = wx.TextCtrl(
-            dialog,
-            style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP | wx.TE_RICH2,
-        )
-        preview_ctrl.SetName("Snapshot preview")
-        preview_ctrl.SetValue(preview_text if preview_text else "(snapshot is empty)")
-        root.Add(preview_ctrl, 1, wx.LEFT | wx.RIGHT | wx.BOTTOM | wx.EXPAND, 8)
-
-        root.Add(wx.StaticText(dialog, label="Logs folder"), 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
-        logs_field = wx.TextCtrl(dialog, style=wx.TE_READONLY)
-        set_accessible_name(logs_field, "Logs folder")
-        logs_field.SetValue(str(logs_path))
-        root.Add(logs_field, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM | wx.EXPAND, 8)
-
-        restore_button = wx.Button(dialog, id=wx.ID_YES, label="Restore Latest Snapshot")
-        open_logs_button = wx.Button(dialog, label="Open Logs Folder")
-        clear_logs_button = wx.Button(dialog, label="Clear Logs")
-        save_diagnostics_button = wx.Button(dialog, label="Save Diagnostics...")
-        # Email Support (2026-09-26): was "Send Bug Report", which filed a
-        # public GitHub issue. It now opens the mail program to support@.
-        send_report_button = wx.Button(dialog, label="Email Support")
-        skip_label = "Discard and Continue" if offer.dismissal_count >= 3 else "Skip Recovery"
-        skip_button = wx.Button(dialog, id=wx.ID_NO, label=skip_label)
-        buttons = wx.BoxSizer(wx.HORIZONTAL)
-        buttons.Add(restore_button, 0, wx.RIGHT, 6)
-        buttons.Add(open_logs_button, 0, wx.RIGHT, 6)
-        buttons.Add(clear_logs_button, 0, wx.RIGHT, 6)
-        buttons.Add(save_diagnostics_button, 0, wx.RIGHT, 6)
-        buttons.Add(send_report_button, 0, wx.RIGHT, 6)
-        buttons.AddStretchSpacer(1)
-        buttons.Add(skip_button, 0)
-        root.Add(buttons, 0, wx.ALL | wx.EXPAND, 8)
-        dialog.SetSizer(root)
-
-        restore_button.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_YES))
-        open_logs_button.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_APPLY))
-        clear_logs_button.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_CLEAR))
-        save_diagnostics_button.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_SAVE))
-        send_report_button.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_HELP))
-        skip_button.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_NO))
-        dialog.SetDefaultItem(restore_button)
-        apply_modal_ids(dialog, affirmative_id=wx.ID_YES, escape_id=wx.ID_NO)
-        restore_button.SetFocus()
-        dialog._quill_keep_initial_focus = True
-
-        try:
-            while True:
-                result = self._show_modal_dialog(
-                    dialog, "Crash Recovery", restore_editor_focus=False
-                )
-                if result == wx.ID_APPLY:
-                    self.open_logs_folder()
-                    continue
-                if result == wx.ID_CLEAR:
-                    removed = self._clear_recovery_logs(logs_path)
-                    if removed:
-                        message = (
-                            f"Removed {removed} log file{'s' if removed != 1 else ''} from:\n"
-                            f"{logs_path}"
-                        )
-                    else:
-                        message = f"There were no log files to remove in:\n{logs_path}"
-                    with wx.MessageDialog(
-                        self.frame, message, "Logs Cleared", wx.OK | wx.ICON_INFORMATION
-                    ) as confirm:
-                        self._show_modal_dialog(confirm, "Logs Cleared", restore_editor_focus=False)
-                    self._set_status(f"Cleared {removed} log file(s)")
-                    continue
-                if result == wx.ID_SAVE:
-                    self.save_diagnostics_bundle()
-                    continue
-                if result == wx.ID_HELP:
-                    if self._send_crash_report(offer, logs_path):
-                        mark_recovery_offer_dismissed(offer)
-                        return
-                    continue
-                if result != wx.ID_YES:
-                    mark_recovery_offer_dismissed(offer)
-                    record_diagnostic_event(
-                        "recovery",
-                        "offer-dismissed",
-                        detail=f"session={offer.session_id}; snapshot={offer.snapshot}",
-                    )
-                    self._set_status("Skipped crash recovery")
-                    self._record_notification("Crash recovery offer dismissed", "recovery")
-                    return
-                try:
-                    recovered_text, had_replacements = read_recovery_snapshot(offer.snapshot)
-                except OSError as error:
-                    record_diagnostic_event(
-                        "recovery",
-                        "snapshot-read-failed",
-                        detail=(
-                            f"session={offer.session_id}; snapshot={offer.snapshot}; error={error}"
-                        ),
-                    )
-                    self._show_message_box(
-                        f"Could not restore snapshot: {error}",
-                        "Crash Recovery",
-                        wx.ICON_ERROR | wx.OK,
-                    )
-                    self._set_status("Crash recovery failed")
-                    return
-                self._create_document_tab(
-                    Document(text=recovered_text, path=None, modified=True),
-                    select=True,
-                )
-                # Rich-mode sessions also snapshot RTF bytes (.rtfsnap): the
-                # plain text alone would recover the words but lose the
-                # formatting. Best-effort restore through the surface's TOM.
-                self._maybe_restore_rich_snapshot(offer.snapshot)
-                # §8.2: warn when bytes were silently replaced during decode.
-                if had_replacements:
-                    self._record_notification(
-                        "This file had undecodable bytes; some characters may have been replaced "
-                        "(shown as •).",
-                        "recovery",
-                    )
-                mark_recovery_offer_recovered(offer)
-                record_diagnostic_event(
-                    "recovery",
-                    "snapshot-recovered",
-                    detail=f"session={offer.session_id}; snapshot={offer.snapshot}",
-                )
-                self._location_ring = LocationRing()
-                # §8.4: restore the cursor to where the user was working.
-                restore_pos = offer.cursor_position
-                if restore_pos > 0 and self.editor is not None:
-                    try:
-                        wx.CallAfter(self.editor.SetInsertionPoint, restore_pos)
-                        self._location_ring.record(restore_pos)
-                    except Exception:  # noqa: BLE001
-                        self._location_ring.record(0)
-                else:
-                    self._location_ring.record(0)
-                self._refresh_title()
-                status = "Recovered latest autosave snapshot"
-                if had_replacements:
-                    status += " (some bytes replaced — check notifications)"
-                self._set_status(status)
-                self._record_notification("Recovered autosave snapshot", "recovery")
-                return
-        finally:
-            dialog.Destroy()
-
     def _apply_theme(self, theme: str) -> None:
         wx = self._wx
         if theme == "dark":
@@ -4214,10 +3696,10 @@ class MainFrame(
             else:
                 grade = "below AA (insufficient)"
             msg = f"Contrast ratio: {ratio:.1f}:1, WCAG grade: {grade}"
-            if self.settings.announcement_startup_tips_enabled:
-                self._announce(msg)
-            else:
-                self._set_status(msg)
+            # Always spoken: you pressed the key to hear this. The startup-tips
+            # setting governs the automatic announcements, not a command.
+            self._set_status_quiet(msg)
+            self._announce(msg)
         except Exception:  # noqa: BLE001
             self._set_status("Could not calculate contrast ratio")
 
@@ -4776,37 +4258,6 @@ class MainFrame(
                 except Exception:
                     pass
 
-    def _refresh_recent_menu(self) -> None:
-        if not hasattr(self, "_recent_menu") or not hasattr(self, "_wx"):
-            return
-        if not self._menu_updates_allowed():
-            self._request_menu_refresh()
-            return
-        while self._recent_menu.GetMenuItemCount() > 0:
-            item = self._recent_menu.FindItemByPosition(0)
-            if item is None:
-                break
-            self._recent_menu.DestroyItem(item)
-        self._recent_menu_ids.clear()
-        if not self.recent_files:
-            item = self._recent_menu.Append(self._wx.ID_ANY, "(No recent files)")
-            item.Enable(False)
-            self._recent_menu.AppendSeparator()
-            self._recent_menu.Append(self._id_clear_recent, "C&lear Recent Files")
-            self._reapply_menu_routes()
-            return
-        for path in self.recent_files:
-            menu_id = self._wx.NewIdRef()
-            self._recent_menu.Append(menu_id, str(path))
-            self._recent_menu_ids[int(menu_id)] = path
-        self._recent_menu.AppendSeparator()
-        self._recent_menu.Append(self._id_clear_recent, "C&lear Recent Files")
-        # A rebuilt submenu has no routes: these rows are file paths, built here
-        # rather than in the menu-bar build, so they never met the pass. Without
-        # this they are the only rows in QUILL with no keyboard route at all --
-        # which is exactly the silent gap the gate is meant to catch.
-        self._reapply_menu_routes()
-
     def _reapply_menu_routes(self) -> None:
         """Re-run the Alt-path pass over the current menu bar.
 
@@ -4825,17 +4276,6 @@ class MainFrame(
             # A frame mid-teardown, or a test double with no menu bar. A missing
             # route is a smaller failure than a menu refresh that raises.
             pass
-
-    def _on_open_recent(self, event: object) -> None:
-        menu_id = event.GetId()
-        path = self._recent_menu_ids.get(menu_id)
-        if menu_id == int(self._id_clear_recent):
-            self.clear_recent_files()
-            return
-        if path is None:
-            event.Skip()
-            return
-        self.open_file(path)
 
     def _refresh_title(self) -> None:
         self._refresh_title_bar()
@@ -5010,6 +4450,10 @@ class MainFrame(
         # that quietly became half-Markdown is not something you can see you
         # did. Set Document Language turns the rows back on in one keystroke.
         markdown_ready = context == "markdown"
+        # Insert Markdown Tag is not dimmed but absent outside Markdown, in both
+        # editors (quill/ui/markdown_tag_row.py); its key still says why.
+        shown = self._markdown_tags_apply()
+        sync_menu_row(self, "_markdown_tag_row", menu_bar, self._id_insert_markdown_tag, shown)
         active_surface = self._active_markup_surface()
         structured_markup_ready = active_surface in {"markdown", "html"}
         markdown_ids = tuple(
@@ -6282,12 +5726,6 @@ class MainFrame(
         else:
             self.notebook.SetSelection(index)
         self._activate_tab(index)
-
-    def _active_tab(self) -> _DocumentTab:
-        index = self._current_tab_index()
-        if index < 0:
-            index = self._active_tab_index
-        return self._document_tabs[index]
 
     @property
     def _current_tab(self) -> _DocumentTab | None:
@@ -7898,12 +7336,6 @@ class MainFrame(
                 return None
             return ("keep", "illuminate", "plain")[dialog.GetSelection()]
 
-    def clear_recent_files(self) -> None:
-        clear_recent_files()
-        self.recent_files = []
-        self._refresh_recent_menu()
-        self._set_status("Cleared recent files")
-
     def open_url(self) -> None:
         wx = self._wx
         from quill.io.http_transport import download_url
@@ -7998,283 +7430,6 @@ class MainFrame(
             return
 
         self._install_remote_document((loaded, epub_book), suffix, download)
-
-    def _install_remote_document(
-        self,
-        result: object,
-        suffix: str,
-        download: object,
-    ) -> None:
-        """Open a downloaded URL document and tag the tab as a remote view."""
-
-        assert isinstance(result, tuple)
-        loaded, epub_book = result
-        self._epub_book = epub_book if suffix == ".epub" else None
-        self._create_document_tab(loaded, select=True)
-        # Tag the tab as remote-sourced; saves go to "Save Copy to Local File..."
-        # rather than the original URL.
-        try:
-            current_tab = self._document_tabs[-1]
-            current_tab.source_label = f"from {getattr(download, 'final_url', '')}"
-            current_tab.read_only_remote = True
-        except (IndexError, AttributeError):
-            pass
-        self._location_ring = LocationRing()
-        self._location_ring.record(0)
-        self._refresh_title()
-        size_text = format_content_length(getattr(download, "size", 0))
-        self._set_status(
-            f"Opened {getattr(download, 'filename', 'remote document')} "
-            f"({size_text}) from {getattr(download, 'final_url', '')}"
-        )
-        # #187: the "Open from URL" dialog's own close-out queues a CallAfter
-        # that restores focus to the *previous* tab's editor (captured before
-        # this new tab existed). Queue a second, correctly-bound CallAfter so
-        # it runs after that stale one and wins, landing focus on the new
-        # editor -- otherwise it never receives its first SetFocus and its
-        # content stays visually blank until the user manually tabs into it.
-        call_after = getattr(self._wx, "CallAfter", None)
-        if callable(call_after) and hasattr(self, "editor"):
-            call_after(self.editor.SetFocus)
-
-    # --- Remote Sites (issues #154, #155, #156, #157) -----------------------
-
-    def open_from_remote(self) -> None:
-        from quill.ui.remote_sites_dialog import DialogMode, RemoteSitesDialog
-
-        with RemoteSitesDialog(
-            self.frame, mode=DialogMode.OPEN, title="Open from Remote"
-        ) as dialog:
-            if self._show_modal_dialog(dialog, "Open from Remote") != self._wx.ID_OK:
-                self._set_status("Open from Remote cancelled")
-                return
-            result = dialog.result
-        if result is None:
-            return
-        self._download_remote_into_new_tab(result.site, result.path)
-
-    def save_to_remote(self) -> None:
-        from quill.ui.remote_sites_dialog import DialogMode, RemoteSitesDialog
-
-        if self._active_tab().read_only_remote:
-            # The active tab was opened from a URL; nothing to write back.
-            self._show_message_box(
-                "This document was opened from a URL and cannot be saved back to it. "
-                "Use Save Copy to Remote... to write a local copy to a remote site.",
-                "Save to Remote",
-                self._wx.ICON_INFORMATION | self._wx.OK,
-            )
-            return
-        with RemoteSitesDialog(self.frame, mode=DialogMode.SAVE, title="Save to Remote") as dialog:
-            if self._show_modal_dialog(dialog, "Save to Remote") != self._wx.ID_OK:
-                self._set_status("Save to Remote cancelled")
-                return
-            result = dialog.result
-        if result is None:
-            return
-        self._upload_active_document(result.site, result.path)
-
-    def save_copy_to_remote(self) -> None:
-        from quill.ui.remote_sites_dialog import DialogMode, RemoteSitesDialog
-
-        with RemoteSitesDialog(
-            self.frame, mode=DialogMode.SAVE, title="Save Copy to Remote"
-        ) as dialog:
-            if self._show_modal_dialog(dialog, "Save Copy to Remote") != self._wx.ID_OK:
-                self._set_status("Save Copy to Remote cancelled")
-                return
-            result = dialog.result
-        if result is None:
-            return
-        self._upload_active_document(result.site, result.path)
-
-    def save_copy_remote(self) -> None:
-        """Local-folder analogue of Save Copy to Remote; used by remote tabs."""
-
-        self.save_copy_to_remote()
-
-    def manage_remote_sites(self) -> None:
-        from quill.ui.remote_sites_dialog import DialogMode, RemoteSitesDialog
-
-        with RemoteSitesDialog(
-            self.frame,
-            mode=DialogMode.OPEN,
-            title="Manage Remote Sites",
-        ) as dialog:
-            self._show_modal_dialog(dialog, "Manage Remote Sites")
-
-    def _download_remote_into_new_tab(self, site, remote_path: str) -> None:
-        from pathlib import Path
-
-        from quill.io.open_read import read_open_document
-
-        self._set_status(f"Downloading {remote_path} from {site.name}...")
-        local_path = self._alloc_remote_temp_path(remote_path)
-        try:
-            self._run_remote_download(site, remote_path, local_path)
-        except Exception as exc:  # noqa: BLE001 - transport errors are surfaced
-            self._show_message_box(
-                f"Could not download from {site.name}: {user_facing_message(exc)}",
-                "Open from Remote",
-                self._wx.ICON_ERROR | self._wx.OK,
-            )
-            return
-        suffix = Path(remote_path).suffix.lower() or Path(local_path).suffix.lower()
-        self._create_document_tab(
-            Document(text="", path=Path(local_path), modified=False), select=True
-        )
-        existing_index = len(self._document_tabs) - 1
-        from quill.io.open_read import OFFICE_STREAM_SUFFIXES
-
-        if suffix in OFFICE_STREAM_SUFFIXES:
-            docx_engine = self._docx_read_engine()
-            self._run_background_task(
-                f"Opening {Path(remote_path).name}",
-                lambda _p: read_open_document(Path(local_path), suffix, docx_engine=docx_engine),
-                lambda result: self._finish_remote_download(
-                    result, suffix, site, remote_path, existing_index
-                ),
-            )
-            return
-        result = read_open_document(Path(local_path), suffix)
-        self._finish_remote_download(result, suffix, site, remote_path, existing_index)
-
-    def _finish_remote_download(
-        self,
-        result: object,
-        suffix: str,
-        site,
-        remote_path: str,
-        existing_index: int,
-    ) -> None:
-        assert isinstance(result, tuple)
-        loaded, epub_book = result
-        if 0 <= existing_index < len(self._document_tabs):
-            tab = self._document_tabs[existing_index]
-            tab.document = loaded
-            tab.editor.ChangeValue(loaded.text)
-            tab.source_label = f"from {site.name}:{remote_path}"
-            tab.read_only_remote = False
-        self._epub_book = epub_book if suffix == ".epub" else None
-        self._select_tab(existing_index)
-        self._refresh_title()
-        self._set_status(f"Downloaded {remote_path} from {site.name}")
-        # #187: the "Open from Remote" dialog's own close-out queues a
-        # CallAfter that restores focus to the *previous* tab's editor
-        # (captured before this new tab existed). Queue a second,
-        # correctly-bound CallAfter so it runs after that stale one and
-        # wins, landing focus on the new editor -- otherwise it never
-        # receives its first SetFocus and its content stays visually blank
-        # until the user manually tabs into it.
-        call_after = getattr(self._wx, "CallAfter", None)
-        if callable(call_after) and hasattr(self, "editor"):
-            call_after(self.editor.SetFocus)
-
-    def _upload_active_document(self, site, remote_path: str) -> None:
-        from pathlib import Path
-
-        from quill.core.remote_sites import load_password
-
-        local_path = self._alloc_remote_temp_path(remote_path)
-        # Atomic, and in the document's own encoding and line endings (bad.md
-        # F4). This was the one writer left that opened the target and wrote
-        # straight into it as UTF-8 with Python's newline translation on, so a
-        # file edited over SFTP came back re-encoded and re-lined -- and an
-        # interrupted write left a truncated temp file to upload.
-        from quill.core.storage import write_text_atomic
-        from quill.io.text import _normalize_line_endings
-
-        text = _normalize_line_endings(
-            self.editor.GetValue(), str(getattr(self.document, "line_ending", "") or "\r\n")
-        )
-        encoding = str(getattr(self.document, "encoding", "") or "utf-8")
-        try:
-            text.encode(encoding)
-        except (UnicodeEncodeError, LookupError):
-            encoding = "utf-8"
-        write_text_atomic(Path(local_path), text, encoding=encoding, newline="")
-        password = load_password(site.id)
-        try:
-            self._run_remote_upload(site, local_path, remote_path, password)
-        except Exception as exc:  # noqa: BLE001
-            self._show_message_box(
-                f"Could not save to {site.name}: {user_facing_message(exc)}",
-                "Save to Remote",
-                self._wx.ICON_ERROR | self._wx.OK,
-            )
-            return
-        self._set_status(f"Saved {remote_path} to {site.name}")
-
-    def _alloc_remote_temp_path(self, remote_path: str) -> str:
-        import os
-        import tempfile
-
-        base = os.path.basename(remote_path.rstrip("/")) or "remote"
-        suffix = os.path.splitext(base)[1]
-        fd, path = tempfile.mkstemp(prefix="quill-remote-", suffix=suffix)
-        os.close(fd)
-        return path
-
-    def _run_remote_download(self, site, remote_path: str, local_path: str) -> None:
-        """Synchronous download on the calling thread.
-
-        The dialog UI is modal and short-lived; threading is intentionally
-        minimal. The transport still raises :class:`RemoteTransportError` on
-        failure so the caller can present a single error message.
-        """
-
-        from quill.core.remote_sites import load_password
-        from quill.io.ftp_transport import FtpTransport
-        from quill.io.remote_transport import RemoteTransport
-        from quill.io.s3_transport import S3Transport
-        from quill.io.sftp_transport import SftpTransport
-        from quill.io.webdav_transport import WebDavTransport
-
-        password = load_password(site.id)
-        protocol = site.protocol
-        transport: RemoteTransport
-        if protocol == "ftp":
-            transport = FtpTransport(site, password=password)
-        elif protocol == "sftp":
-            transport = SftpTransport(site, password=password)
-        elif protocol == "webdav":
-            transport = WebDavTransport(site, password=password)
-        elif protocol == "s3":
-            transport = S3Transport(site, password=password)
-        else:
-            raise RuntimeError(f"Unsupported protocol: {protocol}")
-        try:
-            transport.download(remote_path, local_path)
-        finally:
-            transport.close()
-
-    def _run_remote_upload(self, site, local_path: str, remote_path: str, password: str) -> None:
-        from quill.io.ftp_transport import FtpTransport
-        from quill.io.remote_transport import RemoteTransport
-        from quill.io.s3_transport import S3Transport
-        from quill.io.sftp_transport import SftpTransport
-        from quill.io.webdav_transport import WebDavTransport
-
-        protocol = site.protocol
-        transport: RemoteTransport
-        if protocol == "ftp":
-            transport = FtpTransport(site, password=password)
-        elif protocol == "sftp":
-            transport = SftpTransport(site, password=password)
-        elif protocol == "webdav":
-            transport = WebDavTransport(site, password=password)
-        elif protocol == "s3":
-            transport = S3Transport(site, password=password)
-        else:
-            raise RuntimeError(f"Unsupported protocol: {protocol}")
-        try:
-            transport.upload(local_path, remote_path)
-        finally:
-            transport.close()
-
-    def _record_recent(self, path: Path) -> None:
-        self.recent_files = add_recent_file(path, self.settings.recent_files_limit)
-        self._refresh_recent_menu()
 
     def _maybe_autosave(self) -> None:
         if self._autosave_interval.total_seconds() <= 0:
@@ -9098,454 +8253,12 @@ class MainFrame(
         apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_OK)
         self._show_modal_dialog(dialog, "External Tools and Format Support")
 
-    def _convert_file_default_output_dir(self) -> str:
-        """Best initial output folder for the Convert File dialog.
-
-        Priority: the folder remembered from the last conversion, then the
-        general file-dialog default directory.
-        """
-
-        remembered = getattr(self.settings, "convert_file_last_output_dir", "")
-        if remembered and Path(remembered).is_dir():
-            return remembered
-        return self._file_dialog_default_dir()
-
-    def _remember_convert_file_choices(self, output_dir: Path, output_token: str) -> None:
-        """Persist the Convert File output folder and format for next time."""
-
-        from quill.core.settings import save_settings
-
-        self.settings.convert_file_last_output_dir = str(output_dir)
-        self.settings.convert_file_last_format = output_token
-        save_settings(self.settings)
-
-    def _offer_pandoc_download(self, feature: str) -> bool:
-        """When a feature needs Pandoc and it isn't present, offer the on-demand
-        download (footprint unbundle). Returns True if the user started it.
-
-        On Windows QUILL fetches the official pinned build; elsewhere it points
-        the user at their package manager. Either way the conversion is retried
-        by the user once Pandoc is ready.
-        """
-        wx = self._wx
-        from quill.core.pandoc_install import pandoc_install_supported
-
-        if pandoc_install_supported():
-            result = self._show_message_box(
-                (
-                    f"{feature} needs Pandoc, which is downloaded on demand to keep "
-                    "QUILL's install small. Download the official Pandoc build now "
-                    "(about 45 MB)? It is verified and installed automatically."
-                ),
-                feature,
-                wx.ICON_INFORMATION | wx.YES_NO,
-            )
-            if result == wx.YES:
-                self.download_pandoc()
-                return True
-            # Declining must not look like the command silently did nothing
-            # (#798 review): leave a status explaining why it stopped.
-            self._set_status(f"{feature} needs Pandoc; nothing was done.")
-            return False
-        result = self._show_message_box(
-            (
-                f"{feature} needs Pandoc. Install it with your package manager "
-                "(for example: brew install pandoc), then try again. Copy the "
-                "install command now?"
-            ),
-            feature,
-            wx.ICON_INFORMATION | wx.YES_NO | wx.NO_DEFAULT,
-        )
-        if result == wx.YES and self._copy_to_clipboard(copyable_install_command("pandoc")):
-            self._set_status("Copied Pandoc install command")
-        else:
-            self._set_status(f"{feature} needs Pandoc; nothing was done.")
-        return False
-
-    #: Sources MarkItDown can read and the Markdown-ish outputs it can produce.
-    _MARKITDOWN_SOURCE_SUFFIXES = frozenset({".docx", ".pptx", ".xlsx", ".xls", ".pdf"})
-    _MARKITDOWN_OUTPUT_TOKENS = frozenset({"gfm", "commonmark", "markdown", "plain"})
-
-    @classmethod
-    def _markitdown_convert_applies(cls, request: object) -> bool:
-        """Whether the MarkItDown engine can honestly serve this conversion.
-
-        MarkItDown is a one-way reader: Office/PDF in, Markdown out. Anything
-        else must go to Pandoc, and the caller says so instead of silently
-        substituting an engine the user did not pick.
-        """
-        source = Path(getattr(request, "source_path", ""))
-        token = str(getattr(request, "output_token", ""))
-        return (
-            source.suffix.lower() in cls._MARKITDOWN_SOURCE_SUFFIXES
-            and token in cls._MARKITDOWN_OUTPUT_TOKENS
-        )
-
-    def convert_file(self) -> None:
-        """File > Convert File: convert any document to another format via Pandoc."""
-
-        wx = self._wx
-        status = get_external_tool_status("pandoc")
-        if not status.installed:
-            if self._offer_pandoc_download("Convert File"):
-                # Download runs in the background; the user re-runs Convert File
-                # once Pandoc is ready (the status announcement tells them so).
-                return
-            self._set_status("Convert File unavailable until Pandoc is installed")
-            return
-
-        from quill.core import convert_formats
-        from quill.ui.convert_file_dialog import ConvertFileDialog
-
-        dialog = ConvertFileDialog(
-            self.frame,
-            default_output_dir=self._convert_file_default_output_dir(),
-            default_format=getattr(self.settings, "convert_file_last_format", "gfm") or "gfm",
-            show_modal_fn=self._show_modal_dialog,
-        )
-        request = dialog.prompt()
-        if request is None:
-            self._set_status("Convert File cancelled")
-            return
-
-        target = request.output_path
-        if target.exists():
-            confirm = self._show_message_box(
-                f"{target.name} already exists in that folder. Replace it?",
-                "Convert File",
-                wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT,
-            )
-            if confirm != wx.YES:
-                self._set_status("Convert File cancelled (file already exists)")
-                return
-
-        # Braille sources take QUILL's own path: Pandoc has no braille reader,
-        # but the auto-detecting back-translation (braille_detect) does exactly
-        # this job -- detect the code, back-translate, write the chosen format.
-        if request.source_path.suffix.lower() in convert_formats.BRAILLE_INPUT_SUFFIXES:
-            self._convert_brf_file_request(request, target)
-            return
-
-        engine = getattr(request, "engine", "auto")
-        if engine == "markitdown" and not self._markitdown_convert_applies(request):
-            proceed = self._show_message_box(
-                "MarkItDown reads Word, PowerPoint, Excel, or PDF into Markdown "
-                "or plain text only. Convert with Pandoc instead?",
-                "Convert File",
-                wx.ICON_QUESTION | wx.YES_NO | wx.YES_DEFAULT,
-            )
-            if proceed != wx.YES:
-                self._set_status("Convert File cancelled")
-                return
-            engine = "pandoc"
-
-        if engine == "markitdown":
-            self._set_status(f"Converting {request.source_path.name} with MarkItDown...")
-            try:
-                from quill.io.markitdown_bridge import convert_with_markitdown
-
-                text = convert_with_markitdown(request.source_path)
-                with target.open("w", encoding="utf-8", newline="\n") as handle:
-                    handle.write(text)
-            except (ImportError, ValueError, RuntimeError, OSError) as error:
-                self._show_message_box(
-                    f"Conversion failed: {error}",
-                    "Convert File",
-                    wx.ICON_ERROR | wx.OK,
-                )
-                self._set_status("Conversion failed")
-                return
-        else:
-            from_format = convert_formats.reader_for_path(str(request.source_path))
-            self._set_status(
-                f"Converting {request.source_path.name} to "
-                f"{convert_formats.label_for(request.output_token)}..."
-            )
-            try:
-                convert_file_with_pandoc(
-                    request.source_path,
-                    target,
-                    from_format=from_format,
-                    to_format=request.output_token,
-                    tool_status=status,
-                    resolve_writer=False,
-                )
-            except (PandocUnavailableError, PandocConversionError, ValueError) as error:
-                self._show_message_box(
-                    f"Conversion failed: {error}",
-                    "Convert File",
-                    wx.ICON_ERROR | wx.OK,
-                )
-                self._set_status("Conversion failed")
-                return
-
-        self._remember_convert_file_choices(request.output_dir, request.output_token)
-        self._record_recent(target)
-        self._announce(f"Converted to {target.name}")
-
-        if request.action == "open":
-            self.open_file(path=target)
-            self._set_status(f"Converted and opened {target.name}")
-            return
-
-        # Convert File (save) action: offer to open the result when it is a
-        # text format QUILL can edit; binary outputs just land on disk.
-        if convert_formats.is_text_output(request.output_token):
-            if (
-                self._show_message_box(
-                    f"Conversion complete. Open {target.name} now?",
-                    "Convert File",
-                    wx.ICON_QUESTION | wx.YES_NO | wx.YES_DEFAULT,
-                )
-                == wx.YES
-            ):
-                self.open_file(path=target)
-        self._set_status(f"Converted to {target}")
-
-    # Backwards-compatible alias: the External Tools dialog re-opens the
-    # conversion UI after a successful Pandoc install.
-    def open_pandoc_wizard(self) -> None:
-        self.convert_file()
-
-    def save_diagnostics_bundle(self) -> None:
-        wx = self._wx
-        include_paths = self._review_diagnostics_export()
-        if include_paths is None:
-            self._set_status("Diagnostics export cancelled")
-            return
-        default_name = f"quill-diagnostics-{datetime.now(UTC).strftime('%Y%m%d-%H%M%S')}.zip"
-        with wx.FileDialog(
-            self.frame,
-            "Save diagnostics bundle",
-            wildcard="ZIP archives (*.zip)|*.zip|All files (*.*)|*.*",
-            defaultFile=default_name,
-            style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
-        ) as dialog:
-            if self._show_modal_dialog(dialog, "Save Diagnostics") != wx.ID_OK:
-                self._set_status("Diagnostics export cancelled")
-                return
-            target = Path(dialog.GetPath())
-
-        detection = detect_screen_reader()
-        bundle_path = write_diagnostics_bundle(
-            target,
-            settings=self.settings,
-            keymap=self.keymap,
-            notifications=self._notifications,
-            current_document=self.document,
-            include_file_paths=include_paths,
-            extra_environment={
-                "screen_reader": detection.name,
-                "wx_version": self._wx.version(),
-                **self._announcement_engine.diagnostics_environment(),
-                "bw_rollout": self._bw_diagnostics_snapshot(),
-            },
-        )
-        self._record_notification(f"Saved diagnostics to {bundle_path.name}", "diagnostics")
-        self._set_status(f"Saved diagnostics bundle to {bundle_path.name}")
-
-    def report_bug(self) -> None:
-        """Help > Get Help from Support... -- QUILL's door to a human.
-
-        The name is the old one because the command id, the palette entry and
-        the feature map all carry it; what it does is the family flow in
-        :mod:`quill.ui.support_dialog`, which reaches a person who can answer
-        instead of filing the reporter's own words into a public repository.
-
-        The menu label is QUILL Lite's, "Get Help from Support...", but its
-        access key is L rather than Lite's G: Open User &Guide already owns G
-        in QUILL's Help menu, and a duplicate mnemonic makes Windows cycle
-        between the two instead of pressing either (GATE-14). The command id
-        stays ``help.report_bug`` so a user's rebinding survives; the chord,
-        Ctrl+Alt+F2, is the same in both editors. The QUILL AI support ID goes
-        in through ``ai_support_facts`` (the shared hosted-AI mixin).
-        """
-        from quill.ui.support_dialog import open_support_message
-
-        open_support_message(self, source_app="QUILL", app_version=__version__ or "0.0.0")
-
-    #: The menu's name for it. One flow, two names, no second implementation.
-    get_help_from_support = report_bug
-
-    def _review_diagnostics_export(self) -> bool | None:
-        wx = self._wx
-        dialog = wx.Dialog(self.frame, title="Review Diagnostics Export", size=(780, 560))
-        root = wx.BoxSizer(wx.VERTICAL)
-        include_paths = wx.CheckBox(dialog, label="Include plain file paths in the bundle")
-        review = wx.TextCtrl(dialog, style=wx.TE_MULTILINE | wx.TE_READONLY)
-        set_accessible_name(review, "Diagnostics review")
-        copy_button = wx.Button(dialog, label="Copy Summary")
-        continue_button = wx.Button(dialog, id=wx.ID_OK, label="Continue")
-        cancel_button = wx.Button(dialog, id=wx.ID_CANCEL, label="Cancel")
-
-        def refresh() -> None:
-            detection = detect_screen_reader()
-            review.SetValue(
-                build_diagnostics_review_text(
-                    settings=self.settings,
-                    keymap=self.keymap,
-                    notifications=self._notifications,
-                    current_document=self.document,
-                    include_file_paths=include_paths.GetValue(),
-                    extra_environment={
-                        "screen_reader": detection.name,
-                        "wx_version": self._wx.version(),
-                        **self._announcement_engine.diagnostics_environment(),
-                        "bw_rollout": self._bw_diagnostics_snapshot(),
-                    },
-                )
-            )
-
-        include_paths.Bind(wx.EVT_CHECKBOX, lambda _e: refresh())
-        copy_button.Bind(
-            wx.EVT_BUTTON,
-            lambda _e: self._copy_to_clipboard(review.GetValue()),
-        )
-        continue_button.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_OK))
-        cancel_button.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_CANCEL))
-        root.Add(
-            wx.StaticText(
-                dialog,
-                label=(
-                    "Review what Quill will include before writing the diagnostics zip. "
-                    "Nothing leaves your machine from this step."
-                ),
-            ),
-            0,
-            wx.ALL | wx.EXPAND,
-            8,
-        )
-        root.Add(wx.StaticText(dialog, label="Logs folder"), 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
-        logs_field = wx.TextCtrl(dialog, style=wx.TE_READONLY)
-        set_accessible_name(logs_field, "Logs folder")
-        logs_field.SetValue(str(app_data_dir() / "logs"))
-        root.Add(logs_field, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM | wx.EXPAND, 8)
-        root.Add(
-            wx.StaticText(dialog, label="Diagnostics folder"),
-            0,
-            wx.LEFT | wx.RIGHT | wx.TOP,
-            8,
-        )
-        diagnostics_field = wx.TextCtrl(dialog, style=wx.TE_READONLY)
-        set_accessible_name(diagnostics_field, "Diagnostics folder")
-        diagnostics_field.SetValue(str(app_data_dir() / "diagnostics"))
-        root.Add(diagnostics_field, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM | wx.EXPAND, 8)
-        root.Add(include_paths, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
-        root.Add(review, 1, wx.ALL | wx.EXPAND, 8)
-        buttons = wx.BoxSizer(wx.HORIZONTAL)
-        buttons.Add(copy_button, 0, wx.RIGHT, 6)
-        buttons.AddStretchSpacer(1)
-        buttons.Add(continue_button, 0, wx.RIGHT, 6)
-        buttons.Add(cancel_button, 0)
-        root.Add(buttons, 0, wx.ALL | wx.EXPAND, 8)
-        dialog.SetSizer(root)
-        refresh()
-        apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
-        if self._show_modal_dialog(dialog, "Review Diagnostics Export") != wx.ID_OK:
-            return None
-        return include_paths.GetValue()
-
     def _create_named_scratch_tab(self, title: str, text: str) -> None:
         index = self._create_document_tab(
             Document(text=text, path=None, modified=False),
             select=True,
         )
         self._set_tab_page_text(index, title)
-
-    def _glow_scope(self) -> tuple[str, int, int, str]:
-        start, end = self.editor.GetSelection()
-        if start != end:
-            return self.editor.GetRange(start, end), start, end, "selection"
-        cursor = self.editor.GetInsertionPoint()
-        text = self.editor.GetValue()
-        start, end = paragraph_span(text, cursor)
-        scope = self.editor.GetRange(start, end)
-        if not scope.strip():
-            start, end = line_span(text, cursor)
-            scope = self.editor.GetRange(start, end)
-            return scope, start, end, "current line"
-        return scope, start, end, "current paragraph"
-
-    def _ensure_glow_enabled(self) -> bool:
-        """Gate every GLOW command behind the Experimental opt-in.
-
-        GLOW ships as an experimental feature: it runs only when both the
-        Experimental master switch and the GLOW checkbox are on (Preferences >
-        Experimental). Commands stay in the palette so they are discoverable;
-        invoking one while gated explains exactly how to turn GLOW on — the
-        same pattern as Read Document in Browser.
-        """
-        if self._feature_enabled("core.glow"):
-            return True
-        wx = self._wx
-        self._show_message_box(
-            "GLOW is an experimental feature and is currently turned off.\n\n"
-            "To enable it, open Preferences > Experimental, tick 'Enable "
-            "experimental features', then tick 'GLOW accessibility review and "
-            "repair'. It takes effect as soon as you apply Settings - no "
-            "restart needed.",
-            "GLOW (Experimental)",
-            wx.ICON_INFORMATION | wx.OK,
-        )
-        return False
-
-    def glow_audit_document(self) -> None:
-        if not self._ensure_glow_enabled():
-            return
-        markup = self._current_markup_context()
-        text = self.editor.GetValue()
-        report = build_audit_report(self.document.name, text, markup, "current document")
-        self._create_named_scratch_tab(f"GLOW Audit - {self.document.name}", report)
-        self._set_status(f"Opened GLOW audit for {self.document.name}")
-
-    def glow_audit_selection(self) -> None:
-        if not self._ensure_glow_enabled():
-            return
-        text, _start, _end, scope_label = self._glow_scope()
-        markup = self._current_markup_context()
-        report = build_audit_report(self.document.name, text, markup, scope_label)
-        self._create_named_scratch_tab(f"GLOW Audit - {scope_label.title()}", report)
-        self._set_status(f"Opened GLOW audit for {scope_label}")
-
-    def glow_fix_document(self) -> None:
-        if not self._ensure_glow_enabled():
-            return
-        original = self.editor.GetValue()
-        markup = self._current_markup_context()
-        result = fix_text(original, markup)
-        if result.text == original:
-            report = build_fix_report(self.document.name, result, markup, "current document")
-            self._create_named_scratch_tab(f"GLOW Fix Report - {self.document.name}", report)
-            self._set_status("No deterministic GLOW fixes were available")
-            return
-        preview_title = f"{self.document.name} - GLOW Fix Preview"
-        index = self._create_document_tab(
-            Document(text=result.text, path=None, modified=False),
-            select=True,
-        )
-        self._set_tab_page_text(index, preview_title)
-        report = build_fix_report(self.document.name, result, markup, "current document")
-        self._record_notification(report.splitlines()[0], "glow")
-        self._start_compare_session([(self.document.name, original), (preview_title, result.text)])
-        self._set_status(
-            f"Opened GLOW fix preview with {len(result.fixes)} changes and started compare"
-        )
-
-    def glow_fix_selection(self) -> None:
-        if not self._ensure_glow_enabled():
-            return
-        text, start, end, scope_label = self._glow_scope()
-        markup = self._current_markup_context()
-        result = fix_text(text, markup)
-        if result.text == text:
-            self._set_status(f"No deterministic GLOW fixes were available for {scope_label}")
-            return
-        self.editor.Replace(start, end, result.text)
-        self.editor.SetSelection(start, start + len(result.text))
-        self.document.set_text(self.editor.GetValue())
-        report = build_fix_report(self.document.name, result, markup, scope_label)
-        self._record_notification(report.splitlines()[0], "glow")
-        self._set_status(f"Applied {len(result.fixes)} GLOW fixes to {scope_label}")
 
     def make_document_accessible(self) -> None:
         from quill.core.accessibility_agent import summarize_plan
@@ -9648,7 +8361,7 @@ class MainFrame(
             )
         else:
             prefix = f"Moved to {label}"
-        self._announce_navigation_move(prefix, target)
+        self._announce_navigation_move(prefix, target, latch_structure=context is not None)
 
     def _navigate_heading_rich_word(self, reverse: bool) -> bool:
         """H / Shift+H inside a rich-mode Word document. Headings there are the
@@ -9674,7 +8387,9 @@ class MainFrame(
         self.editor.SetFocus()
         self._location_ring.record(target)
         title = self._heading_title_at(target)
-        self._announce_navigation_move(describe_heading_arrival(level, title), target)
+        self._announce_navigation_move(
+            describe_heading_arrival(level, title), target, latch_structure=True
+        )
         return True
 
     def _heading_title_at(self, offset: int) -> str:
@@ -9714,10 +8429,16 @@ class MainFrame(
         self._location_ring.record(target)
         self._announce_navigation_move(f"Moved to {label}", target)
 
-    def _announce_navigation_move(self, prefix: str, target: int) -> None:
+    def _announce_navigation_move(
+        self, prefix: str, target: int, *, latch_structure: bool = False
+    ) -> None:
         detail = str(getattr(self.settings, "browse_mode_move_detail", "position")).strip().lower()
         if detail == "none":
             return
+        if latch_structure:
+            # The move names the heading itself; latch the caret cue so the
+            # key-release hook does not say the same heading a second time.
+            self.sync_structure_announcer()
         line, column = line_column_for_position(self.editor.GetValue(), target)
         if detail == "line":
             message = f"{prefix} at line {line}"
@@ -11665,356 +10386,6 @@ class MainFrame(
         "finished pages with a little sprinkle of everyday magic."
     )
 
-    def _voice_preview_catalog_roots(self) -> list[Path]:
-        roots: list[Path] = []
-        app_root_raw = os.environ.get("QUILL_APP_ROOT", "").strip()
-        if app_root_raw:
-            app_root = Path(app_root_raw)
-            roots.append(app_root / "quill" / "data" / "voice-previews")
-            roots.append(app_root / "tools" / "speech" / "previews")
-        roots.append(Path(__file__).resolve().parents[1] / "data" / "voice-previews")
-        roots.append(app_data_dir() / "speech" / "previews")
-        deduped: list[Path] = []
-        seen: set[str] = set()
-        for root in roots:
-            marker = str(root).lower()
-            if marker in seen:
-                continue
-            seen.add(marker)
-            deduped.append(root)
-        return deduped
-
-    def _voice_preview_sample_path(self, engine: str, voice_id: str) -> Path | None:
-        safe_engine = (engine or "").strip().lower()
-        safe_voice = (voice_id or "").strip()
-        if not safe_engine or not safe_voice:
-            return None
-        if safe_engine == "sapi5":
-            safe_voice = _sapi5_voice_short_name(safe_voice)
-            if not safe_voice:
-                return None
-        for root in self._voice_preview_catalog_roots():
-            provider_dir = root / safe_engine
-            if not provider_dir.exists():
-                continue
-            for extension in (".wav", ".mp3"):
-                candidate = provider_dir / f"{safe_voice}{extension}"
-                if candidate.exists():
-                    return candidate
-        return None
-
-    def _purge_preview_playback(self) -> None:
-        """Best-effort: stop whatever voice-preview audio is currently sounding.
-
-        Covers both playback backends `_play_preview_asset` uses. Never raises --
-        called opportunistically whenever a new preview supersedes an old one.
-        """
-        if _winsound is not None:
-            try:
-                _winsound.PlaySound(None, _winsound.SND_PURGE)
-            except Exception:  # noqa: BLE001
-                pass
-        try:
-            import ctypes as _ct
-
-            _ct.windll.winmm.mciSendStringW("stop quill_preview", None, 0, None)  # type: ignore[attr-defined]
-            _ct.windll.winmm.mciSendStringW("close quill_preview", None, 0, None)  # type: ignore[attr-defined]
-        except Exception:  # noqa: BLE001
-            pass
-
-    def _stop_active_voice_preview(self) -> None:
-        """Stop/supersede whatever voice preview is currently active.
-
-        Bumps the generation counter first (so any in-flight callback from the
-        old generation becomes a no-op the instant it checks), then best-effort
-        stops the old preview's audio: SAPI5 goes through the ReadAloudController
-        it already owns; every other engine plays through `_play_preview_asset`,
-        stopped via `_purge_preview_playback`. Does NOT stop an old preview's
-        synthesis if it is still computing (e.g. a Piper/Kokoro call in
-        progress) -- that finishes in the background and its result is
-        discarded when the stale generation check fails.
-        """
-        self._preview_generation = getattr(self, "_preview_generation", 0) + 1
-        self._cancel_preview_cue_timer()
-        try:
-            self._read_aloud.stop()
-        except Exception:  # noqa: BLE001
-            pass
-        self._purge_preview_playback()
-
-    def _cancel_preview_cue_timer(self) -> None:
-        """Stop and clear any pending "generating preview" cue timer.
-
-        Called whenever a preview generation is superseded (Task 3) or
-        whenever its synthesis completes on its own -- success or error --
-        so a stray cue never fires after the preview it belonged to is
-        already over (see ``_synth_done`` and ``_finish_background_task``).
-        """
-        timer = getattr(self, "_preview_cue_timer", None)
-        if timer is not None:
-            try:
-                timer.Stop()
-            except Exception:  # noqa: BLE001
-                pass
-            self._preview_cue_timer = None
-
-    def _fire_generating_cue(self, generation: int) -> None:
-        """One-shot "still generating" cue -- fires only if *generation* is
-        still current (the ~400ms delay elapsed before synthesis finished)."""
-        if getattr(self, "_preview_generation", 0) != generation:
-            return
-        post_sound(SoundEvent.VOICE_PREVIEW_GENERATING)
-        if getattr(self.settings, "voice_preview_announce_generating", True):
-            self._announce("Generating preview, please wait.")
-
-    def _play_preview_asset(
-        self, sample_path: Path, still_current: Callable[[], bool] | None = None
-    ) -> None:
-        """Play a preview clip so Stop can cut it mid-phrase.
-
-        Playback is asynchronous and this method returns only when the clip
-        finishes or ``still_current`` reports the preview was superseded -- at
-        which point it purges the audio. A blocking play (the old behavior)
-        could not be interrupted: Stop's SND_PURGE only cancels async sounds,
-        so speech ran to the end regardless of Stop."""
-        import time as _time
-
-        current = still_current if still_current is not None else (lambda: True)
-        suffix = sample_path.suffix.lower()
-        if suffix == ".wav" and _winsound is not None:
-            _winsound.PlaySound(str(sample_path), _winsound.SND_FILENAME | _winsound.SND_ASYNC)
-            _await_playback(
-                duration=_wav_duration_seconds(sample_path),
-                still_current=current,
-                purge=self._purge_preview_playback,
-                sleep=_time.sleep,
-                now=_time.monotonic,
-            )
-            return
-        # MP3 and other formats: use Windows MCI for in-process playback (async
-        # + polling so a superseding Stop takes effect immediately, not after
-        # the whole clip). This avoids opening an external media player.
-        try:
-            import ctypes as _ct
-
-            _winmm = _ct.windll.winmm  # type: ignore[attr-defined]
-            _alias = "quill_preview"
-            _path = str(sample_path).replace('"', "")
-            _winmm.mciSendStringW(f'open "{_path}" type mpegvideo alias {_alias}', None, 0, None)
-            try:
-                _winmm.mciSendStringW(f"play {_alias}", None, 0, None)
-                buf = _ct.create_unicode_buffer(64)
-                while True:
-                    if not current():
-                        break
-                    _winmm.mciSendStringW(f"status {_alias} mode", buf, 64, None)
-                    if buf.value != "playing":
-                        break
-                    _time.sleep(0.05)
-            finally:
-                _winmm.mciSendStringW(f"close {_alias}", None, 0, None)
-            return
-        except (AttributeError, OSError):
-            pass
-        if sys.platform == "darwin":
-            import subprocess as _subprocess
-
-            _subprocess.Popen(["afplay", str(sample_path)])  # noqa: S603,S607
-            return
-        import os as _os
-
-        _os.startfile(str(sample_path))
-
-    def _preview_voice(
-        self,
-        engine: str,
-        voice_id: str,
-        *,
-        live: bool = False,
-        text: str | None = None,
-        on_state_change: Callable[[str], None] | None = None,
-    ) -> None:
-        """Preview *voice_id* through *engine* on a background thread.
-
-        ``live`` True means the voice is downloaded and ready, so synthesize the
-        preview phrase with the real model. ``live`` False (the voice is not yet
-        downloaded) plays the bundled pre-recorded sample instead, so the user
-        can still hear what the voice sounds like before downloading; if no
-        sample ships for it, we say so rather than failing silently.
-
-        Starting a preview always stops/supersedes whatever preview was
-        previously active (see ``_stop_active_voice_preview``): its playback is
-        cut short and its completion callback becomes a no-op, so two previews
-        started in quick succession never overlap.
-        """
-        import tempfile as _tmpfile
-        from pathlib import Path as _Path
-
-        self._stop_active_voice_preview()
-        my_generation = self._preview_generation
-
-        def _still_current() -> bool:
-            return getattr(self, "_preview_generation", 0) == my_generation
-
-        def _report(state: str) -> None:
-            if on_state_change is not None and _still_current():
-                self._wx.CallAfter(on_state_change, state)
-
-        sample = text or self._PREVIEW_TEXT
-        s = self.settings
-
-        # Not downloaded: play the bundled pre-recorded sample (same phrase the
-        # live synthesis uses), or explain that none is available.
-        if not live:
-            preview_sample = self._voice_preview_sample_path(engine, voice_id)
-            if preview_sample is None:
-                self._set_status("Download this voice to hear a preview.")
-                return
-
-            def _play_sample(_progress: Callable[[str, int, int], None]) -> object:
-                _report("playing")
-                try:
-                    self._play_preview_asset(preview_sample, _still_current)
-                except Exception:
-                    _report("idle")
-                    raise
-                return None
-
-            def _sample_done(_r: object) -> None:
-                if _still_current():
-                    self._set_status("Preview finished")
-                _report("idle")
-
-            self._run_background_task(
-                f"Previewing {engine} voice",
-                _play_sample,
-                _sample_done,
-            )
-            return
-
-        # sapi5: delegate to ReadAloudController so SAPI5/COM runs on its own
-        # dedicated thread, avoiding the "started a loop" error from ThreadPoolExecutor.
-        if engine == "sapi5":
-            try:
-                _report("playing")
-                self._read_aloud.start(
-                    sample,
-                    0,
-                    voice_id,
-                    engine_name="sapi5",
-                    rate=s.read_aloud_rate,
-                    volume=s.read_aloud_volume / 100.0,
-                    pitch=s.read_aloud_pitch,
-                    on_state_change=lambda state: (
-                        (self._wx.CallAfter(self._set_status, "Preview finished"), _report("idle"))
-                        if state in ("idle", "error") and _still_current()
-                        else None
-                    ),
-                )
-            except Exception as exc:  # noqa: BLE001
-                self._set_status(f"Preview failed: {exc}")
-                _report("idle")
-            return
-
-        # ElevenLabs previews also cost quota, so gate them on the same per-session
-        # consent and resolve the key on the UI thread before the worker runs.
-        el_key = ""
-        el_model = ""
-        if engine == "elevenlabs":
-            el_params = self._elevenlabs_read_aloud_params("elevenlabs")
-            if el_params is None:
-                return
-            el_key, _el_voice, el_model = el_params
-
-        def _work(_progress: Callable[[str, int, int], None]) -> object:
-            with _tmpfile.NamedTemporaryFile(suffix=".wav", delete=False) as fh:
-                wav = _Path(fh.name)
-            try:
-                if engine == "dectalk":
-                    exe = discover_dectalk_executable(s.read_aloud_dectalk_executable)
-                    if exe is None:
-                        raise ReadAloudUnavailableError("DECtalk executable not configured")
-                    synthesize_to_file_with_dectalk(
-                        sample,
-                        wav,
-                        executable_path=exe,
-                        voice=voice_id,
-                        rate=s.read_aloud_dectalk_rate,
-                    )
-                elif engine == "piper":
-                    exe = discover_piper_executable(s.read_aloud_piper_executable)
-                    if exe is None:
-                        raise ReadAloudUnavailableError("Piper executable not configured")
-                    synthesize_with_piper(
-                        sample,
-                        wav,
-                        executable_path=exe,
-                        model_path=resolve_piper_model_path(voice_id),
-                    )
-                elif engine == "kokoro":
-                    synthesize_with_kokoro(
-                        sample,
-                        wav,
-                        voice=voice_id,
-                        speed=s.read_aloud_kokoro_speed,
-                    )
-                elif engine == "espeak":
-                    exe = discover_espeak_executable(s.read_aloud_espeak_executable)
-                    if exe is None:
-                        raise ReadAloudUnavailableError("eSpeak-NG not found")
-                    synthesize_with_espeak(
-                        sample,
-                        wav,
-                        executable_path=exe,
-                        voice=voice_id,
-                        rate=s.read_aloud_espeak_rate,
-                    )
-                elif engine == "elevenlabs":
-                    from quill.core.ai import elevenlabs_tts
-
-                    wav.write_bytes(
-                        elevenlabs_tts.synthesize_wav(
-                            sample, el_key, voice=voice_id, model=el_model
-                        )
-                    )
-                elif engine == "macos":
-                    synthesize_with_macos(
-                        sample,
-                        wav,
-                        voice=voice_id,
-                        rate=s.read_aloud_macos_rate,
-                    )
-                else:
-                    raise ReadAloudUnavailableError(f"Unknown engine: {engine}")
-                _report("playing")
-                self._play_preview_asset(wav, _still_current)
-            except Exception:
-                _report("idle")
-                raise
-            finally:
-                try:
-                    wav.unlink(missing_ok=True)
-                except OSError:
-                    pass
-            return None
-
-        def _synth_done(_r: object) -> None:
-            # Synthesis reported success -- the pending cue is no longer
-            # relevant regardless of whether this generation is still
-            # current, so cancel it before anything else.
-            self._cancel_preview_cue_timer()
-            if _still_current():
-                self._set_status("Preview finished")
-            _report("idle")
-
-        _report("generating")
-        self._preview_cue_timer = self._wx.CallLater(400, self._fire_generating_cue, my_generation)
-        self._run_background_task(
-            f"Previewing {engine} voice",
-            _work,
-            _synth_done,
-        )
-
     def choose_read_aloud_configuration(self) -> None:
         """Open the unified Speech Hub on the Speech (Offline) tab."""
         from quill.ui.speech_hub_dialog import TAB_SPEECH_OFFLINE
@@ -12736,537 +11107,6 @@ class MainFrame(
     def _on_read_aloud_error(self, error: str) -> None:
         self._set_status(f"Read aloud error: {error}")
 
-    def _apply_watch_folder_menu_state(self) -> None:
-        # Watch folder toggle is now in Settings; no menu state to sync
-        pass
-
-    def _maybe_start_watch_folder(self) -> None:
-        # H-SAFE-1: safe mode must not start the watcher; the banner is a
-        # contract. The WatchService can still be constructed so other
-        # surfaces (settings UI, diagnostics) can inspect profiles, but
-        # ``start()`` is the side effect we are refusing.
-        if self._safe_mode:
-            self._apply_watch_folder_menu_state()
-            return
-        if not bool(getattr(self.settings, "watch_folder_enabled", False)):
-            self._apply_watch_folder_menu_state()
-            return
-        self._start_watch_folder_monitoring(announce=False)
-
-    def _start_watch_folder_monitoring(self, *, announce: bool = True) -> bool:
-        if not self._feature_enabled("core.watch_folder"):
-            if announce:
-                self._set_status("Watch folder is unavailable in this profile")
-            return False
-        started = self._watch_service.start()
-        self.settings.watch_folder_enabled = True
-        save_settings(self.settings)
-        self._apply_watch_folder_menu_state()
-        if announce:
-            if started:
-                count = len(started)
-                noun = "profile" if count == 1 else "profiles"
-                self._set_status(f"Watch folder monitoring started ({count} {noun})")
-                self._record_notification("Watch folder monitoring started", "speech")
-            else:
-                self._set_status("Watch folder is on, but no profiles are enabled")
-                self._record_notification(
-                    "Watch folder monitoring is on, but no profiles are enabled",
-                    "speech",
-                )
-        return True
-
-    def _stop_watch_folder_monitoring(self, *, announce: bool = True) -> None:
-        self._watch_service.stop()
-        self._apply_watch_folder_menu_state()
-        if announce:
-            self._set_status("Watch folder monitoring stopped")
-            self._record_notification("Watch folder monitoring stopped", "speech")
-
-    def toggle_watch_folder_monitoring(self) -> None:
-        """Open Settings at the Watch Folders tab where monitoring can be toggled."""
-        self.open_general_preferences()
-        self._set_status("Watch folder monitoring setting is in Settings > Watch Folders")
-
-    def show_watch_folder_status(self) -> None:
-        """Open the accessible Watch Queue Monitor (WATCH-4)."""
-        if not self._feature_enabled("core.watch_folder"):
-            # #10: this early return left focus in the editor with only a silent
-            # status, so the command looked like it "did nothing". Speak it.
-            self._announce_result("Watch folder is unavailable in this profile")
-            return
-        existing = self._watch_queue_monitor
-        if existing is not None:
-            try:
-                existing.Raise()
-                existing.SetFocus()
-                self._refresh_watch_queue_monitor()
-                return
-            except Exception:
-                self._watch_queue_monitor = None
-                self._watch_queue_listbox = None
-        wx = self._wx
-        dialog = wx.Dialog(
-            self.frame,
-            title="Watch Queue Monitor",
-            style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
-        )
-        root = wx.BoxSizer(wx.VERTICAL)
-
-        summary = wx.StaticText(dialog, label="Watch queue")
-        summary.SetName("Watch queue summary")
-        root.Add(summary, 0, wx.ALL, 8)
-
-        listbox = wx.ListBox(dialog, style=wx.LB_SINGLE)
-        listbox.SetName("Watch queue items")
-        root.Add(listbox, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
-
-        button_row = wx.BoxSizer(wx.HORIZONTAL)
-        pause_button = wx.Button(dialog, label="&Pause")
-        pause_button.SetName("Pause or resume the watch queue")
-        retry_button = wx.Button(dialog, label="&Retry")
-        retry_button.SetName("Retry selected item")
-        open_button = wx.Button(dialog, label="&Open Result")
-        open_button.SetName("Open the result of the selected item")
-        clear_button = wx.Button(dialog, label="&Clear Finished")
-        clear_button.SetName("Clear finished items")
-        refresh_button = wx.Button(dialog, label="Re&fresh")
-        refresh_button.SetName("Refresh the watch queue")
-        for button in (pause_button, retry_button, open_button, clear_button, refresh_button):
-            button_row.Add(button, 0, wx.RIGHT, 6)
-        root.Add(button_row, 0, wx.ALL, 8)
-
-        buttons = dialog.CreateButtonSizer(wx.CLOSE)
-        if buttons is not None:
-            root.Add(buttons, 0, wx.EXPAND | wx.ALL, 8)
-        dialog.SetSizerAndFit(root)
-        dialog.SetSize((640, 460))
-
-        def _selected_item() -> QueueItem | None:
-            index = listbox.GetSelection()
-            if index == wx.NOT_FOUND:
-                return None
-            items = self._watch_queue_items_cache
-            if 0 <= index < len(items):
-                return items[index]
-            return None
-
-        def _on_pause(_event: object) -> None:
-            if self._watch_service.queue.is_paused():
-                self._watch_service.resume()
-                self._set_status("Watch queue resumed")
-            else:
-                self._watch_service.pause()
-                self._set_status("Watch queue paused")
-            self._refresh_watch_queue_monitor()
-
-        def _on_retry(_event: object) -> None:
-            item = _selected_item()
-            if item is None:
-                self._set_status("Select a queue item to retry")
-                return
-            if self._watch_service.retry_item(item.item_id):
-                self._set_status(f"Retrying {Path(item.source_path).name}")
-            else:
-                self._set_status("That item cannot be retried")
-            self._refresh_watch_queue_monitor()
-
-        def _on_open(_event: object) -> None:
-            item = _selected_item()
-            if item is None:
-                self._set_status("Select a queue item to open")
-                return
-            target = item.result_path or item.source_path
-            if not target:
-                self._set_status("That item has no file to open")
-                return
-            self.open_file(Path(target), record_recent=True, refresh_existing=False)
-
-        def _on_clear(_event: object) -> None:
-            removed = self._watch_service.clear_finished()
-            self._set_status(f"Cleared {removed} finished item{'s' if removed != 1 else ''}")
-            self._refresh_watch_queue_monitor()
-
-        def _on_refresh(_event: object) -> None:
-            self._refresh_watch_queue_monitor()
-
-        def _on_close(_event: object) -> None:
-            self._watch_queue_monitor = None
-            self._watch_queue_listbox = None
-            self._watch_queue_pause_button = None
-            dialog.Destroy()
-
-        pause_button.Bind(wx.EVT_BUTTON, _on_pause)
-        retry_button.Bind(wx.EVT_BUTTON, _on_retry)
-        open_button.Bind(wx.EVT_BUTTON, _on_open)
-        clear_button.Bind(wx.EVT_BUTTON, _on_clear)
-        refresh_button.Bind(wx.EVT_BUTTON, _on_refresh)
-        dialog.Bind(wx.EVT_BUTTON, _on_close, id=wx.ID_CLOSE)
-        dialog.Bind(wx.EVT_CLOSE, _on_close)
-
-        self._watch_queue_monitor = dialog
-        self._watch_queue_listbox = listbox
-        self._watch_queue_summary = summary
-        self._watch_queue_pause_button = pause_button
-        self._watch_queue_items_cache = []
-        apply_modal_ids(dialog, affirmative_id=wx.ID_CLOSE, escape_id=wx.ID_CLOSE)
-        self._refresh_watch_queue_monitor()
-        dialog.Show()
-        listbox.SetFocus()
-
-    def _refresh_watch_queue_monitor(self) -> None:
-        dialog = self._watch_queue_monitor
-        listbox = self._watch_queue_listbox
-        if dialog is None or listbox is None:
-            return
-        try:
-            items = self._watch_service.queue_items()
-        except Exception:
-            items = []
-        self._watch_queue_items_cache = items
-        previous = listbox.GetSelection()
-        listbox.Clear()
-        for item in items:
-            name = Path(item.source_path).name if item.source_path else "(unknown)"
-            label = f"{item.state.title()} - {name}"
-            if item.attempts:
-                label += f" (attempt {item.attempts})"
-            if item.message:
-                label += f" - {item.message}"
-            listbox.Append(label)
-        if items:
-            target = previous if 0 <= previous < len(items) else 0
-            listbox.SetSelection(target)
-        counts = self._watch_service.queue_counts()
-        summary = getattr(self, "_watch_queue_summary", None)
-        if summary is not None:
-            queued = counts.get(STATE_QUEUED, 0) + counts.get(STATE_PROCESSING, 0)
-            done = counts.get(STATE_DONE, 0)
-            failed = counts.get(STATE_FAILED, 0)
-            skipped = counts.get(STATE_SKIPPED, 0)
-            paused = " (paused)" if self._watch_service.queue.is_paused() else ""
-            label = f"Pending {queued}, done {done}, failed {failed}, skipped {skipped}{paused}"
-            # Explain an apparently-empty queue: profiles default to ignoring files
-            # already present when the watch started (process_existing off), so only
-            # newly-added files appear. Surface that so the monitor isn't confusing.
-            if not items:
-                try:
-                    primed = self._watch_service.primed_count()
-                except Exception:  # noqa: BLE001 - a hint must never break the monitor
-                    primed = 0
-                if primed:
-                    label += (
-                        f". {primed} existing file{'s' if primed != 1 else ''} ignored "
-                        "(turn on 'Process existing files' on a profile, or add a new file)"
-                    )
-            summary.SetLabel(label)
-        pause_button = getattr(self, "_watch_queue_pause_button", None)
-        if pause_button is not None:
-            pause_button.SetLabel("Resume" if self._watch_service.queue.is_paused() else "Pause")
-
-    def open_watch_folder_settings(self) -> None:
-        """Open the accessible Watch Profile Manager (WATCH-5)."""
-        if not self._feature_enabled("core.watch_folder"):
-            self._set_status("Watch folder is unavailable in this profile")
-            return
-        wx = self._wx
-        with wx.Dialog(
-            self.frame,
-            title="Watch Folder Profiles",
-            style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
-        ) as dialog:
-            root = wx.BoxSizer(wx.VERTICAL)
-
-            heading = wx.StaticText(dialog, label="Watch folder profiles")
-            heading.SetName("Watch folder profiles")
-            root.Add(heading, 0, wx.ALL, 8)
-
-            listbox = wx.ListBox(dialog, style=wx.LB_SINGLE)
-            listbox.SetName("Watch folder profile list")
-            root.Add(listbox, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
-
-            button_row = wx.BoxSizer(wx.HORIZONTAL)
-            add_button = wx.Button(dialog, label="&Add...")
-            edit_button = wx.Button(dialog, label="&Edit...")
-            duplicate_button = wx.Button(dialog, label="D&uplicate")
-            toggle_button = wx.Button(dialog, label="Ena&ble/Disable")
-            delete_button = wx.Button(dialog, label="De&lete")
-            for button in (add_button, edit_button, duplicate_button, toggle_button, delete_button):
-                button_row.Add(button, 0, wx.RIGHT, 6)
-            root.Add(button_row, 0, wx.ALL, 8)
-
-            buttons = dialog.CreateButtonSizer(wx.CLOSE)
-            if buttons is not None:
-                root.Add(buttons, 0, wx.EXPAND | wx.ALL, 8)
-            dialog.SetSizerAndFit(root)
-            dialog.SetSize((620, 440))
-
-            def _refresh_list(select: int = -1) -> None:
-                profiles = self._watch_service.profiles()
-                listbox.Clear()
-                for profile in profiles:
-                    state = "enabled" if profile.enabled else "disabled"
-                    folder = profile.folder_path or "(no folder)"
-                    listbox.Append(f"{profile.name} - {state} - {folder}")
-                if profiles:
-                    index = select if 0 <= select < len(profiles) else 0
-                    listbox.SetSelection(index)
-
-            def _selected_profile() -> WatchProfile | None:
-                index = listbox.GetSelection()
-                if index == wx.NOT_FOUND:
-                    return None
-                profiles = self._watch_service.profiles()
-                if 0 <= index < len(profiles):
-                    return profiles[index]
-                return None
-
-            def _on_add(_event: object) -> None:
-                profile = self._edit_watch_profile(None)
-                if profile is not None:
-                    self._watch_service.add_profile(profile)
-                    _refresh_list()
-                    self._set_status(f"Added watch profile {profile.name}")
-
-            def _on_edit(_event: object) -> None:
-                current = _selected_profile()
-                if current is None:
-                    self._set_status("Select a profile to edit")
-                    return
-                updated = self._edit_watch_profile(current)
-                if updated is not None:
-                    self._watch_service.update_profile(updated)
-                    _refresh_list(listbox.GetSelection())
-                    self._set_status(f"Updated watch profile {updated.name}")
-
-            def _on_duplicate(_event: object) -> None:
-                current = _selected_profile()
-                if current is None:
-                    self._set_status("Select a profile to duplicate")
-                    return
-                copy = self._watch_service.duplicate_profile(current.profile_id)
-                if copy is not None:
-                    _refresh_list()
-                    self._set_status(f"Duplicated watch profile {current.name}")
-
-            def _on_toggle(_event: object) -> None:
-                current = _selected_profile()
-                if current is None:
-                    self._set_status("Select a profile to enable or disable")
-                    return
-                self._watch_service.set_profile_enabled(current.profile_id, not current.enabled)
-                _refresh_list(listbox.GetSelection())
-                state = "disabled" if current.enabled else "enabled"
-                self._set_status(f"{current.name} {state}")
-
-            def _on_delete(_event: object) -> None:
-                current = _selected_profile()
-                if current is None:
-                    self._set_status("Select a profile to delete")
-                    return
-                response = self._show_message_box(
-                    f"Delete watch profile '{current.name}'?",
-                    "Delete Watch Profile",
-                    wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT,
-                )
-                if response != wx.YES:
-                    return
-                self._watch_service.delete_profile(current.profile_id)
-                _refresh_list()
-                self._set_status(f"Deleted watch profile {current.name}")
-
-            add_button.Bind(wx.EVT_BUTTON, _on_add)
-            edit_button.Bind(wx.EVT_BUTTON, _on_edit)
-            duplicate_button.Bind(wx.EVT_BUTTON, _on_duplicate)
-            toggle_button.Bind(wx.EVT_BUTTON, _on_toggle)
-            delete_button.Bind(wx.EVT_BUTTON, _on_delete)
-
-            _refresh_list()
-            apply_modal_ids(dialog, affirmative_id=wx.ID_CLOSE, escape_id=wx.ID_CLOSE)
-            self._show_modal_dialog(dialog, "Watch Folder Profiles")
-
-        if self._watch_service.is_running:
-            self._watch_service.restart()
-        self._apply_watch_folder_menu_state()
-        self._set_status("Updated watch folder profiles")
-
-    def _watch_ai_consent_detail(self) -> str:
-        """Plain-language description of where AI watch actions send content (WATCH-6)."""
-        try:
-            from quill.core.ai.model_manager import load_model_choice, resolve_spec
-
-            spec = resolve_spec(load_model_choice())
-            return (
-                f"AI actions send each file's text to your selected model "
-                f"({spec.name}). This runs only when consent is ticked."
-            )
-        except Exception:  # noqa: BLE001 - never block the dialog on this lookup
-            return (
-                "AI actions send each file's text to your selected AI model. "
-                "This runs only when consent is ticked."
-            )
-
-    def _watch_dry_run_sample(self, profile: WatchProfile) -> Path:
-        """Pick a representative file for a dry-run preview without side effects."""
-        folder = Path(profile.folder_path) if profile.folder_path else None
-        if folder is not None and folder.is_dir():
-            try:
-                for candidate in iter_matching_files(profile):
-                    return candidate
-            except Exception:  # noqa: BLE001 - preview must never raise
-                pass
-            return folder / "example-file.txt"
-        return Path("example-file.txt")
-
-    def _on_watch_file_opened(self, path: Path) -> None:
-        try:
-            self.open_file(path, record_recent=True, refresh_existing=False)
-        except Exception:
-            self._set_status(f"Watch folder could not open {path.name}")
-            return
-        self._record_notification(f"Watch folder opened {path.name}", "speech")
-        self._set_status(f"Watch folder opened {path.name}")
-
-    def _on_watch_queue_event(self, event: str, item: object) -> None:
-        if self._watch_queue_monitor is not None:
-            self._refresh_watch_queue_monitor()
-        if event == "failed" and item is not None:
-            source = getattr(item, "source_path", "")
-            name = Path(source).name if source else "a file"
-            message = getattr(item, "message", "") or "unknown error"
-            if self._watch_message_is_resource_cap(message):
-                # WATCH-6: a runaway action that hit the shared SEC-9 wall-clock
-                # cap is terminated; announce the termination distinctly so the
-                # user understands the machine was protected, not that their
-                # transform merely errored.
-                self._record_notification(
-                    f"Watch stopped {name}: it exceeded the time limit and was "
-                    "terminated to protect your machine.",
-                    "speech",
-                )
-                self._set_status(f"Watch stopped {name}: time limit exceeded")
-                return
-            self._record_notification(
-                f"Watch failed for {name}: {message}",
-                "speech",
-            )
-            self._set_status(f"Watch failed for {name}")
-
-    @staticmethod
-    def _watch_message_is_resource_cap(message: str) -> bool:
-        """Return True when a failed watch item was terminated for a resource cap.
-
-        The SEC-9 Python sandbox reports a wall-clock kill as "Execution timed
-        out"; surface any timeout/limit phrasing as a resource-cap termination
-        so WATCH-6 can announce it distinctly (WATCH-6).
-        """
-        lowered = (message or "").lower()
-        return any(
-            phrase in lowered
-            for phrase in ("timed out", "timeout", "time limit", "exceeded", "resource cap")
-        )
-
-    # WATCH-7: built-in action handlers supplied to the watch action registry.
-    # These run on the watch worker thread, so file I/O is done directly here
-    # (the io layer is UI-agnostic) and any editor work is marshalled to the UI
-    # thread via wx.CallAfter.
-    _WATCH_CONVERT_KINDS: ClassVar[dict[str, tuple[str, str]]] = {
-        "markdown": ("markdown", ".md"),
-        "md": ("markdown", ".md"),
-        "gfm": ("markdown", ".md"),
-        "html": ("html", ".html"),
-        "htm": ("html", ".html"),
-        "plain": ("plain", ".txt"),
-        "text": ("plain", ".txt"),
-        "txt": ("plain", ".txt"),
-    }
-
-    def _watch_convert_file(self, path: Path, target_format: str) -> Path:
-        """Convert a detected file to ``target_format`` via Pandoc (WATCH-7).
-
-        Runs on the watch worker thread. Returns the written output path so the
-        queue can report and optionally open the result.
-        """
-        key = (target_format or "").strip().lower()
-        mapping = self._WATCH_CONVERT_KINDS.get(key)
-        if mapping is None:
-            raise ValueError(
-                f"Unsupported convert target '{target_format}'. Use markdown, html, or plain text."
-            )
-        output_kind, suffix = mapping
-        result = convert_document_with_pandoc(path, output_kind)
-        target = path.with_suffix(suffix)
-        if target == path:
-            target = path.with_name(f"{path.stem}.converted{suffix}")
-        target.write_text(result.text, encoding="utf-8")
-        return target
-
-    def _watch_run_macro(self, path: Path, macro_name: str) -> None:
-        """Open a detected file and replay a saved macro over it (WATCH-7).
-
-        Macro replay mutates the editor, so it must happen on the UI thread; the
-        worker thread marshals it through wx.CallAfter and returns immediately.
-        """
-        call_after = getattr(self._wx, "CallAfter", None)
-        if callable(call_after):
-            call_after(self._watch_run_macro_ui, path, macro_name)
-        else:  # pragma: no cover - fallback for headless test stubs
-            self._watch_run_macro_ui(path, macro_name)
-
-    def _watch_run_macro_ui(self, path: Path, macro_name: str) -> None:
-        try:
-            self.open_file(path, record_recent=True, refresh_existing=False)
-        except Exception:
-            self._set_status(f"Watch folder could not open {path.name}")
-            return
-        macros = getattr(self, "macros", None)
-        if macros is None or macro_name not in getattr(macros, "macros", {}):
-            self._set_status(f"Macro {macro_name} is no longer available")
-            return
-        try:
-            macros.play_macro(macro_name, self.commands.run)
-        except KeyError:
-            self._set_status(f"Macro {macro_name} is no longer available")
-            return
-        self._set_status(f"Ran macro {macro_name} on {path.name}")
-
-    def _watch_run_ai(self, path: Path, options: Mapping[str, object]) -> WatchActionOutcome:
-        """Run a consented AI action over a detected file (WATCH-7, AI-5, WATCH-6).
-
-        Runs on the watch worker thread. Honors the AI on/off switch and writes
-        the result to a sidecar file so nothing in the editor is overwritten.
-        """
-        from quill.core.ai.model_manager import load_ai_enabled
-
-        if not load_ai_enabled():
-            return WatchActionOutcome.skipped(
-                "AI is turned off. Enable it in Tools > AI Assistant to use this action."
-            )
-        mode = str(options.get("mode", "")).strip().lower()
-        if mode not in {"summarize", "tag", "rewrite"}:
-            return WatchActionOutcome.failed("Choose an AI mode: summarize, tag, or rewrite.")
-        try:
-            text = path.read_text(encoding="utf-8")
-        except OSError as error:
-            return WatchActionOutcome.failed(f"Could not read file: {error}")
-        assistant = self._get_assistant()
-        try:
-            if mode in {"summarize", "rewrite"}:
-                result = assistant.transform(mode, text)
-            else:  # tag
-                result = assistant.ask(
-                    "Read the following document and return a short, comma-separated "
-                    "list of topical tags that describe it. Return only the tags:\n\n" + text
-                )
-        except Exception as error:  # surfaced as a failed outcome
-            return WatchActionOutcome.failed(str(error))
-        target = path.with_name(f"{path.stem}.{mode}.md")
-        try:
-            target.write_text(result, encoding="utf-8")
-        except OSError as error:
-            return WatchActionOutcome.failed(f"Could not write AI result: {error}")
-        return WatchActionOutcome.done(f"AI {mode} written to {target.name}", result_path=target)
-
     def install_shell_integration(self) -> None:
         wx = self._wx
         command = launcher_command()
@@ -13840,345 +11680,11 @@ class MainFrame(
         self._set_status(f"Opening {host}...")
         webbrowser.open(target)
 
-    def _write_browser_preview(self, tab_index: int) -> tuple[Path, str]:
-        """Render the tab's preview HTML to its stable on-disk path.
-
-        Shared by the explicit Preview in Browser command and the silent
-        keep-fresh path; only the explicit command opens the browser.
-        Returns the file path and the page title.
-        """
-        tab = self._document_tabs[tab_index]
-        text = tab.editor.GetValue()
-        kind = guess_preview_kind(tab.document.path, text)
-        anchor = preview_anchor_for_text(text, tab.editor.GetInsertionPoint(), kind)
-        text = self._vault_preview_text(text, kind, tab.document.path)
-        title = f"{tab.document.name or 'Preview'} - Browser Preview"
-        preview_dir = app_data_dir() / "browser-preview"
-        preview_dir.mkdir(parents=True, exist_ok=True)
-        safe_name = (
-            re.sub(r"[^a-zA-Z0-9]+", "-", tab.document.name or "preview").strip("-") or "preview"
-        )
-        preview_path = preview_dir / f"{tab_index}-{safe_name}.html"
-        payload = render_preview_html(title, text, kind, anchor)
-        temp_path = preview_path.with_suffix(".tmp")
-        temp_path.write_text(payload, encoding="utf-8")
-        os.replace(temp_path, preview_path)
-        return preview_path, title
-
-    def preview_in_browser(self) -> None:
-        if not self._document_tabs:
-            self._set_status("No document open")
-            return
-        tab_index = (
-            self._active_tab_index if self._active_tab_index >= 0 else self._current_tab_index()
-        )
-        if tab_index < 0 or tab_index >= len(self._document_tabs):
-            self._set_status("No document open")
-            return
-        preview_path, title = self._write_browser_preview(tab_index)
-        browser_choice = normalize_browser_choice(self.settings.preview_browser)
-        session = self._browser_preview_session
-        is_new = (
-            session is None
-            or session.tab_index != tab_index
-            or session.preview_path != preview_path
-            or session.browser_choice != browser_choice
-        )
-        # Opening the browser happens ONLY here, on the explicit user command.
-        # The keep-fresh path (_do_refresh_browser_preview) rewrites the file so
-        # a reload in the browser shows current text, but never opens a tab —
-        # re-opening on every typing pause spammed new tabs (#780 review).
-        open_preview_url(preview_path.as_uri(), browser_choice)
-        self._browser_preview_session = _BrowserPreviewSession(
-            tab_index=tab_index,
-            preview_path=preview_path,
-            browser_choice=browser_choice,
-            title=title,
-        )
-        opened = f"Opened browser preview in {browser_choice_label_for_value(browser_choice)}"
-        self._set_status(opened if is_new else "Refreshed browser preview")
-
-    def preview_in_app(self) -> None:
-        if not self._document_tabs:
-            self._set_status("No document open")
-            return
-        tab_index = (
-            self._active_tab_index if self._active_tab_index >= 0 else self._current_tab_index()
-        )
-        if tab_index < 0 or tab_index >= len(self._document_tabs):
-            self._set_status("No document open")
-            return
-        tab = self._document_tabs[tab_index]
-        text = tab.editor.GetValue()
-        kind = guess_preview_kind(tab.document.path, text)
-        anchor = preview_anchor_for_text(text, tab.editor.GetInsertionPoint(), kind)
-        title = f"{tab.document.name or 'Preview'} - Preview"
-        body = render_preview_body(
-            self._vault_preview_text(text, kind, tab.document.path),
-            kind,
-            dark=self._preview_is_dark(),
-        )
-
-        # #179: WebView2's first ``New()`` call blocks the UI thread for tens
-        # of seconds.  If the deferred warm-up has not finished, defer the
-        # preview with a short status nudge so the editor stays responsive.
-        if not self._webview_warm:
-            self._set_status("Preparing preview... (one-time WebView2 setup)")
-            self._wx.CallLater(500, self._show_preview_in_app, title, body, anchor)
-            return
-
-        self._show_preview_in_app(title, body, anchor)
-
-    def _show_preview_in_app(self, title: str, body: str, anchor: str | None) -> None:
-        from quill.ui.preview_dialog import MarkdownPreviewDialog
-
-        MarkdownPreviewDialog(self.frame, title, body, anchor).show()
-        self._set_status("Opened preview")
-
     def _active_tab(self):
         index = self._active_tab_index if self._active_tab_index >= 0 else self._current_tab_index()
         if 0 <= index < len(self._document_tabs):
             return self._document_tabs[index]
         return None
-
-    def toggle_side_preview(self) -> None:
-        """Show / hide a live preview to the right of the editor (split view)."""
-        tab = self._active_tab()
-        if tab is None or getattr(tab, "splitter", None) is None:
-            self._set_status("No document open")
-            return
-        splitter = tab.splitter
-        if tab.preview is not None and splitter.IsSplit():
-            splitter.Unsplit(tab.preview.control)
-            self._set_status("Preview hidden")
-            self.editor.SetFocus()
-            self._set_active_region("Editor")
-            return
-        self._show_side_preview_for(tab)
-        self._set_status("Preview shown on the right")
-
-    def focus_preview(self) -> None:
-        """Move focus into the preview pane (showing it first if needed).
-
-        The editor is an edit field, so NVDA can't use browse-mode single-letter
-        navigation there. The preview is a real web document, so once focus lands
-        in it NVDA switches to browse mode and H / heading nav work natively.
-        Press Escape or F6 in the preview to come back to the editor.
-        """
-        tab = self._active_tab()
-        if tab is None or getattr(tab, "splitter", None) is None:
-            self._set_status("No document open")
-            return
-        if tab.preview is None or not tab.splitter.IsSplit():
-            self.toggle_side_preview()
-        if tab.preview is not None and tab.splitter.IsSplit():
-            tab.preview.control.SetFocus()
-            self._set_active_region("Preview")
-            self._set_status("Moved to preview. Press Escape or F6 to return to the editor.")
-
-    def _focus_editor_from_preview(self) -> None:
-        if self.editor is not None:
-            self.editor.SetFocus()
-            self._set_active_region("Editor")
-            self._set_status("Back in the editor")
-
-    def _refresh_side_preview(self, text: str | None = None) -> None:
-        tab = self._active_tab()
-        if tab is None:
-            return
-        splitter = getattr(tab, "splitter", None)
-        if splitter is None:
-            return
-        if not splitter.IsSplit():
-            if getattr(self.settings, "auto_side_preview", True):
-                # #1346: the typing path already read the buffer; only fetch it
-                # here when some other caller came in without one.
-                if text is None:
-                    text = tab.editor.GetValue()
-                if guess_preview_kind(tab.document.path, text) != "plain":
-                    self._show_side_preview_for(tab)
-            return
-        if tab.preview is None:
-            return
-        # Debounce: refresh shortly after typing pauses so each keystroke stays
-        # snappy (re-rendering on every character can stutter the editor).
-        timer = getattr(self, "_side_preview_timer", None)
-        if timer is not None and timer.IsRunning():
-            timer.Stop()
-        self._side_preview_timer = self._wx.CallLater(250, self._update_side_preview, tab)
-
-    def _update_side_preview(self, tab) -> None:
-        raw = tab.editor.GetValue()
-        kind = guess_preview_kind(tab.document.path, raw)
-        text = self._vault_preview_text(raw, kind, tab.document.path)
-        # Stamp editor source lines onto the preview blocks only when the
-        # rendered text is the editor's text verbatim (#1257). Vault expansion
-        # rewrites the markup, so its line offsets no longer point at the editor
-        # buffer — leaving source mapping off there avoids a jump landing wrong.
-        source_map = kind == "markdown" and text == raw
-        try:
-            tab.preview.update(
-                render_preview_body(text, kind, dark=self._preview_is_dark(), source_map=source_map)
-            )
-        except Exception:
-            # WebView2 can enter ERROR_INVALID_STATE (0x8007139f) after a forced
-            # close or navigation error; JS/SetPage calls then raise. Discard the
-            # faulted control and let _show_side_preview_for rebuild it.
-            splitter = getattr(tab, "splitter", None)
-            if splitter is not None and splitter.IsSplit():
-                try:
-                    splitter.Unsplit()
-                except Exception:
-                    pass
-            tab.preview = None
-            self._wx.CallAfter(self._show_side_preview_for, tab)
-
-    def _prewarm_webview_runtime(self) -> None:
-        """Initialise the WebView2 subprocess early so preview opens are instant.
-
-        wx.html2.WebView.New() launches the Edge WebView2 process on the first
-        call. On Windows this can take several seconds — occasionally minutes —
-        the first time (COM init, Edge runtime discovery, subprocess spawn). All
-        subsequent calls reuse the same subprocess and are near-instant.
-
-        Creating and immediately destroying a 1×1 hidden WebView here (during
-        the deferred startup task list, after the main window is visible) pays
-        that one-time cost before the user presses F6 or the AI chat pane opens.
-        The visible startup delay (#177) and the F6 freeze (#174) both trace back
-        to this initialisation happening on the user's first interaction instead.
-
-        No-ops silently if wx.html2 is unavailable (Linux/macOS without WebKit,
-        or if the runtime was not installed).
-        """
-        try:
-            import wx.html2
-
-            sentinel = self._wx.Panel(self.frame, size=(1, 1))
-            sentinel.Hide()
-            # WebView.New() alone is enough to trigger WebView2 process
-            # initialisation — no page load required.  WebView2 fires
-            # EVT_WEBVIEW_LOADED for the implicit about:blank navigation; we
-            # destroy the sentinel then.  A 5-second fallback timer covers the
-            # case where the load event never arrives (e.g. no WebView2 runtime).
-            # No explicit page load needed — WebView2 navigates to about:blank on
-            # its own.  Explicit raw-HTML page calls are disallowed here by the
-            # web-surface governance gate (test_web_surface_governance.py).
-            #
-            # Diagnostics: time this call and log it. WebView2's first New() is
-            # the prime suspect for the ~7 s UI-thread stall (review.md §5); this
-            # New() runs on the UI thread and cannot be moved off it, so if it is
-            # the cause the elapsed here will show it directly in the log. Logged
-            # at WARNING when it blocks noticeably so it is findable without
-            # enabling QUILL_PROFILE_STARTUP.
-            import logging as _logging
-
-            _wv_start = time.perf_counter()
-            wv = wx.html2.WebView.New(sentinel)
-            _wv_elapsed = time.perf_counter() - _wv_start
-            _wv_log = _logging.getLogger(__name__)
-            if _wv_elapsed >= 1.0:
-                _wv_log.warning(
-                    "WebView2 first-init (WebView.New) blocked the UI thread for %.1f s",
-                    _wv_elapsed,
-                )
-            else:
-                # INFO (not DEBUG) so the timing is visible at the default level.
-                _wv_log.info("WebView2 first-init took %.3f s", _wv_elapsed)
-
-            # _alive guards both the EVT_WEBVIEW_LOADED callback and the
-            # 5-second fallback CallLater against calling methods on C++
-            # objects that have already been destroyed.  The parent frame
-            # may close (e.g. during startup profiling) before the fallback
-            # timer fires; EVT_WINDOW_DESTROY clears the flag so the
-            # CallLater becomes a no-op instead of an access violation.
-            _alive = [True]
-            sentinel.Bind(wx.EVT_WINDOW_DESTROY, lambda _e: _alive.__setitem__(0, False))
-
-            def _cleanup(_evt: object = None) -> None:
-                if not _alive[0]:
-                    return
-                _alive[0] = False
-                try:
-                    wv.Unbind(wx.html2.EVT_WEBVIEW_LOADED, handler=_cleanup)
-                    sentinel.Destroy()
-                except Exception:
-                    pass
-                # #179: once the sentinel has loaded (or the 5 s fallback has
-                # fired) the WebView2 subprocess is up.  ``_on_update_fetch_done``
-                # and ``preview_in_app`` read this flag to decide whether to
-                # defer their WebView2 dialog until warm-up completes.
-                self._webview_warm = True
-
-            wv.Bind(wx.html2.EVT_WEBVIEW_LOADED, _cleanup)
-            self._wx.CallLater(5000, _cleanup)
-        except Exception:
-            # No wx.html2 — WebView2 is unavailable on this build.  Treat
-            # that as "warm" so we don't keep deferring previews forever.
-            self._webview_warm = True
-
-    def _preview_is_dark(self) -> bool:
-        """Whether preview surfaces should render with the dark theme (issue #83).
-
-        Dark mode themes the wx editor control; the preview is a separate
-        WebView that otherwise stays light, leaving the split view half dark and
-        half bright. Mirror the editor's dark state so both panes match.
-
-        The default ``system`` theme follows the OS appearance, so a user on a
-        dark desktop saw light preview panes with low-contrast blue links
-        (issue #126). Resolve ``system`` against the live wx system appearance so
-        the preview tracks the OS instead of staying bright.
-        """
-        theme = getattr(self.settings, "theme", "system")
-        if theme == "dark":
-            return True
-        if theme in ("system", "auto"):
-            return self._system_appearance_is_dark()
-        return False
-
-    def _system_appearance_is_dark(self) -> bool:
-        """Best-effort detection of an OS-level dark appearance via wx."""
-        getter = getattr(self._wx, "SystemSettings", None)
-        appearance_getter = getattr(getter, "GetAppearance", None) if getter else None
-        if callable(appearance_getter):
-            try:
-                appearance = appearance_getter()
-            except Exception:  # noqa: BLE001 - probing must never crash the preview
-                appearance = None
-            for probe in ("IsDark", "IsUsingDarkBackground"):
-                method = getattr(appearance, probe, None)
-                if callable(method):
-                    try:
-                        return bool(method())
-                    except Exception:  # noqa: BLE001
-                        continue
-        return False
-
-    def _refresh_browser_preview(self) -> None:
-        session = self._browser_preview_session
-        if session is None:
-            return
-        if session.tab_index != self._active_tab_index:
-            return
-        # Debounce like the side preview: re-navigating the external browser on
-        # every keystroke flickered the page and re-announced from the top for a
-        # braille/screen-reader reader (the "meta refresh" feel). Coalescing to
-        # shortly after typing pauses cuts the reload churn; the page also
-        # restores scroll on reload (render_preview_html). The fully flicker-free
-        # live option is the in-app side preview (F6): in-place WebView swap.
-        timer = getattr(self, "_browser_preview_timer", None)
-        if timer is not None and timer.IsRunning():
-            timer.Stop()
-        self._browser_preview_timer = self._wx.CallLater(400, self._do_refresh_browser_preview)
-
-    def _do_refresh_browser_preview(self) -> None:
-        session = self._browser_preview_session
-        if session is None or session.tab_index != self._active_tab_index:
-            return
-        if session.tab_index < 0 or session.tab_index >= len(self._document_tabs):
-            return
-        # Rewrite the file only; never open the browser from the typing path
-        # (that spawned a new tab on every pause — #780 review finding).
-        self._write_browser_preview(session.tab_index)
 
     def _get_assistant(self) -> Assistant:
         assistant = getattr(self, "_assistant", None)
@@ -16025,435 +13531,6 @@ class MainFrame(
     def format_insert_task_list(self) -> None:
         self._insert_structure("Task List", "Inserted task list")
 
-    def open_list_manager(self) -> None:
-        if not self._feature_enabled("core.format"):
-            self._set_status("List Manager is unavailable in this profile")
-            return
-        if self._effective_markup_kind() not in {"markdown", "plain"}:
-            self._set_status("List Manager is only available in Markdown documents")
-            return
-        state = self._extract_list_manager_state()
-        if state is None or not state.items:
-            self._set_status("Place the cursor inside a Markdown list to open List Manager")
-            return
-        updated_text = self._show_list_manager_dialog(state)
-        if updated_text is None:
-            self._set_status("List Manager cancelled")
-            return
-        if updated_text == self.editor.GetValue():
-            self._set_status("List Manager closed without changes")
-            return
-        self._replace_document_text(updated_text)
-        self.document.set_text(updated_text)
-        self._set_status("Applied list manager changes")
-
-    def _extract_list_manager_state(self) -> _ListManagerState | None:
-        text = self.editor.GetValue()
-        cursor = self.editor.GetInsertionPoint()
-        current_start, current_end = line_span(text, cursor)
-        current_line = text[current_start:current_end]
-        if self._parse_list_manager_line(current_line) is None:
-            return None
-
-        starts: list[int] = [0]
-        for index, character in enumerate(text):
-            if character == "\n":
-                starts.append(index + 1)
-
-        current_index = 0
-        for index, start in enumerate(starts):
-            if start <= current_start:
-                current_index = index
-            else:
-                break
-
-        def line_text(line_index: int) -> str:
-            line_start = starts[line_index]
-            line_end = starts[line_index + 1] if line_index + 1 < len(starts) else len(text)
-            return text[line_start:line_end]
-
-        top = current_index
-        while top > 0 and self._parse_list_manager_line(line_text(top - 1)) is not None:
-            top -= 1
-        bottom = current_index
-        while (
-            bottom + 1 < len(starts)
-            and self._parse_list_manager_line(line_text(bottom + 1)) is not None
-        ):
-            bottom += 1
-
-        block_start = starts[top]
-        block_end = starts[bottom + 1] if bottom + 1 < len(starts) else len(text)
-        block_lines = [line_text(i) for i in range(top, bottom + 1)]
-        parsed: list[tuple[str, str, str, bool, str]] = []
-        indent_widths: list[int] = []
-        for raw_line in block_lines:
-            item = self._parse_list_manager_line(raw_line)
-            if item is None:
-                return None
-            parsed.append(item)
-            indent, _kind, _bullet, _checked, _body = item
-            indent_widths.append(self._indent_measure(indent))
-        if not parsed:
-            return None
-
-        base_indent_width = min(indent_widths)
-        step_width = max(1, self._indent_width())
-        items: list[_ListManagerItem] = []
-        for indent, kind, bullet, checked, body in parsed:
-            level = max(0, (self._indent_measure(indent) - base_indent_width) // step_width)
-            items.append(
-                _ListManagerItem(
-                    kind=kind,
-                    text=body,
-                    level=level,
-                    bullet=bullet or "-",
-                    checked=checked,
-                )
-            )
-        return _ListManagerState(
-            start=block_start,
-            end=block_end,
-            trailing_newline=text[block_end - 1 : block_end] == "\n",
-            base_indent=" " * base_indent_width,
-            items=items,
-        )
-
-    def _parse_list_manager_line(self, line: str) -> tuple[str, str, str, bool, str] | None:
-        text = line.rstrip("\r\n")
-        match = re.match(
-            r"^(?P<indent>[ \t]*)(?:(?P<number>\d+)(?P<number_sep>[.)])|(?P<bullet>[-+*]))"
-            r"(?P<spacing>[ \t]+)(?:(?P<task>\[[ xX]\])(?P<task_spacing>[ \t]+))?"
-            r"(?P<body>.*)$",
-            text,
-        )
-        if match is None:
-            return None
-        indent = match.group("indent") or ""
-        bullet = match.group("bullet") or "-"
-        task = match.group("task")
-        body = match.group("body") or ""
-        if task is not None:
-            return indent, "task", bullet, "x" in task.lower(), body
-        if match.group("number") is not None:
-            return indent, "ordered", ".", False, body
-        return indent, "bullet", bullet, False, body
-
-    def _indent_measure(self, indent: str) -> int:
-        return len(indent.expandtabs(self._indent_width()))
-
-    def _render_list_manager_block(self, state: _ListManagerState) -> str:
-        lines: list[str] = []
-        ordered_counters: dict[int, int] = {}
-        for item in state.items:
-            level = max(0, item.level)
-            indent = f"{state.base_indent}{self._indent_unit() * level}"
-            for key in list(ordered_counters):
-                if key > level:
-                    ordered_counters.pop(key, None)
-            if item.kind == "ordered":
-                ordered_counters[level] = ordered_counters.get(level, 0) + 1
-                marker = f"{ordered_counters[level]}. "
-            elif item.kind == "task":
-                marker = f"{item.bullet} [{'x' if item.checked else ' '}] "
-                ordered_counters[level] = 0
-            else:
-                marker = f"{item.bullet} "
-                ordered_counters[level] = 0
-            lines.append(f"{indent}{marker}{item.text}".rstrip())
-        block_text = "\n".join(lines)
-        if state.trailing_newline:
-            block_text += "\n"
-        return block_text
-
-    def _show_list_manager_dialog(self, state: _ListManagerState) -> str | None:
-        wx = self._wx
-        working_items = [
-            _ListManagerItem(
-                kind=item.kind,
-                text=item.text,
-                level=item.level,
-                bullet=item.bullet,
-                checked=item.checked,
-            )
-            for item in state.items
-        ]
-        selected_index: int | None = 0 if working_items else None
-        dialog = wx.Dialog(self.frame, title="List Manager", size=(1020, 700))
-        splitter = wx.SplitterWindow(dialog, style=wx.SP_LIVE_UPDATE)
-        tree = wx.TreeCtrl(
-            splitter,
-            style=wx.TR_HAS_BUTTONS | wx.TR_LINES_AT_ROOT | wx.TR_HAS_VARIABLE_ROW_HEIGHT,
-        )
-        set_accessible_name(tree, "List items")
-        preview = wx.TextCtrl(splitter, style=wx.TE_MULTILINE | wx.TE_READONLY)
-        set_accessible_name(preview, "List item preview")
-        splitter.SplitVertically(tree, preview, 420)
-        splitter.SetMinimumPaneSize(260)
-        item_indexes: dict[object, int] = {}
-        root = tree.AddRoot("List Items")
-
-        def list_preview(index: int | None) -> str:
-            if index is None or index < 0 or index >= len(working_items):
-                return "No list item selected."
-            item = working_items[index]
-            kind_label = {"bullet": "Bullet", "ordered": "Numbered", "task": "Task"}[item.kind]
-            status = f"{kind_label} item at level {item.level + 1}"
-            if item.kind == "task":
-                status = f"{status} ({'checked' if item.checked else 'unchecked'})"
-            return f"{status}\n\n{item.text or '(empty item)'}"
-
-        def build_tree() -> None:
-            nonlocal root, selected_index
-            tree.DeleteAllItems()
-            root = tree.AddRoot("List Items")
-            item_indexes.clear()
-            node_stack: list[tuple[int, object]] = []
-            first_item = None
-            selected_item = None
-            for index, item in enumerate(working_items):
-                label_prefix = (
-                    "[ ]"
-                    if item.kind == "task" and not item.checked
-                    else "[x]"
-                    if item.kind == "task"
-                    else "1."
-                    if item.kind == "ordered"
-                    else item.bullet
-                )
-                label = f"{label_prefix} {item.text or '(empty item)'}"
-                while node_stack and node_stack[-1][0] >= item.level:
-                    node_stack.pop()
-                parent = root if not node_stack else node_stack[-1][1]
-                node = tree.AppendItem(parent, label)
-                item_indexes[node] = index
-                if first_item is None:
-                    first_item = node
-                if selected_index == index:
-                    selected_item = node
-                node_stack.append((item.level, node))
-            tree.Expand(root)
-            target = selected_item if selected_item is not None else first_item
-            if target is not None:
-                tree.SelectItem(target)
-                selected_index = item_indexes.get(target)
-            else:
-                selected_index = None
-            preview.ChangeValue(list_preview(selected_index))
-
-        def subtree_bounds(index: int) -> tuple[int, int]:
-            level = working_items[index].level
-            end = index + 1
-            while end < len(working_items) and working_items[end].level > level:
-                end += 1
-            return index, end
-
-        def update_after_change(message: str, preferred_index: int | None) -> None:
-            nonlocal selected_index
-            if not working_items:
-                selected_index = None
-            elif preferred_index is None:
-                selected_index = min(len(working_items) - 1, selected_index or 0)
-            else:
-                selected_index = max(0, min(preferred_index, len(working_items) - 1))
-            build_tree()
-            self._set_status(message)
-
-        def require_selection() -> int | None:
-            if selected_index is None or selected_index < 0 or selected_index >= len(working_items):
-                return None
-            return selected_index
-
-        def move_up() -> None:
-            index = require_selection()
-            if index is None:
-                return
-            start, end = subtree_bounds(index)
-            target = start - 1
-            while target >= 0 and working_items[target].level != working_items[index].level:
-                target -= 1
-            if target < 0:
-                return
-            block = working_items[start:end]
-            del working_items[start:end]
-            insert_at = target
-            working_items[insert_at:insert_at] = block
-            update_after_change("Moved list item up", insert_at)
-
-        def move_down() -> None:
-            index = require_selection()
-            if index is None:
-                return
-            start, end = subtree_bounds(index)
-            target = end
-            while (
-                target < len(working_items)
-                and working_items[target].level != working_items[index].level
-            ):
-                target += 1
-            if target >= len(working_items):
-                return
-            next_start, next_end = subtree_bounds(target)
-            block = working_items[start:end]
-            del working_items[start:end]
-            insert_at = next_end - len(block)
-            working_items[insert_at:insert_at] = block
-            update_after_change("Moved list item down", insert_at)
-
-        def promote() -> None:
-            index = require_selection()
-            if index is None or working_items[index].level == 0:
-                return
-            start, end = subtree_bounds(index)
-            for cursor in range(start, end):
-                working_items[cursor].level = max(0, working_items[cursor].level - 1)
-            update_after_change("Promoted list item", start)
-
-        def demote() -> None:
-            index = require_selection()
-            if index is None or index == 0:
-                return
-            previous_level = working_items[index - 1].level
-            if previous_level < working_items[index].level:
-                return
-            start, end = subtree_bounds(index)
-            for cursor in range(start, end):
-                working_items[cursor].level += 1
-            update_after_change("Nested list item", start)
-
-        def edit_item() -> None:
-            index = require_selection()
-            if index is None:
-                return
-            current = working_items[index]
-            with wx.TextEntryDialog(
-                dialog,
-                "Edit list item text:",
-                "Edit List Item",
-                value=current.text,
-            ) as entry:
-                if self._show_modal_dialog(entry, "Edit List Item") != wx.ID_OK:
-                    return
-                current.text = entry.GetValue().strip()
-            update_after_change("Updated list item", index)
-
-        def add_item(as_child: bool) -> None:
-            index = require_selection()
-            if index is None:
-                return
-            current = working_items[index]
-            with wx.TextEntryDialog(
-                dialog,
-                "Enter text for the new list item:",
-                "Add List Item",
-                value="",
-            ) as entry:
-                if self._show_modal_dialog(entry, "Add List Item") != wx.ID_OK:
-                    return
-                text_value = entry.GetValue().strip()
-            level = current.level + 1 if as_child else current.level
-            insert_at = subtree_bounds(index)[1] if as_child else subtree_bounds(index)[1]
-            working_items.insert(
-                insert_at,
-                _ListManagerItem(
-                    kind=current.kind,
-                    text=text_value,
-                    level=level,
-                    bullet=current.bullet,
-                    checked=False,
-                ),
-            )
-            update_after_change("Added list item", insert_at)
-
-        def delete_item() -> None:
-            index = require_selection()
-            if index is None:
-                return
-            start, end = subtree_bounds(index)
-            del working_items[start:end]
-            update_after_change("Deleted list item", start - 1 if start > 0 else 0)
-
-        def on_select(event: object) -> None:
-            nonlocal selected_index
-            selected_index = item_indexes.get(event.GetItem())
-            preview.ChangeValue(list_preview(selected_index))
-            event.Skip()
-
-        button_column = wx.BoxSizer(wx.VERTICAL)
-        move_up_button = wx.Button(dialog, label="Move Up")
-        move_down_button = wx.Button(dialog, label="Move Down")
-        promote_button = wx.Button(dialog, label="Promote")
-        demote_button = wx.Button(dialog, label="Demote")
-        edit_button = wx.Button(dialog, label="Edit...")
-        add_child_button = wx.Button(dialog, label="Add Child...")
-        add_sibling_button = wx.Button(dialog, label="Add Sibling...")
-        delete_button = wx.Button(dialog, label="Delete")
-        apply_button = wx.Button(dialog, id=wx.ID_OK, label="Apply Changes")
-        cancel_button = wx.Button(dialog, id=wx.ID_CANCEL, label="Close")
-
-        for button in (
-            move_up_button,
-            move_down_button,
-            promote_button,
-            demote_button,
-            edit_button,
-            add_child_button,
-            add_sibling_button,
-            delete_button,
-        ):
-            button_column.Add(button, 0, wx.EXPAND | wx.BOTTOM, 6)
-        button_column.AddStretchSpacer(1)
-        button_column.Add(apply_button, 0, wx.EXPAND | wx.BOTTOM, 6)
-        button_column.Add(cancel_button, 0, wx.EXPAND)
-
-        controls = wx.BoxSizer(wx.VERTICAL)
-        controls.Add(
-            wx.StaticText(
-                dialog,
-                label=(
-                    "Manage the current Markdown list as a tree. "
-                    "Use Move/Promote/Demote to restructure without editing markers by hand."
-                ),
-            ),
-            0,
-            wx.ALL | wx.EXPAND,
-            8,
-        )
-        controls.Add(splitter, 1, wx.ALL | wx.EXPAND, 8)
-        content = wx.BoxSizer(wx.HORIZONTAL)
-        content.Add(controls, 1, wx.EXPAND)
-        content.Add(button_column, 0, wx.ALL | wx.EXPAND, 8)
-        dialog.SetSizer(content)
-
-        tree.Bind(wx.EVT_TREE_SEL_CHANGED, on_select)
-        move_up_button.Bind(wx.EVT_BUTTON, lambda _e: move_up())
-        move_down_button.Bind(wx.EVT_BUTTON, lambda _e: move_down())
-        promote_button.Bind(wx.EVT_BUTTON, lambda _e: promote())
-        demote_button.Bind(wx.EVT_BUTTON, lambda _e: demote())
-        edit_button.Bind(wx.EVT_BUTTON, lambda _e: edit_item())
-        add_child_button.Bind(wx.EVT_BUTTON, lambda _e: add_item(as_child=True))
-        add_sibling_button.Bind(wx.EVT_BUTTON, lambda _e: add_item(as_child=False))
-        delete_button.Bind(wx.EVT_BUTTON, lambda _e: delete_item())
-        apply_button.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_OK))
-        cancel_button.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_CANCEL))
-
-        build_tree()
-        apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
-        if self._show_modal_dialog(dialog, "List Manager") != wx.ID_OK:
-            return None
-
-        block = self._render_list_manager_block(
-            _ListManagerState(
-                start=state.start,
-                end=state.end,
-                trailing_newline=state.trailing_newline,
-                base_indent=state.base_indent,
-                items=working_items,
-            )
-        )
-        text = self.editor.GetValue()
-        return text[: state.start] + block + text[state.end :]
-
     def format_insert_code_block(self) -> None:
         if not self._feature_enabled("core.format"):
             self._set_status("Code Block is unavailable in this profile")
@@ -17170,9 +14247,17 @@ class MainFrame(
             f"Inserted {tag}" if is_form_snippet(tag) else f"Inserted HTML tag <{tag}>"
         )
 
+    def _markdown_tags_apply(self) -> bool:
+        """A Markdown document, not rich: where Insert Markdown Tag belongs."""
+        rich = self._current_editor_mode().startswith("rich")
+        return not rich and self._current_markup_context() == "markdown"
+
     def insert_markdown_tag(self) -> None:
         if not self._feature_enabled("core.format"):
             self._set_status("Markdown tag tools are unavailable in this profile")
+            return
+        if not self._markdown_tags_apply():
+            self._announce_result(MARKDOWN_TAG_REFUSAL)
             return
         kind = self._choose_searchable_option(
             title="Insert Markdown Tag",
@@ -18584,127 +15669,6 @@ class MainFrame(
                 "Add features any time from Help > Personalise QUILL."
             )
 
-    def run_profile_onboarding(self) -> None:
-        # Backward-compatible alias for older command IDs and automation scripts.
-        self.run_startup_wizard()
-
-    def _maybe_run_first_run_onboarding(self) -> None:
-        from quill.core.paths import app_data_dir, new_install_marker_path
-        from quill.core.settings import save_settings as _save_settings
-        from quill.core.storage import read_json, write_json_atomic
-
-        # Consume the new-install marker dropped by the installer.  The marker
-        # is written to {app} on every install (including upgrades) so that
-        # setup_wizard_completed in %APPDATA% — which survives reinstalls — does
-        # not silently suppress the first-run wizard after a fresh install.
-        #
-        # Deleting the marker can fail (#44) when Quill was installed elevated
-        # into a directory the running user cannot write to — e.g. Program
-        # Files after accepting a UAC prompt at install time. If the delete is
-        # silently swallowed without recording that this marker was already
-        # consumed, every subsequent launch re-enters this branch and force-
-        # resets setup_wizard_completed, reopening the wizard forever.
-        #
-        # The sentinel under app_data_dir() (always writable per-user) records
-        # the marker's resolved path so a marker we have already consumed is
-        # recognized even when it could not be deleted (#647). The marker's
-        # mtime alone is not a reliable identity — antivirus tools, filesystem
-        # mtime drift, or other processes touching the file can change it
-        # between launches, which caused the wizard to keep re-opening. The
-        # path is stable for a given install, so a marker at a path the
-        # sentinel already knows is treated as already consumed regardless of
-        # mtime. A marker at a different path is a genuinely new install
-        # (portable bundle moved, custom install location, etc.) and resets
-        # the wizard as before.
-        marker = new_install_marker_path()
-        if marker is not None and marker.exists():
-            try:
-                marker_resolved = str(marker.resolve())
-            except OSError:
-                # The marker is visible to .exists() but not resolvable —
-                # treat the current path as the identity so we still record
-                # a sentinel and don't reopen the wizard on every launch.
-                marker_resolved = str(marker)
-            marker_mtime = marker.stat().st_mtime
-            consumed_marker_path = app_data_dir() / "new-install-marker-consumed.json"
-            consumed = read_json(consumed_marker_path, {})
-            already_consumed = consumed.get("path") == marker_resolved
-            if not already_consumed:
-                if getattr(self.settings, "setup_wizard_completed", False):
-                    self.settings.setup_wizard_completed = False
-                    _save_settings(self.settings)
-                write_json_atomic(
-                    consumed_marker_path,
-                    {"path": marker_resolved, "mtime": marker_mtime},
-                )
-            try:
-                marker.unlink()
-            except OSError:
-                pass
-
-        def _focus_editor() -> None:
-            editor = getattr(self, "editor", None)
-            if editor is not None and hasattr(editor, "SetFocus"):
-                self._wx.CallAfter(editor.SetFocus)
-
-        # Surface the result of a data move/import that an earlier launch
-        # queued (e.g. the legacy-install import below, applied on restart).
-        self._surface_data_migration_notice()
-
-        # Before the first-run wizard, offer to import data stranded in a
-        # previous install's location (portable<->installed switch, or a lost
-        # storage-mode marker). If the user accepts, QUILL relaunches to apply
-        # the import before Settings are read, so stop onboarding here.
-        if not getattr(self.settings, "setup_wizard_completed", True):
-            if self._maybe_offer_legacy_data_import():
-                return
-
-        # New unified first-run wizard: run when setup_wizard_completed is False
-        # (i.e., a fresh install that has not seen the wizard yet). This is the
-        # only onboarding surface shown on first run; once it completes,
-        # run_setup_wizard() sets setup_wizard_completed=True and we never
-        # re-prompt. The legacy "Startup Wizard overview" and per-feature
-        # prompts that used to fire on later launches were removed (#700) -- the
-        # unified wizard subsumes them, and each feature remains set up from its
-        # own menu/button.
-        if not getattr(self.settings, "setup_wizard_completed", True):
-            try:
-                self.run_startup_wizard(first_run=True)
-            except Exception:
-                self._report_startup_task_failure("first-run setup wizard")
-            # #606: if the default "Untitled" tab was deferred at __init__
-            # time, create it now that the wizard has closed. The
-            # wizard's modal grabbed focus while the notebook was
-            # empty; now we hand the user a fresh document.
-            if getattr(self, "_first_run_wizard_pending", False):
-                self._first_run_wizard_pending = False
-                try:
-                    self._create_document_tab(Document())
-                except Exception:
-                    self._report_startup_task_failure("first-run document tab")
-                # Re-run the editor-dependent init steps that __init__
-                # skipped for this branch. _create_document_tab() already
-                # wired the tab + editor; these restore the location ring,
-                # accessibility region, and soft-wrap style for the new document
-                # (the _bind_events() call in __init__ no-opped soft wrap because
-                # the editor did not exist yet).
-                try:
-                    self._location_ring.record(0)
-                    self._region_tracker.enter("Editor")
-                    self._apply_soft_wrap(self.settings.soft_wrap)
-                except Exception:
-                    pass
-            _focus_editor()
-            # _build_menu() in __init__ deferred its contextual refresh
-            # because self.editor was not yet created. Now that the tab
-            # has been added and self.editor is wired, flush the pending
-            # refresh so contextual menu items (markup mode, document
-            # name, etc.) reflect the active document.
-            self._request_menu_refresh()
-            return
-
-        _focus_editor()
-
     def enable_braille_mode(self) -> None:
         """Enable Braille Mode from Help > Enable Braille Mode or the command palette.
 
@@ -18889,95 +15853,6 @@ class MainFrame(
             return candidates[0] if candidates else None
         except Exception:  # noqa: BLE001
             return None
-
-    def _show_trust_consent_onboarding(self, force: bool) -> bool:
-        wx = self._wx
-        status = getattr(self, "_trust_consent_status", None)
-        reconsent = bool(status is not None and status.accepted and status.needs_reconsent)
-        if sys.platform == "darwin":
-            _key_storage_clause = "API keys are stored in the macOS Keychain."
-        else:
-            _key_storage_clause = (
-                "API keys are stored in Windows Credential Manager when available, "
-                "with DPAPI-encrypted fallback storage."
-            )
-        message = (
-            "By selecting I accept, you confirm that:\n\n"
-            "1. You are responsible for how AI outputs are used, reviewed, and shared.\n"
-            "2. Cloud AI requests are user-initiated and subject to provider terms.\n"
-            "3. Quill does not persist chat session transcripts from AI interactions.\n"
-            f"4. {_key_storage_clause}\n\n"
-            "Do you accept and want to continue?"
-        )
-        if reconsent:
-            deltas = self._format_reconsent_deltas(status.loaded_version)
-            message = (
-                "Your prior trust, privacy, and responsible-AI disclosure is out of "
-                "date.  Please review the changes below before continuing.\n\n"
-                f"Changes since your prior consent:\n\n{deltas}\n\n" + message
-            )
-        title = (
-            "Trust and Privacy Consent" if reconsent else "Trust, Privacy, and Responsible AI Use"
-        )
-        dialog = wx.MessageDialog(
-            self.frame,
-            message,
-            "Trust, Privacy, and Responsible AI Use",
-            wx.YES_NO | wx.ICON_INFORMATION,
-        )
-        if hasattr(dialog, "SetYesNoLabels"):
-            dialog.SetYesNoLabels("I accept", "I do not accept")
-        try:
-            accepted = self._show_modal_dialog(dialog, title) == wx.ID_YES
-        finally:
-            dialog.Destroy()
-        if accepted:
-            mark_trust_consent_complete()
-            self._trust_consent_status = load_trust_consent_status()
-            return True
-        return False
-
-    @staticmethod
-    def _format_reconsent_deltas(loaded_version: int) -> str:
-        """Render the per-version change log as numbered bullet points (#305).
-
-        Returns the deltas for every version strictly greater than
-        ``loaded_version``, in version order.  Empty string when no deltas
-        are recorded (e.g. the change log was wiped in a future cleanup).
-        """
-        lines: list[str] = []
-        for version, delta in sorted(trust_consent_change_log().items()):
-            if version <= loaded_version:
-                continue
-            if not delta:
-                continue
-            lines.append(f"- (version {version}) {delta}")
-        return "\n".join(lines)
-
-    def _show_bw_onboarding(self, force: bool) -> None:
-        wx = self._wx
-        response = self._show_message_box(
-            "Configure QUILL Whisperer rollout defaults now?\n\n"
-            "This step safely stages provider/model setup and status preferences without enabling "
-            "runtime routing changes.",
-            "QUILL Whisperer Setup",
-            wx.ICON_QUESTION | wx.YES_NO,
-        )
-        if response != wx.YES:
-            if force:
-                self._set_status("QUILL Whisperer setup skipped")
-            return
-        self.apply_bw_recommended_provider()
-        self.apply_bw_recommended_model()
-        if not bool(getattr(self.settings, "bw_auto_open_status_page_on_download_start", False)):
-            auto_open = self._show_message_box(
-                "Auto-open Help > Status Page when QUILL Whisperer model downloads start?",
-                "QUILL Whisperer Setup",
-                wx.ICON_QUESTION | wx.YES_NO,
-            )
-            self.settings.bw_auto_open_status_page_on_download_start = auto_open == wx.YES
-            save_settings(self.settings)
-        self._set_status("QUILL Whisperer rollout defaults configured")
 
     def _sync_ai_enabled_menu(self, enabled: bool) -> None:
         menu_bar = self.frame.GetMenuBar()

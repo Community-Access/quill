@@ -40,7 +40,15 @@ def open_doc(host: Any, stem: str) -> None:
 
 
 def build_menu_bar(host: Any, wx: Any, *, title: str, version: str, repo: str) -> Any:
-    """Build, bind and return the menu bar. Every id is pinned on *host*."""
+    """Build, bind and return the menu bar. Every id is pinned on *host*.
+
+    *version* is the app's version; with the app's build it is ``1.0.0+1``, and
+    the installer's marker, when there is one, says which is installed.
+    """
+    from quill.apps.converter import _BUILD
+    from quill.core.app_version import installed_version
+
+    version = installed_version(version, build=_BUILD)
     bar = wx.MenuBar()
     ids: list[Any] = []
 
@@ -112,6 +120,9 @@ def build_menu_bar(host: Any, wx: Any, *, title: str, version: str, repo: str) -
 
     help_menu = wx.Menu()
     add(help_menu, "&Help for This Window\tF1", host.show_context_help)
+    from quill.ui.menu_palette import append_palette_row
+
+    ids.append(append_palette_row(host, help_menu))  # qc.md X-01
     add(help_menu, "&User Guide\tCtrl+F1", lambda: open_doc(host, "userguide"))
     add(help_menu, "&Release Notes\tShift+F1", lambda: open_doc(host, "release-notes-1.0"))
     add(help_menu, "Chan&gelog\tCtrl+Shift+F1", lambda: open_doc(host, "CHANGELOG"))

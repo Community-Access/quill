@@ -107,7 +107,9 @@ def quill_menu_bar():
     # reaching into settings, so nothing else about startup changes.
     with patch.object(MainFrame, "check_for_updates", lambda self, **_kwargs: None):
         frame = MainFrame()
-    yield frame.frame.GetMenuBar()
+    bar = frame.frame.GetMenuBar()
+    bar._quill_main_frame = frame
+    yield bar
     frame.frame.Destroy()
     # Building the frame installs a process-global dialog-transition policy;
     # leaving it set leaks this app's preference into every later test.
@@ -217,3 +219,91 @@ def test_every_menu_item_has_a_mnemonic_at_all(quill_menu_bar) -> None:
     for index in range(quill_menu_bar.GetMenuCount()):
         walk(quill_menu_bar.GetMenu(index), quill_menu_bar.GetMenuLabel(index))
     assert missing == [], "menu items with no Alt letter: " + "; ".join(missing)
+
+
+def test_file_exit_keeps_x(quill_menu_bar) -> None:
+    """Alt+F, X closes a Windows program; QUILL must answer it the same way.
+
+    Family rule 1: Microsoft's key wins for a function both editors have. When
+    File > Recent Documents arrived, the resolver let an earlier File item take
+    the X and Exit was left with no letter at all.
+    """
+    file_menu = quill_menu_bar.GetMenu(quill_menu_bar.FindMenu("File"))
+    found = {}
+    for item in file_menu.GetMenuItems():
+        if item.IsSeparator():
+            continue
+        title = item.GetItemLabel().split(_TAB, 1)[0]
+        found[title.replace("&", "")] = _mnemonic(title)
+    exit_title = next(t for t in found if t.startswith("Exit"))
+    assert found[exit_title] == "X", "; ".join(f"{t}={m}" for t, m in found.items())
+
+
+def test_the_preferences_hub_has_a_way_in(quill_menu_bar, monkeypatch) -> None:
+    """Ctrl+, opens Settings directly, so the hub needs its own row and key.
+
+    Task Recipes and Working Modes, GLOW and every Quillin preference page live
+    only in the hub; from 6d1bc9e until 2026-10 nothing opened it.
+    """
+    from quill.ui.main_frame import MainFrame
+
+    def find(menu):
+        for item in menu.GetMenuItems():
+            if item.GetItemLabelText().startswith("More Preferences..."):
+                return item
+            if item.GetSubMenu() is not None:
+                found = find(item.GetSubMenu())
+                if found is not None:
+                    return found
+        return None
+
+    item = find(quill_menu_bar.GetMenu(quill_menu_bar.FindMenu("Tools")))
+    assert item is not None
+    assert "(QUILL Key + O)" in item.GetItemLabel()
+    item_id = item.GetId()
+    opened: list[bool] = []
+    monkeypatch.setattr(MainFrame, "open_preferences", lambda self: opened.append(True))
+    event = wx.CommandEvent(wx.EVT_MENU.typeId, item_id)
+    quill_menu_bar.GetFrame().GetEventHandler().ProcessEvent(event)
+    assert opened == [True]
+
+
+def test_two_keys_that_did_nothing_now_run_their_command(quill_menu_bar) -> None:
+    """QUILL key, C had no command behind it; Alt+F1 was registered keyless."""
+    commands = quill_menu_bar._quill_main_frame.commands
+    assert commands.keybinding_for("help.why_unavailable") == "Alt+F1"
+    assert commands.get("edit.copy_selection_for_email") is not None
+
+
+def test_copy_selection_for_email_copies_the_selection(quill_menu_bar, monkeypatch) -> None:
+    from quill.ui.main_frame import MainFrame
+
+    command = quill_menu_bar._quill_main_frame.commands.get("edit.copy_selection_for_email")
+    assert command.handler.__func__ is MainFrame.copy_as_email_body
+
+    class _Editor:
+        def GetValue(self) -> str:  # noqa: N802 - wx spelling
+            return "Dear Sam, the meeting moved. Thanks."
+
+        def GetSelection(self) -> tuple[int, int]:  # noqa: N802 - wx spelling
+            return (0, 8)
+
+    class _Clipboard:
+        def Open(self) -> bool:  # noqa: N802 - wx spelling
+            return True
+
+        def SetData(self, data) -> None:  # noqa: N802 - wx spelling
+            copied.append(data.GetText())
+
+        def Close(self) -> None:  # noqa: N802 - wx spelling
+            pass
+
+    copied: list[str] = []
+    monkeypatch.setattr(wx, "TheClipboard", _Clipboard())
+    frame = MainFrame.__new__(MainFrame)
+    frame.editor = _Editor()
+    frame.document = None
+    frame.settings = type("S", (), {"content_handoff_format": "text"})()
+    frame._set_status = lambda _message: None
+    frame.copy_as_email_body()
+    assert copied and copied[0].strip() == "Dear Sam"

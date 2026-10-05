@@ -19,17 +19,17 @@ TUTORIALS: tuple[Tutorial, ...] = (
         minutes=6,
         surfaces=("Quill Radio", "Radio Recordings"),
         summary=(
-            "Start and stop a recording of the station you are listening to, find "
-            "the file, play it back, and understand what the status bar's Record "
-            "cell is counting."
+            "Record the station you are listening to, stop it, find the file and "
+            "play it back. You will also learn what the Record item in the "
+            "status bar is telling you."
         ),
         steps=(
             Step(
                 title="Put something on first",
                 body=(
-                    "Record Now follows what you are listening to, so it needs "
-                    "something to follow. Play a station -- any station -- and "
-                    "leave it running."
+                    "Record Now records whatever you are listening to, so you "
+                    "need something playing first. Play any station you like and "
+                    "leave it on."
                 ),
                 command="radio.play_last",
                 hear="The station's name as it starts playing.",
@@ -38,10 +38,10 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Start the recording",
                 body=(
-                    "Record Now begins a capture of the station on now, and says "
-                    "so with the station's name. More than one place agrees it is "
-                    "happening: the status bar's Record cell changes to Stop "
-                    "Recording with a time, and the now-playing line notes it."
+                    "Record Now starts recording the station that is on, and "
+                    "says so with the station's name. You will also find the "
+                    "Record item in the status bar now says Stop Recording with "
+                    "a time, and the now playing line mentions it too."
                 ),
                 command="radio.record_toggle",
                 hear="Recording started, and the station's name, over the start-recording sound.",
@@ -50,25 +50,22 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Read what the Record cell is counting",
                 body=(
-                    "Press F6 in the main window and arrow to the Record cell. "
-                    "Started with Record "
-                    "Now, it counts up -- 18 min so far -- because you asked for "
-                    "no length at all. Asked for an hour, it counts down. The only "
-                    "number the app has in the first case is a disk-safety cap, "
-                    "and counting down to that would be telling you about a plan "
-                    "you never made."
+                    "Press F6 in the main window and arrow to the Record item. "
+                    "When you start with Record Now, it counts up, such as 18 "
+                    "min so far, because you did not set a length. If you had "
+                    "asked for an hour, it would count down instead."
                 ),
                 keys=("F6", "Right arrow"),
-                hear="Stop Recording, and the elapsed time in brackets: 18 min so far.",
+                hear="Stop Recording, and the time so far in brackets: 18 min so far.",
             ),
             Step(
                 title="Stop it, and hear where it went",
                 body=(
-                    "The same command stops the recording of the station you are "
-                    "listening to, and names the file once it has been written. A "
-                    "recording of a "
-                    "different station running in the background is never stopped "
-                    "by this -- those are stopped from the Recordings window."
+                    "Use the same command to stop recording the station you are "
+                    "listening to. Once the file is saved, Quill Radio tells you "
+                    "its name. If you are also recording a different station in "
+                    "the background, this does not stop that one. You stop those "
+                    "from the Recordings window."
                 ),
                 command="radio.record_toggle",
                 hear="Stopping recording, then Recording saved and the file's name.",
@@ -77,10 +74,11 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Open the recordings list",
                 body=(
-                    "Radio Recordings lists what you have recorded, newest first, "
-                    "so yours is near the top. Its summary line leads with what is "
-                    "happening rather than with counts: recording or not, next "
-                    "scheduled, how many recorded, and the folder they are in."
+                    "Radio Recordings lists everything you have recorded, newest "
+                    "first, so yours is near the top. The summary line tells you "
+                    "what is happening first: whether anything is recording, "
+                    "what is scheduled next, how many recordings you have, and "
+                    "which folder they are in."
                 ),
                 command="radio.recordings",
                 hear="Radio Recordings, then the list and the row you land on.",
@@ -89,10 +87,9 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Play it back",
                 body=(
-                    "Press Enter on the row. It plays through the app's own "
-                    "player, so every transport key you already know works on it "
-                    "-- including volume, which many programs quietly reserve for "
-                    "live audio only."
+                    "Press Enter on the row. It plays in Quill Radio's own "
+                    "player, so all the player keys you already know work on it, "
+                    "volume included."
                 ),
                 keys=("Enter",),
                 hear="Playing recording, the recording's name, then the recording itself.",
@@ -100,43 +97,41 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Throw it away",
                 body=(
-                    "Press Delete and confirm. Focus lands on the recording that "
-                    "took its place in the list -- not at the top and not nowhere, "
-                    "which is what makes deleting several in a row bearable."
+                    "Press Delete and confirm. You land on the next recording in "
+                    "the list, so deleting several in a row is quick and easy."
                 ),
                 keys=("Delete",),
                 hear=(
-                    "A confirmation naming the recording, then Removed recording and "
-                    "its name, and the row that took its place."
+                    "A question naming the recording, then Removed recording and its "
+                    "name, and the row that took its place."
                 ),
                 note=(
-                    "A recording deleted here can be brought back with Undo Last "
-                    "Action, which restores the file and not merely its name in the "
-                    "list."
+                    "Changed your mind? Undo Last Action brings a deleted "
+                    "recording back, the file itself and not just its name in "
+                    "the list."
                 ),
             ),
             Step(
                 title="Decide where recordings live",
                 body=(
-                    "Recording Settings, on the Record menu, holds the format -- "
-                    "MP3, OGG Vorbis, FLAC, WAV or the raw stream -- the quality, the "
-                    "filename pattern, and the destination "
-                    "folder. Recordings land in Music\\Quill Radio Recordings "
-                    "under your user folder unless you point them somewhere else."
+                    "Recording Settings, on the Record menu, is where you choose "
+                    "the format (MP3, OGG Vorbis, FLAC, WAV or the raw stream), "
+                    "the quality, how files are named, and which folder they go "
+                    "in. Unless you change it, recordings go in Music\\Quill "
+                    "Radio Recordings in your user folder."
                 ),
                 command="radio.recording_settings",
                 hear="Recording Settings, then Format and the format chosen now.",
                 note=(
-                    "Set a temporary folder as well and a recording is written "
-                    "there and moved when it finishes, so a half-written file "
-                    "never appears among your finished recordings."
+                    "You can also set a temporary folder. Recordings are made "
+                    "there and moved when they finish, so you never find a half "
+                    "finished file among your recordings."
                 ),
             ),
         ),
         closing=(
-            "One key starts it, the same key stops it, and the file is somewhere "
-            "you can actually find. The next lesson is the one that records "
-            "something while you are out."
+            "One key starts it, the same key stops it, and the file is easy to "
+            "find. Next, learn how to record a show while you are out."
         ),
         then=("book-a-show",),
     ),
@@ -147,30 +142,28 @@ TUTORIALS: tuple[Tutorial, ...] = (
         minutes=8,
         surfaces=("Schedule Recording", "Quill Radio"),
         summary=(
-            "Fill in a scheduled recording correctly the first time, including the "
-            "time-zone trap, then edit, duplicate, disable and delete entries "
-            "without starting again."
+            "Set up a recording for later and get it right the first time, time "
+            "zones included. Then change, copy, pause and remove your bookings "
+            "without starting over."
         ),
         steps=(
             Step(
                 title="Learn the one rule before you open the window",
                 body=(
-                    "You fill in the details first and choose Add Schedule last. "
-                    "Add is the button that commits the entry you have just "
-                    "described -- it is not a button that starts a new form. "
-                    "Nearly every confused first attempt at this window is that "
-                    "one misunderstanding."
+                    "Fill in the details first, and choose Add Schedule last. "
+                    "Add Schedule saves the booking you have just described. It "
+                    "does not start a new blank form. Keep that in mind and this "
+                    "window is easy."
                 ),
-                hear="Nothing: read this one twice instead.",
+                hear="Nothing yet. Just keep this one in mind.",
             ),
             Step(
                 title="Open the schedule",
                 body=(
-                    "Schedule Recording is a list above a form. The list, "
-                    "Scheduled recordings, is what you have booked, ordered by when "
-                    "each one next occurs -- soonest first, not the order you "
-                    "entered them. The form below it, Add a new schedule, is where "
-                    "you describe the next one."
+                    "Schedule Recording has a list above a form. The list, "
+                    "Scheduled recordings, shows what you have booked, with the "
+                    "soonest first. The form underneath, Add a new schedule, is "
+                    "where you describe the next one."
                 ),
                 command="radio.schedule_recording",
                 hear="Schedule Recording, then the Scheduled recordings list.",
@@ -179,12 +172,12 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Pick the station from your favorites",
                 body=(
-                    "Tab to Favorite station and arrow to one: choosing a favorite "
-                    "fills in both Station name and Stream URL. If the station you "
-                    "want is not listed, add it to "
-                    "your favorites first -- or, for a one-off stream, type the "
-                    "name and paste the address by hand instead. Both fields stay "
-                    "editable either way."
+                    "Tab to Favorite station and arrow to one. Choosing a "
+                    "favorite fills in both Station name and Stream URL for you. "
+                    "If the station you want is not there, add it to your "
+                    "favorites first. Or, for a one-off, type the name and paste "
+                    "the address yourself. You can still edit both boxes either "
+                    "way."
                 ),
                 keys=("Tab", "Down arrow"),
                 hear="The station name and stream filled in for you.",
@@ -192,63 +185,58 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Enter the time the way you think of it",
                 body=(
-                    "In the Time field, 7:30 PM and 19:30 are both understood, so "
-                    "use whichever you have in your head. Then pin the entry with "
-                    "Time zone: leave it at (local time) for a show quoted in your "
-                    "own clock, and choose the zone when the show is quoted in "
-                    "somebody else's."
+                    "In the Time box, 7:30 PM and 19:30 both work, so type it "
+                    "whichever way feels natural. Then check Time zone. Leave it "
+                    "on (local time) for a show at a time on your own clock. If "
+                    "the show's time is given in another time zone, choose that "
+                    "zone instead."
                 ),
-                hear="Time (7:30 PM or 19:30), edit; then Time zone, reading (local time).",
+                hear="Time (7:30 PM or 19:30), edit. Then Time zone, reading (local time).",
                 note=(
-                    "The list shows every entry's time with its zone, so two "
-                    "similar bookings in different zones can be told apart at a "
-                    "glance -- which is exactly when this goes wrong."
+                    "The list shows each booking's time with its time zone, so "
+                    "you can tell two similar bookings apart easily."
                 ),
             ),
             Step(
                 title="Choose how often, and how long",
                 body=(
                     "Repeats offers Once (with a date), Daily, or Weekly (with a "
-                    "day). Then the length, as Duration hours and minutes -- a "
-                    "three-hour show is "
-                    "simply 3 and 0, with no arithmetic and no counting zeroes in "
-                    "a seconds field."
+                    "day). Then set the length in Duration hours and minutes. A "
+                    "three-hour show is just 3 and 0. No sums needed."
                 ),
-                hear="Repeats, combo box, then each duration field with its number.",
+                hear="Repeats, combo box, then each duration box with its number.",
             ),
             Step(
                 title="Commit it",
                 body=(
-                    "Choose Add Schedule. Your entry appears in the list, focus "
-                    "moves to it, and the form clears for the next one -- so you "
-                    "are never left standing on the Add button wondering whether "
-                    "it worked."
+                    "Choose Add Schedule. Your booking appears in the list, you "
+                    "land on it, and the form clears ready for the next one. So "
+                    "you always know it worked."
                 ),
                 hear=(
-                    "Scheduled recording added for, and the station, then the entry "
-                    "itself as focus lands on it."
+                    "Scheduled recording added for, and the station. Then the booking "
+                    "itself as you land on it."
                 ),
             ),
             Step(
                 title="Change one without deleting it",
                 body=(
-                    "Select an entry and choose Edit: the form fills in, the Add "
-                    "button relabels to Save Changes and the status line names the "
-                    "entry you are editing, so it is always clear you are changing "
-                    "that one rather than adding a new one. New abandons the edit."
+                    "Select a booking and choose Edit. The form fills in, the Add "
+                    "button changes to Save Changes, and the status line names "
+                    "the booking you are changing. So you always know you are "
+                    "editing, not adding. New cancels the edit."
                 ),
                 keys=("Alt+E",),
-                hear="Station name, holding the entry's name, where focus lands to edit it.",
+                hear="Station name, holding the booking's name, ready for you to edit.",
             ),
             Step(
                 title="Make a similar one",
                 body=(
-                    "Duplicate, beside Edit, starts a new, independent entry "
-                    "pre-filled from the "
-                    "selected one, with (copy) on its name -- a starting point for "
-                    "another day or a second slot. It keeps the original's stream "
-                    "until you change it, so pick a different favorite if you "
-                    "meant a different station."
+                    "Duplicate, next to Edit, starts a new booking filled in "
+                    "from the selected one, with (copy) after its name. It is a "
+                    "handy start for another day or a second time. It keeps the "
+                    "same stream until you change it, so pick a different "
+                    "favorite if you want a different station."
                 ),
                 keys=("Alt+P",),
                 hear="Station name, holding the original name with (copy) after it.",
@@ -256,39 +244,42 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Turn one off without losing it",
                 body=(
-                    "The Disable button turns an entry off rather than deleting "
-                    "it -- a disabled entry reads (disabled) in the list and does "
-                    "not fire, and the same button then reads Enable. Remove names "
-                    "the schedule it will delete, and Delete in the list does the "
-                    "same."
+                    "The Disable button turns a booking off without deleting "
+                    "it. It then reads (disabled) in the list and will not "
+                    "record, and the button changes to Enable. Remove deletes a "
+                    "booking and names it first. The Delete key in the list does "
+                    "the same."
                 ),
                 keys=("Alt+L",),
-                hear="The station's name, and disabled -- or enabled.",
+                hear="The station's name, and disabled. Or enabled.",
             ),
             Step(
                 title="Know what a schedule needs from you",
                 body=(
-                    "Quill Radio has to be running for a scheduled recording to "
-                    "fire -- the tray icon counts. A schedule is due from its "
-                    "start time through the end of its duration, so a late start "
-                    "still records the remaining minutes, and a launch catches up "
-                    "anything whose window is still open. A show whose whole "
-                    "window passed while the app was closed is missed, and the "
-                    "next launch tells you."
+                    "Quill Radio needs to be running for a booked recording to "
+                    "happen. Running in the tray is fine. If Quill Radio starts "
+                    "late, it still records the rest of the show, and when you "
+                    "open it, it catches up on anything still on the air. If a "
+                    "whole show passed while Quill Radio was closed, it is "
+                    "missed, and Quill Radio tells you next time you open it."
                 ),
-                hear="At the next launch: what was missed, up to three named and the rest counted.",
+                hear=(
+                    "Next time you open Quill Radio: what was missed, up to three by name "
+                    "and the rest counted."
+                ),
                 note=(
-                    "Three Preferences, all on by default, cover a sleeping "
-                    "computer: Keep the computer awake before a scheduled "
-                    "recording, Wake the computer for a scheduled recording, and "
-                    "Keep the computer awake while playing or recording."
+                    "Three settings in Preferences help with a sleeping computer, "
+                    "and all three are on to start with: Keep the computer awake "
+                    "before a scheduled recording, Wake the computer for a "
+                    "scheduled recording, and Keep the computer awake while "
+                    "playing or recording."
                 ),
             ),
         ),
         closing=(
-            "A booked show records itself while you are out. The next lesson is "
-            "about recording three of them at once, and about what happens when "
-            "the connection does not hold."
+            "Your show will now record itself while you are out. Well done. The "
+            "next lesson shows you how to record several at once, and what "
+            "happens if the connection drops."
         ),
         then=("several-at-once", "when-a-recording-breaks"),
     ),

@@ -32,6 +32,8 @@
     "base_library.zip",
     "certifi",
     "charset_normalizer",
+    "chat-downloader",
+    "chat_downloader",
     "click",
     "cryptography",
     "curl-cffi",

@@ -26,6 +26,8 @@ class _Host(CastLibraryActionsMixin):
         self._podcast_library = library
         self._selected = selected
         self.opened: list[str] = []
+        self.said: list[str] = []
+        self.changed = 0
         stopped = SimpleNamespace(name="STOPPED")
         self._podcast_controller = SimpleNamespace(
             state=SimpleNamespace(state=stopped, show_id=None, episode_guid=None)
@@ -42,7 +44,19 @@ class _Host(CastLibraryActionsMixin):
         episode = show.find_episode(guid) if show is not None else None
         return None if show is None or episode is None else (show, episode)
 
-    def open_podcast_manager(self):  # referenced by every menu
+    # -- the Manager-shaped names folder_commands reads (CastEpisodeListMixin) --
+
+    @property
+    def _library(self) -> PodcastLibrary:
+        return self._podcast_library
+
+    def _announce(self, message: str) -> None:
+        self.said.append(message)
+
+    def _on_library_changed(self) -> None:
+        self.changed += 1
+
+    def refresh_tree(self) -> None:
         pass
 
     def _podcast_open_add_dialog(self) -> None:
@@ -80,14 +94,59 @@ def test_a_show_row_offers_custom_order_moves() -> None:
     assert any(label.startswith("Move Do&wn in Custom Order") for label in labels)
 
 
-def test_a_view_row_offers_rename_via_f2_and_reset_only_when_renamed() -> None:
+def test_no_row_offers_open_manager_or_the_view_renames() -> None:
+    """Open Manager only led back to the Podcasts place the tree is in, and
+    Rename / Reset Name applied to pinned-view rows the tree no longer has."""
     library = _library()
-    plain = _labels(_Host(library, ("view", "inbox")))
-    assert "&Rename...\tF2" in plain
-    assert "Reset &Name" not in plain
-    library.settings.view_names["inbox"] = "Triage"
-    renamed = _labels(_Host(library, ("view", "inbox")))
-    assert "Reset &Name" in renamed
+    folder = library.add_folder("News")
+    rows = [
+        ("show", "s1"),
+        ("episode", "s1\x00e1"),
+        ("folder", folder.id),
+        ("group", ""),
+        ("view", "inbox"),
+    ]
+    for selected in rows:
+        labels = _labels(_Host(library, selected))
+        assert "Open &Manager..." not in labels, selected
+        assert "Reset &Name" not in labels, selected
+        assert "&Rename...\tF2" not in labels, selected
+
+
+def test_a_folder_row_offers_the_folder_verbs_the_guide_teaches() -> None:
+    library = _library()
+    folder = library.add_folder("News")
+    labels = _labels(_Host(library, ("folder", folder.id)))
+    assert labels[:5] == [
+        "&Play All Unheard",
+        "Add All to &Queue",
+        "Move &Up",
+        "Move Dow&n",
+        "&Export This Folder as OPML...",
+    ]
+    assert "Folder &Settings..." not in labels, "QUILL's Manager only"
+    # GATE-14 inside one popup: every access key is claimed once.
+    keys = [label.split("&", 1)[1][0].lower() for label in labels if "&" in label]
+    assert len(keys) == len(set(keys)), labels
+
+
+def test_the_folder_verbs_act_on_the_folder() -> None:
+    library = _library()
+    news = library.add_folder("News")
+    library.add_folder("Sport")
+    library.find_show("s1").folder_id = news.id
+    host = _Host(library, ("folder", news.id))
+    entries = dict(host._library_context_entries())
+
+    entries["Add All to &Queue"]()
+    assert [item.episode_guid for item in library.queue] == ["e1"]
+    assert host.said[-1] == "Added 1 episode to the queue."
+
+    entries["Move Dow&n"]()
+    assert host.said[-1] == "News, 2 of 2."
+    entries["Move &Up"]()
+    assert host.said[-1] == "News, 1 of 2."
+    assert host.changed == 3
 
 
 def test_a_folder_row_advertises_f2_on_rename() -> None:

@@ -27,6 +27,7 @@ _REPO_ROOT = Path(__file__).resolve().parents[4]
 _FILL_SITES = {
     "radio.station_results": "quill/ui/radio/results_view.py",
     "radio.recordings": "quill/ui/radio/recordings_row_view.py",
+    "radio.local_media": "quill/ui/radio/local_media_rows.py",
 }
 
 

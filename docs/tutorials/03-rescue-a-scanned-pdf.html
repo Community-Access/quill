@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.12" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Tutorial 3: Rescue a scanned PDF</title>
   <style>
@@ -11,7 +11,10 @@
     */
     html {
       color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
       background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
     }
     body {
       margin: 0 auto;
@@ -36,11 +39,16 @@
     }
     @media print {
       html {
-        background-color: white;
+        color-scheme: light only;
       }
-      body {
+      html, body, pre, code {
         background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
         color: black;
+      }
+      pre, code {
+        padding: 0;
       }
       p, h2, h3 {
         orphans: 3;
@@ -53,11 +61,8 @@
     p {
       margin: 1em 0;
     }
-    a {
-      color: #1a1a1a;
-    }
-    a:visited {
-      color: #1a1a1a;
+    a, a:visited {
+      color: inherit;
     }
     img {
       max-width: 100%;
@@ -86,8 +91,11 @@
     blockquote {
       margin: 1em 0 1em 1.7em;
       padding-left: 1em;
-      border-left: 2px solid #e6e6e6;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
       color: #606060;
+      color: light-dark(#606060, #b6b6b6);
     }
     code {
       white-space: pre-wrap;
@@ -111,7 +119,7 @@
     }
     hr {
       border: none;
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       height: 1px;
       margin: 1em 0;
     }
@@ -128,11 +136,11 @@
     }
     tbody {
       margin-top: 0.5em;
-      border-top: 1px solid #1a1a1a;
-      border-bottom: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
     }
     th {
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       padding: 0.25em 0.5em 0.25em 0.5em;
     }
     td {
@@ -171,7 +179,6 @@
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <style>
     /* Accessible skip link: off-screen until it receives keyboard focus. */
@@ -238,36 +245,35 @@
 <h1 id="tutorial-3-rescue-a-scanned-pdf">Tutorial 3: Rescue a scanned
 PDF</h1>
 <p><strong>Goal:</strong> turn a scanned, image-only PDF (or a photo of
-a page) into real, editable, searchable text — free, on your own
-machine, with nothing uploaded.</p>
-<h2 id="background-the-one-rule">Background: the one rule</h2>
-<p><strong>Import / Convert Document</strong> routes every file through
-free, local services first: the built-in <strong>MarkItDown</strong>
-converter for born-digital files, then free on-device <strong>Tesseract
-OCR</strong> for scans. There is no cloud step, no account, and no cost.
-QUILL always asks before running OCR, and never opens an empty result
-silently.</p>
+a page) into real text you can edit and search. It is free, it happens
+on your own computer, and nothing is uploaded.</p>
+<h2 id="before-you-start">Before you start</h2>
+<p><strong>Import / Convert Document</strong> uses free tools on your
+own computer. Files that already contain text are converted by the
+built-in <strong>MarkItDown</strong> converter. Scanned pages are read
+by <strong>Tesseract OCR</strong>, which recognizes the text in a
+picture. There is no account and no cost. QUILL always asks before it
+runs OCR, and tells you if it finds nothing.</p>
 <h2 id="1-one-time-setup-install-the-ocr-engine">1. One-time setup:
 install the OCR engine</h2>
 <ol type="1">
 <li><strong>Tools &gt; Reading &amp; Dictation &gt; Install Local OCR
 Engine (Tesseract)…</strong></li>
-<li>QUILL states the size (about 48 MB) and exactly what will happen,
-then downloads the official installer from QUILL’s own verified release
-and checks it byte-for-byte.</li>
-<li>The installer opens <strong>visibly</strong> — complete it like any
-normal install. (If Tesseract is already on your machine, or installed
-via Homebrew on a Mac, skip this: QUILL finds it automatically.)</li>
+<li>QUILL tells you the size (about 48 MB) and what will happen, then
+downloads the installer and checks that it arrived safely.</li>
+<li>The Tesseract installer opens. Go through it like any other install.
+(If Tesseract is already on your machine, or installed via Homebrew on a
+Mac, skip this: QUILL finds it automatically.)</li>
 </ol>
 <h2 id="2-convert-the-document">2. Convert the document</h2>
 <ol type="1">
 <li><strong>File &gt; Import &gt; Import / Convert Document
 (OCR)…</strong> and pick your PDF.</li>
 <li>If the PDF actually has a text layer, it opens instantly as editable
-text — done, and QUILL announces “Nothing was uploaded.”</li>
-<li>If it is a scan, QUILL says so honestly: <em>“QUILL could not find
-readable text in this document. It looks scanned or image-based. Run
-free on-device OCR? This stays on your computer and does not upload
+text. You are done, and QUILL tells you “Nothing was uploaded.”</li>
+<li>If it is a scan, QUILL tells you: <em>“QUILL could not find readable
+text in this document. It looks scanned or image-based. Run free
+on-device OCR? This stays on your computer and does not upload
 anything.”</em></li>
 <li>Choose <strong>Yes</strong>. QUILL recognizes each page
 (“Recognizing page 3 of 12…”) and opens the result as a new document,
@@ -278,14 +284,15 @@ with page boundaries kept as searchable
 <code>.jpg</code> of a page and it goes straight to OCR.</p>
 <h2 id="3-judge-the-result">3. Judge the result</h2>
 <p>QUILL reports recognition <strong>confidence</strong> out of 100.
-Above ~80 on a clean scan, expect near-perfect text. When QUILL warns
-that confidence is low:</p>
+Above about 80 on a clean scan, expect nearly perfect text. When QUILL
+warns that confidence is low:</p>
 <ul>
-<li>Re-scan straighter/darker if you can — quality in, quality out.</li>
+<li>Scan the page again, straighter or darker, if you can. A better scan
+gives better text.</li>
 <li>Read the result critically; OCR errors cluster around numbers,
 names, and poor contrast regions.</li>
-<li>Run a spell check (<code>palette &gt; spell</code>) — OCR errors
-light up fast.</li>
+<li>Run a spell check (<code>palette &gt; spell</code>). It finds OCR
+mistakes quickly.</li>
 </ul>
 <h2 id="4-finish-the-job">4. Finish the job</h2>
 <ul>
@@ -297,12 +304,11 @@ href="06-make-it-accessible-with-glow.md">tutorial 6</a>).</li>
 <li>For a recurring scan pile, aim a <strong>watch folder</strong> at
 your scanner’s output directory.</li>
 </ul>
-<h2 id="where-this-is-honest">Where this is honest</h2>
+<h2 id="what-each-service-does">What each service does</h2>
 <p><strong>Tools &gt; Reading &amp; Dictation &gt; OCR and Conversion
-Services…</strong> describes every service in plain language — what it
-does, what it costs (nothing), what stays local (everything) — and shows
-the engine’s install status. A consent-gated cloud tier for the hardest
-documents is planned; the free local tiers always run first.</p>
+Services…</strong> explains each service in plain words: what it does,
+what it costs (nothing) and what stays on your computer (everything). It
+also tells you whether the OCR engine is installed.</p>
 <p><strong>Next:</strong> <a href="04-document-to-audiobook.md">Turn a
 document into an audiobook</a>.</p>
 </main>

@@ -148,6 +148,15 @@ def download_and_offer_install(
 
     def _download(**_kw: object) -> None:
         # Absorb the task manager's injected kwargs (cancellation_token, ...).
+        size = int(getattr(release, "size", 0) or 0)
+        digest = str(getattr(release, "download_digest", "") or "")
+        if size and digest:
+            # A build from the signed v2 list: resumable, and checked against
+            # the list's own size and SHA-256 (release channels, plan 6.4).
+            from quill.core.updater.download import download_verified
+
+            download_verified(url, target, sha256=digest, size=size, progress=_progress)
+            return
         download_release_asset(
             url,
             target,

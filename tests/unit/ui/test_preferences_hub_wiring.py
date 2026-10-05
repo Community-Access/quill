@@ -79,7 +79,7 @@ def test_preferences_runs_chosen_handler_after_the_hub_closes() -> None:
     # only after the hub has closed, and closing without a choice reports it.
     assert 'handler = chosen["handler"]' in body
     assert "if handler is None:" in body
-    assert 'self._set_status("Preferences closed")' in body
+    assert 'self._set_status("More Preferences closed")' in body
     assert "handler()" in body
 
 

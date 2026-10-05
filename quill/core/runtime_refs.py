@@ -11,6 +11,14 @@ It is the runtime twin of :mod:`quill.core.components` (which does the same for
 ffmpeg/mpv/models/voices): same file-backed, wx-free, idempotent, never-crash
 design, keyed by a runtime version string (e.g. ``"3.13.1"``) rather than a
 component id. State lives in ``runtime.state.json`` in the shared data dir.
+
+**Keyed by slot since release channels (2026-10).** An installer now registers
+an app under its runtime *slot* -- ``3.13`` (Stable), ``3.13-beta`` or
+``3.13-dev`` (``quill.core.updater.runtime_slots``) -- because a Beta runtime is
+its own folder that must be removed when its last app leaves, without touching
+Stable's. Keys written by older installers (``3.13.1``) belong to the Stable
+slot: :func:`slot_of` says so, and :func:`slot_referenced` counts them, so an
+uninstaller never removes a folder an older app still runs from.
 """
 
 from __future__ import annotations
@@ -105,6 +113,21 @@ def apps_requiring(data_dir: Path, runtime_version: str) -> list[str]:
 def is_referenced(data_dir: Path, runtime_version: str) -> bool:
     """True while at least one installed app still needs *runtime_version*."""
     return bool(apps_requiring(data_dir, runtime_version))
+
+
+def slot_of(key: str) -> str:
+    """The slot a refs key belongs to: ``3.13.1`` -> ``3.13``; ``3.13-beta`` stays."""
+    text = str(key).strip()
+    if "-" in text:
+        return text
+    parts = text.split(".")
+    return ".".join(parts[:2]) if len(parts) >= 2 else text
+
+
+def slot_referenced(data_dir: Path, slot_or_version: str) -> bool:
+    """True while any installed app runs from the slot *slot_or_version* names."""
+    wanted = slot_of(slot_or_version)
+    return any(apps and slot_of(key) == wanted for key, apps in _load(data_dir).items())
 
 
 def unreferenced(data_dir: Path, candidates: Iterable[str]) -> list[str]:

@@ -17,7 +17,13 @@ from quill.core.action_feedback import ActionFeedback
 from quill.core.action_feedback import coerce as coerce_feedback
 from quill.core.windows_dictation.engines import coerce_engine
 from quill.core.windows_dictation.options import PAUSE_SECONDS, coerce_pause, coerce_silence
-from quill.core.windows_dictation.vocabulary import DASH_STYLES
+from quill.core.windows_dictation.speech_language import (
+    STOP_PHRASES,
+    WAKE_PHRASES,
+    coerce_speech_language,
+    localised_phrase,
+)
+from quill.core.windows_dictation.vocabulary import DASH_STYLES, Vocabulary, vocabulary_for
 from quill.core.windows_dictation.wake import DEFAULT_STOP_PHRASE, DEFAULT_WAKE_PHRASE
 
 __all__ = ["DEFAULT_PHRASE_FEEDBACK", "DictationPreferences"]
@@ -49,6 +55,9 @@ class DictationPreferences:
     #: For Windows speech recognition only: a recogniser's language name, or
     #: empty for the one Windows uses by default.
     language: str = ""
+    #: The language dictation listens for: ``en`` or ``es`` (dict.md 9;
+    #: :mod:`quill.core.windows_dictation.speech_language`).
+    speech_language: str = "en"
     #: How long a pause ends a phrase: ``short``, ``normal`` or ``long``
     #: (:data:`quill.core.windows_dictation.options.PAUSE_SECONDS`).
     pause: str = "normal"
@@ -79,12 +88,34 @@ class DictationPreferences:
     def pause_seconds(self) -> float:
         return PAUSE_SECONDS[coerce_pause(self.pause)]
 
+    @property
+    def filler_language(self) -> str:
+        """The language filler removal is told, or ``""`` when it is not known.
+
+        Known for the built-in engines, and for any engine in Spanish (Windows
+        speech is then held to a Spanish recogniser). English Windows speech may
+        be running whatever recogniser the user picked, so it stays unknown and
+        only the universal hesitations go.
+        """
+        if self.speech_language != "en" or self.engine in {"moonshine", "whisper"}:
+            return self.speech_language
+        return ""
+
+    @property
+    def vocabulary(self) -> Vocabulary:
+        """The table a phrase is matched against: Spanish punctuation words
+        count only while the engine is not punctuating (dict.md 9.4, option 1)."""
+        return vocabulary_for(self.speech_language, spoken_marks=not self.engine_punctuates)
+
     @classmethod
     def from_settings(
         cls, settings: object, *, rewrite: Callable[[str], str] | None = None
     ) -> DictationPreferences:
         """The preferences *settings* holds, under the names both editors share."""
         dash = str(getattr(settings, "windows_dictation_dash", "em") or "em")
+        language = coerce_speech_language(
+            getattr(settings, "windows_dictation_speech_language", "")
+        )
         return cls(
             microphone=str(getattr(settings, "windows_dictation_microphone", "") or ""),
             engine=coerce_engine(getattr(settings, "windows_dictation_engine", "")),
@@ -97,13 +128,18 @@ class DictationPreferences:
             announce=bool(getattr(settings, "windows_dictation_announce", True)),
             dash=dash if dash in DASH_STYLES else "em",
             wake_enabled=bool(getattr(settings, "windows_dictation_wake_enabled", False)),
-            wake_phrase=str(
-                getattr(settings, "windows_dictation_wake_phrase", "") or DEFAULT_WAKE_PHRASE
+            wake_phrase=localised_phrase(
+                str(getattr(settings, "windows_dictation_wake_phrase", "") or DEFAULT_WAKE_PHRASE),
+                language,
+                WAKE_PHRASES,
             ),
-            stop_phrase=str(
-                getattr(settings, "windows_dictation_stop_phrase", "") or DEFAULT_STOP_PHRASE
+            stop_phrase=localised_phrase(
+                str(getattr(settings, "windows_dictation_stop_phrase", "") or DEFAULT_STOP_PHRASE),
+                language,
+                STOP_PHRASES,
             ),
             language=str(getattr(settings, "windows_dictation_language", "") or ""),
+            speech_language=language,
             pause=coerce_pause(getattr(settings, "windows_dictation_pause", "normal")),
             remove_fillers=bool(getattr(settings, "windows_dictation_remove_fillers", False)),
             auto_punctuation=bool(getattr(settings, "windows_dictation_auto_punctuation", True)),

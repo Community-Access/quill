@@ -23,12 +23,18 @@ param(
     [string]$Iscc = "",
     [string]$QuillRepo = "",
     [switch]$SkipSharedRuntime,
+    [switch]$SkipPublishedCheck,
+    # A Dev build's version (dev-builds.yml): 3.3.0-dev.20261003.1. Release
+    # builds never pass it; the literal below stays the app's real version.
+    [string]$DevVersion = "",
+    [int]$Build = 0,
     [switch]$Sign
 )
 
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $version = "2.0.0"
+if ($DevVersion) { $version = $DevVersion }
 
 # -- resolve the toolchain ----------------------------------------------------
 # standalone\cast -> standalone -> the QUILL checkout root.
@@ -39,7 +45,16 @@ if (-not $QuillRepo) {
 $QuillRepo = Resolve-QuillRepo -Preferred $QuillRepo
 $Python = Resolve-QuillPython -Preferred $Python -QuillRepo $QuillRepo
 $Iscc = Resolve-QuillIscc -Preferred $Iscc
+
+# The build number: -Build, else the next one after the newest tag published
+# for $version. It must equal the app's build constant in source, which the
+# runtime carries; the installer records it and Windows shows X.Y.Z.B.
+$build, $fileVersion = Resolve-QuillReleaseBuild -QuillRepo $QuillRepo -Python $Python -App "cast" -Version $version -Build $Build -Dev:([bool]$DevVersion) -OfflineOk:$SkipPublishedCheck
 Assert-QuillBuildEnv -Python $Python -QuillRepo $QuillRepo
+
+# GATE-SIBVER (2026-10-03, as Radio's script): the runtime this build ships carries
+# every app's version constant, so no sibling may be ahead of its published release.
+Assert-QuillSiblingVersions -QuillRepo $QuillRepo -Python $Python -Releasing @("cast") -Skip:$SkipPublishedCheck
 
 # Authenticode code signing is opt-in (docs/code-signing.md). -Sign turns it on
 # for this run via QUILL_SIGN, read by QUILL\scripts\code_signing.py. Without it
@@ -137,6 +152,9 @@ Copy-Item (Join-Path $repoRoot "docs\release-notes-2.0.md") $docsDir -Force
 Copy-Item (Join-Path $repoRoot "docs\release-notes-2.0.html") $docsDir -Force
 Copy-Item (Join-Path $repoRoot "docs\prd.md") $docsDir -Force
 Copy-Item (Join-Path $repoRoot "docs\prd.html") $docsDir -Force
+# The changelog lives in docs\ with the rest since 2.0.0 (2026-10-03).
+Copy-Item (Join-Path $repoRoot "docs\CHANGELOG.md") $docsDir -Force
+Copy-Item (Join-Path $repoRoot "docs\CHANGELOG.html") $docsDir -Force
 Copy-Item (Join-Path $repoRoot "README.md") (Join-Path $appDir "README-QUILL-Cast.md") -Force
 
 # -- portable zip (adds the data\ folder = portable-mode evidence) ------------
@@ -160,6 +178,10 @@ $signer = Join-Path $QuillRepo "scripts\code_signing.py"
 & $Python $signer sign-build $sharedRuntimeDist $appDir --label "cast payload"
 if ($LASTEXITCODE -ne 0) { throw "Code signing (payload) failed." }
 
+# Release channels: a portable copy names its own version, as the installer's
+# quill-app-version.ini does -- a Dev build's version is not the code constant,
+# and the update helper's health check waits for exactly this version to start.
+Set-Content -LiteralPath (Join-Path $appDir "quill-app-version.ini") -Value "[app]`r`nversion=$version`r`nversion_build=$version+$build" -Encoding ascii
 $zipPath = Join-Path $repoRoot "dist\QUILL-Cast-Portable-$version.zip"
 if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
 Compress-Archive -Path $appDir -DestinationPath $zipPath
@@ -191,9 +213,9 @@ New-Item -ItemType Directory -Force (Join-Path $launcherDir "docs") | Out-Null
 Copy-Item (Join-Path $appDir "docs\*") (Join-Path $launcherDir "docs") -Recurse -Force
 & $Python $signer sign-build $sharedRuntimeDist $launcherDir --label "cast shared payload"
 if ($LASTEXITCODE -ne 0) { throw "Code signing (shared payload) failed." }
-& $Iscc @innoSign "/dAppVersion=$version" (Join-Path $repoRoot "installer\quill-cast-shared.iss") "/O$(Join-Path $repoRoot 'dist')"
+& $Iscc @innoSign "/dAppVersion=$version" "/dAppBuild=$build" "/dAppFileVersion=$fileVersion" (Join-Path $repoRoot "installer\quill-cast-shared.iss") "/O$(Join-Path $repoRoot 'dist')"
 if ($LASTEXITCODE -ne 0) { throw "ISCC (Setup-Shared) failed with exit code $LASTEXITCODE" }
-& $Iscc @innoSign "/dAppVersion=$version" (Join-Path $repoRoot "installer\quill-cast-lite.iss") "/O$(Join-Path $repoRoot 'dist')"
+& $Iscc @innoSign "/dAppVersion=$version" "/dAppBuild=$build" "/dAppFileVersion=$fileVersion" (Join-Path $repoRoot "installer\quill-cast-lite.iss") "/O$(Join-Path $repoRoot 'dist')"
 if ($LASTEXITCODE -ne 0) { throw "ISCC (Lite) failed with exit code $LASTEXITCODE" }
 # Companion: the runtime-less stick (launcher + icon + docs, ~1 MB).
 $companionZip = Join-Path $repoRoot "dist\QUILL-Cast-Companion-$version.zip"

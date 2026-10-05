@@ -173,16 +173,16 @@ def test_round_trip(tmp_path: pytest.TempPathFactory) -> None:
     # any "Ctrl+Shift+Grave, *" edit.find binding to Ctrl+F). Every letter (both
     # plain and Shift+) is now claimed by some command's default (0.9.0 Beta 3's
     # GitHub repo-admin commands took the last free Shift+ letters), so this test
-    # uses plain digits instead -- still free, and just as good for exercising
-    # the export/import round trip.
+    # used plain digits instead, until Radio Play/Pause took the last free one
+    # (leader 2, 2026-10-03). W is a free plain leader letter.
     keymap["edit.find_next"] = "Ctrl+Shift+Grave, Z"
-    keymap["tools.thesaurus"] = "Ctrl+Shift+Grave, 2"
+    keymap["tools.thesaurus"] = "Ctrl+Shift+Grave, W"
     target = tmp_path / "trip.kqp"
     export_keyboard_pack(target, keymap, name="Trip Pack", description="Round trip test")
     name, description, merged = import_keyboard_pack(target)
     assert name == "Trip Pack"
     assert description == "Round trip test"
     assert merged["edit.find_next"] == "Ctrl+Shift+Grave, Z"
-    assert merged["tools.thesaurus"] == "Ctrl+Shift+Grave, 2"
+    assert merged["tools.thesaurus"] == "Ctrl+Shift+Grave, W"
     # Untouched defaults survive.
     assert merged["file.save"] == DEFAULT_KEYMAP["file.save"]

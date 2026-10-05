@@ -20,6 +20,7 @@ from pathlib import Path
 from quill.core.audio_enhance import clamp_eq_gain
 from quill.core.radio.models import RadioStation
 from quill.core.radio.natural_order import natural_key
+from quill.core.radio.station_tags import tags_from_json
 
 _FILE_NAME = "radio_favorites.json"
 
@@ -87,6 +88,9 @@ class FavoriteStation:
     #: ... and through the engine while listening to this station (see
     #: RadioHistory.optilab_exact_live for what that costs).
     optilab_exact_live: bool = False
+    #: Your own tags ("Detroit Tigers, MLB"), searched with everything else and
+    #: kept here so they travel with the favorite (quill.core.radio.station_tags).
+    user_tags: tuple[str, ...] = ()
 
     @property
     def key(self) -> str:
@@ -436,30 +440,13 @@ class RadioFavoritesStore:
         return count
 
     def search(self, query: str) -> list[FavoriteStation]:
-        """Favorites matching *query*, case-insensitive, in display order.
+        """Favorites matching *query*, case-insensitive, in display order: name,
+        country, language, the directory's tags and yours, folder, homepage, and
+        the teams a station carries. Empty returns everything. The matching
+        lives in :func:`quill.core.radio.station_lookup.search_favorites`."""
+        from quill.core.radio.station_lookup import search_favorites
 
-        Matches the station name, country, language, tags, folder name, and
-        homepage -- rich enough to find one stream among hundreds. An empty
-        query returns everything.
-        """
-        needle = query.strip().lower()
-        if not needle:
-            return list(self.favorites)
-        out: list[FavoriteStation] = []
-        for favorite in self.favorites:
-            station = favorite.station
-            haystack = " ".join((
-                station.name,
-                favorite.custom_name,
-                station.country,
-                getattr(station, "language", ""),
-                " ".join(station.tags),
-                favorite.folder,
-                getattr(station, "homepage", ""),
-            )).lower()
-            if needle in haystack:
-                out.append(favorite)
-        return out
+        return search_favorites(self, query)
 
 
 def _store_path(data_dir: Path) -> Path:
@@ -523,6 +510,7 @@ def load_favorites(data_dir: Path) -> RadioFavoritesStore:
                 ),
                 optilab_exact=bool(entry.get("optilab_exact", False)),
                 optilab_exact_live=bool(entry.get("optilab_exact_live", False)),
+                user_tags=tags_from_json(entry.get("user_tags")),
             )
         )
     return store
@@ -592,6 +580,7 @@ def save_favorites(data_dir: Path, store: RadioFavoritesStore) -> None:
                 "optilab_auto_adapt": favorite.optilab_auto_adapt,
                 "optilab_exact": favorite.optilab_exact,
                 "optilab_exact_live": favorite.optilab_exact_live,
+                "user_tags": list(favorite.user_tags),
             }
             for favorite in store.favorites
         ],

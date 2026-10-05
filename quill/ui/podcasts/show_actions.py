@@ -80,13 +80,9 @@ def move_show_to_folder(
     finally:
         picker.Destroy()
     if choice == NEW_FOLDER_CHOICE:
-        entry = wx.TextEntryDialog(parent, "New folder name:", "New Folder")
-        try:
-            if entry.ShowModal() != wx.ID_OK:  # dialog_button_contract: exempt
-                return False
-            name = entry.GetValue().strip()
-        finally:
-            entry.Destroy()
+        from quill.ui.podcasts.folder_prompt import folder_name_prompt
+
+        name = folder_name_prompt(parent, announce=announce)
         if not name:
             return False
         folder_id = library.add_folder(name).id
@@ -465,6 +461,7 @@ def download_all_episodes(
     show: PodcastShow,
     *,
     announce: Callable[[str], None],
+    host: object = None,
 ) -> int:
     """Queue this show's not-yet-downloaded, not-already-queued episodes.
 
@@ -483,6 +480,10 @@ def download_all_episodes(
     for episode in batch.started:
         enqueue_episode_download(download_queue, download_root, show, episode)
     announce(batch.sentence(show.title))
+    # One sentence when the batch is done, and progress on the way (qc.md F-10).
+    from quill.ui.podcasts import download_run
+
+    download_run.start(host, show.title, [e.guid for e in batch.started], folder=download_root)
     return len(batch.started)
 
 

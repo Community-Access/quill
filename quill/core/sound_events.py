@@ -142,6 +142,11 @@ class SoundEvent(StrEnum):
     #: ticking without waiting for the words that follow it.
     RADIO_REMINDER = "radio_reminder"
     CAST_EPISODE_FINISHED = "cast_episode_finished"
+    #: The four outcomes of a one-key action in QUILL Cast (qc.md 18.7), under
+    #: Cast's own action_feedback choice; failures use ERROR.
+    CAST_QUEUE_ADDED = "cast_queue_added"
+    CAST_REMOVED = "cast_removed"
+    CAST_MARKED_PLAYED = "cast_marked_played"
     WEATHER_ALERT = "weather_alert"
     BEACON_CAPTURED = "beacon_captured"
     BEACON_SYNC_COMPLETE = "beacon_sync_complete"

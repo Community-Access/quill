@@ -17,6 +17,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from quill.ui.podcasts.say_status import say_status
+
 __all__ = ["podcast_index_credentials", "preview_search_result"]
 
 
@@ -46,7 +48,7 @@ def podcast_index_credentials() -> tuple[str, str]:
 
 def preview_search_result(dialog: Any, result: Any, result_index: int) -> None:
     """Fetch *result*'s feed, show it read-only, and subscribe if asked."""
-    dialog._status.SetLabel(f"Loading {result.title}...")
+    say_status(dialog._status, f"Loading {result.title}...", dialog._announce)
     dialog._preview_btn.Enable(False)
     feed_url = result.feed_url
 
@@ -64,10 +66,10 @@ def preview_search_result(dialog: Any, result: Any, result_index: int) -> None:
 
     def _done(_op: str, feed: Any) -> None:
         dialog._preview_btn.Enable(True)
-        dialog._status.SetLabel("")
+        say_status(dialog._status, "", speak=False)
         from quill.ui.podcasts.feed_preview_dialog import FeedPreviewDialog
 
-        wants = FeedPreviewDialog(dialog.dialog, feed=feed, announce_cb=dialog._announce).show()
+        wants = FeedPreviewDialog(dialog.frame, feed=feed, announce_cb=dialog._announce).show()
         if wants:
             dialog._subscribe_to_feed(feed_url, title_hint=result.title, result_index=result_index)
 
@@ -78,7 +80,9 @@ def preview_search_result(dialog: Any, result: Any, result_index: int) -> None:
         # Spoken as well as shown: a status label is silent to a screen
         # reader, which is how Preview's failure went unheard (qc.md 6b item 4).
         message = f"That podcast could not be loaded: {error}"
-        dialog._status.SetLabel(message)
-        dialog._announce(message)
+        say_status(dialog._status, message, speak=False)
+        from quill.ui.podcasts.failure_report import report_failure
+
+        report_failure(dialog, message, subject=str(result.title))
 
     dialog._task_manager.submit("podcast-preview", _work, on_success=_done, on_failure=_failed)

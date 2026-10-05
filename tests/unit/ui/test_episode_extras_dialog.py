@@ -18,7 +18,7 @@ from quill.core.podcasts.extras import build  # noqa: E402
 from quill.core.podcasts.namespace_tags import parse  # noqa: E402
 from quill.ui.podcasts.episode_extras_dialog import (  # noqa: E402
     NOTHING_HEADING,
-    EpisodeExtrasDialog,
+    EpisodeExtrasWindow,
 )
 
 _SHOW = (
@@ -40,7 +40,7 @@ def wx_app():
 
 def _make(parent, **kwargs):
     extras = build(show_tags=parse(_SHOW), episode_tags=parse(_EPISODE), show_title="The Show")
-    return EpisodeExtrasDialog(parent, extras=extras, episode_title="Ep 1", **kwargs)
+    return EpisodeExtrasWindow(parent, extras=extras, episode_title="Ep 1", **kwargs)
 
 
 def test_a_tab_exists_only_when_it_has_something_in_it(wx_app) -> None:
@@ -53,7 +53,7 @@ def test_a_tab_exists_only_when_it_has_something_in_it(wx_app) -> None:
         # No Live, Support, Other Audio or Place tabs: this feed published none.
         assert titles == ["People", "Highlights", "Recommended"]
     finally:
-        dialog.dialog.Destroy()
+        dialog.frame.Destroy()
         frame.Destroy()
 
 
@@ -69,7 +69,7 @@ def test_the_button_is_named_from_the_highlighted_row(wx_app) -> None:
         assert dialog._action_btn.GetLabel() == "&Follow This Podcast"
         assert dialog._action_btn.IsEnabled() is True
     finally:
-        dialog.dialog.Destroy()
+        dialog.frame.Destroy()
         frame.Destroy()
 
 
@@ -82,7 +82,7 @@ def test_a_row_with_no_handler_is_disabled_rather_than_silently_declining(wx_app
         assert dialog._action_btn.IsEnabled() is False
         assert dialog.activate_selected() is False
     finally:
-        dialog.dialog.Destroy()
+        dialog.frame.Destroy()
         frame.Destroy()
 
 
@@ -96,7 +96,7 @@ def test_activating_a_row_reports_the_outcome_either_way(wx_app) -> None:
         assert dialog.activate_selected() is False
         assert said and "could not be opened" in said[-1]
     finally:
-        dialog.dialog.Destroy()
+        dialog.frame.Destroy()
         frame.Destroy()
 
 
@@ -104,19 +104,22 @@ def test_a_podcast_that_published_nothing_still_gets_a_window_that_says_so(wx_ap
     # "Publishes no extra details" and "cannot read them" are different facts,
     # and a greyed-out menu item cannot tell somebody which one it is.
     frame = wx.Frame(None)
-    dialog = EpisodeExtrasDialog(frame, extras=build())
+    dialog = EpisodeExtrasWindow(frame, extras=build())
     try:
         assert dialog._notebook is None
         assert dialog.selected_row() is None
         assert "no extra details" in NOTHING_HEADING
     finally:
-        dialog.dialog.Destroy()
+        dialog.frame.Destroy()
         frame.Destroy()
 
 
-def test_the_dialog_is_registered_in_the_inventory() -> None:
+def test_it_is_a_peer_window_not_a_dialog() -> None:
+    # qc.md Phase 4: About This Episode is a peer -- no longer in the modal
+    # dialog inventory, and opened through peer_window.open_peer.
     inventory = json.loads(
         (Path(__file__).parent / "fixtures" / "dialog_inventory.json").read_text(encoding="utf-8")
     )
-    key = "quill/ui/podcasts/episode_extras_dialog.py::EpisodeExtrasDialog.__init__::wx.Dialog"
-    assert key in inventory
+    assert not any(
+        key.startswith("quill/ui/podcasts/episode_extras_dialog.py") for key in inventory
+    )

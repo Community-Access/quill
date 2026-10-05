@@ -20,6 +20,15 @@ from quill.core.radio import browse_sources
 from quill.core.radio.browse_nodes import make_id
 
 
+@pytest.fixture(autouse=True)
+def _a_key_is_available(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Every test here but one is about a working branch, so it has a key --
+    and none of them may read the real credential store to find out."""
+    from quill.core.podcasts import podcast_index
+
+    monkeypatch.setattr(podcast_index, "available", lambda: True)
+
+
 class _Show:
     def __init__(self, **facts: Any) -> None:
         self.feed_url = facts.get("feed_url", "https://feed.test/rss")
@@ -297,3 +306,24 @@ def test_loading_a_profile_stamps_it_forward(tmp_path) -> None:
     assert reloaded.browse_sources_enabled is not None
     assert "podcastindex" in reloaded.browse_sources_enabled
     assert reloaded.browse_sources_epoch == browse_visibility.SOURCES_EPOCH
+
+
+def test_with_no_key_the_branch_says_so_and_offers_the_fix(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Not an empty Trending folder and an empty category list: one row that
+    says what is missing and opens the window that takes a key."""
+    from quill.core.podcasts import podcast_index
+
+    monkeypatch.setattr(podcast_index, "available", lambda: False)
+
+    rows = branch.browse_root([], safe_mode=False)
+
+    assert len(rows) == 1
+    assert rows[0].is_action
+    assert rows[0].node_id == branch.CREDENTIALS_ACTION
+    assert "Podcast Index Credentials" in rows[0].note
+
+
+def test_the_no_key_row_is_one_radio_can_act_on() -> None:
+    from quill.ui.radio import browse_actions
+
+    assert branch.CREDENTIALS_ACTION in browse_actions._ACTIONS

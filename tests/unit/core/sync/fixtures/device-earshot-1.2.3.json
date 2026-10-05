@@ -1,0 +1,39 @@
+{
+  "app" : "earshot/1.2.3",
+  "device" : "4be0c2d9",
+  "format" : "listening-places/1",
+  "records" : [
+    {
+      "duration_ms" : 0,
+      "id" : "episode:675b58ca5a9c7c7e",
+      "kind" : "episode",
+      "played" : false,
+      "position_ms" : 61000,
+      "updated_at" : "2026-10-02T07:30:00Z"
+    },
+    {
+      "deleted" : true,
+      "id" : "episode:68835a4d3b83f33e",
+      "updated_at" : "2026-09-30T12:00:00Z"
+    },
+    {
+      "duration_ms" : 2400000,
+      "id" : "episode:b1f0b9741df568f1",
+      "kind" : "episode",
+      "label" : "Blind Abilities: Episode 213",
+      "played" : true,
+      "position_ms" : 0,
+      "updated_at" : "2026-10-01T19:02:41Z"
+    },
+    {
+      "duration_ms" : 3894000,
+      "id" : "episode:c88ab12acb067dd4",
+      "kind" : "episode",
+      "label" : "Blind Abilities: Episode 214",
+      "played" : false,
+      "position_ms" : 2412000,
+      "updated_at" : "2026-10-02T21:14:07Z"
+    }
+  ],
+  "written_at" : "2026-10-02T21:14:08Z"
+}

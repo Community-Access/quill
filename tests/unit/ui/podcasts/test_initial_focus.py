@@ -22,10 +22,9 @@ _PODCASTS = Path(__file__).resolve().parents[4] / "quill" / "ui" / "podcasts"
 #: module -> the control that should hold focus when the window opens.
 EXPECTED = {
     "downloads_dialog.py": "_list",
-    "feed_check_dialog.py": "_list",
-    "show_notes_dialog.py": "_notes",
-    "stats_dialog.py": "_report",
-    "year_review_dialog.py": "_report",
+    # stats_dialog.py and year_review_dialog.py became peer windows in Phase 4:
+    # open_peer focuses their focus_target() (the report) on every show, which
+    # tests/unit/apps/test_cast_peer_windows.py pins.
     "play_queue_dialog.py": "_list",
 }
 

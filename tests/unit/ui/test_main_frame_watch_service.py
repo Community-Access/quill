@@ -5,7 +5,11 @@ from pathlib import Path
 from quill.ui.main_frame import MainFrame
 
 _UI_DIR = Path(__file__).resolve().parents[3] / "quill" / "ui"
-SOURCE = (_UI_DIR / "main_frame.py").read_text(encoding="utf-8")
+# The watch-folder runtime moved to its own mixin under F-08 (2026-10-03); the
+# wiring stays in main_frame.py, the handlers in main_frame_watch_folder.py.
+SOURCE = (_UI_DIR / "main_frame.py").read_text(encoding="utf-8") + (
+    _UI_DIR / "main_frame_watch_folder.py"
+).read_text(encoding="utf-8")
 # The Add/Edit Watch Profile dialog (_edit_watch_profile) was extracted into a
 # mixin (GATE-11), so editor-dialog introspection checks both files.
 WATCH_PROFILE_SOURCE = (_UI_DIR / "main_frame_watch_profile.py").read_text(encoding="utf-8")

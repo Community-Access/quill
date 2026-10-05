@@ -17,6 +17,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from quill.ui.podcasts.palette_commands import CAST_PALETTE_TITLES
+
 __all__ = ["CastPlaceRoutesMixin"]
 
 #: Status-bar cell -> the Customize Features area that owns it.
@@ -36,6 +38,9 @@ CAST_TRAY_HOTKEY = "Ctrl+Alt+Shift+F12"
 
 class CastPlaceRoutesMixin:
     """On ``PodcastsAppFrame``, first among the podcast mixins."""
+
+    #: The command palette in Cast's own words (read by the shared mixin).
+    _podcast_palette_titles = CAST_PALETTE_TITLES
 
     def say_now_playing(self) -> None:
         """Ctrl+T: the Now Playing line, said again (qc.md 4.1)."""
@@ -59,6 +64,26 @@ class CastPlaceRoutesMixin:
             episode_menu, "skipping", silence_id, label("Skip Silence", "podcasts.skip_silence")
         )
         episode_menu.Append(say_id, label("Say &Current Episode", "podcasts.say_now_playing"))
+        note_id, marks_id = wx.NewIdRef(), wx.NewIdRef()
+        self._area_row(
+            episode_menu,
+            "notes",
+            note_id,
+            label("Bookmark with a Note...", "podcasts.bookmark_note"),
+        )
+        self._area_row(
+            episode_menu,
+            "notes",
+            marks_id,
+            label("Bookmarks in This Episode...", "podcasts.episode_bookmarks"),
+        )
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.bookmark_with_note(), id=note_id)  # type: ignore[attr-defined]
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_episode_bookmarks(), id=marks_id)  # type: ignore[attr-defined]
+        self._keep_menu_ids(note_id, marks_id)  # type: ignore[attr-defined]
+        remaining_id = wx.NewIdRef()
+        episode_menu.Append(remaining_id, label("Time Remaining", "podcasts.time_remaining"))
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.say_time_remaining(), id=remaining_id)  # type: ignore[attr-defined]
+        self._keep_menu_ids(remaining_id)  # type: ignore[attr-defined]
         info_id = wx.NewIdRef()
         episode_menu.Append(info_id, label("Player Information...", "podcasts.player_information"))
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_player_information(), id=info_id)  # type: ignore[attr-defined]
@@ -72,14 +97,34 @@ class CastPlaceRoutesMixin:
     def _register_cast_tray_hotkey(self) -> None:
         """Cast's own show/hide chord, like every family app's (Radio R, Weather
         W, Converter C, Player P). Without it the shared default added
-        Ctrl+Alt+Shift+Q system-wide, which is Cast's own Mark as Played and
-        Next, so that row never fired while Cast ran (qc.md C2-01). Every
+        Ctrl+Alt+Shift+Q system-wide, QUILL's own show/hide key (and then Cast's
+        Mark as Played and Next, which has since moved) (qc.md C2-01). Every
         Ctrl+Alt+Shift letter already belongs to some family app, so Cast takes
         a function key nothing in the family uses. ``_own_tray_hotkey`` keeps
         the shared default away even when Windows refuses this chord.
         """
         self._own_tray_hotkey = CAST_TRAY_HOTKEY
         self._register_tray_hotkey(CAST_TRAY_HOTKEY)  # type: ignore[attr-defined]
+        # Help > Global Hotkeys offers only commands Cast has (qc.md 18.11), and
+        # Time Remaining is one of them, so it is registered to be bindable.
+        self._global_hotkeys_registered_only = True
+        # Every Episode row of Cast's own is a command too, so the Command
+        # Palette and the Tutorials' Try It can reach it, not only the menu.
+        for command_id, title, handler in (
+            ("podcasts.time_remaining", "Time Remaining", "say_time_remaining"),
+            ("podcasts.say_now_playing", "Say Current Episode", "say_now_playing"),
+            ("podcasts.player_information", "Player Information", "podcast_player_information"),
+            ("podcasts.bookmark_note", "Bookmark with a Note", "bookmark_with_note"),
+            ("podcasts.episode_bookmarks", "Bookmarks in This Episode", "open_episode_bookmarks"),
+            ("podcasts.skip_silence", "Skip Silence", "podcast_toggle_skip_silence"),
+            ("podcasts.watched_folders", "Watched Folders", "open_watched_folders"),
+        ):
+            self.commands.try_register(  # type: ignore[attr-defined]
+                command_id,
+                title,
+                getattr(self, handler),
+                self._binding_for(command_id),  # type: ignore[attr-defined]
+            )
 
     def _append_podcasts_extras(self, subs_menu: Any) -> None:
         """Carry My Place Between Machines..., beside Back Up and Restore: it was
@@ -186,7 +231,7 @@ class CastPlaceRoutesMixin:
             self._refresh_place(keep=True)  # type: ignore[attr-defined]
 
     def _on_refresh_feed(self, show: Any) -> None:
-        """Check Now on a podcast: the shared refresh, said first."""
+        """Refresh Feed on a podcast: the shared refresh, said first."""
         self._announce(f"Checking {show.title}...")  # type: ignore[attr-defined]
         self.refresh_podcast_feed(show.id)  # type: ignore[attr-defined]
 
@@ -344,6 +389,9 @@ class CastPlaceRoutesMixin:
         from quill.core.podcasts import schedule_policy
 
         self._watch_power_resume()
+        from quill.ui.family_sharing import at_launch
+
+        at_launch(self, "cast", self._podcast_history)  # type: ignore[attr-defined]
         if getattr(self, "_safe_mode", False):
             return 0
         library = self._podcast_library  # type: ignore[attr-defined]

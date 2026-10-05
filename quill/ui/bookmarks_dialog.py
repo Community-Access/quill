@@ -71,12 +71,21 @@ def jump(anchor: str, mark: MediaBookmark) -> str:
         return f"Could not go there: {error}."
 
 
-def show_bookmarks(host: Any, *, store: BookmarkStore | None = None) -> None:
-    """Open the Bookmarks window. Modal, house pattern."""
+def show_bookmarks(host: Any, *, store: BookmarkStore | None = None, anchor: str = "") -> None:
+    """Open the Bookmarks window. Modal, house pattern.
+
+    With *anchor*, only that one thing's bookmarks -- QUILL Cast's Bookmarks in
+    This Episode (qc.md section 18 item 1); everything else is the same window.
+    """
     import wx
 
     store = store if store is not None else BookmarkStore()
-    rows: list[tuple[str, MediaBookmark]] = store.all_bookmarks()
+
+    def _rows() -> list[tuple[str, MediaBookmark]]:
+        every = store.all_bookmarks()
+        return [row for row in every if row[0] == anchor] if anchor else every
+
+    rows: list[tuple[str, MediaBookmark]] = _rows()
 
     dialog = wx.Dialog(host.frame, title=TITLE, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
     dialog.SetSize(wx.Size(760, 460))
@@ -84,7 +93,8 @@ def show_bookmarks(host: Any, *, store: BookmarkStore | None = None) -> None:
 
     summary_label = wx.StaticText(dialog, label=bookmark_ops.summarise(rows))
     root.Add(summary_label, 0, wx.ALL, 8)
-    root.Add(wx.StaticText(dialog, label="&Everywhere you marked:"), 0, wx.LEFT | wx.RIGHT, 8)
+    heading = "&Bookmarks in this episode:" if anchor else "&Everywhere you marked:"
+    root.Add(wx.StaticText(dialog, label=heading), 0, wx.LEFT | wx.RIGHT, 8)
     # Extended, so Delete works on twenty rows as readily as on one -- and
     # Enter still jumps to the first of them, which is the only sensible
     # reading of "go to these".
@@ -143,7 +153,7 @@ def show_bookmarks(host: Any, *, store: BookmarkStore | None = None) -> None:
             listbox.SetSelection(index)
 
     def _refresh(select: int = 0) -> None:
-        rows[:] = store.all_bookmarks()
+        rows[:] = _rows()
         listbox.Set([bookmark_ops.row_label(anchor, mark) for anchor, mark in rows])
         summary_label.SetLabel(bookmark_ops.summarise(rows))
         if rows:

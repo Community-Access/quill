@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.12" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL Lite: free AI help, in an editor that talks to
 you</title>
@@ -12,7 +12,10 @@ you</title>
     */
     html {
       color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
       background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
     }
     body {
       margin: 0 auto;
@@ -37,11 +40,16 @@ you</title>
     }
     @media print {
       html {
-        background-color: white;
+        color-scheme: light only;
       }
-      body {
+      html, body, pre, code {
         background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
         color: black;
+      }
+      pre, code {
+        padding: 0;
       }
       p, h2, h3 {
         orphans: 3;
@@ -54,11 +62,8 @@ you</title>
     p {
       margin: 1em 0;
     }
-    a {
-      color: #1a1a1a;
-    }
-    a:visited {
-      color: #1a1a1a;
+    a, a:visited {
+      color: inherit;
     }
     img {
       max-width: 100%;
@@ -87,8 +92,11 @@ you</title>
     blockquote {
       margin: 1em 0 1em 1.7em;
       padding-left: 1em;
-      border-left: 2px solid #e6e6e6;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
       color: #606060;
+      color: light-dark(#606060, #b6b6b6);
     }
     code {
       white-space: pre-wrap;
@@ -112,7 +120,7 @@ you</title>
     }
     hr {
       border: none;
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       height: 1px;
       margin: 1em 0;
     }
@@ -129,11 +137,11 @@ you</title>
     }
     tbody {
       margin-top: 0.5em;
-      border-top: 1px solid #1a1a1a;
-      border-bottom: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
     }
     th {
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       padding: 0.25em 0.5em 0.25em 0.5em;
     }
     td {
@@ -172,7 +180,6 @@ you</title>
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <style>
     /* Accessible skip link: off-screen until it receives keyboard focus. */
@@ -238,489 +245,437 @@ you</title>
 <main id="main-content" tabindex="-1">
 <h1 id="quill-lite-free-ai-help-in-an-editor-that-talks-to-you">QUILL
 Lite: free AI help, in an editor that talks to you</h1>
-<p><strong>September 25, 2026 — from Community Access</strong></p>
+<p><strong>September 25, 2026, from Community Access</strong></p>
 <p><strong>Select a paragraph. Press two keys. Hear it summarized,
-rewritten, proofread or explained — free, with no account, no password
-and no card.</strong></p>
-<p>QUILL Lite is a small, free text editor for Windows, built from the
-ground up for people who use a screen reader. And as of today it has
-something no other Notepad replacement has: <strong>AI help that is
-built for the way you actually work</strong> — keyboard-first,
-spoken-first, and designed so that you are never left wondering what
-just happened.</p>
+rewritten, proofread or explained. It is free, and there is no account,
+no password and no card.</strong></p>
+<p>QUILL Lite is a small, free text editor for Windows, made for people
+who use a screen reader. Starting today it also has AI help that works
+the way you already work: from the keyboard, out loud, and without
+leaving you wondering what just happened.</p>
 <p>It is free, it is open source, and it installs in about a minute.</p>
-<h2 id="next-maintenance-update-not-yet-released">Next Maintenance
-Update (Not Yet Released)</h2>
-<p>Returning with Alt+Tab now gives Windows one bounded follow-up focus
-check, keeping the document ready for typing without taking focus from
-Find or a menu.</p>
-<p>If a full disk or read-only settings folder prevents preferences from
-being saved, QUILL Lite now tells you. Your choices still work for the
-current session, the status message keeps the warning available, and
-reopening Preferences retries the save after storage is available
-again.</p>
-<p>Closing QUILL Lite now stops incoming document polling before closing
-the windows. Waiting requests are kept for the next launch. Cancelling
-exit leaves the app ready to receive them as usual.</p>
-<hr />
 <h2 id="the-short-version">The short version</h2>
 <ul>
 <li><strong>Two keys to an answer.</strong> <strong>Ctrl+Alt+G</strong>
 opens the AI pad right where you are. <strong>Ctrl+Alt+Z</strong> opens
 it ready for a question about your document.</li>
-<li><strong>Five things it does.</strong> Summarize, Rewrite, Proofread,
-Explain, and answer a plain question about the document you have
-open.</li>
-<li><strong>Nothing to set up but a yes.</strong> Read the agreement,
-say yes, and a one-minute connect step does the rest. No account. No
-password. No email address. No card, and no trial that runs out.</li>
-<li><strong>You always know what is sent.</strong> Before anything
-leaves your computer, the pad shows you exactly what is about to go, in
-a box you can read line by line.</li>
-<li><strong>Nothing changes behind your back.</strong> The answer
-arrives in its own window. It goes into your document only when you
-press <strong>Replace</strong> or <strong>Insert</strong> — and
+<li><strong>Five things it can do.</strong> Summarize, Rewrite,
+Proofread, Explain, and answer a plain question about the document you
+have open.</li>
+<li><strong>All it needs is a yes.</strong> You read the agreement, say
+yes, and a one-minute connect step does the rest. No account, no
+password, no email address, no card, and no trial that runs out.</li>
+<li><strong>You see what is sent.</strong> Before anything leaves your
+computer, the pad shows you exactly what will go, in a box you can read
+line by line.</li>
+<li><strong>Nothing changes unless you say so.</strong> The answer
+arrives in its own window. It only goes into your document when you
+press <strong>Replace</strong> or <strong>Insert</strong>, and
 <strong>Ctrl+Z</strong> takes it back like any other edit.</li>
 <li><strong>Your words are not kept.</strong> QUILL’s service counts how
 many requests you make and how big they were. It never keeps what you
 wrote or what came back.</li>
 </ul>
-<p>And underneath the AI is an editor that <strong>answers</strong> you:
-it tells you which heading you just arrived on, spells a misspelled word
-out letter by letter, gives you a status bar you can read cell by cell,
-and teaches itself to you in nine spoken lessons.</p>
+<p>Under the AI is an editor that talks back to you. It tells you which
+heading you just landed on, spells a misspelled word out letter by
+letter, gives you a status bar you can read one cell at a time, and
+teaches itself to you in nine short lessons.</p>
 <hr />
-<h2 id="why-ai-and-why-here">Why AI, and why here</h2>
-<p>AI writing help has mostly arrived as a chat window in a web page — a
-place to paste things into and copy things out of, with buttons that are
-not labelled, answers that appear somewhere you cannot find, and an
-account to create before you can try any of it. For somebody who uses a
-screen reader, every one of those steps is a place to get stuck.</p>
-<p>So we asked a different question: <strong>what would AI help look
-like if it were designed for the people who have been left furthest
-behind by everything else?</strong></p>
-<p>It would live <strong>inside the editor you are already writing
-in</strong>, not in another window. It would work on <strong>the
-paragraph you are standing in</strong> without making you select
-anything. It would <strong>tell you what it is about to send</strong>
-before it sends it. It would put the answer <strong>where your screen
-reader already is</strong>, and let you read it as slowly as you like.
-It would never change a word you did not ask it to change. And it would
-cost <strong>nothing</strong> and ask for <strong>nothing</strong> — no
-name, no email, no password — because the people who need it most are
-the people least able to fight their way through a sign-up form.</p>
-<p>That is what QUILL Lite’s AI is. It runs on QUILL’s own free service,
-paid for by Community Access, and it is the same AI that is now at the
-top of the AI menu in <strong>QUILL for All</strong> — learn it in one
-and you know it in both.</p>
+<h2 id="why-we-put-ai-here">Why we put AI here</h2>
+<p>Most AI writing help is a chat window on a web page. You paste things
+in and copy things out, the buttons often have no labels, the answer
+shows up somewhere you cannot find, and you have to make an account
+before you can try it. If you use a screen reader, every one of those
+steps is a place to get stuck.</p>
+<p>So we started from a different question: what would AI help look like
+if it were made for the people everything else has left behind?</p>
+<p>It would sit inside the editor you are already writing in. It would
+work on the paragraph you are in, without making you select anything. It
+would show you what it is about to send before it sends it. It would put
+the answer where your screen reader already is, so you can read it as
+slowly as you like. It would never change a word you did not ask it to
+change. And it would cost nothing and ask for nothing: no name, no
+email, no password.</p>
+<p>That is QUILL Lite’s AI. It runs on QUILL’s own free service, paid
+for by Community Access. It is the same AI you find at the top of the AI
+menu in <strong>QUILL for All</strong>, so once you know it in one, you
+know it in both.</p>
 <hr />
 <h2 id="your-first-answer-in-about-a-minute">Your first answer, in about
 a minute</h2>
 <ol type="1">
 <li><strong>Open the agreement.</strong> Press
-<strong>Ctrl+Alt+Shift+K</strong> — or <strong>Tools ▸ AI ▸ Privacy
-Agreement</strong>. It is there from the moment you install.</li>
-<li><strong>Read it, and choose I Agree.</strong> It says, in plain
-words, what is sent, what is kept, what is not kept, and how to change
-your mind. Saying yes switches AI help on — there is no second switch to
-hunt for.</li>
+<strong>Ctrl+Alt+Shift+K</strong>, or choose <strong>Tools &gt; AI &gt;
+Privacy Agreement</strong>. It is there from the moment you
+install.</li>
+<li><strong>Read it, and choose I Agree.</strong> It says in plain words
+what is sent, what is kept, what is not kept, and how to change your
+mind. Saying yes also turns AI help on, so there is no second switch to
+look for.</li>
 <li><strong>Connect this computer.</strong> The Connect window opens by
-itself, already showing an eight-character code, spoken as well as
-shown. Press <strong>Open the Connect Page</strong>: your browser opens
-with the code already filled in, so all that is left is
+itself and shows an eight-character code. It reads the code to you as
+well. Press <strong>Open the Connect Page</strong>. Your browser opens
+with the code already filled in, so all you do there is press
 <strong>Confirm</strong>. The window tells you when you are
 connected.</li>
 <li><strong>Try it.</strong> Put the cursor in any paragraph, press
 <strong>Ctrl+Alt+G</strong>, choose <strong>Summarize</strong>, and
 press <strong>Send</strong>. A moment later the summary is in front of
-you, and your screen reader is reading it.</li>
+you and your screen reader is reading it.</li>
 </ol>
-<p>That is the whole setup. From then on it is two keys.</p>
+<p>That is all the setup there is. From then on, it is two keys.</p>
 <hr />
 <h2 id="what-it-can-do">What it can do</h2>
-<p>Open the pad with <strong>Ctrl+Alt+G</strong> and choose one of five
-things:</p>
+<p>Press <strong>Ctrl+Alt+G</strong> to open the pad, then choose one of
+five things.</p>
 <ul>
-<li><strong>Summarize</strong> — a few plain sentences saying what the
-passage says. For the long email, the dense report, the terms and
-conditions nobody reads.</li>
-<li><strong>Rewrite</strong> — the same meaning, clearer and shorter.
-For the paragraph you have rewritten four times and still do not
+<li><strong>Summarize.</strong> A few plain sentences saying what the
+passage says. Handy for a long email, a dense report, or terms and
+conditions.</li>
+<li><strong>Rewrite.</strong> The same meaning, clearer and shorter.
+Good for the paragraph you have rewritten four times and still do not
 like.</li>
-<li><strong>Proofread</strong> — spelling, grammar and punctuation
-corrected, your wording left alone. The corrected text comes back for
-you to compare; nothing in your document changes until you say so.</li>
-<li><strong>Explain</strong> — what the passage actually means, in plain
-language. For jargon, a legal clause, or a paragraph that will not sit
-still.</li>
-<li><strong>Ask a question about the document</strong> — “What does this
-say about the deadline?” “Who do I send the form to?” Type the question,
-and QUILL Lite finds the parts of the document that answer it.</li>
+<li><strong>Proofread.</strong> Spelling, grammar and punctuation fixed,
+with your wording left alone. The corrected text comes back for you to
+compare. Your document stays the same until you say so.</li>
+<li><strong>Explain.</strong> What the passage means, in plain language.
+Try it on jargon, a legal clause, or a paragraph you keep losing the
+thread of.</li>
+<li><strong>Ask a question about the document.</strong> “What does this
+say about the deadline?” “Who do I send the form to?” Type your
+question, and QUILL Lite finds the parts of the document that answer
+it.</li>
 </ul>
-<h2 id="how-it-knows-what-to-send">How it knows what to send</h2>
-<p>This is the part most AI tools leave you to guess, so here it is
-exactly.</p>
+<h3 id="how-it-knows-what-to-send">How it knows what to send</h3>
+<p>Here is exactly what goes.</p>
 <ul>
 <li><strong>If you have selected something</strong>, that is what is
 sent.</li>
-<li><strong>If you have not</strong>, the <strong>paragraph your cursor
-is in</strong> is sent — the text between one blank line and the next.
-You do not have to select anything; put the cursor in the paragraph and
-press the key.</li>
+<li><strong>If you have not</strong>, the paragraph your cursor is in is
+sent: the text between one blank line and the next. Just put the cursor
+in the paragraph and press the key.</li>
 <li><strong>If your document has headings</strong>, you can choose
-<strong>This section</strong> instead: everything from the heading above
-you to the next one. (That works for Markdown-style headings, the ones
-that start with <code>#</code>.)</li>
+<strong>This section</strong> instead. That sends everything from the
+heading above you to the next heading. It works with Markdown headings,
+the ones that start with <code>#</code>.</li>
 </ul>
-<p>A <strong>Send this much</strong> chooser in the pad switches between
-those, and a read-only box above it shows <strong>exactly</strong> the
-text that will go — updated the moment you change your choice. Nothing
-else from your document is sent.</p>
-<p><strong>Asking about the whole document works differently, and
-better.</strong> Rather than sending the whole file, QUILL Lite reads it
-<strong>on your own computer</strong>, finds the <strong>three passages
-most likely to answer your question</strong> — each about 180 words,
-each labelled with the heading it sits under — and sends only those,
-with your question. The pad shows you which passages it chose before you
-press Send. That is why a hundred-page document is a perfectly fair
-thing to ask about: the limit is on how much goes in one question, never
-on how big your document may be.</p>
-<p><strong>If something is too long</strong>, the pad says so
-<strong>before</strong> you send, in words rather than jargon — “that is
-about 4,000 words, and the free limit is about 2,250” — so you can
-choose a smaller part and nothing is used.</p>
-<h2 id="what-happens-to-the-answer">What happens to the answer</h2>
-<p>It arrives in its own window, with the answer in a box you can arrow
-through, and four buttons under it:</p>
+<p>The <strong>Send this much</strong> chooser in the pad switches
+between these. Above it, a read-only box shows you exactly the text that
+will go, and it changes as soon as you change your choice. Nothing else
+from your document is sent.</p>
+<p><strong>Asking about the whole document works a little
+differently.</strong> QUILL Lite does not send the whole file. It reads
+the document on your own computer and picks the three passages most
+likely to answer your question. Each is about 180 words, and each is
+labelled with the heading it sits under. Only those three go, along with
+your question, and the pad shows you which ones it chose before you
+press Send. So a hundred-page document is fine to ask about. The limit
+is on how much goes in one question, not on how big your document
+is.</p>
+<p><strong>If something is too long</strong>, the pad tells you before
+you send, in plain words: “that is about 4,000 words, and the free limit
+is about 2,250”. Choose a smaller part and try again. Nothing is
+used.</p>
+<h3 id="what-happens-to-the-answer">What happens to the answer</h3>
+<p>The answer arrives in its own window, in a box you can arrow through.
+Under it are four buttons.</p>
 <ul>
-<li><strong>Replace My Selection</strong> — put the answer where your
+<li><strong>Replace My Selection</strong> puts the answer where your
 selection was.</li>
-<li><strong>Insert Below</strong> — put it under the paragraph you are
+<li><strong>Insert Below</strong> puts it under the paragraph you are
 in.</li>
-<li><strong>Copy</strong> — take it somewhere else entirely.</li>
-<li><strong>Try Again</strong> — ask for another version.</li>
+<li><strong>Copy</strong> lets you take it somewhere else.</li>
+<li><strong>Try Again</strong> asks for another version.</li>
 </ul>
-<p>Every one of them goes through the ordinary undo, so
-<strong>Ctrl+Z</strong> takes an AI edit back exactly like your own
-typing. If you changed the text while the answer was on its way,
-<strong>Replace</strong> is not offered — QUILL Lite will not write an
-answer over words it was not about. And the editor never freezes while
-you wait: keep typing, save, switch documents.</p>
-<h2 id="free-and-fair">Free, and fair</h2>
-<p>It is free, and free means an allowance, so one person cannot use up
-what everybody else needs:</p>
+<p>All of them can be undone, so <strong>Ctrl+Z</strong> takes an AI
+edit back just like your own typing. If you changed the text while the
+answer was on its way, <strong>Replace</strong> is not offered, so the
+answer never lands on words it was not about. And you can keep working
+while you wait: type, save, or switch documents.</p>
+<h3 id="free-and-fair">Free, and fair</h3>
+<p>Free means there is an allowance, so that everyone gets a share.</p>
 <ul>
 <li><strong>100 requests a month</strong>, no more than <strong>20 a
 day</strong> and <strong>8 an hour</strong>.</li>
 <li>A new connection starts with <strong>15</strong> for its first
-<strong>48 hours</strong>, and then the full allowance applies by
+<strong>48 hours</strong>. After that, the full allowance starts by
 itself.</li>
-<li>A request only counts if an answer comes back. Too long, no
-connection, a problem on the service — nothing is used.</li>
+<li>A request only counts if an answer comes back. If it was too long,
+you had no connection, or the service had a problem, nothing is
+used.</li>
 </ul>
-<p><strong>Ctrl+Alt+Shift+F9</strong> shows exactly where you stand and
-when each count starts again, and so does <strong>Help ▸ About</strong>.
-Need more for a course, a deadline or a book? Choose <strong>Get Help
-from Support</strong> — your support ID goes with the message by itself,
-and support can raise your allowance.</p>
-<h2 id="your-privacy-in-plain-words">Your privacy, in plain words</h2>
-<p>The passage you ask about is sent to QUILL’s service and on to
-OpenAI, which writes the answer. QUILL keeps <strong>how many requests
-you made and how big they were</strong> — never what you wrote, never
-what came back, and never your name, because there is no name on the
-account at all. Nothing is sent as you type, nothing is sent in the
-background, and closing the pad without pressing Send sends nothing.
-<strong>Ctrl+Alt+Shift+K</strong> opens the agreement again at any time,
-and withdrawing switches AI off and signs this computer out in one
-step.</p>
+<p><strong>Ctrl+Alt+Shift+F9</strong> shows how much you have used and
+when each count starts again. <strong>Help &gt; About</strong> shows it
+too. Need more for a course, a deadline or a book? Choose <strong>Get
+Help from Support</strong>. Your support ID goes with the message
+automatically, and support can raise your allowance.</p>
+<h3 id="your-privacy-in-plain-words">Your privacy, in plain words</h3>
+<p>The passage you ask about goes to QUILL’s service and on to OpenAI,
+which writes the answer. QUILL keeps how many requests you made and how
+big they were. It never keeps what you wrote or what came back, and it
+never has your name, because there is no name on the account at all.</p>
+<p>Nothing is sent while you type, and nothing is sent in the
+background. If you close the pad without pressing Send, nothing is sent.
+<strong>Ctrl+Alt+Shift+K</strong> opens the agreement again whenever you
+like. If you withdraw, AI help is switched off and this computer is
+signed out in one step.</p>
 <hr />
 <h2 id="and-the-editor-underneath-it">And the editor underneath it</h2>
 <p>You already know how to use it. Ctrl+O opens. Ctrl+S saves. Ctrl+F
-finds. F3 finds the next one. Every key Notepad and WordPad have had for
-thirty years does exactly what it has always done. What is different is
-that QUILL Lite <strong>answers</strong>:</p>
+finds. F3 finds the next one. The keys you know from Notepad and WordPad
+do what they always have. The difference is that QUILL Lite talks
+back:</p>
 <ul>
-<li>Press <strong>F6</strong> and you land in a status bar you can read,
-cell by cell: the line you are on, the word count, the encoding, the
-line endings.</li>
+<li>Press <strong>F6</strong> and you are in a status bar you can read
+one cell at a time: the line you are on, the word count, the encoding,
+the line endings.</li>
 <li>Press <strong>F1</strong> anywhere and it tells you what window you
-are in and what the control you are on actually does.</li>
-<li>Press <strong>Ctrl+F1</strong> and every keystroke it has is in one
-searchable list.</li>
+are in and what the control you are on does.</li>
+<li>Press <strong>Ctrl+F1</strong> and every key it has is in one list
+you can search.</li>
 <li>Press <strong>Ctrl+Alt+F1</strong> and nine short lessons walk you
-through it — including one on asking a question about your
-document.</li>
-<li>Type a word wrong and you hear a short, quiet sound — then press one
-key and it <strong>spells the word out for you</strong>, because
-“receive” and “recieve” sound identical and only the letters can tell
-you which one you typed.</li>
+through it, including one on asking a question about your document.</li>
+<li>Type a word wrong and you hear a short, quiet sound. Press one key
+and it spells the word out for you. “Receive” and “recieve” sound the
+same, and only the letters tell you which one you typed.</li>
 </ul>
-<p>QUILL Lite is the editor from <strong>QUILL for All</strong> with
-everything else taken out. QUILL is a full writing environment; QUILL
-Lite is for everybody who just needs to open a file, fix a line, ask a
-question, and save it. You can install both. They sit side by side and
-neither touches the other’s settings.</p>
-<h3 id="it-sounds-like-something">It sounds like something</h3>
-<p>QUILL Lite makes a short, quiet sound when things happen that your
-screen reader says nothing about — a cut, a copy, a paste, an undo, a
-document saved, a document closed. These are the moments where speech
-tells you nothing because nothing moved and nothing gained focus, and
-where silence has always meant guessing.</p>
-<p>Every one of those sounds can be <strong>changed, replaced with a
-file of your own, or switched off</strong>, in a window that plays each
-sound as you arrow through the list. And <strong>Alt+Shift+M</strong>
-silences all of them instantly, for when you are on a call or in a quiet
-room. Press it again and they come back.</p>
+<p>QUILL Lite is the editor from <strong>QUILL for All</strong>, on its
+own. QUILL is a full writing workshop. QUILL Lite is for when you just
+need to open a file, fix a line, ask a question, and save. You can
+install both. They sit side by side, and neither one touches the other’s
+settings.</p>
+<h3 id="it-makes-small-sounds">It makes small sounds</h3>
+<p>QUILL Lite plays a short, quiet sound for things your screen reader
+does not mention: a cut, a copy, a paste, an undo, a save, a document
+closing. Without a sound, those moments are silent and you are left
+guessing.</p>
+<p>You can change any sound, swap in a file of your own, or switch it
+off. The window plays each sound as you arrow through the list.
+<strong>Alt+Shift+M</strong> turns all of them off at once, for a phone
+call or a quiet room. Press it again to bring them back.</p>
 <h3 id="it-tells-you-the-shape-of-what-you-are-reading">It tells you the
 shape of what you are reading</h3>
-<p>Arrow onto a heading and QUILL Lite says <strong>“Heading 2,
-Installing”</strong>. Arrow into a list and it says <strong>“Bulleted
-list, 5 items”</strong>. Go a level deeper and it says <strong>“Level 2,
-3 items”</strong>. Arrow out and it says <strong>“Out of
-list”</strong>.</p>
-<p>Your screen reader cannot tell you either of those, and it is not
-failing. The text box every Windows editor is built on — Notepad’s,
-WordPad’s, ours — can pass on the font and the size and has no way at
-all to say “this paragraph is a heading” or “this is a list of five”. On
-a web page your reader tells you both, because the <em>browser</em>
-hands it both. In an editor a heading is a line and a list is some
-dashes, and nobody says anything.</p>
-<p>So QUILL Lite says it. Both cues stay narrow on purpose — once, on
-arrival, never while you move about inside the thing you have already
-been told about — and each has a key that turns it off where you stand,
-because whether structure is what you are listening for depends on
-whether you are writing the document or reading it.</p>
+<p>Arrow onto a heading and QUILL Lite says “Heading 2, Installing”.
+Arrow into a list and it says “Bulleted list, 5 items”. Go a level
+deeper and it says “Level 2, 3 items”. Arrow out and it says “Out of
+list”.</p>
+<p>Your screen reader cannot tell you these things in a Windows editor,
+Notepad and WordPad included. On a web page it can. In an editor, a
+heading is just a line and a list is just some dashes, so QUILL Lite
+says it for you.</p>
+<p>It says each one only once, when you arrive, and not again while you
+move around inside. If you are writing rather than reading and would
+rather not hear them, each one has a key that turns it off.</p>
 <h3 id="it-knows-markdown-and-html-and-writes-them-for-you">It knows
 Markdown and HTML, and writes them for you</h3>
-<p>Open a <code>.md</code> and press <strong>Ctrl+B</strong> with a word
-selected: you get <code>**word**</code>. Open a <code>.html</code> and
-press the same key: you get
+<p>Open a <code>.md</code> file, select a word and press
+<strong>Ctrl+B</strong>: you get <code>**word**</code>. Do the same in a
+<code>.html</code> file and you get
 <code>&lt;strong&gt;word&lt;/strong&gt;</code>. The heading keys write
 <code>## Installing</code> or
-<code>&lt;h2&gt;Installing&lt;/h2&gt;</code>. Open a <code>.py</code>
-and those keys politely decline, because a Python file has no markup and
-putting asterisks in one would be a small disaster nobody could see.</p>
-<p>There is a searchable picker for each — 111 HTML elements and the
-whole Markdown vocabulary, both looked up by what they <em>do</em>
-rather than what they are called (“glossary” finds a definition list,
-“subtitles” finds a caption track) — and the one your document cannot
-use is greyed out rather than hidden, so you are told rather than left
-hunting.</p>
-<p>And the HTML picker inserts <strong>whole form fields</strong>, not
-tags. Choose a dropdown and you get the label, the field, the options,
-and a <code>for</code> that actually points at the right
-<code>id</code>. Choose a radio group and you get a fieldset, a legend,
-and three buttons that share a name — which is the difference between a
-group and three unrelated buttons that can all be on at once. None of
-that wiring is visible, which is exactly why it gets left out, and
-exactly why it should not be left to memory. Select a word first and it
-becomes the label, with the <code>id</code> built from it so the two
-always agree.</p>
-<h3 id="an-emoji-picker-you-can-actually-use">An emoji picker you can
-actually use</h3>
-<p>Every emoji picker ever made is a wall of little pictures, which is
-precisely the one control shape that cannot be used without sight.
-<strong>Alt+.</strong> opens a list instead: search by name, by keyword,
-by a typed smiley (<code>:)</code> finds the smiling face), or browse by
-category — and every single one comes with a <strong>written description
-of what it actually shows</strong>. Insert one and QUILL Lite tells you
-which one went in, by name.</p>
-<h3 id="spell-check-that-tells-you-what-is-actually-wrong">Spell check
-that tells you what is actually wrong</h3>
-<p>Being told “recieve is misspelled” is being told a word that sounds
-exactly like the correct one. The letters are the answer, so QUILL Lite
-spells them — after a short pause, as a separate thing it says, so if
-you already knew you can press the next key and never hear it.</p>
-<p>You choose how: plain letters, the phonetic alphabet (“romeo, echo,
-charlie” — which is unambiguous when B, D, E, P, T and V all sound the
-same through a fast synthesiser), or both. You choose whether capitals
-are named. You choose how long each pause is, and there are separate
-pauses for the three places it happens, because moving through a
-document quickly and stopping to decide are not the same thing.</p>
+<code>&lt;h2&gt;Installing&lt;/h2&gt;</code>. In a <code>.py</code> file
+those keys politely do nothing, so you never get stray asterisks in your
+code.</p>
+<p>There is a searchable picker for each: 111 HTML elements, and all of
+Markdown. You can search by what a thing does, not only by its name.
+“Glossary” finds a definition list, and “subtitles” finds a caption
+track. Anything your document cannot use is still listed but greyed out,
+so you know it is there.</p>
+<p>The HTML picker also inserts whole form fields, not just tags. Choose
+a dropdown and you get the label, the field and the options, all joined
+up the way a screen reader needs. Choose a radio group and you get a
+fieldset, a legend, and three buttons that share a name, so they really
+work as a group. If you select a word first, it becomes the label, and
+the field is named to match it.</p>
+<h3 id="an-emoji-picker-you-can-use">An emoji picker you can use</h3>
+<p>Most emoji pickers are a wall of little pictures.
+<strong>Alt+.</strong> opens a list instead. Search by name, by keyword,
+or by a typed smiley (<code>:)</code> finds the smiling face), or browse
+by category. Each emoji comes with a written description of what it
+shows. When you insert one, QUILL Lite tells you which one went in, by
+name.</p>
+<h3 id="spell-check-that-tells-you-what-is-wrong">Spell check that tells
+you what is wrong</h3>
+<p>Hearing “recieve is misspelled” does not help much, because it sounds
+just like the right word. So after a short pause, QUILL Lite spells it
+out. If you already knew, press your next key and you will not hear
+it.</p>
+<p>You choose how it spells: plain letters, the phonetic alphabet
+(“romeo, echo, charlie”), or both. The phonetic alphabet helps when B,
+D, E, P, T and V all sound alike through a fast voice. You choose
+whether capitals are named. And you choose how long each pause is,
+separately for the three places it happens.</p>
 <p>Land on a misspelled word and press the <strong>Applications
-key</strong>: the corrections are right there at the top of the menu,
-one Down arrow away. Under them, everything else you might want — ignore
-it once, ignore it in this document, add it to your dictionary, or add
-it just for this file.</p>
+key</strong>. The suggestions are at the top of the menu, one Down Arrow
+away. Under them you can ignore the word once, ignore it in this
+document, add it to your dictionary, or add it just for this file.</p>
 <h3 id="your-file-comes-back-exactly-as-it-went-in">Your file comes back
 exactly as it went in</h3>
-<p>Encoding, byte order mark, line endings, the final newline — all of
-it survives a round trip. If you open a file somebody sent you and save
-it again without changing anything, it is byte-for-byte the same file.
-That matters more than it sounds like it does, and most editors quietly
-get it wrong.</p>
-<p><strong>Tools ▸ File Encoding and Line Endings</strong> shows you
-what those actually are, and lets you change them deliberately. Almost
-nothing else will tell you.</p>
-<h3 id="make-it-exactly-as-big-or-as-small-as-you-want">Make it exactly
-as big or as small as you want</h3>
-<p>QUILL Lite has nineteen switchable areas and four one-word
-answers:</p>
+<p>How your file is stored, its line endings, and whether it ends with a
+blank line are all kept. Open a file someone sent you, save it without
+changing anything, and it is exactly the same file. Many editors quietly
+change these things.</p>
+<p><strong>Tools &gt; File Encoding and Line Endings</strong> shows you
+what your file uses and lets you change it on purpose.</p>
+<h3 id="make-it-as-big-or-as-small-as-you-want">Make it as big or as
+small as you want</h3>
+<p>QUILL Lite has 21 parts you can switch on or off, and four profiles
+that set them all in one go:</p>
 <ul>
-<li><strong>Notepad</strong> — two areas. No formatting, no bookmarks,
-no line tools. Ctrl+N makes a plain text file. If you are replacing
-Notepad, choose this.</li>
-<li><strong>WordPad</strong> — bold, italic, headings, alignment,
+<li><strong>Notepad</strong>: two areas. No formatting, no bookmarks, no
+line tools. Ctrl+N makes a plain text file. If you are replacing
+Notepad, choose this one.</li>
+<li><strong>WordPad</strong>: bold, italic, headings, alignment,
 bullets, printing, and a spell checker WordPad never had.</li>
-<li><strong>Recommended</strong> — what a fresh install is.</li>
-<li><strong>Everything</strong> — all of it.</li>
+<li><strong>Recommended</strong>: what you get on a fresh install.</li>
+<li><strong>Everything</strong>: all of it.</li>
 </ul>
-<p>Choose one and every switch below it moves. Pick
-<strong>Custom</strong> and they go back to how you found them. The
-window tells you, in a box you can read line by line, exactly what each
-profile keeps, what it removes, and what else it changes — worked out
-from the actual feature list, so it can never be out of date.</p>
-<h3 id="if-something-goes-wrong-you-write-to-a-person">If something goes
-wrong, you write to a person</h3>
-<p><strong>Ctrl+Alt+F2</strong> — Help &gt; Get Help from Support… —
-opens a short form and then your own mail program, with the message
-already written and QUILL Lite’s version, your Windows version and your
-screen reader filled in at the bottom. It goes to <strong><a
+<p>Choose a profile and every switch below it moves to match. Choose
+<strong>Custom</strong> and they go back to how they were. A box you can
+read line by line tells you what each profile keeps, what it removes,
+and anything else it changes.</p>
+<h3 id="if-something-goes-wrong-a-person-answers">If something goes
+wrong, a person answers</h3>
+<p>Press <strong>Ctrl+Alt+F2</strong>, or choose Help &gt; Get Help from
+Support… A short form opens, and then your own mail program, with the
+message already started. QUILL Lite’s version, your Windows version and
+your screen reader are filled in at the bottom. It goes to <strong><a
 href="mailto:support@community-access.org">support@community-access.org</a></strong>,
-where a person reads it and replies to you by email.</p>
-<p>Not a bug tracker. Not a public issue thread you need an account to
-join, with your configuration and your document’s name in it forever. An
-email, to somebody who answers. Your address is optional — you can
-report a problem without giving one, you just cannot then be replied to
-— and nothing is sent until you send it yourself.</p>
-<h3 id="and-it-tells-you-when-there-is-a-new-version">And it tells you
-when there is a new version</h3>
-<p><strong>Ctrl+Alt+U</strong> asks. If there is nothing newer it says
-so, out loud and in a dialog, because a key that answers with silence
-might as well be broken.</p>
-<p>If there is, the window opens on <strong>what changed</strong> — the
-release notes, in a box you can arrow through — with
-<strong>Update</strong> and <strong>Close</strong> beside them. Your
-focus lands in the notes, so the first thing you hear is what is in the
-release rather than the word “Update”. Update downloads it and offers to
-install and restart for you; everything you have set is kept. Nothing
-downloads until you say so.</p>
-<p>It also looks once a day when it starts and says nothing unless there
-is something — not while it checks, not when there is nothing, not when
-the network is down. One tick box in Settings turns even that off.</p>
+where a person reads it and writes back.</p>
+<p>There is no bug tracker to join and no public thread with your
+settings in it. Your email address is optional. You can report a problem
+without one, but then nobody can reply. Nothing is sent until you send
+it yourself.</p>
+<h3 id="it-tells-you-when-there-is-a-new-version">It tells you when
+there is a new version</h3>
+<p>Press <strong>Ctrl+Alt+U</strong> to check. If there is nothing
+newer, it tells you, out loud and in a dialog.</p>
+<p>If there is a new version, the window opens on what changed: the
+release notes, in a box you can arrow through, with
+<strong>Update</strong> and <strong>Close</strong> beside it. Your focus
+starts in the notes, so the first thing you hear is what is new. Update
+downloads it and offers to install it and restart for you. Everything
+you have set is kept, and nothing downloads until you say so.</p>
+<p>It also checks once a day when it starts. It stays quiet unless there
+is something new, and it says nothing if the network is down. One
+checkbox in Settings turns this off.</p>
 <h3 id="nine-lessons-that-teach-you-the-editor">Nine lessons that teach
 you the editor</h3>
-<p><strong>Ctrl+Alt+F1</strong> opens <strong>Tutorials</strong>: nine
-short guided lessons in two tracks, about forty-two minutes in all.
-Opening a file and giving it back unchanged, the four kinds of document,
-your numbered documents, what to press when you are lost — then
-selecting more than a few words, finding your way back, skimming
-something long, spelling without a red squiggle, and asking a question
-about the document in front of you.</p>
-<p>Each lesson is a list of steps. Every step says <strong>what to
-press</strong>, <strong>why</strong>, and <strong>what you should hear
-when it worked</strong> — which is the part a manual never tells you and
-the part you actually need when you cannot see whether anything
-happened. A step shows <em>your</em> key, so a lesson stays right after
-you rebind something.</p>
+<p>Press <strong>Ctrl+Alt+F1</strong> to open
+<strong>Tutorials</strong>: nine short guided lessons in two tracks,
+about forty-two minutes in all.</p>
+<p>The first track covers opening a file and giving it back unchanged,
+the four kinds of document, your numbered documents, and what to press
+when you are lost. The second covers selecting more than a few words,
+finding your way back, skimming something long, spelling without a red
+squiggle, and asking a question about the document in front of you.</p>
+<p>Each step tells you what to press, why, and what you should hear when
+it worked. That last part is the one you need most when you cannot see
+whether anything happened. Steps show your own keys, so a lesson stays
+right even after you change a key.</p>
 <h3 id="every-key-is-yours-to-change">Every key is yours to change</h3>
-<p><strong>Tools ▸ Keyboard Manager</strong>
-(<strong>Ctrl+Alt+Shift+R</strong>) lists every command in QUILL Lite
-with the key it answers to. Type part of a name to find one, press
-<strong>Enter</strong> on its row, and give it the key you want; if
-something else already has that key, QUILL Lite <strong>names the
-command that owns it and asks</strong>, rather than silently stealing it
-or silently refusing.</p>
-<p><strong>Record a Key</strong> answers the harder question — <em>is
-this combination free?</em> Press it, press the chord, and you are told
-what that chord does today or that it is free. It even catches the case
-nothing else can: a key some other program has claimed across the whole
-of Windows, which never reaches this editor at all and used to look
-exactly like a bug.</p>
-<p><strong>Check for Problems</strong> finds the three ways a keyboard
-goes quietly wrong: a key claimed twice, a key QUILL Lite cannot read,
-and — the one you would otherwise never discover — a key Windows accepts
-and then never delivers, so it is assigned and inert.</p>
-<p>Only what you changed is written down, so a key we improve in a later
-version still reaches you. <strong>Insert can never be claimed</strong>,
-because it is your screen reader’s own modifier and taking it would be
-taking their keyboard.</p>
+<p><strong>Tools &gt; Keyboard Manager</strong>
+(<strong>Ctrl+Alt+Shift+R</strong>) lists every command with its key.
+Type part of a name to find one, press <strong>Enter</strong> on it, and
+give it the key you want. If another command already has that key, QUILL
+Lite tells you which one and asks what you want to do.</p>
+<p><strong>Record a Key</strong> answers the question “is this key
+free?” Press it, press the key combination, and you hear what that key
+does now, or that it is free. It even notices when another program has
+taken the key for the whole of Windows, so it never reaches the editor
+at all.</p>
+<p><strong>Check for Problems</strong> finds three kinds of trouble: a
+key given to two commands, a key QUILL Lite cannot read, and a key
+Windows accepts but never passes on, so it looks assigned and does
+nothing.</p>
+<p>Only the keys you change are saved. That way, if we improve a key in
+a later version, you still get it. <strong>Insert can never be
+taken</strong>, because your screen reader uses it.</p>
 <h3 id="going-back-to-yesterdays-version">Going back to yesterday’s
 version</h3>
-<p>Switch on <strong>Timestamped backups</strong> and <strong>File ▸
+<p>Turn on <strong>Timestamped backups</strong>, and <strong>File &gt;
 Earlier Versions…</strong> (<strong>Ctrl+Alt+Shift+E</strong>) lists
-every save of the document you are in — “Today at 4:12 PM — 2,341
-words”, newest first, twenty kept. The word count is there to be
-compared rather than read: two saves a minute apart are impossible to
-tell apart by ear, and the one that is suddenly two thousand words
-shorter is usually the one you are hunting.</p>
-<p><strong>Restore</strong> drops that version into the window without
-saving, so Ctrl+Z takes it back and the file on disk is untouched until
-you decide. <strong>Open a Copy</strong> puts it in a new window and
-leaves what you are working on completely alone.</p>
-<h3 id="the-rest-briefly">The rest, briefly</h3>
+every save of the document you are in, newest first, with twenty kept.
+Each one reads like “Today at 4:12 PM, 2,341 words”. The word count
+helps you tell them apart: two saves a minute apart sound alike, but the
+one that suddenly lost two thousand words is usually the one you
+want.</p>
+<p><strong>Restore</strong> puts that version into the window without
+saving, so Ctrl+Z takes it back and the file on disk stays as it was
+until you decide. <strong>Open a Copy</strong> puts it in a new window
+and leaves your current work alone.</p>
+<h3 id="everything-else-briefly">Everything else, briefly</h3>
 <ul>
-<li><strong>Numbered documents</strong> in one window — Alt+1 through
-Alt+9, and a Window menu that lists them all</li>
-<li><strong>Bookmarks</strong> — nine numbered ones that survive
-editing, a temporary one, and a list you can jump from</li>
-<li><strong>Marks</strong> — where you were standing before you went to
-look something up. Ctrl+Shift+M drops one, Ctrl+M comes back, Alt+M
-lists them</li>
-<li><strong>Go Back and Go Forward</strong> (Alt+Left, Alt+Right) — the
-undo for navigation. Every jump QUILL Lite makes goes through it, so
-there is no jump you cannot take back</li>
-<li><strong>A copy tray and a clip history</strong>, because one
-clipboard is not enough — twelve numbered slots, a collector that
-gathers several copies into one paste, and a library of clips you chose
-to keep</li>
-<li><strong>Abbreviations and snippets</strong> — type a short form, get
-the long one; or open Snippets (Alt+Shift+I) and pick the one whose
-trigger you cannot remember</li>
-<li><strong>Structural selection</strong> — a word, a line, a sentence,
-a paragraph, a block, each in one keystroke, and F8 to mark a start and
-walk to the end by any means you like</li>
-<li><strong>Line tools</strong> — move, duplicate, join, sort, reverse,
-number, de-duplicate, quote, hard-wrap, comment out, trim, and delete
-every line containing a word</li>
-<li><strong>Headings you can move, not just make</strong> — promote and
-demote, move a whole section and its subsections up or down, fold a long
-document down to its headings, or open the <strong>Heading
-Organizer</strong> (Alt+Shift+O) and restructure the lot in one list.
-<strong>Move Section To…</strong> (Ctrl+Alt+Shift+F5) asks where instead
-of making you press a key forty times</li>
-<li><strong>The Command Palette</strong> (Ctrl+Shift+P) — type part of a
-command’s name and run it, with its key shown beside it, which is a good
-way to pick the keys up</li>
-<li><strong>A special character picker</strong> (Ctrl+Shift+F2) for the
-357 characters a keyboard has no key for, searchable by name, by code
-point, and by the words people actually use — <code>gbp</code>,
-<code>eszett</code>, <code>micro</code>. It reads back what it put in,
-because most of that list is invisible on the page</li>
-<li><strong>Print Preview</strong> (Ctrl+Alt+Shift+P) that is a
-<em>readable answer</em> — how many pages, where each one breaks, what
-is in the margins — rather than a picture of a page</li>
-<li><strong>Four kinds of document in one key</strong> — plain text,
-Markdown, HTML, rich text, and <strong>Alt+Shift+F</strong> rings
-between them, each saying its own name</li>
-<li><strong>Your formatting survives the conversion</strong> — going in
+<li><strong>Numbered documents</strong> in one window. Alt+1 through
+Alt+9 take you to each one, and the Window menu lists them all.</li>
+<li><strong>Bookmarks.</strong> Nine numbered ones that stay put while
+you edit, a temporary one, and a list you can jump from.</li>
+<li><strong>Marks.</strong> A mark remembers where you were before you
+went to look something up. Ctrl+Shift+M sets one, Ctrl+M takes you back,
+and Alt+M lists them.</li>
+<li><strong>Go Back and Go Forward</strong> (Alt+Left, Alt+Right). Undo
+for moving around. Every jump QUILL Lite makes can be taken back.</li>
+<li><strong>A copy tray and a clip history</strong>, for when one
+clipboard is not enough: twelve numbered slots, a collector that gathers
+several copies into one paste, and a library of clips you chose to
+keep.</li>
+<li><strong>Abbreviations and snippets.</strong> Type a short form and
+get the long one. Or open Snippets (Alt+Shift+I) and pick the one whose
+short form you have forgotten.</li>
+<li><strong>Selecting by structure.</strong> A word, a line, a sentence,
+a paragraph or a block, each with one key. Or press F8 to mark where a
+selection starts and move to the end any way you like.</li>
+<li><strong>Line tools.</strong> Move, duplicate, join, sort, reverse,
+number, remove duplicates, quote, hard-wrap, comment out, trim, and
+delete every line that contains a word.</li>
+<li><strong>Headings you can move, not just make.</strong> Promote and
+demote them, move a whole section and its subsections up or down, fold a
+long document down to its headings, or open the <strong>Heading
+Organizer</strong> (Alt+Shift+O) and rearrange them all in one list.
+<strong>Move Section To…</strong> (Ctrl+Alt+Shift+F5) asks where you
+want a section to go, so you do not have to press a key forty
+times.</li>
+<li><strong>The Command Palette</strong> (Ctrl+Shift+P). Type part of a
+command’s name and run it. Its key is shown beside it, which is a nice
+way to learn the keys.</li>
+<li><strong>A special character picker</strong> (Ctrl+Shift+F2) for 357
+characters that have no key on the keyboard. Search by name, by code
+point, or by everyday words like <code>gbp</code>, <code>eszett</code>
+or <code>micro</code>. It tells you what it put in, since many of these
+characters cannot be seen on the page.</li>
+<li><strong>Print Preview</strong> (Ctrl+Alt+Shift+P) tells you what you
+need to know: how many pages, where each one breaks, and what is in the
+margins.</li>
+<li><strong>Four kinds of document, one key.</strong> Plain text,
+Markdown, HTML and rich text. <strong>Alt+Shift+F</strong> moves between
+them, and each one says its name.</li>
+<li><strong>Your formatting comes through the change.</strong> Going in
 and out of rich text keeps headings, bold, italic, underline,
-strikethrough, super and subscript, fonts, sizes, colours, highlights,
-lists, links, code, quotes, alignment, spacing, indents, named styles,
-page breaks, tables and pictures. A rich text file opens in Word with
-Word’s own styles, so the style box says Heading 1 and Quote rather than
-showing text that merely looks the part.</li>
-<li><strong>“What is this character?”</strong> — the difference between
-a hyphen, an en dash and a minus sign, which a screen reader reads
-identically</li>
+strikethrough, superscript and subscript, fonts, sizes, colours,
+highlights, lists, links, code, quotes, alignment, spacing, indents,
+named styles, page breaks, tables and pictures. A rich text file opens
+in Word with Word’s own styles, so Word’s style box says Heading 1 or
+Quote.</li>
+<li><strong>“What is this character?”</strong> Tells a hyphen, an en
+dash and a minus sign apart, which a screen reader usually reads the
+same way.</li>
 <li><strong>It looks after work you have not saved</strong>, and reopens
-what you had open</li>
-<li><strong>It follows the contrast you already chose.</strong> QUILL
-Lite takes its light or dark from Windows, because anybody who needs a
-particular contrast has already told Windows, and that beats an app
-guessing. <strong>Alt+Shift+D</strong> forces dark when you want it.
-Either way the colours are never written into your file</li>
+what you had open.</li>
+<li><strong>It follows your Windows colours.</strong> QUILL Lite uses
+the light or dark setting you already chose in Windows.
+<strong>Alt+Shift+D</strong> switches to dark whenever you want. Either
+way, colours are never written into your file.</li>
 <li><strong>One set of abbreviations with QUILL for All</strong>, if you
-use both — your short forms, your dictionary, your copy tray and your
-bookmarks can be the same in each, and neither program touches the
-other’s until you ask it to</li>
+use both. Your short forms, dictionary, copy tray and bookmarks can be
+shared, and neither program touches the other’s until you ask it
+to.</li>
 </ul>
 <hr />
 <h2 id="getting-it">Getting it</h2>
 <p>Download QUILL Lite from <strong><a
 href="https://www.quillforall.org/quilllite.html">https://www.quillforall.org/quilllite.html</a></strong>.
-There are two files; you want the first one unless you are going to run
-it from a USB stick.</p>
+The current version is 1.2.0. There are two files. Take the first one,
+unless you want to run QUILL Lite from a USB stick.</p>
 <table>
 <thead>
 <tr>
@@ -730,21 +685,21 @@ it from a USB stick.</p>
 </thead>
 <tbody>
 <tr>
-<td><code>QuillLite-Setup-Shared-&lt;version&gt;.exe</code></td>
+<td>QuillLite-Setup-Shared</td>
 <td>You want to install it.</td>
 </tr>
 <tr>
-<td><code>QuillLite-Portable-&lt;version&gt;.zip</code></td>
+<td>QuillLite-Portable</td>
 <td>You want it on a USB stick.</td>
 </tr>
 </tbody>
 </table>
-<p>Both are digitally signed, so Windows can confirm they have not been
-altered.</p>
-<p>Installing offers <em>Open .txt and .rtf files with QUILL Lite</em>
-as an <strong>optional</strong> extra. It adds QUILL Lite to the Open
-With list and <strong>never</strong> makes itself the default — Notepad,
-WordPad and QUILL stay exactly where they were.</p>
+<p>Both are digitally signed, so Windows can check that nobody has
+changed them.</p>
+<p>While installing, you can choose <em>Open .txt and .rtf files with
+QUILL Lite</em>. It is optional. It adds QUILL Lite to the Open With
+list and never makes itself the default, so Notepad, WordPad and QUILL
+stay just as they were.</p>
 <hr />
 <h2 id="one-minute-to-your-first-document">One minute to your first
 document</h2>
@@ -754,20 +709,23 @@ document</h2>
 <li>Press <strong>Ctrl+S</strong>.</li>
 </ol>
 <p>And one more minute to your first answer: put the cursor in what you
-just typed, press <strong>Ctrl+Alt+Shift+K</strong>, agree, connect,
-then <strong>Ctrl+Alt+G</strong> and <strong>Summarize</strong>.</p>
+just typed, press <strong>Ctrl+Alt+Shift+K</strong>, agree, and connect.
+Then press <strong>Ctrl+Alt+G</strong> and choose
+<strong>Summarize</strong>.</p>
+<p>If you would like a guide beside you while you learn, press
+<strong>Ctrl+Alt+F1</strong> and start with the first lesson.</p>
 <hr />
 <h2 id="it-is-free-and-it-is-yours">It is free, and it is yours</h2>
-<p>QUILL Lite is MIT-licensed and open source. No account, no
-subscription, no advertising, nothing phoning home. The editor never
-touches the network unless you ask it to — to check for an update, or to
-send a passage to the AI when you press Send. Your settings and your
-recovered work live in a folder on your machine, and uninstalling does
+<p>QUILL Lite is open source, under the MIT licence. There is no
+account, no subscription and no advertising, and it does not report on
+you. It only goes online when you ask it to: to check for an update, or
+to send a passage to the AI when you press Send. Your settings and
+recovered work stay in a folder on your computer, and uninstalling does
 not delete them.</p>
 <p>If it does something wrong, or does not do something you need, please
-say so — <strong>Ctrl+Alt+F2</strong> writes the message for you, and a
-person reads it. Every single thing in this release exists because
-somebody said so.</p>
+tell us. <strong>Ctrl+Alt+F2</strong> writes the message for you, and a
+person reads it. Everything in this release is here because somebody
+asked for it.</p>
 <ul>
 <li><strong>Download, guides and news:</strong> <a
 href="https://www.quillforall.org">https://www.quillforall.org</a></li>
@@ -777,11 +735,43 @@ href="https://ai.community-access.org">https://ai.community-access.org</a></li>
 href="https://github.com/Community-Access/quill">https://github.com/Community-Access/quill</a></li>
 </ul>
 <hr />
+<h2 id="arrived-in-quill-lite-120">Arrived in QUILL Lite 1.2.0</h2>
+<p>When this was first written, three small fixes were on their way.
+They arrived in QUILL Lite 1.2.0, together with a thesaurus, a
+dictionary you can use without AI, an AI dictionary, a Google Gemini
+key, and Activity and Repeat Last Result. The QUILL Lite 1.2 release
+notes have the whole story.</p>
+<ul>
+<li>When you come back to QUILL Lite with Alt+Tab, it checks that your
+document is ready for typing. It will not pull you out of Find or a
+menu.</li>
+<li>If QUILL Lite cannot save your preferences, because the disk is full
+or the settings folder is read-only, it tells you. Your choices still
+work until you close the app, the warning stays in the status bar, and
+opening Preferences again tries the save once there is room.</li>
+<li>When you close QUILL Lite, anything sent to it while it closes is
+kept for next time. If you change your mind about closing, everything
+carries on as usual.</li>
+</ul>
+<hr />
+<h2 id="where-to-learn-more">Where to learn more</h2>
+<ul>
+<li><strong>The QUILL Lite User Guide</strong>, in the Start menu beside
+QUILL Lite, covers everything, one chapter at a time. AI help has a
+chapter of its own.</li>
+<li><strong>Help &gt; Tutorials</strong> (<strong>Ctrl+Alt+F1</strong>)
+opens nine guided lessons. Start with Open a file, and give it back
+unchanged. For AI help, try Asking a question about a document.</li>
+<li><strong>Help &gt; Get Help from Support</strong>
+(<strong>Ctrl+Alt+F2</strong>) writes to <a
+href="mailto:support@community-access.org">support@community-access.org</a>
+for you. A person at Community Access reads every message.</li>
+</ul>
+<hr />
 <h2 id="please-pass-it-on">Please pass it on</h2>
-<p>If you know somebody who has been putting up with an editor that does
-not talk to them — or who has been told AI is not for them because every
-AI tool they tried was built for somebody else — send them this. That is
-the entire point.</p>
+<p>Do you know someone who puts up with an editor that does not talk to
+them? Or someone who was told AI is not for them, because every AI tool
+they tried was made for somebody else? Please send them this.</p>
 </main>
 </body>
 </html>

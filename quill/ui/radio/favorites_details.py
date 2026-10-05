@@ -32,7 +32,7 @@ from __future__ import annotations
 
 from typing import Any
 
-__all__ = ["LABEL", "build", "describe", "edit_note", "refresh"]
+__all__ = ["LABEL", "build", "describe", "edit_note", "edit_tags", "refresh"]
 
 #: The pane's own label. "&J" because every letter this window's other controls
 #: and buttons would want is already claimed here (K, L, P, R, U, D, O, M, A,
@@ -91,6 +91,9 @@ def describe(favorite: Any) -> str:
     if station is None:
         return ""
     body = str(getattr(station, "details_text", "") or "").strip()
+    from quill.core.radio.station_tags import details_with_tags
+
+    body = details_with_tags(body, tuple(getattr(favorite, "user_tags", ()) or ()))
     note = _note_for(station)
     if not note:
         return body
@@ -146,4 +149,18 @@ def edit_note(dialog: Any) -> None:
         return
     host = SimpleNamespace(frame=dialog.dialog, _announce=dialog._announce)
     if item_note_dialog.edit_note(host, favorite.station):
+        refresh(dialog)
+
+
+def edit_tags(dialog: Any) -> None:
+    """Edit Station Tags... on the selected favorite, then re-read the pane."""
+    from types import SimpleNamespace
+
+    from quill.ui.radio import station_tags_dialog
+
+    favorite = dialog._selected_favorite()
+    if favorite is None:
+        return
+    host = SimpleNamespace(frame=dialog.dialog, _announce=dialog._announce, _store=dialog._store)
+    if station_tags_dialog.edit_station_tags(host, favorite.station):
         refresh(dialog)

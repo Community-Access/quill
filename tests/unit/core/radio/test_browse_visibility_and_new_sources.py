@@ -112,8 +112,10 @@ def test_youtube_offers_an_add_action_per_kind(monkeypatch, tmp_path) -> None:
     real_saved = youtube_saved.SavedStore
     monkeypatch.setattr(youtube_saved, "SavedStore", lambda *a, **k: real_saved(tmp_path))
     nodes = bs.browse("youtube")
-    # One way in per link shape (QA: a pasted link had no obvious way in).
+    # Search first, then one way in per link shape (QA: a pasted link had no
+    # obvious way in).
     assert [n.label for n in nodes if n.is_action] == [
+        "Search YouTube...",
         "Add a Channel...",
         "Add a Playlist...",
         "Add a Video...",
@@ -175,7 +177,8 @@ def test_a_channel_lists_uploads_then_its_playlists(monkeypatch) -> None:
 
     monkeypatch.setattr(yt, "playlists", lambda url, **_kw: [("Lectures", "https://y/pl?list=1")])
     nodes = bs.browse(make_id("youtubechannel", "https://www.youtube.com/@NASA"))
-    assert [n.label for n in nodes] == ["Uploads", "Lectures"]
+    # Live between them since 2026-10-03: a channel's broadcasts, live first.
+    assert [n.label for n in nodes] == ["Uploads", "Live", "Lectures"]
 
 
 def test_videos_page_offers_more_when_there_is_another_page(monkeypatch) -> None:

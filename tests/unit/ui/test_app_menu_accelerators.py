@@ -39,6 +39,8 @@ _APPS_DIR = Path(__file__).resolve().parents[3] / "quill" / "apps"
 #: menu_bar and is not named here.
 APP_MENU_FILES = (
     "radio.py",
+    # Radio's bar moved to its own mixin under F-08 (2026-10-03).
+    "radio_menu_bar.py",
     "podcasts_menu.py",
     # Cast's View menu, split out of podcasts_menu.py (fef27b3); it appends
     # its own top-level menu, so it is scanned like any other bar module.

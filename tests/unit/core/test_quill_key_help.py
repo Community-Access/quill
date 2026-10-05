@@ -28,7 +28,9 @@ def test_prefix_mode_lists_core_follow_on_keys() -> None:
     assert "?" in keys
     assert "Escape" in keys
     assert "M" in keys
-    assert "G" in keys
+    # G is no longer answered by the prefix itself: it is the keymap's
+    # Open From Favorite Folder, listed with the chord groups (2026-10-03).
+    assert "G" not in keys
     # No selection: the selection-actions entry is absent.
     assert "A" not in keys
 

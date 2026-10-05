@@ -2137,12 +2137,12 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
     ),
     SettingSpec(
         "beta_updates",
-        "Get beta updates",
+        "Release channel",
         "admin",
         "bool",
-        "Receive pre-release builds, which may be unstable.",
+        "Stable, Beta or Dev. Change it with the button here or Help, Release Channel.",
         feature_id="core.updates",
-        keywords=("updates", "beta", "channel", "prerelease"),
+        keywords=("updates", "beta", "dev", "stable", "channel", "release", "prerelease"),
     ),
     # --- Integration and Context Menu --------------------------------------
     SettingSpec(
@@ -2669,6 +2669,50 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         minimum=0,
         maximum=10000,
         keywords=("spelling", "alert", "throttle", "repeat", "timing"),
+    ),
+    # --- Quill Eraser (read by main_frame_hygiene._hygiene_settings) ---------
+    SettingSpec(
+        "hygiene_min_confidence",
+        "Quill Eraser: findings to show",
+        "spelling",
+        "choice",
+        "How sure Quill Eraser must be before it reports something. High shows "
+        "only the clear cases; Medium and Low show more, with more false alarms.",
+        choices=(
+            ("high", "Only high-confidence findings (default)"),
+            ("medium", "Medium confidence and above"),
+            ("low", "Everything, including low confidence"),
+        ),
+        keywords=("quill eraser", "hygiene", "tidy", "confidence", "cleanup"),
+    ),
+    SettingSpec(
+        "hygiene_allow_double_space_after_period",
+        "Quill Eraser: allow two spaces after a full stop",
+        "spelling",
+        "bool",
+        "Do not report exactly two spaces after a full stop, question mark or "
+        "exclamation mark, for people who were taught to type that way.",
+        keywords=("quill eraser", "hygiene", "double space", "period", "spaces"),
+    ),
+    SettingSpec(
+        "hygiene_max_blank_lines",
+        "Quill Eraser: blank lines allowed in a row",
+        "spelling",
+        "int",
+        "How many blank lines may sit together before Quill Eraser reports them "
+        "(1 to 10). Default is 2.",
+        minimum=1,
+        maximum=10,
+        keywords=("quill eraser", "hygiene", "blank lines", "empty lines"),
+    ),
+    SettingSpec(
+        "hygiene_rules_disabled",
+        "Quill Eraser: rules to skip",
+        "spelling",
+        "text",
+        "Rule names Quill Eraser should never report, separated by commas, for "
+        "example prose.lowercase_sentence_start. Leave blank to use every rule.",
+        keywords=("quill eraser", "hygiene", "rules", "disable", "skip"),
     ),
     # --- Administration: upgrade and migration behavior --------------------
     SettingSpec(

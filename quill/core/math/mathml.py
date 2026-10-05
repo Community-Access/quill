@@ -14,8 +14,6 @@ import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from typing import cast
 
-from defusedxml import ElementTree as DET
-
 from quill.core.error_codes import CodedError
 
 MATHML_NS = "http://www.w3.org/1998/Math/MathML"
@@ -41,11 +39,15 @@ class Equation:
 def parse_mathml(text: str) -> ET.Element:
     """Parse *text* as MathML, raising :class:`MathMLError` on malformed input.
 
-    Uses defusedxml because the input may originate from an imported document
-    or a Quillin, not only from QUILL's own LaTeX bridge.
+    Through :func:`quill.core.safe_xml.fromstring`, because the input may
+    originate from an imported document or a Quillin: defusedxml when it is
+    installed, and a parser that refuses any DTD or entity declaration when it
+    is not -- so this module imports without defusedxml (PR #1618, qc.md X-08).
     """
+    from quill.core.safe_xml import fromstring
+
     try:
-        root = cast(ET.Element, DET.fromstring(text))
+        root = cast(ET.Element, fromstring(text))
     except Exception as exc:  # noqa: BLE001 - defusedxml raises varied XML error types
         raise MathMLError(str(exc) or type(exc).__name__) from exc
     if root.tag not in (f"{{{MATHML_NS}}}math", "math"):

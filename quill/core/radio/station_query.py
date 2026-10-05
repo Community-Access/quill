@@ -522,6 +522,11 @@ def _row_score(row: Any, query: StationQuery) -> tuple[int, int, int]:
     # shares none.
     if relevance and getattr(row, "place_confirmed", False):
         relevance += 150
+    # A row found by what is known about it -- a team it carries, a tag you gave
+    # it (station_lookup) -- is the answer even though its name may share no word
+    # with the query; only an exact name outranks it.
+    if getattr(row, "match_reason", ""):
+        relevance = max(relevance, 300)
     checked = getattr(row, "last_check_ok", None)
     health = 0 if checked is None else (1 if checked else -1)
     votes = int(getattr(row, "votes", 0) or 0)

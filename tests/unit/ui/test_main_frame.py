@@ -10,7 +10,13 @@ from pathlib import Path
 _UI = Path(__file__).resolve().parents[3] / "quill" / "ui"
 SOURCE = "\n".join(
     (_UI / name).read_text(encoding="utf-8")
-    for name in ("main_frame.py", "main_frame_commands.py", "main_frame_publishing.py")
+    for name in (
+        "main_frame.py",
+        "main_frame_commands.py",
+        "main_frame_publishing.py",
+        # F-08 moved the crash-recovery loop into its own mixin.
+        "main_frame_crash_recovery.py",
+    )
 )
 
 

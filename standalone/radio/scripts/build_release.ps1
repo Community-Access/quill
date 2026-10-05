@@ -41,13 +41,18 @@ param(
     [string]$QuillRepo = "",
     [switch]$SkipSharedRuntime,
     [switch]$SkipPublishedCheck,
+    # A Dev build's version (dev-builds.yml): 3.3.0-dev.20261003.1. Release
+    # builds never pass it; the literal below stays the app's real version.
+    [string]$DevVersion = "",
     [switch]$SkipCatalog,
+    [int]$Build = 0,
     [switch]$Sign
 )
 
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
-$version = "3.1.1"
+$version = "3.2.0"
+if ($DevVersion) { $version = $DevVersion }
 
 # Authenticode code signing is opt-in (docs/code-signing.md). -Sign turns it on
 # for this run by setting QUILL_SIGN=1, which the shared signer
@@ -67,6 +72,11 @@ if (-not $QuillRepo) {
 $QuillRepo = Resolve-QuillRepo -Preferred $QuillRepo
 $Python = Resolve-QuillPython -Preferred $Python -QuillRepo $QuillRepo
 $Iscc = Resolve-QuillIscc -Preferred $Iscc
+
+# The build number: -Build, else the next one after the newest tag published
+# for $version. It must equal the app's build constant in source, which the
+# runtime carries; the installer records it and Windows shows X.Y.Z.B.
+$build, $fileVersion = Resolve-QuillReleaseBuild -QuillRepo $QuillRepo -Python $Python -App "radio" -Version $version -Build $Build -Dev:([bool]$DevVersion) -OfflineOk:$SkipPublishedCheck
 
 # GATE-SIBVER (2026-09-30): the runtime this build ships carries every app's
 # version constant, so no sibling may be ahead of its published release here.
@@ -268,6 +278,10 @@ $signer = Join-Path $QuillRepo "scripts\code_signing.py"
 & $Python $signer sign-build $sharedRuntimeDist $appDir $installerLauncherDir --label "radio payload"
 if ($LASTEXITCODE -ne 0) { throw "Code signing (payload) failed." }
 
+# Release channels: a portable copy names its own version, as the installer's
+# quill-app-version.ini does -- a Dev build's version is not the code constant,
+# and the update helper's health check waits for exactly this version to start.
+Set-Content -LiteralPath (Join-Path $appDir "quill-app-version.ini") -Value "[app]`r`nversion=$version`r`nversion_build=$version+$build" -Encoding ascii
 $zipPath = Join-Path $repoRoot "dist\Quill-Radio-Portable-$version.zip"
 if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
 Write-Host "Compressing portable bundle -> $zipPath ..."
@@ -282,7 +296,7 @@ $innoSign = @()
 if ($env:QUILL_SIGN -eq "1") {
     $innoSign = @("/DSign", "/Squilltrusted=`$q$Python`$q `$q$signer`$q sign `$f")
 }
-& $Iscc @innoSign "/dAppVersion=$version" (Join-Path $repoRoot "installer\quill-radio.iss") "/O$(Join-Path $repoRoot 'dist')"
+& $Iscc @innoSign "/dAppVersion=$version" "/dAppBuild=$build" "/dAppFileVersion=$fileVersion" (Join-Path $repoRoot "installer\quill-radio.iss") "/O$(Join-Path $repoRoot 'dist')"
 if ($LASTEXITCODE -ne 0) { throw "ISCC failed with exit code $LASTEXITCODE" }
 
 # -- retired downloads never ride along ----------------------------------------

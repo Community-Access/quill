@@ -17,6 +17,7 @@ Tagline: *Every conversation within reach.*
 from __future__ import annotations
 
 __version__ = "0.3.0"
+__build__ = 1  # this version's build (docs/release/RELEASE.md, "Build numbers")
 __title__ = "QUILL Social"
 
 

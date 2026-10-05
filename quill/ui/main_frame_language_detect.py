@@ -124,11 +124,28 @@ class LanguageDetectMixin:
             self.set_document_language(language)
         elif mode == "prompt":
             message = (
-                f"This looks like {language}. Press Ctrl+Shift+L, then Enter, "
+                f"This looks like {language}. {self._set_language_route()}, then Enter, "
                 f"to set the document language."
             )
             self._set_status(message)
         else:  # "hint" — visible only, no speech
+            route = self._set_language_route()
             self._set_status(
-                f"Looks like {language} ({percent}%) — press Ctrl+Shift+L to set the language."
+                f"Looks like {language} ({percent}%) — "
+                f"{route[:1].lower()}{route[1:]} to set the language."
             )
+
+    def _set_language_route(self) -> str:
+        """How to reach Set Language, naming the key that is actually bound.
+
+        This used to say "Ctrl+Shift+L" as a literal, which is the bullet-list
+        key; the picker is navigate.set_language (Ctrl+Alt+F6 by default) and
+        can be rebound, so the sentence asks the keymap (2026-10-03).
+        """
+        from quill.core.keymap_format import format_binding_for_display
+
+        binding = self._binding_for("navigate.set_language") or ""
+        if not binding:
+            return "Use Set Language"
+        prefix = getattr(self.settings, "quill_key_binding", "Ctrl+Shift+Grave")
+        return f"Press {format_binding_for_display(binding, prefix=prefix)}"

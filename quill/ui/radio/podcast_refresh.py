@@ -227,7 +227,19 @@ class PodcastRefreshMonitor:
         if self._safe_mode or not self._on_launch():
             return False
         self.check_now(announce_when_empty=False)
+        self._check_youtube_channels()
         return True
+
+    def _check_youtube_channels(self) -> None:
+        """Followed YouTube channels with the bell on ride the same schedule."""
+        from quill.ui.radio import youtube_channel_alerts_ui
+
+        youtube_channel_alerts_ui.check_in_background(
+            self._task_manager,
+            safe_mode=self._safe_mode,
+            minutes=self._interval_minutes(),
+            consented=bool(getattr(self._settings(), "youtube_consented", False)),
+        )
 
     def _on_timer(self, event: Any) -> None:
         # One wx.Timer per frame shares EVT_TIMER with every other timer bound
@@ -236,6 +248,7 @@ class PodcastRefreshMonitor:
             event.Skip()
             return
         self.check_now(announce_when_empty=False)
+        self._check_youtube_channels()
 
     # -- the check ------------------------------------------------------------
 

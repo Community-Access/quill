@@ -127,14 +127,16 @@ class PodcastLibrary:
     #: using Cast for a year. Operations live in podcasts.onboarding.
     onboarding: OnboardingState = field(default_factory=OnboardingState)
 
-    def queue_episode(self, show_id: str, episode_guid: str) -> bool:
+    def queue_episode(self, show_id: str, episode_guid: str, reason: str = "") -> bool:
         """Append an episode to the Play Queue (False when already queued).
         Thin convenience over podcasts.queue.add_to_queue for callers that
         only have the library."""
         for item in self.queue:
             if item.show_id == show_id and item.episode_guid == episode_guid:
                 return False
-        self.queue.append(QueueItem(show_id=show_id, episode_guid=episode_guid, added_at=now_iso()))
+        self.queue.append(
+            QueueItem(show_id=show_id, episode_guid=episode_guid, added_at=now_iso(), reason=reason)
+        )
         return True
 
     def find_show(self, show_id: str) -> PodcastShow | None:
@@ -359,7 +361,11 @@ def merge_episodes(
             and fetched_episode.published > current.published
         ):
             republished.append(current.guid)
-        current.title = fetched_episode.title
+        # A listener's rename survives the refresh (ear.md R8).
+        if current.feed_title:
+            current.feed_title = fetched_episode.title
+        else:
+            current.title = fetched_episode.title
         current.audio_url = fetched_episode.audio_url
         current.published = fetched_episode.published
         current.duration_seconds = fetched_episode.duration_seconds

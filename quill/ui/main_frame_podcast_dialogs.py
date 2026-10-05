@@ -14,6 +14,8 @@ preferences are stored.
 
 from __future__ import annotations
 
+from typing import Any
+
 from quill.core.podcasts import opml as opml_module
 
 _SAFE_MODE_MESSAGE = "Podcasts are disabled in Safe Mode. Restart QUILL normally to use them."
@@ -79,20 +81,39 @@ class PodcastDialogsMixin:
         self._announce("Podcast settings saved")
 
     def _podcast_open_add_dialog(self) -> None:
-        from quill.ui.podcasts.add_podcast_dialog import AddPodcastDialog
+        """A peer window (qc.md Phase 4): made once, raised when asked again."""
+        from quill.ui.podcasts.add_podcast_dialog import AddPodcastWindow
+        from quill.ui.podcasts.peer_window import open_peer
 
-        dialog = AddPodcastDialog(
-            self.frame,
-            library=self._podcast_library,
-            task_manager=self._task_manager,
-            safe_mode=self._safe_mode,
-            announce_cb=self._announce,
-            on_library_changed=self._save_podcast_library,
-            # 11.6: when a feed is already followed, land the cursor on the row
-            # the listener already has rather than only refusing.
-            on_reveal_show=self._podcast_reveal_show,
-        )
-        dialog.show()
+        def _make(host: Any) -> AddPodcastWindow:
+            return AddPodcastWindow(
+                host.frame,
+                library=host._podcast_library,
+                task_manager=host._task_manager,
+                safe_mode=host._safe_mode,
+                announce_cb=host._announce,
+                on_library_changed=host._podcast_library_added_to,
+                # 11.6: when a feed is already followed, land the cursor on the
+                # row the listener already has rather than only refusing.
+                on_reveal_show=host._podcast_reveal_show,
+            )
+
+        window = open_peer(self, "_add_podcast_window", _make)
+        address = getattr(self, "_clipboard_feed_address", lambda: "")()
+        if address:
+            import wx
+
+            window.prefill_address(address)  # qc.md section 18 item 8
+            wx.CallAfter(window.land_on_prefill)
+
+    def _podcast_library_added_to(self) -> None:
+        """Add Podcast followed something. Save, and redraw QUILL's Podcast
+        Manager if it is open underneath -- the window stays open now, so the
+        Manager no longer waits for it to close before it looks again."""
+        self._save_podcast_library()
+        refresh = getattr(getattr(self, "_podcast_manager_dialog", None), "refresh_tree", None)
+        if callable(refresh):
+            refresh()
 
     def _podcast_reveal_show(self, show_id: str) -> bool:
         """Land the cursor on *show_id* in whichever list is open. True if it did.
@@ -169,9 +190,21 @@ class PodcastDialogsMixin:
             with open(path, "w", encoding="utf-8") as handle:
                 handle.write(text)
         except OSError as error:
-            self._set_status(f"Could not export OPML: {error}")
+            from quill.ui.podcasts.failure_report import report_failure
+
+            report_failure(self, f"Could not export OPML: {error}", subject="Export OPML")
             return
-        self._announce("Exported OPML")
+        from pathlib import Path
+
+        from quill.ui.outcome_report import report_outcome
+
+        count = len(self._podcast_library.shows)
+        report_outcome(
+            self,
+            "Export OPML",
+            f"Exported {count} podcast{'' if count == 1 else 's'} to {Path(path).name}.",
+            path=path,
+        )
 
     # -- settings dialogs --------------------------------------------------
     #
@@ -184,29 +217,18 @@ class PodcastDialogsMixin:
         """Playback > Sound Enhancements...: three EQ bands + a compressor +
         Smart Speed. Edits the currently-playing show's own override if one
         is loaded, otherwise the shared default -- see
-        PodcastLibrary.apply_show_override."""
-        from quill.ui.sound_enhance_dialog import SoundEnhanceDialog
+        PodcastLibrary.apply_show_override.
 
-        show = self._podcast_enhance_context_show()
-        settings = (
-            self._podcast_library.effective_settings(show)
-            if show
-            else self._podcast_library.settings
-        )
-        dialog = SoundEnhanceDialog(
-            self.frame,
-            bass_db=settings.eq_bass_db,
-            mid_db=settings.eq_mid_db,
-            treble_db=settings.eq_treble_db,
-            compressor_enabled=settings.compressor_enabled,
-            subject=show.title if show else "episode",
-            show_smart_speed=True,
-            smart_speed_enabled=settings.smart_speed_enabled,
-            announce_cb=self._announce,
-        )
-        result = dialog.show()
-        if result is None:
-            return
+        A peer window (qc.md section 6, Phase 4), reviewable while playing:
+        Apply puts the values into effect and the window stays open; asked
+        for again it is raised and re-read for whatever is playing now."""
+        from quill.ui.podcasts.sound_enhance_window import open_sound_enhancements_window
+
+        open_sound_enhancements_window(self)
+
+    def _podcast_apply_sound_enhancements(self, show: Any, result: tuple[Any, ...]) -> None:
+        """Save and hear the Sound Enhancements window's values for *show*
+        (or the shared default when *show* is None)."""
         bass_db, mid_db, treble_db, compressor_enabled, smart_speed_enabled = result
         if show is not None:
             self._podcast_library.apply_show_override(

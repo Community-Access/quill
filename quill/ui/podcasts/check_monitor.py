@@ -187,6 +187,8 @@ class PodcastCheckMonitor:
             return 0  # the other app checked inside this interval
         self._tick()
         started = 0
+        #: The shows this round started, for a run a person asked for (check_run).
+        self.last_started_ids: list[str] = []
         for show in list(getattr(library, "shows", []) or []):
             if not refresh_policy.can_refresh(show):
                 continue
@@ -205,6 +207,7 @@ class PodcastCheckMonitor:
                 logger.exception("Podcast background check failed for show %s", show.id)
                 continue
             started += 1
+            self.last_started_ids.append(str(show.id))
         return started
 
     def _show_is_due(self, library: Any, show: Any) -> bool:

@@ -125,7 +125,7 @@ SETTINGS: tuple[SettingDef, ...] = (
     ),
     define(
         "refresh_minutes",
-        "Check subscribed feeds e&very:",
+        "Check the podcasts I follow e&very:",
         "How often Cast checks your feeds on its own; zero means only when you "
         "ask. Quill Radio shares the answer -- whichever app checks says so, and "
         "the other stays quiet inside the same interval -- so this is one job "
@@ -191,14 +191,14 @@ SETTINGS: tuple[SettingDef, ...] = (
     ),
     define(
         "inbox_mode",
-        "Which shows go to the &Inbox:",
+        "Which podcasts go to the &Inbox:",
         settings_help.HELP["inbox_mode"],
         kind=KIND_CHOICE,
         category=CATEGORY_ARRIVAL,
         levels=(LEVEL_GLOBAL,),
         default="include",
         choices=choices(
-            ("include", "Only the ones I mark"), ("exclude", "Every show except the ones I mark")
+            ("include", "Only the ones I mark"), ("exclude", "Every podcast except the ones I mark")
         ),
         settings_field="inbox_mode",
         aliases=("inbox", "opt in", "opt out"),
@@ -329,7 +329,7 @@ SETTINGS: tuple[SettingDef, ...] = (
     ),
     define(
         "delete_files_on_remove",
-        "&When I unsubscribe, delete downloaded files:",
+        "&When I stop following a podcast, delete its downloaded files:",
         settings_help.HELP["unsubscribe_files"],
         kind=KIND_CHOICE,
         category=CATEGORY_STORAGE,
@@ -392,7 +392,7 @@ SETTINGS: tuple[SettingDef, ...] = (
     ),
     define(
         "episode_list_view_mode",
-        "Show cross-show lists as:",
+        "Show lists that mix podcasts as:",
         "How the Inbox and the other mixed lists are shaped: one stream, "
         "clustered by podcast, or real folders. It groups rows; it never "
         "removes any.",
@@ -459,10 +459,11 @@ SETTINGS: tuple[SettingDef, ...] = (
     ),
     define(
         "directory_source",
-        "Search these directories:",
-        "Which podcast directories a search asks. Both is the default because "
-        "Cast carries its own key for one of them; choosing one narrows the "
-        "search rather than disabling searching.",
+        "Find podcasts in these directories:",
+        "Which podcast directories Add Podcast asks when you look a podcast up "
+        "by name. Both is the default because Cast carries its own key for one "
+        "of them; choosing one narrows where it looks rather than turning "
+        "finding off.",
         kind=KIND_CHOICE,
         category=CATEGORY_CURATION,
         levels=(LEVEL_GLOBAL,),

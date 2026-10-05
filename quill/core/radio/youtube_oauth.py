@@ -83,6 +83,7 @@ __all__ = [
     "load_tokens",
     "refresh",
     "refuse_in_safe_mode",
+    "revoke",
     "save_tokens",
     "sign_in",
     "sign_out",
@@ -453,24 +454,35 @@ def sign_in(
     save_tokens(TokenBundle.from_token_response(response, now=time.time()))
 
 
-def sign_out(*, opener: Opener | None = None) -> None:
-    """Forget the YouTube session, best-effort revoking it at Google first.
+def sign_out(*, opener: Opener | None = None) -> bool:
+    """Revoke QUILL's access at Google, then forget the local session.
 
-    A revoke failure (offline, already revoked, transient error) never blocks
-    clearing the local session -- an unreachable revoke call must not leave a
-    listener unable to disconnect.
+    Returns ``True`` when Google confirmed the revoke (or no token was stored,
+    so there was nothing to revoke) and ``False`` when Google could not be
+    reached or refused -- the caller then tells the listener how to finish by
+    hand. The local session is wiped either way, in a ``finally``: an
+    unreachable revoke must never leave a listener unable to disconnect.
     """
-    bundle = load_tokens()
-    token = bundle.refresh_token or bundle.access_token
-    if token:
-        try:
-            _revoke(token, opener=opener)
-        except Exception:  # noqa: BLE001 - local sign-out must always succeed
-            pass
-    clear_tokens()
+    try:
+        bundle = load_tokens()
+        token = bundle.refresh_token or bundle.access_token
+        return revoke(token, opener=opener) if token else True
+    finally:
+        clear_tokens()
 
 
-def _revoke(token: str, *, opener: Opener | None = None) -> None:
+def revoke(token: str, *, opener: Opener | None = None) -> bool:
+    """Ask Google to revoke *token* -- and with it QUILL's whole grant.
+
+    Google's revoke endpoint takes either token; a refresh token revokes the
+    grant itself, so :func:`sign_out` passes that when it has one. HTTP 200 is
+    revoked; HTTP 400 ``invalid_token`` means Google no longer knows the token
+    (already revoked, or removed at myaccount.google.com), which is the same
+    outcome. Anything else, or no answer at all, is ``False``. Never raises
+    for a network failure, and the token never appears in a log or a message.
+    """
+    if not REVOKE_URL.startswith("https://"):  # defensive; the constant is https
+        return False
     body = urllib.parse.urlencode({"token": token}).encode("utf-8")
     request = urllib.request.Request(
         REVOKE_URL,
@@ -478,13 +490,31 @@ def _revoke(token: str, *, opener: Opener | None = None) -> None:
         method="POST",
         headers={"Content-Type": "application/x-www-form-urlencoded", "User-Agent": _USER_AGENT},
     )
-    if opener is not None:
-        opener(request)
-        return
-    with urllib.request.urlopen(
-        request, timeout=_TIMEOUT_SECONDS, context=_context_for(REVOKE_URL)
-    ):
-        pass
+    try:
+        if opener is not None:
+            status, raw = opener(request)
+        else:
+            with urllib.request.urlopen(
+                request, timeout=_TIMEOUT_SECONDS, context=_context_for(REVOKE_URL)
+            ) as resp:
+                status, raw = int(resp.status or 200), resp.read()
+    except urllib.error.HTTPError as error:
+        status, raw = int(error.code), error.read()
+    except (urllib.error.URLError, TimeoutError, OSError):
+        return False
+    return _revoke_succeeded(status, raw)
+
+
+def _revoke_succeeded(status: int, raw: bytes) -> bool:
+    if status == 200:
+        return True
+    if status != 400:
+        return False
+    try:
+        parsed = json.loads(raw.decode("utf-8", errors="replace").strip() or "{}")
+    except ValueError:
+        return False
+    return isinstance(parsed, dict) and parsed.get("error") == "invalid_token"
 
 
 def get_access_token(*, opener: Opener | None = None, now: float | None = None) -> str | None:

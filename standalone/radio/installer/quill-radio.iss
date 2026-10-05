@@ -34,7 +34,16 @@
 ; /dAppVersion=<version> to ISCC. The literal below is only the fallback for a
 ; manual ISCC run and must be kept in step with build_release.ps1's $version.
 #ifndef AppVersion
-  #define AppVersion "3.1.1"
+  #define AppVersion "3.2.0"
+#endif
+; The build of this version and the Windows file version (X.Y.Z.B)
+; (docs/release/RELEASE.md, "Build numbers"). build_release.ps1 passes
+; /dAppBuild= and /dAppFileVersion=; these literals are only the fallback.
+#ifndef AppBuild
+  #define AppBuild "1"
+#endif
+#ifndef AppFileVersion
+  #define AppFileVersion "3.2.0.1"
 #endif
 #define AppPublisher "Community Access"
 #define AppURL "https://github.com/Community-Access/quill-radio"
@@ -77,7 +86,7 @@ AppPublisher={#AppPublisher}
 AppPublisherURL={#AppURL}
 AppSupportURL={#AppURL}
 AppUpdatesURL={#AppURL}
-VersionInfoVersion=3.1.1.0
+VersionInfoVersion={#AppFileVersion}
 VersionInfoCompany={#AppPublisher}
 VersionInfoDescription={#AppName} accessible internet radio (shared runtime)
 DefaultDirName={autopf}\{#AppName}
@@ -140,6 +149,9 @@ Name: "docs"; Description: "Documentation (User Guide, Release Notes, Product Re
 ; the code's own constant says which runtime is here, not which app installer
 ; ran -- on 2026-09-29 a Radio runtime made QUILL Lite 1.0.0 call itself 1.1.0.
 Filename: "{app}\quill-app-version.ini"; Section: "app"; Key: "version"; String: "{#AppVersion}"
+; The build, beside the version it belongs to (quill.core.app_version says
+; why it repeats the version rather than holding the bare number).
+Filename: "{app}\quill-app-version.ini"; Section: "app"; Key: "version_build"; String: "{#AppVersion}+{#AppBuild}"
 
 [Files]
 ; Radio's own payload is tiny: just its icon, the per-app C launcher

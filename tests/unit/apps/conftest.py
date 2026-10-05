@@ -771,6 +771,7 @@ def lite_window(tmp_path, lite_settings):
     from quill.apps.lite_window_sections import DocumentSectionCommandsMixin
     from quill.apps.lite_window_selection import DocumentSelectionMixin
     from quill.apps.lite_window_spelling import DocumentSpellingMixin
+    from quill.apps.lite_window_text_editor import DocumentTextEditorMixin
     from quill.apps.lite_window_tools import DocumentToolsMixin
     from quill.apps.lite_window_typing import DocumentTypingMixin
     from quill.apps.lite_window_view import DocumentViewCommandsMixin
@@ -794,6 +795,9 @@ def lite_window(tmp_path, lite_settings):
         DocumentMarksMixin,
         DocumentLineMixin,
         DocumentToolsMixin,
+        # Make QUILL Lite My Text Editor and the Notepad switch, 2026-10-03.
+        # The registry, the prompt and Settings are patched in the test.
+        DocumentTextEditorMixin,
         DocumentClipboardMixin,
         DocumentFormatCommandsMixin,
         # The outline commands, split out of the Format mixin on 2026-09-23

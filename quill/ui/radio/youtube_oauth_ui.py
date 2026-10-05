@@ -36,6 +36,14 @@ CONNECT_EXPLAINER = (
 
 DISCONNECT_TITLE = "Disconnect YouTube Account"
 
+#: The two outcomes of Disconnect, exactly one of which is spoken. The local
+#: sign-in is forgotten in both; only the second needs the listener to act.
+DISCONNECTED = "YouTube account disconnected."
+DISCONNECTED_LOCALLY = (
+    "YouTube account disconnected from QUILL. Google could not be reached, so to "
+    "finish, remove QUILL at myaccount.google.com/permissions."
+)
+
 
 def connect_youtube_account(host: Any) -> None:
     """Ask for consent, sign in in the browser, then import subscriptions."""
@@ -106,7 +114,12 @@ def _report_import(host: Any, added: int, already: int) -> None:
 
 
 def disconnect_youtube_account(host: Any) -> None:
-    """Sign out and forget the stored session (channels already added stay)."""
+    """Revoke QUILL's access at Google and forget the session (channels stay).
+
+    The revoke is a network round trip, so it runs on the task manager; the
+    local session is wiped whether or not Google answers, and exactly one
+    outcome is spoken.
+    """
     from quill.core.radio import youtube_oauth
 
     wx = host._wx
@@ -115,14 +128,37 @@ def disconnect_youtube_account(host: Any) -> None:
         return
     answer = host._show_message_box(
         "Disconnect the YouTube account signed in to QUILL?\n\n"
-        "Channels already imported stay in your YouTube list -- this only "
-        "forgets the sign-in, so future subscription changes stop syncing "
-        "until you connect again.",
+        "This removes QUILL's access at Google and forgets the sign-in here. "
+        "Channels already imported stay in your YouTube list; future "
+        "subscription changes stop syncing until you connect again.",
         DISCONNECT_TITLE,
         # No is the default: pressing Enter reflexively must not sign out.
         wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT,
     )
     if answer != wx.YES:
         return
-    youtube_oauth.sign_out()
-    host._announce("YouTube account disconnected.")
+
+    def _work(**_kwargs: object) -> object:
+        return youtube_oauth.sign_out()
+
+    def _done(_op: str, result: object) -> None:
+        host._wx.CallAfter(host._announce, DISCONNECTED if result is True else DISCONNECTED_LOCALLY)
+
+    def _failed(*_args: object) -> None:
+        host._wx.CallAfter(_forget_after_failure, host)
+
+    host._task_manager.submit(
+        "youtube-oauth-disconnect", _work, on_success=_done, on_failure=_failed
+    )
+
+
+def _forget_after_failure(host: Any) -> None:
+    """``sign_out`` raised: make sure the local session is gone, then say so."""
+    from quill.core.radio import youtube_oauth
+
+    try:
+        youtube_oauth.clear_tokens()
+    except Exception as error:  # noqa: BLE001 - spoken, never swallowed
+        host._announce(f"Could not forget the YouTube sign-in: {error}.")
+        return
+    host._announce(DISCONNECTED_LOCALLY)

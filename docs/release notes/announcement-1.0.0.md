@@ -1,210 +1,232 @@
 # QUILL 1.0.0 is here
 
-## A writing suite built by and for the people who work by ear and by touch.
+## A writing suite for people who work by ear and by touch
 
-*From Community Access. Free. Optional by design. Private by default. Built with you.*
+*From Community Access. Free. AI only if you want it. Your documents stay on your
+computer.*
 
-Most software is built to be looked at, and then made reachable afterward. A label gets
-added, a focus order gets repaired, a warning that flashed red is finally given a word. If
-you write, read, proofread, or transcribe braille without looking at the screen, you know
-how that story ends: the feature technically works, and using it is exhausting.
+QUILL is a complete writing and document program for blind and print-disabled
+readers, writers, students, proofreaders and braille transcribers, and for anyone
+who uses the keyboard instead of a mouse. If you write, read, proofread or
+transcribe braille without looking at the screen, you know how most software goes:
+the feature technically works, and using it wears you out.
 
-QUILL starts at the other end. Every feature began with the question of what you will
-*hear* and what your fingers will *read*, and the visible interface is what fell out of
-that answer. When a feature could not be made to work well by ear, it was redesigned until
-it could, or it was not shipped. That is what 1.0.0 is: a complete writing and document
-environment for blind and print-disabled readers, writers, students, proofreaders, and
-braille transcribers, and for anyone who navigates by keyboard rather than mouse.
+QUILL was built the other way round. Every feature started with two questions: what
+will you hear, and what will your fingers read? If a feature could not be made to
+work well by ear, it was redesigned until it could, or it was left out. That is
+what 1.0.0 is.
 
 ---
 
 ## It talks to you properly
 
-Everything QUILL says goes through one shared service that speaks on four channels at
-once: speech, braille, sound, and the status line. Speech reaches your screen reader
-through a dedicated bridge for each one, so announcements arrive in your own voice at
-your own rate instead of through a second, competing synthesizer. JAWS, NVDA, and
-Narrator on Windows; VoiceOver on macOS. When any screen reader is running, QUILL's own
-built-in voice stays silent so it can never talk over you. Sound carries its own share of
-the load, because a sound never talks over a screen reader: starting a selection opens
-with a rising two-note gate and completing it plays the mirror image, and the top and the
-end of a document answer with a ceiling tick and a floor thud.
+Everything QUILL says goes out on four channels at once: speech, braille, sound and
+the status line. Speech goes through your own screen reader, so you hear it in your
+own voice at your own rate. QUILL works with JAWS, NVDA and Narrator on Windows, and
+VoiceOver on macOS. While a screen reader is running, QUILL's own built-in voice
+stays silent, so it never talks over you.
 
-It also says the things your screen reader cannot. A Windows edit control has no
-paragraph styles and no list semantics, so arrive at a heading and your reader reads a
-line; arrive in a nested list and it reads some dashes. On a web page it tells you both,
-because the browser hands it both. QUILL therefore says it itself: **"Heading 2,
-Installing"** on arrival, **"Bulleted list, 5 items"** entering a list, **"Level 2, 3
-items"** a rung down, **"Out of list"** on the way out, and **"Table, 4 rows, 3 columns"**
-walking into a grid — in Markdown and HTML alike, over bulleted, numbered and definition
-lists. The level comes first because a cue queued behind your reader is thrown away the
-moment the reader restarts, which is what happens on every Ctrl+Home. Each cue has a key
-that switches it off where you stand, because whether structure is what you are listening
-for depends on whether you are writing the document or reading it.
+Sounds do some of the work too, and a sound never talks over your screen reader.
+Starting a selection plays a rising two-note sound, and finishing it plays the same
+two notes falling. The top of a document answers with a ceiling tick and the end
+with a floor thud.
 
-It also helps you write markup that other people can hear. The HTML picker offers 111
-elements and, above them, **twenty whole form controls** — a labelled dropdown, a radio
-group in a fieldset with one shared name, a required field wired to its hint and its error
-with `aria-describedby`. Inserting `<select>` is the easy half of a dropdown; the half
-that decides whether anyone can use it is a `for` that matches an `id`, and that half is
-invisible on screen. QUILL generates the pair together, checks the `id` against the rest
-of your document so a second field cannot silently duplicate the first, and turns whatever
-you had selected into the label. Both pickers search by what a thing *does*: "glossary"
-finds a definition list, "subtitles" finds a caption track, "error message" finds the
-whole validated-field pattern.
+QUILL also tells you things your screen reader cannot. In an ordinary Windows edit
+box, a heading is just a line and a nested list is just some dashes. So QUILL says
+it for you: **"Heading 2, Installing"** when you arrive on a heading,
+**"Bulleted list, 5 items"** as you enter a list, **"Level 2, 3 items"** one
+level down, **"Out of list"** on the way out, and **"Table, 4 rows, 3 columns"**
+when you walk into a table. This works in Markdown and HTML, for bulleted,
+numbered and definition lists.
+You hear the level even right after **Ctrl+Home**, when your screen reader starts
+talking again. Each of these cues has a key that switches it off where you are, for
+the times you are reading a document and do not need to hear its structure.
 
-QUILL also says as much or as little as you want: four verbosity profiles, plus Quiet Mode
-and Meeting Mode for when you need it to stop talking right now. **Spoken Echo** replays
-the last twenty announcements as an arrowable list, and an **Announcement Self-Test**
-reports which channels actually reached you.
+It helps you write markup other people can use, too. The HTML picker offers 111
+elements and, above them, **twenty whole form controls**: a labelled dropdown, a
+radio group in a fieldset with one shared name, a required field tied to its hint
+and its error with `aria-describedby`. A `<select>` on its own is only half a
+dropdown. The other half is a `for` that matches an `id`, and you cannot see it on
+screen. QUILL writes both halves together, checks the `id` against the rest of your
+document so a second field cannot quietly reuse it, and turns whatever you had
+selected into the label. Both pickers search by what a thing does: "glossary" finds
+a definition list, "subtitles" finds a caption track, and "error message" finds the
+whole pattern for a checked field.
+
+You decide how much QUILL says. There are four verbosity profiles, plus Quiet Mode
+and Meeting Mode for when you need it to stop talking right now. The
+**Spoken Echo** (**Alt+Shift+E**) keeps the last twenty announcements in a list you can
+arrow through, and the **Announcement Self-Test** tells you which channels actually
+reached you.
 
 ## The keyboard is the interface
 
-More than seven hundred named commands, every one reachable three ways: from the menu bar,
-from the Command Palette, and from a shortcut you assign. Nothing hides in a toolbar with
-no menu equivalent. The palette matches multi-word queries in any order, finds a command by
-its shortcut, and speaks each result's shortcut alongside its name, so it quietly teaches
-you the faster route while it runs the command for you. The status bar is a control panel
-too, not a decoration: arrow to any cell and press Enter to act on it.
+QUILL has more than seven hundred named commands, and you can reach every one three
+ways: from the menu bar, from the Command Palette (**Ctrl+Shift+P**), and from a
+shortcut you assign. Nothing hides in a toolbar without a menu item. In the palette
+you can type words in any order, or type a shortcut to find its command. Each
+result is read with its shortcut, so you pick up the faster way as you go. The
+status bar is a control panel too: arrow to any cell and press Enter to act on it.
 
-## Braille is a format, not a rendering of print
+## Braille files, kept exactly as they are
 
-QUILL opens and saves `.brf`, `.brl`, `.pef`, and `.ueb` files while preserving the bytes.
-Form feeds, line endings, and layout come back out exactly as they went in, and a round
-trip produces an identical file. For a transcriber, that is the whole ballgame.
+QUILL opens and saves `.brf`, `.brl`, `.pef` and `.ueb` files without changing
+their bytes. Form feeds, line endings and layout come back out exactly as they went
+in, and a round trip gives you an identical file. For a transcriber, that is what
+matters most.
 
-Text in QUILL begins in **braille cell 1**, not cell 2, eliminating the long-standing
-offset that RichEdit controls share with Microsoft Word. Selected text shows dots 7-8,
-restoring the tactile selection feedback braille readers expect. Both corrections are on by
-default, because braille readers tested them and reported back.
+Text in QUILL starts in **braille cell 1**, not cell 2, fixing the offset that
+RichEdit controls share with Microsoft Word. Selected text shows dots 7-8, so you
+can feel your selection again. Both fixes are on by default, because braille
+readers tried them and asked for them.
 
-Back-translating a braille file elsewhere requires that you already know which code it
-uses, and picking wrong produces garbage with no explanation. **Back-Translate to Text
-(Auto-Detect Code)** removes that burden: QUILL scores the file against every English
-braille code it knows and announces the winner, "Detected UEB Grade 2 (contracted)." You
-learn what your file is instead of being quizzed about it. Around it sit print-page
-navigation, page-by-page proofing status, layout validation, and an exportable report.
+To back-translate a braille file in most programs, you have to know which code it
+uses already, and a wrong guess gives you nonsense with no explanation.
+**Back-Translate to Text (Auto-Detect Code)** does the guessing for you. QUILL
+checks the file against every English braille code it knows and tells you the
+winner, for example "Detected UEB Grade 2 (contracted)." Around it you also get print-page navigation,
+page-by-page proofing status, layout checking and a report you can export.
 
-## Every format, and it speaks the language of each one
+> **QUILLBert found something.** He opened a braille file nobody had labelled,
+> chose **Back-Translate to Text (Auto-Detect Code)**, and QUILL told him what code
+> it was before he had even started guessing. He has been opening mystery files
+> ever since.
 
-Plain text, Markdown, HTML, Word, RTF, OpenDocument, EPUB, PowerPoint, spreadsheets, PDF,
-LaTeX, CSV, JSON, XML, braille formats, and images through OCR. PDF and spreadsheet readers
-ship with every install, so a brand-new copy opens a PDF or an `.xlsx` with nothing to
-fetch first.
+## Every format, handled the right way
 
-**Ctrl+B** wraps a Markdown selection in asterisks, writes `<strong>` in HTML, and applies
-real bold in Word or RTF. One command, one intention, the correct result for the document
-you are actually in. Formatting lives beside your text as hidden codes, which is why
-search, spell check, read aloud, bookmarks, and braille all behave identically no matter
-how formatted a document is, and **Reveal Codes** makes every code visible and speakable
-on demand: the WordPerfect feature many people still miss, rebuilt screen-reader-first.
+Plain text, Markdown, HTML, Word, RTF, OpenDocument, EPUB, PowerPoint, spreadsheets,
+PDF, LaTeX, CSV, JSON, XML, braille formats, and images through OCR. The PDF and
+spreadsheet readers come with every install, so a brand-new copy opens a PDF or an
+`.xlsx` without downloading anything first.
 
-Changing a document's format converts it for real. **Format > Document Format** moves the
-document you are in between plain text, Markdown, HTML and Rich Text, and everything comes
-with you — headings, bold, italic, underline, strikethrough, super and subscript, fonts,
-sizes, colours, highlights, lists, links, code, quotes, alignment, spacing, indents, named
-styles, page breaks, tables and images. Switch out to HTML and back a dozen times and you
-get the document you started with, unchanged. Rich Text is written with Word's own styles,
-so a file you send opens in Word as Heading 1 and Quote rather than as text that merely
-looks the part.
+Press **Ctrl+B** and you get bold the right way for the document you are in:
+asterisks around a Markdown selection, `<strong>` in HTML, and real bold in Word or
+RTF. Formatting sits beside your text as hidden codes. That is why search, spell
+check, Read Aloud, bookmarks and braille all behave the same however much
+formatting a document has. **Reveal Codes** (**Alt+F3**) shows every code and
+reads it to you whenever you want. If you miss that feature from WordPerfect, it
+is back, built for screen readers.
 
-Plain text is the one conversion with two honest answers, so QUILL asks rather than
-guessing: take the `#` and `**` off and be strictly plain, or keep them as ordinary
-characters, because a .txt file is entitled to contain them and plenty of people keep
-their notes exactly that way.
+Changing a document's format really converts it. **Format > Document Format** moves
+the document you are in between plain text, Markdown, HTML and Rich Text, and
+everything comes with it: headings, bold, italic, underline, strikethrough, super
+and subscript, fonts, sizes, colours, highlights, lists, links, code, quotes,
+alignment, spacing, indents, named styles, page breaks, tables and images. Switch to
+HTML and back a dozen times and you still have the document you started with. Rich
+Text is written with Word's own styles, so a file you send opens in Word with real
+Heading 1 and Quote styles.
 
-QUILL is also honest about what it cannot do. A Word file containing features QUILL cannot
-carry names them specifically and asks how you want to proceed, and the first rich save over
-a flagged original makes a timestamped backup beside it. QUILL never silently rewrites a
-complex file and asks you to trust that everything survived.
+Plain text has two sensible answers, so QUILL asks you which one you want. It can
+take the `#` and `**` marks off for strictly plain text, or keep them as ordinary
+characters. A .txt file is allowed to contain them, and plenty of people keep their
+notes that way.
 
-## Reading, speaking, and dictating
+QUILL also tells you what it cannot do. If a Word file has features QUILL cannot
+carry, it names them and asks how you want to go on. The first rich save over a
+file like that makes a timestamped backup beside it. QUILL never quietly rewrites a
+complex file and leaves you hoping everything survived.
 
-Read Aloud speaks the document, a section, or a selection, stripping Markdown punctuation
-so you hear words rather than a recital of hash marks. Voices include Windows SAPI 5,
-DECtalk, eSpeak-NG, the local neural engines Piper and Kokoro, the macOS system voice, and
-optional bring-your-own-key cloud voices. Audiobook and Batch Speech exports a whole folder
-to chaptered audio with real MP3 chapter markers and ACX loudness normalization.
+## Reading, speaking and dictating
 
-Dictation runs **on your own machine**, on whisper.cpp, Faster Whisper, Vosk, or NVIDIA's
-Nemotron, with a model manager that checks your actual RAM and GPU before recommending
-one. A safety net
-saves your audio before transcription runs, so a session is never lost to a failed
-transcription.
+Read Aloud speaks the whole document, a section or a selection, and leaves out
+Markdown punctuation so you hear words, not a string of hash marks. Voices include
+Windows SAPI 5, DECtalk, eSpeak-NG, the local neural engines Piper and Kokoro, the
+macOS system voice, and optional cloud voices with your own key. Audiobook and
+Batch Speech turns a whole folder into chaptered audio, with real MP3 chapter
+markers and ACX loudness normalization.
 
-## AI, entirely on your terms
+Dictation runs **on your own machine**, using whisper.cpp, Faster Whisper, Vosk or
+NVIDIA's Nemotron. A model manager checks your actual RAM and GPU before it
+recommends one. Your audio is saved before transcription starts, so a failed
+transcription never costs you a session. **Live Dictation** (**Ctrl+F11**) writes
+each phrase at the cursor as you pause, and you can now dictate in **Spanish** as
+well as English.
 
-QUILL's AI is optional, opt-in, and silent until invited. If you never set it up, no menu
-nags you. If you do, there is a genuinely free path and the wizard shows it rather than
-hiding it behind the paid options: run Ollama locally and everything happens on your own
-machine at no cost, or pick OpenRouter, where the wizard preselects a free model and labels
-every free model as "Free." QUILL bundles no keys and takes no cut.
+## AI, only if you want it
 
-The discipline underneath every AI feature is that **the AI proposes, you dispose.** Every
-suggested edit stops at a review dialog built to be judged by ear: changes announced as what
-they are, and the sentence before and after each change available so you can judge a
-one-word edit with the context a sighted reviewer gets from a highlight. Nothing touches
-your document until you agree, and then it lands as a single undo step. QUILL never quietly
-changes what is answering you, and never switches between cloud and on-device.
+QUILL's AI is optional. It stays off and silent until you set it up, and if you
+never do, no menu nags you. If you do, the setup wizard shows you the free ways
+first. Run Ollama and everything happens on your own computer at no cost. Or pick
+OpenRouter, where the wizard chooses a free model for you and marks every free
+model "Free." QUILL bundles no keys and takes no cut.
 
-## Trust is the product
+One rule runs through every AI feature: **the AI proposes, you dispose.** Every
+suggested edit stops at a review dialog you can judge by ear. Each change is
+announced as what it is, and you can hear the sentence before and after it, so you
+get the same context a sighted reviewer gets from a highlight. Nothing touches your
+document until you agree, and then the change is one undo step. QUILL never quietly
+changes which AI is answering you, and never switches between the cloud and your
+own computer.
 
-A writing tool that loses work, or that silently does something other than what it said, is
-worse than no writing tool at all, and that is doubly true when you cannot glance at the
-screen to catch it. Autosave snapshots your documents continuously, formatting included;
-saves are atomic; undo survives a session. And if your screen reader stops mid-session,
-QUILL snapshots every open document immediately, then says what happened using whatever can
-still talk.
+## Your work is safe
 
-QUILL is a local program: it opens your files from your disk and writes them back to your
-disk, and nothing about your documents is uploaded as a matter of course. Every feature that
-reaches the internet is optional, asks before its first use, and is disabled in **Safe
-Mode**, a known-good state with extensions, AI, and network features all switched off.
+A writing tool that loses your work, or does something other than what it said, is
+worse than none, and more so when you cannot glance at the screen to catch it.
+Autosave keeps copies of your documents all the time, formatting included. Saves
+are atomic, so a save is either complete or not done at all. Undo survives from
+one session to the next. If your screen reader stops in the middle of a session,
+QUILL saves a copy of every open document straight away, then tells you what
+happened with whatever can still talk.
+
+QUILL runs on your own computer. It opens your files from your disk and writes them
+back to your disk, and it does not upload your documents. Every feature that uses
+the internet is optional, asks before you use it the first time, and is turned off
+in **Safe Mode**. Safe Mode starts QUILL with extensions, AI and network features
+all switched off.
 
 ## Start where you want to start
 
-The first launch asks one question: what kind of writing do you do? Your answer picks a
-feature profile, from Just a Text Editor through Writer, Braille Professional, and
-AI-Powered Author to Full QUILL, with a plain-English preview of what each one turns on
-before you commit. No profile is a trap: switch at any time, toggle any single feature,
-and ask **Help > Why Don't I See a Feature?** when something you read about here is not on
-your menus. Install it with the Windows installer, unpack the portable ZIP onto a USB
-stick, or take the Offline Edition, which carries every optional component inside it for
-an air-gapped machine. macOS builds are notarized and Developer-ID signed.
+The first time you open QUILL, it asks one question: what kind of writing do you
+do? Your answer picks a feature profile, from Just a Text Editor through Writer,
+Braille Professional and AI-Powered Author to Full QUILL. Before you choose, you
+hear a plain description of what each one turns on. You can switch profiles at any
+time or turn any single feature on or off. If something you read about here is not
+on your menus, choose **Help > Why Don't I See a Feature?**
+
+Install QUILL with the Windows installer, unpack the portable ZIP onto a USB stick,
+or take the Offline Edition, which carries every optional part inside it for a
+computer with no internet connection. macOS builds are notarized and Developer-ID
+signed. Once it is installed, QUILL can be your text editor in Windows, and even
+open in place of Notepad if you ask it to.
+
+**Help > Release Channel...** lets you stay on Stable, the version we recommend, or
+try new features early on Beta. QUILL saves a copy of your settings before it
+moves, and coming back to Stable is the same window.
 
 ## Or take the small one
 
-Not everybody wants a writing suite. **QUILL Lite** is QUILL's editor on its own --
-Notepad-scale, screen-reader-first, a separate download that installs beside QUILL
-and keeps its own settings. Same keys, same status bar you can actually read, same
-answer when you press F1.
+Not everybody wants a writing suite. **QUILL Lite** is QUILL's editor on its own:
+about the size of Notepad, made for screen readers, and a separate download that
+installs beside QUILL with its own settings. It has the same keys, the same status
+bar you can actually read, and the same help when you press **F1**.
 
-The two are held to one rule: **QUILL Lite is never allowed to be ahead of QUILL.**
-Anything the small product needs that the big one cannot do goes into the shared
-code, and QUILL gets a way to reach it in the same release. In September 2026 a
-twenty-nine item pass made that true in both directions -- the two keyboards
-converged on the keys Word, WordPad and Notepad already put in your hands, a check
-found and fixed 170 menus offering the same Alt letter twice, and QUILL picked up
-four things QUILL Lite had first, including spelling suggestions that spell
-themselves out as you arrow through them.
+One rule holds the two together: **QUILL Lite is never allowed to be ahead of
+QUILL.** Anything QUILL Lite can do, QUILL can do too, in the same release. A
+twenty-nine item pass made that true both ways. The two keyboards now use the keys
+Word, WordPad and Notepad already taught you. A check found and fixed 170 menus
+that offered the same Alt letter twice. And QUILL picked up four things QUILL Lite
+had first, including spelling suggestions that spell themselves out as you arrow
+through them.
 
-If you use both, they can be one setup: **Bring My QUILL Lite Settings** copies
-your preferences and rebound keys into QUILL and shares your abbreviations,
-dictionary, copy tray, clips and bookmarks from then on, so a change in either is
-a change in both. It tells you what it will do before it does it, and nothing you
-already had is replaced.
+If you use both, they can share one setup. **Bring My QUILL Lite Settings** copies
+your preferences and changed keys into QUILL, and from then on the two share your
+abbreviations, dictionary, copy tray, clips and bookmarks, so a change in one is a
+change in both. It tells you what it will do before it does it, and it replaces
+nothing you already had.
 
-## Built with you
+## Thank you
 
-QUILL is free, and it is built by and with the community that uses it. The ranked spelling
-workflow came from a longtime Kurzweil 1000 user's side-by-side comparison. The braille
-cell-alignment correction became the default because braille readers tested it and reported
-back. The Offline Edition became genuinely offline because someone checked the promise
-instead of assuming the label was enough.
+QUILL is free, and the people who use it helped shape it. The ranked spelling
+workflow came from a longtime Kurzweil 1000 user's side-by-side comparison. The
+braille cell fix became the default because braille readers tested it and told us.
+The Offline Edition works with no connection at all because someone checked that
+promise instead of trusting the label.
 
-If something surprises you, beautifully or badly, tell us. **Help > Report a Bug** is the
-direct line, and a report that says "this works perfectly" is worth as much as one that
-says it does not. The complete QUILL 1.0.0 release notes describe the editor feature by
-feature, and also cover the companion apps that ship alongside it.
+If something surprises you, good or bad, please tell us. Choose
+**Help > Get Help from Support...** (**Ctrl+Alt+F2**). It opens a message to
+support@community-access.org in your own mail program. (It used to be called
+**Report a Bug**.) A message that says "this works perfectly" helps as much as one
+that says it does not.
 
-**QUILL 1.0.0. One editor. Every format. Built with you.**
+The full QUILL 1.0.0 release notes go through the editor feature by feature, and
+cover the companion apps that come with it too.

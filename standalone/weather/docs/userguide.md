@@ -243,6 +243,10 @@ keys the app ships with; only the window can know the ones you rebound.
 
 ## Updating
 
+Help > About shows your version with a build number, such as 3.2.0 (build 2). The
+build number tells you which build of a version you have: when a fix comes out
+without a new version number, it is a newer build, and Check for Updates offers it.
+
 **Help > Check for Updates** knows whether you run the installer or the portable
 build and downloads the matching one. All the Quill apps publish to one release
 feed, and each looks only at its own downloads there, so a Quill Radio release is

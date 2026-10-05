@@ -14,6 +14,12 @@ class SettingTarget:
     label: str
     description: str
     control: Any
+    #: For a setting on a part of the window not built yet (qc.md X-01): shows
+    #: that part and returns the control to focus. *control* is then None.
+    reveal: Callable[[], Any] | None = None
+
+    def enabled(self) -> bool:
+        return self.control is None or bool(self.control.IsEnabled())
 
 
 def find_settings(targets: list[SettingTarget], query: str) -> list[SettingTarget]:
@@ -69,6 +75,47 @@ def _targets(parent: Any, prefix: str = "") -> list[SettingTarget]:
     return targets
 
 
+def registry_page_index(
+    dialog: Any,
+    book: Any,
+    page_specs: list[tuple[str, list[Any]]],
+    built_pages: set[int],
+    build_page: Callable[[int], None],
+    control_index: dict[str, tuple[int, Any]],
+    value_of: Callable[[str], object],
+) -> list[SettingTarget]:
+    """Every setting on every page of a lazily built Settings book.
+
+    QUILL's Settings builds a page the first time it is shown, so a search over
+    the controls on screen found only the first page. The built pages are read
+    as usual; an unbuilt page's settings come from its registry specs, and
+    choosing one shows that page and returns the control to focus.
+    """
+
+    def reveal(index: int, key: str) -> Any:
+        book.SetSelection(index)
+        build_page(index)
+        entry = control_index.get(key)
+        return entry[1] if entry is not None else None
+
+    targets = _targets(dialog)
+    for index, (title, specs) in enumerate(page_specs):
+        if index in built_pages:
+            continue
+        for spec in specs:
+            if isinstance(value_of(spec.key), (list, dict)):
+                continue  # not drawn on the page (it has its own manager)
+            targets.append(
+                SettingTarget(
+                    f"{title}: {spec.label}",
+                    f"{spec.key} {spec.description} {' '.join(spec.keywords)}",
+                    None,
+                    reveal=lambda i=index, k=spec.key: reveal(i, k),
+                )
+            )
+    return targets
+
+
 class PreferencesSearch:
     """Find a setting and focus it without changing values or accepting edits."""
 
@@ -78,7 +125,11 @@ class PreferencesSearch:
         ensure_help_provider()
         self.dialog = dialog
         self.announce = announce or (lambda _message: None)
-        self.targets = _targets(dialog)
+        # A window whose settings are not all built at once (sections that are
+        # filled one at a time) offers its own index, so a search reaches the
+        # parts nobody has opened yet (qc.md X-01).
+        index = getattr(dialog, "_quill_settings_index", None)
+        self.targets = list(index()) if callable(index) else _targets(dialog)
         self.matches: list[SettingTarget] = []
         self.timer: Any = None
         self.closed = False
@@ -127,7 +178,7 @@ class PreferencesSearch:
         self.matches = find_settings(self.targets, self.search.GetValue())
         active = bool(self.search.GetValue().strip())
         self.results.Set([
-            target.label + (" (disabled)" if not target.control.IsEnabled() else "")
+            target.label + (" (disabled)" if not target.enabled() else "")
             for target in self.matches
         ])
         if self.matches:
@@ -149,8 +200,14 @@ class PreferencesSearch:
         if not 0 <= index < len(self.matches):
             return
         target = self.matches[index]
-        if not target.control.IsEnabled():
+        if not target.enabled():
             self.announce("This setting is disabled")
+            return
+        if target.reveal is not None:
+            control = target.reveal()
+            if control is not None:
+                self.dialog.Layout()
+                control.SetFocus()
             return
         child = target.control
         while child is not self.dialog:
@@ -217,7 +274,8 @@ def install_preferences_search(
 ) -> PreferencesSearch | None:
     title_getter = getattr(dialog, "GetTitle", None)
     title = title_getter().casefold() if callable(title_getter) else ""
-    if not ("preferences" in title or title.endswith("settings")):
+    is_settings_form = bool(getattr(dialog, "_quill_settings_form", False))
+    if not ("preferences" in title or title.endswith("settings") or is_settings_form):
         return None
     if not isinstance(dialog, (wx.Dialog, wx.Frame)) or dialog.GetSizer() is None:
         return None

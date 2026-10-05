@@ -37,3 +37,33 @@ def test_the_extraction_actually_extracts() -> None:
     text = build_help_reference.generate()
     assert text.count("### Every authored control help sentence") >= 6
     assert text.count("**") > 50, "window purposes missing"
+
+
+#: Which audit gates each published app. The reference and the audit must scan
+#: the same modules: when they did not, the Release Channel, Tutorials and
+#: Converter dialog sentences were gated but never published (2026-10-04).
+_AUDITS = {
+    "Quill Radio": "radio",
+    "QUILL Cast": "cast",
+    "QUILL Media Player": "player",
+    "QUILL Audio Studio": "studio",
+    "Quill Inkwell": "inkwell",
+    "Quill Weather": "weather",
+    "Quill Converter": "converter",
+    "Quill Beacon": "beacon",
+    "QUILL Lite": "lite",
+}
+
+
+def test_the_reference_scans_what_each_audit_scans() -> None:
+    import importlib
+
+    assert {config.display for config in build_help_reference.APPS} == set(_AUDITS)
+    for config in build_help_reference.APPS:
+        audit = importlib.import_module(f"quill.tools.{_AUDITS[config.display]}_help_audit")
+        assert config.scan_dirs == tuple(audit._SCAN_DIRS), config.display
+        assert config.scan_globs == tuple(audit._SCAN_GLOBS), (
+            f"{config.display}: build_help_reference.APPS scans {config.scan_globs}, "
+            f"its audit scans {tuple(audit._SCAN_GLOBS)}. Keep them in step, or a "
+            "gated sentence is never published (or a published one never gated)."
+        )

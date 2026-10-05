@@ -39,6 +39,7 @@ from typing import Any
 from quill.core.action_feedback import coerce as _coerce_action_feedback
 from quill.core.lite.paths import settings_path
 from quill.core.markdown_breaks import normalise_hard_break_style
+from quill.core.recent_documents import clamp_limit, remember
 from quill.core.recovery_triage import DEFAULT_KEEP_DAYS as RECOVERY_KEEP_DAYS
 from quill.core.session_restore import ASK_MODES, ASK_WHEN_IT_MATTERS
 from quill.core.settings_portable import (
@@ -49,15 +50,11 @@ from quill.core.settings_portable import (
 from quill.core.storage import write_json_atomic
 from quill.core.structure_announce import HEADING_POSITIONS
 
-__all__ = ["MAX_RECENT", "MAX_SESSION", "SCHEMA", "Settings", "load", "save"]
+__all__ = ["MAX_SESSION", "SCHEMA", "Settings", "load", "save"]
 
 #: The on-disk shape's version. Bumped only when a field changes meaning in a
 #: way the tolerant loader cannot absorb -- which has not happened yet.
 SCHEMA = 1
-
-#: How many recent files are remembered. Nine are offered with an Alt+digit
-#: mnemonic; the tenth is the one that falls off the end next.
-MAX_RECENT = 10
 
 #: How many documents a restored session reopens. Nine, because that is how many
 #: the Window menu can put a digit on, and reopening thirty files because
@@ -188,6 +185,10 @@ class Settings:
     #: a text file.
     window_maximized: bool = True
     recent_files: list[str] = field(default_factory=list)
+    #: QUILL's names and rules (quill.core.recent_documents); pins sit atop the limit.
+    pinned_recent_files: list[str] = field(default_factory=list)
+    recent_files_limit: int = 10
+    recent_files_auto_clear_missing: bool = False
     #: Seconds between recovery copies of a modified document. **30, matching
     #: QUILL's autosave_interval_seconds** (2026-09-15): it was 60 here for no
     #: stated reason, which meant the same crash cost a QUILL Lite user up to a
@@ -386,12 +387,12 @@ class Settings:
     #: otherwise; off makes Find Next stop at the end and say so.
     wrap_find: bool = True
     # -- Dictation -------------------------------------------------------------
-    #: Tools > Dictation > Dictation Settings, under QUILL's names, from the one
-    #: shared module (quill/ui/windows_dictation_commands.py); what each means is in
-    #: quill/core/windows_dictation/preferences.py and options.py.
+    #: Tools > Dictation > Dictation Settings, under QUILL's names (quill/ui/
+    #: windows_dictation_commands.py); meanings in windows_dictation/preferences.py.
     windows_dictation_microphone: str = ""
     windows_dictation_engine: str = "moonshine"
     windows_dictation_language: str = ""
+    windows_dictation_speech_language: str = "en"
     windows_dictation_dash: str = "em"
     windows_dictation_wake_enabled: bool = False
     windows_dictation_wake_phrase: str = "Quill dictate"
@@ -418,10 +419,7 @@ class Settings:
 
     def remember_recent(self, path: str | Path) -> None:
         """Move *path* to the head of the recent list, without duplicating it."""
-        text = str(path)
-        self.recent_files = [entry for entry in self.recent_files if entry != text]
-        self.recent_files.insert(0, text)
-        del self.recent_files[MAX_RECENT:]
+        self.recent_files = remember(self.recent_files, path, self.recent_files_limit)
 
     def normalized(self) -> Settings:
         """This object with every field forced back into range. Returns self."""
@@ -433,7 +431,8 @@ class Settings:
         self.autosave_seconds = max(_MIN_AUTOSAVE_SECONDS, int(self.autosave_seconds))
         self.window_width = max(320, int(self.window_width))
         self.window_height = max(240, int(self.window_height))
-        self.recent_files = [str(entry) for entry in self.recent_files][:MAX_RECENT]
+        self.recent_files_limit = clamp_limit(self.recent_files_limit)
+        self.recent_files = [str(entry) for entry in self.recent_files][: self.recent_files_limit]
         self.session_files = [str(entry) for entry in self.session_files][:MAX_SESSION]
         if self.session_restore_ask not in ASK_MODES:
             self.session_restore_ask = ASK_WHEN_IT_MATTERS
@@ -527,6 +526,7 @@ def _coerce(current: Any, value: Any) -> Any | None:
 #: record of one computer, not a configuration to carry to another.
 LOCAL_SETTINGS: frozenset[str] = frozenset({
     "recent_files",
+    "pinned_recent_files",
     "session_files",
     "last_update_check",
     "window_width",

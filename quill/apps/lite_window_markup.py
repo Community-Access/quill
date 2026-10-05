@@ -78,6 +78,7 @@ from quill.core.tagging import (
     search_markdown_tag_choices,
 )
 from quill.ui.atomic_edit import replace_as_one_undo
+from quill.ui.markdown_tag_row import markdown_tags_apply
 from quill.ui.richedit_editing import PLAIN, RICH
 
 __all__ = ["DOCUMENT_KINDS", "DocumentMarkupMixin", "MARKUP_COMMANDS"]
@@ -410,7 +411,7 @@ class DocumentMarkupMixin:
 
     def cmd_insert_markdown_tag(self) -> None:
         """Insert > Markdown Tag: the whole Markdown vocabulary, searchable."""
-        if not self._require_language("markdown", "Insert Markdown Tag"):
+        if not markdown_tags_apply(self.markup_surface() or "plain", self._announce):
             return
         kind = choose_searchable(
             self,
@@ -588,9 +589,8 @@ class DocumentMarkupMixin:
     def _require_language(self, wanted: str, what: str) -> bool:
         """True when this document is *wanted*; otherwise say why it is not.
 
-        The menu row for this command is already dimmed, so reaching here means
-        the key was pressed or the palette was used. Both deserve the same
-        sentence the dimmed row would have given if a reader could ask it.
+        The HTML Tag row is dimmed outside HTML, so reaching here means the key
+        or the palette, and both are owed the sentence a dimmed row cannot say.
         """
         if self.editor.mode == RICH:
             self._announce(

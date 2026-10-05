@@ -11,6 +11,12 @@ Nothing here edits anything. The output is a :class:`ParsedPhrase`: either one
 whole-phrase :class:`~quill.core.windows_dictation.vocabulary.Command`, or a
 sequence of words and marks for :func:`~quill.core.windows_dictation.composer.compose`
 to turn into text.
+
+What a phrase is matched against is a
+:class:`~quill.core.windows_dictation.vocabulary.Vocabulary` -- English unless
+the caller passes another (Spanish, from
+:func:`~quill.core.windows_dictation.vocabulary.vocabulary_for`), which may also
+ask for words to be compared without their accents.
 """
 
 from __future__ import annotations
@@ -18,14 +24,14 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 
+from quill.core.windows_dictation.speech_language import fold
 from quill.core.windows_dictation.vocabulary import (
-    COMMANDS,
+    ENGLISH,
     LITERAL,
     SPELLING_ALPHABET,
     Command,
     Mark,
-    longest_phrase,
-    mark_for,
+    Vocabulary,
 )
 
 __all__ = [
@@ -38,7 +44,9 @@ __all__ = [
 ]
 
 _SPLIT = re.compile(r"[\s\-]+")
-_WORD_CHARS = re.compile(r"[^a-z0-9']+")
+# Letters in any language survive: "linea" with its accent and "n" with its
+# tilde must reach the command table intact.
+_WORD_CHARS = re.compile(r"[^\w']+")
 
 
 @dataclass(frozen=True, slots=True)
@@ -94,6 +102,8 @@ class _Token:
     #: several tokens, and its display text must be written once, not once
     #: per token.
     source: int
+    #: The word as said, accents and all, when *lexical* had them folded away.
+    said: str = ""
 
 
 def words_from_text(text: str) -> tuple[RecognizedWord, ...]:
@@ -106,7 +116,7 @@ def _normalise(lexical: str) -> list[str]:
     return [part for part in parts if part]
 
 
-def _tokens(words: tuple[RecognizedWord, ...]) -> list[_Token]:
+def _tokens(words: tuple[RecognizedWord, ...], folds: bool = False) -> list[_Token]:
     tokens: list[_Token] = []
     for index, word in enumerate(words):
         parts = _normalise(word.lexical)
@@ -120,23 +130,28 @@ def _tokens(words: tuple[RecognizedWord, ...]) -> list[_Token]:
         # -> ".") is several tokens for matching, and one piece of text if no
         # phrase claims it: "well-known" stays hyphenated.
         for position, part in enumerate(parts):
-            tokens.append(_Token(part, word.display if position == 0 else "", index))
+            display = word.display if position == 0 else ""
+            tokens.append(_Token(fold(part) if folds else part, display, index, part))
     return tokens
 
 
-def parse(phrase: RecognizedPhrase, *, spelling: bool = False) -> ParsedPhrase:
+def parse(
+    phrase: RecognizedPhrase, *, spelling: bool = False, vocabulary: Vocabulary | None = None
+) -> ParsedPhrase:
     """Turn one recognised phrase into a command or the pieces it inserts.
 
     With *spelling*, words are letters (see :func:`_spell`) -- but a whole-phrase
-    command still works, which is how "stop spelling" gets out.
+    command still works, which is how "stop spelling" gets out. *vocabulary* is
+    the language's table; English when not given.
     """
-    tokens = _tokens(phrase.words)
+    table = vocabulary or ENGLISH
+    tokens = _tokens(phrase.words, table.folds)
     lexical = [token.lexical for token in tokens]
     spoken = tuple(word for word in lexical if word)
-    if spoken in COMMANDS:
-        return ParsedPhrase(command=COMMANDS[spoken])
+    if spoken in table.commands:
+        return ParsedPhrase(command=table.commands[spoken])
     if spelling:
-        letters = _spell(spoken)
+        letters = _spell(spoken, table)
         return ParsedPhrase(pieces=(Piece(letters, verbatim=True),) if letters else ())
 
     pieces: list[Piece] = []
@@ -145,20 +160,21 @@ def parse(phrase: RecognizedPhrase, *, spelling: bool = False) -> ParsedPhrase:
     while index < len(tokens):
         token = tokens[index]
         if token.lexical == LITERAL:
-            escaped = longest_phrase(lexical, index + 1)
+            escaped = table.longest(lexical, index + 1)
             if escaped is not None:
                 # The words themselves, as said. The display form would be the
                 # very punctuation the user asked not to have.
-                pieces.extend(Piece(word) for word in escaped)
+                said = tokens[index + 1 : index + 1 + len(escaped)]
+                pieces.extend(Piece(token.said or token.lexical) for token in said)
                 for consumed in tokens[index : index + 1 + len(escaped)]:
                     written.add(consumed.source)
                 index += 1 + len(escaped)
                 continue
-        found = longest_phrase(lexical, index)
+        found = table.longest(lexical, index)
         if found is not None:
-            mark = mark_for(found)
-            if mark is not None:
-                pieces.append(Piece(mark.text, mark))
+            marks = table.marks.get(found, ())
+            if marks:
+                pieces.extend(Piece(mark.text, mark) for mark in marks)
                 for consumed in tokens[index : index + len(found)]:
                     written.add(consumed.source)
                 index += len(found)
@@ -216,7 +232,7 @@ _LETTER_SOUNDS: dict[str, str] = {
 _CAPITAL = {"capital", "cap", "uppercase", "upper"}
 
 
-def _spell(words: tuple[str, ...]) -> str:
+def _spell(words: tuple[str, ...], vocabulary: Vocabulary = ENGLISH) -> str:
     """Spelling mode: letter names, the phonetic alphabet and digits, as letters.
 
     "capital" (or "cap") before a letter makes it a capital; "space" is a
@@ -230,7 +246,7 @@ def _spell(words: tuple[str, ...]) -> str:
     while index < len(words):
         word = words[index]
         index += 1
-        if word in _CAPITAL:
+        if word in _CAPITAL or word in vocabulary.capital_words:
             capital = True
             continue
         if word == "double" and index < len(words) and words[index] == "you":
@@ -239,7 +255,7 @@ def _spell(words: tuple[str, ...]) -> str:
         elif word == "x" and index < len(words) and words[index] == "ray":
             index += 1  # "x-ray" arrives as two words once its hyphen is split
             letter = "x"
-        elif word == "space":
+        elif word == "space" or word in vocabulary.space_words:
             out.append(" ")
             capital = False
             continue

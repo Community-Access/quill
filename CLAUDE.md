@@ -112,7 +112,11 @@ remaining divergence is a comment *and* a parity-table row (11).
 lived in a root `bad.md`, which was spent and deleted on 2026-09-20 (the root
 layout gate sanctions no such file); the `bad.md <row>` citations scattered
 through the source name rows of that closed program and resolve in git history,
-not on disk. Five
+not on disk. The same holds for `qc.md` (the 2026-09/10 family QC plan) and
+`ear.md` (Earshot parity), both retired on 2026-10-03: `qc.md <id>` citations
+resolve in git history, `ear.md` was never committed and is summarised in the
+Cast PRD (section 23.25), and the open screen-reader checks moved to
+`docs/qa/screen-reader-checks-2026-10.md`. Five
 are pytest gates and one is a tool in `platform_report`:
 
 - **Bound-command and Quillin-hotkey** (`tests/unit/core/test_family_rules_and_gates.py`):

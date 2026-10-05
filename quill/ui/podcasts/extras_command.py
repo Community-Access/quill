@@ -23,6 +23,9 @@ from __future__ import annotations
 
 from typing import Any
 
+#: Where the host keeps its About This Episode window.
+_WINDOW_KEY = "_episode_extras_window"
+
 
 def episode_extras(host: Any, show: Any, episode: Any) -> Any:
     """Build the extras for one episode of one show."""
@@ -42,25 +45,43 @@ def has_extras(show: Any, episode: Any) -> bool:
     return _has(getattr(show, "tags", None), getattr(episode, "tags", None))
 
 
-def open_episode_extras(host: Any, show: Any, episode: Any) -> None:
-    """Say what there is, then show it."""
+def open_episode_extras(host: Any, show: Any, episode: Any) -> Any:
+    """Say what there is, then show it -- in the one About This Episode window.
+
+    A peer (qc.md Phase 4): made once per host, and asked for again -- for this
+    episode or another -- it is raised with its tabs rebuilt for the episode
+    asked about rather than opened a second time.
+    """
     from quill.core.podcasts import extras as extras_module
-    from quill.ui.podcasts.episode_extras_dialog import EpisodeExtrasDialog
+    from quill.ui.podcasts.episode_extras_dialog import EpisodeExtrasWindow
+    from quill.ui.podcasts.peer_window import open_peer
 
     extras = episode_extras(host, show, episode)
+    marks = _bookmark_section(host, show, episode)
+    if marks is not None:
+        extras.sections.append(marks)
     host._announce(extras_module.summary(extras))
 
-    dialog = EpisodeExtrasDialog(
-        getattr(host, "dialog", None) or getattr(host, "frame", None) or host,
-        extras=extras,
-        episode_title=str(getattr(episode, "title", "")),
-        show_modal_dialog=getattr(host, "_show_modal_dialog", None),
-        announce=host._announce,
-        open_url=lambda url: open_link(host, url),
-        play_url=lambda url, label: play_stream(host, show, url, label),
-        subscribe_feed=lambda url: subscribe_to(host, url),
-    )
-    dialog.show()
+    content: dict[str, Any] = {
+        "episode_title": str(getattr(episode, "title", "")),
+        "open_url": lambda url: open_link(host, url),
+        "play_url": lambda url, label: play_stream(host, show, url, label),
+        "subscribe_feed": lambda url: subscribe_to(host, url),
+        "jump_to": lambda target: _jump(host, show, episode, target),
+    }
+    existing = getattr(host, _WINDOW_KEY, None)
+    if existing is not None and existing.frame:
+        existing.load(extras, **content)
+
+    def _make(owner: Any) -> EpisodeExtrasWindow:
+        return EpisodeExtrasWindow(
+            getattr(owner, "dialog", None) or getattr(owner, "frame", None),
+            extras=extras,
+            announce=owner._announce,
+            **content,
+        )
+
+    return open_peer(host, _WINDOW_KEY, _make)
 
 
 def open_for_playing_episode(host: Any) -> None:
@@ -175,7 +196,7 @@ def subscribe_to(host: Any, feed_url: str) -> bool:
         "podcast-podroll-subscribe",
         _work,
         on_success=_done,
-        on_failure=lambda _op, exc: host._announce(f"Could not follow it: {exc}"),
+        on_failure=lambda _op, exc: _report(host, f"Could not follow it: {exc}"),
     )
     return True
 
@@ -187,3 +208,58 @@ def _save_and_refresh(host: Any) -> None:
         if callable(callback):
             callback()
             return
+
+
+def _bookmark_section(host: Any, show: Any, episode: Any) -> Any:
+    """This episode's bookmarks as a tab, or None when it has none (qc.md 18.1)."""
+    from quill.core import bookmark_anchors
+    from quill.core.bookmark_ops import spoken_position
+    from quill.core.podcasts.extras import ACTION_JUMP, Row, Section
+
+    store_of = getattr(host, "_bookmark_store", None)
+    if not callable(store_of):
+        return None
+    anchor = bookmark_anchors.for_episode(str(show.id), str(episode.guid))
+    try:
+        marks = store_of().list(anchor)
+    except Exception:  # noqa: BLE001 - bookmarks are extra, never a reason to fail
+        return None
+    if not marks:
+        return None
+    rows = tuple(
+        Row(
+            label=" -- ".join(
+                part for part in (spoken_position(mark.position_ms), mark.note.strip()) if part
+            ),
+            action=ACTION_JUMP,
+            target=str(mark.position_ms),
+        )
+        for mark in sorted(marks, key=lambda m: m.position_ms)
+    )
+    return Section(
+        key="bookmarks",
+        title="Bookmarks",
+        rows=rows,
+        heading="The places you marked in this episode. Go There plays it from that moment.",
+        noun=("bookmark", "bookmarks"),
+    )
+
+
+def _jump(host: Any, show: Any, episode: Any, target: str) -> bool:
+    """Play *episode* from the bookmark at *target* milliseconds."""
+    from quill.ui.podcasts.show_actions import start_episode_playback
+
+    try:
+        position = max(0, int(target))
+    except ValueError:
+        return False
+    start_episode_playback(
+        host._podcast_controller, host._podcast_library, show, episode, resume_ms=position
+    )
+    return True
+
+
+def _report(host: Any, sentence: str) -> None:
+    from quill.ui.podcasts.failure_report import report_failure
+
+    report_failure(host, sentence)

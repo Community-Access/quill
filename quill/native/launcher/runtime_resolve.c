@@ -15,6 +15,14 @@
  *      Validated by the presence of quillville-runtime.json with a parseable
  *      "python" key matching the current CPython major.minor.
  *
+ *      RELEASE CHANNEL SLOTS (2026-10). When the quill-app-version.ini beside
+ *      the launcher says [runtime] slot=3.13-beta (or 3.13-dev), the folder is
+ *      Runtime/<slot>/ instead, and there is NO fallback to the Stable folder:
+ *      a Beta app silently running Stable's copy of the code is exactly the
+ *      mix-up slots exist to prevent. A missing slot= keeps the old behaviour.
+ *      Python mirror: quill/core/updater/runtime_slots.py, and
+ *      tests/unit/native/test_runtime_resolver.py.
+ *
  * WHY PRIVATE FIRST (2026-09-15). This order was the other way round --
  * "prefer the shared runtime once it is installed" -- and that made every
  * portable bundle stop being portable on any machine where some other
@@ -160,6 +168,18 @@ static int dirname_of(const char *path, char *out, size_t out_size) {
 #endif
 }
 
+/* Case-insensitive prefix compare, portable (no _strnicmp on POSIX). */
+static int ql_strnicmp(const char *a, const char *b, size_t n) {
+    for (size_t i = 0; i < n; ++i) {
+        char ca = a[i], cb = b[i];
+        if (ca >= 'A' && ca <= 'Z') ca = (char)(ca - 'A' + 'a');
+        if (cb >= 'A' && cb <= 'Z') cb = (char)(cb - 'A' + 'a');
+        if (ca != cb) return ca < cb ? -1 : 1;
+        if (ca == '\0') return 0;
+    }
+    return 0;
+}
+
 /* ------------------------------------------------------------------ */
 /* Shared runtime probe                                                */
 /* ------------------------------------------------------------------ */
@@ -214,7 +234,75 @@ static int python_version_compatible(const char *marker_python) {
     return next == '\0' || next == '.';
 }
 
-static int try_shared_runtime(char *out_python, size_t out_size, char *out_root, size_t out_root_size) {
+/* A slot name is "<digits>.<digits>" with an optional "-beta" or "-dev".
+ * Anything else in the ini is ignored rather than turned into a path. */
+static int slot_is_valid(const char *slot) {
+    const char *p = slot;
+    int digits = 0;
+    while (*p >= '0' && *p <= '9') { p++; digits++; }
+    if (!digits || *p != '.') return 0;
+    p++;
+    digits = 0;
+    while (*p >= '0' && *p <= '9') { p++; digits++; }
+    if (!digits) return 0;
+    if (*p == '\0') return 1;
+    return strcmp(p, "-beta") == 0 || strcmp(p, "-dev") == 0;
+}
+
+int ql_runtime_slot(const char *self_dir, char *out, size_t out_size) {
+    if (!out || out_size == 0) return -1;
+    out[0] = '\0';
+    if (!self_dir || !*self_dir) return -1;
+    char ini[QL_PATH_MAX];
+    path_join(ini, sizeof(ini), self_dir, "quill-app-version.ini");
+    FILE *f = fopen(ini, "rb");
+    if (!f) return -1;
+    char line[256];
+    int in_runtime = 0;
+    int found = -1;
+    while (fgets(line, sizeof(line), f)) {
+        char *s = line;
+        /* Inno writes the ini as UTF-8 or ANSI; skip a UTF-8 BOM. */
+        if ((unsigned char)s[0] == 0xEF && (unsigned char)s[1] == 0xBB && (unsigned char)s[2] == 0xBF) s += 3;
+        while (*s == ' ' || *s == '\t') s++;
+        size_t n = strlen(s);
+        while (n && (s[n - 1] == '\n' || s[n - 1] == '\r' || s[n - 1] == ' ' || s[n - 1] == '\t')) s[--n] = '\0';
+        if (s[0] == '[') {
+            in_runtime = (ql_strnicmp(s, "[runtime]", 9) == 0);
+            continue;
+        }
+        if (in_runtime && ql_strnicmp(s, "slot=", 5) == 0) {
+            const char *value = s + 5;
+            if (strlen(value) < out_size && slot_is_valid(value)) {
+                snprintf(out, out_size, "%s", value);
+                found = 0;
+            }
+            break;
+        }
+    }
+    fclose(f);
+    return found;
+}
+
+int ql_runtime_url_for_slot(const char *base_url, const char *slot, char *out, size_t out_size) {
+    if (!out || out_size == 0) return -1;
+    out[0] = '\0';
+    const char *dash = slot ? strrchr(slot, '-') : NULL;
+    if (dash && strcmp(dash, "-dev") == 0) return -1;
+    if (!base_url) base_url = "";
+    if (dash && strcmp(dash, "-beta") == 0) {
+        const char *seg = strstr(base_url, "/runtime-latest/");
+        if (seg) {
+            snprintf(out, out_size, "%.*s/runtime-beta/%s",
+                     (int)(seg - base_url), base_url, seg + strlen("/runtime-latest/"));
+            return 0;
+        }
+    }
+    snprintf(out, out_size, "%s", base_url);
+    return 0;
+}
+
+static int try_shared_runtime(const char *slot, char *out_python, size_t out_size, char *out_root, size_t out_root_size) {
     char base[QL_PATH_MAX];
 
 #ifdef _WIN32
@@ -240,7 +328,12 @@ static int try_shared_runtime(char *out_python, size_t out_size, char *out_root,
      * A future runtime major can be added by reading the marker JSON's
      * "python" key. */
     char runtime_dir[QL_PATH_MAX];
-    path_join(runtime_dir, sizeof(runtime_dir), base, "3.13");
+    if (slot && *slot) {
+        /* A release-channel slot: Runtime/3.13-beta, never Stable's folder. */
+        path_join(runtime_dir, sizeof(runtime_dir), base, slot);
+    } else {
+        path_join(runtime_dir, sizeof(runtime_dir), base, "3.13");
+    }
     if (!path_exists(runtime_dir)) return -1;
 
     char marker[QL_PATH_MAX];
@@ -333,6 +426,7 @@ int ql_resolve_runtime(const char *self_path, QlRuntime *out) {
     out->python[0] = 0;
     out->install_root[0] = 0;
     out->data_dir[0] = 0;
+    out->slot[0] = 0;
 
     /* 1. Beside the launcher: a self-contained install answers for itself.
      * dirname_of failing is not fatal here -- fall through to the shared
@@ -348,8 +442,12 @@ int ql_resolve_runtime(const char *self_path, QlRuntime *out) {
         return 0;
     }
 
-    /* 2. Shared QuillVille runtime: the thin installers' only runtime. */
-    if (try_shared_runtime(out->python, sizeof(out->python),
+    /* 2. Shared QuillVille runtime: the installed apps' only runtime, in the
+     * slot the installer recorded beside this launcher (none: Stable). */
+    if (dirname_of(self_path, self_dir, sizeof(self_dir)) == 0) {
+        ql_runtime_slot(self_dir, out->slot, sizeof(out->slot));
+    }
+    if (try_shared_runtime(out->slot, out->python, sizeof(out->python),
                             out->install_root, sizeof(out->install_root)) == 0) {
         return 0;
     }

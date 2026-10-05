@@ -39,7 +39,6 @@ separate moments and people want different things from each:
 
 from __future__ import annotations
 
-import re
 from collections import deque
 from collections.abc import Callable
 from enum import StrEnum
@@ -64,7 +63,7 @@ from quill.core.windows_dictation.preferences import (
 )
 from quill.core.windows_dictation.resilience import ResilienceMixin, engine_failure_message
 from quill.core.windows_dictation.vocabulary import Command
-from quill.core.windows_dictation.wake import is_stop_phrase, match_wake
+from quill.core.windows_dictation.wake import is_stop_phrase, match_wake, wake_words
 
 __all__ = [
     "DEFAULT_PHRASE_FEEDBACK",
@@ -77,8 +76,6 @@ __all__ = [
     "Moment",
     "RecognizerPort",
 ]
-
-_WORD = re.compile(r"[a-z0-9']+")
 
 
 class DictationStartError(CodedError):
@@ -371,7 +368,7 @@ class DictationController(ResilienceMixin, EditingMixin):
             phrase,
             remove_fillers=preferences.remove_fillers,
             strip_punctuation=preferences.strips_punctuation,
-            language="en" if preferences.engine in {"moonshine", "whisper"} else "",
+            language=preferences.filler_language,
         )
         phrase = self._rewrite(phrase, preferences)
         if self._ignore_until_speech:
@@ -381,7 +378,7 @@ class DictationController(ResilienceMixin, EditingMixin):
             return
         if self._state not in _LIVE:
             return
-        heard = _WORD.findall(" ".join(word.display for word in phrase.words).lower())
+        heard = wake_words(" ".join(word.display for word in phrase.words))
         if is_stop_phrase(heard, preferences.stop_phrase):
             self.stop()
             return
@@ -397,9 +394,9 @@ class DictationController(ResilienceMixin, EditingMixin):
     def _parse(self, phrase: RecognizedPhrase, preferences: DictationPreferences) -> ParsedPhrase:
         """What *phrase* means -- which, when writing straight through, is only words."""
         if not preferences.continuous:
-            return parse(phrase, spelling=self.spelling)
+            return parse(phrase, spelling=self.spelling, vocabulary=preferences.vocabulary)
         phrase = flow_on(phrase, strip_period=preferences.engine_punctuates)
-        parsed = parse(phrase, spelling=self.spelling)
+        parsed = parse(phrase, spelling=self.spelling, vocabulary=preferences.vocabulary)
         if parsed.command is None or parsed.command is Command.STOP:
             return parsed
         return ParsedPhrase(pieces=tuple(Piece(w.display) for w in phrase.words if w.display))
@@ -445,7 +442,7 @@ class DictationController(ResilienceMixin, EditingMixin):
         self, phrase: RecognizedPhrase, preferences: DictationPreferences
     ) -> None:
         heard_words = [word.display for word in phrase.words]
-        heard = _WORD.findall(" ".join(heard_words).lower())
+        heard = wake_words(" ".join(heard_words))
         used = match_wake(heard, preferences.wake_phrase)
         if used is None:
             return  # not for us: dropped, never written, never kept
@@ -458,7 +455,7 @@ class DictationController(ResilienceMixin, EditingMixin):
         remainder: list[str] = []
         counted = 0
         for word in heard_words:
-            if counted < used and _WORD.findall(word.lower()):
+            if counted < used and wake_words(word):
                 counted += 1
                 continue
             remainder.append(word)

@@ -149,7 +149,9 @@ class SoundEnhanceDialog:
         except Exception:
             self._slider_accessible_cls = None
 
-        self.dialog = wx.Dialog(parent, title="Sound Enhancements")
+        # A peer window hands over a panel to build into instead (qc.md Phase 4).
+        panel = self._peer_panel(parent)
+        self.dialog = panel if panel is not None else wx.Dialog(parent, title="Sound Enhancements")
         root = wx.BoxSizer(wx.VERTICAL)
 
         intro = wx.StaticText(
@@ -405,6 +407,11 @@ class SoundEnhanceDialog:
         # The starting values, so Cancel can revert a live preview to how it was.
         self._original_snapshot = self._live_snapshot()
 
+    def _peer_panel(self, parent: object) -> object | None:
+        """None here; ``quill/ui/podcasts/sound_enhance_window.py`` returns the
+        panel of a peer window, so the same controls serve both shapes."""
+        return None
+
     def _add_band_slider(self, root: object, label: str, value_db: float):
         wx = self._wx
         row = wx.BoxSizer(wx.HORIZONTAL)
@@ -570,9 +577,12 @@ class SoundEnhanceDialog:
         ``show`` tuple) so existing callers' 5-tuple contract is untouched."""
         return self._sound_options
 
-    def _on_apply(self, _event: object) -> None:
+    def _collect(self) -> None:
         bass, mid, treble = self._current_band_values()
         smart_speed = self._smart_speed_check.GetValue() if self._smart_speed_check else False
         self._result = (bass, mid, treble, self._compressor_check.GetValue(), smart_speed)
         self._sound_options = self._read_sound_options()
+
+    def _on_apply(self, _event: object) -> None:
+        self._collect()
         self.dialog.EndModal(self._wx.ID_OK)

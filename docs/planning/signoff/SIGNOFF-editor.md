@@ -469,7 +469,7 @@
 ## `navigate.*` (28)
 - [ ] W  [ ] S  [ ] A  `navigate.back_location` — Back Location  `Alt+Left`
 - [ ] W  [ ] S  [ ] A  `navigate.forward_location` — Forward Location  `Alt+Right`
-- [ ] W  [ ] S  [ ] A  `navigate.go_to_anything` — Go to Anything  `Ctrl+Shift+Grave, G`
+- [ ] W  [ ] S  [ ] A  `navigate.go_to_anything` — Go to Anything  `Ctrl+Alt+Shift+A`
 - [ ] W  [ ] S  [ ] A  `navigate.go_to_bookmark` — Go To Bookmark...
 - [ ] W  [ ] S  [ ] A  `navigate.go_to_line` — Go To Line...  `Ctrl+G`
 - [ ] W  [ ] S  [ ] A  `navigate.go_to_page` — Go To Page...  `Ctrl+Shift+G`

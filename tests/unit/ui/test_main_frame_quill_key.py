@@ -366,16 +366,62 @@ def test_browse_mode_question_mark_shows_browse_cheat_sheet_and_stays() -> None:
     assert "(3)" in frame._help_shown[0][1]  # type: ignore[attr-defined]
 
 
-def test_prefix_then_g_opens_quick_nav() -> None:
-    # NAV-4: the QUILL key prefix then G opens Quick Nav / Go to Anything.
-    frame = _build_frame()
+def _default_keymap_frame() -> tuple[MainFrame, list[str]]:
+    from quill.core.keymap import DEFAULT_KEYMAP
+
+    frame = _build_frame(keymap=dict(DEFAULT_KEYMAP))
+    ran: list[str] = []
+    frame._run_command = ran.append  # type: ignore[method-assign]
+    frame._chord_command_available = lambda _cid: True  # type: ignore[method-assign]
+    frame._has_active_selection = lambda: False  # type: ignore[method-assign]
+    return frame, ran
+
+
+def test_prefix_then_g_reaches_open_from_favorite_folder() -> None:
+    # Leader G is Open From Favorite Folder in the keymap. The handler used to
+    # answer G itself (Quick Nav), so the bound command never fired; Quick Nav
+    # is Ctrl+Shift+Z and Go to Anything Ctrl+Alt+Shift+A (2026-10-03).
+    frame, ran = _default_keymap_frame()
     opened: list[str] = []
     frame.open_quick_nav = lambda: opened.append("nav")  # type: ignore[method-assign]
     frame._handle_quill_key_mode_event(_Event(_BACKTICK, ctrl=True, shift=True))
     handled = frame._handle_quill_key_mode_event(_Event(ord("G")))
     assert handled is True
-    assert opened == ["nav"]
+    assert ran == ["file.open_from_favorite_folder"]
+    assert opened == []
     assert frame._quill_key_mode_active is False
+
+
+def test_prefix_then_n_enters_browse_mode_and_radio_play_pause_is_on_two() -> None:
+    # N is browse mode, answered before the keymap, so Radio Play/Pause --
+    # which the keymap put on leader N, where it could never fire -- is on
+    # leader 2 with the rest of the media digits.
+    frame, ran = _default_keymap_frame()
+    frame._handle_quill_key_mode_event(_Event(_BACKTICK, ctrl=True, shift=True))
+    assert frame._handle_quill_key_mode_event(_Event(ord("N"))) is True
+    assert frame._quill_key_mode_active is True
+    assert ran == []
+
+    frame, ran = _default_keymap_frame()
+    frame._handle_quill_key_mode_event(_Event(_BACKTICK, ctrl=True, shift=True))
+    assert frame._handle_quill_key_mode_event(_Event(ord("2"))) is True
+    assert ran == ["radio.play_pause"]
+
+
+def test_no_default_leader_chord_sits_on_a_key_the_handler_answers_itself() -> None:
+    # A keymap binding on a reserved second key is dead on arrival: the handler
+    # consumes the key before it ever reads the keymap.
+    from quill.core.keymap import _QUILL_LEADER_PREFIX, DEFAULT_KEYMAP
+    from quill.core.quill_key_help import RESERVED_LEADER_KEYS
+
+    leader = _QUILL_LEADER_PREFIX + ", "
+    dead = sorted(
+        command_id
+        for command_id, binding in DEFAULT_KEYMAP.items()
+        if binding.upper().startswith(leader)
+        and binding[len(leader) :].strip().upper() in RESERVED_LEADER_KEYS
+    )
+    assert dead == []
 
 
 def test_prefix_press_announces_quill_key() -> None:

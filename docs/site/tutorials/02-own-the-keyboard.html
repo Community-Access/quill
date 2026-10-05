@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.12" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL Tutorials - Tutorial 2: Own the keyboard</title>
   <style>
@@ -26,7 +26,6 @@
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <link rel="stylesheet" href="/assets/style.css" />
 </head>
@@ -35,26 +34,25 @@
 <main id="main" tabindex="-1"><div class="wrap">
 <h1 id="tutorial-2-own-the-keyboard">Tutorial 2: Own the keyboard</h1>
 <p><strong>Goal:</strong> move anywhere in QUILL without the mouse, and
-bend the keymap to your hands.</p>
+set up the keys the way you like them.</p>
 <h2 id="1-the-quill-key-prefix-commands">1. The QUILL key (prefix
 commands)</h2>
 <p>QUILL has more commands than convenient key combinations, so it uses
 a prefix: press the <strong>QUILL key</strong>
-(<code>Ctrl+Shift+Grave</code> by default — the tilde key), then one
-more key.</p>
+(<code>Ctrl+Shift+Grave</code> by default; Grave is the key with the
+tilde on it), then one more key.</p>
 <p>Try these:</p>
 <ol type="1">
-<li>QUILL key, then <code>S</code> — insert a snippet.</li>
-<li>QUILL key, then <code>X</code> — open the Copy Tray (a twelve-slot
+<li>QUILL key, then <code>S</code>: insert a snippet.</li>
+<li>QUILL key, then <code>X</code>: open the Copy Tray (a twelve-slot
 clipboard).</li>
-<li>QUILL key, then <code>Shift+M</code> — the remote sites
-manager.</li>
+<li>QUILL key, then <code>Shift+M</code>: the remote sites manager.</li>
 </ol>
 <p>Press the QUILL key <strong>twice</strong> and Browse Mode locks on:
 letters and arrows act as navigation commands until you press
-<code>Escape</code> — the same idea as a screen reader's virtual cursor.
-One press arms exactly one command (Quick Nav); two presses lock the
-mode.</p>
+<code>Escape</code>. It works like your screen reader's virtual cursor.
+One press is for just one command (Quick Nav); two presses keep the mode
+on.</p>
 <h2 id="2-deep-navigation">2. Deep navigation</h2>
 <ul>
 <li>Jump by heading in Markdown documents; move by section; set and jump
@@ -69,26 +67,27 @@ announced on switch.</li>
 things to try:</p>
 <ol type="1">
 <li><strong>Reverse lookup.</strong> In the search box, type a
-<em>shortcut</em> — <code>ctrl+alt+m</code>, or even
-<code>Control + Shift + K</code> (spelling and order are forgiving).
-QUILL tells you which command owns it, or that it is free.</li>
+<em>shortcut</em>, such as <code>ctrl+alt+m</code>, or even
+<code>Control + Shift + K</code>. It does not mind how you spell it or
+what order you type the keys in. QUILL tells you which command owns it,
+or that it is free.</li>
 <li><strong>Record Keys.</strong> Select a command, choose Record Keys,
-press the chord. Done. If the key is taken, QUILL names the owner by its
-friendly title and offers to move the key — informed, one step, no
-silent clobbering.</li>
-<li><strong>Run Diagnostics.</strong> Audits the whole keymap:
-duplicates, bindings to commands that no longer exist, unreadable
-entries, keys that are assigned but inert. <strong>Heal</strong> fixes
-the repairable ones in one click.</li>
+press the keys you want. Done. If those keys are already in use, QUILL
+tells you which command has them and offers to move them for you. It
+never takes them without asking.</li>
+<li><strong>Run Diagnostics.</strong> Checks all your keys for problems:
+a key given to two commands, a key for a command that no longer exists,
+or a key that does nothing. <strong>Heal</strong> fixes what it can in
+one step.</li>
 </ol>
 <p>Export your keymap as a <code>.kqp</code> keyboard pack to share it
 or carry it between machines.</p>
 <h2 id="4-ask-dont-wait-status-queries">4. Ask, don't wait: status
 queries</h2>
-<p>Instead of QUILL deciding what to announce, ask on demand (all in the
-palette): <strong>Where am I?</strong>, <strong>What changed?</strong>,
-<strong>Speak Status</strong>, and <strong>Describe Formatting at
-Cursor</strong> ("Arial, 14 point, centered, bold").</p>
+<p>You can ask QUILL about where you are whenever you like. These are
+all in the palette: <strong>Where am I?</strong>, <strong>What
+changed?</strong>, <strong>Speak Status</strong>, and <strong>Describe
+Formatting at Cursor</strong> ("Arial, 14 point, centered, bold").</p>
 <h2 id="5-exercise">5. Exercise</h2>
 <ol type="1">
 <li>Rebind <strong>GLOW Audit Current Document</strong> to a key of your

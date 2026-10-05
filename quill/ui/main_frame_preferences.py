@@ -30,11 +30,13 @@ from quill.core.features import (
 from quill.core.paths import app_data_dir
 from quill.core.settings import Settings, save_settings
 from quill.ui.accessible_names import ensure_accessible_names
+from quill.ui.app_context_help import ensure_help_provider
 from quill.ui.dialog_contract import (
     apply_modal_ids,
     focus_primary_control,
     set_accessible_name,
 )
+from quill.ui.preferences_search import registry_page_index
 
 
 class PreferencesMixin:
@@ -73,6 +75,12 @@ class PreferencesMixin:
                 "Status Bar Layout",
                 "Choose which fields appear in the status bar and their order.",
                 self.open_status_bar_settings,
+                None,
+            ),
+            (
+                "Task Recipes and Working Modes",
+                "Change several settings for one task at once, with a preview and Put Back.",
+                self.open_settings_recipes,
                 None,
             ),
             (
@@ -135,7 +143,7 @@ class PreferencesMixin:
         # modal is on screen at a time.
         chosen: dict[str, Callable[[], None] | None] = {"handler": None}
 
-        with wx.Dialog(self.frame, title="Preferences") as dialog:
+        with wx.Dialog(self.frame, title="More Preferences") as dialog:
             # This hub answers F1 itself with topic-based help (its char hook
             # below); the marker keeps the dialog contract's generic F1 hook
             # from shadowing that authored answer.
@@ -210,68 +218,25 @@ class PreferencesMixin:
             # on every platform.
             book.SetFocus()
             dialog._quill_keep_initial_focus = True
-            self._show_modal_dialog(dialog, "Preferences")
+            self._show_modal_dialog(dialog, "More Preferences")
 
         handler = chosen["handler"]
         if handler is None:
-            self._set_status("Preferences closed")
+            self._set_status("More Preferences closed")
             return
         handler()
 
     def open_glow_settings(self) -> None:
-        """Open the GLOW accessibility settings (engine toggle + network consent).
+        """GLOW Accessibility settings (moved to quill/ui/glow_settings.py, GATE-11)."""
+        from quill.ui.glow_settings import open_glow_settings
 
-        GLOW is enabled by default and runs locally; the optional networked
-        features stay off until the user explicitly turns them on here (GLOW-7).
-        """
-        from quill.ui.web_form import show_web_form
+        open_glow_settings(self)
 
-        values = show_web_form(
-            self.frame,
-            self._wx,
-            title="GLOW Accessibility",
-            intro=(
-                "GLOW is Quill's built-in accessibility engine. It is on by default "
-                "and runs entirely on your computer. The optional features below can "
-                "use a network connection and are off until you turn them on. Quill "
-                "never sends your document anywhere without asking first."
-            ),
-            fields=[
-                {
-                    "name": "enabled",
-                    "label": "Enable the GLOW accessibility engine",
-                    "type": "checkbox",
-                    "value": getattr(self.settings, "glow_enabled", True),
-                },
-                {
-                    "name": "ai_alt_text",
-                    "label": "Allow optional AI alt-text generation (uses the network)",
-                    "type": "checkbox",
-                    "value": getattr(self.settings, "glow_ai_alt_text_consent", False),
-                },
-                {
-                    "name": "pii_redaction",
-                    "label": "Allow optional PII redaction (uses the network)",
-                    "type": "checkbox",
-                    "value": getattr(self.settings, "glow_pii_redaction_consent", False),
-                },
-                {
-                    "name": "language_processing",
-                    "label": "Allow optional WCAG language processing (uses the network)",
-                    "type": "checkbox",
-                    "value": getattr(self.settings, "glow_language_processing_consent", False),
-                },
-            ],
-        )
-        if values is None:
-            self._set_status("GLOW settings cancelled")
-            return
-        self.settings.glow_enabled = bool(values.get("enabled", True))
-        self.settings.glow_ai_alt_text_consent = bool(values.get("ai_alt_text"))
-        self.settings.glow_pii_redaction_consent = bool(values.get("pii_redaction"))
-        self.settings.glow_language_processing_consent = bool(values.get("language_processing"))
-        save_settings(self.settings)
-        self._set_status("GLOW settings saved")
+    def open_settings_recipes(self) -> None:
+        """Preferences > Task Recipes and Working Modes (qc.md X-02, X-03)."""
+        from quill.ui.settings_recipes_dialog import open_settings_recipes
+
+        open_settings_recipes(self)
 
     #: Wildcard for exported QUILL settings files (SET-7).
     QSF_WILDCARD = "QUILL settings file (*.qsf)|*.qsf|All files (*.*)|*.*"
@@ -486,6 +451,7 @@ class PreferencesMixin:
         ext_master_value: bool | None = None
         ext_engine_spec: tuple[str, str, bool] | None = None
         data_location_choice: tuple[str, str] | None = None
+        ensure_help_provider()  # SetHelpText is a no-op without one
 
         with wx.Dialog(self.frame, title="Settings") as dialog:
             outer = wx.BoxSizer(wx.VERTICAL)
@@ -512,6 +478,8 @@ class PreferencesMixin:
 
             def _make_control(parent_panel, sizer, spec, page_index: int) -> None:
                 current = registry.get_value(self.settings, spec.key)
+                if isinstance(current, (list, dict)):
+                    return  # as text, OK would wipe it; these have their own manager
                 # preview_browser is stored as text but is best chosen from the
                 # list of installed browsers.
                 if spec.key == "preview_browser":
@@ -749,6 +717,15 @@ class PreferencesMixin:
                     sp_text.Bind(wx.EVT_TEXT, _mark_dirty)
                     return
 
+                if spec.key == "beta_updates":
+                    # Release channels (plan 7.1): the channel is shown here and
+                    # changed only in the shared Release Channel window, never by
+                    # ticking a box. main_frame_updates.py builds the row.
+                    shown = self._add_release_channel_row(parent_panel, sizer)
+                    readers[spec.key] = self._release_channel_is_prerelease
+                    writers[spec.key] = lambda _v: None
+                    control_index[spec.key] = (page_index, shown)
+                    return
                 if spec.kind == "bool":
                     cb = wx.CheckBox(parent_panel, label=spec.label)
                     cb.SetValue(bool(current))
@@ -759,13 +736,6 @@ class PreferencesMixin:
                     writers[spec.key] = lambda v, c=cb: c.SetValue(bool(v))
                     control_index[spec.key] = (page_index, cb)
                     cb.Bind(wx.EVT_CHECKBOX, _mark_dirty)
-                    if spec.key == "beta_updates":
-
-                        def _on_beta_toggle(_event: object, _cb=cb) -> None:
-                            if _cb.GetValue() and not self._confirm_beta_channel():
-                                _cb.SetValue(False)
-
-                        cb.Bind(wx.EVT_CHECKBOX, _on_beta_toggle)
                     if spec.key == "braille_editor_hide_border":
                         # Unchecking breaks braille cell alignment; warn at
                         # decision time and re-check unless the user confirms.
@@ -939,6 +909,7 @@ class PreferencesMixin:
 
             page_index = 0
             _page_build_fns: list[Callable[[], None]] = []
+            _page_specs: list[tuple[str, list]] = []
             _built_pages: set[int] = set()
             _ai_refs: dict[str, object] = {}
             _data_location_refs: dict[str, object] = {}
@@ -1094,21 +1065,28 @@ class PreferencesMixin:
                         _ps.Add(
                             wx.StaticText(
                                 _p,
-                                label="All other AI settings (providers, models, API keys) "
-                                "are managed in the AI Hub.",
+                                label="Providers and API keys are managed in the AI Hub. "
+                                "Image prompt styles you add or hide are in More "
+                                "Preferences, AI Connection, Image Prompt Styles.",
                             ),
                             0,
                             wx.ALL,
                             6,
                         )
-                        _p.Layout()
-                        return
+                        # The page's own settings follow. This used to return
+                        # here, so the eleven below were never drawn and Find a
+                        # setting could not reach them.
                     for spec in _sp:
                         _make_control(_p, _ps, spec, _pi)
+                        _built = control_index.get(spec.key)
+                        if _built is not None and spec.description:
+                            # F1 on the control says what the setting does.
+                            _built[1].SetHelpText(spec.description)
                     if _show_experimental:
                         self._wire_experimental_gates(control_index)
                     if _show_data_location:
                         _build_data_location_block(_p, _ps)
+                        self._add_text_editor_prefs(dialog, _p, _ps, _mark_dirty)
                     if _show_mgmt:
                         _ps.Add(wx.StaticLine(_p), 0, wx.EXPAND | wx.TOP | wx.BOTTOM, 6)
                         _ps.Add(
@@ -1280,6 +1258,7 @@ class PreferencesMixin:
                 _pg = wx.Panel(notebook, style=wx.TAB_TRAVERSAL)
                 _pg.SetSizer(wx.BoxSizer(wx.VERTICAL))
                 notebook.AddPage(_pg, group.title)
+                _page_specs.append((group.title, specs))
                 _page_build_fns.append(
                     _make_page_builder(
                         _pg,
@@ -1320,6 +1299,8 @@ class PreferencesMixin:
                     _apply_btn.Enable(True)
 
             def _do_apply() -> None:
+                if getattr(dialog, "text_editor_prefs", None) is not None:
+                    dialog.text_editor_prefs.commit()  # quill/ui/text_editor_prefs.py
                 _c = {k: r() for k, r in readers.items()}
                 # The braille editor fix only takes full effect on restart; warn if
                 # the user changed it so they are not confused that nothing changed.
@@ -1401,6 +1382,17 @@ class PreferencesMixin:
                 # must stay on the tabs so the tab names can be browsed.
                 if wx.Window.FindFocus() is not notebook:
                     focus_primary_control(dialog)
+
+            # Find a setting reaches every page, built or not (preferences_search).
+            dialog._quill_settings_index = lambda: registry_page_index(
+                dialog,
+                notebook,
+                _page_specs,
+                _built_pages,
+                _build_page,
+                control_index,
+                lambda key: registry.get_value(self.settings, key),
+            )
 
             notebook.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, _on_page_changed)
 

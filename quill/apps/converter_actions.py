@@ -569,6 +569,7 @@ def _is_under(path: Path, folder: Path) -> bool:
 
 
 def _version() -> str:
-    from quill.apps.converter import _VERSION
+    from quill.apps.converter import _BUILD, _VERSION
+    from quill.core.app_version import describe_version
 
-    return _VERSION
+    return describe_version(_VERSION, build=_BUILD)

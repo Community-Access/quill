@@ -65,7 +65,11 @@ class ManagerDownloadsMixin:
         from quill.ui.podcasts.show_actions import download_all_episodes
 
         queued = download_all_episodes(
-            self._download_queue, self._download_root, show, announce=self._announce
+            self._download_queue,
+            self._download_root,
+            show,
+            announce=self._announce,
+            host=getattr(self, "_transport_host", None) or self,
         )
         if queued and show is self._current_show:
             self._fill_episodes(show)

@@ -175,17 +175,19 @@ class WatchedFolderSettingsDialog:
         chosen = tuple(ext for ext, box in pairs if box.GetValue())
         folder.extensions = chosen or SUPPORTED_AUDIO_EXTENSIONS
 
+    def show(self, host: Any) -> bool:
+        """Through the host's dialog contract; True when Save was pressed (and applied)."""
+        import wx
+
+        try:
+            if host._show_modal_dialog(self.dialog, TITLE) == wx.ID_OK:
+                self.read()
+                return True
+            return False
+        finally:
+            self.dialog.Destroy()
+
 
 def edit_folder_settings(host: Any, parent: Any, folder: WatchedFolder) -> bool:
     """Show the page for *folder*; True when Save was pressed (and applied)."""
-    import wx
-
-    dialog = WatchedFolderSettingsDialog(parent, folder)
-    try:
-        answer = host._show_modal_dialog(dialog.dialog, TITLE)
-        if answer == wx.ID_OK:
-            dialog.read()
-            return True
-        return False
-    finally:
-        dialog.dialog.Destroy()
+    return WatchedFolderSettingsDialog(parent, folder).show(host)

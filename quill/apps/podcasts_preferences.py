@@ -18,11 +18,19 @@ from __future__ import annotations
 from typing import Any
 
 from quill.apps.podcasts_close import _CLOSE_ACTION_LABELS, _CLOSE_ACTION_VALUES
+from quill.core.action_feedback import ACTION_FEEDBACK_LABELS
 from quill.core.podcasts import notices
 from quill.core.podcasts.refresh_policy import INTERVAL_CHOICES
+from quill.core.podcasts.watched_folders import ORIGINALS, TELLS
 from quill.ui.podcasts.preferences_window import AppRow
 
 __all__ = ["CastPreferencesMixin", "app_rows"]
+
+
+def _shown_channel() -> str:
+    from quill.core.updater.channels import shown_channel, state_for
+
+    return shown_channel(state_for("cast"))
 
 
 def app_rows(host: Any) -> list[AppRow]:
@@ -44,6 +52,16 @@ def app_rows(host: Any) -> list[AppRow]:
             "Compares your version with the newest release once a day, quietly. "
             "Nothing is installed without you; Help > Check for Updates asks.",
             "opens",
+        ),
+        AppRow(
+            "release_channel",
+            f"Change release channel (now {_shown_channel()})...",
+            "Stable, Beta or Dev: which versions Cast offers you. Opens the "
+            "Release Channel window, the same one as the Help menu's Release "
+            "Channel. Nothing changes until you choose Switch there.",
+            "opens",
+            kind="action",
+            action=lambda: host.open_release_channel(),
         ),
         AppRow(
             "winamp_playback_keys",
@@ -120,11 +138,86 @@ def app_rows(host: Any) -> list[AppRow]:
             "telling",
         ),
         AppRow(
+            "wf_default_original",
+            "A new watched folder's &original files:",
+            "What a newly added watched folder does with the files that land in it. "
+            "Each folder can still be set its own way in Watched Folders; folders you "
+            "already watch are not changed.",
+            "data",
+            kind="choice",
+            options=ORIGINALS,
+        ),
+        AppRow(
+            "wf_default_tell",
+            "When files arrive in a new watched folder, tell me:",
+            "How a newly added watched folder tells you about arrivals. Every arrival "
+            "is in Notifications whichever you choose. Folders you already watch are not "
+            "changed.",
+            "data",
+            kind="choice",
+            options=TELLS,
+        ),
+        AppRow(
+            "wf_default_min_seconds",
+            "A new watched folder ignores files shorter than:",
+            "So a recorder's accidental two-second file does not become an episode. "
+            "Folders you already watch are not changed.",
+            "data",
+            kind="choice",
+            options=(
+                (0, "Nothing; take every file"),
+                (10, "10 seconds"),
+                (30, "30 seconds"),
+                (60, "1 minute"),
+                (300, "5 minutes"),
+            ),
+        ),
+        AppRow(
+            "wf_default_subfolders",
+            "A new watched folder includes its subfolders",
+            "Also watch every folder inside a newly added one. Folders you already watch "
+            "are not changed.",
+            "data",
+        ),
+        AppRow(
+            "inbox_personal_audio",
+            "New files in watched folders also wait in the Inbox",
+            "For triaging everything in one place. Off, they arrive in Personal Audio only.",
+            "inbox",
+        ),
+        AppRow(
+            "action_feedback",
+            "When a one-key action &works:",
+            "What you get when adding to the queue, removing from a place or marking "
+            "as played works: a short sound, the words, both, or nothing. A failure "
+            "is always said in words.",
+            "telling",
+            kind="choice",
+            options=tuple((mode.value, label) for mode, label in ACTION_FEEDBACK_LABELS),
+        ),
+        AppRow(
+            "announce_up_next",
+            "Say what is &up next before an episode ends",
+            '"Next: Episode 412 from Accidental Tech Podcast", about ten seconds '
+            "before the end, so a new voice never arrives without warning. Never "
+            "during Quiet Hours, and never when nothing will follow.",
+            "telling",
+        ),
+        AppRow(
             "announce_dialog_transitions",
             "Announce &dialog transitions (more spoken detail)",
             "Says a window's name as it opens and closes. Off by default to "
             "reduce alert noise; the screen reader still reads the title.",
             "telling",
+        ),
+        AppRow(
+            "share_family_prefs",
+            "Share these choices with my other Quill apps",
+            "Announce dialog transitions, and in QUILL Cast what a one-key action "
+            "answers with, are kept the same in every Quill app that also shares. "
+            "Nothing about keys, focus or your screen reader is ever shared, and an "
+            "app that has not turned this on is not touched.",
+            "window",
         ),
         AppRow(
             "close_action",
@@ -223,6 +316,9 @@ class CastPreferencesMixin:
             setattr(history, key, value)
         if app_changes:
             podcast_history.save_history(app_data_dir(), history)
+            from quill.ui.family_sharing import after_preferences
+
+            after_preferences(self, "cast", history, app_changes)
         written = 0
         for setting_id, value in default_changes.items():
             definition = settings_catalog.definition(setting_id)
@@ -246,6 +342,29 @@ class CastPreferencesMixin:
         else:
             self._announce("Preferences closed; nothing changed.")  # type: ignore[attr-defined]
         self._refresh_place(keep=True)  # type: ignore[attr-defined]
+
+    def _check_cast_updates(self, *, silent: bool = False) -> None:
+        """Help > Check for Updates..., and the quiet once-a-day check at launch.
+
+        Compares the version the *installer* recorded, not the runtime's code
+        constant: a sibling's newer runtime must never make this copy look up
+        to date (release channels, Phase 0). The channel decides what may be
+        offered (``app_shell.check_for_app_updates``).
+        """
+        from quill.ui.updates.shell import installed_app_version
+
+        self.check_for_app_updates(
+            repo_slug="Community-Access/quill",
+            current_version=installed_app_version("cast"),
+            app_key="cast",
+            silent_no_update=silent,
+        )
+
+    def open_release_channel(self) -> None:
+        """Preferences > Change release channel... (also Help > Release Channel...)."""
+        from quill.ui.updates.shell import open_for_shell
+
+        open_for_shell(self, "cast")
 
     def open_cast_data_folder(self) -> None:
         from quill.ui.data_folder_dialog import open_data_folder_dialog

@@ -74,6 +74,16 @@ def open_in_radio(host: Any, target: str) -> None:
     kept is on the frame either way.
     """
     say = _say(host)
+    from quill.core import notification_targets
+
+    kind, target_id = notification_targets.parse(target)
+    if kind == notification_targets.KIND_STREAM:
+        # A new-video notice (Notify Me About New Videos): Enter plays it.
+        from quill.ui.radio import youtube_channel_alerts_ui
+
+        if not youtube_channel_alerts_ui.open_stream_notice(host, target_id):
+            say(NOTHING_TO_OPEN)
+        return
     show, refusal = resolve_show(target)
     if show is None:
         say(refusal)

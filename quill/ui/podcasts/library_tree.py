@@ -123,3 +123,29 @@ def first_playable_in_view(library: Any, view_id: str) -> tuple[Any, Any] | None
         if not episode.played and int(getattr(episode, "position_ms", 0) or 0) <= 0:
             return (show, episode)
     return None
+
+
+def append_nodes(tree: Any, parent: Any, nodes: list[Any], tag: Any, shows: dict[str, Any]) -> None:
+    """Draw a :func:`~quill.core.podcasts.library_view.library_nodes` plan.
+
+    A podcast row gets its "Loading episodes..." placeholder so expanding it
+    still fills lazily; a folder opens or stays closed as the plan says. The
+    "Podcasts in no folder" group is tagged ``group`` rather than ``folder``,
+    so Rename and Delete Folder never offer to act on something that is not a
+    folder.
+    """
+    from quill.core.podcasts.library_view import NO_FOLDER
+
+    for node in nodes:
+        item = tree.AppendItem(parent, node.label)
+        if node.kind == "show":
+            tag(item, ("show", node.id))
+            show = shows.get(node.id)
+            if show is not None and show.episodes:
+                placeholder = tree.AppendItem(item, "Loading episodes...")
+                tag(placeholder, ("placeholder", node.id))
+            continue
+        tag(item, ("group", node.id) if node.id == NO_FOLDER else ("folder", node.id))
+        append_nodes(tree, item, node.children, tag, shows)
+        if node.open and node.children:
+            tree.Expand(item)

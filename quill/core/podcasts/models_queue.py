@@ -50,13 +50,20 @@ class QueueItem:
     #: first load. Reading it as "infinitely old" would silently empty
     #: everybody's queue on the first launch after updating.
     added_at: str = ""
+    #: Why it is waiting, when Cast put it there rather than the listener:
+    #: "Auto-Queue", "a lineup", "your listening run", "a watched folder"
+    #: (qc.md X-04). "" means the listener queued it.
+    reason: str = ""
 
     def to_dict(self) -> dict:
-        return {
+        row = {
             "show_id": self.show_id,
             "episode_guid": self.episode_guid,
             "added_at": self.added_at,
         }
+        if self.reason:
+            row["reason"] = self.reason
+        return row
 
     @classmethod
     def from_dict(cls, data: object) -> QueueItem | None:
@@ -70,4 +77,5 @@ class QueueItem:
             show_id=show_id,
             episode_guid=episode_guid,
             added_at=str(data.get("added_at", "")).strip(),
+            reason=str(data.get("reason", "") or "").strip()[:60],
         )

@@ -1,175 +1,118 @@
-# Tutorial 10: Podcasts
+# Tutorial 10: Podcasts with QUILL Cast
 
-**Goal:** subscribe to a show, organize your library into folders, download
-an episode for offline listening, and control playback without ever leaving
-the keyboard — QUILL's own podcast client, built on the same "one player
-that outlives any dialog" idea as [Internet Radio](09-internet-radio.md).
+In this tutorial you will follow a podcast, play an episode, pause and skip
+around in it, and line up something to hear next. It takes about ten minutes.
+Every step tells you what to press.
 
-Podcasts need a network connection to subscribe and download, and are
-disabled entirely in Safe Mode. Everything below lives under **Tools >
-Media > Podcasts...**.
+Podcasts have their own app in the QUILL family, called **QUILL Cast**. It is
+free. If you have QUILL, you can find Cast on QUILL's QuillVille menu, which
+offers to download it if you don't have it yet.
 
-## 1. Subscribe to a show
+## A few words first
 
-1. **Tools > Media > Podcasts...** opens the Podcast Manager: an empty
-   folder tree on the left, an empty episode list on the right, the first
-   time you use it.
-2. Press **Add Podcast...**. Three ways in, all on the same dialog:
-   - Type a show name in the search box and press **Search** — this
-     queries Apple's free iTunes Search directory. Arrow to a result and
-     press **Subscribe to Selected**.
-   - Already know the feed address? Paste it into **Add by Feed URL** and
-     press **Add** — skips the search entirely.
-   - Coming from another podcast app? **Import OPML...** reads its whole
-     exported subscription list — folders included — in one step.
-3. Close the Add Podcast dialog. Your new show appears in the Podcast
-   Manager's tree, and its episodes fill the list on the right when you
-   select it.
+A **podcast** is a show that puts out episodes, a bit like a radio programme
+you can hear whenever you like. When you **follow** a podcast, Cast collects
+each new episode for you as it comes out. Following is free, and you can stop
+any time. An episode you have not heard yet is called **unheard**.
 
-## 2. Organize into folders
+## 1. Open Cast
 
-Press **New Folder...** to create one, nested under whatever's selected in
-the tree — select a folder first, then New Folder again, to nest one inside
-it. There's no drag-and-drop yet; moving a show between folders is a
-planned follow-up (see the end of this tutorial).
+1. Open QUILL Cast from the Start menu.
+2. The first time, a short welcome window opens. Read it with the arrow keys
+   if you like.
+3. Press **Add Your First Podcast** (Alt+A) to go straight to the next step.
+   Or press Escape to skip the welcome. It will not come back.
 
-Not ready to unsubscribe from a show but don't want new episodes right now?
-Right-click it in the tree (or open its context menu with Menu/Shift+F10)
-and choose **Pause Updates for This Podcast** — it stays in your library,
-episodes and all, but QUILL stops checking its feed *and* stops downloading
-anything new for it until you choose **Resume Updates for This Podcast**
-later. Pausing never cancels a download already running, and it never puts
-the show out of reach: **Refresh Feed** on that row still checks it any time
-you ask.
+## 2. Follow your first podcast
 
-## 3. Download an episode for offline listening
+1. Press **Ctrl+N** to open Add Podcast. Your cursor is in the Podcast name
+   box.
+2. Type a few words of a podcast's name and press Enter. Cast tells you how
+   many it found.
+3. Press **Alt+R** to move to the results, and arrow through them.
+4. When you hear the one you want, press **Alt+O** to follow it. Cast says
+   "Now following", the podcast's name and how many episodes it has.
+5. Press Escape to close the Add Podcast window.
 
-Select an episode in the list and press **Download**, or reach the same
-action from its right-click context menu. Downloads run on their own
-dedicated background thread, so a big backlog never slows down anything
-else QUILL is doing — an AI request, a transcription job — while it works
-through the queue.
+Not sure you picked the right one? Press Enter on a result instead. Cast shows
+you the podcast and its recent episodes before you decide.
 
-Two separate pause controls, worth knowing apart:
+Want more to start with? Podcasts > Follow ACB Media Podcasts (**Ctrl+Alt+B**)
+follows all of ACB Media's podcasts in one step. If you are moving from
+another podcast app, save your list there as an OPML file, then choose Import
+OPML (Alt+I) in the Add Podcast window.
 
-- **Pause All Downloads** / **Resume All Downloads** — reachable from the
-  tray menu, the status bar's Podcasts cell, or the Podcast Manager —
-  stops the queue from *starting* anything new. Whatever's already
-  mid-transfer keeps running to completion.
-- **Pause Download** on one specific episode (its button, or its context
-  menu) halts that one transfer immediately, right where it is. Choosing
-  **Resume Download** later picks the file back up from the exact byte it
-  stopped at — nothing already downloaded is thrown away.
+## 3. Hear an episode
 
-Try it: start downloading a longer episode, then immediately pause just
-that one episode. Its status column shows "Paused." Resume it and watch the
-status move back through "Downloading" to "Downloaded."
+1. Press **Ctrl+Shift+S** to go to Podcasts. This is your library, with one
+   row for each podcast you follow.
+2. Arrow to the podcast you just followed and press **Enter**. Cast plays its
+   next unheard episode and tells you what it is.
 
-## 4. Play an episode, and control speed
+Want a particular episode? Press Right Arrow on the podcast to open it. Arrow
+down through the episodes, newest first, and press Enter on the one you want.
+Left Arrow takes you back up. Press **Ctrl+T** any time to hear what is
+playing.
 
-Select an episode and press **Play/Pause**, double-click it, or use its
-context menu. Starting a different episode always replaces whatever was
-playing — QUILL never plays two things at once, whether that's two
-episodes or an episode and a radio station. Closing the Podcast Manager
-never stops playback, exactly like Browse Stations in Internet Radio.
+## 4. Pause, skip and change the volume
 
-Your place in an episode is saved automatically. Come back to it later —
-even much later, even after closing QUILL — and it resumes exactly where
-you stopped.
+These keys work from anywhere in Cast. Try each one.
 
-The **Speed** control on the player row sets playback rate for whichever
-podcast you currently have selected, from 0.75x up to 2.0x. It's
-remembered per show, so a fast-talking interview show and a slow, dense
-lecture series can each have their own comfortable speed.
+1. Press **Ctrl+P** to pause. Press it again to carry on.
+2. Press **Ctrl+Right** to skip forward, and **Ctrl+Left** to skip back.
+3. Press **Ctrl+Up** to make it louder, and **Ctrl+Down** to make it quieter.
+4. Press **Ctrl+.** (Ctrl+Period) to stop.
 
-## 5. Chapters, sorting, and show notes
+Cast remembers where you stopped. Play that episode again, today or next
+month, and it picks up where you left off.
 
-If a show publishes Podcasting 2.0 chapters (or the episode has ID3
-chapters once downloaded), a **Chapters...** button appears on the player
-row — opens a list of chapter titles and start times; picking one jumps
-playback straight there.
+## 5. Line up what comes next
 
-Two **Sort by** choices, one above the folder tree (shows: Title,
-Unheard First, Recently Updated) and one above the episode list (episodes:
-Newest, Oldest, Title, Duration, Unplayed First), are remembered between
-sessions. Each show and folder in the tree also shows an unheard-episode
-count in parentheses, so you can see what's waiting without opening it.
+The Play Queue is your list for later. When one episode ends, the next one in
+the queue plays.
 
-**View Show Notes...** on an episode's context menu opens its description
-in a plain, readable window — HTML stripped to text with links shown as
-`text (url)` rather than raw markup, or switch to a rich view if you'd
-rather see it formatted. **Send Show Notes to Editor** copies that same
-plain text into a new document tab, if you want to keep or annotate it.
+1. In Podcasts, press Right Arrow on a podcast to open its episodes.
+2. Arrow to an episode you want to hear later and press **Space**. Cast tells
+   you it was added to the Play Queue.
+3. Press **Ctrl+Shift+Q** to go to the Play Queue and hear what is lined up.
 
-## 6. Podcast Settings
+## 6. Find your way around
 
-**Podcast Settings...** on the Podcast Manager toolbar sets the defaults
-every show starts from: stream vs. download, retention (keep everything,
-keep the last N, or delete after playing), download location, and what
-happens to downloaded files when you unsubscribe from a show — **ask each
-time** (the default), **always delete them**, or **never delete them**.
+Press **Alt+L** to go to the Places list. Think of it as a map of Cast. It has
+your Inbox, where new episodes wait for you, Continue Listening, for anything
+you started and didn't finish, and more. Arrow down the list, press Enter to
+go into a place, and Backspace to come back out.
 
-## 7. Control it without opening the dialog
+## 7. Listen with the window out of the way
 
-- **The status bar.** A **Podcasts** cell appears the first time you play
-  an episode. Press Enter, or click it, to play/pause. Its context menu
-  adds Stop and Pause/Resume All Downloads.
-- **The system tray.** Send QUILL to the tray and its right-click menu
-  carries the same controls for when the window is hidden.
-- **The keyboard, from anywhere in the editor.** Your QUILL Key
-  (**Ctrl+Shift+Grave**), then **8**, toggles play/pause; then **7** stops.
-  Deliberately parked right next to Radio's N/0/9 chords, not on top of
-  them. Remap either in **Preferences > Keyboard Shortcuts**.
+Press **Ctrl+W** to send Cast to the system tray. The episode keeps playing
+while you do other things, and your keyboard's media keys still work. To bring
+Cast back, press **Ctrl+Alt+Shift+F12** from any program, or double-click the
+Cast icon in the notification area.
 
-## 8. Take your library with you
+## If you press the wrong thing
 
-**Export OPML...** on the Podcast Manager writes your whole subscription
-list — folder structure included — to a standard `.opml` file that any
-other podcast app can read. Bring it back into QUILL (or take it
-somewhere else) with **Import OPML...**, the same button you used in step 1.
+Any question that would delete something starts on No, so pressing Enter too
+soon loses nothing. If something goes anyway, press **Ctrl+Z**. It brings back
+the last podcast you unfollowed or the last episode you removed, and tells you
+what came back. Missed what Cast just said? Press **F9** to hear it again.
 
-OPML moves subscriptions and nothing else. To move the rest — your folders
-and playlists, your settings, your Quick Action order, your bookmarks and the
-keys you rebound — use **Export My Setup...** and **Import My Setup...** on
-QUILL Cast's or Quill Radio's Help menu, which write one `.quillsetup` file.
-Passwords are never included, and importing replaces what is on the other
-machine rather than merging with it. Both of those say so before they act.
+## Keys for your first day
 
-## 9. If something goes wrong, or you want quiet
+- Ctrl+N: add a podcast
+- Enter: play the selected podcast or episode
+- Ctrl+P: pause or carry on
+- Ctrl+Right and Ctrl+Left: skip forward or back
+- Ctrl+Up and Ctrl+Down: volume up or down
+- Ctrl+T: say what is playing
+- Space: add the episode to the Play Queue
+- F9: repeat the last thing Cast said
+- Ctrl+Alt+F1: guided tutorials inside Cast
 
-Two surfaces worth knowing about, shared by QUILL Cast and Quill Radio.
+## Where to go next
 
-**Recent Problems** (Help > Recent Problems...) is a list of what has failed
-recently — a feed that could not be read, a download that died overnight, a
-stream that dropped — with the reason, the time, and a Retry. Announcements
-are transient by design, and before this list a spoken failure that went past
-while you were in another window was gone for good.
-
-**Quiet Hours** (Help > Quiet Hours...) is a window in which the apps stop
-speaking on their own. Feeds are still checked and downloads still run — only
-the announcements wait — and anything you press a key for still answers.
-Failures always speak.
-
-And if you do the wrong thing to the wrong row: **Ctrl+Z** takes back the last
-destructive step, once, and tells you what came back. Deleted files are moved
-aside rather than deleted outright, so an undo brings the audio back and not
-just the intention to fetch it again.
-
-## What's not here yet
-
-No video podcasts — audio only, matching every other playback surface in
-QUILL. Moving a show between folders is keyboard-menu-only for now (no
-drag-and-drop). Transcript viewing/export is parsed from the feed already
-but has no UI of its own yet; a separate Inbox view, a cross-show
-reorderable Play Queue, local (imported-file) podcasts, and richer
-filtering (beyond the sorting above) are the next planned phases — see
-the PRD's Podcasts section (5.84g) if you want the full list — the once-planned next phases (Inbox, Play Queue, transcripts, local podcasts, Search Everywhere) have since shipped.
-
-## The shape of it
-
-Subscribe with a search, a URL, or an OPML import; organize into folders;
-download with two pause controls that mean genuinely different things;
-play through one shared player that never stops just because you closed a
-dialog. Right-click nearly anything for the full set of actions, and reach
-the essentials — play, pause, stop — from the status bar, the tray, or the
-keyboard without ever opening the Podcast Manager at all.
+The [QUILL Cast user guide](/docs/cast-userguide.html) starts with "Your first
+ten minutes" and then walks you through everything else, one chapter at a
+time. Cast, QUILL and Quill Radio share your podcasts, so a podcast you follow
+in one is there in the others too. For radio stations, see [Tutorial
+9](09-internet-radio.md).

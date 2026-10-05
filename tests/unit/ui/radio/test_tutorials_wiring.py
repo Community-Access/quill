@@ -112,7 +112,8 @@ def test_the_window_manager_can_list_what_is_open() -> None:
 
 
 def test_help_menu_offers_tutorials_and_the_command_is_registered() -> None:
-    app = _src("quill/apps/radio.py")
+    # The menu bar moved to radio_menu_bar.py under F-08 (2026-10-03).
+    app = _src("quill/apps/radio.py") + _src("quill/apps/radio_menu_bar.py")
     menu = _src("quill/apps/radio_help_docs.py")
     assert 'host._menu_label("&Tutorials...", "radio.tutorials")' in menu
     assert "def open_radio_tutorials(self" in app

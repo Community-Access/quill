@@ -1,0 +1,170 @@
+name: dev-builds
+
+# Dev channel builds (release channels, owner decisions 2026-10-03):
+#
+# - built here, from main, at most once a day and only when main changed since
+#   the last Dev build (scripts/dev_build_plan.py decides);
+# - UNSIGNED (no Authenticode secret is used, so Windows may say "unknown
+#   publisher"; the Dev risk window says so);
+# - published to the separate repository Community-Access/quillville-dev-builds,
+#   never to Community-Access/quill, whose first page of 30 releases is all that
+#   installed Quill Radio 3.0.4 and QUILL Lite 1.1.2 ever read.
+#
+# The signed v2 feed is NOT written here: the feed key never lives in CI. The
+# owner lists a Dev build on the Dev channel from their own computer:
+#   python scripts/publish_release.py --app radio --version <v> --channel dev --existing
+#
+# Needs the repository secret DEV_BUILDS_TOKEN: a fine-grained token with
+# "Contents: read and write" on Community-Access/quillville-dev-builds only.
+
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Build even if main has not changed or a build already ran today"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dev-builds
+  cancel-in-progress: false
+
+env:
+  DEV_REPO: Community-Access/quillville-dev-builds
+
+jobs:
+  decide:
+    runs-on: ubuntu-latest
+    outputs:
+      build: ${{ steps.plan.outputs.build }}
+      reason: ${{ steps.plan.outputs.reason }}
+      version_quill: ${{ steps.plan.outputs.version_quill }}
+      version_quilllite: ${{ steps.plan.outputs.version_quilllite }}
+      version_radio: ${{ steps.plan.outputs.version_radio }}
+      version_cast: ${{ steps.plan.outputs.version_cast }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Decide whether today's Dev build runs
+        id: plan
+        env:
+          GH_TOKEN: ${{ secrets.DEV_BUILDS_TOKEN }}
+        run: |
+          FORCE=""
+          if [ "${{ inputs.force }}" = "true" ]; then FORCE="--force"; fi
+          python scripts/dev_build_plan.py --sha "$(git rev-parse HEAD)" --repo "$DEV_REPO" $FORCE >> "$GITHUB_OUTPUT"
+          cat "$GITHUB_OUTPUT"
+
+  build:
+    needs: decide
+    if: needs.decide.outputs.build == 'true'
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [quill, quilllite, radio, cast]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Install build dependencies
+        run: python -m pip install -e .[ui,spellcheck,dev]
+      - name: Install Inno Setup
+        shell: pwsh
+        run: winget install --id JRSoftware.InnoSetup -e --accept-package-agreements --accept-source-agreements --disable-interactivity
+      - name: Pick this app's Dev version
+        id: ver
+        shell: pwsh
+        run: |
+          $versions = @{
+            quill = "${{ needs.decide.outputs.version_quill }}"
+            quilllite = "${{ needs.decide.outputs.version_quilllite }}"
+            radio = "${{ needs.decide.outputs.version_radio }}"
+            cast = "${{ needs.decide.outputs.version_cast }}"
+          }
+          "version=$($versions['${{ matrix.app }}'])" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+      - name: Build QUILL (Dev, unsigned)
+        if: matrix.app == 'quill'
+        shell: pwsh
+        run: |
+          $version = "${{ steps.ver.outputs.version }}"
+          $base = $version.Split('-')[0]
+          $number = $version.Split('.')[-1]
+          New-Item -ItemType Directory -Force build | Out-Null
+          @"
+          base_version = "$base"
+          channel = "dev"
+          prerelease_number = 0
+          product_name = "QUILL for All"
+          publisher = "Community Access"
+          website = "https://quillforall.org"
+          "@ | Set-Content -Encoding utf8 build/version.toml
+          $env:QUILL_BUILD_NUMBER = $number
+          $iscc = @("$env:LOCALAPPDATA\Programs\Inno Setup 7\ISCC.exe", "C:\Program Files (x86)\Inno Setup 7\ISCC.exe") | Where-Object { Test-Path $_ } | Select-Object -First 1
+          python scripts/build_windows_distribution.py --bundle-python --compile-installer --iscc-path "$iscc" --output-dir dist/windows
+          New-Item -ItemType Directory -Force dist/dev | Out-Null
+          Get-ChildItem dist/windows/installer/Output/Quill-for-All-Setup-*.exe | Select-Object -First 1 | Copy-Item -Destination "dist/dev/Quill-for-All-Setup-$version.exe"
+          Compress-Archive -Path dist/windows/portable/* -DestinationPath "dist/dev/Quill-Portable-$version.zip"
+      - name: Build a sibling app (Dev, unsigned)
+        if: matrix.app != 'quill'
+        shell: pwsh
+        run: |
+          $version = "${{ steps.ver.outputs.version }}"
+          python scripts/fetch_build_deps.py
+          & "standalone/${{ matrix.app }}/scripts/build_release.ps1" -SkipPublishedCheck -SkipCatalog -DevVersion $version
+          New-Item -ItemType Directory -Force dist/dev | Out-Null
+          Get-ChildItem "standalone/${{ matrix.app }}/dist" -File | Where-Object { $_.Name -like "*$version*" } | Copy-Item -Destination dist/dev
+      - uses: actions/upload-artifact@v7
+        with:
+          name: dev-${{ matrix.app }}
+          path: dist/dev
+          retention-days: 7
+
+  publish:
+    needs: [decide, build]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [quill, quilllite, radio, cast]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+      - uses: actions/download-artifact@v8
+        with:
+          name: dev-${{ matrix.app }}
+          path: dist/dev
+      - name: Publish to the dev-builds repository
+        env:
+          GH_TOKEN: ${{ secrets.DEV_BUILDS_TOKEN }}
+        run: |
+          case "${{ matrix.app }}" in
+            quill) VERSION="${{ needs.decide.outputs.version_quill }}"; TAG="v$VERSION"; NAME="QUILL" ;;
+            quilllite) VERSION="${{ needs.decide.outputs.version_quilllite }}"; TAG="quill-lite-v$VERSION"; NAME="QUILL Lite" ;;
+            radio) VERSION="${{ needs.decide.outputs.version_radio }}"; TAG="quill-radio-v$VERSION"; NAME="Quill Radio" ;;
+            cast) VERSION="${{ needs.decide.outputs.version_cast }}"; TAG="quill-cast-v$VERSION"; NAME="QUILL Cast" ;;
+          esac
+          SHA="$(git rev-parse HEAD)"
+          (cd dist/dev && sha256sum -- * > SHA256SUMS.txt)
+          printf 'Dev build of %s, unsigned. Built from Community-Access/quill@%s.\n\nNot listed on the Dev channel until the owner signs it into the feed.\n' "$NAME" "$SHA" > notes.md
+          gh release create "$TAG" dist/dev/* \
+            --repo "$DEV_REPO" \
+            --target main \
+            --title "$NAME $VERSION (Dev)" \
+            --notes-file notes.md \
+            --prerelease \
+            --latest=false

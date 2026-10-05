@@ -200,6 +200,8 @@ class RadioHistory:
     #: dialog_contract.show_modal_dialog's "no policy set" fallback always
     #: spoke it, unlike full QUILL where it is opt-in.
     announce_dialog_transitions: bool = False
+    #: Share the family's shared choices with the other Quill apps (qc.md X-05).
+    share_family_prefs: bool = False
     #: How much scaffolding an exported transcript keeps: speakers, timestamps,
     #: both, or just the words. Per install, and named the same in both apps
     #: (the same shape announce_dialog_transitions has) so a transcript saved

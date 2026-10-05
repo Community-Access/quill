@@ -80,11 +80,11 @@ SETTINGS: tuple[SettingDef, ...] = (
     # -- 7.1 / 7.2 / 7.6: when episodes arrive and how many ------------------
     define(
         "backfill_mode",
-        "When I subscribe, also &fetch:",
+        "When I follow a podcast, also &fetch:",
         "How much of a podcast's back catalogue to collect once, at the moment "
-        "you subscribe. It is a one-off and it is separate from the automatic "
-        "download count, which only ever looks forward -- subscribing to a "
-        "daily news feed and to a 400-episode series are opposite acts.",
+        "you follow it. It is a one-off and it is separate from the automatic "
+        "download count, which only ever looks forward -- following a daily "
+        "news podcast and following a 400-episode series are opposite acts.",
         kind=KIND_CHOICE,
         category=CATEGORY_ARRIVAL,
         default=BACKFILL_NONE,
@@ -147,7 +147,7 @@ SETTINGS: tuple[SettingDef, ...] = (
         default=QUEUE_ORDER_NEWEST,
         choices=choices(
             (QUEUE_ORDER_NEWEST, "Newest episode"),
-            (QUEUE_ORDER_OLDEST, "Oldest unplayed episode"),
+            (QUEUE_ORDER_OLDEST, "Oldest unheard episode"),
         ),
         aliases=("queue", "beginning", "serial", "order"),
     ),
@@ -155,7 +155,7 @@ SETTINGS: tuple[SettingDef, ...] = (
     define(
         "transcript_policy",
         "Fetch &transcripts:",
-        "When to collect a podcast's transcripts. A cached transcript is what "
+        "When to collect a podcast's transcripts. A downloaded transcript is what "
         "lets Search Everywhere find a sentence rather than a title. Fetching "
         "never plays or downloads audio; transcribing here is the one choice "
         "that does read the audio, which is why it is per podcast.",
@@ -218,8 +218,8 @@ SETTINGS: tuple[SettingDef, ...] = (
         "quiet_feed_weeks",
         "Tell me if this podcast goes quiet for (weeks, 0 = never):",
         "Says something when a podcast you follow stops publishing for this "
-        "long. It never unsubscribes you and never stops checking the feed -- a "
-        "show that ends does so silently, and this is the only notice you get.",
+        "long. It never unfollows the podcast and never stops checking it -- a "
+        "podcast that ends does so silently, and this is the only notice you get.",
         kind=KIND_INT,
         category=CATEGORY_ANNOUNCEMENTS,
         default=0,
@@ -266,6 +266,19 @@ SETTINGS: tuple[SettingDef, ...] = (
         levels=(LEVEL_SHOW,),
         default="",
         aliases=("pronounce", "pronunciation", "phonetic", "speech", "tts"),
+    ),
+    define(
+        "listening_note",
+        "What I care about in this podcast:",
+        'A sentence or two in your own words, such as "the interviews, not the '
+        'news round-up". Nothing uses it yet: it is kept so that AI help, when '
+        "you turn it on, can suggest episodes the way you would choose them. "
+        "It never leaves this computer on its own.",
+        kind=KIND_TEXT,
+        category=CATEGORY_CURATION,
+        levels=(LEVEL_SHOW,),
+        default="",
+        aliases=("note", "interests", "care", "prefer", "like"),
     ),
     define(
         "earcon",
@@ -326,8 +339,8 @@ SETTINGS: tuple[SettingDef, ...] = (
         "catalog_view_limit",
         "Show at most this many episodes (0 = all of them):",
         "How many of this podcast's episodes the list shows at once, newest "
-        "first. It is a view: nothing is deleted, nothing is unsubscribed, and "
-        "search and the older episodes are all still there when you raise it.",
+        "first. It is a view: nothing is deleted, you still follow the podcast, "
+        "and Find and the older episodes are all still there when you raise it.",
         kind=KIND_INT,
         category=CATEGORY_CURATION,
         default=0,
@@ -442,10 +455,10 @@ SETTINGS: tuple[SettingDef, ...] = (
     ),
     define(
         "duplicate_feed_policy",
-        "If a podcast is already subscribed:",
-        "What to do when a feed you add turns out to be one you already "
-        "follow. Warning is the default; allowing it makes a second, "
-        "independent subscription rather than merging the two.",
+        "If I add a podcast I already follow:",
+        "What to do when a podcast you add turns out to be one you already "
+        "follow. Telling you is the default; adding it anyway makes a second, "
+        "independent copy of the podcast rather than merging the two.",
         kind=KIND_CHOICE,
         category=CATEGORY_ARRIVAL,
         levels=(LEVEL_GLOBAL,),

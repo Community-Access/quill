@@ -166,7 +166,7 @@ def route_new_episodes(
             continue
         if hidden is not None and hidden(episode):
             continue
-        if library.queue_episode(show.id, episode.guid):
+        if library.queue_episode(show.id, episode.guid, "Auto-Queue"):
             queued += 1
     return queued
 

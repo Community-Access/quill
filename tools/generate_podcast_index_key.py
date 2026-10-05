@@ -50,6 +50,7 @@ from __future__ import annotations
 
 import os
 import re
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -117,6 +118,11 @@ def resolve() -> tuple[str, str]:
 
 
 def main(argv: list[str] | None = None) -> int:
+    # --require (release builds, 2026-10-03): a shipped app without the pair
+    # shows "Add a Podcast Index Key..." to every listener, which is how Quill
+    # Radio's categories looked broken. Fail the build instead; never print
+    # the values themselves.
+    require = "--require" in (sys.argv[1:] if argv is None else argv)
     key, secret = resolve()
     if not (key and secret):
         # Nothing from any source: keep working credentials already bundled
@@ -128,6 +134,14 @@ def main(argv: list[str] | None = None) -> int:
                 f"bundled pair in {OUTPUT_FILE}."
             )
             return 0
+        if require:
+            print(
+                "No Podcast Index credential pair: set QUILL_PODCAST_INDEX_KEY and "
+                "QUILL_PODCAST_INDEX_SECRET (or keep an existing bundled pair) before "
+                "a release build.",
+                file=sys.stderr,
+            )
+            return 1
     write_module(key, secret, OUTPUT_FILE)
     if key and secret:
         print(f"Wrote {OUTPUT_FILE} with bundled Podcast Index credentials.")

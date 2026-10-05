@@ -14,19 +14,17 @@ commands *do* is here once, so a fix to one editor's dictation is a fix to both
 -- and if the QUILL adapter ever grows a command of its own, the capability has
 forked.
 
-**One controller in the whole app.** There is one microphone. It writes into
-whichever document it was last pointed at: the one the key was pressed in, or
-the one in front when the wake phrase was heard. The key that starts dictation
-anywhere stops it everywhere, so "press it again to stop" is true whichever
-window you pressed it in.
+**One controller in the whole app**, because there is one microphone. It writes
+into the document it was last pointed at (where the key was pressed, or the one
+in front when the wake phrase was heard), and the key that starts dictation
+anywhere stops it everywhere.
 
 **The wake phrase listens only while this program is the active window.** When
 another program comes to the front, dictation stops and the microphone closes;
 when this one comes back, listening for the wake phrase resumes. Listening in
-the background was considered and left out: waking would have to pull the
-window forward to write anywhere, and a program that takes focus from what
-somebody is doing because it heard its name is the kind of surprise a screen
-reader user pays for most.
+the background was left out: waking would have to pull the window forward, and a
+program that takes focus because it heard its name is the kind of surprise a
+screen reader user pays for most.
 """
 
 from __future__ import annotations
@@ -557,6 +555,7 @@ class WindowsDictationMixin(DictationToolsMixin):
             wake_phrase=preferences.wake_phrase if preferences.wake_enabled else "",
             stop_phrase=preferences.stop_phrase,
             own_phrases=profile.replacements,
+            language=preferences.speech_language,
         )
         dialog = DictationCommandsDialog(self._dictation_parent(), body)
         try:
@@ -588,9 +587,14 @@ def _make_recognizer(controller: DictationController, preferences: DictationPref
             controller,
             language=preferences.language,
             pause_ms=int(preferences.pause_seconds * 1000),
+            speech_language=preferences.speech_language,
         )
     from quill.core.windows_dictation.local_recognizer import LocalDictationRecognizer
 
     return LocalDictationRecognizer(
-        controller, preferences.engine, post=wx.CallAfter, pause_seconds=preferences.pause_seconds
+        controller,
+        preferences.engine,
+        post=wx.CallAfter,
+        pause_seconds=preferences.pause_seconds,
+        language=preferences.speech_language,
     )

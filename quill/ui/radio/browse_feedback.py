@@ -145,3 +145,46 @@ def empty_row_text(*, unreachable: bool, override: str = "", note: str = "") -> 
         return override
     says = "Could not be reached. Open it again to try." if unreachable else "Nothing in here."
     return f"{says} {note}" if (note and unreachable) else says
+
+
+def empty_verdict(children: list[Any]) -> tuple[bool, str]:
+    """``(network_failed, reason)`` for one browse, asked on the thread that browsed.
+
+    The failure record is per thread, so this must run inside the background
+    work, not in the UI-thread callback (whose slot is always empty). A folder
+    that came back with rows has no verdict. ``reason`` is a sentence written
+    for the listener -- "the Podcast Index needs a free key..." -- and is only
+    given when the failure was *not* the network, which has its own sentence.
+    """
+    if children:
+        return False, ""
+    from quill.core.radio.browse_failure import last_error_was_network, listener_reason
+
+    if last_error_was_network():
+        return True, ""
+    return False, listener_reason()
+
+
+def fill_rows(host: Any, node: Any, children: list[Any]) -> None:
+    """Append *children* under *node* as one quiet batch.
+
+    A chart folder is a hundred or two hundred rows, each folder row with its
+    own "Loading..." child, and every insertion is an accessibility event the
+    screen reader has to process while it is also reading the folder you just
+    opened. Freezing the tree for the fill collapses those repaints into one;
+    nothing is announced per row -- the count is said once, by the caller.
+    """
+    tree = host._tree
+    freeze = getattr(tree, "Freeze", None)
+    thaw = getattr(tree, "Thaw", None)
+    if callable(freeze):
+        freeze()
+    try:
+        for child in children:
+            item = tree.AppendItem(node, host._row_label(child))
+            tree.SetItemData(item, host._row_data(child))
+            if child.is_folder:
+                tree.SetItemData(tree.AppendItem(item, "Loading..."), host._placeholder())
+    finally:
+        if callable(thaw):
+            thaw()

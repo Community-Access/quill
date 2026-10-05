@@ -50,8 +50,9 @@ def test_previews_failure_is_spoken_as_well_as_shown() -> None:
     result = SimpleNamespace(title="The Daily", feed_url="https://example.invalid/feed")
     preview_search_result(dialog, result, 0)
     assert dialog._preview_btn.enabled is True
-    assert spoken == ["That podcast could not be loaded: host unreachable"]
-    assert dialog._status.text == spoken[0]
+    # "Loading ..." is said as Preview starts (say_status); the failure follows it.
+    assert spoken[-1] == "That podcast could not be loaded: host unreachable"
+    assert dialog._status.text == spoken[-1]
 
 
 def test_a_feed_check_that_could_not_run_says_so_not_checked_zero() -> None:

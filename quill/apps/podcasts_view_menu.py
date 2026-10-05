@@ -251,7 +251,18 @@ class CastViewMenuMixin:
         scope_id = wx.NewIdRef()
         self._area_row(view_menu, "inbox", scope_id, "Inbox &Folder...\tCtrl+Shift+O")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.choose_inbox_folder_scope(), id=scope_id)
-        self._keep_menu_ids(self._hide_caught_up_item_id, scope_id)
+        # Every layout and order for the library and the Inbox in one window
+        # whose choices take effect as they are made (Jeff, 2026-10-03).
+        arrange_id = wx.NewIdRef()
+        view_menu.Append(arrange_id, "&Rearrange Library and Inbox...\tCtrl+Shift+R")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_library_view(), id=arrange_id)
+        self._keep_menu_ids(self._hide_caught_up_item_id, scope_id, arrange_id)
+
+    def open_library_view(self) -> None:
+        """View > Rearrange Library and Inbox... (Ctrl+Shift+R)."""
+        from quill.ui.podcasts.library_view_dialog import open_library_view
+
+        open_library_view(self)
 
     # -- how much of Cast, and what it looks like ------------------------- #
 

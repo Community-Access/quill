@@ -159,7 +159,14 @@ def announce_position(host: Any) -> None:
     """Say where we are, without moving."""
     if _refuse(host):
         return
-    host._announce(describe_position(_controller(host)))
+    spoken = describe_position(_controller(host))
+    from quill.ui.radio import local_media_playback
+
+    try:
+        where = local_media_playback.where_suffix(host)
+    except Exception:  # noqa: BLE001 - the position alone is still the answer
+        where = ""
+    host._announce(f"{spoken.rstrip('.')}, {where}." if where else spoken)
 
 
 def go_to_position(host: Any) -> None:
@@ -286,28 +293,46 @@ def _announce_chapter(host: Any, index: int) -> None:
         host._announce(f"{title}, chapter {index + 1} of {len(chapters)}.")
 
 
+def _playlist_step(host: Any, direction: int) -> bool:
+    """A Local Media playlist's next or previous item, where chapters run out.
+
+    The chapter keys are the player's "next" and "previous" in every window, and
+    a song has no chapters -- so in a playlist they move by item, the way every
+    media player's next-track key does. True when a playlist answered.
+    """
+    from quill.ui.radio import local_media_playback
+
+    try:
+        return local_media_playback.step(host, direction)
+    except Exception:  # noqa: BLE001 - a playlist that cannot answer leaves the chapter reply
+        return False
+
+
 def next_chapter(host: Any) -> None:
-    """Jump to the next published chapter."""
+    """Jump to the next published chapter, or the next item in a playlist."""
     if _refuse(host):
         return
     controller = _controller(host)
     if not controller.chapters():
-        host._announce(NO_CHAPTERS)
+        if not _playlist_step(host, 1):
+            host._announce(NO_CHAPTERS)
         return
     index = controller.go_to_adjacent_chapter(1)
     if index < 0:
-        host._announce(NO_CHAPTERS)
+        if not _playlist_step(host, 1):
+            host._announce(NO_CHAPTERS)
         return
     _announce_chapter(host, index)
 
 
 def previous_chapter(host: Any) -> None:
-    """Jump to the previous chapter, or restart this one."""
+    """Jump to the previous chapter, or restart this one, or the previous item."""
     if _refuse(host):
         return
     controller = _controller(host)
     if not controller.chapters():
-        host._announce(NO_CHAPTERS)
+        if not _playlist_step(host, -1):
+            host._announce(NO_CHAPTERS)
         return
     index = controller.go_to_adjacent_chapter(-1)
     if index < 0:

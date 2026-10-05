@@ -142,6 +142,40 @@ PURPOSES: dict[str, str] = {
         "you press a key for still answers. The window is shared with the "
         "other Quill listening apps."
     ),
+    "Organise My Podcasts": (
+        "Folders AI help suggests for your podcasts. Suggestions from AI help, for you to decide. "
+        "Each row starts accepted; Space switches it between Accept and Skip, and Accept All and "
+        "Skip All change every row. Apply Selected does only the accepted rows; Cancel or Escape "
+        "changes nothing."
+    ),
+    "Build Me a Listening Run": (
+        "Episodes AI help chose to fit the time you have, measured by Cast. Suggestions from AI "
+        "help, for you to decide. Each row starts accepted; Space switches it between Accept and "
+        "Skip, and Accept All and Skip All change every row. Apply Selected does only the accepted"
+        " rows; Cancel or Escape changes nothing."
+    ),
+    "Smart Playlist from a Sentence": (
+        "The rules Cast would save for the playlist you described. Apply Selected saves the "
+        "playlist; you can change its rules later with Edit Rules. Cancel saves nothing."
+    ),
+    "Name These Chapters": (
+        "New chapter titles AI help wrote from the transcript. Suggestions from AI help, for you "
+        "to decide. Each row starts accepted; Space switches it between Accept and Skip, and "
+        "Accept All and Skip All change every row. Apply Selected does only the accepted rows; "
+        "Cancel or Escape changes nothing."
+    ),
+    "Tidy the Podcasts I Follow": (
+        "Podcasts that look finished, doubled up or broken, each with its reason and an action. "
+        "Nothing is sent anywhere for this. Suggestions from AI help, for you to decide. Each row "
+        "starts accepted; Space switches it between Accept and Skip, and Accept All and Skip All "
+        "change every row. Apply Selected does only the accepted rows; Cancel or Escape changes "
+        "nothing."
+    ),
+    "Undo History": (
+        "The last ten things you can take back, newest first, each saying what "
+        "undoing it brings back. Undo This One takes back the highlighted step "
+        "alone and leaves the rest; Ctrl+Z always takes the newest."
+    ),
     "Recent Problems": (
         "Everything that has failed recently, in one list that outlives the "
         "announcement: feeds that could not be read, downloads that died, "
@@ -163,6 +197,13 @@ PURPOSES: dict[str, str] = {
         "new one, Folder Settings changes how it behaves, Pause stops watching "
         "for now, and Remove stops for good without touching a single file."
     ),
+    "Rearrange Library and Inbox": (
+        "How the library and the Inbox are laid out: folders first, folders "
+        "only, podcasts without folders or everything together; how podcasts "
+        "and folders are ordered; whether folders start open; what the counts "
+        "say; and whether the Inbox lists folders first. Each choice takes "
+        "effect as you make it, and Close keeps them all."
+    ),
     "Watched Folder Settings": (
         "How one watched folder behaves: its name in Personal Audio, whether "
         "Cast copies, moves or plays your files where they are, what a new file "
@@ -176,9 +217,9 @@ PURPOSES: dict[str, str] = {
         "restores the shipped order. Hiding a place never removes what is in it."
     ),
     "QUILL Cast Preferences": (
-        "Everything that is not about one podcast, in eight sections: when Cast "
-        "opens, playing, fetching, the Inbox, chapters, telling you, the window, "
-        "and data. The shared defaults here are what every podcast follows until "
+        "Everything that is not about one podcast, in nine sections: when Cast "
+        "opens, playing, fetching, the Inbox, the library, chapters, telling you, "
+        "the window, and data. The shared defaults here are what every podcast follows until "
         "Settings for This Podcast says otherwise. Save writes only what you changed."
     ),
     "Rename Place": (
@@ -189,20 +230,10 @@ PURPOSES: dict[str, str] = {
         "A name for the Play Queue's current order, so Apply Lineup can put it "
         "back later. Saving never changes the queue itself."
     ),
-    "Skip Settings": (
-        "How far each skip key moves, forward and back, and the intro and "
-        "outro amounts an episode can skip by itself. A show can override "
-        "any of this for itself in its own Settings."
-    ),
     "Mark All as Played": (
         "Confirm marking every episode listed as played. It says how many "
         "rows this touches before it does anything, and it changes only the "
         "played mark -- no file is deleted."
-    ),
-    "Move Podcasts to Folder": (
-        "File the chosen shows into a library folder. Folders are yours to "
-        "invent; a show sits in one at a time, and moving one changes "
-        "nothing about its episodes or its downloads."
     ),
     "Move to Folder": (
         "Choose the folder to file into, or make a new one. Folders are "
@@ -213,6 +244,11 @@ PURPOSES: dict[str, str] = {
         "Your listening year as a short report: the shows you gave the most "
         "time to, how many episodes you finished, and when you listened. It "
         "is built from your own local history."
+    ),
+    "Sound Enhancements": (
+        "Bass, middle and treble, Even Out Volume and Smart Speed, for the "
+        "podcast that is playing or for every podcast. Apply puts them into "
+        "effect and the window stays open, so you can listen and adjust again."
     ),
     "About This Episode": (
         "Everything the feed says about one episode -- people, links, "
@@ -226,17 +262,10 @@ PURPOSES: dict[str, str] = {
     ),
     # -- the first-run screens ---------------------------------------------------
     "Welcome to QUILL Cast": (
-        "A three-screen tour for a first launch. Nothing here is a setting "
-        "you can get wrong: read, press Next, and Skip leaves at any point."
-    ),
-    "Add your first podcast": (
-        "The second first-run screen: the two ways a show gets into your "
-        "library -- searching the directories by name, or pasting a feed "
-        "address -- and the button that opens Add Podcast right now."
-    ),
-    "You're set": (
-        "The last first-run screen: where your shows live from here, and the "
-        "handful of keys worth knowing on day one."
+        "One screen for a first launch: where you would like to land each time "
+        "Cast opens, whether to hear a tip now and then, and Add Your First "
+        "Podcast. Nothing here is a setting you can get wrong; Skip, or Escape, "
+        "leaves at once, and Preferences changes where you land later."
     ),
     "Episode Filter Rule": (
         "One rule inside a podcast's Episode Filters: a title pattern, a "
@@ -254,8 +283,29 @@ PURPOSES: dict[str, str] = {
     ),
 }
 
+# Release channels: the shared windows (quill/ui/updates) take their titles and
+# purposes from one place, so a title can never ship without its F1 paragraph.
+from quill.core.updater.wording import window_titles as _channel_windows  # noqa: E402
+
+PURPOSES.update(_channel_windows("QUILL Cast"))
+
 #: Purposes for windows whose titles carry live data, matched by prefix.
 PREFIX_PURPOSES: tuple[tuple[str, str], ...] = (
+    (
+        "About ",
+        "What AI help said, read only, to review at your own pace. Copy puts it on the clipboard. "
+        "AI can be wrong, so check anything that matters.",
+    ),
+    (
+        "Is ",
+        "What AI help said, read only, to review at your own pace. Copy puts it on the clipboard. "
+        "AI can be wrong, so check anything that matters.",
+    ),
+    (
+        "Summary of ",
+        "What AI help said, read only, to review at your own pace. Copy puts it on the clipboard. "
+        "AI can be wrong, so check anything that matters.",
+    ),
     (
         "Schedule for",
         "When this podcast -- or every podcast -- is looked at for new episodes: "
@@ -354,6 +404,12 @@ PREFIX_PURPOSES: tuple[tuple[str, str], ...] = (
         "Find",
         "Type what to find in the notes; the number of matches is said and the "
         "first is selected. F3 finds the next.",
+    ),
+    (
+        "Transcript",
+        "The episode's transcript, a line per caption, to read along. Enter on "
+        "a line plays from there while this episode is playing; Ctrl+F finds; "
+        "Links lists every address in it. Escape returns to where you were.",
     ),
     (
         "Show Notes",

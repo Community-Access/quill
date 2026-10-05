@@ -1,4 +1,4 @@
-# QUILL Cast 2.0 User Guide
+# QUILL Cast User Guide
 
 ## Introduction
 
@@ -59,14 +59,36 @@ After the chapters comes the **Keyboard reference**: every key Cast comes
 with, in small tables grouped by where you use them. Keep it handy for the
 first few weeks.
 
+Cast also has guided tutorials, short lessons you do with Cast open in front
+of you, on Help > Tutorials (Ctrl+Alt+F1). Whenever a lesson covers the same
+ground as part of this guide, I give you its name, so you can choose between
+reading about something and being walked through it.
+
+Now and then a short note from QUILLBee, QUILLVille's guide, is set apart as a
+quote: a faster key, a word explained, or something worth knowing before it
+catches you out. QUILLBert, the curious porcupine, wanders in once or twice
+when he has found something. The guide reads perfectly well if you skip every
+one of them, and you can meet the pair properly on the [Meet QUILLBert and
+QUILLBee](https://www.quillforall.org/meet-quillbert-and-quillbee.html) page.
+
 ### Reading this guide with a screen reader
 
 The guide is built from headings so you can move through it quickly. Each
-chapter is a level 2 heading and each section inside it is a level 3 heading.
-In JAWS or NVDA, press 2 to move from chapter to chapter and 3 to move between
-the sections of a chapter. Shift with either number goes back. To see every
-heading at once, press Insert+F6 in JAWS or Insert+F7 in NVDA and choose
-headings.
+chapter is a level 2 heading, and the main topics in a chapter are level 3
+headings. When a topic has parts of its own, those parts sit one level deeper,
+at level 4, and once or twice at level 5. In JAWS or NVDA, press 2 to move
+from chapter to chapter, 3 to move between the main topics, and 4 to step
+through the parts of a topic. Shift with any of those numbers goes back. To
+see every heading at once, press Insert+F6 in JAWS or Insert+F7 in NVDA and
+choose headings.
+
+The notes from QUILLBee and QUILLBert are block quotes. In a web browser, Q
+moves to the next one in JAWS and NVDA, and Shift+Q goes back, so they are as
+easy to skip as they are to find.
+
+Every chapter ends with a short section called What you learned, and where to
+go next. If you are skimming, those are a quick way to hear what a chapter
+covers before you read it.
 
 Keys are written the way Cast writes them in its menus. Ctrl+Shift+I means
 hold down Ctrl and Shift together and press I. A menu path such as Podcasts >
@@ -108,26 +130,35 @@ everywhere, so you always know what is new to you.
 
 Open QUILL Cast from the Start menu.
 
-On a new install, Cast greets you with three short welcome screens: what Cast
-is, how to add your first podcast, and two things worth knowing before you
-begin. Each screen is a text box, so arrow through it at your own pace and
-read any line again whenever you like.
+On a new install, Cast greets you with one short window called **Welcome to
+QUILL Cast**. It asks one question and then gets out of your way.
 
-1. Read the first screen, then press **Next** (Alt+N).
-2. Carry on through the other two. On the last one, Next becomes **Finish**.
-3. If you would rather get going, press **Add a Podcast Now** (Alt+A) on any
-   screen. It opens the Add Podcast window, which the next section walks
-   through.
+1. The welcome words are in a text box at the top. Arrow through them at your
+   own pace, and read any line again whenever you like.
+2. Press Tab to reach **Where would you like to land each time?** (Alt+W).
+   This is the place Cast puts you each time it opens. Leave it on **What is
+   new** if you are not sure: Cast then opens on your Inbox when something is
+   waiting, otherwise on an episode you are part way through, and otherwise
+   on your podcasts. You can change it later in Preferences.
+3. Press **Add Your First Podcast** (Alt+A) to go straight to finding one,
+   which the next section walks through. Or press **Done** (Enter) to start
+   with an empty library.
 
-**Skip** (Alt+S, or Escape) leaves the welcome screens at any point. Skipping
-counts as done, so they will not come back next time. If you already have
-podcasts, from a backup or another QUILL app, Cast does not show them at all.
+**Skip** (Escape) leaves the welcome without changing anything. Skipping
+counts as done, so it will not come back next time. If you already have
+podcasts, from a backup or another QUILL app, Cast does not show it at all.
 
-The welcome screens also have a checkbox, **Show me a tip now and then**
-(Alt+T). Leave it ticked. The first time you reach somewhere new, such as the
-Play Queue, Cast says one helpful sentence about it. Each tip is said once,
-ever. It goes to your braille display as well as to speech, and it never takes
-your focus or makes you press anything.
+The welcome also has a checkbox, **Show me a tip now and then** (Alt+T).
+Leave it ticked. The first time you reach somewhere new, such as the Play
+Queue, Cast says one helpful sentence about it. Each tip is said once, ever.
+It goes to your braille display as well as to speech, and it never takes your
+focus or makes you press anything.
+
+Everything the welcome does not cover is in the **Tutorials** (Help >
+Tutorials, Ctrl+Alt+F1), short guided lessons you can take whenever you like.
+The very first one, **The first hour**, walks the same path as this chapter,
+one step at a time. Chapter 8, When you need a hand, has more on the
+tutorials.
 
 ### Following your first podcast
 
@@ -151,7 +182,7 @@ episodes before you decide. Chapter 4, Finding podcasts you will love, covers
 the preview and every other way to add a podcast, including by its feed
 address.
 
-### Two quick ways to fill your library
+#### Two quick ways to fill your library
 
 If you would like more than one podcast to start with, here are two shortcuts.
 
@@ -164,6 +195,11 @@ you follow as an OPML file. Save one from your old app, then in Cast press
 Ctrl+N and choose **Import OPML...** (Alt+I) in the Add Podcast window. Pick
 the file and press Import. Your folders come across too, and you can keep
 listening while it works. Chapter 4 has the details.
+
+Until you follow something, the Podcasts place (Ctrl+Shift+S) holds three
+rows to get you started: **Add a Podcast by URL...**, **Import Podcasts from
+OPML...** and **Find a Podcast...**. Press Enter on any of them. They go away
+by themselves as soon as you follow your first podcast.
 
 ### Hearing an episode
 
@@ -185,7 +221,7 @@ one you want. Left Arrow takes you back up to the podcast.
 Lose track of what is on? Press **Ctrl+T** from anywhere in Cast and it tells
 you.
 
-### Pausing, skipping and volume
+#### Pausing, skipping and volume
 
 Let the episode play for a moment, then try each of these. They work from
 anywhere in Cast, whichever list you are in.
@@ -270,6 +306,11 @@ through Cast one lesson at a time, with Cast open in front of you. The
 Keyboard reference at the end of this guide has every other key, grouped by
 where you use them.
 
+> **QUILLBee's shortcut:** One key isn't in the table, and it's the one to
+> reach for when the others slip your mind. Press Ctrl+Shift+P for the Command
+> Palette and type a word, like "sleep" or "queue". Each command it finds
+> comes with its key, when it has one, so you learn the key while you use it.
+
 ### How Cast talks to you
 
 Cast tells you how everything you do turned out. It speaks through your screen
@@ -278,6 +319,17 @@ things your screen reader would not already say, such as a download finishing
 or the result of a command, and it never moves your focus to do it.
 
 Missed something? Press **F9** and Cast says it again.
+
+> **A note from QUILLBee:** F9 only goes back one. If two things were said
+> while you were busy elsewhere, press Shift+F9 for Activity instead. It lists
+> everything Cast has told you this session, newest first, one sentence to a
+> row.
+
+When you add an episode to the queue, remove one from a place, or mark one as
+played, Cast plays a short sound as well as saying what happened. Once you
+know the sounds, you may prefer just the sound, or just the words. Choose in
+Preferences (Ctrl+,), in the **Telling you** section, under **When a one-key
+action works**. If something does not work, Cast always says so in words.
 
 Braille settings are shared by the whole QUILL family. If you also use QUILL,
 set them once there under Preferences > Accessibility and Cast follows along.
@@ -308,6 +360,16 @@ and you will find playback controls, Show and Exit.
 To choose what closing the window does, open Preferences (**Ctrl+,**) and pick
 **The window** in the Section list. Closing can exit Cast, send it to the
 tray, or ask you each time.
+
+If you choose to be asked, closing the window brings up a small question
+called **Closing QUILL Cast**. Press **Exit** to close Cast, or **Minimize to
+Tray** (Alt+M) to keep listening with the window out of the way. Tick **Don't
+ask me again** (Alt+D) and Cast remembers your answer. Cancel, or Escape,
+leaves everything as it was.
+
+One more choice sits beside it: **Alt+F4 minimizes to the system tray**. With
+it ticked, Alt+F4 tucks Cast into the tray, still playing, instead of closing
+it.
 
 If your keyboard has media keys, Play/Pause, Stop, Next Track and Previous
 Track control Cast from any program, even while it is in the tray. Next and
@@ -342,10 +404,19 @@ Uninstalling Cast never deletes your podcasts. They will be waiting if you
 come back. Chapter 7, Your podcasts, wherever you are, has more on what the
 apps share.
 
-You have followed a podcast, heard it, paused it, skipped through it and
-lined up something for later. That is a real first session. When you are
-ready, Chapter 2, Finding your way around, takes you for a walk around the
-window.
+### What you learned, and where to go next
+
+You have followed a podcast, heard it, paused it, skipped through it and lined
+up something for later. That is a real first session, and those few keys will
+carry you through most days.
+
+If you would like to go over it again with Cast keeping you company, Help >
+Tutorials has a lesson called **The first hour**. It follows the same steps
+and moves you on as you do each one.
+
+When you are ready, Chapter 2, Finding your way around, takes you for a walk
+around the window. If you would rather get a few more podcasts in first, skip
+ahead to Chapter 4, Finding podcasts you will love.
 
 ## Chapter 2: Finding your way around
 
@@ -356,9 +427,8 @@ there is nothing hidden behind another door.
 
 We will go through the window from top to bottom, step in and out of the
 places where your episodes live, find an episode by typing a word or two, and
-try the shortcuts that jump straight to where you want to be. By the end of
-it you will be able to reach any podcast or episode in a couple of keystrokes,
-and you will know which menu to open when you go looking for something new.
+try the shortcuts that jump straight to where you want to be. Have Cast open
+while you read, and try each thing as we meet it.
 
 ### A walk from top to bottom
 
@@ -441,7 +511,7 @@ To wander between places:
 Walk into an empty place and Cast tells you, once, what fills it. In an empty
 Play Queue you hear "The queue is empty. Space on any episode adds it."
 
-### Making the Places list your own
+#### Making the Places list your own
 
 The list starts in the order most people find useful. You are not most people.
 If you live in the Play Queue and rarely open the Inbox, put the Play Queue at
@@ -455,13 +525,19 @@ the top. Go to the Places list, arrow to a place, and then:
   Cast remembers.
 - **The Applications key** (or Shift+F10) opens a menu of what the whole place
   can do, such as Clear Entire Queue in the Play Queue or Mark All as Played
-  in the Inbox. The same menu has Rename, Hide, Move Up and Move Down, in case
-  you forget the keys.
+  in the Inbox. The same menu has **Rename This Place...**, **Hide This
+  Place**, **Move Up** and **Move Down**, in case you forget the keys, and
+  **Places...** at the bottom for the whole list at once. On a list of
+  episodes, such as the Inbox or the Play Queue, it also has **Choose
+  Columns...**, which Chapter 6, Making Cast yours, explains.
 
 To rearrange everything in one go, choose **View > Places** (Ctrl+Shift+G).
 You can move, hide, show and rename places there, and **Reset to Default**
 puts it all back the way it came. This is also where you show Recently Expired
 if you want it.
+
+If you would rather be walked through it, Help > Tutorials has a lesson called
+**Places**. It also takes you into the status bar and Go To.
 
 ### Lists of episodes
 
@@ -476,7 +552,9 @@ Arrow to an episode, then:
 - **Space** adds it to the end of the Play Queue.
 - **Delete** takes it out of this place only. It stays in your library.
 - **F2** gives the episode a name of your own, handy when a podcast calls
-  every episode "Episode".
+  every episode "Episode". Your name sticks, even after Cast checks the
+  podcast again. Clear it and the podcast's own title comes back. You can
+  rename a podcast the same way.
 - **Shift+F10** or the Applications key opens everything else you can do with
   it: play next, download, mark as played, read the show notes, look at its
   chapters, share it and more.
@@ -497,7 +575,28 @@ Two choices on the View menu change what every list shows:
   Started Only, Downloaded Only or Played Only. Choose Unheard Only and every
   list hides what you have already heard.
 - **View > Sort Episodes** puts them in the order you like: newest first,
-  oldest first, by title or by length.
+  oldest first, by title, or by length with **Longest First** and **Shortest
+  First**. Shortest First is a good way to find something that fits a short
+  walk.
+
+#### Working with several episodes at once
+
+Sorting a busy Inbox one episode at a time gets old fast. In any episode list,
+the Play Queue included, you can select several and act on them together.
+
+1. Go to the list, for example the Inbox (Ctrl+Shift+I).
+2. Select the episodes you want:
+   - **Shift+Up** or **Shift+Down** extends the selection.
+   - **Ctrl+Space** adds or removes the episode under the cursor.
+   - **Ctrl+A** selects the whole list.
+   Cast counts as you go.
+3. Press **Shift+F10**. The menu opens with actions for the whole selection:
+   add them to the queue, download them, mark them played, add them to a
+   playlist, remove their downloaded copies, or file them to an Inbox folder.
+4. Choose one. Cast tells you how many it did.
+
+Removing downloaded copies deletes only the files. The episodes stay in your
+library with your place in each, ready to download again whenever you like.
 
 ### Favorites, Playlists, Notifications and Podcasts
 
@@ -530,8 +629,14 @@ through the podcasts you follow. In the tree:
   it, so you never lose a podcast by deleting a folder.
 - **F2** renames a folder.
 - **Alt+Up** and **Alt+Down** move a podcast or folder into your own order.
-- **Shift+F10** opens the podcast's menu, with Settings for This Podcast,
-  Move to Folder and the rest.
+- **Shift+F10** opens the menu for the row you are on. On a podcast it has
+  **Play Next Episode**, Add to Favorites, Move to Folder, **Move Up in Custom
+  Order** and **Move Down in Custom Order**, Download All Episodes, Remove
+  All Downloads, Remove All Episodes, Feed Credentials for a private feed,
+  Unfollow and New Folder. On a folder it has **Rename Folder...**, Delete
+  Folder, New Folder and Add Podcast. On an episode inside an open podcast it
+  has **Play Episode**, and either Download Episode or, once it is saved,
+  Stop and **Remove Download**.
 
 When your library grows, **View > Hide Caught-Up Podcasts** (Ctrl+Shift+H)
 takes the podcasts with nothing unheard out of the tree, so what is left is
@@ -554,6 +659,9 @@ it was on. Find will turn it up.
 5. Press Enter to play, or Shift+F10 for everything else you can do.
 6. Press **Escape** when you are done. Your library comes back with the
    cursor right where you left it.
+
+If you would rather be walked through it, Help > Tutorials has a lesson called
+**Find**.
 
 ### The status bar
 
@@ -585,7 +693,11 @@ never move, so your fingers can learn them.
 3. Press a number to go there, or Escape to stay where you were.
 
 Press **Settings** inside Go To to choose which ten places are on the list
-and in what order. Put the one you use most at number 1. Each row also shows
+and in what order. Put the one you use most at number 1. Besides every place
+in the Places list, you can add Sound Enhancements, **Skip Settings** (which
+opens Preferences at the Playing section), Quick Actions, **Episode Extras**
+(About This Episode), Keyboard Shortcuts, the Keyboard Shortcuts Sheet,
+Media Tools and the Places window. Each row also shows
 the place's own key, so after a few weeks of Go To you will find you have
 learned those too.
 
@@ -613,7 +725,7 @@ afternoon is a fine way to learn Cast.
 Now and then a menu row is dimmed. Cast tells you why, so you know what would
 make it work. Chapter 8 has more on that.
 
-### Simple and Advanced
+#### Simple and Advanced
 
 Cast starts in **Simple** mode, with menus that hold what you do week to week:
 follow, find, play, queue, download, settings and help. **Advanced** mode adds
@@ -633,27 +745,54 @@ If you would like an even smaller Cast, **View > Customize Features**
 timer. Whatever you turn off, you still have a podcast player. Chapter 6,
 Making Cast yours, tells you more.
 
-### Working with several episodes at once
+### Windows that stay open
 
-Sorting a busy Inbox one episode at a time gets old fast. In any episode list,
-the Play Queue included, you can select several and act on them together.
+Most of what Cast opens is a window of its own rather than a box you have to
+finish with first: Add Podcast, Feed Check, Settings for This Podcast,
+Episode Filters, Smart Playlist rules, Show Notes, the Transcript, Listening
+Statistics, Year in Review, About This Episode, Sound Enhancements,
+Notifications and Watched Folders. They all work the same way:
 
-1. Go to the list, for example the Inbox (Ctrl+Shift+I).
-2. Select the episodes you want:
-   - **Shift+Up** or **Shift+Down** extends the selection.
-   - **Ctrl+Space** adds or removes the episode under the cursor.
-   - **Ctrl+A** selects the whole list.
-   Cast counts as you go.
-3. Press **Shift+F10**. The menu opens with actions for the whole selection:
-   add them to the queue, download them, mark them played, add them to a
-   playlist, remove their downloaded copies, or file them to an Inbox folder.
-4. Choose one. Cast tells you how many it did.
+- Each one has a menu bar, and is listed in the Window menu, so you can go
+  back to your library and come back to it.
+- Escape or Ctrl+W closes it, and you are back on the row or button you
+  opened it from.
+- Opening it again brings the same window to the front instead of a second
+  copy. If you ask for it on a different podcast or episode, the same window
+  shows that one instead.
+- Where a window changes settings, its button says **Save** rather than OK,
+  and the window stays open afterwards, so you can try something and adjust
+  it. Ctrl+S saves too. **Close** leaves without saving anything you have not
+  saved.
 
-Removing downloaded copies deletes only the files. The episodes stay in your
-library with your place in each, ready to download again whenever you like.
+The few that still ask a single question, such as Delete Folder or the Sleep
+Timer, wait for your answer before you can go on, the way any dialog does.
 
-You can now get anywhere in Cast and find anything in it. Chapter 3, Sit back
-and listen, is all about the episode that is playing.
+> **QUILLBee's tip:** With three or four of these open, it's easy to lose
+> track. The Window menu (Alt+W) lists every Cast window you have open, and
+> from any of them, Ctrl+1 takes you back to the main window.
+
+### Getting home
+
+Wherever you are in the window, **Ctrl+Home** takes you back to the place
+Cast opens on, with the cursor on its first row. It is the quickest way back
+when you have wandered. In a text box, such as the show notes or Find,
+Ctrl+Home keeps its usual job of moving to the top of the text.
+
+### What you learned, and where to go next
+
+You can now get around the whole window: the Places list and the place beside
+it, Find, the status bar, Go To and the menus. You know how to step into a
+place and back out, how to act on several episodes at once, and how to get
+home with Ctrl+Home when you have wandered off.
+
+If you would like some practice, Help > Tutorials has two short lessons for
+this chapter, **Places** and **Find**.
+
+Next, Chapter 3, Sit back and listen, is all about the episode that is
+playing. If you are more curious about sorting what arrives each morning,
+Chapter 5, Keeping up without keeping watch, covers the Inbox and the Play
+Queue.
 
 ## Chapter 3: Sit back and listen
 
@@ -664,10 +803,8 @@ We will start with the everyday keys: pause, skip, change the volume and the
 speed. Then we will move around an episode by its chapters, make a podcast
 sound the way you like, and set a sleep timer. After that come the things
 that make listening richer: the Now Playing window, the show notes and their
-links, transcripts, bookmarks and your own notes. By the end of the chapter you
-will be able to jump to the part of an episode you want, keep a moment so you
-can find it again, share it with a friend, and fall asleep to a podcast
-without it playing all night.
+links, transcripts, bookmarks and your own notes. There is a lot here, so dip
+in for whatever you need today and leave the rest for another evening.
 
 Nearly everything here is on the **Episode** menu (Alt+E), and nearly every
 row on that menu has its own key. Give it a few days and you will stop opening
@@ -684,7 +821,8 @@ Once it is playing, these keys work from anywhere in Cast:
 1. **Ctrl+P** pauses. Press it again to carry on.
 2. **Ctrl+Up** and **Ctrl+Down** turn the volume up and down. Cast says the
    new volume.
-3. **Ctrl+Alt+M** mutes, and pressing it again brings the sound back.
+3. **Ctrl+Alt+M** (Episode > Mute/Unmute) mutes, and pressing it again brings
+   the sound back.
 4. **Ctrl+.** (Ctrl+Period) stops. Cast remembers your place, so next time the
    episode carries on where you left it.
 
@@ -716,7 +854,18 @@ in.
 2. Type 1:02:00. Typing 62:00 works too, and so does a number of seconds.
 3. Press Enter. You are there.
 
-### Skipping the intro and the outro
+**How much is left?** You are about to set off on a twenty-minute drive and
+want to know whether this episode will fit. Press **Ctrl+Shift+T** (Episode >
+Time Remaining). Cast says something like "12:04 of 31:50, 20 minutes left".
+If you are listening faster than normal, it also tells you how long that
+really takes, such as "13 minutes at 1.5 times", and if the sleep timer is
+running it adds when it will stop. Nothing opens and nothing changes.
+
+If you would rather be walked through it, Help > Tutorials has a lesson called
+**Keys**. It covers these skips, going to a time, scanning forward and the
+Winamp letters.
+
+#### Skipping the intro and the outro
 
 Some podcasts open with the same two minutes of music every week, or close
 with a long list of credits. Cast can skip them for you, every time.
@@ -725,7 +874,7 @@ with a long list of credits. Cast can skip them for you, every time.
 2. Set **Skip the first** to how many seconds to skip at the start.
 3. Set **Stop this far before the end** to how many seconds to leave off the
    end.
-4. Press OK.
+4. Press **Save** (Ctrl+S), then **Close**.
 
 The intro skip only happens when an episode starts from the beginning, so
 picking up halfway through never throws you past where you were. When Cast
@@ -733,7 +882,7 @@ stops early for the outro, it treats the episode as finished and moves on to
 whatever comes next. The same two settings are in Preferences > Playing if you
 want them for every podcast.
 
-### Scanning forward
+#### Scanning forward
 
 Skipping in jumps is fine when you know how far to go. When you want to hear
 where the ad break ends, scanning is better.
@@ -760,7 +909,8 @@ To see the whole list:
 1. Arrow to the episode and press **Shift+F10** or the Applications key.
 2. Choose **Chapters...**. The list shows each chapter's name and where it
    starts.
-3. Arrow to one and press Enter to go there.
+3. Arrow to one and press Enter, or **Jump To Chapter** (Alt+J), to go
+   there.
 
 Cast finds chapters in several places: a list the podcast published, marks
 inside a downloaded file, and timestamps the podcast typed into its show
@@ -768,7 +918,10 @@ notes. Some podcasts mark only a few highlights instead of a full list. Then
 the list calls them **Moments this podcast marked**, so you know you are
 looking at the best bits of the episode.
 
-### Skipping a chapter
+If you would rather be walked through it, Help > Tutorials has a lesson called
+**Chapters, and skipping what you did not come for**.
+
+#### Skipping a chapter
 
 Every episode of a podcast has a sponsor chapter you never want to hear. You
 can tell Cast to skip it.
@@ -785,7 +938,13 @@ name, and jumps past it. **Skip Nothing** (Alt+N) clears every mark at once.
 The marks last for this listening session only, so tomorrow's episode starts
 with a clean slate.
 
-### When an episode has no chapters
+For a chapter that turns up in every episode, such as "Sponsor" or "Ad
+break", tell the podcast once. In Settings for This Podcast (Ctrl+Alt+,),
+under Playback, type the chapter names into **Skip chapters named**. From
+then on Cast jumps over any chapter with that name in every episode of that
+podcast. Nothing is removed from the episode.
+
+#### When an episode has no chapters
 
 Most episodes come without any chapters. Cast can work some out for you, in
 the background, while you listen. It does this for downloaded episodes from
@@ -807,11 +966,28 @@ To choose how hard Cast tries:
      computer, writes down what was said, and finds the sections from that.
      It takes minutes, works without the internet, and you can stop it any
      time.
-4. Press OK.
+4. Press **Save**.
 
 **Work out chapters**, in the same section, chooses whether Cast does this
 never, only for downloaded episodes, or for every episode. The rest of the
-Chapters section has its own F1 help.
+Chapters section lets you choose where Cast looks:
+
+- **Look for chapters in the show notes** reads the times the podcast typed
+  into its notes. It costs nothing and is usually right.
+- **Look for chapters in the transcript** uses a transcript when there is
+  one.
+- **Listen to the audio to find chapters** lets Cast write down what was said
+  when nothing else worked. It is the slow one, so turn it off if you never
+  want it.
+- **Give worked-out chapters names** asks an AI to name the sections. It
+  sends words only, never audio, and it stays off until you turn it on.
+- **Say when a chapter scan finishes** gives you one sentence when Cast is
+  done, and says nothing when it found nothing.
+- **Chapter preview length** is how much Preview This Mark plays either side
+  of a chapter.
+
+Each of these can be set for one podcast in Settings for This Podcast, and
+each has its own F1 help.
 
 You can also ask for chapters on one episode, right now:
 
@@ -828,6 +1004,12 @@ You can also ask for chapters on one episode, right now:
    Here...** (Alt+A) adds one, and **Delete Chapter** (Alt+D) removes one.
 6. Press **Save Chapters** to keep them.
 
+Both are in the Command Palette (Ctrl+Shift+P) for the episode that is
+playing. **Analyse Chapters in This Episode** works them out and opens Review
+Chapters, as above. **Find Chapters in This Episode** works them out and keeps
+them straight away, for when you trust Cast's guess and just want to get on
+with listening.
+
 ### Speeding up or slowing down
 
 Some people talk slowly. Some podcasts are best at their natural pace. Cast
@@ -837,7 +1019,7 @@ lets each podcast have its own speed.
 2. Press **Ctrl+Shift+Up** to speed up or **Ctrl+Shift+Down** to slow down. Each
    press moves a tenth, anywhere from half speed to five times.
 3. Cast says the new speed and that it belongs to this podcast.
-4. **Ctrl+Shift+0** puts it back to normal.
+4. **Ctrl+Shift+0** (Episode > Reset Speed to Normal) puts it back to normal.
 
 Cast remembers the speed for that podcast. Your fast-talking news show can
 stay at normal speed while the slow, rambling one runs at 1.8, and you never
@@ -846,7 +1028,17 @@ have to change it again.
 Press the same keys with nothing playing and you set the speed for every
 podcast that does not have its own. Cast tells you which one you changed.
 
-### Shortening the silences
+> **QUILLBee wants you to know:** If an episode plays at a speed you didn't
+> expect, its podcast probably has a speed of its own. Press F6 to reach the
+> status bar, arrow to the Speed cell and press Enter. Cast tells you the
+> speed and what it belongs to. To have that podcast follow the shared speed
+> again, open Settings for This Podcast (Ctrl+Alt+,) and press Use shared
+> default for Playback speed.
+
+If you would rather be walked through it, Help > Tutorials has a lesson called
+**Sleep and speed**. It does the sleep timer with you too.
+
+#### Shortening the silences
 
 Long pauses add up over an hour. Cast can shorten them, so an episode takes
 less time without anyone sounding rushed.
@@ -863,9 +1055,21 @@ You can also do it from Sound Enhancements:
 
 Like speed, this belongs to the podcast that is playing, or to every podcast
 when nothing is playing. You can also turn on **Shorten silences** in
-Preferences > Playing for every podcast at once.
+Preferences > Playing for every podcast at once. Just below it, **How much
+silence to shorten** chooses A little, A moderate amount, or As much as
+possible. Even at its strongest, it never speeds anyone up. It only trims the
+gaps.
 
-### Sound Enhancements
+### Making it sound right
+
+Some podcasts need a little help before they sound good in your ears. Here is
+how to shape the sound, lift a podcast that is always too quiet, and choose
+where the sound goes.
+
+If you would rather be walked through it, Help > Tutorials has a lesson called
+**Shape the sound**.
+
+#### Sound Enhancements
 
 Some podcasts are muddy, some are thin, and some swing from a whisper to a
 roar. **Sound Enhancements** lets you shape the sound.
@@ -877,14 +1081,24 @@ roar. **Sound Enhancements** lets you shape the sound.
    sliders. Up is more.
 4. Check **Even Out Volume** to bring quiet and loud parts closer together.
    It is lovely for a laughing guest and a softly spoken host.
-5. Press OK. Playback picks up at the same spot with the new sound.
+5. Press **Apply** (Alt+Y). Playback picks up at the same spot with the new
+   sound, and the window stays open so you can try something else.
+6. When it sounds right, press **Close**, Escape or Ctrl+W. You are back where
+   you were.
+
+Sound Enhancements is a window of its own, so you can leave it open and go
+back to your library while you listen. Press Ctrl+E again and it comes to
+the front, showing the settings for whatever is playing now.
 
 Like speed, these settings belong to the podcast that is playing, or to every
-podcast when nothing is. Sound Enhancements needs a free tool called FFmpeg.
+podcast when nothing is. The same three sliders are in Preferences > Playing
+as **Bass, in decibels**, **Middle, in decibels** and **Treble, in
+decibels**, with **Even out volume** beside them, if you want a starting
+sound for every podcast. Sound Enhancements needs a free tool called FFmpeg.
 If it is missing, the episode plays as normal and Cast tells you why. Chapter
 8, When you need a hand, explains how to get it.
 
-### Making a quiet podcast louder
+#### Making a quiet podcast louder
 
 One podcast always seems to be recorded in a cupboard. Turning up the
 computer's volume for it means turning it down again for everything else.
@@ -892,18 +1106,19 @@ Give that podcast a boost instead.
 
 1. Select the podcast and press **Ctrl+Alt+,** for Settings for This Podcast.
 2. Set **Volume Boost** to Low, Medium or High.
-3. Press OK.
+3. Press **Save** (Ctrl+S), then **Close**.
 
 Cast applies the boost every time that podcast plays, and leaves everything
 else alone. Chapter 6, Making Cast yours, has more on what Settings for This
 Podcast can do.
 
-### Which ear and which speakers
+#### Which ear and which speakers
 
 **Ctrl+Shift+M** (Episode > Audio Output Mode) changes where the sound goes.
 Each press moves on to the next: stereo, mono, left ear only, right ear only.
 Left ear only is handy when one ear is for the podcast and the other is for
-your screen reader.
+your screen reader. To make a choice stick, set **Send the audio to** in
+Preferences > Playing, or in Settings for This Podcast for one podcast.
 
 **Ctrl+Shift+K** (Episode > Audio Output Device) chooses which speakers or
 headphones Cast plays through. If Cast cannot switch devices itself, it says
@@ -918,12 +1133,24 @@ about the queue. While you listen, three keys work with it:
 
 - **Ctrl+Alt+Down** plays the next episode in the queue now.
 - **Ctrl+Alt+Up** goes back to the previous one.
-- **Ctrl+Alt+Shift+Q** marks this episode played and moves on to the next.
+- **Ctrl+Alt+Shift+Down** marks this episode played and moves on to the next.
 
 Two switches in Preferences > Playing decide what happens at the end: **Play
 the next episode in the Play Queue**, which is on, and **When the queue is
 empty, keep going with the same podcast**, which is off until you turn it on.
 With both off, Cast stops at the end of each episode.
+
+If you notice a pause between one episode and the next, turn on **Start
+loading the next episode before this one ends**, in the same section. Cast
+fetches the start of the next queued episode a little early, so the next one
+begins straight away. It starts off, because it uses some data in advance,
+which matters on a capped connection.
+
+About ten seconds before an episode ends, Cast tells you what comes next:
+"Next: Episode 412 from Accidental Tech Podcast." It names the podcast only
+when it changes, it says nothing when nothing will follow, and it stays quiet
+during Quiet Hours. If you would rather not hear it, turn off **Say what is up
+next before an episode ends** in Preferences, in the **Telling you** section.
 
 **Stop After This Episode** (**Ctrl+Alt+Shift+A**) is for tonight only. Cast
 stops at the end of this episode instead of moving on, and then the setting
@@ -944,12 +1171,25 @@ away.
 
 - **Ctrl+Alt+Shift+T** sets the timer straight to the end of this episode. It
   follows the episode, so skipping ahead moves it too.
-- **Ctrl+Alt+X** gives you five more minutes, even once the sound has started
-  to fade.
+- **Ctrl+Alt+X** (Episode > Extend Sleep Timer 5 Minutes) gives you five more
+  minutes, even once the sound has started to fade.
 - To turn the timer off, open the Sleep Timer again and press **Cancel Sleep
   Timer**.
 
+If you always fall asleep to the same podcast after about the same time, let
+Cast remember it. **Sleep timer starts at** in Settings for This Podcast
+(Ctrl+Alt+,) sets the number of minutes the Sleep Timer offers first while
+that podcast plays. It never starts a timer by itself. The same row in
+Preferences > Playing sets it for every podcast.
+
 The status bar's Sleep timer cell tells you how long is left at any time.
+
+> **QUILLBert and QUILLBee:**
+>
+> **QUILLBert:** The sound started fading, and I wasn't sleepy yet.
+>
+> **QUILLBee:** Ctrl+Alt+X. Five more minutes, and the volume comes
+> straight back up.
 
 ### Now Playing
 
@@ -986,6 +1226,9 @@ place intact. If you would like it to come forward every time an episode
 starts, turn on **Switch to Now Playing when playback starts** in Preferences >
 Playing.
 
+If you would rather be walked through it, Help > Tutorials has a lesson called
+**Now Playing**.
+
 ### Reading the show notes
 
 **Show notes** are what the podcast wrote about an episode: who is on it, what
@@ -1021,7 +1264,8 @@ and Cast tells you how many words it copied. Press the Applications key on
 the button for other choices: **Plain text with links**, which keeps each
 link's address beside it, **Markdown**, or **Formatted**, which keeps the
 headings and bold when you paste into Word or Outlook. Cast remembers what you
-chose.
+chose. You can also pick it in Preferences > Playing, under **Copy show notes
+as**.
 
 **Links** opens a list of every link in the notes, each with its name and
 where it goes. The button says how many there are.
@@ -1034,6 +1278,19 @@ where it goes. The button says how many there are.
 
 **View in Browser** opens the notes as the podcast wrote them, pictures and
 all, in your web browser.
+
+The **Show Notes** window has two more buttons of its own:
+
+- **Send to Editor** (Alt+S) puts the notes on the clipboard as plain text, so
+  you can paste them into QUILL, Word or an email. Cast says "Show notes
+  copied to clipboard".
+- **Save As...** (Alt+A) saves the notes to a file. Choose plain text, HTML or
+  Markdown in the file type list. HTML and Markdown keep every link as a
+  link.
+
+If you would rather be walked through it, Help > Tutorials has a lesson called
+**Show notes, and what else the podcast sent**. It goes on to About This
+Episode and transcripts as well.
 
 ### About This Episode
 
@@ -1062,7 +1319,15 @@ has.
    - **Support**: where to support the podcast. It opens in your browser.
    - **Place**: where the episode is about.
 5. The button under each list says what it will do for the row you are on,
-   such as Open in Browser, Play or Follow This Podcast.
+   such as Open in Browser, Play or Follow This Podcast. Enter or Space on
+   the row does the same thing.
+
+The window stays open after you use a button, so you can play a highlight and
+then follow a recommended podcast without opening it twice. It is a window of
+its own: you can go back to your library while it is open, and asking for
+About This Episode on another episode shows that episode in the same window.
+Press Escape or Ctrl+W to close it, and you are back on the episode you
+started from.
 
 If the podcast sent none of these, the window says so.
 
@@ -1077,12 +1342,21 @@ things:
   it was spoken.
 - **Save Transcript As...** saves it to a file.
 - **Open Transcript in Editor** opens it in QUILL, if you have it, ready to
-  read, search or quote.
+  read, quote or copy from.
 
 Transcripts are also how Cast works out chapters when you choose A while in
 Preferences > Chapters.
 
-### Bookmarks
+### Keeping a moment
+
+When something in an episode is worth coming back to, you have three ways to
+keep it: a bookmark, a note in your own words, or a sentence you can send to a
+friend.
+
+If you would rather be walked through it, Help > Tutorials has a lesson called
+**Keep a moment**.
+
+#### Bookmarks
 
 A guest recommends a book, and you want to remember where. A bookmark marks
 that spot in one keystroke.
@@ -1102,7 +1376,18 @@ bookmark, **Share** to copy it for someone else, **Delete**, and **Export...**
 to save the whole list as a document. If you use Quill Radio, its bookmarks
 are in the same list, and Radio sees yours.
 
-### Your notes on an episode
+**A bookmark with a note.** Sometimes you want to say why, right then. Press
+**Ctrl+Shift+D** (Episode > Bookmark with a Note) instead. Type a few words,
+such as "the book the guest recommends", and press Enter. The note is
+optional; pressing Enter on an empty box still makes the bookmark.
+
+**Just this episode's bookmarks.** Press **Ctrl+Shift+J** (Episode > Bookmarks
+in This Episode) to see only the bookmarks in the episode that is playing, or
+the one you are on. The same list is one button away in Now Playing
+(**Bookmarks**, Alt+O), and About This Episode has a **Bookmarks** tab whose
+**Go There** plays the episode from that moment.
+
+#### Your notes on an episode
 
 When you want to say something about a moment, such as "the bit about the
 recipe", use a note. A note keeps your words and the time together.
@@ -1117,10 +1402,26 @@ To read your notes:
 - **My Notes in This Episode**, in the Command Palette (Ctrl+Shift+P), lists
   the notes for what is playing.
 
-Select a note and Cast takes you to that moment, starting the episode if it
-has to. **Copy Note** copies the episode, the podcast, the time and your words
-together, ready to send to someone. The Your note box in Now Playing is a
-note too, so it shows up here as well.
+Select a note and press **Jump To Note** (Alt+J), or Enter, and Cast takes
+you to that moment, starting the episode if it has to. **Copy Note** (Alt+C)
+copies the episode, the podcast, the time and your words together, ready to
+send to someone. **Delete Note** (Alt+D) removes the note you are on, and
+Cast says "Note deleted". The Your note box in Now Playing is a note too, so
+it shows up here as well.
+
+#### Sharing a moment
+
+You hear something wonderful and want a friend to hear it too.
+
+1. While it plays, press Shift+F10 on the episode and choose **Share This
+   Moment**. In Now Playing, press **Share...**.
+2. Cast copies a sentence such as "Blind Abilities, Episode 214, at 41
+   minutes 12 seconds", along with a link.
+3. Paste it into a message or an email.
+
+The sentence works for anyone, even read out over the phone. A friend who has
+Cast and follows the same podcast can open the link and hear that exact
+second.
 
 ### Picking up where you left off
 
@@ -1139,6 +1440,11 @@ beginning if you ever play it again.
 4. Press **Delete** on an episode you are not going back to. Cast forgets your
    place and takes it off the list, and the episode stays unheard.
 
+If your place in an episode came from another device, the row says so at the
+end: "last played on Kitchen laptop", or "last played on Earshot" when it came
+from the Earshot app on your phone. Once you listen to it here, that goes away,
+because the place is yours again.
+
 If you also use Quill Radio, an unfinished audiobook chapter or recording
 from Radio shows up in the same list.
 
@@ -1156,26 +1462,18 @@ You have fallen behind on a podcast and want a fresh start, without forty
 unheard episodes staring at you.
 
 1. Select the podcast, or play one of its episodes.
-2. Press **Ctrl+Shift+E** (Episode > Mark All as Played).
+2. Press **Ctrl+Shift+E** (Episode > Mark All as Played). In the Command
+   Palette it is called **Mark All Episodes as Played**.
 3. Cast asks first, naming the podcast and how many episodes. Press **Mark Played**.
 
 Every episode is marked played and leaves the Inbox. They stay in your
 library, and your downloads stay too. If you do this often, tick **Don't ask
 me again** and Cast stops asking.
 
-### Sharing a moment
-
-You hear something wonderful and want a friend to hear it too.
-
-1. While it plays, press Shift+F10 on the episode and choose **Share This
-   Moment**. In Now Playing, press **Share...**.
-2. Cast copies a sentence such as "Blind Abilities, Episode 214, at 41
-   minutes 12 seconds", along with a link.
-3. Paste it into a message or an email.
-
-The sentence works for anyone, even read out over the phone. A friend who has
-Cast and follows the same podcast can open the link and hear that exact
-second.
+For one episode at a time, press Shift+F10 on it and choose **Mark as
+Played**. On an episode you have already heard, the same row reads **Mark as
+Unheard**, which puts it back among the new ones, handy when you want to hear
+it again or marked it by mistake.
 
 ### Everything about what is playing
 
@@ -1211,9 +1509,21 @@ the Podcasts tree, Left and Right keep their usual job. If you would rather
 type letters to jump through a list by name, turn off **Winamp playback keys**
 in Preferences > Playing.
 
-You can now listen exactly the way you like, find your way around any
-episode, and keep the moments that matter. Next, Chapter 4, Finding podcasts
-you will love, helps you fill your library with more to listen to.
+### What you learned, and where to go next
+
+You can now listen exactly the way you like. You can skip and scan, hop
+between chapters and skip the ones you never want, give each podcast its own
+speed, shape the sound, and fall asleep with a sleep timer running. You can read the show notes, keep a moment
+with a bookmark or a note, and share it with a friend.
+
+Several lessons in Help > Tutorials go over this chapter with you: **Keys**,
+**Sleep and speed**, **Chapters, and skipping what you did not come for**,
+**Shape the sound**, **Now Playing**, **Keep a moment**, and **Show notes, and
+what else the podcast sent**. Start with whichever one you want to feel at
+home with first.
+
+Next, Chapter 4, Finding podcasts you will love, helps you fill your library
+with more to listen to.
 
 ## Chapter 4: Finding podcasts you will love
 
@@ -1222,9 +1532,7 @@ radio, a friend will not stop talking about one, or you have years of
 favourites sitting in another app. Here you will learn every way to bring a
 podcast into Cast: by name, by its address, from a members-only feed, from a
 list exported by another app, and from audio files already on your computer.
-By the end you will have a library you chose, sorted into folders that make
-sense to you, and you will know how to let a podcast go when you have had
-enough of it.
+Then we will sort it all into folders that make sense to you.
 
 A word you will meet often: a podcast's **feed** is the address where the
 publisher lists its episodes. Cast reads the feed to learn what is new. Most
@@ -1262,13 +1570,23 @@ Cast looks in two directories at once, iTunes and Podcast Index, which
 between them know nearly every podcast there is. Podcast Index is also where
 many independent podcasts live, so asking both finds things a single store
 misses. If you ever want only one, choose it in the **Directory** list
-(Alt+D). Most people leave it on Both.
+(Alt+D). Most people leave it on Both. To change where Add Podcast always
+starts looking, set **Find podcasts in these directories** in Preferences >
+Data.
 
 A podcast you already follow says "Following" in the results, and on that row
-the Follow button reads **Unfollow** instead. To start a new search, clear the
-name field and type again.
+the Follow button reads **Unfollow** instead. To look for something else,
+clear the name box and type again.
 
-### Looking before you follow
+When you follow a podcast, Cast brings in its newest episodes. If you would
+like some of its older ones too, open Preferences > Fetching and set **When I
+follow a podcast, also fetch** to the newest few, the last few months, or everything
+the feed still offers. **How many, or how many months** says how far back.
+This happens once, at the moment you follow. If you add a feed you already
+follow, **If I add a podcast I already follow**, in the same section, decides
+whether Cast asks you, skips it quietly, or adds a second copy.
+
+#### Looking before you follow
 
 Plenty of podcasts share a name. Three shows called "The Daily", a dozen
 called "Book Club". A quick look saves you following the wrong one.
@@ -1283,6 +1601,23 @@ Between them, these tell you whether it is the one you meant, whether it is
 still running, and whether it is in your language. Press **Follow** if it is,
 or Escape to go back to your results and keep looking.
 
+Every result has a menu of its own, too. Press **Shift+F10** or the
+Applications key on it for **Follow** (or **Stop Following**), **Preview...**,
+**Copy Feed Address**, **Copy Website Address** and **Open Website in Your
+Browser**. The two website items are dimmed when the podcast did not give a
+website. Cast tells you when an address has been copied.
+
+If you would rather be walked through it, Help > Tutorials has a lesson called
+**The first hour**. Its first few steps find and follow a podcast with you.
+
+### Following ACB Media's podcasts
+
+If you would like a full shelf to explore on your first day, Podcasts >
+**Follow ACB Media Podcasts** (Ctrl+Alt+B) follows every podcast in ACB
+Media's directory at once. They are set to stream, so nothing starts a pile
+of downloads. Run it again later to pick up any new ones. It never adds the
+same podcast twice, so it is safe to press whenever you like.
+
 ### Adding a podcast by its address
 
 Sometimes a website, a newsletter or a friend gives you the feed address
@@ -1293,18 +1628,14 @@ feed".
 2. Paste the address with Ctrl+V.
 3. Press Enter or **Add** (Alt+A).
 
+There is a shortcut. Copy the address first, wherever you found it, then
+press **Ctrl+N** in Cast. Add Podcast opens with the address already filled in
+and the cursor on it, and Cast tells you so. Press Enter to follow.
+
 Cast says "Fetching" while it reads the feed, then tells you it is
 following.
 
-### Following ACB Media's podcasts
-
-If you would like a full shelf to explore on your first day, Podcasts >
-**Follow ACB Media Podcasts** (Ctrl+Alt+B) follows every podcast in ACB
-Media's directory at once. They are set to stream, so nothing starts a pile
-of downloads. Run it again later to pick up any new ones. It never adds the
-same podcast twice, so it is safe to press whenever you like.
-
-### Private feeds with a username and password
+#### Private feeds with a username and password
 
 Patreon supporter feeds, members-only podcasts and company feeds usually need
 a sign-in. Cast handles them like any other podcast once it knows your
@@ -1334,13 +1665,14 @@ Feed Credentials.
 
 ### Using your own Podcast Index key
 
-Cast searches Podcast Index without you doing anything. If you have your own
-free key from podcastindex.org and would rather use it, choose Podcasts >
+Cast already uses Podcast Index for you, with nothing to set up. If you have
+your own free key from podcastindex.org and would rather use it, choose
+Podcasts >
 **Podcast Index Credentials...** (Ctrl+Alt+Shift+I, Advanced).
 
 1. Type your key in **Key** (Alt+K) and your secret in **Secret** (Alt+E).
 2. Press **Read It Back** (Alt+R) if you want to hear what you typed.
-3. Press OK.
+3. Press **Save**.
 
 Your key is used from then on, and it is kept by Windows like a feed
 password. **Forget These** (Alt+F) removes it, and Cast goes back to its own.
@@ -1376,7 +1708,8 @@ you asked for the reachability check, Cast tells you how far along it is as
 it goes. **Stop Checking** (Alt+T) ends the check early and keeps everything
 already imported. A private feed that asks for a sign-in counts as working.
 
-When it is done, a report lists anything worth your attention: corrections,
+When it is done, the **OPML Import Report** window lists anything worth your
+attention: corrections,
 feeds that did not answer, duplicates it skipped, and anything it could not
 import. Two buttons sit under it:
 
@@ -1405,6 +1738,11 @@ on the Episode menu, under its Recommended tab. Following one there is a real
 follow, with the podcast's proper name and its episodes. Chapter 3, Sit back
 and listen, walks through About This Episode.
 
+> **QUILLBert found something:** Most of the podcasts he follows now came from
+> that Recommended tab in About This Episode (Ctrl+Shift+A). He follows one, it
+> recommends three more, and he has given up counting. Not every podcast sends
+> recommendations, so if there's no Recommended tab, this one didn't.
+
 ### Your own recordings and audiobooks
 
 Cast can play audio you already have, such as audiobooks, lectures, sermons
@@ -1419,7 +1757,10 @@ They live in the **Personal Audio** place (Ctrl+Shift+U).
 Each file becomes an episode. Cast keeps its own copy, so moving or deleting
 the originals does no harm.
 
-### Folders Cast watches for you
+If you would rather be walked through it, Help > Tutorials has a lesson called
+**Your own audio**. It covers watched folders too.
+
+#### Folders Cast watches for you
 
 This is one of my favourite parts of Cast. Maybe your voice recorder copies
 its recordings to a folder on your computer. Maybe a friend drops lectures
@@ -1435,9 +1776,9 @@ To watch a folder:
    window opens.
 2. Press **Add Folder** (Alt+A) and choose the folder, the same way you would
    choose one anywhere else in Windows.
-3. A settings page opens for that folder. The choices are explained just
-   below, and the ones it starts with are good ones, so you can simply press
-   **Save**.
+3. The **Watched Folder Settings** window opens for that folder. The choices
+   are explained just below, and the ones it starts with are good ones, so
+   you can simply press **Save**.
 4. Cast says it is watching the folder and has a first look straight away.
    Anything already there arrives now.
 
@@ -1446,7 +1787,7 @@ will hear something like "New in Voice Memos: Tuesday meeting, 42 minutes".
 Press Ctrl+Shift+U to go to Personal Audio, and there it is, ready to play
 with every key you already know.
 
-### What the folder settings mean
+##### What the folder settings mean
 
 The settings page has one row for each choice:
 
@@ -1476,13 +1817,28 @@ The settings page has one row for each choice:
   checked. Uncheck one to leave those files alone, such as raw .wav
   recordings you are still editing.
 
-### Living with your watched folders
+If you add folders often, you can choose what a new one starts with. In
+Preferences (Ctrl+,), the **Data** section has four rows for it: **A new
+watched folder's original files**, **When files arrive in a new watched
+folder, tell me**, **A new watched folder ignores files shorter than**, and
+**A new watched folder includes its subfolders**. Folders you already watch
+keep their own settings.
+
+And if you like to decide about everything in one place, turn on **New files
+in watched folders also wait in the Inbox**, in the **The Inbox** section of
+Preferences. Your new recordings then wait in the Inbox beside new episodes,
+as well as being in Personal Audio.
+
+##### Living with your watched folders
 
 The Watched Folders window lists each folder as a sentence: its name, whether
 Cast is watching it, how many files it has brought in, when something last
 arrived, and where it is. Press Enter on one to go to its files in Personal
 Audio. The buttons do the rest, and the Applications key offers them again,
-along with Open Folder in File Explorer and Copy Path:
+along with **Go to Its Files**, Open Folder in File Explorer and Copy Path.
+On that menu, Pause or Resume says exactly which it will do: **Pause
+Watching** on a folder Cast is watching, and **Resume Watching** on one you
+paused.
 
 - **Folder Settings** (Alt+S) opens that folder's settings page again.
 - **Scan Now** (Alt+N) looks at the folder straight away.
@@ -1503,7 +1859,9 @@ A few things happen without you having to think about them:
   up, so nothing that arrived while it was closed is missed.
 - A folder on a network drive is looked at every ten minutes, because
   Windows cannot always tell Cast about changes there. Scan Now is there for
-  when you cannot wait.
+  when you cannot wait. To look at every watched folder at once, open the
+  Command Palette (Ctrl+Shift+P) and choose **Scan Watched Folders for New
+  Episodes**.
 - If a folder goes missing, for example because a drive is unplugged, Cast
   tells you once and keeps watching. Help > Recent Problems keeps a note of
   it.
@@ -1542,13 +1900,64 @@ folders inside it. Press Shift+F10 on one for:
 - **Export This Folder as OPML...**, to share one folder and what is inside
   it with another computer or another person.
 
-### Choosing the order of your podcasts
+If you would rather be walked through it, Help > Tutorials has a lesson called
+**Arrange a library that has grown**.
+
+#### Choosing the order of your podcasts
 
 Podcasts > **Sort Podcasts** offers **Ascending (A to Z)**, **Descending (Z to
 A)**, or **Custom Order**, and the menu always shows which one is in use.
 Custom Order is the one you build yourself. The first time you press Alt+Up
 or Alt+Down in the Podcasts place, Cast switches to Custom Order for you,
 starting from the order you were looking at, so nothing jumps around.
+
+#### Choosing how the library looks
+
+A long library is easier to move around when it is shaped the way you think
+about it. Press **Ctrl+Shift+R** (View > Rearrange Library and Inbox). Each
+choice in that window takes effect as soon as you make it, so you can try one,
+press Escape, listen to the library, and come back. Close keeps everything.
+
+- **Show the library as** decides the shape of the Podcasts place:
+  - **Folders first, then podcasts**, the way it starts. Your folders come
+    first, then any podcasts that are not in a folder.
+  - **Folders only**. Just your folders, closed, so even a library of a
+    hundred podcasts is a short list. Podcasts not in a folder get a folder of
+    their own at the end, called "Podcasts in no folder". Right Arrow opens a
+    folder.
+  - **Podcasts only, without folders**. One list of every podcast, with no
+    folders in the way.
+  - **Folders and podcasts together, by name**. Folders and podcasts mixed in
+    one alphabetical list.
+- **Sort podcasts by**: title A to Z or Z to A, most unheard first, recently
+  updated first, or your own order.
+- **Sort folders by**: your own order (the one Move Up and Move Down make),
+  name A to Z or Z to A, most unheard first, or most podcasts first.
+- **Folders start** open, showing their podcasts, or closed until you open
+  one.
+- **Counts say** how many episodes are unheard, how many podcasts a folder
+  holds, both, or nothing at all, if you would rather hear just the names.
+- **Leave out folders with nothing in them** keeps empty folders out of the
+  way. They come back the moment you file a podcast in one.
+- **Show the Inbox as** is explained in "Folders first in the Inbox" below.
+
+None of these hides a podcast. Whatever you choose, every podcast is still
+there, one Right Arrow away at most. The same choices are in Preferences
+(Ctrl+,), in the section called **The library**, with the Inbox one in **The
+Inbox**. There, Folders start is called **Folders in the library start**, and
+Counts say is **Counts in the library say**.
+
+The library section has one more choice, **Show lists that mix podcasts
+as**. It
+shapes the lists that mix podcasts, such as New Episodes: one flat list,
+grouped by podcast, or a folder for each podcast. It only groups the rows; it
+never leaves any out.
+
+> **QUILLBee's tip:** A big library gets shorter still with View > Hide
+> Caught-Up Podcasts (Ctrl+Shift+H), which leaves out every podcast with
+> nothing unheard. It's a tick on the View menu, so the same key brings them
+> all back. And if the Podcasts place ever looks emptier than you remember,
+> that tick is the first thing to check.
 
 ### Keeping your favourites close
 
@@ -1583,7 +1992,7 @@ until you unlock it. You need four things:
 - the Spotify feature unlocked with a code, through Help > **Redeem Unlock
   Code...**;
 - a Spotify Premium account, since Spotify only streams to Premium
-  subscribers;
+  members;
 - your own Spotify Client ID, from an app you register in the Spotify
   Developer Dashboard with its redirect address set to exactly
   `http://127.0.0.1:43217/callback`;
@@ -1603,9 +2012,19 @@ Spotify.
 Spotify is switched off in Safe Mode, and the first sign-in asks your
 permission before Cast reaches Spotify.
 
-You now know every way to bring a podcast home and how to keep your library
-in order. Once you are following a few, Chapter 5, Keeping up without
-keeping watch, shows how their new episodes find you.
+### What you learned, and where to go next
+
+You now know every way to bring a podcast home: by name, by its address, from
+a private feed, from another app's list, and from audio files already on your
+computer. You can sort your library into folders, choose how it looks, keep
+your favorites close, and let a podcast go when you have had enough of it.
+
+To practise, Help > Tutorials has **Your own audio**, for Personal Audio and
+watched folders, and **Arrange a library that has grown**, for folders,
+favorites and unfollowing.
+
+Once you are following a few podcasts, Chapter 5, Keeping up without keeping
+watch, shows how their new episodes find you.
 
 ## Chapter 5: Keeping up without keeping watch
 
@@ -1614,10 +2033,6 @@ there is something new waiting. This chapter is about that everyday rhythm:
 how Cast finds new episodes, where it puts them, and how you decide what to
 hear and in what order. You will meet the Inbox, the Play Queue, playlists,
 downloads, schedules and Episode Filters, each explained before you use it.
-By the end, new episodes will come to you on your terms. You will have a
-queue that plays one episode after another, a way to sort what arrives
-without it piling up, and podcasts that check themselves at the times that
-suit them.
 
 The chapter starts with the ideas, then the morning routine that uses them,
 then each part in turn. Read the first two sections and you can stop there
@@ -1678,6 +2093,11 @@ follow.
 That is the whole loop. Everything else in this chapter makes it fit you a
 little better.
 
+> **A note from QUILLBee:** An empty Inbox on your first morning doesn't mean
+> nothing arrived. Nothing goes to the Inbox until you send a podcast there,
+> which "Choosing what goes to the Inbox" explains a little further on. Until
+> you do, New Episodes (Ctrl+Shift+W) has everything.
+
 ### New Episodes
 
 **New Episodes** (View > New Episodes, Ctrl+Shift+W) shows recent episodes
@@ -1706,7 +2126,10 @@ is about deciding:
 Nothing you do in the Inbox removes an episode from your library. When Cast
 opens and something is waiting in the Inbox, that is where it starts you.
 
-### Choosing what goes to the Inbox
+If you would rather be walked through it, Help > Tutorials has a lesson called
+**The Inbox**. It finishes by catching a new episode from its notice.
+
+#### Choosing what goes to the Inbox
 
 Nothing goes to the Inbox until you say so, one podcast at a time.
 
@@ -1718,12 +2141,12 @@ From then on its new episodes wait in the Inbox. The same menu row now reads
 **Stop Routing to Inbox**, to turn it off.
 
 If you would rather have nearly everything in the Inbox, open Preferences
-(Ctrl+,), choose **The Inbox** section, and change **Which shows go to the
-Inbox** to "Every show except the ones I exclude". The podcast menu row then
+(Ctrl+,), choose **The Inbox** section, and change **Which podcasts go to
+the Inbox** to "Every podcast except the ones I mark". The podcast menu row then
 becomes **Keep This Show Out of the Inbox**, and on a podcast you have kept
 out, **Put Back in the Inbox**.
 
-### Inbox folders
+#### Inbox folders
 
 Sometimes you want to keep an episode without hearing it today: a long
 interview for the weekend, a cooking episode for when you are in the
@@ -1742,7 +2165,25 @@ To look in one folder, use **View > Inbox Folder...** (Ctrl+Shift+O), or
 **Inbox Folder...** on the Inbox place's Applications key menu. Deleting an
 Inbox folder moves its episodes up a level. It never removes them.
 
-### Keeping the Inbox tidy
+#### Folders first in the Inbox
+
+When a lot arrives at once, a long Inbox is easier to take in by folder. Press
+**Ctrl+Shift+R** and choose **Show the Inbox as**:
+
+- **Every episode in one list**, the way it starts.
+- **Folders first, then episodes**. The Inbox begins with a row for each of
+  your library's folders that has something new, such as "News, folder, 5 in
+  the Inbox", and then lists the episodes from podcasts that are not in a
+  folder. Press **Enter** on a folder row to see just its episodes, and
+  **Backspace** to come back to the folder row.
+- **Folders only**. Just the folder rows, with one more called "Podcasts in no
+  folder" for everything else.
+
+These are the folders your podcasts live in, the same ones as in the Podcasts
+place. Inbox folders, the ones you file single episodes into, are separate and
+still work as described above.
+
+#### Keeping the Inbox tidy
 
 An Inbox that keeps everything forever turns into a second library. To stop
 that, open Preferences > The Inbox and set two limits:
@@ -1763,7 +2204,9 @@ Now and then a publisher re-issues an episode, with a corrected file or a
 new cut. If that episode had been trimmed from your Inbox, Cast brings it
 back and tells you: "Episode 42 was re-published by The Daily, so it is back
 in your Inbox." Episodes you have played, started, queued or filed stay where
-they are.
+they are. A few podcasts re-issue their whole back catalogue every time they
+tidy their feed. For one of those, turn off **Treat re-published episodes as
+new** in its Settings for This Podcast, and old episodes stop coming back.
 
 ### The Play Queue
 
@@ -1773,8 +2216,9 @@ it in the morning and Cast plays one episode after another until it runs out.
 Ways to add to it:
 
 - Press **Space** on any episode, in any list.
-- Choose **Play Next** on an episode's menu (Shift+F10) to put it at the
-  front, so it plays as soon as the current one ends.
+- Press **Shift+Space** on any episode to play it next, straight after the
+  one that is playing. **Play Next** on an episode's menu (Shift+F10) does the
+  same.
 - On a folder in the Podcasts place, choose **Add All to Queue** for every
   unheard episode in it.
 - In the Notifications window, choose **Add to Queue** on a new-episode
@@ -1789,22 +2233,37 @@ are on Episode > Play Queue Run:
 
 - **Next in Queue** (Ctrl+Alt+Down) skips to the next episode.
 - **Previous in Queue** (Ctrl+Alt+Up) goes back one.
-- **Mark as Played and Next** (Ctrl+Alt+Shift+Q) finishes this one for good
+- **Mark as Played and Next** (Ctrl+Alt+Shift+Down) finishes this one for good
   and moves on. I use this one for news I have heard enough of.
 
 In the queue itself, Delete takes an episode out of the queue. It stays in
-your library. The Applications key on the Play Queue place offers:
+your library. An episode Cast put there for you, rather than one you added
+yourself, says why at the end of its row: "queued by Auto-Queue", "queued by
+the lineup Morning", "queued by your listening run" or "queued by a watched
+folder". So you always know where an episode came from.
+
+The Applications key on the Play Queue place offers:
 
 - **Clear Entire Queue...**, which asks first.
 - **Play Queue Shuffled**, for a change of pace.
 - **Save Lineup...** and **Apply Lineup...**, which the next section
   explains.
 
+When you just want something to listen to, open the Command Palette
+(Ctrl+Shift+P) and type "unheard". **Play an Unheard Episode (newest)** plays
+the next unstarted episode in your queue if there is one, then looks in the
+Inbox, then everywhere else, and picks the newest you have not started.
+**Play an Unheard Episode (oldest)** looks in the same order but picks the
+oldest, which suits a podcast you are working through from the start.
+
 If your queue is long, **Group the Play Queue by** in Preferences > The
 window clusters it by podcast or by folder. The play order does not change,
 and each group header says what it is: "News, group, 4 episodes".
 
-### Sending a podcast straight to the queue
+If you would rather be walked through it, Help > Tutorials has a lesson called
+**The Queue**. It covers lineups and expiry as well.
+
+#### Sending a podcast straight to the queue
 
 For a podcast you never skip, there is no need to queue each episode by
 hand. Choose **Auto-Queue New Episodes** on the podcast's menu (Shift+F10).
@@ -1812,7 +2271,11 @@ Its new episodes go straight into the Play Queue when they arrive and skip
 the Inbox. **Stop Auto-Queueing New Episodes** on the same menu turns it off.
 You can also tick it in the podcast's Settings for This Podcast.
 
-### Lineups
+Starting a series from the beginning? In the same window, set **Auto-Queue
+takes the** to **Oldest unheard episode**. Cast then queues the podcast one
+episode at a time from the start, instead of the newest first.
+
+#### Lineups
 
 A lineup is the order you like to listen in on a particular day: news first,
 then the comedy, then the long interview for the drive home. Arrange it once
@@ -1832,7 +2295,7 @@ already heard. Saving under a name you already used replaces that lineup.
 Lineups are saved as playlists, so you can rename or delete them in
 Playlists.
 
-### Letting old episodes expire
+#### Letting old episodes expire
 
 A daily news podcast goes stale fast. Yesterday's headlines sitting in your
 queue take a turn they do not deserve. To have Cast take old episodes of a
@@ -1852,13 +2315,18 @@ show it with View > Places... (Ctrl+Shift+G). On an episode there, choose **Rest
 Queue** to bring it back with a fresh start, or **Forget This One** to let
 it go. The place's own menu offers **Restore All to the Queue**.
 
+> **QUILLBee's shortcut:** You don't have to show Recently Expired in the
+> Places list to look in it. Ctrl+Shift+X (View > Recently Expired) goes
+> straight there, even while it's hidden.
+
 ### When Cast looks for new episodes
 
 Until you tell it otherwise, Cast checks when you ask. There are three ways
 to ask:
 
 - **F5** (Podcasts > Refresh All Now) checks everything you follow.
-- **Check Now** on a podcast's menu checks only that podcast.
+- **Refresh Feed** on a podcast's menu checks only that podcast. It is a
+  Quick Action, so you can put it on a key.
 - **Refresh All Now** on the Podcasts place's Applications key menu does the
   same as F5.
 
@@ -1878,7 +2346,11 @@ automatic downloads.
 If you also run Quill Radio, the two apps share the record of when each feed
 was checked, so neither asks the publisher twice.
 
-### Giving a podcast a schedule
+If you would rather be walked through it, Help > Tutorials has a lesson called
+**When Cast looks for new episodes**. It covers schedules, pausing a podcast,
+Feed Check and quiet hours.
+
+#### Giving a podcast a schedule
 
 A schedule decides when Cast looks at a podcast on its own. There is one
 shared schedule for all your podcasts, and any podcast can have its own.
@@ -1914,19 +2386,24 @@ This Podcast. When you save, Cast reads the schedule back in one sentence:
 Scheduled checks wait for the end of Quiet Hours unless you tick **Check
 during Quiet Hours** in Preferences > Fetching.
 
-### Pausing a podcast
+#### Pausing a podcast
 
 A podcast between seasons, or one that has finished, does not need checking.
 Press Shift+F10 on it and choose **Pause Updates for This Podcast**. Cast
 stops checking and downloading it on its own, and everything you already
-have stays. F5 and Check Now still check it when you ask. **Resume Updates
+have stays. F5 and Refresh Feed still check it when you ask. **Resume Updates
 for This Podcast** on the same menu wakes it up again.
 
-### Feed Check
+#### Feed Check
 
 Sometimes a podcast moves house or stops publishing, and its feed stops
 answering. When you wonder which of your sixty podcasts has gone quiet, open
 **Podcasts > Feed Check...** (Ctrl+Shift+C).
+
+A podcast that has moved house properly usually leaves a forwarding address.
+Turn on **Follow permanent feed redirects** in Preferences > Fetching, and
+Cast updates the podcast's address for you when it finds one. It starts off.
+A saved username and password are never sent on to the new address.
 
 1. Focus is in **Your feeds, worst first** (Alt+W). Failing feeds come first,
    then quiet ones, then healthy ones.
@@ -1956,20 +2433,42 @@ ways to look at it.
 - **The status bar's Notifications cell**, which counts what is unread.
   Press F6 to reach the status bar, and Enter on the cell opens the window.
 
+In either list, a new-episode notice answers two keys of its own, so you
+never need to chase a pop-up before it disappears. **Ctrl+Enter** plays the
+new episode straight away, and **Space** adds it to the Play Queue, just as
+Space does on any episode.
+
 How loudly Cast tells you is up to you. In Preferences > **Telling you**,
 **When new episodes arrive** offers three choices. **Quietly**, where Cast
 starts, adds the episodes to Notifications and says nothing. **Notify me**
 also shows a Windows desktop notification with a short sound. **Not at all**
 keeps no record. Either way the episodes still arrive. The same section has a
 switch for each kind of notice, if you want to hear about some things and
-not others.
+not others. Each one starts with **Tell me about:**, followed by a new
+episode, a feed that keeps failing, a podcast that has gone quiet, a download
+you started finished, the sleep timer's last minute, or a personal audio
+import finished. Turning one off only stops the notice. The episodes still
+arrive, download and queue as usual.
+
+If a busy morning brings a flood of announcements, **At most this many
+spoken announcements an hour** sets a ceiling. Anything over it is folded
+into one summary instead of being said twenty times. Two more rows, which
+any podcast can set for itself, tell you when something may be wrong:
+**Tell me if this podcast goes quiet for** a number of weeks, and **Tell me
+after this many failed checks**. Leave either at 0 and it never says
+anything.
+
+A podcast can even have a sound of its own. In Settings for This Podcast,
+under Announcements, choose a sound in **Play this sound when it publishes**,
+and that podcast's new episodes play it instead of the usual sound. The
+sounds come from your sound pack.
 
 For a podcast you really care about, choose **Announce New Episodes** on its
 menu. When a scheduled check finds something new from it, Cast says the
 episode names out loud and in braille. **Stop Announcing New Episodes** turns
 it off.
 
-### Quiet hours
+#### Quiet hours
 
 You do not want Cast talking to you at two in the morning about a new
 episode. **Help > Quiet Hours...** (Ctrl+Alt+Shift+Z) sets a time when Cast
@@ -2002,6 +2501,14 @@ Started streaming something you now want to keep? Press **Ctrl+Alt+K**
 (Episode > Keep This Episode) and Cast keeps it as a download, often without
 fetching it again.
 
+Now and then a podcast moves its audio, or a download comes out cut short or
+silent. You do not need to unfollow and follow again. Press Shift+F10 on the
+episode and choose **Refresh Episode Audio...**. Cast reads the podcast's feed
+again, tells you whether the address changed, asks once (because it will
+download the episode again), and then fetches a fresh copy. Your place, your
+played mark and your notes stay exactly as they were. It is also in the
+Command Palette (Ctrl+Shift+P).
+
 To watch what is downloading, go to **Downloads** (View > Downloads,
 Ctrl+D). Delete there removes the file, and you can still stream the episode.
 The **Downloads** menu (Alt+D) has **Pause All Downloads**
@@ -2013,7 +2520,10 @@ reconnecting", and Cast picks up where it stopped. **Reconnect and keep
 downloading automatically** in Preferences > Fetching turns this on or off,
 and **Reconnect attempts** sets how many times it tries.
 
-### Downloading on its own
+If you would rather be walked through it, Help > Tutorials has a lesson called
+**Downloads, and the disk they live on**.
+
+#### Downloading on its own
 
 If you like having the newest episodes ready on your disk, let Cast fetch
 them. In Preferences > **Fetching**:
@@ -2027,12 +2537,20 @@ them. In Preferences > **Fetching**:
   episodes. It starts off, since the Inbox is for deciding.
 - **Download automatically on a metered connection** decides whether this
   happens on a phone hotspot or a capped connection.
+- **Only download automatically after (hour)** and **...and before (hour)**
+  keep automatic downloads to the hours you choose, such as overnight. Leave
+  both the same and there is no limit. A download you ask for always starts
+  straight away.
+- **Always sync the full catalog** downloads every episode a podcast has ever
+  published, not just the new ones. It suits an archive you want complete.
+  Turn it on for that one podcast in Settings for This Podcast, not for
+  everything.
 
 Cast tells you how many downloads it started. To hear when they have all
 finished, tick **Notify me when downloads finish** in Preferences > Telling
 you. You get one notification for the whole batch.
 
-### Keeping disk use in check
+#### Keeping disk use in check
 
 Downloads add up. Preferences > **Data** has two clean-up rules, both off
 until you set them:
@@ -2041,9 +2559,40 @@ until you set them:
 - **Total download storage cap**, in megabytes. When you go over, played
   downloads are removed, oldest first.
 
+One more choice, in the same section: **Delete its downloaded file** when you
+finish an episode. With that on, an episode you take out of the Inbox with
+Delete is finished with too, so its download goes as well, and Cast says so.
+An episode you marked Keep This Episode is never deleted this way.
+
 Neither ever removes an episode that is in your queue or that you are partway
 through. To protect one podcast completely, tick **Never delete this
 podcast's downloads** in its Settings for This Podcast.
+
+A few more rows in Preferences > Data, for when you want them:
+
+- **Default retention** chooses between keeping every download and **Keep
+  the most recent**, which keeps only the number of newest downloads you set
+  for each podcast. Older episodes stay in the list, ready to stream.
+- **This podcast may use** gives one podcast a share of the disk, in
+  megabytes. When it is full, Cast stops downloading that podcast on its own.
+  It never deletes what you already have.
+- **Download location** is the folder downloads are saved in. Leave it blank
+  for the usual one. Files already saved stay where they are.
+- **When I stop following a podcast, delete its downloaded files** sets the
+  answer Cast starts on when you unfollow a podcast: Ask me, Always or Never.
+- **Prefer the audio that is** picks which version to download when a
+  podcast offers more than one: whatever it lists first, the smallest file,
+  or the best quality.
+- **Auto-trim silence from downloaded episodes** and **Normalize loudness of
+  downloaded episodes** tidy each new download as it arrives: the first
+  trims silence at the start and end, the second evens out how loud episodes
+  are. Both change the saved file, so they apply to new downloads only.
+
+Streaming has a small store of its own. **Keep streamed episodes ready while
+they play** saves the audio of what you are streaming, so a dropped connection
+does not stop the episode and Cast can find chapters in it. It is on to start
+with, and the audio is cleared away by itself. **Space for streamed episodes**
+sets how much room that may take.
 
 **Free Up Space** (Ctrl+Alt+F) applies those rules now and tells you how much
 space came back. **Run Housekeeping Now** (Ctrl+Alt+H) does the whole tidy-up
@@ -2078,7 +2627,10 @@ all at once.
 On a playlist's own row, the menu offers **Open**, **Edit Rules...** for a
 smart one, **Rename Playlist...** and **Delete Playlist...** (Delete).
 
-### Writing a smart playlist
+If you would rather be walked through it, Help > Tutorials has a lesson called
+**Playlists and smart playlists**.
+
+#### Writing a smart playlist
 
 If you are new to this, press Add Starter Playlists first and open one with
 Edit Rules to see how it is made. Then try your own.
@@ -2095,7 +2647,9 @@ Edit Rules to see how it is made. Then try your own.
    - **Title or notes contain** (Alt+T), for a word or a name.
    - **Most episodes** (Alt+0), to keep the list short.
 5. Choose a **Sort** (Alt+R).
-6. Press OK.
+6. Press **Save** (or Ctrl+S). The playlist is made, and the window stays
+   open so you can keep adjusting it; each later Save updates the same
+   playlist. Press Escape when you are done.
 
 The window tells you how many episodes match as you change things. Every
 choice has its own F1 help.
@@ -2124,7 +2678,10 @@ You open Episode Filters from a podcast's menu (**Episode Filters...**), or
 with **Episode Filters...** (Alt+L) in its Settings for This Podcast. But the
 easiest way in is from an episode you do not want, which comes next.
 
-### Filter Episodes Like This
+If you would rather be walked through it, Help > Tutorials has a lesson called
+**Stop the parts of a podcast you did not want**.
+
+#### Filter Episodes Like This
 
 You usually know the episode you do not want before you know what it has in
 common with the others. So let Cast work that out.
@@ -2135,8 +2692,9 @@ common with the others. So let Cast work that out.
    tells you why Cast chose it and how many recent episodes it catches.
 4. Press **Preview** (Alt+V) and read **Preview results** (Alt+L) to see what
    would happen to each recent episode.
-5. If it looks right, press **Save**. If not, press **Edit Rule...** (Alt+E)
-   and adjust it, or Cancel to leave everything as it was.
+5. If it looks right, press **Save** (or Ctrl+S). The window stays open. If
+   not, press **Edit Rule...** (Alt+E) and adjust it, or press Close to leave
+   everything as it was.
 
 Cast drafts the rule by looking, in this order, for:
 
@@ -2152,7 +2710,7 @@ Cast drafts the rule by looking, in this order, for:
 Cast never offers a rule that would catch every recent episode. Nothing is
 saved until you press Save.
 
-### Writing a filter rule yourself
+#### Writing a filter rule yourself
 
 Once you have tried Filter Episodes Like This, writing your own is not much
 harder. Here is a rule that hides trailers, step by step.
@@ -2161,7 +2719,7 @@ harder. Here is a rule that hides trailers, step by step.
 2. Tick **Filter new episodes of this podcast** (Alt+F).
 3. In **When a rule matches** (Alt+W), leave "Keep everything except
    episodes a rule matches".
-4. Press **Add Rule...** (Alt+A). The rule window opens.
+4. Press **Add Rule...** (Alt+A). The **Episode Filter Rule** window opens.
 5. In **Name for this rule** (Alt+N), type something you will recognise,
    such as "Trailers".
 6. In **Title match** (Alt+T), choose how to read the title:
@@ -2188,11 +2746,12 @@ trailer. Length in minutes is at most 5." Beside it, **Edit Rule...**
 what they say. A podcast can have as many rules as you like, and an episode
 needs to match only one of them.
 
-### Adding more tests to a rule
+##### Adding more tests to a rule
 
 The title and the length are often enough. When they are not, a rule can
 look at more. In the rule window, go to **More tests** (Alt+S) and press
-**Add Test...** (Alt+A). A small window asks three things.
+**Add Test...** (Alt+A). A small window called **Episode Filter Test** asks
+three things.
 
 1. **Look at** (Alt+L): the title, the show notes, the people on the episode
    as the publisher lists them, the episode type (full, trailer or bonus), its
@@ -2230,7 +2789,7 @@ Some rules worth writing:
   the publisher writes it.
 - Everything from old seasons: Season number is at most 3.
 
-### Trying a rule before you keep it
+#### Trying a rule before you keep it
 
 You do not have to guess whether a rule is right.
 
@@ -2248,7 +2807,7 @@ before it takes effect.
 
 Nothing changes while you try, so adjust and try again as often as you like.
 
-### Where a filter applies, and saving it
+#### Where a filter applies, and saving it
 
 Under **Where this applies** (Alt+H), tick what the filter does to matching
 episodes. There are eight checkboxes. The first four are ticked on a new
@@ -2276,7 +2835,13 @@ If a "keep only" filter turns away every new episode of a check, Cast tells
 you, and leaves a note in Episode Filters for when you next open it, in case
 the publisher changed their titles.
 
-### Getting a filtered episode back
+> **QUILLBee's tip:** Give a new filter a week or two before you tick any of
+> the four boxes that hide episodes. While the episodes it catches are still
+> in the podcast's own list, one it caught by mistake is a Shift+F10 away from
+> Always Keep This Episode (Ignore the Filter). Once a rule has proved itself,
+> hide away.
+
+#### Getting a filtered episode back
 
 Two ways, always:
 
@@ -2310,9 +2875,22 @@ all of them are Quick Actions, so you can put one on Ctrl+1 to Ctrl+9.
 Show in File Explorer and Copy File Path need a downloaded episode, and say
 so if there is no file yet.
 
-You can now let new episodes come to you, sort them in the Inbox, line them
-up in the queue, and keep the clutter out with filters. Chapter 6, Making
-Cast yours, is where you shape all of this to suit the way you listen.
+### What you learned, and where to go next
+
+You can now let new episodes come to you, sort them in the Inbox, line them up
+in the Play Queue, and keep the clutter out with filters. You also know how to
+give a podcast a schedule, look after your downloads, and make playlists that
+fill themselves.
+
+The tutorials spend more time on this chapter than on any other, because these
+pieces work best together. Help > Tutorials has **The Inbox**, **The Queue**,
+**When Cast looks for new episodes**, **Downloads, and the disk they live
+on**, **Playlists and smart playlists**, and **Stop the parts of a podcast you
+did not want**. Take them one at a time, on a day you have a few spare
+minutes.
+
+Next, Chapter 6, Making Cast yours, is where you shape all of this to suit the
+way you listen.
 
 ## Chapter 6: Making Cast yours
 
@@ -2326,8 +2904,7 @@ We will go through the places you can change Cast, from the broadest to the
 most particular: Preferences for the whole app, Settings for This Podcast for
 one podcast, what each list row says, what Enter does, which features you see
 at all, and which keys do what. At the end are Quillins and AI help, for when
-you want Cast to do a little more. By the end you will know where to go for
-any change you have in mind, and why you might want to make it.
+you want Cast to do a little more.
 
 One tip before we start. Every window in this chapter answers **F1**. If a
 setting is not described here, put focus on it and press F1 to hear what it
@@ -2339,7 +2916,8 @@ Preferences holds the settings for Cast as a whole. It also holds the shared
 defaults, the values every podcast follows until you give that podcast its
 own. Change the skip distance here and every podcast skips that far.
 
-1. Press **Ctrl+,** (or choose Podcasts > Preferences).
+1. Press **Ctrl+,** (or choose Podcasts > Preferences). The **QUILL Cast
+   Preferences** window opens.
 2. Focus starts in the **Section** list. Arrow to the section you want.
 3. Tab into that section's settings and change what you like.
 4. Press **Save**, or Escape to leave without changing anything.
@@ -2348,7 +2926,11 @@ You can move between sections before you save, and Cast keeps what you
 changed in each one. When you press Save, it tells you what changed. If you
 get lost in a long section, Alt+S takes you back to the Section list.
 
-Here is what each of the eight sections is for, so you know where to look:
+Two sections have a shortcut by name. In the Command Palette (Ctrl+Shift+P),
+**Fetching Preferences** opens Preferences on Fetching, and **Playing
+Preferences** opens it on Playing.
+
+Here is what each of the nine sections is for, so you know where to look:
 
 - **When Cast opens.** Where Cast puts you when it starts, whether it picks up
   the last episode straight away, whether it checks your podcasts on opening,
@@ -2359,16 +2941,23 @@ Here is what each of the eight sections is for, so you know where to look:
   for you, and what happens if a download's connection drops.
 - **The Inbox.** Which podcasts send new episodes to the Inbox, how many wait
   there, and how long episodes wait in the Play Queue.
+- **The library.** How the Podcasts place is laid out, and the order of your
+  podcasts, folders and episodes.
 - **Chapters.** Whether Cast looks for chapters in episodes that do not come
   with any.
 - **Telling you.** What Cast says out loud, which notifications you get, and
   how each list row is spoken.
-- **The window.** What closing the window does, AI help, and how your lists
-  are sorted and grouped.
+- **The window.** What closing the window does, AI help, sharing your
+  choices with other Quill apps, how the Play Queue is grouped, and how many
+  episodes a podcast's list shows.
 - **Data.** Where your podcasts and downloads are kept, when old downloads are
   tidied away, and how long your listening history is kept.
 
-### The settings worth a look first
+If you would rather be walked through it, Help > Tutorials has a lesson called
+**Preferences, and one podcast's own settings**. It opens Settings for This
+Podcast with you as well.
+
+#### The settings worth a look first
 
 You could spend an afternoon in Preferences. You do not need to. These are
 the ones people change most, and the reasons they do.
@@ -2404,6 +2993,174 @@ Cast was closed** (both in Telling you), and **Switch to Now Playing when
 playback starts** (Playing), for people who like the Now Playing window up
 front.
 
+#### Every row, section by section
+
+When you are hunting for one setting and cannot remember its section, this
+list is for you. Each row is named exactly as it appears in Preferences, with
+a few words about what it does. Most of them are explained more fully in the
+chapter where you would use them, and F1 on any row tells you more.
+
+**When Cast opens**
+
+- **Where to land on launch**: the place Cast opens on.
+- **Resume the last episode on launch**: start playing where you stopped.
+- **Check for updates on launch**: look for a new version once a day.
+- **Check when Cast opens**, **Check when the computer wakes** and **Catch up
+  on a missed check at the next launch**: when Cast looks for new episodes
+  without being asked.
+
+**Playing**
+
+- **Winamp playback keys (Z X C V B, arrows to seek)**: the Winamp letters in
+  your lists.
+- **Switch to Now Playing when playback starts**: bring Now Playing to the
+  front each time.
+- **Copy show notes as**: what Copy Notes puts on the clipboard.
+- **Playback speed**: the speed every podcast starts at.
+- **Default playback mode**: whether a podcast you newly follow downloads its
+  episodes or streams them.
+- **Send the audio to**: both ears, mono, or one ear only.
+- **Volume Boost**: lift quiet podcasts.
+- **Bass, in decibels**, **Middle, in decibels** and **Treble, in
+  decibels**: the shape of the sound.
+- **Even out volume**: bring quiet and loud parts closer together.
+- **Shorten silences** and **How much silence to shorten**: trim the pauses.
+- **Skip forward by** and **Skip back by**: how far Ctrl+Right and Ctrl+Left
+  jump.
+- **Skip the first** and **Stop this far before the end**: skip intros and
+  outros.
+- **Play the next episode in the Play Queue** and **When the queue is empty,
+  keep going with the same podcast**: what happens when an episode ends.
+- **Start loading the next episode before this one ends**: no pause between
+  episodes.
+- **Sleep timer starts at (minutes, 0 = off)**: what the Sleep Timer offers
+  first.
+
+**Fetching**
+
+- **Look for new episodes on a schedule**: the automatic check, on or off.
+- **Check for new episodes**, with its **Change Schedule...** button: the
+  shared schedule.
+- **Look at the schedules every**: how often Cast wakes up to see which
+  podcasts are due. It does not check a podcast before its own schedule says
+  so.
+- **A short sound each time a check runs**: a little tick, so you know the
+  checks are happening. It starts off.
+- **Let what a check found interrupt speech**: let news of new episodes cut
+  in on whatever is being said. It starts off.
+- **Check during Quiet Hours**: let scheduled checks run at night.
+- **Automatically download** and **Always sync the full catalog**: what is
+  downloaded for you.
+- **Also download anything you add to the Play Queue** and **Also download
+  everything routed to the Inbox**.
+- **Download automatically on a metered connection**.
+- **Only download automatically after (hour)** and **...and before (hour)**:
+  the hours automatic downloads may start.
+- **Reconnect and keep downloading automatically**, **Reconnect attempts**
+  and **Seconds between attempts**: what happens when a download's
+  connection drops.
+- **When I follow a podcast, also fetch** and **How many, or how many
+  months**: how
+  much of a podcast's past to bring in when you follow it.
+- **Auto-Queue takes the**: the newest episode, or the oldest unheard one.
+- **Fetch transcripts**: never, when an episode arrives, when you download
+  it, or also make one yourself when the podcast has none.
+- **Follow permanent feed redirects**: let a podcast that has moved update
+  its own address.
+- **Treat re-published episodes as new**: whether a re-issued episode comes
+  back to your Inbox.
+- **If I add a podcast I already follow**: whether Cast tells you, skips it
+  quietly or adds it anyway.
+
+**The Inbox**
+
+- **Which podcasts go to the Inbox**: only the podcasts you mark, or every
+  podcast except those.
+- **Inbox: keep at most (0 = no limit)** and **Inbox: drop episodes older
+  than**: keep the Inbox short.
+- **Expire from the queue**: how long an episode may wait in the Play Queue.
+- **Show the Inbox as**: one list, folders first, or folders only.
+- **New files in watched folders also wait in the Inbox**.
+
+**The library**
+
+- **Show the library as**, **Sort podcasts by**, **Sort folders by**,
+  **Folders in the library start**, **Counts in the library say** and
+  **Leave out folders with nothing in them**: the shape of the Podcasts
+  place.
+- **Sort episodes by**: the order of a podcast's episodes.
+- **Show lists that mix podcasts as**: how those lists are grouped.
+
+**Chapters**
+
+- **Work out chapters** and **How long to spend looking**: whether and how
+  hard Cast looks for chapters an episode did not come with.
+- **Look for chapters in the show notes**, **Look for chapters in the
+  transcript** and **Listen to the audio to find chapters**: where it looks.
+- **Give worked-out chapters names**, **Say when a chapter scan finishes**
+  and **Chapter preview length**.
+
+**Telling you**
+
+- **When new episodes arrive**: notify me, quietly, or not at all.
+- One switch for each kind of notice:
+  - **Tell me about: a new episode**
+  - **Tell me about: a feed that keeps failing**
+  - **Tell me about: a podcast that has gone quiet**
+  - **Tell me about: a download you started finished**
+  - **Tell me about: the sleep timer's last minute**
+  - **Tell me about: a personal audio import finished**
+- **Desktop toasts for new episodes and finished downloads** and **Notify me
+  when downloads finish**: the pop-ups.
+- **One sentence on launch about what arrived while Cast was closed**.
+- **Say what is up next before an episode ends**.
+- **When a one-key action works**: a sound, words, both, or neither.
+- **Announce dialog transitions (more spoken detail)**: Cast says a window's
+  name as it opens and closes. It starts off, because your screen reader
+  already reads the title.
+- **New episodes of this podcast are**: urgent, normal or quiet.
+- **At most this many spoken announcements an hour (0 = no limit)**.
+- **Tell me if this podcast goes quiet for (weeks, 0 = never)** and **Tell
+  me after this many failed checks (0 = never)**.
+- **Read each row starting with**, **Say the podcast's name**, **Say when it
+  was published**, **Say how long it is**, **Say whether it is
+  downloaded**, **Say when it has chapters or a transcript**, **Say the
+  season and episode number** and **Read the episode's description**: how a
+  row is spoken, which "How an episode row is spoken" below explains.
+
+**The window**
+
+- **When closing the window** and **Alt+F4 minimizes to the system tray**.
+- **AI help (sends the show notes you ask about to QUILL's servers)**.
+- **Share these choices with my other Quill apps**.
+- **Group the Play Queue by**: nothing, podcast or folder.
+- **Show at most this many episodes (0 = all of them)**: a shorter list for
+  a podcast with thousands of episodes.
+
+**Data**
+
+- **Data Folder...**: where all your Quill apps keep their settings and
+  podcasts.
+- **Download location**: where downloads are saved.
+- **Default retention**, **Keep the most recent**, **Delete downloads after
+  (days, 0 = never)**, **Delete its downloaded file**, **Total download
+  storage cap (MB, 0 = none)** and **This podcast may use (MB, 0 = no
+  budget)**: when downloads are tidied away.
+- **When I stop following a podcast, delete its downloaded files**: what
+  Cast suggests when you unfollow.
+- **Prefer the audio that is**: which version to download.
+- **Auto-trim silence from downloaded episodes** and **Normalize loudness of
+  downloaded episodes**.
+- **Keep streamed episodes ready while they play** and **Space for streamed
+  episodes (MB, 0 = no limit)**.
+- **A new watched folder's original files**, **When files arrive in a new
+  watched folder, tell me**, **A new watched folder ignores files shorter
+  than** and **A new watched folder includes its subfolders**: what a newly
+  watched folder starts with.
+- **Find podcasts in these directories**: where Add Podcast looks.
+- **Show listening streaks in Statistics** and **Keep my listening history
+  for**.
+
 ### Settings for one podcast
 
 Not every podcast wants the same treatment. A daily news show wants checking
@@ -2416,7 +3173,9 @@ one podcast be different from the rest.
    Podcast).
 3. Focus starts in the **Category** list. There are five: Arrival, Playback,
    Storage, Announcements and Curation. Arrow to one and Tab into it.
-4. Change what you want and press OK.
+4. Change what you want and press **Save** (or Ctrl+S). The window stays
+   open, so you can move on to another category. Press Escape when you are
+   done.
 
 Every control shows the value this podcast is using right now, whether it
 came from Preferences or from the podcast itself. Anything you leave alone
@@ -2426,6 +3185,11 @@ this podcast picks it up too.
 When the podcast has its own value for something, a button sits beside it,
 such as **Use shared default for Playback speed**. Press it and that one
 setting goes back to following Preferences.
+
+> **QUILLBee's tip:** Set what most of your podcasts want in Preferences
+> first, and give a podcast its own value only where it really is different.
+> Whatever a podcast leaves alone keeps following Preferences, so one change
+> there next month still reaches every podcast that hasn't gone its own way.
 
 What the five categories hold:
 
@@ -2452,7 +3216,7 @@ episodes go straight to the Play Queue**. At the bottom are three buttons:
 - **Episode Filters...** (Alt+L) sets rules for where this podcast's new
   episodes go. Chapter 5, Keeping up without keeping watch, explains them.
 
-### Podcast settings you will be glad you found
+#### Podcast settings you will be glad you found
 
 Most per-podcast settings are there for the day you need them. These few
 solve problems people meet in their first month.
@@ -2468,6 +3232,11 @@ podcast's real titles are untouched.
 **Say this podcast's name as** (Announcements). For the podcast name your
 speech engine always mangles. Type a spelling that sounds right, and Cast
 uses it whenever the name is spoken. Written, the name stays as it is.
+
+**What I care about in this podcast** (Curation). A sentence or two in your
+own words, such as "the interviews, not the news round-up". Nothing uses it
+yet. It is there so that AI help, when you turn it on, can suggest episodes
+the way you would choose them. It stays on this computer.
 
 **New episodes of this podcast are** (Announcements). Urgent tells you about
 each new episode straight away, by name. Normal counts it in a summary.
@@ -2495,9 +3264,24 @@ fiction, audiobooks in a feed, and anything else meant to be heard in order.
 podcast lives in one folder, but it can have any number of labels, and a
 smart playlist can gather episodes by label.
 
+**Also add new episodes to the playlist** (Curation). Pick one of your
+playlists, and this podcast's new episodes join it as they arrive. They are
+not queued or downloaded, and they still go to the Inbox as usual.
+
+**Use this artwork instead** (Curation). A picture file of your own for the
+podcast, shown in the tray and the window. It changes nothing your screen
+reader says.
+
+Most of the other rows in Settings for This Podcast have the same names as
+the rows in Preferences, so the list in "Every row, section by section"
+above is a good map of them too.
+
 None of these deletes an episode or marks anything played.
 
-### Changing a podcast setting in one keystroke
+Help > Tutorials has a lesson with the same name, **Podcast settings you will
+be glad you found**, if you would like to try each one with a guide.
+
+#### Changing a podcast setting in one keystroke
 
 Three podcast settings get changed far more than the rest, so each has its
 own row on a podcast's context menu (Shift+F10):
@@ -2511,6 +3295,22 @@ Each opens a small window with the cursor already in its one control. Cast
 tells you in words what you chose: "Keeping the 5 newest downloaded
 episodes." They are Quick Actions too, which the section after next explains,
 so if you change speed all the time you can put Playback Speed on Ctrl+1.
+
+### Keeping your choices the same in every Quill app
+
+If you use Quill Radio as well, you may want a choice you make here to hold
+there too. In Preferences, in **The window** section, turn on **Share these
+choices with my other Quill apps**.
+
+Two choices are shared: **Announce dialog transitions**, which decides whether
+a window's name is said as it opens and closes, and **When a one-key action
+works**, which decides whether an action answers with a sound, words or both.
+Every
+Quill app with this turned on keeps them the same. When Cast picks up a choice
+you made in another app, it tells you which one.
+
+Your keys, where focus goes and how your screen reader works are never shared,
+and an app that has not turned this on is left alone.
 
 ### Choosing what a row says
 
@@ -2534,14 +3334,18 @@ Two hidden columns are worth trying: **Time Left** on episodes you have
 started, and **Podcast** in lists that mix podcasts. **Reset This List**
 puts one list back the way it came.
 
-### How an episode row is spoken
+If you would rather be walked through it, Help > Tutorials has a lesson called
+**Decide what a row says, and what Enter does**. It goes on to Quick Actions
+and Customize Features.
+
+#### How an episode row is spoken
 
 Open Preferences (Ctrl+,), choose **Telling you**, and you will find a group
 of settings that shape every episode row:
 
 - **Read each row starting with** the episode title, the podcast's name, or
   the date. Whatever comes first is what you can jump to by typing its first
-  letter, so choose the one you search by.
+  letter, so choose the one you tend to look for.
 - **Say the podcast's name**, in lists that mix podcasts.
 - **Say when it was published**, as "Today", "Yesterday", "3 days ago", or
   the date.
@@ -2556,6 +3360,12 @@ of settings that shape every episode row:
 One podcast can have its own choices, under Announcements in Settings for
 This Podcast. That is handy for a podcast that already puts the date in every
 title: turn the date off for that one alone.
+
+> **QUILLBee's tip:** If a podcast starts every title with the same words,
+> such as "Ep. 412 -", no choice here helps with that one. Tidy episode
+> titles, under Announcements in its Settings for This Podcast, leaves those
+> words out when the title is shown and spoken, so typing a first letter lands
+> on the part that differs.
 
 ### Quick Actions: what Enter does
 
@@ -2586,7 +3396,7 @@ Cast is easier to learn.
 2. Every feature is a checkbox, grouped under eight headings: Places,
    Playing, Library, Getting podcasts, Keeping things, Telling you, Listening
    data and Around the app. Everything starts on.
-3. Uncheck what you do not want and press OK.
+3. Uncheck what you do not want and press **Save**.
 
 The menus and places change straight away. The status bar follows the next
 time you open Cast.
@@ -2610,6 +3420,33 @@ need only now and then, such as Choose Columns, Quick Actions, backups and
 the Quillins menu. Chapter 2, Finding your way around, has more on Simple
 and Advanced.
 
+#### Every switch in Customize Features
+
+Here is every checkbox, under its heading, so you can see at a glance what
+you could turn off. F1 on any box says what goes away with it.
+
+- **Places**: Inbox, Play Queue, Downloads, Personal Audio, Playlists and
+  Notifications.
+- **Playing**: Now Playing window, Transcripts and chapters, Show notes and
+  your notes, Sleep timer, Speed controls, Sound Enhancements, Skipping,
+  Winamp playback keys and Global hotkeys.
+- **Library**: Folders and custom order, Find, Feed Check, Episode filters
+  and smart playlists, Quick Actions and Choose Columns, Hide caught-up
+  podcasts, and Watched folders.
+- **Getting podcasts**: Directory search and Add by address, Follow ACB
+  Media, Backups and OPML, Private feeds and directory credentials, and
+  Spotify podcasts.
+- **Keeping things**: Automatic downloads, Retention and housekeeping, Keep
+  This Episode and Refresh Episode Audio, and Export my data and Delete all
+  data.
+- **Telling you**: Toasts, Sounds, New-episode digest, Feed failure and
+  gone-quiet notices, Automatic feed check, and Dialog transition
+  announcements.
+- **Listening data**: Statistics, Recently played and Continue Listening, and
+  Listening Places sync.
+- **Around the app**: Status bar, Tray, Tutorials, Command Palette and Go To,
+  Share and export audio, Quillins, and AI features.
+
 ### Changing keys
 
 Every key in Cast can be changed. If a key is awkward for your hands, or
@@ -2629,16 +3466,19 @@ press **Ctrl+Alt+Shift+K** (Help > Keyboard Shortcuts Sheet). Type
 "download" in its filter and you hear only the keys about downloading.
 **Copy All** puts the list on the clipboard.
 
-### Keys that work from any program
+#### Keys that work from any program
 
 Global Hotkeys give a few Cast commands a key that works even when Cast is
 not the window you are in. Pause a podcast from your word processor without
 switching windows.
 
 1. Press **Ctrl+Alt+Shift+H** (Help > Global Hotkeys).
-2. Choose Play/Pause, Stop, or Show or Hide QUILL Cast, and give it a key.
-   Cast already shows and hides on Ctrl+Alt+Shift+F12, so you only need a
-   key here if you would like a different one as well.
+2. Choose a command and give it a key. Cast offers Play/Pause, Stop,
+   **Now Playing window**, which brings the player to the front from
+   anywhere, **Time Remaining**, which says how much is left without leaving
+   what you are doing, and Show or Hide QUILL Cast. Cast already shows and
+   hides on Ctrl+Alt+Shift+F12, so you only need a key for that one if you
+   would like a different one as well.
 
 The first time, Cast warns you that a system-wide key can take over the same
 key in other programs. If another program already owns a key, Cast leaves it
@@ -2647,11 +3487,15 @@ alone.
 The Keyboard reference at the end of this guide lists every key Cast comes
 with.
 
+The last steps of the **Keys** lesson, in Help > Tutorials, move a key and set
+up a key that works from any program, if you would like company while you do
+it.
+
 ### Quillins
 
 Quillins are QUILL's small add-ons. Cast has its own **Quillins** menu, which
 appears in Advanced mode. It comes with one sample Quillin, which signs in to
-a private, subscriber-only feed. In this release only the Quillins that come
+a private, members-only podcast. In this release only the Quillins that come
 with Cast can run, and none run in Safe Mode.
 
 ### AI help
@@ -2696,13 +3540,109 @@ sign in QUILL or Quill Radio, and signing out of one leaves the others
 signed in. If another Quill app is already signed in, your browser remembers
 you and it takes one Allow.
 
-AI help reads the notes of the episode you are on, and only when you ask. It
-never runs in the background, never changes your library, never writes into
-the show notes, and does not run in Safe Mode.
+The last step of the **Show notes, and what else the podcast sent** lesson, in
+Help > Tutorials, turns AI help on with you.
 
-That is Cast shaped around you: your keys, your rows, your podcasts each
-treated their own way. Chapter 7, Your podcasts, wherever you are, shows how
-to keep all of it safe and take it with you.
+#### Letting AI help with your podcasts
+
+Below the rows above, the AI Features menu has a few more that are about your
+podcasts rather than one episode's notes. Each one asks a question only when
+you choose it, and each one that would change something shows you its
+suggestions first. Nothing changes until you say so.
+
+**Organise My Podcasts** (Help > AI Features, P). Following dozens of podcasts
+and never got round to folders? Choose this, and AI help suggests folders for
+them, using the folders you already have where they fit. A list opens with
+one suggestion per row, such as "Move: Tech Talk -- from no folder to
+Technology". Every row starts as Accept. Press **Space** on any row you do not
+want and it changes to Skip. **Accept All** (Alt+A) and **Skip All** (Alt+K)
+change every row. Press **Apply Selected** and Cast makes the folders and
+moves the podcasts you accepted, and tells you how many. Cancel, or Escape,
+changes nothing. If AI help names a podcast or folder you do not have, Cast
+leaves it out and tells you how many it left out.
+
+**What Is This Podcast About?** (W). On a podcast with a description that says
+nothing useful, this gives you two or three plain sentences about what it is
+and who it is for. Cast says the answer and shows it in a window you can read
+at your own pace and copy from.
+
+**Is This Episode for Me?** (F). First, tell Cast what you care about in a
+podcast: in Settings for This Podcast (Ctrl+Alt+,), fill in **What I care about
+in this podcast**, for example "the interviews, not the news round-up". Then,
+on any episode of that podcast, choose this row. You get one sentence starting
+with Yes, Probably, Probably not or No, and the reason. It never skips or
+hides anything; it only tells you.
+
+**Summarise This Episode** (S). A short summary of an episode, for deciding
+whether to listen. If Cast has the episode's transcript, it summarises that,
+and if not it summarises the show notes. The answer always starts by saying
+which it used, because a summary of the show notes is not a summary of what
+was said.
+
+**Build Me a Listening Run** (L). "I have 40 minutes." Type how many minutes
+you have, and AI help picks unheard episodes from your Inbox and New Episodes
+that fit, in an order worth hearing. Cast measures the time itself, so the run
+really fits. Review the list, then Apply Selected adds them to the end of your
+Play Queue.
+
+**Smart Playlist from a Sentence** (T). Describe the playlist you want, such as
+"unheard news under 20 minutes from this week". Cast shows the rules it would
+save, one per row, in plain words. Apply Selected saves the smart playlist;
+you can change its rules later like any other smart playlist. A podcast or
+folder you named that Cast cannot find is left out and said.
+
+**Name These Chapters** (H). When Cast has worked out an episode's chapters
+from its transcript (Analyse Chapters, in Chapter 3), their names can be
+rough. This asks AI help for better names from what is said in each chapter,
+and lets you accept or skip each name on its own, because one wrong name
+should not cost you the other eleven.
+
+#### Tidying the podcasts you follow
+
+Over the years a library collects podcasts that stopped years ago, a podcast
+followed twice under slightly different names, and a feed that no longer
+works. **Help > AI Features > Tidy the Podcasts I Follow** (I) finds them for you.
+It needs no AI and sends nothing anywhere, so it works even with AI help
+switched off.
+
+Each row says what it found and offers one action: **Pause updates** for a
+podcast with nothing new in over a year or a feed that keeps failing, and
+**Unfollow** for a second copy. Space switches a row between Accept and Skip,
+as in the other lists. Apply Selected pauses the ones you accepted, and asks
+before each unfollow, with No selected, so nothing goes by accident. A paused
+podcast keeps every episode; resume it any time from its menu.
+
+#### What AI help will never do
+
+You can count on these, every time:
+
+- It never asks anything unless you choose a row or press its key.
+- It never runs in the background, during a check for new episodes, or while
+  Cast tidies its downloads.
+- It never deletes, unfollows or spends anything on its own. Anything it
+  suggests waits for you in a list, and nothing changes until Apply.
+- It is sent titles, descriptions, show notes and transcripts. It is never
+  sent a feed address, a file on your computer, where you are in an episode or
+  your support ID.
+- It is off in Safe Mode.
+
+### What you learned, and where to go next
+
+You now know where to go for any change you have in mind. Preferences sets how
+Cast behaves everywhere, and Settings for This Podcast lets one podcast be
+different. You can decide what a row says, what Enter does, which features you
+see and which keys do what. When you cannot remember where a setting lives,
+"Every row, section by section" lists every row in Preferences, and "Every
+switch in Customize Features" lists every feature you can turn off. And when
+you want it, AI help is there for long show notes and a library that has got
+out of hand.
+
+Help > Tutorials has three lessons for this chapter: **Preferences, and one
+podcast's own settings**, **Podcast settings you will be glad you found**, and
+**Decide what a row says, and what Enter does**.
+
+Next, Chapter 7, Your podcasts, wherever you are, shows how to keep all of
+this safe and take it with you.
 
 ## Chapter 7: Your podcasts, wherever you are
 
@@ -2743,11 +3683,19 @@ The buttons under the report:
 - **Year in Review...** (Alt+Y) tells the story of your year in a few
   friendly sentences: how long you listened, your top podcasts and what share
   of the year each took, your busiest month, and how many days you listened.
-  You can arrow through it, copy it, or save it.
+  Choose a different **Year** (Alt+Y) to look back further. **Copy** (Alt+C)
+  puts the story on the clipboard, and **Save as Text...** (Alt+S) saves it
+  as a file.
 - **Export CSV...** (Alt+E) saves every listening session as a file you can
   open in a spreadsheet.
 - **Clear Statistics...** (Alt+S) deletes the listening log and nothing
   else. Your podcasts, places and notes stay as they are.
+
+Statistics and Year in Review are windows of their own. You can leave them
+open, go back to your library, and come back from the Window menu. Press
+Ctrl+Alt+Shift+S again and the same window comes to the front with the latest
+numbers. Escape or Ctrl+W closes either one, and you are back where you
+opened it.
 
 If you enjoy a streak, open Preferences (Ctrl+,), choose **Data**, and check
 **Show listening streaks in Statistics**. Your streak then shows in the report
@@ -2755,6 +3703,14 @@ and in Year in Review. A streak that ran through yesterday still counts, so
 you have all of today to keep it going. The same section has **Keep my
 listening history for**, from not at all to forever, if you would rather Cast
 remembered less.
+
+> **QUILLBert found something:** Year in Review doesn't wait for December.
+> Press Alt+Y in Listening Statistics whenever you like, and its Year list
+> switches between this year and last. He looked in March and found he'd
+> already spent eleven hours on a podcast about bread. He isn't sorry.
+
+If you would rather be walked through it, Help > Tutorials has a lesson called
+**How much did I actually listen?**.
 
 ### Backing up your podcasts
 
@@ -2772,7 +3728,7 @@ folder, and you can always get back to where you are today.
 Cast tells you when the backup is written. Do it now, while you think of it.
 Then do it again whenever you have spent an evening sorting folders.
 
-### Restoring from a backup
+#### Restoring from a backup
 
 When you need your library back, from a backup you made earlier:
 
@@ -2784,7 +3740,7 @@ When you need your library back, from a backup you made earlier:
 The backup replaces the library on this computer. Anything playing stops
 first, and your podcasts are back straight away, with no restart.
 
-### Exporting your data to read
+#### Exporting your data to read
 
 Sometimes you want to look at your data, or use it in another program.
 **Podcasts > Export My Data** (**Ctrl+Alt+Shift+E**) writes everything Cast
@@ -2797,14 +3753,22 @@ My Podcasts. For a list of only the podcasts you follow, to take to another
 podcast app, use Export OPML, which Chapter 4, Finding podcasts you will
 love, covers.
 
+If you would rather be walked through it, Help > Tutorials has a lesson called
+**Back it up, move it, and keep your place**. It makes a backup with you, then
+covers the move to a new computer and keeping your place in step.
+
 ### Starting over
 
-If you want a clean slate, **Podcasts > Delete All Podcast Data**
-(**Ctrl+Alt+Shift+D**) unfollows every podcast and clears your Play Queue,
-playlists, Inbox folders, statistics and history. Cast asks twice, with No
-selected each time, then asks separately whether to delete your downloaded
-files as well. Make a backup first if there is any chance you will want it
-back.
+If you want a clean slate on this computer, **Podcasts > Clear All Podcast
+Data from This Computer** (**Ctrl+Alt+Shift+D**) unfollows every podcast and
+clears your Play Queue, playlists, Inbox folders, statistics and history.
+Cast asks twice, with No selected each time, then asks separately whether to
+delete your downloaded files as well. Make a backup first if there is any
+chance you will want it back.
+
+It only ever clears this computer. Your phone, your other computers and the
+shared folder you use to keep your place in step are left exactly as they
+are, so tidying a laptop can never empty anything else.
 
 ### Moving your setup to a new computer
 
@@ -2829,6 +3793,12 @@ private feed sign-ins again, through **Feed Credentials** on the podcast's
 context menu. Cast reminds you of this before it imports. Importing replaces
 what is on the new computer, so do it before you start setting things up
 there.
+
+> **A note from QUILLBee:** Four commands in this chapter sound alike, and
+> they do different jobs. Back Up My Podcasts makes a copy you can put back.
+> Export My Setup is for a new computer, and carries your settings and keys as
+> well. Export My Data is for reading, and can't be put back. Export OPML,
+> from Chapter 4, is only the list of podcasts you follow, for another app.
 
 ### Keeping your place on more than one computer
 
@@ -2867,7 +3837,30 @@ With the plain file, **Include episode and file names** lets Cast name an
 episode when it tells you about a disagreement. Turn it off if you would
 rather the shared folder knew less about what you listen to.
 
-### Your place between Quill Radio and QUILL Cast
+**Also share the podcasts I follow, and their folders** goes one step
+further. Follow a podcast on one device and it appears on the others,
+in the same folder and at the same speed. Stop following it on one, and it goes
+from the others too. Here is what to know before you turn it on:
+
+- Anybody who can see the shared folder can read the list of podcasts you
+  follow. That is why it is off until you choose it.
+- Private podcasts, ones you sign in to or whose address carries a key, never
+  go in the folder. Cast tells you how many it kept back.
+- When a podcast leaves because you stopped following it elsewhere, only the
+  follow goes. Your downloaded episodes stay on this computer, and so does
+  your listening history. Follow it again and everything comes back.
+- Every podcast added or removed this way is named when you sync, such as
+  "Stopped following Blind Abilities, removed on Studio PC", so nothing
+  changes without you hearing about it.
+- If your phone puts a podcast in two folders, Cast files it in the first
+  one and leaves the phone's second folder alone.
+
+### Cast and the other Quill apps
+
+If you use Quill Radio or QUILL as well, Cast shares with them, so you never
+have to keep two of anything.
+
+#### Your place between Quill Radio and QUILL Cast
 
 If you also use Quill Radio, you never need to remember which app you were
 in. Both apps share one place per episode on the same computer. Pause an
@@ -2877,7 +3870,7 @@ seconds."
 
 An episode finished in either app is finished in both.
 
-### Sharing with QUILL
+#### Sharing with QUILL
 
 QUILL Cast, QUILL and Quill Radio keep your podcasts in one shared store on
 your computer. Follow a podcast here and QUILL's Podcasts follows it too,
@@ -2887,9 +3880,18 @@ files stay where they are on your disk.
 Uninstalling QUILL Cast never deletes any of it. If you come back, your
 podcasts are waiting.
 
-Your listening is now safe, portable, and in step wherever you are. If
-anything ever puzzles you or goes wrong, Chapter 8, When you need a hand, is
-there for you.
+### What you learned, and where to go next
+
+Your listening is now safe and it can travel. You can see how much you have
+listened, make a backup and put it back, move everything to a new computer,
+and keep your place in step between computers and between Quill apps.
+
+Help > Tutorials has **Back it up, move it, and keep your place** for the
+backup and the move, and **How much did I actually listen?** for your
+statistics and Year in Review.
+
+If anything ever puzzles you or goes wrong, Chapter 8, When you need a hand,
+is there for you.
 
 ## Chapter 8: When you need a hand
 
@@ -2902,9 +3904,8 @@ We will go through the help Cast has built in, roughly in the order you are
 likely to need it: asking about the control you are on, finding a command
 you have forgotten, taking back a mistake, hearing a message again, and
 learning Cast with the tutorials. Then come updates, getting in touch with a
-person, and answers to the questions people ask most. By the end you will
-know that very little in Cast can go wrong for good, and where to turn when
-something does.
+person, and answers to the questions people ask most. The good news first:
+very little in Cast can go wrong for good.
 
 Most of what follows lives on the Help menu, **Alt+H**.
 
@@ -2950,8 +3951,14 @@ all, and says what it did: "Undid Unfollow. Brought back The Daily, with 412
 episodes and 3 downloaded files."
 
 Undo covers unfollowing, Remove All Episodes, Remove All Downloads, Mark All
-as Played and deleting a recording. It goes back one step, the most recent
-one. Press it again and Cast says "Nothing to undo."
+as Played and deleting a recording. Ctrl+Z takes back the most recent one.
+Press it again and it takes back the one before.
+
+Sometimes the mistake was a few steps ago, and you want to keep what you did
+since. Choose **Edit > Undo History** (**Ctrl+Shift+Z**). It lists the last ten
+things you can take back, newest first, each saying what undoing it would
+bring back. Choose one and press **Undo This One**. Only that step comes
+back; the others stay as they are. Quill Radio has the same list.
 
 You never have to wonder whether something can be undone. When it can, Cast
 ends its message with "Ctrl+Z undoes this." If part of it cannot come back,
@@ -2977,6 +3984,23 @@ Announcements go by fast, and you may have been reading something else.
   streams that dropped, each with its reason and time. **Retry** tries the
   selected one again. **Copy All** gives you the whole list as text for a
   message to support, without any passwords. **Clear List** empties it.
+  Anything Cast tried to do on its own and could not, such as reading a
+  podcast's chapters, processing a download's audio or looking at a watched
+  folder, is written here too, even when it was not worth interrupting you
+  for.
+
+A few things take a while, and Cast keeps you posted without chattering. When
+you press F5 to check every podcast, it says how far it has got every quarter
+of the way, then one sentence at the end: "Checked 40 feeds: 6 new episodes
+from 4 podcasts." Download All Episodes does the same for a batch. Those
+closing sentences go into Activity, along with your exports and each podcast
+you follow, so F9 can say the last one again and Open Folder can find a file
+you just saved.
+
+Cast never leaves you wondering whether a button worked. Every button and
+every key ends in a sentence: what happened, or why nothing could. When
+something is busy, Cast says so as it starts, such as "Searching..." or
+"Fetching The Daily...", and says how it turned out when it finishes.
 
 If Cast could not save your library when it last closed, perhaps because the
 disk was full, it tells you once the next time it opens. Retry on that row in
@@ -2985,12 +4009,17 @@ Recent Problems tries the save again.
 Nothing in Activity or Recent Problems leaves your computer. F9 and Shift+F9
 work the same way in QUILL, QUILL Lite and Quill Radio.
 
+If you would rather be walked through it, Help > Tutorials has a lesson called
+**When something breaks**. It practises F9, Activity, Recent Problems, undo
+and F1 with you, before you ever need them.
+
 ### Learning with the tutorials
 
 Reading about Cast is one thing. The tutorials teach it by having you use it,
 one step at a time, with Cast right there beside you.
 
-1. Press **Ctrl+Alt+F1** (Help > Tutorials).
+1. Press **Ctrl+Alt+F1** (Help > Tutorials). The **QUILL Cast Tutorials**
+   window opens.
 2. The contents list the tutorials in five tracks: Your first hour, Keeping
    up, Listening well, One podcast at a time, and Making it yours. Each row
    says how long it takes and whether you have finished it.
@@ -2999,7 +4028,7 @@ one step at a time, with Cast right there beside you.
    Tutorials window stays open beside Cast the whole time.
 5. Press **Next** (Alt+N) for the next step, or **Back** (Alt+B) to go back.
 
-There are 24 tutorials, a little over two hours in all. A few things make
+There are 24 tutorials, about two and a half hours in all. A few things make
 them pleasant to use:
 
 - **Try it** (Alt+T) does the step for you, such as opening a window, so the
@@ -3029,6 +4058,10 @@ unless it finds one. To check now:
    open again afterwards, or **Install when I close** (Alt+C) to keep
    listening and update the next time you close Cast.
 
+Help > About shows your version with a build number, such as 3.2.0 (build 2). The
+build number tells you which build of a version you have: when a fix comes out
+without a new version number, it is a newer build, and Check for Updates offers it.
+
 If you are already up to date, Cast tells you so. To turn the daily check
 off, open Preferences (Ctrl+,), choose **When Cast opens**, and clear
 **Check for updates on launch**.
@@ -3036,6 +4069,88 @@ off, open Preferences (Ctrl+,), choose **When Cast opens**, and clear
 The user guide, the release notes and the version you have are on the Help
 menu too: **User Guide** (Ctrl+Alt+D), **Release Notes** (Ctrl+Alt+R) and
 **About QUILL Cast** (Ctrl+Alt+O).
+
+### Release channels: Stable, Beta and Dev
+
+Cast comes in three flavours, and you choose which one your copy follows.
+They are called release channels.
+
+- **Stable** is the version we recommend. It has been checked with JAWS and
+  NVDA, and it is what most people use. Every copy starts here.
+- **Beta** gets new features a few weeks early. It is mostly finished, but
+  some things may not work right yet.
+- **Dev** is the work in progress, sometimes several builds a week. Things
+  will break. Only choose it if a developer asked you to, or you enjoy
+  testing.
+
+1. Open the **Help** menu, then choose **Release Channel...** (press **Alt+H**,
+   then **L**). You can also open it from Preferences (Ctrl+,): under **When
+   Cast opens**, choose **Change release channel**.
+2. Arrow through Stable, Beta and Dev. The box below tells you what each one
+   means and what choosing it would do. Nothing changes yet.
+3. Press **Switch** to move, or **Close** (Escape) to leave things as they
+   are.
+4. For Beta or Dev, a short warning comes first: what could go wrong, how your
+   podcasts are protected, and how to come back. Read it, tick the **I
+   understand** box, and choose **Move to Beta** (or **Move to Dev**). **Stay
+   on Stable**, or Escape, changes nothing.
+
+Before it moves, Cast saves a copy of your subscriptions, playlists, listening
+places and settings. If it cannot, it stays where it is and tells you why.
+Downloaded episodes are not copied, and updates do not change them. Then it
+checks for updates on the new channel straight away and offers you the newest
+version there, if there is one. Nothing is installed unless you say so.
+
+**When Quill Radio or QUILL Lite is installed too.** These apps run on one shared engine on
+your computer. When an app moves to Beta or Dev, it gets its own copy of that
+engine, so the apps you leave on Stable are never touched. You can still move
+several at once: tick them under "Also move my other QuillVille apps on this
+computer" and choose **Switch**.
+
+**A note about disk space.** That second copy of the engine takes about 335 MB.
+It goes away by itself when your last app comes back to Stable. A portable copy
+carries its own engine, so it needs no extra space.
+
+**Updates on Beta and Dev.** On Beta and Dev, Cast downloads a new version
+quietly when its daily check finds one, so it is ready when you are. It never
+installs anything without asking: when the download is done, it says so and
+shows you what's new, and you choose when to install. It waits instead of
+downloading on a metered connection, during Quiet Hours, and while Quill Radio is recording.
+Update History tells you why it waited. On Stable nothing changes: Cast tells
+you about a new version and downloads it only when you ask.
+
+**If an update doesn't start.** After an update, Cast checks that the new
+version really opens. If it doesn't open within two minutes, the update undoes
+itself and puts back the version you had, and the next time Cast starts it
+tells you so. Nothing of yours is changed, and Update History has the details.
+To make this possible, Cast keeps a copy of the installer for the version you
+have: on Beta and Dev for as long as you have that version, and on Stable for a
+week or three starts after each update. That copy takes about 200 MB of disk
+space, which Stable gives back once the week or the three starts are up. After
+an update, the previous installer is kept until the new version has started
+three times, or for a week, and then it is deleted.
+
+**Coming back to Stable.** Open Release Channel again and choose **Stable**.
+
+- If the version you have is already a Stable one, you are back straight away
+  and nothing is installed.
+- If you have a newer Beta or Dev version, Cast checks whether Stable can
+  read everything you have saved. If it can, choose **Go back to** (the Stable
+  version) **now**. Cast downloads Stable and offers to install it, and your
+  subscriptions and settings come with you.
+- If Stable can't read something yet, Cast says so and gives you two safe
+  choices. **Wait for Stable** keeps the version you have, stops test versions,
+  and moves you to Stable by itself when Stable catches up. **Use the copy
+  from** (the day you joined) puts back the copy of your subscriptions and settings saved
+  when you joined, then installs Stable. Anything you added since then won't be
+  in it, but a copy of how things are right now is saved first, so nothing is
+  thrown away.
+- If there is no saved copy, waiting is the only choice, and the window says
+  so.
+
+The **Update History** button in the same window shows what the updater has
+done for Cast. Switching sends nothing about you: the only thing Cast ever
+sends when it checks for updates is a request for the list of versions.
 
 ### When a media tool is missing
 
@@ -3071,55 +4186,83 @@ have something from Recent Problems or Activity, paste it in.
 
 ### Troubleshooting
 
-**A feed will not add.** Check that the address is the feed itself, and not
-the podcast's web page. Searching by name in Add Podcast usually finds it.
+Here are the snags people run into most, each with what to do about it.
 
-**Cast asks for a username and password.** The feed is private. Enter the
-ones your podcast provider gave you. For Patreon-style feeds they are next
-to the feed address on the provider's site. If the question keeps coming
-back, copy both again.
+> **QUILLBee's tip:** Most of these start the same way. Press F9 to hear what
+> Cast said, then Ctrl+Alt+Shift+P for Recent Problems, which keeps the reason
+> and the time for anything that failed, earlier sessions included. Between
+> the two, you often know what went wrong before you read any further.
 
-**A private feed says "feed sign-in failed".** The publisher may have
-changed your sign-in, or you are on a different computer. Open the podcast's
-context menu, choose **Feed Credentials**, enter the password again, and
-refresh with F5.
+#### A podcast will not add
 
-**A download keeps failing.** Press **Ctrl+Alt+Shift+V** (Downloads > Resume
-All Downloads). If it still fails, check that **Reconnect and keep
-downloading automatically** is on in Preferences, under Fetching. Recent
-Problems will have the reason.
+Check that the address is the feed itself, and not the podcast's web page.
+Typing its name in Add Podcast usually finds it.
 
-**Episodes vanished from the Play Queue.** They waited longer than the
-podcast's queue limit. Go to Recently Expired (**Ctrl+Shift+X**) and press
-Restore. To change the limit, use **Queue Expiry...** on the podcast's
-context menu. Chapter 5, Keeping up without keeping watch, explains queue
-expiry and Inbox limits.
+#### Cast asks for a username and password
 
-**The Inbox is missing episodes.** A podcast's Inbox limits can move older
-episodes out of the Inbox. They are still unheard in the podcast's own
-episode list, and nothing is deleted.
+The feed is private. Enter the ones your podcast provider gave you. For
+Patreon-style feeds they are next to the feed address on the provider's site.
+If the question keeps coming back, copy both again.
 
-**A download disappeared.** A cleanup rule in Preferences, under Data,
-removed the file. The episode is still there, ready to download again.
-Cleanup never touches an episode in your Play Queue or one you have started.
+#### A private feed says "feed sign-in failed"
 
-**Cast did not pick up my episode when it opened.** Resume Last Episode on
-Launch (Ctrl+Alt+Shift+L) only works when the episode is still in your
-library. If you unfollowed the podcast or removed the episode, press Enter
-on something new.
+The publisher may have changed your sign-in, or you are on a different
+computer. Open the podcast's context menu, choose **Feed Credentials**, enter
+the password again, and refresh with F5.
 
-**A letter key does something unexpected in a list.** Those are the Winamp
-playback keys. Turn them off in Preferences, under Playing, if you would
-rather type letters to jump through a list.
+#### A download keeps failing
 
-**A command or a whole menu is missing.** It may be an Advanced row, or a
-feature switched off in Customize Features (Ctrl+Alt+C). The Command Palette
-(Ctrl+Shift+P) finds it either way and tells you which.
+Press **Ctrl+Alt+Shift+V** (Downloads > Resume All Downloads). If it still
+fails, check that **Reconnect and keep downloading automatically** is on in
+Preferences, under Fetching. Recent Problems will have the reason.
 
-That is everything you need to find your own way through Cast, and to get
-back on track when something goes wrong. The Keyboard reference that follows
-lists every key Cast comes with, for the days you want them all in one
-place. Happy listening.
+#### Episodes vanished from the Play Queue
+
+They waited longer than the podcast's queue limit. Go to Recently Expired
+(**Ctrl+Shift+X**) and press Restore. To change the limit, use **Queue
+Expiry...** on the podcast's context menu. Chapter 5, Keeping up without
+keeping watch, explains queue expiry and Inbox limits.
+
+#### The Inbox is missing episodes
+
+A podcast's Inbox limits can move older episodes out of the Inbox. They are
+still unheard in the podcast's own episode list, and nothing is deleted.
+
+#### A download disappeared
+
+A cleanup rule in Preferences, under Data, removed the file. The episode is
+still there, ready to download again. Cleanup never touches an episode in your
+Play Queue or one you have started.
+
+#### Cast did not pick up my episode when it opened
+
+Resume Last Episode on Launch (Ctrl+Alt+Shift+L) only works when the episode
+is still in your library. If you unfollowed the podcast or removed the
+episode, press Enter on something new.
+
+#### A letter key does something unexpected in a list
+
+Those are the Winamp playback keys. Turn them off in Preferences, under
+Playing, if you would rather type letters to jump through a list.
+
+#### A command or a whole menu is missing
+
+It may be an Advanced row, or a feature switched off in Customize Features
+(Ctrl+Alt+C). The Command Palette (Ctrl+Shift+P) finds it either way and tells
+you which.
+
+### What you learned, and where to go next
+
+You now know where to turn when you are stuck. F1 explains whatever you are
+on, the Command Palette finds a command you have forgotten, Ctrl+Z takes back
+a mistake, and F9 says the last thing again. When none of that is enough, a
+person at support will help.
+
+If you would like to practise this before you need it, Help > Tutorials has a
+lesson called **When something breaks**.
+
+The Keyboard reference that follows lists every key Cast comes with, for the
+days you want them all in one place. Happy listening.
 
 ## Keyboard reference
 
@@ -3152,6 +4295,7 @@ Advanced appear on the menus only when Advanced Features is on.
 | Help for the window and control you are on | F1 |
 | Command Palette | Ctrl+Shift+P |
 | Go To | Ctrl+G |
+| Back to the place Cast opens on | Ctrl+Home |
 | Send to the tray | Ctrl+W |
 | Show or hide Cast from any program | Ctrl+Alt+Shift+F12 |
 | Exit | Ctrl+Q |
@@ -3207,10 +4351,20 @@ Playlists, Enter opens a playlist.
 | --- | --- |
 | Play (Quick Action 1) | Enter |
 | Add to the Play Queue | Space |
+| Play next, straight after this one | Shift+Space |
 | Remove from this place (stays in your library) | Delete |
 | Rename | F2 |
 | Quick Actions 1 to 9 | Ctrl+1 to Ctrl+9 |
 | The episode's menu | Shift+F10 or the Applications key |
+
+### In Notifications
+
+| Action | Key |
+| --- | --- |
+| Go to what a notice is about | Enter |
+| Play a new episode now | Ctrl+Enter |
+| Add a new episode to the Play Queue | Space |
+| Remove a notice | Delete |
 
 ### Playing
 
@@ -3219,6 +4373,7 @@ Playlists, Enter opens a playlist.
 | Play or pause | Ctrl+P |
 | Stop | Ctrl+. |
 | Say what is playing | Ctrl+T |
+| Time remaining | Ctrl+Shift+T |
 | Player Information | Ctrl+I |
 | Now Playing window | Ctrl+Alt+2 |
 | Skip forward, skip back | Ctrl+Right, Ctrl+Left |
@@ -3229,9 +4384,11 @@ Playlists, Enter opens a playlist.
 | Volume up, volume down | Ctrl+Up, Ctrl+Down |
 | Mute or unmute | Ctrl+Alt+M |
 | Next in the Play Queue, previous | Ctrl+Alt+Down, Ctrl+Alt+Up |
-| Mark as Played and Next | Ctrl+Alt+Shift+Q |
+| Mark as Played and Next | Ctrl+Alt+Shift+Down |
 | Stop After This Episode | Ctrl+Alt+Shift+A |
 | Bookmark this moment | Ctrl+Alt+A |
+| Bookmark with a note | Ctrl+Shift+D |
+| Bookmarks in this episode | Ctrl+Shift+J |
 | Sleep Timer | Ctrl+Alt+T |
 | Sleep at end of this episode | Ctrl+Alt+Shift+T |
 | Add 5 minutes to the sleep timer | Ctrl+Alt+X |
@@ -3278,6 +4435,7 @@ they keep doing that.
 | Watched Folders | Ctrl+Alt+W |
 | Follow ACB Media Podcasts | Ctrl+Alt+B |
 | Feed Check | Ctrl+Shift+C |
+| Rearrange Library and Inbox | Ctrl+Shift+R |
 | Settings for This Podcast | Ctrl+Alt+, |
 | Preferences | Ctrl+, |
 | Import OPML (Advanced) | Ctrl+Alt+I |
@@ -3297,7 +4455,7 @@ they keep doing that.
 | Back Up My Podcasts (Advanced) | Ctrl+Alt+Shift+B |
 | Restore from a Backup (Advanced) | Ctrl+Alt+Shift+R |
 | Export My Data (Advanced) | Ctrl+Alt+Shift+E |
-| Delete All Podcast Data (Advanced) | Ctrl+Alt+Shift+D |
+| Clear All Podcast Data from This Computer (Advanced) | Ctrl+Alt+Shift+D |
 | Export My Setup | Ctrl+Alt+Shift+X |
 | Import My Setup | Ctrl+Alt+Shift+N |
 
@@ -3316,6 +4474,7 @@ they keep doing that.
 | Action | Key |
 | --- | --- |
 | Undo Last Action | Ctrl+Z |
+| Undo History | Ctrl+Shift+Z |
 | Repeat Last Result | F9 |
 | Activity | Shift+F9 |
 | Recent Problems | Ctrl+Alt+Shift+P |
@@ -3331,6 +4490,8 @@ they keep doing that.
 | Media Tools (Advanced) | Ctrl+Alt+Shift+M |
 | Get FFmpeg (Advanced) | Ctrl+Alt+Shift+F |
 | Redeem Unlock Code (Advanced) | Ctrl+Alt+Shift+Y |
+| Connect to Spotify (experimental, once unlocked) | Ctrl+Alt+S |
+| Browse Spotify Podcasts (experimental, once unlocked) | Ctrl+Alt+V |
 
 ### AI Features
 

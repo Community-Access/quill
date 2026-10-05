@@ -35,7 +35,7 @@ from quill.core.podcasts.models_filters import (  # noqa: E402
 )
 from quill.core.podcasts.subscriptions import PodcastLibrary  # noqa: E402
 from quill.ui.podcasts.episode_filter_rule_dialog import EpisodeFilterRuleDialog  # noqa: E402
-from quill.ui.podcasts.episode_filters_dialog import EpisodeFiltersDialog  # noqa: E402
+from quill.ui.podcasts.episode_filters_dialog import EpisodeFiltersWindow  # noqa: E402
 
 
 @pytest.fixture(scope="module")
@@ -77,7 +77,7 @@ def test_the_filters_window_builds_and_shows_the_stored_configuration(wx_app, tm
 
     frame = wx.Frame(None)
     try:
-        dialog = EpisodeFiltersDialog(frame, library=library, show=show)
+        dialog = EpisodeFiltersWindow(frame, library=library, show=show)
         try:
             assert dialog._enabled.GetValue() is True
             assert dialog._rules.GetCount() == 1
@@ -92,7 +92,7 @@ def test_the_filters_window_builds_and_shows_the_stored_configuration(wx_app, tm
             assert dialog._draft.scopes == stored.scopes
             assert dialog._draft.mode == MODE_KEEP_MATCHING
         finally:
-            dialog.dialog.Destroy()
+            dialog.frame.Destroy()
     finally:
         frame.Destroy()
 
@@ -111,7 +111,7 @@ def test_the_filters_window_previews_without_touching_anything(wx_app) -> None:
     )
     frame = wx.Frame(None)
     try:
-        dialog = EpisodeFiltersDialog(frame, library=library, show=show)
+        dialog = EpisodeFiltersWindow(frame, library=library, show=show)
         try:
             said: list[str] = []
             dialog._announce = said.append
@@ -125,7 +125,7 @@ def test_the_filters_window_previews_without_touching_anything(wx_app) -> None:
             assert library.inbox_assignments == {}
             assert len(show.episodes) == 2
         finally:
-            dialog.dialog.Destroy()
+            dialog.frame.Destroy()
     finally:
         frame.Destroy()
 

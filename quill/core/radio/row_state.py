@@ -32,6 +32,8 @@ class FolderState:
     subscribed: bool = False
     #: A channel the listener chose to follow (so it can be unfollowed).
     is_followed_channel: bool = False
+    #: That followed channel rings for new videos (youtube_channel_alerts).
+    channel_notify: bool = False
     #: Whether the tree row is currently expanded (Open reads as Close then).
     expanded: bool = False
     #: A top-level source branch (Popular Stations, Podcasts, ...) -- the

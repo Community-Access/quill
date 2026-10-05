@@ -1,0 +1,3117 @@
+{
+  "version": 1,
+  "as_of": "2026-10-03",
+  "about": "English-language radio flagship stations for major North American league teams, hand-checked against each team's, league's or station's own public page (the source per team). Call signs and names only -- streams are matched against the station directory at search time. Teams whose flagship could not be verified are left out rather than guessed.",
+  "teams": [
+    {
+      "team": "Arizona Diamondbacks",
+      "league": "MLB",
+      "sport": "baseball",
+      "aliases": [
+        "Diamondbacks",
+        "D-backs",
+        "Arizona baseball"
+      ],
+      "source": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=2026-06-01&endDate=2026-08-31&hydrate=broadcasts(all)",
+      "stations": [
+        {
+          "name": "Arizona Sports 98.7 FM",
+          "call_sign": "KMVP-FM",
+          "city": "Phoenix, AZ",
+          "homepage": "https://arizonasports.com/",
+          "notes": "MLB official schedule data (2026 season) lists this as the team's English radio broadcast for nearly every game"
+        }
+      ]
+    },
+    {
+      "team": "Athletics",
+      "league": "MLB",
+      "sport": "baseball",
+      "aliases": [
+        "A's",
+        "Athletics",
+        "Sacramento baseball"
+      ],
+      "source": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=2026-06-01&endDate=2026-08-31&hydrate=broadcasts(all)",
+      "stations": [
+        {
+          "name": "Talk 650 KSTE",
+          "call_sign": "KSTE",
+          "city": "Sacramento, CA",
+          "homepage": "https://kste.iheart.com/",
+          "notes": "MLB official schedule data (2026 season) lists this as the team's English radio broadcast for nearly every game; team also streams on A's Cast"
+        }
+      ]
+    },
+    {
+      "team": "Atlanta Braves",
+      "league": "MLB",
+      "sport": "baseball",
+      "aliases": [
+        "Braves",
+        "Atlanta baseball"
+      ],
+      "source": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=2026-06-01&endDate=2026-08-31&hydrate=broadcasts(all)",
+      "stations": [
+        {
+          "name": "680 The Fan",
+          "call_sign": "WCNN",
+          "city": "Atlanta, GA",
+          "homepage": "https://www.680thefan.com/",
+          "notes": "MLB official schedule data (2026 season) lists this as the team's English radio broadcast for nearly every game; MLB lists it as 680 AM/93.7 FM The Fan"
+        }
+      ]
+    },
+    {
+      "team": "Baltimore Orioles",
+      "league": "MLB",
+      "sport": "baseball",
+      "aliases": [
+        "Orioles",
+        "O's",
+        "Baltimore baseball"
+      ],
+      "source": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=2026-06-01&endDate=2026-08-31&hydrate=broadcasts(all)",
+      "stations": [
+        {
+          "name": "WBAL 1090 AM",
+          "call_sign": "WBAL",
+          "city": "Baltimore, MD",
+          "homepage": "https://www.wbal.com/",
+          "notes": "MLB official schedule data (2026 season) lists this as the team's English radio broadcast for nearly every game; co-listed with 98 Rock"
+        },
+        {
+          "name": "98 Rock 97.9 FM",
+          "call_sign": "WIYY",
+          "city": "Baltimore, MD",
+          "homepage": "https://www.98online.com/",
+          "notes": "MLB official schedule data (2026 season) lists this as the team's English radio broadcast for nearly every game; co-listed with WBAL"
+        }
+      ]
+    },
+    {
+      "team": "Boston Red Sox",
+      "league": "MLB",
+      "sport": "baseball",
+      "aliases": [
+        "Red Sox",
+        "Sox",
+        "Boston baseball"
+      ],
+      "source": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=2026-06-01&endDate=2026-08-31&hydrate=broadcasts(all)",
+      "stations": [
+        {
+          "name": "WEEI 93.7 FM",
+          "call_sign": "WEEI-FM",
+          "city": "Boston, MA",
+          "homepage": "https://www.audacy.com/weei",
+          "notes": "MLB official schedule data (2026 season) lists this as the team's English radio broadcast for nearly every game"
+        }
+      ]
+    },
+    {
+      "team": "Chicago Cubs",
+      "league": "MLB",
+      "sport": "baseball",
+      "aliases": [
+        "Cubs",
+        "Chicago Cubs baseball"
+      ],
+      "source": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=2026-06-01&endDate=2026-08-31&hydrate=broadcasts(all)",
+      "stations": [
+        {
+          "name": "104.3 The Score",
+          "call_sign": "WSCR-AM",
+          "city": "Chicago, IL",
+          "homepage": "https://www.audacy.com/670thescore",
+          "notes": "MLB official schedule data (2026 season) lists this as the team's English radio broadcast for nearly every game; station page titles itself WSCR-AM, branded 104.3 The Score"
+        }
+      ]
+    },
+    {
+      "team": "Chicago White Sox",
+      "league": "MLB",
+      "sport": "baseball",
+      "aliases": [
+        "White Sox",
+        "Chicago White Sox baseball"
+      ],
+      "source": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=2026-06-01&endDate=2026-08-31&hydrate=broadcasts(all)",
+      "stations": [
+        {
+          "name": "ESPN 1000",
+          "call_sign": "WMVP",
+          "city": "Chicago, IL",
+          "homepage": "",
+          "notes": "MLB official schedule data (2026 season) lists this as the team's English radio broadcast for nearly every game"
+        }
+      ]
+    },
+    {
+      "team": "Cincinnati Reds",
+      "league": "MLB",
+      "sport": "baseball",
+      "aliases": [
+        "Reds",
+        "Cincinnati baseball"
+      ],
+      "source": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=2026-06-01&endDate=2026-08-31&hydrate=broadcasts(all)",
+      "stations": [
+        {
+          "name": "700 WLW",
+          "call_sign": "WLW",
+          "city": "Cincinnati, OH",
+          "homepage": "https://700wlw.iheart.com/",
+          "notes": "MLB official schedule data (2026 season) lists this as the team's English radio broadcast for nearly every game"
+        }
+      ]
+    },
+    {
+      "team": "Cleveland Guardians",
+      "league": "MLB",
+      "sport": "baseball",
+      "aliases": [
+        "Guardians",
+        "Cleveland baseball"
+      ],
+      "source": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=2026-06-01&endDate=2026-08-31&hydrate=broadcasts(all)",
+      "stations": [
+        {
+          "name": "WTAM 1100",
+          "call_sign": "WTAM",
+          "city": "Cleveland, OH",
+          "homepage": "https://wtam.iheart.com/",
+          "notes": "MLB official schedule data (2026 season) lists this as the team's English radio broadcast for nearly every game; co-listed with WMMS"
+        },
+        {
+          "name": "100.7 WMMS",
+          "call_sign": "WMMS",
+          "city": "Cleveland, OH",
+          "homepage": "https://wmms.iheart.com/",
+          "notes": "MLB official schedule data (2026) lists it for most games alongside WTAM"
+        }
+      ]
+    },
+    {
+      "team": "Colorado Rockies",
+      "league": "MLB",
+      "sport": "baseball",
+      "aliases": [
+        "Rockies",
+        "Colorado baseball",
+        "Denver baseball"
+      ],
+      "source": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=2026-06-01&endDate=2026-08-31&hydrate=broadcasts(all)",
+      "stations": [
+        {
+          "name": "KOA 850 AM / 94.1 FM",
+          "call_sign": "KOA",
+          "city": "Denver, CO",
+          "homepage": "https://www.850koa.com/",
+          "notes": "MLB official schedule data (2026 season) lists this as the team's English radio broadcast for nearly every game"
+        }
+      ]
+    },
+    {
+      "team": "Detroit Tigers",
+      "league": "MLB",
+      "sport": "baseball",
+      "aliases": [
+        "Tigers",
+        "Detroit baseball"
+      ],
+      "source": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=2026-06-01&endDate=2026-08-31&hydrate=broadcasts(all)",
+      "stations": [
+        {
+          "name": "97.1 The Ticket",
+          "call_sign": "WXYT-FM",
+          "city": "Detroit, MI",
+          "homepage": "https://www.audacy.com/971theticket",
+          "notes": "MLB official schedule data (2026 season) lists this as the team's English radio broadcast for nearly every game"
+        }
+      ]
+    },
+    {
+      "team": "Houston Astros",
+      "league": "MLB",
+      "sport": "baseball",
+      "aliases": [
+        "Astros",
+        "Houston baseball"
+      ],
+      "source": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=2026-06-01&endDate=2026-08-31&hydrate=broadcasts(all)",
+      "stations": [
+        {
+          "name": "SportsTalk 790",
+          "call_sign": "KBME",
+          "city": "Houston, TX",
+          "homepage": "https://sportstalk790.iheart.com/",
+          "notes": "MLB official schedule data (2026 season) lists this as the team's English radio broadcast for nearly every game"
+        }
+      ]
+    },
+    {
+      "team": "Kansas City Royals",
+      "league": "MLB",
+      "sport": "baseball",
+      "aliases": [
+        "Royals",
+        "Kansas City baseball",
+        "KC baseball"
+      ],
+      "source": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=2026-06-01&endDate=2026-08-31&hydrate=broadcasts(all)",
+      "stations": [
+        {
+          "name": "96.5 The Fan",
+          "call_sign": "KFNZ-FM",
+          "city": "Kansas City, MO",
+          "homepage": "https://www.audacy.com/965thefan",
+          "notes": "MLB official schedule data (2026 season) lists this as the team's English radio broadcast for nearly every game"
+        }
+      ]
+    },
+    {
+      "team": "Los Angeles Angels",
+      "league": "MLB",
+      "sport": "baseball",
+      "aliases": [
+        "Angels",
+        "Halos",
+        "Anaheim baseball"
+      ],
+      "source": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=2026-06-01&endDate=2026-08-31&hydrate=broadcasts(all)",
+      "stations": [
+        {
+          "name": "AM 830 KLAA",
+          "call_sign": "KLAA",
+          "city": "Orange, CA",
+          "homepage": "https://www.am830klaa.com/",
+          "notes": "MLB official schedule data (2026 season) lists this as the team's English radio broadcast for nearly every game"
+        }
+      ]
+    },
+    {
+      "team": "Los Angeles Dodgers",
+      "league": "MLB",
+      "sport": "baseball",
+      "aliases": [
+        "Dodgers",
+        "LA Dodgers",
+        "Los Angeles baseball"
+      ],
+      "source": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=2026-06-01&endDate=2026-08-31&hydrate=broadcasts(all)",
+      "stations": [
+        {
+          "name": "AM 570 LA Sports",
+          "call_sign": "KLAC",
+          "city": "Los Angeles, CA",
+          "homepage": "https://am570lasports.iheart.com/",
+          "notes": "MLB official schedule data (2026 season) lists this as the team's English radio broadcast for nearly every game"
+        }
+      ]
+    },
+    {
+      "team": "Miami Marlins",
+      "league": "MLB",
+      "sport": "baseball",
+      "aliases": [
+        "Marlins",
+        "Miami baseball"
+      ],
+      "source": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=2026-06-01&endDate=2026-08-31&hydrate=broadcasts(all)",
+      "stations": [
+        {
+          "name": "WQAM 560 AM / 104.3 FM",
+          "call_sign": "WQAM-AM",
+          "city": "Miami, FL",
+          "homepage": "https://www.wqam.com/",
+          "notes": "MLB official schedule data (2026 season) lists this as the team's English radio broadcast for nearly every game; MLB lists 104.3 FM for most games and 560 AM for some"
+        }
+      ]
+    },
+    {
+      "team": "Milwaukee Brewers",
+      "league": "MLB",
+      "sport": "baseball",
+      "aliases": [
+        "Brewers",
+        "Brew Crew",
+        "Milwaukee baseball"
+      ],
+      "source": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=2026-06-01&endDate=2026-08-31&hydrate=broadcasts(all)",
+      "stations": [
+        {
+          "name": "620 WTMJ",
+          "call_sign": "WTMJ",
+          "city": "Milwaukee, WI",
+          "homepage": "https://www.wtmj.com/",
+          "notes": "MLB official schedule data (2026 season) lists this as the team's English radio broadcast for nearly every game"
+        }
+      ]
+    },
+    {
+      "team": "Minnesota Twins",
+      "league": "MLB",
+      "sport": "baseball",
+      "aliases": [
+        "Twins",
+        "Minnesota baseball"
+      ],
+      "source": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=2026-06-01&endDate=2026-08-31&hydrate=broadcasts(all)",
+      "stations": [
+        {
+          "name": "830 WCCO",
+          "call_sign": "WCCO-AM",
+          "city": "Minneapolis, MN",
+          "homepage": "https://www.audacy.com/wccoradio",
+          "notes": "MLB official schedule data (2026 season) lists this as the team's English radio broadcast for nearly every game; co-listed with 102.9 The Wolf"
+        },
+        {
+          "name": "102.9 The Wolf",
+          "call_sign": "KMNB-FM",
+          "city": "Minneapolis, MN",
+          "homepage": "https://www.audacy.com/1029thewolf",
+          "notes": "MLB official schedule data (2026 season) lists this as the team's English radio broadcast for nearly every game; co-listed with WCCO"
+        }
+      ]
+    },
+    {
+      "team": "New York Mets",
+      "league": "MLB",
+      "sport": "baseball",
+      "aliases": [
+        "Mets",
+        "Amazins",
+        "New York Mets baseball"
+      ],
+      "source": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=2026-06-01&endDate=2026-08-31&hydrate=broadcasts(all)",
+      "stations": [
+        {
+          "name": "Audacy Mets Radio 880 AM",
+          "call_sign": "WHSQ-AM",
+          "city": "New York, NY",
+          "homepage": "",
+          "notes": "MLB official schedule data (2026 season) lists this as the team's English radio broadcast for nearly every game; call sign from MLB data, not confirmed on a station page"
+        }
+      ]
+    },
+    {
+      "team": "New York Yankees",
+      "league": "MLB",
+      "sport": "baseball",
+      "aliases": [
+        "Yankees",
+        "Yanks",
+        "New York Yankees baseball"
+      ],
+      "source": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=2026-06-01&endDate=2026-08-31&hydrate=broadcasts(all)",
+      "stations": [
+        {
+          "name": "WFAN 660 AM / 101.9 FM",
+          "call_sign": "WFAN-AM",
+          "city": "New York, NY",
+          "homepage": "https://www.audacy.com/wfan",
+          "notes": "MLB official schedule data (2026 season) lists this as the team's English radio broadcast for nearly every game; simulcast on WFAN-FM 101.9"
+        }
+      ]
+    },
+    {
+      "team": "Philadelphia Phillies",
+      "league": "MLB",
+      "sport": "baseball",
+      "aliases": [
+        "Phillies",
+        "Phils",
+        "Philadelphia baseball"
+      ],
+      "source": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=2026-06-01&endDate=2026-08-31&hydrate=broadcasts(all)",
+      "stations": [
+        {
+          "name": "SportsRadio 94 WIP",
+          "call_sign": "WIP-FM",
+          "city": "Philadelphia, PA",
+          "homepage": "https://www.audacy.com/94wip",
+          "notes": "MLB official schedule data (2026 season) lists this as the team's English radio broadcast for nearly every game"
+        }
+      ]
+    },
+    {
+      "team": "Pittsburgh Pirates",
+      "league": "MLB",
+      "sport": "baseball",
+      "aliases": [
+        "Pirates",
+        "Bucs",
+        "Pittsburgh baseball"
+      ],
+      "source": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=2026-06-01&endDate=2026-08-31&hydrate=broadcasts(all)",
+      "stations": [
+        {
+          "name": "93.7 The Fan",
+          "call_sign": "KDKA-FM",
+          "city": "Pittsburgh, PA",
+          "homepage": "https://www.audacy.com/937thefan",
+          "notes": "MLB official schedule data (2026 season) lists this as the team's English radio broadcast for nearly every game; KDKA 1020 AM / 100.1 FM carries some games"
+        }
+      ]
+    },
+    {
+      "team": "San Diego Padres",
+      "league": "MLB",
+      "sport": "baseball",
+      "aliases": [
+        "Padres",
+        "Friars",
+        "San Diego baseball"
+      ],
+      "source": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=2026-06-01&endDate=2026-08-31&hydrate=broadcasts(all)",
+      "stations": [
+        {
+          "name": "97.3 The Fan",
+          "call_sign": "KWFN-FM",
+          "city": "San Diego, CA",
+          "homepage": "https://www.973thefansd.com/",
+          "notes": "MLB official schedule data (2026 season) lists this as the team's English radio broadcast for nearly every game"
+        }
+      ]
+    },
+    {
+      "team": "San Francisco Giants",
+      "league": "MLB",
+      "sport": "baseball",
+      "aliases": [
+        "Giants",
+        "SF Giants",
+        "San Francisco baseball"
+      ],
+      "source": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=2026-06-01&endDate=2026-08-31&hydrate=broadcasts(all)",
+      "stations": [
+        {
+          "name": "KNBR 680",
+          "call_sign": "KNBR",
+          "city": "San Francisco, CA",
+          "homepage": "https://www.knbr.com/",
+          "notes": "MLB official schedule data (2026 season) lists this as the team's English radio broadcast for nearly every game"
+        }
+      ]
+    },
+    {
+      "team": "Seattle Mariners",
+      "league": "MLB",
+      "sport": "baseball",
+      "aliases": [
+        "Mariners",
+        "M's",
+        "Seattle baseball"
+      ],
+      "source": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=2026-06-01&endDate=2026-08-31&hydrate=broadcasts(all)",
+      "stations": [
+        {
+          "name": "Seattle Sports 710 AM",
+          "call_sign": "KIRO-AM",
+          "city": "Seattle, WA",
+          "homepage": "https://www.seattlesports.com/",
+          "notes": "MLB official schedule data (2026 season) lists this as the team's English radio broadcast for nearly every game"
+        }
+      ]
+    },
+    {
+      "team": "St. Louis Cardinals",
+      "league": "MLB",
+      "sport": "baseball",
+      "aliases": [
+        "Cardinals",
+        "Cards",
+        "St. Louis baseball"
+      ],
+      "source": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=2026-06-01&endDate=2026-08-31&hydrate=broadcasts(all)",
+      "stations": [
+        {
+          "name": "NewsRadio 1120 KMOX",
+          "call_sign": "KMOX-AM",
+          "city": "St. Louis, MO",
+          "homepage": "https://www.kmox.com/",
+          "notes": "MLB official schedule data (2026 season) lists this as the team's English radio broadcast for nearly every game; MLB lists 1120 AM/104.1 FM"
+        }
+      ]
+    },
+    {
+      "team": "Tampa Bay Rays",
+      "league": "MLB",
+      "sport": "baseball",
+      "aliases": [
+        "Rays",
+        "Tampa Bay baseball"
+      ],
+      "source": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=2026-06-01&endDate=2026-08-31&hydrate=broadcasts(all)",
+      "stations": [
+        {
+          "name": "95.7 The Fan WDAE",
+          "call_sign": "WDAE",
+          "city": "Tampa, FL",
+          "homepage": "https://957wdae.iheart.com/",
+          "notes": "MLB official schedule data (2026 season) lists this as the team's English radio broadcast for nearly every game"
+        }
+      ]
+    },
+    {
+      "team": "Texas Rangers",
+      "league": "MLB",
+      "sport": "baseball",
+      "aliases": [
+        "Rangers",
+        "Texas baseball",
+        "Dallas baseball"
+      ],
+      "source": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=2026-06-01&endDate=2026-08-31&hydrate=broadcasts(all)",
+      "stations": [
+        {
+          "name": "105.3 The Fan",
+          "call_sign": "KRLD-FM",
+          "city": "Dallas, TX",
+          "homepage": "https://www.audacy.com/1053thefan",
+          "notes": "MLB official schedule data (2026 season) lists this as the team's English radio broadcast for nearly every game"
+        }
+      ]
+    },
+    {
+      "team": "Toronto Blue Jays",
+      "league": "MLB",
+      "sport": "baseball",
+      "aliases": [
+        "Blue Jays",
+        "Jays",
+        "Toronto baseball"
+      ],
+      "source": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=2026-06-01&endDate=2026-08-31&hydrate=broadcasts(all)",
+      "stations": [
+        {
+          "name": "Sportsnet 590 The Fan",
+          "call_sign": "CJCL",
+          "city": "Toronto, ON",
+          "homepage": "https://www.sportsnet.ca/590/",
+          "notes": "MLB official schedule data (2026 season) lists this as the team's English radio broadcast for nearly every game; call sign CJCL not confirmed on the station page"
+        }
+      ]
+    },
+    {
+      "team": "Washington Nationals",
+      "league": "MLB",
+      "sport": "baseball",
+      "aliases": [
+        "Nationals",
+        "Nats",
+        "Washington baseball"
+      ],
+      "source": "https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=2026-06-01&endDate=2026-08-31&hydrate=broadcasts(all)",
+      "stations": [
+        {
+          "name": "106.7 The Fan",
+          "call_sign": "WJFK-FM",
+          "city": "Washington, DC",
+          "homepage": "https://www.audacy.com/thefandc",
+          "notes": "MLB official schedule data (2026 season) lists this as the team's English radio broadcast for nearly every game"
+        }
+      ]
+    },
+    {
+      "team": "Arizona Cardinals",
+      "league": "NFL",
+      "sport": "football",
+      "aliases": [
+        "Cardinals",
+        "Arizona football",
+        "Cards"
+      ],
+      "source": "https://www.azcardinals.com/gameday/how-to-listen",
+      "stations": [
+        {
+          "name": "Arizona Sports 98.7",
+          "call_sign": "KMVP-FM",
+          "city": "Phoenix, AZ",
+          "homepage": "https://arizonasports.com/",
+          "notes": "flagship (team page: 'Flagship station 98.7 FM Arizona Sports'), 2026"
+        }
+      ]
+    },
+    {
+      "team": "Atlanta Falcons",
+      "league": "NFL",
+      "sport": "football",
+      "aliases": [
+        "Falcons",
+        "Atlanta football"
+      ],
+      "source": "https://www.atlantafalcons.com/news/92-9-the-game-announced-as-new-falcons-partner-14863351",
+      "stations": [
+        {
+          "name": "92.9 The Game",
+          "call_sign": "WZGC-FM",
+          "city": "Atlanta, GA",
+          "homepage": "https://www.audacy.com/929thegame",
+          "notes": "flagship per 2015 team release; current team how-to-watch pages still list 92.9 The Game as radio; nothing contradicts"
+        }
+      ]
+    },
+    {
+      "team": "Baltimore Ravens",
+      "league": "NFL",
+      "sport": "football",
+      "aliases": [
+        "Ravens",
+        "Baltimore football"
+      ],
+      "source": "https://www.baltimoreravens.com/news/ravens-expand-2026-radio-preseason-television-coverage",
+      "stations": [
+        {
+          "name": "98 Rock",
+          "call_sign": "WIYY-FM",
+          "city": "Baltimore, MD",
+          "homepage": "https://www.98online.com/",
+          "notes": "co-flagship with WBAL; 2026 team release names these as the Baltimore stations / official broadcast partners"
+        },
+        {
+          "name": "WBAL NewsRadio 1090",
+          "call_sign": "WBAL-AM",
+          "city": "Baltimore, MD",
+          "homepage": "https://www.wbal.com/",
+          "notes": "co-flagship; also simulcast on 101.5 FM (call sign not verified)"
+        }
+      ]
+    },
+    {
+      "team": "Buffalo Bills",
+      "league": "NFL",
+      "sport": "football",
+      "aliases": [
+        "Bills",
+        "Buffalo football"
+      ],
+      "source": "https://www.buffalobills.com/news/buffalo-bills-announce-new-flagship-radio-station-and-broadcast-team-additions-for-2026-season",
+      "stations": [
+        {
+          "name": "97 Rock",
+          "call_sign": "WGRF-FM",
+          "city": "Buffalo, NY",
+          "homepage": "https://www.97rock.com/",
+          "notes": "new flagship starting 2026 season (team release May 15, 2026)"
+        }
+      ]
+    },
+    {
+      "team": "Carolina Panthers",
+      "league": "NFL",
+      "sport": "football",
+      "aliases": [
+        "Panthers",
+        "Carolina football"
+      ],
+      "source": "https://www.panthers.com/news/radio",
+      "stations": [
+        {
+          "name": "99.7 The Fox",
+          "call_sign": "WRFX-FM",
+          "city": "Charlotte, NC",
+          "homepage": "https://997thefox.iheart.com/",
+          "notes": "flagship (team radio network page, current)"
+        }
+      ]
+    },
+    {
+      "team": "Chicago Bears",
+      "league": "NFL",
+      "sport": "football",
+      "aliases": [
+        "Bears",
+        "Chicago football"
+      ],
+      "source": "https://www.chicagobears.com/news/bears-announce-espn-1000-as-new-flagship-radio-station",
+      "stations": [
+        {
+          "name": "ESPN 1000",
+          "call_sign": "WMVP",
+          "city": "Chicago, IL",
+          "homepage": "",
+          "notes": "flagship since 2023 (team release); 2026 Week 1 team page lists ESPN Chicago 1000 AM / 100.3 FM HD2; call sign not verified on station site; no homepage resolved"
+        }
+      ]
+    },
+    {
+      "team": "Cincinnati Bengals",
+      "league": "NFL",
+      "sport": "football",
+      "aliases": [
+        "Bengals",
+        "Cincinnati football"
+      ],
+      "source": "https://www.bengals.com/news/how-to-watch-listen-stream-jaguars-bengals-week-4-2026",
+      "stations": [
+        {
+          "name": "700 WLW",
+          "call_sign": "WLW-AM",
+          "city": "Cincinnati, OH",
+          "homepage": "https://700wlw.iheart.com/",
+          "notes": "one of three Cincinnati flagship stations (2026)"
+        },
+        {
+          "name": "WEBN 102.7",
+          "call_sign": "WEBN-FM",
+          "city": "Cincinnati, OH",
+          "homepage": "https://webn.iheart.com/",
+          "notes": "co-flagship (2026)"
+        },
+        {
+          "name": "ESPN 1530",
+          "call_sign": "WCKY-AM",
+          "city": "Cincinnati, OH",
+          "homepage": "https://espn1530.iheart.com/",
+          "notes": "co-flagship (2026)"
+        }
+      ]
+    },
+    {
+      "team": "Cleveland Browns",
+      "league": "NFL",
+      "sport": "football",
+      "aliases": [
+        "Browns",
+        "Cleveland football"
+      ],
+      "source": "https://www.clevelandbrowns.com/audio/radio-affiliates",
+      "stations": [
+        {
+          "name": "850 ESPN Cleveland",
+          "call_sign": "WKNR",
+          "city": "Cleveland, OH",
+          "homepage": "https://goodkarmabrands.com/espn-cleveland/",
+          "notes": "one of three flagship stations; call sign not verified on station site; homepage is owner page"
+        },
+        {
+          "name": "92.3 The Fan",
+          "call_sign": "WKRK-FM",
+          "city": "Cleveland, OH",
+          "homepage": "https://www.audacy.com/923thefan",
+          "notes": "co-flagship"
+        },
+        {
+          "name": "98.5 WNCX",
+          "call_sign": "WNCX-FM",
+          "city": "Cleveland, OH",
+          "homepage": "https://www.audacy.com/wncx",
+          "notes": "co-flagship"
+        }
+      ]
+    },
+    {
+      "team": "Dallas Cowboys",
+      "league": "NFL",
+      "sport": "football",
+      "aliases": [
+        "Cowboys",
+        "Dallas football"
+      ],
+      "source": "https://www.dallascowboys.com/news/cowboys-texans-how-to-watch-listen-stream-in-week-4",
+      "stations": [
+        {
+          "name": "105.3 The Fan",
+          "call_sign": "KRLD-FM",
+          "city": "Dallas/Fort Worth, TX",
+          "homepage": "https://www.audacy.com/1053thefan",
+          "notes": "2026 Week 4 team page: 'Listen (Local): KRLD-FM 105.3 The Fan'; flagship wording in older team release"
+        }
+      ]
+    },
+    {
+      "team": "Denver Broncos",
+      "league": "NFL",
+      "sport": "football",
+      "aliases": [
+        "Broncos",
+        "Denver football"
+      ],
+      "source": "https://www.denverbroncos.com/news/broncos-announce-2026-schedule-featuring-holiday-matchups-and-bookend-stretches-vs-playoff-teams",
+      "stations": [
+        {
+          "name": "KOA NewsRadio 850 AM / 94.1 FM",
+          "call_sign": "KOA",
+          "city": "Denver, CO",
+          "homepage": "https://www.850koa.com/",
+          "notes": "'the team's flagship radio station' (2026 schedule release); also heard on 94.1 FM"
+        }
+      ]
+    },
+    {
+      "team": "Detroit Lions",
+      "league": "NFL",
+      "sport": "football",
+      "aliases": [
+        "Lions",
+        "Detroit football"
+      ],
+      "source": "https://www.detroitlions.com/news/97-1-the-ticket-announces-multi-year-partnership-extension-with-detroit-lions",
+      "stations": [
+        {
+          "name": "97.1 The Ticket",
+          "call_sign": "WXYT-FM",
+          "city": "Detroit, MI",
+          "homepage": "https://www.audacy.com/971theticket",
+          "notes": "team's 'radio home', multi-year extension Feb 11, 2026"
+        }
+      ]
+    },
+    {
+      "team": "Green Bay Packers",
+      "league": "NFL",
+      "sport": "football",
+      "aliases": [
+        "Packers",
+        "Green Bay football",
+        "Pack"
+      ],
+      "source": "https://www.packers.com/video/radio-network",
+      "stations": [
+        {
+          "name": "95.7 BIG FM",
+          "call_sign": "WRIT-FM",
+          "city": "Milwaukee, WI",
+          "homepage": "https://957bigfm.iheart.com/",
+          "notes": "team page: 'WRIT is the flagship station of the Packers Radio Network' (current, 2026)"
+        }
+      ]
+    },
+    {
+      "team": "Houston Texans",
+      "league": "NFL",
+      "sport": "football",
+      "aliases": [
+        "Texans",
+        "Houston football"
+      ],
+      "source": "https://www.houstontexans.com/news/houston-texans-vs-dallas-cowboys-how-to-watch-listen-live-stream",
+      "stations": [
+        {
+          "name": "95.7 The Fan",
+          "call_sign": "KIKK-FM",
+          "city": "Houston, TX",
+          "homepage": "https://www.audacy.com/957thefan",
+          "notes": "2026 team pages list 'Local Radio: 95.7 The Fan' (also 610 AM); word 'flagship' not used on 2026 pages"
+        }
+      ]
+    },
+    {
+      "team": "Indianapolis Colts",
+      "league": "NFL",
+      "sport": "football",
+      "aliases": [
+        "Colts",
+        "Indianapolis football",
+        "Indy football"
+      ],
+      "source": "https://www.colts.com/news/where-to-watch-indianapolis-colts-at-washington-commanders-regular-nfl-season-week-4-2026-london-england",
+      "stations": [
+        {
+          "name": "93.5 / 107.5 The Fan",
+          "call_sign": "WIBC-HD2",
+          "city": "Indianapolis, IN",
+          "homepage": "https://1075thefan.com/",
+          "notes": "Indianapolis originating station per 2026 team page (word 'flagship' not used); The Fan is WIBC-HD2 on 93.5/107.5 FM translators"
+        },
+        {
+          "name": "97.1 HANK FM",
+          "call_sign": "WLHK",
+          "city": "Indianapolis, IN",
+          "homepage": "https://hankfm.com/",
+          "notes": "co-carrier in Indianapolis per 2026 team page"
+        }
+      ]
+    },
+    {
+      "team": "Jacksonville Jaguars",
+      "league": "NFL",
+      "sport": "football",
+      "aliases": [
+        "Jaguars",
+        "Jacksonville football",
+        "Jags"
+      ],
+      "source": "https://www.jaguars.com/news/jaguars-radio-affiliates",
+      "stations": [
+        {
+          "name": "1010 XL / 92.5 FM",
+          "call_sign": "WJXL",
+          "city": "Jacksonville, FL",
+          "homepage": "https://1010xl.com/",
+          "notes": "marked 'Flagship' on team affiliate list (dated 2017); 2026 team game pages confirm 1010 XL and 92.5 FM"
+        }
+      ]
+    },
+    {
+      "team": "Kansas City Chiefs",
+      "league": "NFL",
+      "sport": "football",
+      "aliases": [
+        "Chiefs",
+        "Kansas City football",
+        "KC football"
+      ],
+      "source": "https://www.chiefs.com/listen/",
+      "stations": [
+        {
+          "name": "96.5 The Fan",
+          "call_sign": "KFNZ-FM",
+          "city": "Kansas City, MO",
+          "homepage": "https://www.audacy.com/965thefan",
+          "notes": "'The radio home of the Kansas City Chiefs' (team listen page, current)"
+        }
+      ]
+    },
+    {
+      "team": "Las Vegas Raiders",
+      "league": "NFL",
+      "sport": "football",
+      "aliases": [
+        "Raiders",
+        "Las Vegas football"
+      ],
+      "source": "https://www.raiders.com/news/how-to-watch-listen-to-and-livestream-las-vegas-raiders-vs-dallas-cowboys-monday-night-football-espn-week-11",
+      "stations": [
+        {
+          "name": "KOMP 92.3 FM",
+          "call_sign": "KOMP",
+          "city": "Las Vegas, NV",
+          "homepage": "https://www.komp.com/",
+          "notes": "'Local Radio Broadcast Flagship' (2025 season team page; no 2026 page found)"
+        },
+        {
+          "name": "Raider Nation Radio 920 AM",
+          "call_sign": "KRLV",
+          "city": "Las Vegas, NV",
+          "homepage": "",
+          "notes": "co-flagship (2025 season team page)"
+        }
+      ]
+    },
+    {
+      "team": "Los Angeles Chargers",
+      "league": "NFL",
+      "sport": "football",
+      "aliases": [
+        "Chargers",
+        "Bolts",
+        "LA Chargers"
+      ],
+      "source": "https://www.chargers.com/news/2026-week-3-bills-where-to-watch-listen-livestream",
+      "stations": [
+        {
+          "name": "KFI AM 640",
+          "call_sign": "KFI-AM",
+          "city": "Los Angeles, CA",
+          "homepage": "https://kfiam640.iheart.com/",
+          "notes": "2026 team page: 'Chargers radio can be heard on KFI AM-640'; flagship English radio partner per 2017 team release"
+        }
+      ]
+    },
+    {
+      "team": "Los Angeles Rams",
+      "league": "NFL",
+      "sport": "football",
+      "aliases": [
+        "Rams",
+        "LA Rams"
+      ],
+      "source": "https://www.therams.com/news/rams-announce-2026-tv-and-broadcast-teams",
+      "stations": [
+        {
+          "name": "ESPN LA 710",
+          "call_sign": "KSPN",
+          "city": "Los Angeles, CA",
+          "homepage": "https://goodkarmabrands.com/espn-la/",
+          "notes": "'official home and flagship English radio partner' (2026); homepage is owner page"
+        }
+      ]
+    },
+    {
+      "team": "Miami Dolphins",
+      "league": "NFL",
+      "sport": "football",
+      "aliases": [
+        "Dolphins",
+        "Miami football",
+        "Fins"
+      ],
+      "source": "https://www.miamidolphins.com/news/how-to-watch-stream-listen-miami-dolphins-at-minnesota-vikings",
+      "stations": [
+        {
+          "name": "BIG 105.9",
+          "call_sign": "WBGG-FM",
+          "city": "Miami, FL",
+          "homepage": "https://big1059.iheart.com/",
+          "notes": "Dolphins Radio Network local English station (2026 team page); co-carrier with WINZ"
+        },
+        {
+          "name": "FOX Sports 940",
+          "call_sign": "WINZ-AM",
+          "city": "Miami, FL",
+          "homepage": "https://foxsports940.iheart.com/",
+          "notes": "co-carrier (2026)"
+        }
+      ]
+    },
+    {
+      "team": "Minnesota Vikings",
+      "league": "NFL",
+      "sport": "football",
+      "aliases": [
+        "Vikings",
+        "Minnesota football",
+        "Vikes"
+      ],
+      "source": "https://www.vikings.com/news/how-to-watch-listen-to-vikings-bears-in-week-4",
+      "stations": [
+        {
+          "name": "KFAN 100.3 FM",
+          "call_sign": "KFXN-FM",
+          "city": "Minneapolis/St. Paul, MN",
+          "homepage": "https://kfan.iheart.com/",
+          "notes": "'KFAN and KTLK serve as the flagship stations' (2026)"
+        },
+        {
+          "name": "KTLK 1130 AM",
+          "call_sign": "KTLK",
+          "city": "Minneapolis/St. Paul, MN",
+          "homepage": "",
+          "notes": "co-flagship"
+        }
+      ]
+    },
+    {
+      "team": "New England Patriots",
+      "league": "NFL",
+      "sport": "football",
+      "aliases": [
+        "Patriots",
+        "New England football",
+        "Pats"
+      ],
+      "source": "https://www.patriots.com/audio/live",
+      "stations": [
+        {
+          "name": "98.5 The Sports Hub",
+          "call_sign": "WBZ-FM",
+          "city": "Boston, MA",
+          "homepage": "https://985thesportshub.com/",
+          "notes": "'Patriots flagship radio station' (team page, 2026)"
+        }
+      ]
+    },
+    {
+      "team": "New Orleans Saints",
+      "league": "NFL",
+      "sport": "football",
+      "aliases": [
+        "Saints",
+        "New Orleans football"
+      ],
+      "source": "https://www.neworleanssaints.com/news/broadcasting",
+      "stations": [
+        {
+          "name": "WWL 870 AM / 105.3 FM",
+          "call_sign": "WWL",
+          "city": "New Orleans, LA",
+          "homepage": "https://www.audacy.com/wwl",
+          "notes": "'WWL is the flagship station of the Saints Radio Network' (AM/FM simulcast)"
+        }
+      ]
+    },
+    {
+      "team": "New York Giants",
+      "league": "NFL",
+      "sport": "football",
+      "aliases": [
+        "Giants",
+        "New York Giants football",
+        "Big Blue"
+      ],
+      "source": "https://www.giants.com/news/giants-and-audacy-s-wfan-extend-play-by-play-partnership-tiki-barber-pregame-postgame-show",
+      "stations": [
+        {
+          "name": "WFAN 101.9 FM / 66 AM",
+          "call_sign": "WFAN-FM",
+          "city": "New York, NY",
+          "homepage": "https://www.audacy.com/wfan",
+          "notes": "'flagship station of the team'; AM 660 simulcast"
+        }
+      ]
+    },
+    {
+      "team": "New York Jets",
+      "league": "NFL",
+      "sport": "football",
+      "aliases": [
+        "Jets",
+        "New York Jets football",
+        "Gang Green"
+      ],
+      "source": "https://www.newyorkjets.com/tune-in/radio-information",
+      "stations": [
+        {
+          "name": "Q104.3",
+          "call_sign": "WAXQ-FM",
+          "city": "New York, NY",
+          "homepage": "https://q1043.iheart.com/",
+          "notes": "'official radio home of the New York Jets' (team page, current)"
+        }
+      ]
+    },
+    {
+      "team": "Philadelphia Eagles",
+      "league": "NFL",
+      "sport": "football",
+      "aliases": [
+        "Eagles",
+        "Philadelphia football",
+        "Birds"
+      ],
+      "source": "https://www.philadelphiaeagles.com/news/how-to-watch-stream-and-listen-eagles-at-bears-2026-nfl-week-3-monday-night-football",
+      "stations": [
+        {
+          "name": "SportsRadio 94WIP",
+          "call_sign": "WIP-FM",
+          "city": "Philadelphia, PA",
+          "homepage": "https://www.audacy.com/94wip",
+          "notes": "radio call of the game on 94WIP (2026 team page); word 'flagship' not on this page"
+        }
+      ]
+    },
+    {
+      "team": "Pittsburgh Steelers",
+      "league": "NFL",
+      "sport": "football",
+      "aliases": [
+        "Steelers",
+        "Pittsburgh football"
+      ],
+      "source": "https://www.steelers.com/audio/steelers-audio-network/radio",
+      "stations": [
+        {
+          "name": "102.5 WDVE",
+          "call_sign": "WDVE-FM",
+          "city": "Pittsburgh, PA",
+          "homepage": "https://dve.iheart.com/",
+          "notes": "co-flagship ('our flagship stations: WDVE 102.5 FM and WBGG 970 AM')"
+        },
+        {
+          "name": "FOX Sports 970",
+          "call_sign": "WBGG-AM",
+          "city": "Pittsburgh, PA",
+          "homepage": "https://foxsportspgh.iheart.com/",
+          "notes": "co-flagship"
+        }
+      ]
+    },
+    {
+      "team": "San Francisco 49ers",
+      "league": "NFL",
+      "sport": "football",
+      "aliases": [
+        "49ers",
+        "San Francisco football",
+        "Niners"
+      ],
+      "source": "https://www.49ers.com/fans/tv-radio",
+      "stations": [
+        {
+          "name": "KNBR 680",
+          "call_sign": "KNBR-AM",
+          "city": "San Francisco, CA",
+          "homepage": "https://www.knbr.com/",
+          "notes": "'The 49ers flagship stations include KNBR 680 and KSAN 107.7 The Bone'"
+        },
+        {
+          "name": "107.7 The Bone",
+          "call_sign": "KSAN-FM",
+          "city": "San Francisco, CA",
+          "homepage": "https://www.1077thebone.com/",
+          "notes": "co-flagship"
+        }
+      ]
+    },
+    {
+      "team": "Seattle Seahawks",
+      "league": "NFL",
+      "sport": "football",
+      "aliases": [
+        "Seahawks",
+        "Seattle football",
+        "Hawks"
+      ],
+      "source": "https://www.seahawks.com/news/how-to-watch-listen-and-follow-seahawks-vs-chargers-in-week-4-on-sunday-september-29",
+      "stations": [
+        {
+          "name": "Seattle Sports 710 AM",
+          "call_sign": "KIRO-AM",
+          "city": "Seattle, WA",
+          "homepage": "https://www.seattlesports.com/",
+          "notes": "2026 team page lists both stations; flagship partners per team Bonneville extension release"
+        },
+        {
+          "name": "KIRO Newsradio 97.3 FM",
+          "call_sign": "KIRO-FM",
+          "city": "Seattle, WA",
+          "homepage": "https://mynorthwest.com/",
+          "notes": "co-flagship"
+        }
+      ]
+    },
+    {
+      "team": "Tampa Bay Buccaneers",
+      "league": "NFL",
+      "sport": "football",
+      "aliases": [
+        "Buccaneers",
+        "Tampa Bay football",
+        "Bucs"
+      ],
+      "source": "https://www.buccaneers.com/news/how-to-watch-buccaneers-vs-vikings-week-3-2026",
+      "stations": [
+        {
+          "name": "98ROCK 97.9 FM",
+          "call_sign": "WXTB-FM",
+          "city": "Tampa, FL",
+          "homepage": "https://98rock.iheart.com/",
+          "notes": "'English Radio Broadcast Flagship Station' (2026)"
+        }
+      ]
+    },
+    {
+      "team": "Tennessee Titans",
+      "league": "NFL",
+      "sport": "football",
+      "aliases": [
+        "Titans",
+        "Tennessee football",
+        "Nashville football"
+      ],
+      "source": "https://www.tennesseetitans.com/broadcast/titans-radio/titans-radio-affiliates",
+      "stations": [
+        {
+          "name": "104.5 The Zone",
+          "call_sign": "WGFX-FM",
+          "city": "Nashville, TN",
+          "homepage": "https://www.1045thezone.com/",
+          "notes": "marked FLAGSHIP on affiliate list 'Updated for 2026'"
+        }
+      ]
+    },
+    {
+      "team": "Washington Commanders",
+      "league": "NFL",
+      "sport": "football",
+      "aliases": [
+        "Commanders",
+        "Washington football"
+      ],
+      "source": "https://www.commanders.com/news/commanders-vs-dolphins-how-to-watch-listen-stream-2026",
+      "stations": [
+        {
+          "name": "BIG 100",
+          "call_sign": "WBIG-FM",
+          "city": "Washington, DC",
+          "homepage": "",
+          "notes": "'the flagship station for Washington Commanders Football' (2026)"
+        }
+      ]
+    },
+    {
+      "team": "Atlanta Hawks",
+      "league": "NBA",
+      "sport": "basketball",
+      "aliases": [
+        "Hawks",
+        "Atlanta basketball"
+      ],
+      "source": "https://www.nba.com/hawks/929thegame",
+      "stations": [
+        {
+          "name": "92.9 The Game",
+          "call_sign": "WZGC-FM",
+          "city": "Atlanta, GA",
+          "homepage": "https://www.audacy.com/929thegame",
+          "notes": "flagship of the Atlanta Hawks Radio Network; nba.com 2026-27 schedule data lists WZGC"
+        }
+      ]
+    },
+    {
+      "team": "Boston Celtics",
+      "league": "NBA",
+      "sport": "basketball",
+      "aliases": [
+        "Celtics",
+        "Boston basketball",
+        "C's"
+      ],
+      "source": "https://985thesportshub.com/celtics-radio-network/",
+      "stations": [
+        {
+          "name": "98.5 The Sports Hub",
+          "call_sign": "WBZ-FM",
+          "city": "Boston, MA",
+          "homepage": "https://985thesportshub.com/",
+          "notes": "station page: Official Flagship Station of the Celtics; WROR 105.7 carries a few overflow games"
+        }
+      ]
+    },
+    {
+      "team": "Brooklyn Nets",
+      "league": "NBA",
+      "sport": "basketball",
+      "aliases": [
+        "Nets",
+        "Brooklyn basketball"
+      ],
+      "source": "https://www.audacy.com/wfan/sports/nets/brooklyn-nets-wfan-renew-partnership-for-2023-24-season",
+      "stations": [
+        {
+          "name": "WFAN 101.9 FM / 660 AM",
+          "call_sign": "WFAN-FM",
+          "city": "New York, NY",
+          "homepage": "https://www.audacy.com/wfan",
+          "notes": "flagship per 2023 multi-year extension (station site); nba.com 2026-27 schedule data lists 101.9 FM / 660 AM"
+        }
+      ]
+    },
+    {
+      "team": "Charlotte Hornets",
+      "league": "NBA",
+      "sport": "basketball",
+      "aliases": [
+        "Hornets",
+        "Charlotte basketball"
+      ],
+      "source": "https://www.nba.com/hornets/radio",
+      "stations": [
+        {
+          "name": "Sports Radio 92.7 WFNZ",
+          "call_sign": "WFNZ-FM",
+          "city": "Charlotte, NC",
+          "homepage": "https://wfnz.com/",
+          "notes": "flagship of the Hornets Radio Network"
+        }
+      ]
+    },
+    {
+      "team": "Chicago Bulls",
+      "league": "NBA",
+      "sport": "basketball",
+      "aliases": [
+        "Bulls",
+        "Chicago basketball"
+      ],
+      "source": "https://www.nba.com/bulls/news/radio",
+      "stations": [
+        {
+          "name": "670 The Score / 104.3 The Score",
+          "call_sign": "WSCR",
+          "city": "Chicago, IL",
+          "homepage": "https://www.audacy.com/670thescore",
+          "notes": "flagship; 2025-26 team radio page lists WSCR-AM/FM 670 / 104.3"
+        }
+      ]
+    },
+    {
+      "team": "Cleveland Cavaliers",
+      "league": "NBA",
+      "sport": "basketball",
+      "aliases": [
+        "Cavaliers",
+        "Cavs",
+        "Cleveland basketball"
+      ],
+      "source": "https://www.nba.com/cavaliers/releases/iheart-extension-201020",
+      "stations": [
+        {
+          "name": "WTAM 1100",
+          "call_sign": "WTAM",
+          "city": "Cleveland, OH",
+          "homepage": "https://wtam.iheart.com/",
+          "notes": "co-flagship per 2020 team release; 2025-26 game notes and 2026-27 schedule data still list WTAM/WMMS"
+        },
+        {
+          "name": "100.7 WMMS",
+          "call_sign": "WMMS",
+          "city": "Cleveland, OH",
+          "homepage": "https://wmms.iheart.com/",
+          "notes": "co-flagship with WTAM (same release)"
+        }
+      ]
+    },
+    {
+      "team": "Dallas Mavericks",
+      "league": "NBA",
+      "sport": "basketball",
+      "aliases": [
+        "Mavericks",
+        "Mavs",
+        "Dallas basketball"
+      ],
+      "source": "https://www.audacy.com/1053thefan/sports/dallas-mavericks/105-3-the-fan-to-be-the-official-flagship-of-the-mavericks",
+      "stations": [
+        {
+          "name": "105.3 The Fan",
+          "call_sign": "KRLD-FM",
+          "city": "Dallas, TX",
+          "homepage": "https://www.audacy.com/1053thefan",
+          "notes": "new flagship for 2026-27 (announced Sept 2026 on station site); nba.com 2026-27 schedule data lists 105.3 The Fan"
+        }
+      ]
+    },
+    {
+      "team": "Denver Nuggets",
+      "league": "NBA",
+      "sport": "basketball",
+      "aliases": [
+        "Nuggets",
+        "Denver basketball"
+      ],
+      "source": "https://www.altitudesports.com/radio-station-guide/",
+      "stations": [
+        {
+          "name": "Altitude Sports Radio 92.5 FM",
+          "call_sign": "KKSE-FM",
+          "city": "Denver, CO",
+          "homepage": "https://www.altitudesportsradio.com/",
+          "notes": "Altitude Radio Network flagship station (team owner/station page); some games on 950 AM; call sign inferred from station site"
+        }
+      ]
+    },
+    {
+      "team": "Detroit Pistons",
+      "league": "NBA",
+      "sport": "basketball",
+      "aliases": [
+        "Pistons",
+        "Detroit basketball"
+      ],
+      "source": "https://www.nba.com/pistons/radio",
+      "stations": [
+        {
+          "name": "97.1 The Ticket",
+          "call_sign": "WXYT-FM",
+          "city": "Detroit, MI",
+          "homepage": "https://www.audacy.com/971theticket",
+          "notes": "radio flagship partner; conflict games air on WWJ 950 AM"
+        }
+      ]
+    },
+    {
+      "team": "Golden State Warriors",
+      "league": "NBA",
+      "sport": "basketball",
+      "aliases": [
+        "Warriors",
+        "Dubs",
+        "Golden State basketball"
+      ],
+      "source": "https://www.nba.com/warriors/radio-network",
+      "stations": [
+        {
+          "name": "95.7 The Game",
+          "call_sign": "KGMZ-FM",
+          "city": "San Francisco, CA",
+          "homepage": "https://www.audacy.com/957thegame",
+          "notes": "flagship of the Warriors Radio Network"
+        }
+      ]
+    },
+    {
+      "team": "Houston Rockets",
+      "league": "NBA",
+      "sport": "basketball",
+      "aliases": [
+        "Rockets",
+        "Houston basketball"
+      ],
+      "source": "https://sportstalk790.iheart.com/featured/chris-gordy/content/2025-08-14-rockets-announce-schedule-for-2025-26-nba-season/",
+      "stations": [
+        {
+          "name": "SportsTalk 790",
+          "call_sign": "KBME",
+          "city": "Houston, TX",
+          "homepage": "https://sportstalk790.iheart.com/",
+          "notes": "radio broadcast home of the Rockets (2025-26, station site); nba.com 2026-27 schedule data lists 790 AM / 740 AM"
+        },
+        {
+          "name": "NewsRadio 740 KTRH",
+          "call_sign": "KTRH",
+          "city": "Houston, TX",
+          "homepage": "https://ktrh.iheart.com/",
+          "notes": "named alongside KBME as radio home (simulcast)"
+        }
+      ]
+    },
+    {
+      "team": "Indiana Pacers",
+      "league": "NBA",
+      "sport": "basketball",
+      "aliases": [
+        "Pacers",
+        "Indiana basketball"
+      ],
+      "source": "https://www.nba.com/pacers/where-to-watch",
+      "stations": [
+        {
+          "name": "107.5 The Fan and 93.5 FM",
+          "call_sign": "WFNI",
+          "city": "Indianapolis, IN",
+          "homepage": "https://1075thefan.com/",
+          "notes": "listed as flagship; call sign WFNI not confirmed on an authoritative page"
+        }
+      ]
+    },
+    {
+      "team": "LA Clippers",
+      "league": "NBA",
+      "sport": "basketball",
+      "aliases": [
+        "Clippers",
+        "Clips",
+        "Clippers basketball"
+      ],
+      "source": "https://www.nba.com/gamenotes/clippers.pdf",
+      "stations": [
+        {
+          "name": "AM 570 LA Sports",
+          "call_sign": "KLAC",
+          "city": "Los Angeles, CA",
+          "homepage": "https://am570lasports.iheart.com/",
+          "notes": "2025-26 game notes: all games on 'the all sports home of the Clippers, AM 570'; word flagship not used"
+        }
+      ]
+    },
+    {
+      "team": "Los Angeles Lakers",
+      "league": "NBA",
+      "sport": "basketball",
+      "aliases": [
+        "Lakers",
+        "Los Angeles basketball"
+      ],
+      "source": "https://www.nba.com/lakers/broadcast/watch-listen",
+      "stations": [
+        {
+          "name": "ESPN LA 710",
+          "call_sign": "KSPN",
+          "city": "Los Angeles, CA",
+          "homepage": "https://goodkarmabrands.com/espn-la/",
+          "notes": "flagship; homepage is owner page"
+        }
+      ]
+    },
+    {
+      "team": "Memphis Grizzlies",
+      "league": "NBA",
+      "sport": "basketball",
+      "aliases": [
+        "Grizzlies",
+        "Grizz",
+        "Memphis basketball"
+      ],
+      "source": "https://www.nba.com/grizzlies/news/radio_network_partners.html",
+      "stations": [
+        {
+          "name": "92.9 ESPN Memphis",
+          "call_sign": "WMFS-FM",
+          "city": "Memphis, TN",
+          "homepage": "https://www.audacy.com/929espn",
+          "notes": "flagship (92.9 FM / 680 AM)"
+        }
+      ]
+    },
+    {
+      "team": "Miami Heat",
+      "league": "NBA",
+      "sport": "basketball",
+      "aliases": [
+        "Heat",
+        "Miami basketball"
+      ],
+      "source": "https://www.nba.com/heat/wheretowatch",
+      "stations": [
+        {
+          "name": "WQAM 104.3 FM / 560 AM",
+          "call_sign": "WQAM",
+          "city": "Miami, FL",
+          "homepage": "https://www.audacy.com/wqam",
+          "notes": "primary English station (word flagship not used); 2025-26 schedule says all games in English on WQAM 104.3 FM"
+        }
+      ]
+    },
+    {
+      "team": "Milwaukee Bucks",
+      "league": "NBA",
+      "sport": "basketball",
+      "aliases": [
+        "Bucks",
+        "Milwaukee basketball"
+      ],
+      "source": "https://cdn.nba.com/teams/uploads/sites/1610612749/2025/08/2025-26-Milwaukee-Bucks-Schedule.pdf",
+      "stations": [
+        {
+          "name": "620 WTMJ / 103.3 FM",
+          "call_sign": "WTMJ",
+          "city": "Milwaukee, WI",
+          "homepage": "https://www.wtmj.com/",
+          "notes": "2025-26 team schedule: all games on 620 WTMJ or 103.3 FM; flagship wording from 2020 team renewal release"
+        }
+      ]
+    },
+    {
+      "team": "Minnesota Timberwolves",
+      "league": "NBA",
+      "sport": "basketball",
+      "aliases": [
+        "Timberwolves",
+        "Wolves",
+        "Minnesota basketball"
+      ],
+      "source": "https://www.audacy.com/wccoradio/local-sports/timberwolves/timberwolves-broadcasts-return-wcco-audacy",
+      "stations": [
+        {
+          "name": "830 WCCO",
+          "call_sign": "WCCO-AM",
+          "city": "Minneapolis, MN",
+          "homepage": "https://www.audacy.com/wccoradio",
+          "notes": "new radio home from 2026-27 (station site, Sept 2026); nba.com 2026-27 schedule data lists 830 WCCO"
+        }
+      ]
+    },
+    {
+      "team": "New Orleans Pelicans",
+      "league": "NBA",
+      "sport": "basketball",
+      "aliases": [
+        "Pelicans",
+        "Pels",
+        "New Orleans basketball"
+      ],
+      "source": "https://www.nba.com/pelicans/broadcasting",
+      "stations": [
+        {
+          "name": "WWL 870 AM / 105.3 FM",
+          "call_sign": "WWL",
+          "city": "New Orleans, LA",
+          "homepage": "https://www.audacy.com/wwl",
+          "notes": "flagship; AM/FM simulcast"
+        }
+      ]
+    },
+    {
+      "team": "New York Knicks",
+      "league": "NBA",
+      "sport": "basketball",
+      "aliases": [
+        "Knicks",
+        "New York basketball"
+      ],
+      "source": "https://www.nba.com/gamenotes/knicks.pdf",
+      "stations": [
+        {
+          "name": "880 ESPN New York",
+          "call_sign": "WHSQ",
+          "city": "New York, NY",
+          "homepage": "",
+          "notes": "June 2026 game notes list 'RADIO: 880 ESPN NEW YORK'; word flagship not used; call sign not confirmed on an authoritative page"
+        }
+      ]
+    },
+    {
+      "team": "Oklahoma City Thunder",
+      "league": "NBA",
+      "sport": "basketball",
+      "aliases": [
+        "Thunder",
+        "OKC",
+        "Oklahoma City basketball"
+      ],
+      "source": "https://www.nba.com/thunder/radio",
+      "stations": [
+        {
+          "name": "98.1 The Sports Animal",
+          "call_sign": "WWLS-FM",
+          "city": "Oklahoma City, OK",
+          "homepage": "https://www.thesportsanimal.com/",
+          "notes": "flagship of the Thunder Radio Network"
+        }
+      ]
+    },
+    {
+      "team": "Orlando Magic",
+      "league": "NBA",
+      "sport": "basketball",
+      "aliases": [
+        "Magic",
+        "Orlando basketball"
+      ],
+      "source": "https://www.nba.com/magic/broadcast",
+      "stations": [
+        {
+          "name": "96.9 The Game",
+          "call_sign": "WYGM",
+          "city": "Orlando, FL",
+          "homepage": "https://969thegame.iheart.com/",
+          "notes": "flagship; also AM 740; select games on FM 104.5"
+        }
+      ]
+    },
+    {
+      "team": "Philadelphia 76ers",
+      "league": "NBA",
+      "sport": "basketball",
+      "aliases": [
+        "76ers",
+        "Sixers",
+        "Philadelphia basketball"
+      ],
+      "source": "https://www.nba.com/sixers/76ers-radio-network",
+      "stations": [
+        {
+          "name": "97.5 The Fanatic",
+          "call_sign": "WPEN-FM",
+          "city": "Philadelphia, PA",
+          "homepage": "https://975thefanatic.com/",
+          "notes": "flagship (page refers to 2024-25); nba.com 2026-27 schedule data still lists 97.5 The Fanatic"
+        }
+      ]
+    },
+    {
+      "team": "Phoenix Suns",
+      "league": "NBA",
+      "sport": "basketball",
+      "aliases": [
+        "Suns",
+        "Phoenix basketball"
+      ],
+      "source": "https://www.nba.com/suns/press-release/suns-and-arizona-sports-98.7-extend-radio-agreement",
+      "stations": [
+        {
+          "name": "Arizona Sports 98.7",
+          "call_sign": "KMVP-FM",
+          "city": "Phoenix, AZ",
+          "homepage": "https://arizonasports.com/",
+          "notes": "flagship English station per 2014 release; 2025-26 game notes and 2026-27 schedule data list 98.7"
+        }
+      ]
+    },
+    {
+      "team": "Portland Trail Blazers",
+      "league": "NBA",
+      "sport": "basketball",
+      "aliases": [
+        "Trail Blazers",
+        "Blazers",
+        "Portland basketball"
+      ],
+      "source": "https://ripcityradio.iheart.com/",
+      "stations": [
+        {
+          "name": "Rip City Radio 620",
+          "call_sign": "KPOJ",
+          "city": "Portland, OR",
+          "homepage": "https://ripcityradio.iheart.com/",
+          "notes": "station: 'Your Home of the Portland Trail Blazers'; nba.com 2026-27 schedule data lists Rip City Radio 620"
+        }
+      ]
+    },
+    {
+      "team": "San Antonio Spurs",
+      "league": "NBA",
+      "sport": "basketball",
+      "aliases": [
+        "Spurs",
+        "San Antonio basketball"
+      ],
+      "source": "https://woai.iheart.com/featured/spurswatch/about/",
+      "stations": [
+        {
+          "name": "News Radio 1200 WOAI",
+          "call_sign": "WOAI",
+          "city": "San Antonio, TX",
+          "homepage": "https://woai.iheart.com/",
+          "notes": "station: proud flagship of the Spurs; nba.com 2026-27 schedule data lists WOAI 1200 AM"
+        }
+      ]
+    },
+    {
+      "team": "Toronto Raptors",
+      "league": "NBA",
+      "sport": "basketball",
+      "aliases": [
+        "Raptors",
+        "Raps",
+        "Toronto basketball"
+      ],
+      "source": "https://www.nba.com/gamenotes/raptors.pdf",
+      "stations": [
+        {
+          "name": "Sportsnet 590 The FAN",
+          "call_sign": "CJCL",
+          "city": "Toronto, ON",
+          "homepage": "https://www.sportsnet.ca/590/",
+          "notes": "games split with TSN 1050 by TV partner; no single flagship named (2025-26 game notes)"
+        },
+        {
+          "name": "TSN 1050 Toronto",
+          "call_sign": "CHUM",
+          "city": "Toronto, ON",
+          "homepage": "https://www.tsn.ca/radio/toronto-1050/",
+          "notes": "carries the TSN share of games; call sign not confirmed on source"
+        }
+      ]
+    },
+    {
+      "team": "Utah Jazz",
+      "league": "NBA",
+      "sport": "basketball",
+      "aliases": [
+        "Jazz",
+        "Utah basketball"
+      ],
+      "source": "https://www.nba.com/gamenotes/jazz.pdf",
+      "stations": [
+        {
+          "name": "The Zone 97.5 FM / 1280 AM",
+          "call_sign": "KZNS-FM",
+          "city": "Salt Lake City, UT",
+          "homepage": "https://sports.ksl.com/",
+          "notes": "Oct 2026 game notes list KSL Sports Zone (1160 AM/102.7 FM) and The Zone (1280 AM/97.5 FM); word flagship not used"
+        }
+      ]
+    },
+    {
+      "team": "Washington Wizards",
+      "league": "NBA",
+      "sport": "basketball",
+      "aliases": [
+        "Wizards",
+        "Washington basketball"
+      ],
+      "source": "https://monumentalsports.com/2025/10/monumental-sports-network-announces-2025-26-washington-wizards-local-tv-radio-schedule/",
+      "stations": [
+        {
+          "name": "106.7 The Fan",
+          "call_sign": "WJFK-FM",
+          "city": "Washington, DC",
+          "homepage": "https://www.audacy.com/thefandc",
+          "notes": "flagship of the Wizards Radio Network for 2025-26 (team owner release)"
+        }
+      ]
+    },
+    {
+      "team": "Golden State Valkyries",
+      "league": "WNBA",
+      "sport": "basketball",
+      "aliases": [
+        "Valkyries",
+        "Golden State WNBA",
+        "Bay Area WNBA"
+      ],
+      "source": "https://valkyries.wnba.com/news/golden-state-valkyries-announce-local-television-and-radio-broadcast-schedule-20260425",
+      "stations": [
+        {
+          "name": "95.7 The Game",
+          "call_sign": "KGMZ-FM",
+          "city": "San Francisco, CA",
+          "homepage": "https://www.audacy.com/957thegame",
+          "notes": "flagship; 2026 schedule lists 95.7 The Game for most games"
+        }
+      ]
+    },
+    {
+      "team": "Indiana Fever",
+      "league": "WNBA",
+      "sport": "basketball",
+      "aliases": [
+        "Fever",
+        "Indiana WNBA"
+      ],
+      "source": "https://fever.wnba.com/news/indiana-fever-announce-local-broadcast-schedule-including-expanded-tv-and-radio-programming-for-2026-season",
+      "stations": [
+        {
+          "name": "93.5 / 107.5 The Fan",
+          "call_sign": "",
+          "city": "Indianapolis, IN",
+          "homepage": "https://1075thefan.com/",
+          "notes": "all preseason and regular-season games, 2026; call sign not confirmed"
+        }
+      ]
+    },
+    {
+      "team": "Las Vegas Aces",
+      "league": "WNBA",
+      "sport": "basketball",
+      "aliases": [
+        "Aces",
+        "Las Vegas WNBA"
+      ],
+      "source": "https://aces.wnba.com/watch-listen-stream",
+      "stations": [
+        {
+          "name": "ESPN Radio 1100",
+          "call_sign": "KWWN",
+          "city": "Las Vegas, NV",
+          "homepage": "https://espnlv.com/",
+          "notes": "team page: listen locally on KWWN/ESPN Radio 1100 AM; page undated"
+        }
+      ]
+    },
+    {
+      "team": "Minnesota Lynx",
+      "league": "WNBA",
+      "sport": "basketball",
+      "aliases": [
+        "Lynx",
+        "Minnesota WNBA"
+      ],
+      "source": "https://cdn.wnba.com/sites/1611661324/2026/08/Notes-082426-FINAL.pdf",
+      "stations": [
+        {
+          "name": "KFAN 100.3 FM",
+          "call_sign": "KFXN-FM",
+          "city": "Minneapolis-St. Paul, MN",
+          "homepage": "https://kfan.iheart.com/",
+          "notes": "flagship radio home (2024 team release); 2026 team game notes list KFAN"
+        }
+      ]
+    },
+    {
+      "team": "Portland Fire",
+      "league": "WNBA",
+      "sport": "basketball",
+      "aliases": [
+        "Fire",
+        "Portland WNBA"
+      ],
+      "source": "https://fire.wnba.com/news/portland-fire-and-portland-thorns-announce-radio-partnership-with-audacy-portland",
+      "stations": [
+        {
+          "name": "910 ESPN Portland",
+          "call_sign": "KMTT-AM",
+          "city": "Portland, OR",
+          "homepage": "https://www.audacy.com/stations/910espnportland",
+          "notes": "radio home from 2026 (Audacy Portland); call sign from radio press, not team page"
+        }
+      ]
+    },
+    {
+      "team": "Washington Mystics",
+      "league": "WNBA",
+      "sport": "basketball",
+      "aliases": [
+        "Mystics",
+        "Washington WNBA"
+      ],
+      "source": "https://monumentalsports.com/2025/10/audacy-and-monumental-sports-announce-multi-year-partnership-extension/",
+      "stations": [
+        {
+          "name": "The Team 980",
+          "call_sign": "WTEM",
+          "city": "Washington, DC",
+          "homepage": "https://www.audacy.com/theteam980",
+          "notes": "most games per 2024 team release; Oct 2025 multi-year Audacy extension covers 2026; audio is a simulcast of the TV call"
+        },
+        {
+          "name": "106.7 The Fan",
+          "call_sign": "WJFK-FM",
+          "city": "Washington, DC",
+          "homepage": "https://www.audacy.com/thefandc",
+          "notes": "select games"
+        }
+      ]
+    },
+    {
+      "team": "Boston Bruins",
+      "league": "NHL",
+      "sport": "hockey",
+      "aliases": [
+        "Bruins",
+        "Boston hockey",
+        "B's"
+      ],
+      "source": "https://www.nhl.com/bruins/news/bruins-2025-26-national-tv-broadcast-schedule-released",
+      "stations": [
+        {
+          "name": "98.5 The Sports Hub",
+          "call_sign": "WBZ-FM",
+          "city": "Boston, MA",
+          "homepage": "https://985thesportshub.com/",
+          "notes": "flagship; every Bruins game on 98.5 The Sports Hub (2025-26)"
+        }
+      ]
+    },
+    {
+      "team": "Buffalo Sabres",
+      "league": "NHL",
+      "sport": "hockey",
+      "aliases": [
+        "Sabres",
+        "Buffalo hockey"
+      ],
+      "source": "https://www.nhl.com/sabres/fans/sabres-radio-network",
+      "stations": [
+        {
+          "name": "WGR 550",
+          "call_sign": "WGR",
+          "city": "Buffalo, NY",
+          "homepage": "https://www.audacy.com/wgr550",
+          "notes": "flagship ('WGR 550 AM (Flagship)')"
+        }
+      ]
+    },
+    {
+      "team": "Calgary Flames",
+      "league": "NHL",
+      "sport": "hockey",
+      "aliases": [
+        "Flames",
+        "Calgary hockey"
+      ],
+      "source": "https://www.nhl.com/flames/news/flames-announce-2025-26-regular-season-schedule",
+      "stations": [
+        {
+          "name": "Sportsnet 960 The FAN",
+          "call_sign": "CFAC",
+          "city": "Calgary, AB",
+          "homepage": "",
+          "notes": "all games on Sportsnet 960 The FAN (2025-26); call sign not shown on source"
+        }
+      ]
+    },
+    {
+      "team": "Carolina Hurricanes",
+      "league": "NHL",
+      "sport": "hockey",
+      "aliases": [
+        "Hurricanes",
+        "Carolina hockey",
+        "Canes"
+      ],
+      "source": "https://www.nhl.com/hurricanes/team/broadcast-info/",
+      "stations": [
+        {
+          "name": "99.9 The Fan",
+          "call_sign": "WCMC-FM",
+          "city": "Raleigh, NC",
+          "homepage": "https://www.999thefan.com/",
+          "notes": "flagship per current team broadcast-info page; call sign not shown on source"
+        }
+      ]
+    },
+    {
+      "team": "Chicago Blackhawks",
+      "league": "NHL",
+      "sport": "hockey",
+      "aliases": [
+        "Blackhawks",
+        "Chicago hockey",
+        "Hawks"
+      ],
+      "source": "https://www.nhl.com/blackhawks/news/release-blackhawks-and-wgn-radio-agree-to-multi-year-radio-rights-extension",
+      "stations": [
+        {
+          "name": "WGN Radio 720",
+          "call_sign": "WGN",
+          "city": "Chicago, IL",
+          "homepage": "https://wgnradio.com/",
+          "notes": "flagship; multi-year extension announced 2026-09-14"
+        }
+      ]
+    },
+    {
+      "team": "Colorado Avalanche",
+      "league": "NHL",
+      "sport": "hockey",
+      "aliases": [
+        "Avalanche",
+        "Colorado hockey",
+        "Avs"
+      ],
+      "source": "https://www.nhl.com/avalanche/news/avalanche-announces-2025-25-schedule",
+      "stations": [
+        {
+          "name": "Altitude Sports Radio 92.5 FM",
+          "call_sign": "KKSE-FM",
+          "city": "Denver, CO",
+          "homepage": "https://www.altitudesportsradio.com/",
+          "notes": "primary home of the Altitude Radio Network (950 AM carries some games); source does not use the word flagship"
+        }
+      ]
+    },
+    {
+      "team": "Columbus Blue Jackets",
+      "league": "NHL",
+      "sport": "hockey",
+      "aliases": [
+        "Blue Jackets",
+        "Columbus hockey",
+        "CBJ"
+      ],
+      "source": "https://www.nhl.com/bluejackets/multimedia/radio-network",
+      "stations": [
+        {
+          "name": "97.1 The Fan",
+          "call_sign": "WBNS-FM",
+          "city": "Columbus, OH",
+          "homepage": "https://www.971thefan.com/",
+          "notes": "flagship ('your flagship radio home'); 93.3 The Bus for conflicts"
+        }
+      ]
+    },
+    {
+      "team": "Dallas Stars",
+      "league": "NHL",
+      "sport": "hockey",
+      "aliases": [
+        "Stars",
+        "Dallas hockey"
+      ],
+      "source": "https://www.nhl.com/stars/multimedia/broadcast",
+      "stations": [
+        {
+          "name": "Sportsradio 96.7 FM / 1310 The Ticket",
+          "call_sign": "KTCK-FM",
+          "city": "Dallas, TX",
+          "homepage": "https://www.theticket.com/",
+          "notes": "flagship radio home, 17th season (2026-27); FM half of simulcast"
+        },
+        {
+          "name": "Sportsradio 1310 The Ticket",
+          "call_sign": "KTCK",
+          "city": "Dallas, TX",
+          "homepage": "https://www.theticket.com/",
+          "notes": "AM half of the same flagship simulcast"
+        }
+      ]
+    },
+    {
+      "team": "Detroit Red Wings",
+      "league": "NHL",
+      "sport": "hockey",
+      "aliases": [
+        "Red Wings",
+        "Detroit hockey",
+        "Wings"
+      ],
+      "source": "https://www.nhl.com/redwings/tickets/broadcast",
+      "stations": [
+        {
+          "name": "97.1 The Ticket",
+          "call_sign": "WXYT-FM",
+          "city": "Detroit, MI",
+          "homepage": "https://www.audacy.com/971theticket",
+          "notes": "team broadcast schedule lists 97.1 FM for every game; word flagship not used"
+        }
+      ]
+    },
+    {
+      "team": "Edmonton Oilers",
+      "league": "NHL",
+      "sport": "hockey",
+      "aliases": [
+        "Oilers",
+        "Edmonton hockey",
+        "Oil"
+      ],
+      "source": "https://www.nhl.com/oilers/news/preview-oilers-vs-canucks-09-29-26",
+      "stations": [
+        {
+          "name": "880 CHED",
+          "call_sign": "CHED",
+          "city": "Edmonton, AB",
+          "homepage": "https://globalnews.ca/radio/880ched/",
+          "notes": "Oilers Radio Network including 880 CHED (2026-09-29); CHED moved from 630 to 880; word flagship not used"
+        }
+      ]
+    },
+    {
+      "team": "Florida Panthers",
+      "league": "NHL",
+      "sport": "hockey",
+      "aliases": [
+        "Panthers",
+        "Florida hockey",
+        "Cats"
+      ],
+      "source": "https://www.nhl.com/panthers/news/florida-panthers-announce-2025-26-radio-network-presented-by-baptist-health",
+      "stations": [
+        {
+          "name": "104.3 WQAM",
+          "call_sign": "WQAM-FM",
+          "city": "Miami, FL",
+          "homepage": "https://www.audacy.com/wqam",
+          "notes": "main station of the Panthers Radio Network, all 82 games (2025-26); word flagship not used"
+        }
+      ]
+    },
+    {
+      "team": "Los Angeles Kings",
+      "league": "NHL",
+      "sport": "hockey",
+      "aliases": [
+        "Kings",
+        "LA Kings",
+        "LA hockey"
+      ],
+      "source": "https://www.nhl.com/kings/news/kings-and-espn-radio-710-announce-broadcast-partnership",
+      "stations": [
+        {
+          "name": "ESPN LA 710",
+          "call_sign": "KSPN",
+          "city": "Los Angeles, CA",
+          "homepage": "",
+          "notes": "radio rights partner but on air for only about 25 games a season; all games stream on apps; confirmed for 2026-27 by nhl.com/kings/fans/tune-in"
+        }
+      ]
+    },
+    {
+      "team": "Minnesota Wild",
+      "league": "NHL",
+      "sport": "hockey",
+      "aliases": [
+        "Wild",
+        "Minnesota hockey"
+      ],
+      "source": "https://www.nhl.com/wild/info/radio-network",
+      "stations": [
+        {
+          "name": "KFAN FM 100.3",
+          "call_sign": "KFXN-FM",
+          "city": "Minneapolis-St. Paul, MN",
+          "homepage": "https://kfan.iheart.com/",
+          "notes": "'The official radio flagship home of the Minnesota Wild'"
+        }
+      ]
+    },
+    {
+      "team": "Montreal Canadiens",
+      "league": "NHL",
+      "sport": "hockey",
+      "aliases": [
+        "Canadiens",
+        "Habs",
+        "Montreal hockey"
+      ],
+      "source": "https://www.nhl.com/canadiens/fans/broadcast",
+      "stations": [
+        {
+          "name": "TSN 690",
+          "call_sign": "CKGM",
+          "city": "Montreal, QC",
+          "homepage": "https://www.tsn.ca/radio/montreal-690/",
+          "notes": "all English-language games; French flagship omitted; call sign not shown on source"
+        }
+      ]
+    },
+    {
+      "team": "Nashville Predators",
+      "league": "NHL",
+      "sport": "hockey",
+      "aliases": [
+        "Predators",
+        "Preds",
+        "Nashville hockey"
+      ],
+      "source": "https://www.nhl.com/predators/news/espn-102-5-the-game-preds-sign-multi-year-partnership-extension-326820608",
+      "stations": [
+        {
+          "name": "ESPN 102.5 The Game",
+          "call_sign": "WPRT-FM",
+          "city": "Nashville, TN",
+          "homepage": "",
+          "notes": "official flagship per 2021 release; March 2026 team game-day page confirms games still air on 102.5 The Game"
+        }
+      ]
+    },
+    {
+      "team": "New York Islanders",
+      "league": "NHL",
+      "sport": "hockey",
+      "aliases": [
+        "Islanders",
+        "Isles",
+        "Long Island hockey"
+      ],
+      "source": "https://www.nhl.com/islanders/info/tune-in",
+      "stations": [
+        {
+          "name": "88.7 FM WRHU",
+          "call_sign": "WRHU",
+          "city": "Hempstead, NY",
+          "homepage": "",
+          "notes": "all radio broadcasts live on WRHU (Hofstra), which produces them; word flagship not used"
+        },
+        {
+          "name": "103.9 LI News Radio",
+          "call_sign": "WRCN-FM",
+          "city": "Riverhead, NY",
+          "homepage": "https://linewsradio.com/",
+          "notes": "co-carrier named alongside WRHU"
+        }
+      ]
+    },
+    {
+      "team": "New York Rangers",
+      "league": "NHL",
+      "sport": "hockey",
+      "aliases": [
+        "Rangers",
+        "Blueshirts",
+        "New York Rangers hockey"
+      ],
+      "source": "https://www.nhl.com/rangers/news/rangers-vs-lightning-pregame-notes-10-01-26",
+      "stations": [
+        {
+          "name": "ESPN 880 AM",
+          "call_sign": "WHSQ",
+          "city": "New York, NY",
+          "homepage": "",
+          "notes": "'Radio: ESPN 880 AM' (2026-27 home opener notes); word flagship not used; call sign not shown on source"
+        }
+      ]
+    },
+    {
+      "team": "Ottawa Senators",
+      "league": "NHL",
+      "sport": "hockey",
+      "aliases": [
+        "Senators",
+        "Sens",
+        "Ottawa hockey"
+      ],
+      "source": "https://www.nhl.com/senators/news/senators-extend-broadcast-deal-with-tsn",
+      "stations": [
+        {
+          "name": "TSN 1200",
+          "call_sign": "CFGO",
+          "city": "Ottawa, ON",
+          "homepage": "https://www.tsn.ca/radio/ottawa-1200/",
+          "notes": "exclusive English-language radio broadcaster (CFGO operating as TSN 1200)"
+        }
+      ]
+    },
+    {
+      "team": "Philadelphia Flyers",
+      "league": "NHL",
+      "sport": "hockey",
+      "aliases": [
+        "Flyers",
+        "Philadelphia hockey"
+      ],
+      "source": "https://www.nhl.com/flyers/news/philadelphia-flyers-announce-2025-26-broadcast-schedule",
+      "stations": [
+        {
+          "name": "97.5 The Fanatic",
+          "call_sign": "WPEN-FM",
+          "city": "Philadelphia, PA",
+          "homepage": "https://975thefanatic.com/",
+          "notes": "flagship of the Flyers Broadcast Network (2025-26); some games on 93.3 WMMR"
+        }
+      ]
+    },
+    {
+      "team": "Pittsburgh Penguins",
+      "league": "NHL",
+      "sport": "hockey",
+      "aliases": [
+        "Penguins",
+        "Pens",
+        "Pittsburgh hockey"
+      ],
+      "source": "https://www.nhl.com/penguins/news/pittsburgh-penguins-preseason-lineup-09-24-26-vs-columbus",
+      "stations": [
+        {
+          "name": "105.9 The X",
+          "call_sign": "WXDX-FM",
+          "city": "Pittsburgh, PA",
+          "homepage": "https://1059thex.iheart.com/",
+          "notes": "'the Penguins' official flagship radio station' (2026-09-24)"
+        }
+      ]
+    },
+    {
+      "team": "Seattle Kraken",
+      "league": "NHL",
+      "sport": "hockey",
+      "aliases": [
+        "Kraken",
+        "Seattle hockey"
+      ],
+      "source": "https://www.nhl.com/kraken/news/kraken-radio-broadcast-partnership-extended-iheart-media-seattle-sports-radio-kjr-fm",
+      "stations": [
+        {
+          "name": "Sports Radio 93.3 KJR",
+          "call_sign": "KJR-FM",
+          "city": "Seattle, WA",
+          "homepage": "https://933kjr.iheart.com/",
+          "notes": "flagship; multi-year extension announced 2026-08-27"
+        }
+      ]
+    },
+    {
+      "team": "St. Louis Blues",
+      "league": "NHL",
+      "sport": "hockey",
+      "aliases": [
+        "Blues",
+        "St. Louis hockey"
+      ],
+      "source": "https://www.nhl.com/blues/fans/where-to-watch",
+      "stations": [
+        {
+          "name": "101 ESPN",
+          "call_sign": "WXOS",
+          "city": "St. Louis, MO",
+          "homepage": "https://www.101espn.com/",
+          "notes": "every game live on 101 ESPN (2026-27 page); called 'Blues flagship radio station' in another team article; call sign not shown on source"
+        }
+      ]
+    },
+    {
+      "team": "Tampa Bay Lightning",
+      "league": "NHL",
+      "sport": "hockey",
+      "aliases": [
+        "Lightning",
+        "Bolts",
+        "Tampa Bay hockey"
+      ],
+      "source": "https://www.nhl.com/lightning/news/tampa-bay-lightning-cox-media-group-to-continue-partnership-making-102-5-the-bone-the-official-flagship-station-of-the-bolts",
+      "stations": [
+        {
+          "name": "102.5 The Bone",
+          "call_sign": "WHPT",
+          "city": "Tampa, FL",
+          "homepage": "",
+          "notes": "official flagship; extension announced 2025-09-19; call sign not shown on source"
+        }
+      ]
+    },
+    {
+      "team": "Toronto Maple Leafs",
+      "league": "NHL",
+      "sport": "hockey",
+      "aliases": [
+        "Maple Leafs",
+        "Leafs",
+        "Toronto hockey"
+      ],
+      "source": "https://www.nhl.com/mapleleafs/news/maple-leafs-announce-2024-25-television-and-radio-broadcast-schedule",
+      "stations": [
+        {
+          "name": "Sportsnet 590 The FAN",
+          "call_sign": "CJCL",
+          "city": "Toronto, ON",
+          "homepage": "https://www.sportsnet.ca/590/",
+          "notes": "co-flagship, radio shared equally with TSN 1050 per 2024-25 release (latest found); 2026-10-03 team game-day page lists Sportsnet 590; call sign not shown on source"
+        },
+        {
+          "name": "TSN 1050",
+          "call_sign": "CHUM",
+          "city": "Toronto, ON",
+          "homepage": "https://www.tsn.ca/radio/toronto-1050/",
+          "notes": "co-flagship per 2024-25 release; call sign not shown on source"
+        }
+      ]
+    },
+    {
+      "team": "Utah Mammoth",
+      "league": "NHL",
+      "sport": "hockey",
+      "aliases": [
+        "Mammoth",
+        "Utah hockey"
+      ],
+      "source": "https://www.nhl.com/utah/news/utah-mammoth-announce-broadcast-schedule-for-2025-26-nhl-season-release-8-27-25",
+      "stations": [
+        {
+          "name": "KSL Sports Zone 97.5 FM",
+          "call_sign": "KZNS-FM",
+          "city": "Salt Lake City, UT",
+          "homepage": "https://sports.ksl.com/",
+          "notes": "radio home (2025-26), every game on 1280 AM / 97.5 FM"
+        },
+        {
+          "name": "KSL Sports Zone 1280 AM",
+          "call_sign": "KZNS",
+          "city": "Salt Lake City, UT",
+          "homepage": "https://sports.ksl.com/",
+          "notes": "AM simulcast"
+        }
+      ]
+    },
+    {
+      "team": "Vancouver Canucks",
+      "league": "NHL",
+      "sport": "hockey",
+      "aliases": [
+        "Canucks",
+        "Nucks",
+        "Vancouver hockey"
+      ],
+      "source": "https://www.nhl.com/canucks/news/game-notes-canucks-at-kings-112925",
+      "stations": [
+        {
+          "name": "Sportsnet 650",
+          "call_sign": "CISL",
+          "city": "Vancouver, BC",
+          "homepage": "",
+          "notes": "2025-26 team game notes list 'Radio: Sportsnet 650'; word flagship not found; call sign not shown on source"
+        }
+      ]
+    },
+    {
+      "team": "Vegas Golden Knights",
+      "league": "NHL",
+      "sport": "hockey",
+      "aliases": [
+        "Golden Knights",
+        "VGK",
+        "Vegas hockey"
+      ],
+      "source": "https://www.nhl.com/goldenknights/news/beasley-media-group-named-official-audio-partner-of-vegas-golden-knights",
+      "stations": [
+        {
+          "name": "X 107.9",
+          "call_sign": "KVGS-FM",
+          "city": "Las Vegas, NV",
+          "homepage": "https://x1079.com/",
+          "notes": "official English-language radio flagship from 2026-27 (announced 2026-09-28)"
+        }
+      ]
+    },
+    {
+      "team": "Washington Capitals",
+      "league": "NHL",
+      "sport": "hockey",
+      "aliases": [
+        "Capitals",
+        "Caps",
+        "Washington hockey"
+      ],
+      "source": "https://www.nhl.com/capitals/news/monumental-sports-network-unveils-2025-26-washington-capitals-local-tv-radio-schedule",
+      "stations": [
+        {
+          "name": "106.7 The Fan",
+          "call_sign": "WJFK-FM",
+          "city": "Washington, DC",
+          "homepage": "https://www.audacy.com/thefandc",
+          "notes": "flagship (2025-26)"
+        },
+        {
+          "name": "WFED 1500 AM",
+          "call_sign": "WFED",
+          "city": "Washington, DC",
+          "homepage": "https://federalnewsnetwork.com/",
+          "notes": "AM home of the Capitals Radio Network (co-carrier, not called flagship)"
+        }
+      ]
+    },
+    {
+      "team": "Winnipeg Jets",
+      "league": "NHL",
+      "sport": "hockey",
+      "aliases": [
+        "Jets",
+        "Winnipeg hockey"
+      ],
+      "source": "https://www.nhl.com/jets/news/jets-announce-2025-26-broadcast-schedule",
+      "stations": [
+        {
+          "name": "680 CJOB",
+          "call_sign": "CJOB",
+          "city": "Winnipeg, MB",
+          "homepage": "https://globalnews.ca/radio/cjob/",
+          "notes": "every Jets game (2025-26) on 680 CJOB, simulcast on Power 97; word flagship not used"
+        }
+      ]
+    },
+    {
+      "team": "Atlanta United FC",
+      "league": "MLS",
+      "sport": "soccer",
+      "aliases": [
+        "Atlanta United",
+        "ATL UTD",
+        "Atlanta soccer"
+      ],
+      "source": "https://www.atlutd.com/news/match-preview-atlanta-united-hosts-charlotte-fc-in-sunday-rivalry-matchup",
+      "stations": [
+        {
+          "name": "92.9 The Game",
+          "call_sign": "WZGC-FM",
+          "city": "Atlanta, GA",
+          "homepage": "https://www.audacy.com/929thegame",
+          "notes": "local English radio per club match preview (date not shown); Star 94.1 for conflicts"
+        }
+      ]
+    },
+    {
+      "team": "Austin FC",
+      "league": "MLS",
+      "sport": "soccer",
+      "aliases": [
+        "Austin FC",
+        "Verde",
+        "Austin soccer"
+      ],
+      "source": "https://www.austinfc.com/news/austin-fc-confirms-2026-radio-broadcast-partners-and-talent",
+      "stations": [
+        {
+          "name": "Alt 97.5",
+          "call_sign": "",
+          "city": "Austin, TX",
+          "homepage": "https://alt975austin.iheart.com/",
+          "notes": "all 34 2026 regular-season matches in English; call sign not confirmed"
+        }
+      ]
+    },
+    {
+      "team": "CF Montreal",
+      "league": "MLS",
+      "sport": "soccer",
+      "aliases": [
+        "CF Montreal",
+        "Montreal soccer"
+      ],
+      "source": "https://en.cfmontreal.com/news/cf-montreal-takes-on-chicago-fire-fc-saturday-at-soldier-field",
+      "stations": [
+        {
+          "name": "TSN 690",
+          "call_sign": "CKGM",
+          "city": "Montreal, QC",
+          "homepage": "https://www.tsn.ca/radio/montreal-690/",
+          "notes": "English radio home; 2026 club match previews list TSN 690"
+        }
+      ]
+    },
+    {
+      "team": "Charlotte FC",
+      "league": "MLS",
+      "sport": "soccer",
+      "aliases": [
+        "Charlotte FC",
+        "CLTFC",
+        "Charlotte soccer"
+      ],
+      "source": "https://www.charlottefootballclub.com/broadcast/",
+      "stations": [
+        {
+          "name": "WFNZ 92.7 FM",
+          "call_sign": "WFNZ-FM",
+          "city": "Charlotte, NC",
+          "homepage": "https://wfnz.com/",
+          "notes": "Charlotte station heading the club's English radio network (2026)"
+        }
+      ]
+    },
+    {
+      "team": "Chicago Fire FC",
+      "league": "MLS",
+      "sport": "soccer",
+      "aliases": [
+        "Fire",
+        "Chicago Fire",
+        "Chicago soccer"
+      ],
+      "source": "https://www.chicagofirefc.com/fans/radio",
+      "stations": [
+        {
+          "name": "WLS-AM 890",
+          "call_sign": "WLS-AM",
+          "city": "Chicago, IL",
+          "homepage": "https://www.wlsam.com/",
+          "notes": "radio home of Chicago Fire FC in 2026"
+        }
+      ]
+    },
+    {
+      "team": "Colorado Rapids",
+      "league": "MLS",
+      "sport": "soccer",
+      "aliases": [
+        "Rapids",
+        "Colorado soccer",
+        "Denver soccer"
+      ],
+      "source": "https://www.coloradorapids.com/news/colorado-rapids-announce-radio-broadcast-extensions-with-altitude-sports-and-tico-sports",
+      "stations": [
+        {
+          "name": "Altitude Sports Radio 92.5 FM",
+          "call_sign": "KKSE-FM",
+          "city": "Denver, CO",
+          "homepage": "https://www.altitudesportsradio.com/",
+          "notes": "official English radio partner for 2026; simulcast on 950 AM"
+        }
+      ]
+    },
+    {
+      "team": "Columbus Crew",
+      "league": "MLS",
+      "sport": "soccer",
+      "aliases": [
+        "Crew",
+        "Columbus soccer"
+      ],
+      "source": "https://alt1057.iheart.com/",
+      "stations": [
+        {
+          "name": "Columbus Alternative 105.7",
+          "call_sign": "WXZX",
+          "city": "Columbus, OH",
+          "homepage": "https://alt1057.iheart.com/",
+          "notes": "station site carries the 2026 Crew match schedule (iHeart deal through 2027); no club page found, word flagship not confirmed"
+        }
+      ]
+    },
+    {
+      "team": "D.C. United",
+      "league": "MLS",
+      "sport": "soccer",
+      "aliases": [
+        "D.C. United",
+        "DC United",
+        "Washington soccer"
+      ],
+      "source": "https://www.dcunited.com/news/match-preview-d-c-united-vs-charlotte-fc-saturday-september-19-2026",
+      "stations": [
+        {
+          "name": "Freedom 104.7 FM",
+          "call_sign": "WONK-FM",
+          "city": "Washington, DC",
+          "homepage": "https://freedom1047.iheart.com/",
+          "notes": "radio broadcasts per September 2026 club preview"
+        }
+      ]
+    },
+    {
+      "team": "FC Cincinnati",
+      "league": "MLS",
+      "sport": "soccer",
+      "aliases": [
+        "FC Cincinnati",
+        "FCC",
+        "Cincinnati soccer"
+      ],
+      "source": "https://www.fccincinnati.com/news/tune-in-fc-cincinnati-at-new-york-city-fc-2026",
+      "stations": [
+        {
+          "name": "ESPN 1530",
+          "call_sign": "WCKY-AM",
+          "city": "Cincinnati, OH",
+          "homepage": "https://espn1530.iheart.com/",
+          "notes": "Official English Radio Broadcast Home (2026)"
+        }
+      ]
+    },
+    {
+      "team": "Inter Miami CF",
+      "league": "MLS",
+      "sport": "soccer",
+      "aliases": [
+        "Inter Miami",
+        "Miami soccer"
+      ],
+      "source": "https://www.intermiamicf.com/news/espn-west-palm-s-106-3-named-the-official-english-language-radio-partner-of-inter-miami-cf",
+      "stations": [
+        {
+          "name": "ESPN West Palm 106.3",
+          "call_sign": "",
+          "city": "West Palm Beach, FL",
+          "homepage": "https://goodkarmasports.com/espn-west-palm/",
+          "notes": "Official English-Language Radio Partner per 2025 announcement; nothing contradicts; call sign not confirmed"
+        }
+      ]
+    },
+    {
+      "team": "Los Angeles FC",
+      "league": "MLS",
+      "sport": "soccer",
+      "aliases": [
+        "LAFC",
+        "Los Angeles soccer"
+      ],
+      "source": "https://www.lafc.com/schedule/where-to-watch",
+      "stations": [
+        {
+          "name": "710 ESPN",
+          "call_sign": "KSPN",
+          "city": "Los Angeles, CA",
+          "homepage": "",
+          "notes": "flagship English radio partner; 1110 AM is overflow"
+        }
+      ]
+    },
+    {
+      "team": "Minnesota United FC",
+      "league": "MLS",
+      "sport": "soccer",
+      "aliases": [
+        "Minnesota United",
+        "Loons",
+        "Minnesota soccer"
+      ],
+      "source": "https://www.mnufc.com/news/mnufc-announces-date-change-for-road-match-against-lafc",
+      "stations": [
+        {
+          "name": "1500 ESPN",
+          "call_sign": "KSTP-AM",
+          "city": "Minneapolis-St. Paul, MN",
+          "homepage": "https://1500espn.com/",
+          "notes": "MNUFC Radio on 1500 ESPN (2026 club release)"
+        }
+      ]
+    },
+    {
+      "team": "Nashville SC",
+      "league": "MLS",
+      "sport": "soccer",
+      "aliases": [
+        "Nashville SC",
+        "Nashville soccer"
+      ],
+      "source": "https://www.nashvillesc.com/news/preview-nashville-sc-and-inter-miami-cf-square-off-for-top",
+      "stations": [
+        {
+          "name": "104.5 The Zone",
+          "call_sign": "WGFX-FM",
+          "city": "Nashville, TN",
+          "homepage": "https://www.1045thezone.com/",
+          "notes": "Listen: 104.5 The Zone (August 2026 club preview)"
+        }
+      ]
+    },
+    {
+      "team": "New England Revolution",
+      "league": "MLS",
+      "sport": "soccer",
+      "aliases": [
+        "Revolution",
+        "Revs",
+        "New England soccer"
+      ],
+      "source": "https://www.revolutionsoccer.net/schedule/matches",
+      "stations": [
+        {
+          "name": "98.5 The Sports Hub",
+          "call_sign": "WBZ-FM",
+          "city": "Boston, MA",
+          "homepage": "https://985thesportshub.com/",
+          "notes": "every match in English; station calls itself flagship of the Revolution Radio Network"
+        }
+      ]
+    },
+    {
+      "team": "Orlando City SC",
+      "league": "MLS",
+      "sport": "soccer",
+      "aliases": [
+        "Orlando City",
+        "Orlando soccer"
+      ],
+      "source": "https://www.orlandocitysc.com/news/what-to-watch-presented-by-verizon-as-orlando-city-face-nashville-sc-on-the-road",
+      "stations": [
+        {
+          "name": "AM 810 Fox Sports Radio",
+          "call_sign": "WRSO-AM",
+          "city": "Orlando, FL",
+          "homepage": "https://fsrorlando.iheart.com/",
+          "notes": "English radio per club preview dated August 2025; no 2026 confirmation"
+        }
+      ]
+    },
+    {
+      "team": "Philadelphia Union",
+      "league": "MLS",
+      "sport": "soccer",
+      "aliases": [
+        "Union",
+        "Philadelphia soccer"
+      ],
+      "source": "https://www.philadelphiaunion.com/club/radio",
+      "stations": [
+        {
+          "name": "97.5 The Fanatic",
+          "call_sign": "WPEN-FM",
+          "city": "Philadelphia, PA",
+          "homepage": "https://975thefanatic.com/",
+          "notes": "official radio broadcast partner; 2026 club match notes list it"
+        }
+      ]
+    },
+    {
+      "team": "Portland Timbers",
+      "league": "MLS",
+      "sport": "soccer",
+      "aliases": [
+        "Timbers",
+        "PTFC",
+        "Portland soccer"
+      ],
+      "source": "https://www.timbers.com/news/timbers-announce-new-radio-broadcast-partnership-with-105-1-the-fan",
+      "stations": [
+        {
+          "name": "105.1 The Fan",
+          "call_sign": "KRSK-FM",
+          "city": "Portland, OR",
+          "homepage": "https://www.audacy.com/1051thefan",
+          "notes": "new exclusive radio home from 2026 (Audacy); some matches on 1080 AM The Fan"
+        }
+      ]
+    },
+    {
+      "team": "Real Salt Lake",
+      "league": "MLS",
+      "sport": "soccer",
+      "aliases": [
+        "RSL",
+        "Real Salt Lake",
+        "Salt Lake soccer"
+      ],
+      "source": "https://kslsports.com/mls/real-salt-lake/real-salt-lake-ksl-sports-zone-announce-radio-partnership/498909",
+      "stations": [
+        {
+          "name": "KSL Sports Zone 97.5 FM / 1280 AM",
+          "call_sign": "KZNS-FM",
+          "city": "Salt Lake City, UT",
+          "homepage": "https://sports.ksl.com/",
+          "notes": "station's 2023 announcement covers 2023 season and beyond; no 2026-specific confirmation found"
+        }
+      ]
+    },
+    {
+      "team": "San Diego FC",
+      "league": "MLS",
+      "sport": "soccer",
+      "aliases": [
+        "San Diego FC",
+        "SDFC",
+        "San Diego soccer"
+      ],
+      "source": "https://www.sandiegofc.com/news/san-diego-fc-announces-official-english-and-spanish-radio-broadcast-partners",
+      "stations": [
+        {
+          "name": "San Diego Sports 760",
+          "call_sign": "KGB-AM",
+          "city": "San Diego, CA",
+          "homepage": "https://sportssd.iheart.com/",
+          "notes": "official English radio partner; multi-year deal announced 2025"
+        }
+      ]
+    },
+    {
+      "team": "San Jose Earthquakes",
+      "league": "MLS",
+      "sport": "soccer",
+      "aliases": [
+        "Earthquakes",
+        "Quakes",
+        "San Jose soccer"
+      ],
+      "source": "https://www.sjearthquakes.com/news/news-earthquakes-announce-radio-stations-for-2026-mls-season",
+      "stations": [
+        {
+          "name": "KSFO 810 AM",
+          "call_sign": "KSFO-AM",
+          "city": "San Francisco, CA",
+          "homepage": "https://www.ksfo.com/",
+          "notes": "English flagship for 2026; some games on KNBR 680"
+        }
+      ]
+    },
+    {
+      "team": "Seattle Sounders FC",
+      "league": "MLS",
+      "sport": "soccer",
+      "aliases": [
+        "Sounders",
+        "Sounders FC",
+        "Seattle soccer"
+      ],
+      "source": "https://www.soundersfc.com/matchday/television-and-radio",
+      "stations": [
+        {
+          "name": "Sports Radio 950 KJR",
+          "call_sign": "KJR-AM",
+          "city": "Seattle, WA",
+          "homepage": "https://933kjr.iheart.com/",
+          "notes": "English radio partner (iHeartMedia Seattle); matches on 950 AM or 93.3 FM"
+        },
+        {
+          "name": "Sports Radio 93.3 KJR",
+          "call_sign": "KJR-FM",
+          "city": "Seattle, WA",
+          "homepage": "https://933kjr.iheart.com/",
+          "notes": "co-carrier with 950 AM"
+        }
+      ]
+    },
+    {
+      "team": "Sporting Kansas City",
+      "league": "MLS",
+      "sport": "soccer",
+      "aliases": [
+        "Sporting KC",
+        "SKC",
+        "Kansas City soccer"
+      ],
+      "source": "https://www.sportingkc.com/news/sporting-kc-and-sports-radio-810-whb-extend-broadcast-agreement-for-2025-and-2026-seasons",
+      "stations": [
+        {
+          "name": "Sports Radio 810 WHB",
+          "call_sign": "WHB",
+          "city": "Kansas City, MO",
+          "homepage": "https://www.810whb.com/",
+          "notes": "official radio home; agreement covers 2025 and 2026"
+        }
+      ]
+    },
+    {
+      "team": "St. Louis CITY SC",
+      "league": "MLS",
+      "sport": "soccer",
+      "aliases": [
+        "St. Louis CITY",
+        "CITY SC",
+        "St. Louis soccer"
+      ],
+      "source": "https://www.stlcitysc.com/news/match-preview-st-louis-city-sc-opens-2026-mls-regular-season-against-charlotte-fc-at-energizer-park",
+      "stations": [
+        {
+          "name": "Y98.1 FM",
+          "call_sign": "KYKY-FM",
+          "city": "St. Louis, MO",
+          "homepage": "https://www.audacy.com/y98",
+          "notes": "English radio per 2026 season-opener preview"
+        }
+      ]
+    },
+    {
+      "team": "Vancouver Whitecaps FC",
+      "league": "MLS",
+      "sport": "soccer",
+      "aliases": [
+        "Whitecaps",
+        "Vancouver soccer"
+      ],
+      "source": "https://www.whitecapsfc.com/news/live-radio-730-cknw-english-or-connect-fm-91-5-punjabi",
+      "stations": [
+        {
+          "name": "730 CKNW",
+          "call_sign": "CKNW",
+          "city": "Vancouver, BC",
+          "homepage": "https://globalnews.ca/radio/cknw/",
+          "notes": "English radio home (Corus)"
+        }
+      ]
+    }
+  ]
+}

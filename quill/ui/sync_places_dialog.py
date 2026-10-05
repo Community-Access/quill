@@ -154,6 +154,19 @@ class SyncPlacesDialog:
         )
         self._labels.SetValue(config.include_labels)
         shared.Add(self._labels, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 6)
+
+        self._subscriptions = wx.CheckBox(
+            self._dialog, label="Also share the podcasts I follow, and their fol&ders"
+        )
+        self._subscriptions.SetHelpText(
+            "Adds the podcasts you follow and your podcast folders to the plain file, so following "
+            "or unfollowing a podcast on one device does the same on the others. Anybody who can "
+            "see the folder can read the list. Private feeds, ones with a sign-in or a key in "
+            "their address, never go in it. Unfollowing elsewhere never deletes episodes or "
+            "downloads here, and every podcast added or removed is named when you sync."
+        )
+        self._subscriptions.SetValue(config.share_subscriptions)
+        shared.Add(self._subscriptions, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 6)
         root.Add(shared, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         self._status = wx.TextCtrl(
@@ -226,6 +239,7 @@ class SyncPlacesDialog:
             # behind on every sync.
             device_id=self._config.device_id or (_new_device_id() if interchange else ""),
             include_labels=bool(self._labels.GetValue()),
+            share_subscriptions=bool(self._subscriptions.GetValue()),
         )
 
     def browse(self) -> str:

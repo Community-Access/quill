@@ -69,6 +69,7 @@ def _wx():
 def _host(**overrides):
     host = SimpleNamespace(
         open_browse_stations=lambda: None,
+        open_local_media=lambda: None,
         open_internet_radio=lambda: None,
         open_manage_radio_favorites=lambda: None,
         open_radio_recordings=lambda: None,
@@ -89,6 +90,17 @@ def test_the_menu_is_titled_station_and_every_item_shows_a_key() -> None:
     # The house rule: an enabled item names its key, whether from the keymap
     # (_menu_label above) or from the literal fallback.
     assert all("\t" in label for _id, label in menu.items)
+
+
+def test_local_media_shows_its_key_without_a_keymap() -> None:
+    """Local Media (Radio 3.2) joined the Station menu; with no ``_menu_label``
+    the literal fallback still names Ctrl+O."""
+    bar = _MenuBar()
+    host = _host()
+    del host._menu_label
+    surface_app_menu.install(win=_Win(), host=host, menu_bar=bar, wx=_wx())
+    labels = [label for _id, label in bar.menus[0][0].items]
+    assert "&Local Media...\tCtrl+O" in labels
 
 
 def test_a_surface_skips_the_commands_it_already_owns() -> None:

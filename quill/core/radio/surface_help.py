@@ -118,6 +118,46 @@ PURPOSES: dict[str, str] = {
         "has an answer, and Enter on a saved row opens the folder it landed "
         "in."
     ),
+    "YouTube Comments": (
+        "The comments people left on a YouTube video, one per row, with "
+        "replies right after the comment they answer. Type in Search comments "
+        "to narrow the list, change Sort by for the newest, read the selected "
+        "comment in full in Full text, and use Load More for the next hundred. "
+        "Keys: Alt+M Search comments, Alt+B Sort by, Alt+C the list, Alt+T Full "
+        "text, Alt+L Load More, Alt+P Copy Comment. Escape closes it and takes "
+        "you back where you were."
+    ),
+    # The Live Chat window and its neighbours (youtube_live_chat_window,
+    # youtube_video_window, youtube_sponsorblock_ui, youtube_search_filters_ui).
+    "YouTube Live Chat": (
+        "A YouTube live stream's chat, or a finished stream's replay, oldest at "
+        "the top and newest at the bottom. New messages are added without "
+        "moving you. Keys: Home and End, Ctrl+Up and Ctrl+Down for the same "
+        "person's previous or next message, Ctrl+J the newest, Ctrl+L read the "
+        "newest without moving, Ctrl+T when the selected one was sent, Space "
+        "pause, Ctrl+S speak new messages on or off, F6 between the list, Full "
+        "text and the filter. Escape closes it."
+    ),
+    "YouTube Video": (
+        "Everything about one YouTube video apart from playing it: whether it "
+        "is live or when a premiere starts, its description, the moments the "
+        "description lists (Enter jumps there while it plays), Live Chat, Save "
+        "Audio, and a reminder for a premiere. Escape closes it."
+    ),
+    "About This Channel": (
+        "A YouTube channel's name, subscriber count and the description it "
+        "wrote about itself, to read with the arrow keys. Escape closes it."
+    ),
+    "Skip Sponsor Segments": (
+        "Whether Quill Radio jumps over the parts of YouTube videos that "
+        "SponsorBlock's volunteers have marked as sponsor reads, self-promotion "
+        "and the like, and which kinds. Off until you turn it on here."
+    ),
+    "Search YouTube with Filters": (
+        "Search YouTube with the filters YouTube's own Filters menu offers -- "
+        "type, upload date, length and sort order -- or search YouTube Music's "
+        "songs. The answers land in Browse Stations' Search Results."
+    ),
     "Song History": (
         "What each station has played while you listened: every title the "
         "stream reported, newest first, with the time it was heard. From a "
@@ -204,6 +244,13 @@ PURPOSES: dict[str, str] = {
         "most belongs at 1, because you will press Ctrl+G then 1 without "
         "reading anything."
     ),
+    "Edit Station Tags": (
+        "Your own words for a station, so a search finds it by them: a team it "
+        "carries, a show you like, anything. Type them in Your tags, separated "
+        "by commas, and press Enter. The directory's own tags are listed below, "
+        "read-only, because they are searched too. Empty the box to remove your "
+        "tags; Escape leaves everything as it was."
+    ),
     "Import Stations": (
         "Bring stations in from a playlist file -- M3U, PLS -- or another "
         "player's export. What arrives lands in your favorites; nothing "
@@ -279,6 +326,11 @@ PURPOSES: dict[str, str] = {
         "downloads still run -- only the announcements wait -- and anything "
         "you press a key for still answers. The window is shared with the "
         "other Quill listening apps."
+    ),
+    "Undo History": (
+        "The last ten things you can take back, newest first, each saying what "
+        "undoing it brings back. Undo This One takes back the highlighted step "
+        "alone and leaves the rest; Ctrl+Z always takes the newest."
     ),
     "Recent Problems": (
         "Everything that has failed recently, in one list that outlives the "
@@ -357,7 +409,25 @@ PURPOSES: dict[str, str] = {
         "Type a position -- 90, 1:30, or 1:02:03 -- and playback moves straight there."
     ),
     "Jump to File": ("Type any part of a recording's name and the list jumps to the first match."),
+    "Local Media": (
+        "Your own music, audiobooks and video, in playlists you make. Playlists "
+        "are on the left and the selected one's items on the right; Enter plays "
+        "from an item and carries on through the playlist, Shift+F10 opens "
+        "everything a row can do, and Ctrl+O adds files. Removing an item never "
+        "touches the file on your computer."
+    ),
+    "Local Media Item Properties": (
+        "Everything known about one file in a playlist: its title, artist and "
+        "album, its length, where it is on your computer and whether it is still "
+        "there. Read it with the arrow keys, or copy any of it."
+    ),
 }
+
+# Release channels: the shared windows (quill/ui/updates) take their titles and
+# purposes from one place, so a title can never ship without its F1 paragraph.
+from quill.core.updater.wording import window_titles as _channel_windows  # noqa: E402
+
+PURPOSES.update(_channel_windows("Quill Radio"))
 
 #: Purposes for windows whose titles carry live data, matched by prefix.
 PREFIX_PURPOSES: tuple[tuple[str, str], ...] = (

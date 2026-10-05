@@ -94,6 +94,14 @@ _DEFAULT_LIMIT = 25
 #: refusal, because that refusal is the only place they will see it.
 SIGNUP_URL = "https://api.podcastindex.org/signup"
 
+#: What every Podcast Index surface says when there is no key at all. One
+#: sentence in one place, naming the window that actually takes a key -- the
+#: old wording sent people to Podcast Settings, which has no such field.
+NO_KEY_SENTENCE = (
+    "The Podcast Index needs a free key, and none has been entered. Get one at "
+    f"{SIGNUP_URL}, then add it in the Podcast Index Credentials window."
+)
+
 
 #: Where the two halves of the credential live in the platform store. Two
 #: entries rather than one joined string, so neither can be logged by accident
@@ -106,6 +114,13 @@ class PodcastIndexError(CodedError):
     """A Podcast Index request failed, or was refused."""
 
     code = "QUILL-PODCASTS-PODCASTINDEX"
+    #: Every message this error carries is written to be read aloud, so a browse
+    #: folder that comes back empty because of one says the sentence instead of
+    #: "Nothing in here" (see ``browse_failure.listener_reason``).
+    listener_facing = True
+    #: True when the index answered and refused (a rejected key), which is not
+    #: a network failure and must not be reported as "could not be reached".
+    service_reached = False
 
 
 def bundled_credentials() -> tuple[str, str]:
@@ -218,10 +233,12 @@ def _http_json(url: str, headers: dict[str, str]) -> object:
         payload = retry_transient(_fetch_once)
     except urllib.error.HTTPError as error:
         if error.code in (401, 403):
-            raise PodcastIndexError(
-                "Podcast Index did not accept those credentials. Check the key "
-                "and secret in Podcast Settings."
-            ) from error
+            rejected = PodcastIndexError(
+                "The Podcast Index did not accept the key and secret. Check them "
+                "in the Podcast Index Credentials window."
+            )
+            rejected.service_reached = True
+            raise rejected from error
         raise PodcastIndexError(f"Could not reach Podcast Index: {error}") from error
     except (urllib.error.URLError, TimeoutError, ssl.SSLError, OSError) as error:
         raise PodcastIndexError(f"Could not reach Podcast Index: {error}") from error
@@ -285,10 +302,7 @@ def search_podcasts(
     if not (key and secret):
         key, secret = credentials()
     if not key or not secret:
-        raise PodcastIndexError(
-            "This build has no Podcast Index credential. A free developer key from "
-            f"{SIGNUP_URL} can be added in Podcast Settings, or search iTunes instead."
-        )
+        raise PodcastIndexError(f"{NO_KEY_SENTENCE} Or search iTunes instead.")
     if not query.strip():
         return []
     params = {"q": query, "max": max(1, min(limit, 100))}

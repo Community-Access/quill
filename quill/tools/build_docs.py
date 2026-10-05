@@ -48,6 +48,24 @@ _SECTION_LABELS: dict[str, str] = {
     "checking-for-updates": "Checking for Updates",
     "glow-workflows-inside-quill": "GLOW Workflows Inside QUILL",
     "braille-mode": "Braille Mode",
+    "the-tab-key-indent-or-tab-character": "The Tab Key, Indent or Tab Character",
+    "keyboard-packs": "Keyboard Packs",
+    "sounds-and-turning-them-off": "Sounds, and Turning Them Off",
+    "chapter-3-opening-saving-and-converting-files": "Opening, Saving and Converting Files",
+    "opening-files": "Opening Files",
+    "saving-files": "Saving Files",
+    "save-as-plain-text": "Save As Plain Text",
+    "encoding-and-line-endings-ctrl-alt-e": "Encoding and Line Endings",
+    "when-another-program-changes-the-file-you-are-editing": (
+        "When Another Program Changes the File You Are Editing"
+    ),
+    "the-rest-of-the-file-menu": "The Rest of the File Menu",
+    "managing-your-github-account": "Managing Your GitHub Account",
+    "saving-back-to-github": "Saving Back to GitHub",
+    "opening-and-saving-github-files": "Opening and Saving GitHub Files",
+    "creating-a-notebook": "Creating a Notebook",
+    "notebooks": "Notebooks",
+    "sessions": "Sessions",
 }
 
 # Desired display order for sections. Sections not listed appear at the end
@@ -155,7 +173,7 @@ def _generate_markdown(topics: list[dict]) -> str:
         "# QUILL Control Reference\n\n"
         "This document describes every registered help topic in QUILL.\n"
         "Press F1 on any control to see its topic in-app.\n"
-        "Press Ctrl+F1 to open the User Guide.\n\n"
+        "Press Ctrl+Shift+F1 to open the User Guide.\n\n"
         f"Topic count: {len(topics)}\n"
     )
 

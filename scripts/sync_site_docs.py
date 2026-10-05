@@ -60,10 +60,11 @@ SYNC_MAP: dict[str, dict[str, str]] = {
     "radio": {
         "userguide": "userguide.html",
         "prd": "prd.html",
-        # The 3.1 notes, published with Quill Radio 3.1.1 (2026-09-30); the 3.0
-        # notes stay rendered and reachable, they are just no longer the page
-        # Help > Release Notes and the site point at.
-        "release-notes": "release-notes-3.1.html",
+        # The 3.2 notes, for Quill Radio 3.2.0 (2026-10-03; prepared as 3.1.1,
+        # never published under that number); the 3.0 notes stay rendered and
+        # reachable, they are just no longer the page Help > Release Notes and
+        # the site point at.
+        "release-notes": "release-notes-3.2.html",
         # The 3.0 announcement. Unlike ``radio-pr.html`` (the 1.0 press release,
         # deliberately left as a historical page) this one is generated from the
         # repo, so it cannot drift from the release it announces.
@@ -77,6 +78,9 @@ SYNC_MAP: dict[str, dict[str, str]] = {
         "userguide": "userguide.html",
         "prd": "prd.html",
         "release-notes": "release-notes-2.0.html",
+        # The changelog moved into docs/ beside the other Cast documents and
+        # joined the site with 2.0.0 (2026-10-03).
+        "changelog": "CHANGELOG.html",
     },
     "weather": {
         "userguide": "userguide.html",
@@ -109,7 +113,8 @@ SYNC_MAP: dict[str, dict[str, str]] = {
     "quilllite": {
         "userguide": "userguide.html",
         "prd": "prd.html",
-        "release-notes": "release-notes-1.1.html",
+        # The 1.2.0 notes (2026-10-03).
+        "release-notes": "release-notes-1.2.html",
         # The 1.0 announcement and the free-AI guide, both linked from
         # quilllite.html. Generated from the repo like Radio's, so the page a
         # newsletter links to cannot drift from the release it announces.

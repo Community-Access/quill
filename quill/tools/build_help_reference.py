@@ -50,7 +50,14 @@ APPS: tuple[AppConfig, ...] = (
         "Quill Radio",
         "quill.core.radio.surface_help",
         ("quill/ui/radio",),
-        ("quill/apps/radio*.py",),
+        # The shared Tutorials and Release Channel windows are gated once, in
+        # Radio's audit, so their sentences are published once, here.
+        (
+            "quill/apps/radio*.py",
+            "quill/ui/tutorials_window.py",
+            "quill/ui/tutorials_contents.py",
+            "quill/ui/updates/*.py",
+        ),
         "radio_help_inventory.json",
     ),
     AppConfig(
@@ -92,7 +99,7 @@ APPS: tuple[AppConfig, ...] = (
         "Quill Converter",
         "quill.core.converter_surface_help",
         (),
-        ("quill/apps/converter.py",),
+        ("quill/apps/converter*.py", "quill/ui/converter_dialogs.py"),
         "converter_help_inventory.json",
     ),
     AppConfig(
@@ -120,12 +127,32 @@ APPS: tuple[AppConfig, ...] = (
             "quill/apps/lite*.py",
             "quill/ui/spelling_voice_dialog.py",
             "quill/ui/hosted_ai*.py",
+            "quill/ui/text_editor_prefs.py",
+            "quill/ui/text_editor_commands.py",
+            "quill/ui/windows_dictation_*.py",
+            "quill/ui/recent_documents_dialog.py",
         ),
         "lite_help_inventory.json",
     ),
 )
 
 _FIXTURES = _REPO_ROOT / "tests" / "unit" / "ui" / "fixtures"
+
+#: Help sentences for controls a public build does not show yet: the YouTube
+#: account actions behind ``future.youtube_oauth``, held back until Google
+#: approves the sign-in (docs/design/googlepermissions.md). The help stays at
+#: the construction site, where the audits see it; only this published
+#: reference leaves it out, so it never describes a control nobody can find.
+#: ``(path, receiver)``, with ``"*"`` for every control in the file.
+HELD_BACK: frozenset[tuple[str, str]] = frozenset({
+    ("quill/ui/radio/youtube_comments_write.py", "*"),
+    ("quill/ui/radio/youtube_live_chat_window.py", "self._send_box"),
+    ("quill/ui/radio/youtube_live_chat_window.py", "self._send_button"),
+})
+
+
+def _held_back(rel: str, receiver: str) -> bool:
+    return (rel, "*") in HELD_BACK or (rel, receiver) in HELD_BACK
 
 
 def _scan_paths(config: AppConfig) -> list[Path]:
@@ -240,7 +267,8 @@ def generate() -> str:
         for path in _scan_paths(config):
             rel = path.relative_to(_REPO_ROOT).as_posix()
             for window, receiver, text in _authored_help(path):
-                authored.append((rel, window, receiver, text))
+                if not _held_back(rel, receiver):
+                    authored.append((rel, window, receiver, text))
         if authored:
             lines.append("### Every authored control help sentence")
             lines.append("")

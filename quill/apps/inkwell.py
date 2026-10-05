@@ -35,6 +35,7 @@ from quill.core.abbreviations import (
     resolve_expansion,
     save_abbreviation_library,
 )
+from quill.core.app_version import describe_version, installed_version
 from quill.core.expansion.settings import (
     InkwellSettings,
     load_settings,
@@ -45,6 +46,7 @@ from quill.ui.inkwell_expansion import InkwellExpansionMixin
 
 _TITLE = "Quill Inkwell"
 _VERSION = "1.0.0"
+_BUILD = 1  # this version's build (docs/release/RELEASE.md, "Build numbers")
 _REPO = "Community-Access/quill"
 _IPC_SLOT = "inkwell"
 
@@ -213,10 +215,15 @@ class QuillInkwellFrame(AppShellFrame, InkwellExpansionMixin):
         help_menu = wx.Menu()
         updates_id, about_id = wx.NewIdRef(), wx.NewIdRef()
         help_menu.Append(updates_id, "Check for &Updates...\tCtrl+Alt+U")
+        from quill.ui.menu_palette import append_palette_row
+
+        append_palette_row(self, help_menu)  # qc.md X-01
         self.frame.Bind(
             wx.EVT_MENU,
             lambda _e: self.check_for_app_updates(
-                repo_slug=_REPO, current_version=_VERSION, app_key="inkwell"
+                repo_slug=_REPO,
+                current_version=installed_version(_VERSION, build=_BUILD),
+                app_key="inkwell",
             ),
             id=updates_id,
         )
@@ -538,7 +545,7 @@ class QuillInkwellFrame(AppShellFrame, InkwellExpansionMixin):
 
     def _show_about(self) -> None:
         self._show_message_box(
-            f"{_TITLE} {_VERSION}\n\n"
+            f"{_TITLE} {describe_version(_VERSION, build=_BUILD)}\n\n"
             "Abbreviation expansion in every application, sharing one library "
             "with QUILL.\n\nFree, and part of the QuillVille family."
             "\n\nSupport: support@community-access.org",

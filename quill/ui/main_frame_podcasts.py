@@ -30,6 +30,7 @@ from quill.ui.main_frame_podcast_save import PodcastLibrarySaveMixin
 from quill.ui.main_frame_podcast_session import PodcastSessionMixin
 from quill.ui.main_frame_podcast_transfers import PodcastTransfersMixin
 from quill.ui.podcasts.check_monitor import PodcastCheckMonitor
+from quill.ui.podcasts.failure_report import report_failure
 from quill.ui.podcasts.folder_watch import FolderWatchMixin
 from quill.ui.podcasts.player_controller import (
     PodcastPlaybackState,
@@ -219,7 +220,13 @@ class PodcastsMixin(
                 self._podcast_chapters_source = str(getattr(result, "label", ""))
 
         self._task_manager.submit(
-            "podcast-chapters", _do_fetch, on_success=_on_success, on_failure=lambda *_a: None
+            "podcast-chapters",
+            _do_fetch,
+            on_success=_on_success,
+            # An optional lookup Cast made on its own: written down, not said.
+            on_failure=lambda _op, error: report_failure(
+                self, f"Chapters for {episode.title} could not be read: {error}", quiet=True
+            ),
         )
 
     def _maybe_surface_podcast_status_cell(self, active: bool) -> None:
@@ -742,7 +749,11 @@ class PodcastsMixin(
             "podcast-audio-process",
             _do_process,
             on_success=_on_success,
-            on_failure=lambda *_a: None,
+            on_failure=lambda _op, error: report_failure(
+                self,
+                f"Could not process the audio of {destination.name}: {error}",
+                background=True,
+            ),
         )
 
     # -- local (imported) podcasts (Phase 4) -----------------------------------
@@ -819,7 +830,7 @@ class PodcastsMixin(
             )
 
         def _on_failure(_op: str, error: object) -> None:
-            self._announce(f"ACB Media Podcasts could not be fetched: {error}")
+            report_failure(self, f"ACB Media Podcasts could not be fetched: {error}")
 
         self._announce("Fetching the ACB Media podcast directory...")
         self._task_manager.submit(
@@ -893,6 +904,10 @@ class PodcastsMixin(
     # -- command palette registration ----------------------------------------
 
     def _register_podcasts_commands(self) -> None:
+        # A host may give these its own names, and drop one it has no use for
+        # (None): QUILL Cast's palette says Follow and Personal Audio, as its
+        # menus do. QUILL has no map and keeps the titles below.
+        renamed: dict[str, str | None] = getattr(self, "_podcast_palette_titles", None) or {}
         for command_id, title, handler in (
             ("podcasts.open_manager", "Podcasts: Open Manager...", self.open_podcast_manager),
             (
@@ -992,6 +1007,10 @@ class PodcastsMixin(
                 self.open_podcast_skip_settings,
             ),
         ):
+            if command_id in renamed:
+                if renamed[command_id] is None:
+                    continue
+                title = str(renamed[command_id])
             self.commands.try_register(
                 command_id,
                 title,

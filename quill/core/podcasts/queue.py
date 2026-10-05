@@ -24,11 +24,18 @@ def _index_of(library: PodcastLibrary, show_id: str, episode_guid: str) -> int:
     return -1
 
 
-def add_to_queue(library: PodcastLibrary, show_id: str, episode_guid: str) -> bool:
-    """Append an episode to the queue. False when it is already queued."""
+def add_to_queue(
+    library: PodcastLibrary, show_id: str, episode_guid: str, *, reason: str = ""
+) -> bool:
+    """Append an episode to the queue. False when it is already queued.
+
+    *reason* says why, when Cast queued it rather than the listener (X-04).
+    """
     if _index_of(library, show_id, episode_guid) != -1:
         return False
-    library.queue.append(QueueItem(show_id=show_id, episode_guid=episode_guid, added_at=now_iso()))
+    library.queue.append(
+        QueueItem(show_id=show_id, episode_guid=episode_guid, added_at=now_iso(), reason=reason)
+    )
     return True
 
 

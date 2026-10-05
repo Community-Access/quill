@@ -67,7 +67,10 @@ def test_missing_credentials_are_a_sentence_not_a_server_error(monkeypatch) -> N
     with pytest.raises(podcast_index.PodcastIndexError) as caught:
         podcast_index.search_podcasts("news", key="", secret="")
     said = str(caught.value)
-    assert "Podcast Settings" in said
+    # The window that actually takes a key -- the old wording named Podcast
+    # Settings, which has no such field.
+    assert "Podcast Index Credentials" in said
+    assert "Podcast Settings" not in said
     assert podcast_index.SIGNUP_URL in said
 
 
@@ -236,3 +239,23 @@ def test_the_secret_does_not_survive_redaction() -> None:
     assert secret not in scrubbed
     scrubbed = redact_text_for_bundle(f"X-Auth-Key: {secret}")
     assert secret not in scrubbed
+
+
+def test_a_rejected_key_is_not_reported_as_the_network(monkeypatch) -> None:
+    """A 401 is the index answering, not the index being unreachable."""
+    import io
+    import urllib.error
+
+    from quill.core.radio import browse_failure
+
+    def _refuse(_operation: object, **_kw: object) -> str:
+        raise urllib.error.HTTPError("https://api.test", 401, "Unauthorized", {}, io.BytesIO())
+
+    monkeypatch.setattr(podcast_index, "retry_transient", _refuse)
+    with pytest.raises(podcast_index.PodcastIndexError) as caught:
+        podcast_index._http_json("https://api.podcastindex.org/api/1.0/x", {})
+
+    assert "Podcast Index Credentials" in str(caught.value)
+    assert not browse_failure.last_error_was_network(caught.value)
+    said = browse_failure.listener_reason(caught.value)
+    assert said.startswith("The Podcast Index did not accept"), "no error code read aloud"

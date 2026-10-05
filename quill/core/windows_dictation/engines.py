@@ -21,6 +21,14 @@ The candidates were measured on the same ten sentences before this was
 decided; the comparison is in
 ``docs/design/dictation for windows only/engine-comparison.md``.
 
+**Spanish** (dict.md section 9) is a language, not an engine: Moonshine has no
+Spanish model, so with the dictation language set to Spanish both built-in
+engines use :data:`WHISPER_MULTILINGUAL` -- Whisper tiny, multilingual, told
+``language="es"`` -- which ships in the main installer beside the English
+models (:func:`model_for`). Tiny rather than base because base.en already
+measured 0.28 seconds of computing per second of speech, over the 0.25 budget
+in dict.md section 1, and multilingual base is the same network.
+
 **Where the models are.** Beside the program rather than inside the shared
 QuillVille runtime: every sibling app installs that runtime, and a Radio user
 should not download 230 MB of speech models. So the installer puts them in
@@ -39,16 +47,22 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 
+from quill.core.windows_dictation.speech_language import coerce_speech_language
+
 __all__ = [
     "DEFAULT_ENGINE",
     "ENGINES",
+    "LANGUAGE_MODELS",
     "MODELS_FOLDER",
     "VAD_MODEL",
+    "WHISPER_MULTILINGUAL",
     "EngineInfo",
     "ModelFile",
     "coerce_engine",
     "engine_info",
+    "language_model_problem",
     "model_dir",
+    "model_for",
     "model_roots",
     "package_dirs",
     "vad_model_path",
@@ -94,7 +108,8 @@ ENGINES: tuple[EngineInfo, ...] = (
         "moonshine",
         "Moonshine (fast, punctuates for you)",
         "Built in. Recognises speech on this computer, quickly even on a modest "
-        "one, and adds punctuation and capitals by itself. English.",
+        "one, and adds punctuation and capitals by itself. English only: with the "
+        "dictation language set to Spanish, Whisper is used instead.",
         folder="moonshine-tiny-en",
         archive=_SHERPA_MODELS + "sherpa-onnx-moonshine-tiny-en-int8.tar.bz2",
         files=(
@@ -127,7 +142,8 @@ ENGINES: tuple[EngineInfo, ...] = (
         "Whisper (accurate, punctuates for you)",
         "Built in. Recognises speech on this computer and adds punctuation and "
         "capitals by itself; a little slower than Moonshine, and worth trying if "
-        "Moonshine often mishears you. English.",
+        "Moonshine often mishears you. English, and Spanish with the dictation "
+        "language set to Spanish.",
         folder="whisper-tiny-en",
         archive=_SHERPA_MODELS + "sherpa-onnx-whisper-tiny.en.tar.bz2",
         files=(
@@ -164,6 +180,39 @@ ENGINES: tuple[EngineInfo, ...] = (
         "here for anybody who already knows it and prefers it.",
     ),
 )
+
+#: Whisper tiny, multilingual: what both built-in engines use for Spanish. Not
+#: in :data:`ENGINES` -- nobody chooses it as an engine; the dictation language
+#: chooses it. About 104 MB, the same as tiny.en. Digests checked 2026-10-04
+#: against sherpa-onnx's ``asr-models`` release.
+WHISPER_MULTILINGUAL = EngineInfo(
+    "whisper_multilingual",
+    "Whisper, multilingual",
+    "Built in. Whisper's multilingual model, which dictation uses for Spanish.",
+    folder="whisper-tiny",
+    archive=_SHERPA_MODELS + "sherpa-onnx-whisper-tiny.tar.bz2",
+    files=(
+        ModelFile(
+            "encoder.int8.onnx",
+            "d24fb083ae3b1041fc24e97971d60e280c9342201fbb67b0ab428a8b4a51a434",
+            source="tiny-encoder.int8.onnx",
+        ),
+        ModelFile(
+            "decoder.int8.onnx",
+            "d2fece8dd42771f1df975c6c0445770d0c292bf7547c2cae04a6c0cc57540925",
+            source="tiny-decoder.int8.onnx",
+        ),
+        ModelFile(
+            "tokens.txt",
+            "b34b360dbb493e781e479794586d661700670d65564001f23024971d1f2fa126",
+            source="tiny-tokens.txt",
+        ),
+    ),
+)
+
+#: Models that serve a language rather than an engine. Fetched and shipped
+#: exactly like the engines' own (scripts/fetch_dictation_models.py).
+LANGUAGE_MODELS: tuple[EngineInfo, ...] = (WHISPER_MULTILINGUAL,)
 
 #: Finds the pauses between phrases for the two model engines. MIT licensed.
 VAD_MODEL = ModelFile(
@@ -213,9 +262,23 @@ def _complete(folder: Path, files: tuple[ModelFile, ...]) -> bool:
     return all((folder / item.name).is_file() for item in files)
 
 
-def model_dir(engine_id: str) -> Path | None:
-    """The folder holding *engine_id*'s model, or ``None`` when it is not here."""
+def model_for(engine_id: str, language: str = "en") -> EngineInfo:
+    """The model *engine_id* runs for *language*.
+
+    English is the engine's own model. For Spanish both built-in engines use
+    :data:`WHISPER_MULTILINGUAL` (Moonshine knows no Spanish); an engine with no
+    model of its own (Windows speech, voice typing) is returned unchanged,
+    because Windows does the recognising.
+    """
     engine = engine_info(engine_id)
+    if coerce_speech_language(language) == "en" or not engine.folder:
+        return engine
+    return WHISPER_MULTILINGUAL
+
+
+def model_dir(engine_id: str, language: str = "en") -> Path | None:
+    """The folder holding *engine_id*'s model for *language*, or ``None``."""
+    engine = model_for(engine_id, language)
     if not engine.folder:
         return None
     for root in model_roots():
@@ -223,6 +286,25 @@ def model_dir(engine_id: str) -> Path | None:
         if _complete(candidate, engine.files):
             return candidate
     return None
+
+
+def language_model_problem(engine_id: str, language: str) -> str:
+    """Why *engine_id* cannot dictate *language* in this copy, or ``""``.
+
+    Only the built-in engines are checked here: Windows speech recognition finds
+    out whether Windows has the language when it starts, and voice typing is
+    Windows' own business entirely.
+    """
+    if coerce_speech_language(language) == "en" or not engine_info(engine_id).folder:
+        return ""
+    if model_dir(engine_id, language) is not None:
+        return ""
+    return (
+        "Spanish dictation needs Whisper's multilingual speech model, which is not "
+        "included in this copy of QUILL. Reinstalling QUILL puts it back. Until then, "
+        "choose English as the dictation language, or Windows speech recognition "
+        "with Spanish installed in Windows."
+    )
 
 
 def package_dirs() -> list[Path]:

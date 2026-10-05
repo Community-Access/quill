@@ -36,6 +36,7 @@ Four behaviours are worth knowing before reading the code:
 from __future__ import annotations
 
 from collections.abc import Callable
+from typing import Any
 
 from quill.core.podcasts import episode_filter_maintenance as maintenance
 from quill.core.podcasts import episode_filters as filters
@@ -47,7 +48,6 @@ from quill.core.podcasts.settings_types import (
     SettingDef,
 )
 from quill.core.podcasts.subscriptions import PodcastLibrary
-from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.podcasts.show_settings_panel import (
     SettingControl,
     apply_controls,
@@ -55,11 +55,39 @@ from quill.ui.podcasts.show_settings_panel import (
     follow_again,
 )
 
-__all__ = ["ShowSettingsDialog"]
+__all__ = ["ShowSettingsWindow", "open_show_settings", "per_podcast_settings"]
 
 
-class ShowSettingsDialog:
-    """Edits one podcast's settings; ``show()`` returns whether anything changed."""
+def per_podcast_settings(category: str) -> tuple[SettingDef, ...]:
+    """The rows this window shows for *category*.
+
+    Everything a podcast may set, less what Preferences never shows either
+    (``preferences_window.section_of`` answers "" for it): the three legacy
+    refresh rows that the refresh schedule replaced. Shown here they read as a
+    second way to say when this podcast is checked, beside "Check for new
+    episodes", which is the one that answers.
+    """
+    from quill.ui.podcasts.preferences_window import section_of
+
+    return tuple(
+        definition
+        for definition in settings_catalog.for_category(category, level=LEVEL_SHOW)
+        if section_of(definition)
+    )
+
+
+class ShowSettingsWindow:
+    """Edits one podcast's settings -- a peer window (qc.md Phase 4).
+
+    Made once. Save writes what you changed and the window stays open, so a
+    setting can be tried and changed again; Close (or Escape) leaves anything
+    not saved as it was. Asked for again while it is showing the same podcast
+    it is only raised; otherwise it is rebuilt from what is stored, for the
+    podcast asked about.
+    """
+
+    TITLE = "Settings for"
+    MENU_TITLE = "Settin&gs"
 
     def __init__(
         self,
@@ -68,26 +96,47 @@ class ShowSettingsDialog:
         library: PodcastLibrary,
         show: PodcastShow,
         announce_cb: Callable[[str], None] | None = None,
+        on_saved: Callable[[], None] | None = None,
+        host: Any = None,
     ) -> None:
         import wx
 
         self._wx = wx
+        self._announce = announce_cb or (lambda _m: None)
+        self._host = host
+        self._body: Any = None
+        self.frame = wx.Frame(parent, title="Settings for", size=(660, 760))
+        self.frame.SetMinSize((620, 620))
+        self.frame.SetSizer(wx.BoxSizer(wx.VERTICAL))
+        self.load(library=library, show=show, on_saved=on_saved)
+        self.frame.CentreOnParent()
+
+    def load(
+        self,
+        *,
+        library: PodcastLibrary,
+        show: PodcastShow,
+        on_saved: Callable[[], None] | None = None,
+    ) -> None:
+        """Build the window's contents for *show*, from what is stored."""
+        wx = self._wx
         self._library = library
         self._show = show
-        self._announce = announce_cb or (lambda _m: None)
+        self._on_saved = on_saved
         self._changed = False
         self._controls: list[SettingControl] = []
         self._categories = settings_catalog.categories_with_settings()
         self._title = f"Settings for {show.title}"
 
-        self.dialog = wx.Dialog(
-            parent, title=self._title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
-        )
-        self.dialog.SetMinSize((620, 620))
+        self.frame.SetTitle(self._title)
+        self.TITLE = self._title  # what "Entered" and "Exited" say
+        if self._body is not None:
+            self._body.Destroy()
+        self._body = body = wx.Panel(self.frame, style=wx.TAB_TRAVERSAL)
         root = wx.BoxSizer(wx.VERTICAL)
 
         intro = wx.StaticText(
-            self.dialog,
+            body,
             label=(
                 f"These apply to {show.title} only. Anything you do not change here "
                 "keeps following its folder and your shared defaults, so changing "
@@ -97,9 +146,9 @@ class ShowSettingsDialog:
         intro.Wrap(580)
         root.Add(intro, 0, wx.EXPAND | wx.ALL, 10)
 
-        root.Add(wx.StaticText(self.dialog, label="&Category:"), 0, wx.LEFT | wx.RIGHT, 10)
+        root.Add(wx.StaticText(body, label="&Category:"), 0, wx.LEFT | wx.RIGHT, 10)
         self._category = wx.Choice(
-            self.dialog,
+            body,
             choices=[CATEGORY_LABELS.get(name, name) for name in self._categories],
         )
         self._category.SetName("Category")
@@ -111,14 +160,14 @@ class ShowSettingsDialog:
         self._category.SetSelection(0)
         root.Add(self._category, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
-        self._panel = wx.ScrolledWindow(self.dialog, style=wx.VSCROLL | wx.BORDER_SIMPLE)
+        self._panel = wx.ScrolledWindow(body, style=wx.VSCROLL | wx.BORDER_SIMPLE)
         self._panel.SetScrollRate(0, 12)
         root.Add(self._panel, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         # The three things that are not settings: two flags that live on the
         # podcast record itself, and the filter, which is a rule set with its
         # own gated window rather than a value.
-        self._favorite = wx.CheckBox(self.dialog, label="A &favorite podcast")
+        self._favorite = wx.CheckBox(body, label="A &favorite podcast")
         self._favorite.SetValue(show.is_favorite)
         self._favorite.SetHelpText(
             "Puts this podcast in the Favorites view. It is a mark, not a folder: "
@@ -126,28 +175,26 @@ class ShowSettingsDialog:
         )
         root.Add(self._favorite, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
-        self._route_inbox = wx.CheckBox(self.dialog, label="&Route new episodes to the Inbox")
+        self._route_inbox = wx.CheckBox(body, label="&Route new episodes to the Inbox")
         self._route_inbox.SetValue(show.route_to_inbox)
         self._route_inbox.SetHelpText(settings_help.HELP["inbox_mode"])
         root.Add(self._route_inbox, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
-        self._auto_queue = wx.CheckBox(
-            self.dialog, label="New episodes go straight to the Play &Queue"
-        )
+        self._auto_queue = wx.CheckBox(body, label="New episodes go straight to the Play &Queue")
         self._auto_queue.SetValue(show.auto_queue)
         self._auto_queue.SetHelpText(settings_help.SHOW_HELP["auto_queue"])
         root.Add(self._auto_queue, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
-        self._filters_btn = wx.Button(self.dialog, label="Episode Fi&lters...")
+        self._filters_btn = wx.Button(body, label="Episode Fi&lters...")
         self._filters_btn.SetHelpText(
             settings_help.FILTER_HELP["enabled"]
             + " "
             + filters.describe_configuration(maintenance.filter_for(library, show))
         )
-        clear_btn = wx.Button(self.dialog, label="Use Shared &Defaults")
+        clear_btn = wx.Button(body, label="Use Shared &Defaults")
         clear_btn.SetHelpText(settings_help.SHOW_HELP["reset"])
-        changed_btn = wx.Button(self.dialog, label="What Have I C&hanged?")
+        changed_btn = wx.Button(body, label="What Have I C&hanged?")
         changed_btn.SetHelpText(
             "Lists only the settings this podcast answers for itself, out of all "
             "of them. It changes nothing -- it is the question a settings window "
@@ -160,27 +207,46 @@ class ShowSettingsDialog:
 
         row = wx.BoxSizer(wx.HORIZONTAL)
         row.AddStretchSpacer()
-        ok_btn = wx.Button(self.dialog, wx.ID_OK, "OK")
+        ok_btn = wx.Button(body, label="Save")
         ok_btn.SetHelpText(
-            "Saves what you changed, and only what you changed. Anything you left "
-            "alone keeps following its folder and the shared defaults."
+            "Saves what you changed, and only what you changed, and keeps this "
+            "window open. Anything you left alone keeps following its folder and "
+            "the shared defaults. Ctrl+S does the same from anywhere in the window."
         )
-        cancel_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Cancel")
+        cancel_btn = wx.Button(body, label="Close")
         cancel_btn.SetHelpText(
-            "Leaves this podcast's settings as they were. An Episode Filter you "
-            "already saved in its own window is not undone by this."
+            "Closes this window and returns to where you were. Anything not saved "
+            "is left as it was; an Episode Filter saved in its own window stays saved."
         )
+        from quill.ui.dialog_contract import bind_close_button
+
+        bind_close_button(self.frame, cancel_btn, modeless=True)
         row.Add(ok_btn, 0, wx.RIGHT, 6)
         row.Add(cancel_btn)
         root.Add(row, 0, wx.EXPAND | wx.ALL, 10)
 
-        self.dialog.SetSizer(root)
+        body.SetSizer(root)
+        sizer = self.frame.GetSizer()
+        sizer.Clear()
+        sizer.Add(body, 1, wx.EXPAND)
         self._category.Bind(wx.EVT_CHOICE, self._on_category)
         self._filters_btn.Bind(wx.EVT_BUTTON, self._on_episode_filters)
         clear_btn.Bind(wx.EVT_BUTTON, self._on_clear_overrides)
         changed_btn.Bind(wx.EVT_BUTTON, self._on_what_changed)
         ok_btn.Bind(wx.EVT_BUTTON, self._on_ok)
         self._fill_panel()
+        self.frame.Layout()
+
+    def focus_target(self) -> Any:
+        return self._category
+
+    def menu_rows(self) -> list[tuple[str, Callable[[], None]]]:
+        # A frame has no default button, so Save gets a key of its own.
+        return [("&Save" + chr(9) + "Ctrl+S", lambda: self._on_ok(None))]
+
+    def shows(self, show: PodcastShow) -> bool:
+        """Whether this window is up, on *show*."""
+        return bool(self.frame.IsShown()) and self._show.id == show.id
 
     # -- the generated panel -------------------------------------------------
 
@@ -200,7 +266,7 @@ class ShowSettingsDialog:
         self._controls = []
         grid = wx.FlexGridSizer(cols=2, gap=(6, 8))
         grid.AddGrowableCol(1, 1)
-        for definition in settings_catalog.for_category(self._current_category(), level=LEVEL_SHOW):
+        for definition in per_podcast_settings(self._current_category()):
             self._controls.append(
                 build_control(
                     self._panel,
@@ -249,7 +315,7 @@ class ShowSettingsDialog:
         from quill.ui.podcasts.show_list_editor import edit_opaque_setting
 
         if edit_opaque_setting(
-            self.dialog,
+            self.frame,
             library=self._library,
             show=self._show,
             definition=definition,
@@ -266,16 +332,20 @@ class ShowSettingsDialog:
         save, and making Cancel here silently undo a filter somebody had just
         confirmed applying to their queue would be a genuine surprise.
         """
-        from quill.ui.podcasts.episode_filters_dialog import EpisodeFiltersDialog
+        from quill.ui.podcasts.episode_filters_dialog import open_episode_filters
 
-        dialog = EpisodeFiltersDialog(
-            self.dialog,
-            library=self._library,
-            show=self._show,
-            announce_cb=self._announce,
-        )
-        if dialog.show():
+        def _saved() -> None:
             self._changed = True
+            if self._on_saved is not None:
+                self._on_saved()
+
+        open_episode_filters(
+            self._host if self._host is not None else self,
+            self._show,
+            library=self._library,
+            parent=self.frame,
+            on_saved=_saved,
+        )
 
     def _on_what_changed(self, _event: object) -> None:
         """List only the settings this podcast answers for itself."""
@@ -290,7 +360,7 @@ class ShowSettingsDialog:
             body,
             "What Have I Changed?",
             self._wx.OK | self._wx.ICON_INFORMATION,
-            self.dialog,
+            self.frame,
             announce=None,
         )
 
@@ -308,7 +378,7 @@ class ShowSettingsDialog:
             "episode, download or queue entry is touched.",
             "Use Shared Defaults",
             wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION,
-            self.dialog,
+            self.frame,
             announce=None,
         )
         if answer != wx.YES:
@@ -341,31 +411,31 @@ class ShowSettingsDialog:
         self._close_ok()
 
     def _close_ok(self) -> None:
-        """Dismiss with OK, if this window is running a modal loop.
+        """Saved: tell the caller, show the new state, and stay open."""
+        if self._on_saved is not None:
+            self._on_saved()
+        self._fill_panel()
 
-        Guarded because ``EndModal`` on a window that was never shown modally
-        is a hard wxWidgets assertion rather than a no-op, and these handlers
-        are reachable without a loop -- from a test, and from a caller that
-        built the window to read it rather than to show it.
-        """
-        if self.dialog.IsModal():
-            self.dialog.EndModal(self._wx.ID_OK)
 
-    # -- showing -------------------------------------------------------------
+def open_show_settings(
+    host: Any,
+    show: PodcastShow,
+    *,
+    library: PodcastLibrary,
+    parent: object,
+    on_saved: Callable[[], None] | None = None,
+    opener: Any = None,
+) -> ShowSettingsWindow:
+    """Open, or raise, the one Settings for This Podcast window, on *show*."""
+    from quill.ui.podcasts.peer_window import open_peer
 
-    def show(self) -> bool:
-        self.dialog.CentreOnParent()
-        apply_modal_ids(
-            self.dialog,
-            affirmative_id=self._wx.ID_OK,
-            affirmative_label="OK",
-            cancel_id=self._wx.ID_CANCEL,
-            escape_id=self._wx.ID_CANCEL,
-        )
-        from quill.ui.dialog_contract import show_modal_dialog
+    content = {"library": library, "show": show, "on_saved": on_saved}
+    existing = getattr(host, "_show_settings_window", None)
+    if existing is not None and existing.frame and not existing.shows(show):
+        existing.load(**content)
 
-        try:
-            show_modal_dialog(self.dialog, self._title, announce=self._announce)
-            return self._changed
-        finally:
-            self.dialog.Destroy()
+    def _make(owner: Any) -> ShowSettingsWindow:
+        return ShowSettingsWindow(parent, announce_cb=owner._announce, host=owner, **content)
+
+    window: ShowSettingsWindow = open_peer(host, "_show_settings_window", _make, opener=opener)
+    return window

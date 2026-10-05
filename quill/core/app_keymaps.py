@@ -47,6 +47,12 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         # route for the row.
         "radio.play_favorite": "Alt+Shift+F",
         "radio.browse": "Ctrl+B",
+        # Local Media (2026-10-03): your own music, audiobooks and video, in
+        # playlists. Ctrl+O because "open a file of mine" is what Ctrl+O has
+        # meant in every program, and it was free on this bar -- and inside the
+        # window the same key is Add Media Files, so Ctrl+O twice gets you from
+        # anywhere to the file picker.
+        "radio.local_media": "Ctrl+O",
         "radio.add_custom_station": "Ctrl+N",
         "radio.add_youtube_playlist": "Ctrl+Shift+Y",
         "radio.add_youtube_link": "Ctrl+Alt+N",
@@ -129,6 +135,8 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         # One step of undo for the destructive verbs (11.3). Radio has no
         # editor, so Ctrl+Z is free here in exactly the way it is not in QUILL.
         "app.undo_last": "Ctrl+Z",
+        # Undo History (qc.md 18.12); Ctrl+Shift+Z is the Sleep Timer here.
+        "app.undo_history": "Ctrl+Alt+Shift+A",
         # Recent Problems: the list a transient announcement goes into. On
         # Help, beside the other "what is going on here" surfaces.
         "app.recent_problems": "Ctrl+Alt+Shift+P",
@@ -211,14 +219,40 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         # same window, so a person who set it up in QUILL Lite finds it here.
         "radio.ask_quill_radio": "Ctrl+Shift+8",
         "radio.chatgpt_account": "Alt+F5",
+        # Search YouTube... (Station) and Read Comments... (Video), 2026-10-03:
+        # the last two of the three Ctrl+Shift digit gaps named above. Digits,
+        # so no mnemonic is pretended; Alt+S then H and Alt+D then M are the
+        # one-key-at-a-time routes.
+        "radio.search_youtube": "Ctrl+Shift+6",
+        "radio.youtube_comments": "Ctrl+Shift+7",
+        # Video > YouTube (2026-10-03): Live Chat, YouTube Video, Skip Sponsor
+        # Segments and Search YouTube with Filters. The Ctrl+Shift digit row is
+        # spent, so these take the Ctrl+Alt+Shift digit row, which was wholly
+        # free on this bar; 7 sits beside Read Comments' Ctrl+Shift+7 on
+        # purpose -- the chat and the comments are the two conversations.
+        "radio.youtube_live_chat": "Ctrl+Alt+Shift+7",
+        "radio.youtube_video": "Ctrl+Alt+Shift+8",
+        "radio.youtube_sponsorblock": "Ctrl+Alt+Shift+9",
+        "radio.youtube_search_filters": "Ctrl+Alt+Shift+0",
     },
     # QUILL Cast had no app keymap at all until undo needed one: every other
     # Cast accelerator is either a shared default or baked into a menu label.
     "cast": {
         "app.undo_last": "Ctrl+Z",
+        # Undo History (qc.md 18.12). Not Radio's chord: Ctrl+Alt+Shift+H is Cast's
+        # Global Hotkeys, and Ctrl+Shift+Z is Radio's Sleep Timer.
+        "app.undo_history": "Ctrl+Shift+Z",
         # The same key Quill Radio's Go to Position uses, so "jump to the bit
         # forty minutes in" is one keystroke in both players (11.8).
         "podcasts.go_to_position": "Ctrl+Alt+J",
+        # Mark as Played and Next (ear.md R3): Next in Queue's Ctrl+Alt+Down with
+        # Shift added, so the two "and on to the next" keys sit together. It was
+        # Ctrl+Alt+Shift+Q until 2026-10-04, which is QUILL's system-wide
+        # show/hide key, so it never fired while QUILL ran. A Cast command, so
+        # its key lives here and not in the editor's table (family rule 7);
+        # QUILL Lite's Next Section on the same chord is no clash, because
+        # neither key is system-wide and the two never share a window.
+        "podcasts.mark_played_and_next": "Ctrl+Alt+Shift+Down",
         # Now Playing (qc.md 5): window 2, so Ctrl+2 reaches it through the
         # Window menu; this is the Episode menu row's own chord.
         "podcasts.now_playing": "Ctrl+Alt+2",
@@ -228,6 +262,11 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         "podcasts.skip_silence": "Ctrl+Shift+9",
         # Player Information, which had no key or menu row in Cast (qc.md C2-03).
         "podcasts.player_information": "Ctrl+I",
+        # qc.md section 18 item 3: how much is left, on one key.
+        "podcasts.time_remaining": "Ctrl+Shift+T",
+        # Bookmarks for one episode (qc.md 18.1): J beside Help > Bookmarks' Ctrl+Alt+Shift+J.
+        "podcasts.bookmark_note": "Ctrl+Shift+D",
+        "podcasts.episode_bookmarks": "Ctrl+Shift+J",
         # The shared hosted AI (ear.md A1): the family's chords, all free in
         # Cast except Privacy Agreement's Ctrl+Alt+Shift+K (Keyboard Shortcuts
         # Sheet), which takes Alt+Shift+F2, beside the own key on Alt+F2.

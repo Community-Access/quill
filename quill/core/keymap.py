@@ -103,8 +103,7 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "file.open_github_items": "",
     "file.close_document": "Ctrl+W",
     "file.print": "Ctrl+P",
-    # Restore points: no default key (assignable); the File menu item is the
-    # primary path.
+    # Restore points: the File menu is the primary path; the chord below is the second.
     # QUILL Lite's chord, freed by tools.ai_switch_engine vacating the AI class
     # (bad.md P1.1, P1.11). The File menu was the only way in before.
     "file.restore_previous_version": "Ctrl+Alt+Shift+E",
@@ -150,6 +149,7 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "view.toggle_tab_control": "Ctrl+Shift+Grave, Shift+T",
     "app.command_palette": "Ctrl+Shift+P",
     "app.preferences": "Ctrl+,",
+    "app.preferences_hub": "Ctrl+Shift+Grave, O",  # the hub; Ctrl+, opens Settings
     # #608: app.exit is bound to Ctrl+Q so it maps to Cmd+Q on macOS
     # (the conventional Quit shortcut) and Alt+F4 on Windows is also
     # wired by the wx stock accelerator on the file menu. Quote Lines
@@ -238,8 +238,7 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # Neither is a default JAWS or NVDA command: NVDA's laptop layer uses
     # NVDA+Ctrl+... rather than bare Ctrl+Alt, and JAWS's Ctrl+Alt assignments
     # are Ctrl+Alt+function-key and Ctrl+Alt+arrow (table navigation), not
-    # Ctrl+Alt+G or Ctrl+Alt+Z. Both are rebindable, and the Keyboard Manager
-    # says so.
+    # Ctrl+Alt+G or Ctrl+Alt+Z. Both are rebindable; the Keyboard Manager says so.
     "tools.hosted_ai_assistant": "Ctrl+Alt+G",  # §edsharp-ok — QUILL Lite's chord
     "tools.hosted_ai_ask_document": "Ctrl+Alt+Z",  # §edsharp-ok — QUILL Lite's chord
     # Usage and Sign In are the two that could NOT keep QUILL Lite's chord, and
@@ -392,6 +391,9 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "power.describe_character_detail": "Ctrl+Alt+C",  # §edsharp-ok — QUILL Lite's chord
     "view.toggle_spellcheck_as_you_type": "Ctrl+Alt+F7",
     "tools.check_updates": "Ctrl+Alt+U",
+    # No chord in any channel app: Alt+Shift+F4 (until 2026-10-03) is Alt+F4 to a
+    # dialog and closed it (rule 4); once a year needs a way in, not a chord (rule 9).
+    "help.release_channel": "",
     "help.about_quill": "Shift+F1",
     # Open User Guide carried "Ctrl+F1" as a LITERAL after a tab in its menu
     # label, outside the keymap: absent from the generated reference,
@@ -479,7 +481,7 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "tools.dictation_toggle": "Ctrl+Shift+Grave, D",
     "tools.speech_dictate": "Ctrl+Shift+Grave, Shift+D",
     "tools.speech_batch_export": "Ctrl+Shift+Grave, Y",  # Audio Studio
-    "radio.play_pause": "Ctrl+Shift+Grave, N",  # Internet Radio (N = the last free plain letter)
+    "radio.play_pause": "Ctrl+Shift+Grave, 2",  # Radio; leader N is browse mode (rule 7: digits)
     "radio.stop": "Ctrl+Shift+Grave, 0",  # Internet Radio
     "radio.mute_toggle": "Ctrl+Shift+Grave, 9",  # Internet Radio
     # Quick-play favorites have no editor chord. They held Ctrl+Alt+Shift+digit
@@ -753,6 +755,7 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # The session chooser on demand, so "Not Now" is deferrable rather than
     # lost (rule 9: a once-in-a-while command gets a key, not a short one).
     "file.reopen_last_session": "Alt+Shift+F12",
+    "file.recent_documents": "Alt+Shift+0",  # beside Alt+Shift+1-9; free in both (rule 5)
     # Once in a lifetime, so an F-key past F9 (rule 9). Reachable without
     # switching profiles, because somebody can want their QUILL Lite
     # abbreviations in QUILL without wanting QUILL Lite's menus (bad.md P2.4).
@@ -798,14 +801,14 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "edit.select_to_end_of_line": "Shift+End",
     "edit.select_to_start_of_document": "Ctrl+Shift+Home",
     "edit.select_to_end_of_document": "Ctrl+Shift+End",
-    # #608: Quote Lines moved from Ctrl+Q to Ctrl+Shift+Q so Ctrl+Q is
-    # free for the system Quit shortcut on macOS (Cmd+Q maps to Ctrl+Q in
-    # wxPython). Unquote Lines moved from Ctrl+Shift+Q to Ctrl+Shift+K
-    # to keep the two commands as a near-mirror pair (Shift+Q -> Shift+K
-    # to stay in the home row). The legacy_rebinding entries below
-    # rewrite the prior pair on load for users who saved them to disk.
+    # #608: Quote Lines left Ctrl+Q so Cmd+Q can quit on macOS. Unquote Lines is
+    # Alt+Shift+. since 2026-10-03: Ctrl+Alt+Shift+Q is the system-wide show/hide
+    # hotkey, which Windows hands over before any window sees the key, so it never
+    # fired in QUILL, nor in QUILL Lite while QUILL ran. Both editors move and keep
+    # one chord (rule 2); an occasional verb takes a chord free in both (rule 3);
+    # no bare Ctrl+Alt (AltGr, §10.8). Gate: test_no_editor_chord_is_the_global_show_hide_key
     "edit.quote_lines": "Ctrl+Shift+Q",  # §4.22 advanced-editor parity; #608
-    "edit.unquote_lines": "Ctrl+Alt+Shift+Q",  # one modifier off its twin; #608
+    "edit.unquote_lines": "Alt+Shift+.",
     # §edsharp-ok — QUILL Lite's chord (§4.17 avoided Ctrl+D, not this one).
     "edit.duplicate_selection": "Ctrl+Alt+Q",
     "edit.reverse_lines": "Alt+Shift+Z",  # §4.22 advanced-editor parity
@@ -1494,9 +1497,9 @@ def merge_keymaps(raw: object) -> dict[str, str]:
         "edit.quote_lines": ("Ctrl+Q", "Ctrl+Shift+Q"),
         # Two hops now (#608, then the 2026-09-18 blockquote merge): a saved
         # Ctrl+Shift+Q or Ctrl+Shift+K both mean "wherever Unquote Lines lives",
-        # and it lives on Ctrl+Alt+Shift+Q since Duplicate Selection took
-        # Ctrl+Alt+Q and lowercase took Ctrl+Shift+K (bad.md P2.5, P1.1).
-        "edit.unquote_lines": ("Ctrl+Shift+K", "Ctrl+Alt+Shift+Q"),
+        # and it lives on Alt+Shift+. since 2026-10-03 (Ctrl+Alt+Shift+Q, its
+        # home before that, is the global show/hide hotkey).
+        "edit.unquote_lines": ("Ctrl+Shift+K", "Alt+Shift+."),
         # window.next_document / previous_document: Ctrl+Tab restored as default
         # in #190; no cross-platform legacy rebinding needed (the macOS-only
         # rewrite lives in the darwin block below).

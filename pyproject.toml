@@ -388,6 +388,14 @@ youtube = [
   # cleanly there (probed 2026-08-18); undeclared, it only shipped because the
   # build machine happened to have it.
   "curl-cffi>=0.16.3",
+  # Quill Radio's Live Chat window reads a live (or replayed) YouTube chat
+  # through chat-downloader, the one maintained reader of YouTube's live-chat
+  # continuation feed; yt-dlp only saves a finished replay to a file, which is
+  # no help to somebody following a stream as it happens. Pinned exactly:
+  # it scrapes the same page yt-dlp does, so a new release is a behaviour
+  # change to review rather than a routine bump. Pure Python (~150 KB) plus
+  # colorlog, docstring-parser, isodate and websocket-client, all pure too.
+  "chat-downloader==0.2.8",
 ]
 runtime = [
   "quill[ui]",

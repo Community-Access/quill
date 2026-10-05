@@ -32,4 +32,9 @@ def handle(controller: Any) -> None:
         return
     if book_playback.handle_finished(controller):
         return
+    # A Local Media playlist: the next item, by the playlist's own order.
+    from quill.ui.radio import local_media_playback
+
+    if local_media_playback.handle_finished(controller):
+        return
     controller._set_state(RadioPlayerState.STOPPED, message="The stream ended or disconnected.")

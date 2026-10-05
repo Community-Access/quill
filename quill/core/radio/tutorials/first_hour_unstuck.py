@@ -19,125 +19,126 @@ TUTORIALS: tuple[Tutorial, ...] = (
         minutes=4,
         surfaces=("Quill Radio",),
         summary=(
-            "The short list to reach for when something is not where you expected, "
-            "you missed what was said, or a menu item will not press. Read it once "
-            "now so it is familiar when you need it."
+            "What to do when something is not where you expected, you missed "
+            "what was said, or a menu item will not work. Read it once now, so "
+            "it feels familiar on the day you need it."
         ),
         steps=(
             Step(
                 title="Escape steps back to where you were",
                 body=(
-                    "Escape closes the window you are in -- Browse Stations, the "
-                    "Player, any list -- and your screen reader names the window "
-                    "you land back in. Ctrl+W and Ctrl+F4 close those windows too. "
-                    "Closing one never stops playback and never loses anything "
-                    "you have not deliberately deleted."
+                    "Escape closes the window you are in, such as Browse "
+                    "Stations, the Player or any list, and your screen reader "
+                    "tells you where you landed. Ctrl+W and Ctrl+F4 close those "
+                    "windows too. Closing a window never stops the sound, and "
+                    "you never lose anything you did not choose to delete."
                 ),
                 keys=("Escape",),
-                hear="The name of the window you are back in, and the control that has focus.",
+                hear="The name of the window you are back in, and where you are in it.",
                 note=(
-                    "The main window is the exception: there Ctrl+W sends Quill "
-                    "Radio to the tray, and Alt+F4 exits. Preferences can make "
-                    "Quill Radio say Entered and Exited as windows open and close, "
-                    "if you want that as well."
+                    "The main window works a little differently. There, Ctrl+W "
+                    "tucks Quill Radio away in the system tray, and Alt+F4 "
+                    "closes it. If you like, you can turn on a setting in "
+                    "Preferences so Quill Radio says Entered and Exited as "
+                    "windows open and close."
                 ),
             ),
             Step(
                 title="Hear the last announcement again",
                 body=(
-                    "Speech disappears the moment it finishes, which is right "
-                    "almost always and wrong the one time the sentence you needed "
-                    "went past. Repeat Last Announcement says it again. It has no "
-                    "key out of the box: find it in the command palette by typing "
-                    "repeat, or give it one in the Keyboard Manager."
+                    "Missed what Quill Radio just said? It happens to everyone. "
+                    "Repeat Last Announcement says it again. It has no key to "
+                    "start with. Find it in the command palette by typing "
+                    "repeat, or give it a key of your own in the Keyboard Manager."
                 ),
                 command="app.repeat_last_announcement",
                 hear=(
-                    "Whatever Quill Radio last told you, in full -- or No announcement to repeat "
-                    "yet."
+                    "Whatever Quill Radio last told you, in full. Or No announcement to repeat yet."
                 ),
             ),
             Step(
                 title="Ask what is playing",
                 body=(
-                    "What's Playing opens a small Now Playing window: the station, "
-                    "and the track when the stream carries one, in a box you can "
-                    "arrow through and copy. Escape closes it. It is the fastest "
-                    "way to work out what you are listening to after coming back "
-                    "to the machine."
+                    "What's Playing opens a small Now Playing window. It tells "
+                    "you the station, and the song when the station sends one, "
+                    "in a box you can arrow through and copy. Press Escape to "
+                    "close it. It is the quickest way to find out what is on "
+                    "when you come back to the computer."
                 ),
                 command="radio.whats_playing_details",
                 keys=("Ctrl+T",),
-                hear="Now Playing, the station's name, then the track if there is one.",
+                hear="Now Playing, the station's name, then the song if there is one.",
                 note=(
-                    "For one spoken sentence and no window, type what's playing in "
-                    "the command palette."
+                    "If you would rather just hear one sentence with no window, "
+                    "type what's playing in the command palette."
                 ),
             ),
             Step(
                 title="Read the list of what has failed",
                 body=(
-                    "Recent Problems is a list of what has gone wrong recently -- "
-                    "feeds that could not be read, downloads that died, streams "
-                    "that dropped -- each with its reason and the time. It exists "
-                    "because a spoken failure you missed used to be gone for good."
+                    "Recent Problems lists what has gone wrong lately: podcasts "
+                    "that could not be checked, downloads that stopped, stations "
+                    "that dropped out. Each one says why and when. So if you "
+                    "missed a message while it was being spoken, you can still "
+                    "find it here."
                 ),
                 command="app.recent_problems",
                 keys=("Ctrl+Alt+Shift+P",),
-                hear="Recent Problems, and a count by kind -- or No recent problems.",
+                hear="Recent Problems, and a count of each kind. Or No recent problems.",
                 note=(
-                    "Copy All takes the list as text, which is what to paste into "
-                    "a bug report. It carries addresses and error messages, never "
-                    "passwords, and nothing in it leaves this computer."
+                    "Copy All copies the whole list as text, ready to paste into "
+                    "a message to support. It includes web addresses and error "
+                    "messages, but never passwords, and nothing in it leaves "
+                    "your computer unless you send it."
                 ),
             ),
             Step(
                 title="Find out why a menu item is dimmed",
                 body=(
-                    "A greyed item on a row's own menu is not a dead end. Each "
-                    "dimmed item carries its reason -- Remove All Downloads: "
-                    "nothing is downloaded for this show -- shown in the status "
-                    "bar and spoken by readers that voice menu help. A transport "
-                    "key that cannot act says why, too: Where Am I on live radio "
-                    "explains that a live stream has no position."
+                    "A dimmed item on a row's menu is not a dead end. Each one "
+                    "comes with a reason, such as Remove All Downloads: nothing "
+                    "is downloaded for this show. You see it in the status bar, "
+                    "and screen readers that read menu help will say it. Player "
+                    "keys explain themselves too. Where Am I on live radio tells "
+                    "you a live stream has no position."
                 ),
                 keys=("Shift+F10",),
-                hear="The item, the word dimmed, and the sentence saying what would un-dim it.",
+                hear="The item, the word dimmed, and a sentence saying what would make it work.",
             ),
             Step(
                 title="Take back the last destructive thing",
                 body=(
-                    "Undo Last Action brings back the last thing you removed: an "
+                    "Undo Last Action brings back what you just removed: an "
                     "unsubscribe, a deleted recording, a Mark All as Played. It "
-                    "says what it brought back. It is one step and not a stack, on "
-                    "purpose -- an undo you have to count presses of is a puzzle."
+                    "tells you what came back. Press it again to go back one "
+                    "more step, newest first, up to ten steps."
                 ),
                 command="app.undo_last",
                 keys=("Ctrl+Z",),
-                hear="Undid, the action, Brought back, and what came back -- or Nothing to undo.",
+                hear=("Undid, the action, Brought back, and what came back. Or Nothing to undo."),
                 note=(
-                    "Every action that can be undone ends its own announcement "
-                    "with Ctrl+Z undoes this, so you never have to remember "
-                    "whether this particular verb was one of them."
+                    "Anything you can undo ends its message with Ctrl+Z undoes "
+                    "this, so you never have to wonder. To pick one particular "
+                    "step from the last ten, use Undo History on the Edit menu."
                 ),
             ),
             Step(
                 title="Report it rather than working around it",
                 body=(
-                    "If something does not happen the way a lesson says it should, "
-                    "that is worth reporting. Get Help from Support writes to a "
-                    "person from inside the app, stamped with this app's "
-                    "version. Your own mail program opens with it ready; "
-                    "nothing is sent until you send it."
+                    "If something does not work the way a lesson says it should, "
+                    "please tell us. Get Help from Support writes to a real "
+                    "person from inside Quill Radio, and includes which version "
+                    "you have. Your own email program opens with the message "
+                    "ready. Nothing is sent until you send it."
                 ),
                 keys=("Ctrl+Alt+F2",),
                 hear="A form with most of it already filled in.",
             ),
         ),
         closing=(
-            "That is the first hour. From here the tracks are independent: go to "
-            "Finding something to listen to if you want more stations, or to "
-            "Recording if you have a show to catch."
+            "That is your first hour, and you did it. From here you can take the "
+            "tracks in any order. Try Finding something to listen to if you want "
+            "more stations, or Recording if there is a show you want to catch."
         ),
     ),
 )

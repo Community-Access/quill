@@ -124,7 +124,9 @@ def test_generating_cue_fires_once_after_the_delay(wx_app, monkeypatch) -> None:
 
     monkeypatch.setattr(frame, "_set_status", lambda *a, **k: None)
     monkeypatch.setattr(frame, "_announce", lambda *a, **k: announced.append(a[0]))
-    monkeypatch.setattr("quill.ui.main_frame.post_sound", lambda event_id: posted.append(event_id))
+    monkeypatch.setattr(
+        "quill.ui.main_frame_voice_preview.post_sound", lambda event_id: posted.append(event_id)
+    )
 
     frame._stop_active_voice_preview()
     my_generation = frame._preview_generation
@@ -149,7 +151,9 @@ def test_generating_cue_does_not_fire_if_superseded_first(wx_app, monkeypatch) -
     posted: list[str] = []
     monkeypatch.setattr(frame, "_set_status", lambda *a, **k: None)
     monkeypatch.setattr(frame, "_announce", lambda *a, **k: None)
-    monkeypatch.setattr("quill.ui.main_frame.post_sound", lambda event_id: posted.append(event_id))
+    monkeypatch.setattr(
+        "quill.ui.main_frame_voice_preview.post_sound", lambda event_id: posted.append(event_id)
+    )
 
     frame._stop_active_voice_preview()
     stale_generation = frame._preview_generation
@@ -192,7 +196,9 @@ def test_generating_cue_is_cancelled_when_synthesis_finishes_first(wx_app, monke
 
     monkeypatch.setattr(frame, "_set_status", lambda *a, **k: None)
     monkeypatch.setattr(frame, "_announce", lambda *a, **k: None)
-    monkeypatch.setattr("quill.ui.main_frame.post_sound", lambda event_id: posted.append(event_id))
+    monkeypatch.setattr(
+        "quill.ui.main_frame_voice_preview.post_sound", lambda event_id: posted.append(event_id)
+    )
     monkeypatch.setattr(
         "quill.ui.main_frame.discover_espeak_executable",
         lambda *_a, **_k: Path("espeak.exe"),

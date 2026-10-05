@@ -37,6 +37,22 @@ class ManagerRowViewMixin:
         self._episode_columns: list[ColumnDef] = columns_for("cast", SURFACE)
         build_columns(self._episodes, self._episode_columns)
 
+    def _queue_reason(self, episode: PodcastEpisode, show: PodcastShow | None) -> str:
+        """In the Play Queue place, why an episode is waiting (qc.md X-04)."""
+        if getattr(self, "_current_place", "") != "queue" or show is None:
+            return ""
+        for item in self._library.queue:
+            if item.show_id == show.id and item.episode_guid == episode.guid:
+                return f"; queued by {item.reason}" if item.reason else ""
+        return ""
+
+    def _played_elsewhere(self, episode: PodcastEpisode) -> str:
+        """In Continue Listening, the device a place came from (ear.md B1)."""
+        device = str(getattr(episode, "last_played_on", "") or "")
+        if not device or getattr(self, "_current_place", "") != "continue_listening":
+            return ""
+        return f"; last played on {device}"
+
     def _episode_row_values(
         self, episode: PodcastEpisode, show: PodcastShow | None
     ) -> dict[str, str]:
@@ -62,7 +78,9 @@ class ManagerRowViewMixin:
             "title": self._display_title(episode, show),
             "published": episode.published[:16],
             "duration": duration_text,
-            "status": self._episode_status_text(episode),
+            "status": self._episode_status_text(episode)
+            + self._queue_reason(episode, show)
+            + self._played_elsewhere(episode),
             "podcast": show.title if show is not None else "",
             "remaining": remaining,
             "downloaded": "Downloaded" if episode.downloaded_path else "Streams",

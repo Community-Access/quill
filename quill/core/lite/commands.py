@@ -106,6 +106,7 @@ COMMANDS: list[CommandRow] = [
     ("&File", "New &Rich Text Document", "Alt+Shift+T", "cmd_new_rich", ""),
     ("&File", "New P&lain Text Document", "Ctrl+Alt+N", "cmd_new_plain", ""),
     ("&File", "&Open...", "Ctrl+O", "cmd_open", ""),
+    ("&File", "Recent &Documents...", "Alt+Shift+0", "cmd_recent_documents", ""),
     ("&File", "", "", "", "sep"),
     ("&File", "&Save", "Ctrl+S", "cmd_save", ""),
     ("&File", "Save &As...", "Ctrl+Shift+S", "cmd_save_as", ""),
@@ -275,9 +276,9 @@ COMMANDS: list[CommandRow] = [
     # "Remove Quote Marks" rather than "Unquote Lines", which is QUILL's label:
     # a listener hears "unquote" as the start of a quotation, and Edit > Lines
     # had no free mnemonic in the word anyway. The divergence is a label, not a
-    # verb -- both editors run the same `unquote_lines`.
+    # verb -- both editors run the same `unquote_lines`. Alt+Shift+. (keymap.py says why).
     ("&Edit|&Lines", "&Quote Lines", "Ctrl+Shift+Q", "cmd_quote_lines", ""),
-    ("&Edit|&Lines", "Remove Quote &Marks", "Ctrl+Alt+Shift+Q", "cmd_unquote_lines", ""),
+    ("&Edit|&Lines", "Remove Quote &Marks", "Alt+Shift+.", "cmd_unquote_lines", ""),
     ("&Edit|&Lines", "", "", "", "sep"),
     # Log triage and formatting for a narrow display, which are two of the
     # reasons somebody opens a plain-text editor at all (bad.md 4.2, Tier 2).
@@ -513,12 +514,11 @@ COMMANDS: list[CommandRow] = [
     # HTML kinds, a tag picker for each, and no way to make it (bad.md 4.2).
     ("&Insert", "Lin&k...", "Ctrl+K", "cmd_insert_link", ""),
     ("&Insert", "", "", "", "sep"),
-    # The two tag pickers. Exactly one of them is ever enabled -- whichever the
-    # document's language is -- and the other is *dimmed rather than hidden*,
-    # because a row that is present and greyed announces itself as unavailable
-    # the moment a reader touches it, while a row that has vanished leaves
-    # somebody hunting a menu for a feature they know exists. See
-    # DocumentMarkupMixin and MARKUP_COMMANDS.
+    # The two tag pickers. Markdown Tag is on the menu only in a Markdown
+    # document, in both editors (owner's decision, 2026-10-04: "unavailable" in
+    # rich and plain documents was a row with no use there), and its key still
+    # says why outside one. HTML Tag is dimmed outside HTML. See
+    # quill/ui/markdown_tag_row.py, DocumentMarkupMixin and MARKUP_COMMANDS.
     #
     # The keys are two free neighbours rather than mnemonics, and that is an
     # admission rather than a design: M, H, T and G were all bound years ago, and
@@ -836,13 +836,10 @@ COMMANDS: list[CommandRow] = [
     ("&Tools", "C&ustomize Features...", "Ctrl+Alt+F10", "cmd_customize_features", ""),
     # Which keys do what, beside which features exist. Never switchable, for
     # the same reason as its two neighbours: the surface that repairs a key
-    # somebody broke cannot be behind a key.
-    #
-    # Ctrl+Alt+Shift+R rather than anything spelling "keyboard": K is Set
-    # Mark, lowercase and Remove Blank Lines three times over, and moving a
-    # real command out of the way to make room for the dialog that moves
-    # commands would be a poor trade. R is for rebind. The mnemonic is the
-    # K the menu still has free.
+    # somebody broke cannot be behind a key. Ctrl+Alt+Shift+R rather than a
+    # K chord: K is Set Mark, lowercase and Remove Blank Lines three times
+    # over, and moving a real command to make room for the dialog that moves
+    # commands would be a poor trade. R is for rebind; the mnemonic is K.
     ("&Tools", "&Keyboard Manager...", "Ctrl+Alt+Shift+R", "cmd_keyboard_manager", ""),
     # -- Tools > Spelling ----------------------------------------------------
     # A submenu rather than a menu on the bar: neither Notepad nor WordPad has a
@@ -1012,6 +1009,8 @@ COMMANDS: list[CommandRow] = [
     # The family item and key: Lite's users least know where else to write.
     ("&Help", "&Get Help from Support...", "Ctrl+Alt+F2", "cmd_get_help_from_support", ""),
     ("&Help", "Check for &Updates...", "Ctrl+Alt+U", "cmd_check_updates", ""),
+    # No key (rules 4 and 9; keymap.py): Alt+H, C. See KEYLESS_WITH_REASON.
+    ("&Help", "Release &Channel...", "", "cmd_release_channel", ""),
     ("&Help", "&About QUILL Lite", "Shift+F1", "cmd_about", ""),
 ]
 
@@ -1073,7 +1072,7 @@ def shortcut_text(keymap: dict[str, str] | None = None) -> str:
                 if child
                 else f"{_plain(parent)} menu"
             )
-        lines.append(f"  {key}: {_plain(label)}")
+        lines.append(f"  {key}: {_plain(label)}" if key else f"  No key: {_plain(label)}")
     lines += [
         "",
         "Window menu",

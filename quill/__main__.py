@@ -378,7 +378,11 @@ def main() -> int:
 
         return run_cli(sys.argv[2:])
 
-    parsed = _parse_cli_arguments(sys.argv[1:])
+    # Windows started QUILL *as* Notepad (Tools > Open QUILL Instead of
+    # Notepad): turn Notepad's command line into QUILL's, exactly as QUILL Lite does.
+    from quill.core.windows_editor import translate_notepad_argv
+
+    parsed = _parse_cli_arguments(translate_notepad_argv(sys.argv[1:]))
     if parsed.version:
         print(__version__)
         return 0
@@ -412,6 +416,11 @@ def main() -> int:
     from quill.core import components
 
     components.register_running_app("quill", OPTIONAL_COMPONENTS)
+    # Release channels, Phase 0: note which data formats this build writes,
+    # before its first save, so "is it safe to go back?" has a history later.
+    from quill.core.data_format_ledger import record_running_build
+
+    record_running_build("quill", __version__)
     # Add any on-demand-installed speech engine packs (e.g. Faster Whisper) to
     # sys.path so the speech registry can find them this session (#669 follow-up).
     try:

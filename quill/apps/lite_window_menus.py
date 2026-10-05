@@ -7,21 +7,21 @@ list read three times -- and the uniqueness rules can be asserted against the
 table (``tests/unit/core/lite/test_lite_commands.py``) rather than against a
 running window.
 
-One family of rows is *dimmed* as the document changes rather than rebuilt:
-**Insert > Markdown Tag and Insert > HTML Tag**, of which exactly one can ever
-apply. Dimmed rather than removed, and the difference matters by ear: a greyed
-row announces itself as unavailable the moment a reader arrives on it, which
-answers the question; a row that has vanished leaves somebody hunting the menus
-for a feature they know the app has. The state is refreshed on every menu open
-(``_on_menu_open``), so it can never be stale -- the language can change between
-two presses of Alt.
+One row is *hidden* as the document changes: **Insert > Markdown Tag**, which
+is on the menu only in a Markdown document, in QUILL as well
+(:mod:`quill.ui.markdown_tag_row`, the owner's decision of 2026-10-04 after
+"the item for inserting a Markdown tag is unavailable" in rich and plain
+documents). Its key stays bound while the row is away, so pressing it elsewhere
+says why nothing happened. Insert > HTML Tag is still *dimmed* outside HTML.
+Both are refreshed by :meth:`DocumentMenuMixin.sync_menu_state`, from the change
+itself, because on an MDI child the menu-open event goes to the shell.
 
 Two menus are rebuilt as the app changes rather than built once:
 
-* **Open Recent**, which skips entries whose file has gone. Skipped rather than
-  greyed out: choosing a missing entry could only ever produce a "does not
-  exist" prompt, so offering it costs a keystroke and an announcement for
-  nothing.
+* **Open Recent**, which skips entries whose file has certainly gone. Skipped
+  rather than greyed out: choosing a missing entry could only ever produce a
+  "does not exist" prompt, so offering it costs a keystroke and an announcement
+  for nothing. File > Recent Documents still lists them, and says so.
 * **Window**, which lists every open document *by its own number*, with Alt+1
   to Alt+9 on the first nine and a check mark on the one you are in. With MDI
   this is not a convenience -- an MDI child does not appear in Alt+Tab at all,
@@ -46,6 +46,7 @@ from quill.apps.lite_window_typing import overwrite_now
 from quill.core.lite.commands import SUBMENU_SEP, CommandRow, split_menu
 from quill.core.lite.format_kinds import FORMAT_COMMAND_KINDS, applies_to
 from quill.core.lite.keymap import default_aliases, resolved_commands
+from quill.ui.markdown_tag_row import HideableMenuRow, markdown_tag_row_shown
 from quill.ui.richedit_editing import RICH
 
 __all__ = ["DocumentMenuMixin"]
@@ -101,6 +102,8 @@ class DocumentMenuMixin:
         self._recent_menu = wx.Menu()
         self._check_items = {}
         self._menu_items = {}
+        #: Rows that leave their menu in the wrong kind of document, by handler.
+        self._hideable_rows: dict[str, HideableMenuRow] = {}
         self._window_menu_items = []
         rows: dict[str, list[CommandRow]] = {}
         top_level: list[str] = []
@@ -156,6 +159,8 @@ class DocumentMenuMixin:
             )
             self.Bind(wx.EVT_MENU, self._dispatch(handler), item)
             self._menu_items[handler] = item
+            if handler == "cmd_insert_markdown_tag":
+                self._hideable_rows[handler] = HideableMenuRow(menu, item)
             if kind == "check":
                 self._check_items[handler] = item
             if handler == "cmd_open":
@@ -198,6 +203,16 @@ class DocumentMenuMixin:
             entries.append(
                 wx.AcceleratorEntry(parsed.GetFlags(), parsed.GetKeyCode(), item.GetId())
             )
+        # A hidden row's key, too. A row off its menu takes its label's key with
+        # it, and the key has to keep reaching the command so the command can
+        # say why it did nothing -- Ctrl+Alt+I in a rich document.
+        for row in getattr(self, "_hideable_rows", {}).values():
+            if row.accel is not None and row.accel.GetKeyCode():
+                entries.append(
+                    wx.AcceleratorEntry(
+                        row.accel.GetFlags(), row.accel.GetKeyCode(), row.item.GetId()
+                    )
+                )
         self.SetAcceleratorTable(wx.AcceleratorTable(entries))
 
     def _dispatch(self, handler: str) -> Any:
@@ -274,9 +289,14 @@ class DocumentMenuMixin:
         language = getattr(self, "document_language", None)
         current = language() if callable(language) else "plain"
         rich = self.editor.mode == RICH if hasattr(self, "editor") else False
+        shown = markdown_tag_row_shown("rich" if rich else current)
+        hideable = getattr(self, "_hideable_rows", {})
+        for row in hideable.values():
+            row.set_shown(shown)
         for handler, languages in MARKUP_COMMANDS.items():
             item = self._menu_items.get(handler)
-            if item is not None:
+            # A row that is off its menu is not dimmed as well: it is not there.
+            if item is not None and (handler not in hideable or shown):
                 # Rich text disables both: its headings are a point size and its
                 # bold is real bold, so a markup tag inserted into one would put
                 # literal angle brackets next to text that is already formatted.
@@ -293,24 +313,28 @@ class DocumentMenuMixin:
                 item.Enable(applies_to(handler, kind))
 
     def refresh_recent_menu(self) -> None:
-        """Rebuild Open Recent, skipping files that are no longer there.
+        """Rebuild Open Recent: pinned first, then newest, the first nine numbered.
 
-        Skipped rather than greyed: choosing a missing entry could only ever
-        produce a "does not exist" prompt, so offering it wastes a keystroke and
-        an announcement.
+        The list, the order and the wording are QUILL's too
+        (:mod:`quill.core.recent_documents`). A file certainly deleted from an
+        internal drive is skipped -- choosing it could only produce a "does not
+        exist" prompt -- but one on an unplugged USB drive stays. Every row,
+        missing or not, is in File > Recent Documents (Alt+Shift+0).
         """
+        from quill.core import recent_documents as rd
+
         for item in list(self._recent_menu.GetMenuItems()):
             self._recent_menu.Delete(item)
-        recent = [entry for entry in self.app.settings.recent_files if Path(entry).exists()]
+        settings = self.app.settings
+        pinned = list(getattr(settings, "pinned_recent_files", []))
+        recent = rd.menu_paths(settings.recent_files, pinned)[: rd.NUMBERED]
         if not recent:
             placeholder = self._recent_menu.Append(wx.ID_ANY, "No recent files")
             placeholder.Enable(False)
             return
-        for index, entry in enumerate(recent[:9], start=1):
-            path = Path(entry)
-            item = self._recent_menu.Append(
-                wx.ID_ANY, f"&{index} {path.name}  ({path.parent})\tAlt+Shift+{index}"
-            )
+        for index, entry in enumerate(recent, start=1):
+            label = rd.menu_label(index, entry, pinned=rd.is_pinned(pinned, entry))
+            item = self._recent_menu.Append(wx.ID_ANY, label)
             self.Bind(wx.EVT_MENU, lambda _e, p=entry: self.app.open_path(Path(p)), item)
 
     def refresh_window_menu(self) -> None:

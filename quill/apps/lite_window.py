@@ -58,10 +58,12 @@ from quill.apps.lite_window_markup import DocumentMarkupMixin
 from quill.apps.lite_window_menus import DocumentMenuMixin
 from quill.apps.lite_window_mode import DocumentModeMixin
 from quill.apps.lite_window_open import DocumentBackgroundOpenMixin
+from quill.apps.lite_window_recent import DocumentRecentMixin
 from quill.apps.lite_window_sections import DocumentSectionCommandsMixin
 from quill.apps.lite_window_selection import DocumentSelectionMixin
 from quill.apps.lite_window_spelling import DocumentSpellingMixin
 from quill.apps.lite_window_status import DocumentStatusMixin
+from quill.apps.lite_window_text_editor import DocumentTextEditorMixin
 from quill.apps.lite_window_theme import DocumentAppearanceMixin
 from quill.apps.lite_window_tools import DocumentToolsMixin
 from quill.apps.lite_window_typing import DocumentTypingMixin
@@ -103,6 +105,8 @@ class DocumentFrame(
     DocumentPrintMixin,
     DocumentUpdatesMixin,
     DocumentToolsMixin,
+    # Make QUILL Lite My Text Editor and the Notepad switch, 2026-10-03.
+    DocumentTextEditorMixin,
     DocumentKeymapMixin,
     DocumentLineMixin,
     DocumentHistoryMixin,
@@ -112,6 +116,7 @@ class DocumentFrame(
     DocumentTypingMixin,
     DocumentSpellingMixin,
     DocumentFileMixin,
+    DocumentRecentMixin,
     # Large and networked files open off the UI thread (F-05).
     DocumentBackgroundOpenMixin,
     DocumentContextMenuMixin,

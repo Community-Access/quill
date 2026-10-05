@@ -18,6 +18,8 @@ from __future__ import annotations
 from typing import Any
 
 from quill.core.podcasts import places as places_model
+from quill.core.sound_events import SoundEvent
+from quill.ui.podcasts.outcome_feedback import say_outcome
 
 __all__ = ["CastPlacesHostMixin"]
 
@@ -80,6 +82,7 @@ class CastPlacesHostMixin:
             return False
         changed = place_id != self._current_place
         self._current_place = place_id
+        self._place_opened_inbox_folder = ""
         self._place_opened_show_id = ""
         self._place_opened_playlist_id = ""
         places = getattr(self, "_places", None)
@@ -144,7 +147,12 @@ class CastPlacesHostMixin:
                 ]
             else:
                 pairs = list(virtual_view_pairs(library, place_id))
-            self._fill_episodes_from_pairs(pairs)  # type: ignore[attr-defined]
+            if place_id == "inbox":
+                from quill.ui.podcasts.inbox_view import fill_inbox
+
+                fill_inbox(self, pairs)
+            else:
+                self._fill_episodes_from_pairs(pairs)  # type: ignore[attr-defined]
             self._select_list_key(keep) or self._select_list_row(0)  # type: ignore[attr-defined]
         pane.set_heading(self._place_heading(place_id))
         self._refresh_place_counts()
@@ -159,8 +167,15 @@ class CastPlacesHostMixin:
         if not self._current_place:
             return
         key = self._selected_tree_data() if keep else None  # type: ignore[attr-defined]
+        episodes = getattr(self, "_episodes", None)
+        self._list_previous_index = episodes.GetFirstSelected() if keep and episodes else -1
         if self._place_opened_playlist_id:
             self._open_playlist_in_place(self._place_opened_playlist_id, keep=key)
+            return
+        if getattr(self, "_place_opened_inbox_folder", ""):
+            from quill.ui.podcasts.inbox_view import open_inbox_folder
+
+            open_inbox_folder(self, self._place_opened_inbox_folder, keep=key)
             return
         if self._place_opened_show_id:
             show = self._podcast_library.find_show(self._place_opened_show_id)  # type: ignore[attr-defined]
@@ -219,6 +234,12 @@ class CastPlacesHostMixin:
         self._refresh_notes_pane()  # type: ignore[attr-defined]
 
     def _back_from_show_in_place(self) -> bool:
+        folder_id = getattr(self, "_place_opened_inbox_folder", "")
+        if folder_id:
+            self._place_opened_inbox_folder = ""
+            self._fill_place(self._current_place, keep=("inbox_folder", folder_id))
+            self._content.focus()  # type: ignore[attr-defined]
+            return True
         if self._place_opened_playlist_id:
             playlist_id = self._place_opened_playlist_id
             self._place_opened_playlist_id = ""
@@ -311,6 +332,14 @@ class CastPlacesHostMixin:
 
         code = event.GetKeyCode()
         selected = self._list_selected_data()  # type: ignore[attr-defined]
+        if selected is not None and selected[0] == "notice":
+            # ear.md R9: Play Now and Add to Queue on the notice itself.
+            if code in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER) and event.ControlDown():
+                self._notice_verb(selected[1], "play")
+                return
+            if code == wx.WXK_SPACE and not event.HasAnyModifiers():
+                self._notice_verb(selected[1], "queue")
+                return
         if code in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
             self._activate_content_row(selected)
             return
@@ -367,6 +396,10 @@ class CastPlacesHostMixin:
         elif kind == "playlist":
             self._open_playlist_in_place(value)
             self._content.focus()  # type: ignore[attr-defined]
+        elif kind == "inbox_folder":
+            from quill.ui.podcasts.inbox_view import open_inbox_folder
+
+            open_inbox_folder(self, value)
 
     def _queue_selected_episode(self) -> None:
         from quill.core.podcasts import queue as queue_ops
@@ -378,7 +411,9 @@ class CastPlacesHostMixin:
         if queue_ops.add_to_queue(self._podcast_library, show.id, episode.guid):  # type: ignore[attr-defined]
             self._save_podcast_library()  # type: ignore[attr-defined]
             self._refresh_place_counts()
-            self._announce(f"Added {episode.title} to the Play Queue.")  # type: ignore[attr-defined]
+            say_outcome(
+                self, f"Added {episode.title} to the Play Queue.", sound=SoundEvent.CAST_QUEUE_ADDED
+            )
         else:
             self._announce(f"{episode.title} is already in the Play Queue.")  # type: ignore[attr-defined]
 
@@ -437,6 +472,17 @@ class CastPlacesHostMixin:
 
             library.inbox_assignments[inbox_key(show.id, episode.guid)] = REMOVED_MARKER
             said = f"Removed {episode.title} from the Inbox. It is still unheard in {show.title}."
+            # Earshot R4: with "Delete downloads when done" on, an episode you
+            # dismiss is done with, so its file goes too -- unless it is kept.
+            from quill.core.podcasts import retention
+
+            if (
+                episode.downloaded_path
+                and library.effective_settings(show).delete_after_play
+                and not retention.is_protected(library, show, episode)
+                and retention.remove_downloaded_copy(episode)
+            ):
+                said += " Its download was deleted."
         elif place_id == "downloads":
             from quill.core.podcasts.retention import remove_downloaded_copy
 
@@ -467,8 +513,13 @@ class CastPlacesHostMixin:
         if not said:
             return
         self._save_podcast_library()  # type: ignore[attr-defined]
-        self._refresh_place(keep=False)
-        self._announce(said)  # type: ignore[attr-defined]
+        # keep=True: the row has gone, so the cursor lands on the one that moved
+        # into its place rather than back at the top (qc.md F-10).
+        self._refresh_place(keep=True)
+        if place_id == "new_episodes":
+            say_outcome(self, said, sound=SoundEvent.CAST_MARKED_PLAYED)
+        else:
+            say_outcome(self, said, sound=SoundEvent.CAST_REMOVED)
 
     # -- notices in the list ------------------------------------------------------------------ #
 
@@ -494,6 +545,21 @@ class CastPlacesHostMixin:
             self._announce("There is nothing to open for this one.")  # type: ignore[attr-defined]
             return
         self.open_notification_target(target)  # type: ignore[attr-defined]
+
+    def _notice_verb(self, notice_id: str, verb: str) -> None:
+        """Play Now ("play") or Add to Queue ("queue") on a notice row."""
+        from quill.ui.podcasts import notice_actions
+
+        notice = self._notice_by_id(notice_id)
+        if notice is None:
+            return
+        done = (
+            notice_actions.play_now(self, notice)
+            if verb == "play"
+            else notice_actions.add_to_queue(self, notice)
+        )
+        if done:
+            self._refresh_place(keep=True)
 
     def _dismiss_notice(self, notice_id: str) -> None:
         from quill.core.notifications import load_notifications, save_notifications

@@ -57,6 +57,7 @@ def show_web_form(
     cancel_label: str = "Cancel",
     size: tuple[int, int] = (720, 560),
     auto_focus_first_field: bool = True,
+    settings: bool = False,
 ) -> dict | None:
     """Show a modal accessible web form; return values on save or ``None``."""
     dialog = _WebFormDialog(
@@ -69,6 +70,7 @@ def show_web_form(
         cancel_label=cancel_label,
         size=size,
         auto_focus_first_field=auto_focus_first_field,
+        settings=settings,
     )
     return dialog.show()
 
@@ -86,8 +88,14 @@ class _WebFormDialog:
         cancel_label: str,
         size: tuple[int, int],
         auto_focus_first_field: bool,
+        settings: bool = False,
     ) -> None:
         self._wx = wx
+        #: A form of settings gets Find a setting, whichever way it renders (X-01):
+        #: asked for, or a form made only of switches and choices.
+        self._settings = settings or all(
+            str(field.get("type", "text")) in ("checkbox", "select") for field in fields
+        )
         self._fields = fields
         self._save_label = save_label
         self._cancel_label = cancel_label
@@ -101,6 +109,8 @@ class _WebFormDialog:
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
         self.dialog.SetSize(size)
+        if self._settings:
+            self.dialog._quill_settings_form = True
         sizer = wx.BoxSizer(wx.VERTICAL)
 
         self._webview = None
@@ -152,6 +162,12 @@ class _WebFormDialog:
         ]
         if intro:
             parts.append(f"<p>{html.escape(intro)}</p>")
+        if self._settings:
+            parts.append(
+                "<p><label for='form-find'>Find a setting</label><br>"
+                "<input id='form-find' type='search' style='width:100%;font-size:1rem;padding:6px'>"
+                " <span id='form-find-count' role='status' aria-live='polite'></span></p>"
+            )
         first_id = ""
         for field in self._fields:
             field_id = "field-" + str(field["name"])
@@ -224,6 +240,18 @@ class _WebFormDialog:
             "document.getElementById('form-cancel').addEventListener('click',function(){"
             "post({type:'cancel'});});"
             f"{focus_script}"
+            "var find=document.getElementById('form-find');if(find){"
+            "function hits(){var q=find.value.toLowerCase().split(/\\s+/).filter(Boolean);"
+            "if(!q.length)return [];return names.filter(function(n){"
+            "var el=document.getElementById('field-'+n);var lab=el&&el.closest('p');"
+            "var t=(lab?lab.textContent:n).toLowerCase();"
+            "return q.every(function(w){return t.indexOf(w)>=0;});});}"
+            "find.addEventListener('input',function(){var h=hits();"
+            "document.getElementById('form-find-count').textContent="
+            "find.value?h.length+' matching settings':'';});"
+            "find.addEventListener('keydown',function(e){if(e.key==='Enter'){"
+            "var h=hits();if(h.length){e.preventDefault();"
+            "document.getElementById('field-'+h[0]).focus();}}});}"
             "})();</script>"
         )
         return "".join(parts)

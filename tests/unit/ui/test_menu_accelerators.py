@@ -18,6 +18,7 @@ status readout, not a command -- there is nothing to invoke).
 from __future__ import annotations
 
 import collections
+import re
 
 import pytest
 
@@ -94,9 +95,18 @@ def _items(menu_bar):
     return out
 
 
+#: A route written in the label rather than as a native accelerator, the form
+#: QUILL's menu_routes gives a keyless row: "Release Cha&nnel... (Alt+H, N)".
+#: Help > Release Channel... is the one such row here; it has no chord on
+#: purpose (keymap.py's help.release_channel: rules 4 and 9).
+_ALT_PATH_ROUTE = re.compile(r"\(Alt\+[^()]*\)\s*$")
+
+
 def test_every_enabled_menu_item_advertises_a_keyboard_route(radio_menu_bar) -> None:
     missing = [
-        where for where, label, enabled in _items(radio_menu_bar) if enabled and chr(9) not in label
+        where
+        for where, label, enabled in _items(radio_menu_bar)
+        if enabled and chr(9) not in label and not _ALT_PATH_ROUTE.search(label)
     ]
     assert missing == [], "menu items with no accelerator: " + "; ".join(missing)
 
@@ -178,12 +188,15 @@ def test_every_enabled_menu_item_has_an_access_letter(radio_menu_bar) -> None:
 
 #: The Station menu has more items than the alphabet has letters, and a letter
 #: may not be claimed twice (test_menu_item_access_keys). Every letter in these
-#: four labels is already another item's, so they keep only their keys --
-#: Ctrl+comma, Ctrl+Q, Ctrl+Alt+P and Ctrl+Alt+O -- and Alt+S then the arrows.
-#: Shrink this, never grow it: a new Station item takes a free letter.
+#: five labels is already another item's, so they keep only their keys --
+#: Ctrl+comma, Ctrl+Q, Ctrl+Alt+P, Ctrl+Alt+O and Ctrl+O -- and Alt+S then the
+#: arrows. Shrink this, never grow it: a new Station item takes a free letter.
+#: Local Media joined on 2026-10-04 by the owner's decision: it had taken D,
+#: which Download Preferences already had.
 _STATION_MENU_OUT_OF_LETTERS = frozenset({
     "Preferences...",
     "Exit",
     "Connect to Spotify...",
     "Browse Spotify...",
+    "Local Media...",
 })

@@ -62,7 +62,7 @@ def test_test_microphone_says_speak_now_then_what_it_heard(wx_app, monkeypatch) 
     import quill.ui.update_download as download
     from quill.ui.windows_dictation_dialog import WindowsDictationDialog
 
-    monkeypatch.setattr(local, "record_and_hear", lambda _mic, _engine: (0.5, "hello there"))
+    monkeypatch.setattr(local, "record_and_hear", lambda _mic, _engine, **_kw: (0.5, "hello there"))
     monkeypatch.setattr(download, "thread_submit", _run_now)
     monkeypatch.setattr(wx, "CallAfter", lambda fn, *args: fn(*args))
     said: list[str] = []
@@ -84,7 +84,7 @@ def test_a_failed_microphone_test_is_a_sentence(wx_app, monkeypatch) -> None:
     from quill.core.windows_dictation.controller import DictationStartError
     from quill.ui.windows_dictation_dialog import WindowsDictationDialog
 
-    def refuse(_mic, _engine):
+    def refuse(_mic, _engine, **_kw):
         raise DictationStartError("The microphone could not be opened.")
 
     monkeypatch.setattr(local, "record_and_hear", refuse)
@@ -95,5 +95,68 @@ def test_a_failed_microphone_test_is_a_sentence(wx_app, monkeypatch) -> None:
     try:
         dialog._on_test_microphone(None)
         assert said[-1] == "The microphone could not be opened."
+    finally:
+        dialog.Destroy()
+
+
+def test_the_dictation_language_round_trips(wx_app) -> None:
+    from quill.ui.windows_dictation_dialog import WindowsDictationDialog
+
+    saved = _Settings()
+    saved.windows_dictation_speech_language = "es"
+    dialog = WindowsDictationDialog(None, saved)
+    try:
+        assert dialog.speech_language.GetSelection() == 1
+        settings = _Settings()
+        dialog.apply(settings)
+        assert settings.windows_dictation_speech_language == "es"
+        dialog.speech_language.SetSelection(0)
+        dialog.apply(settings)
+        assert settings.windows_dictation_speech_language == "en"
+    finally:
+        dialog.Destroy()
+
+
+def test_the_dictation_language_is_labelled_helped_and_findable(wx_app) -> None:
+    from quill.ui.app_context_help import ensure_help_provider
+    from quill.ui.preferences_search import _targets, find_settings
+    from quill.ui.windows_dictation_dialog import WindowsDictationDialog
+
+    ensure_help_provider()  # SetHelpText stores nothing without one
+    dialog = WindowsDictationDialog(None, _Settings())
+    try:
+        assert "Spanish" in dialog.speech_language.GetHelpText()
+        found = find_settings(_targets(dialog), "dictation language")
+        labels = {target.label: target.control for target in found}
+        assert labels["Dictation language"] is dialog.speech_language
+        keys = [
+            child.GetLabel().split("&")[1][:1].lower()
+            for child in dialog.GetChildren()
+            if "&" in child.GetLabel().replace("&&", "")
+        ]
+        assert keys.count("g") == 1 and len(keys) == len(set(keys))
+    finally:
+        dialog.Destroy()
+
+
+def test_choosing_spanish_swaps_the_default_phrases_and_reports_a_missing_model(
+    wx_app, monkeypatch
+) -> None:
+    import quill.ui.windows_dictation_dialog as module
+
+    monkeypatch.setattr(module, "language_model_problem", lambda _e, _l: "No Spanish model.")
+    said: list[str] = []
+    dialog = module.WindowsDictationDialog(None, _Settings(), said.append)
+    try:
+        dialog.speech_language.SetSelection(1)
+        dialog._on_speech_language(None)
+        assert dialog.wake_phrase.GetValue() == "Quill dicta"
+        assert dialog.stop_phrase.GetValue() == "deja de dictar"
+        assert said[-1] == "No Spanish model."
+        dialog.stop_phrase.SetValue("basta ya por favor")
+        dialog.speech_language.SetSelection(0)
+        dialog._on_speech_language(None)
+        assert dialog.wake_phrase.GetValue() == "Quill dictate"
+        assert dialog.stop_phrase.GetValue() == "basta ya por favor"  # the user's own
     finally:
         dialog.Destroy()

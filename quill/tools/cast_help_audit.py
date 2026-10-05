@@ -49,6 +49,14 @@ _SCAN_GLOBS: tuple[str, ...] = ("quill/apps/podcasts*.py",)
 #: Surface constructions whose titles the scan cannot resolve, with the
 #: reason they are fine. Keyed ``<module>::<qualname>``.
 TITLE_EXEMPT: dict[str, str] = {
+    "quill/ui/podcasts/ai_review_dialog.py::review": (
+        "the title is the feature's name, passed in by cast_ai_features; every "
+        "one is in surface_help.PURPOSES"
+    ),
+    "quill/ui/podcasts/ai_answer_dialog.py::show_answer": (
+        "the title is 'About <podcast>', 'Is <episode> for me?' or 'Summary of "
+        "<episode>'; all three are prefixes in surface_help.PREFIX_PURPOSES"
+    ),
     "quill/ui/podcasts/schedule_dialog.py::ScheduleDialog.__init__": (
         "the title is 'Schedule for <podcast>' or 'Schedule for Every Podcast', "
         "built from the podcast's title, so the scan sees no literal; 'Schedule "
@@ -61,29 +69,20 @@ TITLE_EXEMPT: dict[str, str] = {
         "pinned by test_cast_single_settings"
     ),
     "quill/ui/podcasts/first_run_dialog.py::FirstRunDialog.__init__": (
-        "titles come from podcasts.onboarding.SCREEN_TITLES; all three "
-        "screens are in surface_help.PURPOSES, pinned by test_cast_surface_help"
+        "the title is the module's TITLE constant ('Welcome to QUILL Cast'), "
+        "so the scan sees a name rather than a literal; the one screen is in "
+        "surface_help.PURPOSES, pinned by test_cast_help_audit"
     ),
-    "quill/ui/podcasts/episode_extras_dialog.py::EpisodeExtrasDialog.__init__": (
-        "a conditional the scan cannot fold: both arms start with the module's "
-        "TITLE ('About This Episode'), which surface_help answers exactly and "
-        "by prefix; pinned by test_cast_surface_help"
-    ),
-    "quill/ui/podcasts/show_settings_dialog.py::ShowSettingsDialog.__init__": (
-        "the title is 'Settings for <show>' built into self._title, so the scan "
-        "sees an f-string rather than a literal; surface_help answers 'Settings "
-        "for' by prefix, pinned by test_cast_show_settings"
+    "quill/ui/podcasts/skip_settings_dialog.py::SkipSettingsDialog.__init__": (
+        "QUILL's own window: Cast never opens it (its Skip Settings route opens "
+        "Preferences at Playing), and QUILL's F1 does not read Cast's "
+        "catalogue, so a purpose here would describe a window no Cast user can "
+        "reach; pinned by test_cast_help_audit"
     ),
     "quill/ui/podcasts/show_list_editor.py::ListSettingDialog.__init__": (
         "the title is '<subject> -- <show>' chosen from _SUBJECTS at runtime; "
         "all three subjects are prefixes in surface_help.PREFIX_PURPOSES and "
         "are pinned by test_cast_show_settings"
-    ),
-    "quill/ui/podcasts/episode_filters_dialog.py::EpisodeFiltersDialog.__init__": (
-        "the title is '<module TITLE> -- <show>', so the f-string opens with a "
-        "formatted value rather than a literal and the prefix scan cannot see "
-        "it; surface_help answers 'Episode Filters' by prefix, pinned by "
-        "test_cast_episode_filters"
     ),
     "quill/ui/podcasts/folder_settings_dialog.py::FolderSettingsDialog.__init__": (
         "an f-string that opens with the module's TITLE ('Folder Settings') "

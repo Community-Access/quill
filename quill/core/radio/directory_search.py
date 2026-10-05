@@ -224,6 +224,9 @@ def merge_and_rank(
                 survivor = survivor_by_name_country[name_country]
             if survivor is not None:
                 _absorb_source(survivor, station.source)
+                if station.match_reason and not survivor.match_reason:
+                    # Why it was found outlives the de-dup (station_lookup).
+                    survivor.match_reason = station.match_reason
                 continue
             if url_key:
                 survivor_by_url[url_key] = station

@@ -65,6 +65,7 @@ from quill.ui.dialog_contract import show_message_box
 
 _TITLE = "QuillBeacon"
 _VERSION = "0.1.0"
+_BUILD = 1  # this version's build (docs/release/RELEASE.md, "Build numbers")
 
 # Destinations in the sidebar (PRD 13.1).
 DESTINATIONS = [
@@ -116,13 +117,11 @@ class BeaconFrame(wx.Frame):
         self.current_sort = "added"
         self.last_query = ""
 
-        # F1 context help with Beacon's authored purpose catalogue
-        # (GATE-BEACON-HELP). activate() installs the wx.HelpProvider (making
-        # every SetHelpText live) and registers the family engine with
-        # Beacon's window-purpose resolver; install() binds F1 on this main
-        # frame, which no dialog-contract show path wraps. Beacon's dialogs
-        # bind F1 themselves in their __init__ (see dialogs._context_help),
-        # because they are shown with a bare ShowModal(), not through
+        # F1 context help with Beacon's authored purpose catalogue (GATE-BEACON-HELP). activate()
+        # installs the wx.HelpProvider (making every SetHelpText live) and registers the family
+        # engine with Beacon's window-purpose resolver; install() binds F1 on this main frame, which
+        # no dialog-contract show path wraps. Beacon's dialogs bind F1 themselves in their __init__
+        # (see dialogs._context_help), because they are shown with a bare ShowModal(), not through
         # show_modal_dialog.
         from quill.apps.beacon import surface_help
         from quill.ui import app_context_help
@@ -1569,7 +1568,7 @@ class BeaconFrame(wx.Frame):
 
     def _on_about(self, _e) -> None:
         show_message_box(
-            f"{_TITLE} {_VERSION}\nSchema v{SCHEMA_VERSION}\n"
+            f"{_TITLE} {_VERSION} (build {_BUILD})\nSchema v{SCHEMA_VERSION}\n"
             "Find your way back to anything.\n\n"
             "Local-first. No account required. Library: "
             f"{self.data_dir / 'beacons.db'}"

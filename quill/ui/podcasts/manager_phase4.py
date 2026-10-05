@@ -28,6 +28,7 @@ from quill.ui.podcasts import volume_boost_ui
 from quill.ui.podcasts.episode_search import EpisodeSearchMixin
 from quill.ui.podcasts.manager_expired import ManagerExpiredMixin
 from quill.ui.podcasts.manager_search_everywhere import SearchEverywhereMixin
+from quill.ui.podcasts.say_status import say_status
 
 _EPISODE_FILTER_LABELS = (
     "All",
@@ -348,12 +349,15 @@ class ManagerPhase4Mixin(ManagerExpiredMixin, EpisodeSearchMixin, SearchEverywhe
         finally:
             self._episodes.Thaw()
         if total > len(shown):
-            self._status.SetLabel(
+            say_status(
+                self._status,
                 f"Showing the newest {len(shown)} of {total} episode(s) in {view_label}. "
-                "Narrow it with the Episodes filter, or open one podcast to see all of its own."
+                "Narrow it with the Episodes filter, or open one podcast to see all of its own.",
+                self._announce,
             )
         else:
-            self._status.SetLabel(f"{total} episode(s) in {view_label}.")
+            # Follows the selection, which the reader already says; not spoken.
+            say_status(self._status, f"{total} episode(s) in {view_label}.", speak=False)
         if shown:
             self._episodes.Select(0)
             self._episodes.Focus(0)

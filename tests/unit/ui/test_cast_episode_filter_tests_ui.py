@@ -34,7 +34,7 @@ from quill.ui.podcasts.episode_filter_test_dialog import (  # noqa: E402
     EpisodeFilterTestDialog,
     comparison_choices,
 )
-from quill.ui.podcasts.episode_filters_dialog import EpisodeFiltersDialog  # noqa: E402
+from quill.ui.podcasts.episode_filters_dialog import EpisodeFiltersWindow  # noqa: E402
 
 
 @pytest.fixture(scope="module")
@@ -140,7 +140,7 @@ def test_a_suggestion_opens_the_rule_editor_and_switches_filtering_on(wx_app, mo
     suggestion = suggest_rule(show.episodes[1], show.episodes)
     frame = wx.Frame(None)
     try:
-        dialog = EpisodeFiltersDialog(frame, library=library, show=show, suggestion=suggestion)
+        dialog = EpisodeFiltersWindow(frame, library=library, show=show, suggestion=suggestion)
         seen: dict[str, object] = {}
 
         def fake_rule_dialog(rule=None, *, intro=""):
@@ -156,7 +156,7 @@ def test_a_suggestion_opens_the_rule_editor_and_switches_filtering_on(wx_app, mo
         # Offered once: a second call does nothing.
         dialog._offer_suggestion()
         assert len(dialog._draft.rules) == 1
-        dialog.dialog.Destroy()
+        dialog.frame.Destroy()
     finally:
         frame.Destroy()
 
@@ -166,7 +166,7 @@ def test_declining_the_suggestion_adds_nothing(wx_app, monkeypatch) -> None:
     library = PodcastLibrary(shows=[show])
     frame = wx.Frame(None)
     try:
-        dialog = EpisodeFiltersDialog(
+        dialog = EpisodeFiltersWindow(
             frame,
             library=library,
             show=show,
@@ -178,6 +178,6 @@ def test_declining_the_suggestion_adds_nothing(wx_app, monkeypatch) -> None:
         dialog._offer_suggestion()
         assert dialog._draft.rules == [] and not dialog._draft.enabled
         assert said == ["No rule added."]
-        dialog.dialog.Destroy()
+        dialog.frame.Destroy()
     finally:
         frame.Destroy()

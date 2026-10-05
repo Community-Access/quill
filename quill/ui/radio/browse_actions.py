@@ -463,6 +463,23 @@ def _search_podcast_index(host: Any) -> None:
     )
 
 
+def _podcast_index_credentials(host: Any) -> None:
+    """Add a Podcast Index Key...: the row the branch offers when it has none.
+
+    Opens the same Podcast Index Credentials window Quill Cast has (the key
+    lives in the Windows credential store, so one entry serves both apps), then
+    reloads the branch so Trending and the categories appear straight away.
+    """
+    from types import SimpleNamespace
+
+    from quill.ui.podcasts.directory_credentials_dialog import open_directory_credentials
+    from quill.ui.radio import browse_refresh
+
+    open_directory_credentials(SimpleNamespace(frame=host._win, _announce=host._announce))
+    if host._tree:
+        browse_refresh.reload_source_branch(host, "podcastindex")
+
+
 def _tv_refresh(host: Any) -> None:
     """Fetch today's TV catalog now, off-thread, and reload the branch.
 
@@ -492,6 +509,15 @@ def _tv_refresh(host: Any) -> None:
             host._announce(f"The TV channel list could not be updated. {error}.")
 
     host._task_manager.submit("radio-tv-refresh", _work, on_success=_ok, on_failure=_failed)
+
+
+def _search_youtube(host: Any) -> None:
+    """Search YouTube...: videos, playlists and channels, answered in this tree."""
+    if _refuse_in_safe_mode(host, "Searching YouTube") or not _youtube_allowed(host):
+        return
+    from quill.ui.radio import youtube_search_ui
+
+    youtube_search_ui.run_in_tree(host)
 
 
 def _antennaweb(host: Any) -> None:
@@ -525,6 +551,24 @@ _ACTIONS: dict[str, Callable[[Any], None]] = {
     "exportpodcastsopml": _export_podcasts_opml,
     "searchpodcasts": _search_podcasts,
     "searchpodcastindex": _search_podcast_index,
+    "podcastindexcredentials": _podcast_index_credentials,
     "antennaweb": _antennaweb,
     "tvrefresh": _tv_refresh,
+    "searchyoutube": _search_youtube,
 }
+
+
+def _local_media_action(action_id: str) -> Callable[[Any], None]:
+    """Local Media's rows (Add Media Files..., Add a Folder...): its own module."""
+
+    def _run(host: Any) -> None:
+        from quill.ui.radio.local_media_browse import ACTIONS
+
+        ACTIONS[action_id](host)
+
+    return _run
+
+
+for _local_id in ("localaddfiles", "localaddfolder", "localnewplaylist", "localimport"):
+    _ACTIONS[_local_id] = _local_media_action(_local_id)
+_ACTIONS["localopenwindow"] = _local_media_action("localopenwindow")

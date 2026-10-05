@@ -199,6 +199,33 @@ def test_most_steps_say_what_you_should_hear(app_id: str) -> None:
     )
 
 
+def test_quill_help_keys_are_named_by_command_not_typed() -> None:
+    """A help key written as a literal goes stale the day the keymap moves it.
+
+    The first-hour track taught Ctrl+F1 for the keyboard reference (it is the
+    key cheat sheet) and Shift+F1 for What Can I Do Here (it is About QUILL).
+    A step about a help command names the command and lets the key render.
+    """
+    from quill.core.keymap import DEFAULT_ALIASES
+
+    owners: dict[str, set[str]] = {}
+    for command, key in DEFAULT_KEYMAP.items():
+        if key:
+            owners.setdefault(key.lower(), set()).add(command)
+    for command, keys in DEFAULT_ALIASES.items():
+        for key in (keys,) if isinstance(keys, str) else keys:
+            if key:
+                owners.setdefault(key.lower(), set()).add(command)
+    stale = [
+        f"{tutorial.slug} step {number}: {key} is {sorted(owned)}"
+        for tutorial, number, step in _steps("quill")
+        for key in step.keys
+        for owned in [{c for c in owners.get(key.lower(), set()) if c.startswith("help.")}]
+        if owned and step.command not in owned
+    ]
+    assert stale == []
+
+
 @pytest.mark.parametrize("app_id", _APP_IDS)
 def test_slugs_are_unique_within_an_app(app_id: str) -> None:
     slugs = _catalogue(app_id).slugs()

@@ -194,7 +194,8 @@ def test_versions_agree_with_the_app() -> None:
     assert re.search(rf'^\$version = "{re.escape(version)}"', script, re.M)
     iss = _ISS.read_text(encoding="utf-8")
     assert f'#define AppVersion "{version}"' in iss
-    assert f"VersionInfoVersion={version}.0" in iss
+    assert "VersionInfoVersion={#AppFileVersion}" in iss
+    assert re.search(rf'#define AppFileVersion "{re.escape(version)}\.\d+"', iss)
 
 
 def test_installer_has_its_own_app_id_and_ref() -> None:

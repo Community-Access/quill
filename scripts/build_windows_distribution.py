@@ -33,6 +33,7 @@ from pathlib import Path
 
 from quill.core.shell_verbs import ShellVerb, default_shell_verbs
 from quill.core.storage import write_json_atomic
+from quill.core.windows_editor import QUILL as QUILL_EDITOR
 
 # Product-name fallback. The canonical source is build/version.toml; this
 # constant from quill.branding is the safety default when the TOML is
@@ -606,7 +607,10 @@ def build_windows_distribution(
         )
 
     iss_numeric_version = _iss_numeric_version(
-        identity.base_version, identity.channel, identity.prerelease_number
+        identity.base_version,
+        identity.channel,
+        identity.prerelease_number,
+        identity.release_build,
     )
     installer_script = installer_dir / "quill.iss"
     reference_installer_script = reference_installer_dir / "quill.iss"
@@ -894,6 +898,160 @@ def _render_readme(
         ).strip()
         + "\r\n"
     )
+
+
+def build_text_editor_registry_lines() -> list[str]:
+    """Return Inno ``[Registry]`` lines that register QUILL as a text editor.
+
+    Always written and never a takeover: a ProgID, an entry in each type's
+    ``OpenWithProgids``, ``Applications\\quill.exe`` and the ``Capabilities`` +
+    ``RegisteredApplications`` pair that lists QUILL in Settings > Default apps.
+    The choice of default stays the user's (a ``UserChoice`` key nothing here
+    touches). Generated from ``quill.core.windows_editor.QUILL`` -- the profile
+    Settings' Make QUILL My Text Editor writes for one account -- so the installer
+    and the command cannot offer different types. HKA is HKCU for a per-user
+    install and HKLM for an administrator one.
+    """
+    profile = QUILL_EDITOR
+    classes = "Software\\Classes"
+    progid = f"{classes}\\{profile.progid}"
+    application = f"{classes}\\Applications\\{{#AppExeName}}"
+    capabilities = profile.capabilities_key
+    command = '"""{app}\\{#AppExeName}"" -m ' + profile.module + ' ""%1"""'
+    icon = '"{app}\\{#AppExeName},0"'
+
+    def value(subkey: str, name: str, data: str, flags: str = "uninsdeletekey") -> str:
+        return (
+            f'Root: HKA; Subkey: "{subkey}"; ValueType: string; ValueName: "{name}";'
+            f" ValueData: {data}; Flags: {flags}"
+        )
+
+    lines = [
+        "; QUILL tells Windows it is a text editor that CAN open these types, on",
+        "; every install, and takes nothing over. Windows keeps the choice of which",
+        "; app opens a type for the user alone; these keys put QUILL in Open With and",
+        "; in Settings > Apps > Default apps, where that choice is made. Tools > Make",
+        "; QUILL My Text Editor writes the same keys for one account and opens that",
+        "; page. Generated from quill.core.windows_editor.QUILL (HKA: this user for",
+        "; a per-user install, the whole machine for an administrator one).",
+        value(progid, "", f'"{profile.app_name} Document"'),
+        value(progid, "FriendlyTypeName", f'"{profile.app_name} Document"'),
+        value(f"{progid}\\DefaultIcon", "", icon),
+        value(f"{progid}\\shell\\open\\command", "", command),
+        value(application, "FriendlyAppName", f'"{profile.app_name}"'),
+        value(f"{application}\\DefaultIcon", "", icon),
+        value(f"{application}\\shell\\open\\command", "", command),
+    ]
+    lines += [value(f"{application}\\SupportedTypes", ext, '""') for ext in profile.extensions]
+    lines += [
+        "; One value in each type's own list, removed on uninstall; the type's key",
+        "; is shared with every other app and is never deleted.",
+    ]
+    lines += [
+        value(f"{classes}\\{ext}\\OpenWithProgids", profile.progid, '""', "uninsdeletevalue")
+        for ext in profile.extensions
+    ]
+    owner = capabilities.rsplit("\\", 1)[0]
+    lines += [
+        "; Capabilities + RegisteredApplications: what Default apps lists QUILL by.",
+        f'Root: HKA; Subkey: "{owner}"; Flags: uninsdeletekeyifempty',
+        value(capabilities, "ApplicationName", f'"{profile.app_name}"'),
+        value(capabilities, "ApplicationDescription", f'"{profile.description}"'),
+        value(capabilities, "ApplicationIcon", icon),
+    ]
+    lines += [
+        value(f"{capabilities}\\FileAssociations", ext, f'"{profile.progid}"')
+        for ext in profile.extensions
+    ]
+    lines.append(
+        value(
+            "Software\\RegisteredApplications",
+            profile.app_name,
+            f'"{capabilities}"',
+            "uninsdeletevalue",
+        )
+    )
+    return lines
+
+
+#: Settings' Open QUILL instead of Notepad points every Notepad launch at this
+#: install through Image File Execution Options. Left behind by an uninstall,
+#: Notepad would stop opening at all, so the uninstaller takes those Debugger
+#: values out again: only values naming a program in this install's folder
+#: together with --notepad, in the parent key and the Windows 11 per-path
+#: subkeys. Another program's value -- QUILL Lite's included -- and
+#: Microsoft's own values are left alone. An event procedure, so it runs
+#: beside the data-removal prompt in the main CurUninstallStepChanged.
+_NOTEPAD_UNINSTALL_CODE: tuple[str, ...] = (
+    "// -- Uninstall: put Notepad back, if QUILL replaced it ------------------------",
+    "const",
+    "  NotepadIfeoKey = 'SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File"
+    " Execution Options\\notepad.exe';",
+    "",
+    "function DebuggerPointsHere(Key: String): Boolean;",
+    "var",
+    "  Value: String;",
+    "begin",
+    "  Result := RegQueryStringValue(HKLM64, Key, 'Debugger', Value) and",
+    "    (Pos(Lowercase(ExpandConstant('{app}\\')), Lowercase(Value)) > 0) and",
+    "    (Pos('--notepad', Lowercase(Value)) > 0);",
+    "end;",
+    "",
+    "function NotepadKeysPointingHere(var Keys: TArrayOfString): Integer;",
+    "var",
+    "  Names: TArrayOfString;",
+    "  I: Integer;",
+    "begin",
+    "  SetArrayLength(Keys, 0);",
+    "  if DebuggerPointsHere(NotepadIfeoKey) then",
+    "  begin",
+    "    SetArrayLength(Keys, 1);",
+    "    Keys[0] := NotepadIfeoKey;",
+    "  end;",
+    "  if RegGetSubkeyNames(HKLM64, NotepadIfeoKey, Names) then",
+    "    for I := 0 to GetArrayLength(Names) - 1 do",
+    "      if DebuggerPointsHere(NotepadIfeoKey + '\\' + Names[I]) then",
+    "      begin",
+    "        SetArrayLength(Keys, GetArrayLength(Keys) + 1);",
+    "        Keys[GetArrayLength(Keys) - 1] := NotepadIfeoKey + '\\' + Names[I];",
+    "      end;",
+    "  Result := GetArrayLength(Keys);",
+    "end;",
+    "",
+    "<event('CurUninstallStepChanged')>",
+    "procedure PutNotepadBack(CurUninstallStep: TUninstallStep);",
+    "var",
+    "  Keys: TArrayOfString;",
+    "  I, ResultCode: Integer;",
+    "  Params: String;",
+    "begin",
+    "  if (CurUninstallStep <> usUninstall) or (NotepadKeysPointingHere(Keys) = 0) then",
+    "    Exit;",
+    "  if IsAdmin then",
+    "  begin",
+    "    for I := 0 to GetArrayLength(Keys) - 1 do",
+    "      RegDeleteValue(HKLM64, Keys[I], 'Debugger');",
+    "  end",
+    "  else if not UninstallSilent then",
+    "  begin",
+    "    // One administrator prompt for every key, the same command the app runs.",
+    "    Params := '/d /s /c \"';",
+    "    for I := 0 to GetArrayLength(Keys) - 1 do",
+    "    begin",
+    "      if I > 0 then",
+    "        Params := Params + ' & ';",
+    "      Params := Params + '\"' + ExpandConstant('{sys}\\reg.exe') + '\" delete \"HKLM\\' +",
+    "        Keys[I] + '\" /v Debugger /f /reg:64';",
+    "    end;",
+    "    Params := Params + '\"';",
+    "    MsgBox('QUILL is still opening in place of Notepad. To put Notepad back, ' +",
+    "      'Windows will ask for administrator approval next.', mbInformation, MB_OK);",
+    "    ShellExec('runas', ExpandConstant('{cmd}'), Params, '', SW_HIDE,",
+    "      ewWaitUntilTerminated, ResultCode);",
+    "  end;",
+    "end;",
+    "",
+)
 
 
 def build_shell_verb_registry_lines(
@@ -1288,6 +1446,8 @@ def build_inno_setup_script(
             f'Root: HKCU; Subkey: "Software\\Classes\\{extension}\\OpenWithList\\{{#AppExeName}}";'
             " Flags: uninsdeletekey; Check: WantsFileAssoc"
         )
+    lines += [""]
+    lines += build_text_editor_registry_lines()
     lines += [
         "",
         '; "Send to Quill" file right-click verbs (SHELL-3). Generated from',
@@ -1686,6 +1846,7 @@ def build_inno_setup_script(
         "  Result := True;",
         "end;",
         "",
+        *_NOTEPAD_UNINSTALL_CODE,
         "// -- Uninstall: ask before wiping personal data ----------------------------",
         "procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);",
         "var",
@@ -3129,6 +3290,7 @@ def _build_identity(source_root: Path) -> BuildIdentity:
         base_version=base,
         channel=channel,
         prerelease_number=pre,
+        release_build=0 if channel == "dev" else _release_build_from_init_py(source_root),
         display_version=display,
         product_name=product_name,
         publisher=publisher,
@@ -3157,6 +3319,19 @@ def _base_version_from_init_py(source_root: Path) -> str:
     return "unknown"
 
 
+def _release_build_from_init_py(source_root: Path) -> int:
+    """``quill.__build__``, the release build number (docs/release/RELEASE.md,
+    "Build numbers"), read as text; 0 when the checkout predates it."""
+    import re
+
+    init_py = source_root / "quill" / "__init__.py"
+    if init_py.exists():
+        match = re.search(r"^__build__\s*=\s*(\d+)", init_py.read_text(encoding="utf-8"), re.M)
+        if match:
+            return int(match.group(1))
+    return 0
+
+
 def _display_version(base: str, channel: str, pre: int) -> str:
     """User-facing release label, matching tools/generate_build_info.py.
 
@@ -3173,21 +3348,25 @@ def _display_version(base: str, channel: str, pre: int) -> str:
     return f"{base} Dev"
 
 
-def _iss_numeric_version(base: str, channel: str, pre: int) -> str:
+def _iss_numeric_version(base: str, channel: str, pre: int, release_build: int = 0) -> str:
     """Return a Major.Minor.Build.Revision quadruple for Inno Setup.
 
     Inno Setup's ``VersionInfoVersion`` directive (which feeds the
     Windows VERSIONINFO resource) requires a numeric quadruple, not
     the user-visible "0.7.0 Beta 1" string. The ``base`` is split on
-    dots; missing segments are filled with zeros; ``pre`` fills the
-    Revision slot for alpha/beta/rc channels so beta 1 is distinguishable
-    from the final 0.7.0 release once a user has both installed.
+    dots; missing segments are filled with zeros. The Revision slot is the
+    release build number (``1.0.0.2`` for 1.0.0 build 2, so Windows shows
+    which build is installed); without one, ``pre`` fills it for
+    alpha/beta/rc channels so beta 1 is distinguishable from the final.
     """
     parts = base.split(".")
     while len(parts) < 3:
         parts.append("0")
     major, minor, build = parts[0], parts[1], parts[2]
-    revision = str(pre) if channel in {"alpha", "beta", "rc"} else "0"
+    if release_build > 0:
+        revision = str(release_build)
+    else:
+        revision = str(pre) if channel in {"alpha", "beta", "rc"} else "0"
     return f"{major}.{minor}.{build}.{revision}"
 
 
@@ -3201,6 +3380,7 @@ class BuildIdentity:
     display_version: str
     product_name: str
     publisher: str
+    release_build: int = 0
 
 
 if __name__ == "__main__":

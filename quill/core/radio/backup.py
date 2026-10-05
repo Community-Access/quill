@@ -30,6 +30,7 @@ RADIO_DATA_FILES: tuple[str, ...] = (
     "radio_history.json",
     "radio_wake_timer.json",
     "radio_recording_schedule.json",
+    "radio-station-tags.json",
 )
 
 BACKUP_SUFFIX = ".qrbackup"

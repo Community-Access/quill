@@ -177,7 +177,11 @@ def _iss_version_errors(iss: Path, canonical: str, label: str) -> list[str]:
     # Windows file properties. Four-part (3.0.0.0), so compare the first three:
     # this is the number a listener sees in the .exe's Details tab and the one
     # Windows uses to decide whether an upgrade is an upgrade.
-    match = re.search(r"VersionInfoVersion=([0-9.]+)", text)
+    # Since build numbers (2026-10) the directive reads {#AppFileVersion}, an
+    # X.Y.Z.B the build script passes; its fallback literal is what is checked.
+    match = re.search(r"VersionInfoVersion=([0-9.]+)", text) or re.search(
+        r'#define AppFileVersion "([0-9.]+)"', text
+    )
     if match:
         parts = match.group(1).split(".")
         if ".".join(parts[:3]) != canonical:

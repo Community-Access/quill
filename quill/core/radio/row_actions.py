@@ -36,7 +36,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from quill.core import dimmed_reason
-from quill.core.radio import row_reminders, transport_commands
+from quill.core.radio import row_actions_youtube, row_reminders, transport_commands
 from quill.core.radio.cast_handoff import CAST_HANDOFFS
 from quill.core.radio.row_state import FolderState as FolderState
 
@@ -70,6 +70,8 @@ REFRESH_ALL_PODCASTS = "podcast.refresh_all"
 #: opens shows whatever is already there, so writing and clearing are the
 #: same action rather than two menu rows that have to agree with each other.
 EDIT_NOTE = "item.note"
+#: Your own searchable tags on a live station (station_tags, 3.2.0).
+EDIT_TAGS = "station.tags"
 #: Turn new-episode alerts on or off for one subscribed podcast, from its
 #: own row (3.1.0). Settings still owns the three-way choice; this is the
 #: decision somebody makes while standing on the show, and it toggles
@@ -225,6 +227,7 @@ FOLDER_CONTENTS: dict[str, str] = {
     "wx": "Forecasts",
     "youtube": "Channels",
     "youtubechannel": "Videos",
+    "ytchannel": "Videos",
     "youtubevideos": "Videos",
 }
 
@@ -469,9 +472,8 @@ def folder_actions(kind: str, state: FolderState) -> list[RowAction]:
 
     actions.extend(library_actions(kind, state))
 
-    if is_followed_channel(kind) or state.is_followed_channel:
-        # "&P", not "&C": an expanded channel's menu now leads with "&Close".
-        actions.append(RowAction(UNFOLLOW_CHANNEL, "Sto&p Following This Channel"))
+    # Follow or Stop Following, Subscribe on YouTube, the bell (row_actions_youtube).
+    actions.extend(row_actions_youtube.channel_actions(kind, state, RowAction))
 
     if kind == "ytplaylist":
         # A saved playlist: removable from the same menu that plays it.
@@ -609,6 +611,7 @@ def actions_for(
                 # (the same request playing would make) fetches them, no
                 # playback required.
                 actions.append(RowAction(VIEW_TRANSCRIPT, "View Transcr&ipt..."))
+        actions.extend(row_actions_youtube.video_actions(station, RowAction))
         if kind == "ytvideo":  # removable from the menu that plays it
             actions.append(RowAction(REMOVE_SAVED, "Remo&ve from YouTube"))
             actions.extend(youtube_add_actions())
@@ -618,6 +621,8 @@ def actions_for(
         # reminder because they are the same instinct -- one is for a moment,
         # the other is for whenever you next come back to this row.
         actions.append(RowAction(EDIT_NOTE, "&Note to Self..."))
+        if not getattr(station, "is_recording", False):  # "T&ags": De&tails holds T
+            actions.append(RowAction(EDIT_TAGS, "Edit Station T&ags..."))
         return actions
     if resolve_lazily:
         return lazy_leaf_actions(saved=saved)

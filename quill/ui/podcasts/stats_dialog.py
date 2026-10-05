@@ -20,9 +20,9 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from pathlib import Path
+from typing import Any
 
 from quill.core.podcasts import stats
-from quill.ui.dialog_contract import apply_modal_ids
 
 
 def format_report(
@@ -81,8 +81,17 @@ def format_report(
     return "\n".join(lines).rstrip() + "\n"
 
 
-class PodcastStatsDialog:
-    """A read-only, arrow-navigable listening report."""
+class PodcastStatsWindow:
+    """A read-only, arrow-navigable listening report, as a peer window.
+
+    A peer rather than a dialog (qc.md section 6, Phase 4): the report is
+    something to keep open beside the library and come back to, so it is made
+    once, raised and refreshed when asked for again, and Escape hides it and
+    returns focus to whatever opened it (``peer_window``).
+    """
+
+    TITLE = "Listening Statistics"
+    MENU_TITLE = "Statis&tics"
 
     def __init__(
         self,
@@ -93,33 +102,39 @@ class PodcastStatsDialog:
         announce_cb: Callable[[str], None] | None = None,
         on_clear: Callable[[], int] | None = None,
         streaks_enabled: bool = False,
+        reload: Callable[[], tuple[list[stats.ListeningSession], dict[str, str], bool]]
+        | None = None,
+        host: Any = None,
     ) -> None:
         import wx
 
         self._wx = wx
+        self._host = host
         self._sessions = sessions
         self._show_titles = show_titles or {}
         self._announce = announce_cb or (lambda _m: None)
         self._on_clear = on_clear
+        self._reload = reload
         # Opt-in, and off unless the listener asked. See _streak_line.
         self._streaks_enabled = streaks_enabled
 
-        self.dialog = wx.Dialog(
-            parent,
-            title="Listening Statistics",
-            style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
-        )
-        self.dialog.SetMinSize((580, 520))
+        self.frame = wx.Frame(parent, title="Listening Statistics", size=(620, 560))
+        self.frame.SetMinSize((580, 520))
+        panel = wx.Panel(self.frame, style=wx.TAB_TRAVERSAL)
         root = wx.BoxSizer(wx.VERTICAL)
 
         period_row = wx.BoxSizer(wx.HORIZONTAL)
         period_row.Add(
-            wx.StaticText(self.dialog, label="&Period:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6
+            wx.StaticText(panel, label="&Period:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6
         )
         self._period_choice = wx.Choice(
-            self.dialog, choices=[label for _pid, label, _days in stats.PERIODS]
+            panel, choices=[label for _pid, label, _days in stats.PERIODS]
         )
         self._period_choice.SetName("Which period the statistics cover")
+        self._period_choice.SetHelpText(
+            "Which stretch of time the report covers. The report below changes as "
+            "soon as you choose."
+        )
         self._period_choice.SetSelection(len(stats.PERIODS) - 1)
         period_row.Add(self._period_choice, 1, wx.EXPAND)
         root.Add(period_row, 0, wx.EXPAND | wx.ALL, 10)
@@ -128,9 +143,9 @@ class PodcastStatsDialog:
         # creation order is the accessible name on wxMSW. The "Period:" label
         # above names the combo that follows it and nothing else, so this field
         # had only a SetName and announced as a bare read-only "edit".
-        report_label = wx.StaticText(self.dialog, label="Listening &report:")
+        report_label = wx.StaticText(panel, label="Listening &report:")
         self._report = wx.TextCtrl(
-            self.dialog,
+            panel,
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2 | wx.BORDER_SIMPLE,
         )
         self._report.SetHelpText(
@@ -141,16 +156,30 @@ class PodcastStatsDialog:
         root.Add(self._report, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
-        copy_btn = wx.Button(self.dialog, label="&Copy")
+        copy_btn = wx.Button(panel, label="&Copy")
         copy_btn.SetName("Copy the whole report to the clipboard")
-        export_btn = wx.Button(self.dialog, label="&Export CSV...")
+        copy_btn.SetHelpText("Puts the whole report on the clipboard.")
+        export_btn = wx.Button(panel, label="&Export CSV...")
         export_btn.SetName("Save every listening session as a CSV file")
-        year_btn = wx.Button(self.dialog, label="&Year in Review...")
+        export_btn.SetHelpText("Saves every listening session as a CSV file, for a spreadsheet.")
+        year_btn = wx.Button(panel, label="&Year in Review...")
         year_btn.SetName("A few sentences about your listening year, to read or keep")
-        clear_btn = wx.Button(self.dialog, label="Clear &Statistics...")
+        year_btn.SetHelpText(
+            "Opens Year in Review: a few sentences about your listening year, to "
+            "read or keep. It opens beside this window."
+        )
+        clear_btn = wx.Button(panel, label="Clear &Statistics...")
         clear_btn.SetName("Delete the whole listening log")
+        clear_btn.SetHelpText(
+            "Deletes the whole listening log, after asking. Nothing else about your "
+            "library changes."
+        )
         clear_btn.Enable(on_clear is not None)
-        close_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Close")
+        close_btn = wx.Button(panel, label="Close")
+        close_btn.SetHelpText("Closes this window and returns to where you were.")
+        from quill.ui.dialog_contract import bind_close_button
+
+        bind_close_button(self.frame, close_btn, modeless=True)
         btn_row.Add(copy_btn, 0, wx.RIGHT, 6)
         btn_row.Add(export_btn, 0, wx.RIGHT, 6)
         btn_row.Add(year_btn, 0, wx.RIGHT, 6)
@@ -159,27 +188,26 @@ class PodcastStatsDialog:
         btn_row.Add(close_btn)
         root.Add(btn_row, 0, wx.EXPAND | wx.ALL, 10)
 
-        self.dialog.SetSizer(root)
+        panel.SetSizer(root)
         self._period_choice.Bind(wx.EVT_CHOICE, lambda _e: self._refresh(announce=True))
         copy_btn.Bind(wx.EVT_BUTTON, self._on_copy)
         export_btn.Bind(wx.EVT_BUTTON, self._on_export)
         year_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_year_in_review())
         clear_btn.Bind(wx.EVT_BUTTON, self._on_clear_click)
+        self.frame.CentreOnParent()
         self._refresh()
 
-    def show(self) -> None:
-        self.dialog.CentreOnParent()
-        apply_modal_ids(self.dialog, cancel_id=self._wx.ID_CANCEL, escape_id=self._wx.ID_CANCEL)
-        from quill.ui.dialog_contract import show_modal_dialog
-
+    def focus_target(self) -> Any:
         # Focus on the thing this window is for, not on whatever control happens
         # to come first in it (qc.md 6b: eight windows landed on a filter or a
-        # chooser). Set before ShowModal, which keeps a focus already placed.
-        self._report.SetFocus()
-        try:
-            show_modal_dialog(self.dialog, "Listening Statistics", announce=self._announce)
-        finally:
-            self.dialog.Destroy()
+        # chooser).
+        return self._report
+
+    def refresh(self) -> None:
+        """Raised again: read the log afresh, keeping the chosen period."""
+        if self._reload is not None:
+            self._sessions, self._show_titles, self._streaks_enabled = self._reload()
+        self._refresh()
 
     def _period_id(self) -> str:
         index = max(0, self._period_choice.GetSelection())
@@ -228,7 +256,7 @@ class PodcastStatsDialog:
     def _on_export(self, _event: object) -> None:
         wx = self._wx
         with wx.FileDialog(  # dialog_button_contract: exempt
-            self.dialog,
+            self.frame,
             "Export Listening Statistics",
             defaultFile="listening-statistics.csv",
             wildcard="CSV files (*.csv)|*.csv|All files (*.*)|*.*",
@@ -246,7 +274,14 @@ class PodcastStatsDialog:
         except OSError as error:
             self._announce(f"Could not export the statistics: {error}")
             return
-        self._announce(f"Exported {len(self._sessions)} session(s) to {path.name}")
+        from quill.ui.outcome_report import report_outcome
+
+        report_outcome(
+            self,
+            "Export Listening Statistics",
+            f"Exported {len(self._sessions)} session(s) to {path.name}.",
+            path=path,
+        )
 
     def _on_clear_click(self, _event: object) -> None:
         from quill.ui.dialog_contract import show_message_box
@@ -259,7 +294,7 @@ class PodcastStatsDialog:
             "This only clears the statistics; nothing else about your library changes.",
             "Clear Statistics",
             wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION,
-            self.dialog,
+            self.frame,
             announce=self._announce,
         )
         if answer != wx.YES:
@@ -267,3 +302,40 @@ class PodcastStatsDialog:
         self._on_clear()
         self._sessions = []
         self._refresh()
+
+
+def _load(host: Any) -> tuple[list[stats.ListeningSession], dict[str, str], bool]:
+    """(sessions, show titles, streaks switched on) as the host has them now."""
+    from quill.core.paths import app_data_dir
+
+    library = host._podcast_library
+    return (
+        stats.load_sessions(app_data_dir()),
+        {show.id: show.title for show in library.shows},
+        bool(getattr(library.settings, "stats_streaks_enabled", False)),
+    )
+
+
+def open_statistics_window(
+    host: Any, *, focus: bool = True, opener: Any = None
+) -> PodcastStatsWindow:
+    """Open, or raise and refresh, the host's Listening Statistics window."""
+    from quill.ui.podcasts.peer_window import open_peer
+
+    def _make(owner: Any) -> PodcastStatsWindow:
+        sessions, titles, streaks_on = _load(owner)
+        return PodcastStatsWindow(
+            owner.frame,
+            sessions=sessions,
+            show_titles=titles,
+            announce_cb=owner._announce,
+            on_clear=owner._podcast_clear_statistics,
+            streaks_enabled=streaks_on,
+            reload=lambda: _load(owner),
+            host=owner,
+        )
+
+    window: PodcastStatsWindow = open_peer(
+        host, "_podcast_stats_window", _make, focus=focus, opener=opener
+    )
+    return window

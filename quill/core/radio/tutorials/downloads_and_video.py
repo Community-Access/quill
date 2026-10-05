@@ -20,18 +20,18 @@ TUTORIALS: tuple[Tutorial, ...] = (
         minutes=5,
         surfaces=("Browse Stations", "Downloads"),
         summary=(
-            "Download one podcast episode or chapter, watch it arrive in the "
-            "Downloads window, open the folder it went to, and decide once "
-            "where downloads are filed."
+            "Download a podcast episode or a book chapter, watch it arrive in "
+            "the Downloads window, open the folder it went to, and choose where "
+            "your downloads are kept."
         ),
         steps=(
             Step(
                 title="Find something that has an end",
                 body=(
                     "Open Browse Stations and arrow to a podcast episode, a book "
-                    "chapter or an archive recording. Only a thing with a "
-                    "beginning and an end can be saved; a live station offers "
-                    "Record instead, because there is no file to fetch."
+                    "chapter or an archive recording. You can only download "
+                    "something with a beginning and an end. A live station "
+                    "offers Record instead, because there is no file to save."
                 ),
                 keys=("Ctrl+B",),
                 hear="Browse Stations, then the row you arrow to.",
@@ -40,48 +40,48 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Download it from the row's menu",
                 body=(
-                    "Press Shift+F10 on the row and choose Download. It joins the "
-                    "one download queue, and you can carry on listening to "
-                    "something else while it arrives. A podcast episode files "
-                    "itself under a folder named for its show."
+                    "Press Shift+F10 on the row and choose Download. It joins "
+                    "the download queue, and you can carry on listening to "
+                    "something else while it downloads. A podcast episode goes "
+                    "into a folder named after its show."
                 ),
                 keys=("Shift+F10", "D"),
                 hear="Queued, the name, how many are left to go, and You can carry on listening.",
                 note=(
-                    "A row that cannot be saved has no Download item at all, rather "
-                    "than a dimmed one. A row already on disk offers Remove "
-                    "Download in its place."
+                    "If a row cannot be saved, it has no Download item at all. "
+                    "If it is already saved, it offers Remove Download instead."
                 ),
             ),
             Step(
                 title="Hear it land",
                 body=(
-                    "A single download says where it went the moment it finishes, "
-                    "naming the file and the folder. A whole book says its "
-                    "progress instead, because forty separate saved sentences "
-                    "would not be feedback anybody could use."
+                    "When a single download finishes, Quill Radio tells you the "
+                    "file's name and the folder it went into. For a whole book, "
+                    "you hear how far along it is instead, rather than forty "
+                    "separate messages."
                 ),
                 hear="Saved, the file's name, and the folder it went to.",
             ),
             Step(
                 title="Open the Downloads window",
                 body=(
-                    "The Downloads window lists everything queued, one sentence "
-                    "per row with its state last -- waiting, downloading now, "
-                    "saved, failed -- so arrowing the list answers where each one "
-                    "has got to. Finished rows stay until you clear them."
+                    "The Downloads window lists everything in the queue. Each "
+                    "row ends with how it is doing: waiting, downloading now, "
+                    "saved or failed. So arrowing down the list tells you where "
+                    "each one is up to. Finished rows stay until you clear them."
                 ),
                 keys=("Ctrl+Shift+J",),
-                hear="Downloads, then the first row and its state.",
+                hear="Downloads, then the first row and how it is doing.",
                 check="window:Downloads",
             ),
             Step(
                 title="Go to the file",
                 body=(
                     "On a saved row, Open Containing Folder shows the file in "
-                    "Explorer. Cancel This One stops a download without losing "
-                    "what has arrived, Remove From List forgets a row and leaves "
-                    "the file alone, and Clear Finished tidies the list."
+                    "File Explorer. Cancel This One stops a download and keeps "
+                    "what has arrived so far. Remove From List takes a row off "
+                    "the list but leaves the file alone. Clear Finished tidies "
+                    "up the list."
                 ),
                 keys=("Tab",),
                 hear="Showing, the file's name, in, and its folder. Or Cleared, and a count.",
@@ -89,36 +89,37 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Decide once where downloads go",
                 body=(
-                    "Download Preferences sets the downloads folder, whether each "
-                    "podcast show and each book gets a folder of its own, whether "
-                    "downloads keep going when the window closes to the tray, and "
-                    "whether to be asked where to save every time instead."
+                    "Download Preferences sets your downloads folder. It also "
+                    "lets you choose whether each podcast and each book gets its "
+                    "own folder, whether downloads carry on when the window goes "
+                    "to the tray, and whether to be asked where to save each time."
                 ),
                 command="radio.download_preferences",
                 keys=("Ctrl+Alt+Shift+D",),
                 hear="Download Preferences, then Downloads folder, blank uses the default.",
                 note=(
-                    "The Downloads window has a Preferences button that opens the "
-                    "same dialog, because that is where the question occurs to "
-                    "people."
+                    "The Downloads window also has a Preferences button that "
+                    "opens the same settings, right where you are likely to want "
+                    "them."
                 ),
             ),
             Step(
                 title="Play it without the internet",
                 body=(
                     "Go back to the same row in Browse Stations and press Enter. "
-                    "A saved row plays from your disk, with no connection needed, "
-                    "and its menu now offers Stop and Remove Download beside the "
-                    "usual verbs."
+                    "A saved row plays from your computer, so you do not need an "
+                    "internet connection. Its menu now also has Stop and Remove "
+                    "Download."
                 ),
                 keys=("Enter",),
-                hear="Playing, and the name -- from the copy on this computer.",
+                hear="Playing, and the name, from the copy on your computer.",
                 check="playing",
             ),
         ),
         closing=(
-            "Everything you save goes through one queue and lands where you said. "
-            "When a download fails, Recent Problems keeps the reason."
+            "Everything you save goes through one queue and lands where you "
+            "chose. If a download ever fails, Recent Problems keeps the reason "
+            "for you."
         ),
         then=("pick-up-where-you-left-off",),
     ),
@@ -129,30 +130,29 @@ TUTORIALS: tuple[Tutorial, ...] = (
         minutes=6,
         surfaces=("Quill Radio", "Quill Radio Video"),
         summary=(
-            "Find out what a YouTube video or a television channel carries, "
-            "switch to its described audio track when there is one, and show "
-            "or hide the picture for somebody sitting beside you."
+            "Find out what a YouTube video or TV channel offers, switch to "
+            "described audio when there is some, and show or hide the picture "
+            "for someone sitting next to you."
         ),
         steps=(
             Step(
                 title="Know that the picture never starts on its own",
                 body=(
-                    "Play a YouTube video or a television channel from Browse "
-                    "Stations. It plays as sound only. The picture appears only "
-                    "when somebody asks for it, which is both quieter for a "
-                    "listener and the honest answer to light sensitivity."
+                    "Play a YouTube video or a TV channel from Browse Stations. "
+                    "You hear the sound only. The picture only appears when you "
+                    "ask for it, so nothing pops up unexpectedly on your screen."
                 ),
                 keys=("Enter",),
-                hear="Playing, and the name -- and no window opening.",
+                hear="Playing, and the name, and no window opening.",
                 check="playing",
             ),
             Step(
                 title="Ask what the video carries",
                 body=(
-                    "Video Information, on the Video menu, says the picture's "
-                    "size, frame rate and encoding, then the two facts most "
-                    "worth hearing, last so they are what you are left on: "
-                    "whether captions and described audio were published."
+                    "Video Information, on the Video menu, tells you the "
+                    "picture's size, frame rate and format. Last of all, so you "
+                    "remember them, it tells you whether the video has captions "
+                    "and whether it has described audio."
                 ),
                 keys=("Ctrl+Shift+I",),
                 hear=(
@@ -164,13 +164,13 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 title="Switch to described audio in one key",
                 body=(
                     "Play Described Audio, on the Audio menu, switches straight "
-                    "to the track that narrates what is on screen. When the video "
-                    "has none, it says what tracks it does have, so you know the "
-                    "video is the reason and not the app."
+                    "to the track that describes what is on screen. If the video "
+                    "does not have one, Quill Radio tells you which tracks it "
+                    "does have, so you know it is the video and not you."
                 ),
                 keys=("Ctrl+Alt+D",),
                 hear=(
-                    "Playing the described audio track -- or This video has one audio "
+                    "Playing the described audio track. Or This video has one audio "
                     "track, and No described audio was published."
                 ),
             ),
@@ -178,43 +178,45 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 title="Choose a track from the list",
                 body=(
                     "Audio and Described Audio, on the same menu, lists every "
-                    "audio track the video offers -- other languages, "
-                    "commentary, description -- with a described track first and "
-                    "the one playing marked. Arrow to one and press Enter to switch."
+                    "sound track the video has, such as other languages, "
+                    "commentary and description. A described track comes first, "
+                    "and the one playing is marked. Arrow to one and press Enter "
+                    "to switch."
                 ),
                 keys=("Ctrl+Shift+A",),
                 hear=(
-                    "Audio and Described Audio, then the first track, and playing now "
-                    "on the current one."
+                    "Audio and Described Audio, then the first track, and playing now on "
+                    "the current one."
                 ),
                 note=(
-                    "A live station has no tracks to choose, and says so rather "
-                    "than opening an empty list."
+                    "A live station has no tracks to choose from, and Quill "
+                    "Radio tells you so instead of opening an empty list."
                 ),
             ),
             Step(
                 title="Show the picture, and take it away",
                 body=(
-                    "Show Video opens a window titled Quill Radio Video with the "
-                    "picture in it. The same key, Ctrl+W or Escape takes it away "
-                    "again, and the sound carries on without a stutter -- hiding "
-                    "the picture never pauses anything."
+                    "Show Video opens a window called Quill Radio Video with the "
+                    "picture in it. Press the same key, Ctrl+W or Escape to close "
+                    "it again. The sound carries on smoothly. Hiding the picture "
+                    "never pauses anything."
                 ),
                 keys=("Ctrl+Shift+V",),
                 hear="Video shown, and its size. Then Video hidden. Audio is still playing.",
                 note=(
                     "The picture needs the mpv playback engine, which is the "
-                    "default. If you changed the engine in Preferences, Show "
-                    "Video says so instead."
+                    "usual setting. If you changed the engine in Preferences, "
+                    "Show Video tells you."
                 ),
             ),
             Step(
                 title="Keep a frame, or fill the screen",
                 body=(
-                    "With the picture showing, Take a Snapshot saves the current "
-                    "frame as a picture file in your recordings folder -- a slide "
-                    "to read with OCR, or to send to somebody who can describe "
-                    "it. F11 fills the screen, and F11 or Escape leaves."
+                    "While the picture is showing, Take a Snapshot saves what is "
+                    "on screen as a picture file in your recordings folder. You "
+                    "could read a slide with OCR, or send it to someone who can "
+                    "describe it. F11 fills the screen, and F11 or Escape goes "
+                    "back."
                 ),
                 keys=("Ctrl+Shift+Alt+H", "F11"),
                 hear=(
@@ -224,8 +226,8 @@ TUTORIALS: tuple[Tutorial, ...] = (
             ),
         ),
         closing=(
-            "Captions and the transcript have their own steps in Watch television "
-            "and in the YouTube lesson; everything here works the same for both."
+            "Captions and transcripts have their own steps in Watch television "
+            "and in the YouTube lesson. Everything here works the same for both."
         ),
         then=("watch-television", "youtube-without-an-account"),
     ),

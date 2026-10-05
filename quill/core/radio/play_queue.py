@@ -140,6 +140,34 @@ class PlayQueue:
         self.set_rows(rows, shuffler=shuffler)
         return True
 
+    def follow(
+        self,
+        rows: Sequence[int],
+        *,
+        shuffler: Callable[[list[int]], None] | None = None,
+    ) -> None:
+        """Adopt an *edited* list without throwing away the order already set.
+
+        :meth:`set_rows_if_changed` answers a list that refreshes; this answers
+        one the listener rearranges (Local Media's playlists). With shuffle off
+        the order is simply the new list order, so a move is heard at once.
+        With it on, the permutation survives the edit: rows that went are
+        dropped, rows that stayed keep their shuffled places, and rows that are
+        new join the end in a shuffled order of their own -- so they are heard
+        this time round, and Previous still goes back to what played before.
+        """
+        items = list(rows)
+        if not self.shuffle:
+            self.order = items
+            return
+        wanted = set(items)
+        kept = [row for row in self.order if row in wanted]
+        known = set(kept)
+        fresh = [row for row in items if row not in known]
+        if len(fresh) > 1:
+            (shuffler or random.shuffle)(fresh)
+        self.order = kept + fresh
+
     def toggle_shuffle(
         self,
         rows: Sequence[int],

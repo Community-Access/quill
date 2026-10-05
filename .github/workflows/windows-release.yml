@@ -124,6 +124,37 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
+      # Release channels, Phase 0: the tag says which channel this is, instead
+      # of every tag being labelled "Beta" and marked a prerelease. v1.0.0 is a
+      # Stable release; v1.1.0-beta.1 (or -rc.N, -alpha.N, -dev.N) is a
+      # prerelease, which installed copies on Stable never see. The v1 update
+      # feed carries one version and no channel, so from 1.0.0 on only Stable
+      # tags refresh it; before 1.0.0 every tag does, as it always has.
+      - name: Read the release channel from the tag
+        id: channel
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          # A build number (v1.0.0-build.2, v1.1.0-beta.1.build.3) says which
+          # build of a release this is, not which channel: read the channel
+          # without it (docs/release/RELEASE.md, "Build numbers").
+          VERSION="${VERSION%-build.*}"
+          VERSION="${VERSION%.build.*}"
+          BASE="${VERSION%%-*}"
+          MAJOR="${BASE%%.*}"
+          case "$VERSION" in
+            *-dev*) LABEL=" Dev" ;;
+            *-alpha*) LABEL=" Alpha" ;;
+            *-rc*) LABEL=" Release Candidate" ;;
+            *-*) LABEL=" Beta" ;;
+            *) LABEL="" ;;
+          esac
+          if [ "$VERSION" = "$BASE" ]; then PRERELEASE=false; else PRERELEASE=true; fi
+          if [ "$PRERELEASE" = false ] || [ "$MAJOR" -lt 1 ]; then FEED=true; else FEED=false; fi
+          {
+            echo "prerelease=$PRERELEASE"
+            echo "label=$LABEL"
+            echo "feed=$FEED"
+          } >> "$GITHUB_OUTPUT"
       - name: Build release body from CHANGELOG
         run: |
           python scripts/extract_release_body.py \
@@ -158,14 +189,14 @@ jobs:
       - name: Create GitHub release
         uses: softprops/action-gh-release@v3
         with:
-          name: "QUILL for All ${{ github.ref_name }} Beta"
+          name: "QUILL for All ${{ github.ref_name }}${{ steps.channel.outputs.label }}"
           body_path: release-body.md
           files: |
             release-assets/installer/Quill-for-All-Setup-*.exe
             release-assets/Quill-Portable-*.zip
             release-assets/metadata/*.json
             release-assets/update/*.zip
-          prerelease: true
+          prerelease: ${{ steps.channel.outputs.prerelease == 'true' }}
       # The signed update feed (autoupdate manifest) is generated and pushed
       # here, deliberately AFTER the GitHub release above has published real,
       # downloadable assets -- not earlier in the build job. Running Users'
@@ -173,6 +204,7 @@ jobs:
       # release the moment the feed lands on main; generating it before the
       # release existed would offer an update with nothing yet to download.
       - name: Generate update feed
+        if: steps.channel.outputs.feed == 'true'
         # QUILL_FEED_SIGNING_KEY (base64 Ed25519 seed, private counterpart of
         # quill/core/feed-pub.key) enables the real signature_ed25519 field.
         # Until the secret is provisioned this is empty and the feed carries
@@ -186,6 +218,7 @@ jobs:
             --tag "${{ github.ref_name }}" \
             --notes "$(python scripts/extract_release_body.py --version '${{ github.ref_name }}' --max-chars 800)"
       - name: Commit update feed
+        if: steps.channel.outputs.feed == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"

@@ -5187,7 +5187,7 @@ the Audio Studio's `tools.speech_batch_export`, found during this feature's
 research to bypass the registry). A `radio_player` status-bar cell
 (auto-surfaces on first play) and a system-tray right-click section
 (Play/Pause, Stop, Mute, Favorite Stations, Now Playing) both drive the same
-controller. Three in-app QUILL-key chords (`Ctrl+Shift+Grave, N/0/9` for
+controller. Three in-app QUILL-key chords (`Ctrl+Shift+Grave, 2/0/9` for
 play-pause/stop/mute) cover the explicit "hotkeys from the editor" ask —
 scoped to app-focused, matching every QUILL-key chord except the one
 existing OS-level `RegisterHotKey` precedent (sticky notes), which stays a
@@ -5390,11 +5390,17 @@ step.
 
 **Insert Equation (`ui/main_frame_equations.py`, #1197).** Maths authoring is
 text-first by design: the author types LaTeX or pastes MathML into the shared
-accessible web form and QUILL supplies the delimiters (`$...$` inline, `$$` on
-their own lines for a block). MathML is inserted verbatim -- it is a complete
+accessible web form and QUILL supplies the delimiters (`\(...\)` inline, a
+one-line `$$...$$` on its own line for a block). The text comes from
+`core/math/equation_text.py`, which the Math Equations Quillin's prompt uses
+too, so the two Insert Equation commands write the same thing -- the
+delimiters MathJax's defaults and Word export (`io/docx_math.py`) both read.
+Until 2026-10-03 this command wrote `$...$` and a three-line `$$` fence, which
+neither rendered nor exported. MathML is inserted verbatim -- it is a complete
 element and wrapping it would break it. A selected equation round-trips for
-editing: `split_existing_equation` strips `$`/`$$` and preselects the mode it
-found, so the shortcut doubles as "edit this equation" without retyping. The
+editing: `split_existing_equation` strips `$$`, `\[ \]`, `\( \)` or an older
+`$` and preselects the mode it found, so the shortcut doubles as "edit this
+equation" without retyping, and re-inserting upgrades old delimiters. The
 rationale is accessibility, not preference: a symbol palette is a mouse
 affordance, while text is keyboard-only, reviewable character by character, and
 already spoken by screen readers with maths support. Rendering needs nothing

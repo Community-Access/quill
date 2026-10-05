@@ -82,6 +82,8 @@ def entries_for(dialog: Any) -> list[tuple[str, Callable[[], None]]]:
             # only thing missing here was a way to write one without going
             # back to the browse window to find the same station again.
             ("&Note to Self...", lambda: favorites_details.edit_note(dialog)),
+            # Words a search should find it by: a team, a show, your own label.
+            ("Edit Station &Tags...", lambda: favorites_details.edit_tags(dialog)),
         ]
         if dialog._marked_key is not None:
             entries.insert(5, ("Move &Above", lambda: dialog._on_move_marked(True)))

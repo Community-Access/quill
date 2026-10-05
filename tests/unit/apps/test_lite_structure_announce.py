@@ -274,6 +274,38 @@ def test_navigation_latches_the_announcer_so_arrival_is_not_said_twice() -> None
     assert win.announcements == []
 
 
+def test_rich_navigation_speaks_the_heading_once() -> None:
+    """Previous/Next Heading in a rich document said it twice.
+
+    The command spoke "Heading 1: Two", then the caret hook on key release
+    spoke "Heading 1, Two" -- the rich path never latched the announcer.
+    """
+
+    class _RichEditor(_Editor):
+        def __init__(self) -> None:
+            super().__init__(RICH, 0)
+
+        def next_heading(self, caret: int, *, reverse: bool = False):
+            return (4, 1)
+
+        def paragraph_text_at(self, _start: int) -> str:
+            return "Two"
+
+    win = _Window("One" + chr(10) + "Two" + chr(10), mode=RICH)
+    win.editor = _RichEditor()
+    win.at("One")
+
+    def go_to(offset: int) -> None:
+        win.control.SetInsertionPoint(offset)
+        win.editor._level = 1
+
+    win._go_to = go_to
+    win.announcements.clear()
+    win.cmd_next_heading()
+    win.announce_structure_at_caret()  # the hook that fires on key release
+    assert len(win.announcements) == 1, win.announcements
+
+
 def test_the_heading_cue_never_interrupts_the_reader() -> None:
     """The one thing that would make this feature worse than silence.
 

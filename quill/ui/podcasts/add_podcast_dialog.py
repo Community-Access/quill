@@ -17,8 +17,8 @@ from quill.core.podcasts import directory_search, feed_reader, itunes_search
 from quill.core.podcasts.list_columns import DIRECTORY_RESULTS
 from quill.core.podcasts.models import PodcastShow
 from quill.core.podcasts.subscriptions import PodcastLibrary, new_id
-from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.media.list_columns_view import build_columns, columns_for, fill_row
+from quill.ui.podcasts.say_status import say_status
 from quill.ui.surface_lifetime import surface_tasks
 
 
@@ -47,8 +47,15 @@ def _apply_backfill(library: Any, show: Any) -> int:
     return len(wanted)
 
 
-class AddPodcastDialog:
-    """Search iTunes, add a feed URL directly, or import an OPML file."""
+class AddPodcastWindow:
+    """Search a directory, add a feed URL, or import OPML -- a peer window.
+
+    Made once (qc.md Phase 4): Follow keeps it open for the next podcast, and
+    asking for it again raises it with its results as you left them.
+    """
+
+    TITLE = "Add Podcast"
+    MENU_TITLE = "Add Pod&cast"
 
     def __init__(
         self,
@@ -66,7 +73,7 @@ class AddPodcastDialog:
         self._wx = wx
         self._library = library
         # Every task this window starts is tied to its lifetime (qc.md F-02).
-        self._task_manager = surface_tasks(task_manager, lambda: getattr(self, "dialog", None))
+        self._task_manager = surface_tasks(task_manager, lambda: getattr(self, "frame", None))
         self._safe_mode = safe_mode
         self._announce = announce_cb or (lambda _m: None)
         self._on_library_changed = on_library_changed or (lambda: None)
@@ -75,24 +82,23 @@ class AddPodcastDialog:
         self._on_reveal_show = on_reveal_show
         self._search_results: list[itunes_search.PodcastSearchResult] = []
 
-        self.dialog = wx.Dialog(
-            parent, title="Add Podcast", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
-        )
-        self.dialog.SetMinSize((640, 520))
+        self.frame = wx.Frame(parent, title="Add Podcast", size=(760, 620))
+        self.frame.SetMinSize((640, 520))
+        panel = wx.Panel(self.frame, style=wx.TAB_TRAVERSAL)
         root = wx.BoxSizer(wx.VERTICAL)
 
-        search_box = wx.StaticBoxSizer(wx.VERTICAL, self.dialog, "Find a Podcast in a Directory")
+        search_box = wx.StaticBoxSizer(wx.VERTICAL, panel, "Find a Podcast in a Directory")
         source_row = wx.BoxSizer(wx.HORIZONTAL)
         source_row.Add(
-            wx.StaticText(self.dialog, label="&Directory:"),
+            wx.StaticText(panel, label="&Directory:"),
             0,
             wx.ALIGN_CENTER_VERTICAL | wx.ALL,
             6,
         )
         self._source_choice = wx.Choice(
-            self.dialog, choices=[label for _sid, label in directory_search.SOURCE_LABELS]
+            panel, choices=[label for _sid, label in directory_search.SOURCE_LABELS]
         )
-        self._source_choice.SetName(
+        self._source_choice.SetHelpText(
             "Which directory to look in. iTunes needs nothing. Podcast Index "
             "carries the extra Podcasting 2.0 information -- chapters, "
             "transcripts -- and needs a key you add with Podcast Index Credentials."
@@ -109,12 +115,12 @@ class AddPodcastDialog:
         # label -- announced correctly. Created before the field, because the
         # association is by creation order and not by sizer position.
         query_row.Add(
-            wx.StaticText(self.dialog, label="Podcast &name:"),
+            wx.StaticText(panel, label="Podcast &name:"),
             0,
             wx.ALIGN_CENTER_VERTICAL | wx.ALL,
             6,
         )
-        self._query_ctrl = wx.TextCtrl(self.dialog, style=wx.TE_PROCESS_ENTER)
+        self._query_ctrl = wx.TextCtrl(panel, style=wx.TE_PROCESS_ENTER)
         self._query_ctrl.SetName("Podcast name to find")
         self._query_ctrl.SetHelpText(
             "Type part of a podcast's name and press Enter, or choose Find Podcasts. "
@@ -122,8 +128,8 @@ class AddPodcastDialog:
             "until you say so."
         )
         query_row.Add(self._query_ctrl, 1, wx.ALL | wx.EXPAND, 6)
-        self._search_btn = wx.Button(self.dialog, label="Find Podcast&s")
-        self._search_btn.SetName("Finds podcasts matching this name in the chosen directory")
+        self._search_btn = wx.Button(panel, label="Find Podcast&s")
+        self._search_btn.SetHelpText("Finds podcasts matching this name in the chosen directory")
         query_row.Add(self._search_btn, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
         search_box.Add(query_row, 0, wx.EXPAND)
         root.Add(search_box, 0, wx.EXPAND | wx.ALL, 10)
@@ -132,8 +138,8 @@ class AddPodcastDialog:
         # heading created immediately before it, because the association is by
         # creation order and not by sizer position. "Search results" was only a
         # SetName, which wxMSW never hands to the reader.
-        root.Add(wx.StaticText(self.dialog, label="&Results:"), 0, wx.LEFT | wx.RIGHT, 10)
-        self._results = wx.ListCtrl(self.dialog, style=wx.LC_REPORT | wx.BORDER_SIMPLE)
+        root.Add(wx.StaticText(panel, label="&Results:"), 0, wx.LEFT | wx.RIGHT, 10)
+        self._results = wx.ListCtrl(panel, style=wx.LC_REPORT | wx.BORDER_SIMPLE)
         self._results.SetHelpText(
             "Podcasts the chosen directory matched. Enter previews the one you "
             "are on; Follow adds it to your library."
@@ -148,8 +154,8 @@ class AddPodcastDialog:
         # Preview first, and it is what Enter does: subscribing from a title
         # alone is the thing that produces regret, and a title is all a search
         # result shows.
-        self._preview_btn = wx.Button(self.dialog, label="&Preview...")
-        self._preview_btn.SetName("Look at this podcast before following it")
+        self._preview_btn = wx.Button(panel, label="&Preview...")
+        self._preview_btn.SetHelpText("Look at this podcast before following it")
         self._preview_btn.Enable(False)
         # Follow, not Subscribe. Every podcast app a listener has used in
         # the last five years says Follow, and "subscribe" now reads as
@@ -158,7 +164,7 @@ class AddPodcastDialog:
         # the selected row (see _refresh_follow_button).
         from quill.ui.podcasts.add_podcast_actions import FOLLOW_LABEL
 
-        self._subscribe_btn = wx.Button(self.dialog, label=FOLLOW_LABEL)
+        self._subscribe_btn = wx.Button(panel, label=FOLLOW_LABEL)
         self._subscribe_btn.SetName(
             "Follow the selected podcast, or stop following it if you already do"
         )
@@ -172,40 +178,45 @@ class AddPodcastDialog:
         result_row.Add(self._subscribe_btn, 0)
         root.Add(result_row, 0, wx.ALL, 10)
 
-        url_box = wx.StaticBoxSizer(wx.HORIZONTAL, self.dialog, "Add by Feed URL")
+        url_box = wx.StaticBoxSizer(wx.HORIZONTAL, panel, "Add by Feed URL")
         # Labelled for the same reason as the search field above it.
         url_box.Add(
-            wx.StaticText(self.dialog, label="&Feed address:"),
+            wx.StaticText(panel, label="&Feed address:"),
             0,
             wx.ALIGN_CENTER_VERTICAL | wx.ALL,
             6,
         )
-        self._url_ctrl = wx.TextCtrl(self.dialog, style=wx.TE_PROCESS_ENTER)
+        self._url_ctrl = wx.TextCtrl(panel, style=wx.TE_PROCESS_ENTER)
         self._url_ctrl.SetName("The podcast's RSS feed URL")
         self._url_ctrl.SetHelpText(
             "Paste a podcast's feed address here when you already have it, then "
             "press Enter or choose Add. Both http and https addresses work."
         )
         url_box.Add(self._url_ctrl, 1, wx.ALL | wx.EXPAND, 6)
-        self._add_url_btn = wx.Button(self.dialog, label="&Add")
-        self._add_url_btn.SetName("Follow the podcast at this feed address")
+        self._add_url_btn = wx.Button(panel, label="&Add")
+        self._add_url_btn.SetHelpText("Follow the podcast at this feed address")
         url_box.Add(self._add_url_btn, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
         root.Add(url_box, 0, wx.EXPAND | wx.ALL, 10)
 
-        self._status = wx.StaticText(self.dialog, label="")
+        self._status = wx.StaticText(panel, label="")
         self._status.SetName("Status")
         root.Add(self._status, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
-        import_btn = wx.Button(self.dialog, label="&Import OPML...")
-        import_btn.SetName("Import a whole subscription list from an OPML file")
-        close_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Close")
+        import_btn = wx.Button(panel, label="&Import OPML...")
+        import_btn.SetHelpText("Import a whole subscription list from an OPML file")
+        close_btn = wx.Button(panel, label="Close")
+        close_btn.SetHelpText("Closes this window and returns to where you were.")
+        from quill.ui.dialog_contract import bind_close_button
+
+        bind_close_button(self.frame, close_btn, modeless=True)
         btn_row.Add(import_btn, 0, wx.RIGHT, 6)
         btn_row.AddStretchSpacer()
         btn_row.Add(close_btn)
         root.Add(btn_row, 0, wx.EXPAND | wx.ALL, 10)
 
-        self.dialog.SetSizer(root)
+        panel.SetSizer(root)
+        self.frame.CentreOnParent()
 
         self._query_ctrl.Bind(wx.EVT_TEXT_ENTER, self._on_search)
         self._search_btn.Bind(wx.EVT_BUTTON, self._on_search)
@@ -234,32 +245,45 @@ class AddPodcastDialog:
         self._results.DeleteAllItems()
         self._subscribe_btn.Enable(False)
         self._refresh_follow_button()
-        self._status.SetLabel("")
+        say_status(self._status, "", speak=False)
         self._announce("Find cleared.")
 
-    def show(self) -> None:
-        self.dialog.CentreOnParent()
-        apply_modal_ids(self.dialog, cancel_id=self._wx.ID_CANCEL)
-        from quill.ui.dialog_contract import show_modal_dialog
+    def prefill_address(self, address: str) -> None:
+        """Ctrl+N with a web address on the clipboard: it is filled in, with the
+        cursor on it, so following is one Enter (qc.md section 18 item 8)."""
+        self._url_ctrl.SetValue(address)
+        # Spoken when the window has opened (show), not now, behind it.
+        say_status(
+            self._status,
+            "The address on your clipboard is filled in. Press Enter to follow it.",
+            speak=False,
+        )
+        self._prefilled = True
 
-        try:
-            show_modal_dialog(self.dialog, "Add Podcast", announce=self._announce)
-        finally:
-            self.dialog.Destroy()
+    def focus_target(self) -> Any:
+        return self._url_ctrl if getattr(self, "_prefilled", False) else self._query_ctrl
+
+    def land_on_prefill(self) -> None:
+        """After a prefill: the cursor on the address, and the status said."""
+        if getattr(self, "_prefilled", False):
+            self._url_ctrl.SetFocus()
+            self._url_ctrl.SelectAll()
+            self._announce(self._status.GetLabel())
+            self._prefilled = False
 
     # ------------------------------------------------------------------
     # Search
 
     def _on_search(self, _event: object) -> None:
         if self._safe_mode:
-            self._status.SetLabel("Finding podcasts is disabled in Safe Mode.")
+            say_status(self._status, "Finding podcasts is disabled in Safe Mode.", self._announce)
             return
         query = self._query_ctrl.GetValue().strip()
         if not query:
-            self._status.SetLabel("Type a podcast name to find.")
+            say_status(self._status, "Type a podcast name to find.", self._announce)
             return
         source = directory_search.SOURCES[self._source_choice.GetSelection()]
-        self._status.SetLabel("Searching...")
+        say_status(self._status, "Searching...", self._announce)
         self._search_btn.Enable(False)
         from quill.ui.podcasts.preview_command import podcast_index_credentials
 
@@ -288,7 +312,7 @@ class AddPodcastDialog:
     ) -> None:
         self._search_btn.Enable(True)
         if error is not None or found is None:
-            self._status.SetLabel(f"Find failed: {error}")
+            say_status(self._status, f"Find failed: {error}", self._announce)
             return
         from quill.ui.podcasts.add_podcast_actions import following_cell
 
@@ -311,8 +335,7 @@ class AddPodcastDialog:
         # "12 results" from an unknown source is what makes somebody wonder
         # whether the other one was asked at all.
         said = found.summary()
-        self._status.SetLabel(said)
-        self._announce(said)
+        say_status(self._status, said, self._announce)
         if results:
             self._results.Select(0)
             self._results.Focus(0)
@@ -377,7 +400,7 @@ class AddPodcastDialog:
     def _on_add_url(self, _event: object) -> None:
         url = self._url_ctrl.GetValue().strip()
         if not url:
-            self._status.SetLabel("Type a feed URL first.")
+            say_status(self._status, "Type a feed URL first.", self._announce)
             return
         self._subscribe_to_feed(url)
 
@@ -391,13 +414,13 @@ class AddPodcastDialog:
         password: str = "",
     ) -> None:
         if self._safe_mode:
-            self._status.SetLabel("Adding podcasts is disabled in Safe Mode.")
+            say_status(self._status, "Adding podcasts is disabled in Safe Mode.", self._announce)
             return
         existing = self._library.find_show_by_feed_url(feed_url)
         if existing is not None:
             self._say_already_have(existing)
             return
-        self._status.SetLabel(f"Fetching {title_hint or feed_url}...")
+        say_status(self._status, f"Fetching {title_hint or feed_url}...", self._announce)
 
         def _do_fetch(**_kwargs: Any) -> feed_reader.FeedInfo:
             return feed_reader.fetch_and_parse_feed(
@@ -429,7 +452,7 @@ class AddPodcastDialog:
             self._prompt_for_credentials(feed_url, last_username=username)
             return
         if error is not None or info is None:
-            self._status.SetLabel(f"Could not follow it: {error}")
+            say_status(self._status, f"Could not follow it: {error}", self._announce)
             self._return_focus_to_results(result_index)
             return
         show = PodcastShow(
@@ -454,7 +477,12 @@ class AddPodcastDialog:
             feed_auth.save_feed_password(show.id, password)
         self._on_library_changed()
         backfilled = _apply_backfill(self._library, show)
-        self._status.SetLabel(f"Now following {show.title} ({len(show.episodes)} episodes).")
+        # The fuller sentence (with the back-catalogue) is spoken below.
+        say_status(
+            self._status,
+            f"Now following {show.title} ({len(show.episodes)} episodes).",
+            speak=False,
+        )
         from quill.core.podcasts.follow_words import followed
 
         message = followed(show.title)
@@ -463,7 +491,9 @@ class AddPodcastDialog:
                 f"; {backfilled} back-catalogue episode"
                 f"{'' if backfilled == 1 else 's'} queued for download"
             )
-        self._announce(message)
+        from quill.ui.outcome_report import report_outcome
+
+        report_outcome(self, "Follow", message, object_name=show.title)
         self._url_ctrl.SetValue("")
         self._return_focus_to_results(result_index)
 
@@ -487,8 +517,7 @@ class AddPodcastDialog:
             except Exception:  # noqa: BLE001 - a reveal that fails is not fatal
                 moved = False
         sentence = duplicate_add.already_have("podcast", title, moved=moved)
-        self._status.SetLabel(sentence)
-        self._announce(sentence)
+        say_status(self._status, sentence, self._announce)
 
     def _return_focus_to_results(self, result_index: int | None) -> None:
         """After subscribing from a search result, put focus back on the list.
@@ -516,14 +545,16 @@ class AddPodcastDialog:
 
         message = "The username or password was not accepted. Try again." if last_username else ""
         result = FeedCredentialsDialog(
-            self.dialog,
+            self.frame,
             username=last_username,
             message=message,
             announce_cb=self._announce,
         ).show()
         if result is None or result.action != "save":
-            self._status.SetLabel(
-                "That feed requires a sign-in. Add it again when you have the credentials."
+            say_status(
+                self._status,
+                "That feed requires a sign-in. Add it again when you have the credentials.",
+                self._announce,
             )
             return
         self._subscribe_to_feed(feed_url, username=result.username, password=result.password)
@@ -545,7 +576,7 @@ class AddPodcastDialog:
 
         wx = self._wx
         with wx.FileDialog(
-            self.dialog,
+            self.frame,
             "Import OPML",
             wildcard="OPML files (*.opml;*.xml)|*.opml;*.xml|All files (*.*)|*.*",
             style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
@@ -554,7 +585,7 @@ class AddPodcastDialog:
                 return
             path = Path(dialog.GetPath())
         importer = OpmlImportDialog(
-            self.dialog,
+            self.frame,
             library=self._library,
             path=path,
             task_manager=self._task_manager,
@@ -563,4 +594,5 @@ class AddPodcastDialog:
             on_library_changed=self._on_library_changed,
         )
         importer.show()
-        self._status.SetLabel(f"Finished importing {path.name}.")
+        # The import window has already said what it imported.
+        say_status(self._status, f"Finished importing {path.name}.", speak=False)

@@ -19,18 +19,18 @@ TUTORIALS: tuple[Tutorial, ...] = (
         minutes=6,
         surfaces=("Quill Radio", "Keyboard Shortcuts Sheet"),
         summary=(
-            "Rebind anything, give the player keys that work from inside other "
-            "programs, and know which keys are already system-wide before you "
-            "start."
+            "Change any key to one you prefer, give the player keys that work "
+            "even while you are in another program, and find out which keys "
+            "already work everywhere."
         ),
         steps=(
             Step(
                 title="Find the key you want to change",
                 body=(
                     "Keyboard Shortcuts, on the Help menu, opens the Keymap "
-                    "Editor: a searchable, conflict-aware list of every command "
-                    "and the key assigned to it. Type part of a command's name, or "
-                    "type or record a key to find out what it already does."
+                    "Editor. It lists every command and its key, and you can "
+                    "search it. Type part of a command's name, or type or press "
+                    "a key to find out what it does."
                 ),
                 keys=("Ctrl+Alt+K",),
                 hear="Keymap Editor, then the Search box.",
@@ -38,59 +38,60 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Assign a key and hear the objection",
                 body=(
-                    "Select a command and choose Edit Keybinding. If the key is "
-                    "already assigned, the editor names the command that has it "
-                    "and asks before taking it. A key your screen reader keeps for "
-                    "itself is refused outright, and a key another program holds "
-                    "system-wide gets a warning, because either would be assigned "
-                    "and never fire."
+                    "Select a command and choose Edit Keybinding. If the key you "
+                    "press is already used, the editor tells you which command "
+                    "has it and asks before taking it. Keys your screen reader "
+                    "needs are not allowed, and you get a warning for keys "
+                    "another program already uses everywhere. That way you never "
+                    "end up with a key that does nothing."
                 ),
                 keys=("Alt+E",),
-                hear="Either the new key confirmed, or the command that already owns it named.",
+                hear=(
+                    "Either your new key confirmed, or the name of the command that already has it."
+                ),
                 note=(
-                    "The keymap is shared with QUILL and QUILL Cast, so a "
-                    "shortcut you change here changes it in the editor too."
+                    "Your keys are shared with QUILL and QUILL Cast, so a key "
+                    "you change here changes there too."
                 ),
             ),
             Step(
                 title="Check what you actually have",
                 body=(
-                    "The Keyboard Shortcuts Sheet is built by reading the menu bar "
-                    "in front of you, so after a rebinding it says your key rather "
-                    "than the default. It also lists the keys no menu item carries "
-                    "-- F6 into the status bar, the Winamp letters in the "
-                    "Recordings list, Shift+F10 for a row's actions -- each with "
-                    "the window it works in."
+                    "The Keyboard Shortcuts Sheet always shows the keys you "
+                    "really have, so after a change it shows your new key. It "
+                    "also lists keys that are not on any menu, such as F6 for "
+                    "the status bar, the Winamp letters in the Recordings list, "
+                    "and Shift+F10 for a row's actions, each with the window it "
+                    "works in."
                 ),
                 keys=("Ctrl+Alt+Shift+K",),
-                hear="A filter box, then the number of shortcuts listed.",
+                hear="A filter box, then how many shortcuts are listed.",
             ),
             Step(
                 title="Give the player a system-wide key",
                 body=(
-                    "Global Hotkeys, on the Help menu, assigns a key that works "
-                    "while another program has focus, for the safe playback verbs "
-                    "only: play/pause, stop, mute, volume up and down, and show or "
-                    "hide to the tray. A global key can never trigger anything "
-                    "that changes a document or a file. Choose Assign, press the "
-                    "key, then Save."
+                    "Global Hotkeys, on the Help menu, lets you set keys that "
+                    "work even while you are in another program. They are only "
+                    "for safe playback commands: play/pause, stop, mute, volume "
+                    "up and down, and show or hide to the tray. Choose Assign, "
+                    "press the key you want, then Save."
                 ),
                 keys=("Ctrl+Alt+G",),
-                hear=("Global Hotkeys, then a list of commands, each with its global key or none."),
+                hear="Global Hotkeys, then a list of commands, each with its global key or none.",
                 note=(
-                    "None are set by default. A key another program already owns "
-                    "is left alone rather than fought over, and Quill Radio says "
-                    "which ones were already in use by another app."
+                    "None are set to start with. If another program already "
+                    "uses a key, Quill Radio leaves it alone and tells you which "
+                    "ones were taken."
                 ),
             ),
             Step(
                 title="Use the two you already have",
                 body=(
-                    "Two system-wide keys work without being set up. Your "
-                    "keyboard's media keys drive play/pause and stop while Quill "
-                    "Radio runs, even from the tray; and Ctrl+Alt+Shift+R shows or "
-                    "hides the window from any program. Each app in the family "
-                    "uses its own chord, so they never clash."
+                    "Two keys work everywhere without any setup. The media keys "
+                    "on your keyboard play, pause and stop while Quill Radio is "
+                    "running, even from the tray. And Ctrl+Alt+Shift+R shows or "
+                    "hides the Quill Radio window from any program. Each Quill "
+                    "app has its own key for this, so they never get mixed up."
                 ),
                 keys=("Ctrl+Alt+Shift+R",),
                 hear="Quill Radio hidden to the tray, then Quill Radio shown.",
@@ -98,18 +99,17 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Know the block that is not yours to take",
                 body=(
-                    "Nothing in Quill Radio sits on Ctrl+Alt+arrow. That block "
-                    "belongs to JAWS's and NVDA's table navigation, and a key "
-                    "there works everywhere except while somebody is reading a "
-                    "table. If you are choosing your own keys, leave it alone for "
-                    "the same reason."
+                    "Quill Radio never uses Ctrl+Alt with an arrow key. JAWS and "
+                    "NVDA use those keys to move around tables, so a key there "
+                    "would stop working whenever you read a table. When you "
+                    "choose your own keys, it is best to leave them alone too."
                 ),
-                hear="Nothing: this is a rule, not an action.",
+                hear="Nothing. This step is just good to know.",
             ),
         ),
         closing=(
-            "Every tutorial in this set names commands rather than keys, so once "
-            "you have rebound something the lessons say your key too."
+            "The lessons always name commands rather than keys, so once you "
+            "change a key, the lessons show your new key too. Make it yours."
         ),
         then=("settings-worth-changing",),
     ),
@@ -120,18 +120,17 @@ TUTORIALS: tuple[Tutorial, ...] = (
         minutes=8,
         surfaces=("Preferences", "Quill Radio"),
         summary=(
-            "A guided pass through Preferences, stopping only at the settings "
-            "that change something you will notice. Everything else can stay as "
-            "it is."
+            "A friendly walk through Preferences, stopping only at the settings "
+            "you will really notice. Everything else is fine just as it is."
         ),
         steps=(
             Step(
                 title="Open Preferences",
                 body=(
-                    "Preferences is one window with a lot in it. Rather than "
-                    "reading it top to bottom, this lesson stops at six settings; "
-                    "the rest are sensible defaults that you can leave alone until "
-                    "something makes you want them."
+                    "Preferences is one window with a lot in it. Instead of "
+                    "reading it from top to bottom, this lesson stops at six "
+                    "settings. The rest are set sensibly already, and you can "
+                    "leave them until you find a reason to change them."
                 ),
                 keys=("Ctrl+,",),
                 hear="Quill Radio Preferences, and its first checkbox.",
@@ -140,58 +139,59 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 title="Decide what closing the window means",
                 body=(
                     "When closing the window offers Ask every time, Exit, or "
-                    "Minimize to Tray, and governs closing the main window. "
-                    "Station > Exit always quits for real. Among the checkboxes, "
-                    "Alt+F4 minimizes to the system tray is its own switch: turn "
-                    "it on and the reflexive Alt+F4 tucks the radio away still "
-                    "playing."
+                    "Minimize to Tray. It decides what happens when you close the "
+                    "main window. Station > Exit always really closes Quill "
+                    "Radio. Further down, the checkbox Alt+F4 minimizes to the "
+                    "system tray is a separate choice. Turn it on, and Alt+F4 "
+                    "tucks the radio away while it keeps playing."
                 ),
                 hear="When closing the window, combo box, and its current choice.",
                 note=(
-                    "The one thing that always asks first is a recording in "
-                    "progress, because exiting stops the capture."
+                    "If you are recording, Quill Radio always asks before it "
+                    "closes, because closing stops the recording."
                 ),
             ),
             Step(
                 title="Leave the playback engine alone unless something is wrong",
                 body=(
                     "Playback engine: Automatic uses the mpv engine when it is "
-                    "present, which is what powers pausing and rewinding live "
-                    "radio, the output device choice, Volume Boost, and stations "
-                    "in more formats. Windows Media (classic) is exactly the "
-                    "pre-1.1 behaviour if you ever want it back."
+                    "there. That is what lets you pause and rewind live radio, "
+                    "choose an output device, use Volume Boost, and play stations "
+                    "in more formats. Windows Media (classic) is there if you "
+                    "ever want the old way back."
                 ),
                 hear="Playback engine, combo box, Automatic (recommended).",
                 note=(
                     "If Rewind, Volume Boost or the output device say they need "
-                    "the mpv engine, this setting is why -- or the bundled engine "
-                    "is missing, which Audio Health will tell you."
+                    "the mpv engine, check this setting. If it is already on "
+                    "Automatic, Audio Health will tell you if the engine is "
+                    "missing."
                 ),
             ),
             Step(
                 title="Send the radio to a different speaker",
                 body=(
-                    "Radio output device, in Preferences and as Output Device on "
-                    "the Audio menu, routes just the radio to a second sound "
-                    "card or a USB headset. Your screen reader and Quill Radio's "
-                    "own sounds stay on the system default device, which is the "
-                    "whole reason this setting exists rather than your using "
-                    "Windows' own."
+                    "Radio output device, in Preferences, and Output Device on "
+                    "the Audio menu, send just the radio to a second sound card "
+                    "or a USB headset. Your screen reader and Quill Radio's own "
+                    "sounds stay where they are. So you can have the radio in "
+                    "the speakers and your screen reader in your headphones."
                 ),
                 keys=("Ctrl+Shift+D",),
                 hear="Output Device, the device list, then Output device and the name you chose.",
                 note=(
-                    "An unplugged device is remembered rather than reset, and if "
-                    "it cannot be used the radio plays through the default and "
-                    "says so."
+                    "If you unplug the device, Quill Radio remembers it for next "
+                    "time. Meanwhile it plays through your usual device and "
+                    "tells you so."
                 ),
             ),
             Step(
                 title="Make the text bigger",
                 body=(
-                    "Text Size on the View menu -- Normal, Large or Larger -- "
-                    "scales the favorites list, the buttons, the now-playing line "
-                    "and the status bar. It is remembered between sessions."
+                    "Text Size, on the View menu, offers Normal, Large or Larger. "
+                    "It makes the favorites list, the buttons, the now playing "
+                    "line and the status bar bigger, and it is remembered next "
+                    "time."
                 ),
                 keys=("Ctrl+Alt+1", "Ctrl+Alt+2", "Ctrl+Alt+3"),
                 hear="Text size, and the size you chose.",
@@ -199,40 +199,40 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Turn off whole areas you never use",
                 body=(
-                    "Customize Features, on the View menu, leaves out a whole menu "
-                    "and every command under it. Today that is Recording, for "
-                    "anybody who wants a plain radio and nothing else to arrow "
-                    "past. Nothing is deleted; tick it again and it comes back. "
-                    "The menu changes the next time you open Quill Radio."
+                    "Customize Features, on the View menu, hides a whole menu and "
+                    "everything on it. Right now that is Recording, for anyone "
+                    "who just wants a plain radio with less to arrow past. "
+                    "Nothing is deleted. Check it again and it comes back. The "
+                    "menu changes the next time you open Quill Radio."
                 ),
                 keys=("Ctrl+Alt+C",),
                 hear=(
-                    "Recording, with a short description of what it covers; after "
-                    "OK, Feature settings saved."
+                    "Recording, with a short description of what it covers. After OK, "
+                    "Feature settings saved."
                 ),
             ),
             Step(
                 title="Put your setup where a sync service can see it",
                 body=(
-                    "The Data Folder button in Preferences opens the family-wide "
-                    "data location -- "
-                    "settings, favorites, subscriptions and playback positions for "
-                    "every Quill app. Point it at a folder Dropbox, OneDrive, "
-                    "Google Drive or iCloud already syncs and your whole setup "
-                    "travels between computers, with no account and no sign-in."
+                    "The Data Folder button in Preferences shows where all your "
+                    "Quill apps keep your settings, favorites, subscriptions and "
+                    "listening places. Move it into a folder that Dropbox, "
+                    "OneDrive, Google Drive or iCloud already syncs, and your "
+                    "whole setup follows you between computers. No account and "
+                    "no sign-in needed."
                 ),
                 hear="Data Folder, the current folder, and an offer to restart after a change.",
                 note=(
-                    "One rule: do not run Quill apps on two computers against the "
-                    "same folder at the same time. If you do, the next launch says "
-                    "so rather than letting two machines fight over one profile."
+                    "One thing to remember: do not run Quill apps on two "
+                    "computers using the same folder at the same time. If you "
+                    "do, Quill Radio tells you next time it opens."
                 ),
             ),
         ),
         closing=(
-            "Six settings. If you only change one, make it the closing "
-            "behaviour -- it is the one that decides whether the radio keeps "
-            "playing when your hand slips."
+            "That is six settings, and you are done. If you only change one, "
+            "make it what closing the window does. It decides whether the radio "
+            "keeps playing when your hand slips."
         ),
     ),
 )

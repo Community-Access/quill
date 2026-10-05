@@ -65,7 +65,7 @@ def test_get_help_from_support_writes_as_quilllite(lite_window, monkeypatch):
     and only -- Quill app.
     """
     import quill.ui.support_dialog as support_dialog
-    from quill.core.lite import APP_NAME, APP_VERSION
+    from quill.core.lite import APP_NAME, version_label
 
     calls: list[dict] = []
     monkeypatch.setattr(
@@ -77,7 +77,9 @@ def test_get_help_from_support_writes_as_quilllite(lite_window, monkeypatch):
     win = lite_window("hello")
     win.cmd_get_help_from_support()
 
-    assert calls == [{"source_app": APP_NAME, "app_version": APP_VERSION}]
+    # With its build, as About says it: "1.2.0 (build 1)" tells support which
+    # build of a version somebody is on, which a fix shipped as build 2 needs.
+    assert calls == [{"source_app": APP_NAME, "app_version": version_label()}]
 
 
 def test_about_says_quilllite_is_a_companion_rather_than_a_replacement(lite_window, lite_dialogs):

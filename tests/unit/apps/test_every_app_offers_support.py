@@ -28,7 +28,7 @@ _REPO_ROOT = Path(__file__).resolve().parents[3]
 #: app key -> the module that builds its Help menu.
 _HELP_MENU: dict[str, str] = {
     "quill": "quill/ui/main_frame_menu.py",
-    "radio": "quill/apps/radio.py",
+    "radio": "quill/apps/radio_menu_bar.py",  # the menu bar moved there (F-08)
     "weather": "quill/apps/weather.py",
     "cast": "quill/apps/podcasts_menu.py",
     "studio": "quill/apps/studio.py",

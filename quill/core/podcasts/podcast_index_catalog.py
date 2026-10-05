@@ -38,7 +38,7 @@ from dataclasses import dataclass
 
 from quill.core.podcasts.podcast_index import (
     API_ROOT,
-    SIGNUP_URL,
+    NO_KEY_SENTENCE,
     PodcastIndexError,
     _http_json,
     auth_headers,
@@ -276,12 +276,34 @@ def _catalog_json(path: str, params: dict[str, object]) -> object:
     """One signed catalogue GET. Same egress site, same rules as the search."""
     key, secret = credentials()
     if not (key and secret):
-        raise PodcastIndexError(
-            "This build has no Podcast Index credential. A free developer key from "
-            f"{SIGNUP_URL} can be added in Podcast Settings."
-        )
-    url = f"{API_ROOT}{path}?{urllib.parse.urlencode(params)}"
-    return _http_json(url, auth_headers(key, secret))
+        raise PodcastIndexError(NO_KEY_SENTENCE)
+    query = urllib.parse.urlencode(params)
+    url = f"{API_ROOT}{path}?{query}" if query else f"{API_ROOT}{path}"
+    payload = _http_json(url, auth_headers(key, secret))
+    refusal = refusal_in(payload)
+    if refusal:
+        # The index answers some refusals with HTTP 200 and ``"status":
+        # "false"``. Parsed as a listing, that is an empty folder; it is not.
+        refused = PodcastIndexError(f"The Podcast Index could not answer: {refusal}")
+        refused.service_reached = True
+        raise refused
+    return payload
+
+
+def refusal_in(payload: object) -> str:
+    """The index's own explanation when a reply says ``"status": "false"`` (pure).
+
+    ``""`` for an ordinary answer. Every documented reply carries ``status``
+    as the *string* ``"true"`` or ``"false"``; a reply without one is treated
+    as an answer, because the parsers are already total.
+    """
+    if not isinstance(payload, dict):
+        return ""
+    status = payload.get("status")
+    if status is False or (isinstance(status, str) and status.strip().lower() == "false"):
+        description = _as_text(payload.get("description"))
+        return description or "it refused the request without saying why."
+    return ""
 
 
 def _limit(limit: int) -> int:

@@ -107,13 +107,25 @@ def run(
     def _search(
         chosen: tuple[federated_browse.SearchTarget, ...] | None, deadline: float
     ) -> federated_browse.FederatedBrowse:
-        return federated_browse.search_everything(
+        found = federated_browse.search_everything(
             query,
             safe_mode=host._safe_mode,
             # getattr: tests build the dialog with __new__ and no __init__.
             catalog=getattr(host, "_catalog", None),
             targets=chosen,
             deadline_seconds=deadline,
+        )
+        if targets is not None:  # "Search for a Podcast..." means podcasts
+            return found
+        # Your tagged stations and the teams' flagships, in front.
+        from quill.ui.radio.station_lookup_lane import prepend_to_federated
+
+        return prepend_to_federated(
+            host,
+            query,
+            found,
+            safe_mode=host._safe_mode,
+            network=deadline >= federated_browse.SEARCH_DEADLINE_SECONDS,
         )
 
     def _work(**_kwargs: Any) -> federated_browse.FederatedBrowse:

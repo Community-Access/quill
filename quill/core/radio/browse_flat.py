@@ -43,6 +43,9 @@ LOCAL_SOURCES = frozenset({
     # The lists themselves are local; only opening one reaches the network.
     "myservers",
     "youtube",
+    # Files on this computer: nothing to fetch, so Safe Mode leaves them be.
+    "localmedia",
+    "localplaylist",
 })
 
 FLAT: dict[str, Callable[[bool], list[RadioStation]]] = {

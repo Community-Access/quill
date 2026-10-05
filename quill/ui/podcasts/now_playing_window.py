@@ -96,6 +96,7 @@ class NowPlayingWindow:
         self._played.Bind(wx.EVT_BUTTON, lambda _e: self._on_mark_played())
         self._share.Bind(wx.EVT_BUTTON, lambda _e: self._on_share())
         self._about.Bind(wx.EVT_BUTTON, lambda _e: self._call("open_podcast_episode_extras"))
+        self._bookmarks.Bind(wx.EVT_BUTTON, lambda _e: self._call("open_episode_bookmarks"))
         del host
 
     # -- the host ----------------------------------------------------------------

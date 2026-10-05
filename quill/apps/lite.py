@@ -56,9 +56,9 @@ from quill.core.lite import features as features_mod
 from quill.core.lite import inbox as inbox_mod
 from quill.core.lite import keymap as keymap_mod
 from quill.core.lite import recovery as recovery_mod
-from quill.core.lite import settings as settings_mod
 from quill.core.lite.open_prepare import prepare_in_background
 from quill.core.lite.paths import data_dir
+from quill.core.windows_editor import translate_notepad_argv
 from quill.ui.dialog_contract import show_message_box
 from quill.ui.richedit_editing import PLAIN, RICH
 
@@ -125,7 +125,7 @@ class QuillLiteApp(
     def OnInit(self) -> bool:  # noqa: N802 - wx API shape
         self.SetAppName(APP_ID)
         self.data_dir = data_dir()
-        self.settings = settings_mod.load()
+        self.settings = self._load_settings()
         self._settings_baseline = copy.deepcopy(self.settings)  # F-11: merge on save
         # Here and not in __init__, where it was until 2026-09-17 and where it
         # read self.settings **before OnInit had loaded it** -- so constructing
@@ -592,15 +592,14 @@ def main() -> int:
     # somebody's queued change.
     apply_pending_at_launch()
 
-    paths, mode, check, new_instance = _parse_args(list(sys.argv[1:]))
+    paths, mode, check, new_instance = _parse_args(translate_notepad_argv(sys.argv[1:]))
     if check:
         from quill.apps.lite_check import run_check
 
         return run_check()
 
-    # One process, many windows: a second launch hands its files to the first
-    # and exits, so opening files from Explorer is instant and there is one
-    # owner of the settings file and the recovery store.
+    # One process, many windows: a second launch (Explorer, or Windows starting
+    # us in Notepad's place) hands its files to the first and exits.
     checker = wx.SingleInstanceChecker(f"{APP_ID}-{wx.GetUserId()}")
     if checker.IsAnotherRunning() and not new_instance:
         _allow_foreground(inbox_mod.running_instance_pid())

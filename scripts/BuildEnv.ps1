@@ -415,3 +415,42 @@ function Assert-QuillSiblingVersions {
         throw "GATE-SIBVER: an app's version is out of step with what is published (see above)."
     }
 }
+
+function Resolve-QuillReleaseBuild {
+    <#
+    .SYNOPSIS
+    The build number this release build ships as, and its Windows file version.
+
+    .DESCRIPTION
+    The same version can ship more than once: a rebuild of 3.2.0 with a fix is
+    3.2.0 build 2, offered as an update to everyone on build 1
+    (docs\release\RELEASE.md, "Build numbers"). -Build wins; otherwise
+    scripts\release_build_number.py takes the next build after the newest tag
+    published for this version, and refuses a build that is already published
+    or that the app's build constant in source does not say. -Dev is a Dev
+    build (no build number); -OfflineOk takes the source constant when the
+    published releases cannot be read (dev builds only).
+
+    Returns a two-element array: build number, file version (3.2.0.2).
+    #>
+    param(
+        [Parameter(Mandatory)][string]$QuillRepo,
+        [Parameter(Mandatory)][string]$Python,
+        [Parameter(Mandatory)][string]$App,
+        [Parameter(Mandatory)][string]$Version,
+        [int]$Build = 0,
+        [switch]$Dev,
+        [switch]$OfflineOk
+    )
+    $args = @((Join-Path $QuillRepo "scripts\release_build_number.py"), "--app", $App, "--version", $Version)
+    if ($Build -gt 0) { $args += @("--build", "$Build") }
+    if ($Dev) { $args += "--dev" }
+    if ($OfflineOk) { $args += "--offline-ok" }
+    $line = & $Python @args | Select-Object -Last 1
+    if ($LASTEXITCODE -ne 0 -or -not $line) {
+        throw "Build number: this build cannot ship as $App $Version (see above)."
+    }
+    $parts = "$line".Trim().Split(" ")
+    Write-Host "Building $App $Version build $($parts[0]) (file version $($parts[1]))."
+    return @([int]$parts[0], $parts[1])
+}

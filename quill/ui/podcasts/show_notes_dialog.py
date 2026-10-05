@@ -20,19 +20,25 @@ retype:
 from __future__ import annotations
 
 from collections.abc import Callable
+from typing import Any
 
 from quill.core.podcasts.show_notes import html_to_plain_text, strip_html_images
-from quill.ui.dialog_contract import apply_modal_ids
 
 
-class ShowNotesDialog:
+class ShowNotesWindow:
     """One episode's show notes, read with the Notes reader (qc.md 5c).
 
     The same reader Now Playing and the main window's pane use: headings by H,
     links and timestamps by Tab, Copy Notes in four formats, Links in These
     Notes, View in Browser. Two verbs of its own stay: Send to Editor, and Save
     As, which keeps a link *as a link* in HTML and Markdown.
+
+    A peer window (qc.md Phase 4): made once, and asked for again -- for this
+    episode or another -- it is raised with the notes asked about.
     """
+
+    TITLE = "Show Notes"
+    MENU_TITLE = "Show No&tes"
 
     def __init__(
         self,
@@ -49,23 +55,48 @@ class ShowNotesDialog:
     ) -> None:
         import wx
 
+        self._wx = wx
+        self._announce = announce_cb or (lambda _m: None)
+        self._body: Any = None
+        self.frame = wx.Frame(parent, title="Show Notes", size=(760, 640))
+        self.frame.SetMinSize((620, 520))
+        self.frame.SetSizer(wx.BoxSizer(wx.VERTICAL))
+        self.load(
+            episode_title=episode_title,
+            description_html=description_html,
+            on_send_to_editor=on_send_to_editor,
+            on_seek=on_seek,
+            podcast_title=podcast_title,
+            copy_format=copy_format,
+            set_copy_format=set_copy_format,
+        )
+        self.frame.CentreOnParent()
+
+    def load(
+        self,
+        *,
+        episode_title: str,
+        description_html: str,
+        on_send_to_editor: Callable[[str], None] | None = None,
+        on_seek: Callable[[int], None] | None = None,
+        podcast_title: str = "",
+        copy_format: Callable[[], str] | None = None,
+        set_copy_format: Callable[[str], None] | None = None,
+    ) -> None:
+        """Show *episode_title*'s notes -- the first time, or for the next one asked."""
         from quill.ui.notes_reader import NotesReader
 
-        self._wx = wx
+        wx = self._wx
         self._description_html = description_html
         self._plain_text = html_to_plain_text(description_html)
         self._on_send_to_editor = on_send_to_editor
-        self._announce = announce_cb or (lambda _m: None)
-
-        self.dialog = wx.Dialog(
-            parent,
-            title=f"Show Notes -- {episode_title}",
-            style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
-        )
-        self.dialog.SetMinSize((620, 520))
+        self.frame.SetTitle(f"Show Notes -- {episode_title}")
+        if self._body is not None:
+            self._body.Destroy()
+        self._body = body = wx.Panel(self.frame, style=wx.TAB_TRAVERSAL)
         root = wx.BoxSizer(wx.VERTICAL)
         self.reader = NotesReader(
-            self.dialog,
+            body,
             root,
             label="Show &notes:",
             announce=self._announce,
@@ -78,35 +109,35 @@ class ShowNotesDialog:
         self._notes = self.reader.field  # what the window is for; focused on show
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
-        send_btn = wx.Button(self.dialog, label="&Send to Editor")
+        send_btn = wx.Button(body, label="&Send to Editor")
         send_btn.SetHelpText("Opens these show notes as a new document, as plain text.")
-        self._save_btn = wx.Button(self.dialog, label="Save &As...")
+        self._save_btn = wx.Button(body, label="Save &As...")
         self._save_btn.SetHelpText(
             "Saves these show notes to a file as plain text, HTML or Markdown; the "
             "last two keep every link as a link."
         )
-        close_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Close")
+        close_btn = wx.Button(body, label="Close")
+        close_btn.SetHelpText("Closes this window and returns to where you were.")
+        from quill.ui.dialog_contract import bind_close_button
+
+        bind_close_button(self.frame, close_btn, modeless=True)
         btn_row.Add(send_btn, 0, wx.RIGHT, 6)
         btn_row.Add(self._save_btn, 0, wx.RIGHT, 6)
         btn_row.AddStretchSpacer()
         btn_row.Add(close_btn)
         root.Add(btn_row, 0, wx.EXPAND | wx.ALL, 10)
 
-        self.dialog.SetSizer(root)
+        body.SetSizer(root)
+        sizer = self.frame.GetSizer()
+        sizer.Clear()
+        sizer.Add(body, 1, wx.EXPAND)
+        self.frame.Layout()
         send_btn.Bind(wx.EVT_BUTTON, self._on_send_to_editor_click)
         self._save_btn.Bind(wx.EVT_BUTTON, lambda _e: self.save_as())
 
-    def show(self) -> None:
-        self.dialog.CentreOnParent()
-        apply_modal_ids(self.dialog, cancel_id=self._wx.ID_CANCEL)
-        from quill.ui.dialog_contract import show_modal_dialog
-
+    def focus_target(self) -> Any:
         # Focus on the thing this window is for (qc.md 6b): the notes.
-        self._notes.SetFocus()
-        try:
-            show_modal_dialog(self.dialog, "Show Notes", announce=self._announce)
-        finally:
-            self.dialog.Destroy()
+        return self._notes
 
     def show_links(self) -> int:
         """List every address in the notes, to open or copy (the reader's Links)."""
@@ -127,7 +158,7 @@ class ShowNotesDialog:
         formats = self._save_formats()
         wildcard = "|".join(f"{label} (*.{ext})|*.{ext}" for label, ext, _writer in formats)
         dialog = wx.FileDialog(
-            self.dialog,
+            self.frame,
             "Save Show Notes As",
             wildcard=wildcard,
             style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,

@@ -1,0 +1,134 @@
+name: promote-release
+
+# Promote a listed build -- Dev to Beta, or Beta to Stable -- as the same files
+# (release channels, plan 4.4). Nothing reaches Stable without a person
+# pressing Approve: the Stable job runs in the GitHub Environment
+# "stable-promotion", whose required reviewer is the owner.
+#
+# The feed signing key never lives in CI, so the promote jobs run
+# promote_release.py --no-sign: they flip the GitHub release, write the feed
+# change WITHOUT a signature, and open a pull request. GATE-FEED fails that
+# pull request until the owner signs it on their own computer:
+#   git fetch origin && git switch promote/<app>-<version>
+#   python scripts/feed_tool.py sign --app <app>
+#   git commit -am "sign feed" && git push
+#
+# The same script runs locally, signing as it goes:
+#   python scripts/promote_release.py --app radio --version 3.3.0 --to stable
+
+on:
+  workflow_dispatch:
+    inputs:
+      app:
+        description: "App"
+        type: choice
+        options: [quill, quilllite, radio, cast]
+      version:
+        description: "Version, as listed in the feed (3.3.0)"
+        type: string
+        required: true
+      to:
+        description: "Promote to"
+        type: choice
+        options: [beta, stable]
+      dry_run:
+        description: "Only run the checks"
+        type: boolean
+        default: true
+      skip_soak:
+        description: "Reason for promoting before 7 days on Beta (recorded in the feed)"
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: python -m pip install -e . pynacl
+      - name: Run every promotion check (dry run)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python scripts/promote_release.py \
+            --app "${{ inputs.app }}" --version "${{ inputs.version }}" --to "${{ inputs.to }}" \
+            --skip-soak "${{ inputs.skip_soak }}" --dry-run --report promotion-report.txt
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: promotion-report
+          path: promotion-report.txt
+
+  promote-beta:
+    needs: checks
+    if: ${{ !inputs.dry_run && inputs.to == 'beta' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -e . pynacl
+      - name: Promote to Beta (feed left unsigned)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python scripts/promote_release.py --app "${{ inputs.app }}" --version "${{ inputs.version }}" \
+            --to beta --skip-soak "${{ inputs.skip_soak }}" --no-sign
+      - name: Open the pull request to sign
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          BRANCH="promote/${{ inputs.app }}-${{ inputs.version }}-beta"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git switch -c "$BRANCH"
+          git add docs/site/updates/v2 docs/release/promotions.log
+          git commit -m "release: ${{ inputs.app }} ${{ inputs.version }} to Beta (feed unsigned)"
+          git push origin "$BRANCH"
+          gh pr create --head "$BRANCH" --title "Promote ${{ inputs.app }} ${{ inputs.version }} to Beta" \
+            --body "Sign the feed before merging: python scripts/feed_tool.py sign --app ${{ inputs.app }}"
+
+  promote-stable:
+    needs: checks
+    if: ${{ !inputs.dry_run && inputs.to == 'stable' }}
+    runs-on: ubuntu-latest
+    environment: stable-promotion
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -e . pynacl
+      - name: Promote to Stable (feed left unsigned)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python scripts/promote_release.py --app "${{ inputs.app }}" --version "${{ inputs.version }}" \
+            --to stable --skip-soak "${{ inputs.skip_soak }}" --no-sign
+      - name: Open the pull request to sign
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          BRANCH="promote/${{ inputs.app }}-${{ inputs.version }}-stable"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git switch -c "$BRANCH"
+          git add docs/site/updates/v2 docs/release/promotions.log
+          git commit -m "release: ${{ inputs.app }} ${{ inputs.version }} to Stable (feed unsigned)"
+          git push origin "$BRANCH"
+          gh pr create --head "$BRANCH" --title "Promote ${{ inputs.app }} ${{ inputs.version }} to Stable" \
+            --body "Sign the feed before merging: python scripts/feed_tool.py sign --app ${{ inputs.app }}"

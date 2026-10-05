@@ -182,6 +182,71 @@ Root: HKCU; Subkey: "Software\Classes\.html\OpenWithList\{#AppExeName}"; Flags: 
 Root: HKCU; Subkey: "Software\Classes\.htm\OpenWithList\{#AppExeName}"; Flags: uninsdeletekey; Check: WantsFileAssoc
 Root: HKCU; Subkey: "Software\Classes\.epub\OpenWithList\{#AppExeName}"; Flags: uninsdeletekey; Check: WantsFileAssoc
 
+; QUILL tells Windows it is a text editor that CAN open these types, on
+; every install, and takes nothing over. Windows keeps the choice of which
+; app opens a type for the user alone; these keys put QUILL in Open With and
+; in Settings > Apps > Default apps, where that choice is made. Tools > Make
+; QUILL My Text Editor writes the same keys for one account and opens that
+; page. Generated from quill.core.windows_editor.QUILL (HKA: this user for
+; a per-user install, the whole machine for an administrator one).
+Root: HKA; Subkey: "Software\Classes\Quill.Document"; ValueType: string; ValueName: ""; ValueData: "QUILL Document"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\Quill.Document"; ValueType: string; ValueName: "FriendlyTypeName"; ValueData: "QUILL Document"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\Quill.Document\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\{#AppExeName},0"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\Quill.Document\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill ""%1"""; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\Applications\{#AppExeName}"; ValueType: string; ValueName: "FriendlyAppName"; ValueData: "QUILL"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\Applications\{#AppExeName}\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\{#AppExeName},0"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\Applications\{#AppExeName}\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill ""%1"""; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\Applications\{#AppExeName}\SupportedTypes"; ValueType: string; ValueName: ".txt"; ValueData: ""; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\Applications\{#AppExeName}\SupportedTypes"; ValueType: string; ValueName: ".text"; ValueData: ""; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\Applications\{#AppExeName}\SupportedTypes"; ValueType: string; ValueName: ".log"; ValueData: ""; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\Applications\{#AppExeName}\SupportedTypes"; ValueType: string; ValueName: ".md"; ValueData: ""; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\Applications\{#AppExeName}\SupportedTypes"; ValueType: string; ValueName: ".markdown"; ValueData: ""; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\Applications\{#AppExeName}\SupportedTypes"; ValueType: string; ValueName: ".rtf"; ValueData: ""; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\Applications\{#AppExeName}\SupportedTypes"; ValueType: string; ValueName: ".html"; ValueData: ""; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\Applications\{#AppExeName}\SupportedTypes"; ValueType: string; ValueName: ".htm"; ValueData: ""; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\Applications\{#AppExeName}\SupportedTypes"; ValueType: string; ValueName: ".csv"; ValueData: ""; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\Applications\{#AppExeName}\SupportedTypes"; ValueType: string; ValueName: ".rst"; ValueData: ""; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\Applications\{#AppExeName}\SupportedTypes"; ValueType: string; ValueName: ".json"; ValueData: ""; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\Applications\{#AppExeName}\SupportedTypes"; ValueType: string; ValueName: ".docx"; ValueData: ""; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\Applications\{#AppExeName}\SupportedTypes"; ValueType: string; ValueName: ".odt"; ValueData: ""; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\Applications\{#AppExeName}\SupportedTypes"; ValueType: string; ValueName: ".epub"; ValueData: ""; Flags: uninsdeletekey
+; One value in each type's own list, removed on uninstall; the type's key
+; is shared with every other app and is never deleted.
+Root: HKA; Subkey: "Software\Classes\.txt\OpenWithProgids"; ValueType: string; ValueName: "Quill.Document"; ValueData: ""; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\.text\OpenWithProgids"; ValueType: string; ValueName: "Quill.Document"; ValueData: ""; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\.log\OpenWithProgids"; ValueType: string; ValueName: "Quill.Document"; ValueData: ""; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\.md\OpenWithProgids"; ValueType: string; ValueName: "Quill.Document"; ValueData: ""; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\.markdown\OpenWithProgids"; ValueType: string; ValueName: "Quill.Document"; ValueData: ""; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\.rtf\OpenWithProgids"; ValueType: string; ValueName: "Quill.Document"; ValueData: ""; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\.html\OpenWithProgids"; ValueType: string; ValueName: "Quill.Document"; ValueData: ""; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\.htm\OpenWithProgids"; ValueType: string; ValueName: "Quill.Document"; ValueData: ""; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\.csv\OpenWithProgids"; ValueType: string; ValueName: "Quill.Document"; ValueData: ""; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\.rst\OpenWithProgids"; ValueType: string; ValueName: "Quill.Document"; ValueData: ""; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\.json\OpenWithProgids"; ValueType: string; ValueName: "Quill.Document"; ValueData: ""; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\.docx\OpenWithProgids"; ValueType: string; ValueName: "Quill.Document"; ValueData: ""; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\.odt\OpenWithProgids"; ValueType: string; ValueName: "Quill.Document"; ValueData: ""; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\.epub\OpenWithProgids"; ValueType: string; ValueName: "Quill.Document"; ValueData: ""; Flags: uninsdeletevalue
+; Capabilities + RegisteredApplications: what Default apps lists QUILL by.
+Root: HKA; Subkey: "Software\QUILL"; Flags: uninsdeletekeyifempty
+Root: HKA; Subkey: "Software\QUILL\Capabilities"; ValueType: string; ValueName: "ApplicationName"; ValueData: "QUILL"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\QUILL\Capabilities"; ValueType: string; ValueName: "ApplicationDescription"; ValueData: "An accessible writing environment for plain text, Markdown, rich text, HTML, Word and EPUB, built for screen readers."; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\QUILL\Capabilities"; ValueType: string; ValueName: "ApplicationIcon"; ValueData: "{app}\{#AppExeName},0"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\QUILL\Capabilities\FileAssociations"; ValueType: string; ValueName: ".txt"; ValueData: "Quill.Document"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\QUILL\Capabilities\FileAssociations"; ValueType: string; ValueName: ".text"; ValueData: "Quill.Document"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\QUILL\Capabilities\FileAssociations"; ValueType: string; ValueName: ".log"; ValueData: "Quill.Document"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\QUILL\Capabilities\FileAssociations"; ValueType: string; ValueName: ".md"; ValueData: "Quill.Document"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\QUILL\Capabilities\FileAssociations"; ValueType: string; ValueName: ".markdown"; ValueData: "Quill.Document"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\QUILL\Capabilities\FileAssociations"; ValueType: string; ValueName: ".rtf"; ValueData: "Quill.Document"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\QUILL\Capabilities\FileAssociations"; ValueType: string; ValueName: ".html"; ValueData: "Quill.Document"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\QUILL\Capabilities\FileAssociations"; ValueType: string; ValueName: ".htm"; ValueData: "Quill.Document"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\QUILL\Capabilities\FileAssociations"; ValueType: string; ValueName: ".csv"; ValueData: "Quill.Document"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\QUILL\Capabilities\FileAssociations"; ValueType: string; ValueName: ".rst"; ValueData: "Quill.Document"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\QUILL\Capabilities\FileAssociations"; ValueType: string; ValueName: ".json"; ValueData: "Quill.Document"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\QUILL\Capabilities\FileAssociations"; ValueType: string; ValueName: ".docx"; ValueData: "Quill.Document"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\QUILL\Capabilities\FileAssociations"; ValueType: string; ValueName: ".odt"; ValueData: "Quill.Document"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\QUILL\Capabilities\FileAssociations"; ValueType: string; ValueName: ".epub"; ValueData: "Quill.Document"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\RegisteredApplications"; ValueType: string; ValueName: "QUILL"; ValueData: "Software\QUILL\Capabilities"; Flags: uninsdeletevalue
+
 ; "Send to Quill" file right-click verbs (SHELL-3). Generated from
 ; quill.core.shell_verbs so the installer, runtime registry writer, CLI
 ; --action map, and Settings toggles stay in lockstep. Opt-in via the
@@ -957,6 +1022,73 @@ begin
   if N = NormalizedDir(ExpandConstant('{win}')) then Exit;
   if N = NormalizedDir(ExpandConstant('{sys}')) then Exit;
   Result := True;
+end;
+
+// -- Uninstall: put Notepad back, if QUILL replaced it ------------------------
+const
+  NotepadIfeoKey = 'SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\notepad.exe';
+
+function DebuggerPointsHere(Key: String): Boolean;
+var
+  Value: String;
+begin
+  Result := RegQueryStringValue(HKLM64, Key, 'Debugger', Value) and
+    (Pos(Lowercase(ExpandConstant('{app}\')), Lowercase(Value)) > 0) and
+    (Pos('--notepad', Lowercase(Value)) > 0);
+end;
+
+function NotepadKeysPointingHere(var Keys: TArrayOfString): Integer;
+var
+  Names: TArrayOfString;
+  I: Integer;
+begin
+  SetArrayLength(Keys, 0);
+  if DebuggerPointsHere(NotepadIfeoKey) then
+  begin
+    SetArrayLength(Keys, 1);
+    Keys[0] := NotepadIfeoKey;
+  end;
+  if RegGetSubkeyNames(HKLM64, NotepadIfeoKey, Names) then
+    for I := 0 to GetArrayLength(Names) - 1 do
+      if DebuggerPointsHere(NotepadIfeoKey + '\' + Names[I]) then
+      begin
+        SetArrayLength(Keys, GetArrayLength(Keys) + 1);
+        Keys[GetArrayLength(Keys) - 1] := NotepadIfeoKey + '\' + Names[I];
+      end;
+  Result := GetArrayLength(Keys);
+end;
+
+<event('CurUninstallStepChanged')>
+procedure PutNotepadBack(CurUninstallStep: TUninstallStep);
+var
+  Keys: TArrayOfString;
+  I, ResultCode: Integer;
+  Params: String;
+begin
+  if (CurUninstallStep <> usUninstall) or (NotepadKeysPointingHere(Keys) = 0) then
+    Exit;
+  if IsAdmin then
+  begin
+    for I := 0 to GetArrayLength(Keys) - 1 do
+      RegDeleteValue(HKLM64, Keys[I], 'Debugger');
+  end
+  else if not UninstallSilent then
+  begin
+    // One administrator prompt for every key, the same command the app runs.
+    Params := '/d /s /c "';
+    for I := 0 to GetArrayLength(Keys) - 1 do
+    begin
+      if I > 0 then
+        Params := Params + ' & ';
+      Params := Params + '"' + ExpandConstant('{sys}\reg.exe') + '" delete "HKLM\' +
+        Keys[I] + '" /v Debugger /f /reg:64';
+    end;
+    Params := Params + '"';
+    MsgBox('QUILL is still opening in place of Notepad. To put Notepad back, ' +
+      'Windows will ask for administrator approval next.', mbInformation, MB_OK);
+    ShellExec('runas', ExpandConstant('{cmd}'), Params, '', SW_HIDE,
+      ewWaitUntilTerminated, ResultCode);
+  end;
 end;
 
 // -- Uninstall: ask before wiping personal data ----------------------------

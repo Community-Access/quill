@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Quill Converter - convert audio and video, hear it first</title>
-  <meta name="description" content="Quill Converter 1.0.0, released 2026-09-28: a free, screen-reader-first audio and video converter for Windows. 34 output formats, more than 80 input types, named effects you can preview, Join into One File and Split by Chapters. Everything bundled; nothing downloads.">
+  <title>Quill Converter: convert audio and video files</title>
+  <meta name="description" content="Quill Converter 1.0.0 is a free audio and video converter for Windows that works with your screen reader. Add your files, pick a format, hear a preview, and convert.">
   <link rel="stylesheet" href="/assets/style.css">
 </head>
 <body>
@@ -41,13 +41,13 @@
   <main id="main" tabindex="-1">
     <div class="hero">
       <div class="wrap">
-        <h1>Quill Converter: any sound or video, into the format you need.</h1>
+        <h1>Quill Converter: change any sound or video file into the format you need</h1>
         <p class="lede">
-          Queue files or whole folders, choose what you want them to become, and press Convert.
-          Quill Converter turns sound into sound, video into sound and video into video, fixes
-          what is wrong with a recording on the way through, and lets you hear fifteen seconds
-          of the result before you commit. Free, on your own computer, and built the way a
-          screen reader user would build it.
+          Got an audiobook your player will not open? A lecture video when you only want the sound?
+          Quill Converter changes audio and video files from one format to another, right on your
+          own computer. You add your files, pick what you want them to become, and press Convert.
+          You can even hear fifteen seconds of the result first. It is free, and it works with
+          your screen reader from the moment it opens.
         </p>
         <div class="cta">
           <a class="btn" href="https://github.com/Community-Access/quill/releases/download/quill-converter-v1.0.0/Quill-Converter-Setup-Shared-1.0.0.exe">Download the Quill Converter 1.0.0 installer (recommended)</a>
@@ -56,24 +56,37 @@
           <a class="btn secondary" href="/docs/converter-userguide.html">Read the user guide</a>
           <a class="btn secondary" href="/docs/converter-release-notes.html">Read the release notes</a>
         </div>
-        <p class="req-note">Version 1.0.0, released 2026-09-28. Windows 10 or later, 64-bit. Two downloads, and everything is inside both: FFmpeg, the mpv playback engine, the web-link downloader and the cover-art library, so nothing downloads the first time you use a feature. The installer sets up the shared QuillVille Runtime if it is not already there and offers "Convert with Quill Converter" on the File Explorer right-click menu. The portable ZIP unpacks anywhere, a USB stick included, and keeps its settings beside QuillConverter.exe. Help &gt; Check for Updates (Ctrl+Alt+U) offers whichever of the two you are running.</p>
+        <p class="req-note">Version 1.0.0, released September 28, 2026. You need Windows 10 or later, 64-bit. Most people should pick the installer. It adds Quill Converter to your Start menu, and it can add "Convert with Quill Converter" to the menu you get when you right-click a file in File Explorer. The portable ZIP is for running from a folder or a USB stick; it keeps its settings next to QuillConverter.exe. Both downloads already include everything the app needs, so nothing else downloads later. To get a newer version, use Help &gt; Check for Updates (Ctrl+Alt+U).</p>
       </div>
     </div>
 
+    <section class="band" aria-labelledby="start-h">
+      <div class="wrap">
+        <h2 id="start-h">Your first conversion, step by step</h2>
+        <p>When Quill Converter opens, you are in the list of files to convert. From there:</p>
+        <ol>
+          <li>Press Alt+A to add files, or Alt+O to add a whole folder. You can also copy files in File Explorer and paste them into the list with Ctrl+V.</li>
+          <li>Press Alt+T to go to Convert to, and arrow through the formats. Each one tells you what it is good for, like "MP3 audio, plays everywhere".</li>
+          <li>If you want the sound cleaned up, press Alt+E for Effects and pick one, such as "Clean up speech". If not, skip this step.</li>
+          <li>Press Alt+Y to hear fifteen seconds of how the new file will sound. Press it again to stop.</li>
+          <li>Press Ctrl+Enter to convert.</li>
+        </ol>
+        <p>You hear how far along it is at 25, 50 and 75 percent, and it tells you when it is done. Your new files go into a folder called Converted, next to the first file in your list. Your original files are never changed. If something goes wrong, press Ctrl+R and the Conversion Report tells you why, in plain words.</p>
+      </div>
+    </section>
+
     <section class="band" aria-labelledby="whats-in-h">
       <div class="wrap">
-        <h2 id="whats-in-h">What it does</h2>
+        <h2 id="whats-in-h">What else it can do for you</h2>
         <ul class="intro">
-          <li><strong>34 formats out, more than 80 in.</strong> MP3, M4A, M4B audiobooks, Opus, FLAC, WAV, AC-3, WavPack, AMR phone audio and more, and nine video formats from MP4 to Ogg. Film and broadcast files, DVD VOB files, camcorder MTS, old RealMedia and tracker music all read. Only the formats the bundled FFmpeg can really write are offered.</li>
-          <li><strong>Video, both ways.</strong> Take the sound out of a video, or make a new video: same quality, a smaller file for phones, or a new container with nothing re-encoded. H.264 and H.265 are encoded on your graphics chip when it can, several times faster than the processor alone. Every audio track travels, so a described-audio track is kept, and MKV keeps the subtitles.</li>
-          <li><strong>A video, a playlist or a channel.</strong> Paste a YouTube link and choose how much to take: one video, a whole playlist, or a channel&#39;s newest videos. Every video&#39;s audio arrives in order, tagged as one album, and next time only the new ones download.</li>
-          <li><strong>Effects named for the problem.</strong> Clean up speech, make a podcast, pass ACX for an audiobook, bring film dialogue forward, remove hum or background noise, cut long silences, or even out loud and quiet parts for night listening. Custom Effects (Ctrl+E) puts every switch on one page.</li>
-          <li><strong>Hear it first.</strong> Preview (Ctrl+P) plays fifteen seconds exactly as the result will sound; Preview Original (Ctrl+Shift+P) plays the same fifteen seconds untouched.</li>
-          <li><strong>Chapters that survive.</strong> Keep a file's own chapters, write your own in a text file beside it (lines like "0:00 Welcome"), find them at the pauses, or have one every few minutes, in any format. They land inside every format that can hold them, and in a .cue sheet beside the rest, so nothing is silently lost. The Chapter Workbench (Ctrl+H) lets you hear a book and edit its chapters at the playhead.</li>
-          <li><strong>Join and split.</strong> Join into One File (Ctrl+J) makes a folder of chapters into one audiobook with a chapter per file; Split by Chapters (Ctrl+Shift+S) does the reverse, or cuts a long recording every 30 minutes or at its pauses.</li>
-          <li><strong>Tags and cover art.</strong> Edit Tags (Ctrl+T) opens Audio Studio's Tag Editor inside Quill Converter: every tag of an MP3, M4A, M4B or MP4 and its cover art, with nothing else to install.</li>
-          <li><strong>Told, not guessed.</strong> Progress counted inside each file, not just file by file: spoken every quarter, on a progress bar, and in the status bar and tray tooltip with about how long is left. Stop is immediate and removes the unfinished file. File Properties (Alt+Enter) describes any file, and a Conversion Report (Ctrl+R) says in plain words why anything failed.</li>
-          <li><strong>Help from a person.</strong> Help &gt; Get Help from Support (Ctrl+Alt+F2) writes an email to our help desk in your own mail program, with the details support asks for already filled in.</li>
+          <li><strong>Open almost anything.</strong> It reads more than 80 kinds of files and writes 34, including MP3, M4A, M4B audiobooks, FLAC, WAV and Opus, plus nine video formats such as MP4 and MKV. It only offers the formats it can really make.</li>
+          <li><strong>Get the sound out of a video.</strong> Pick a sound format and you get just the audio. Or make a new, smaller video for your phone. If a video has a described-audio track, it comes along.</li>
+          <li><strong>Save audio from a web link.</strong> Press Alt+L, paste a YouTube link, and choose one video, a whole playlist, or a channel's newest videos. The files come in order, ready to listen to.</li>
+          <li><strong>Fix the sound while you convert.</strong> The effects are named for the problem they fix: clean up speech, make a podcast, remove hum or background noise, cut long silences, or make film dialogue easier to hear. Press Ctrl+E for Custom Effects if you want to choose each setting yourself.</li>
+          <li><strong>Keep your chapters.</strong> If a book has chapters, they come along. You can also write your own in a plain text file, with lines like "0:00 Welcome". The Chapter Workbench (Ctrl+H) lets you listen to a book and set chapters where you hear them.</li>
+          <li><strong>Join files or split them.</strong> Ctrl+J joins a folder of chapter files into one audiobook. Ctrl+Shift+S splits a book back into its chapters, or cuts a long recording into pieces.</li>
+          <li><strong>Fix the title and cover.</strong> Ctrl+T opens the Tag Editor, where you can change the title, artist and cover art of MP3, M4A, M4B and MP4 files.</li>
+          <li><strong>Ask a person for help.</strong> Help &gt; Get Help from Support (Ctrl+Alt+F2) starts an email to our support team in your own mail program, with the details they need already filled in.</li>
         </ul>
       </div>
     </section>
@@ -84,23 +97,23 @@
         <div class="cards">
           <div class="card">
             <h3><a href="/docs/converter-announcement.html">Announcement</a></h3>
-            <p>Quill Converter 1.0: every sound and video format, from the keyboard, with progress you can hear and a Stop that stops.</p>
+            <p>A short note on what Quill Converter 1.0 is and who it is for.</p>
           </div>
           <div class="card">
             <h3><a href="/docs/converter-userguide.html">User guide</a></h3>
-            <p>Installing, your first conversion, every format, preset and effect, chapters, Join and Split, and the full keyboard reference.</p>
+            <p>Start here. How to install it, your first conversion, and every format, effect and key, explained one step at a time.</p>
           </div>
           <div class="card">
             <h3><a href="/docs/converter-release-notes.html">Release notes</a></h3>
-            <p>What 1.0.0 is, what is inside the downloads, and the known limits.</p>
+            <p>What is in version 1.0.0, and anything we know does not work yet.</p>
           </div>
           <div class="card">
             <h3><a href="/docs/converter-changelog.html">Changelog</a></h3>
-            <p>Every change in 1.0.0, grouped by what it touches.</p>
+            <p>The full list of changes in 1.0.0.</p>
           </div>
           <div class="card">
             <h3><a href="/docs/converter-prd.html">Product requirements</a></h3>
-            <p>The design document behind Quill Converter: scope, architecture and the accessibility commitments it is held to.</p>
+            <p>The detailed plan we built Quill Converter from. Most people will not need this.</p>
           </div>
         </div>
       </div>
@@ -110,11 +123,11 @@
   <footer class="site">
     <div class="wrap">
       <p class="note">
-        <strong class="quill" style="color:var(--accent)">Quill Converter</strong> -
-        free, screen-reader-first audio and video conversion for Windows, sharing its codebase with QUILL.
+        <strong class="quill" style="color:var(--accent)">Quill Converter</strong> is a free audio and video converter for Windows,
+        made by Community Access for people who use screen readers.
       </p>
       <nav aria-label="Documentation">
-        <h4>Documentation</h4>
+        <h2>Documentation</h2>
         <ul>
           <li><a href="/docs/converter-announcement.html">Announcement</a></li>
           <li><a href="/docs/converter-userguide.html">User guide</a></li>
@@ -123,14 +136,14 @@
         </ul>
       </nav>
       <nav aria-label="Project">
-        <h4>Project</h4>
+        <h2>Project</h2>
         <ul>
           <li><a href="https://github.com/Community-Access/quill/releases/tag/quill-converter-v1.0.0">Quill Converter 1.0.0 release</a></li>
           <li><a href="mailto:support@community-access.org">Email QUILL support</a></li>
         </ul>
       </nav>
       <nav aria-label="The QUILL family">
-        <h4>The QUILL family</h4>
+        <h2>The QUILL family</h2>
         <ul>
           <li><a href="/index.html">QUILL writing environment</a></li>
           <li><a href="/radio.html">Quill Radio</a></li>

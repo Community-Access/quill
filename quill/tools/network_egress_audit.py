@@ -43,11 +43,11 @@ _EGRESS_CALLEES = frozenset({
     # call site. Treat the wrapper as the reviewable egress marker so every
     # private-feed fetch site is still inventoried below.
     "urlopen_auth_safe",
-    # The audio-converter URL import (quill/core/audio/url_import.py) hands off to
-    # yt-dlp, which does all its HTTP internally. Constructing ``yt_dlp.YoutubeDL``
-    # is the single point where QUILL enters that network path, so treat it as the
-    # reviewable egress marker (mirrors the ElevenLabs SDK marker above).
+    # yt-dlp (URL import, Radio's YouTube) and chat-downloader (Radio's Live Chat) do
+    # their HTTP internally; constructing ``YoutubeDL`` / ``ChatDownloader`` is where
+    # QUILL enters each path, so those are the reviewable markers (as ElevenLabs).
     "YoutubeDL",
+    "ChatDownloader",
 })
 
 # Module-qualified HTTP egress: a call like ``requests.get(...)`` or

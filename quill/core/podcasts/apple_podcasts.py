@@ -14,7 +14,9 @@ public, both keyless, both verified live on 2026-08-13:
 * **The charts** -- ``rss.marketingtools.apple.com/api/v2/<storefront>/podcasts/
   top/<n>/podcasts.json`` returns the top shows for any storefront, which is the
   axis almost no desktop client offers: the top podcasts in Ireland or Japan are
-  one substitution away.
+  one substitution away. A genre folder uses Apple's per-genre chart instead
+  (:mod:`quill.core.podcasts.apple_genre_charts`), because the storefront chart
+  filtered by genre left most genres with a handful of shows or none.
 
 A chart row carries Apple's collection id, not a feed, so the last hop is
 ``itunes.apple.com/lookup?id=<id>&entity=podcast``, which returns ``feedUrl``.
@@ -322,21 +324,6 @@ def genres_in(genres: list[AppleGenre], genre_id: str) -> AppleGenre | None:
     return None
 
 
-def genre_id_set(genre: AppleGenre) -> frozenset[str]:
-    """*genre*'s id plus every descendant's (pure).
-
-    Needed because a chart row is tagged with the **leaf** genre, not its
-    ancestors: a show under Arts > Books carries ``1482`` and never ``1301``.
-    Matching a top-level genre against raw row tags therefore finds nothing,
-    which is exactly what the first live run of this module did -- "Arts, 0
-    shows" against a chart full of arts podcasts.
-    """
-    ids = {genre.genre_id}
-    for child in genre.subgenres:
-        ids |= genre_id_set(child)
-    return frozenset(ids)
-
-
 def storefront_name(code: str) -> str:
     """A storefront's display name (pure), falling back to the code itself."""
     lowered = code.strip().lower()
@@ -400,19 +387,22 @@ def fetch_charts(
     safe_mode: bool = False,
     refresh: bool = False,
 ) -> list[AppleShow]:
-    """The top shows for *storefront*, optionally filtered to *genre_id*.
+    """The top shows for *storefront*, or for one genre of it.
 
-    Apple's chart feed is per-storefront, not per-genre, so a genre node filters
-    the storefront chart by the ``genres`` each row already carries. That is one
-    request for every genre in a storefront rather than one per genre, which is
-    both faster and considerably politer.
-
-    The filter matches *genre_id* **or any of its descendants**, because a chart
-    row is tagged with its leaf genre and never its ancestors -- see
-    :func:`genre_id_set`. Filtering on the bare id finds nothing for every
-    top-level genre, which is the whole first level of the tree.
+    With a *genre_id* this is **Apple's own chart for that genre**
+    (:mod:`quill.core.podcasts.apple_genre_charts`), up to 200 shows. It used
+    to filter the storefront's overall top 100 by genre instead, which is one
+    request rather than one per genre and answers almost nothing: History got
+    four shows and most subgenres got none (reported 2026-10-03).
     """
     refuse_in_safe_mode(safe_mode)
+    wanted = genre_id.strip()
+    if wanted:
+        from quill.core.podcasts import apple_genre_charts
+
+        return apple_genre_charts.fetch_genre_chart(
+            storefront, wanted, safe_mode=safe_mode, refresh=refresh
+        )
     rows = max(10, min(int(count), 100))
     chart = kind if kind in (CHART_SHOWS, CHART_EPISODES) else CHART_SHOWS
     key = f"apple:charts:{storefront.strip().lower()}:{rows}:{chart}"
@@ -426,13 +416,7 @@ def fetch_charts(
         refresh=refresh,
         empty=[],
     )
-    shows = _shows_from_json(payload)
-    wanted = genre_id.strip()
-    if not wanted:
-        return shows
-    node = genres_in(fetch_genres(safe_mode=safe_mode), wanted)
-    accepted = genre_id_set(node) if node is not None else frozenset({wanted})
-    return [show for show in shows if accepted.intersection(show.genre_ids)]
+    return _shows_from_json(payload)
 
 
 def resolve_feed_url(collection_id: str, *, safe_mode: bool = False) -> str:

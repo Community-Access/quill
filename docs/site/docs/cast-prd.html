@@ -244,7 +244,7 @@
 <main id="main-content" tabindex="-1">
 <h1 id="quill-cast--product-requirements">QUILL Cast – Product
 Requirements</h1>
-<p>Version 2.0</p>
+<p>Version 2.0.0, released 2026-10-03.</p>
 <h2 id="1-product-statement">1. Product statement</h2>
 <p>QUILL Cast is QUILL’s podcast environment, shipped as its own small
 Windows app for people who want their shows without loading a full
@@ -2100,6 +2100,261 @@ View &gt; Find in Library is Ctrl+F. Transcripts are excluded until
 F-09’s index exists. <code>podcasts_view_menu.py</code> joined the app
 menu-accelerator gate, whose first run gave Customize Features Radio’s
 Ctrl+Alt+C.</p>
+<h3 id="2325-earshot-parity-complete-2026-10-03">23.25 Earshot parity,
+complete (2026-10-03)</h3>
+<p>The Earshot parity plan (ear.md, compared against Earshot 1.2.3,
+TestFlight 273, S:/code/earshot 63dc641) is closed and its working file
+retired. Parity meant the listener gets the same outcome, not the same
+screen: keys where iOS has gestures, the Command Palette where iOS has
+Siri.</p>
+<ul>
+<li>R1 Hide Caught-Up Podcasts (View, remembered; “All caught up” when
+everything is hidden). R2 Feed Check. R3 Refresh Episode Audio on the
+episode menu and the palette
+(<code>ui/podcasts/refresh_audio_command.py</code> over
+<code>core/podcasts/refresh_audio.py</code>: re-read the feed, ask once
+naming the download, keep position, played, note and speed). R4 Delete
+in the Inbox also deletes the download when “Delete its downloaded file”
+is on, never for a kept episode. R5 the Inbox scoped to one library
+folder (View &gt; Inbox Folder). R6 Play an Unheard Episode (queue, then
+Inbox, then everything; newest or oldest), Play Queue Shuffled, Clear
+Entire Queue, in the palette. R7 Jump List: dropped by Jeff, 2026-10-03;
+not planned. R8 to R10: 23.20.</li>
+<li>A1 to A12, the AI verbs: 23.21 and the shared hosted AI.</li>
+<li>B1 to B3: 23.24.</li>
+<li>Principle kept from the plan: no invented formats – where Earshot
+has not defined something, Cast follows the shared Listening Places
+proposal or waits.</li>
+</ul>
+<h3 id="2323-library-and-inbox-layouts-2026-10-03">23.23 Library and
+Inbox layouts (2026-10-03)</h3>
+<ul>
+<li>Six catalogue settings, global, stored by id
+(<code>settings_defs_views.py</code>): <code>library_layout</code>
+(folders_first | folders_only | podcasts_only | mixed),
+<code>folder_sort_mode</code> (custom | name_az | name_za | most_unheard
+| most_podcasts), <code>library_folders_open</code> (open | closed),
+<code>library_counts</code> (unheard | podcasts | both | none),
+<code>library_hide_empty_folders</code>, <code>inbox_layout</code>
+(episodes | folders_first | folders_only).</li>
+<li>Plans in <code>library_view.py</code>; invariant: no layout hides a
+podcast or an Inbox episode. Folders only adds a “Podcasts in no folder”
+group, tagged <code>group</code>.</li>
+<li>The Inbox groups by each show’s top-level library folder; a folder
+row opens in place, Backspace returns.</li>
+<li>View &gt; Rearrange Library and Inbox (Ctrl+Shift+R), live;
+Preferences &gt; The library (ninth section).</li>
+</ul>
+<h3 id="2324-earshot-b1-b3-2026-10-03">23.24 Earshot B1-B3
+(2026-10-03)</h3>
+<ul>
+<li>B1: <code>PodcastEpisode.last_played_on</code> from the winning
+device file’s <code>device_label</code>, or its app name; shown in
+Continue Listening; cleared by any local position change.</li>
+<li>B2: an Earshot 1.2.3 device file fixture written to Earshot’s
+encoder.</li>
+<li>B3: subscriptions and folders in the plain file per the shared
+proposal’s section 6.7, behind
+<code>PlacesConfig.share_subscriptions</code> (off).</li>
+</ul>
+<h3
+id="2322-why-it-is-queued-and-choices-shared-with-quill-radio-qcmd-x-04-x-05-2026-10-03">23.22
+Why it is queued, and choices shared with Quill Radio (qc.md X-04, X-05;
+2026-10-03)</h3>
+<ul>
+<li>A queue slot carries an optional <code>reason</code>
+(<code>QueueItem.reason</code>, written only when set): Auto-Queue, “the
+lineup <name>”, “your listening run”, “a watched folder”. The Play Queue
+place adds “; queued by <reason>” to the row’s status. A slot the
+listener added has no reason and says nothing extra.</li>
+<li>Preferences &gt; The window: <strong>Share these choices with my
+other Quill apps</strong> (<code>share_family_prefs</code>, off). Shared
+through <code>quill/core/family_preferences.py</code> in the shared data
+folder, only between apps that each turned it on, and only
+<code>announce_dialog_transitions</code> and
+<code>action_feedback</code>. Cast adopts at launch and says which
+choice it took; turning it on adopts or publishes; saving Preferences
+publishes.</li>
+<li>Settings search covers all eight Preferences sections (X-01).</li>
+</ul>
+<h3 id="2321-casts-own-ai-verbs-earmd-a2-a10-2026-10-03">23.21 Cast’s
+own AI verbs (ear.md A2-A10; 2026-10-03)</h3>
+<p><code>quill/core/podcasts/ai_listening.py</code> (wx-free: prompts
+and readers for A3-A8, <code>tidy_rows</code> for A9) and
+<code>quill/ui/podcasts/cast_ai_features.py</code>
+(<code>CastDomainAiMixin</code>, carried by
+<code>CastExtensionsMixin</code> under GATE-11), with
+<code>ai_review_dialog.py</code> (Accept/Skip per row in words, Space
+toggles, Apply Selected, Cancel changes nothing) and
+<code>ai_answer_dialog.py</code> (read-only answer, Copy). Every request
+goes through the shared service’s <code>ask("ask", ...)</code> behind
+<code>_ai_ready</code> (switch and agreement); failures through
+<code>report_failure</code>. Rows are appended to Help &gt; AI Features
+by a hook the adapter calls, so <code>CastAiMixin</code> still has no
+command of its own. Organise asks in batches of 40; a run is measured
+with Cast’s own lengths; playlist rules resolve names to ids; chapter
+titles are saved to the inference cache. Tidy sends nothing and works
+with AI off; unfollow rows go through the ordinary undoable prompt. A10
+is a test: the background passes and destructive verbs cannot import the
+AI.</p>
+<h3 id="2320-earshot-parity-r8-r10-earmd-2026-10-03">23.20 Earshot
+parity R8-R10 (ear.md; 2026-10-03)</h3>
+<ul>
+<li><strong>R8, names that survive.</strong>
+<code>PodcastShow.feed_title</code> and
+<code>PodcastEpisode.feed_title</code> hold the feed’s own name when the
+listener renamed it (““ otherwise; written only when set).
+<code>custom_names.rename</code> applies a rename and keeps the feed’s
+name; renaming to nothing or to the feed’s name restores it.
+<code>merge_episodes</code> updates <code>feed_title</code>, never the
+listener’s title. <code>PodcastFolder</code> and
+<code>ExpiredEntry</code> moved to <code>models_folder.py</code>
+(re-exported) to make room; <code>models.py</code> ratcheted to
+200.</li>
+<li><strong>R9, notice actions on keys.</strong>
+<code>ui/podcasts/notice_actions.py</code>: Ctrl+Enter plays, Space
+queues, on a new-episode notice in the Notifications place and the
+Notifications window, and in both rows’ menus.</li>
+<li><strong>R10, this computer only.</strong> Delete All Podcast Data is
+now Clear All Podcast Data from This Computer, and every sentence says
+the phone, other computers and the shared place folder are untouched.
+Cast has no “delete everywhere”: subscriptions do not sync (B3).</li>
+<li>B1-B3 stay blocked on Earshot (ear.md 5a).</li>
+</ul>
+<h3 id="2319-phase-3-nothing-silent-qcmd-p4-section-10-2026-10-03">23.19
+Phase 3: nothing silent (qc.md P4, section 10; 2026-10-03)</h3>
+<ul>
+<li><code>ui/podcasts/say_status.py</code>: the one way to write a
+status line – set it and speak it once when it changed; clearing is
+silent; <code>speak=False</code> is written at the call site with its
+reason (a paced progress count, a line whose fuller sentence the caller
+speaks, a count that follows the selection). Every Cast status write was
+moved to it: Add Podcast (Find, Find failed, Fetching, Could not follow
+it, sign-in needed, Safe Mode, empty fields – several of which were
+silent), Preview, Search Everywhere, OPML import, Find in library, the
+Podcast Manager’s episode counts.</li>
+<li><code>ui/podcasts/failure_report.py</code>: one helper for a failure
+– spoken (with the error sound through
+<code>outcome_feedback.say_failure</code>), or for work Cast did on its
+own spoken unless Quiet Hours hold it back, or only recorded – and
+always written to Recent Problems. The two
+<code>on_failure=lambda *_a: None</code> handlers (chapter prefetch,
+audio processing), ACB Media, chapter inference and analysis,
+transcripts, the chapters dialog, Follow from About This Episode,
+Preview and watched folders use it.</li>
+<li>GATE-CAST-SILENT (<code>quill/tools/check_cast_silence.py</code>, in
+<code>platform_report</code>): in Cast’s scope, a status
+<code>SetLabel</code> outside <code>say_status</code>, or an
+<code>on_failure</code> that says nothing or only logs, fails.</li>
+</ul>
+<h3
+id="2318-phase-7-the-listening-extensions-qcmd-section-18-2026-10-03">23.18
+Phase 7: the listening extensions (qc.md section 18, 2026-10-03)</h3>
+<p><code>quill/apps/podcasts_extensions.py</code>
+(<code>CastExtensionsMixin</code>, ahead of the shared podcast mixins)
+and <code>quill/core/podcasts/listening_words.py</code> (wx-free):</p>
+<ul>
+<li><strong>Time Remaining</strong>, Ctrl+Shift+T
+(<code>podcasts.time_remaining</code>, Episode menu, also offered as a
+global hotkey): position of length, what is left, the real time at the
+speed in force, and the sleep timer.</li>
+<li><strong>Ctrl+Home</strong> to the launch place, first row; caught in
+the frame’s char hook, never an accelerator, so a text field keeps
+Ctrl+Home.</li>
+<li><strong>Shift+Space</strong>, Play This Next:
+<code>listening_words.play_this_next</code> inserts after the playing
+episode’s slot (the playing episode stays queued, ear.md R4), else at
+the front; char hook, skipped in text fields.</li>
+<li><strong>Up next</strong>, about ten real seconds before the end,
+through the controller’s one-second tick: the run-end choice’s next
+episode (<code>queue_steps.step_next</code> or the folder’s next
+unplayed), once per episode, never with Stop After This Episode or a
+sleep-at-end, through <code>quiet_hours_ui.speak_background</code>;
+<code>PodcastHistory.announce_up_next</code> (on).</li>
+<li><strong>Ctrl+N</strong> with one web address on the clipboard fills
+Add Podcast’s feed address and focuses it
+(<code>AddPodcastDialog.prefill_address</code>); Enter follows. No
+preview: Add by URL fetches and validates the feed as it follows.</li>
+<li><strong>Bookmarks</strong>: Bookmark with a Note (Ctrl+Shift+D),
+Bookmarks in This Episode (Ctrl+Shift+J;
+<code>show_bookmarks(anchor=...)</code> filters the shared window), a
+Bookmarks button in Now Playing, and a Bookmarks tab in About This
+Episode (<code>extras.ACTION_JUMP</code>, Go There plays from that
+moment).</li>
+<li><strong>Earcons</strong> for added-to-queue, removed and marked
+played (<code>SoundEvent.CAST_QUEUE_ADDED</code>,
+<code>CAST_REMOVED</code>, <code>CAST_MARKED_PLAYED</code>, in the ink
+pack), resolved through <code>action_feedback.resolve</code> by Cast’s
+own <code>PodcastHistory.action_feedback</code> (default <em>both</em>,
+so nothing went quiet); failures through <code>resolve_failure</code>
+(<code>ui/podcasts/outcome_feedback.py</code>).</li>
+<li><strong>What I care about in this podcast</strong>: a show-level
+text setting (<code>listening_note</code>, Curation) for later AI
+features to read.</li>
+<li><strong>Global hotkeys</strong>: Podcasts: Now Playing window and
+Podcasts: Time Remaining join the allowlist; Cast’s Global Hotkeys
+window now lists only commands Cast registers
+(<code>_global_hotkeys_registered_only</code>), so it no longer offers
+Radio’s and the editor’s.</li>
+<li><strong>Undo History</strong> (Edit &gt; Undo History, shared with
+Quill Radio): <code>undo_last.UndoHistory</code> keeps ten steps; Ctrl+Z
+still takes the newest, and pressing it again takes the one before; each
+held deletion gets its own holding folder
+(<code>undo_last_ui._step_dir</code>).</li>
+<li>Timestamps in show notes were already links
+(<code>notes_reader</code>, 23.13).</li>
+<li>Not built: a braille <em>status line</em>. Neither JAWS nor NVDA
+gives an app a status region, and every Cast announcement already goes
+to braille as a flash message through the shared announcement
+service.</li>
+</ul>
+<h3
+id="2317-the-20-follow-ups-watched-folders-a-showhide-chord-two-menu-rows-qcmd-c2-01-to-c2-03-2026-10-03">23.17
+The 2.0 follow-ups: watched folders, a show/hide chord, two menu rows
+(qc.md C2-01 to C2-03, 2026-10-03)</h3>
+<p><strong>Watched folders (C2-02, section 5d of qc.md).</strong>
+<code>WatchedFolder</code> records live in the library file
+(<code>watched_folders</code>), replacing the one
+<code>watched_folder</code> string a Personal Audio show carried;
+<code>watched_folders.migrate</code> turns each old string into a record
+with the defaults and marks the files the show already has as seen, so
+an upgrade imports nothing twice. Each record carries a name,
+include-subfolders, one-group-per-subfolder, file types, what happens to
+the original (keep a copy, move, or play in place), what an arrival does
+(add, queue, play when idle), Tell me (each, batch, quiet), a minimum
+length (30 seconds) and a speed. <code>plan</code> does the slow half on
+the task manager (find, skip seen by size and time, wait for anything
+modified in the last five seconds or not yet openable, skip known
+content hashes and short files, copy through <code>_staged_copy</code>);
+<code>apply</code> does the quick half on the UI thread. Live watching
+is <code>wx.FileSystemWatcher</code> (created after the event loop
+starts) feeding <code>SettleTracker</code>, which releases a path once
+its size has held still for five seconds and it opens; a network path
+(<code>is_network_path</code>) is polled every ten minutes instead. A
+full look runs at launch and on <code>EVT_POWER_RESUME</code>. Arrivals
+write an <code>IMPORT_FINISHED</code> notice and are spoken by Tell me;
+a folder’s problem is spoken once until it recovers and written to
+Recent Problems. The window
+(<code>ui/podcasts/watched_folders_window.py</code>) is a peer like
+Notifications; the settings page is
+<code>ui/podcasts/watched_folder_settings.py</code>; the host side is
+<code>ui/podcasts/folder_watch.FolderWatchMixin</code>, shared by QUILL
+through <code>PodcastsMixin</code>, where Podcasts: Watched Folders… is
+a palette command. Safe Mode watches nothing. Ctrl+Alt+W opens the
+window; Scan Watched Folders stays as a palette command and scans every
+folder.</p>
+<p><strong>Show/hide chord (C2-01).</strong> Cast registers its own
+system-wide show/hide, Ctrl+Alt+Shift+F12
+(<code>podcasts_routes.CAST_TRAY_HOTKEY</code>), and sets
+<code>_own_tray_hotkey</code> so the shared default (Ctrl+Alt+Shift+Q,
+which is QUILL’s own show/hide key) is never added, even when Windows
+refuses Cast’s own chord. Every Ctrl+Alt+Shift letter already belongs to
+a family app.</p>
+<p><strong>Menu rows (C2-03).</strong> Episode &gt; Player Information…
+(Ctrl+I) and Podcasts &gt; Carry My Place Between Machines… (Alt+H in
+the menu) were palette-only. Bookmark This Moment (Ctrl+Alt+A) and Skip
+Silence (Ctrl+Shift+9) gained Episode rows in the same pass; their keys
+never fired in Cast without one.</p>
 <h3
 id="2316-phase-5-one-vocabulary-two-settings-windows-refresh-schedules-2026-10-02">23.16
 Phase 5: one vocabulary, two settings windows, refresh schedules

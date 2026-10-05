@@ -36,7 +36,16 @@
 ; /dAppVersion=<version> to ISCC. The literal below is only the fallback for a
 ; manual ISCC run and must be kept in step with build_release.ps1's $version.
 #ifndef AppVersion
-  #define AppVersion "1.1.2"
+  #define AppVersion "1.2.0"
+#endif
+; The build of this version and the Windows file version (X.Y.Z.B)
+; (docs/release/RELEASE.md, "Build numbers"). build_release.ps1 passes
+; /dAppBuild= and /dAppFileVersion=; these literals are only the fallback.
+#ifndef AppBuild
+  #define AppBuild "1"
+#endif
+#ifndef AppFileVersion
+  #define AppFileVersion "1.2.0.1"
 #endif
 #define AppPublisher "Community Access"
 #define AppURL "https://github.com/Community-Access/quill"
@@ -67,7 +76,7 @@ AppPublisher={#AppPublisher}
 AppPublisherURL={#AppURL}
 AppSupportURL={#AppURL}
 AppUpdatesURL={#AppURL}
-VersionInfoVersion=1.1.2.0
+VersionInfoVersion={#AppFileVersion}
 VersionInfoCompany={#AppPublisher}
 VersionInfoDescription={#AppName} accessible plain text and rich text editor (shared runtime)
 ; The folder keeps the old name: an existing install upgrades in place.
@@ -100,6 +109,9 @@ UninstallDisplayIcon={app}\quill-lite.ico
 SetupIconFile=..\assets\quill-lite.ico
 LicenseFile=..\LICENSE
 SetupLogging=yes
+; The [Registry] section registers QUILL Lite as a text editor; this tells
+; Explorer to refresh Open With and Default apps when Setup finishes.
+ChangesAssociations=yes
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -115,7 +127,6 @@ Name: "custom"; Description: "Custom installation"; Flags: iscustom
 Name: "runtime"; Description: "Shared QuillVille runtime (Python) -- installed once, reused by every QuillVille app"; Types: full compact custom; Flags: fixed
 Name: "main"; Description: "{#AppName} (required)"; Types: full compact custom; Flags: fixed
 Name: "docs"; Description: "Documentation (User Guide, Release Notes, Product Requirements)"; Types: full custom
-Name: "assoc"; Description: "Open .txt and .rtf files with {#AppName}"; Types: custom
 
 [INI]
 ; The version THIS installer installed, read by quill.core.app_version for
@@ -123,6 +134,9 @@ Name: "assoc"; Description: "Open .txt and .rtf files with {#AppName}"; Types: c
 ; the code's own constant says which runtime is here, not which app installer
 ; ran -- on 2026-09-29 a Radio runtime made QUILL Lite 1.0.0 call itself 1.1.0.
 Filename: "{app}\quill-app-version.ini"; Section: "app"; Key: "version"; String: "{#AppVersion}"
+; The build, beside the version it belongs to (quill.core.app_version says
+; why it repeats the version rather than holding the bare number).
+Filename: "{app}\quill-app-version.ini"; Section: "app"; Key: "version_build"; String: "{#AppVersion}+{#AppBuild}"
 
 [Files]
 Source: "..\assets\quill-lite.ico"; DestDir: "{app}"; Components: main; Flags: ignoreversion
@@ -186,22 +200,63 @@ Name: "{group}\Uninstall {#AppName}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\{#AppName}"; Filename: "{app}\QuillLite.exe"; IconFilename: "{app}\quill-lite.ico"; Check: WantsDesktopIcon; Components: main
 
 [Registry]
-; "Open with QUILL Lite" on .txt and .rtf, as an OPTIONAL component and never as
-; the default handler. A text editor that quietly takes over every .txt on the
-; machine is a text editor people uninstall; taking the verb rather than the
-; association leaves Notepad, WordPad and QUILL exactly where they were.
-Root: HKA; Subkey: "Software\Classes\Applications\QuillLite.exe\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\QuillLite.exe"" ""%1"""; Flags: uninsdeletekey; Components: assoc
-Root: HKA; Subkey: "Software\Classes\Applications\QuillLite.exe"; ValueType: string; ValueName: "FriendlyAppName"; ValueData: "{#AppName}"; Flags: uninsdeletekey; Components: assoc
-Root: HKA; Subkey: "Software\Classes\Applications\QuillLite.exe\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\quill-lite.ico"; Flags: uninsdeletekey; Components: assoc
-Root: HKA; Subkey: "Software\Classes\.txt\OpenWithList\QuillLite.exe"; Flags: uninsdeletekey; Components: assoc
-Root: HKA; Subkey: "Software\Classes\.rtf\OpenWithList\QuillLite.exe"; Flags: uninsdeletekey; Components: assoc
-; QUILL Lite edits four kinds, not two. Markdown and HTML were missing from
-; this list until 2026-09-16 -- so a .md file could not reach the editor that
-; has a Markdown mode, from the menu Windows offers for exactly that (bad.md A1).
-Root: HKA; Subkey: "Software\Classes\.md\OpenWithList\QuillLite.exe"; Flags: uninsdeletekey; Components: assoc
-Root: HKA; Subkey: "Software\Classes\.markdown\OpenWithList\QuillLite.exe"; Flags: uninsdeletekey; Components: assoc
-Root: HKA; Subkey: "Software\Classes\.html\OpenWithList\QuillLite.exe"; Flags: uninsdeletekey; Components: assoc
-Root: HKA; Subkey: "Software\Classes\.htm\OpenWithList\QuillLite.exe"; Flags: uninsdeletekey; Components: assoc
+; QUILL Lite tells Windows it is a text editor that CAN open these types, on
+; every install, and takes nothing over. Windows keeps the choice of which app
+; opens a type for the user alone (a UserChoice key only Windows can write, and
+; nothing here touches it); these keys put QUILL Lite in Open With and in
+; Settings > Apps > Default apps, where that choice is made. Tools > Make QUILL
+; Lite My Text Editor writes the same keys for one account and opens that page.
+;
+; This replaced an optional "assoc" component on 2026-10-03. Components are a
+; TNewCheckListBox, which a screen reader reads as unchecked whatever its state,
+; and offering nothing that takes over left nothing worth asking about.
+;
+; HKA: HKCU for a per-user install, HKLM for an administrator one. The types are
+; the ones QUILL Lite really opens; quill/core/lite/windows_editor.py EXTENSIONS
+; holds the same list, and tests/unit/scripts/test_quilllite_text_editor_installer.py
+; keeps the two equal.
+Root: HKA; Subkey: "Software\Classes\QuillLite.Document"; ValueType: string; ValueName: ""; ValueData: "{#AppName} Document"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\QuillLite.Document"; ValueType: string; ValueName: "FriendlyTypeName"; ValueData: "{#AppName} Document"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\QuillLite.Document\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\quill-lite.ico"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\QuillLite.Document\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\QuillLite.exe"" ""%1"""; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\Applications\QuillLite.exe"; ValueType: string; ValueName: "FriendlyAppName"; ValueData: "{#AppName}"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\Applications\QuillLite.exe\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\quill-lite.ico"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\Applications\QuillLite.exe\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\QuillLite.exe"" ""%1"""; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\Applications\QuillLite.exe\SupportedTypes"; ValueType: string; ValueName: ".txt"; ValueData: ""; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\Applications\QuillLite.exe\SupportedTypes"; ValueType: string; ValueName: ".text"; ValueData: ""; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\Applications\QuillLite.exe\SupportedTypes"; ValueType: string; ValueName: ".log"; ValueData: ""; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\Applications\QuillLite.exe\SupportedTypes"; ValueType: string; ValueName: ".md"; ValueData: ""; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\Applications\QuillLite.exe\SupportedTypes"; ValueType: string; ValueName: ".markdown"; ValueData: ""; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\Applications\QuillLite.exe\SupportedTypes"; ValueType: string; ValueName: ".rtf"; ValueData: ""; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\Applications\QuillLite.exe\SupportedTypes"; ValueType: string; ValueName: ".html"; ValueData: ""; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\Applications\QuillLite.exe\SupportedTypes"; ValueType: string; ValueName: ".htm"; ValueData: ""; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\Applications\QuillLite.exe\SupportedTypes"; ValueType: string; ValueName: ".csv"; ValueData: ""; Flags: uninsdeletekey
+; One value in each type's own list, removed on uninstall; the type's key is
+; shared with every other app and is never deleted.
+Root: HKA; Subkey: "Software\Classes\.txt\OpenWithProgids"; ValueType: string; ValueName: "QuillLite.Document"; ValueData: ""; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\.text\OpenWithProgids"; ValueType: string; ValueName: "QuillLite.Document"; ValueData: ""; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\.log\OpenWithProgids"; ValueType: string; ValueName: "QuillLite.Document"; ValueData: ""; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\.md\OpenWithProgids"; ValueType: string; ValueName: "QuillLite.Document"; ValueData: ""; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\.markdown\OpenWithProgids"; ValueType: string; ValueName: "QuillLite.Document"; ValueData: ""; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\.rtf\OpenWithProgids"; ValueType: string; ValueName: "QuillLite.Document"; ValueData: ""; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\.html\OpenWithProgids"; ValueType: string; ValueName: "QuillLite.Document"; ValueData: ""; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\.htm\OpenWithProgids"; ValueType: string; ValueName: "QuillLite.Document"; ValueData: ""; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\.csv\OpenWithProgids"; ValueType: string; ValueName: "QuillLite.Document"; ValueData: ""; Flags: uninsdeletevalue
+; Capabilities + RegisteredApplications: what Default apps lists QUILL Lite by.
+Root: HKA; Subkey: "Software\QuillLite"; Flags: uninsdeletekeyifempty
+Root: HKA; Subkey: "Software\QuillLite\Capabilities"; ValueType: string; ValueName: "ApplicationName"; ValueData: "{#AppName}"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\QuillLite\Capabilities"; ValueType: string; ValueName: "ApplicationDescription"; ValueData: "An accessible text editor for plain text, Markdown, rich text and HTML, built for screen readers."; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\QuillLite\Capabilities"; ValueType: string; ValueName: "ApplicationIcon"; ValueData: "{app}\quill-lite.ico"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\QuillLite\Capabilities\FileAssociations"; ValueType: string; ValueName: ".txt"; ValueData: "QuillLite.Document"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\QuillLite\Capabilities\FileAssociations"; ValueType: string; ValueName: ".text"; ValueData: "QuillLite.Document"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\QuillLite\Capabilities\FileAssociations"; ValueType: string; ValueName: ".log"; ValueData: "QuillLite.Document"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\QuillLite\Capabilities\FileAssociations"; ValueType: string; ValueName: ".md"; ValueData: "QuillLite.Document"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\QuillLite\Capabilities\FileAssociations"; ValueType: string; ValueName: ".markdown"; ValueData: "QuillLite.Document"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\QuillLite\Capabilities\FileAssociations"; ValueType: string; ValueName: ".rtf"; ValueData: "QuillLite.Document"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\QuillLite\Capabilities\FileAssociations"; ValueType: string; ValueName: ".html"; ValueData: "QuillLite.Document"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\QuillLite\Capabilities\FileAssociations"; ValueType: string; ValueName: ".htm"; ValueData: "QuillLite.Document"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\QuillLite\Capabilities\FileAssociations"; ValueType: string; ValueName: ".csv"; ValueData: "QuillLite.Document"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\RegisteredApplications"; ValueType: string; ValueName: "{#AppName}"; ValueData: "Software\QuillLite\Capabilities"; Flags: uninsdeletevalue
 
 [UninstallDelete]
 ; Remove only QUILL Lite's own {app} payload. The shared runtime is left to the
@@ -280,4 +335,75 @@ function NextButtonClick(CurPageID: Integer): Boolean;
 begin
   Result := True;
   LaunchIfChosen(CurPageID);
+end;
+
+{ Open QUILL Lite Instead of Notepad (Tools menu) points every Notepad launch at
+  this folder's QuillLite.exe through Image File Execution Options. Left behind
+  by an uninstall, Notepad would stop opening at all, so the uninstaller takes
+  those Debugger values out again: only values naming this install's
+  QuillLite.exe, in the parent key and in the Windows 11 per-path subkeys.
+  Another program's value, and Microsoft's own values, are left alone. }
+const
+  NotepadIfeoKey = 'SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\notepad.exe';
+
+function DebuggerPointsHere(Key: string): Boolean;
+var
+  Value: string;
+begin
+  Result := RegQueryStringValue(HKLM64, Key, 'Debugger', Value) and
+    (Pos(Lowercase(ExpandConstant('{app}\QuillLite.exe')), Lowercase(Value)) > 0);
+end;
+
+function NotepadKeysPointingHere(var Keys: TArrayOfString): Integer;
+var
+  Names: TArrayOfString;
+  I: Integer;
+begin
+  SetArrayLength(Keys, 0);
+  if DebuggerPointsHere(NotepadIfeoKey) then
+  begin
+    SetArrayLength(Keys, 1);
+    Keys[0] := NotepadIfeoKey;
+  end;
+  if RegGetSubkeyNames(HKLM64, NotepadIfeoKey, Names) then
+    for I := 0 to GetArrayLength(Names) - 1 do
+      if DebuggerPointsHere(NotepadIfeoKey + '\' + Names[I]) then
+      begin
+        SetArrayLength(Keys, GetArrayLength(Keys) + 1);
+        Keys[GetArrayLength(Keys) - 1] := NotepadIfeoKey + '\' + Names[I];
+      end;
+  Result := GetArrayLength(Keys);
+end;
+
+<event('CurUninstallStepChanged')>
+procedure PutNotepadBack(CurUninstallStep: TUninstallStep);
+var
+  Keys: TArrayOfString;
+  I, ResultCode: Integer;
+  Params: string;
+begin
+  if (CurUninstallStep <> usUninstall) or (NotepadKeysPointingHere(Keys) = 0) then
+    Exit;
+  if IsAdmin then
+  begin
+    for I := 0 to GetArrayLength(Keys) - 1 do
+      RegDeleteValue(HKLM64, Keys[I], 'Debugger');
+  end
+  else if not UninstallSilent then
+  begin
+    { One administrator prompt for every key, the same command the app runs. }
+    Params := '/d /s /c "';
+    for I := 0 to GetArrayLength(Keys) - 1 do
+    begin
+      if I > 0 then
+        Params := Params + ' & ';
+      Params := Params + '"' + ExpandConstant('{sys}\reg.exe') + '" delete "HKLM\' +
+        Keys[I] + '" /v Debugger /f /reg:64';
+    end;
+    Params := Params + '"';
+    MsgBox('QUILL Lite is still opening in place of Notepad. To put Notepad back, ' +
+      'Windows will ask for administrator approval next.', mbInformation, MB_OK);
+    ShellExec('runas', ExpandConstant('{cmd}'), Params, '', SW_HIDE,
+      ewWaitUntilTerminated, ResultCode);
+  end;
 end;

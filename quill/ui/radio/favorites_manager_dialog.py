@@ -357,12 +357,12 @@ class FavoritesManagerDialog:
         if query:
             # A filter flattens the view: every match in one list, its folder
             # spoken as part of the label, so results are one arrow-key apart.
+            # Each label says why it matched -- a team, your tag -- and its folder.
+            from quill.core.radio.station_lookup import favorite_label
+
             matches = self._store.search(query)
             for favorite in matches:
-                label = favorite.display_label
-                if favorite.folder:
-                    label += f" -- in {favorite.folder}"
-                item = tree.AppendItem(root, label)
+                item = tree.AppendItem(root, favorite_label(favorite, query))
                 tree.SetItemData(item, ("station", favorite.key))
                 if favorite.key == keep_key:
                     select_item = item

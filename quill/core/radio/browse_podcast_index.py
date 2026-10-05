@@ -56,6 +56,10 @@ EPISODE_LIMIT = 100
 
 SOURCE_LABEL = "Podcast Index"
 
+#: The action row offered when there is no key (handled in Radio's
+#: ``browse_actions``, which opens the Podcast Index Credentials window).
+CREDENTIALS_ACTION = "podcastindexcredentials"
+
 
 def _spoken_length(seconds: int) -> str:
     """ "42 minutes", the way a row should read it aloud. "" when unknown."""
@@ -184,9 +188,25 @@ def episode_leaf(episode: object, show_title: str, feed_url: str) -> BrowseNode:
 
 
 def browse_root(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
-    """The branch itself: trending, the taxonomy, and a way to search it."""
+    """The branch itself: trending, the taxonomy, and a way to search it.
+
+    With no key at all -- a build made without the bundled one, and nobody has
+    entered their own -- every folder below would fail, and each used to say
+    "Nothing in here". The branch says what is missing instead, as a row that
+    opens the window that fixes it.
+    """
     if args and args[0]:
         return []
+    from quill.core.podcasts import podcast_index
+
+    if not podcast_index.available():
+        return [
+            action(
+                CREDENTIALS_ACTION,
+                "Add a Podcast Index Key...",
+                note=podcast_index.NO_KEY_SENTENCE,
+            )
+        ]
     return [
         folder(make_id("pitrending"), "Trending Now", note="what is being talked about today"),
         folder(make_id("picategories"), "By Category", note="the index's own taxonomy"),

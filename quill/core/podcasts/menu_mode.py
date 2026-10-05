@@ -9,7 +9,7 @@ features and allow an advanced mode."
 by *machinery*, and Earshot's are organised by *places you go* -- Inbox, Queue,
 Subscriptions, Library, Downloads, Stats, Settings (Earshot PRD 5.2). That is why
 the Subscriptions menu reads as a mess: Add Podcast, Back Up My Podcasts, Export
-My Data, Podcast Index Credentials, Choose Columns and Delete All Podcast Data all
+My Data, Podcast Index Credentials, Choose Columns and Clear All Podcast Data from This Computer all
 sit in one list, and only the first of them is something a listener does in their
 first month. Nothing there is a bad feature. The list is simply not sorted by how
 often anybody needs it, so a newcomer reads twenty rows to find the two they came

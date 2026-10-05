@@ -15,10 +15,11 @@ import wx
 from quill.apps.podcasts_close import (
     CastCloseMixin,
 )
+from quill.apps.podcasts_extensions import CastExtensionsMixin
 from quill.apps.podcasts_go_to import CastGoToMixin
 from quill.apps.podcasts_help_surfaces import CastHelpSurfacesMixin
 from quill.apps.podcasts_library_actions import CastLibraryActionsMixin
-from quill.apps.podcasts_menu import APP_REPO, APP_TITLE, APP_VERSION, CastMenuBarMixin
+from quill.apps.podcasts_menu import APP_BUILD, APP_REPO, APP_TITLE, APP_VERSION, CastMenuBarMixin
 from quill.apps.podcasts_now_playing import CastNowPlayingMixin
 from quill.apps.podcasts_preferences import CastPreferencesMixin
 from quill.apps.podcasts_routes import CastPlaceRoutesMixin
@@ -60,6 +61,7 @@ class PodcastsAppFrame(
     # (which the apps have) win over GlobalHotkeysMixin's send_to_tray-based copy.
     AppShellFrame,
     CastPlaceRoutesMixin,  # the one window's doors, before the shared mixins
+    CastExtensionsMixin,  # qc.md section 18: the listening keys
     PodcastsMixin,
     CastLibraryActionsMixin,
     CastCloseMixin,
@@ -263,7 +265,7 @@ class PodcastsAppFrame(
     # -- library tree (pinned views + folders + shows) ---------------------
 
     def _reload_library_tree(self, *, keep_key: tuple[str, str] | None = None) -> None:
-        from quill.core.podcasts.sorting import sort_shows, unheard_count
+        from quill.core.podcasts.sorting import sort_shows
 
         if self._library_find_active():  # Find shows matches: refresh those
             self._refresh_library_find()
@@ -282,38 +284,8 @@ class PodcastsAppFrame(
                 select_item = item
 
         # The pinned views are places now (qc.md 4.3); this tree is the
-        # Podcasts place: folders and podcasts only.
-        folder_items: dict[str | None, object] = {None: root}
-
-        # Folder badges: how many podcasts live under each folder -- the whole
-        # subtree, matching what expanding the folder actually reveals.
-        direct_counts: dict[str | None, int] = {}
-        for show in self._podcast_library.shows:
-            direct_counts[show.folder_id] = direct_counts.get(show.folder_id, 0) + 1
-
-        def folder_show_count(folder_id: str | None) -> int:
-            total = direct_counts.get(folder_id, 0)
-            for child in self._podcast_library.folders:
-                if child.parent_folder_id == folder_id:
-                    total += folder_show_count(child.id)
-            return total
-
-        def folder_item(folder_id: str | None) -> object:
-            if folder_id in folder_items:
-                return folder_items[folder_id]
-            folder = self._podcast_library.find_folder(folder_id)
-            if folder is None:
-                return root
-            count = folder_show_count(folder.id)
-            label = f"{folder.name} ({count})" if count else folder.name
-            item = tree.AppendItem(folder_item(folder.parent_folder_id), label)
-            tag(item, ("folder", folder_id or ""))
-            folder_items[folder_id] = item
-            return item
-
-        for folder in self._podcast_library.folders:
-            folder_item(folder.id)
-
+        # Podcasts place: folders and podcasts, laid out as the listener chose
+        # (View > Library Layout; core/podcasts/library_view.py).
         if not self._podcast_library.shows and not self._podcast_library.folders:
             # An empty library offers the three ways in, as rows that act on
             # Enter -- and stop appearing the moment anything is subscribed.
@@ -325,27 +297,22 @@ class PodcastsAppFrame(
             ):
                 tag(tree.AppendItem(root, label), ("action", key))
 
+        from quill.core.podcasts.library_view import library_nodes
+        from quill.ui.podcasts.library_tree import append_nodes
+
         # Hide Caught-Up Podcasts (R1) filters at the one place the tree is
         # built, so two answers about which podcasts exist cannot coexist.
-        for show in sort_shows(
+        shows = sort_shows(
             self._visible_library_shows(), self._podcast_library.settings.show_sort_mode
-        ):
-            count = unheard_count(show)
-            label = f"{show.title} ({count} unheard)" if count else show.title
-            item = tree.AppendItem(folder_item(show.folder_id), label)
-            tag(item, ("show", show.id))
-            if show.episodes:
-                placeholder = tree.AppendItem(item, "Loading episodes...")
-                tag(placeholder, ("placeholder", show.id))
+        )
+        by_id = {show.id: show for show in shows}
+        append_nodes(tree, root, library_nodes(self._podcast_library, shows), tag, by_id)
 
         # wxMSW asserts on expanding a hidden root (TR_HIDE_ROOT), which took
         # the whole app down before its window appeared -- and the call was a
         # no-op regardless: a hidden root's children are the visible top level.
         if not (tree.GetWindowStyle() & wx.TR_HIDE_ROOT):
             tree.Expand(root)
-        for fitem in folder_items.values():
-            if fitem is not root:
-                tree.Expand(fitem)
         first, _cookie = tree.GetFirstChild(root)
         if select_item is not None:
             tree.SelectItem(select_item)
@@ -628,9 +595,7 @@ class PodcastsAppFrame(
             return
         history.last_update_check = datetime.now(UTC).isoformat()
         podcast_history.save_history(app_data_dir(), history)
-        self.check_for_app_updates(
-            repo_slug=_REPO, current_version=_VERSION, app_key="cast", silent_no_update=True
-        )
+        self._check_cast_updates(silent=True)  # podcasts_preferences.py
 
     # -- menu bar -------------------------------------------------------------
 
@@ -656,13 +621,9 @@ class PodcastsAppFrame(
     def _new_library_folder(self) -> None:
         """Create a top-level library folder without opening the Manager --
         the same store the Manager's own New Folder button writes to."""
-        dialog = wx.TextEntryDialog(self.frame, "Folder name:", "New Folder")
-        try:
-            if dialog.ShowModal() != wx.ID_OK:  # dialog_button_contract: exempt
-                return
-            name = dialog.GetValue().strip()
-        finally:
-            dialog.Destroy()
+        from quill.ui.podcasts.folder_prompt import folder_name_prompt
+
+        name = folder_name_prompt(self.frame, announce=self._announce)
         if not name:
             return
         self._podcast_library.add_folder(name, parent_folder_id=None)
@@ -674,8 +635,10 @@ class PodcastsAppFrame(
         self._announce("QUILL Cast is still running in the system tray.")
 
     def _show_about(self) -> None:
+        from quill.core.app_version import describe_version
+
         self._show_message_box(
-            f"{_TITLE} {_VERSION}\n"
+            f"{_TITLE} {describe_version(_VERSION, build=APP_BUILD)}\n"
             "Podcasts from Quill, as a standalone app.\n\n"
             "Runs the same podcast feature code as QUILL itself and shares "
             "its settings, podcasts, and downloads.\n"

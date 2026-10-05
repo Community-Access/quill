@@ -16,7 +16,9 @@ paragraph without pausing still sees it arrive.
 
 **Models are loaded once per session** and kept: Moonshine takes about a second
 to load, Whisper a little less, and paying that on every Ctrl+F11 would make
-starting dictation feel broken.
+starting dictation feel broken. The cache is keyed by engine *and* language,
+because Spanish loads a different model (multilingual Whisper, told
+``language="es"``; :func:`~quill.core.windows_dictation.engines.model_for`).
 
 Needs ``sherpa-onnx``, ``numpy`` and ``sounddevice``, all imported lazily -- a
 copy without them raises :class:`DictationStartError` with a sentence, never an
@@ -33,12 +35,14 @@ from typing import Any, Protocol
 
 from quill.core.windows_dictation.controller import DictationStartError
 from quill.core.windows_dictation.engines import (
-    engine_info,
+    language_model_problem,
     model_dir,
+    model_for,
     package_dirs,
     vad_model_path,
 )
 from quill.core.windows_dictation.parser import RecognizedPhrase, words_from_text
+from quill.core.windows_dictation.speech_language import coerce_speech_language
 
 __all__ = [
     "LocalDictationRecognizer",
@@ -55,7 +59,9 @@ _MAX_PHRASE_SECONDS = 20.0
 #: What Whisper writes for noise it could not place: a cough, a chair, the tail
 #: of a breath. Dropped only when it is the *whole* phrase, so somebody who
 #: dictates "Thank you." after a real sentence still gets it.
+#: The Spanish ones are what multilingual Whisper makes of the same noises.
 _NOISE_PHRASES = frozenset({"", ".", "you", "you.", "thank you.", "thanks for watching!", "bye."})
+_NOISE_PHRASES |= {"gracias.", "¡gracias!", "gracias por ver el video.", "adiós."}
 _SHORT_SECONDS = 0.8
 _LEAD_PAD_SECONDS = 0.2
 #: Audio taken from before the moment speech was detected -- see _History.
@@ -70,7 +76,8 @@ _STALL_SECONDS = 2.0
 _RETRY_SECONDS = 2.0
 
 _cache_lock = threading.Lock()
-_recognizers: dict[str, Any] = {}
+#: ``(engine, language) -> recogniser``.
+_recognizers: dict[tuple[str, str], Any] = {}
 
 Poster = Callable[..., None]
 
@@ -173,21 +180,25 @@ def _import_sherpa() -> Any:
     return sherpa_onnx
 
 
-def _load(engine_id: str) -> Any:
-    """The sherpa-onnx recogniser for *engine_id*, loaded once per session."""
+def _load(engine_id: str, language: str = "en") -> Any:
+    """The sherpa-onnx recogniser for *engine_id* in *language*, loaded once per session."""
+    language = coerce_speech_language(language)
+    key = (engine_id, language)
     with _cache_lock:
-        cached = _recognizers.get(engine_id)
+        cached = _recognizers.get(key)
         if cached is not None:
             return cached
-        folder = model_dir(engine_id)
+        model = model_for(engine_id, language)
+        folder = model_dir(engine_id, language)
         if folder is None:
             raise DictationStartError(
-                f"{engine_info(engine_id).label.split(' (')[0]} is not included in this copy "
+                language_model_problem(engine_id, language)
+                or f"{model.label.split(' (')[0]} is not included in this copy "
                 "of QUILL. Choose another speech engine in Dictation Settings."
             )
         sherpa_onnx = _import_sherpa()
 
-        if engine_id == "moonshine":
+        if model.id == "moonshine":
             recognizer = sherpa_onnx.OfflineRecognizer.from_moonshine(
                 preprocessor=str(folder / "preprocess.onnx"),
                 encoder=str(folder / "encode.int8.onnx"),
@@ -201,10 +212,10 @@ def _load(engine_id: str) -> Any:
                 encoder=str(folder / "encoder.int8.onnx"),
                 decoder=str(folder / "decoder.int8.onnx"),
                 tokens=str(folder / "tokens.txt"),
-                language="en",
+                language=language,
                 num_threads=2,
             )
-        _recognizers[engine_id] = recognizer
+        _recognizers[key] = recognizer
         return recognizer
 
 
@@ -227,11 +238,11 @@ def _vad(pause_seconds: float = _MIN_SILENCE_SECONDS) -> Any:
     return sherpa_onnx.VoiceActivityDetector(config, buffer_size_in_seconds=60)
 
 
-def transcribe(engine_id: str, samples: Any) -> str:
+def transcribe(engine_id: str, samples: Any, language: str = "en") -> str:
     """One phrase of 16 kHz float samples as text, noise answers removed."""
     import numpy as np
 
-    recognizer = _load(engine_id)
+    recognizer = _load(engine_id, language)
     stream = recognizer.create_stream()
     # Quiet on either side. Voice detection trims a phrase tight to the speech,
     # and Moonshine sizes its answer from the audio's length: without the tail,
@@ -295,7 +306,9 @@ class _History:
 # --------------------------------------------------------------------------- #
 
 
-def record_and_hear(microphone: str, engine_id: str, seconds: float = 4.0) -> tuple[float, str]:
+def record_and_hear(
+    microphone: str, engine_id: str, seconds: float = 4.0, *, language: str = "en"
+) -> tuple[float, str]:
     """Dictation Settings' Test Microphone: record *seconds*, and report.
 
     Returns the loudest moment (0.0 to 1.0) and, for a built-in engine, what it
@@ -330,7 +343,7 @@ def record_and_hear(microphone: str, engine_id: str, seconds: float = 4.0) -> tu
     peak = float(np.max(np.abs(mono))) if mono.size else 0.0
     if engine_id not in {"moonshine", "whisper"} or peak < 0.02:
         return peak, ""
-    return peak, transcribe(engine_id, mono)
+    return peak, transcribe(engine_id, mono, language)
 
 
 class LocalDictationRecognizer:
@@ -359,9 +372,11 @@ class LocalDictationRecognizer:
         *,
         post: Poster,
         pause_seconds: float = _MIN_SILENCE_SECONDS,
+        language: str = "en",
     ) -> None:
         self._listener = listener
         self._engine = engine_id
+        self._language = coerce_speech_language(language)
         #: How long a silence ends a phrase (Dictation Settings, Pause before writing).
         self._pause = pause_seconds
         self._post = post
@@ -386,7 +401,7 @@ class LocalDictationRecognizer:
                 "The built-in speech engines are not included in this copy of QUILL. "
                 "Choose Windows speech recognition in Dictation Settings."
             ) from error
-        _load(self._engine)  # before the microphone opens: fail cleanly, not mid-sentence
+        _load(self._engine, self._language)  # before the microphone opens: fail cleanly
         vad = _vad(self._pause)
         self._microphone = microphone
         try:
@@ -551,11 +566,11 @@ class LocalDictationRecognizer:
         """One phrase, with the engine reloaded and the phrase retried once if the
         first decode raises. A second failure propagates to the worker's handler."""
         try:
-            return transcribe(self._engine, samples)
+            return transcribe(self._engine, samples, self._language)
         except Exception:  # noqa: BLE001 - one retry, then it is reported
             with _cache_lock:
-                _recognizers.pop(self._engine, None)
-            return transcribe(self._engine, samples)
+                _recognizers.pop((self._engine, self._language), None)
+            return transcribe(self._engine, samples, self._language)
 
     def _drain(self) -> None:
         while True:

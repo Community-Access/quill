@@ -79,7 +79,8 @@ def folder_state(dialog: Any, node: Any, kind: str, args: list[str]) -> row_acti
         savable=len(savable),
         is_podcast_show=row_actions.is_podcast_show(kind),
         subscribed=subscribed,
-        is_followed_channel=row_actions.is_followed_channel(kind),
+        is_followed_channel=channel_followed(kind, args),
+        channel_notify=channel_notify(kind, args),
         expanded=expanded,
         # A root branch's id IS its source id (no args); only those rows can
         # be hidden in place.
@@ -90,6 +91,28 @@ def folder_state(dialog: Any, node: Any, kind: str, args: list[str]) -> row_acti
         downloaded_files=downloaded_files,
         alerts_on=alerts_on,
     )
+
+
+def channel_followed(kind: str, args: list[str]) -> bool:
+    """A followed channel, or a found one the listener already follows (local read)."""
+    if row_actions.is_followed_channel(kind):
+        return True
+    if kind != "ytchannel" or not args:
+        return False
+    from quill.core.radio.youtube_channels import ChannelStore, normalize_channel_url
+
+    wanted = {normalize_channel_url(url) for url in args if url} - {""}
+    return any(channel.url in wanted for channel in ChannelStore().all())
+
+
+def channel_notify(kind: str, args: list[str]) -> bool:
+    """Whether this followed channel's bell is on (a local read)."""
+    if kind not in ("youtubechannel", "ytchannel") or not args or not args[0]:
+        return False
+    from quill.core.radio.youtube_channel_alerts import AlertStore
+
+    store = AlertStore()
+    return any(store.is_notifying(url) for url in args if url)
 
 
 def known_subscribed(dialog: Any, kind: str, args: list[str]) -> bool:

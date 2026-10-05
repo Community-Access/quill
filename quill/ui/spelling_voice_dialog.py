@@ -95,7 +95,7 @@ def edit_spelling_voice(
     speech.SetHelpText(
         "Speak the misspelling as well as the sound. Off by default and "
         "deliberately: an interruption while you are composing costs more than it "
-        "tells you, and the same word is one Shift+F7 away."
+        "tells you, and the same word is one Alt+Shift+F7 away."
     )
     speech.SetValue(bool(getattr(settings, "spelling_alert_speech", False)))
     typing_box.Add(speech, 0, wx.ALL, _PAD // 2)

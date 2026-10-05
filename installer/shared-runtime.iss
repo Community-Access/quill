@@ -9,6 +9,17 @@
 ;      that needs it is uninstalled (quill.core.runtime_cli -> runtime_refs);
 ;   3. remove the shared runtime on uninstall only when it becomes unreferenced.
 ;
+; RELEASE CHANNEL SLOTS (release-channels plan 6.5, 2026-10). Each channel has
+; its own runtime folder: Runtime.13 (Stable, the folder that always existed),
+; Runtime.13-beta and Runtime.13-dev. Within a slot the newest build wins,
+; as before; across slots nothing is shared, so a Beta Quill Radio can never put
+; Beta code under a Stable QUILL Lite. The slot comes from /CHANNEL=stable|beta|dev
+; on the command line -- the updater always passes it -- or, for a hand install,
+; from the version: Stable for a final number, Beta for any pre-release. The
+; slot and channel are written into {app}\quill-app-version.ini ([runtime] slot=,
+; [app] channel=), where the native launcher reads slot= (runtime_resolve.c).
+; Python mirror: quill/core/updater/runtime_slots.py.
+;
 ; The app installer must define these BEFORE #include-ing this file:
 ;   #define RuntimeVersion   "3.13.1"     ; the CPython version the runtime ships
 ;   #define RuntimeSourceDir "..\..\runtime\dist\QuillVilleRuntime"  ; built payload
@@ -102,10 +113,18 @@ Source: "{#RuntimeSourceDir}\OptiLabCore-NOTICE.txt"; DestDir: "{code:RuntimeDir
   Flags: ignoreversion uninsneveruninstall
 #endif
 
+[INI]
+; Which runtime slot this install runs from, and the channel it was made for.
+; The launcher beside this file reads slot=; with none it uses Runtime\3.13.
+Filename: "{app}\quill-app-version.ini"; Section: "runtime"; Key: "slot"; String: "{code:RuntimeSlot}"
+Filename: "{app}\quill-app-version.ini"; Section: "app"; Key: "channel"; String: "{code:InstallChannel}"
+
 [Run]
-; Record that this app needs this runtime version (idempotent). Runs the shared
-; runtime's own Python so the tested refcount logic (runtime_cli) does the work.
-Filename: "{code:RuntimeExe}"; Parameters: "-m quill.core.runtime_cli register {#AppRefId} {#RuntimeVersion}"; \
+; Record that this app needs this runtime SLOT (idempotent). Keyed by slot
+; ("3.13", "3.13-beta") so a Beta slot is removed when its last app leaves
+; (runtime_refs.slot_of treats an older "3.13.1" key as the Stable slot). Runs
+; the shared runtime's own Python so the tested refcount logic does the work.
+Filename: "{code:RuntimeExe}"; Parameters: "-m quill.core.runtime_cli register {#AppRefId} {code:RuntimeSlot}"; \
   StatusMsg: "Registering the shared runtime..."; Flags: runhidden waituntilterminated
 ; Repair a "start with Windows" entry an older build wrote as the bare runtime
 ; exe. The app repairs its own entry at launch, but that needs a launch -- and
@@ -136,6 +155,35 @@ begin
   else Result := Result + Copy(Version, 1, Dot - 1);
 end;
 
+// The channel this install is for: /CHANNEL= when given (the updater always
+// gives it), else Stable for a final version and Beta for any pre-release, so
+// a hand install from the website lands somewhere sensible.
+function InstallChannel(Param: string): string;
+begin
+  Result := Lowercase(ExpandConstant('{param:CHANNEL|}'));
+  if (Result <> 'stable') and (Result <> 'beta') and (Result <> 'dev') then
+  begin
+#ifdef AppVersion
+    if Pos('-dev', '{#AppVersion}') > 0 then
+      Result := 'dev'
+    else if Pos('-', '{#AppVersion}') > 0 then
+      Result := 'beta'
+    else
+      Result := 'stable';
+#else
+    Result := 'stable';
+#endif
+  end;
+end;
+
+// "3.13" for Stable, "3.13-beta", "3.13-dev".
+function RuntimeSlot(Param: string): string;
+begin
+  Result := RuntimeMajor();
+  if InstallChannel('') <> 'stable' then
+    Result := Result + '-' + InstallChannel('');
+end;
+
 function RuntimeDir(Param: string): string;
 begin
   // MUST match the launcher: quill/native/launcher/runtime_resolve.c probes
@@ -146,6 +194,9 @@ begin
   // "Quill Radio could not find a Python runtime" (found 2026-08-16).
   // tests/unit/structure/test_shared_runtime_installer.py pins the agreement.
   Result := ExpandConstant('{localappdata}\QuillVille\Runtime') + '\' + RuntimeMajor();
+  // A Beta or Dev install gets its own slot beside Stable's (see the header).
+  if InstallChannel('') <> 'stable' then
+    Result := Result + '-' + InstallChannel('');
 end;
 
 function RuntimeExe(Param: string): string;
@@ -237,22 +288,41 @@ begin
   Result := gRuntimeNeeded;
 end;
 
-// On uninstall: drop this app's reference. runtime_cli exits 10 when the runtime
-// is now unreferenced -- then, and only then, remove the shared runtime folder.
+// On uninstall: drop this app's reference. runtime_cli exits 10 when the slot
+// is now unreferenced -- then, and only then, remove that slot's folder. The
+// slot is read from the marker BEFORE the app's files go (an uninstall has no
+// /CHANNEL), so a Beta app removes the Beta slot and never Stable's.
+var
+  gUninstallSlot: string;
+
+function UninstallRuntimeDir(): string;
+begin
+  Result := ExpandConstant('{localappdata}\QuillVille\Runtime') + '\' + gUninstallSlot;
+end;
+
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 var
   ResultCode: Integer;
 begin
+  if CurUninstallStep = usUninstall then
+  begin
+    gUninstallSlot := GetIniString('runtime', 'slot', RuntimeMajor(),
+                                   ExpandConstant('{app}\quill-app-version.ini'));
+    if gUninstallSlot = '' then
+      gUninstallSlot := RuntimeMajor();
+  end;
   if CurUninstallStep = usPostUninstall then
   begin
-    if FileExists(RuntimeExe('')) then
+    if gUninstallSlot = '' then
+      gUninstallSlot := RuntimeMajor();
+    if FileExists(UninstallRuntimeDir() + '\QuillVilleRuntime.exe') then
     begin
-      if Exec(RuntimeExe(''),
-              '-m quill.core.runtime_cli unregister {#AppRefId} {#RuntimeVersion}',
+      if Exec(UninstallRuntimeDir() + '\QuillVilleRuntime.exe',
+              '-m quill.core.runtime_cli unregister {#AppRefId} ' + gUninstallSlot,
               '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
       begin
         if ResultCode = 10 then
-          DelTree(RuntimeDir(''), True, True, True);
+          DelTree(UninstallRuntimeDir(), True, True, True);
       end;
     end;
   end;

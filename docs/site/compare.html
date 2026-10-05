@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>QUILL or QUILL Lite - which editor should you install?</title>
-  <meta name="description" content="QUILL is a screen-reader-first writing environment for Windows and macOS. QUILL Lite is the same editor with the environment removed: Notepad and WordPad, rebuilt so they answer. One codebase, two front doors - and a complete, category-by-category comparison of every difference between the two products.">
+  <title>QUILL or QUILL Lite: which one should you install?</title>
+  <meta name="description" content="Not sure whether to install QUILL or QUILL Lite? A plain comparison of the two free editors, with the quick answer first and the full details after.">
   <link rel="stylesheet" href="/assets/style.css">
 </head>
 <body>
@@ -32,26 +32,23 @@
 
   <main id="main" tabindex="-1" class="prose">
     <div class="wrap">
-      <h1>QUILL or QUILL Lite: which editor should you install?</h1>
+      <h1>QUILL or QUILL Lite: which one should you install?</h1>
       <p class="lede">
-        This page compares the two <em>products</em>, not two documents — QUILL has a
-        document-comparison tool of its own, and this is not it. QUILL and QUILL Lite are
-        two free editors for Windows, built from one codebase to one accessibility
-        standard, and they are not the same thing. QUILL is a writing environment. QUILL
-        Lite is that environment's editor with the environment taken off it: Notepad and
-        WordPad, rebuilt so that they answer.
+        QUILL and QUILL Lite are two free editors for Windows, made by the same people.
+        This page helps you choose. If you only want the quick answer, read the first
+        section and stop there. The rest is here for when you want the details.
       </p>
 
       <nav class="cmp-jump" aria-labelledby="onpage-h">
         <h2 id="onpage-h">On this page</h2>
         <ul>
           <li><a href="#short-answer">The short answer</a></li>
-          <li><a href="#one-codebase">One codebase, two front doors</a></li>
-          <li><a href="#subtraction">Why subtraction only runs one way</a></li>
-          <li><a href="#shared-floor">What is identical in both</a></li>
-          <li><a href="#differences">Where they genuinely differ</a></li>
+          <li><a href="#one-codebase">How the two are related</a></li>
+          <li><a href="#subtraction">Making QUILL smaller, but not the other way round</a></li>
+          <li><a href="#shared-floor">What both of them do</a></li>
+          <li><a href="#differences">Where they are different</a></li>
           <li><a href="#moving-up">Moving from QUILL Lite to QUILL</a></li>
-          <li><a href="#table">The full comparison, category by category</a></li>
+          <li><a href="#table">Side by side, one topic at a time</a></li>
           <li><a href="#downloads">Download either one</a></li>
           <li><a href="#read-more">Read more before you decide</a></li>
         </ul>
@@ -59,283 +56,250 @@
 
       <h2 id="short-answer" tabindex="-1" class="focus-target">The short answer</h2>
       <p>
-        Most people who write, read and file documents all day want QUILL. Most people
-        who open a text file to change one line want QUILL Lite. Both are free, both are
-        MIT-licensed, and installing one does not affect the other — they keep separate
-        settings, separate folders and separate updates — so if the answer is not
-        obvious, install both and let a week decide.
+        If you write, read and sort out documents all day, you probably want QUILL. If you
+        mostly open a text file, change a line and close it again, you probably want
+        QUILL Lite.
       </p>
-
-      <div class="verdict">
-        <h3>Choose QUILL Lite if this sounds like you</h3>
-        <p>
-          You want a replacement for Notepad or WordPad that speaks properly. You edit
-          configuration files, logs, notes and letters. You want Ctrl+N to be instant and
-          never to meet a setup wizard. You want either no Format menu at all, or exactly
-          the formatting WordPad had. You have never needed to open a spreadsheet, a PDF
-          or a braille file in an editor, and you would rather a program did nine things
-          well than a hundred things at once.
-        </p>
-      </div>
-      <div class="verdict">
-        <h3>Choose QUILL if this sounds like you</h3>
-        <p>
-          Documents arrive and you have to deal with them, whatever format they are in:
-          Word, PowerPoint, Excel, PDF, EPUB, braille, DAISY, email archives. You write
-          long things and want an outline, bookmarks you can export and a way to compare
-          two drafts. You want a document read aloud in a voice that is not your screen
-          reader, or transcribed, or turned into an audiobook. You read braille. You use
-          AI with your own key or your own local model. You are on a Mac. Or you simply
-          want all of it, because turning features off is easier than finding them one at
-          a time.
-        </p>
-      </div>
-
-      <h2 id="one-codebase" tabindex="-1" class="focus-target">One codebase, two front doors</h2>
       <p>
-        This is worth saying plainly, because a "Lite" edition in this industry is usually
-        a fork that quietly rots, and this one is not a fork. QUILL Lite's code lives
-        inside the QUILL package rather than beside it, and it does not copy QUILL's
-        editing surface — it uses it. The spell checker, the numbered bookmarks, the copy
-        tray, the clip library, the free hosted AI, the dictation engine, the file-encoding
-        logic and the F1 help engine are one implementation with two callers.
+        Both are free. You can install both, and they will not get in each other's way.
+        Each one keeps its own settings and gets its own updates. If you cannot decide,
+        install both and use them for a week.
       </p>
-      <p>Three things follow from that, and all three are things you can feel.</p>
+
+      <div class="verdict">
+        <h3>QUILL Lite might suit you if...</h3>
+        <ul>
+          <li>You want Notepad or WordPad, but one that works properly with your screen reader.</li>
+          <li>You mostly edit notes, letters, logs and settings files.</li>
+          <li>You want the program to open fast, with no setup wizard.</li>
+          <li>You want no formatting at all, or just the formatting WordPad had.</li>
+          <li>You would rather learn nine menus well than a hundred features at once.</li>
+        </ul>
+      </div>
+      <div class="verdict">
+        <h3>QUILL might suit you if...</h3>
+        <ul>
+          <li>Documents come to you in all sorts of formats: Word, PowerPoint, Excel, PDF, EPUB, braille, DAISY or email.</li>
+          <li>You write long things and want an outline, bookmarks and a way to compare two drafts.</li>
+          <li>You want a document read aloud in a voice that is not your screen reader, turned into an audiobook, or transcribed.</li>
+          <li>You read braille.</li>
+          <li>You want to use AI with your own key, or with a model on your own computer.</li>
+          <li>You use a Mac.</li>
+          <li>You like having everything there, and turning off what you do not need.</li>
+        </ul>
+      </div>
+
+      <h2 id="one-codebase" tabindex="-1" class="focus-target">How the two are related</h2>
+      <p>
+        QUILL Lite is not a cut-down copy that gets forgotten. It is built from the same
+        parts as QUILL. The spell checker, the numbered bookmarks, the copy tray, the clip
+        library, the free AI, dictation, the way files are saved, and the F1 help are the
+        same code in both.
+      </p>
+      <p>That helps you in three ways.</p>
       <ul class="fact-list">
         <li>
           <strong>A fix in one is a fix in both.</strong>
-          The spell checker's suggestion ranking, and three separate bugs in how selection
-          worked, were all found while QUILL Lite was being built — and were fixed in the
-          shared code, so every QUILL user got them in the same release.
+          When a bug is fixed in one of the shared parts, both editors get the fix in the
+          same release.
         </li>
         <li>
           <strong>A key you learn in one works in the other.</strong>
-          Every QUILL Lite command is mapped to the QUILL command that means the same
-          thing, and a test fails the build if the two ever drift onto different keys
-          without a written reason. There are ten such reasons today, and each one is a
-          paragraph arguing its case rather than an accident nobody noticed.
+          Commands that do the same thing use the same key in both. Where a key had to be
+          different, there is a written reason. There are only ten of those.
         </li>
         <li>
-          <strong>QUILL Lite is never allowed to be ahead of QUILL.</strong>
-          That is a family rule — the tenth of eleven — and it is enforced rather than
-          hoped for: if QUILL Lite needs something QUILL cannot do, the capability goes
-          into the shared package and QUILL gets a way to reach it in the same change. It
-          is how QUILL ended up with numbered bookmarks, with six rich-text commands it
-          had the engine for and no keys to, and with the entire free hosted AI.
+          <strong>QUILL Lite never gets ahead of QUILL.</strong>
+          If QUILL Lite gains something QUILL cannot do, QUILL gets it too, at the same
+          time. That is how QUILL got numbered bookmarks and the free AI.
         </li>
       </ul>
 
-      <h2 id="subtraction" tabindex="-1" class="focus-target">Why subtraction only runs one way</h2>
+      <h2 id="subtraction" tabindex="-1" class="focus-target">Making QUILL smaller, but not the other way round</h2>
       <p>
-        QUILL Lite stays small by being switchable, not by being poor. Twenty whole
-        feature areas can be turned off in <strong>Tools, Customize Features</strong>, and
-        switching one off takes its menu <em>and</em> its keys with it — because a key that
-        still fires for a feature you turned off is the feature not being off. Four named
-        starting points do it in one move: <strong>Recommended</strong> (16 of the 20
-        areas), <strong>Everything</strong> (all 20), <strong>WordPad</strong> (5, and
-        Ctrl+N makes a rich text document) and <strong>Notepad</strong> (2, and Ctrl+N
-        makes a plain text one).
-      </p>
-      <p>
-        QUILL has the mirror image of that dial: eleven feature profiles, from
-        <strong>Essential</strong> and <strong>Writer</strong> through <strong>Braille and
-        Screen Reader Power User</strong> and <strong>Accessibility Professional</strong> to
-        <strong>Full Quill</strong>. One of the eleven is called <strong>QUILL
-        Lite</strong>, and it does what its name says: it reduces QUILL to nine menus — a
-        plain-text editor with rich text, spelling, the line tools and the clipboard — and
-        makes Ctrl+N produce a plain text document.
-      </p>
-      <p>
-        So the asymmetry is the whole design. <strong>You can make QUILL look like QUILL
-        Lite. You cannot make QUILL Lite become QUILL.</strong> If you are genuinely
-        unsure, that is an argument for starting with QUILL. The honest counter-argument is
-        that an editor with nine menus is faster to learn, and nobody has ever got lost in
-        it.
-      </p>
-
-      <h2 id="shared-floor" tabindex="-1" class="focus-target">What is identical in both</h2>
-      <p>
-        Everything in this list is the same in both products, to the same standard,
-        enforced by the same tests. If you are choosing between them, you are not choosing
-        between an accessible editor and a less accessible one.
+        QUILL Lite stays small because you can switch parts of it off. Open
+        <strong>Tools, Customize Features</strong>. There are twenty feature areas, and
+        when you turn one off, its menu and its keys go away too. There are also four
+        ready-made choices:
       </p>
       <ul>
+        <li><strong>Recommended</strong>: 16 of the 20 areas. This is what you start with.</li>
+        <li><strong>Everything</strong>: all 20.</li>
+        <li><strong>WordPad</strong>: 5 areas, and Ctrl+N makes a rich text document.</li>
+        <li><strong>Notepad</strong>: 2 areas, and Ctrl+N makes a plain text document.</li>
+      </ul>
+      <p>
+        QUILL has something similar, called feature profiles. There are eleven of them,
+        from <strong>Essential</strong> and <strong>Writer</strong> up to <strong>Full
+        Quill</strong>. One of them is called <strong>QUILL Lite</strong>. It trims QUILL
+        down to nine menus and makes Ctrl+N create a plain text document.
+      </p>
+      <p>
+        So here is the thing to remember: <strong>you can make QUILL look like QUILL Lite,
+        but you cannot make QUILL Lite grow into QUILL.</strong> If you are unsure, that is
+        a good reason to start with QUILL. On the other hand, nine menus are quick to
+        learn, and it is hard to get lost in them.
+      </p>
+
+      <h2 id="shared-floor" tabindex="-1" class="focus-target">What both of them do</h2>
+      <p>
+        Everything in this list works the same way in both. Whichever one you pick, you
+        get an editor made for people who use a screen reader.
+      </p>
+      <ul>
+        <li><strong>Every menu item shows its shortcut key</strong>, and no two items share a key.</li>
         <li>
-          <strong>Every enabled menu item shows a keyboard route in its label</strong>, and
-          no two items in one menu bar claim the same key. Both are build gates rather than
-          intentions. Walking a menu to discover there is no shortcut is a cost you pay on
-          every visit, and a key claimed twice means one of the pair silently never fires.
+          <strong>They do not talk over your screen reader.</strong> Your screen reader
+          already tells you window names, where you are and what you are on. The editor
+          only speaks up about things your screen reader cannot know, like the result of
+          something you asked it to do.
         </li>
-        <li>
-          <strong>The app says only what your screen reader does not already say.</strong>
-          Window titles, focus moves, control names, roles, states and list selections are
-          the reader's job; a background result, a change on a control you are not sitting
-          on, and the outcome of an action are the app's. Over-announcing is the failure
-          nobody ever reports and everybody suffers, so there is a gate for it.
-        </li>
-        <li><strong>F1 answers everywhere</strong>, in every window, with what the window is for and then what the control you are on does.</li>
-        <li><strong>F6 lands you in a status bar you can read cell by cell</strong> — line, word count, encoding, line endings — rather than a decoration you cannot reach.</li>
-        <li><strong>Headings and lists announce themselves</strong> ("Heading 2, Installing"; "Bulleted list, 5 items"), which no Windows edit control can tell your screen reader on its own.</li>
-        <li><strong>Spell check spells the word out</strong>, letter by letter or in the phonetic alphabet, because "receive" and "recieve" sound identical.</li>
-        <li><strong>Your file comes back byte for byte</strong>, with the encoding and line endings it arrived with, and a window that lets you change either on purpose.</li>
-        <li><strong>Unsaved work survives a crash</strong>, and the session comes back when you ask for it.</li>
-        <li><strong>Every key is yours to change</strong>, in a manager that names the current owner of a key before it hands it over.</li>
-        <li><strong>The same free AI, on the same five keys.</strong> Not a similar feature built twice — one implementation reached by both, so it cannot drift.</li>
-        <li><strong>Free, for good.</strong> MIT-licensed, no paid tier, no trial, no account needed to use the editor. Donations cover what the AI service costs to run.</li>
+        <li><strong>F1 works everywhere.</strong> It tells you what the window is for, and then what the control you are on does.</li>
+        <li><strong>F6 takes you to the status bar.</strong> Arrow through it to hear the line, word count, encoding and line endings.</li>
+        <li><strong>Headings and lists tell you what they are.</strong> You hear things like "Heading 2, Installing" or "Bulleted list, 5 items".</li>
+        <li><strong>Spell check can spell a word out</strong>, letter by letter or with the phonetic alphabet. That helps when two spellings sound the same, like "receive" and "recieve".</li>
+        <li><strong>Your file is saved the way it came in</strong>, with the same encoding and line endings, unless you choose to change them.</li>
+        <li><strong>Unsaved work survives a crash</strong>, and you can bring back the documents you had open.</li>
+        <li><strong>You can change any key.</strong> Before you take a key, the key manager tells you what it already does.</li>
+        <li><strong>The same free AI, on the same five keys.</strong></li>
+        <li><strong>Free for good.</strong> No paid version, no trial, and no account needed to use the editor. Donations pay for the AI service.</li>
       </ul>
 
-      <h2 id="differences" tabindex="-1" class="focus-target">Where they genuinely differ</h2>
+      <h2 id="differences" tabindex="-1" class="focus-target">Where they are different</h2>
 
       <h3>What you can open</h3>
+      <p>This is the biggest difference, and it may decide things for you.</p>
       <p>
-        This is the largest single difference, and the one most likely to decide it for
-        you. QUILL Lite opens text and rich text: <code>.txt</code>, <code>.rtf</code>,
+        QUILL Lite opens text and rich text files: <code>.txt</code>, <code>.rtf</code>,
         <code>.md</code>, <code>.log</code>, <code>.csv</code>, <code>.json</code>,
-        <code>.py</code> and <code>.html</code>. That is a deliberate boundary, not an
-        unfinished one.
+        <code>.py</code> and <code>.html</code>. It keeps to that list on purpose.
       </p>
       <p>
-        QUILL reads Word, PowerPoint and Excel; OpenDocument and Apple iWork; PDF, with
-        local OCR for scans; EPUB and the proprietary e-book formats; braille in BRF, BRL,
-        PEF and UEB, with translation and back-translation; DAISY and NIMAS talking books,
-        which it also writes; email and mail archives, calendars and contacts; notebooks,
-        subtitles, feeds, chat exports and saved web pages; TeX, reStructuredText, AsciiDoc
-        and Org-mode; and files over FTP, SFTP, WebDAV, S3, HTTPS and GitHub. It writes
-        Word and rich text in place, exports through Pandoc, converts in batches, and
-        refuses at the file layer — not merely in the interface — to overwrite a PDF or a
-        spreadsheet with text.
+        QUILL opens almost anything a document can come in. That includes Word,
+        PowerPoint and Excel; OpenDocument and Apple iWork; PDF, including scanned pages,
+        which it reads with OCR on your own computer; EPUB and other e-books; braille files
+        in BRF, BRL, PEF and UEB, which it can also translate; DAISY and NIMAS talking
+        books, which it can also make; email archives, calendars and contacts; and plenty
+        more. It can open files over FTP, SFTP, WebDAV, S3, HTTPS and GitHub. It can save
+        Word and rich text, export to other formats, and convert lots of files in one go.
+        And it will never save plain text over a PDF or a spreadsheet by mistake.
       </p>
 
-      <h3>How documents sit on the screen</h3>
+      <h3>How your documents are arranged</h3>
       <p>
-        QUILL puts documents in tabs, in one or more windows: Ctrl+T for a new tab, Ctrl+Tab
-        to move between them. QUILL Lite numbers them instead, as children of a single
-        window, from 1, and never reuses a number while its document is open — because
-        "Document 3" is a name you can hold in your head and say out loud, and "the other
-        Untitled" is not.
+        QUILL puts documents in tabs. Press Ctrl+T for a new tab, and Ctrl+Tab to move
+        between them.
       </p>
       <p>
-        That choice has a cost, and QUILL Lite states it rather than hiding it: numbered
-        child windows do not appear in Alt+Tab, so the whole job of moving between documents
-        falls on the app. It carries that four ways — Ctrl+F6, Ctrl+Tab, Alt+1 to Alt+9,
-        and the Window menu — and every document's title leads with its number, because the
-        title is the one string your screen reader reads on arrival.
+        QUILL Lite numbers your documents instead, inside one window: 1, 2, 3 and so on. A
+        document keeps its number for as long as it is open, so "Document 3" is always
+        the same document.
+      </p>
+      <p>
+        There is one thing to know. Numbered documents do not show up in Alt+Tab. To move
+        between them, use Ctrl+F6, Ctrl+Tab, Alt+1 to Alt+9, or the Window menu. Every
+        document's title starts with its number, so your screen reader tells you which one
+        you are in.
       </p>
 
-      <h3>Speech, and the decision not to have a voice</h3>
+      <h3>Speech: your screen reader, or a voice of its own</h3>
       <p>
-        QUILL Lite speaks through a running NVDA or JAWS and nowhere else. No SAPI, no
-        synthesised voice of its own — because a second voice talking over a screen reader
-        is worse than silence. For anyone with no reader running, every message is also in
-        the status bar, which is exactly why the status bar is focusable.
+        QUILL Lite talks only through your screen reader, NVDA or JAWS. It has no voice of
+        its own, because two voices talking at once is worse than one. If no screen
+        reader is running, every message also shows in the status bar.
       </p>
       <p>
-        QUILL does have its own voice, on purpose and as a separate feature: Read Aloud in
-        a secondary voice, offline speech engines that never touch the network, batch
-        document-to-speech, audiobook building from a folder, offline transcription, and
-        voice commands. If you want a document read to you while you do something else,
-        that is QUILL.
+        QUILL can read to you in a second voice, separate from your screen reader. It can
+        also turn documents into speech, build an audiobook from a folder, transcribe
+        recordings without going online, and take voice commands. If you want a document
+        read to you while you do something else, choose QUILL.
       </p>
 
       <h3>Braille</h3>
       <p>
-        QUILL has a Braille mode: it opens and writes BRF, BRL, PEF and UEB, translates and
-        back-translates through liblouis, validates and repairs files, detects page
-        structure, and drives braille-specific status cells on a display. QUILL Lite has
-        none of it, and that is the clearest single reason a braille reader should install
-        QUILL.
+        QUILL has a Braille mode. It opens and saves BRF, BRL, PEF and UEB files,
+        translates to and from braille, checks and repairs braille files, and can show
+        extra status cells on a braille display. QUILL Lite has none of this. If you read
+        braille, QUILL is the one to install.
       </p>
 
-      <h3>AI: the same five commands, and then everything around them</h3>
+      <h3>AI</h3>
+      <p>The free AI is the same in both, on the same keys:</p>
+      <ul>
+        <li>Ctrl+Alt+G opens the AI pad.</li>
+        <li>Ctrl+Alt+Z asks a question about your document.</li>
+        <li>Alt+F5 is <strong>Use My ChatGPT Subscription</strong>.</li>
+        <li>Ctrl+F5 is <strong>Ask About an Image</strong>.</li>
+        <li>Alt+F2 lets you use your own OpenAI or Google Gemini key.</li>
+      </ul>
       <p>
-        The free hosted AI is at parity, deliberately — summarising or explaining a passage
-        is disproportionately valuable to somebody who cannot skim, which is why it was the
-        one exception to QUILL Lite's no-AI rule. Both products have the same AI pad on
-        Ctrl+Alt+G, the same document question on Ctrl+Alt+Z, the same <strong>Use My
-        ChatGPT Subscription</strong> on Alt+F5, the same <strong>Ask About an
-        Image</strong> on Ctrl+F5, the same web-search checkbox, the same conversations and
-        the same ten writing tools — behind the same two gates: a privacy agreement you
-        have to read, and a connection you have to make.
+        Both have the same web search option, the same saved conversations and the same
+        ten writing tools. In both, nothing is sent until you have read a short privacy
+        agreement and chosen to connect.
       </p>
       <p>
-        What QUILL adds is everything around that: bring your own key, a provider list with
-        a default cascade, local on-device models, interchangeable agent harnesses, a prompt
-        library, shareable prompt and skill packs, grammar checking, alt text for images,
-        and a wizard to set it all up.
-      </p>
-
-      <h3>The environment itself</h3>
-      <p>
-        This is what the word "Lite" is really about. QUILL has Quillins — sandboxed
-        extensions, twenty-three of them bundled, plus a community hub — the eight
-        QuillVille companion apps on one launcher, Git and GitHub as first-class citizens,
-        remote sites, accessible library and NLS BARD search, document compare,
-        watch-folder automation, macros, timer events, sticky notes with global hotkeys,
-        equations, tables and a table studio, Reveal Codes, Story Studio, an accessible
-        notes vault with backlinks, an accessibility auditor that produces a conformance
-        report, internet radio and podcasts inside the editor, and a nine-page wizard to
-        introduce them. QUILL Lite has none of it, and opens instantly.
+        QUILL adds more around that: other AI companies, AI models that run on your own
+        computer, AI agents, a prompt library, grammar checking, alt text for images, and
+        a wizard to help you set it all up.
       </p>
 
-      <h3>Five gaps in QUILL, found by building QUILL Lite</h3>
+      <h3>Everything else QUILL can do</h3>
       <p>
-        Five commands exist in QUILL Lite and not in QUILL: Print Preview, Unfold All,
-        Paste Collected, Clear Collected, and closing one numbered child window. Under
-        family rule 10 that is not a feature list, it is a bug list, and the codebase
-        tracks it as one — capped, so it cannot quietly grow. It is on this page because a
-        comparison that only flattered the larger product would not be worth reading. (A
-        sixth entry, Underline, is on the internal list only because QUILL's Ctrl+U is
-        wired straight into the editor instead of through the keymap. It works.)
+        This is what "Lite" really means. QUILL comes with extras called Quillins, with
+        twenty-three included and more on the Quillin Hub. It has the QuillVille companion
+        apps on one launcher, Git and GitHub, remote sites, library and NLS BARD search,
+        document compare, folders it can watch and act on, macros, timers, sticky notes,
+        equations, tables, Reveal Codes, Story Studio for long writing, a notes vault, an
+        accessibility checker, and radio and podcasts. A setup wizard shows you around.
+        QUILL Lite has none of these, and it opens straight away.
+      </p>
+
+      <h3>A few things only QUILL Lite has, for now</h3>
+      <p>
+        To be fair to both, here is the short list going the other way. QUILL Lite has
+        Print Preview, Unfold All, Paste Collected and Clear Collected, and QUILL does not
+        have them yet. They are on QUILL's to-do list. QUILL Lite can also close one
+        numbered document window, which QUILL does not need because it uses tabs.
       </p>
 
       <h2 id="moving-up" tabindex="-1" class="focus-target">Moving from QUILL Lite to QUILL</h2>
       <p>
-        This is a supported path with a menu item behind it, not a migration you do by
-        hand. QUILL's <strong>Bring my QUILL Lite settings</strong> shows you a plan before
-        it does anything, and then treats two kinds of state differently, for a reason.
+        If you start with QUILL Lite and later want QUILL, you do not have to set
+        everything up again. In QUILL, open <strong>Tools, Customize and Support, Bring My
+        QUILL Lite Settings</strong>, or press Alt+Shift+F11. It tells you what it will do
+        before it does anything.
       </p>
       <ul class="fact-list">
         <li>
-          <strong>Content is shared from then on.</strong>
-          Abbreviations, your personal dictionary, the copy tray, the clip library and
-          per-file bookmarks are things you build up over months, so they are merged into
-          QUILL's folder and QUILL Lite is pointed at it. After that, a change in either
-          editor is a change in both.
+          <strong>The things you have collected are shared from then on.</strong>
+          Your abbreviations, personal dictionary, copy tray, clip library and bookmarks
+          move into QUILL, and QUILL Lite uses them from there. Add a word in one editor
+          and the other one has it too.
         </li>
         <li>
-          <strong>Preferences are copied once, and then allowed to drift.</strong>
-          Wrap, autosave, spell-check-while-typing and your rebound keys are about the
-          editor you are in — and a chord you rebound in a nine-menu editor should not
-          silently rebind something in a twelve-menu one.
+          <strong>Your preferences are copied once.</strong>
+          Things like word wrap, autosave, spell checking as you type, and keys you have
+          changed are copied over. After that, each editor keeps its own, so changing one
+          does not surprise you in the other.
         </li>
         <li>
-          <strong>Nothing you already have is lost.</strong>
-          QUILL's own entry wins every collision, in every store, because anyone running
-          the import has been using QUILL and what is already there is the more recent of
-          the two.
+          <strong>Nothing you already have in QUILL is lost.</strong>
+          If both editors have an entry for the same thing, QUILL keeps its own.
         </li>
       </ul>
-      <p>
-        The two products also store five settings under different names — QUILL Lite's
-        <code>autosave_seconds</code> is QUILL's <code>autosave_interval_seconds</code>, for
-        one — so the importer translates rather than copies. You never see any of that,
-        which is the point of it being written down in one place and tested.
-      </p>
 
-      <h2 id="table" tabindex="-1" class="focus-target">The full comparison, category by category</h2>
+      <h2 id="table" tabindex="-1" class="focus-target">Side by side, one topic at a time</h2>
       <p>
-        Eleven categories of capability, compared for QUILL 0.9.0 Beta 2 and QUILL Lite
-        1.1.2, as of 30 September 2026. In every table the first column names the
-        capability, the second column is QUILL, and the third column is QUILL Lite. A
-        dashed line down the left edge of a row means one of the two does not have that
-        capability; the words in the row say which.
+        These tables compare QUILL 0.9.0 Beta 2 with QUILL Lite 1.1.2, as of 30 September
+        2026. There is one table for each topic, so you can jump between them by heading
+        or by table. In every table, the first column names the feature, the second
+        column is QUILL, and the third column is QUILL Lite.
       </p>
       <p>
-        It is eleven tables rather than one long one so that heading navigation reaches
-        every category, so that your screen reader's table list becomes a way to move
-        between them, and so that you hear "row 5 of 18" instead of "row 82 of 152". What
-        that costs is the ability to sweep the whole matrix in one pass, which is why each
-        table opens with a sentence that answers it in words first.
+        Each table starts with a sentence that sums it up, so you can skip the table if
+        that answers your question. Some rows have a dashed line down the left edge. That
+        means one of the two does not have that feature, and the words in the row always
+        say which one.
       </p>
 
       <nav class="cmp-jump" aria-labelledby="jump-h">
@@ -351,7 +315,7 @@
           <li><a href="#t-tools">Tools and the wider environment</a></li>
           <li><a href="#t-safety">Safety and your data</a></li>
           <li><a href="#t-custom">Customising it</a></li>
-          <li><a href="#t-gaps">Gaps QUILL Lite has closed first</a></li>
+          <li><a href="#t-gaps">What QUILL Lite has that QUILL does not yet</a></li>
         </ul>
       </nav>
 
@@ -388,9 +352,9 @@
 
       <h3 id="t-windows" tabindex="-1" class="focus-target">Documents and windows</h3>
       <p class="group-verdict">
-        Both hold many documents at once. QUILL uses tabs, which Alt+Tab can reach; QUILL
-        Lite uses numbered child windows, which it cannot, and binds four other ways
-        instead.
+        Both can have many documents open at once. QUILL uses tabs. QUILL Lite numbers
+        its documents inside one window. Those do not show up in Alt+Tab, so it gives you
+        four other ways to move between them.
       </p>
       <div class="cmp-scroll">
         <table class="cmp">
@@ -417,9 +381,8 @@
 
       <h3 id="t-files" tabindex="-1" class="focus-target">Files it opens and saves</h3>
       <p class="group-verdict">
-        This is the biggest difference on the page. QUILL Lite opens eight text-like
-        extensions and rich text. QUILL opens more or less anything a document can arrive
-        as.
+        This is the biggest difference on the page. QUILL Lite opens eight kinds of text
+        file, plus rich text. QUILL opens almost anything a document can come in.
       </p>
       <div class="cmp-scroll">
         <table class="cmp">
@@ -453,7 +416,7 @@
             <tr class="gap"><th scope="row">Export through Pandoc</th><td>Yes<span class="qual">eleven formats, plus PDF</span></td><td>No</td></tr>
             <tr class="gap"><th scope="row">Batch conversion</th><td>Yes<span class="qual">a four-page wizard</span></td><td>No</td></tr>
             <tr><th scope="row">Byte-for-byte round trip</th><td>Yes<span class="qual">encoding and line endings you can set</span></td><td>Yes<span class="qual">encoding and line endings you can set</span></td></tr>
-            <tr><th scope="row">Protecting a file it cannot write</th><td>Yes<span class="qual">enforced in the file layer, not by the interface</span></td><td>Not applicable<span class="qual">it only opens what it can write</span></td></tr>
+            <tr><th scope="row">Protecting a file it cannot write</th><td>Yes<span class="qual">it will not save text over a PDF or a spreadsheet</span></td><td>Not needed<span class="qual">it only opens what it can save</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -534,9 +497,9 @@
 
       <h3 id="t-speech" tabindex="-1" class="focus-target">Speech, sound and braille</h3>
       <p class="group-verdict">
-        Both talk to NVDA and JAWS to the same standard, and both dictate — see
-        <a href="/dictation.html">the complete dictation guide</a> for all of it. A voice of
-        its own, and braille, are QUILL's — the first by QUILL Lite's deliberate choice.
+        Both work with NVDA and JAWS in the same way, and both let you dictate. The
+        <a href="/dictation.html">complete dictation guide</a> has all of it. Only QUILL
+        has a voice of its own and braille. QUILL Lite leaves out the voice on purpose.
       </p>
       <div class="cmp-scroll">
         <table class="cmp">
@@ -550,10 +513,10 @@
           </thead>
           <tbody>
             <tr><th scope="row">Announcements to NVDA and JAWS</th><td>Yes</td><td>Yes</td></tr>
-            <tr class="gap"><th scope="row">A voice of its own</th><td>Yes<span class="qual">Read Aloud, as a separate feature you switch on</span></td><td>No<span class="qual">by design: a second voice over a screen reader is worse than silence</span></td></tr>
+            <tr class="gap"><th scope="row">A voice of its own</th><td>Yes<span class="qual">Read Aloud, as a separate feature you switch on</span></td><td>No<span class="qual">on purpose: two voices at once is worse than one</span></td></tr>
             <tr class="gap"><th scope="row">Offline speech engines</th><td>Yes<span class="qual">nothing sent anywhere</span></td><td>No</td></tr>
             <tr class="gap"><th scope="row">Batch speech and audiobooks</th><td>Yes<span class="qual">whole documents, and a book from a folder</span></td><td>No</td></tr>
-            <tr><th scope="row">Offline dictation</th><td>Yes</td><td>Yes<span class="qual">the recogniser ships inside it and nothing you say leaves the computer</span></td></tr>
+            <tr><th scope="row">Offline dictation</th><td>Yes</td><td>Yes<span class="qual">it comes built in, and nothing you say leaves your computer</span></td></tr>
             <tr><th scope="row">Windows dictation</th><td>Yes<span class="qual">including words you teach it</span></td><td>Yes<span class="qual">including words you teach it</span></td></tr>
             <tr><th scope="row">Tidying misheard dictation</th><td>Yes<span class="qual">with AI, which is told to change nothing else</span></td><td>Yes<span class="qual">with AI, which is told to change nothing else</span></td></tr>
             <tr class="gap"><th scope="row">Voice commands</th><td>Yes<span class="qual">and a voice conversation mode</span></td><td>No</td></tr>
@@ -563,19 +526,19 @@
             <tr><th scope="row">Sound or speech, your choice</th><td>Yes<span class="qual">per kind of feedback, and a count is always spoken</span></td><td>Yes<span class="qual">per kind of feedback, and a count is always spoken</span></td></tr>
             <tr><th scope="row">A focusable status bar</th><td>Yes<span class="qual">F6, read cell by cell</span></td><td>Yes<span class="qual">F6, read cell by cell</span></td></tr>
             <tr><th scope="row">F1 everywhere</th><td>Yes<span class="qual">every window and every control</span></td><td>Yes<span class="qual">every window and every control</span></td></tr>
-            <tr><th scope="row">Key Describer</th><td>Yes<span class="qual">it names what a chord does</span></td><td>Not applicable<span class="qual">QUILL Lite has no chords</span></td></tr>
+            <tr><th scope="row">Key Describer</th><td>Yes<span class="qual">it names what a chord does</span></td><td>Not needed<span class="qual">QUILL Lite has no chords</span></td></tr>
           </tbody>
         </table>
       </div>
 
       <h3 id="t-ai" tabindex="-1" class="focus-target">AI</h3>
       <p class="group-verdict">
-        The free hosted AI is identical in both, down to the keys. Everything around it —
-        other providers, local models, agents, packs — is QUILL's.
+        The free AI is the same in both, right down to the keys. Everything around it,
+        like other AI companies, local models, agents and prompt packs, is only in QUILL.
       </p>
       <div class="cmp-scroll">
         <table class="cmp">
-          <caption>AI: the free hosted service is the same in both; the surrounding machinery is not.</caption>
+          <caption>AI: the free service is the same in both, and the extras are only in QUILL.</caption>
           <thead>
             <tr>
               <th scope="col">Capability</th>
@@ -584,7 +547,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr><th scope="row">The free hosted AI</th><td>Yes<span class="qual">no account, no password, no card</span></td><td>Yes<span class="qual">no account, no password, no card</span></td></tr>
+            <tr><th scope="row">The free AI</th><td>Yes<span class="qual">no account, no password, no card</span></td><td>Yes<span class="qual">no account, no password, no card</span></td></tr>
             <tr><th scope="row">The AI pad</th><td>Ctrl+Alt+G</td><td>Ctrl+Alt+G</td></tr>
             <tr><th scope="row">Ask about the document</th><td>Ctrl+Alt+Z<span class="qual">it reads the file on your computer and sends only the passages that answer</span></td><td>Ctrl+Alt+Z<span class="qual">it reads the file on your computer and sends only the passages that answer</span></td></tr>
             <tr><th scope="row">Seeing what will be sent</th><td>Yes<span class="qual">in a box you can read line by line, before anything leaves</span></td><td>Yes<span class="qual">in a box you can read line by line, before anything leaves</span></td></tr>
@@ -594,10 +557,10 @@
             <tr><th scope="row">Conversations and writing tools</th><td>Yes<span class="qual">ten of them</span></td><td>Yes<span class="qual">ten of them</span></td></tr>
             <tr><th scope="row">A privacy agreement first</th><td>Yes</td><td>Yes</td></tr>
             <tr><th scope="row">A usage window</th><td>Yes<span class="qual">where you stand, and when each count starts again</span></td><td>Yes<span class="qual">where you stand, and when each count starts again</span></td></tr>
-            <tr><th scope="row">Your own OpenAI key</th><td>Yes<span class="qual">Alt+F2</span></td><td>Yes<span class="qual">Alt+F2</span></td></tr>
-            <tr class="gap"><th scope="row">Other AI providers</th><td>Yes<span class="qual">a provider list, and a default cascade between them</span></td><td>No</td></tr>
+            <tr><th scope="row">Your own OpenAI or Google Gemini key</th><td>Yes<span class="qual">Alt+F2</span></td><td>Yes<span class="qual">Alt+F2</span></td></tr>
+            <tr class="gap"><th scope="row">Other AI companies</th><td>Yes<span class="qual">pick from a list, and set the order to try them in</span></td><td>No</td></tr>
             <tr class="gap"><th scope="row">Local, on-device models</th><td>Yes</td><td>No</td></tr>
-            <tr class="gap"><th scope="row">Agent harnesses</th><td>Yes<span class="qual">interchangeable</span></td><td>No</td></tr>
+            <tr class="gap"><th scope="row">AI agents</th><td>Yes<span class="qual">and you choose which one</span></td><td>No</td></tr>
             <tr class="gap"><th scope="row">Prompt library and packs</th><td>Yes<span class="qual">shareable prompt and skill packs</span></td><td>No</td></tr>
             <tr class="gap"><th scope="row">Grammar checking with AI</th><td>Yes</td><td>No</td></tr>
             <tr class="gap"><th scope="row">Alt text for an image</th><td>Yes</td><td>No</td></tr>
@@ -608,13 +571,13 @@
 
       <h3 id="t-tools" tabindex="-1" class="focus-target">Tools and the wider environment</h3>
       <p class="group-verdict">
-        This is what the word "Lite" is really about. Spelling, printing, tutorials and
-        getting help are shared; the rest of this list is QUILL's, and is why it is the
+        This is what "Lite" really means. Spelling, printing, tutorials and getting help
+        are in both. The rest of this list is only in QUILL, and it is why QUILL is the
         bigger program.
       </p>
       <div class="cmp-scroll">
         <table class="cmp">
-          <caption>Tools and the wider environment: the part the word "Lite" is really about.</caption>
+          <caption>Tools and the wider environment: the part that makes QUILL the bigger program.</caption>
           <thead>
             <tr>
               <th scope="col">Capability</th>
@@ -646,8 +609,8 @@
 
       <h3 id="t-safety" tabindex="-1" class="focus-target">Safety and your data</h3>
       <p class="group-verdict">
-        Effectively identical. Neither one sends anything anywhere unless you ask, and
-        neither has any telemetry at all.
+        Almost the same. Neither one sends anything anywhere unless you ask, and neither
+        collects any information about how you use it.
       </p>
       <div class="cmp-scroll">
         <table class="cmp">
@@ -662,14 +625,14 @@
           <tbody>
             <tr><th scope="row">Unsaved work after a crash</th><td>Recovered</td><td>Recovered</td></tr>
             <tr><th scope="row">Session restore</th><td>Yes</td><td>Yes</td></tr>
-            <tr><th scope="row">Timestamped backups</th><td>Yes<span class="qual">a dated copy on every save</span></td><td>Yes<span class="qual">switched off by default: reassuring, and they fill a folder</span></td></tr>
+            <tr><th scope="row">Timestamped backups</th><td>Yes<span class="qual">a dated copy on every save</span></td><td>Yes<span class="qual">off until you turn it on, because the copies fill up a folder</span></td></tr>
             <tr><th scope="row">Restore points</th><td>Yes<span class="qual">one per save, browsable</span></td><td>Yes<span class="qual">as Browse Backups</span></td></tr>
-            <tr><th scope="row">Atomic writes</th><td>Yes<span class="qual">a half-written settings file cannot exist</span></td><td>Yes<span class="qual">a half-written settings file cannot exist</span></td></tr>
-            <tr class="gap"><th scope="row">Safe Mode</th><td>Yes<span class="qual">starts with AI, watch folder and extensions off</span></td><td>Not applicable<span class="qual">nothing to switch off at this size; when it cannot start, it says why in a sentence</span></td></tr>
+            <tr><th scope="row">Settings saved safely</th><td>Yes<span class="qual">a settings file is never left half-written</span></td><td>Yes<span class="qual">a settings file is never left half-written</span></td></tr>
+            <tr class="gap"><th scope="row">Safe Mode</th><td>Yes<span class="qual">starts with AI, watch folder and extensions off</span></td><td>Not needed<span class="qual">it is small enough not to need one, and if it cannot start, it tells you why</span></td></tr>
             <tr><th scope="row">Crash reports</th><td>Only if you opt in, with secrets scrubbed</td><td>Only if you opt in, with secrets scrubbed</td></tr>
             <tr><th scope="row">Sensitive settings encrypted</th><td>Yes<span class="qual">by Windows itself</span></td><td>Yes<span class="qual">by Windows itself</span></td></tr>
             <tr><th scope="row">Signed installer and application</th><td>Yes</td><td>Yes</td></tr>
-            <tr><th scope="row">Telemetry</th><td>None</td><td>None</td></tr>
+            <tr><th scope="row">Usage tracking</th><td>None</td><td>None</td></tr>
             <tr><th scope="row">Anything sent without asking</th><td>Nothing</td><td>Nothing</td></tr>
           </tbody>
         </table>
@@ -692,7 +655,7 @@
           </thead>
           <tbody>
             <tr><th scope="row">Rebinding a key</th><td>Yes<span class="qual">Keyboard Settings</span></td><td>Yes<span class="qual">the Keyboard Manager, which names a key's current owner first</span></td></tr>
-            <tr class="gap"><th scope="row">Chords on a leader key</th><td>Yes<span class="qual">the QUILL Key</span></td><td>No<span class="qual">a writing environment's grammar, deliberately left out</span></td></tr>
+            <tr class="gap"><th scope="row">Chords on a leader key</th><td>Yes<span class="qual">the QUILL Key</span></td><td>No<span class="qual">left out on purpose, to keep it simple</span></td></tr>
             <tr class="gap"><th scope="row">Per-document keymap</th><td>Yes<span class="qual">with explicit consent</span></td><td>No</td></tr>
             <tr><th scope="row">Named feature profiles</th><td>Eleven<span class="qual">one of them is called QUILL Lite</span></td><td>Four<span class="qual">Recommended, Everything, WordPad, Notepad</span></td></tr>
             <tr><th scope="row">Individual feature switches</th><td>Yes</td><td>Yes<span class="qual">twenty areas, and switching one off takes its keys as well as its menu</span></td></tr>
@@ -700,20 +663,20 @@
             <tr><th scope="row">Settings export and import</th><td>Yes</td><td>Yes</td></tr>
             <tr><th scope="row">Theme follows the system</th><td>Yes</td><td>Yes</td></tr>
             <tr><th scope="row">Text size and reset</th><td>Yes</td><td>Yes</td></tr>
-            <tr><th scope="row">Importing a QUILL Lite setup</th><td>Yes<span class="qual">one menu item, and it shows its plan first</span></td><td>Not applicable</td></tr>
-            <tr class="gap"><th scope="row">Interface language</th><td>Translated<span class="qual">through a community pipeline</span></td><td>English</td></tr>
+            <tr><th scope="row">Importing a QUILL Lite setup</th><td>Yes<span class="qual">one menu item, and it tells you what it will do first</span></td><td>Not needed</td></tr>
+            <tr class="gap"><th scope="row">Interface language</th><td>Translated<span class="qual">by volunteers in the community</span></td><td>English</td></tr>
           </tbody>
         </table>
       </div>
 
-      <h3 id="t-gaps" tabindex="-1" class="focus-target">Gaps QUILL Lite has closed first</h3>
+      <h3 id="t-gaps" tabindex="-1" class="focus-target">What QUILL Lite has that QUILL does not yet</h3>
       <p class="group-verdict">
-        Five commands QUILL Lite has and QUILL does not. Family rule 10 says that is not
-        allowed to stand, so this is QUILL's backlog rather than QUILL Lite's advantage.
+        Five commands QUILL Lite has and QUILL does not. QUILL is meant to catch up, so
+        think of this as QUILL's to-do list.
       </p>
       <div class="cmp-scroll">
         <table class="cmp">
-          <caption>Gaps QUILL Lite has closed first: a tracked bug list, capped so it cannot grow.</caption>
+          <caption>What QUILL Lite has that QUILL does not yet: QUILL's to-do list.</caption>
           <thead>
             <tr>
               <th scope="col">Command</th>
@@ -726,16 +689,16 @@
             <tr class="gap"><th scope="row">Unfold All</th><td>No<span class="qual">it folds and lists folds, but cannot unfold everything at once</span></td><td>Yes</td></tr>
             <tr class="gap"><th scope="row">Paste Collected</th><td>No<span class="qual">its collector writes straight into the document, so there is no paste step</span></td><td>Yes</td></tr>
             <tr class="gap"><th scope="row">Clear Collected</th><td>No</td><td>Yes</td></tr>
-            <tr class="gap"><th scope="row">Closing one numbered window</th><td>Not applicable<span class="qual">QUILL has tabs</span></td><td>Yes</td></tr>
+            <tr class="gap"><th scope="row">Closing one numbered window</th><td>Not needed<span class="qual">QUILL uses tabs</span></td><td>Yes</td></tr>
           </tbody>
         </table>
       </div>
 
       <h2 id="downloads" tabindex="-1" class="focus-target">Download either one</h2>
       <p>
-        Both are free. Every installer and portable build is digitally signed, so Windows
-        can confirm it has not been altered, and neither program takes over your file
-        associations without being asked.
+        Both are free. Every installer and portable version is digitally signed, so
+        Windows can check that nobody has changed it. Neither one makes itself the default
+        program for your files unless you ask it to.
       </p>
 
       <h3>QUILL</h3>
@@ -744,9 +707,9 @@
         <a class="btn secondary" href="https://github.com/Community-Access/quill/releases/tag/v0.9.0-beta.2">All QUILL 0.9.0 Beta 2 downloads, including macOS and portable</a>
       </p>
       <p class="req-note">
-        Windows 10 or later, 64-bit, or macOS 12 or later. The installer above is the
-        online one: 78 MB, and it fetches speech engines, converters and language packs
-        the first time you use them. The release page also has a 199 MB offline installer
+        You need Windows 10 or later, 64-bit, or macOS 12 or later. The installer above
+        is the online one. It is 78 MB, and it downloads speech engines, converters and
+        language packs the first time you use them. The release page also has a 199 MB offline installer
         that needs no connection, two portable ZIPs, and the 136 MB macOS disk image.
       </p>
 
@@ -756,32 +719,32 @@
         <a class="btn secondary" href="https://github.com/Community-Access/quill/releases/tag/quill-lite-v1.1.2">All QUILL Lite 1.1.2 downloads, including portable</a>
       </p>
       <p class="req-note">
-        Windows 10 or later, 64-bit. The installer is 230 MB because everything is inside
-        it, the offline dictation recogniser included; the portable ZIP is 300 MB and
-        carries its own data folder, so it runs from a USB stick. The installer can add
+        You need Windows 10 or later, 64-bit. The installer is 230 MB because everything
+        is inside it, including offline dictation. The portable ZIP is 300 MB and keeps
+        its settings with it, so you can run it from a USB stick. The installer can add
         QUILL Lite to the Open With list for <code>.txt</code> and <code>.rtf</code>
-        without ever making itself the default.
+        files, without making itself the default.
       </p>
 
       <h2 id="read-more" tabindex="-1" class="focus-target">Read more before you decide</h2>
 
       <h3>About QUILL Lite</h3>
       <ul>
-        <li><a href="/quilllite.html">What QUILL Lite is, in its own words</a> — the product page, including the free AI.</li>
-        <li><a href="/docs/quilllite-userguide.html">The QUILL Lite user guide</a> — every menu, every key, and what each one says.</li>
-        <li><a href="/docs/quilllite-prd.html">Why QUILL Lite exists: the QUILL Lite product requirements</a> — what it keeps, what it drops, and the argument for each decision.</li>
-        <li><a href="/docs/quilllite-ai-guide.html">The QUILL Lite AI guide</a> — what is sent, what is kept, and what the free service costs to run.</li>
+        <li><a href="/quilllite.html">The QUILL Lite page</a>: what it is, including the free AI.</li>
+        <li><a href="/docs/quilllite-userguide.html">The QUILL Lite user guide</a>: every menu and every key, step by step.</li>
+        <li><a href="/docs/quilllite-prd.html">The QUILL Lite plan</a>: what it keeps, what it leaves out, and why.</li>
+        <li><a href="/docs/quilllite-ai-guide.html">The QUILL Lite AI guide</a>: what is sent, what is kept, and what the free service costs to run.</li>
       </ul>
 
       <h3>About QUILL</h3>
       <ul>
-        <li><a href="/docs/userguide.html">The QUILL user guide</a> — the whole writing environment.</li>
-        <li><a href="/docs/keyboard-reference.html">The QUILL keyboard reference</a> — all 463 default bindings, generated from the keymap the app actually loads.</li>
+        <li><a href="/docs/userguide.html">The QUILL user guide</a>: everything QUILL does.</li>
+        <li><a href="/docs/keyboard-reference.html">The QUILL keyboard reference</a>: all 463 default keys in one list.</li>
       </ul>
 
       <h3>About both</h3>
       <ul>
-        <li><a href="/faq.html">QUILL frequently asked questions</a> — installing, updating, portable builds, privacy, and what the AI does with your text.</li>
+        <li><a href="/faq.html">QUILL frequently asked questions</a>: installing, updating, portable versions, privacy, and what the AI does with your text.</li>
         <li><a href="/docs.html">All documentation for every app in the family</a>.</li>
       </ul>
 
@@ -792,13 +755,13 @@
   <footer class="site">
     <div class="wrap">
       <p class="note">
-        <strong class="quill" style="color:var(--accent)">QUILL</strong> —
+        <strong class="quill" style="color:var(--accent)">QUILL</strong>:
         Quality, Usable, Inclusive, Lightweight, Literate. A screen-reader-first
         writing environment for Windows and macOS, built by the community that
         depends on it.
       </p>
       <nav aria-label="Documentation">
-        <h4>Documentation</h4>
+        <h2>Documentation</h2>
         <ul>
           <li><a href="/docs/userguide.html">QUILL user guide</a></li>
           <li><a href="/docs/quilllite-userguide.html">QUILL Lite user guide</a></li>
@@ -808,7 +771,7 @@
         </ul>
       </nav>
       <nav aria-label="Project">
-        <h4>Project</h4>
+        <h2>Project</h2>
         <ul>
           <li><a href="https://github.com/Community-Access/quill/releases/tag/v0.9.0-beta.2">All QUILL 0.9.0 Beta 2 downloads, including macOS and portable</a></li>
           <li><a href="https://github.com/Community-Access/quill/releases/tag/quill-lite-v1.1.2">All QUILL Lite 1.1.2 downloads, including portable</a></li>
@@ -819,7 +782,7 @@
         </ul>
       </nav>
       <nav aria-label="Privacy and security">
-        <h4>Privacy &amp; security</h4>
+        <h2>Privacy &amp; security</h2>
         <ul>
           <li><a href="/docs/privacy.html">QUILL's privacy policy</a></li>
           <li><a href="/docs/security.html">Reporting a security problem</a></li>

@@ -1,60 +1,67 @@
-# QUILL Lite 1.0.1 — What's New
+# QUILL Lite 1.0.1
 
 *Released September 25, 2026.*
 
-**A fix for AI help on some Windows 10 computers.** If Connect stopped at the
-step that gets your code and said QUILL Lite "could not reach the internet" --
-on a computer whose internet was working perfectly well -- this release fixes
-it. Nothing else changes, and everything you have is kept.
+Welcome to QUILL Lite 1.0.1. This small update gets free AI help connecting on
+the Windows 10 computers where it would not, and tells you clearly what went
+wrong if a connection ever fails. Nothing else changes, and everything you have
+is kept.
 
----
+## AI help connects on every computer
 
-## What was wrong
+On some Windows 10 computers, AI help would not connect. You pressed Connect,
+it got as far as fetching your code, and then it said QUILL Lite "could not
+reach the internet", even though your internet was fine.
 
-When QUILL Lite connects to its free AI service, it first checks the service's
-security certificate, the same check your browser makes before it shows a
-padlock. To make that check, a program needs a list of the organisations it
-trusts to issue certificates.
+Before QUILL Lite talks to its free AI service, it checks that the service is
+really who it says it is. Your web browser makes the same check before it
+shows you a padlock. On some computers, Windows had not yet fetched what it
+needed for that check, so QUILL Lite stopped before sending anything, which
+was the safe thing to do, and then blamed the internet.
 
-QUILL Lite 1.0 used only the list Windows keeps. Windows does not keep a
-complete list up front: it downloads most of those organisations the first time
-Windows' own networking needs one. A computer that has never had a reason to
-download the one this service uses -- often because the browser on it keeps its
-own list and never asks Windows -- did not have it. QUILL Lite could not
-finish the check, stopped before sending anything, and then reported the wrong
-problem: that the internet could not be reached.
+Now QUILL Lite carries what it needs for the check itself, so connecting works
+on those computers. The check is just as strict as before, and a connection
+that cannot be checked is still refused.
 
-## What 1.0.1 does
+## When a connection fails, it tells you why
 
-- **Connecting works on those computers.** QUILL Lite now also trusts the list
-  it ships with, so the check succeeds whether or not Windows has downloaded
-  that organisation yet. The check itself is exactly as strict as before: every
-  certificate is still verified, and a connection that cannot be verified is
-  still refused.
-- **When a connection fails, it says how.** A certificate that cannot be
-  verified, an address that cannot be looked up, a connection that was refused,
-  and a service that did not answer in time are now four different messages.
-  Each names the service and ends with the reason Windows gave, so a message
-  you pass on to us tells us straight away what happened.
+Instead of one message for everything, there are now four, so you know which
+of these happened:
 
-New error codes, in case you are asked for one:
+- the service could not be confirmed as genuine,
+- the service's address could not be found,
+- the connection was refused,
+- the service did not answer in time.
 
-- **QUILL-AI-GATEWAY-CERTIFICATE**: the service was reached, but its
-  certificate could not be verified. Security software or a work network that
-  inspects secure connections is the usual cause now.
-- **QUILL-AI-GATEWAY-UNREACHABLE**: the service was not reached -- refused, cut
-  off, or no answer in time.
-- **QUILL-AI-GATEWAY-OFFLINE**: the service's address could not be looked up,
-  so this computer is offline or its DNS is not answering.
+Each message names the service and ends with the reason Windows gave. If you
+send one of these messages to support, we can tell straight away what
+happened. In every case, nothing was sent and none of your allowance was used.
 
-In every one of these cases nothing was sent and none of your allowance was
-used.
+If someone helping you asks for an error code, these are the new ones:
 
----
+- **QUILL-AI-GATEWAY-CERTIFICATE**: the service was reached but could not be
+  confirmed as genuine. The usual cause is security software, or a work
+  network that looks inside secure connections.
+- **QUILL-AI-GATEWAY-UNREACHABLE**: the service was not reached. The
+  connection was refused, cut off, or got no answer in time.
+- **QUILL-AI-GATEWAY-OFFLINE**: the service's address could not be found. This
+  computer is offline, or cannot look up addresses right now.
 
 ## Getting it
 
-Choose **Help ▸ Check for Updates** (**Ctrl+Alt+U**) and then Update, or download
-**QuillLite-Setup-Shared-1.0.1.exe** to install or update, or
-**QuillLite-Portable-1.0.1.zip** to unzip over a portable copy. Your settings,
-your recovered work and your AI connection are all kept.
+1. Choose **Help > Check for Updates** (**Ctrl+Alt+U**), then Update.
+2. Or download QuillLite-Setup-Shared-1.0.1.exe to install or update.
+3. Or, for a portable copy, download QuillLite-Portable-1.0.1.zip and unzip it
+   over the copy you have.
+
+Your settings, your recovered work and your AI connection are all kept.
+
+## Where to learn more
+
+The QUILL Lite User Guide, in the Start menu beside QUILL Lite, has a chapter
+on AI help that walks you through connecting. In the app, **Help > Tutorials**
+(**Ctrl+Alt+F1**) has a lesson called Asking a question about a document.
+
+If you get stuck, choose **Help > Get Help from Support** (**Ctrl+Alt+F2**),
+or write to support@community-access.org. A person at Community Access reads
+every message.

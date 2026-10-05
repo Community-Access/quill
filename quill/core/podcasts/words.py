@@ -22,9 +22,11 @@ __all__ = ["ALLOWED_PHRASES", "FORBIDDEN", "offences", "scrub_allowed"]
 #: Forbidden word -> the word to use instead (the message the gate prints).
 FORBIDDEN: dict[str, str] = {
     "unsubscribe": "unfollow",
+    "unsubscribes": "unfollows",
     "unsubscribed": "unfollowed",
     "unsubscribing": "unfollowing",
     "subscribe": "follow",
+    "subscribes": "follows",
     "subscribed": "followed",
     "subscribing": "following",
     "subscription": "podcast (or 'the podcasts you follow')",

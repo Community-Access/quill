@@ -1,84 +1,90 @@
 # Tutorial 6: Make a document accessible with GLOW
 
-**Goal:** take a real document from "probably fine" to *verified, graded,
-and repaired* — using GLOW, QUILL's built-in accessibility review system.
+**Goal:** take a real document from "probably fine" to *checked, graded and
+fixed*, using GLOW, QUILL's built-in accessibility checker.
 
-GLOW (Guided Layout and Output Workflow) is guided confidence, not a
-compliance dashboard: it explains each finding in plain language and only
-applies fixes you approve. Everything is under **Tools > GLOW**.
+GLOW (Guided Layout and Output Workflow) explains each problem it finds in
+plain words, and only makes the fixes you agree to. Everything is under
+**Tools > GLOW**.
 
 ## 0. Switch it on (GLOW is experimental)
 
-GLOW ships as an experimental feature, off by default while it matures:
+GLOW is still experimental, so it is off until you turn it on:
 
 1. **Preferences > Experimental.**
-2. Tick **Enable experimental features** (the master switch — until it is on,
-   every experimental control is disabled and skipped in the tab order).
+2. Tick **Enable experimental features**. Until this is on, the other
+   experimental choices are greyed out and Tab skips them.
 3. Tick **GLOW accessibility review and repair (experimental)**.
-4. Apply. The **Tools > GLOW** menu appears immediately — no restart.
+4. Apply. The **Tools > GLOW** menu appears right away. You do not need to
+   restart.
 
-Experimental means still maturing, not unsafe: every GLOW action below keeps
-the review-first, never-touch-the-original contract.
+Experimental means it is still being improved, not that it is unsafe. GLOW
+always shows you a change before making it, and never changes your original
+file.
 
 ## 1. Audit what you are writing
 
 1. Open any Markdown or HTML document you have written.
 2. **Tools > GLOW > GLOW Audit Current Document.**
-3. The report opens as a normal tab. Arrow through it. Each finding gives:
-   the rule, the severity, the location, and a plain-language suggestion —
-   e.g. heading levels that jump (H1 straight to H4), links that just say
-   "click here", images without alt text, HTML missing `lang`, tables
-   without header cells, paragraphs too dense to listen to.
+3. The report opens as a normal tab. Arrow through it. Each finding tells you
+   what the problem is, how serious it is, where it is, and what to do about
+   it. For example: headings that skip a level (H1 straight to H4), links that
+   just say "click here", pictures with no description, tables with no header
+   cells, or paragraphs too long to listen to comfortably.
 
 For just the section you are working on, use **GLOW Audit Selection /
 Paragraph** instead.
 
-## 2. Fix — with your eyes open
+## 2. Fix it, and see every change
 
-1. **GLOW Fix Current Document.** QUILL opens the repaired text as a *named
-   preview tab* and immediately starts a **compare session** against your
-   original.
-2. Walk the differences. Accept knowing exactly what changed; reject and
-   nothing happened. Never a silent rewrite.
-3. For quick in-place cleanup of one block, **GLOW Fix Selection /
-   Paragraph** — the replacement stays selected so `Ctrl+Z` is one step
-   away.
+1. **GLOW Fix Current Document.** QUILL opens the repaired text in a *new
+   preview tab* and compares it with your original right away.
+2. Go through the differences. If you accept, you know exactly what changed.
+   If you reject, nothing changes. GLOW never rewrites anything without
+   showing you.
+3. To quickly fix one paragraph where it is, use **GLOW Fix Selection /
+   Paragraph**. The fixed text stays selected, and `Ctrl+Z` undoes it in one
+   step.
 
-Fixable findings (heading-marker spacing, missing `lang`, missing alt
-attributes, trailing whitespace) are marked `[auto-fix]` in the audit;
-judgment calls (link text, dense paragraphs) stay yours.
+Problems GLOW can fix for you are marked `[auto-fix]` in the report. Things
+that need your judgment, like link wording or long paragraphs, are left for
+you.
 
 ## 3. Grade the file you are about to send
 
-The headline capability: GLOW audits **structured files on disk** — Word,
-PowerPoint, Excel, PDF, EPUB.
+GLOW can also check **files on your computer**: Word, PowerPoint, Excel, PDF
+and EPUB.
 
 1. Export your document to Word (**File > Export > Word Document...**), or
    pick any existing docx.
-2. **Tools > GLOW > GLOW Audit File...** and choose it. The audit runs in
-   the background and returns a **score out of 100, a letter grade**, and
-   every finding.
-3. To repair: **GLOW Fix File...**. GLOW writes a fixed copy *next to* the
-   original (`report.docx` → `report-accessible.docx`), confirms the
-   destination first, and opens the post-fix audit so you can verify the
-   improvement. **The original file is never modified.**
+2. **Tools > GLOW > GLOW Audit File...** and choose it. The audit runs in the
+   background and returns a **score out of 100, a letter grade**, and every
+   finding.
+3. To fix it, choose **GLOW Fix File...**. GLOW saves a fixed copy *next to*
+   the original (`report.docx` becomes `report-accessible.docx`), checks with
+   you where to save it, and then shows you a new report so you can see what
+   improved. **The original file is never modified.**
 
-## 4. Keep the engine fresh (only when you ask)
+## 4. Keep GLOW up to date (only when you ask)
 
-**Help > Check for GLOW Updates...** checks for a newer accessibility
-engine. The check runs only on your command, the download is confirmed
-separately, every wheel is signature- and checksum-verified, and a failed
-install rolls back automatically. The engine's optional networked helpers
-(AI alt-text, PII redaction) are off until you explicitly consent, per use —
-the default GLOW workflow is entirely on-device.
+**Help > Check for GLOW Updates...** checks for a newer version of GLOW. It
+only checks when you ask, and asks again before it downloads anything.
+Downloads are checked to make sure they are safe, and if an update fails, your
+old version is put back. A few optional extras go online, such as writing
+picture descriptions with AI; they ask you first every time. Everything else
+in GLOW stays on your computer.
 
-## 5. The routine worth adopting
+## 5. A routine to try
 
-Draft → **Audit Current Document** → fix the judgment calls yourself →
-**Fix Current Document** for the mechanical ones (accept from the compare) →
-export → **Audit File** as the final gate. Two minutes, and you are shipping
-documents more accessible than most sighted authors produce.
+1. Write your draft.
+2. Run **Audit Current Document**.
+3. Fix the things that need your judgment yourself.
+4. Run **Fix Current Document** for the rest, and accept the changes you want.
+5. Export your file.
+6. Run **Audit File** on it one last time.
 
-*Want an ambitious pass beyond the deterministic rules? The AI menu's
-**Accessibility Tune-Up** agent drafts a broader improvement plan — 
-reviewable like everything else.*
+It takes a couple of minutes, and the people you send it to will thank you.
+
+*Want more ideas than the checker gives? The AI menu's **Accessibility
+Tune-Up** suggests a wider plan for improving your document, and you check
+every suggestion before anything changes.*

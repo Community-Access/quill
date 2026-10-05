@@ -36,6 +36,12 @@ from __future__ import annotations
 
 #: Surface purposes by exact window title.
 PURPOSES: dict[str, str] = {
+    "Find a Setting or Command": (
+        "Every menu command in this app, searchable by name. Type part of a "
+        "name; Down moves into the matches; Enter does the highlighted one, exactly "
+        "as choosing it from its menu would. An option says whether it is on, and "
+        "doing it switches it and says the new state."
+    ),
     "Tag Editor": (
         "Every tag of one MP3, M4A, M4B or MP4 file, over five pages -- title, "
         "artist and album, the people, the dates and numbers, sorting, and the "

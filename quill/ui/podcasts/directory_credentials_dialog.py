@@ -32,8 +32,9 @@ _INTRO = (
     "Podcast Index is a second podcast directory. It is free, and it carries "
     "the extra information some podcasts publish -- chapters, transcripts, and "
     "the moments a show marked as worth hearing. It needs a key and a secret, "
-    "which you can get for nothing at podcastindex.org. Leave these empty and "
-    "QUILL Cast simply finds iTunes, as it always has."
+    "which you can get for nothing at api.podcastindex.org/signup. A key "
+    "entered here works in QUILL Cast and Quill Radio alike. Leave these empty "
+    "and finding podcasts uses Apple Podcasts, as it always has."
 )
 
 

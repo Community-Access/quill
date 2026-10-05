@@ -122,6 +122,8 @@ def test_radio_startup_registers_the_handler() -> None:
 
     repo = Path(__file__).resolve().parents[3]
     source = (repo / "quill" / "apps" / "radio.py").read_text(encoding="utf-8")
+    # The menu bar moved to radio_menu_bar.py under F-08 (2026-10-03).
+    source += (repo / "quill" / "apps" / "radio_menu_bar.py").read_text(encoding="utf-8")
     assert "context_help.activate()" in source
     # The Help menu's F1 row moved into apps/radio_help_docs.py with the rest of
     # that menu's documents when Tutorials arrived (GATE-11: extract, never
@@ -145,8 +147,11 @@ def test_every_shell_app_inherits_f1_and_quill_installs_the_provider() -> None:
     assert "app_context_help.activate()" in shell
     assert "app_context_help.install(self.frame" in shell
     quill_help = (repo / "quill" / "ui" / "context_help.py").read_text(encoding="utf-8")
-    assert "app_context_help.activate()" in quill_help, (
-        "QUILL must install the provider and the generic dialog F1 handler"
+    # Since 2026-10-04 QUILL hands it a resolver for the windows it shares with
+    # its siblings (Release Channel, hosted AI, dictation); everything else
+    # still falls back to the generic paragraph.
+    assert "app_context_help.activate(quill_window_purpose)" in quill_help, (
+        "QUILL must install the provider and the dialog F1 handler"
     )
     engine = (repo / "quill" / "ui" / "app_context_help.py").read_text(encoding="utf-8")
     assert "set_context_help_handler(show_help)" in engine

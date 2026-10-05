@@ -68,6 +68,10 @@ class ResultsViewMixin:
         label = station.display_name
         if source != "Radio Browser":
             label = f"{label} - via {source}"
+        # A row found by a team it carries or a tag you gave it says so, since
+        # its name may share no word with what was typed (station_lookup).
+        if station.match_reason:
+            label = f"{label} - {station.match_reason}"
         # A row that the listing directory could not play says so, last, so the
         # station's own name still leads the line a screen reader reads. Rows
         # with nothing to report are untouched -- see
@@ -112,3 +116,18 @@ class ResultsViewMixin:
         if stations:
             self._results.Select(0)
             self._results.Focus(0)
+
+    def _details_for(self, station: RadioStation) -> str:
+        """The details panel's text for *station*, your own tags included."""
+        from quill.ui.radio.station_tags_dialog import details_for
+
+        return details_for(self, station)
+
+    def _edit_tags(self, station: RadioStation) -> None:
+        """Edit Station Tags... from a result row, then re-read its details."""
+        from quill.ui.radio.station_tags_dialog import edit_station_tags
+
+        if edit_station_tags(self, station):
+            index = self._results.GetFirstSelected()
+            if 0 <= index < len(self._current_results):
+                self._details.SetValue(self._details_for(self._current_results[index]))

@@ -35,6 +35,9 @@ _EMPTY = "Nothing to tell you yet."
 class NotificationsWindow:
     """The frame, its list, and the verbs."""
 
+    TITLE = TITLE
+    MENU_TITLE = "&Notifications"
+
     def __init__(self, host: Any) -> None:
         self._host = host
         self._notices: list[Any] = []
@@ -85,19 +88,12 @@ class NotificationsWindow:
         for context_event in (wx.EVT_CONTEXT_MENU, wx.EVT_RIGHT_UP):
             self._list.Bind(context_event, self._on_context)
         self._list.Bind(wx.EVT_KEY_DOWN, self._on_key)
-        self.frame.Bind(wx.EVT_CLOSE, self._on_close)
-        self.frame.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
+        self.refresh()
 
     # -- showing -------------------------------------------------------------------- #
 
-    def show(self, *, focus: bool = True) -> None:
-        self.refresh()
-        from quill.ui.dialog_contract import show_modeless_surface
-
-        show_modeless_surface(self.frame, TITLE, announce=self._host._announce)
-        self.frame.Raise()
-        if focus:
-            self._list.SetFocus()
+    def focus_target(self) -> Any:
+        return self._list
 
     def refresh(self, *, keep: int = -1) -> None:
         try:
@@ -112,25 +108,6 @@ class NotificationsWindow:
         if callable(refresh_counts):
             refresh_counts()
 
-    def _on_close(self, event: Any) -> None:
-        if event.CanVeto():
-            event.Veto()
-            self.frame.Hide()
-            from quill.ui.dialog_contract import announce_surface_exit
-
-            announce_surface_exit(TITLE, self._host._announce)
-            focus = getattr(self._host, "_focus_cast_initial_control", None)
-            if callable(focus):
-                focus()
-            return
-        event.Skip()
-
-    def _on_char_hook(self, event: Any) -> None:
-        if event.GetKeyCode() == wx.WXK_ESCAPE:
-            self.frame.Close()
-            return
-        event.Skip()
-
     # -- the verbs ----------------------------------------------------------------------- #
 
     def _current(self) -> Any:
@@ -141,20 +118,9 @@ class NotificationsWindow:
 
     def _resolved(self, notice: Any) -> tuple[Any, Any] | None:
         """(show, newest unplayed episode) for a new-episode notice, or None."""
-        from quill.core.podcasts import notices as cast_notices
-        from quill.ui.notification_open import resolve_show
+        from quill.ui.podcasts.notice_actions import episode_for
 
-        if cast_notices.kind_of(notice) != cast_notices.NEW_EPISODE:
-            return None
-        show, _refusal = resolve_show(str(getattr(notice, "target", "") or ""))
-        if show is None:
-            return None
-        from quill.core.podcasts.sorting import sort_episodes
-
-        for episode in sort_episodes(list(show.episodes), "newest_first"):
-            if not episode.played:
-                return show, episode
-        return None
+        return episode_for(notice)
 
     def _read_it(self, notice: Any) -> None:
         if not notice.read:
@@ -174,29 +140,18 @@ class NotificationsWindow:
         wx.CallAfter(self._host.open_notification_target, target)
 
     def _play_now(self) -> None:
+        from quill.ui.podcasts.notice_actions import play_now
+
         notice = self._current()
-        pair = self._resolved(notice) if notice is not None else None
-        if pair is None:
-            self._host._announce("Nothing to play for this one.")
-            return
-        self._read_it(notice)
-        self._host._play_episode_object(*pair)
+        if notice is not None and play_now(self._host, notice):
+            self.refresh(keep=self._list.GetSelection())
 
     def _add_to_queue(self) -> None:
-        from quill.core.podcasts import queue as queue_ops
+        from quill.ui.podcasts.notice_actions import add_to_queue
 
         notice = self._current()
-        pair = self._resolved(notice) if notice is not None else None
-        if pair is None:
-            self._host._announce("Nothing to queue for this one.")
-            return
-        show, episode = pair
-        self._read_it(notice)
-        if queue_ops.add_to_queue(self._host._podcast_library, show.id, episode.guid):
-            self._host._save_podcast_library()
-            self._host._announce(f"Added {episode.title} to the Play Queue.")
-        else:
-            self._host._announce(f"{episode.title} is already in the Play Queue.")
+        if notice is not None and add_to_queue(self._host, notice):
+            self.refresh(keep=self._list.GetSelection())
 
     def _mark_read(self) -> None:
         notice = self._current()
@@ -228,6 +183,12 @@ class NotificationsWindow:
         if code in (wx.WXK_DELETE, wx.WXK_NUMPAD_DELETE):
             self._mark_read()
             return
+        if code in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER) and event.ControlDown():
+            self._play_now()  # ear.md R9: a toast is not reliably reachable
+            return
+        if code == wx.WXK_SPACE and not event.HasAnyModifiers():
+            self._add_to_queue()
+            return
         event.Skip()
 
     def _on_context(self, event: Any) -> None:
@@ -237,7 +198,10 @@ class NotificationsWindow:
         menu = wx.Menu()
         rows: list[tuple[str, Any]] = [("&Open\tEnter", self._open)]
         if self._resolved(notice) is not None:
-            rows += [("&Play Now", self._play_now), ("Add to &Queue", self._add_to_queue)]
+            rows += [
+                ("&Play Now\tCtrl+Enter", self._play_now),
+                ("Add to &Queue\tSpace", self._add_to_queue),
+            ]
             rows.append(("&Go to the Podcast", self._open))
         rows.append(("Mark &Read\tDelete", self._mark_read))
         for label, handler in rows:
@@ -251,31 +215,18 @@ class NotificationsWindow:
             event.Skip(False)
 
 
-def open_notifications_window(host: Any, *, focus: bool = True) -> NotificationsWindow:
-    """Open, or raise, the host's Notifications window (made once, hidden on close)."""
-    window = getattr(host, "_notifications_window", None)
-    if window is None:
-        window = NotificationsWindow(host)
-        host._notifications_window = window
-        _install_peer(host, window)
-    window.show(focus=focus)
+def open_notifications_window(
+    host: Any, *, focus: bool = True, opener: Any = None
+) -> NotificationsWindow:
+    """Open, or raise, the host's Notifications window.
+
+    Through the shared peer contract (``peer_window``): made once, hidden on
+    close, raised and refreshed when asked again, and Escape returns focus to
+    whatever opened it.
+    """
+    from quill.ui.podcasts.peer_window import open_peer
+
+    window: NotificationsWindow = open_peer(
+        host, "_notifications_window", NotificationsWindow, focus=focus, opener=opener
+    )
     return window
-
-
-def _install_peer(host: Any, window: NotificationsWindow) -> None:
-    windows = getattr(host, "_windows", None)
-    frame = window.frame
-    menu_bar = wx.MenuBar()
-    own = wx.Menu()
-    close_id = wx.NewIdRef()
-    own.Append(close_id, "&Close\tCtrl+W")
-    frame.Bind(wx.EVT_MENU, lambda _e: frame.Close(), id=close_id)
-    menu_bar.Append(own, "&Notifications")
-    if windows is not None:
-        windows.install(frame, menu_bar)
-    frame.SetMenuBar(menu_bar)
-    keep = getattr(host, "_keep_menu_ids", None)
-    if callable(keep):
-        keep(close_id)
-    if windows is not None:
-        windows.register(frame, TITLE, focus=lambda: window._list.SetFocus())

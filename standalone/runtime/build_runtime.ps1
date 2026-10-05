@@ -67,6 +67,10 @@ if (Test-Path $envCheck) {
 # -- onedir build -------------------------------------------------------------
 Push-Location $repoRoot
 try {
+    # Every app in the runtime reaches the Podcast Index through this bundled
+    # pair; a release without it looks broken to listeners (2026-10-03).
+    & $Python (Join-Path $quillRepo "tools\generate_podcast_index_key.py") --require
+    if ($LASTEXITCODE -ne 0) { throw "The Podcast Index credential is missing; see tools/generate_podcast_index_key.py." }
     & $Python -m PyInstaller quillville-runtime.spec --noconfirm --distpath dist --workpath build
     if ($LASTEXITCODE -ne 0) { throw "PyInstaller failed" }
 } finally {

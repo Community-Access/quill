@@ -148,7 +148,9 @@ def analyse_chapters_for_episode(host: Any, show: Any, episode: Any) -> None:
         host._wx.CallAfter(_review, host, show, episode, show_id, guid, total_ms, answer)
 
     def _failed(*_args: object) -> None:
-        host._wx.CallAfter(host._announce, "Could not analyse this episode for chapters.")
+        from quill.ui.podcasts.failure_report import report_failure
+
+        report_failure(host, "Could not analyse this episode for chapters.")
 
     host._task_manager.submit(
         "podcast-chapter-analysis", _work, on_success=_done, on_failure=_failed

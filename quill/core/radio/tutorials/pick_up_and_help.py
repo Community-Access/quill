@@ -20,8 +20,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
         surfaces=("Quill Radio", "Continue Listening"),
         summary=(
             "Find everything you started and did not finish in one list, carry "
-            "on from the exact place, and move to a time you name rather than "
-            "one you skip towards."
+            "on from exactly where you stopped, and jump to a time you choose."
         ),
         steps=(
             Step(
@@ -29,13 +28,13 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 body=(
                     "Continue Listening, on the Playback menu, is one list of "
                     "everything you started and did not finish: podcast "
-                    "episodes, recordings and files on this computer, most "
-                    "recent first. A line above the list says how many, and "
-                    "across what."
+                    "episodes, recordings and files on your computer, most "
+                    "recent first. A line above the list tells you how many "
+                    "there are, and what kinds."
                 ),
                 keys=("Ctrl+Alt+Shift+L",),
                 hear=(
-                    "Continue Listening, then how many things you did not finish, or "
+                    "Continue Listening, then how many things you did not finish. Or "
                     "Nothing unfinished. Everything you started, you finished."
                 ),
             ),
@@ -43,9 +42,8 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 title="Read a row before you choose it",
                 body=(
                     "Arrow down the list. Each row is one sentence: the title, "
-                    "where it came from, what kind of thing it is, how far in you "
-                    "got in words rather than a timecode, and how much of it that "
-                    "is."
+                    "where it came from, what kind of thing it is, how far in "
+                    "you got, in words, and how much of the whole that is."
                 ),
                 keys=("Down arrow",),
                 hear="A title, then recording or podcast, then 12 minutes in, 40% through.",
@@ -53,20 +51,20 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Resume it",
                 body=(
-                    "Press Enter, or the Resume button. It starts from where you "
-                    "stopped, through the same player as everything else, so the "
-                    "speed you chose and the volume you set come back with it."
+                    "Press Enter, or the Resume button. It carries on from where "
+                    "you stopped, in the same player as everything else, so the "
+                    "speed and volume you chose come back with it."
                 ),
                 keys=("Enter",),
-                hear="Resuming at, and the place -- 12 minutes 8 seconds, say.",
+                hear="Resuming at, and the place. 12 minutes 8 seconds, say.",
                 check="playing",
             ),
             Step(
                 title="Forget one you will never finish",
                 body=(
-                    "Forget This One drops the saved place and takes the row out "
-                    "of the list. It deletes nothing -- the episode or the "
-                    "recording is still where it was -- it only stops being "
+                    "Forget This One forgets your place and takes the row off "
+                    "the list. It does not delete anything. The episode or "
+                    "recording is still where it was. It just stops being "
                     "offered here."
                 ),
                 keys=("Alt+F",),
@@ -75,25 +73,25 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Ask where you are now",
                 body=(
-                    "Where Am I says the position, the whole length and the "
-                    "chapter, from any window. Words, never a timecode, because "
-                    "a pair of numbers read aloud is ambiguous until you already "
-                    "know it is a time."
+                    "Where Am I tells you how far in you are, how long the whole "
+                    "thing is, and which chapter you are in, from any window. "
+                    "It always uses words, so you never have to work out what a "
+                    "string of numbers means."
                 ),
                 command="radio.transport.announce_position",
                 keys=("Ctrl+Shift+W",),
                 hear=(
-                    "3 minutes 10 seconds of 18 minutes 40 seconds, and the chapter "
-                    "if there is one."
+                    "3 minutes 10 seconds of 18 minutes 40 seconds, and the chapter if "
+                    "there is one."
                 ),
             ),
             Step(
                 title="Go to a time you name",
                 body=(
                     "Go to Position, on the Playback menu, asks for Hours, "
-                    "Minutes and Seconds, already filled with where you are now. "
-                    "Change the one you mean and press Enter. A timecode such as "
-                    "1:23:45 typed in the box below wins over the three fields."
+                    "Minutes and Seconds, already filled in with where you are "
+                    "now. Change the one you want and press Enter. Or type a time "
+                    "such as 1:23:45 in the box below, and that is used instead."
                 ),
                 keys=("Ctrl+Alt+J",),
                 hear="Go to Position, then Hours, and the current hour.",
@@ -101,10 +99,11 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Skip when you only need to get near",
                 body=(
-                    "Skip Back and Skip Forward move thirty seconds either way "
-                    "through a recording, an episode or a file, from any window, "
-                    "and say where they landed. On live radio the same keys in the "
-                    "main window rewind into what was just broadcast instead."
+                    "Skip Back and Skip Forward move thirty seconds back or "
+                    "forward through a recording, an episode or a file, from any "
+                    "window, and tell you where you landed. On live radio, the "
+                    "same keys in the main window rewind into what was just on "
+                    "air."
                 ),
                 keys=("Ctrl+Shift+Left", "Ctrl+Shift+Right"),
                 hear="The new position, in words: 3 minutes 40 seconds of 18 minutes 40 seconds.",
@@ -115,9 +114,9 @@ TUTORIALS: tuple[Tutorial, ...] = (
             ),
         ),
         closing=(
-            "Anything with a timeline keeps its place on its own; this list is "
-            "how you get back to all of them without remembering where each "
-            "one lives."
+            "Anything you can move around in remembers your place by itself. "
+            "This list gets you back to all of them, without having to remember "
+            "where each one is."
         ),
         then=("keep-a-moment",),
     ),
@@ -128,70 +127,72 @@ TUTORIALS: tuple[Tutorial, ...] = (
         minutes=4,
         surfaces=("Quill Radio", "Quill Radio Tutorials"),
         summary=(
-            "Get the most out of this tutorial window, and know which Help "
-            "menu door answers which question: the control under your "
-            "fingers, the guide, what changed, and what is new."
+            "Make the most of this tutorials window, and learn which part of the "
+            "Help menu to use for which question: the control you are on, the "
+            "user guide, what changed, and what is new."
         ),
         steps=(
             Step(
                 title="Open the tutorials from anywhere",
                 body=(
                     "Tutorials, on the Help menu, opens this window, or brings it "
-                    "to the front. It is a real window rather than a dialog, so it "
-                    "can stay open beside the one you are practising in, and "
-                    "Ctrl+Tab moves between them."
+                    "to the front if it is already open. It can stay open beside "
+                    "the window you are practising in, and Ctrl+Tab moves you "
+                    "between them."
                 ),
                 command="radio.tutorials",
                 keys=("Ctrl+Alt+F1",),
                 hear=(
-                    "Quill Radio Tutorials, then the tutorials tree -- and, when some "
-                    "lessons are about the window you came from, a sentence saying so."
+                    "Quill Radio Tutorials, then the list of tutorials. If some lessons "
+                    "are about the window you came from, a sentence saying so."
                 ),
             ),
             Step(
                 title="Find a lesson by what you want to do",
                 body=(
-                    "Press Alt+F for the Find a tutorial box and type. Every word "
-                    "has to appear somewhere in a lesson, so record tuesday finds "
-                    "the scheduling lesson; the word here lists only the lessons "
-                    "about the window you came from. Enter takes you to the tree."
+                    "Press Alt+F for the Find a tutorial box and type. A lesson "
+                    "shows up if it has all your words, so record tuesday finds "
+                    "the lesson on booking recordings. Type here to see only the "
+                    "lessons about the window you came from. Enter takes you to "
+                    "the list."
                 ),
                 keys=("Alt+F", "Enter"),
-                hear="How many tutorials are showing, then the first one in the tree.",
+                hear="How many tutorials are showing, then the first one in the list.",
             ),
             Step(
                 title="Let a lesson do a step, or watch you do it",
                 body=(
-                    "Inside a lesson, Try it runs the step's command exactly as "
-                    "its key would. With Follow me ticked, the lesson notices "
-                    "when you have done a step yourself -- a station playing, a "
-                    "favorite added -- and moves you on."
+                    "Inside a lesson, Try it does the step for you, exactly as "
+                    "its key would. With Follow me checked, the lesson notices "
+                    "when you have done a step yourself, such as a station "
+                    "playing or a favorite added, and moves you on."
                 ),
                 keys=("Alt+T", "Alt+N"),
                 hear="Done, and what it noticed, then the next step read out.",
                 note=(
-                    "Nothing is graded. A step the lesson cannot watch for costs "
-                    "you one press of Next, and your place in every lesson is "
-                    "kept until you ask it to forget."
+                    "There is no test and no score. If a lesson cannot tell "
+                    "whether you did a step, just press Next. Your place in "
+                    "every lesson is kept until you ask it to forget."
                 ),
             ),
             Step(
                 title="Ask about the control you are on",
                 body=(
-                    "F1 in any window says what that window is for and then what "
-                    "the focused control does. It is the fastest answer to what "
-                    "is this, and it never takes you away from where you were."
+                    "Press F1 in any window to hear what that window is for, and "
+                    "then what the control you are on does. It is the quickest "
+                    "answer to what is this, and it never takes you away from "
+                    "where you were."
                 ),
                 keys=("F1",),
-                hear="The window's purpose, then the control's own help.",
+                hear="What the window is for, then help for the control you are on.",
             ),
             Step(
                 title="Open the guide and the release notes",
                 body=(
-                    "The User Guide is the whole app written down; the Release "
-                    "Notes say what changed in this version. Each opens in your "
-                    "web browser, where your screen reader's heading keys move "
-                    "through it."
+                    "The User Guide covers all of Quill Radio. The Release Notes "
+                    "tell you what changed in this version. Each opens in your "
+                    "web browser, where your screen reader's heading keys take "
+                    "you from section to section."
                 ),
                 keys=("Ctrl+F1", "Shift+F1"),
                 hear="Your browser, with the document's title.",
@@ -199,19 +200,19 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Keep the whole book of lessons",
                 body=(
-                    "On the tutorial contents, The whole book as a document opens "
-                    "every lesson as one page in your browser -- to read straight "
-                    "through, print, or keep on another device. It is made from "
-                    "these same lessons, so it never says anything they do not."
+                    "In the tutorials list, The whole book as a document opens "
+                    "every lesson as one page in your browser. You can read it "
+                    "straight through, print it, or keep it on another device. "
+                    "It is made from these same lessons, so the two always match."
                 ),
                 keys=("Alt+D",),
                 hear="Your browser, with Quill Radio Tutorials as the page title.",
             ),
         ),
         closing=(
-            "Between F1, the tutorials and the guide, the answer to how do I is "
-            "always inside the app. Getting unstuck, in the first track, covers "
-            "what to do when the answer is that something is wrong."
+            "With F1, the tutorials and the user guide, the answer to how do I "
+            "is always right inside Quill Radio. And if something seems wrong, "
+            "the lesson Getting unstuck, in the first track, is there for you."
         ),
         then=("getting-unstuck",),
     ),

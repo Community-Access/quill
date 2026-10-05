@@ -28,18 +28,12 @@ def rename_folder_prompt(
     *,
     announce: Callable[[str], None],
 ) -> bool:
-    import wx
-
     folder = library.find_folder(folder_id)
     if folder is None:
         return False
-    entry = wx.TextEntryDialog(parent, "Folder name:", "Rename Folder", value=folder.name)
-    try:
-        if entry.ShowModal() != wx.ID_OK:  # dialog_button_contract: exempt
-            return False
-        name = entry.GetValue().strip()
-    finally:
-        entry.Destroy()
+    from quill.ui.podcasts.folder_prompt import folder_name_prompt
+
+    name = folder_name_prompt(parent, current=folder.name, announce=announce)
     if not name or name == folder.name:
         return False
     folder.name = name
@@ -169,13 +163,9 @@ def create_folder_prompt(
     if location != TOP_LEVEL_CHOICE:
         match = next((f for f in folders if f.name == location), None)
         parent_id = match.id if match is not None else None
-    entry = wx.TextEntryDialog(parent, "Folder name:", "New Folder")
-    try:
-        if entry.ShowModal() != wx.ID_OK:  # dialog_button_contract: exempt
-            return False
-        name = entry.GetValue().strip()
-    finally:
-        entry.Destroy()
+    from quill.ui.podcasts.folder_prompt import folder_name_prompt
+
+    name = folder_name_prompt(parent, announce=announce)
     if not name:
         return False
     library.add_folder(name, parent_folder_id=parent_id)

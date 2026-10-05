@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Google and YouTube Permissions for QUILL</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="google-and-youtube-permissions-for-quill">Google and YouTube
+Permissions for QUILL</h1>
+<p><em>Written 2026-10-03 for Jeff. This covers what QUILL can do with
+YouTube today, what needs Google’s approval, and how to get that
+approval, from the first form to the day the switch goes on for
+everyone. The section “For listeners” is written to hand to people as it
+is.</em></p>
+<h2 id="the-short-version">The short version</h2>
+<ul>
+<li><strong>Most of the YouTube features in Quill Radio need no approval
+from anyone.</strong> They include playing, searching, comments, live
+chat, channels, notifications, sponsor skipping and the browser sign-in.
+They work the moment 3.2.0 ships.</li>
+<li><strong>One group of features needs Google’s approval:</strong>
+anything that goes through <strong>Connect YouTube Account</strong>, the
+official Google sign-in. That covers replying to comments, sending live
+chat messages, subscribing for real, liking and building playlists, and
+keeping your subscription list in sync live.</li>
+<li><strong>Getting that approval is a review, not a code
+change.</strong> QUILL’s Google sign-in has to pass Google’s <em>OAuth
+app verification</em>. Both YouTube permissions QUILL asks for are what
+Google calls “sensitive”. That means a review with a demo video and a
+privacy policy, but <strong>not</strong> the paid third-party security
+audit that only “restricted” permissions such as full Gmail or Drive
+access need.</li>
+<li><strong>The daily posting limit is a separate request.</strong>
+QUILL starts with YouTube’s standard daily allowance, shared by everyone
+who uses QUILL. Raising it means a second form and a check against
+YouTube’s developer policies.</li>
+<li><strong>Until approval, nothing breaks.</strong> Connect YouTube
+Account stays switched off in public builds. In a developer build it
+works for up to 100 test accounts you add yourself.</li>
+</ul>
+<p>Google changes its forms and wording from time to time. The steps
+below match how things work in late 2026. Check the links in “Where to
+read Google’s own rules” before you submit.</p>
+<hr />
+<h2
+id="for-listeners-what-quill-radio-does-while-we-wait-for-google">For
+listeners: what Quill Radio does while we wait for Google</h2>
+<p>This section is written to be given to people as it is: copied into
+the Radio guide, the release notes, the site or a reply to an email. It
+answers one question: what can I do today, and what do I need for
+it?</p>
+<p>There are three levels. Most people never go past the first.</p>
+<h3 id="level-1-no-account-no-sign-in-nothing-to-set-up">Level 1: no
+account, no sign-in, nothing to set up</h3>
+<p>Install Quill Radio and all of this works straight away. You don’t
+need a Google account, a YouTube account or a key of any kind, and Quill
+Radio never asks who you are.</p>
+<p><strong>Radio and podcasts</strong></p>
+<ul>
+<li>Every station Quill Radio can find, and your favourites, recordings
+and reminders.</li>
+<li>Finding podcasts and their categories, and following, playing and
+downloading episodes. The Podcast Index key that helps with this is
+built into Quill Radio, so there’s nothing for you to sign up for.</li>
+</ul>
+<p><strong>Playing YouTube</strong></p>
+<ul>
+<li>Any YouTube link you paste or open: a video, a live stream, a
+playlist or a channel.</li>
+<li>Chapters, speed, Where Am I, and captions read along as a transcript
+you can search.</li>
+<li>The YouTube Video window: whether something is live, finished or
+starting soon, its description, and the times listed in it, which you
+can jump to.</li>
+<li>Remind Me When It Goes Live, for premieres and upcoming
+streams.</li>
+<li>Save Audio, through Quill Radio’s downloads.</li>
+<li>Skip Sponsor Segments, if you turn it on.</li>
+</ul>
+<p><strong>Finding things on YouTube</strong></p>
+<ul>
+<li>Search YouTube for videos, playlists and channels
+(Ctrl+Shift+6).</li>
+<li>Search YouTube with Filters: type, upload date, length and sort
+order, plus YouTube Music songs (Ctrl+Alt+Shift+0).</li>
+<li>Any channel’s Uploads, Shorts, Live and Playlists, and About This
+Channel.</li>
+</ul>
+<p><strong>Reading what people say</strong></p>
+<ul>
+<li>Read Comments on any public video (Ctrl+Shift+7).</li>
+<li>Live Chat on any public live stream (Ctrl+Alt+Shift+7), and the chat
+of a finished stream played back in step with the video. Speaking new
+messages, pausing and filtering all work.</li>
+</ul>
+<p><strong>Keeping up with channels</strong></p>
+<ul>
+<li>Follow a channel in Quill Radio, and Notify Me About New
+Videos.</li>
+<li>Bring in your YouTube subscriptions from a Google Takeout file, if
+you want them all at once.</li>
+<li>Subscribe on YouTube…: Quill Radio opens YouTube’s own “Subscribe?”
+page in your browser, and you confirm it there, signed in as you
+normally are.</li>
+</ul>
+<h3
+id="level-2-optional-using-the-youtube-sign-in-already-in-your-web-browser">Level
+2: optional, using the YouTube sign-in already in your web browser</h3>
+<p>If you’re signed in to YouTube in Edge, Chrome, Firefox, Brave, Opera
+or Vivaldi, you can let Quill Radio use that sign-in. Turn on
+<strong>Use my YouTube sign-in from my web browser</strong> in
+Preferences. This needs no approval from Google, because it’s simply
+your own browser’s sign-in, read on your own computer.</p>
+<p>It adds:</p>
+<ul>
+<li>My YouTube: Home, Subscriptions, Watch Later, Liked Videos, Your
+Playlists and History.</li>
+<li>Videos only your account can watch: members-only videos, and
+age-restricted videos once your account has confirmed your age.</li>
+</ul>
+<p>Good to know:</p>
+<ul>
+<li>Quill Radio never sees or stores your password. It keeps only which
+browser you chose, or the path of a cookies.txt file, and it scrubs
+sign-in data from its logs and problem reports.</li>
+<li>Some newer versions of Chrome and Edge lock their sign-in away from
+other programs. If yours does, Quill Radio says so and suggests Firefox
+or a cookies.txt file instead.</li>
+<li>Reading a members-only live chat works only with a cookies.txt
+file.</li>
+<li>This level can read, not post. It can’t reply, send chat, subscribe
+or like.</li>
+</ul>
+<h3 id="level-3-waiting-for-google-connect-youtube-account">Level 3:
+waiting for Google, Connect YouTube Account</h3>
+<p>These features are built and tested, and they need Google to approve
+QUILL before everyone can use them:</p>
+<ul>
+<li>Replying to comments, adding your own, and deleting your own.</li>
+<li>Sending messages in a live chat.</li>
+<li>Subscribing and unsubscribing directly, without the browser
+page.</li>
+<li>Like, Dislike, Add to Playlist and New Playlist.</li>
+<li>Keeping your subscription list in sync with YouTube
+automatically.</li>
+</ul>
+<p>Until approval, <strong>Connect YouTube Account</strong> doesn’t
+appear in Quill Radio. In the meantime:</p>
+<ul>
+<li>To subscribe, use Subscribe on YouTube…, which works today.</li>
+<li>To reply, send a chat message or like a video, open the video on
+YouTube in your browser. Copy Stream Link on the video’s row menu puts
+its address on the clipboard.</li>
+</ul>
+<p>When Google says yes, an update switches these on, and the release
+notes will say so.</p>
+<p><em>Internal note (not listener text):</em> until Google approves,
+all of the above is hidden in Quill Radio, not merely disabled.
+<code>future.youtube_oauth</code> is <code>released=False</code>, so a
+public build has no Connect/Disconnect rows on the Station menu, no
+Reply / Add a Comment / Delete My Comment buttons in YouTube Comments,
+no send box in Live Chat, no Like, Dislike, Remove Rating, Add to
+Playlist, New Playlist or Add a Comment in the YouTube Video window, and
+Subscribe on YouTube… always opens the confirm page – even when a Google
+client is baked into the build. The listener documents say nothing about
+any of it; the removed passages are kept in “Ready to restore after
+approval”, below.</p>
+<h3 id="questions-people-ask">Questions people ask</h3>
+<p><strong>Do I need a Google account to use Quill Radio?</strong> No.
+Everything in Level 1 works without one.</p>
+<p><strong>Does Quill Radio ever see my Google password?</strong> No.
+The browser sign-in is read from your browser on your own computer.
+Connect YouTube Account, when it arrives, signs you in on Google’s own
+page in your browser, and Quill Radio is handed a permission it keeps in
+Windows’ secure credential store. You can take that permission back at
+any time from your Google account.</p>
+<p><strong>Why can I read comments but not reply?</strong> Reading uses
+YouTube’s public pages, the same as anyone visiting them. Posting on
+your behalf needs Google’s official permission, and Google reviews any
+app that asks for it. QUILL’s review is under way.</p>
+<p><strong>Is anything sent to QUILL’s own servers?</strong> No. QUILL
+has none. Quill Radio talks to YouTube directly, and to SponsorBlock
+only if you turn sponsor skipping on.</p>
+<p><strong>Will there be a limit on posting?</strong> Yes. YouTube gives
+each app a daily allowance shared by all of its users. If it runs out,
+Quill Radio tells you once and you can try again the next day.</p>
+<hr />
+<h2 id="what-works-without-google-approval-the-detail">What works
+without Google approval (the detail)</h2>
+<p>Everything in this section works without your Google account and
+without anyone at Google signing off. It runs through yt-dlp, the chat
+reader (chat-downloader) and YouTube’s public pages, the same way a web
+browser reads them.</p>
+<h3 id="listening-and-watching">Listening and watching</h3>
+<ul>
+<li>Playing any YouTube link: videos, live streams, playlists and
+channels.</li>
+<li>The YouTube Video window: whether a video is live, finished or about
+to start, its description, the times listed in the description (press
+Enter to jump), Remind Me When It Goes Live, and Save Audio.</li>
+<li>Chapters, speed, Where Am I and captions read along as a transcript,
+with search and jump.</li>
+<li>Skip Sponsor Segments, which uses the community SponsorBlock list.
+It sends only a short code made from the video’s address, never your
+identity.</li>
+</ul>
+<h3 id="finding-things">Finding things</h3>
+<ul>
+<li>Search YouTube (Ctrl+Shift+6) for videos, playlists and
+channels.</li>
+<li>Search YouTube with Filters (Ctrl+Alt+Shift+0): type, upload date,
+length and sort order, plus YouTube Music songs.</li>
+<li>A channel’s Uploads, Shorts, Live and Playlists, and About This
+Channel.</li>
+</ul>
+<h3 id="reading-what-people-say">Reading what people say</h3>
+<ul>
+<li>Read Comments (Ctrl+Shift+7), with search, Top or Newest, Load More
+and Copy.</li>
+<li>Live Chat (Ctrl+Alt+Shift+7): reading a live chat, or the chat of a
+finished stream in step with the video. Speaking new messages, pausing
+and filtering are all included.</li>
+</ul>
+<h3 id="your-channels-kept-in-quill-radio">Your channels, kept in Quill
+Radio</h3>
+<ul>
+<li>Follow This Channel in Quill Radio, and Stop Following.</li>
+<li>Notify Me About New Videos, per channel.</li>
+<li>Importing your subscriptions from a Google Takeout file.</li>
+<li><strong>Subscribe on YouTube…</strong> without the official sign-in:
+Quill Radio opens YouTube’s own “Subscribe?” page in your browser, and
+you confirm it there. This works today for everyone.</li>
+</ul>
+<h3 id="your-own-youtube-through-your-browser-no-google-approval">Your
+own YouTube, through your browser (no Google approval)</h3>
+<p>With <strong>Use my YouTube sign-in from my web browser</strong>
+turned on in Preferences, Quill Radio reads your browser’s YouTube
+sign-in each time it asks YouTube for something. This is your own
+browser session on your own computer, used the way yt-dlp always has.
+Google does not review it, because QUILL never asks Google for a
+permission. It gives you:</p>
+<ul>
+<li>My YouTube: Home, Subscriptions, Watch Later, Liked Videos, Your
+Playlists and History.</li>
+<li>Members-only and age-restricted videos that your account can already
+watch.</li>
+</ul>
+<p>What the browser sign-in <strong>cannot</strong> do is post anything:
+no comments, no chat messages, no subscribing, no likes. Those go
+through Google’s official sign-in, below.</p>
+<hr />
+<h2 id="what-needs-google-approval">What needs Google approval</h2>
+<p>These all go through <strong>Station &gt; Connect YouTube
+Account…</strong> (the official Google sign-in, using the QUILL app’s
+Google client). They work today in a developer build for test accounts.
+Everyone else gets them once Google has verified the app.</p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Permission it needs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Keep your subscriptions and playlists in sync live</td>
+<td>Read only</td>
+</tr>
+<tr>
+<td>Reply to a comment, add a comment, delete your own</td>
+<td>Post on your behalf</td>
+</tr>
+<tr>
+<td>Send messages in a live chat</td>
+<td>Post on your behalf</td>
+</tr>
+<tr>
+<td>Subscribe and Unsubscribe directly</td>
+<td>Post on your behalf</td>
+</tr>
+<tr>
+<td>Like, Dislike, Remove Rating</td>
+<td>Post on your behalf</td>
+</tr>
+<tr>
+<td>Add to Playlist and New Playlist</td>
+<td>Post on your behalf</td>
+</tr>
+</tbody>
+</table>
+<p>Quill Radio asks for “post on your behalf” only the first time
+someone uses one of those features. Someone who only ever reads never
+sees that request.</p>
+<h3 id="the-two-permissions-in-googles-terms">The two permissions, in
+Google’s terms</h3>
+<table>
+<thead>
+<tr>
+<th>What QUILL calls it</th>
+<th>Google’s scope</th>
+<th>Google’s class</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Read only</td>
+<td><code>https://www.googleapis.com/auth/youtube.readonly</code></td>
+<td>Sensitive</td>
+</tr>
+<tr>
+<td>Post on your behalf</td>
+<td><code>https://www.googleapis.com/auth/youtube.force-ssl</code></td>
+<td>Sensitive</td>
+</tr>
+</tbody>
+</table>
+<p>Both are sensitive, not restricted. So the review needs a privacy
+policy, a demo video and a written reason for each permission. It does
+<strong>not</strong> need the CASA security assessment.</p>
+<h3 id="what-happens-before-approval">What happens before approval</h3>
+<ul>
+<li><strong>Testing mode</strong> (where the app is now): only Google
+accounts you add as test users in the Google Cloud console can sign in,
+up to 100. Their sign-in expires after 7 days, so they connect again
+each week.</li>
+<li><strong>Published but not verified:</strong> anyone can sign in, but
+Google shows a “Google hasn’t verified this app” warning, and people
+must choose Advanced and continue. Google also caps how many new people
+an unverified app can sign in. <strong>Do not ship to the public like
+this.</strong> The warning frightens people, and a screen reader user
+may not find the way past it.</li>
+<li><strong>Verified:</strong> a normal consent screen naming QUILL,
+with no warning and no user cap.</li>
+</ul>
+<hr />
+<h2 id="before-you-submit-a-checklist">Before you submit: a
+checklist</h2>
+<p>Google reviewers try the app and read the policy. These need to be
+true first. Each item names who does it.</p>
+<ol type="1">
+<li><strong>Verify the domain</strong> (you). Add quillforall.org to
+Google Search Console as a Domain property and add the DNS TXT record it
+gives you. The consent screen’s home page, privacy policy and terms
+links must all be on a verified domain.</li>
+<li><strong>Privacy policy covers YouTube</strong> (done 2026-10-03).
+<code>docs/legal/PRIVACY.md</code> now has a “YouTube in Quill Radio”
+section and a row for the new-video check. Make sure the published page
+on quillforall.org shows it.</li>
+<li><strong>Disconnect also revokes</strong> (done 2026-10-03).
+<strong>Disconnect YouTube Account…</strong> now revokes QUILL’s access
+at Google (<code>https://oauth2.googleapis.com/revoke</code>) and then
+forgets the sign-in on this computer. If Google can’t be reached, the
+sign-in is still forgotten, and Quill Radio says to finish at
+<code>https://myaccount.google.com/permissions</code>.</li>
+<li><strong>Say where to revoke</strong> (us; docs and the consent
+text). The Radio guide and the privacy policy should tell people they
+can remove QUILL’s access at any time at
+<code>https://myaccount.google.com/permissions</code>.</li>
+<li><strong>YouTube attribution</strong> (us; docs). YouTube’s developer
+policies ask an app to say it uses YouTube API Services, and to link the
+YouTube Terms of Service and the Google Privacy Policy. Put this in the
+privacy policy and in Radio’s About or the YouTube chapter.</li>
+<li><strong>Fix one old description</strong> (us; code). The Customize
+Features entry for Connect YouTube Account still says it is read-only.
+It now also covers posting, when asked for.</li>
+<li><strong>Logo</strong> (you or us). A square PNG of QUILL’s icon, 120
+by 120 pixels. If you add a logo, Google reviews the brand, which can
+add a few days. You can submit without one.</li>
+<li><strong>Support email</strong> (you). <a
+href="mailto:support@community-access.org">support@community-access.org</a>,
+on a Google account you control, as the app’s user support address.</li>
+<li><strong>One Google Cloud project</strong> (you). The same project
+holds the OAuth client that
+<code>tools/generate_youtube_oauth_client.py</code> bakes into builds.
+Note its project number; Google asks for it.</li>
+</ol>
+<hr />
+<h2 id="submitting-for-verification-step-by-step">Submitting for
+verification, step by step</h2>
+<p>In the Google Cloud console, open the QUILL project, then
+<strong>Google Auth Platform</strong> (older screens call it the OAuth
+consent screen).</p>
+<ol type="1">
+<li><strong>APIs:</strong> make sure <strong>YouTube Data API
+v3</strong> is enabled for the project.</li>
+<li><strong>Clients:</strong> the OAuth client is the <strong>Desktop
+app</strong> type. QUILL signs in through your browser and comes back to
+<code>http://127.0.0.1:8912/callback</code> on your own computer.
+Desktop clients accept that without registering it.</li>
+<li><strong>Branding:</strong>
+<ul>
+<li>App name: <strong>QUILL</strong>. Keep it exactly the same
+everywhere; a mismatch is a common reason for rejection.</li>
+<li>User support email: <a
+href="mailto:support@community-access.org">support@community-access.org</a>.</li>
+<li>App logo: optional (see the checklist).</li>
+<li>Application home page:
+<code>https://www.quillforall.org/</code></li>
+<li>Privacy policy: the published privacy page on quillforall.org.</li>
+<li>Terms of service: the published terms page, if there is one.</li>
+<li>Authorized domains: <code>quillforall.org</code>.</li>
+<li>Developer contact email: an address you read.</li>
+</ul></li>
+<li><strong>Audience:</strong> choose <strong>External</strong>. While
+testing, add test users here. When you’re ready, press <strong>Publish
+app</strong> to move from Testing to In production. Verification starts
+from there.</li>
+<li><strong>Data Access:</strong> add the two scopes,
+<code>youtube.readonly</code> and <code>youtube.force-ssl</code>. For
+each, paste the justification from “What to tell Google about each
+permission” below.</li>
+<li><strong>Verification Center:</strong> submit. Google asks for:
+<ul>
+<li>the demo video link (see “The demo video”);</li>
+<li>how each scope is used, which is the same justification text;</li>
+<li>confirmation that you follow Google’s API Services User Data Policy,
+including the Limited Use rules.</li>
+</ul></li>
+<li><strong>Answer Google’s emails.</strong> A reviewer writes from
+Google’s Trust and Safety team, usually within a few days. Reply in that
+same email thread. Common requests are a clearer video, a privacy policy
+wording change, or proof of the domain.</li>
+<li><strong>Timing:</strong> brand checks often take two or three
+working days. A review with sensitive scopes takes longer, typically one
+to a few weeks, depending on how many rounds of questions there
+are.</li>
+</ol>
+<h3 id="what-to-tell-google-about-each-permission">What to tell Google
+about each permission</h3>
+<p>Paste these, adjusted if anything changes.</p>
+<p><strong>youtube.readonly</strong></p>
+<blockquote>
+<p>QUILL is a free, screen-reader-first audio app for blind and
+low-vision people. With this permission, Quill Radio lists the channels
+and playlists the signed-in person follows, so they can listen to them
+without typing each address. It is only used when the person chooses
+Connect YouTube Account. Nothing is sent to any server of ours. The list
+is kept on the person’s own computer, and they can disconnect at any
+time.</p>
+</blockquote>
+<p><strong>youtube.force-ssl</strong></p>
+<blockquote>
+<p>Used only when the person asks QUILL to act on YouTube for them:
+posting a comment or reply they have written, deleting their own
+comment, sending a live chat message they have typed, subscribing or
+unsubscribing from a channel, rating a video, or adding a video to one
+of their playlists. Each action happens only when the person presses a
+button for it, and QUILL tells them the result. QUILL asks for this
+permission only the first time the person uses one of these features.
+QUILL is designed for screen reader users, and this lets them take part
+on YouTube through an accessible interface instead of a web page that is
+hard to use with a screen reader. No data is sent to our servers; QUILL
+has none.</p>
+</blockquote>
+<h3 id="the-demo-video">The demo video</h3>
+<p>Upload it to YouTube as <strong>Unlisted</strong>. Keep it short,
+three to five minutes, and plain. A screen recording with narration is
+ideal. Show:</p>
+<ol type="1">
+<li>QUILL running, with the app’s name visible.</li>
+<li>Station &gt; Connect YouTube Account…, then the Google consent
+screen. <strong>Slow down here:</strong> the reviewer must see the app
+name and, in the browser’s address bar, the <code>client_id</code> that
+matches the project you are submitting.</li>
+<li>Coming back to Quill Radio, and the subscriptions and playlists
+appearing (that’s the read-only scope in use).</li>
+<li>The first posting action, for example Reply in the Comments window.
+Show QUILL’s own explanation, then Google’s second consent screen for
+posting.</li>
+<li>Each posting feature once: a reply posted, a comment deleted, a live
+chat message sent, Subscribe, Like, Add to Playlist.</li>
+<li>Station &gt; Disconnect YouTube Account…, and then the QUILL entry
+gone from <code>https://myaccount.google.com/permissions</code>, which
+shows that revoking works.</li>
+</ol>
+<p>Narration tip: say what each step does in a sentence, the same way
+the user guide does. Reviewers are people too.</p>
+<h3 id="the-privacy-policy-text">The privacy policy text</h3>
+<p>This is now in <code>docs/legal/PRIVACY.md</code>, as “YouTube in
+Quill Radio”, in a slightly longer form that also covers the browser
+sign-in and SponsorBlock. The core of it, for the Google form:</p>
+<blockquote>
+<p><strong>YouTube.</strong> Quill Radio uses YouTube API Services. By
+using its YouTube features you agree to the YouTube Terms of Service (<a
+href="https://www.youtube.com/t/terms">https://www.youtube.com/t/terms</a>),
+and the Google Privacy Policy (<a
+href="https://policies.google.com/privacy">https://policies.google.com/privacy</a>)
+applies to what Google does with your data.</p>
+<p>If you choose Connect YouTube Account, QUILL asks Google for
+permission to read the channels and playlists you follow, and, only if
+you then use a feature that needs it, to post comments, replies and live
+chat messages you write, subscribe or unsubscribe, rate videos, and add
+videos to your playlists. QUILL does these things only when you ask.
+Your sign-in is stored in your computer’s own secure credential store,
+never in our files and never on any server; QUILL has no servers that
+receive your data. Lists QUILL reads from YouTube stay on your computer.
+You can disconnect at any time with Station &gt; Disconnect YouTube
+Account…, which also removes QUILL’s access at Google, or remove QUILL’s
+access from your Google account at <a
+href="https://myaccount.google.com/permissions">https://myaccount.google.com/permissions</a>.</p>
+<p>QUILL’s use of information received from Google APIs adheres to the
+Google API Services User Data Policy, including the Limited Use
+requirements.</p>
+</blockquote>
+<hr />
+<h2 id="the-daily-limit-and-asking-for-more">The daily limit, and asking
+for more</h2>
+<p>Every app using the YouTube Data API starts with <strong>10,000 quota
+units a day</strong>, shared by everyone who uses that app. Reading is
+cheap; posting is not:</p>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Approximate cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Listing subscriptions or playlists, a page</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Posting a comment or reply</td>
+<td>50</td>
+</tr>
+<tr>
+<td>Sending a live chat message</td>
+<td>about 50</td>
+</tr>
+<tr>
+<td>Subscribing, rating, adding to a playlist</td>
+<td>50</td>
+</tr>
+</tbody>
+</table>
+<p>So posting tops out at roughly <strong>200 actions a day for all
+QUILL users together</strong>. When the limit is reached, Quill Radio
+says “YouTube’s daily limit for QUILL has been reached; try again
+tomorrow.” once, and does not retry.</p>
+<p>To raise it:</p>
+<ol type="1">
+<li>Get the app verified first. It’s the same project, and reviewers
+like to see it.</li>
+<li>Fill in <strong>YouTube API Services: Audit and Quota Extension
+Form</strong>.</li>
+<li>Describe QUILL, its users, how many people you expect, and what each
+action is for. The permission justifications above work here too.</li>
+<li>YouTube checks QUILL against the YouTube API Services Terms and
+Developer Policies. The usual points are attribution, not storing
+YouTube data longer than needed, honouring deletion and revocation, and
+not changing how YouTube content is shown in misleading ways. Have the
+privacy policy and the demo video ready; they may ask for a
+walkthrough.</li>
+<li>Expect a few weeks. Ask for a modest number with a clear reason, for
+example “accessibility users posting comments and live chat; expected N
+daily active users”. That goes better than asking for a large round
+number.</li>
+</ol>
+<hr />
+<h2 id="after-approval-switching-it-on">After approval: switching it
+on</h2>
+<ol type="1">
+<li><strong>Build with the client.</strong> Release builds bake the
+Google client in from the environment: set
+<code>QUILL_YOUTUBE_OAUTH_CLIENT_ID</code> and
+<code>QUILL_YOUTUBE_OAUTH_CLIENT_SECRET</code> (or the
+<code>_FILE</code> variants) before the runtime build runs
+<code>tools/generate_youtube_oauth_client.py</code>. A desktop client’s
+secret is not truly secret, and Google knows that; it identifies the
+app, not a person.</li>
+<li><strong>Turn the feature on for everyone.</strong> Mark the
+<code>future.youtube_oauth</code> feature as released in
+<code>quill/core/feature_catalog.py</code> /
+<code>quill/core/features.py</code>, so Connect YouTube Account shows in
+public builds.</li>
+<li><strong>Tell people.</strong> A release-notes paragraph, the Radio
+guide’s YouTube chapter (restored in step 4, without its “Google has to
+review an app” paragraph), and the site.</li>
+<li><strong>Restore the passages in “Ready to restore after
+approval”</strong>, below: the user guide, release notes, both Radio
+changelogs, the root changelog and the reworded code strings, verbatim,
+then render and sync the docs.</li>
+<li><strong>Watch the quota</strong> for the first weeks in the Google
+Cloud console’s API dashboard, and apply for an extension early if
+posting is popular.</li>
+</ol>
+<hr />
+<h2 id="where-to-read-googles-own-rules">Where to read Google’s own
+rules</h2>
+<p>Check these before you submit; Google updates them.</p>
+<ul>
+<li>OAuth app verification help: <a
+href="https://support.google.com/cloud/answer/13463073">https://support.google.com/cloud/answer/13463073</a></li>
+<li>Sensitive and restricted scopes: <a
+href="https://developers.google.com/identity/protocols/oauth2/production-readiness/sensitive-scope-verification">https://developers.google.com/identity/protocols/oauth2/production-readiness/sensitive-scope-verification</a></li>
+<li>Google API Services User Data Policy: <a
+href="https://developers.google.com/terms/api-services-user-data-policy">https://developers.google.com/terms/api-services-user-data-policy</a></li>
+<li>YouTube API Services Terms of Service: <a
+href="https://developers.google.com/youtube/terms/api-services-terms-of-service">https://developers.google.com/youtube/terms/api-services-terms-of-service</a></li>
+<li>YouTube API Services Developer Policies: <a
+href="https://developers.google.com/youtube/terms/developer-policies">https://developers.google.com/youtube/terms/developer-policies</a></li>
+<li>YouTube quota and compliance audits: <a
+href="https://developers.google.com/youtube/v3/guides/quota_and_compliance_audits">https://developers.google.com/youtube/v3/guides/quota_and_compliance_audits</a></li>
+</ul>
+<hr />
+<h2 id="other-services-in-the-family-for-comparison">Other services in
+the family, for comparison</h2>
+<ul>
+<li><strong>Podcast Index:</strong> no review. A free key from <a
+href="https://api.podcastindex.org/signup">https://api.podcastindex.org/signup</a>,
+baked into builds by <code>tools/generate_podcast_index_key.py</code>,
+and release builds now refuse to ship without it.</li>
+<li><strong>ChatGPT sign-in and your own AI keys</strong> (OpenAI,
+Google Gemini): each person signs in or pastes their own key. QUILL
+needs no approval of its own.</li>
+<li><strong>YouTube without Connect YouTube Account:</strong> none
+needed, as described in “What works without Google approval”.</li>
+</ul>
+<hr />
+<h2 id="ready-to-restore-after-approval">Ready to restore after
+approval</h2>
+<p>Everything below was taken out of the listener-facing documents on
+2026-10-03, so that nobody reads about Connect YouTube Account, the
+write actions or the daily-limit message before Google approves them.
+Each passage is verbatim. Where a passage was rewritten rather than
+removed, “Reads now” is the text to find and “Restore to” is what
+replaces it. After restoring, render each changed <code>.md</code> (html
+and epub), run <code>python scripts/sync_site_docs.py</code> and
+<code>python scripts/check_docs_artifacts.py</code>, and add a
+release-notes paragraph for the release that turns it on.</p>
+<h3
+id="standaloneradiodocsuserguidemd"><code>standalone/radio/docs/userguide.md</code></h3>
+<h4
+id="chapter-10--channels--follow-a-channel-or-subscribe-on-youtube">Chapter
+10 &gt; Channels &gt; Follow a channel, or subscribe on YouTube</h4>
+<p>Reads now:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>   YouTube.</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>Quill Radio never subscribes for you; YouTube always asks you to</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>confirm.</span></code></pre></div>
+<p>Restore to:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>   YouTube.</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>If you have connected your YouTube account (see **Doing things on YouTube</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>with your account**, below), **Subscribe on YouTube...** subscribes you</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>straight away instead, and you hear &quot;Subscribed to Rick Steves&#39; Europe.&quot; If you</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>already subscribe, it asks whether to unsubscribe, with **No** already chosen</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>so a quick Enter changes nothing.</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>Without a connected account, Quill Radio never subscribes for you; YouTube</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>always asks you to confirm.</span></code></pre></div>
+<h4
+id="chapter-10--watching-and-reading-along--the-youtube-video-window-step-by-step">Chapter
+10 &gt; Watching and reading along &gt; The YouTube Video window, step
+by step</h4>
+<p>Reads now:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>Press **Escape** to close the window.</span></code></pre></div>
+<p>Restore to:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>The rest of the buttons act on your YouTube account; see **Doing things on</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>   YouTube with your account**, below.</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ss">8. </span>Press **Escape** to close the window.</span></code></pre></div>
+<h4
+id="chapter-10--live-chat--using-live-chat-with-a-screen-reader-keys-in-the-live-chat-window-table">Chapter
+10 &gt; Live chat &gt; Using Live Chat with a screen reader (Keys in the
+Live Chat window table)</h4>
+<p>Reads now:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Move between the list, Full text and the filter <span class="pp">|</span> F6 / Shift+F6 <span class="pp">|</span></span></code></pre></div>
+<p>Restore to:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Move between the list, Full text, the filter and the send box <span class="pp">|</span> F6 / Shift+F6 <span class="pp">|</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Send what you typed <span class="pp">|</span> Enter (in the send box) <span class="pp">|</span></span></code></pre></div>
+<h4
+id="chapter-10--doing-things-on-youtube-with-your-account-whole-section">Chapter
+10 &gt; Doing things on YouTube with your account (whole section)</h4>
+<p>Put this whole section back immediately before the heading
+<code>### Repair YouTube Support</code>. Before publishing, drop or
+reword its second paragraph (“Connect YouTube Account is new, and Google
+has to review an app…”), which describes the pre-approval state.</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">### Doing things on YouTube with your account</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>Everything so far only reads from YouTube. Quill Radio can also do things on</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>YouTube as you: reply to comments, write your own, send messages in a live</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>chat, subscribe and unsubscribe, like or dislike a video, and add videos to</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>your playlists. For this it uses Google&#39;s own sign-in, **Connect YouTube</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>Account** on the Station menu, rather than your browser.</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>Connect YouTube Account is new, and Google has to review an app before</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>everyone can use it. Until that review is finished, you only see it in copies</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>of Quill Radio where it has been switched on, and Google may show a warning</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>that the app is not verified, or not let you sign in at all. Where it is not</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>available, the buttons below are not shown, and **Subscribe on YouTube...**</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>keeps opening YouTube&#39;s own page in your browser.</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="fu">#### The permission Quill Radio asks for</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>Connecting your account first lets Quill Radio read your subscriptions and</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>playlists, nothing more. The first time you use one of the actions below,</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>Quill Radio stops and explains, in plain words, that it needs one more</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>permission: to act on YouTube for you. If you choose **OK**, your browser opens</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>on Google&#39;s page to approve it.</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>Google describes that permission as &quot;See, edit, and permanently delete your</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>YouTube videos, ratings, comments and captions&quot;, because that is the only</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>name it has for it. Quill Radio uses it only for the actions listed here, and</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>only when you press the button for one. It never does anything on its own, and</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>it never sees your password. If you choose **Cancel**, nothing changes, and you</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>hear &quot;Nothing was changed on YouTube.&quot; You can take the permission back any</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>time with **Station &gt; Disconnect YouTube Account...**, which also removes</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>Quill Radio&#39;s access at Google. Your sign-in is kept in</span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>Windows&#39; own secure store, never in a settings file.</span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a><span class="fu">#### YouTube&#39;s daily limit</span></span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>Google gives each app a fixed number of requests a day, shared by everybody</span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>who uses it. If Quill Radio runs out, you hear &quot;YouTube&#39;s daily limit for</span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>QUILL has been reached; try again tomorrow.&quot; Nothing is retried behind your</span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>back; just try again the next day. Reading, playing and searching are not</span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>affected.</span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Reply to a comment, or write your own, step by step</span></span>
+<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Open a video&#39;s comments (Ctrl+Shift+7, or **Read Comments...** on its row).</span>
+<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>To answer someone, select their comment and press **Alt+R** for</span>
+<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a>   **Reply...**. To write a new comment on the video, press **Alt+A** for</span>
+<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a>   **Add a Comment...**.</span>
+<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Type what you want to say and choose **OK**.</span>
+<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>You hear &quot;Reply posted.&quot; or &quot;Comment posted.&quot;, and it appears in the list,</span>
+<span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a>   under the comment it answers.</span>
+<span id="cb7-51"><a href="#cb7-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-52"><a href="#cb7-52" aria-hidden="true" tabindex="-1"></a>To remove one of your own comments, select it and press **Alt+D** for **Delete</span>
+<span id="cb7-53"><a href="#cb7-53" aria-hidden="true" tabindex="-1"></a>My Comment**. Quill Radio checks with YouTube that it is yours, asks you to</span>
+<span id="cb7-54"><a href="#cb7-54" aria-hidden="true" tabindex="-1"></a>confirm, and you hear &quot;Comment deleted.&quot; Anybody else&#39;s comment cannot be</span>
+<span id="cb7-55"><a href="#cb7-55" aria-hidden="true" tabindex="-1"></a>deleted, and you are told so.</span>
+<span id="cb7-56"><a href="#cb7-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-57"><a href="#cb7-57" aria-hidden="true" tabindex="-1"></a>You can also add a comment from the **YouTube Video** window with **Add a</span>
+<span id="cb7-58"><a href="#cb7-58" aria-hidden="true" tabindex="-1"></a>Comment...** (Alt+C).</span>
+<span id="cb7-59"><a href="#cb7-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-60"><a href="#cb7-60" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Send a message in a live chat, step by step</span></span>
+<span id="cb7-61"><a href="#cb7-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-62"><a href="#cb7-62" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Open the live chat (Ctrl+Alt+Shift+7). With your account connected, the</span>
+<span id="cb7-63"><a href="#cb7-63" aria-hidden="true" tabindex="-1"></a>   window has a **Send a message** box (Alt+S).</span>
+<span id="cb7-64"><a href="#cb7-64" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Type your message and press **Enter**. YouTube&#39;s chat takes one line of up</span>
+<span id="cb7-65"><a href="#cb7-65" aria-hidden="true" tabindex="-1"></a>   to 200 characters.</span>
+<span id="cb7-66"><a href="#cb7-66" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>You hear &quot;Message sent.&quot; The box empties and keeps focus, ready for the</span>
+<span id="cb7-67"><a href="#cb7-67" aria-hidden="true" tabindex="-1"></a>   next one. If sending fails, you hear why and what you typed stays in the</span>
+<span id="cb7-68"><a href="#cb7-68" aria-hidden="true" tabindex="-1"></a>   box, so nothing is lost.</span>
+<span id="cb7-69"><a href="#cb7-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-70"><a href="#cb7-70" aria-hidden="true" tabindex="-1"></a>You can only send to a chat that is live right now. A replay is read-only.</span>
+<span id="cb7-71"><a href="#cb7-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-72"><a href="#cb7-72" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Like a video, or add it to a playlist, step by step</span></span>
+<span id="cb7-73"><a href="#cb7-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-74"><a href="#cb7-74" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Open the **YouTube Video** window (Ctrl+Alt+Shift+8).</span>
+<span id="cb7-75"><a href="#cb7-75" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Choose one of these:</span>
+<span id="cb7-76"><a href="#cb7-76" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>**Like** (Alt+L), **Dislike** (Alt+I) or **Remove Rating** (Alt+R). You</span>
+<span id="cb7-77"><a href="#cb7-77" aria-hidden="true" tabindex="-1"></a>     hear &quot;Liked.&quot;, &quot;Disliked.&quot; or &quot;Rating removed.&quot; YouTube counts a dislike</span>
+<span id="cb7-78"><a href="#cb7-78" aria-hidden="true" tabindex="-1"></a>     but no longer shows the number to anyone.</span>
+<span id="cb7-79"><a href="#cb7-79" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>**Add to Playlist...** (Alt+P): pick one of your playlists from the list</span>
+<span id="cb7-80"><a href="#cb7-80" aria-hidden="true" tabindex="-1"></a>     and choose **OK**. You hear, for example, &quot;Added to Walks.&quot;</span>
+<span id="cb7-81"><a href="#cb7-81" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>**New Playlist...** (Alt+N): type a name, choose who can see it (private,</span>
+<span id="cb7-82"><a href="#cb7-82" aria-hidden="true" tabindex="-1"></a>     unlisted or public), and choose **OK**. The video goes into the new</span>
+<span id="cb7-83"><a href="#cb7-83" aria-hidden="true" tabindex="-1"></a>     playlist.</span>
+<span id="cb7-84"><a href="#cb7-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-85"><a href="#cb7-85" aria-hidden="true" tabindex="-1"></a>YouTube does not let any app add to **Watch Later**, so that one has to be</span>
+<span id="cb7-86"><a href="#cb7-86" aria-hidden="true" tabindex="-1"></a>done on YouTube itself.</span>
+<span id="cb7-87"><a href="#cb7-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-88"><a href="#cb7-88" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Subscribe and unsubscribe</span></span>
+<span id="cb7-89"><a href="#cb7-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-90"><a href="#cb7-90" aria-hidden="true" tabindex="-1"></a>With your account connected, **Subscribe on YouTube...** on a channel&#39;s menu</span>
+<span id="cb7-91"><a href="#cb7-91" aria-hidden="true" tabindex="-1"></a>(Shift+F10, then Y) subscribes you straight away. If you already subscribe, it</span>
+<span id="cb7-92"><a href="#cb7-92" aria-hidden="true" tabindex="-1"></a>asks whether to unsubscribe, with **No** already chosen.</span></code></pre></div>
+<h4 id="chapter-10--what-you-learned-and-where-to-go-next">Chapter 10
+&gt; What you learned, and where to go next</h4>
+<p>Reads now:</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>search with YouTube&#39;s own filters or YouTube Music, and, if you like, use your</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>own YouTube sign-in.</span></code></pre></div>
+<p>Restore to:</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>search with YouTube&#39;s own filters or YouTube Music, and, if you like, use your</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>own YouTube sign-in and act on YouTube with your account.</span></code></pre></div>
+<h3
+id="standaloneradiodocsrelease-notes-32md"><code>standalone/radio/docs/release-notes-3.2.md</code></h3>
+<h4 id="youtube-the-list-of-what-is-new">YouTube (the list of what is
+new)</h4>
+<p>Reads now:</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Shorts** and **About This Channel** on every channel.</span></code></pre></div>
+<p>Restore to:</p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Shorts** and **About This Channel** on every channel.</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Doing things on YouTube with your account**: reply and comment, chat,</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  subscribe, like, and add to playlists, where Connect YouTube Account is</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  available.</span></code></pre></div>
+<h4 id="doing-things-on-youtube-with-your-account-whole-section">Doing
+things on YouTube with your account (whole section)</h4>
+<p>Put this whole section back immediately before the heading
+<code>## Keeping up with podcasts</code>.</p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">### Doing things on YouTube with your account</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>Where **Connect YouTube Account** is available, Quill Radio can now act on</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>YouTube as you: **Reply...**, **Add a Comment...** and **Delete My Comment**</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>in the comments window; a **Send a message** box in Live Chat; **Subscribe on</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>YouTube...** that subscribes and unsubscribes for real; and **Like**,</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>**Dislike**, **Remove Rating**, **Add to Playlist...** and **New Playlist...**</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>in the YouTube Video window. Each says what happened once, such as &quot;Reply</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>posted.&quot; or &quot;Subscribed to Rick Steves&#39; Europe.&quot;</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>The first time you use one, Quill Radio explains in plain words that it needs</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>one more permission from Google, to act on YouTube for you, and only then opens</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>your browser to ask. Google names that permission broadly; Quill Radio uses it</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>only for these buttons, and only when you press one.</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>Two honest caveats. Google has to review an app before everyone can sign in to</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>it, so until that is done Connect YouTube Account only appears in some copies</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>of Quill Radio, and Google may warn that the app is not verified. And Google</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>allows each app a fixed number of requests a day, shared by everyone; if that</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>runs out you hear &quot;YouTube&#39;s daily limit for QUILL has been reached; try again</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>tomorrow.&quot; YouTube does not let any app add to Watch Later.</span></code></pre></div>
+<h3
+id="standaloneradiodocschangelogmd"><code>standalone/radio/docs/CHANGELOG.md</code></h3>
+<h4 id="quill-radio-320-entry-youtube-live-chat--bullet-title">Quill
+Radio 3.2.0 entry: YouTube: Live Chat, … (bullet title)</h4>
+<p>Reads now:</p>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>sponsor skipping and filtered search.**</span></code></pre></div>
+<p>Restore to:</p>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>sponsor skipping, filtered search and account actions.**</span></code></pre></div>
+<h4 id="quill-radio-320-entry-youtube-live-chat--end-of-bullet">Quill
+Radio 3.2.0 entry: YouTube: Live Chat, … (end of bullet)</h4>
+<p>Reads now:</p>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a> Channels gain Shorts and About This Channel...; My YouTube gains History.</span></code></pre></div>
+<p>Restore to:</p>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a> Channels gain Shorts and About This Channel...; My YouTube gains History. Where Connect YouTube Account is available, Reply, Add a Comment, Delete My Comment, sending in Live Chat, real Subscribe/Unsubscribe, Like/Dislike/Remove Rating, Add to Playlist and New Playlist act as your account, asking Google for the extra permission (youtube.force-ssl) in plain words the first time; a spent daily quota is one sentence and is never retried.</span></code></pre></div>
+<h3
+id="standaloneradiochangelogmd"><code>standalone/radio/CHANGELOG.md</code></h3>
+<p>The same two edits as
+<code>standalone/radio/docs/CHANGELOG.md</code>; keep the two
+changelogs’ entries identical.</p>
+<h4 id="quill-radio-320-entry-youtube-live-chat--bullet-title-1">Quill
+Radio 3.2.0 entry: YouTube: Live Chat, … (bullet title)</h4>
+<p>Reads now:</p>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>sponsor skipping and filtered search.**</span></code></pre></div>
+<p>Restore to:</p>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>sponsor skipping, filtered search and account actions.**</span></code></pre></div>
+<h4 id="quill-radio-320-entry-youtube-live-chat--end-of-bullet-1">Quill
+Radio 3.2.0 entry: YouTube: Live Chat, … (end of bullet)</h4>
+<p>Reads now:</p>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a> Channels gain Shorts and About This Channel...; My YouTube gains History.</span></code></pre></div>
+<p>Restore to:</p>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a> Channels gain Shorts and About This Channel...; My YouTube gains History. Where Connect YouTube Account is available, Reply, Add a Comment, Delete My Comment, sending in Live Chat, real Subscribe/Unsubscribe, Like/Dislike/Remove Rating, Add to Playlist and New Playlist act as your account, asking Google for the extra permission (youtube.force-ssl) in plain words the first time; a spent daily quota is one sentence and is never retried.</span></code></pre></div>
+<h3 id="changelogmd"><code>CHANGELOG.md</code></h3>
+<h4 id="100--quill-radio-youtube-live-chat--heading">1.0.0 &gt; Quill
+Radio: YouTube live chat, … (heading)</h4>
+<p>Reads now:</p>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">### Quill Radio: YouTube live chat, sponsor skipping and filtered search (2026-10-03)</span></span></code></pre></div>
+<p>Restore to:</p>
+<div class="sourceCode" id="cb22"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">### Quill Radio: YouTube live chat, account actions, sponsor skipping and filtered search (2026-10-03)</span></span></code></pre></div>
+<h4
+id="100--quill-radio-youtube-live-chat--account-actions-bullet">1.0.0
+&gt; Quill Radio: YouTube live chat, … (account actions bullet)</h4>
+<p>Put this bullet back between the <strong>Live Chat</strong> bullet
+and the <strong>YouTube Video window</strong> bullet.</p>
+<div class="sourceCode" id="cb23"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Account actions through the official sign-in**, incremental:</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="in">`youtube_write_scope.py`</span> asks for <span class="in">`youtube.force-ssl`</span> (with</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="in">`include_granted_scopes`</span>) only on the first write, after a plain-language</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  consent; <span class="in">`youtube_account_api.py`</span> is the single Data API write site</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  (comments, live chat send, subscriptions, ratings, playlists), turning a 403</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  quotaExceeded into one sentence and never retrying. Wired into the Comments</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  window (Reply / Add a Comment / Delete My Comment), the Live Chat send box,</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  Subscribe on YouTube (real subscribe/unsubscribe, the confirm page as the</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  fallback) and the new YouTube Video window.</span></code></pre></div>
+<h3 id="code-strings-that-were-reworded">Code strings that were
+reworded</h3>
+<p>These are not documents, but they are what a listener hears or reads,
+so they were reworded at the same time. Restore them in the same
+change.</p>
+<h4
+id="quillcoreradiosurface_helppy-f1-window-purposes"><code>quill/core/radio/surface_help.py</code>
+(F1 window purposes)</h4>
+<p><code>"YouTube Comments"</code>, restore the last sentence:</p>
+<div class="sourceCode" id="cb24"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>&quot;you back where you were. With a YouTube account connected, Alt+R &quot;</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>&quot;Reply, Alt+A Add a Comment and Alt+D Delete My Comment post as you.&quot;</span></code></pre></div>
+<p><code>"YouTube Live Chat"</code>, restore the send box to the F6
+list:</p>
+<div class="sourceCode" id="cb25"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>&quot;pause, Ctrl+S speak new messages on or off, F6 between the list, Full &quot;</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>&quot;text, the filter and the send box. Escape closes it.&quot;</span></code></pre></div>
+<p><code>"YouTube Video"</code>, restore the account actions:</p>
+<div class="sourceCode" id="cb26"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>&quot;description lists (Enter jumps there while it plays), and Like, Add &quot;</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>&quot;to Playlist, Add a Comment and the rest, which act as your connected &quot;</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>&quot;YouTube account. Escape closes it.&quot;</span></code></pre></div>
+<h4
+id="quilluiradiopalette_commandspy-command-palette-title"><code>quill/ui/radio/palette_commands.py</code>
+(Command Palette title)</h4>
+<p><code>radio.youtube_video</code> reads
+<code>Internet Radio: YouTube Video Details...</code>; restore
+<code>Internet Radio: YouTube Video Details and Account Actions...</code>.</p>
+<h4
+id="quilltoolsbuild_help_referencepy-published-f1-reference"><code>quill/tools/build_help_reference.py</code>
+(published F1 reference)</h4>
+<p>Empty <code>HELD_BACK</code>, so the Comments window’s Reply / Add a
+Comment / Delete My Comment help and the Live Chat send box help are
+published again, then run
+<code>python -m quill.tools.build_help_reference --write</code> and
+<code>python -m quill.tools.build_keymap_reference --write</code>.</p>
+<h4 id="tests-that-pin-the-hiding">Tests that pin the hiding</h4>
+<p><code>tests/unit/ui/radio/test_radio_youtube_held_back.py</code>
+asserts every surface is absent while <code>future.youtube_oauth</code>
+is locked. Once the flag is released it is no longer locked in a public
+build: rewrite that file’s <code>locked_app</code> fixture (or retire
+the file) in the same change.</p>
+</main>
+</body>
+</html>

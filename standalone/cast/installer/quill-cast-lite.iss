@@ -13,6 +13,15 @@
 #ifndef AppVersion
   #define AppVersion "2.0.0"
 #endif
+; The build of this version and the Windows file version (X.Y.Z.B)
+; (docs/release/RELEASE.md, "Build numbers"). build_release.ps1 passes
+; /dAppBuild= and /dAppFileVersion=; these literals are only the fallback.
+#ifndef AppBuild
+  #define AppBuild "1"
+#endif
+#ifndef AppFileVersion
+  #define AppFileVersion "2.0.0.1"
+#endif
 #define AppPublisher "Community Access"
 #define AppURL "https://github.com/Community-Access/quill"
 #define RuntimeUrl "https://github.com/Community-Access/quill/releases/download/runtime-latest/QuillVille-Runtime-Setup.exe"
@@ -32,6 +41,7 @@ SignedUninstaller=yes
 AppId={{316B5D30-E16B-4973-95B6-968F5D897FD7}}
 AppName={#AppName}
 AppVersion={#AppVersion}
+VersionInfoVersion={#AppFileVersion}
 AppPublisher={#AppPublisher}
 AppPublisherURL={#AppURL}
 VersionInfoCompany={#AppPublisher}
@@ -58,6 +68,17 @@ SetupLogging=yes
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
+
+[INI]
+; The version THIS installer installed, read by quill.core.app_version for
+; Check for Updates and About. The shared runtime carries every app's code, so
+; the code's own constant says which runtime is here, not which app installer
+; ran (the same marker Quill Radio and QUILL Lite write; release-channels plan,
+; Phase 0).
+Filename: "{app}\quill-app-version.ini"; Section: "app"; Key: "version"; String: "{#AppVersion}"
+; The build, beside the version it belongs to (quill.core.app_version says
+; why it repeats the version rather than holding the bare number).
+Filename: "{app}\quill-app-version.ini"; Section: "app"; Key: "version_build"; String: "{#AppVersion}+{#AppBuild}"
 
 [Files]
 Source: "..\assets\quill-cast.ico"; DestDir: "{app}"; Flags: ignoreversion

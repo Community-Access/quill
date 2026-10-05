@@ -28,7 +28,10 @@ def describe_selection(dialog: Any, data: dict | None) -> None:
 
     station = data.get("station") if data else None
     if station is not None:
-        dialog._details.ChangeValue(_with_note(station, station.details_text))
+        # Your tags beside the directory's (station_tags_dialog.details_for).
+        from quill.ui.radio.station_tags_dialog import details_for
+
+        dialog._details.ChangeValue(_with_note(station, details_for(dialog, station)))
         dialog._favorite_btn.Enable(True)
         dialog._update_favorite_label(station)
     elif dialog._is_playable(data) and data is not None:

@@ -262,14 +262,26 @@ def test_preferences_and_the_places_chooser_build(cast_frame) -> None:
 
 
 def test_cast_never_takes_ctrl_alt_shift_q_system_wide(cast_frame) -> None:
-    """qc.md C2-01: Ctrl+Alt+Shift+Q is Cast's Mark as Played and Next. The
-    shared default show/hide key must not claim it while Cast runs, even when
-    Windows refuses Cast's own chord."""
+    """qc.md C2-01: Ctrl+Alt+Shift+Q is QUILL's show/hide key. Cast must not
+    claim it as a second show/hide while it runs, even when Windows refuses
+    Cast's own chord."""
     from quill.apps.podcasts_routes import CAST_TRAY_HOTKEY
 
     assert cast_frame._own_tray_hotkey == CAST_TRAY_HOTKEY
     cast_frame._tray_hotkey_registered = False  # as if Windows refused it
     assert "Ctrl+Alt+Shift+Q" not in cast_frame._global_hotkey_bindings().values()
+
+
+def test_mark_as_played_and_next_shows_its_own_key(cast_frame) -> None:
+    """It was Ctrl+Alt+Shift+Q, QUILL's show/hide key, and never fired while
+    QUILL ran. It now follows Next in Queue's key, through the app keymap."""
+    labels = []
+    bar = cast_frame.frame.GetMenuBar()
+    for index in range(bar.GetMenuCount()):
+        for item in bar.GetMenu(index).GetMenuItems():
+            if item.GetSubMenu() is not None:
+                labels += [sub.GetItemLabel() for sub in item.GetSubMenu().GetMenuItems()]
+    assert "Mark as Played and Ne&xt\tCtrl+Alt+Shift+Down" in labels
 
 
 def test_player_information_and_carry_my_place_have_menu_rows(cast_frame) -> None:
@@ -280,3 +292,73 @@ def test_player_information_and_carry_my_place_have_menu_rows(cast_frame) -> Non
         labels += [item.GetItemLabel() for item in bar.GetMenu(index).GetMenuItems()]
     assert any(label.startswith("Player Information...\tCtrl+I") for label in labels)
     assert any("Carry My Place Between Mac&hines..." in label for label in labels)
+
+
+def test_delete_lands_on_the_row_that_moved_into_its_place(cast_frame) -> None:
+    """qc.md F-10: after a row leaves, the cursor is on its neighbour, not the top."""
+    frame = cast_frame
+    frame.show_place("inbox", focus=False)
+    frame._select_list_row(2)
+    assert frame._episodes.GetFirstSelected() == 2, frame._list_rows
+    following = frame._list_rows[3]
+    removed = frame._selected_tree_data()
+    frame._remove_from_place(removed)
+    assert removed not in frame._list_rows, (removed, frame._list_rows)
+    assert frame._episodes.GetFirstSelected() == 2
+    assert frame._list_rows[2] == following
+
+
+def test_dismissing_from_the_inbox_deletes_the_download_when_done_means_deleted(
+    cast_frame, tmp_path
+) -> None:
+    """Earshot R4: with Delete downloads when done on, Delete in the Inbox frees the file."""
+    frame = cast_frame
+    frame._podcast_library.settings.delete_after_play = True
+    frame.show_place("inbox", focus=False)
+    pair = frame._selected_episode()
+    assert pair is not None
+    _show, episode = pair
+    copy = tmp_path / "episode.mp3"
+    copy.write_bytes(b"audio")
+    episode.downloaded_path = str(copy)
+    frame._remove_from_place(frame._selected_tree_data())
+    assert episode.downloaded_path == ""
+    assert not copy.exists()
+
+
+def test_the_palette_says_casts_menu_names_not_quills(cast_frame) -> None:
+    """The shared mixin registers QUILL's titles; Cast speaks its own words and
+    has no Open Manager (it only led back to the Podcasts place)."""
+    commands = cast_frame.commands
+    assert commands.get("podcasts.open_manager") is None
+    expected = {
+        "podcasts.acb_media": "Podcasts: Follow ACB Media Podcasts",
+        "podcasts.add_local": "Podcasts: Add Personal Audio...",
+        "podcasts.settings": "Podcasts: Fetching Preferences...",
+        "podcasts.skip_settings": "Podcasts: Playing Preferences...",
+    }
+    for command_id, title in expected.items():
+        command = commands.get(command_id)
+        assert command is not None, command_id
+        assert command.title == title
+
+
+def test_play_next_episode_from_the_managers_verbs_plays_in_the_one_window(
+    cast_frame, monkeypatch
+) -> None:
+    """The Manager's play verb was never defined on the one window, so its
+    Play Next Episode (and chapter jump) raised there."""
+    from quill.ui.podcasts import show_actions
+
+    started: list[tuple[str, int | None]] = []
+    monkeypatch.setattr(
+        show_actions,
+        "start_episode_playback",
+        lambda _c, _l, show, episode, *, resume_ms=None, announce=None: (
+            started.append((episode.guid, resume_ms)) or True
+        ),
+    )
+    frame = cast_frame
+    show = frame._podcast_library.find_show("s2")
+    frame._play_next_unplayed(show)
+    assert started and started[0][0].startswith("s2e")

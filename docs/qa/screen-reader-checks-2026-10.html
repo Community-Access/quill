@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Checks to Try With Your Screen Reader, October 2026</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="checks-to-try-with-your-screen-reader-october-2026">Checks to
+Try With Your Screen Reader, October 2026</h1>
+<p>These are the hands-on checks for everything built in late September
+and early October 2026 across QUILL Cast, Quill Radio, QUILL Lite and
+QUILL. There are 149 of them. Each one says where to go, what to press
+and what you should hear. Tick a box only after you have tried it
+yourself with a screen reader; passing automated tests do not count.</p>
+<p>Try them with NVDA, JAWS and Narrator where you can. When something
+is wrong, write down the check, the screen reader and its version, and
+exactly what you heard. Never put document text, passwords or keys in a
+report.</p>
+<p>This list used to live in the working file qc.md, which was retired
+on 2026-10-03 once all its code work was done. The app-by-app sign-off
+sheets in this folder are still the place to start for a release; this
+page covers what is new since they were written.</p>
+<h2 id="still-to-do-in-the-code">Still to do in the code</h2>
+<ul>
+<li><strong>QUILL’s own documentation</strong> – its user guide, release
+notes, tutorials and the QUILL pages of the website – gets the same
+people-first, beginner-first rewrite that QUILL Cast, Quill Radio, QUILL
+Lite and the site received on 2026-10-03. Jeff asked for QUILL to come
+last.</li>
+</ul>
+<p>This section records user-experience changes implemented in source,
+not a release announcement. Test the current source build; older
+installed builds may not contain these changes. All manual checks below
+are pending. Automated test passes do not mean speech, braille, native
+Alt+Tab, or every app was manually verified. Do not tick a checkbox
+until a human completes that check.</p>
+<p>Run the keyboard checks separately with NVDA, JAWS, and Narrator.
+Record the reader/version, app/build or commit, result, and exact
+unexpected speech or focus behavior under the relevant item. Repeat
+relevant checks with the status bar hidden and announcement throttling
+enabled. Never include document content, tokens, or credentials in the
+test report.</p>
+<h2 id="native-preferences-search">Native Preferences Search</h2>
+<p>Implemented in commit <code>1822e4c</code>. Search navigates existing
+controls; it does not edit settings, press action buttons, or save the
+dialog.</p>
+<p>Entry points: open the app’s existing Preferences or Settings
+command. In QUILL and Lite, Preferences is Control+Comma. Radio, Cast,
+Studio, Weather, and Beacon use their existing Preferences/Settings menu
+routes. Native modal and sanctioned modeless Settings/Preferences
+surfaces use the same search implementation.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />On opening, find the named
+<strong>Find a setting</strong> field by Tab; confirm its name and
+editable role are spoken once and F1 gives useful control
+help.</label></li>
+<li><label><input type="checkbox" />Type a word from a setting’s label
+or help, such as <strong>recovery</strong> in Lite or <strong>auto
+sync</strong> in Beacon. Focus must stay in the search field as results
+update. Changing the query must not change or save a
+setting.</label></li>
+<li><label><input type="checkbox" />Press Down to enter <strong>Matching
+settings</strong>, then arrow through results. Confirm each name and
+selection is read naturally without duplicate app speech.</label></li>
+<li><label><input type="checkbox" />Press Enter on a match. Its actual
+control receives focus, with its current value/state spoken by the
+reader. Enter in search must not trigger the dialog’s default OK/Apply
+or activate an action button.</label></li>
+<li><label><input type="checkbox" />Choose a match on a hidden
+notebook/book page. Confirm that page is revealed before focus moves. In
+Beacon, a Sync match must show the Sync section.</label></li>
+<li><label><input type="checkbox" />Press Control+F from a setting. It
+returns to search and selects the current query so typing can replace
+it.</label></li>
+<li><label><input type="checkbox" />Search for a nonexistent setting.
+Confirm zero matches is reviewable and no previous result remains
+selectable. Count speech is debounced when the host supplies an
+announcement callback; some hosts currently expose only the on-screen
+count. Record silence or duplicate count speech as an acceptance
+issue.</label></li>
+<li><label><input type="checkbox" />Find a disabled setting where
+available. Its result identifies it as disabled; Enter must not enable
+it, edit it, or move focus to an unusable control.</label></li>
+<li><label><input type="checkbox" />While search has text, press Escape:
+it clears the query and keeps the window open. Press Escape again with
+an empty query: the original window’s cancel/close behavior applies,
+with no unintended save.</label></li>
+<li><label><input type="checkbox" />Change a setting normally, return to
+search, then Cancel. Existing cancel semantics must remain intact.
+Repeat with OK/Apply and confirm only intentional settings changes are
+applied. Immediate-action buttons retain their authored behavior when
+deliberately activated outside search.</label></li>
+<li><label><input type="checkbox" />Close while typing a query, then
+reopen. No delayed result-count speech should arrive from the closed
+window, and the replacement surface must work.</label></li>
+<li><label><input type="checkbox" />Verify Tab/Shift+Tab order,
+result-list reachability, and readable sizing at a smaller window size
+and increased display scaling.</label></li>
+</ul>
+<p>Coverage: 67 Preferences/dialog/Beacon tests, followed by 29
+search/dialog tests after modeless onboarding and 12 search/Beacon tests
+after helper extraction. These include real wx controls, Lite’s
+constructed Preferences, Beacon’s hidden Sync panel, disabled controls,
+and value/cancel preservation.</p>
+<p>Limits: Converter, Player, and Inkwell do not yet have unified
+Preferences entry points. Web forms and unopened nested dialogs are not
+indexed. QUILL’s hub search finds categories and descriptions, not
+controls in unopened child dialogs. Do not report this as completed
+all-app/global settings search.</p>
+<h2 id="radio-and-cast-transport-state">Radio and Cast Transport
+State</h2>
+<p>The primary transport action must say what pressing it will do,
+<strong>and to what, in its visible label</strong> (implemented
+2026-10-01, X-06). Radio’s main-window contract is a single button:
+stopped offers “Play <selected
+favorite>” (Alt+L), active offers “Stop <what is playing>” (Alt+T), and
+paused offers “Resume <it>” (Alt+U); with a folder or nothing selected
+it reads “Play – nothing selected” and pressing it says what would work.
+Cast has a primary “Play <selection>” / “Pause <episode>” / “Resume
+<episode>” button (Alt+Y, Alt+S) plus a separate Stop (Alt+T) that is
+disabled when nothing is playing or paused. The object is in the label
+because an accessible name on a wxMSW button is never read. The label,
+enablement, and action must agree. Do not announce a state the focused
+native control says. The Volume slider in Radio’s main window is now
+Alt+O.</p>
+<p>Entry points: Radio’s main player window and Cast’s main podcast
+window. Test a playable station/show, a local or recorded item, and a
+bounded Cast episode.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />With playback stopped and a playable
+target selected, Tab to the primary transport. It must be enabled and
+read “Play” followed by the name of the selected station/show/episode –
+the name you gave a renamed favorite, in Radio. In Cast, separate Stop
+must be disabled, never an enabled dead action.</label></li>
+<li><label><input type="checkbox" />Arrow the list to a folder (Radio),
+a folder, an empty show or a view with nothing playable (Cast). The
+button must read “Play – nothing selected”; pressing it must say which
+two things would work and start nothing. Arrow back to a playable row:
+the label must follow without anything else being said.</label></li>
+<li><label><input type="checkbox" />Select a podcast whose title is
+longer than forty characters. The label must end with an ellipsis and
+the button must not change width; Tab onward and confirm the buttons
+after it did not move. A title containing an ampersand must read
+naturally and not create a stray Alt key.</label></li>
+<li><label><input type="checkbox" />In Cast, select a podcast: the
+Unfollow button must read “Unfollow” and that podcast’s name. Select one
+of its episodes: the same. Select a folder: plain “Unfollow”,
+disabled.</label></li>
+<li><label><input type="checkbox" />Start playback. Radio’s primary
+button changes to Stop; Cast’s changes to Pause, with separate Stop
+available only when it can stop active playback.</label></li>
+<li><label><input type="checkbox" />Pause a bounded Cast episode. Resume
+and the episode’s name must be offered (Alt+S, the same letter Pause
+had) and continue at the saved position; no control may be mislabeled as
+Stop. In Radio, pause a podcast or recording with Ctrl+Space: the main
+window’s button must read “Resume” and its name, Alt+U must press it,
+and Playback &gt; Play must read Resume too.</label></li>
+<li><label><input type="checkbox" />Stop playback. Radio returns to
+Play. Cast returns its primary button to Play and makes separate Stop
+unavailable. Do not duplicate Play in that row.</label></li>
+<li><label><input type="checkbox" />Repeat with no selection, a
+folder/view, live Radio, loading, natural completion, and failure. No
+enabled action may promise an impossible result.</label></li>
+<li><label><input type="checkbox" />Invoke actions by keyboard. Labels,
+spoken names, menus, and hotkeys must agree; refreshing the state must
+not steal focus. Record exact speech/state.</label></li>
+</ul>
+<p>Coverage: <code>tests/unit/core/test_transport_button.py</code>
+(every label and sentence the shared module can produce),
+<code>tests/unit/ui/podcasts/test_cast_transport_row.py</code> and
+<code>tests/unit/ui/radio/test_main_transport_button.py</code> (both
+rows on fake hosts, every state),
+<code>tests/unit/ui/test_button_mnemonics.py</code> (the real Radio
+frame against its real menu bar), and GATE-15 with run-time labels. This
+cross-app physical reader and main-window enablement matrix remains
+unrun; record exact speech after running it. Two conscious gaps to
+listen for: Radio’s status-bar Play cell and the player panel’s
+Play/Stop button still say the bare verb.</p>
+<h2 id="cast-find-in-library">Cast Find in Library</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />In Cast’s main window press Ctrl+F:
+focus is in “Find in library”. Type part of a podcast name: nothing is
+spoken per letter; when you stop, the count is spoken once.</label></li>
+<li><label><input type="checkbox" />Down Arrow: the first match is read
+with what it is (“– a podcast”, “– an episode of …”). Enter plays it;
+the Play button names it; Shift+F10 opens the usual menu.</label></li>
+<li><label><input type="checkbox" />Escape from the box: “Back to your
+library”, and the cursor is on the row it was on before
+searching.</label></li>
+<li><label><input type="checkbox" />View menu: Find in Library shows
+Ctrl+F; Customize Features shows Ctrl+Alt+C and opens with that
+key.</label></li>
+</ul>
+<h2 id="cast-episode-filter-tests">Cast Episode Filter Tests</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Open a podcast’s Episode Filters,
+Add Rule. Alt+S reaches “More tests”; Alt+A opens “Episode Filter Test”
+with focus on “Look at”. Choose Show notes, Test “contains”, Value
+“sponsor”, Save: the list reads “Show notes contains “sponsor”” and
+“Test added” is spoken.</label></li>
+<li><label><input type="checkbox" />In Episode Filter Test choose Look
+at: Episode type. The Test list becomes whole phrases (“is a trailer”)
+and Value is dimmed. Choose Length in minutes, type “ten” and Save:
+refused with the reason, focus on Value.</label></li>
+<li><label><input type="checkbox" />Set Match when (Alt+W) to “Any one
+test is enough” with two tests, then Try It on Recent Episodes (Alt+Y):
+the count and up to five titles are spoken once; Alt+U reads the same
+sentence. The rules list row starts “Any one of:”.</label></li>
+<li><label><input type="checkbox" />On an episode you do not want,
+Shift+F10, F: Episode Filters opens and the rule window appears on its
+own; its first line says why the rule was chosen and how many of the
+newest it catches. Save the rule: “Rule added and filtering switched
+on”. Cancel Episode Filters: nothing was stored.</label></li>
+</ul>
+<h2 id="cast-phase-1-small-fixes">Cast Phase 1 Small Fixes</h2>
+<p>Each row is one small Phase 1 fix, checked by ear in QUILL Cast’s
+main window or the named dialog. Record exact speech.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />Press Ctrl+, in Cast. In the
+Podcasts group, “Where to land on launch” (Alt+U) reads “What is new…”;
+choose Favorites, OK, close and reopen Cast: focus lands on Favorites
+even when it is empty. Set it back to What is new.</label></li>
+<li><label><input type="checkbox" />Open an episode’s Show Notes, choose
+View as: Rich text, then Tab. The formatted notes are announced as “Show
+notes, formatted”; Alt+F reaches them; choosing Plain text hides the
+label with them.</label></li>
+<li><label><input type="checkbox" />Press F1 in the main window (focus
+on the library) and in Feed Check. The first paragraph describes the
+window as it is now: the main window’s buttons name their object, places
+are in the View menu, F6 reaches the status bar; Feed Check is worst
+first and opening it checks nothing.</label></li>
+<li><label><input type="checkbox" />With the network off, Preview a
+search result in Add Podcast: the failure is spoken once, and Preview is
+usable again. Import an OPML file with feed checking on while offline:
+either per-feed results, or “The feed check could not run. Everything
+you imported is kept” – never “checked 0 feeds”.</label></li>
+<li><label><input type="checkbox" />Shift+F10 on a podcast in the
+library: the menu says Unfollow… (Delete). Preview a search result in
+Add Podcast: the button says Follow. Podcasts menu: Follow ACB Media
+Podcasts. Unfollow a podcast, press Ctrl+Z: “Undid Unfollow” and what
+came back. No surface says Subscribe except where it names the OPML
+subscription-list file.</label></li>
+<li><label><input type="checkbox" />Open Settings for This Podcast on a
+podcast with its own speed. Beside the speed field, the button reads
+“Use shared default for” and the setting’s name; pressing it drops only
+that answer. Use Shared Defaults (Alt+D) asks first and says how many it
+dropped.</label></li>
+<li><label><input type="checkbox" />In the main window’s library tree,
+press Shift+F10 on a podcast, a folder, a pinned view and an episode,
+then the Applications key on each. Each opens the same menu a
+right-click does, once (not twice).</label></li>
+<li><label><input type="checkbox" />Open Downloads, Podcasts &gt; Feed
+Check…, an episode’s Show Notes, Listening Statistics, and Year in
+Review from Statistics. Each opens with focus on its list, notes or
+report – the first thing read after the title is content, not a filter
+or a button.</label></li>
+<li><label><input type="checkbox" />Press Ctrl+Shift+Q (or View &gt;
+Play Queue…): the Play Queue opens with focus in the queue list and its
+title read once. In QUILL, open the Sticky Notes Browser: it opens with
+focus in the search field.</label></li>
+<li><label><input type="checkbox" />In Simple mode (View &gt; Advanced
+Features unchecked), open Help: Keyboard Shortcuts… (Ctrl+Alt+Shift+W)
+and Global Hotkeys… (Ctrl+Alt+Shift+H) are present and open their
+windows; the Advanced Features announcement now counts two fewer
+rows.</label></li>
+<li><label><input type="checkbox" />Smart Playlist Rules, Podcast
+Settings, Settings for This Podcast: the OK button is announced as “OK”
+with no shortcut; Alt+O does nothing; Enter saves and
+closes.</label></li>
+</ul>
+<h2 id="cast-watched-folders-and-the-20-follow-ups">Cast Watched Folders
+and the 2.0 Follow-Ups</h2>
+<p>Checked by ear in QUILL Cast with a scratch folder you can drop files
+into. Record exact speech.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />Press Ctrl+Alt+W. “Watched Folders”
+opens on “No folders yet. Press Add Folder to choose one.” Press Alt+A,
+choose the scratch folder, and Save the settings page as it opens. Cast
+says it is watching the folder.</label></li>
+<li><label><input type="checkbox" />Copy a 40-second MP3 into the
+folder. Within about ten seconds Cast says “New in <folder>: <title>, 1
+minute.” Ctrl+Shift+U shows it in Personal Audio. The original is still
+in the folder.</label></li>
+<li><label><input type="checkbox" />Copy the same file in again under
+another name: nothing is said and no second episode appears. Copy a
+two-second file: nothing arrives.</label></li>
+<li><label><input type="checkbox" />Start copying a large file over a
+slow link (or a network share): nothing is said until the copy finishes;
+then it arrives once.</label></li>
+<li><label><input type="checkbox" />Folder Settings (Alt+S): set Tell me
+to “Say how many arrived”, copy two files: “2 new recordings in
+<folder>.” Set it to Quietly: nothing is said, and Notifications
+(Ctrl+Shift+N) has the arrival.</label></li>
+<li><label><input type="checkbox" />Pause (Alt+U), copy a file: nothing
+arrives. Resume: it arrives.</label></li>
+<li><label><input type="checkbox" />Rename the folder in File Explorer:
+Cast says once that it is unavailable, “Still watching.” Help &gt;
+Recent Problems lists it. Rename it back and press Scan Now: it recovers
+silently.</label></li>
+<li><label><input type="checkbox" />Remove (Alt+M): the question starts
+on No; Yes says its files stay in Personal Audio, and they
+do.</label></li>
+<li><label><input type="checkbox" />Ctrl+Alt+Shift+F12 from another
+program shows and hides Cast. Ctrl+Alt+Shift+Down in Cast marks the
+playing episode played and moves to the next.</label></li>
+<li><label><input type="checkbox" />Episode menu: Player Information…
+(Ctrl+I) opens the report; Bookmark This Moment (Ctrl+Alt+A) saves a
+bookmark; Skip Silence (Ctrl+Shift+9) says it is on, then off. Podcasts
+menu: Carry My Place Between Machines… (H) opens its
+window.</label></li>
+</ul>
+<h2 id="cast-listening-extensions-phase-7">Cast Listening Extensions
+(Phase 7)</h2>
+<p>Checked by ear in QUILL Cast while an episode plays. Record exact
+speech.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />Ctrl+Shift+T: “<position> of
+<length>, <n> minutes left.” At 1.5x it adds the real time; with a sleep
+timer it adds when it stops.</label></li>
+<li><label><input type="checkbox" />Ctrl+Home from the Places list, an
+episode list and the status bar lands on the launch place’s first row.
+In the show notes it moves to the top of the text instead.</label></li>
+<li><label><input type="checkbox" />Shift+Space on an episode: “<title>
+plays next, after this one.” It plays when the current episode ends. In
+Find, Shift+Space types a space.</label></li>
+<li><label><input type="checkbox" />Ten seconds before an episode ends
+with more queued: “Next: <title> from <podcast>.” Not during Quiet
+Hours; not with Stop After This Episode on; never twice for one
+episode.</label></li>
+<li><label><input type="checkbox" />Copy a feed address, press Ctrl+N:
+Add Podcast opens with it filled in, the cursor on it, and it says so.
+Enter follows.</label></li>
+<li><label><input type="checkbox" />Ctrl+Shift+D, type a note, Enter:
+“Bookmarked <time> in <episode>.” Ctrl+Shift+J lists only this episode’s
+bookmarks; Now Playing’s Bookmarks (Alt+O) does the same; About This
+Episode has a Bookmarks tab whose Go There plays from that
+moment.</label></li>
+<li><label><input type="checkbox" />Space on an episode plays a short
+sound and speaks. Preferences &gt; Telling you &gt; When a one-key
+action works: Play a sound – only the sound; Neither – silence, the
+status bar still shows the words.</label></li>
+<li><label><input type="checkbox" />Help &gt; Global Hotkeys lists only
+Cast’s commands, including Podcasts: Now Playing window and Podcasts:
+Time Remaining; a key given to each works from another
+program.</label></li>
+<li><label><input type="checkbox" />Unfollow two podcasts. Edit &gt;
+Undo History lists both, newest first; Undo This One on the older one
+brings back only that one. The same in Quill Radio.</label></li>
+</ul>
+<h2 id="cast-nothing-silent-phase-3--the-per-window-listen">Cast Nothing
+Silent (Phase 3) – the per-window listen</h2>
+<p>Open each surface, press each button, and write down exactly what was
+heard. A button that changes something and says nothing is a bug to
+file.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />Add Podcast: Find with an empty
+field (“Type a podcast name to find.”), Find (“Searching…”, then the
+count), Find with the network off (“Find failed: …”), Add with an empty
+address (“Type a feed URL first.”), Add a bad address (“Fetching …”,
+then “Could not follow it: …”).</label></li>
+<li><label><input type="checkbox" />Preview a result: “Loading
+<title>…”; with the network off, the failure is said once and appears in
+Help &gt; Recent Problems.</label></li>
+<li><label><input type="checkbox" />Search Everywhere: a search says its
+count; clearing says “Search cleared.”</label></li>
+<li><label><input type="checkbox" />Import OPML with feed checking on:
+the percentage is said every few per cent; the end says how many were
+checked and how many were unreachable.</label></li>
+<li><label><input type="checkbox" />About This Episode on an episode
+with chapters to analyse, transcripts, Follow on a recommended podcast
+with the network off: each failure is said and listed in Recent
+Problems.</label></li>
+<li><label><input type="checkbox" />Unplug the drive of a watched
+folder: said once, listed in Recent Problems, not repeated on the next
+look.</label></li>
+<li><label><input type="checkbox" />Every other Cast window: press every
+button once; record any that is silent.</label></li>
+</ul>
+<h2 id="cast-earshot-parity-r8-r10">Cast Earshot Parity R8-R10</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Rename an episode with F2, press F5:
+the name stays. Rename it to nothing: “Back to the feed’s own name, …”.
+The same for a podcast.</label></li>
+<li><label><input type="checkbox" />In the Notifications place and the
+Notifications window, on a new-episode notice: Ctrl+Enter plays it;
+Space says “Added … to the Play Queue.” with the added
+sound.</label></li>
+<li><label><input type="checkbox" />Podcasts &gt; Clear All Podcast Data
+from This Computer (Advanced): both questions say this computer only,
+and start on No; cancelling says “Nothing was cleared.”</label></li>
+</ul>
+<h2 id="cast-ai-verbs-and-tidy-the-podcasts-i-follow">Cast AI Verbs and
+Tidy the Podcasts I Follow</h2>
+<p>AI help on and the agreement accepted, unless a row says
+otherwise.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />Organise My Podcasts: the review
+list reads “Accept: Move: …” rows; Space says Skip/Accept; Apply
+Selected says how many folders and moves; Escape says “Nothing was
+changed.”</label></li>
+<li><label><input type="checkbox" />What Is This Podcast About and
+Summarise This Episode: the answer is spoken, then shown read-only with
+Copy; the summary starts “From the transcript” or “From the show
+notes”.</label></li>
+<li><label><input type="checkbox" />Is This Episode for Me with no note
+set: asks for the note first. With a note: one sentence starting Yes,
+Probably, Probably not or No.</label></li>
+<li><label><input type="checkbox" />Build Me a Listening Run, 30
+minutes: the run’s total is said, the list fits, Apply adds them to the
+queue in order.</label></li>
+<li><label><input type="checkbox" />Smart Playlist from a Sentence: the
+rules are read as sentences; Apply saves a smart playlist that shows the
+right episodes.</label></li>
+<li><label><input type="checkbox" />Name These Chapters on an analysed
+episode: per-chapter Accept/Skip; without analysis it says to run
+Analyse Chapters first.</label></li>
+<li><label><input type="checkbox" />With AI help off: Tidy the Podcasts
+I Follow still works and sends nothing; every other row says AI help is
+switched off.</label></li>
+</ul>
+<h2 id="f-10-adoptions-progress-results-and-the-cursor">F-10 Adoptions:
+Progress, Results, and the Cursor</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Cast, 8 or more podcasts: F5 says
+“Checking feeds, 25 percent” and so on, then one sentence; F9 repeats
+it; Shift+F9 lists it; with a broken feed, the row offers
+Retry.</label></li>
+<li><label><input type="checkbox" />Cast: Download All Episodes on a
+podcast with 4 or more missing: quarters, then “Downloaded 4 of 4
+episodes of …”; Activity’s Open Folder opens the download
+folder.</label></li>
+<li><label><input type="checkbox" />Cast: Export OPML, Export My Data,
+Year in Review Save: each appears in Activity with Open Folder.
+Following a podcast appears too.</label></li>
+<li><label><input type="checkbox" />Cast: Delete on the third row of the
+Inbox: the cursor is on the row that moved up, not the
+first.</label></li>
+<li><label><input type="checkbox" />Radio: a recording that finishes is
+in Activity, “Recording saved: …”, with Open Folder; one that captured
+nothing is listed as failed with its reason.</label></li>
+<li><label><input type="checkbox" />QUILL Lite: open a large file from a
+network drive; Shift+F9 while it opens, and again after: Opened
+<name>.</label></li>
+</ul>
+<h2 id="cast-first-run-and-tutorials-phase-6">Cast First Run and
+Tutorials (Phase 6)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />On a fresh profile with no podcasts:
+one welcome window. Tab reaches “Where would you like to land each
+time?”; choose Favorites, Done; reopen Cast: it lands on Favorites. Skip
+(Escape) changes nothing and never returns.</label></li>
+<li><label><input type="checkbox" />Add Your First Podcast (Alt+A)
+closes the welcome and opens Add Podcast.</label></li>
+<li><label><input type="checkbox" />Help &gt; Tutorials (Ctrl+Alt+F1):
+five tracks; The first hour, Places, Find, Now Playing and When
+something breaks are in the first. Try It on a step with a command does
+what the step says.</label></li>
+</ul>
+<h2 id="epub-maths-x-08">EPUB Maths (X-08)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Open an EPUB whose MathML has a
+less-than sign (x &lt; 3): the equation reads “x less than 3”, not “x
+3”.</label></li>
+</ul>
+<h2
+id="settings-search-reach-recipes-and-working-modes-x-01-to-x-04">Settings
+Search Reach, Recipes and Working Modes (X-01 to X-04)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Cast Preferences on When Cast opens:
+type “original” in Find a setting; the Data section’s watched-folder row
+is listed; Enter shows Data and puts focus on it.</label></li>
+<li><label><input type="checkbox" />Converter, Media Player and Inkwell:
+Ctrl+Alt+Shift+S opens Find a Setting or Command; typing narrows; an
+option row says on or off; Enter switches it and says the new
+state.</label></li>
+<li><label><input type="checkbox" />QUILL without a screen reader:
+Preferences &gt; GLOW Accessibility shows a Find a setting box; Enter
+moves to the first match.</label></li>
+<li><label><input type="checkbox" />QUILL: Preferences &gt; Task Recipes
+and Working Modes. Quiet background work previews its changes; Apply
+says how many changed; Put Back restores them. Turn Focus on for this
+session only, restart QUILL: Focus is off and every setting is
+back.</label></li>
+<li><label><input type="checkbox" />Shift+F9 during a Download All batch
+in Cast: the summary says “Still working: Downloading …”.</label></li>
+<li><label><input type="checkbox" />Cast’s Play Queue: an episode
+Auto-Queue added reads “…; queued by Auto-Queue”; one you added with
+Space says nothing extra.</label></li>
+</ul>
+<h2 id="shared-choices-between-apps-x-05">Shared Choices Between Apps
+(X-05)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />In Cast, turn on Announce dialog
+transitions and Share these choices with my other Quill apps; save. In
+Radio, turn on Share these choices; on save Radio says it is now using
+your shared choice for announce dialog transitions, and it is
+on.</label></li>
+<li><label><input type="checkbox" />Turn sharing off in Radio, change
+the choice in Cast: Radio is unchanged at its next launch.</label></li>
+</ul>
+<h2 id="windows-that-stay-open-cast-phase-4">Windows That Stay Open
+(Cast Phase 4)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Ctrl+Alt+Shift+S, Escape: focus is
+back where you were; Ctrl+Alt+Shift+S again brings the same Statistics
+window, refreshed, and it is in the Window menu.</label></li>
+<li><label><input type="checkbox" />Settings for This Podcast: change a
+value, Ctrl+S; the window stays open and says it saved; Escape returns
+to the podcast row.</label></li>
+<li><label><input type="checkbox" />Episode Filters from Filter Episodes
+Like This: Save keeps it open; Close after an unsaved edit leaves the
+stored rules unchanged.</label></li>
+<li><label><input type="checkbox" />New Smart Playlist: first Save makes
+it; a second Save updates the same playlist (no duplicate in
+Playlists).</label></li>
+<li><label><input type="checkbox" />Add Podcast: follow a result, go to
+the library with Alt+Tab or the Window menu, come back; the results are
+still there.</label></li>
+<li><label><input type="checkbox" />Read Transcript on one episode, then
+on another: one window, showing the second; Radio’s transcript is still
+a dialog.</label></li>
+<li><label><input type="checkbox" />Podcast Sound Enhancements: Apply
+changes the sound and the window stays open; Close leaves it as
+applied.</label></li>
+<li><label><input type="checkbox" />QUILL’s Podcast Manager (modal):
+open Episode Filters and Show Notes from a row; both are usable and
+close with the Manager.</label></li>
+<li><label><input type="checkbox" />New Folder from the tree, the picker
+and Move to Folder: the same “Folder name:” box each time.</label></li>
+</ul>
+<h2 id="earshot-b1-b3">Earshot B1-B3</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Listen to an episode in Earshot with
+Listening Places on; Sync Now in Cast; Continue Listening’s row ends
+“last played on Earshot”. Play it in Cast; the phrase goes.</label></li>
+<li><label><input type="checkbox" />Two Cast machines, both with Also
+share the podcasts I follow on: follow a podcast in a folder on one,
+Sync Now on both; it appears on the other in that folder, and the sync
+sentence names it.</label></li>
+<li><label><input type="checkbox" />Unfollow it on one, sync both: it
+goes from the other, named; its downloaded episodes are still on
+disk.</label></li>
+<li><label><input type="checkbox" />A private feed (with a sign-in) is
+not in the shared file; the sync sentence says one private feed stayed
+on this device.</label></li>
+</ul>
+<h2 id="library-and-inbox-views">Library and Inbox Views</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Ctrl+Shift+R: change Show the
+library as to Folders only; Escape; the Podcasts place lists only
+folders, closed, and “Podcasts in no folder” last; Right Arrow opens
+one.</label></li>
+<li><label><input type="checkbox" />Podcasts only and Together by name
+read as described; no podcast is missing in any layout.</label></li>
+<li><label><input type="checkbox" />Counts say: No counts; rows read
+names only.</label></li>
+<li><label><input type="checkbox" />Show the Inbox as Folders first:
+folder rows lead (“News, folder, 5 in the Inbox”); Enter shows that
+folder’s episodes; Backspace returns to the row.</label></li>
+<li><label><input type="checkbox" />Preferences &gt; The library holds
+the same choices; changing one there redraws the library after
+Save.</label></li>
+</ul>
+<h2 id="documentation-voice-cast-radio-lite-the-site">Documentation
+Voice (Cast, Radio, Lite, the site)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Read one chapter of each guide aloud
+with the screen reader: no sentence sounds machine-written; the closing
+“What you learned, and where to go next” names a real next chapter and a
+real lesson.</label></li>
+<li><label><input type="checkbox" />Heading navigation (H, then 2/3/4)
+in each guide’s HTML walks a true outline: subtopics sit one level under
+their topic, nothing skips a level.</label></li>
+<li><label><input type="checkbox" />Help &gt; Tutorials in Cast, Radio
+and Lite: the lessons read warmly and say what you will
+hear.</label></li>
+<li><label><input type="checkbox" />quillforall.org home, Radio, QUILL
+Lite, FAQ and compare pages read as beginner-first, with one H1
+each.</label></li>
+</ul>
+<h2 id="radio-and-cast-closing-report">Radio and Cast Closing
+Report</h2>
+<p>Entry: Quill Radio and QUILL Cast. To force a failure, make the data
+folder read-only (or fill the disk) just before closing, then restore
+it.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />Close Cast with the folder
+read-only. It closes as usual. Restore the folder and start Cast: one
+sentence says it could not finish saving and names what; it is not
+repeated on the next launch.</label></li>
+<li><label><input type="checkbox" />Help &gt; Recent Problems: a
+“Closing” row is there; Retry says the library and statistics were saved
+now.</label></li>
+<li><label><input type="checkbox" />Repeat in Radio: the sentence names
+noting when it closed or the recording note; Retry while recording keeps
+the recording note and says so.</label></li>
+<li><label><input type="checkbox" />A normal close of either app says
+nothing at the next launch.</label></li>
+</ul>
+<h2 id="lite-background-open">Lite Background Open</h2>
+<p>Entry: a plain text file of several megabytes on a local disk, and
+any small file on a network share.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />File &gt; Open the large file. A new
+window’s title says its number and “Opening”; “Opening” and the name is
+spoken once; typing does nothing until the text arrives; then focus is
+at the top of the text and the title is the file’s.</label></li>
+<li><label><input type="checkbox" />Open it again while it is still
+opening: focus moves to that window; no second window
+opens.</label></li>
+<li><label><input type="checkbox" />Open the large file and press Ctrl+W
+at once: the window closes, nothing is announced later, and nothing
+appears in another window.</label></li>
+<li><label><input type="checkbox" />Open the network file, then
+disconnect the share before it arrives (or use a path that cannot be
+read): the box names the reason and asks Try again?; No closes the empty
+window, Yes reads again.</label></li>
+</ul>
+<h2 id="lite-multi-instance-settings">Lite Multi-Instance Settings</h2>
+<p>Entry: start QUILL Lite, then start a second with
+<code>--new-instance</code>.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />In the first, turn Word Wrap off
+(Alt+Z). In the second, change the theme in Preferences. Close the
+first, then the second. Start QUILL Lite: Word Wrap is off and the theme
+is the one the second chose.</label></li>
+<li><label><input type="checkbox" />With both open, change a setting in
+one: the other does not change or announce anything until it is
+restarted.</label></li>
+</ul>
+<h2 id="lite-settings-save-failure-and-retry">Lite Settings-Save Failure
+and Retry</h2>
+<p>Implemented in commit <code>6eaab53</code>. Accepted choices stay
+active for the current session when writing settings fails. This is
+separate from document saving.</p>
+<p>Entry points: Tools &gt; Preferences (Control+Comma), plus ordinary
+settings changes such as word wrap or appearance. Use a disposable
+development/test profile and a controlled write failure; do not make the
+real user profile read-only or fill the machine’s disk to test this.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />Accept a setting while its store
+cannot be written. Expect: <strong>Settings could not be saved. They
+remain active for this session. Reopen Preferences to retry.</strong>
+Confirm Preferences does not then falsely say <strong>Preferences
+saved</strong>.</label></li>
+<li><label><input type="checkbox" />Confirm the chosen setting works in
+the current session despite the persistence failure. The editor remains
+usable and the document is unchanged.</label></li>
+<li><label><input type="checkbox" />Use F6 to review the status bar’s
+Message cell. The failure remains reviewable after another action,
+document editing, and ordinary message expiry.</label></li>
+<li><label><input type="checkbox" />Repeat a failed change. Check
+warning coalescing and configured speech throttling; record any missing
+failure outcome or excessive repeated warning.</label></li>
+<li><label><input type="checkbox" />Restore write access and reopen
+Preferences. It retries already accepted settings without another edit
+or OK. On success, expect <strong>Settings are now saved</strong>, and
+the persistent warning clears.</label></li>
+<li><label><input type="checkbox" />Make a new edit inside that reopened
+Preferences window and Cancel. Cancel discards that new edit; it does
+not undo the successful retry of choices accepted earlier.
+Reopen/relaunch to confirm only accepted values persist.</label></li>
+<li><label><input type="checkbox" />With a settings warning queued,
+exit. It must be reported before teardown rather than delivered into a
+destroyed window. No exception dialog should appear.</label></li>
+<li><label><input type="checkbox" />Repeat the failure with the status
+bar hidden. Record whether the spoken warning is sufficient and whether
+a review route is discoverable.</label></li>
+</ul>
+<p>Coverage: 50 settings/status/Preferences/lifecycle tests, including
+real filesystem failure followed by a successful atomic write,
+stale-warning suppression after retry, preserved session values, and a
+pending warning at exit.</p>
+<p>Limits: direct Retry/Open Settings Folder activity actions and
+adoption by other settings/history writers remain open. Fault injection
+and diagnostics must not expose raw filesystem errors, user paths, or
+sensitive contents.</p>
+<h2 id="lite-activation-and-alttab-focus">Lite Activation and Alt+Tab
+Focus</h2>
+<p>Implemented in commit <code>53406c3</code>. Activation makes one
+event-loop focus check and one bounded settling check. Old checks are
+invalidated when activation changes. Only container/missing focus is
+repaired; intentional control focus must be left alone. The app does not
+announce the focus move itself.</p>
+<p>Entry point: open a Lite document and switch to another application
+with Alt+Tab.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />Alt+Tab back repeatedly, then type
+immediately. Text must enter the active document, not disappear into the
+shell or MDI client. Confirm ordinary reader focus speech is not
+duplicated by an app announcement.</label></li>
+<li><label><input type="checkbox" />Leave and return while a Find field
+or another interactive control has focus. That control must keep focus
+and remain usable; typing must not be redirected to the document
+unexpectedly.</label></li>
+<li><label><input type="checkbox" />Repeat around open menus. Navigation
+must remain in the menu rather than being interrupted by the delayed
+focus repair.</label></li>
+<li><label><input type="checkbox" />Rapidly leave again before the
+settling check. The app must not steal focus back from the newly active
+application.</label></li>
+<li><label><input type="checkbox" />Repeat with several documents, after
+switching with Control+Tab or Control+F6, after opening a child, and
+after closing the active child. Focus must refer to the currently active
+document, never a destroyed or old child.</label></li>
+<li><label><input type="checkbox" />Minimize/hide the shell and close it
+while activation work is queued. No background focus grab, stale speech,
+or exception dialog should occur.</label></li>
+</ul>
+<p>Coverage: 21 focus tests, including real wx MDI/text controls over
+five repair/preserve cycles; the preceding activation/lifecycle suite
+passed 28 tests. Physical Alt+Tab and actual reader output remain human
+acceptance, not automated passes. A reusable family helper and
+unsuccessful-repair diagnostics remain open.</p>
+<h2 id="lite-inbox-and-exit-lifecycle">Lite Inbox and Exit
+Lifecycle</h2>
+<p>Implemented in commit <code>fb9f32d</code>. Confirmed Exit/shell
+close stops app-owned polling before child destruction; final cleanup is
+idempotent. Cancelled close keeps the app active. Pending external open
+requests are retained for a later launch, and a deferred launch-update
+check does not start after shutdown.</p>
+<p>Entry points: normal Exit, Alt+F4 on the shell, and opening a file
+through a second Lite launch while the first instance is running.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />Exit with several documents.
+Save/discard prompts must remain operable, and exit must not cause a
+late document window or exception dialog to appear.</label></li>
+<li><label><input type="checkbox" />Cancel a save/discard prompt during
+exit. The existing app must remain usable and accept a subsequent
+file-open request from a second launch.</label></li>
+<li><label><input type="checkbox" />Send a request around confirmed
+exit. Confirm no document opens in the dying shell; retained requests
+must be handled on the next appropriate launch. The queued-tick timing
+itself is covered by automated tests.</label></li>
+<li><label><input type="checkbox" />Exit soon after launch. No deferred
+launch-update dialog should appear after shutdown begins. Repeated/final
+cleanup must not produce duplicate cues.</label></li>
+<li><label><input type="checkbox" />Check focus and speech around
+prompts, veto, and successful close. Only intended action outcomes and
+existing native focus/title speech should occur.</label></li>
+</ul>
+<p>Coverage: 23 construction/lifecycle/update tests, including forced
+close, veto, repeated finalization, pending requests, and delayed
+checks.</p>
+<h2 id="shared-background-callback-lifetime">Shared Background Callback
+Lifetime</h2>
+<p>Implemented in commit <code>84de01d</code>. Task-manager shutdown
+suppresses queued and late success, failure, and progress delivery.
+Work/results may continue to exist; UI delivery suppression is not the
+same as cancellation.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />When testing an adopted app task,
+close its owner while it is pending. No later speech, focus move, status
+update, or exception may target the closed surface. Record the specific
+task and app, not merely a generic pass.</label></li>
+<li><label><input type="checkbox" />Reopen a replacement surface and
+start another task. It must receive its own result, never the old
+surface’s callback.</label></li>
+<li><label><input type="checkbox" />Confirm that cancellation feedback
+and completed results follow the feature’s documented policy;
+suppressing stale UI callbacks must not silently erase work that the
+feature promises to retain.</label></li>
+</ul>
+<p>Coverage: 12 focused task-manager tests for queued
+success/failure/progress, repeated invalidation, replacement tokens,
+shutdown, and retained futures.</p>
+<p>Limits: per-surface token adoption, persistent Activity/Problems
+history, direct timers, and arbitrary CallAfter callbacks are not
+completed by this manager fix. Add each actual adoption here as it lands
+before asking for feature-level SR testing.</p>
+<h2 id="core-registry-ownership">Core Registry Ownership</h2>
+<p>Completed QC2 F-07 in commit <code>1822e4c</code>. This is an
+internal thread contract, not a new reader interaction. No dedicated
+speech script is required.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />During normal app regression,
+confirm keyboard commands, command palettes, and extension commands
+still work, without new error dialogs or unexpected speech.</label></li>
+</ul>
+<p>Coverage: 77 registry/Quillin tests and strict mypy. Worker access is
+rejected before state changes or handler dispatch. Readers do not need
+to provoke that programming-error path manually.</p>
+<h2 id="cast-earshot-parity-r3-and-r4">Cast Earshot Parity R3 and
+R4</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Shift+F10 on an episode, Refresh
+Episode Audio…: Cast says it is checking the feed, then asks once,
+naming the download; Yes downloads it again and says so; your place in
+the episode is unchanged.</label></li>
+<li><label><input type="checkbox" />Preferences &gt; Data, turn on
+Delete its downloaded file; in the Inbox, Delete on a downloaded episode
+says “Its download was deleted.” and the file is gone; an episode marked
+Keep This Episode keeps its file.</label></li>
+</ul>
+<h2
+id="quill-radio-youtube-live-against-real-youtube-before-320-ships">Quill
+Radio YouTube, Live Against Real YouTube (before 3.2.0 ships)</h2>
+<p>Every YouTube feature so far is tested only with stand-ins. Try these
+on real YouTube with JAWS and with NVDA. Note anything that is silent,
+chatty, or moves your place when it should not.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />Station &gt; Search YouTube…
+(Ctrl+Shift+6): search for a channel you know. The count is said once;
+rows read title first, then the kind (video, playlist, channel). Enter
+on a video plays it; Enter on a channel opens Uploads, Shorts, Live and
+Playlists.</label></li>
+<li><label><input type="checkbox" />Video &gt; YouTube &gt; Search
+YouTube with Filters… (Ctrl+Alt+Shift+0): try “This week”, “Over 20
+minutes” and sort by views; then a YouTube Music song search. Results
+land under Search Results.</label></li>
+<li><label><input type="checkbox" />Video &gt; Read Comments…
+(Ctrl+Shift+7) on a popular video: rows read author first; replies say
+who they answer; emoji are read as words; a link reads as “link to …”.
+Search filters as you type and the count is said once. Load More adds
+rows and your place does not move. Escape returns you where you
+were.</label></li>
+<li><label><input type="checkbox" />Video &gt; YouTube &gt; Live Chat…
+(Ctrl+Alt+Shift+7) on a busy live stream:</label>
+<ul>
+<li>Arrow through the list while messages arrive: nothing moves you and
+nothing re-reads.</li>
+<li>Space pauses; on resume the waiting count is said once.</li>
+<li>Ctrl+Up and Ctrl+Down jump between one person’s messages; Ctrl+J
+goes to the newest; Ctrl+L reads the newest without moving; Ctrl+T says
+when the selected message was sent.</li>
+<li>Turn on Speak new messages: a burst is summarised (“12 new
+messages”), nothing is spoken more than once every 4 seconds, and Ctrl+S
+turns it off.</li>
+<li>Try “only messages mentioning a word” with a word likely to
+appear.</li>
+<li>F6 and Shift+F6 move between the list, Full text and the
+filter.</li>
+</ul></li>
+<li><label><input type="checkbox" />Live Chat replay on a finished
+stream that had chat: messages appear in step with
+playback.</label></li>
+<li><label><input type="checkbox" />Video &gt; YouTube &gt; YouTube
+Video… (Ctrl+Alt+Shift+8): the status line (live, finished, or “Starts
+in …”), the description, and Moments in the description: Enter jumps
+when that video is playing. On a premiere, Remind Me When It Goes Live
+sets a reminder. Save Audio queues a download.</label></li>
+<li><label><input type="checkbox" />Preferences, YouTube group: turn on
+Use my YouTube sign-in from my web browser with your usual browser. My
+YouTube appears under YouTube with Home, Subscriptions, Watch Later,
+Liked Videos, Your Playlists and History. If the browser refuses, Quill
+Radio says so once in plain words.</label></li>
+<li><label><input type="checkbox" />A members-only or age-restricted
+video your account can watch plays with the browser sign-in on, and is
+refused politely with it off.</label></li>
+<li><label><input type="checkbox" />Video &gt; YouTube &gt; Skip Sponsor
+Segments… (Ctrl+Alt+Shift+9): turn it on and play a video known to have
+a sponsor segment. “Skipped a sponsor segment.” is said once per
+skip.</label></li>
+<li><label><input type="checkbox" />On a followed channel, Notify Me
+About New Videos: after its next upload and the next podcast refresh,
+one “New on <channel>” notice; Enter on it in Notifications plays the
+video.</label></li>
+<li><label><input type="checkbox" />Hidden until Google approves: none
+of these appear anywhere in a public build: Connect YouTube Account,
+Reply / Add a Comment / Delete My Comment, a Send box in Live Chat, Like
+/ Dislike / Add to Playlist in the YouTube Video window.</label></li>
+</ul>
+</main>
+</body>
+</html>

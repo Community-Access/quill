@@ -1,464 +1,382 @@
-# QUILL Lite 1.1 — What's New
+# QUILL Lite 1.1
 
-*Version 1.1.2, released September 30, 2026. **1.1.2** makes *Install and
-restart now* actually run the installer and restart: before, the update helper
-was ended the moment QUILL Lite closed. Updating to 1.1.2 from an earlier
-version is by hand once (choose *Open folder* in the update window and run the
-installer); after that the button works. **1.1.1** was 1.1.0 with one thing
-changed: the version number. If Help ▸ About said 1.1.0 but Tools ▸ AI had no
-ChatGPT rows, that was a runtime from Quill Radio 3.0.3 or 3.0.4 announcing a
-number ahead of the code, and Check for Updates believed it. 1.1.1 is newer
-than any number a runtime could have claimed, so Check for Updates offers it
-everywhere. The changelog has the full story and the gate that stops it
-recurring.*
+*Version 1.1.2, released September 30, 2026.*
 
-## Coming in 1.2.0
+Welcome to QUILL Lite 1.1. You can now write by talking, and AI help can run
+on the ChatGPT plan you already pay for, which also lets QUILL Lite describe a
+picture and look something up on the web for the first time.
 
-- Returning with Alt+Tab now makes one bounded follow-up focus check to handle
-  late Windows activation. It preserves Find fields and menus and never repairs
-  focus after you leave the app or start exit.
-- Settings-save failures are no longer silent. Your choices remain active for
-  the session, with a spoken warning and a persistent status message. Reopen
-  Preferences to retry after fixing the storage problem. Preferences no longer
-  says "saved" when the write failed.
-- Closing the app stops incoming document polling before the windows are
-  destroyed. Waiting open requests remain for the next launch, and a cancelled
-  close leaves polling active. A queued launch-update check no longer starts
-  after exit begins.
-- Exiting no longer fails with "wrapped C/C++ object of type Panel has been
-  deleted". The status bar's refresh timer could be re-armed by the closing
-  window's own last events after the timers had been stopped, and then fire
-  on a panel that was already gone. The stop is now one-way, and a refresh
-  that reaches a destroyed panel does nothing.
-- Two QUILL Lites started with `--new-instance` no longer undo each other's
-  preferences. Each now writes only the settings it changed, and keeps the
-  other's choices for everything else; a change made in one takes effect in
-  the other the next time it starts, never mid-session.
-- A large file, or any file on a network share, no longer freezes the window
-  while it is read. A new window says "Opening" and the name once, the text
-  arrives when it is ready, closing the window cancels, and a file that cannot
-  be read asks whether to try again.
-- **Activity (Help, Shift+F9) and Repeat Last Result (F9).** Everything
-  QUILL Lite told you this session, newest first, with what you can do about
-  each row: Retry, Open Folder, Copy Details, Clear List. A settings file that
-  could not be saved is said once, with the reason -- the disk is full, the
-  folder is read only, Windows would not allow it -- and its row carries a
-  Retry that saves again and an Open Folder that shows you the disk; when a
-  later save works, that is said too, so a failure you were told about is
-  never left standing. Background work that finished after you closed its
-  window lands here as a row instead of being lost. F9 says the newest result
-  that mattered again -- the last thing QUILL Lite itself told you, not the
-  last thing your screen reader read. The same two keys and the same window
-  in QUILL, Quill Radio and QUILL Cast.
-- **A thesaurus, on Shift+F7 and on every word.** QUILL's two-pane thesaurus,
-  with QUILL's data inside QUILL Lite, that finds the word you are actually
-  on ("running" reaches "run", "happier" reaches "happy") and puts every
-  replacement back in the form the sentence needs. The Applications key on
-  any word now carries a *Thesaurus for "word"* submenu -- the best
-  replacements one keystroke away, every other sense as a submenu, the
-  opposites, a spoken summary -- and a *Dictionary for "word"* submenu.
-- **Look Up Word (Alt+F10), the dictionary without AI.** QUILL's Look Up
-  window, in both editors: the thesaurus offline, and -- only after you tick
-  **Use online sources** in the window -- definitions, more words and a short
-  Wikipedia summary from three free services that receive the word alone.
-  Enter on a word in the list replaces yours; Add to Dictionary teaches it.
-- **The AI dictionary, Tools > Dictionary.** Twelve questions about the word
-  as it is used in this sentence -- define it, synonyms that fit, a simpler,
-  more formal or more vivid word, opposites, is this the right word, use it
-  in a sentence, where it comes from, how to say it, rhymes, the Word
-  Explorer that does it all at once -- and Find the Word For, the reverse
-  dictionary. Prose for listening, choices that each say why, Use This Word
-  as one undo step. On your own OpenAI key or ChatGPT subscription only.
-- **Your own key can be a Google Gemini key.** Use My Own AI Key (Alt+F2,
-  formerly Use My Own OpenAI Key) opens on a Provider list -- OpenAI or Google
-  Gemini -- and everything below follows the choice: where the text goes,
-  which key, that account's own models with that company's prices. The choice
-  is yours and saved; nothing is guessed from a key that happens to exist. With
-  a Gemini key, Ask About an Image works too.
-- **Dictionary Status**, QUILL's row, under Tools > Spelling: how many words
-  your dictionaries hold, where each file is, and whether the thesaurus data
-  is present.
+There are ten new writing tools in the AI pad, and you can now have a real
+back-and-forth conversation with AI help. Everything works from the keyboard
+and tells you what happened, the way the rest of QUILL Lite does.
 
-## Released in 1.1
+## About 1.1.1 and 1.1.2
 
-Five things are new in 1.1, and the first is the one to read: AI help now runs
-on the ChatGPT plan you already pay for, and with it comes the first time QUILL
-Lite can describe a picture or look something up on the web.
+**1.1.2** fixes the **Install and restart now** button. Before, it closed QUILL
+Lite but never ran the installer. Now it installs and restarts as it should.
+You need to update to 1.1.2 by hand once: in the update window, choose **Open
+folder** and run the installer yourself. After that, the button works.
 
-- **[AI help on your ChatGPT subscription](#ai-help-on-your-chatgpt-subscription).**
-  Press **Alt+F5**, choose Continue with ChatGPT, sign in once in your browser,
-  and every AI command runs on your plan -- no key, no limits, no bill. Two
-  things arrive with it that QUILL Lite has never had: **pictures, described**
-  (**Ctrl+F5**) and **web search**, one checkbox away.
-- **[Ten writing tools](#ten-writing-tools).** Shorten, Simplify, Make more
-  formal, Make friendlier, Turn into a list, Find action items, Suggest
-  headings, Continue writing, Write an email reply, and Translate into twenty
-  languages -- all in the same AI pad.
-- **[Conversations with AI help](#conversations-with-ai-help).** Talk back and
-  forth, and each reply remembers what was said before -- free, inside your
-  ordinary allowance, or without limit on your plan or your own key.
-- **[AI help with your own OpenAI key](#ai-help-with-your-own-openai-key).**
-  Paste a key and every limit on AI help is lifted.
-- **[Dictation](#dictation).** Press **Ctrl+F11**, talk, and pause. What you
-  said is written at the cursor with the punctuation put in for you, and QUILL
-  Lite reads it back so you know it is right.
+**1.1.1** was 1.1.0 with a new number. Some computers showed 1.1.0 in **Help
+> About** but had no ChatGPT choices under **Tools > AI**, because files shared
+by Quill Radio had given Check for Updates the wrong idea of which version you
+had. The new number made sure everyone was offered the update.
 
----
+## Try this first
 
-## AI help on your ChatGPT subscription
+1. Put the cursor where you want some words, press **Ctrl+F11**, and say a
+   sentence. Pause, and QUILL Lite writes it and reads it back. Press
+   **Ctrl+F11** again to stop.
+2. If you pay for ChatGPT, press **Alt+F5**, choose **Continue with ChatGPT**,
+   and sign in once in your browser.
+3. Put the cursor in a long paragraph, press **Ctrl+Alt+G**, and choose
+   **Shorten**. Press **Insert Below** if you like the result, or Escape if
+   you do not.
+4. Press **Ctrl+F5**, choose a photo or a screenshot, and hear what is in it.
 
-If you pay for ChatGPT, this is the release where QUILL Lite stops asking you
-for anything else. Press **Alt+F5**, choose **Continue with ChatGPT**, sign in
-the way you sign in to ChatGPT on the web, allow "QUILL Lite" to use your plan,
-and come back. That is the whole of it. From then on the pad, the seventeen
-writing tools, Ask About This Document and conversations run on your plan:
-no monthly allowance, no size limit, no per-request bill, and nothing passing
-through QUILL's servers.
+## Dictating
 
-### What it does that nothing else in QUILL Lite could
-
-**Pictures, described.** Press **Ctrl+F5** -- **Ask About an Image** -- choose a
-JPEG, PNG, WebP or GIF, and either ask a question or ask nothing. You hear a
-description written for a blind reader: what the picture is, what matters most
-in it, and every word of any text in it, transcribed exactly. A screenshot a
-colleague sent with "see attached". The photo of a letter. A chart in a report.
-A menu on a website. A receipt, and "what is the total". The answer opens in
-an Image Description window; **Insert Below** puts it into your document under
-the paragraph you are in, which is how you caption a picture in something you
-are writing, and Ctrl+Z takes it back.
-
-**Web search.** The model may look things up through OpenAI when a question
-calls for it -- an event, a price, what a page says today -- in Ask a general
-question, in a question about the document, and in conversations. It is off
-until you turn it on, because a search is a second thing sent somewhere and
-that is yours to allow. Turning it on takes four keystrokes:
-
-1. Press **Alt+F5** (Tools ▸ AI ▸ Use My ChatGPT Subscription). You must be
-   signed in; if you are not, press Continue with ChatGPT first.
-2. Press **Alt+W**, or Tab to the **Allow web search** checkbox.
-3. Press **Space** to check it. QUILL Lite says "Web search is allowed." It is
-   saved at once; there is no OK.
-4. Press **Escape** to close the window. Your next question may search.
-
-Press Space on the same checkbox again to switch it off; QUILL Lite says "Web
-search is off; only what you send is used."
-
-### Dictation, corrected
-
-**Tidy Dictated Text** (**Ctrl+F3**) is the one the dictation users asked for.
-Leave the cursor in a paragraph you dictated, or select a stretch of it, press
-the key, and the model corrects what the recogniser misheard -- sound-alike
-words, a name it had never met, words run together, the comma that should have
-been a full stop, every "um" -- and changes nothing else. The **Tidied
-Dictation** window opens on the corrected text; **Replace My Selection** puts
-it back where the dictated words were and **Ctrl+Z** takes it back as one step.
-It runs on your ChatGPT subscription or your own OpenAI key, never on the free
-allowance.
-
-### How it is kept, and how it is undone
-
-QUILL Lite registers itself with OpenAI when you first sign in -- there is no
-secret hidden in the program -- and keeps only a refresh token, in Windows'
-credential store, under its own name. Your ChatGPT password is never seen by
-QUILL Lite. **Sign Out** (press it twice) asks OpenAI to revoke the sign-in and
-forgets it here; **Forget on This Computer** forgets it here only. Neither
-button exists until you are signed in. Each QUILL app -- QUILL Lite, QUILL,
-Quill Radio -- signs in as itself and appears as itself under Apps in ChatGPT's
-settings, so signing one out leaves the others as they were.
-
-### The model, and the usage
-
-The **Model** list is your plan's own, read from your account as you sign in;
-the first is chosen for you and another is saved the moment you arrow to it.
-What you use counts toward your plan's usage, which OpenAI enforces and shows
-on ChatGPT's own usage page -- **Open ChatGPT Usage** takes you there -- and
-when a limit is reached QUILL Lite says so in words. **Usage**
-(Ctrl+Alt+Shift+F9) opens the account window on a plan, and **Help ▸ About**
-names the account and the model.
-
-### Beside your own key
-
-A saved OpenAI key still works exactly as before. When both exist, the plan is
-used, because it is already paid for where a key is billed per request; sign
-out of ChatGPT and the key takes over again, at once.
-
-## Ten writing tools
-
-The AI pad (**Ctrl+Alt+G**) goes from seven choices to seventeen. The ten new
-ones work on the same passage Summarize does -- your selection, else the
-paragraph you are in, else the section -- and each is one request, the same
-size as any other, so none of them costs more of your allowance than Summarize.
-Press a letter in the list to jump to one.
-
-| Choose | You get |
-|---|---|
-| **Shorten** | The same passage at about half the length, every important fact kept |
-| **Simplify** | Plain, easy-to-read language: short sentences, everyday words, technical terms explained |
-| **Make more formal** | The same meaning in a professional tone, for work or official letters |
-| **Make friendlier** | The same meaning in a warmer tone, as if to someone you know |
-| **Turn into a list** | A bulleted list, or numbered steps when the passage describes a process |
-| **Find action items** | Every task, who does it and by when, and every date or deadline, one per line |
-| **Suggest headings** | Headings that divide a long passage into sections you can jump between by heading, and where each goes |
-| **Continue writing** | A next paragraph in the same voice, for you to keep, change or throw away |
-| **Write an email reply** | Select an email you received; get a polite reply to edit, with decisions left in [square brackets] |
-| **Translate** | The passage in the language you choose, from twenty, meaning and formatting kept |
-
-A few that are worth knowing about:
-
-- **Suggest headings** is about navigation: headings are what a screen reader
-  jumps between, so this is how a long, flat passage becomes one you can move
-  through by heading. It suggests; you place the ones you want.
-- **Find action items** turns meeting notes or a long thread into the list of
-  who does what by when -- and says so plainly when there is nothing to do.
-- **Write an email reply** leaves anything only you can decide in [square
-  brackets], so nothing is decided for you.
-- **Translate** shows a **Translate into** list with twenty languages when you
-  choose it; Spanish is chosen until you pick another.
-
-Every result arrives in the answer window with **Replace My Selection**,
-**Insert Below**, **Copy**, **Try Again** and **Follow Up** -- so "shorter
-still" or "more formal than that" is one button away.
-
----
-
-## Conversations with AI help
-
-Until now, AI help answered one thing at a time: the next question never
-remembered the last. Now you can talk it through.
-
-### Starting one
-
-- In the AI pad (**Ctrl+Alt+G**), choose **Have a conversation**, type your
-  first message if you like, and press **Send**. The **AI Conversation**
-  window opens.
-- Or press **Follow Up** in any answer window to carry on from that answer.
-  Following up a question about your document keeps sending the same passages,
-  so you can keep asking about them.
-
-### Talking
-
-Focus stays in **Your message**. Type, press **Enter**, and the reply is read
-aloud as it arrives and added to the **Conversation** above, which Shift+Tab
-reaches for reading again word by word. **Copy Last Reply** and **Insert Last
-Reply Below** put the latest reply where you want it -- nothing goes into your
-document otherwise, and **Ctrl+Z** takes an insert back. **New Conversation**
-starts fresh.
-
-### It stays free
-
-Each message is one request, with a monthly share of its own (40 of your 100).
-The conversation so far goes with each message only as far as the ordinary
-size limit allows, newest first -- so no message ever costs more than any other
-request. The price of a very long conversation is that it gradually forgets
-its beginning, and the window **says so the first time that happens**.
-
-### With your own OpenAI key
-
-No limit at all: the whole conversation goes with every message, straight to
-OpenAI on your account. A long conversation therefore costs more per reply, and
-the window says so. It is only shortened if it outgrows what the model can read
-at once, and you are told if that happens.
-
----
-
-## AI help with your own OpenAI key
-
-**Tools ▸ AI ▸ Use My Own OpenAI Key** (**Alt+F2**). Paste an OpenAI key, press
-OK, and every limit on AI help is lifted — no monthly, daily or hourly
-allowance, and no size ceiling.
-
-### Choosing the model
-
-Once the key is checked, the **Model** list holds every model your account can
-use for text, **Luna 6 first, then the other GPT-6 models**. Each row carries an
-estimated cost per 100 requests, and the **Cost estimate** box below says what a
-typical request might cost. They are estimates to help you compare, not
-OpenAI's prices. With a key saved, the list fills as the window opens, so you
-can change the model at any time with **Alt+F2**.
-
-### What changes
-
-Your text goes straight from this computer to OpenAI on your account, and
-nothing passes through QUILL's servers. OpenAI bills your account for each
-request. You do not need to connect this computer or accept the free service's
-agreement. The seventeen things AI help can do, and what comes back, are
-exactly the same -- and a conversation has no limit at all (see *Conversations with AI
-help*, above).
-
-### Usage and About
-
-**Usage** (**Ctrl+Alt+Shift+F9**) shows a different window with your own key:
-the model answering, that no allowance applies, and **Open My OpenAI Usage**,
-which opens your OpenAI account's usage page, where your requests and charges
-are. **Help ▸ About** shows the model and that page instead of the free
-allowance.
-
-### Going back to the free service
-
-**Remove the Saved Key**, in the same window. AI help is back on the free
-service, with its free allowance, at once. There is no other switch to find:
-while a key is saved it is used, and when it is gone it is not.
-
-### Where the key is kept
-
-In Windows' credential store, never in a settings file, and it is never shown
-again once saved. A portable copy keeps it in an encrypted file. QUILL uses the
-same key: saving or removing it in either program does it for both.
-
----
-
-## Dictation
-
-The speech recognition comes with QUILL Lite. There is nothing to download, no
-account to make, and nothing you say leaves your computer. No recording is kept
-anywhere.
+The speech recognition comes with QUILL Lite. There is nothing to download and
+no account to make. Nothing you say leaves your computer, and no recording is
+kept anywhere.
 
 ### Getting started
 
 1. Put the cursor where you want the words.
 2. Press **Ctrl+F11**. You hear two rising tones and "Dictation on".
-3. Talk the way you would talk to a person, and pause. The sentence is written,
-   a soft tone says it went in, and QUILL Lite reads it back to you.
+3. Talk the way you would talk to a person, then pause. Your sentence is
+   written, a soft tone tells you it went in, and QUILL Lite reads it back.
 4. Keep going. It keeps listening between sentences.
-5. Press **Ctrl+F11** again, or say "stop dictation", to stop.
+5. To stop, press **Ctrl+F11** again, or say "stop dictation".
 
-### Punctuation goes in by itself
-
-You do not need to say punctuation: full stops, commas, question marks and
-capitals go in by themselves. Say a mark whenever you want a particular one,
-and your word wins.
+You do not need to say punctuation. Full stops, commas, question marks and
+capitals go in for you. If you want a particular mark, say it, and your word
+wins.
 
 ### Fixing things by voice
 
 Say these on their own, after a pause:
 
-- **"scratch that"** takes out the last phrase. Say it again for the one before.
-- **"select that"** selects the last phrase, so you can fix it with the keyboard.
-- **"capitalize that"**, **"all caps that"**, **"no caps that"** change its capitals.
+- **"scratch that"** takes out the last phrase. Say it again for the one
+  before.
+- **"select that"** selects the last phrase, so you can fix it with the
+  keyboard.
+- **"capitalize that"**, **"all caps that"** and **"no caps that"** change its
+  capitals.
 - **"delete word"** and **"delete sentence"** delete back from the cursor.
-- **"undo that"** is Ctrl+Z; **"read that"** reads the last phrase again.
-- **"go to end of line"**, **"go to top"** and their friends move the cursor.
+- **"undo that"** is the same as Ctrl+Z, and **"read that"** reads the last
+  phrase again.
+- **"go to end of line"**, **"go to top"** and others like them move the
+  cursor.
 
-### Spelling a name
+To spell a name, say **"start spelling"**, then the letters, then **"stop
+spelling"**. For example, "capital bravo alpha delta" writes *Bad*.
 
-Say **"start spelling"**, then the letters -- "capital bravo alpha delta" writes
-*Bad* -- then **"stop spelling"**.
+While dictating, say **"what can I say"** for a list of everything dictation
+understands, including your own phrases. The same list is in the
+documentation as **Dictation commands**.
 
-### Starting with your voice
+### Starting and stopping with your voice
 
-Switch on the **wake phrase** in Dictation Settings and say **"Quill dictate"**
-to start without touching the keyboard -- or choose a phrase of your own. It
-listens only while QUILL Lite is the window in front, and nothing it hears is
-kept unless it starts with the wake phrase. It is off until you turn it on.
+Turn on the **wake phrase** in Dictation Settings. Then say **"Quill
+dictate"**, or a phrase of your own, to start without touching the keyboard.
+It only listens while QUILL Lite is the window in front, and nothing it hears
+is kept unless it starts with the wake phrase. It is off until you turn it on.
 
-### Stopping with your voice
-
-Say **"stop dictation"** on its own to stop -- or choose your own **stop phrase**
-in Dictation Settings. It counts only when it is all you said, so the same words
-inside a sentence are simply written.
+Say **"stop dictation"** on its own to stop, or choose your own **stop
+phrase**. It only counts when it is all you said, so the same words in the
+middle of a sentence are just written down.
 
 ### Talking in one long run
 
-Switch on **Just write what I say** in Dictation Settings and a pause does
-nothing: no full stop because you paused, no tone, no read-back, and no voice
-commands -- only the punctuation you say and your stop phrase. For thinking out
-loud, telling a story, or a good rant, without being interrupted.
-
-### Fine-tuning
-
-Dictation Settings also has **automatic punctuation** on or off, how long a
-**pause** ends a phrase (short, normal or long), **remove filler words** like um
-and uh, **stop after silence** (1, 5 or 10 minutes), and **Test Microphone**,
-which listens for four seconds and tells you how loud you were and what it
-heard.
+Turn on **Just write what I say** in Dictation Settings, and a pause does
+nothing: no full stop, no tone, no read-back and no voice commands. Only the
+punctuation you say, and your stop phrase, still work. It is good for thinking
+out loud or telling a story without being interrupted.
 
 ### Your own words and phrases
 
-**My Words and Phrases** (Alt+Shift+F10, or the button in Dictation Settings)
-is a window, not a file to edit. It lists everything dictation has been taught,
-one line each, with Add Word, Add Phrase, Add Correction, Edit and Remove. A
-**word** is a name spelled your way; a **phrase** is something you say that
-writes something longer (*my email address*); a **correction** is what the
-engine keeps hearing wrong and what to write instead (*quill light* becomes
-*QUILL Lite*). Each change is saved the moment you make it and used by the next
-phrase. The file behind it, `dictation.md`, is still plain text, and Open the
-File opens it for anyone who prefers that.
+**My Words and Phrases** (**Alt+Shift+F10**) lists everything you have taught
+dictation, with Add Word, Add Phrase, Add Correction, Edit and Remove buttons.
 
-### Escape cancels, and the microphone can drop
+- A **word** is a name, spelled your way.
+- A **phrase** is something short you say that writes something longer, like
+  *my email address*.
+- A **correction** is something dictation keeps getting wrong, and what to
+  write instead. For example, *quill light* becomes *QUILL Lite*.
 
-While a phrase is being heard, **Escape** throws it away and says "Cancelled";
-nothing is written. If the microphone is unplugged or goes silent, dictation
-pauses, says so, and resumes by itself when it is back. If the speech engine
-stops answering it is restarted once without a word, and only a second failure
-is reported, by name, with the engine to try instead.
+Each change is used from your next phrase. If you would rather edit the list
+as a plain text file, **Open the File** opens it.
 
-### One Ctrl+Z per phrase, one session at a time
+### Tidying what you dictated
 
-Every phrase is one undo step, even one that replaced a selection. Ctrl+F11 in a
-second document while dictation runs in the first moves it there and says
-"Dictation moved to" the document's name. A read-only document refuses before
-the microphone opens.
+**Tidy Dictated Text** (**Ctrl+F3**) is the one dictation users asked for.
+Leave the cursor in a paragraph you dictated, or select part of it, and press
+**Ctrl+F3**. AI help fixes what dictation got wrong: words that sound alike, a
+name it had never heard, words run together, a comma that should have been a
+full stop, and every "um". It changes nothing else.
 
-### Dictate into any box
+The **Tidied Dictation** window opens on the corrected text. **Replace My
+Selection** puts it in place, and **Ctrl+Z** takes it back in one step. This
+works on your ChatGPT plan or your own OpenAI key, not the free allowance.
 
-**Ctrl+F11** in the Find box, either Replace box, or the AI pad's question
-dictates into that box, with the same engine and your own words. "New paragraph"
-is a space there.
+### When something goes wrong
 
-### Recent phrases
+- Press **Escape** while a phrase is being heard to throw it away. You hear
+  "Cancelled" and nothing is written.
+- If the microphone is unplugged or goes quiet, dictation pauses, tells you,
+  and starts again by itself when the microphone is back.
+- If dictation stops answering, QUILL Lite quietly restarts it once. Only if
+  that fails too are you told, with which engine to try instead.
+- **Recent Phrases** (**Shift+F11**) lists the last twenty phrases. Press
+  Enter on one to write it again, which is how you get a phrase back when
+  "scratch that" went one too far.
 
-**Recent Phrases** (Shift+F11) lists the last twenty phrases of the session,
-newest first; Enter writes one again at the cursor, Copy puts it on the
-clipboard. The rescue for a "scratch that" that went one too far.
+### More you can do
 
-### Every command, in one place
+- **Every phrase is one Ctrl+Z**, even one that replaced a selection.
+- **One document at a time.** Press Ctrl+F11 in another document and dictation
+  moves there and tells you.
+- **A read-only document says no** before the microphone even opens.
+- **Dictate into a box.** Press **Ctrl+F11** in the Find box, either Replace
+  box, or the AI pad's question box, and you dictate into that box.
+- **The status bar has a Dictation part**, which tells you whether dictation is
+  off, listening, hearing you, writing, spelling or waiting for the wake
+  phrase. **Tools > Dictation > Dictation On** is checked while it is on.
 
-Say **"what can I say"** while dictating, and a window lists everything
-dictation understands, your own phrases included. The same list is its own page
-in the documentation, **Dictation commands**.
+### Dictation Settings
 
-### Settings: engine, microphone, and what you hear
+Open **Tools > Dictation > Dictation Settings** (**Alt+Shift+F6**).
 
-**Tools ▸ Dictation ▸ Dictation Settings...** (**Alt+Shift+F6**):
-
-- **Speech engine.** **Moonshine** is the one it starts with: fast even on a
-  modest computer. **Whisper** is a little slower; try it if Moonshine often
-  mishears you. Both are built in and understand English. **Windows speech
+- **Speech engine.** **Moonshine** is the one you start with, and it is fast
+  even on a modest computer. **Whisper** is a little slower; try it if
+  Moonshine often mishears you. Both understand English. **Windows speech
   recognition** can use any speech language installed in Windows, but you say
   the punctuation yourself. **Windows voice typing** hands over to Windows+H.
-- **Microphone**, by name, or the Windows default.
+- **Microphone.** Choose yours by name, or use the Windows default.
 - **What you hear** after each phrase: a sound, the words read back, both, or
-  neither.
+  neither. If the read-back plays through speakers, the microphone can hear it
+  too, so use headphones or choose just the sound.
+- **Automatic punctuation** on or off, how long a **pause** ends a phrase,
+  **remove filler words** like um and uh, and **stop after silence**.
+- **Test Microphone** listens for four seconds and tells you how loud you were
+  and what it heard.
 
-If the read-back comes out of speakers, the microphone can hear it too. Use
-headphones, or choose a sound only.
+## AI help on your ChatGPT plan
 
-### Knowing what it is doing
+If you pay for ChatGPT, QUILL Lite no longer needs anything else from you.
 
-The status bar has a new **Dictation** part -- off, listening, hearing you,
-writing, spelling, or waiting for the wake phrase -- and **Tools ▸ Dictation ▸
-Dictation On** is checked while it writes.
+1. Press **Alt+F5** (**Tools > AI > Use My ChatGPT Subscription**).
+2. Choose **Continue with ChatGPT**.
+3. Sign in the way you sign in to ChatGPT on the web.
+4. Allow "QUILL Lite" to use your plan, and come back.
 
----
+From then on, the AI pad, all the writing tools, Ask About This Document and
+conversations run on your plan. There is no key to paste, no free allowance to
+count, no size limit from us, and no bill per request. Nothing passes through
+our servers.
+
+### Pictures, described
+
+Press **Ctrl+F5** for **Ask About an Image**. Choose a JPEG, PNG, WebP or GIF.
+Ask a question about it, or ask nothing at all. You hear a description written
+for a blind reader: what the picture is, what matters most in it, and every
+word of any text in it, written out exactly.
+
+Some things to try:
+
+- a screenshot a colleague sent with "see attached",
+- a photo of a letter,
+- a chart in a report,
+- a receipt, asking "what is the total".
+
+**Insert Below** puts the description in your document under the paragraph
+you are in, which is handy for captioning a picture. **Ctrl+Z** takes it back
+out.
+
+### Web search
+
+When a question needs it, AI help can look things up for you: an event, a
+price, what a web page says today. This works when you ask a general question,
+a question about your document, and in conversations.
+
+It is off until you turn it on, because a search sends something to one more
+place, and that is your call:
+
+1. Press **Alt+F5**. Sign in first if you have not.
+2. Press **Alt+W** to reach **Allow web search**.
+3. Press **Space**. You hear "Web search is allowed." It is saved straight
+   away.
+4. Press **Escape** to close the window.
+
+To turn it off, press Space on the same checkbox. You hear "Web search is off;
+only what you send is used."
+
+### Your model, your usage, and signing out
+
+The **Model** list comes from your own plan, and the first one is chosen for
+you. What you use counts toward your plan's own usage, which OpenAI sets.
+**Open ChatGPT Usage** takes you to it, and if you reach a limit, QUILL Lite
+tells you in plain words. **Usage** (**Ctrl+Alt+Shift+F9**) shows your
+account, and **Help > About** names the account and the model.
+
+QUILL Lite never sees your ChatGPT password. **Sign Out** (press it twice)
+signs you out with OpenAI and on this computer. **Forget on This Computer**
+forgets the sign-in here only. QUILL Lite, QUILL and Quill Radio each sign in
+on their own, so signing one out leaves the others alone.
+
+If you also have your own OpenAI key saved, your plan is used, since you have
+already paid for it. Sign out and your key takes over again straight away.
+
+## Ten new writing tools
+
+The AI pad (**Ctrl+Alt+G**) now has seventeen choices instead of seven. The
+new ones work on your selection if you have one, otherwise the paragraph you
+are in. Each counts as one request, the same as Summarize. Press a letter in
+the list to jump to a choice.
+
+- **Shorten**: the same passage at about half the length, with every
+  important fact kept.
+- **Simplify**: short sentences, everyday words, and technical terms
+  explained.
+- **Make more formal**: the same meaning in a professional tone.
+- **Make friendlier**: the same meaning in a warmer tone.
+- **Turn into a list**: a bulleted list, or numbered steps for a process.
+- **Find action items**: every task, who does it and by when, one per line. If
+  there is nothing to do, it says so.
+- **Suggest headings**: headings for a long passage, and where each one goes,
+  so your screen reader can jump between sections. You place the ones you
+  want.
+- **Continue writing**: a next paragraph in the same voice, to keep, change or
+  throw away.
+- **Write an email reply**: select an email and get a polite reply, with
+  anything only you can decide left in [square brackets].
+- **Translate**: into one of twenty languages, with the meaning and formatting
+  kept. Spanish is chosen until you pick another.
+
+Every result opens with **Replace My Selection**, **Insert Below**, **Copy**,
+**Try Again** and **Follow Up**. So if you want it "shorter still", it is one
+button away.
+
+## Conversations with AI help
+
+Until now, AI help answered one question at a time. Now you can talk it
+through.
+
+- In the AI pad (**Ctrl+Alt+G**), choose **Have a conversation**, type your
+  first message if you like, and press **Send**.
+- Or press **Follow Up** in any answer window to carry on from that answer.
+
+Your focus stays in **Your message**. Type, and press **Enter**. The reply is
+read aloud as it arrives and added to the **Conversation** box above. Press
+Shift+Tab to read it again word by word.
+
+Nothing goes into your document unless you ask. **Copy Last Reply** and
+**Insert Last Reply Below** put the latest reply where you want it, and
+**Ctrl+Z** takes an insert back out. **New Conversation** starts again.
+
+On the free service, each message is one request, and conversations can use up
+to 40 of your 100 a month. A very long conversation slowly forgets how it
+began, and the window tells you the first time that happens. With your own key
+or your ChatGPT plan, there is no such limit. With your own key, the whole
+conversation goes with every message, so a long one costs more per reply, and
+the window tells you so.
+
+## AI help with your own OpenAI key
+
+Choose **Tools > AI > Use My Own OpenAI Key** (**Alt+F2**), paste an OpenAI
+key, and press OK. Every limit on AI help is gone. Your text goes straight
+from this computer to OpenAI, on your account, and OpenAI bills you for each
+request.
+
+- The **Model** list shows every model your account can use, with Luna 6
+  first. Each row shows an estimated cost per 100 requests, to help you
+  compare. They are estimates, not OpenAI's prices.
+- **Usage** (**Ctrl+Alt+Shift+F9**) names the model and opens your OpenAI
+  usage page.
+- **Remove the Saved Key** goes back to the free service straight away.
+- Your key is kept safely by Windows, never in a settings file, and never
+  shown again. A portable copy keeps it in an encrypted file. QUILL uses the
+  same key, so saving or removing it in one does it for both.
 
 ## Keys new in 1.1
 
 | Key | What it does |
 |---|---|
-| **Ctrl+F11** | Dictation On (start or stop); in Find, Replace or the AI question box, dictate there |
-| **Escape** | Throw away the phrase being heard |
+| **Ctrl+F11** | Start or stop dictation |
 | **Alt+Shift+F6** | Dictation Settings |
 | **Shift+F11** | Recent Phrases |
 | **Alt+Shift+F10** | My Words and Phrases |
-| **Alt+F2** | Use My Own OpenAI Key |
+| **Ctrl+F3** | Tidy Dictated Text |
 | **Alt+F5** | Use My ChatGPT Subscription |
 | **Ctrl+F5** | Ask About an Image |
-| **Ctrl+F3** | Tidy Dictated Text |
+| **Alt+F2** | Use My Own OpenAI Key |
 
-## Also in QUILL
+All of these are in QUILL too, on the same keys. Quill Radio has the ChatGPT
+sign-in as well, behind Ask QUILL Radio.
 
-All five are in QUILL too, on the same keys: Live Dictation under Tools ▸
-Speech, Use My Own OpenAI Key, Use My ChatGPT Subscription and Ask About an
-Image in the AI menu, and the writing tools and Have a conversation in the same
-AI pad, with Follow Up in the same answer window. Quill Radio has the sign-in
-too, as its own agent, behind **Ask QUILL Radio**.
+## Coming next, in 1.2.0
+
+These are on their way in the next release.
+
+### Words: a thesaurus, a dictionary and Look Up
+
+- **Thesaurus** (**Shift+F7**) finds the word you are really on, so "running"
+  finds "run", and puts your choice back in the form your sentence needs.
+- Press the Applications key on any word for two new submenus, **Thesaurus
+  for** that word and **Dictionary for** that word.
+- **Look Up Word** (**Alt+F10**) works offline. Tick **Use online sources** for
+  definitions and a short Wikipedia summary too; only the word is sent, and
+  only after you tick the box. **Add to Dictionary** teaches the word to your
+  spell checker.
+- **Tools > Dictionary** asks AI help about a word as it is used in your
+  sentence: define it, synonyms that fit, a simpler, more formal or more vivid
+  word, opposites, is this the right word, use it in a sentence, where it
+  comes from, how to say it, rhymes, or the **Word Explorer**, which does them
+  all. **Find the Word For** suggests the word you are reaching for from a
+  description. **Use This Word** puts your choice in as one step you can undo.
+  These need your ChatGPT plan or your own key.
+- **Dictionary Status**, under **Tools > Spelling**, tells you how many words
+  your dictionaries hold and where they are kept.
+
+### Your own key can be a Google Gemini key
+
+**Use My Own AI Key** (Alt+F2), the new name for Use My Own OpenAI Key, opens
+on a **Provider** list: OpenAI or Google Gemini. Everything follows your
+choice, and QUILL Lite never guesses. Ask About an Image works with Gemini too.
+
+### Knowing what happened
+
+**Help > Activity** (**Shift+F9**) lists everything QUILL Lite told you since
+you opened it, newest first, with what you can do about each one: Retry, Open
+Folder or Copy Details. If background work finishes after you closed its
+window, the result lands here instead of being lost. **F9** says the last
+important result again. The same keys work in QUILL, Quill Radio and QUILL
+Cast.
+
+### Things that will work better
+
+- **Coming back with Alt+Tab** puts your focus where it should be, even when
+  Windows is slow. It leaves Find boxes and menus alone.
+- **If your settings cannot be saved, you are told**, with the reason. Your
+  choices still work for the rest of the session, a message stays in the
+  status bar, and Preferences no longer says "saved" when it was not.
+- **Big files and network drives no longer freeze the window.** You hear
+  "Opening" and the file's name, and closing the window cancels it.
+- **Closing QUILL Lite is tidier.** Documents sent to it while it closes are
+  opened next time, an update check never starts on the way out, and an error
+  message some people saw while exiting is gone.
+- **Two copies at once** no longer undo each other's preferences.
+
+## Where to learn more
+
+The QUILL Lite User Guide, in the Start menu beside QUILL Lite, has chapters
+on everything here, including Dictation, AI help, Thesaurus, Dictionary, Activity and Repeat Last
+Result, and Keeping QUILL Lite up to date.
+
+**Help > Tutorials** (**Ctrl+Alt+F1**) has nine short lessons. For AI help,
+try Asking a question about a document.
+
+If you get stuck, choose **Help > Get Help from Support** (**Ctrl+Alt+F2**),
+or write to support@community-access.org. A person at Community Access reads
+every message.

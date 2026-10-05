@@ -29,14 +29,22 @@ middle of a sentence is part of the sentence -- and :func:`stop_phrase_problem`
 holds it to the same two-word rule, because a stop that fires by accident loses
 the rest of what somebody was saying.
 
+**Each dictation language has its own defaults** ("Quill dicta" and "deja de
+dictar" in Spanish, awaiting native-speaker review): see
+:func:`~quill.core.windows_dictation.speech_language.localised_phrase`. Words
+are compared without their accents, so "dictá" and "dicta" are one word.
+
 Pure and wx-free.
 """
 
 from __future__ import annotations
 
-import re
-
 from quill.core.speech.vocabulary import levenshtein, soundex
+from quill.core.windows_dictation.speech_language import (
+    STOP_PHRASES,
+    WAKE_PHRASES,
+    folded_words,
+)
 
 __all__ = [
     "DEFAULT_STOP_PHRASE",
@@ -48,14 +56,13 @@ __all__ = [
     "wake_words",
 ]
 
-DEFAULT_WAKE_PHRASE = "Quill dictate"
-DEFAULT_STOP_PHRASE = "stop dictation"
-
-_WORD = re.compile(r"[a-z0-9']+")
+DEFAULT_WAKE_PHRASE = WAKE_PHRASES["en"]
+DEFAULT_STOP_PHRASE = STOP_PHRASES["en"]
 
 
 def wake_words(phrase: str) -> list[str]:
-    return _WORD.findall(phrase.lower())
+    """*phrase*'s words, lower-cased, accents and punctuation taken off."""
+    return folded_words(phrase)
 
 
 def wake_phrase_problem(phrase: str) -> str:

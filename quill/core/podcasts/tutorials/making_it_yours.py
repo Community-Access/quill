@@ -1,12 +1,13 @@
-"""QUILL Cast, track 4: making it yours, and keeping it safe.
+"""QUILL Cast, track 5: making it yours -- and the last lesson of track 3.
 
-Five lessons: arranging a library that has grown, deciding what a row says and
-what Enter does, the shared defaults everything else starts from, the feeds and
-folders that are yours alone, and the backup you will be glad of exactly once.
+Three lessons. A library that has grown past a screenful; what every row says
+and what Enter does, and which parts of Cast you see at all; and the backup,
+the move to a new computer and the place that follows you between machines --
+which you will be glad of exactly once.
 
-The settings *chain* -- shared default, folder, podcast -- is a track of its
-own (``per_podcast``), because it turned out to be a system rather than a
-window. What stays here is the half that is genuinely about the whole library.
+This module also holds listening statistics, the last lesson of track 3
+(Listening well), because it is about your own data like the backup is; its
+``track`` keeps it in Listening well.
 """
 
 from __future__ import annotations
@@ -19,83 +20,92 @@ TUTORIALS: tuple[Tutorial, ...] = (
         title="Arrange a library that has grown",
         track="yours",
         minutes=6,
-        surfaces=("QUILL Cast", "Podcast Manager"),
+        surfaces=("Podcasts", "Move to Folder", "QUILL Cast"),
         summary=(
-            "Folders, an order of your own, favorites, and the counts that tell "
-            "you what is waiting without your having to open anything."
+            "Put your podcasts in folders and in your own order, listen from a "
+            "whole folder at once, and hide what you have caught up on. You will "
+            "also keep favorites close, and let a podcast go when you are done."
         ),
         steps=(
             Step(
-                title="Read what a row already tells you",
-                body=(
-                    "A show wears its unplayed count in words -- (3 unheard) -- and "
-                    "a folder wears how many podcasts live under it, counting "
-                    "everything expanding it would reveal. That is the tree "
-                    "answering what is waiting before you open anything."
-                ),
-                keys=("Down arrow",),
-                hear="Each show with its unheard count.",
-            ),
-            Step(
                 title="Make a folder",
                 body=(
-                    "New Folder creates a library folder without opening the "
-                    "Manager. Folders nest, so News/Daily and News/Weekly are both "
-                    "possible and both readable."
+                    "Once you follow more than a handful, folders help: News, Comedy, "
+                    "Long Drives, whatever suits you. New Folder, on the Podcasts "
+                    "menu, asks for a name. Folders live in the Podcasts place."
                 ),
-                keys=("Alt+S",),
-                hear="The folder created, by name.",
+                keys=("Ctrl+Shift+F",),
+                hear="The new folder, in Podcasts.",
             ),
             Step(
-                title="File shows into it",
+                title="File a podcast into it",
                 body=(
-                    "Move to Folder on a show's context menu. Deleting a folder "
-                    "later dissolves it -- your shows step safely to the top level. "
-                    "You never stop following anything by deleting a folder, which is "
-                    "the fear that stops people making folders at all."
+                    "Go to a podcast, open its menu and choose Move to Folder, then "
+                    "pick the folder. If you delete a folder later, its podcasts just "
+                    "move out of it, so you never lose one that way."
                 ),
-                keys=("Shift+F10",),
-                hear="Moved, and the folder it landed in.",
+                keys=("Shift+F10", "Enter"),
+                hear="The podcast in its new folder.",
             ),
             Step(
-                title="Put them in the order you think in",
+                title="Put them in your own order",
                 body=(
-                    "Sort Podcasts offers A to Z, Z to A, or your custom order. "
-                    "Alt+Up and Alt+Down nudge a show among its folder's "
-                    "neighbours, and the first move switches to custom "
-                    "automatically -- starting from the order already on screen, so "
-                    "nothing jumps."
+                    "In the Podcasts place, Alt+Up and Alt+Down move a podcast or a "
+                    "folder. The first time you do it, Cast switches Sort Podcasts to "
+                    "Custom Order for you, starting from the order you already had, so "
+                    "nothing jumps around."
                 ),
                 keys=("Alt+Up", "Alt+Down"),
-                hear="The show's new position.",
+                hear="Where it moved.",
             ),
             Step(
-                title="Order the episode lists too",
+                title="Listen from a whole folder",
                 body=(
-                    "Sort shows in the Manager orders podcasts within each folder "
-                    "-- Title, most unheard first, recently updated first, or your "
-                    "custom order. The dropdown opens on whatever the library is "
-                    "actually sorted by, so the Manager and the main window never "
-                    "disagree."
-                ),
-                keys=("Ctrl+M",),
-                hear="The sort read back.",
-            ),
-            Step(
-                title="Keep the ones you love where you can find them",
-                body=(
-                    "Add to Favorites on a show puts it in the Favorites pinned "
-                    "view. The button on the main window reads Remove from "
-                    "Favorites when the playing show is already one, so it never "
-                    "shows you the opposite of the truth."
+                    "On a folder's menu, Play All Unheard queues the newest unheard "
+                    "episode from each podcast in it and starts playing. Add All to "
+                    "Queue adds every unheard episode instead."
                 ),
                 keys=("Shift+F10",),
-                hear="Added to Favorites, or removed.",
+                hear="The first episode playing, and how many were queued.",
+                check="playing",
+            ),
+            Step(
+                title="Hide what you have caught up on",
+                body=(
+                    "Hide Caught-Up Podcasts, on the View menu, hides the podcasts "
+                    "with nothing unheard, so only the ones with something new for you "
+                    "are left. Press it again to show them all."
+                ),
+                keys=("Ctrl+Shift+H",),
+                hear="Caught-up podcasts hidden, and how many.",
+            ),
+            Step(
+                title="Keep your favorites close",
+                body=(
+                    "Add to Favorites, in the main window, works on the podcast that "
+                    "is playing. Favorites is a place: Enter on one opens its "
+                    "episodes right there, and Delete takes it out of Favorites while "
+                    "you still follow it."
+                ),
+                keys=("Alt+F", "Ctrl+Shift+V"),
+                hear="Favorites, then the podcasts in it.",
+            ),
+            Step(
+                title="Let a podcast go",
+                body=(
+                    "Unfollow, in the main window, or Delete on a podcast in the "
+                    "Podcasts place. Cast asks first, and asks separately about any "
+                    "downloads. Changed your mind? Ctrl+Z brings it back with its "
+                    "episodes and your place in them."
+                ),
+                keys=("Alt+U", "Ctrl+Z"),
+                hear="A question that starts on No; after Ctrl+Z, the podcast back.",
             ),
         ),
         closing=(
-            "Do this at twenty shows rather than at two hundred. The tree is the "
-            "surface you live in."
+            "Your library is yours to arrange however you like. To share one folder "
+            "with another computer or a friend, use Export This Folder as OPML on "
+            "the folder's menu."
         ),
         then=("rows-and-actions",),
     ),
@@ -103,356 +113,251 @@ TUTORIALS: tuple[Tutorial, ...] = (
         slug="rows-and-actions",
         title="Decide what a row says, and what Enter does",
         track="yours",
-        minutes=5,
-        surfaces=("Choose Columns", "Quick Actions", "Podcast Manager"),
+        minutes=6,
+        surfaces=("QUILL Cast", "QUILL Cast Preferences"),
         summary=(
-            "Two windows that change how the app sounds rather than what it can "
-            "do -- plus the numbered list of places that never renumbers itself."
+            "Your screen reader reads each row in full, and you get to decide what "
+            "goes in it. Choose the columns, how an episode row is spoken, what "
+            "Enter and Ctrl+1 to Ctrl+9 do, and which parts of Cast you see at all."
         ),
         steps=(
             Step(
-                title="Open Choose Columns",
+                title="Turn on the Advanced rows",
                 body=(
-                    "An episode list is read one column at a time, so the columns "
-                    "are the sentence you hear on every row. This window decides it "
-                    "-- for the episode list, for Downloads, and for Add Podcast's "
-                    "search results."
+                    "Cast starts in Simple mode, with the menus you use week to week. "
+                    "Advanced Features adds the rows you go looking for once you know "
+                    "they exist, such as Choose Columns and Quick Actions. Press it "
+                    "again to switch back."
+                ),
+                keys=("Ctrl+Alt+Shift+G",),
+                hear="Which mode you are now in.",
+            ),
+            Step(
+                title="Choose the columns",
+                body=(
+                    "In Choose Columns, pick a list in Columns for, then move a column "
+                    "up or down, or hide it. A row will read lets you hear what one "
+                    "row will sound like before you press OK. Time Left starts hidden "
+                    "and is worth a try."
                 ),
                 keys=("Ctrl+Alt+Shift+C",),
-                hear="Two lists: shown in the order they are read, and hidden.",
+                hear="What one row will sound like.",
             ),
             Step(
-                title="Hear the change before you keep it",
+                title="Decide how an episode row is spoken",
                 body=(
-                    "A row will read spells out the sentence one row will say with "
-                    "the settings exactly as they stand. Move something, listen to "
-                    "that line, and only then press OK."
-                ),
-                keys=("Alt+Up", "Alt+Down"),
-                hear="The sample row, rebuilt after every change.",
-            ),
-            Step(
-                title="Turn on the column you have been missing",
-                body=(
-                    "The episode list can also show Podcast (worth having in a list "
-                    "that spans shows, noise in a list of one), Time Left on "
-                    "something you started, and Downloaded. Add Podcast's results "
-                    "can show the feed address, which tells two same-named shows "
-                    "apart."
-                ),
-                hear="The sample row with the column you added.",
-            ),
-            Step(
-                title="Decide what Enter does",
-                body=(
-                    "Quick Actions orders the actions on episodes, podcasts and "
-                    "queue items. The first action in each list is what Enter does, "
-                    "the first nine answer to Ctrl+1 through Ctrl+9, and the whole "
-                    "list is the order of the context menu."
-                ),
-                command="podcasts.quick_actions",
-                hear="A combo box naming the list, then the actions in order.",
-            ),
-            Step(
-                title="Put the three-second settings first",
-                body=(
-                    "Episodes to Keep, Queue Expiry and Playback Speed each open a "
-                    "window holding one control with the cursor already in it. They "
-                    "are Quick Actions too, so if you adjust speed constantly, put "
-                    "it first and reach it with Ctrl+1."
-                ),
-                keys=("Ctrl+1",),
-                hear="The setting's own window, with the cursor in the one control.",
-            ),
-            Step(
-                title="Arrange your places",
-                body=(
-                    "Go To is a short numbered list of places -- the Manager, "
-                    "Continue Listening, the Play Queue, Downloads, Bookmarks, "
-                    "Statistics, Add a Podcast, Episode Notes, the Sleep Timer, "
-                    "Preferences. The numbering never moves, which is exactly what "
-                    "the Window menu cannot promise."
-                ),
-                command="app.go_to",
-                keys=("Ctrl+G",),
-                hear="The numbered list, each row with its own direct key.",
-            ),
-        ),
-        closing=(
-            "Rows show the place's own key where it has one, so the popup teaches "
-            "itself out of a job: use Go To 1 for a month and you will have "
-            "learned Ctrl+M."
-        ),
-        then=("shared-and-per-show",),
-    ),
-    Tutorial(
-        slug="shared-and-per-show",
-        title="The shared defaults, and where the app opens",
-        track="yours",
-        minutes=5,
-        surfaces=("Podcast Settings", "Podcasts"),
-        summary=(
-            "The settings that are genuinely about the whole library rather "
-            "than about one podcast -- and the two that decide what you see "
-            "first and what happens when you close the window."
-        ),
-        steps=(
-            Step(
-                title="Open the shared defaults",
-                body=(
-                    "Podcast Settings holds what every podcast follows until "
-                    "something nearer disagrees: playback mode, retention, the "
-                    "download location, the reconnect rules, default speed, "
-                    "automatic downloads, the Inbox rules and what happens when "
-                    "an episode finishes."
-                ),
-                keys=("Alt+S",),
-                hear="Entered Podcast Settings.",
-            ),
-            Step(
-                title="Know which ones can only live here",
-                body=(
-                    "A few settings are about this computer or about you rather "
-                    "than about a podcast, and are offered only here: where "
-                    "downloads land, which directories a search asks, how long a "
-                    "listening history is kept, and the reconnect attempts."
-                ),
-                hear="Each setting, and what it does not do.",
-                note=(
-                    "Everything else in this window can also be set on a folder "
-                    "or on one podcast. That chain is a track of its own -- see "
-                    "One podcast at a time."
-                ),
-            ),
-            Step(
-                title="Cap what the app may say",
-                body=(
-                    "At most this many spoken announcements an hour is the "
-                    "ceiling on new-episode news. Anything over it is folded into "
-                    "the shared summary rather than dropped, so a library of "
-                    "three hundred podcasts stops talking over you."
-                ),
-                hear="The ceiling read back, or that there is none.",
-            ),
-            Step(
-                title="Choose where the app opens",
-                body=(
-                    "Start on this view decides what QUILL Cast opens on: New "
-                    "Episodes, Continue Listening, the Inbox, Favorites, Recently "
-                    "Expired, or the top of the tree. Pick the question you "
-                    "actually ask first."
-                ),
-                hear="The view read back.",
-            ),
-            Step(
-                title="Decide what closing means",
-                body=(
-                    "When closing the window offers Ask every time, Exit, or "
-                    "Minimize to Tray, and governs the titlebar X, Alt+F4 and Exit "
-                    "together. Ask every time only actually asks when there is "
-                    "something to lose, and names what is at stake."
+                    "In Preferences, under Telling you, Read each row starting with "
+                    "chooses the title, the podcast or the date. Whatever comes first "
+                    "is what typing a letter jumps to. Other choices there add the "
+                    "length or whether it is downloaded, or leave the description out."
                 ),
                 keys=("Ctrl+,",),
-                hear=(
-                    "An episode is playing and 2 downloads are in progress -- "
-                    "when there is something to lose."
-                ),
+                hear="The Telling you section, then the first row choice.",
             ),
             Step(
-                title="Find any setting without hunting for it",
+                title="Choose what Enter does",
                 body=(
-                    "There are ninety-odd settings across this window, the folder "
-                    "editor and the per-podcast one. What Have I Changed?, on a "
-                    "podcast's own settings, is the fastest route to the handful "
-                    "that are not simply following a default."
+                    "Quick Actions decides what Enter does on a row, what Ctrl+1 to "
+                    "Ctrl+9 do, and the order of a row's menu. In Actions for, pick "
+                    "episodes, podcasts or the Play Queue. The first action in the "
+                    "Order list is what Enter does, and Make Default puts one first."
                 ),
-                hear="A count, then one line per setting with the level that set it.",
+                command="podcasts.quick_actions",
+                keys=("Ctrl+Alt+Q",),
+                hear="Quick Actions, then the actions for episodes.",
+            ),
+            Step(
+                title="Run an action by its number",
+                body=(
+                    "In any episode list, Ctrl+1 to Ctrl+9 run the first nine Quick "
+                    "Actions. Put the action you use most, after Play, second in the "
+                    "list, and Ctrl+2 does it from then on. If one cannot run on a "
+                    "row, Cast tells you why."
+                ),
+                keys=("Ctrl+2",),
+                hear="What the action did.",
+            ),
+            Step(
+                title="Turn off what you never use",
+                body=(
+                    "Customize Features lists every feature as a checkbox. Uncheck what "
+                    "you do not want, and it leaves the menus, places and Go To. The "
+                    "Just Listen profile keeps only the essentials. Do not worry, "
+                    "whatever you turn off, you still have a podcast player."
+                ),
+                keys=("Ctrl+Alt+C",),
+                hear="Feature settings saved, and what follows them.",
             ),
         ),
         closing=(
-            "Set the answer that suits most of your library here, and let the "
-            "folder and the podcast disagree where they genuinely do. Most people "
-            "set three things globally and two on one podcast, forever."
-        ),
-        then=("private-and-local", "how-settings-resolve"),
-    ),
-    Tutorial(
-        slug="private-and-local",
-        title="Private feeds, and audio of your own",
-        track="yours",
-        minutes=5,
-        surfaces=("QUILL Cast", "Podcast Manager"),
-        summary=(
-            "Supporter feeds that need a password, and turning folders of your own "
-            "audio into shows -- including folders Cast watches for you."
-        ),
-        steps=(
-            Step(
-                title="Subscribe to a feed that asks for a sign-in",
-                body=(
-                    "Add the feed exactly as any other. If it asks, a small Feed "
-                    "Credentials window opens with focus on the username field; "
-                    "enter what your provider gave you and the subscription carries "
-                    "on. A wrong password reopens the dialog with your username "
-                    "kept, and says so."
-                ),
-                keys=("Alt+S",),
-                hear="The show subscribed, or the sign-in failing with the reason.",
-            ),
-            Step(
-                title="Change or clear it later",
-                body=(
-                    "Feed Credentials on the show's context menu is the same "
-                    "dialog, username prefilled. Clear Credentials removes both and "
-                    "makes the show public-only again. Every save and clear is "
-                    "announced."
-                ),
-                keys=("Shift+F10",),
-                hear="Saved, or cleared.",
-            ),
-            Step(
-                title="Know where the password lives",
-                body=(
-                    "Never in a plain file: Windows Credential Manager on an "
-                    "installed copy, DPAPI-encrypted inside the data folder on a "
-                    "portable one. It is never in podcasts.json, never in logs, and "
-                    "Export OPML never includes it -- an exported subscription list "
-                    "is always safe to share."
-                ),
-                hear="Nothing: this is the promise behind the dialog.",
-                note=(
-                    "One deliberate rule: credentials are only ever sent to the "
-                    "same host as the feed. If a show serves its audio from a "
-                    "different host, those requests carry no credentials."
-                ),
-            ),
-            Step(
-                title="Turn your own audio into a show",
-                body=(
-                    "Add Local Podcast makes a folder of your own audio into a "
-                    "podcast -- an audiobook you own, a course, recordings a friend "
-                    "sent. It gets episodes, positions and everything else a "
-                    "subscribed show has."
-                ),
-                keys=("Alt+S",),
-                hear="The local show added, and how many files it found.",
-            ),
-            Step(
-                title="Have it watch a folder",
-                body=(
-                    "A watched folder picks up files you drop into it. Scan Watched "
-                    "Folders runs the check now. It is the shape to use for "
-                    "anything that arrives regularly by a route Cast cannot "
-                    "subscribe to."
-                ),
-                keys=("Alt+S",),
-                hear="How many new files it picked up.",
-            ),
-        ),
-        closing=(
-            "A private feed and a folder of your own both end up as ordinary "
-            "shows -- same keys, same queue, same statistics."
+            "Forgot where a feature went? The Command Palette still lists its "
+            "commands, and tells you they are switched off in Customize Features."
         ),
         then=("keep-it-safe",),
     ),
     Tutorial(
         slug="keep-it-safe",
-        title="Back it up, move it, and fix it",
+        title="Back it up, move it, and keep your place",
         track="yours",
         minutes=6,
         surfaces=("QUILL Cast",),
         summary=(
-            "The backup you will be glad of exactly once, the readable export, "
-            "the media-tool check, and where to look when something has gone "
-            "wrong."
+            "Save your whole library in one file and put it back again. Then move "
+            "everything to a new computer, and keep your place in step between "
+            "computers, and between Quill Radio and Cast."
         ),
         steps=(
             Step(
-                title="Back up the whole library",
+                title="Make a backup",
                 body=(
-                    "Back Up My Podcasts writes subscriptions, folders, playlists, "
-                    "positions, notes, statistics, your Go To order and your "
-                    "bookmarks into one file. It offers to include downloaded "
-                    "episodes and defaults to leaving them out: they can be tens of "
-                    "gigabytes and can always be fetched again, where the 40 KB "
-                    "beside them cannot."
+                    "Back Up My Podcasts saves your whole library in one file: the "
+                    "podcasts you follow, folders, playlists, your place in each "
+                    "episode, notes, statistics and bookmarks. It asks whether to "
+                    "include downloads, and the answer starts on No. You will find it "
+                    "once Advanced Features is on."
                 ),
-                command="app.backup",
-                hear="The file written, and what went into it.",
+                keys=("Ctrl+Alt+Shift+B",),
+                hear="Cast telling you the backup is written.",
             ),
             Step(
-                title="Restore one, knowing what you are restoring",
+                title="Put it back",
                 body=(
-                    "Restore tells you when the backup was made and how many "
-                    "podcasts are in it before it does anything, because the two "
-                    "ways to get this wrong are restoring the wrong file and "
-                    "restoring a six-month-old one."
+                    "Restore from a Backup asks for the file. Before it changes "
+                    "anything, it tells you when the backup was made and how many "
+                    "podcasts it holds. It replaces the library on this computer, and "
+                    "you do not need to restart Cast."
                 ),
-                command="app.restore",
-                hear="The backup's date and size, before anything changes.",
+                keys=("Ctrl+Alt+Shift+R",),
+                hear="When the backup was made, and how many podcasts it holds.",
             ),
             Step(
-                title="Take a readable copy",
+                title="Move your setup to a new computer",
                 body=(
-                    "Export My Data writes everything Cast knows about your "
-                    "listening to one readable JSON file -- subscriptions, folders, "
-                    "the queue, playlists, notes, statistics, recently played. "
-                    "Export OPML covers subscriptions and nothing else; this covers "
-                    "the rest."
-                ),
-                command="podcasts.export_data",
-                hear="The file written, and where.",
-            ),
-            Step(
-                title="Move to another machine",
-                body=(
-                    "Export My Setup writes one file carrying your subscriptions, "
-                    "folders, playlists, settings, Go To order, Quick Action order "
-                    "and bookmarks; Import My Setup puts them on the other machine. "
-                    "Passwords are not in it, and the confirmation says so."
+                    "Export My Setup carries what a backup does not: your settings, "
+                    "your Go To and Quick Action order, and any keys you changed. On "
+                    "the new computer, Import My Setup tells you what the file holds "
+                    "and asks before it changes anything. Passwords are never included."
                 ),
                 command="app.export_setup",
-                hear="What the file holds, named, before anything is written.",
+                keys=("Ctrl+Alt+Shift+X", "Ctrl+Alt+Shift+N"),
+                hear="What the file holds, before anything changes.",
             ),
             Step(
-                title="Check the media tools",
+                title="Export your data to read",
                 body=(
-                    "Cast needs FFmpeg for four things -- trimming silence, "
-                    "evening out volume, working out chapters, and Sound "
-                    "Enhancements. All four fail by producing a plausible result, "
-                    "which is why Media Tools answers the question whenever you "
-                    "ask, including when the answer is good news."
+                    "Curious what Cast knows about your listening? Export My Data "
+                    "writes it all to one file you can read. Cast cannot restore from "
+                    "it, so for a copy you can put back, use Back Up My Podcasts."
                 ),
-                command="app.media_tools",
-                hear="Each tool, present or missing, and what its absence costs.",
+                command="podcasts.export_data",
+                keys=("Ctrl+Alt+Shift+E",),
+                hear="Where the file was written.",
             ),
             Step(
-                title="Find what went wrong while you were elsewhere",
+                title="Carry your place between machines",
                 body=(
-                    "Recent Problems lists what has failed recently -- feeds that "
-                    "could not be read, downloads that died -- each with its reason "
-                    "and the time. It exists because a spoken failure you missed "
-                    "used to be gone for good."
+                    "Listen on more than one computer? Carry My Place Between Machines, "
+                    "on the Podcasts menu, keeps your place in step through a folder "
+                    "you already sync, such as OneDrive, with no account to make. "
+                    "Choose the folder, choose encrypted or a plain file, name this "
+                    "computer, and press Sync Now."
                 ),
-                command="app.recent_problems",
-                hear="The failures, newest first, each with its reason.",
+                keys=("Alt+P", "H"),
+                hear="Cast saying how the sync went.",
+                note=(
+                    "If you choose encrypted, write the recovery phrase down. Your "
+                    "other computers need it to join."
+                ),
             ),
             Step(
-                title="Take back the last destructive thing",
+                title="Pick up where Quill Radio left off",
                 body=(
-                    "Undo Last Action brings back the last thing you removed: an "
-                    "unfollow, a Remove All Episodes, a Mark All as Played. It "
-                    "says what it brought back, and it is one step rather than a "
-                    "stack, on purpose."
+                    "On the same computer, Quill Radio and Cast remember the same "
+                    "place in each episode. Pause an episode in Radio, play it in Cast, "
+                    "and it carries on from the same second. An episode you finish in "
+                    "either app is finished in both."
                 ),
-                command="app.undo_last",
-                keys=("Ctrl+Z",),
-                hear="Undid, and what came back -- or Nothing to undo.",
+                keys=("Enter",),
+                hear="Picking up where you left off in Quill Radio, and the time.",
             ),
         ),
         closing=(
-            "One backup file and one setup file. Between them, nothing you have "
-            "built here is difficult to get back."
+            "Make a backup now, while you think of it, and again whenever you have "
+            "spent an evening sorting folders. You will be glad you did."
         ),
+    ),
+    Tutorial(
+        slug="how-much-did-i-listen",
+        title="How much did I actually listen?",
+        track="listening",
+        minutes=4,
+        surfaces=("Listening Statistics", "Year in Review"),
+        summary=(
+            "See how long you have listened, how much time faster playback saved "
+            "you, your top podcasts, and the story of your year. It all stays on "
+            "your computer."
+        ),
+        steps=(
+            Step(
+                title="Open Listening Statistics",
+                body=(
+                    "Listening Statistics is on the Episode menu. Cast keeps the count "
+                    "on your computer and nowhere else, and only for as long as you "
+                    "tell it to."
+                ),
+                command="podcasts.statistics",
+                keys=("Ctrl+Alt+Shift+S",),
+                hear="Listening Statistics, then the period.",
+            ),
+            Step(
+                title="Choose a period",
+                body=(
+                    "Period offers this week, this month, this year or all time. The "
+                    "report below changes to match as soon as you choose, so arrow "
+                    "through the periods and compare."
+                ),
+                keys=("Alt+P",),
+                hear="The period you chose.",
+            ),
+            Step(
+                title="Read the report",
+                body=(
+                    "Read the Listening report line by line: how long you listened, "
+                    "how much time faster playback saved you, how many episodes you "
+                    "finished, and your podcasts, most listened first. Times are said "
+                    "as words, so they never sound like a time of day."
+                ),
+                keys=("Alt+R",),
+                hear="How long you listened, as words, such as 3 hours, 47 minutes.",
+            ),
+            Step(
+                title="Hear the story of your year",
+                body=(
+                    "Year in Review tells it in a few friendly sentences: how long you "
+                    "listened, your top podcasts and their share of the year, your "
+                    "busiest month, and how many days you listened. You can copy it "
+                    "or save it."
+                ),
+                keys=("Alt+Y",),
+                hear="Year in Review, then the first sentence of your year.",
+            ),
+            Step(
+                title="Keep it, or clear it",
+                body=(
+                    "Copy puts the report on the clipboard, and Export CSV saves every "
+                    "listening session for a spreadsheet. Clear Statistics deletes "
+                    "only the listening record, nothing else. Keep my listening history "
+                    "for, in Preferences under Data, decides how much Cast remembers."
+                ),
+                keys=("Alt+C", "Alt+E", "Alt+S"),
+                hear="What Cast copied, saved or cleared.",
+                note=(
+                    "Show listening streaks in Statistics, in the same section, adds "
+                    "your streak to the report and to Year in Review."
+                ),
+            ),
+        ),
+        closing="Enjoy the numbers. Nothing in your statistics ever leaves your computer.",
+        then=("how-settings-resolve",),
     ),
 )

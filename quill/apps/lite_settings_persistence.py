@@ -33,6 +33,15 @@ class LiteSettingsPersistenceMixin:
 
             self._stop_write_reports = install(self, speak=False)
 
+    def _load_settings(self) -> settings_mod.Settings:
+        """Read the settings, dropping deleted recent files if asked to (QUILL's #14)."""
+        from quill.core.recent_documents import drop_missing
+
+        loaded = settings_mod.load()
+        if loaded.recent_files_auto_clear_missing:
+            loaded.recent_files = drop_missing(loaded.recent_files)
+        return loaded
+
     def save_settings(self) -> bool:
         self._ensure_write_reports()
         # A three-way merge against the file as it is now, when this process

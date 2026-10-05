@@ -102,7 +102,7 @@ _NAMES = {
 
 #: Where two different phrases write the same character and are not synonyms,
 #: so a reader meeting the second row does not take it for a mistake.
-_SAME_AS = {"minus sign": "a hyphen — the same character that “hyphen” writes"}
+_SAME_AS = {"minus sign": 'a hyphen, the same character that "hyphen" writes'}
 
 #: The three that write no character at all, so there is nothing to show beside
 #: the words -- the words are the whole answer.
@@ -121,8 +121,8 @@ _INTROS = {
     ),
     "Brackets": "Both halves are separate phrases, so you can say one without the other.",
     "Dashes and joining": (
-        "What “dash” writes is your choice in Dictation Settings, so this row "
-        "shows the setting's default."
+        'What "dash" writes is up to you, in Dictation Settings. This row '
+        "shows what it writes until you change it."
     ),
     "Symbols": "The symbols people dictate most often in ordinary prose and in code.",
     "Lines and layout": ("These change where the next words go rather than adding a character."),
@@ -197,7 +197,7 @@ def _table(
     for the reasoning; the CSS is shared.
     """
     out = [
-        f'      <h3 id="{anchor}" tabindex="-1" class="focus-target">{heading}</h3>',
+        f'      <h4 id="{anchor}" tabindex="-1" class="focus-target">{heading}</h4>',
         f'      <p class="group-verdict">{caption}</p>',
         '      <div class="cmp-scroll">',
         '        <table class="cmp cmp-2">',
@@ -224,15 +224,26 @@ def rendered() -> str:
     marks = _grouped_marks()
     commands = _grouped_commands()
 
+    # The text below is plain ASCII on purpose: straight quotes and commas, not
+    # curly quotes and dashes. The one exception is a character dictation really
+    # writes (the em dash), which rendered() emits as a numeric reference.
     lines.append(
-        "      <p>Everything below is generated from the same table dictation itself "
-        "reads, so this page cannot list a phrase the program does not know, or miss "
-        f"one it does. There are {len(MARKS)} marks and layout phrases and "
-        f"{len(COMMAND_HELP)} spoken commands. While dictating you can say "
-        "“what can I say” to hear the same list in a window.</p>"
+        f"      <p>There are {len(MARKS)} punctuation marks and layout phrases, and "
+        f"{len(COMMAND_HELP)} spoken commands. This list comes straight from "
+        "dictation itself, so it is always complete. While you are dictating, say "
+        '"what can I say" to hear the same list in a window.</p>'
     )
 
-    lines.append("      <h3>What you can say, and what it writes</h3>")
+    # Each group's table is an h4 under one of these two h3s, so heading
+    # navigation shows "what to say" and "commands" as the two branches they are.
+    lines.append(
+        '      <h3 id="v-marks" tabindex="-1" class="focus-target">'
+        "What you can say, and what it writes</h3>"
+    )
+    lines.append(
+        "      <p>Punctuation, brackets, symbols and layout. Each table lists the words "
+        "to say and what appears in your document.</p>"
+    )
     for group, group_marks in marks.items():
         lines += _table(
             anchor=_slug(group),
@@ -245,11 +256,13 @@ def rendered() -> str:
             rows=[(e(" ".join(mark.phrase)), _writes(mark)) for mark in group_marks],
         )
 
-    lines.append("      <h3>Commands dictation obeys</h3>")
     lines.append(
-        "      <p>A command counts only when it is the whole phrase, said on its own "
-        "after a pause. “Delete that line of text” inside a longer sentence "
-        "is just words, and is written as words. Say “literal” before any "
+        '      <h3 id="v-commands" tabindex="-1" class="focus-target">Commands dictation obeys</h3>'
+    )
+    lines.append(
+        "      <p>A command works only when it is the whole phrase, said on its own "
+        'after a pause. "Delete that line of text" in the middle of a longer sentence '
+        'is just words, and is written as words. Say "literal" before any '
         "phrase on this page to write it out instead of acting on it.</p>"
     )
     for group, entries in commands.items():
@@ -266,11 +279,11 @@ def rendered() -> str:
     lines += [
         '      <h3 id="v-spelling" tabindex="-1" class="focus-target">Spelling a word out</h3>',
         "      <ul>",
-        "        <li>Say “start spelling”, then letters. Everything you say is "
-        "written as letters until you say “stop spelling”.</li>",
-        "        <li>Say “capital” before a letter for a capital, and “space” for a space.</li>",
-        "        <li>Letter names work (“bee”, “see”), and the "
-        "phonetic alphabet is far more reliable: alpha, bravo, charlie, delta, echo, "
+        '        <li>Say "start spelling", then letters. Everything you say is '
+        'written as letters until you say "stop spelling".</li>',
+        '        <li>Say "capital" before a letter for a capital, and "space" for a space.</li>',
+        '        <li>Letter names work ("bee", "see"), but the '
+        "phonetic alphabet works much better: alpha, bravo, charlie, delta, echo, "
         "foxtrot, golf, hotel, india, juliet, kilo, lima, mike, november, oscar, papa, "
         "quebec, romeo, sierra, tango, uniform, victor, whiskey, x-ray, yankee, zulu.</li>",
         f"        <li>Numbers are written as digits: {e(digits)}.</li>",
@@ -279,16 +292,19 @@ def rendered() -> str:
         " without the keyboard</h3>",
         "      <ul>",
         "        <li>With the wake phrase switched on in Dictation Settings, say "
-        f"“{e(DEFAULT_WAKE_PHRASE)}” to start dictation without touching a key. "
+        f'"{e(DEFAULT_WAKE_PHRASE)}" to start dictation without touching a key. '
         "Anything you say after it in the same breath is written.</li>",
-        f"        <li>Say “{e(DEFAULT_STOP_PHRASE)}” on its own, after a pause, "
+        f'        <li>Say "{e(DEFAULT_STOP_PHRASE)}" on its own, after a pause, '
         "to stop. With the wake phrase on, stopping goes back to waiting for the wake "
         "phrase, so you need never touch the keyboard at all.</li>",
         "        <li>You choose both phrases yourself, and each needs at least two words, "
         "so ordinary talk cannot start or stop dictation by accident.</li>",
         "      </ul>",
     ]
-    return "\n".join(lines)
+    # Keep the region plain ASCII: a character dictation writes that is not
+    # ASCII (the em dash in the "dash" row) becomes a numeric reference, which
+    # still renders as the real character.
+    return "\n".join(lines).encode("ascii", "xmlcharrefreplace").decode("ascii")
 
 
 def _split(text: str) -> tuple[str, str, str]:

@@ -255,7 +255,7 @@ cannot drift from the code. Bindings shown as
 release, then the second key. Every binding here is a <em>default</em> –
 the in-app reference (Help &gt; Open Keyboard Reference) always shows
 your own customised keymap.</p>
-<p>Editor commands with default bindings: 481.</p>
+<p>Editor commands with default bindings: 484.</p>
 <h2 id="the-quill-editor">The QUILL editor</h2>
 <h3 id="files">Files</h3>
 <table>
@@ -306,6 +306,11 @@ your own customised keymap.</p>
 <td>(unbound by default)</td>
 <td>Save to Remote</td>
 <td><code>file.save_to_remote</code></td>
+</tr>
+<tr>
+<td>Alt+Shift+0</td>
+<td>Recent Documents</td>
+<td><code>file.recent_documents</code></td>
 </tr>
 <tr>
 <td>Alt+Shift+F12</td>
@@ -443,6 +448,11 @@ your own customised keymap.</p>
 <td>Alt+M</td>
 <td>List Marks</td>
 <td><code>edit.list_marks</code></td>
+</tr>
+<tr>
+<td>Alt+Shift+.</td>
+<td>Unquote Lines</td>
+<td><code>edit.unquote_lines</code></td>
 </tr>
 <tr>
 <td>Alt+Shift+C</td>
@@ -593,11 +603,6 @@ your own customised keymap.</p>
 <td>Ctrl+Alt+Shift+M</td>
 <td>Open clip library</td>
 <td><code>edit.open_clip_library</code></td>
-</tr>
-<tr>
-<td>Ctrl+Alt+Shift+Q</td>
-<td>Unquote Lines</td>
-<td><code>edit.unquote_lines</code></td>
 </tr>
 <tr>
 <td>Ctrl+Alt+Shift+S</td>
@@ -776,7 +781,7 @@ your own customised keymap.</p>
 </tr>
 <tr>
 <td>QUILL Key + C</td>
-<td>Copy selection for email</td>
+<td>Copy Selection For Email</td>
 <td><code>edit.copy_selection_for_email</code></td>
 </tr>
 <tr>
@@ -2047,6 +2052,11 @@ your own customised keymap.</p>
 <td><code>app.repeat_last_result</code></td>
 </tr>
 <tr>
+<td>QUILL Key + O</td>
+<td>More Preferences…</td>
+<td><code>app.preferences_hub</code></td>
+</tr>
+<tr>
 <td>Shift+F9</td>
 <td>Activity…</td>
 <td><code>app.activity</code></td>
@@ -2063,6 +2073,11 @@ your own customised keymap.</p>
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>(unbound by default)</td>
+<td>Release Channel…</td>
+<td><code>help.release_channel</code></td>
+</tr>
 <tr>
 <td>Alt+F1</td>
 <td>Why Is This Unavailable?</td>
@@ -2686,6 +2701,11 @@ your own customised keymap.</p>
 <td><code>media.sound_enhancements</code></td>
 </tr>
 <tr>
+<td>QUILL Key + 2</td>
+<td>Radio: Play/Pause</td>
+<td><code>radio.play_pause</code></td>
+</tr>
+<tr>
 <td>QUILL Key + 3</td>
 <td>Play Favorite Station…</td>
 <td><code>radio.play_favorite</code></td>
@@ -2724,11 +2744,6 @@ your own customised keymap.</p>
 <td>QUILL Key + M</td>
 <td>Paste html as markdown</td>
 <td><code>power.paste_html_as_markdown</code></td>
-</tr>
-<tr>
-<td>QUILL Key + N</td>
-<td>Radio: Play/Pause</td>
-<td><code>radio.play_pause</code></td>
 </tr>
 <tr>
 <td>QUILL Key + Shift+G</td>
@@ -2910,6 +2925,31 @@ never inside the QUILL editor.</p>
 <td><code>radio.find_streams</code></td>
 </tr>
 <tr>
+<td>Ctrl+Alt+Shift+0</td>
+<td>Internet Radio: Search YouTube with Filters…</td>
+<td><code>radio.youtube_search_filters</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+7</td>
+<td>Internet Radio: YouTube Live Chat…</td>
+<td><code>radio.youtube_live_chat</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+8</td>
+<td>Internet Radio: YouTube Video Details…</td>
+<td><code>radio.youtube_video</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+9</td>
+<td>Internet Radio: Skip Sponsor Segments in YouTube Videos…</td>
+<td><code>radio.youtube_sponsorblock</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+A</td>
+<td>Undo History…</td>
+<td><code>app.undo_history</code></td>
+</tr>
+<tr>
 <td>Ctrl+Alt+Shift+D</td>
 <td>Internet Radio: Download Preferences…</td>
 <td><code>radio.download_preferences</code></td>
@@ -3035,6 +3075,11 @@ never inside the QUILL editor.</p>
 <td><code>radio.add_custom_station</code></td>
 </tr>
 <tr>
+<td>Ctrl+O</td>
+<td>Internet Radio: Local Media…</td>
+<td><code>radio.local_media</code></td>
+</tr>
+<tr>
 <td>Ctrl+P</td>
 <td>Radio: Play/Pause</td>
 <td><code>radio.play_pause</code></td>
@@ -3058,6 +3103,16 @@ never inside the QUILL editor.</p>
 <td>Ctrl+Shift+0</td>
 <td>Transport.speed reset</td>
 <td><code>radio.transport.speed_reset</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+6</td>
+<td>Internet Radio: Search YouTube…</td>
+<td><code>radio.search_youtube</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+7</td>
+<td>Internet Radio: Read YouTube Comments…</td>
+<td><code>radio.youtube_comments</code></td>
 </tr>
 <tr>
 <td>Ctrl+Shift+8</td>
@@ -3225,7 +3280,7 @@ never inside the QUILL editor.</p>
 </tr>
 <tr>
 <td>Ctrl+Alt+2</td>
-<td>Now playing</td>
+<td>Podcasts: Now Playing window</td>
 <td><code>podcasts.now_playing</code></td>
 </tr>
 <tr>
@@ -3252,6 +3307,11 @@ never inside the QUILL editor.</p>
 <td>Ctrl+Alt+Shift+B</td>
 <td>Backup</td>
 <td><code>app.backup</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+Down</td>
+<td>Podcasts: Mark as Played and Next</td>
+<td><code>podcasts.mark_played_and_next</code></td>
 </tr>
 <tr>
 <td>Ctrl+Alt+Shift+F2</td>
@@ -3332,6 +3392,26 @@ never inside the QUILL editor.</p>
 <td>Ctrl+Shift+9</td>
 <td>Skip silence</td>
 <td><code>podcasts.skip_silence</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+D</td>
+<td>Bookmark note</td>
+<td><code>podcasts.bookmark_note</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+J</td>
+<td>Episode bookmarks</td>
+<td><code>podcasts.episode_bookmarks</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+T</td>
+<td>Podcasts: Time Remaining</td>
+<td><code>podcasts.time_remaining</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+Z</td>
+<td>Undo History…</td>
+<td><code>app.undo_history</code></td>
 </tr>
 <tr>
 <td>Ctrl+T</td>

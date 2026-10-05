@@ -1,9 +1,15 @@
-"""QUILL Cast, track 2: keeping up.
+"""QUILL Cast, track 2: keeping up -- the first five of its seven lessons.
 
-Five lessons about the part of podcasting that is actually hard: not playing
-an episode, but deciding which of the four hundred waiting ones you will
-play. The Inbox, the Play Queue, automatic downloads and the rules that keep
-all three from becoming a second library.
+Playing an episode is easy; deciding which of the four hundred waiting ones to
+play is the hard part, and the Inbox, the Play Queue, downloads and playlists
+are one system that only makes sense together. Your own audio sits here too,
+because a watched folder is one more way new episodes arrive -- they just come
+from your own disk.
+
+The track's last two lessons, Episode Filters and schedules, are rules you set
+for one podcast at a time, so they live in :mod:`.per_podcast` beside the
+other per-podcast lessons. The catalogue orders by track, so they still come
+last in this one.
 """
 
 from __future__ import annotations
@@ -12,250 +18,330 @@ from quill.core.tutorials.model import Step, Tutorial
 
 TUTORIALS: tuple[Tutorial, ...] = (
     Tutorial(
-        slug="what-is-new",
-        title="Find out what is new",
+        slug="the-inbox",
+        title="The Inbox",
         track="keeping-up",
-        minutes=5,
-        surfaces=("QUILL Cast", "Podcast Manager"),
+        minutes=8,
+        surfaces=("QUILL Cast", "Notifications"),
         summary=(
-            "Check every feed at once, have Cast check on its own, and be told by "
-            "name about the shows you never skip -- without being told about the "
-            "ones you do."
+            "Choose which podcasts send new episodes to the Inbox, then sort "
+            "through it like the morning post. Put some aside for later, keep it "
+            "from piling up, and catch a new episode straight from its notice."
         ),
         steps=(
             Step(
-                title="Ask every show at once",
+                title="Check for anything new",
                 body=(
-                    "Checking for new episodes asks all your feeds in one go, "
-                    "rather than one show at a time. It says what it found, counted "
-                    "and named, and says nothing at all when it found nothing -- "
-                    "because a check that reports silence has stopped being "
-                    "information."
+                    "Refresh All Now asks every podcast you follow whether it has "
+                    "anything new. Cast tells you how many it is checking, and the "
+                    "answers come in one podcast at a time. When you ask, Cast always "
+                    "answers, even if nothing is new."
                 ),
-                keys=("Alt+S",),
-                hear="What is new, counted and named -- or nothing.",
+                keys=("F5",),
+                hear="How many podcasts it is checking, then what arrived.",
             ),
             Step(
-                title="Read the New Episodes view",
+                title="Choose what goes to the Inbox",
                 body=(
-                    "Everything that arrived, across every show, in one list. This "
-                    "is the view to live in if you follow a lot of shows: it "
-                    "answers what is new without your having to remember which "
-                    "shows publish on which day."
+                    "Nothing goes to the Inbox until you say so, one podcast at a "
+                    "time. On a podcast, open its menu and choose Route New Episodes "
+                    "to Inbox. The same row then reads Stop Routing to Inbox, to turn "
+                    "it off again."
                 ),
-                keys=("Ctrl+M",),
-                hear="How many new episodes, and from how many shows.",
+                keys=("Shift+F10",),
+                hear="The podcast's menu, then Cast confirming the change.",
+                note=(
+                    "Would you rather have nearly everything in the Inbox? In "
+                    "Preferences, under The Inbox, choose Every podcast except the ones "
+                    "I mark."
+                ),
             ),
             Step(
-                title="Have it check on its own",
+                title="Open the Inbox",
                 body=(
-                    "Cast can check on a schedule and at launch. Both start off, on "
-                    "purpose: an app that reaches the network on a schedule nobody "
-                    "chose is spending somebody else's data allowance."
+                    "The Inbox holds the unheard episodes of the podcasts you send "
+                    "there. When Cast opens and something is waiting, this is where "
+                    "it puts you, and the window title tells you how many."
+                ),
+                command="podcasts.inbox",
+                keys=("Ctrl+Shift+I",),
+                hear="Inbox, then the first waiting episode.",
+            ),
+            Step(
+                title="Decide about each episode",
+                body=(
+                    "The Inbox is for deciding. Enter plays an episode now, Space "
+                    "adds it to the Play Queue, and Delete takes it out of the Inbox. "
+                    "Do not worry: nothing you do here removes an episode from your "
+                    "library. One you delete is still there, unheard, in its podcast."
+                ),
+                keys=("Enter", "Space", "Delete"),
+                hear="Added to the Play Queue, or what Delete did.",
+                check="queue-grew",
+            ),
+            Step(
+                title="Put one aside for later",
+                body=(
+                    "A long interview for the weekend? Open its menu and choose File "
+                    "to Inbox Folder, then pick a folder or type a new name. Cast "
+                    "remembers, and files that podcast's later episodes there too. "
+                    "View, Inbox Folder looks in one folder."
+                ),
+                keys=("Shift+F10", "Ctrl+Shift+O"),
+                hear="The folder the episode went to.",
+            ),
+            Step(
+                title="Clear the lot when you start fresh",
+                body=(
+                    "Back on the Places list, the Applications key on the Inbox "
+                    "offers Mark All as Played. Cast asks first, and the question "
+                    "starts on No. The episodes stay in your library."
+                ),
+                keys=("Applications",),
+                hear="Cast asking first, then how many it marked.",
+            ),
+            Step(
+                title="Keep the Inbox from piling up",
+                body=(
+                    "In Preferences, under The Inbox, keep at most a number of "
+                    "episodes, or drop ones older than a few hours up to two weeks. "
+                    "Trimming never deletes anything, and episodes you started, "
+                    "queued or filed are never trimmed."
                 ),
                 keys=("Ctrl+,",),
-                hear="The settings read back.",
-            ),
-            Step(
-                title="Be told about the shows you never skip",
-                body=(
-                    "Announce New Episodes, per show, names new episodes out loud "
-                    "and in braille when the background check finds them, with a "
-                    "tray notification. It is per podcast deliberately: being told "
-                    "about every feed is being told about nothing."
-                ),
-                keys=("Shift+F10",),
-                hear="The new episodes, by name, for that show only.",
-            ),
-            Step(
-                title="Send one show's episodes straight to the queue",
-                body=(
-                    "Auto-Queue New Episodes, also per show, sends new episodes "
-                    "into the Play Queue on refresh, skipping the Inbox entirely. "
-                    "It is for the show you never triage because you always listen."
-                ),
-                keys=("Shift+F10",),
-                hear="The setting read back for that show.",
-            ),
-            Step(
-                title="Know what happens to a re-published episode",
-                body=(
-                    "Publishers re-issue episodes -- a corrected file, a re-cut. If "
-                    "one had been trimmed out of your Inbox it comes back, "
-                    "announced as what it is: Episode 42 was re-published by The "
-                    "Daily, so it is back in your Inbox. Anything you have played, "
-                    "started, queued or filed by hand is left exactly alone."
-                ),
-                hear="The re-publication, described as a re-publication.",
-            ),
-        ),
-        closing=(
-            "A refresh should never argue with a decision you have already made. "
-            "That one rule explains most of this lesson."
-        ),
-        then=("the-inbox", "the-play-queue"),
-    ),
-    Tutorial(
-        slug="the-inbox",
-        title="Triage with the Inbox",
-        track="keeping-up",
-        minutes=6,
-        surfaces=("Podcast Manager",),
-        summary=(
-            "Route shows into the Inbox, file episodes into folders you invent, "
-            "and cap the whole thing so it stays a triage surface rather than "
-            "becoming a second library."
-        ),
-        steps=(
-            Step(
-                title="Understand what it is for",
-                body=(
-                    "The Inbox triages **episodes**, where the library organises "
-                    "**shows**. Route a show to the Inbox and its new episodes land "
-                    "there for you to decide about, rather than sitting inside the "
-                    "show waiting to be found."
-                ),
-                keys=("Ctrl+M",),
-                hear="The Inbox, with how many episodes are waiting.",
-            ),
-            Step(
-                title="File an episode where you want it",
-                body=(
-                    "File episodes into your own nested folders. Your first manual "
-                    "filing per show is remembered and applied automatically from "
-                    "then on -- and Forget reverts that, so a one-off does not "
-                    "become a rule you cannot see."
-                ),
-                keys=("Shift+F10",),
-                hear="The folder it went to, and that the rule was remembered.",
-            ),
-            Step(
-                title="Choose which shows arrive here",
-                body=(
-                    "Which shows go to the Inbox has two answers: only the shows I "
-                    "choose (the default), or every show except the ones I exclude. "
-                    "The second suits a large subscription list you triage; the "
-                    "first suits a few shows you follow closely."
-                ),
-                keys=("Alt+S",),
-                hear="The setting read back -- and the per-show menu item changing to match.",
+                hear="The Inbox section of Preferences.",
                 note=(
-                    "Switching reuses the same per-show mark and reads it the other "
-                    "way round, so the menu item on a show becomes Keep This Show "
-                    "Out of the Inbox. Nothing moves unless you change the setting."
+                    "Any podcast can have its own limits in Settings for This "
+                    "Podcast, so a daily news show keeps three while a weekly one "
+                    "keeps everything."
                 ),
             ),
             Step(
-                title="Cap it before it becomes a library",
+                title="Catch a new episode from its notice",
                 body=(
-                    "Any podcast can keep at most N episodes in the Inbox and drop "
-                    "ones older than six hours up to a fortnight. An Inbox holding "
-                    "every unplayed episode of every routed show forever is not a "
-                    "triage surface."
+                    "Notifications keeps what Cast has told you, newest first, so the "
+                    "episode that arrived while you were in your email is still "
+                    "there. On a new-episode notice, Ctrl+Enter plays it straight "
+                    "away and Space adds it to the Play Queue."
                 ),
-                keys=("Shift+F10",),
-                hear="The cap read back for that show.",
-            ),
-            Step(
-                title="Know that trimming never deletes",
-                body=(
-                    "A trimmed episode leaves the Inbox and stays unplayed in its "
-                    "show's own list, downloaded file and all. And three kinds are "
-                    "never trimmed and do not even count toward the cap: anything "
-                    "you started, anything queued, and anything you filed by hand."
-                ),
-                hear="Nothing: this is the promise that makes a cap safe to set.",
+                keys=("Ctrl+Shift+N", "Ctrl+Enter", "Space"),
+                hear="The newest notice, then the episode playing or queued.",
+                check="playing",
             ),
         ),
         closing=(
-            "The Inbox is where episodes wait for a decision. Everything above is "
-            "about making sure the decision is yours and the waiting is bounded."
+            "Empty the Inbox each morning and nothing slips past you. Next comes "
+            "the Play Queue, where the keepers go."
         ),
         then=("the-play-queue",),
     ),
     Tutorial(
         slug="the-play-queue",
-        title="Line up what plays next",
+        title="The Queue",
         track="keeping-up",
-        minutes=6,
-        surfaces=("Play Queue", "Podcast Manager"),
+        minutes=7,
+        surfaces=("Play Queue", "Save Lineup", "QUILL Cast"),
         summary=(
-            "The Play Queue, how it advances, how to reorder it from the "
-            "keyboard, and what happens to something you queued and never got to."
+            "Fill the Play Queue, play one next, and move through it while it "
+            "plays. You will also hear what is coming before it starts, save the "
+            "order as a lineup, and get back an episode that waited too long."
         ),
         steps=(
             Step(
-                title="Queue an episode",
+                title="Add to the end of the queue",
                 body=(
-                    "Play Next puts an episode at the front; Add to Queue puts it "
-                    "at the end. The queue auto-advances, survives a restart, and "
-                    "is the thing that decides what plays when the current episode "
-                    "finishes."
+                    "Space on any episode, in any list, adds it to the end of the "
+                    "Play Queue. For several at once, select them with Shift and the "
+                    "arrows, or Ctrl+Space one at a time, then press Space."
                 ),
-                keys=("Shift+F10",),
-                hear="Queued, and where in the queue it went.",
+                keys=("Space", "Ctrl+Space"),
+                hear="Added to the Play Queue.",
+                check="queue-grew",
             ),
             Step(
-                title="Open the queue itself",
+                title="Play one next",
                 body=(
-                    "The Play Queue is one keystroke away from the Episode menu as "
-                    "well as living in the Manager's tree. Reorder it with Move Up "
-                    "and Move Down, or Mark then Move for a long hop."
+                    "Shift+Space puts an episode straight after the one that is "
+                    "playing, ahead of everything else in the queue. Play Next on an "
+                    "episode's menu does the same."
                 ),
-                keys=("Alt+E",),
-                hear="The queue, in order, with each episode's show.",
+                keys=("Shift+Space",),
+                hear="Cast saying the episode plays next.",
             ),
             Step(
-                title="Decide what follows an episode",
+                title="Look at what is lined up",
                 body=(
-                    "Two switches in Podcast Settings: play the next episode in the "
-                    "Play Queue, and when the queue is empty keep going with the "
-                    "same podcast. With both off, playback stops at the end of the "
-                    "episode you started."
+                    "The Play Queue place shows what plays next, in order. Delete "
+                    "takes an episode out of the queue; it stays in your library. "
+                    "The Applications key on the place offers Clear Entire Queue and "
+                    "Play Queue Shuffled."
                 ),
-                keys=("Alt+S",),
-                hear="Each setting read back.",
+                keys=("Ctrl+Shift+Q", "Delete"),
+                hear="Play Queue, then the episode at the front.",
             ),
             Step(
-                title="Expire what you never got to",
+                title="Move through it while it plays",
                 body=(
-                    "A queued episode you never played is worse than clutter -- the "
-                    "queue decides what plays next, so a stale item takes a turn. "
-                    "Expire from the queue, per show, removes one that has waited "
-                    "longer than a day, a week, a fortnight, a month."
+                    "From anywhere in Cast, Next in Queue skips to the next episode "
+                    "and Previous in Queue goes back one. Mark as Played and Next "
+                    "finishes this one for good and moves on, which is handy when "
+                    "you have heard enough of the news."
                 ),
-                keys=("Shift+F10",),
-                hear="The expiry rule read back for that show.",
+                command="podcasts.next_in_queue",
+                keys=("Ctrl+Alt+Down", "Ctrl+Alt+Up", "Ctrl+Alt+Shift+Down"),
+                hear="The next episode's title, then its audio.",
+            ),
+            Step(
+                title="Hear what is up next",
+                body=(
+                    "Just listen. About ten seconds before an episode ends, Cast tells "
+                    "you what comes next. It names the podcast only when it changes, "
+                    "says nothing when nothing will follow, and stays quiet during "
+                    "Quiet Hours. You do not have to press anything."
+                ),
+                hear="Next:, then the episode, and the podcast if it changes.",
                 note=(
-                    "There is deliberately no global setting: a daily news show "
-                    "wants two days and a weekly long-form show wants two weeks, "
-                    "and one number for everything is a number nobody wants."
+                    "Turn it off with Say what is up next before an episode ends, in "
+                    "Preferences under Telling you."
                 ),
             ),
             Step(
-                title="Find what expired",
+                title="Send a podcast straight to the queue",
                 body=(
-                    "Expiring is not deleting. The episode moves to Recently "
-                    "Expired and waits seven days keeping its downloaded file, its "
-                    "saved position and its place in its show. Restore to the Play "
-                    "Queue puts it back with a fresh clock."
+                    "For a podcast you never skip, choose Auto-Queue New Episodes on "
+                    "its menu. Its new episodes go straight into the Play Queue when "
+                    "they arrive and skip the Inbox. Stop Auto-Queueing New Episodes "
+                    "turns it off."
                 ),
-                keys=("Ctrl+M",),
-                hear="Recently Expired, and what is in it.",
+                keys=("Shift+F10",),
+                hear="Cast confirming new episodes will be queued.",
             ),
             Step(
-                title="Group the queue if it is long",
+                title="Save the order as a lineup",
                 body=(
-                    "The queue can be grouped so one show's episodes cluster "
-                    "together, which is the difference between reading a queue and "
-                    "auditing one."
+                    "Arrange the queue the way you like it, then choose Save Lineup "
+                    "from the Applications key on the Play Queue place and give it a "
+                    "name, such as Tuesday. Next Tuesday, Apply Lineup moves its "
+                    "unheard episodes to the front in your order."
                 ),
-                hear="The queue, re-read in its new shape.",
+                keys=("Applications",),
+                hear="The lineup saved; later, how many it applied and skipped.",
+            ),
+            Step(
+                title="Get back what waited too long",
+                body=(
+                    "Queue Expiry, on a podcast's menu, takes its old episodes out of "
+                    "the queue after a day or a week. An expired episode is not "
+                    "deleted: it waits in Recently Expired, hidden until you show it "
+                    "in View, Places. Restore to the Play Queue brings it back."
+                ),
+                keys=("Ctrl+Shift+X",),
+                hear="Recently Expired, then the episodes waiting there.",
             ),
         ),
         closing=(
-            "Inbox for undecided, queue for decided. The two rules above -- "
-            "expiry, and Recently Expired -- are what keep the second list honest."
+            "Fill the queue in the morning and Cast plays one episode after another "
+            "until it runs out. Next, let's play audio that is not a podcast at all."
+        ),
+        then=("your-own-audio", "downloads-and-space"),
+    ),
+    Tutorial(
+        slug="your-own-audio",
+        title="Your own audio",
+        track="keeping-up",
+        minutes=7,
+        surfaces=("Watched Folders", "Watched Folder Settings", "QUILL Cast"),
+        summary=(
+            "Play your own recordings, audiobooks and lectures with every key you "
+            "already know. Then let Cast watch a folder, so anything you put there "
+            "turns up in Personal Audio by itself."
+        ),
+        steps=(
+            Step(
+                title="Add some files",
+                body=(
+                    "Add Personal Audio, on the Podcasts menu, takes one or more "
+                    "audio files -- MP3, M4B, M4A, WAV, FLAC or OGG -- and a name for "
+                    "the collection. Each file becomes an episode, and Cast keeps its "
+                    "own copy, so moving the originals does no harm."
+                ),
+                keys=("Ctrl+Alt+L",),
+                hear="The collection added, by name.",
+            ),
+            Step(
+                title="Find them in Personal Audio",
+                body=(
+                    "Personal Audio is a place like any other. Your collections work "
+                    "just like a podcast: the same keys, the same bookmarks, and Cast "
+                    "remembers your place in each file."
+                ),
+                command="podcasts.personal_audio",
+                keys=("Ctrl+Shift+U",),
+                hear="Personal Audio, then your collection.",
+            ),
+            Step(
+                title="Open Watched Folders",
+                body=(
+                    "Maybe your voice recorder copies its files to a folder, or your "
+                    "audiobooks always download to the same place. Tell Cast about "
+                    "that folder once, and anything that lands there arrives in "
+                    "Personal Audio by itself."
+                ),
+                keys=("Ctrl+Alt+W",),
+                hear="Watched Folders, then your folders, or that there are none yet.",
+            ),
+            Step(
+                title="Add a folder",
+                body=(
+                    "Press Add Folder and choose the folder the way you would anywhere "
+                    "in Windows. A settings page opens for it. The choices it starts "
+                    "with are good ones, so you can press Save straight away. Cast "
+                    "takes a first look right then."
+                ),
+                keys=("Alt+A",),
+                hear="Cast saying it is watching the folder, then anything already there.",
+            ),
+            Step(
+                title="Decide what happens to each file",
+                body=(
+                    "First, what to do with the original file: leave it where it is, "
+                    "move it into Cast's folder, or play it from where it is. New "
+                    "arrivals can also join the Play Queue. Tell me chooses how much "
+                    "Cast says. Files shorter than 30 seconds are skipped to begin with."
+                ),
+                keys=("Alt+O", "Alt+A", "Alt+T", "Alt+I"),
+                hear="Each choice, and what it is set to.",
+                note=(
+                    "Each folder can have its own speed, and Each subfolder is its "
+                    "own group turns a folder of audiobooks into one group per book."
+                ),
+            ),
+            Step(
+                title="Hear something arrive",
+                body=(
+                    "Now try it. Copy a recording into the folder, and within a few "
+                    "seconds Cast tells you about it. A file still being copied is "
+                    "left alone until it has finished, and the same recording never "
+                    "arrives twice, even if you rename it."
+                ),
+                hear="New in, the folder's name, then the file and its length.",
+            ),
+            Step(
+                title="Look again, rest it, or stop watching",
+                body=(
+                    "In Watched Folders, Scan Now looks at a folder straight away, "
+                    "Pause or Resume stops watching for a while, and Remove stops for "
+                    "good. Remove asks first. The files Cast already brought in stay, "
+                    "and nothing in the folder is touched."
+                ),
+                keys=("Alt+N", "Alt+U", "Alt+M"),
+                hear="What Cast did; for Remove, a question that starts on No.",
+            ),
+        ),
+        closing=(
+            "A watched folder is a way in, not a mirror, so deleting a file from it "
+            "never deletes the episode. Cast also looks at every folder when it "
+            "opens and when your computer wakes."
         ),
         then=("downloads-and-space",),
     ),
@@ -264,318 +350,171 @@ TUTORIALS: tuple[Tutorial, ...] = (
         title="Downloads, and the disk they live on",
         track="keeping-up",
         minutes=6,
-        surfaces=("Downloads", "Podcast Manager"),
+        surfaces=("Downloads", "QUILL Cast"),
         summary=(
-            "Have episodes arrive ready to play, see what they are costing you, "
-            "and set the two rules that clear space without ever taking the thing "
-            "you are halfway through."
+            "Download an episode, keep one you are streaming, and pause what is "
+            "downloading. Then let Cast fetch the newest for you, and keep your "
+            "disk from filling up."
         ),
         steps=(
             Step(
-                title="Have new episodes arrive downloaded",
+                title="Download one episode",
                 body=(
-                    "Automatically download -- none, the newest 1, 3, 5, 10, or "
-                    "every episode -- is the setting that makes new episodes arrive "
-                    "ready to play. Any podcast can set its own, and new episodes "
-                    "are fetched on subscribe and on every refresh."
+                    "Every episode plays straight from the internet, so you never have "
+                    "to download. A download is a copy on your computer, for when you "
+                    "are offline or on a slow connection. Download Episode is on the "
+                    "episode's menu, and Remove Downloaded Copy appears once it is here."
                 ),
-                keys=("Alt+S",),
-                hear="How many episodes it started downloading; nothing happens silently.",
+                keys=("Shift+F10",),
+                hear="Downloading, then the episode's title.",
             ),
             Step(
-                title="Know the two companion switches",
+                title="Keep what you are streaming",
                 body=(
-                    "Anything you add to the Play Queue downloads too, whatever its "
-                    "age -- an episode you queued is one you meant to play. Anything "
-                    "routed to the Inbox does not, because the Inbox is a triage "
-                    "surface, not a commitment."
+                    "Started streaming something you now want to keep? Keep This "
+                    "Episode, on the Episode menu, keeps it as a download, often "
+                    "without fetching it again."
                 ),
-                hear="Each switch read back.",
+                keys=("Ctrl+Alt+K",),
+                hear="Cast saying it is keeping the episode.",
             ),
             Step(
-                title="See what it is costing",
+                title="See what is downloaded",
                 body=(
-                    "Downloads answers how much disk your podcasts are using: the "
-                    "total, a breakdown by podcast largest first, and an Unheard "
-                    "only filter that tells you how many already-played downloads "
-                    "it hid."
+                    "The Downloads place holds the episodes kept on this computer and "
+                    "the ones on their way. Delete there removes the file, but the "
+                    "episode stays, and you can still stream it."
                 ),
                 command="podcasts.downloads",
-                hear="The total, then the biggest shows.",
+                keys=("Ctrl+D",),
+                hear="Downloads, then the first episode kept on this computer.",
             ),
             Step(
-                title="Set the two automatic rules",
+                title="Pause and resume everything",
                 body=(
-                    "Delete downloads after N days (overridable per podcast, so one "
-                    "archival show can keep everything) and a total storage cap in "
-                    "megabytes, which removes already-played downloads oldest first "
-                    "when you go over. Both are off to begin with."
+                    "Need the internet for something else for a while? The Downloads "
+                    "menu pauses every download at once, and resumes them again, from "
+                    "anywhere in Cast. If a connection drops halfway, Cast reconnects "
+                    "and picks up where it stopped."
                 ),
-                keys=("Alt+S",),
-                hear="Each rule read back.",
+                keys=("Ctrl+Alt+Shift+U", "Ctrl+Alt+Shift+V"),
+                hear="All downloads paused, or resumed.",
             ),
             Step(
-                title="Know what the rules will never take",
+                title="Let Cast fetch the newest for you",
                 body=(
-                    "A queued or part-played episode is never removed by either "
-                    "rule. That is what makes an automatic cap safe: disk pressure "
-                    "is not a reason to throw away the thing you are halfway "
-                    "through. It also means a cap can be unreachable, and Cast says "
-                    "so rather than pretending."
+                    "In Preferences, under Fetching, Automatically download keeps the "
+                    "newest episodes of each podcast ready for you: none, the newest "
+                    "1, 3, 5 or 10, or every episode. Another choice there decides "
+                    "whether this happens on a metered connection."
                 ),
-                hear="What it could not free, and why.",
+                keys=("Ctrl+,",),
+                hear="The Fetching section, then what changed when you save.",
             ),
             Step(
-                title="Run the rules now",
+                title="Keep the disk in check",
                 body=(
-                    "Free Up Space applies both rules immediately and says how many "
-                    "bytes came back. Run Housekeeping Now does the full pass -- "
-                    "expire stale queue items, sweep Recently Expired, trim the "
-                    "Inbox, apply the storage rules -- and reports it all in one "
-                    "sentence."
+                    "In Preferences, under Data, you can have downloads deleted after "
+                    "a number of days, and set a limit on how much space they use. "
+                    "Neither ever removes an episode in your queue or one you are "
+                    "partway through."
                 ),
-                command="podcasts.run_maintenance",
-                hear="Everything it did, in one sentence.",
+                keys=("Ctrl+,",),
+                hear="The Data section of Preferences.",
+                note=(
+                    "Never delete this podcast's downloads, in Settings for This "
+                    "Podcast, protects one podcast from every cleanup."
+                ),
+            ),
+            Step(
+                title="Tidy up now",
+                body=(
+                    "Free Up Space applies those rules now and tells you how much "
+                    "space came back. Run Housekeeping Now does the whole tidy-up at "
+                    "once, the queue, the Inbox and your downloads, and tells you what "
+                    "it did in one sentence."
+                ),
+                command="podcasts.free_space",
+                keys=("Ctrl+Alt+F", "Ctrl+Alt+H"),
+                hear="How much space came back.",
             ),
         ),
         closing=(
-            "Housekeeping also runs after every feed refresh, so most of the time "
-            "this lesson is about a button you will never need to press."
+            "Downloads are there when you want them, never because you must. "
+            "Every episode streams, and a removed file can always be fetched again."
         ),
-        then=("playlists-and-lineups",),
+        then=("playlists",),
     ),
     Tutorial(
-        slug="playlists-and-lineups",
-        title="Playlists, smart playlists, and the order you listen in",
+        slug="playlists",
+        title="Playlists and smart playlists",
         track="keeping-up",
         minutes=5,
-        surfaces=("Podcast Manager",),
+        surfaces=("Smart Playlist Rules", "QUILL Cast"),
         summary=(
-            "Saved episode lists you build by hand, and rule-based ones that "
-            "rebuild themselves every time you open them."
+            "Make a playlist you fill by hand, like a mixtape, and a smart playlist "
+            "that fills itself from a few rules you choose, such as anything under "
+            "half an hour that you have not heard."
         ),
         steps=(
             Step(
-                title="Know how a playlist differs from the queue",
+                title="Go to Playlists",
                 body=(
-                    "The Play Queue is transient -- it empties as you listen. A "
-                    "playlist is saved and named, and it stays. The pinned views "
-                    "are neither: they are fixed questions the app asks for you."
+                    "Playlists is a place. Enter opens a playlist right there in the "
+                    "same list, and Backspace brings you back to the list of "
+                    "playlists. Lineups you saved from the Play Queue live here too."
                 ),
-                keys=("Ctrl+M",),
-                hear="The Playlists node, below the Play Queue.",
+                keys=("Ctrl+Shift+Y",),
+                hear="Playlists, then the first playlist.",
             ),
             Step(
-                title="Build one by hand",
+                title="Start with the starters",
                 body=(
-                    "New Playlist makes an empty named list, and Add to Playlist on "
-                    "any episode's context menu fills it one episode at a time. "
-                    "This is the right shape for a list somebody else will listen "
-                    "to, or for a course you are working through."
+                    "The easiest way in is to borrow some. The Applications key on "
+                    "the Playlists place offers Add Starter Playlists: five ready-made "
+                    "smart playlists, such as Quick Listens and New This Week. Open one "
+                    "with Edit Rules to see how it works, then change it or delete it."
                 ),
-                keys=("Shift+F10",),
-                hear="The playlist created, then each episode added.",
+                keys=("Applications",),
+                hear="The starter playlists, in the list.",
             ),
             Step(
-                title="Or describe one and let it fill itself",
+                title="Make one by hand",
                 body=(
-                    "New Smart Playlist takes rules instead of episodes: which "
-                    "shows, episode status, how recent, how long, and how to sort. "
-                    "It is re-resolved live every time you open it, so it is never "
-                    "out of date."
+                    "New Playlist, on the same menu, makes an empty one. Then choose "
+                    "Add to Playlist on any episode's menu and pick it. Select several "
+                    "episodes first to add them all at once."
                 ),
-                hear="The rules read back, then how many episodes match right now.",
+                keys=("Applications", "Shift+F10"),
+                hear="The playlist named, then each episode added.",
             ),
             Step(
-                title="Edit the rules later",
+                title="Write a smart playlist",
                 body=(
-                    "Edit Rules, Rename (F2) and Delete are on each playlist's own "
-                    "context menu. A smart playlist that returns nothing is telling "
-                    "you something about the rules rather than about the shows."
+                    "New Smart Playlist asks for a name, then the rules: which "
+                    "podcasts, the episode status, how recent, the shortest and "
+                    "longest length, and words in the title or notes. Leave a number "
+                    "at 0 if you do not mind. As you go, Cast tells you how many "
+                    "episodes match."
                 ),
-                keys=("Shift+F10", "F2"),
-                hear="The playlist under its new name, or the new rules.",
+                keys=("Alt+S", "Alt+D", "Alt+M", "Alt+X"),
+                hear="How many episodes match, as you change each rule.",
             ),
             Step(
-                title="Save the order you listen in",
+                title="Change one later",
                 body=(
-                    "A lineup is the order you work through things -- the news, "
-                    "then the long one, then the funny one. Saving it means you "
-                    "stop rebuilding the same queue every morning."
+                    "On a playlist's own row, the menu offers Open, Edit Rules for a "
+                    "smart one, Rename Playlist and Delete Playlist. Delete on the row "
+                    "does the same, and Cast asks first."
                 ),
-                hear="The lineup saved, by name.",
+                keys=("Shift+F10", "Delete"),
+                hear="The playlist's menu.",
             ),
         ),
         closing=(
-            "Hand-built for a list somebody chose; smart for a question that "
-            "keeps answering itself."
+            "A smart playlist keeps itself up to date, so the one you make today is "
+            "still right next month, without you touching it."
         ),
-    ),
-    Tutorial(
-        slug="episode-filters",
-        title="Stop the parts of a podcast you did not want",
-        track="keeping-up",
-        minutes=11,
-        surfaces=("Podcasts",),
-        summary=(
-            "Rules, per podcast, that decide which of its episodes reach you at "
-            "all -- and eight separate places you can choose to mean them."
-        ),
-        steps=(
-            Step(
-                title="Find the podcast that publishes two things",
-                body=(
-                    "Most libraries have one: a show you follow that also runs a "
-                    "daily two-minute segment, or trailers for its sister show, or "
-                    "a members-only strand mixed into the public feed. Every one "
-                    "of those arrives and has to be dismissed by hand."
-                ),
-                keys=("Down arrow",),
-                hear="The podcast, and its unheard count.",
-            ),
-            Step(
-                title="Open its Episode Filters",
-                body=(
-                    "Episode Filters is on the podcast's context menu, and on a "
-                    "button in Settings for This Podcast. The window opens saying "
-                    "the one thing worth knowing before you start: a filtered "
-                    "episode is never deleted."
-                ),
-                keys=("Shift+F10",),
-                hear="The podcast named, then that nothing is deleted.",
-            ),
-            Step(
-                title="Write a rule",
-                body=(
-                    "Add Rule takes your own name for it, a title pattern and an "
-                    "optional minimum length. Wildcards are the everyday choice: a "
-                    "star is any run of text, a question mark is one character, "
-                    "and every other punctuation mark means itself -- so Q+A* "
-                    "finds the segment actually called Q+A."
-                ),
-                hear="The rule read back: its name, then enabled, then what it matches.",
-                note=(
-                    "A pattern has to describe the whole title, so put a star at "
-                    "each end to mean contains. An episode whose feed does not say "
-                    "how long it is never matches a length rule, because a missing "
-                    "length is not a short episode."
-                ),
-            ),
-            Step(
-                title="Add a test the title cannot answer",
-                body=(
-                    "Under More tests, Add Test asks what to look at -- the show "
-                    "notes, the people on the episode, the type the publisher gave "
-                    "it, its length, age, season or number -- how to compare, and "
-                    "the value. Words, wildcards and regular expressions all work "
-                    "on text. Match when decides whether every test has to hold or "
-                    "any one is enough."
-                ),
-                keys=("Alt+S", "Alt+A", "Alt+W"),
-                hear="The test read back as a sentence, such as Show notes contains sponsored by.",
-                note=(
-                    "A feed that does not say a length, a date or a number never "
-                    "matches a number test, and an episode with no type counts as "
-                    "a full episode."
-                ),
-            ),
-            Step(
-                title="Try the rule before you keep it",
-                body=(
-                    "Try It on Recent Episodes runs the rule exactly as the window "
-                    "shows it against the 50 newest episodes and says how many it "
-                    "catches, naming the first five. Change the pattern and try "
-                    "again until it catches what you meant."
-                ),
-                keys=("Alt+Y",),
-                hear="Matches, then a count of the 50 newest, then titles.",
-            ),
-            Step(
-                title="Or let an episode write the rule",
-                body=(
-                    "On any episode you did not want, Filter Episodes Like This on "
-                    "its menu drafts the rule for you: the publisher's trailer or "
-                    "bonus mark, a series name the title shares with its siblings, "
-                    "or an unusual length -- checked against the newest episodes "
-                    "and opened in the rule window for you to change."
-                ),
-                keys=("Shift+F10", "F"),
-                hear="Why the rule was chosen, and how many episodes it catches.",
-            ),
-            Step(
-                title="Preview before anything happens",
-                body=(
-                    "Preview tries the rules against the 50 newest episodes you "
-                    "already have and reports what each would be -- the decision "
-                    "first, then the title and the length. It changes nothing, and "
-                    "it works even while the filter itself is switched off."
-                ),
-                hear="How many of the 50 would be filtered, and how many kept.",
-            ),
-            Step(
-                title="Choose where it applies",
-                body=(
-                    "Where this applies is eight independent tick boxes: the "
-                    "Inbox, Auto-Queue, automatic downloads, the announcement, "
-                    "this podcast's episode list, New Episodes and Continue "
-                    "Listening, smart playlists, and Search Everywhere."
-                ),
-                hear="Each row with its ticked state as you arrow past it.",
-                note=(
-                    "A new filter starts with the first four ticked and the last "
-                    "four clear. The first four decline to route an episode, which "
-                    "is invisible and reversible; the last four hide it, which "
-                    "changes what you can find."
-                ),
-            ),
-            Step(
-                title="Save it, and answer the two questions",
-                body=(
-                    "Saving refuses a filter that could not mean anything -- on "
-                    "with no rule on, a pattern that cannot be read, nowhere to "
-                    "apply. It asks about a hiding place, and about the Play "
-                    "Queue, which is the one list you built by hand."
-                ),
-                check="filter-saved",
-                hear="The filter saved, what it does, and where it applies.",
-            ),
-            Step(
-                title="See what it caught",
-                body=(
-                    "Choose Filtered out in the episode list's own filter. It "
-                    "shows exactly what this podcast's rules are holding back, "
-                    "and every episode action still works from there -- play it, "
-                    "queue it, download it."
-                ),
-                hear="Only the episodes the rules caught.",
-            ),
-            Step(
-                title="Rescue the one it was wrong about",
-                body=(
-                    "Always Keep This Episode, on any episode's menu, exempts that "
-                    "one episode everywhere the filter applies. It is not undone "
-                    "by editing the rules afterwards, because it records that you "
-                    "looked at this one and wanted it."
-                ),
-                hear="The episode named, and that it is exempt.",
-            ),
-            Step(
-                title="Know what happens if you get it wrong",
-                body=(
-                    "If a keep-only filter rejects every single new episode of one "
-                    "refresh, Cast says so and remembers it, so a background check "
-                    "that ran while you were away still has a notice waiting. "
-                    "Reviewing the rules and saving clears it."
-                ),
-                hear="A warning naming the podcast, and that nothing was lost.",
-            ),
-        ),
-        closing=(
-            "One rule set, and up to eight places to mean it. Nothing it does is "
-            "permanent: untick a place and those episodes are back on the next "
-            "redraw, because the filter is asked every time a list is drawn "
-            "rather than stamped onto an episode when it arrived."
-        ),
-        then=("how-settings-resolve",),
+        then=("episode-filters",),
     ),
 )

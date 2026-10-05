@@ -74,6 +74,19 @@ _JWT_RE = re.compile(r"\beyJ[A-Za-z0-9_\-]{10,}\.[A-Za-z0-9_\-]{10,}\.[A-Za-z0-9
 # credentials this way for playback engines that only take a URL string.
 _URL_USERINFO_RE = re.compile(r"(\bhttps?://)[^/\s@]+@")
 
+# Browser sign-in cookies (Quill Radio's "Use my YouTube sign-in"): Quill
+# never writes one anywhere, and these make sure a yt-dlp debug line or a
+# pasted cookies.txt row cannot carry one into a log or a crash bundle either.
+# Google's session cookie names, and the Netscape cookies.txt row shape
+# (domain, flag, path, secure, expiry, name, value -- tab separated).
+_COOKIE_NAME_RE = re.compile(
+    r"(?:\b(?:SAPISID|APISID|HSID|SSID|SID|SIDCC|LOGIN_INFO|PREF|VISITOR_INFO1_LIVE)"
+    r"|__Secure-[0-9A-Za-z_-]+)\s*[=:\t]\s*\S+"
+)
+_NETSCAPE_COOKIE_RE = re.compile(
+    r"^#?(?:HttpOnly_)?\.?[A-Za-z0-9.-]+\t(?:TRUE|FALSE)\t/[^\t]*\t(?:TRUE|FALSE)\t\d+\t"
+)
+
 _MAX_LINE_BYTES = 4096
 
 # Flag names (normalized: leading dashes stripped, lower-cased) whose
@@ -100,6 +113,8 @@ _SECRET_VALUE_FLAGS = frozenset({
     "access-key",
     "access_key",
     "cookie",
+    "cookies",
+    "cookiefile",
 })
 
 
@@ -252,6 +267,8 @@ def _line_is_pure_secret(line: str) -> bool:
     if _SECRET_NAME_RE.search(stripped):
         return True
     if _JWT_RE.search(stripped):
+        return True
+    if _COOKIE_NAME_RE.search(stripped) or _NETSCAPE_COOKIE_RE.search(line):
         return True
     # A whole-line base64 token with a known-secret header.
     if stripped.startswith(("Bearer ", "Basic ", "Authorization:", "X-API-Key:")):

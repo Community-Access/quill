@@ -48,6 +48,12 @@ nacl_datas, nacl_binaries, nacl_hiddenimports = collect_all("nacl")
 # costs more than the disk does. Collected explicitly because yt-dlp loads its
 # ~940 site extractors through a lazy registry the tracer cannot follow.
 ytdlp_datas, ytdlp_binaries, ytdlp_hiddenimports = collect_all("yt_dlp")
+# chat-downloader: the Live Chat window. Lazily imported, with a JSON format
+# table (formatting/custom_formats.json) the tracer cannot see.
+_chat = collect_all("chat_downloader")
+ytdlp_datas += _chat[0]
+ytdlp_binaries += _chat[1]
+ytdlp_hiddenimports += _chat[2]
 
 a = Analysis(
     ["launcher.py"],

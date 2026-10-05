@@ -14,6 +14,7 @@ from urllib.error import URLError
 from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 
+from quill.core import versioning as _versioning
 from quill.core.update_digest import asset_digest_for_url as _asset_digest_for_url
 
 DEFAULT_UPDATE_MANIFEST_URL = (
@@ -32,9 +33,13 @@ _TRUSTED_HOSTS_ENV = "QUILL_UPDATE_TRUSTED_HOSTS"
 # *discovery*, never relax download security.
 _API_URL_ENV = "QUILL_UPDATE_API_URL"
 _MANIFEST_URL_ENV = "QUILL_UPDATE_MANIFEST_URL"
-# Pre-release ordering: a final (non-pre-release) build outranks every
-# pre-release of the same major.minor.patch. See _version_tuple / _prerelease_rank.
-_STABLE_PRERELEASE_RANK = (9, 0, 0)
+# GitHub returns 30 releases a page unless asked. One repository hosts every
+# app's releases, so a Stable release falls off page one as soon as enough
+# betas are published, and the updater then says nothing at all (release-
+# channels plan, 1.9 hazard 1). Ask for the maximum, and follow at most a
+# few "next" links.
+_RELEASES_PER_PAGE = 100
+_MAX_RELEASE_PAGES = 3
 
 
 def _env_url_override(name: str) -> str:
@@ -49,6 +54,66 @@ def _env_url_override(name: str) -> str:
     if len(raw) >= 2 and raw[0] == raw[-1] and raw[0] in ("'", '"'):
         raw = raw[1:-1].strip()
     return raw
+
+
+def _with_per_page(url: str) -> str:
+    """*url* asking GitHub for :data:`_RELEASES_PER_PAGE` releases a page."""
+    if "per_page=" in url:
+        return url
+    return f"{url}{'&' if '?' in url else '?'}per_page={_RELEASES_PER_PAGE}"
+
+
+def _next_page_url(response: object, current: str) -> str:
+    """The ``rel="next"`` link GitHub sent, if it is on the same host over HTTPS."""
+    headers = getattr(response, "headers", None)
+    getter = getattr(headers, "get", None)
+    if getter is None:
+        return ""
+    link = str(getter("Link") or getter("link") or "")
+    for part in link.split(","):
+        match = re.match(r'\s*<([^>]+)>\s*;\s*rel="?next"?', part)
+        if match:
+            target = match.group(1)
+            if (
+                urlparse(target).scheme == "https"
+                and urlparse(target).hostname == urlparse(current).hostname
+            ):
+                return target
+    return ""
+
+
+def _fetch_release_json(api_url: str, timeout: int) -> list[object]:
+    """Every release GitHub lists at *api_url*, across up to a few pages."""
+    url = _with_per_page(api_url)
+    collected: list[object] = []
+    for _page in range(_MAX_RELEASE_PAGES):
+        request = Request(
+            url,
+            headers={"Accept": "application/vnd.github+json", "User-Agent": "Quill-Updater"},
+        )
+        with urlopen(request, timeout=timeout, context=_ssl_context()) as response:
+            payload = response.read().decode("utf-8", errors="strict")
+            next_url = _next_page_url(response, url)
+        raw = json.loads(payload)
+        if not isinstance(raw, list):
+            raise ValueError("GitHub releases payload must be a JSON array")
+        collected.extend(raw)
+        if not next_url or len(raw) < _RELEASES_PER_PAGE:
+            break
+        url = next_url
+    return collected
+
+
+def _is_editor_release(data: dict) -> bool:
+    """True for a QUILL (editor) release, false for a sibling app's or a tool's.
+
+    Every app releases from this one repository. QUILL's own tags are bare
+    ``v1.0.0``; a sibling's are ``quill-radio-v3.0.4``. The old parser read the
+    sibling tags as ``0.0.0`` and so never offered them -- by accident. The
+    shared parser reads them correctly, so the filter has to be said out loud.
+    """
+    tag = str(data.get("tag_name") or data.get("name") or "").strip().lower()
+    return not tag.startswith(("quill-", "runtime-", "assets-"))
 
 
 def resolve_releases_api_url(default: str = GITHUB_RELEASES_API) -> str:
@@ -152,20 +217,11 @@ def fetch_latest_release(
     Returns None when no eligible release exists.
     """
     api_url = api_url or resolve_releases_api_url()
-    request = Request(
-        api_url,
-        headers={
-            "Accept": "application/vnd.github+json",
-            "User-Agent": "Quill-Updater",
-        },
-    )
-    with urlopen(request, timeout=timeout, context=_ssl_context()) as response:
-        payload = response.read().decode("utf-8", errors="strict")
-    releases = json.loads(payload)
-    if not isinstance(releases, list):
-        raise ValueError("GitHub releases payload must be a JSON array")
+    releases = _fetch_release_json(api_url, timeout)
 
-    candidates = [r for r in releases if isinstance(r, dict) and not r.get("draft")]
+    candidates = [
+        r for r in releases if isinstance(r, dict) and not r.get("draft") and _is_editor_release(r)
+    ]
     if not include_prereleases:
         candidates = [r for r in candidates if not r.get("prerelease")]
     if not candidates:
@@ -362,19 +418,11 @@ def fetch_releases(
     Setup .exe and a portable one its portable .zip.
     """
     api_url = api_url or resolve_releases_api_url()
-    request = Request(
-        api_url,
-        headers={"Accept": "application/vnd.github+json", "User-Agent": "Quill-Updater"},
-    )
-    with urlopen(request, timeout=timeout, context=_ssl_context()) as response:
-        payload = response.read().decode("utf-8", errors="strict")
-    raw = json.loads(payload)
-    if not isinstance(raw, list):
-        raise ValueError("GitHub releases payload must be a JSON array")
+    raw = _fetch_release_json(api_url, timeout)
     return [
         _release_from_json(r, prefer_portable=prefer_portable)
         for r in raw
-        if isinstance(r, dict) and not r.get("draft")
+        if isinstance(r, dict) and not r.get("draft") and _is_editor_release(r)
     ]
 
 
@@ -433,8 +481,12 @@ def _app_asset_url(
 def _app_version_from_tag(tag: str) -> str:
     """'quill-radio-v2.2.0' / 'weather-2.2.0' / 'v2.2.0' -> '2.2.0'. Pulls the
     trailing dotted-number version out of a per-app release tag so each app's
-    own version can be compared even when several apps share one repo's tags."""
-    match = re.search(r"(\d+\.\d+(?:\.\d+)?(?:[-.][0-9A-Za-z.]+)?)\s*$", tag or "")
+    own version can be compared even when several apps share one repo's tags.
+    A build rides along in either spelling: ``quill-radio-v3.2.0-build.12`` ->
+    ``3.2.0-build.12``, which :mod:`quill.core.versioning` reads as build 12."""
+    match = re.search(
+        r"(\d+\.\d+(?:\.\d+)?(?:[-.][0-9A-Za-z.]+)?(?:\+[0-9A-Za-z.]+)?)\s*$", tag or ""
+    )
     return match.group(1) if match else (tag or "").strip()
 
 
@@ -459,15 +511,7 @@ def fetch_app_releases(
     api_url = api_url or resolve_releases_api_url()
     if prefer_portable is None:
         prefer_portable = running_portable()
-    request = Request(
-        api_url,
-        headers={"Accept": "application/vnd.github+json", "User-Agent": "Quill-Updater"},
-    )
-    with urlopen(request, timeout=timeout, context=_ssl_context()) as response:
-        payload = response.read().decode("utf-8", errors="strict")
-    raw = json.loads(payload)
-    if not isinstance(raw, list):
-        raise ValueError("GitHub releases payload must be a JSON array")
+    raw = _fetch_release_json(api_url, timeout)
     releases: list[GitHubRelease] = []
     for r in raw:
         if not isinstance(r, dict) or r.get("draft"):
@@ -775,87 +819,17 @@ def is_newer_version(current: str, available: str) -> bool:
     return _version_tuple(available) > _version_tuple(current)
 
 
-def _version_tuple(value: str) -> tuple[int, int, int, tuple[int, int, int]]:
-    """Sortable version key with intentional pre-release ordering.
+def _version_tuple(value: str) -> _versioning.VersionKey:
+    """Sortable version key -- a thin wrapper over :mod:`quill.core.versioning`.
 
-    The fourth element ranks the pre-release stage so that, for the same
-    ``major.minor.patch``, a final release always sorts *after* any of its
-    pre-releases (``1.2.0`` > ``1.2.0-rc2`` > ``1.2.0-rc1`` > ``1.2.0-beta1`` >
-    ``1.2.0-alpha1``). Unrecognized suffixes are treated as the earliest stage so
-    an unknown pre-release never outranks a stable build.
-
-    Its third sub-element is an *interim patch* so a hand-off test build can sit
-    strictly between two pre-releases: ``Beta 1`` < ``Beta 1A`` < ``Beta 2``
-    (display letter) and the equivalent PEP 440 ``0.8.0b1`` < ``0.8.0b1.post1`` <
-    ``0.8.0b2``. This lets a tester run an interim build and still be offered the
-    real next pre-release through Check for Updates, without being nagged to
-    "update" back down to the published one.
-
-    Accepts both PEP 440 hyphen form (``1.2.0-rc1``) and the human-readable
-    display form produced by :func:`quill.build_info.get_short_version`
-    (``1.2.0 Beta 1``). Without the second form the running 0.7.0 beta build
-    would compare its display string against ``__version__`` (the base
-    ``0.7.0``) and never recognize an updated beta as "newer".
+    Kept so every existing caller and test keeps working. The ordering is
+    ``dev < alpha < beta < rc < final`` within one ``major.minor.patch``; an
+    interim hand-off build (``Beta 1A`` / ``0.8.0b1.post1``) sits strictly
+    between Beta 1 and Beta 2; the display form ("0.7.0 Beta 1") and the
+    PEP 440 form are both understood; and text that is not a version sorts
+    below everything, so a malformed tag can never outrank a real build.
     """
-
-    cleaned = value.strip().lstrip("v")
-    # Normalize the display form ("0.7.0 Beta 1", "0.7.0 Release Candidate 2")
-    # to the PEP 440 hyphen form ("0.7.0-beta1", "0.7.0-rc2") so the rest of
-    # the parser only has to know one shape. Without this normalization the
-    # running 0.7.0 beta build would compare its display string against
-    # ``__version__`` (the base ``0.7.0``) and never recognize an updated
-    # beta as "newer" -- or, worse, would treat the suffix digits as part
-    # of the patch number ("Release Candidate 1" -> 0.7.1).
-    space_match = re.match(
-        r"^(\d+\.\d+(?:\.\d+)?)\s+"
-        r"(alpha|beta|release\s+candidate|rc|dev)"
-        r"\.?\s*(\d*)([a-z]?)\b",
-        cleaned,
-        re.I,
-    )
-    if space_match:
-        base, label, number, patch = space_match.groups()
-        label_key = label.strip().lower()
-        if label_key == "release candidate":
-            label_key = "rc"
-        cleaned = f"{base}-{label_key}{number}{patch}"
-    # Separate the core x.y.z from any pre-release suffix (-rc1, -beta.2, ...) so
-    # the suffix digits cannot leak into the patch number.
-    core, separator, suffix = cleaned.partition("-")
-    parts = core.split(".")
-    integers: list[int] = []
-    for index in range(3):
-        if index < len(parts):
-            token = "".join(char for char in parts[index] if char.isdigit())
-            integers.append(int(token or "0"))
-        else:
-            integers.append(0)
-    prerelease = _prerelease_rank(suffix) if separator else _STABLE_PRERELEASE_RANK
-    return integers[0], integers[1], integers[2], prerelease
-
-
-def _prerelease_rank(suffix: str) -> tuple[int, int, int]:
-    lowered = suffix.strip().lower()
-    if lowered.startswith("rc"):
-        tier = 2
-    elif lowered.startswith(("beta", "b")):
-        tier = 1
-    else:
-        # alpha/a and anything unrecognized fall to the earliest stage.
-        tier = 0
-    # The pre-release number is the first run of digits (so "beta1.post1" is
-    # number 1, not 11). The interim patch is either a trailing letter right
-    # after that number ("beta1a" -> 1, i.e. "A") or a PEP 440 ".postN" suffix.
-    number_match = re.search(r"(\d+)", lowered)
-    number = int(number_match.group(1)) if number_match else 0
-    post = 0
-    letter_match = re.search(r"\d([a-z])", lowered)
-    post_match = re.search(r"post(\d+)", lowered)
-    if letter_match:
-        post = ord(letter_match.group(1)) - ord("a") + 1
-    elif post_match:
-        post = int(post_match.group(1))
-    return tier, number, post
+    return _versioning.sort_key(value)
 
 
 def download_release_asset(

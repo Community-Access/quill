@@ -19,7 +19,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from quill.core.podcasts import onboarding, surface_help
+from quill.core.podcasts import surface_help
 from quill.tools import cast_help_audit
 
 REPO = Path(__file__).resolve().parents[3]
@@ -58,8 +58,9 @@ def test_the_f1_wiring_is_in_place() -> None:
 
 def test_the_exempt_titles_are_answered_by_the_catalogue() -> None:
     """Every TITLE_EXEMPT entry claims the catalogue answers it. Prove it."""
-    for title in onboarding.SCREEN_TITLES.values():
-        assert surface_help.is_known_title(title), title
+    from quill.ui.podcasts import first_run_dialog
+
+    assert surface_help.is_known_title(first_run_dialog.TITLE)
     assert surface_help.is_known_title("About This Episode")
     assert surface_help.is_known_title("About This Episode -- Episode 12")
     assert surface_help.is_known_title("Folder Settings")
@@ -70,3 +71,20 @@ def test_the_generic_purpose_is_the_floor_not_a_ceiling() -> None:
     assert surface_help.purpose_for_title("Some Quillin Window") == surface_help.GENERIC_PURPOSE
     assert surface_help.purpose_for_title("Podcasts") != surface_help.GENERIC_PURPOSE
     assert surface_help.purpose_for_title("My Notes -- Episode 412").startswith("Your own notes")
+
+
+def test_f1_never_describes_a_window_cast_cannot_open() -> None:
+    """The old three-screen welcome is one screen now, and Skip Settings and
+    Move Podcasts to Folder are QUILL's windows: Cast's catalogue names none
+    of them, and the Skip Settings construction is exempt with that reason."""
+    for gone in (
+        "Add your first podcast",
+        "You're set",
+        "Skip Settings",
+        "Move Podcasts to Folder",
+    ):
+        assert gone not in surface_help.PURPOSES, gone
+    assert "three-screen" not in surface_help.PURPOSES["Welcome to QUILL Cast"]
+    assert "nine sections" in surface_help.PURPOSES["QUILL Cast Preferences"]
+    exempt = cast_help_audit.TITLE_EXEMPT
+    assert "quill/ui/podcasts/skip_settings_dialog.py::SkipSettingsDialog.__init__" in exempt

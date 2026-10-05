@@ -15,66 +15,39 @@ takes text, wraps it in the right delimiters, and gets out of the way.
 Two conveniences do the fiddly part:
 
 * A selection is pre-filled and its delimiters are stripped, so pressing the
-  shortcut on an existing ``$E = mc^2$`` reopens it as ``E = mc^2`` to edit
-  rather than making the author retype it (and the display mode is inferred
-  from which delimiters were there).
+  shortcut on an existing equation reopens it as ``E = mc^2`` to edit rather
+  than making the author retype it (and the display mode is inferred from
+  which delimiters were there).
 * MathML is inserted verbatim -- it is already a complete element and must not
-  be wrapped in ``$``.
+  be wrapped.
 
-The rendering half already exists: ``core/browser_preview.py`` loads MathJax for
-a document that actually contains math, so an inserted equation shows up
-rendered in the live preview and in exported HTML with nothing else to set up.
+The text itself is built by :mod:`quill.core.math.equation_text`, the one place
+both this command and the bundled Math Equations Quillin get it from:
+``\\(...\\)`` inline and a one-line ``$$...$$`` block, the delimiters the
+preview's MathJax and Word export both understand. This command wrote ``$...$``
+until 2026-10-03, which neither of them did.
 """
 
 from __future__ import annotations
 
 from typing import Any
 
+from quill.core.math.equation_text import equation_snippet, split_existing_equation
+
+__all__ = ["INTRO", "EquationsMixin", "equation_snippet", "split_existing_equation"]
+
 #: The dialog's explanation line. Says what the two formats do rather than
 #: assuming the author already knows the difference.
 INTRO = (
-    "Type an equation as LaTeX or paste MathML. LaTeX is wrapped in $ for an "
-    "inline equation or $$ for a block equation on its own line. MathML "
-    "(<math>...</math>) is inserted exactly as typed, since it already carries "
-    "its own markup."
+    "Type an equation as LaTeX or paste MathML. LaTeX is wrapped in \\( and \\) "
+    "for an inline equation, or in $$ on a line of its own for a block equation. "
+    "MathML (<math>...</math>) is inserted exactly as typed, since it already "
+    "carries its own markup."
 )
 
 
-def equation_snippet(equation: str, display_mode: str) -> str:
-    """The text to insert for *equation* in *display_mode*.
-
-    MathML is returned untouched. LaTeX is wrapped: ``$...$`` inline, or
-    ``$$`` on its own lines for a block equation, which is what Markdown
-    renderers (and MathJax in QUILL's preview) expect.
-    """
-    text = (equation or "").strip()
-    if not text:
-        return ""
-    if text.startswith("<"):
-        return text
-    if display_mode == "block":
-        return f"$$\n{text}\n$$"
-    return f"${text}$"
-
-
-def split_existing_equation(selection: str) -> tuple[str, str]:
-    """Split a selected equation into ``(equation, display_mode)``.
-
-    Lets the shortcut act as "edit this equation" when the author selects one
-    they already wrote: the delimiters come off so the field holds just the
-    math, and the mode they used is preselected. A selection that is not an
-    equation comes back unchanged as inline.
-    """
-    text = (selection or "").strip()
-    if text.startswith("$$") and text.endswith("$$") and len(text) > 4:
-        return text[2:-2].strip(), "block"
-    if text.startswith("$") and text.endswith("$") and len(text) > 2:
-        return text[1:-1].strip(), "inline"
-    return selection or "", "inline"
-
-
 class EquationsMixin:
-    """Insert > Insert Equation... (Ctrl+Shift+E)."""
+    """Insert > Insert Equation... (Ctrl+Alt+= by default)."""
 
     def insert_equation(self) -> None:
         """Ask for an equation and insert it at the caret."""

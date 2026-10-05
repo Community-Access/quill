@@ -78,6 +78,14 @@ class DocumentBackgroundOpenMixin:
         self.SetTitle(f"{self.number}: {message}... - {self._app_display_name()}")
         self._set_status_message(message)
         self._announce(message)
+        # Listed in Activity while it runs, and as its outcome after (qc.md F-10).
+        from quill.core import activity
+
+        self._open_progress = activity.LOG.begin(
+            activity.Progress(
+                operation_id=f"lite-open-{generation}", phase="opening", message=message
+            )
+        )
 
         def work(**_kwargs: object) -> PreparedDocument:
             return prepare_document(path, mode)
@@ -118,6 +126,7 @@ class DocumentBackgroundOpenMixin:
         self.opening_path = None
         self._set_editable(True)
         self._set_status_message("")
+        self._end_open_progress(path, failed=None)
         if self._commit_load(path, prepared):
             self.app.refresh_all_menus()
             try:
@@ -135,6 +144,7 @@ class DocumentBackgroundOpenMixin:
         self.opening_path = None
         self._set_editable(True)
         self._set_status_message("")
+        self._end_open_progress(path, failed=exc)
         self._update_title()
         self._cue_error()
         answer = show_message_box(
@@ -149,6 +159,26 @@ class DocumentBackgroundOpenMixin:
             # The window was made for this file and holds nothing else: an
             # empty window left behind is a stop a listener has to clear.
             self.Close()
+
+    def _end_open_progress(self, path: Path, *, failed: BaseException | None) -> None:
+        """Take the open off Activity's in-progress list and keep its outcome."""
+        from quill.core import activity
+        from quill.ui.outcome_report import keep_outcome
+
+        progress = getattr(self, "_open_progress", None)
+        if progress is not None:
+            activity.LOG.end(progress.operation_id)
+            self._open_progress = None
+        if failed is None:
+            keep_outcome("Open", f"Opened {path.name}.", object_name=path.name, path=path)
+        else:
+            keep_outcome(
+                "Open",
+                f"Could not open {path.name}.",
+                object_name=path.name,
+                failed=True,
+                reason=str(failed),
+            )
 
     # -- small adapters, so the commit and the frame stay in step -------- #
 

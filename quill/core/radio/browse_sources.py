@@ -68,6 +68,9 @@ from __future__ import annotations
 
 from collections.abc import Callable, Sequence
 
+from quill.core.radio import browse_local_media as _local_media
+from quill.core.radio import browse_youtube_extra as _youtube_extra
+from quill.core.radio import browse_youtube_more as _youtube_more
 from quill.core.radio import (
     iheart,
     m3u_catalog,
@@ -220,6 +223,7 @@ from quill.core.radio.models import RadioStation
 #: The top-level branches, in tree order.
 ROOT_SOURCES: tuple[tuple[str, str], ...] = (
     ("favorites", "Favorites"),
+    ("localmedia", "Local Media"),
     ("popular", "Popular Stations"),
     ("trending", "Trending Now"),
     ("recent", "Recently Added or Changed"),
@@ -612,6 +616,11 @@ _HANDLERS: dict[str, Callable[..., list[BrowseNode]]] = {
     "audiopub": _browse_audiopub,
     "audiopubdiscover": _browse_audiopub_discover,
 }
+# Found channels, live tabs and My YouTube (GATE-11: browse_youtube_more).
+_HANDLERS.update(_youtube_more.HANDLERS)
+# A channel's Shorts and My YouTube's History (browse_youtube_extra).
+_HANDLERS.update(_youtube_extra.HANDLERS)
+_HANDLERS.update(_local_media.HANDLERS)  # Local Media: your playlists
 
 
 def is_expandable(node_id: str) -> bool:

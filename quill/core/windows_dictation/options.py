@@ -67,7 +67,8 @@ SILENCE_CHOICES: tuple[tuple[int, str], ...] = (
     (10, "After 10 minutes"),
 )
 
-_ENGINE_MARKS = ".,?!;:" + chr(0x2026)
+# The Spanish opening marks go too, or "?Que" would keep its leading mark.
+_ENGINE_MARKS = ".,?!;:" + chr(0x2026) + chr(0xBF) + chr(0xA1)
 _SENTENCE_END = (".", "?", "!", chr(0x2026))
 _CORE = re.compile(r"[^\w'-]+")
 

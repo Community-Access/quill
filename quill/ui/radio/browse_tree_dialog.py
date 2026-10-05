@@ -471,6 +471,7 @@ class BrowseTreeDialog:
         *,
         failed: bool = False,
         empty_text: str = "",
+        reason: str = "",
     ) -> None:
         """Turn one node's children into tree rows.
 
@@ -491,8 +492,10 @@ class BrowseTreeDialog:
             # worth trying again, so it is not marked as loaded. One that is
             # genuinely empty is left alone -- re-fetching an empty folder on
             # every expand would be a network request for a known answer.
+            # A *reason* (no key entered, a key refused) is also worth retrying:
+            # the listener is about to fix it and come back.
             unreachable = failed or browse_sources.last_error_was_network()
-            if unreachable:
+            if unreachable or reason:
                 from quill.ui.radio import browse_refresh
 
                 browse_refresh.forget_load(self, node)
@@ -500,22 +503,19 @@ class BrowseTreeDialog:
             # also what keeps the folder expandable (see browse_feedback).
             says = browse_feedback.empty_row_text(
                 unreachable=unreachable,
-                override=empty_text,
+                override=empty_text or (reason if not failed else ""),
                 note=browse_sources.repeat_failure_note(
                     str((self._node_data(node) or {}).get("node_id", ""))
                 ),
             )
             tree.SetItemData(tree.AppendItem(node, says), dict(_PLACEHOLDER))
-        for child in children:
-            item = tree.AppendItem(node, self._row_label(child))
-            tree.SetItemData(item, self._row_data(child))
-            if child.is_folder:
-                tree.SetItemData(tree.AppendItem(item, "Loading..."), dict(_PLACEHOLDER))
+        browse_feedback.fill_rows(self, node, children)  # frozen, no per-row speech
         # Counted from what the SOURCE returned, not from the rows on screen:
         # an empty folder now carries one explanatory row, and counting that
         # would announce "1 item" for a folder holding nothing.
         count = len(children)
-        self._announce(self._children_summary(node, count, failed=failed))
+        said = reason if (reason and not count and not failed) else ""
+        self._announce(said or self._children_summary(node, count, failed=failed))
         from quill.ui.radio import browse_prefetch
 
         # Read one level ahead: the first few child folders fetch now, so
@@ -652,20 +652,23 @@ class BrowseTreeDialog:
         self._announce(f"Loading {label}...")
         browse_feedback.start_slow_load_notice(self, label)
 
-        def _work(**_kwargs: Any) -> tuple[list[BrowseNode], bool]:
+        def _work(**_kwargs: Any) -> tuple[list[BrowseNode], bool, str]:
             children = self._fetch_children(node_id)
             # Asked on the SAME thread that browsed: the failure record is kept
             # per thread, so reading it later from the UI-thread callback would
             # read the UI thread's own, always-empty slot -- and a branch that
             # failed on the network would be marked loaded and never retried.
-            return children, (not children and browse_sources.last_error_was_network())
+            return (children, *browse_feedback.empty_verdict(children))
 
         def _ok(_op: str, raw: object) -> None:
             # Already on the UI thread (call_ui_safely marshals + guards this);
             # call directly rather than scheduling a second unguarded CallAfter.
-            children, net_failed = raw if isinstance(raw, tuple) else ([], False)
+            children, net_failed, reason = (*raw, "")[:3] if isinstance(raw, tuple) else ([], 0, "")
             self._add_children(
-                node, children if isinstance(children, list) else [], failed=bool(net_failed)
+                node,
+                children if isinstance(children, list) else [],
+                failed=bool(net_failed),
+                reason=str(reason or ""),
             )
 
         def _failed(_op: str, error: BaseException) -> None:

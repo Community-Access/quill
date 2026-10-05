@@ -103,6 +103,11 @@ class RadioStation:
     #: transient, excluded from equality exactly like ``alt_sources``: it
     #: records how a row was found, not which station it is.
     place_confirmed: bool = field(default=False, compare=False)
+    #: Why a search found this row when its name may not say so -- "carries the
+    #: Detroit Tigers", "your tag: Red Wings" (see
+    #: :mod:`quill.core.radio.station_lookup`). Shown in the row and the details
+    #: panel; search-only and transient, excluded from equality like the rest.
+    match_reason: str = field(default="", compare=False)
 
     @property
     def display_name(self) -> str:
@@ -122,6 +127,8 @@ class RadioStation:
         address -- three lines, none of which answer "what is this episode?".
         """
         lines = [self.name]
+        if self.match_reason:
+            lines.append(f"Found because it {self.match_reason}")
         if self.source:
             lines.append(f"From: {self.source}")
         if self.country or self.language:

@@ -114,6 +114,17 @@ def build_video_playback_items(
     video_target.Append(video_info_id, "Video &Information	Ctrl+Shift+I")
     video_target.Append(snapshot_id, "Take a Snaps&hot\tCtrl+Shift+Alt+H")
     video_target.Append(full_screen_id, "F&ull Screen	F11")
+    # The comments of the video that is playing (YouTube only); the same
+    # window a video row's Read Comments... opens. Ctrl+Shift+7 is one of the
+    # last free chords on this bar (see app_keymaps); M is free on this menu.
+    comments_id = wx.NewIdRef()
+    video_target.Append(comments_id, app._menu_label("Read Co&mments...", "radio.youtube_comments"))
+    frame.Bind(wx.EVT_MENU, lambda _e: _open_comments(app), id=comments_id)
+    # Video > YouTube: Live Chat, YouTube Video, Skip Sponsor Segments and the
+    # filtered search (radio_youtube_video_menu). Y is free on this menu.
+    from quill.apps.radio_youtube_video_menu import add_youtube_video_items
+
+    youtube_ids = add_youtube_video_items(app, video_target, wx)
     frame.Bind(wx.EVT_MENU, lambda _e: video_commands.toggle_video(app), id=show_video_id)
     frame.Bind(wx.EVT_MENU, lambda _e: video_commands.toggle_captions(app), id=captions_id)
     frame.Bind(wx.EVT_MENU, lambda _e: video_commands.caption_settings(app), id=caption_settings_id)
@@ -171,6 +182,8 @@ def build_video_playback_items(
     frame.Bind(wx.EVT_MENU, lambda _e: video.announce_position(app), id=where_id)
     return (
         continue_id,
+        comments_id,
+        *youtube_ids,
         show_video_id,
         captions_id,
         caption_settings_id,
@@ -192,6 +205,12 @@ def build_video_playback_items(
         goto_pos_id,
         skip_silence_id,
     )
+
+
+def _open_comments(app: Any) -> None:
+    from quill.ui.radio import youtube_comments_ui
+
+    youtube_comments_ui.open_for_playing(app)
 
 
 def _open_continue_listening(app: Any) -> None:

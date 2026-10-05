@@ -52,4 +52,11 @@ def export_favorites_to_playlist(frame: Any) -> None:
         frame._announce(f"Could not write the playlist: {exc}.")
         return
     plural = "station" if len(playable) == 1 else "stations"
-    frame._announce(f"Exported {len(playable)} {plural} to {destination.name}.")
+    from quill.ui.outcome_report import report_outcome
+
+    report_outcome(
+        frame,
+        "Export Playlist",
+        f"Exported {len(playable)} {plural} to {destination.name}.",
+        path=destination,
+    )

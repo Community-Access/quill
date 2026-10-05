@@ -5,7 +5,9 @@ Bundled Quillin that inserts LaTeX or MathML equations at the caret.
 - LaTeX equations are wrapped in `\(...\)` (inline) or `$$...$$` (display) delimiters — both are MathJax's own default math delimiters, so preview and HTML export need no extra configuration.
 - MathML is inserted verbatim.
 
-Contributed via the Insert menu and the keyboard shortcut Ctrl+Shift+E.
+Contributed to the Insert menu. QUILL's own Insert Equation (Ctrl+Alt+=)
+writes exactly the same delimiters, so an equation from either one renders
+in the preview and becomes a real equation in Word export.
 
 ## Math AutoCorrect-style abbreviations
 

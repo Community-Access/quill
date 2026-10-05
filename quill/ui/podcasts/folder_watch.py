@@ -60,7 +60,15 @@ class FolderWatchMixin:
             if Path(existing.path) == Path(path):
                 self._announce(f"{existing.display_name()} is already watched.")
                 return None
-        folder = wf.WatchedFolder(path=path, name=Path(path).name)
+        history = getattr(self, "_podcast_history", None)
+        folder = wf.WatchedFolder(
+            path=path,
+            name=Path(path).name,
+            original=str(getattr(history, "wf_default_original", "keep")),
+            tell=str(getattr(history, "wf_default_tell", "each")),
+            min_seconds=int(getattr(history, "wf_default_min_seconds", 30)),
+            include_subfolders=bool(getattr(history, "wf_default_subfolders", True)),
+        )
         if not edit_folder_settings(self, owner, folder):
             return None
         library.watched_folders.append(folder)
@@ -207,9 +215,13 @@ class FolderWatchMixin:
         from quill.core.podcasts import queue as queue_ops
 
         library = self._podcast_library
+        history = getattr(self, "_podcast_history", None)
+        if getattr(history, "inbox_personal_audio", False):
+            for show, _episode in added:
+                show.route_to_inbox = True  # Preferences > The Inbox (qc.md 5d)
         if folder.arrivals in ("queue", "play"):
             for show, episode in added:
-                queue_ops.add_to_queue(library, show.id, episode.guid)
+                queue_ops.add_to_queue(library, show.id, episode.guid, reason="a watched folder")
             self._save_podcast_library()
         if folder.arrivals == "play":
             controller = getattr(self, "_podcast_controller", None)
@@ -233,17 +245,18 @@ class FolderWatchMixin:
 
     def _folder_problem(self, folder: wf.WatchedFolder, sentence: str) -> None:
         """Say a folder's problem once (until it recovers) and write it down."""
-        said: set[str] = self.__dict__.setdefault("_folder_problems_said", set())
-        if folder.id not in said:
-            said.add(folder.id)
-            self._announce(f"{sentence} Still watching.")
-        try:
-            from quill.core.paths import app_data_dir
-            from quill.core.problem_log import KIND_OTHER, record_problem
+        from quill.ui.podcasts.failure_report import report_failure
 
-            record_problem(app_data_dir(), KIND_OTHER, folder.display_name(), sentence)
-        except Exception:  # noqa: BLE001 - the problem log is a record, never a failure
-            return
+        said: set[str] = self.__dict__.setdefault("_folder_problems_said", set())
+        first = folder.id not in said
+        said.add(folder.id)
+        report_failure(
+            self,
+            f"{sentence} Still watching.",
+            subject=folder.display_name(),
+            background=True,
+            quiet=not first,
+        )
 
     def _migrate_watched_folders(self) -> None:
         library = self._podcast_library

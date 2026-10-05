@@ -39,6 +39,23 @@ def pytest_configure(config: pytest.Config) -> None:
         config.option.basetemp = str(_session_basetemp())
     _redirect_comtypes_gen_dir()
     _configure_hypothesis()
+    _isolate_release_channels()
+
+
+def _isolate_release_channels() -> None:
+    """Point the family's ``channels.json`` and Update History at a scratch folder.
+
+    They live in ``%LOCALAPPDATA%\\QuillVille`` (quill.core.updater.channels),
+    which neither ``QUILL_DATA_DIR`` nor the real-profile guard below covers, so
+    without this an update-check test would read the developer's own release
+    channel -- a Beta on their machine and a Stable on CI is the same test giving
+    two answers. Set before any test's environment snapshot, so the leak guard
+    sees it as the starting state; tests that write channels use a tmp_path of
+    their own on top. ``channels.family_dir`` honours it only in dev builds.
+    """
+    root = Path.home() / ".quill-pytest-tmp"
+    worker = os.environ.get("PYTEST_XDIST_WORKER") or f"p{os.getpid()}"
+    os.environ.setdefault("QUILL_FAMILY_DIR", str(root / f"quillville-{worker}"))
 
 
 def _redirect_comtypes_gen_dir() -> None:
@@ -568,6 +585,23 @@ def _no_saved_own_ai_key(monkeypatch: pytest.MonkeyPatch) -> None:
     from quill.core.ai import own_key
 
     monkeypatch.setattr(own_key, "has_own_key", lambda *_a: False)
+
+
+@pytest.fixture(autouse=True)
+def _no_live_release_feed(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Every update check sees "no v2 list published yet" unless a test says otherwise.
+
+    The apps' update checks read the signed release feed first
+    (``quill/core/updater/feed_fetch.py``); without this, a test of the old
+    GitHub path would fetch the real feed from the site. Tests of the feed
+    pass their own ``get``, or patch ``http_get`` back themselves.
+    """
+    from quill.core.updater import feed_fetch
+
+    def _missing(url: str, timeout: int = 15) -> bytes:
+        raise feed_fetch.FeedMissing(url)
+
+    monkeypatch.setattr(feed_fetch, "http_get", _missing)
 
 
 @pytest.fixture(autouse=True)

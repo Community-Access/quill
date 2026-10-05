@@ -65,6 +65,11 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 #: with the accessible-name gate) plus the pressables it deliberately skips.
 _HELPABLE_CLASSES = frozenset(_LABELABLE_CLASSES) | {"Button", "ToggleButton"}
 
+#: Base classes whose ``super().__init__(title=...)`` is a window title.
+_SURFACE_BASES = frozenset({"wx.Dialog", "wx.Frame"})
+#: Calls that wrap a title literal without changing which title it is.
+_TITLE_WRAPPERS = frozenset({"_", "str", "gettext", "lazy_gettext"})
+
 HELPED = "helped"
 NAMED_HELP = "named-help"
 HELP_ELSEWHERE = "help-elsewhere"
@@ -143,6 +148,8 @@ class _HelpVisitor(ast.NodeVisitor):
         #: self._title = "literal" assignments and title="literal" parameter
         #: defaults anywhere in the module, for dialogs with dynamic titles.
         self._self_titles: list[str] = []
+        #: One flag per enclosing class: does it subclass wx.Dialog / wx.Frame?
+        self._surface_class: list[bool] = []
         for node in ast.walk(tree):
             if (
                 isinstance(node, ast.Assign)
@@ -168,7 +175,9 @@ class _HelpVisitor(ast.NodeVisitor):
 
     def visit_ClassDef(self, node: ast.ClassDef) -> None:
         self._scope.append(node.name)
+        self._surface_class.append(any(_unparse(base) in _SURFACE_BASES for base in node.bases))
         self.generic_visit(node)
+        self._surface_class.pop()
         self._scope.pop()
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
@@ -185,12 +194,24 @@ class _HelpVisitor(ast.NodeVisitor):
 
     def _resolve_title(self, value: ast.expr) -> list[str] | None:
         """Every title this expression can carry, or None when unresolvable."""
+        # ``_("Title")`` and ``str(_("Title"))``: a translated literal is still
+        # the literal the catalogue is keyed by.
+        while (
+            isinstance(value, ast.Call)
+            and _unparse(value.func) in _TITLE_WRAPPERS
+            and len(value.args) == 1
+            and not value.keywords
+        ):
+            value = value.args[0]
         if isinstance(value, ast.Constant) and isinstance(value.value, str):
             return [value.value]
         if isinstance(value, ast.JoinedStr) and value.values:
             first = value.values[0]
             if isinstance(first, ast.Constant) and isinstance(first.value, str):
-                return [first.value]  # a prefix is enough for is_known_title
+                # A prefix is enough for is_known_title -- but with something
+                # after it, the way every real title has: "Trail -- " would
+                # otherwise be stripped to "Trail --" and miss its own prefix.
+                return [first.value + "..."]
         if isinstance(value, ast.Name):
             constant = self._constants.get(value.id)
             if constant is not None:
@@ -201,10 +222,28 @@ class _HelpVisitor(ast.NodeVisitor):
             return list(self._self_titles) or None
         return None
 
+    def _is_surface_super_init(self, node: ast.Call) -> bool:
+        """``super().__init__(..., title=...)`` inside a wx.Dialog/wx.Frame subclass.
+
+        Until 2026-10-04 only ``wx.Dialog(...)`` / ``wx.Frame(...)`` calls were
+        seen, so every *subclassed* window -- the release-channel windows, the
+        dictation settings, the hosted-AI conversation -- shipped without its
+        title ever being checked, and answered F1 with the generic paragraph.
+        """
+        func = node.func
+        return (
+            bool(self._surface_class)
+            and self._surface_class[-1]
+            and isinstance(func, ast.Attribute)
+            and func.attr == "__init__"
+            and isinstance(func.value, ast.Call)
+            and _unparse(func.value.func) == "super"
+        )
+
     def visit_Call(self, node: ast.Call) -> None:
         cls = _wx_class_name(node.func)
         qualname = ".".join(self._scope) if self._scope else "<module>"
-        if cls in ("Frame", "Dialog"):
+        if cls in ("Frame", "Dialog") or self._is_surface_super_init(node):
             for kw in node.keywords:
                 if kw.arg == "title":
                     key = f"{self._module}::{qualname}"

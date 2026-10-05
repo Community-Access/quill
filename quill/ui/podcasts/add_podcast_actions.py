@@ -36,6 +36,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from quill.ui.podcasts.say_status import say_status
+
 __all__ = [
     "FOLLOW_LABEL",
     "UNFOLLOW_LABEL",
@@ -140,17 +142,17 @@ def open_context_menu(dialog: Any, index: int) -> None:
     menu.Enable(copy_site_id, bool(homepage))
     menu.Enable(open_site_id, bool(homepage))
 
-    dialog.dialog.Bind(wx.EVT_MENU, lambda _e: dialog._on_follow_action(), id=follow_id)
-    dialog.dialog.Bind(wx.EVT_MENU, lambda _e: dialog._on_preview_selected(), id=preview_id)
-    dialog.dialog.Bind(
+    dialog.frame.Bind(wx.EVT_MENU, lambda _e: dialog._on_follow_action(), id=follow_id)
+    dialog.frame.Bind(wx.EVT_MENU, lambda _e: dialog._on_preview_selected(), id=preview_id)
+    dialog.frame.Bind(
         wx.EVT_MENU,
         lambda _e: _copy(dialog, result.feed_url, "Feed address copied"),
         id=copy_feed_id,
     )
-    dialog.dialog.Bind(
+    dialog.frame.Bind(
         wx.EVT_MENU, lambda _e: _copy(dialog, homepage, "Website address copied"), id=copy_site_id
     )
-    dialog.dialog.Bind(wx.EVT_MENU, lambda _e: _open_site(dialog, homepage), id=open_site_id)
+    dialog.frame.Bind(wx.EVT_MENU, lambda _e: _open_site(dialog, homepage), id=open_site_id)
 
     try:
         dialog._results.PopupMenu(menu)
@@ -255,7 +257,7 @@ def follow_action(dialog: Any) -> None:
     from quill.ui.podcasts.show_actions import unsubscribe_show_prompt
 
     if not unsubscribe_show_prompt(
-        dialog.dialog,
+        dialog.frame,
         dialog._library,
         existing,
         announce=dialog._announce,
@@ -263,5 +265,6 @@ def follow_action(dialog: Any) -> None:
     ):
         return
     title = str(getattr(existing, "title", "") or "that podcast")
-    dialog._status.SetLabel(f"No longer following {title}.")
+    # The unfollow itself already said so, with its undo offer.
+    say_status(dialog._status, f"No longer following {title}.", speak=False)
     refresh_row_following(dialog, index, result.feed_url)

@@ -101,6 +101,9 @@ def test_every_quilllite_field_is_either_shared_mapped_or_its_own() -> None:
         # Session restore is QuillLite-only until G4 gives QUILL one.
         "restore_session",
         "session_files",
+        # QUILL keeps its pins beside recent.json (recent-pinned.json), as it
+        # keeps the recent list itself outside Settings; same rules, one module.
+        "pinned_recent_files",
         # "Use QUILL's" only makes sense in the product that is not QUILL.
         # QUILL Lite's own, for now and on purpose. QUILL has AI already -- five
         # bring-your-own-key providers, local models, the agent harness -- and

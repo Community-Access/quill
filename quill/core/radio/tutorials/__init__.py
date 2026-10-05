@@ -29,6 +29,7 @@ from quill.core.radio.tutorials import (
     keys_and_settings,
     living_care,
     living_daily,
+    local_media,
     own_sources,
     pick_up_and_help,
     recording_basics,
@@ -42,41 +43,43 @@ TRACKS: tuple[Track, ...] = (
     Track(
         "first-hour",
         "Your first hour",
-        "Start here. By the end of this track you can find a station, keep it, "
-        "work the player from any window, and get yourself unstuck without "
-        "asking anybody.",
+        "Start here. By the end of this track you will have found a station and "
+        "kept it, you will know the player keys that work in every window, and "
+        "you will know how to get yourself unstuck.",
     ),
     Track(
         "finding",
         "Finding something to listen to",
-        "Several ways in: the tree, the search across every directory at once, "
-        "addresses of your own, and the catalog on your own disk that answers "
-        "when the internet does not.",
+        "Lots of ways to find something you will love: browsing, searching "
+        "every directory at once, adding stations of your own, and the station "
+        "list on your computer that works even without the internet.",
     ),
     Track(
         "yours",
         "Making it yours",
-        "Folders, order, columns, keys, and the handful of settings that "
-        "change how the app feels rather than what it can do.",
+        "Folders, your own order, what each row says, your own keys, and the "
+        "handful of settings that make Quill Radio feel like yours.",
     ),
     Track(
         "recording",
         "Recording",
-        "From one keypress to a show that records itself every Tuesday while "
-        "you are out -- and what happens when the connection does not hold.",
+        "From one key that records what is on, to a show that records itself "
+        "every Tuesday while you are out, and what happens if the connection "
+        "drops.",
     ),
     Track(
         "beyond",
         "More than radio",
-        "Podcasts, audiobooks, YouTube, television and the ACB Media schedule "
-        "all arrive through the same tree and play with the same keys.",
+        "Podcasts, audiobooks, YouTube, television and the ACB Media schedule. "
+        "They all live in Browse Stations and play with the keys you already "
+        "know.",
     ),
     Track(
         "living",
         "Living with it",
-        "The parts you meet after the first week: what was that song, keeping "
-        "a moment, sleeping, statistics, and where to look when something "
-        "goes wrong.",
+        "The things you will want after your first week: what was that song, "
+        "keeping a moment, sleep timers, your listening statistics, and where "
+        "to look when something goes wrong.",
     ),
 )
 
@@ -94,6 +97,7 @@ CATALOGUE: TutorialSet = build(
     recording_more.TUTORIALS,
     beyond_podcasts.TUTORIALS,
     beyond_tv.TUTORIALS,
+    local_media.TUTORIALS,
     downloads_and_video.TUTORIALS,
     living_daily.TUTORIALS,
     living_care.TUTORIALS,

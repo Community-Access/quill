@@ -63,7 +63,10 @@ def test_installer_version_matches_the_app_and_the_build() -> None:
     build = _BUILD.read_text(encoding="utf-8")
     assert f'#define AppVersion "{converter._VERSION}"' in iss
     assert f'$version = "{converter._VERSION}"' in build
-    assert f"VersionInfoVersion={converter._VERSION}.0" in iss
+    # Windows file version X.Y.Z.B: the version and its build (build numbers).
+    assert "VersionInfoVersion={#AppFileVersion}" in iss
+    assert f'#define AppFileVersion "{converter._VERSION}.{converter._BUILD}"' in iss
+    assert f'#define AppBuild "{converter._BUILD}"' in iss
 
 
 def test_installer_ships_ffmpeg_and_the_explorer_verb_task() -> None:

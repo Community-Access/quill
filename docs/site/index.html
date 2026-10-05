@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>QUILL - Screen-reader-first software, built by the community that depends on it</title>
-  <meta name="description" content="QUILL Lite 1.1 is out: AI help on the ChatGPT plan you already pay for, pictures described, web search and dictation, in a free talking editor for Windows. QUILL is a growing family of free, screen-reader-first software for Windows and macOS: the QUILL writing studio, the Quill Radio internet radio app, and more on the way. Every command speaks. Everything works from the keyboard. Built by the community that depends on it.">
+  <title>QUILL: free talking software for screen reader users</title>
+  <meta name="description" content="Free Windows software for people who use a screen reader. QUILL Lite is a simple editor that talks. Quill Radio plays internet radio. Quill Converter changes audio and video files from one format to another. QUILL is the full writing studio. Every command tells you what happened, and everything works from the keyboard.">
   <link rel="stylesheet" href="/assets/style.css">
 </head>
 <body>
@@ -67,79 +67,186 @@
 
   <main id="main" tabindex="-1">
 
-    <!-- QUILL Lite 1.1 splash, September 29, 2026 -->
+    <!-- Welcome. This is the page's one h1. It comes first so that someone
+         reading in order, or jumping by heading, meets "which app is for me"
+         before any feature list. A community member asked for beginners to
+         be met first, and that request still shapes the order of this page. -->
+    <div class="hero">
+      <div class="wrap">
+        <h1 id="welcome-h">Free software that talks to you, made for screen reader users</h1>
+        <p class="lede">
+          Welcome. We make free programs for people who use JAWS, NVDA or Narrator.
+          Every command tells you what happened. Every menu item tells you its key.
+          You can do everything from the keyboard, and nothing you write leaves your
+          computer unless you say so.
+        </p>
+        <p class="lede">Not sure where to start? Pick the line that sounds like you.</p>
+        <ul class="start-list">
+          <li><strong>I want a simple editor that talks.</strong> Start with <a href="#lite11-h">QUILL Lite</a>. If you can use Notepad, you can use QUILL Lite.</li>
+          <li><strong>I want to listen to the radio.</strong> Try <a href="#radio-announce-h">Quill Radio</a>. More than 62,000 stations come with it.</li>
+          <li><strong>I have an audio or video file in the wrong format.</strong> <a href="/converter.html">Quill Converter</a> changes it into the one you need, on your own computer.</li>
+          <li><strong>I want every writing tool there is.</strong> <a href="#quill-h">QUILL</a> is the full writing studio, for Windows and macOS. It is in beta.</li>
+          <li><strong>I cannot decide between the two editors.</strong> <a href="/compare.html">Compare QUILL and QUILL Lite</a>.</li>
+        </ul>
+        <div class="qv-callout qv-callout--bee">
+          <p class="qv-callout__label" id="qv-home-bee">QUILLBee's tip</p>
+          <p>You can't really pick wrong here. Every app is free, each one installs on its own, and they're happy to share a computer. Start with the one that sounds most like you, and add another whenever you're curious.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUILL Lite 1.1, September 29, 2026 -->
     <section class="band splash" aria-labelledby="lite11-h">
       <div class="wrap">
-        <p class="splash-kicker">New today</p>
-        <h1 id="lite11-h">QUILL Lite 1.1 is here, and it brought your ChatGPT plan with it.</h1>
+        <p class="splash-kicker">New</p>
+        <h2 id="lite11-h" class="splash-title">QUILL Lite 1.1: a simple editor that talks, and now it can use your ChatGPT plan</h2>
         <p class="splash-lede">
-          Five keys, five new tricks. Sign in to the ChatGPT plan you already pay for and every AI
-          command in QUILL Lite runs on it, with no key, no allowance, no size limit and no bill.
-          Then do two things a talking editor has never done for you: hear a picture described,
-          and look something up on the web. Dictation lands in the same release, with an AI that
-          fixes what the recogniser misheard and touches nothing else.
+          QUILL Lite is a small text editor for Windows. You type, it talks, and every
+          command tells you what it did. Version 1.1 adds five new things, each on its own
+          key. If you pay for ChatGPT, you can sign in once and use your plan for every AI
+          command, with no key to copy and no extra bill. You can also hear a picture
+          described, let the AI look things up on the web when you allow it, and write
+          with your voice.
         </p>
         <div class="cta">
-          <a class="btn" href="https://github.com/Community-Access/quill/releases/download/quill-lite-v1.1.2/QuillLite-Setup-Shared-1.1.2.exe">Download QUILL Lite 1.1.2 - Installer</a>
-          <a class="btn" href="https://github.com/Community-Access/quill/releases/download/quill-lite-v1.1.2/QuillLite-Portable-1.1.2.zip">Download QUILL Lite 1.1.2 - Portable</a>
-          <a class="btn secondary" href="/docs/quilllite-release-notes.html">Read what's new in 1.1</a>
-          <a class="btn secondary" href="/docs/quilllite-ai-guide.html">The complete AI guide</a>
+          <a class="btn" href="https://github.com/Community-Access/quill/releases/download/quill-lite-v1.1.2/QuillLite-Setup-Shared-1.1.2.exe">Download the QUILL Lite 1.1.2 installer</a>
+          <a class="btn" href="https://github.com/Community-Access/quill/releases/download/quill-lite-v1.1.2/QuillLite-Portable-1.1.2.zip">Download the QUILL Lite 1.1.2 portable ZIP</a>
+          <a class="btn secondary" href="/docs/quilllite-release-notes.html">Read what is new in 1.1</a>
+          <a class="btn secondary" href="/docs/quilllite-ai-guide.html">Read the AI guide</a>
         </div>
-        <p class="req-note">Windows 10 or later, 64-bit. Both downloads are digitally signed. Install over 1.0 and everything you have is kept. No ChatGPT plan? QUILL's free AI is still there, with no account, no password and no card.</p>
+        <p class="req-note">You need Windows 10 or later, 64-bit. Both downloads are digitally signed. If you have 1.0, install 1.1 over it and you keep everything. No ChatGPT plan? The free AI is still there, with no account, no password and no card.</p>
 
         <ul class="splash-tiles" aria-label="What is new in QUILL Lite 1.1">
           <li class="tile tile-1">
             <p class="tile-key"><kbd>Alt</kbd>+<kbd>F5</kbd></p>
-            <h2>Your ChatGPT plan, no key required</h2>
-            <p>Press it, choose <strong>Continue with ChatGPT</strong>, sign in the way you do on the web, allow QUILL Lite to use your plan, and come back. That is the whole setup. The model list is your plan's own, the first one is chosen for you, and Sign Out is two presses whenever you like.</p>
+            <h3>Use your ChatGPT plan</h3>
+            <p>Press Alt+F5 and choose <strong>Continue with ChatGPT</strong>. Your browser opens. Sign in the way you always do, allow QUILL Lite to use your plan, and come back. That is all the setup there is. Signing out later takes two key presses.</p>
           </li>
           <li class="tile tile-2">
             <p class="tile-key"><kbd>Ctrl</kbd>+<kbd>F5</kbd></p>
-            <h2>Pictures, described</h2>
-            <p>The screenshot a colleague sent with "see attached". The photo of a letter. The chart in a report. The menu on a website. Choose the file, ask a question or ask nothing, and hear what is in it, with every word of text transcribed exactly. <strong>Insert Below</strong> puts the description into your document.</p>
+            <h3>Hear a picture described</h3>
+            <p>Someone sent you a screenshot, a photo of a letter, or a chart. Press Ctrl+F5, choose the file, and ask a question if you have one. You hear what is in the picture, and any text in it is read to you word for word. <strong>Insert Below</strong> puts the description into your document.</p>
           </li>
           <li class="tile tile-3">
-            <p class="tile-key"><kbd>Alt</kbd>+<kbd>W</kbd> in the account window</p>
-            <h2>Web search, when you say so</h2>
-            <p>One checkbox, off until you check it. On, the model may look up an event, a price, or what a page says today, in a general question, a question about your document, or a conversation. A search is a second thing sent somewhere, so it is yours to allow.</p>
+            <p class="tile-key"><kbd>Alt</kbd>+<kbd>W</kbd> in the ChatGPT window</p>
+            <h3>Web search, only if you allow it</h3>
+            <p>There is one checkbox for web search, and it starts off. Check it, and the AI can look up today's news, a price, or what a web page says now. Leave it off, and nothing extra is sent anywhere.</p>
           </li>
           <li class="tile tile-4">
             <p class="tile-key"><kbd>Ctrl</kbd>+<kbd>F11</kbd></p>
-            <h2>Dictation that ships in the box</h2>
-            <p>Talk, pause, and hear what was written, with the punctuation put in for you. The recogniser lives inside QUILL Lite, nothing you say leaves the computer, Escape throws a phrase away, and one Ctrl+Z undoes one phrase. <a href="/dictation.html">The complete dictation guide</a> has every key and every spoken command.</p>
+            <h3>Write with your voice</h3>
+            <p>Press Ctrl+F11, talk, and pause. QUILL Lite writes what you said, puts in the punctuation, and reads it back to you. It all happens on your computer, so nothing you say is sent anywhere. <a href="/dictation.html">The dictation guide</a> has every key and every spoken command.</p>
           </li>
           <li class="tile tile-5">
             <p class="tile-key"><kbd>Ctrl</kbd>+<kbd>F3</kbd></p>
-            <h2>Tidy Dictated Text</h2>
-            <p>"Their" for "there", a name the recogniser had never met, two words run together, a comma where a full stop belonged, and every "um". Ctrl+F3 sends the paragraph to the model with one instruction: fix what was misheard, change nothing else. Replace My Selection puts it back; Ctrl+Z takes it away.</p>
+            <h3>Tidy Dictated Text</h3>
+            <p>Dictation sometimes mishears you. "Their" turns up where you said "there", or a name comes out wrong. Put the cursor in the paragraph and press Ctrl+F3. The AI fixes what was misheard and leaves everything else alone. <strong>Replace My Selection</strong> puts the tidy version in, and Ctrl+Z takes it back out. This one needs a ChatGPT plan or your own AI key (OpenAI or Google Gemini).</p>
           </li>
         </ul>
 
         <div class="splash-try">
-          <h2 id="lite11-try-h">Your first five minutes</h2>
+          <h3 id="lite11-try-h">Your first five minutes</h3>
           <ol aria-labelledby="lite11-try-h">
-            <li>Press <kbd>Alt</kbd>+<kbd>F5</kbd>, then <strong>Continue with ChatGPT</strong>. Sign in in your browser, allow <strong>QUILL Lite</strong>, and come back. You hear "Signed in with ChatGPT as" your address.</li>
-            <li>Press <kbd>Ctrl</kbd>+<kbd>F5</kbd>, <strong>Browse</strong> to any screenshot on your computer, and press <kbd>Enter</kbd>. Listen.</li>
-            <li>Select a paragraph you are not proud of, press <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>G</kbd>, arrow to <strong>Proofread</strong>, and press <kbd>Enter</kbd>. Then press <strong>Replace My Selection</strong>.</li>
+            <li>Press <kbd>Alt</kbd>+<kbd>F5</kbd>, then press <strong>Continue with ChatGPT</strong>. Sign in on the web page that opens, allow <strong>QUILL Lite</strong>, and come back. You hear "Signed in with ChatGPT as", then your address. No plan? Skip this step.</li>
+            <li>Press <kbd>Ctrl</kbd>+<kbd>F5</kbd>, choose <strong>Browse</strong>, pick any screenshot on your computer, and press <kbd>Enter</kbd>. Then listen.</li>
+            <li>Select a paragraph, press <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>G</kbd> to open the AI Assistant, arrow down to <strong>Proofread</strong>, and press <kbd>Enter</kbd>. If you like what you hear, press <strong>Replace My Selection</strong>.</li>
           </ol>
-          <p>Also new in 1.1: ten more writing tools in the AI pad, conversations that remember what was said, and your own OpenAI key as a third route. <a href="/quilllite.html">Explore QUILL Lite</a>, or read the <a href="/docs/quilllite-userguide.html">user guide</a>.</p>
+          <p>Version 1.1 also brings ten more writing tools in the AI Assistant, conversations that remember what you said, and a way to use your own AI key. <a href="/quilllite.html">Find out more about QUILL Lite</a>, or read the <a href="/docs/quilllite-userguide.html">user guide</a>.</p>
         </div>
       </div>
     </section>
 
-    <!-- Hero -->
-    <div class="hero">
+    <!-- Everything about QUILL Lite: the documentation cards -->
+    <section class="band" aria-labelledby="lite-docs-h">
       <div class="wrap">
-        <h2>Accessible software built around your screen reader - not around an afterthought.</h2>
-        <p class="lede">
-          QUILL began as a writing studio and has grown into a small family of free,
-          screen-reader-first software for Windows and macOS, built by the community that
-          depends on it: the <strong>QUILL</strong> writing environment, the new
-          <strong>Quill Radio</strong> internet radio app, and a dedicated podcast client on
-          the way. Every command announces its outcome. Everything works from the keyboard.
-          Your data never leaves your device without your explicit say-so. QUILL itself is at
-          version 0.9.0 - the final feature beta before 1.0 - with everything this project set
-          out to build already in the product.
+        <h2 id="lite-docs-h">Learn QUILL Lite</h2>
+        <p class="intro">New to QUILL Lite? Start with the nine lessons. Each one tells you what to press and what you should hear.</p>
+        <div class="cards">
+          <div class="card">
+            <h3><a href="/docs/quilllite-tutorials.html">The nine lessons</a></h3>
+            <p>Short lessons, one skill at a time. Each step says what to press, why, and what you should hear when it worked.</p>
+          </div>
+          <div class="card">
+            <h3><a href="/docs/quilllite-userguide.html">The user guide</a></h3>
+            <p>Every menu, every key and every setting, from the status bar to the Keyboard Manager.</p>
+          </div>
+          <div class="card">
+            <h3><a href="/docs/quilllite-ai-guide.html">The AI guide</a></h3>
+            <p>Every AI command, what gets sent when you use it, how to ask about a whole document, and how your privacy is kept.</p>
+          </div>
+          <div class="card">
+            <h3><a href="/docs/quilllite-release-notes.html">Release notes</a></h3>
+            <p>What is new in version 1.1, key by key: your ChatGPT plan, pictures described, web search, dictation and Tidy Dictated Text.</p>
+          </div>
+          <div class="card">
+            <h3><a href="/docs/quilllite-announcement.html">The 1.0 announcement</a></h3>
+            <p>Why we put AI in the editor you already write in, and how to get your first answer in a minute.</p>
+          </div>
+          <div class="card">
+            <h3><a href="/docs/quilllite-changelog.html">Changelog</a></h3>
+            <p>Every change, sorted into what was added, what changed and what was fixed.</p>
+          </div>
+          <div class="card">
+            <h3><a href="/docs/quilllite-prd.html">Product requirements</a></h3>
+            <p>Why QUILL Lite exists, and what it leaves out on purpose.</p>
+          </div>
+          <div class="card">
+            <h3><a href="https://ai.community-access.org">The free AI service</a></h3>
+            <p>What the free service does with your writing, how much you can use it, and what it costs us to run.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quill Radio 3.0, September 26, 2026 -->
+    <section class="band callout" aria-labelledby="radio-announce-h">
+      <div class="wrap">
+        <h2 id="radio-announce-h">Quill Radio 3.0: internet radio made for screen reader users</h2>
+        <p class="intro">
+          Quill Radio plays internet radio. More than 62,000 stations come inside the app,
+          so browsing and searching are quick, and they work even when you are offline.
+          You can browse by country, by language, or by what is popular today. There are
+          also audiobooks from LibriVox and the Internet Archive, podcasts with no account
+          to make, YouTube and TV.
+        </p>
+        <p class="intro">
+          Search understands how people talk about stations. Type "Sunny 105.7 Gulf Shores
+          Alabama" and Quill Radio looks for the name, the frequency and the town. You can
+          rewind live radio 30 seconds at a time with Ctrl+Shift+Left, and Ctrl+Shift+L
+          takes you back to live. Every menu item tells you its key. If you delete something
+          by mistake, Ctrl+Z brings it back. And <strong>Help &gt; Tutorials</strong>
+          (Ctrl+Alt+F1) teaches you the app one step at a time.
+        </p>
+        <p class="intro">Version 3.0.4 came out on September 28, 2026, for Windows 10 or later, 64-bit.
+          There are two downloads, and both are signed. Most people want the installer. The
+          portable ZIP runs from a folder and writes nothing to the computer. You can also
+          see both on the <a href="https://github.com/Community-Access/quill/releases/tag/quill-radio-v3.0.4">Quill Radio 3.0.4 release page</a>.</p>
+        <div class="cta">
+          <a class="btn" href="https://github.com/Community-Access/quill/releases/download/quill-radio-v3.0.4/Quill-Radio-Setup-Shared-3.0.4.exe">Download the Quill Radio 3.0.4 installer (recommended)</a>
+          <a class="btn" href="https://github.com/Community-Access/quill/releases/download/quill-radio-v3.0.4/Quill-Radio-Portable-3.0.4.zip">Download the Quill Radio 3.0.4 portable ZIP</a>
+          <a class="btn secondary" href="/radio.html">Find out more about Quill Radio</a>
+          <a class="btn secondary" href="/docs/radio-userguide.html">Read the user guide</a>
+          <a class="btn secondary" href="/docs/radio-release-notes.html">Read the 3.0 release notes</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUILL, the full writing studio -->
+    <section class="band" aria-labelledby="quill-h">
+      <div class="wrap">
+        <h2 id="quill-h">QUILL, the full writing studio</h2>
+        <p class="intro">
+          QUILL is where this family of apps began. It is a writing studio for Windows and
+          macOS that opens almost any document, reads to you, takes dictation, and has a
+          tool for nearly every writing job. It is free. Version 0.9.0 is the last beta
+          before 1.0. Everything we planned is already in it, and from here on the work is
+          fixing and polishing.
+        </p>
+        <p>
+          QUILL 1.0 is not out yet. The download here is 0.9.0 Beta 2, and it is the
+          one to get. The QUILL user guide is written for 1.0, so now and then it may
+          describe something your copy does not have yet. When 1.0 is ready, it will be
+          right here, and QUILL's Check for Updates will tell you.
         </p>
         <p class="acronym">
           <strong>Q</strong>uality <span aria-hidden="true">&middot;</span>
@@ -149,133 +256,55 @@
           <strong>L</strong>iterate
         </p>
         <div class="cta">
-          <a class="btn" href="https://github.com/Community-Access/quill/releases/download/v0.9.0-beta.2/Quill-for-All-Setup-0.9.0.Beta.2.exe">Download QUILL 0.9.0 Beta 2 - Windows Installer (Online)</a>
-          <a class="btn" href="https://github.com/Community-Access/quill/releases/download/v0.9.0-beta.2/Quill-for-All-Setup-Offline-0.9.0.Beta.2.exe">Download QUILL 0.9.0 Beta 2 - Windows Installer (Offline)</a>
-          <a class="btn" href="https://github.com/Community-Access/quill/releases/download/v0.9.0-beta.2/Quill-Portable-v0.9.0-beta.2.zip">Download QUILL 0.9.0 Beta 2 - Windows Portable (Online)</a>
-          <a class="btn" href="https://github.com/Community-Access/quill/releases/download/v0.9.0-beta.2/Quill-Portable-Offline-0.9.0-beta.2.zip">Download QUILL 0.9.0 Beta 2 - Windows Portable (Offline)</a>
-          <a class="btn" href="https://github.com/Community-Access/quill/releases/download/v0.9.0-beta.2/Quill.dmg">Download QUILL 0.9.0 Beta 2 - macOS</a>
+          <a class="btn" href="https://github.com/Community-Access/quill/releases/download/v0.9.0-beta.2/Quill-for-All-Setup-0.9.0.Beta.2.exe">Download QUILL 0.9.0 Beta 2 Windows installer (online)</a>
+          <a class="btn" href="https://github.com/Community-Access/quill/releases/download/v0.9.0-beta.2/Quill-for-All-Setup-Offline-0.9.0.Beta.2.exe">Download QUILL 0.9.0 Beta 2 Windows installer (offline)</a>
+          <a class="btn" href="https://github.com/Community-Access/quill/releases/download/v0.9.0-beta.2/Quill-Portable-v0.9.0-beta.2.zip">Download QUILL 0.9.0 Beta 2 Windows portable (online)</a>
+          <a class="btn" href="https://github.com/Community-Access/quill/releases/download/v0.9.0-beta.2/Quill-Portable-Offline-0.9.0-beta.2.zip">Download QUILL 0.9.0 Beta 2 Windows portable (offline)</a>
+          <a class="btn" href="https://github.com/Community-Access/quill/releases/download/v0.9.0-beta.2/Quill.dmg">Download QUILL 0.9.0 Beta 2 for macOS</a>
           <a class="btn secondary" href="/docs/release1.0.0.html">What's new in 1.0.0</a>
           <a class="btn secondary" href="/docs/userguide.html">User guide</a>
         </div>
-        <p class="req-note">Windows 10 or later, 64-bit. Online installers download optional components on first use; offline installers bundle everything. Extract portable ZIPs and run from any folder. macOS 12 or later: download the disk image (.dmg) and drag QUILL to Applications. The Python runtime is included in all builds.</p>
-      </div>
-    </div>
-
-    <!-- Everything about QUILL Lite: the documentation cards -->
-    <section class="band" aria-labelledby="lite-docs-h">
-      <div class="wrap">
-        <h2 id="lite-docs-h">Everything about QUILL Lite</h2>
-        <div class="cards">
-          <div class="card">
-            <h3><a href="/docs/quilllite-announcement.html">The 1.0 announcement</a></h3>
-            <p>Why AI belongs in the editor you already write in, your first answer in a minute, and everything the editor does.</p>
-          </div>
-          <div class="card">
-            <h3><a href="/docs/quilllite-ai-guide.html">The AI guide</a></h3>
-            <p>Every AI command, exactly what is sent - selection, paragraph or section - how asking about a whole document works, the answer window, limits and privacy.</p>
-          </div>
-          <div class="card">
-            <h3><a href="/docs/quilllite-userguide.html">The user guide</a></h3>
-            <p>Every menu, every key and every setting, from the status bar to the Keyboard Manager.</p>
-          </div>
-          <div class="card">
-            <h3><a href="/docs/quilllite-tutorials.html">The nine lessons</a></h3>
-            <p>Each step says what to press, why, and what you should hear when it worked.</p>
-          </div>
-          <div class="card">
-            <h3><a href="/docs/quilllite-release-notes.html">Release notes</a></h3>
-            <p>What is new in QUILL Lite 1.1, step by step and key by key: your ChatGPT plan, pictures described, web search, dictation and Tidy Dictated Text.</p>
-          </div>
-          <div class="card">
-            <h3><a href="/docs/quilllite-changelog.html">Changelog</a></h3>
-            <p>Every change, grouped into what was added, what changed and what was fixed.</p>
-          </div>
-          <div class="card">
-            <h3><a href="/docs/quilllite-prd.html">Product requirements</a></h3>
-            <p>Why a second editor exists, and what it deliberately does not do.</p>
-          </div>
-          <div class="card">
-            <h3><a href="https://ai.community-access.org">The free AI service</a></h3>
-            <p>What the service does with your writing, how the allowance works, and what it costs to run.</p>
-          </div>
-        </div>
+        <p class="req-note">Windows 10 or later, 64-bit. The online installers download some parts the first time you use them. The offline installers include everything. To use a portable ZIP, unzip it and run QUILL from that folder. On macOS 12 or later, download the disk image (.dmg) and drag QUILL to Applications. You do not need to install Python. It is included.</p>
       </div>
     </section>
 
-    <!-- Quill Radio 3.0 announcement, September 26, 2026 -->
-    <section class="band callout" aria-labelledby="radio-announce-h">
-      <div class="wrap">
-        <h2 id="radio-announce-h">Quill Radio 3.0 is here - a radio that answers the questions people actually arrive with</h2>
-        <p class="intro">
-          <strong>More than thirty branches</strong> to wander in Browse Stations - by country, by
-          language, by what is trending today, plus the Internet Archive, LibriVox, Project
-          Gutenberg, podcasts with no account, SHOUTcast, Live365, YouTube and television - and
-          <strong>more than 62,000 stations ship inside the app</strong>, so browsing and search
-          answer instantly and keep answering with no internet at all. Search now finds the
-          station you meant: "Sunny 105.7 Gulf Shores Alabama" is a brand, a frequency and a place,
-          and Quill Radio asks each directory the right question.
-        </p>
-        <p class="intro">
-          Described audio tracks are named and offered, never hidden behind "Track 2". Anything
-          with an end has chapters, a position you can go to, and a transcript you can search.
-          Every window reaches the player, every menu item names its key, Ctrl+Z takes back the
-          last destructive action, and <strong>Help &gt; Tutorials</strong> (Ctrl+Alt+F1) teaches
-          the app one step at a time. Live radio can be rewound 30 seconds at a time and
-          brought back to live. Two downloads: the installer most people want, and a
-          portable ZIP that writes nothing to the computer it runs on.
-        </p>
-        <p class="intro">Version 3.0.4, released 2026-09-28, for Windows 10 or later, 64-bit.
-          Both downloads are signed and on the <a href="https://github.com/Community-Access/quill/releases/tag/quill-radio-v3.0.4">Quill Radio 3.0.4 release page</a>.</p>
-        <div class="cta">
-          <a class="btn" href="https://github.com/Community-Access/quill/releases/download/quill-radio-v3.0.4/Quill-Radio-Setup-Shared-3.0.4.exe">Download the Quill Radio 3.0.4 installer (recommended)</a>
-          <a class="btn" href="https://github.com/Community-Access/quill/releases/download/quill-radio-v3.0.4/Quill-Radio-Portable-3.0.4.zip">Download the Quill Radio 3.0.4 portable ZIP</a>
-          <a class="btn secondary" href="/radio.html">Explore Quill Radio</a>
-          <a class="btn secondary" href="/docs/radio-userguide.html">Read the user guide</a>
-          <a class="btn secondary" href="/docs/radio-release-notes.html">Read the 3.0 release notes</a>
-        </div>
-      </div>
-    </section>
-
-    <!-- Beginners start here: kept immediately after the hero so a screen
-         reader reading in document order (or jumping by heading) meets the
-         learning material before any feature marketing. Requested by a
-         community member: beginners need the podcast and the guide first,
-         not agents and snippets. -->
+    <!-- Beginners start here: the learning material for QUILL, kept before
+         any feature list. Requested by a community member: beginners need
+         the podcast and the guide first, not agents and snippets. -->
     <section class="band" aria-labelledby="beginners-h">
       <div class="wrap">
-        <h2 id="beginners-h">Beginners start here</h2>
+        <h2 id="beginners-h">New to QUILL? Start here</h2>
         <p class="intro">
-          New to QUILL? You do not need to read this whole page. These three things
-          will teach you the program, in whichever way you like to learn.
+          You do not need to read the rest of this page. Pick the way you like to learn,
+          and start there.
         </p>
         <div class="cards">
           <div class="card">
-            <h3><a href="/podcast/index.html">Learn by listening: The QUILL Cast</a></h3>
-            <p>A free 54-episode audio course that teaches all of QUILL by ear, from
-            the installer to every feature - about fifteen minutes per part, with
-            hands-on homework at the end of each episode. Play episodes right on the
-            page, read the full transcripts, or <a href="/podcast/feed.xml">subscribe
+            <h3><a href="/podcast/index.html">Learn by listening: The QUILL Cast audio course</a></h3>
+            <p>A free audio course in 54 episodes. It takes you from the installer
+            to every feature, and each episode ends with something to try. Play episodes
+            on the page, read the transcripts, or <a href="/podcast/feed.xml">subscribe
             by RSS</a> in any podcast app.</p>
             <span class="more"><a href="/podcast/index.html">Start episode one <span aria-hidden="true">&rarr;</span></a></span>
           </div>
           <div class="card">
             <h3><a href="/tutorials/index.html">Learn by doing: hands-on tutorials</a></h3>
-            <p>Ten complete walkthroughs, ten to twenty minutes each, starting with
-            "your first hour in QUILL" - install, write, save, and hear what QUILL
-            tells you along the way.</p>
+            <p>Ten walkthroughs of ten to twenty minutes each. The first one is
+            "Your first hour in QUILL": install it, write something, save it, and
+            hear what QUILL tells you along the way.</p>
             <span class="more"><a href="/tutorials/index.html">Start the first tutorial <span aria-hidden="true">&rarr;</span></a></span>
           </div>
           <div class="card">
             <h3><a href="/docs/quill-step-by-step.html">Learn by listening: QUILL, Step by Step</a></h3>
-            <p>A manual written to be read aloud: seventeen short chapters, one
-            skill each, at a walking pace. Download the EPUB and follow along in
+            <p>A book written to be read aloud: seventeen short chapters, one
+            skill each, at a gentle pace. Download the EPUB and follow along in
             ElevenReader, Voice Dream, or any reading app.</p>
             <span class="more"><a href="/docs/quill-step-by-step.epub">Download QUILL, Step by Step as an EPUB <span aria-hidden="true">&rarr;</span></a></span>
           </div>
           <div class="card">
             <h3><a href="/docs/userguide.html">Learn by reading: the user guide</a></h3>
-            <p>The complete reference: writing, navigation, every command and setting,
-            and all of QUILL's accessibility features explained in plain language.</p>
+            <p>The full reference: writing, moving around, every command and setting,
+            and all of QUILL's accessibility features, in plain language.</p>
             <span class="more"><a href="/docs/userguide.html">Open the user guide <span aria-hidden="true">&rarr;</span></a></span>
           </div>
         </div>
@@ -285,24 +314,29 @@
     <!-- Community -->
     <section class="band" aria-labelledby="community-h">
       <div class="wrap">
-        <h2 id="community-h">Built by the community that depends on it</h2>
+        <h2 id="community-h">Made with the people who use it</h2>
         <p class="intro">
-          QUILL is not accessibility software written <em>about</em> blind writers. It is writing
-          software built <em>with</em> them - and every release carries the community's fingerprints.
+          QUILL is not software made <em>about</em> blind writers. It is made <em>with</em>
+          them, and every release has their fingerprints on it.
         </p>
         <div class="features">
           <div class="feature">
-            <h3>Eight lines rewrote saving</h3>
-            <p>A beta tester wrote eight lines, saved as Word, and noticed three quiet lies: a stuck title bar, a forgotten filename, and lines fused into one. Her report rebuilt the entire save pipeline - every save in QUILL now tells the truth, out loud, and a whole class of data loss became impossible. One email. That is how this project works.</p>
+            <h3>Eight lines changed how QUILL saves</h3>
+            <p>A beta tester typed eight lines, saved them as a Word file, and noticed three things wrong: the title bar did not change, the file name was forgotten, and her lines ran together. Her report led us to rebuild how QUILL saves. Now every save tells you, out loud, what really happened. That was one email.</p>
           </div>
           <div class="feature">
-            <h3>Feedback becomes features</h3>
-            <p>The "Beginners start here" section at the top of this very page came from a mailing-list suggestion. Contributed fixes ship with credit in the release notes. Issues filed by testers are the roadmap. If something creaks, say so - the people who report things shape what QUILL becomes.</p>
+            <h3>Your feedback becomes features</h3>
+            <p>The "New to QUILL? Start here" section on this page came from a mailing-list suggestion. Fixes people send us are credited in the release notes, and what testers report is what we work on next. If something is not right, tell us.</p>
           </div>
           <div class="feature">
-            <h3>Free for everyone, always</h3>
-            <p>Every feature of QUILL is free and always will be. The Golden Quills - supporters who chose to give when giving was never required - are thanked by name in the About dialog, and their generosity helps keep it that way. Donating is optional; the software is yours regardless.</p>
+            <h3>Free for everyone</h3>
+            <p>Every feature of QUILL is free, and it will stay that way. The Golden Quills are people who chose to give anyway. They are thanked by name in the About dialog, and their gifts help keep it free. Giving is up to you. The software is yours either way.</p>
           </div>
+        </div>
+        <div class="qv-callout qv-callout--bert">
+          <p class="qv-callout__label" id="qv-home-bert">QUILLBert's Corner</p>
+          <p>QUILLBert wandered in while we were rewriting this page and hasn't left since. He's the curious one, the QUILLVille porcupine who finds things. His friend QUILLBee is the one who explains them. You'll bump into both of them around the site from now on.</p>
+          <p><a href="/meet-quillbert-and-quillbee.html">Meet QUILLBert and QUILLBee, in Jeff's own words</a></p>
         </div>
       </div>
     </section>
@@ -312,127 +346,116 @@
       <div class="wrap">
         <h2 id="sr-h">Built for the way you work with a screen reader</h2>
         <p class="intro">
-          QUILL does not add accessibility at the end. Screen-reader use shapes every design
-          decision, from focus management to announcement phrasing to keyboard navigation.
-          Open any topic below to go deeper.
+          QUILL was made for screen readers from the start. Open any topic below to
+          read more about it.
         </p>
 
         <details class="deep">
-          <summary><h3>Spoken-first: the announcement engine</h3></summary>
+          <summary><h3>Every command tells you what happened</h3></summary>
           <div>
-            <p>Every command in QUILL announces a clear outcome: "Wrapped 3 words in bold",
-            "Nothing selected", "Saved." A command that succeeds silently is treated as a bug,
-            and NVDA, JAWS, and Narrator parity is a design requirement, not an afterthought.
-            One announcement engine serves the whole application - every built-in command and
-            every extension speaks through the same channel, with selectable backends and
-            automatic screen-reader detection.</p>
+            <p>Every command in QUILL says how it went: "Wrapped 3 words in bold",
+            "Nothing selected", "Saved." It works the same way with NVDA, JAWS and
+            Narrator, and QUILL finds your screen reader for you. Add-ons speak through
+            the same channel as everything else.</p>
             <h4>The Spoken Echo</h4>
-            <p>Speech disappears the instant it is spoken - except in QUILL. The Spoken Echo
-            keeps the last twenty announcements in a read-only dialog you can arrow through,
-            re-read, and copy (Alt+Shift+E). Double-press any informational command - Describe
-            Formatting, Document Summary, Context Help - and it opens the Echo instead of
-            re-speaking.</p>
+            <p>Speech is gone as soon as it is spoken. The Spoken Echo (Alt+Shift+E) keeps
+            the last twenty announcements in a list you can arrow through, read again and
+            copy. Press an information command twice, such as Describe Formatting or
+            Document Summary, and the Echo opens instead of speaking again.</p>
             <h4>Describe anything</h4>
-            <p>Describe Formatting at Cursor speaks exactly what is in effect ("Arial, 14
-            point, centered, bold"). Describe Character at Cursor names the character under
-            the caret - Unicode name, code point, category, notes for invisibles. Document
-            summaries, context help, and F1 topics on every one of 460+ commands round it out:
-            if you can reach it, QUILL can explain it.</p>
+            <p>Describe Formatting at Cursor tells you what is in effect, such as "Arial, 14
+            point, centered, bold". Describe Character at Cursor names the character under
+            the cursor. Every one of more than 460 commands has its own F1 help, so if you
+            can reach it, QUILL can explain it.</p>
           </div>
         </details>
 
         <details class="deep">
-          <summary><h3>Keyboard-complete: palette, keymap, and chords</h3></summary>
+          <summary><h3>Everything from the keyboard</h3></summary>
           <div>
-            <p>Everything is reachable and operable from the keyboard alone. Dialogs have
-            predictable focus, explicit defaults, and no traps - a contract audited by
-            automated gates across 370+ dialog surfaces. The command palette (Ctrl+Shift+P)
-            gives instant keyboard access to every command in the application.</p>
+            <p>You can do everything from the keyboard. Dialogs put focus where you expect
+            it, have a clear default button, and never trap you. The command palette
+            (Ctrl+Shift+P) finds any command by name.</p>
             <h4>A keymap manager that answers questions</h4>
-            <p>The Keymap Editor searches two ways from one box: type part of a command name
-            to filter, or type a shortcut - <code>ctrl+alt+m</code>, even a QUILL chord - to
-            learn exactly which command owns it, or that it is free. Record Keys lets you
-            press a combination instead of typing it. Assigning a taken key names its owner
-            and offers to reassign, and Run Diagnostics audits the whole keymap for
-            duplicates, orphans, and inert bindings, with one-press healing.</p>
+            <p>The Keymap Editor searches two ways from one box. Type part of a command name
+            to find it, or type a shortcut such as <code>ctrl+alt+m</code> to learn which
+            command has it, or that it is free. Record Keys lets you press the keys instead
+            of typing them. If a key is taken, QUILL tells you which command has it and
+            offers to move it. Run Diagnostics checks the whole keymap for problems and
+            offers to fix them.</p>
             <h4>Keyboard packs</h4>
-            <p>Whole shortcut schemes export and import as .kqp keyboard packs - share the
-            muscle memory of a WordPerfect-style or word-processor-style layout, or publish
-            your own on the Quillin Hub.</p>
+            <p>You can save a whole set of shortcuts as a .kqp keyboard pack and share it,
+            or install one someone else made, such as a WordPerfect-style layout. Packs can
+            be shared on the Quillin Hub.</p>
           </div>
         </details>
 
         <details class="deep">
-          <summary><h3>Verbosity, sounds, and braille</h3></summary>
+          <summary><h3>How much it says, sounds, and braille</h3></summary>
           <div>
-            <p>How much QUILL says - and when, and how - is tunable end to end. Verbosity
-            profiles shape announcement detail; indentation can be spoken as "4 spaces" or
-            "1 tab" or not at all; dialog enter/exit cues are off by default because your
-            screen reader already announces dialogs, and one setting brings them back.</p>
+            <p>You decide how much QUILL says. Verbosity profiles set how much detail you
+            hear. Indentation can be spoken as "4 spaces", "1 tab", or not at all. Sounds
+            for opening and closing dialogs are off at first, because your screen reader
+            already tells you, and one setting turns them back on.</p>
             <h4>Sound events and sound packs</h4>
-            <p>Saves, errors, sync states, and the nine voice-interaction cues are real,
-            named sound events. Swap the entire palette with a sound pack, retune a single
-            event, or silence any of them - and share your palette on the Hub.</p>
+            <p>Saving, errors and the voice control cues each have their own sound. You can
+            swap them all with a sound pack, change just one, or turn any of them off, and
+            share your sounds on the Hub.</p>
             <h4>Braille-aware, byte-exact</h4>
-            <p>Status strings are short and meaning-first for braille displays. BRF files
-            honor a strict byte-for-byte contract - form feeds, trailing spaces, and line
-            endings survive exactly - and page-layout proofreading finds the longest line and
-            longest page against your embosser's limits before you send it.</p>
+            <p>Status messages are short, with the meaning first, so they fit on a braille
+            display. BRF files are saved exactly as they came, down to the last space and
+            form feed. Before you emboss, QUILL can find the longest line and the longest
+            page, so you know they fit your embosser.</p>
           </div>
         </details>
 
         <details class="deep">
-          <summary><h3>Selection and navigation you can trust</h3></summary>
+          <summary><h3>Selecting and moving around</h3></summary>
           <div>
-            <p>Structured selection tools let you start, extend, complete, and reselect by
-            word, sentence, line, paragraph, or block - deliberate and reviewable, never
-            dependent on visual feedback.</p>
+            <p>Select by word, sentence, line, paragraph or block, and grow or shrink the
+            selection as you go. You never need to see the screen to know what is
+            selected.</p>
             <h4>Move like the document is yours</h4>
-            <p>Navigate by heading, paragraph, block, list, table, bookmark, code block,
-            link, or search result. The Outline Navigator holds the whole structure -
-            headings, bookmarks, sticky notes, search matches - at any moment. Alt+1 through
-            Alt+0 jump straight to an open document instead of cycling.</p>
+            <p>Move by heading, paragraph, list, table, bookmark, code block, link or search
+            result. The Outline Navigator shows the whole shape of your document:
+            headings, bookmarks, sticky notes and search matches. Alt+1 through Alt+0 jump
+            straight to an open document.</p>
             <h4>Places that remember you</h4>
-            <p>Named bookmarks belong to the specific file you set them in and persist across
-            sessions. Your last cursor position returns when a document reopens. Inline notes
-            anchor your comments to the text they are about and follow it through edits.</p>
+            <p>Named bookmarks stay with the file you set them in, from one day to the next.
+            When you reopen a document, the cursor goes back to where you left it. Notes
+            you add stay with the text they are about, even as you edit.</p>
             <h4>A status bar that acts</h4>
-            <p>Word count, selection details, spelling state, background tasks, autosave
-            state, copy tray, screen-reader detection - each status cell is
-            keyboard-activatable. The status bar is an action hub, not a decoration.</p>
+            <p>The status bar shows word count, selection, spelling, background tasks,
+            autosave, the copy tray and your screen reader. You can move to any of these
+            and act on it from the keyboard.</p>
           </div>
         </details>
 
         <details class="deep">
           <summary><h3>Your language, your look, your quiet</h3></summary>
           <div>
-            <p>The interface is translatable with a display-language switcher, themes follow
-            system, light, or dark with real contrast in both, and motion is minimal by
-            design. An optional system-tray presence keeps QUILL a keystroke away - with the
-            Copy Tray reachable from the tray menu - and a notification center collects
-            update and workflow events instead of interrupting your writing.</p>
-            <h4>QUILL parla italiano - the first community translation</h4>
-            <p>QUILL's first shipped display language beyond English arrived from the
-            community, not a vendor: menus, dialogs, and spoken messages, translated in full
-            by <strong>Elena Brescacin</strong> (<a href="https://github.com/elettrona">elettrona</a>)
-            - 669 of 672 catalog strings at contribution, checked by the CI placeholder and
-            coverage gates, and compiled into every build. Switch it under
-            <strong>Tools &gt; Writing and Language &gt; Change Display Language</strong> -
-            spoken messages change immediately, menus after a restart. Untranslated strings
-            fall back to English, and the refreshed template ships in-repo so the
-            translation keeps growing. Grazie mille, Elena.</p>
+            <p>You can change the language QUILL uses, choose the system, light or dark
+            theme, and keep QUILL in the system tray, with the Copy Tray on the tray menu.
+            A notification center collects updates and other news so they do not interrupt
+            your writing.</p>
+            <h4>QUILL parla italiano: the first community translation</h4>
+            <p>QUILL's first translation came from the community.
+            <strong>Elena Brescacin</strong> (<a href="https://github.com/elettrona">elettrona</a>)
+            translated the menus, dialogs and spoken messages into Italian. To switch,
+            choose <strong>Tools &gt; Writing and Language &gt; Change Display Language</strong>.
+            Spoken messages change right away, and menus change after a restart. Anything
+            not yet translated stays in English. Grazie mille, Elena.</p>
           </div>
         </details>
 
         <details class="deep">
           <summary><h3>How we keep it accessible</h3></summary>
           <div>
-            <p>Accessibility claims are tested, not asserted. Automated gates audit every
-            dialog surface, every announcement path, and every UI-surface change on every
-            commit. A nightly robot tester launches the real application, presses real keys,
-            and checks what a screen reader would meet - named controls, honest titles,
-            Escape that works, and the words QUILL actually speaks, read from the same
-            announcement channel you hear.</p>
+            <p>We test it. Every time the code changes, automatic checks look at every
+            dialog and every announcement. Every night a test robot opens the real app,
+            presses real keys, and checks what a screen reader would find: named controls,
+            correct window titles, an Escape key that works, and the words QUILL really
+            speaks.</p>
           </div>
         </details>
       </div>
@@ -441,139 +464,128 @@
     <!-- The complete writing environment -->
     <section class="band" aria-labelledby="writing-h">
       <div class="wrap">
-        <h2 id="writing-h">A complete writing environment</h2>
+        <h2 id="writing-h">Everything you need to write</h2>
         <p class="intro">
-          QUILL is designed for people who live in text: quick notes, daily writing, long-form
-          projects, technical authoring, research, review, and revision-heavy editing - with
-          the power tools people missed from the great editors of memory.
+          QUILL is for people who spend their day in text: notes, letters, long projects,
+          technical writing, research and careful editing. It also brings back tools people
+          miss from the classic editors.
         </p>
 
         <details class="deep">
-          <summary><h3>Rich formatting without the clutter</h3></summary>
+          <summary><h3>Formatting without the clutter</h3></summary>
           <div>
-            <p>Apply real document formatting - bold, italic, underline, strikethrough,
-            super and subscript, font family and point size, color and highlight, plus
-            paragraph alignment, line spacing, indent, and named styles - without ever seeing
-            markup clutter. The buffer stays clean, fast plain text; the formatting rides
-            along as invisible codes that materialize into real Word, RTF, and HTML
-            formatting on save.</p>
+            <p>Bold, italic, underline, fonts, sizes, colors, alignment, line spacing,
+            indents and styles all work, and you never have to listen to markup. When you
+            save, the formatting becomes real Word, RTF or HTML formatting.</p>
             <h4>Reveal Codes, reborn</h4>
-            <p>The beloved WordPerfect feature, reimagined screen-reader-first. Press Alt+F3
-            and your document becomes a stream of codes and text - [Bold On], [Font: Arial],
-            [Center], [Hard Return] - every code an individually announced, navigable item.
-            Jump from a [Bold On] to its matching [Bold Off] and hear its reach. F6 moves
-            between editor, codes pane, and status bar with both carets in sync.</p>
+            <p>Remember Reveal Codes from WordPerfect? Press Alt+F3 and your document
+            becomes a list of codes and text, such as [Bold On], [Font: Arial], [Center]
+            and [Hard Return]. Each one is read on its own as you move. Jump from a
+            [Bold On] to its [Bold Off] to hear how far it reaches. F6 moves between the
+            editor, the codes and the status bar.</p>
             <h4>Illuminations</h4>
-            <p>A plain .txt cannot hold fonts or colors, so QUILL can write an Illumination -
-            a small companion file beside the text that carries the formatting. The .txt
-            stays genuinely plain everywhere else; reopen it in QUILL and every font, color,
-            and alignment returns exactly. If another program edits the text, QUILL notices
-            and opens it plain rather than mis-applying old formatting.</p>
+            <p>A plain .txt file cannot hold fonts or colors. So QUILL can save a small
+            extra file next to it, called an Illumination, that holds the formatting. Other
+            programs still see plain text. Open it in QUILL again and your formatting comes
+            back. If another program changed the text in the meantime, QUILL opens it plain
+            rather than guess.</p>
           </div>
         </details>
 
         <details class="deep">
           <summary><h3>Snippets, abbreviations, and automation</h3></summary>
           <div>
-            <p>Short triggers expand into longer text as you type. Snippets support
-            placeholders, choices, date and time values, prompts, and cursor placement.
-            Smart triggers like <code>=todo(10)</code> or <code>=rand(3,4)</code> generate
-            content when you press Enter. Macros record and replay whole command sequences,
-            and word prediction offers completions as you write.</p>
+            <p>Type a short trigger and it grows into longer text. Snippets can hold dates,
+            choices, questions, and where to leave the cursor. Smart triggers like
+            <code>=todo(10)</code> or <code>=rand(3,4)</code> build text when you press
+            Enter. Macros record and replay a series of commands, and word prediction offers
+            to finish words for you.</p>
             <h4>The Copy Tray</h4>
-            <p>Twelve persistent clipboard slots with labels and pinning. Paste a slot with a
-            chord, double-press to hear what it holds before committing, triple-press to open
-            the tray. Copy to Next Empty Slot routes around your pinned favorites, and the
-            slots survive restarts - a small library of the fragments you reach for daily.</p>
+            <p>Twelve clipboard slots that you can label and pin, and they are still there
+            after a restart. Press a slot's key to paste it. Press it twice to hear what it
+            holds first, and three times to open the tray.</p>
             <h4>Watch folders</h4>
-            <p>Point QUILL at a folder and let automation act on files as they arrive -
-            transcribe recordings, convert documents, run transcript actions - hands-free,
-            off by default, and visible in the Status Page while it works.</p>
+            <p>Point QUILL at a folder and it can work on files as they arrive, for example
+            to transcribe recordings or convert documents. It is off until you turn it on,
+            and the Status Page tells you what it is doing.</p>
           </div>
         </details>
 
         <details class="deep">
           <summary><h3>Search, replace, and compare</h3></summary>
           <div>
-            <p>Find, replace, wildcard, and regular-expression search with history and
-            find-all reporting. When a Replace All would change more than a handful of
-            occurrences, a preview lists every change with before-and-after text so nothing
-            surprising happens at scale.</p>
+            <p>Find and replace, with wildcards, regular expressions and history. If Replace
+            All would change more than a few places, you get a list of every change first,
+            with the text before and after.</p>
             <h4>The Regex Helper</h4>
-            <p>Patterns explained in plain language - what the expression will match, piece
-            by piece - so regular expressions become a tool you can hear your way through
-            rather than a wall of punctuation.</p>
+            <p>The Regex Helper explains a pattern in plain words, piece by piece, so you can
+            hear what it will match.</p>
             <h4>Compare Mode</h4>
-            <p>Review a document against another file or the clipboard in a keyboard-first
-            diff: move by change, hear each hunk read in context, and act on what differs.</p>
+            <p>Compare a document with another file or with the clipboard. Move from change
+            to change and hear each one in context.</p>
           </div>
         </details>
 
         <details class="deep">
           <summary><h3>Spelling, thesaurus, and language tools</h3></summary>
           <div>
-            <p>Hunspell-backed spell check with the F7 review dialog, next/previous
-            misspelling navigation, a misspelling list, as-you-type hints, and custom word
-            lists. Extra language dictionaries - Spanish, French, and more - download on
-            demand the first time you pick them. A thesaurus sits on Shift+F7, and optional
-            pre-save or pre-post proofreading opens the review right when it matters.</p>
+            <p>Spell check opens on F7. You can also move to the next or previous
+            misspelling, get hints as you type, and keep your own word lists. Dictionaries
+            for other languages, such as Spanish and French, download the first time you
+            choose them. The thesaurus is on Shift+F7. QUILL can also check your spelling
+            before you save or post.</p>
             <h4>Autoformat that respects you</h4>
-            <p>Smart quotes and dash merging follow your preferences. Markdown heading
-            auto-numbering adds 1., 1.1, 1.1.1 across the document and removes them on a
-            second run. Footnote helpers insert reference pairs, hop between reference and
-            definition, and renumber everything into document order. Join Paragraph repairs
-            email-mangled line wrapping in one keystroke.</p>
+            <p>Smart quotes follow your settings. QUILL can number your Markdown headings
+            1., 1.1, 1.1.1 and take the numbers off again. Footnote helpers insert
+            footnotes, move between a footnote and its mark, and renumber them in order.
+            Join Paragraph fixes lines that email broke apart, in one key press.</p>
           </div>
         </details>
 
         <details class="deep">
           <summary><h3>Projects, sessions, and notes</h3></summary>
           <div>
-            <p>Notebooks organize a folder of files into one working environment with
-            entries, bookmarks, snapshots, and optional writing goals. Sticky Notes capture
-            passing thoughts without losing your place. Sessions save and restore whole
-            working sets - every open tab, back the way you left it. Trusted locations stop
-            repeated prompts in the folders you work from every day.</p>
+            <p>Notebooks gather a folder of files into one place, with bookmarks, snapshots
+            and writing goals if you want them. Sticky Notes catch a passing thought without
+            losing your place. Sessions bring back every open tab the way you left it.
+            Trusted locations stop QUILL asking the same question about folders you use
+            every day.</p>
           </div>
         </details>
 
         <details class="deep">
           <summary><h3>Classic power tools</h3></summary>
           <div>
-            <p>In the WordPerfect Editor tradition: <strong>Repeat Next Command</strong> runs
-            the next command N times - down twenty lines, delete ten words - in one gesture.
-            <strong>Restore Deleted Text</strong> re-inserts any of the last three blocks
-            removed by structured deletes, distinct from Undo. <strong>Describe Character at
-            Cursor</strong> is the screen-reader descendant of Reveal Codes for a single
-            character. A read-only guard protects reference documents from stray keystrokes.</p>
+            <p>From the WordPerfect tradition: <strong>Repeat Next Command</strong> runs the
+            next command as many times as you say, such as down twenty lines or delete ten
+            words. <strong>Restore Deleted Text</strong> brings back any of the last three
+            blocks you deleted, separately from Undo. <strong>Describe Character at
+            Cursor</strong> tells you exactly what one character is. A read-only guard keeps
+            reference documents safe from stray keys.</p>
           </div>
         </details>
 
         <details class="deep">
           <summary><h3>Tables you can actually edit</h3></summary>
           <div>
-            <p>Table Studio makes tables workable by ear: build one from scratch or open a
-            CSV/TSV straight into a real keyboard grid where crossing a row speaks the column
-            heading, F2 edits a cell, Alt+arrows move whole rows and columns, and
-            Ctrl+Insert adds a row. Insert the result as a properly-headed Markdown or HTML
-            table, or save it back out as CSV for a full round trip. Cell announcements flow
-            through Windows accessibility for NVDA and JAWS, with a native UIA provider for
-            even richer events on builds that include it.</p>
+            <p>Table Studio makes tables easy to work with by ear. Build one, or open a CSV
+            or TSV file as a grid. Moving across a row reads the column heading. F2 edits a
+            cell, Alt with the arrow keys moves rows and columns, and Ctrl+Insert adds a
+            row. Insert the table into your document as Markdown or HTML, or save it back as
+            CSV. It works with NVDA and JAWS.</p>
           </div>
         </details>
 
         <details class="deep">
           <summary><h3>Profiles and editor surfaces</h3></summary>
           <div>
-            <p>Feature profiles - Essential, Writer, Developer, Accessibility Professional,
-            or Full QUILL - shape the interface to your needs: keep QUILL simple, or light up
-            automation, scripting, AI, remote files, and extensions when you want them.</p>
-            <h4>Experimental surfaces, double-gated</h4>
-            <p>The Experimental tab offers alternative editor controls - RichEdit
-            generations, a plain Notepad-style control, Scintilla (the Notepad++ engine, the
-            only alternative with full multi-level undo and redo) - each explained before you
-            switch, all behind two deliberate consents so nothing changes under your hands by
-            accident.</p>
+            <p>Profiles shape QUILL to fit you: Essential, Writer, Developer, Accessibility
+            Professional, or Full QUILL. Keep it simple, or turn on automation, scripting,
+            AI, remote files and add-ons when you want them.</p>
+            <h4>Experimental editing controls</h4>
+            <p>The Experimental tab offers other editing controls, including a plain
+            Notepad-style one and Scintilla, the engine from Notepad++. Each is explained
+            before you switch, and QUILL asks you twice, so nothing changes by accident.</p>
           </div>
         </details>
       </div>
@@ -582,23 +594,22 @@
     <!-- Math -->
     <section class="band" aria-labelledby="math-h">
       <div class="wrap">
-        <h2 id="math-h">Math that types, sounds, and travels to Word</h2>
+        <h2 id="math-h">Math you can type, hear, and send to Word</h2>
         <p class="intro">
-          Equations get the same screen-reader-first treatment as everything else in QUILL -
-          typed as fast as prose, explored piece by piece, spoken in real math language, and
-          exported as genuine, editable Word equations.
+          Type equations as quickly as words, explore them piece by piece, hear them in
+          real math speech, and send them to Word as equations you can edit.
         </p>
 
         <details class="deep">
           <summary><h3>Type an equation like AutoCorrect</h3></summary>
           <div>
-            <p>88 backslash-code abbreviations - <code>\alpha</code>, <code>\sqrt</code>,
-            <code>\ne</code>, <code>\pi</code>, and more, seeded from the DAISY-published
-            Word Math AutoCorrect list - expand to their symbol the instant you type the
-            code and a space or punctuation, anywhere in ordinary prose. Ten ready-made
-            formulas (the quadratic formula, the Pythagorean theorem, slope-intercept,
-            distance, midpoint, and more) are one selection away in <strong>Insert &gt;
-            Snippet Gallery...</strong> - nothing to type from memory.</p>
+            <p>Type a code such as <code>\alpha</code>, <code>\sqrt</code>,
+            <code>\ne</code> or <code>\pi</code>, then a space or punctuation, and it turns
+            into the symbol. There are 88 of these, based on the Word Math AutoCorrect list
+            published by DAISY, and they work anywhere in your writing. Ten common formulas,
+            such as the quadratic formula and the Pythagorean theorem, are ready to insert
+            from <strong>Insert &gt; Snippet Gallery...</strong>, so you do not have to type
+            them from memory.</p>
           </div>
         </details>
 
@@ -606,37 +617,33 @@
           <summary><h3>Explore an equation's structure</h3></summary>
           <div>
             <p><strong>Explore Equation Structure...</strong> (Ctrl+Shift+Grave, F, or the
-            Insert menu) steps through a formula's parts - numerator and denominator, base
-            and exponent, a root's radicand - through an ordinary Windows single-select list
-            you already know how to drive: arrow keys, type-ahead, Enter to choose. Escape
-            ends the whole session at any depth; <strong>Back up one level</strong> is the
-            dedicated choice for stepping out one layer instead.</p>
+            Insert menu) walks you through the parts of a formula, such as the top and
+            bottom of a fraction, or the base and the power. It uses an ordinary list, so
+            you move with the arrow keys and choose with Enter. <strong>Back up one
+            level</strong> steps out one layer, and Escape ends the session.</p>
           </div>
         </details>
 
         <details class="deep">
-          <summary><h3>Real math speech, not just a template</h3></summary>
+          <summary><h3>Real math speech</h3></summary>
           <div>
-            <p>"Read this part aloud" upgrades automatically to genuine natural-language math
-            speech - the same MathCAT engine NVDA itself ships - once you install it from
-            <strong>Help &gt; Download Optional Components &gt; MathCAT math speech
-            engine</strong> (about 3 MB). Without it, the same command keeps working with
-            QUILL's built-in template reading - nothing regresses either way.</p>
+            <p>"Read this part aloud" uses real math speech once you install MathCAT, the
+            same engine NVDA uses. Get it from <strong>Help &gt; Download Optional
+            Components &gt; MathCAT math speech engine</strong> (about 3 MB). Without it,
+            QUILL still reads the equation in its own simpler way.</p>
             <h4>Math Tutor</h4>
-            <p>A read-only AI agent explains a selected equation in plain language - what it
-            means, what each symbol is - without solving anything or touching your
-            document.</p>
+            <p>Math Tutor explains a selected equation in plain words: what it means and what
+            each symbol is. It does not solve anything or change your document.</p>
           </div>
         </details>
 
         <details class="deep">
           <summary><h3>Real Word equations, both directions</h3></summary>
           <div>
-            <p><strong>File &gt; Export &gt; Word Document</strong> writes a genuine equation
-            object for every formula in your document - editable in Word, read as math by
-            JAWS, never a picture and never literal text. Open that file back in QUILL and
-            the same plain, editable equation text returns, in either Word-reading
-            engine.</p>
+            <p><strong>File &gt; Export &gt; Word Document</strong> saves each formula as a
+            real Word equation. You can edit it in Word, and JAWS reads it as math, not as a
+            picture or a string of letters. Open that file in QUILL again and you get your
+            equation text back.</p>
           </div>
         </details>
       </div>
@@ -645,119 +652,109 @@
     <!-- Every document -->
     <section class="band" aria-labelledby="formats-h">
       <div class="wrap">
-        <h2 id="formats-h">Every document, rescued and returned</h2>
+        <h2 id="formats-h">Open almost any document, and save it the way you need</h2>
         <p class="intro">
-          The documents most likely to be inaccessible - scans, photocopies, image PDFs,
-          locked-away formats - are exactly the ones other tools give up on. QUILL treats
-          them as a promise.
+          Scans, photocopies and picture PDFs are the documents most likely to shut a
+          screen reader out. QUILL does its best to get the words out of them for you.
         </p>
 
         <details class="deep">
           <summary><h3>What QUILL opens</h3></summary>
           <div>
-            <p>Plain text, Markdown, HTML, Word (.docx and legacy .doc), RTF, EPUB, PDF,
-            PowerPoint, Excel, Apple Pages, OpenDocument, CSV and TSV (as text or an
-            accessible grid), Jupyter notebooks, JSON, YAML, TOML, XML, SQLite, and the
-            braille family (.brf, .brl, .pef). Complex extractions come with an intake report
-            that explains the confidence and quality of what QUILL recovered - honesty at the
-            moment of opening. Open from URL brings a web document straight into a tab.</p>
+            <p>Plain text, Markdown, HTML, Word (.docx and the older .doc), RTF, EPUB, PDF,
+            PowerPoint, Excel, Apple Pages, OpenDocument, CSV and TSV (as text or as a grid),
+            Jupyter notebooks, JSON, YAML, TOML, XML, SQLite, and braille files (.brf, .brl,
+            .pef). When QUILL takes the text out of a complicated file, it tells you how well
+            that went. Open from URL brings a web page straight into a tab.</p>
           </div>
         </details>
 
         <details class="deep">
-          <summary><h3>Saving that converts - honestly</h3></summary>
+          <summary><h3>Save in the format you need</h3></summary>
           <div>
-            <p>Save As genuinely converts. Choose Word and headings become Word heading
-            styles, each editor line becomes one paragraph, and your fonts, colors, and
-            alignment land on real Word runs. Choose HTML and you get a complete standalone
-            page. And QUILL announces what happened, in words: "Saved as report.docx, Word
-            format. You are still editing QUILL text; each save converts it to Word."</p>
+            <p>Save As really converts. Choose Word, and your headings become Word headings,
+            each line becomes a paragraph, and your fonts, colors and alignment come along.
+            Choose HTML, and you get a complete web page. Then QUILL tells you what happened,
+            for example: "Saved as report.docx, Word format."</p>
             <h4>Your originals are protected</h4>
-            <p>Open a PDF, EPUB, or spreadsheet and you are editing extracted text - so
-            Ctrl+S will never overwrite the binary original. QUILL explains and routes you to
-            Save As, and typing a name like notes.pdf offers the real PDF exporter instead of
-            writing a file Acrobat cannot open.</p>
+            <p>When you open a PDF, EPUB or spreadsheet, you are editing the text taken out of
+            it, so Ctrl+S never writes over the original. QUILL explains this and takes you
+            to Save As. If you type a name like notes.pdf, QUILL offers its PDF exporter, so
+            you get a file Acrobat can open.</p>
             <h4>Choose your converter</h4>
-            <p>Word reading and saving engines are selectable - native, MarkItDown, or
-            Pandoc - with each engine's trade-offs described in plain spoken language before
-            you commit, backed by a published bake-off.</p>
+            <p>You can choose which engine reads and saves Word files: native, MarkItDown or
+            Pandoc. QUILL explains the differences in plain words before you choose.</p>
           </div>
         </details>
 
         <details class="deep">
-          <summary><h3>Document rescue: three tiers of OCR</h3></summary>
+          <summary><h3>Document rescue: reading scanned pages</h3></summary>
           <div>
-            <p>Everyone with a screen reader knows the feeling: the PDF turns out to be a
-            photograph of a page. QUILL's rescue tool has one rule - free first, local
-            first, and nothing is ever uploaded without you saying yes, out loud, that one
-            time.</p>
-            <h4>How the tiers work</h4>
-            <p>The free local converter handles born-digital files instantly. When a PDF
-            looks scanned, QUILL says so and asks before running free on-device OCR (the
-            Tesseract engine - CPU-only, offline, a one-time verified 48 MB download). For
-            the documents nothing local can rescue - dense tables, forms, handwriting - an
-            optional bring-your-own-key cloud service is offered only after local OCR comes
-            back weak, consent-gated on every single upload, with an extra caution when a
-            filename suggests sensitive content.</p>
+            <p>You open a PDF and find it is just a photo of a page. QUILL can help. It tries
+            free tools on your own computer first, and nothing is uploaded unless you say
+            yes.</p>
+            <h4>How it works</h4>
+            <p>Ordinary files are read straight away. If a PDF looks scanned, QUILL tells you
+            and asks before running free OCR on your computer. That uses Tesseract, a
+            one-time 48 MB download that then works offline. If that is not good enough, for
+            example with dense tables, forms or handwriting, QUILL can offer a cloud service
+            that uses your own key. It asks you every time before a file is sent, and warns
+            you if the file name looks private.</p>
             <h4>Review exactly what needs reviewing</h4>
-            <p>Review Last OCR Result lists every low-confidence line as "Page N:
-            [confidence] text" - a checklist of exactly the trouble spots, by ear. A
-            plain-language services page explains every converter: what it does, what it
-            costs, and what stays on your machine.</p>
+            <p>Review Last OCR Result lists only the lines QUILL was unsure about, as "Page N:
+            confidence, text", so you know exactly what to check. A services page explains
+            each converter: what it does, what it costs, and what stays on your computer.</p>
           </div>
         </details>
 
         <details class="deep">
           <summary><h3>Braille production and DAISY</h3></summary>
           <div>
-            <p>Translation and embossing through liblouis, with the translation pack as a
-            small on-demand download. BRF editing honors a strict byte-for-byte contract, and
-            the Braille Repair tools read layout metrics against your cells-per-line and
-            lines-per-page limits, jump to the longest line or page, and strip trailing
-            spaces - NLS-style proofreading before anything embosses.</p>
+            <p>QUILL translates and embosses braille with liblouis. The braille pack is a
+            small download. BRF files are kept exactly as they are. The Braille Repair tools
+            check line and page lengths against your embosser, jump to the longest line or
+            page, and remove spaces at the ends of lines, so you can proofread before you
+            emboss.</p>
             <h4>DAISY talking books</h4>
-            <p>One export writes a DAISY 2.02 text-only talking book - the folder a Victor
-            Reader Stream, Plextalk, or APH player reads aloud with its own voice, your
-            headings becoming the player's navigation points.</p>
+            <p>One export makes a DAISY 2.02 talking book that a Victor Reader Stream,
+            Plextalk or APH player can read aloud in its own voice. Your headings become
+            the places you can jump to.</p>
           </div>
         </details>
 
         <details class="deep">
-          <summary><h3>Convert at any scale</h3></summary>
+          <summary><h3>Convert one file or a whole folder</h3></summary>
           <div>
-            <p>Single files import and export through Pandoc - Word, ODT, EPUB, LaTeX, PDF,
-            and more - with a per-conversion engine choice whose description updates as you
-            arrow through it. Pandoc itself is an on-demand download (about 45 MB,
-            checksum-verified), which alone halved the installer.</p>
+            <p>Convert a single file through Pandoc to Word, ODT, EPUB, LaTeX, PDF and more,
+            and choose the engine for each conversion. Pandoc downloads the first time you
+            need it (about 45 MB, checked before it is installed).</p>
             <h4>The batch wizard</h4>
-            <p>Convert whole folders in the background with curated profiles - Clean Word
-            Document, Accessible HTML Page, EPUB Book, Print PDF, Plain Text for Screen
-            Readers - overwrite policies that keep you out of prompt loops, live rows in the
-            Status Page, and one spoken completion line: "12 of 14 files converted in 4.2
-            seconds."</p>
+            <p>The batch wizard converts whole folders in the background. Pick a profile,
+            such as Clean Word Document, Accessible HTML Page, EPUB Book, Print PDF, or Plain
+            Text for Screen Readers. The Status Page shows each file as it goes, and when it
+            is done you hear one line, such as "12 of 14 files converted in 4.2 seconds."</p>
           </div>
         </details>
 
         <details class="deep">
           <summary><h3>Remote files, SSH, and GitHub</h3></summary>
           <div>
-            <p>Open and save over FTP, SFTP, WebDAV, S3, and HTTPS - all off by default,
-            never silent. Edit a file on a server over SSH and it uploads back on save with
-            a tilde backup in its original newline style. A full GitHub repository browser
-            opens files from your repos and saves changes back. Remote documents that cannot
-            be written back say so and offer Save a Copy instead.</p>
+            <p>Open and save files over FTP, SFTP, WebDAV, S3 and HTTPS. All of these are off
+            until you turn them on. Edit a file on a server over SSH, and it goes back up when
+            you save, with a backup copy. A GitHub browser opens files from your
+            repositories and saves your changes back. If a remote file cannot be saved back,
+            QUILL says so and offers Save a Copy.</p>
           </div>
         </details>
 
         <details class="deep">
           <summary><h3>Reading, lists, encodings, and publishing</h3></summary>
           <div>
-            <p>EPUB books open with chapter navigation for comfortable long reading. List
-            Studio builds and reorders structured lists by ear. Encoding tools detect and
-            convert the files that arrive mangled. And when your words go outward: post to
-            Mastodon with an optional per-account pre-post spelling review, or browse your
-            WordPress site's content through an experimental read-only connection - sending
-            stays locked until it earns trust, and we say that plainly.</p>
+            <p>EPUB books open with chapter navigation, for comfortable long reading. List
+            Studio builds and reorders lists by ear. Encoding tools fix files that arrive
+            garbled. You can post to Mastodon, with a spelling check first if you want one.
+            You can also look through your WordPress site with an experimental read-only
+            connection. Sending to WordPress is not available yet.</p>
           </div>
         </details>
       </div>
@@ -766,120 +763,106 @@
     <!-- Speech and voice -->
     <section class="band" aria-labelledby="voice-h">
       <div class="wrap">
-        <h2 id="voice-h">A studio that speaks - and listens</h2>
+        <h2 id="voice-h">Reading aloud, dictation, and voice control</h2>
         <p class="intro">
-          QUILL's speech suite runs on your device by default: neural voices without a cloud,
-          dictation without an account, a voice interface that can never do harm - and the
-          Audio Studio, a keyboard-first workshop that turns a folder of anything into a
-          published, chaptered audiobook or podcast.
+          QUILL's speech tools run on your computer unless you choose otherwise. QUILL can
+          read to you in natural voices, take dictation, follow spoken commands, and help
+          you turn documents or recordings into an audiobook or podcast with the Audio
+          Studio.
         </p>
 
         <details class="deep">
           <summary><h3>Read Aloud, in your language</h3></summary>
           <div>
-            <p>The voice lists are not English-only. The Windows engine shows every voice
-            installed on your PC in any language - add Italian or German in Windows Settings
-            and it appears in QUILL immediately. The on-device Kokoro neural engine speaks
-            English, Spanish, French, Hindi, Italian, and Brazilian Portuguese from the same
-            voice pack. Piper adds one-click voices including Italian's Paola and Riccardo,
-            eSpeak NG covers a world of languages offline, and the classic DECtalk is a
-            download away. Read Aloud, audiobook export, and batch speech all honor the
-            chosen voice's language, end to end.</p>
-            <h4>Premium voices, honestly labeled</h4>
-            <p>Optional cloud voices - OpenAI, Gemini, ElevenLabs with your own key (cached
-            sentence by sentence so repeats are never re-billed) - sit beside the free local
-            engines, and an experimental browser reader unlocks Edge's Online Natural voices,
-            with the privacy trade-off stated in the setting itself.</p>
+            <p>The voice lists are not just English. The Windows engine lists every voice on
+            your PC, in any language, so if you add Italian or German in Windows Settings, it
+            shows up in QUILL. The Kokoro voices run on your computer and speak English,
+            Spanish, French, Hindi, Italian and Brazilian Portuguese. Piper adds more voices,
+            including Italian's Paola and Riccardo. eSpeak NG covers many languages offline,
+            and the classic DECtalk is a download away. Read Aloud and audiobook export use
+            the language of the voice you choose.</p>
+            <h4>Cloud voices, if you want them</h4>
+            <p>You can add cloud voices from OpenAI, Gemini or ElevenLabs with your own key.
+            Each sentence is kept after the first time, so you are not charged twice for it.
+            An experimental option uses Edge's Online Natural voices, and the setting tells
+            you what that means for your privacy.</p>
           </div>
         </details>
 
         <details class="deep">
-          <summary><h3>Hey QUILL: voice control that cannot hurt you</h3></summary>
+          <summary><h3>Hey QUILL: control QUILL with your voice</h3></summary>
           <div>
-            <p>Drive QUILL by speaking, entirely on-device, in four levels: push-to-talk
-            single commands ("save file", "word count", "next heading"); conversation mode
-            that keeps listening through a follow-up window, ending your turn when you stop
-            speaking (calibrated to your room); the always-listening "Hey QUILL" wake word,
-            with a status-bar presence and periodic reminder so a live microphone is never a
-            surprise; and spoken questions handed to Ask Quill with you pressing Send, so a
-            person is always in the loop.</p>
-            <h4>The safety law</h4>
-            <p>Voice can only run a curated, non-destructive allowlist. Closing without
-            saving, sending, publishing, and deleting are simply not in its vocabulary. A
-            misheard phrase can never do harm - everything is off by default, off in Safe
-            Mode, and abortable with "cancel."</p>
-            <h4>Nine musical cues</h4>
-            <p>Every state has a warm audio cue - a rising chime on, a soft two-note when the
-            mic opens, a sparkle when the action lands, a calm fall on no-match - each a real
-            sound event you can retune in any sound pack. Prompts can carry your name
-            ("Listening, Jeff.") and stay silent whenever a screen reader is talking.</p>
+            <p>Control QUILL by speaking, all on your computer. There are four ways. Hold a
+            key and say one command, such as "save file", "word count" or "next heading".
+            Talk back and forth, and QUILL keeps listening for your next request. Turn on the
+            "Hey QUILL" wake word; the status bar shows it is on, and QUILL reminds you now
+            and then that the microphone is listening. Or ask Ask Quill a question out loud,
+            and press Send yourself.</p>
+            <h4>What voice cannot do</h4>
+            <p>Voice can only run commands that cannot lose your work. It cannot close without
+            saving, send, publish or delete. Everything is off until you turn it on, it is
+            off in Safe Mode, and saying "cancel" stops it.</p>
+            <h4>Nine sound cues</h4>
+            <p>Each step has its own short sound: a chime when voice control turns on, two
+            soft notes when the microphone opens, and so on. You can change them with any
+            sound pack. Prompts can use your name ("Listening, Jeff."), and they stay quiet
+            while your screen reader is talking.</p>
           </div>
         </details>
 
         <details class="deep">
           <summary><h3>Dictation and transcription</h3></summary>
           <div>
-            <p>Press Ctrl+F11, talk, and pause: Live Dictation writes each phrase as you
-            pause, reads it back, and takes spoken punctuation and commands. Its two
-            engines - Moonshine and Whisper - are inside the program, so nothing is
-            downloaded and nothing you say leaves the computer. Locked Dictation (Ctrl+F9)
-            records a whole passage and transcribes it afterwards, and QUILL also
-            transcribes files and recordings with captions and speaker labels.
-            <a href="/dictation.html">The complete dictation guide</a> covers all of it.</p>
+            <p>Press Ctrl+F11, talk, and pause. Live Dictation writes each phrase when you
+            pause, reads it back, and understands spoken punctuation and commands. It has
+            two speech engines, Moonshine and Whisper, and both are inside the program, so
+            nothing is downloaded and nothing you say leaves the computer. Locked Dictation
+            (Ctrl+F9) records a whole passage and writes it out afterwards. QUILL can also
+            transcribe recordings, with captions and speaker names.
+            <a href="/dictation.html">The dictation guide</a> covers all of it.</p>
           </div>
         </details>
 
         <details class="deep">
           <summary><h3>The Listening Companion</h3></summary>
           <div>
-            <p>The gap between "I recorded it" and "I have the document" closes to a couple
-            of keystrokes. Transcribe audio or video, then apply a Transcript Action: Meeting
-            Minutes, Action Items, Executive Summary, Interview or Study Notes, Q&amp;A, a
-            Follow-Up Email, Key Quotes, a Decisions Log, or a clean draft. Build your own
-            actions with the no-syntax Action Builder, run them on any document, or let a
-            watch folder do it automatically as recordings arrive.</p>
+            <p>Recorded a meeting or an interview? QUILL can turn it into a document in a
+            couple of key presses. Transcribe the audio or video, then choose a Transcript
+            Action, such as Meeting Minutes, Action Items, a Summary, Study Notes, Q&amp;A, a
+            Follow-Up Email, Key Quotes or a clean draft. You can make your own actions with
+            the Action Builder, or have a watch folder do it as recordings arrive.</p>
           </div>
         </details>
 
         <details class="deep">
-          <summary><h3>The Audio Studio: from a folder of anything to a published book</h3></summary>
+          <summary><h3>The Audio Studio: from a folder of files to a finished book</h3></summary>
           <div>
-            <p>One guided, keyboard-first wizard, three journeys. <strong>Narrate
-            documents</strong> into a chaptered M4B or MP3 audiobook - round-robin voices,
-            explicit <strong>voice casting</strong> ("every chapter titled like
-            <em>interview</em> gets the guest voice"), page-turn cues, spoken credits, and
-            ACX loudness mastering, in translated editions across ~37 languages.
-            <strong>Combine a folder of recordings</strong> into one book, each file a
-            chapter, reviewed before the merge - or point library mode at a folder of
-            folders and every subfolder builds unattended. <strong>Open any audiobook</strong>
-            in the Chapter Workbench and fix it by ear: play to where a boundary belongs and
-            split at the playhead, retime, merge, or let silences propose the chapters.</p>
-            <h4>An authoring loop, not an exporter</h4>
-            <p>Incremental rebuilds fingerprint every document and its settings - edit one
-            chapter of a forty-document book and only that chapter re-synthesizes; the rest
-            announce "reused, unchanged since last run." <strong>Propose AI titles</strong>
-            names a folder of track files by transcribing each opening minute on your own
-            machine and asking your AI for a short title - proposed for review, never
-            applied blind. Even the cover finds itself: one lookup fills title, author,
-            genre, year, and the jacket from Open Library.</p>
+            <p>One step-by-step wizard does three jobs. It can <strong>read documents
+            aloud</strong> into a chaptered M4B or MP3 audiobook, with a different voice for
+            certain chapters if you like, and the loudness ACX asks for. It can <strong>join
+            a folder of recordings</strong> into one book, one chapter per file, and you check
+            the order before it starts. And it can <strong>open any audiobook</strong> in the
+            Chapter Workbench, where you fix chapters by ear: play to where a chapter should
+            begin, and split it there.</p>
+            <h4>Change one chapter, rebuild one chapter</h4>
+            <p>If you edit one chapter of a long book, only that chapter is made again. The
+            rest are reused. <strong>Propose AI titles</strong> can suggest a short title for
+            each track, and you review them before anything changes. One lookup can fill in
+            the title, author, genre, year and cover from Open Library.</p>
             <h4>Publish without leaving</h4>
-            <p>Write a complete podcast feed offline (iTunes + Podcasting 2.0 tags), run a
-            whole show from one folder with per-episode descriptions and an accessible
-            show-notes page, upload over SFTP through QUILL's own SSH machinery with spoken,
-            cancelable progress, or send the book to your own Auphonic account - credits
-            and presets announced before a byte moves. Every network path asks first;
-            every secret lives in the Windows Credential Manager.</p>
+            <p>You can write a podcast feed, upload over SFTP, or send the book to your own
+            Auphonic account. QUILL asks before anything goes online, and your passwords are
+            kept in the Windows Credential Manager.</p>
           </div>
         </details>
 
         <details class="deep">
           <summary><h3>Fitting your machine</h3></summary>
           <div>
-            <p>Models load on demand and unload when idle. Low-resource mode keeps one model
-            in memory at a time and prefers the smallest that fits - it turns itself on for
-            very low-memory machines and tells you once, out loud. The whole suite -
-            dictation, read-aloud, and AI - stays usable on an older CPU-only laptop, trading
-            a moment of reloading for a footprint that fits.</p>
+            <p>Speech and AI models load when you need them and unload when you are done.
+            On a computer with little memory, QUILL keeps one model loaded at a time, and it
+            tells you once that it is doing this. Dictation, reading aloud and AI all still
+            work on an older laptop. They just take a moment longer to load.</p>
           </div>
         </details>
       </div>
@@ -888,90 +871,88 @@
     <!-- Organize -->
     <section class="band" aria-labelledby="organize-h">
       <div class="wrap">
-        <h2 id="organize-h">Organize a life of writing</h2>
+        <h2 id="organize-h">Organize your notes and your books</h2>
         <p class="intro">
-          Linked knowledge and long-form structure have always been visual-first - graphs,
-          corkboards, binders full of pixels. QUILL keeps the power and drops the picture.
+          Tools for linked notes and for planning a book are usually built around pictures:
+          graphs, corkboards and binders. QUILL gives you the same tools as lists you can
+          hear.
         </p>
 
         <details class="deep">
           <summary><h3>The Accessible Vault: links and backlinks</h3></summary>
           <div>
-            <p>A vault is a folder of plain-text notes that point at one another. Type
-            [[Note Title]] anywhere and Follow Wikilink opens that note - at the exact
-            heading with [[Note#Heading]] or block with [[Note#^block]]. A link to a note
-            that does not exist offers to create it; an ambiguous name gets a spoken chooser,
-            never a guess.</p>
-            <h4>The graph, spoken</h4>
-            <p>Show Backlinks answers "what links here?" as a list you can hear - "5 notes
-            link here" - each entry read with the sentence its link sits in, Enter to open
-            the source at that mention. For a screen-reader user this is more useful than
-            the picture ever was.</p>
+            <p>A vault is a folder of plain-text notes that link to each other. Type
+            [[Note Title]] anywhere, and Follow Wikilink opens that note. Use [[Note#Heading]]
+            to go to a heading, or [[Note#^block]] to go to a block. If the note does not
+            exist yet, QUILL offers to create it. If the name matches more than one note, you
+            choose from a list.</p>
+            <h4>What links here</h4>
+            <p>Show Backlinks lists every note that links to the one you are in, such as "5
+            notes link here". Each one is read with the sentence the link is in, and Enter
+            opens that note at that spot.</p>
             <h4>Embeds</h4>
-            <p>Write ![[Other Note]] and QUILL can pull that content in: Speak Embed reads
-            what it points to without touching your text; Resolve Embed Inline drops the
-            real content in place as one undoable change.</p>
+            <p>Write ![[Other Note]] to point to another note. Speak Embed reads that note
+            without changing your text. Resolve Embed Inline puts the real text in its place,
+            and one Undo takes it back out.</p>
           </div>
         </details>
 
         <details class="deep">
           <summary><h3>The Vault: find, gather, and live in it</h3></summary>
           <div>
-            <p>Go to Note is a type-to-filter jump box that speaks the match count as you
-            narrow. Search Vault covers every note - with Regex and Whole Word modes - and
-            opens a result at its exact line. Show Tags gathers notes by #tag with counts,
-            and nested tags roll up so #area finds everything under #area/sub.</p>
+            <p>Go to Note narrows a list of notes as you type, and tells you how many match.
+            Search Vault looks through every note, with Regex and Whole Word if you need them,
+            and opens a result at the right line. Show Tags gathers notes by #tag, and #area
+            also finds everything under #area/sub.</p>
             <h4>Templates and daily notes</h4>
-            <p>Insert Template fills in {{date}}, {{time}}, and {{title}}, asks any
+            <p>Insert Template fills in {{date}}, {{time}} and {{title}}, asks any
             {{prompt}} questions out loud one at a time, and leaves your cursor at
-            {{cursor}}. Open Today's Note starts (or returns to) today's page, and
-            Previous/Next Daily Note walk your journal.</p>
+            {{cursor}}. Open Today's Note starts today's page or takes you back to it, and
+            Previous and Next Daily Note move through your journal.</p>
             <h4>Publish and sync</h4>
-            <p>Export Vault as Website writes one accessible page per note with your links
-            and embeds resolved. If the vault is a Git repository, Sync Vault commits,
-            pulls, and pushes over your own remote - and lists conflicts rather than
-            overwriting a word. A vault stays plain Markdown you own forever.</p>
+            <p>Export Vault as Website makes one accessible web page per note, with the links
+            working. If the vault is a Git repository, Sync Vault sends and receives your
+            changes, and lists any conflicts instead of writing over your words. A vault is
+            plain Markdown, and it is yours to keep.</p>
           </div>
         </details>
 
         <details class="deep">
           <summary><h3>Story Studio: a binder for a whole book</h3></summary>
           <div>
-            <p>Tools &gt; Story Studio opens a keyboard-navigable binder for a project
-            folder: your manuscript's parts, chapters, and scenes drawn straight from the
-            Markdown headings you already write, beside groups for Characters, Places, Plot
-            threads, Research, and Brainstorm. Enter opens any item - a chapter at its
-            heading.</p>
+            <p>Tools &gt; Story Studio opens a binder for a book project that you move
+            through with the keyboard. Your parts, chapters and scenes come straight from the
+            Markdown headings you already write. Next to them are groups for Characters,
+            Places, Plot threads, Research and Brainstorm. Press Enter on any item to open
+            it.</p>
             <h4>Character sheets without a database</h4>
-            <p>Edit Details opens a small accessible form - a character's Role, Goal,
-            Motivation, and Arc; a plot thread's Status; tags - saved as tidy front matter in
-            the file itself, so editing the form and editing the file are the same bytes.</p>
+            <p>Edit Details opens a small form for a character's Role, Goal, Motivation and
+            Arc, or a plot thread's Status, plus tags. It is saved inside the file itself, so
+            the form and the file always agree.</p>
             <h4>Compile and ship</h4>
-            <p>Compile Manuscript stitches every file together, in order, into one document -
-            and from there, ordinary Export takes over: Word, EPUB, DAISY, audio. A project
-            is a folder of plain text plus one small companion file; delete the companion
-            and you still have every word.</p>
+            <p>Compile Manuscript joins every file, in order, into one document. Then use
+            Export as usual for Word, EPUB, DAISY or audio. A project is a folder of plain
+            text plus one small extra file. Delete that file and you still have every
+            word.</p>
           </div>
         </details>
 
         <details class="deep">
           <summary><h3>GLOW: fix accessibility yourself</h3></summary>
           <div>
-            <p>GLOW is guided accessibility review and repair inside your editor. Audit the
-            document or just the paragraph at your caret: findings open as a readable tab -
-            heading levels that jump, links that just say "click here", images without alt
-            text, tables without headers - each with a rule, a severity, and a plain-language
-            suggestion.</p>
+            <p>GLOW checks your document for accessibility problems and helps you fix them.
+            Check the whole document or just the paragraph you are in. Each problem is
+            explained in plain words, such as a heading level that skips, a link that just
+            says "click here", a picture with no description, or a table with no
+            headers.</p>
             <h4>Fix without fear</h4>
-            <p>Fixes are safe, deterministic, and reviewable - a repaired preview opens in a
-            compare session against the original, never a silent rewrite. GLOW Audit File and
-            Fix File take on whole Word, PowerPoint, Excel, PDF, and EPUB documents with a
-            scored, graded report; fixing always writes a repaired copy beside the untouched
-            original.</p>
+            <p>Before anything changes, GLOW shows you the fixed version beside the original.
+            GLOW can also check and fix whole Word, PowerPoint, Excel, PDF and EPUB files,
+            with a scored report. Fixing always saves a new copy and leaves your original
+            alone.</p>
             <h4>Private by default</h4>
-            <p>The everyday workflow runs entirely on your machine; the engine's optional
-            networked helpers stay off unless you consent per action, and engine updates are
-            signed, verified, and fetched only when you ask.</p>
+            <p>Everyday checks run on your computer. Anything that would go online asks you
+            first, and GLOW updates only when you ask.</p>
           </div>
         </details>
       </div>
@@ -980,78 +961,76 @@
     <!-- AI -->
     <section class="band" aria-labelledby="ai-h">
       <div class="wrap">
-        <h2 id="ai-h">AI that waits to be invited</h2>
+        <h2 id="ai-h">AI help, only when you ask for it</h2>
         <p class="intro">
-          A complete, optional AI suite that is silent until you turn it on - and free to use
-          when you do. Never set it up, and QUILL is exactly the editor it always was.
+          QUILL has AI help, and it stays off until you set it up. If you never set it up,
+          QUILL works just the same. If you do, you can use it for free.
         </p>
 
         <details class="deep">
-          <summary><h3>Set up in seconds, free by design</h3></summary>
+          <summary><h3>Setting it up, for free</h3></summary>
           <div>
-            <p>A short, screen-reader-first wizard offers one choice - on-device, an
-            account, or not now - with one-step connect and Test Connection. Click any AI
-            action before setup and QUILL offers the wizard right there instead of failing.</p>
+            <p>A short wizard asks one question: use a model on your own computer, use an
+            account, or not now. Then it connects and tests the connection for you. If you
+            choose an AI command before setting up, QUILL offers the wizard right there.</p>
             <h4>You never have to pay</h4>
-            <p>The wizard leads with the best free options: most private, a model on your
-            own computer (no account, works offline, nothing leaves your device); best
-            quality, your own free OpenRouter key with a strong free model preselected.
-            Every provider has a Get API Key button that opens the right signup page, model
-            dropdowns replace typed ids, and models that cost nothing say "Free" out loud.
-            Honest about trade-offs: free hosted models can be slower, and confidential
-            writing belongs on the private on-device option.</p>
+            <p>The wizard starts with the free choices. For the most privacy, run a model on
+            your own computer: no account, it works offline, and nothing leaves your device.
+            For the best answers, get a free OpenRouter key, and the wizard picks a good free
+            model for you. Every provider has a Get API Key button that opens the right sign-up
+            page, and free models say "Free". Free online models can be slower, and private
+            writing is best kept on your own computer.</p>
           </div>
         </details>
 
         <details class="deep">
           <summary><h3>Ask Quill and everyday help</h3></summary>
           <div>
-            <p>One conversation that knows your document. Draft, rewrite, summarize,
-            restructure, ask questions - and every proposed change arrives as an accessible
-            accept/reject preview applied as a single undo step. Nothing is ever silently
-            rewritten.</p>
+            <p>Ask Quill is a conversation that knows your document. Ask it to draft,
+            rewrite, summarize, rearrange, or answer questions. Every change it suggests is
+            shown to you first. You accept or reject it, and one Undo takes it back. Nothing
+            is ever changed behind your back.</p>
             <h4>The everyday actions</h4>
-            <p>Rewrite, summarize, expand, continue, fix grammar, generate a table of
-            contents; AI spell check and grammar-and-style review; translate a selection or
-            document; the AI Thesaurus; Document Q&amp;A; and spoken answers plus audio
-            export in natural voices, beside QUILL's on-device speech.</p>
+            <p>Rewrite, summarize, expand, continue, fix grammar, and make a table of
+            contents. AI spell check and a grammar and style review. Translate a selection
+            or a whole document. An AI thesaurus, questions and answers about your document,
+            and answers read aloud in natural voices.</p>
           </div>
         </details>
 
         <details class="deep">
-          <summary><h3>Engines and agents, on a leash</h3></summary>
+          <summary><h3>Agents, and you stay in charge</h3></summary>
           <div>
-            <p>QUILL's agent can run on more than one engine. The built-in Native engine
-            works on whichever provider you connected - on-device models, OpenAI, Claude,
-            Gemini, OpenRouter, or custom endpoints. If you pay for GitHub Copilot, use that
-            subscription directly: a short spoken device code signs you in, no API key at
-            all. The Claude Agent and OpenAI Agents engines plug in with the API keys you
+            <p>QUILL's agent works with whichever AI you connected: a model on your computer,
+            OpenAI, Claude, Gemini, OpenRouter or others. If you pay for GitHub Copilot, you
+            can use that. You sign in with a short code that QUILL reads to you, and no API
+            key is needed. The Claude Agent and OpenAI Agents engines use API keys you
             already have.</p>
             <h4>The safety never changes</h4>
-            <p>Whichever engine runs, QUILL owns every edit: the agent proposes, you approve
-            a preview, one keystroke undoes it, and vendor agents run text-only - their own
-            file and shell tools are off. Optional, off by default, off in Safe Mode.</p>
+            <p>Whichever engine you use, the agent only suggests. You see a preview and
+            approve it, and one key press undoes it. Agents from other companies work with
+            text only, and cannot touch your files or run programs. It is all off until you
+            turn it on, and off in Safe Mode.</p>
           </div>
         </details>
 
         <details class="deep">
           <summary><h3>The AI Library</h3></summary>
           <div>
-            <p>Prompts, Skills, and Agents in one tabbed manager with a real promotion path:
-            a Prompt graduates into a multi-step Skill, and a Skill into a first-class
-            Agent - all reviewable, all yours, all running through the connection you set up
-            once. Skill packs share on the Quillin Hub like everything else.</p>
+            <p>The AI Library keeps your Prompts, Skills and Agents in one place. A prompt you
+            use often can grow into a Skill with several steps, and a Skill can grow into an
+            Agent. They all use the connection you set up once, and you can share skill packs
+            on the Quillin Hub.</p>
           </div>
         </details>
 
         <details class="deep">
-          <summary><h3>Machine-aware and honest</h3></summary>
+          <summary><h3>It fits your computer</h3></summary>
           <div>
-            <p>When your computer can comfortably run a more accurate on-device model, the
-            model dialog says so - a one-step suggestion you can ignore. If a cloud request
-            cannot reach the internet and a local model is installed, QUILL tells you that
-            you can switch and keep working offline - it never switches for you, because
-            your privacy choice stays yours. Idle models unload to give your memory back.</p>
+            <p>If your computer can run a better model, QUILL tells you, and you can ignore
+            it. If you are offline and you have a model on your computer, QUILL tells you that
+            you can switch to it, but it never switches for you. Your privacy choice stays
+            yours. Models you are not using unload to free up memory.</p>
           </div>
         </details>
       </div>
@@ -1060,63 +1039,59 @@
     <!-- Quillins -->
     <section class="band" aria-labelledby="quillins-h">
       <div class="wrap">
-        <h2 id="quillins-h">Quillins - extend QUILL, share it back</h2>
+        <h2 id="quillins-h">Quillins: add your own features to QUILL</h2>
         <p class="intro">
-          A Quillin is a sandboxed extension: a JSON manifest and, if you want, a few lines
-          of Python or Node.js. Every capability is declared upfront and consent-gated - and
-          what you build, you can share.
+          A Quillin is an add-on for QUILL. The simplest ones need no code at all. Every
+          Quillin says up front what it needs, and asks before using it. Anything you build,
+          you can share.
         </p>
 
         <details class="deep">
           <summary><h3>Start with zero code</h3></summary>
           <div>
-            <p>A JSON manifest adds menu items, hotkeys, and text snippets with placeholders
-            like <code>${selection}</code>, <code>${date}</code>, and
-            <code>${clipboard}</code> - no code, no build tools. The
-            <a href="/quillin-wizard.html">Snippet Wizard</a> builds one interactively in
-            your browser: fill in the form, download your manifest, done.</p>
+            <p>A small JSON file can add menu items, keys and snippets, with placeholders
+            such as <code>${selection}</code>, <code>${date}</code> and
+            <code>${clipboard}</code>. You do not need any code or tools. The
+            <a href="/quillin-wizard.html">Snippet Wizard</a> builds that file for you in your
+            browser: fill in the form, download the file, and you are done.</p>
           </div>
         </details>
 
         <details class="deep">
           <summary><h3>Real code, safely sandboxed</h3></summary>
           <div>
-            <p>Add a Python or Node.js entry module for genuine custom behavior. Your code
-            runs in a sandboxed subprocess with import allowlists and resource caps, touches
-            only the capabilities it declared - document access, filesystem, network,
-            clipboard, and storage are each consent-gated at runtime - and announces through
-            the same engine as built-in commands, with full screen-reader parity. A crashing
-            Quillin cannot affect your editor or your document.</p>
+            <p>Need more? Add Python or Node.js code. It runs on its own, apart from QUILL,
+            and can only use what it asked for. Your document, your files, the network, the
+            clipboard and storage each need your permission. A Quillin speaks through QUILL's
+            own announcements, so it works with your screen reader. If a Quillin crashes,
+            your editor and your document are fine.</p>
             <h4>Deep integration</h4>
-            <p>Quillins attach to any menu and the context menu, bind hotkeys in QUILL's own
-            grammar (conflicts reported, never silently overridden), contribute
-            abbreviations, define smart triggers like <code>=bug()</code>, and react to
-            document events. The Quillins Manager lists every capability and signature state
-            and lets you enable, disable, reload, or remove anything.</p>
+            <p>Quillins can add to any menu and to the context menu, use their own keys (QUILL
+            tells you about any clash), add abbreviations, add smart triggers like
+            <code>=bug()</code>, and respond to things that happen in a document. The
+            Quillins Manager shows what each one can do, and lets you turn it on or off,
+            reload it, or remove it.</p>
           </div>
         </details>
 
         <details class="deep">
           <summary><h3>The Quillin Hub</h3></summary>
           <div>
-            <p>The community store for every shareable QUILL artifact - Quillins, AI agents
-            and skill packs, sound packs, keyboard packs, verbosity packs, and pronunciation
-            dictionaries. Submitting runs the full validator locally and reads you the
-            verdict before anything touches the network; every published artifact is
-            cryptographically signed, and the storefront and your Quillin Manager both speak
-            its signature state. From "I made this for myself" to "everyone can have this."</p>
+            <p>The Quillin Hub is where people share Quillins, AI agents, skill packs, sound
+            packs, keyboard packs, verbosity packs and pronunciation dictionaries. Before you
+            submit something, QUILL checks it on your own computer and reads you the result.
+            Everything on the Hub is signed, and both the Hub and your Quillins Manager tell
+            you whether the signature checks out.</p>
           </div>
         </details>
 
         <details class="deep">
           <summary><h3>For developers and power users</h3></summary>
           <div>
-            <p>A Developer Console scripts QUILL from inside QUILL. The sandboxed Python
-            snippet runner executes quick transformations under strict isolation. Code-aware
-            editing brings syntax-aware spell check and word navigation to source files.
-            Quillin lint and validation tools check your extension before the Hub ever sees
-            it, and the GitHub browser and remote workflows keep repository work inside the
-            editor you can hear.</p>
+            <p>A Developer Console lets you script QUILL from inside QUILL. A sandboxed Python
+            runner handles quick changes to text. Source code gets spell check and word
+            movement that understand code. Lint tools check your Quillin before you share it,
+            and the GitHub browser lets you work on a repository without leaving QUILL.</p>
           </div>
         </details>
 
@@ -1131,80 +1106,72 @@
     <!-- Trust -->
     <section class="band" aria-labelledby="reliable-h">
       <div class="wrap">
-        <h2 id="reliable-h">Trust is the whole product</h2>
+        <h2 id="reliable-h">Your work is safe with QUILL</h2>
         <p class="intro">
-          For QUILL, reliability and honesty are accessibility features. Your work is never
-          silently lost, your data never silently sent, and when something goes wrong, QUILL
-          says so - in words.
+          QUILL works hard never to lose your work and never to send anything without asking.
+          When something goes wrong, it tells you in plain words.
         </p>
 
         <details class="deep">
-          <summary><h3>Layered safety nets for your words</h3></summary>
+          <summary><h3>Safety nets for your words</h3></summary>
           <div>
-            <p>Undo and persistent undo cover the editing session - up to a hundred steps
-            that survive closing the file. Autosave and backups surround every save, with
-            crash-safe snapshots and recovery offered on the next launch. And restore points
-            are the long memory: every save keeps a content-based snapshot, File &gt;
-            Restore Previous Version lists them as "Today at 4:12 PM - 2,341 words," and
-            restoring is itself reversible because your current text is snapshotted first. A
-            week of saves is kept fully, then daily, then weekly; the newest five are never
-            pruned; and keeping a snapshot can never be the reason a save fails.</p>
-            <h4>Atomic everything</h4>
-            <p>All settings and data write to a temporary file first, then replace
-            atomically - a crash mid-write leaves your existing file untouched, and
-            schema-validated stores catch problems before they reach disk.</p>
+            <p>Undo keeps up to a hundred steps, even after you close the file. Autosave and
+            backups protect every save, and after a crash QUILL offers to bring your work
+            back. Every save also keeps a snapshot. File &gt; Restore Previous Version lists
+            them, such as "Today at 4:12 PM, 2,341 words". Before you restore one, QUILL
+            keeps a snapshot of what you have now, so you can change your mind. A week of
+            saves is kept in full, then one a day, then one a week, and the newest five are
+            always kept.</p>
+            <h4>Safe saving</h4>
+            <p>Settings and data are written to a temporary file first and then swapped in.
+            If the computer crashes in the middle, your existing file is untouched.</p>
           </div>
         </details>
 
         <details class="deep">
-          <summary><h3>Updates and safety advisories</h3></summary>
+          <summary><h3>Updates and safety notices</h3></summary>
           <div>
-            <p>Update checks verify a signed manifest, downloads are checksum-verified, and
-            optional components install only when you ask, with cancelable spoken progress.</p>
+            <p>Updates are checked against a signed list, downloads are checked before they
+            install, and optional parts install only when you ask. You hear the progress, and
+            you can cancel.</p>
             <h4>The advisory system</h4>
-            <p>If the community reports a shipped feature misbehaving badly, a signed
-            advisory can switch off that one feature - loudly, with its reason announced -
-            until the fix ships. Advisories only ever turn things off, persist offline, are
-            lifted by the same signed feed, and <code>QUILL_IGNORE_FEATURE_LOCKS=1</code> is
-            your standing local override. Policy: used only on real community reports, when
-            a fix cannot ship fast enough.</p>
+            <p>If people report that a feature is causing real trouble, we can send a signed
+            notice that turns just that feature off until a fix is ready. QUILL tells you when
+            this happens and why. A notice can only turn things off, never on. If you need the
+            feature anyway, setting <code>QUILL_IGNORE_FEATURE_LOCKS=1</code> overrides it.
+            We only do this after real reports from the community, when a fix cannot come
+            fast enough.</p>
           </div>
         </details>
 
         <details class="deep">
-          <summary><h3>Privacy engineering</h3></summary>
+          <summary><h3>Privacy</h3></summary>
           <div>
-            <p>Secrets live in the OS credential vault, never in files. Sensitive settings
-            are encrypted at rest. Crash reports pass a redaction scrubber so tokens and
-            personal paths never leave your machine, and the crash dialog confirms out loud
-            whether a report was sent or copied. Every outbound call site in the codebase is
-            registered in a network egress audit that the build enforces - local-first is a
-            gate in the test suite, not a slogan.</p>
+            <p>Passwords and keys are kept in your system's secure credential store, never
+            in plain files. Sensitive settings are encrypted. Crash reports have passwords and
+            personal details removed before they go anywhere, and QUILL tells you whether a
+            report was sent. Every place in QUILL that can go online is listed and checked
+            each time the code changes.</p>
           </div>
         </details>
 
         <details class="deep">
           <summary><h3>Tested like it matters</h3></summary>
           <div>
-            <p>Over 7,000 automated tests run on every change. Style, typing, module-size,
-            dialog-inventory, persistence, and egress gates enforce the contracts that keep
-            QUILL predictable. And a nightly robot tester launches the real application on a
-            real desktop, presses real keys, and checks what a screen reader would meet -
-            named controls, honest titles, Escape that works, and the words QUILL actually
-            speaks. It reports to humans; it never gates or auto-fixes.</p>
+            <p>More than 7,000 automatic tests run every time the code changes. Every night a
+            test robot opens the real app on a real desktop, presses real keys, and checks
+            what a screen reader would find. It reports to people. It does not change
+            anything by itself.</p>
           </div>
         </details>
 
         <details class="deep">
           <summary><h3>The road to 1.0</h3></summary>
           <div>
-            <p>0.9.0 is the final feature beta. From here to 1.0, every change is a bug fix,
-            a polish pass, or a performance win - driven by community reports. Rough edges
-            get smoothed, not shipped. Safety advisories stand guard between "you told us"
-            and "it is fixed." The first promise was "we will build it all." The second is
-            "it will all work." 1.0 will be boring, in the best way - and when something is
-            not fixed yet, you hear that from us in exactly those words, with the reporter's
-            name on the fix when it comes from the community.</p>
+            <p>0.9.0 is the last beta with new features. Between now and 1.0, the work is
+            fixing bugs, smoothing rough edges and making things faster, guided by what you
+            report. If something is not fixed yet, we will tell you so. And when a fix comes
+            from your report, your name goes on it.</p>
           </div>
         </details>
       </div>
@@ -1213,11 +1180,11 @@
     <!-- Start here -->
     <section class="band" aria-labelledby="next-h">
       <div class="wrap">
-        <h2 id="next-h">Start here</h2>
+        <h2 id="next-h">Downloads and documents</h2>
         <div class="cards">
           <div class="card">
             <h3>Download QUILL 0.9.0 Beta 2</h3>
-            <p>Windows 10 or later, 64-bit, or macOS 12 or later. Includes Python runtime - no separate install required. This is 0.9.0 - the final feature beta before 1.0.</p>
+            <p>For Windows 10 or later, 64-bit, or macOS 12 or later. Python is included, so there is nothing else to install. This is the last beta before 1.0.</p>
             <ul class="doc-links">
               <li><a href="https://github.com/Community-Access/quill/releases/download/v0.9.0-beta.2/Quill-for-All-Setup-0.9.0.Beta.2.exe">Windows: System installer (online)</a></li>
               <li><a href="https://github.com/Community-Access/quill/releases/download/v0.9.0-beta.2/Quill-for-All-Setup-Offline-0.9.0.Beta.2.exe">Windows: System installer (offline)</a></li>
@@ -1229,42 +1196,42 @@
           </div>
           <div class="card">
             <h3><a href="/docs/release1.0.0.html">The 1.0.0 release notes</a></h3>
-            <p>The story of One Editor, Every Format: the braille correction enabled by default, RTF and Word documents made genuinely editable, every open community bug report addressed, GitHub turned into a working environment - and the community that drove all of it.</p>
+            <p>What is coming in QUILL 1.0: braille correction turned on for everyone, RTF and Word documents you can really edit, every open bug report from the community answered, and GitHub inside QUILL.</p>
             <span class="more"><a href="/docs/release1.0.0.html">Read the release notes <span aria-hidden="true">&rarr;</span></a></span>
           </div>
           <div class="card">
             <h3><a href="/docs/userguide.html">User guide</a></h3>
-            <p>Writing, navigation, commands, settings, and all of QUILL's accessibility features explained.</p>
+            <p>Writing, moving around, commands, settings, and all of QUILL's accessibility features, explained.</p>
             <span class="more"><a href="/docs/userguide.html">Open the user guide <span aria-hidden="true">&rarr;</span></a></span>
           </div>
           <div class="card">
             <h3><a href="/docs/quillins.html">Build your first Quillin</a></h3>
-            <p>A hands-on walkthrough from an empty folder to a working, tested extension. No prior experience required.</p>
+            <p>A step-by-step walkthrough, from an empty folder to a working add-on. You do not need any experience.</p>
             <span class="more"><a href="/docs/quillins.html">Start the tutorial <span aria-hidden="true">&rarr;</span></a></span>
           </div>
           <div class="card">
             <h3><a href="/faq.html">Frequently asked questions</a></h3>
-            <p>Answers about accessibility, privacy, AI, Quillins, security, and how to contribute.</p>
+            <p>Answers about accessibility, privacy, AI, Quillins, security, and how to help.</p>
             <span class="more"><a href="/faq.html">Read the FAQ <span aria-hidden="true">&rarr;</span></a></span>
           </div>
           <div class="card">
             <h3><a href="/quillin-wizard.html">Snippet Wizard</a></h3>
-            <p>Build a snippet-only Quillin interactively, without writing a line of code. Fill in the form and download your <code>manifest.json</code>.</p>
+            <p>Make a snippet Quillin without writing any code. Fill in the form and download your <code>manifest.json</code>.</p>
             <span class="more"><a href="/quillin-wizard.html">Open the wizard <span aria-hidden="true">&rarr;</span></a></span>
           </div>
           <div class="card">
             <h3><a href="/tutorials/index.html">Hands-on tutorials</a></h3>
-            <p>Seven complete walkthroughs, ten to twenty minutes each: your first hour, keyboard mastery, rescuing a scanned PDF, building an audiobook, starting a linked-notes Vault, shipping an accessible document with GLOW, and typing math like a pro.</p>
+            <p>Ten walkthroughs of ten to twenty minutes each: your first hour, the keyboard, rescuing a scanned PDF, making an audiobook, starting a Vault, accessible documents with GLOW, typing math, GitHub inside QUILL, internet radio, and podcasts.</p>
             <span class="more"><a href="/tutorials/index.html">Start a tutorial <span aria-hidden="true">&rarr;</span></a></span>
           </div>
           <div class="card">
-            <h3><a href="/podcast/index.html">The QUILL Cast</a></h3>
-            <p>A 36-episode audio course that teaches all of QUILL by ear, narrated by QUILL's own on-device Kokoro voices. Play episodes right on the page, read the full transcripts, or <a href="/podcast/feed.xml">subscribe by RSS</a> in any podcast app.</p>
+            <h3><a href="/podcast/index.html">The QUILL Cast audio course</a></h3>
+            <p>A free audio course in 54 episodes that teaches QUILL by ear. Play episodes on the page, read the transcripts, or <a href="/podcast/feed.xml">subscribe by RSS</a> in any podcast app.</p>
             <span class="more"><a href="/podcast/index.html">Browse the episodes <span aria-hidden="true">&rarr;</span></a></span>
           </div>
           <div class="card">
             <h3><a href="/docs.html">All documentation</a></h3>
-            <p>Every published QUILL document: product, privacy, security, Quillins, contributing, and governance.</p>
+            <p>Every QUILL document we publish: the product, privacy, security, Quillins, helping out, and how the project is run.</p>
             <ul class="doc-links">
               <li><a href="/docs/privacy.html">Privacy</a></li>
               <li><a href="/docs/security.html">Security</a></li>
@@ -1273,7 +1240,7 @@
           </div>
           <div class="card">
             <h3><a href="/radio.html">Quill Radio 3.0</a></h3>
-            <p>The next generation of the ACB Radio Tuner: every ACB Media stream plus more than 62,000 stations that ship inside the app, podcasts, audiobooks, YouTube and television, favorites, scheduled recordings, and guided tutorials. Free and standalone.</p>
+            <p>The new version of the ACB Radio Tuner. It has every ACB Media stream, more than 62,000 stations built in, podcasts, audiobooks, YouTube and TV, favorites, scheduled recordings, and step-by-step tutorials. It is free, and you do not need QUILL to use it.</p>
             <ul class="doc-links">
               <li><a href="https://github.com/Community-Access/quill/releases/download/quill-radio-v3.0.4/Quill-Radio-Setup-Shared-3.0.4.exe">Quill Radio 3.0.4 installer for Windows</a></li>
               <li><a href="https://github.com/Community-Access/quill/releases/download/quill-radio-v3.0.4/Quill-Radio-Portable-3.0.4.zip">Quill Radio 3.0.4 portable ZIP for Windows</a></li>
@@ -1290,13 +1257,12 @@
   <footer class="site">
     <div class="wrap">
       <p class="note">
-        <strong class="quill" style="color:var(--accent)">QUILL</strong> -
-        Quality, Usable, Inclusive, Lightweight, Literate. A screen-reader-first
-        writing environment for Windows and macOS, built by the community that
-        depends on it.
+        <strong class="quill" style="color:var(--accent)">QUILL</strong>:
+        Quality, Usable, Inclusive, Lightweight, Literate. Free software for screen
+        reader users, made with the people who use it.
       </p>
       <nav aria-label="Documentation">
-        <h4>Documentation</h4>
+        <h2>Documentation</h2>
         <ul>
           <li><a href="/docs/userguide.html">User guide</a></li>
           <li><a href="/docs/release1.0.0.html">1.0.0 release notes</a></li>
@@ -1306,7 +1272,7 @@
         </ul>
       </nav>
       <nav aria-label="Project">
-        <h4>Project</h4>
+        <h2>Project</h2>
         <ul>
           <li><a href="https://github.com/Community-Access/quill/releases/tag/v0.9.0-beta.2">Download QUILL 0.9.0 Beta 2</a></li>
           <li><a href="https://github.com/Community-Access/quill/releases/tag/quill-radio-v3.0.4">Quill Radio 3.0.4 release page</a></li>
@@ -1317,7 +1283,7 @@
         </ul>
       </nav>
       <nav aria-label="Privacy and security">
-        <h4>Privacy &amp; security</h4>
+        <h2>Privacy &amp; security</h2>
         <ul>
           <li><a href="/docs/privacy.html">Privacy</a></li>
           <li><a href="/docs/security.html">Security</a></li>

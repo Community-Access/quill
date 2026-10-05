@@ -322,8 +322,9 @@ class PodcastSettingsDialog:
         self._inbox_mode = wx.Choice(
             self.dialog,
             choices=[
-                "Only the shows I choose",
-                "Every show except the ones I exclude",
+                # The same words as Preferences > The Inbox (settings_defs_library).
+                "Only the ones I mark",
+                "Every show except the ones I mark",
             ],
         )
         self._inbox_mode.SetName(settings_help.HELP["inbox_mode"])

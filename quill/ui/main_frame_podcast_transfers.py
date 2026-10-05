@@ -65,6 +65,9 @@ class PodcastTransfersMixin:
         self._podcast_cue_download_started(item)
         if item.status == "failed":
             self._record_podcast_download_problem(item)
+            from quill.ui.podcasts import download_run
+
+            download_run.step(self, item.episode_guid, failed_title=str(item.episode_guid))
         if self._podcast_manager_dialog is not None:
             self._podcast_manager_dialog.on_download_status_changed(item)
 
@@ -129,6 +132,9 @@ class PodcastTransfersMixin:
         if self._podcast_manager_dialog is not None:
             self._podcast_manager_dialog.on_download_completed(item)
         self._maybe_notify_downloads_finished(item)
+        from quill.ui.podcasts import download_run
+
+        download_run.step(self, item.episode_guid)
 
     def _maybe_notify_downloads_finished(self, item: DownloadItem) -> None:
         """One desktop notification when the queue goes quiet (list.md 2.5).

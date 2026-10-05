@@ -44,6 +44,26 @@ TOKEN_FILE = "bridge_token.txt"
 ALLOWED_ORIGIN_SCHEMES = ("moz-extension://", "chrome-extension://")
 
 
+_ORIGIN_HOST_CHARS = frozenset("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-_:")
+
+
+def _safe_origin(value: str | None) -> str:
+    """An Origin header fit to echo back: an allowed scheme and a plain host.
+
+    Anything else -- including a value carrying CR or LF, which would split
+    the response -- is refused, so the reply simply omits the CORS header.
+    """
+    origin = (value or "").replace("\r", "").replace("\n", "")
+    # A character check, not a regular expression: no backtracking on input
+    # an unauthenticated sender controls.
+    for scheme in ALLOWED_ORIGIN_SCHEMES:
+        if origin.startswith(scheme):
+            host = origin[len(scheme) :]
+            if 0 < len(host) <= 255 and set(host) <= _ORIGIN_HOST_CHARS:
+                return origin
+    return ""
+
+
 class CaptureBridge:
     """Owns the HTTP server thread, the store handle, and the shared token."""
 
@@ -185,6 +205,10 @@ class CaptureBridge:
         return {"ok": True, "count": len(results), "results": results}
 
 
+#: The most a rejected request's body is read (and thrown away) before the 401.
+_MAX_DISCARD_BYTES = 1 << 20
+
+
 def _make_handler(bridge: CaptureBridge):
     class _Handler(BaseHTTPRequestHandler):
         # Quiet logging.
@@ -212,8 +236,8 @@ def _make_handler(bridge: CaptureBridge):
             self.send_header("Content-Type", "application/json")
             self.send_header("Content-Length", str(len(body)))
             # Permissive CORS for extension origins.
-            origin = self.headers.get("Origin") or ""
-            if origin.startswith(ALLOWED_ORIGIN_SCHEMES):
+            origin = _safe_origin(self.headers.get("Origin"))
+            if origin:
                 self.send_header("Access-Control-Allow-Origin", origin)
             self.send_header("Vary", "Origin")
             self.end_headers()
@@ -223,8 +247,8 @@ def _make_handler(bridge: CaptureBridge):
             self.send_response(code)
             self.send_header("Content-Type", "text/html; charset=utf-8")
             self.send_header("Content-Length", str(len(body)))
-            origin = self.headers.get("Origin") or ""
-            if origin.startswith(ALLOWED_ORIGIN_SCHEMES):
+            origin = _safe_origin(self.headers.get("Origin"))
+            if origin:
                 self.send_header("Access-Control-Allow-Origin", origin)
             self.send_header("Vary", "Origin")
             self.end_headers()
@@ -240,11 +264,27 @@ def _make_handler(bridge: CaptureBridge):
             except (ValueError, UnicodeDecodeError):
                 return {}
 
+        def _discard_body(self) -> None:
+            # A rejected request's body must still be read before the reply:
+            # on Windows, closing a socket with unread data in its receive
+            # buffer sends a reset, and the reset can destroy the 401 before
+            # the client reads it (WinError 10053 on the client). Bounded, so
+            # an unauthenticated sender cannot make us read without limit;
+            # past the bound the connection is simply closed.
+            try:
+                length = int(self.headers.get("Content-Length") or 0)
+            except ValueError:
+                length = 0
+            if 0 < length <= _MAX_DISCARD_BYTES:
+                self.rfile.read(length)
+            elif length > _MAX_DISCARD_BYTES:
+                self.close_connection = True
+
         # -- routes ---------------------------------------------------------
         def do_OPTIONS(self) -> None:
             self.send_response(204)
-            origin = self.headers.get("Origin") or ""
-            if origin.startswith(ALLOWED_ORIGIN_SCHEMES):
+            origin = _safe_origin(self.headers.get("Origin"))
+            if origin:
                 self.send_header("Access-Control-Allow-Origin", origin)
                 self.send_header(
                     "Access-Control-Allow-Headers", "Content-Type, X-QuillBeacon-Token"
@@ -304,6 +344,7 @@ def _make_handler(bridge: CaptureBridge):
 
         def do_POST(self) -> None:
             if not self._authorized():
+                self._discard_body()
                 self._send(401, {"ok": False, "error": "unauthorized"})
                 return
             path = urlparse(self.path).path

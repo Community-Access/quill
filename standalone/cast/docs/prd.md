@@ -1,6 +1,6 @@
 # QUILL Cast -- Product Requirements
 
-Version 2.0
+Version 2.0.0, released 2026-10-03.
 
 ## 1. Product statement
 
@@ -1529,6 +1529,167 @@ in Library is Ctrl+F. Transcripts are excluded until F-09's index exists.
 `podcasts_view_menu.py` joined the app menu-accelerator gate, whose first run
 gave Customize Features Radio's Ctrl+Alt+C.
 
+### 23.25 Earshot parity, complete (2026-10-03)
+
+The Earshot parity plan (ear.md, compared against Earshot 1.2.3, TestFlight
+273, S:/code/earshot 63dc641) is closed and its working file retired. Parity
+meant the listener gets the same outcome, not the same screen: keys where iOS
+has gestures, the Command Palette where iOS has Siri.
+
+- R1 Hide Caught-Up Podcasts (View, remembered; "All caught up" when everything
+  is hidden). R2 Feed Check. R3 Refresh Episode Audio on the episode menu and
+  the palette (`ui/podcasts/refresh_audio_command.py` over
+  `core/podcasts/refresh_audio.py`: re-read the feed, ask once naming the
+  download, keep position, played, note and speed). R4 Delete in the Inbox
+  also deletes the download when "Delete its downloaded file" is on, never for
+  a kept episode. R5 the Inbox scoped to one library folder (View > Inbox
+  Folder). R6 Play an Unheard Episode (queue, then Inbox, then everything;
+  newest or oldest), Play Queue Shuffled, Clear Entire Queue, in the palette.
+  R7 Jump List: dropped by Jeff, 2026-10-03; not planned. R8 to R10: 23.20.
+- A1 to A12, the AI verbs: 23.21 and the shared hosted AI.
+- B1 to B3: 23.24.
+- Principle kept from the plan: no invented formats -- where Earshot has not
+  defined something, Cast follows the shared Listening Places proposal or
+  waits.
+
+### 23.23 Library and Inbox layouts (2026-10-03)
+
+- Six catalogue settings, global, stored by id (`settings_defs_views.py`):
+  `library_layout` (folders_first | folders_only | podcasts_only | mixed),
+  `folder_sort_mode` (custom | name_az | name_za | most_unheard |
+  most_podcasts), `library_folders_open` (open | closed), `library_counts`
+  (unheard | podcasts | both | none), `library_hide_empty_folders`,
+  `inbox_layout` (episodes | folders_first | folders_only).
+- Plans in `library_view.py`; invariant: no layout hides a podcast or an Inbox
+  episode. Folders only adds a "Podcasts in no folder" group, tagged `group`.
+- The Inbox groups by each show's top-level library folder; a folder row opens
+  in place, Backspace returns.
+- View > Rearrange Library and Inbox (Ctrl+Shift+R), live; Preferences > The
+  library (ninth section).
+
+### 23.24 Earshot B1-B3 (2026-10-03)
+
+- B1: `PodcastEpisode.last_played_on` from the winning device file's
+  `device_label`, or its app name; shown in Continue Listening; cleared by any
+  local position change.
+- B2: an Earshot 1.2.3 device file fixture written to Earshot's encoder.
+- B3: subscriptions and folders in the plain file per the shared proposal's
+  section 6.7, behind `PlacesConfig.share_subscriptions` (off).
+
+### 23.22 Why it is queued, and choices shared with Quill Radio (qc.md X-04, X-05; 2026-10-03)
+
+- A queue slot carries an optional `reason` (`QueueItem.reason`, written only
+  when set): Auto-Queue, "the lineup <name>", "your listening run", "a watched
+  folder". The Play Queue place adds "; queued by <reason>" to the row's
+  status. A slot the listener added has no reason and says nothing extra.
+- Preferences > The window: **Share these choices with my other Quill apps**
+  (`share_family_prefs`, off). Shared through `quill/core/family_preferences.py`
+  in the shared data folder, only between apps that each turned it on, and only
+  `announce_dialog_transitions` and `action_feedback`. Cast adopts at launch
+  and says which choice it took; turning it on adopts or publishes; saving
+  Preferences publishes.
+- Settings search covers all eight Preferences sections (X-01).
+
+### 23.21 Cast's own AI verbs (ear.md A2-A10; 2026-10-03)
+
+`quill/core/podcasts/ai_listening.py` (wx-free: prompts and readers for A3-A8,
+`tidy_rows` for A9) and `quill/ui/podcasts/cast_ai_features.py`
+(`CastDomainAiMixin`, carried by `CastExtensionsMixin` under GATE-11), with
+`ai_review_dialog.py` (Accept/Skip per row in words, Space toggles, Apply
+Selected, Cancel changes nothing) and `ai_answer_dialog.py` (read-only answer,
+Copy). Every request goes through the shared service's `ask("ask", ...)` behind
+`_ai_ready` (switch and agreement); failures through `report_failure`. Rows are
+appended to Help > AI Features by a hook the adapter calls, so `CastAiMixin`
+still has no command of its own. Organise asks in batches of 40; a run is
+measured with Cast's own lengths; playlist rules resolve names to ids;
+chapter titles are saved to the inference cache. Tidy sends nothing and works
+with AI off; unfollow rows go through the ordinary undoable prompt. A10 is a
+test: the background passes and destructive verbs cannot import the AI.
+
+### 23.20 Earshot parity R8-R10 (ear.md; 2026-10-03)
+
+- **R8, names that survive.** `PodcastShow.feed_title` and
+  `PodcastEpisode.feed_title` hold the feed's own name when the listener
+  renamed it ("" otherwise; written only when set). `custom_names.rename`
+  applies a rename and keeps the feed's name; renaming to nothing or to the
+  feed's name restores it. `merge_episodes` updates `feed_title`, never the
+  listener's title. `PodcastFolder` and `ExpiredEntry` moved to
+  `models_folder.py` (re-exported) to make room; `models.py` ratcheted to 200.
+- **R9, notice actions on keys.** `ui/podcasts/notice_actions.py`: Ctrl+Enter
+  plays, Space queues, on a new-episode notice in the Notifications place and
+  the Notifications window, and in both rows' menus.
+- **R10, this computer only.** Delete All Podcast Data is now Clear All
+  Podcast Data from This Computer, and every sentence says the phone, other
+  computers and the shared place folder are untouched. Cast has no "delete
+  everywhere": subscriptions do not sync (B3).
+- B1-B3 stay blocked on Earshot (ear.md 5a).
+
+### 23.19 Phase 3: nothing silent (qc.md P4, section 10; 2026-10-03)
+
+- `ui/podcasts/say_status.py`: the one way to write a status line -- set it
+  and speak it once when it changed; clearing is silent; `speak=False` is
+  written at the call site with its reason (a paced progress count, a line
+  whose fuller sentence the caller speaks, a count that follows the
+  selection). Every Cast status write was moved to it: Add Podcast (Find,
+  Find failed, Fetching, Could not follow it, sign-in needed, Safe Mode,
+  empty fields -- several of which were silent), Preview, Search Everywhere,
+  OPML import, Find in library, the Podcast Manager's episode counts.
+- `ui/podcasts/failure_report.py`: one helper for a failure -- spoken (with
+  the error sound through `outcome_feedback.say_failure`), or for work Cast
+  did on its own spoken unless Quiet Hours hold it back, or only recorded --
+  and always written to Recent Problems. The two `on_failure=lambda *_a: None`
+  handlers (chapter prefetch, audio processing), ACB Media, chapter inference
+  and analysis, transcripts, the chapters dialog, Follow from About This
+  Episode, Preview and watched folders use it.
+- GATE-CAST-SILENT (`quill/tools/check_cast_silence.py`, in
+  `platform_report`): in Cast's scope, a status `SetLabel` outside
+  `say_status`, or an `on_failure` that says nothing or only logs, fails.
+
+### 23.18 Phase 7: the listening extensions (qc.md section 18, 2026-10-03)
+
+`quill/apps/podcasts_extensions.py` (`CastExtensionsMixin`, ahead of the shared
+podcast mixins) and `quill/core/podcasts/listening_words.py` (wx-free):
+
+- **Time Remaining**, Ctrl+Shift+T (`podcasts.time_remaining`, Episode menu,
+  also offered as a global hotkey): position of length, what is left, the real
+  time at the speed in force, and the sleep timer.
+- **Ctrl+Home** to the launch place, first row; caught in the frame's char
+  hook, never an accelerator, so a text field keeps Ctrl+Home.
+- **Shift+Space**, Play This Next: `listening_words.play_this_next` inserts
+  after the playing episode's slot (the playing episode stays queued, ear.md
+  R4), else at the front; char hook, skipped in text fields.
+- **Up next**, about ten real seconds before the end, through the
+  controller's one-second tick: the run-end choice's next episode
+  (`queue_steps.step_next` or the folder's next unplayed), once per episode,
+  never with Stop After This Episode or a sleep-at-end, through
+  `quiet_hours_ui.speak_background`; `PodcastHistory.announce_up_next` (on).
+- **Ctrl+N** with one web address on the clipboard fills Add Podcast's feed
+  address and focuses it (`AddPodcastDialog.prefill_address`); Enter follows.
+  No preview: Add by URL fetches and validates the feed as it follows.
+- **Bookmarks**: Bookmark with a Note (Ctrl+Shift+D), Bookmarks in This
+  Episode (Ctrl+Shift+J; `show_bookmarks(anchor=...)` filters the shared
+  window), a Bookmarks button in Now Playing, and a Bookmarks tab in About
+  This Episode (`extras.ACTION_JUMP`, Go There plays from that moment).
+- **Earcons** for added-to-queue, removed and marked played
+  (`SoundEvent.CAST_QUEUE_ADDED`, `CAST_REMOVED`, `CAST_MARKED_PLAYED`, in the
+  ink pack), resolved through `action_feedback.resolve` by Cast's own
+  `PodcastHistory.action_feedback` (default *both*, so nothing went quiet);
+  failures through `resolve_failure` (`ui/podcasts/outcome_feedback.py`).
+- **What I care about in this podcast**: a show-level text setting
+  (`listening_note`, Curation) for later AI features to read.
+- **Global hotkeys**: Podcasts: Now Playing window and Podcasts: Time
+  Remaining join the allowlist; Cast's Global Hotkeys window now lists only
+  commands Cast registers (`_global_hotkeys_registered_only`), so it no
+  longer offers Radio's and the editor's.
+- **Undo History** (Edit > Undo History, shared with Quill Radio):
+  `undo_last.UndoHistory` keeps ten steps; Ctrl+Z still takes the newest, and
+  pressing it again takes the one before; each held deletion gets its own
+  holding folder (`undo_last_ui._step_dir`).
+- Timestamps in show notes were already links (`notes_reader`, 23.13).
+- Not built: a braille *status line*. Neither JAWS nor NVDA gives an app a
+  status region, and every Cast announcement already goes to braille as a
+  flash message through the shared announcement service.
+
 ### 23.17 The 2.0 follow-ups: watched folders, a show/hide chord, two menu rows (qc.md C2-01 to C2-03, 2026-10-03)
 
 **Watched folders (C2-02, section 5d of qc.md).** `WatchedFolder` records live
@@ -1558,8 +1719,8 @@ as a palette command and scans every folder.
 
 **Show/hide chord (C2-01).** Cast registers its own system-wide show/hide,
 Ctrl+Alt+Shift+F12 (`podcasts_routes.CAST_TRAY_HOTKEY`), and sets
-`_own_tray_hotkey` so the shared default (Ctrl+Alt+Shift+Q, which is Cast's
-Mark as Played and Next) is never added, even when Windows refuses Cast's own
+`_own_tray_hotkey` so the shared default (Ctrl+Alt+Shift+Q, which is QUILL's
+own show/hide key) is never added, even when Windows refuses Cast's own
 chord. Every Ctrl+Alt+Shift letter already belongs to a family app.
 
 **Menu rows (C2-03).** Episode > Player Information... (Ctrl+I) and Podcasts >

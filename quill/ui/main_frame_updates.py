@@ -1,8 +1,8 @@
 """Update checking and delivery for MainFrame (CQ-1 decomposition).
 
 ``UpdatesMixin`` owns the QUILL self-update flow -- the startup/manual GitHub
-release check, release-notes presentation, the beta-channel offer/confirm
-dialogs, skip-version bookkeeping, the consented download of installer or
+release check (filtered by the release channel, ``quill.core.updater``),
+release-notes presentation, skip-version bookkeeping, the consented download of installer or
 portable builds, and post-download actions (reveal, launch installer, extract
 portable) -- plus the consented GLOW engine update check
 (``check_for_glow_updates``). Extracted verbatim from ``main_frame.py``; runs
@@ -68,6 +68,9 @@ class UpdatesMixin:
         current_version = build_info.resolve_running_version(
             override=getattr(getattr(self, "_updates", None), "current_version", "")
         )
+        if current_version == build_info.get_short_version():
+            # A Dev build carries its build stamp, so two Dev builds differ.
+            current_version = build_info.feed_version()
 
         self.settings.last_update_check = datetime.now(UTC).isoformat()
         try:
@@ -79,7 +82,16 @@ class UpdatesMixin:
             self._set_status_quiet("Checking for updates...")
             self._announce("Checking for updates")
 
-        beta = bool(getattr(self.settings, "beta_updates", False))
+        # The release channel (Help > Release Channel) decides; QUILL's old "Get
+        # beta updates" box counts only until a channel has been stored.
+        from quill.core.updater.channels import includes_prereleases, load_channels
+
+        channels = load_channels()
+        beta = (
+            includes_prereleases(channels.state("quill"))
+            if channels.has("quill")
+            else bool(getattr(self.settings, "beta_updates", False))
+        )
         self._update_check_in_progress = True
         # Portable installs update by replacing the bundle, not by running the
         # installer. The signed manifest feed only carries the installer URL, so
@@ -105,7 +117,20 @@ class UpdatesMixin:
                 # Portable updates by replacing the bundle, so its download
                 # *prompt* uses the releases path (portable .zip), not the
                 # manifest's installer URL — but advisories above still apply.
-                if (
+                # The signed v2 list decides when one is published; until then
+                # the GitHub path, exactly as before (release channels, Phase 2).
+                from quill.core.updater.feed_fetch import (
+                    FeedCheckFailed,
+                    fetch_feed,
+                    offers_from_feed,
+                )
+
+                listed = fetch_feed("quill")
+                if listed.status != "missing":
+                    if not listed.usable or listed.feed is None:
+                        raise FeedCheckFailed(listed.reason)
+                    releases = list(offers_from_feed(listed.feed, portable=portable))
+                elif (
                     portable
                     or manifest is None
                     or not is_newer_version(current_version, manifest.version)
@@ -152,10 +177,8 @@ class UpdatesMixin:
     ) -> None:
         """UI-thread callback once the background update-network fetch finishes."""
         from quill.core.updates import (
-            find_release,
             is_newer_version,
             running_portable,
-            select_latest,
         )
 
         self._update_check_in_progress = False
@@ -171,8 +194,19 @@ class UpdatesMixin:
         # manifest is fetched only for advisories (above); the download prompt
         # uses the releases path so a portable user is offered the .zip, not the
         # installer.
+        # The v1 manifest has no channel, so a pre-release in it is offered only
+        # to somebody on Beta or Dev (release channels, Phase 0).
+        from quill.core.versioning import ReleaseVersion
+
+        manifest_version = ReleaseVersion.try_parse(manifest.version) if manifest else None
+        manifest_ok = beta or (manifest_version is not None and not manifest_version.is_prerelease)
+        # A client reading the v2 list ignores the v1 manifest for offers; it
+        # still applies the manifest's advisories above (plan 9.5).
+        if releases and all(hasattr(r, "channels") for r in releases):
+            manifest_ok = False
         if (
             manifest is not None
+            and manifest_ok
             and not running_portable()
             and is_newer_version(current_version, manifest.version)
         ):
@@ -208,20 +242,23 @@ class UpdatesMixin:
             return
 
         releases = releases or []
-        latest_any = select_latest(releases, include_prereleases=True)
-        latest_stable = select_latest(releases, include_prereleases=False)
+        # The release channel decides what may be offered (Stable never sees a
+        # pre-release). A build that finds itself a pre-release with no channel
+        # stored is set to its own channel once, and says so -- this replaced a
+        # silent auto-enrol (release channels, plan 2.1).
+        from quill.core.updater.check import evaluate, up_to_date_text
 
-        # Auto-enroll in beta channel when running a prerelease build.
-        current_match = find_release(releases, current_version)
-        if not beta and current_match is not None and current_match.prerelease:
-            self.settings.beta_updates = True
-            save_settings(self.settings)
-            beta = True
-            self._record_notification(
-                "You're running a beta build, so beta updates are enabled.", "update"
-            )
-
-        target = latest_any if beta else latest_stable
+        result = evaluate(
+            "quill",
+            current_version,
+            releases,
+            legacy_beta=bool(getattr(self.settings, "beta_updates", False)),
+        )
+        for notice in result.notices:
+            self._record_notification(notice, "update")
+            self._announce(notice)
+        self._mirror_release_channel(result.state)
+        target = result.target
         newer = target is not None and is_newer_version(current_version, target.version)
         # #919's same-version "self-heal" offer is gone (2026-09-26): it existed
         # to restore a bundled GitHub token, and no build carries one any more --
@@ -235,6 +272,8 @@ class UpdatesMixin:
                 )
                 return
             if silent_no_update:
+                if self._hold_background_update(target, result.state):
+                    return
                 self._record_notification(f"Update {target.version} found; downloading", "update")
                 self._download_update_release(target)
                 return
@@ -248,57 +287,138 @@ class UpdatesMixin:
                 self._record_notification(f"Update {target.version} deferred", "update")
             return
 
-        # No update on current channel — check if a prerelease is available on stable.
-        prerelease_available = (
-            not beta
-            and latest_any is not None
-            and latest_any.prerelease
-            and is_newer_version(current_version, latest_any.version)
-        )
-        if prerelease_available:
-            if silent_no_update:
-                self._record_notification(
-                    f"A beta build {latest_any.version} is available. "
-                    "Enable beta updates to install it.",
-                    "update",
-                )
-                self._set_status("Beta update available")
-                return
-            self._route_prerelease_to_beta(current_version, latest_any)
-            return
-
-        # Genuinely up to date.
+        # Genuinely up to date. No offer to "switch to beta" any more: an
+        # up-to-date answer should not try to sell a riskier channel.
         if silent_no_update:
             self._record_notification("Update check found no newer version", "update")
             return
         self._set_status_quiet("No update available")
         self._announce("Quill is up to date")
         self._record_notification("Update check found no newer version", "update")
-        if beta:
-            self._html_info(
-                "Check for Updates",
-                "# You're up to date\n\n"
-                "You're on the **beta** channel and running the newest build.\n\n"
-                f"**Current version:** {current_version}",
-            )
-        else:
-            self._offer_beta_switch(current_version, latest_stable)
+        self._html_info(
+            "Check for Updates",
+            "# You're up to date\n\n" + up_to_date_text(current_version, result.state),
+        )
 
-    def _route_prerelease_to_beta(self, current_version: str, release: GitHubRelease) -> None:
-        """A prerelease is available while on stable — enroll in beta (with the
-        consent gate), then offer the prerelease for download."""
-        if not self._confirm_beta_channel(release):
-            self._set_status("Stayed on the stable channel")
-            return
-        self.settings.beta_updates = True
-        save_settings(self.settings)
-        self._set_status_quiet("Switched to the beta update channel")
-        self._announce("Beta updates enabled")
-        action = self._show_update_available_dialog(current_version, release)
-        if action == "download":
-            self._download_update_release(release)
-        elif action == "skip":
-            self._skip_update_version(release.version)
+    def _hold_background_update(self, target: object, state: object) -> bool:
+        """Beta and Dev: the automatic download waits on a metered connection, in
+        Quiet Hours, or while Quill Radio records; Stable is unchanged."""
+        from quill.core.updater import history
+        from quill.core.updater.background import background_gate, read_conditions
+
+        gate = background_gate(state, read_conditions())  # type: ignore[arg-type]
+        if not gate.reason:
+            return False
+        version = str(getattr(target, "version", ""))
+        history.record("quill", "held_back", to_version=version, detail=gate.reason)
+        self._record_notification(f"Update {version} found. {gate.reason}", "update")
+        return True
+
+    def _mirror_release_channel(self, state: object) -> None:
+        """Keep the old ``beta_updates`` flag in step with the channel, for one
+        release cycle, so a QUILL taken back to 0.9.x still behaves (plan 9.4)."""
+        wanted = getattr(state, "channel", "stable") != "stable"
+        if bool(getattr(self.settings, "beta_updates", False)) != wanted:
+            self.settings.beta_updates = wanted
+            try:
+                save_settings(self.settings)
+            except Exception:  # noqa: BLE001 - a mirror is a courtesy
+                pass
+
+    # -- release channels (Help > Release Channel..., plan 7) ---------------
+
+    def _install_release_channel_item(self, help_menu: object) -> None:
+        """Help > Release Channel..., beside Check for Updates.
+
+        Registered here rather than in the command table so the whole feature
+        is one mixin: the command, its menu row and its binding.
+        """
+        from quill.core.i18n import _
+
+        wx = self._wx
+        self.commands.try_register(
+            "help.release_channel",
+            "Release Channel...",
+            self.open_release_channel,
+            self._binding_for("help.release_channel"),
+        )
+        item_id = getattr(self, "_id_release_channel", None) or wx.NewIdRef()
+        self._id_release_channel = item_id
+        label = self._menu_label(_("Release &Channel..."), "help.release_channel")
+        help_menu.Append(item_id, label)  # type: ignore[attr-defined]
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_release_channel(), id=item_id)
+        # Built once at start-up: once the window is up, tell the update helper
+        # this version started (release channels, Phase 4). Once per session.
+        if not getattr(self, "_update_start_confirmed", False):
+            self._update_start_confirmed = True
+            call_later = getattr(wx, "CallLater", None)
+            if callable(call_later):
+                call_later(1500, self._confirm_update_started)
+
+    def _confirm_update_started(self) -> None:
+        from quill import build_info
+        from quill.core.paths import app_data_dir
+        from quill.ui.updates.started import confirm_after_start
+
+        confirm_after_start(
+            app_key="quill",
+            app_name="QUILL",
+            version=build_info.feed_version(),
+            updates_dir=app_data_dir() / "updates",
+            announce=self._announce,
+        )
+
+    def _add_release_channel_row(self, panel: object, sizer: object) -> object:
+        """Preferences: "Release channel: Stable" and a button that changes it.
+
+        No access key on the button: the Preferences pages are dense, and a
+        duplicate letter is worse than none (GATE-14). Tab reaches it.
+        """
+        from quill.core.updater.channels import shown_channel, state_for
+
+        wx = self._wx
+        row = wx.BoxSizer(wx.HORIZONTAL)
+        status = wx.StaticText(panel, label=f"Release channel: {shown_channel(state_for('quill'))}")
+        button = wx.Button(panel, label="Change release channel...")
+        button.SetHelpText(
+            "Choose Stable, Beta or Dev for QUILL. Opens the Release Channel window, "
+            "the same one as Help, Release Channel."
+        )
+
+        def _change(_event: object) -> None:
+            self.open_release_channel()
+            status.SetLabel(f"Release channel: {shown_channel(state_for('quill'))}")
+
+        button.Bind(wx.EVT_BUTTON, _change)
+        row.Add(status, 1, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
+        row.Add(button, 0)
+        sizer.Add(row, 0, wx.EXPAND | wx.ALL, 6)  # type: ignore[attr-defined]
+        return button
+
+    def _release_channel_is_prerelease(self) -> bool:
+        from quill.core.updater.channels import state_for
+
+        return state_for("quill").channel != "stable"
+
+    def open_release_channel(self) -> None:
+        """Choose Stable, Beta or Dev for QUILL (the shared Release Channel window)."""
+        from quill.ui.updates.flow import open_release_channel
+
+        current = build_info.resolve_running_version(
+            override=getattr(getattr(self, "_updates", None), "current_version", "")
+        )
+        if current == build_info.get_short_version():
+            current = build_info.feed_version()  # with its build: "1.0.0 (build 2)"
+        open_release_channel(
+            self.frame,
+            app_key="quill",
+            installed_version=current,
+            show_modal=self._show_modal_dialog,
+            announce=self._announce,
+            on_changed=self._mirror_release_channel,
+            check_now=lambda: self.check_for_updates(),
+            install_release=self._download_update_release,
+        )
 
     def _render_html(self, markdown_text: str) -> str:
 
@@ -523,89 +643,6 @@ class UpdatesMixin:
         self._set_status(f"Skipping update {version}")
         self._record_notification(f"Update {version} skipped", "update")
         self._announce(f"Update {version} skipped")
-
-    def _offer_beta_switch(
-        self, current_version: str, stable_release: GitHubRelease | None
-    ) -> None:
-        wx = self._wx
-        stable_line = (
-            f"the latest stable release is {stable_release.version}"
-            if stable_release is not None
-            else "no stable release is published yet"
-        )
-        plain = (
-            f"You're on the stable channel (current version {current_version}; "
-            f"{stable_line}).\n\n"
-            "Want earlier features sooner? The beta channel delivers prerelease "
-            "builds as soon as they're published."
-        )
-        dialog = wx.MessageDialog(
-            self.frame, plain, "Check for Updates", wx.YES_NO | wx.NO_DEFAULT | wx.ICON_INFORMATION
-        )
-        if hasattr(dialog, "SetYesNoLabels"):
-            dialog.SetYesNoLabels("Switch to beta...", "Stay on stable")
-        try:
-            result = self._show_modal_dialog(dialog, "Check for Updates")
-        finally:
-            dialog.Destroy()
-        if result == wx.ID_YES and self._confirm_beta_channel():
-            self.settings.beta_updates = True
-            save_settings(self.settings)
-            self._set_status_quiet("Switched to the beta update channel")
-            self._announce("Beta updates enabled")
-            # Surface the latest prerelease right away so the user can install it,
-            # even if its version matches the current build (they opted into beta).
-            self._offer_latest_beta(current_version)
-
-    def _offer_latest_beta(self, current_version: str) -> None:
-        from quill.core.updates import fetch_latest_release
-
-        try:
-            release = fetch_latest_release(include_prereleases=True)
-        except (URLError, ValueError, OSError) as error:
-            self._html_info(
-                "Check for Updates",
-                f"# Update check failed\n\nCould not check beta updates: {error}",
-            )
-            return
-        if release is None:
-            self._html_info(
-                "Check for Updates",
-                "# No beta build yet\n\nNo beta (prerelease) build is available yet.",
-            )
-            return
-        action = self._show_update_available_dialog(current_version, release)
-        if action == "download":
-            self._download_update_release(release)
-        elif action == "skip":
-            self._skip_update_version(release.version)
-
-    def _confirm_beta_channel(self, release: GitHubRelease | None = None) -> bool:
-        """Consent gate the user must agree to before beta updates turn on."""
-        wx = self._wx
-        detected = (
-            f"A beta build ({release.version}) is available.\n\n" if release is not None else ""
-        )
-        plain = (
-            f"{detected}"
-            "Beta updates are prerelease builds. They get new features and fixes "
-            "first, but they may be unstable - expect rough edges, and occasional "
-            "bugs that could affect your documents.\n\n"
-            "- Beta builds are published as GitHub prereleases.\n"
-            "- You can switch back to stable anytime in Settings.\n"
-            "- Keep backups of important documents.\n\n"
-            "Do you understand and want to receive beta updates?"
-        )
-        dialog = wx.MessageDialog(
-            self.frame, plain, "Beta updates", wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING
-        )
-        if hasattr(dialog, "SetYesNoLabels"):
-            dialog.SetYesNoLabels("I understand, enable beta", "Cancel")
-        try:
-            result = self._show_modal_dialog(dialog, "Beta updates")
-        finally:
-            dialog.Destroy()
-        return result == wx.ID_YES
 
     def _download_update_release(self, release: GitHubRelease) -> None:
         """Auto-download the release asset to <app data>/updates, off-thread,

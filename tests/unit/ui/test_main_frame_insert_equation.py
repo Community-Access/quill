@@ -57,8 +57,35 @@ def _form(monkeypatch, returned: dict | None, captured: dict | None = None):
 
 
 def test_latex_is_wrapped_inline_or_block() -> None:
-    assert equation_snippet("E = mc^2", "inline") == "$E = mc^2$"
-    assert equation_snippet("E = mc^2", "block") == "$$\nE = mc^2\n$$"
+    # The delimiters MathJax's defaults and Word export read; a bare $ is
+    # neither (2026-10-03: this command wrote $...$ before).
+    assert equation_snippet("E = mc^2", "inline") == "\\(E = mc^2\\)"
+    assert equation_snippet("E = mc^2", "block") == "\n$$E = mc^2$$\n"
+
+
+def test_the_core_command_and_the_quillin_share_one_builder() -> None:
+    from quill.core.math import equation_text
+
+    assert equation_snippet is equation_text.equation_snippet
+    assert split_existing_equation is equation_text.split_existing_equation
+    root = Path(__file__).resolve().parents[3]
+    source = (root / "quill/quillins_bundled/math-equations/extension.py").read_text(
+        encoding="utf-8"
+    )
+    assert "from quill.core.math.equation_text import" in source
+
+
+def test_an_inserted_equation_is_one_word_export_recognises() -> None:
+    from quill.io.docx_math import split_math_segments
+
+    for mode, display in (("inline", False), ("block", True)):
+        snippet = equation_snippet("x^2 + y^2 = r^2", mode)
+        # Word export reads one paragraph at a time.
+        line = next(part for part in snippet.split("\n") if part)
+        math = [seg for seg in split_math_segments(f"So {line} holds.") if seg.is_math]
+        assert len(math) == 1, (mode, line)
+        assert math[0].content == "x^2 + y^2 = r^2"
+        assert math[0].display is display
 
 
 def test_mathml_is_inserted_verbatim() -> None:
@@ -76,7 +103,11 @@ def test_empty_input_produces_nothing() -> None:
 
 
 def test_a_selected_inline_equation_comes_back_without_its_delimiters() -> None:
+    assert split_existing_equation("\\(E = mc^2\\)") == ("E = mc^2", "inline")
+    # The older $...$ this command used to write still reopens, so inserting
+    # it again upgrades its delimiters.
     assert split_existing_equation("$E = mc^2$") == ("E = mc^2", "inline")
+    assert split_existing_equation("\\[E = mc^2\\]") == ("E = mc^2", "block")
 
 
 def test_a_selected_block_equation_preselects_block_mode() -> None:
@@ -98,7 +129,7 @@ def test_insert_equation_inserts_inline_latex(monkeypatch) -> None:
 
     host.insert_equation()
 
-    assert host.inserted == ["$E = mc^2$"]
+    assert host.inserted == ["\\(E = mc^2\\)"]
     assert host.status == "Inserted equation"
     assert {field["name"] for field in captured["fields"]} == {"equation", "display_mode"}
     assert captured["save_label"] == "Insert"
@@ -110,7 +141,7 @@ def test_insert_equation_inserts_block_latex(monkeypatch) -> None:
 
     host.insert_equation()
 
-    assert host.inserted == ["$$\n\\int_0^1 x dx\n$$"]
+    assert host.inserted == ["\n$$\\int_0^1 x dx$$\n"]
 
 
 def test_insert_equation_prefills_the_selection_for_editing(monkeypatch) -> None:

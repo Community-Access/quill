@@ -19,6 +19,12 @@ Environment overrides:
 - ``GITHUB_RUN_NUMBER`` - build counter (GitHub Actions).
 - ``QUILL_BUILD_NUMBER`` - local override for the build counter.
 
+That counter is the CI run, recorded in ``BUILD_STAMP`` for support. The
+**release build number** -- the one that lets the same version ship more than
+once (docs/release/RELEASE.md, "Build numbers") -- is ``quill.__build__``,
+written as ``RELEASE_BUILD``; a Dev build has none (its stamp already makes it
+unique).
+
 This script never raises on transient failures (missing git, no network).
 It writes a generated module that records what it could and could not
 determine.
@@ -38,6 +44,7 @@ except ModuleNotFoundError:  # pragma: no cover - Python < 3.11 fallback
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     import tomli as tomllib  # type: ignore[no-redef]
 
+from quill import __build__ as RELEASE_BUILD
 from quill.branding import APP_DISPLAY_NAME, APP_ORGANIZATION
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -112,7 +119,9 @@ def main() -> int:
 
     build_stamp = f"{build_date}.{build_number}"
     nice_version = display_version(base, channel, pre)
-    full_display = f"{product_name} {nice_version} build {build_stamp}"
+    release_build = 0 if channel == "dev" else int(RELEASE_BUILD)
+    build_words = f" (build {release_build})" if release_build else ""
+    full_display = f"{product_name} {nice_version}{build_words}, built {build_stamp}"
     pep440 = pep440_version(base, channel, pre, build_number, build_date)
 
     OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
@@ -126,6 +135,7 @@ WEBSITE = {website!r}
 BASE_VERSION = {base!r}
 CHANNEL = {channel!r}
 PRERELEASE_NUMBER = {pre!r}
+RELEASE_BUILD = {release_build!r}
 
 DISPLAY_VERSION = {nice_version!r}
 BUILD_STAMP = {build_stamp!r}

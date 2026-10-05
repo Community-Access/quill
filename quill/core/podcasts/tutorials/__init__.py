@@ -1,20 +1,21 @@
 """QUILL Cast's guided tutorials: its tracks, and its lessons assembled.
 
-Twenty-four lessons in five tracks. The engine -- what a step is, how one
-renders, where progress is kept -- is shared with Quill Radio, Quill Weather
-and QUILL in :mod:`quill.core.tutorials`; this is Cast's content and nothing
-else.
+Twenty-four lessons in five tracks, written against Cast 2.0: one window, a
+Places list beside the place you are in, Find, a status bar, and Now Playing
+as a window of its own. The engine -- what a step is, how one renders, where
+progress is kept -- is shared with Quill Radio, Quill Weather and QUILL in
+:mod:`quill.core.tutorials`; this is Cast's content and nothing else.
 
-The shape of the set follows the shape of the problem. Playing a podcast is
-easy and takes one track; *keeping up* with forty of them is the hard part and
-takes six lessons of its own, because the Inbox, the Play Queue, automatic
-downloads, their caps and the rules that stop unwanted episodes arriving at all
-are one system and only make sense together.
+The shape of the set follows the shape of the problem. The first track is the
+window itself, and what to do when something goes wrong in it. Playing a
+podcast is easy; *keeping up* with forty of them is the hard part and takes
+seven lessons of its own, because the Inbox, the Play Queue, your own audio,
+downloads, playlists, Episode Filters and schedules are one system and only
+make sense together.
 
-The fifth track exists for the same reason. Almost every complaint a podcast
-listener has is about **one podcast behaving differently from the rest**, and
-the settings that answer that are a system too -- a chain of levels, what
-arrives, what a row says, and who is allowed to interrupt you.
+The fourth track exists because almost every complaint a podcast listener has
+is about **one podcast behaving differently from the rest**, and the settings
+that answer that are a system too.
 """
 
 from __future__ import annotations
@@ -33,37 +34,35 @@ TRACKS: tuple[Track, ...] = (
     Track(
         "first-hour",
         "Your first hour",
-        "Subscribe to something, play it, learn the keys that work while it is "
-        "playing, and meet the Podcast Manager.",
+        "Follow a podcast and play it, find your way around the one window, "
+        "and know what to do when something goes wrong. Start here.",
     ),
     Track(
         "keeping-up",
         "Keeping up",
-        "The hard part of podcasting is not playing an episode; it is deciding "
-        "which of the four hundred waiting ones you will play. The Inbox, the "
-        "queue, automatic downloads, and the rules that keep all three bounded.",
+        "Playing an episode is easy. Choosing which of the many waiting ones to "
+        "play is the hard part, and these lessons help: the Inbox, the queue, "
+        "your own audio, downloads, playlists, filters and schedules.",
     ),
     Track(
         "listening",
         "Listening well",
-        "The hour itself: skipping what you did not come for, shaping the "
-        "sound, keeping a moment, reading what the publisher sent, and how much "
-        "of your life this has taken.",
+        "For the time you spend listening: the keys, speed and the sleep timer, "
+        "chapters, the sound, bookmarks, show notes, and how much you have "
+        "listened.",
     ),
     Track(
         "per-podcast",
         "One podcast at a time",
-        "Keep the newest three ready is right for a daily news show and wrong "
-        "for a weekly interview. How a setting is decided, what arrives and "
-        "when, what every row says, how a badly-reading podcast is fixed, and "
-        "who is allowed to interrupt you.",
+        "Keeping the newest three suits a daily news podcast and not a weekly "
+        "interview. Learn how Preferences and one podcast's own settings fit "
+        "together, and find the settings worth knowing in your first month.",
     ),
     Track(
         "yours",
         "Making it yours",
-        "A library that has grown, what a row says and what Enter does, the "
-        "shared defaults everything starts from, feeds and folders of your own, "
-        "and the backup you will be glad of exactly once.",
+        "Tidy a library that has grown, choose what a row says and what Enter "
+        "does, and make a backup you will be very glad of one day.",
     ),
 )
 

@@ -331,6 +331,37 @@ def product_version(product: Product) -> str:
     return str(__version__)
 
 
+def product_file_version(product: Product) -> str:
+    """The four-part Windows file version, ``X.Y.Z.B``, for the launcher's VERSIONINFO.
+
+    ``B`` is the app's build number (``_BUILD`` / ``__build__`` beside its version;
+    docs/release/RELEASE.md, "Build numbers"), so Explorer's Details tab says which
+    build of a version is installed. 0 when the app has no build constant.
+    """
+    version = re.match(r"\d+(?:\.\d+){0,2}", product_version(product))
+    parts = (version.group(0) if version else "0").split(".")
+    parts += ["0"] * (3 - len(parts))
+    build = 0
+    sources = []
+    if product.version_from:
+        sources = [
+            _REPO_ROOT / "quill" / "apps" / f"{product.version_from}.py",
+            _REPO_ROOT / "quill" / "apps" / product.version_from / "__init__.py",
+            _REPO_ROOT / product.version_from,
+        ]
+    sources.append(_REPO_ROOT / "quill" / "__init__.py")
+    for source in sources:
+        if not source.is_file():
+            continue
+        match = re.search(
+            r"^(?:_BUILD|__build__)\s*=\s*(\d+)", source.read_text(encoding="utf-8"), re.M
+        )
+        if match:
+            build = int(match.group(1))
+            break
+    return ".".join([*parts[:3], str(build)])
+
+
 def product_icon(product: Product) -> Path | None:
     if not product.icon_dir:
         return None
@@ -373,6 +404,7 @@ def configure_args(
         f"-DPRODUCT_NAME={product.name}",
         f"-DPRODUCT_DISPLAY_NAME={product.display}",
         f"-DPRODUCT_VERSION={version}",
+        f"-DPRODUCT_FILE_VERSION={product_file_version(product)}",
         f"-DPRODUCT_PYTHON_MODULE={product.module}",
         f"-DPRODUCT_REPO={_REPO}",
         f"-DPRODUCT_APP_ID={product.app_id}",
