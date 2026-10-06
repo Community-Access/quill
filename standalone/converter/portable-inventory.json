@@ -53,6 +53,7 @@
     "charset_normalizer",
     "chat-downloader",
     "chat_downloader",
+    "colorama",
     "colorlog",
     "comtypes",
     "cryptography",
