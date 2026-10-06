@@ -106,6 +106,7 @@
     "typing_extensions.py",
     "tzdata",
     "urllib3",
+    "websockets",
     "win32",
     "win32com",
     "win32comext",

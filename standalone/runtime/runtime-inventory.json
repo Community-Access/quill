@@ -39,6 +39,7 @@
     "curl-cffi",
     "curl_cffi",
     "curl_cffi.libs",
+    "dateutil",
     "docx",
     "enchant",
     "keyring",
