@@ -84,11 +84,25 @@ jobs:
         run: python -m pip install -e .[ui,spellcheck,dev] "pyinstaller>=6.22.3" "pyinstaller-hooks-contrib>=2026.7" "packaging>=25"
       - name: Install Inno Setup
         shell: pwsh
-        run: winget install --id JRSoftware.InnoSetup -e --accept-package-agreements --accept-source-agreements --disable-interactivity
-      - name: Install Pandoc for sibling documentation
+        run: winget install --id JRSoftware.InnoSetup.7 -e --accept-package-agreements --accept-source-agreements --disable-interactivity
+      - name: Stage pinned Pandoc for sibling documentation
         if: matrix.app != 'quill'
         shell: pwsh
-        run: winget install --id JohnMacFarlane.Pandoc -e --accept-package-agreements --accept-source-agreements --disable-interactivity
+        run: |
+          # Match scripts/build_windows_distribution.py's pinned 3.10 archive.
+          # winget's MSI succeeds but its per-user path is not visible to the
+          # next runner step, where DocRender.ps1 resolves Pandoc.
+          $archive = Join-Path $env:RUNNER_TEMP 'pandoc-3.10.zip'
+          Invoke-WebRequest 'https://github.com/jgm/pandoc/releases/download/3.10/pandoc-3.10-windows-x86_64.zip' -OutFile $archive
+          $expected = 'bb808d00fd58762299d64582a9b4c3e4b106cd929e62c5f19bcdcb496f1e54ae'
+          if ((Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash.ToLowerInvariant() -ne $expected) {
+            throw 'Pandoc archive checksum did not match the repository pin.'
+          }
+          $target = Join-Path $env:RUNNER_TEMP 'quill-pandoc'
+          Expand-Archive -LiteralPath $archive -DestinationPath $target
+          $pandoc = Get-ChildItem -LiteralPath $target -Filter pandoc.exe -File -Recurse | Select-Object -First 1
+          if (-not $pandoc) { throw 'Pandoc archive contained no pandoc.exe.' }
+          "QUILL_PANDOC=$($pandoc.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
       - name: Pick this app's Dev version
         id: ver
         shell: pwsh
