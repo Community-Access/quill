@@ -55,11 +55,12 @@ updates:
   # path). It was outside every ecosystem above, so its transitive pins were
   # the only place in the repo Dependabot could see a vulnerability and not
   # open a pull request -- five alerts (anyio, soupsieve) sat open with no
-  # branch to merge. The "uv" ecosystem reads uv.lock directly.
+  # branch to merge. The "uv" ecosystem reads uv.lock directly. That lock
+  # resolves llama-cpp-python from PyPI, so it must not use the CPU wheel
+  # registry above: its GitHub release redirects receive 401 from Dependabot's
+  # proxy even for unrelated security updates such as PyJWT.
   - package-ecosystem: "uv"
     directory: "/"
-    registries:
-      - llama-cpp-python-cpu
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
