@@ -141,6 +141,9 @@ jobs:
       - name: Build a sibling app (Dev, unsigned)
         if: matrix.app != 'quill'
         shell: pwsh
+        env:
+          QUILL_PODCAST_INDEX_KEY: ${{ secrets.QUILL_PODCAST_INDEX_KEY }}
+          QUILL_PODCAST_INDEX_SECRET: ${{ secrets.QUILL_PODCAST_INDEX_SECRET }}
         run: |
           $version = "${{ steps.ver.outputs.version }}"
           python scripts/fetch_build_deps.py
