@@ -141,7 +141,8 @@ jobs:
         run: |
           $version = "${{ steps.ver.outputs.version }}"
           python scripts/fetch_build_deps.py
-          & "standalone/${{ matrix.app }}/scripts/build_release.ps1" -SkipPublishedCheck -SkipCatalog -DevVersion $version
+          $buildPython = python -c "import sys; print(sys.executable)"
+          & "standalone/${{ matrix.app }}/scripts/build_release.ps1" -Python $buildPython -SkipPublishedCheck -SkipCatalog -DevVersion $version
           New-Item -ItemType Directory -Force dist/dev | Out-Null
           Get-ChildItem "standalone/${{ matrix.app }}/dist" -File | Where-Object { $_.Name -like "*$version*" } | Copy-Item -Destination dist/dev
       - uses: actions/upload-artifact@v7
