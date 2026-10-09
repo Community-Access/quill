@@ -7,7 +7,7 @@ psycopg2-binary==2.9.13
 flask-cors==6.0.5
 pygithub==2.10.0
 python-dotenv==1.2.3
-Werkzeug==3.1.8
+Werkzeug==3.1.9
 bandit==1.9.4
 gunicorn==26.2.0
 # Direct requirement: quill.tools.signing uses nacl.signing for Ed25519.
