@@ -54,7 +54,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-python@v7
         with:
-          python-version: "3.12"
+          python-version: "3.13"
       - name: Decide whether today's Dev build runs
         id: plan
         env:
@@ -79,12 +79,16 @@ jobs:
           ref: main
       - uses: actions/setup-python@v7
         with:
-          python-version: "3.12"
+          python-version: "3.13"
       - name: Install build dependencies
-        run: python -m pip install -e .[ui,spellcheck,dev]
+        run: python -m pip install -e .[ui,spellcheck,dev] "pyinstaller>=6.22.3" "pyinstaller-hooks-contrib>=2026.7" "packaging>=25"
       - name: Install Inno Setup
         shell: pwsh
         run: winget install --id JRSoftware.InnoSetup -e --accept-package-agreements --accept-source-agreements --disable-interactivity
+      - name: Install Pandoc for sibling documentation
+        if: matrix.app != 'quill'
+        shell: pwsh
+        run: winget install --id JohnMacFarlane.Pandoc -e --accept-package-agreements --accept-source-agreements --disable-interactivity
       - name: Pick this app's Dev version
         id: ver
         shell: pwsh
@@ -113,8 +117,7 @@ jobs:
           website = "https://quillforall.org"
           "@ | Set-Content -Encoding utf8 build/version.toml
           $env:QUILL_BUILD_NUMBER = $number
-          $iscc = @("$env:LOCALAPPDATA\Programs\Inno Setup 7\ISCC.exe", "C:\Program Files (x86)\Inno Setup 7\ISCC.exe") | Where-Object { Test-Path $_ } | Select-Object -First 1
-          python scripts/build_windows_distribution.py --bundle-python --compile-installer --iscc-path "$iscc" --output-dir dist/windows
+          python scripts/build_windows_distribution.py --bundle-python --compile-installer --output-dir dist/windows
           New-Item -ItemType Directory -Force dist/dev | Out-Null
           Get-ChildItem dist/windows/installer/Output/Quill-for-All-Setup-*.exe | Select-Object -First 1 | Copy-Item -Destination "dist/dev/Quill-for-All-Setup-$version.exe"
           Compress-Archive -Path dist/windows/portable/* -DestinationPath "dist/dev/Quill-Portable-$version.zip"

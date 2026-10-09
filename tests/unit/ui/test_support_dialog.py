@@ -108,6 +108,30 @@ def test_sending_hands_the_message_to_the_mail_program_and_says_it_is_not_sent(
     assert dialog.ended == [_FakeWx.ID_OK]
 
 
+def test_send_includes_selected_reader_version_in_the_mail_body(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from quill.core import support_screen_reader
+
+    monkeypatch.setattr(
+        support_screen_reader,
+        "screen_reader_support_facts",
+        lambda selected: (
+            {"Screen reader version": "2026.2608.25.400"} if selected == "JAWS" else {}
+        ),
+    )
+    launched: list[str] = []
+    monkeypatch.setattr(support_dialog, "_launch", lambda url: launched.append(url) or True)
+
+    _dialog(_Host())._submit()
+
+    from urllib.parse import parse_qs, urlparse
+
+    body = parse_qs(urlparse(launched[0]).query)["body"][0]
+    assert "Screen reader: JAWS" in body
+    assert "Screen reader version: 2026.2608.25.400" in body
+
+
 def test_no_mail_program_still_leaves_the_message_and_the_address(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
