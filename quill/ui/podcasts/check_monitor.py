@@ -63,10 +63,15 @@ class PodcastCheckMonitor:
         safe_mode: bool = False,
         post_tick: Callable[[str], None] | None = None,
         feature_enabled: Callable[[], bool] | None = None,
+        refresh_many: Callable[[list[str], bool], int] | None = None,
     ) -> None:
         self._settings_provider = settings_provider
         self._library_provider = library_provider
         self._refresh_show = refresh_show
+        #: The bounded batch (F-09): given every due podcast at once and
+        #: whether somebody asked, it fetches a few at a time. Omitted, each
+        #: show is handed to ``refresh_show`` as before.
+        self._refresh_many = refresh_many
         self._safe_mode = safe_mode
         #: Asked on every enablement check so a Podcasts feature that is off --
         #: including a build where it is not released yet -- never polls feeds
@@ -186,9 +191,7 @@ class PodcastCheckMonitor:
         if not force and not self._claim_this_round(library):
             return 0  # the other app checked inside this interval
         self._tick()
-        started = 0
-        #: The shows this round started, for a run a person asked for (check_run).
-        self.last_started_ids: list[str] = []
+        due: list[str] = []
         for show in list(getattr(library, "shows", []) or []):
             if not refresh_policy.can_refresh(show):
                 continue
@@ -201,13 +204,21 @@ class PodcastCheckMonitor:
             # own inherits the shared one and behaves exactly as before.
             if not force and not self._show_is_due(library, show):
                 continue
+            due.append(str(show.id))
+        if self._refresh_many is not None and due:
             try:
-                self._refresh_show(str(show.id))
+                return int(self._refresh_many(due, force))
+            except Exception:  # noqa: BLE001 - a batch that will not start is logged, not raised
+                logger.exception("Podcast check could not start its batch")
+                return 0
+        started = 0
+        for show_id in due:
+            try:
+                self._refresh_show(show_id)
             except Exception:  # noqa: BLE001 - one bad feed never stops the rest
-                logger.exception("Podcast background check failed for show %s", show.id)
+                logger.exception("Podcast background check failed for show %s", show_id)
                 continue
             started += 1
-            self.last_started_ids.append(str(show.id))
         return started
 
     def _show_is_due(self, library: Any, show: Any) -> bool:

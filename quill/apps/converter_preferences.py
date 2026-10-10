@@ -109,8 +109,9 @@ def _main_window_control(host: Any, entry: SettingEntry) -> Any:
     field = entry.key.removeprefix("converter.")
     if field == "recurse" or field in getattr(host, "_advanced_choices", {}):
         if not host._settings.show_advanced:
-            host.set_advanced_visible(True)
-            _check_menu(host, "_advanced_item", True)
+            from quill.apps import converter_advanced
+
+            converter_advanced.reveal_for_navigation(host)
         if field == "recurse":
             return host._recurse
         return host._advanced_choices[field][0]

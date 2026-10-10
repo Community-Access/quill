@@ -11,26 +11,6 @@ from __future__ import annotations
 
 from typing import Any
 
-__all__ = ["CAST_PALETTE_TITLES", "register_podcast_commands"]
-
-#: QUILL Cast's names for the palette commands the shared podcasts mixin
-#: registers (``main_frame_podcasts._register_podcasts_commands``), so the
-#: palette says what Cast's menus say: Cast follows rather than subscribes,
-#: calls local files Personal Audio, keeps the old Podcast Settings and Skip
-#: Settings windows as Preferences sections, and has its places rather than
-#: windows. ``None`` drops a command Cast does not have: Open Manager only led
-#: back to the Podcasts place. QUILL keeps its own titles; Go To keeps the
-#: Podcasts place under its own name.
-CAST_PALETTE_TITLES: dict[str, str | None] = {
-    "podcasts.open_manager": None,
-    "podcasts.acb_media": "Podcasts: Follow ACB Media Podcasts",
-    "podcasts.add_local": "Podcasts: Add Personal Audio...",
-    "podcasts.settings": "Podcasts: Fetching Preferences...",
-    "podcasts.skip_settings": "Podcasts: Playing Preferences...",
-    "podcasts.open_queue": "Podcasts: Play Queue",
-    "media.continue_listening": "Podcasts: Continue Listening",
-}
-
 
 def register_podcast_commands(host: Any) -> None:
     for command_id, title, handler in (
@@ -67,7 +47,7 @@ def register_podcast_commands(host: Any) -> None:
         ("podcasts.export_data", "Podcasts: Export My Data...", host.podcast_export_data),
         (
             "podcasts.delete_all_data",
-            "Podcasts: Clear All Podcast Data from This Computer...",
+            "Podcasts: Delete All Podcast Data...",
             host.podcast_delete_all_data,
         ),
         (
@@ -82,11 +62,16 @@ def register_podcast_commands(host: Any) -> None:
         ),
         # Feed Check (R2).
         ("podcasts.feed_check", "Podcasts: Feed Check...", host.open_cast_feed_check),
-        # Refresh Episode Audio (R3): also on the episode's own menu.
+        # Every feed at once, as one bounded batch -- and the one stop for it (F-09).
         (
-            "podcasts.refresh_episode_audio",
-            "Podcasts: Refresh Episode Audio...",
-            lambda: _refresh_audio(host),
+            "podcasts.check_all_feeds",
+            "Podcasts: Check All Feeds Now",
+            host.podcast_check_all_feeds,
+        ),
+        (
+            "podcasts.stop_feed_checks",
+            "Podcasts: Stop Checking Feeds",
+            host.podcast_stop_feed_checks,
         ),
         # The three verbs Earshot publishes to Siri (R5). No menu row: they are
         # one-press keys whose whole point is not opening a menu, and the palette
@@ -144,9 +129,3 @@ def register_podcast_commands(host: Any) -> None:
     from quill.ui.radio import transport_keys
 
     transport_keys.register_commands(host, prefix="podcasts")
-
-
-def _refresh_audio(host: Any) -> None:
-    from quill.ui.podcasts.refresh_audio_command import refresh_episode_audio
-
-    refresh_episode_audio(host)

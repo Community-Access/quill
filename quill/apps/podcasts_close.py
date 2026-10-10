@@ -166,6 +166,9 @@ class CastCloseMixin:
             ("transfers", getattr(self, "_shutdown_podcast_transfers", None)),
         ):
             report.step(name, BEST_EFFORT, action)
+        # A check of many feeds and a search in flight are told to stop, so the
+        # worker threads let go at their next read rather than finishing (F-09).
+        report.step("feed_checks", BACKGROUND, lambda: self._stop_cast_background_work())
         report.step("tasks", BACKGROUND, lambda: self._task_manager.shutdown(wait=False))
         report.step("feed_checks", BACKGROUND, lambda: _shutdown_feed_checks(self))
         report.step("media_keys", BEST_EFFORT, lambda: self._unregister_media_keys())
@@ -179,6 +182,12 @@ class CastCloseMixin:
             "peer_windows", BEST_EFFORT, lambda: self._windows.destroy_all_except(self.frame)
         )
         report.persist(app_data_dir())
+
+    def _stop_cast_background_work(self) -> None:
+        from quill.ui.podcasts.feed_refresh import stop_feed_checks
+
+        stop_feed_checks(self, announce=False)
+        self._cancel_library_find()
 
     def _cast_launch_notices(self) -> None:
         """At launch, after the window is up: media health, then the previous

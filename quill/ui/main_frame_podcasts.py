@@ -30,8 +30,7 @@ from quill.ui.main_frame_podcast_save import PodcastLibrarySaveMixin
 from quill.ui.main_frame_podcast_session import PodcastSessionMixin
 from quill.ui.main_frame_podcast_transfers import PodcastTransfersMixin
 from quill.ui.podcasts.check_monitor import PodcastCheckMonitor
-from quill.ui.podcasts.failure_report import report_failure
-from quill.ui.podcasts.folder_watch import FolderWatchMixin
+from quill.ui.podcasts.feed_refresh import refresh_feeds
 from quill.ui.podcasts.player_controller import (
     PodcastPlaybackState,
     PodcastPlayerController,
@@ -47,7 +46,6 @@ _SAFE_MODE_MESSAGE = "Podcasts are disabled in Safe Mode. Restart QUILL normally
 
 
 class PodcastsMixin(
-    FolderWatchMixin,  # watched folders, shared with QUILL (qc.md 5d)
     PodcastSessionMixin,
     QueueRunCommandsMixin,
     PodcastAcquisitionMixin,
@@ -124,6 +122,8 @@ class PodcastsMixin(
             ),
             library_provider=lambda: self._podcast_library,
             refresh_show=self.refresh_podcast_feed,
+            # Many feeds at once go through one bounded batch (F-09).
+            refresh_many=lambda ids, manual: refresh_feeds(self, ids, manual=manual),
             safe_mode=self._safe_mode,
             feature_enabled=lambda: self._feature_enabled("core.podcasts"),
         )
@@ -220,13 +220,7 @@ class PodcastsMixin(
                 self._podcast_chapters_source = str(getattr(result, "label", ""))
 
         self._task_manager.submit(
-            "podcast-chapters",
-            _do_fetch,
-            on_success=_on_success,
-            # An optional lookup Cast made on its own: written down, not said.
-            on_failure=lambda _op, error: report_failure(
-                self, f"Chapters for {episode.title} could not be read: {error}", quiet=True
-            ),
+            "podcast-chapters", _do_fetch, on_success=_on_success, on_failure=lambda *_a: None
         )
 
     def _maybe_surface_podcast_status_cell(self, active: bool) -> None:
@@ -681,6 +675,18 @@ class PodcastsMixin(
 
         refresh_feed(self, show_id)
 
+    def podcast_check_all_feeds(self) -> None:
+        """Every feed now, a few at a time; the end is spoken (F-09)."""
+        from quill.ui.podcasts.feed_refresh import check_all_feeds
+
+        check_all_feeds(self)
+
+    def podcast_stop_feed_checks(self) -> None:
+        """Stop a check of many feeds; its end sentence says how far it got."""
+        from quill.ui.podcasts.feed_refresh import stop_feed_checks
+
+        stop_feed_checks(self)
+
     def _maybe_backfill_always_sync(self, show: object) -> None:
         """Always Sync (Phase 4): a download-mode show with
         always_sync_full_catalog queues a download for every catalog episode
@@ -749,11 +755,7 @@ class PodcastsMixin(
             "podcast-audio-process",
             _do_process,
             on_success=_on_success,
-            on_failure=lambda _op, error: report_failure(
-                self,
-                f"Could not process the audio of {destination.name}: {error}",
-                background=True,
-            ),
+            on_failure=lambda *_a: None,
         )
 
     # -- local (imported) podcasts (Phase 4) -----------------------------------
@@ -804,6 +806,22 @@ class PodcastsMixin(
             "Its files live outside your synced data folder by design."
         )
 
+    def scan_watched_podcast_folders(self) -> None:
+        """Scan every local show's watched folder for new audio files."""
+        from quill.core.podcasts.local_import import scan_watched_folder
+
+        added_total = 0
+        for show in self._podcast_library.shows:
+            if show.is_local and show.watched_folder:
+                added_total += scan_watched_folder(show)
+        if added_total:
+            self._save_podcast_library()
+            if self._podcast_manager_dialog is not None:
+                self._podcast_manager_dialog.refresh_tree()
+            self._announce(f"Watched folders added {added_total} new episode(s)")
+        else:
+            self._announce("No new files in watched folders")
+
     def subscribe_acb_media_podcasts(self) -> None:
         """One command subscribes ACB Media's whole podcast directory
         (idempotent; new arrivals are stream-only so nothing mass-downloads)."""
@@ -830,7 +848,7 @@ class PodcastsMixin(
             )
 
         def _on_failure(_op: str, error: object) -> None:
-            report_failure(self, f"ACB Media Podcasts could not be fetched: {error}")
+            self._announce(f"ACB Media Podcasts could not be fetched: {error}")
 
         self._announce("Fetching the ACB Media podcast directory...")
         self._task_manager.submit(
@@ -904,10 +922,6 @@ class PodcastsMixin(
     # -- command palette registration ----------------------------------------
 
     def _register_podcasts_commands(self) -> None:
-        # A host may give these its own names, and drop one it has no use for
-        # (None): QUILL Cast's palette says Follow and Personal Audio, as its
-        # menus do. QUILL has no map and keeps the titles below.
-        renamed: dict[str, str | None] = getattr(self, "_podcast_palette_titles", None) or {}
         for command_id, title, handler in (
             ("podcasts.open_manager", "Podcasts: Open Manager...", self.open_podcast_manager),
             (
@@ -946,11 +960,6 @@ class PodcastsMixin(
                 "podcasts.scan_watched",
                 "Podcasts: Scan Watched Folders for New Episodes",
                 self.scan_watched_podcast_folders,
-            ),
-            (
-                "podcasts.watched_folders",
-                "Podcasts: Watched Folders...",
-                self.open_watched_folders,
             ),
             (
                 "podcasts.acb_media",
@@ -1007,10 +1016,6 @@ class PodcastsMixin(
                 self.open_podcast_skip_settings,
             ),
         ):
-            if command_id in renamed:
-                if renamed[command_id] is None:
-                    continue
-                title = str(renamed[command_id])
             self.commands.try_register(
                 command_id,
                 title,

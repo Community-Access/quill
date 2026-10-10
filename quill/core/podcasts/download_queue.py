@@ -24,6 +24,7 @@ touch wx must marshal back to the UI thread themselves (e.g. via
 
 from __future__ import annotations
 
+import heapq
 import logging
 import ssl
 import threading
@@ -142,7 +143,16 @@ def _fetch_chunked(
 
 
 class PodcastDownloadQueue:
-    """Owns the one background download worker for the whole app."""
+    """Owns the one background download worker for the whole app.
+
+    **Every state question is O(1)** (F-09). A row asks about its own download
+    through :meth:`get` (a dict lookup); the status bar's "3 of 40" asks
+    :meth:`count` rather than copying and scanning the whole session's history
+    on every progress tick; and the worker finds the next item to start from a
+    heap of queued items in enqueue order, rather than walking past every
+    finished download from the top each time. All three are kept current by
+    :meth:`_set_status`, the one place an item's status changes.
+    """
 
     def __init__(
         self,
@@ -166,6 +176,13 @@ class PodcastDownloadQueue:
         self._reconnect_wait_seconds = max(1.0, reconnect_wait_seconds)
         self._items: dict[str, DownloadItem] = {}
         self._order: list[str] = []
+        #: How many items are in each status, kept by :meth:`_set_status`.
+        self._counts: dict[str, int] = {}
+        #: Queued items as ``(enqueue sequence, item id)``; stale entries (the
+        #: item has since started, paused or gone) are skipped when popped.
+        self._queued_heap: list[tuple[int, str]] = []
+        self._sequence: dict[str, int] = {}
+        self._next_sequence = 0
         self._lock = threading.Lock()
         self._all_paused = False
         self._wake = threading.Event()
@@ -206,8 +223,15 @@ class PodcastDownloadQueue:
             auth_header=auth_header,
         )
         with self._lock:
+            replaced = self._items.get(item_id)
+            if replaced is not None:
+                self._counts[replaced.status] = self._counts.get(replaced.status, 1) - 1
             self._items[item_id] = item
             self._order.append(item_id)
+            self._sequence[item_id] = self._next_sequence
+            self._next_sequence += 1
+            self._counts[item.status] = self._counts.get(item.status, 0) + 1
+            heapq.heappush(self._queued_heap, (self._sequence[item_id], item_id))
         self._wake.set()
         self._on_status_changed(item)
         return item
@@ -243,7 +267,7 @@ class PodcastDownloadQueue:
                 return False
             item._pause_event.set()
             if item.status == "queued":
-                item.status = "paused"
+                self._set_status(item, "paused")
         self._on_status_changed(item)
         return True
 
@@ -253,7 +277,7 @@ class PodcastDownloadQueue:
             if item is None or item.status not in ("paused",):
                 return False
             item._pause_event.clear()
-            item.status = "queued"
+            self._set_status(item, "queued")
         self._on_status_changed(item)
         self._wake.set()
         return True
@@ -265,7 +289,7 @@ class PodcastDownloadQueue:
                 return False
             item._cancel_event.set()
             if item.status in ("queued", "paused"):
-                item.status = "cancelled"
+                self._set_status(item, "cancelled")
         self._on_status_changed(item)
         return True
 
@@ -275,8 +299,24 @@ class PodcastDownloadQueue:
 
     def active_count(self) -> int:
         """How many items are currently downloading (for a status summary)."""
+        return self.count("downloading")
+
+    def count(self, status: str) -> int:
+        """How many items are in *status* -- O(1), for a status cell on every tick."""
         with self._lock:
-            return sum(1 for item in self._items.values() if item.status == "downloading")
+            return max(0, self._counts.get(status, 0))
+
+    def _set_status(self, item: DownloadItem, status: DownloadStatus) -> None:
+        """The one place an item's status changes. Call with the lock held."""
+        if item.status == status:
+            return
+        if self._items.get(item.item_id) is item:
+            self._counts[item.status] = self._counts.get(item.status, 1) - 1
+            self._counts[status] = self._counts.get(status, 0) + 1
+            if status == "queued":
+                sequence = self._sequence.get(item.item_id, self._next_sequence)
+                heapq.heappush(self._queued_heap, (sequence, item.item_id))
+        item.status = status
 
     def shutdown(self) -> None:
         self._shutdown = True
@@ -288,13 +328,19 @@ class PodcastDownloadQueue:
         with self._lock:
             if self._all_paused or self._active_count >= self._max_concurrent:
                 return None
-            for item_id in self._order:
-                item = self._items[item_id]
-                if item.status == "queued":
-                    item.status = "downloading"
-                    item.started_at = _now_iso()
-                    self._active_count += 1
-                    return item
+            while self._queued_heap:
+                sequence, item_id = heapq.heappop(self._queued_heap)
+                item = self._items.get(item_id)
+                if (
+                    item is None
+                    or item.status != "queued"
+                    or self._sequence.get(item_id) != sequence
+                ):
+                    continue  # started, paused, cancelled or replaced since
+                self._set_status(item, "downloading")
+                item.started_at = _now_iso()
+                self._active_count += 1
+                return item
             return None
 
     def _run(self) -> None:
@@ -322,7 +368,8 @@ class PodcastDownloadQueue:
         if attempt > self._reconnect_max_attempts:
             return False
         item.reconnect_attempts = attempt
-        item.status = "downloading"  # still active, not a hard failure, while retrying
+        with self._lock:  # still active, not a hard failure, while retrying
+            self._set_status(item, "downloading")
         self._on_status_changed(item)
         self._on_reconnect(item, attempt, self._reconnect_max_attempts)
         # Interruptible wait: a cancel during the pause must not block shutdown.
@@ -356,9 +403,9 @@ class PodcastDownloadQueue:
                 # Partial bytes stay on disk; the retried _fetch_chunked call
                 # resumes via Range, same as a manual Resume would.
                 continue
-        item.status = result
         item.finished_at = _now_iso()
         with self._lock:
+            self._set_status(item, result)
             self._active_count = max(0, self._active_count - 1)
         self._on_status_changed(item)
         if result == "completed":

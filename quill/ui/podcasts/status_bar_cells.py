@@ -314,7 +314,13 @@ def download_counts(host: Any) -> tuple[int, int]:
         return (0, 0)
     try:
         active = int(queue.active_count() or 0)
-        waiting = sum(1 for item in queue.snapshot() if item.status == "queued")
+        # O(1) from the queue's own counts (F-09): this runs on every progress
+        # tick, and a session's queue holds every download it ever started.
+        counter = getattr(queue, "count", None)
+        if callable(counter):
+            waiting = int(counter("queued") or 0)
+        else:
+            waiting = sum(1 for item in queue.snapshot() if item.status == "queued")
     except Exception:  # noqa: BLE001 - a status cell must never raise
         return (0, 0)
     return (active, waiting)
