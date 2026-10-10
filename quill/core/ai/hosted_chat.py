@@ -14,9 +14,9 @@ Two ceilings, one rule:
   recent exchanges fit; the service trims again, authoritatively
   (``quill-ai-gateway/app/limits.py::fit_history``), and says how many it
   dropped.
-* **The user's own OpenAI key** -- no QUILL limit at all. The whole conversation
-  goes, and is only shortened when it outgrows what the model can read at once
-  (:data:`quill.core.ai.own_key.CONTEXT_WARNING_TOKENS`).
+* **The user's own API key** (OpenAI or Google Gemini) -- no QUILL limit at
+  all. The whole conversation goes, and is only shortened when it outgrows
+  what the model can read at once (:data:`quill.core.ai.own_key.CONTEXT_WARNING_TOKENS`).
 
 Either way, :attr:`Conversation.set_aside` counts the turns no longer sent, so
 the window can *say* when a conversation starts forgetting its opening instead

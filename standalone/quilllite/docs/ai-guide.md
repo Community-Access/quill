@@ -601,6 +601,9 @@ subscription. The free service and an OpenAI key cannot do this here.
   right down to the instructions sent with your text. The pad still warns you
   before sending something very large, because with your own key a large
   request costs you money.
+- While an answer is on its way, **Send** becomes **Stop** (`Alt+S`). Stopping
+  closes a Gemini stream immediately; for another route it discards that
+  request's eventual answer. It never stops a request from another AI window.
 
 ### Where your key is kept
 

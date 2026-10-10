@@ -280,7 +280,12 @@ class AiPadFrame(wx.Frame):
         sizer.Add(self._language, 0, wx.EXPAND | wx.ALL, _PAD)
 
         self._send = wx.Button(panel, label="&Send")
-        self._send.SetHelpText("Sends the text above and uses one of your free requests.")
+        self._send.SetHelpText(
+            "Sends the text above and uses one of your free requests. While a request "
+            "is on its way this button is Stop, and pressing it stops the request."
+        )
+        self._working = False
+        self._request_cancel: Any = None
         self._send.Bind(wx.EVT_BUTTON, self._on_send)
         _close_row(self, sizer, self._send)
 
@@ -472,6 +477,9 @@ class AiPadFrame(wx.Frame):
     # -- sending ---------------------------------------------------------- #
 
     def _on_send(self, _event: wx.CommandEvent) -> None:
+        if self._working:  # the button is Stop while a request is on its way
+            self._stop()
+            return
         reason = self._service.unavailable_reason(self._action_id)
         if reason:
             self._say(reason)
@@ -530,16 +538,17 @@ class AiPadFrame(wx.Frame):
             )
             return
 
-        self._send.Disable()
+        self._working = True
+        self._send.SetLabel("&Stop")
         self._status.SetValue("Working...")
-        self._announce("Working.")
+        self._announce("Working. Alt+S stops it.")
         self.last_request = (feature, prompt, chunks)
         # Only Translate carries a language, so every other request keeps the
         # call shape it always had.
         extra: dict[str, str] = {}
         if feature == "translate":
             extra["language"] = LANGUAGES[max(0, self._language.GetSelection())]
-        self._service.ask(
+        self._request_cancel = self._service.ask(
             feature,
             prompt,
             chunks,
@@ -556,7 +565,7 @@ class AiPadFrame(wx.Frame):
                 f"{quota.daily_cap} left today."
             )
         if self:
-            self._send.Enable()
+            self._idle()
             self._status.SetValue(used)
         # The result window takes focus, so the reader announces it and reads
         # the answer. Nothing is announced here on top of that.
@@ -566,8 +575,25 @@ class AiPadFrame(wx.Frame):
         if not self:
             self._announce(message)
             return
-        self._send.Enable()
+        self._idle()
         show_problem(self, self._status, message, self._announce)
+
+    def _idle(self) -> None:
+        self._working = False
+        self._request_cancel = None
+        self._send.SetLabel("&Send")
+
+    def _stop(self) -> None:
+        """Stop: the answer, or the failure, is never shown (qc.md X-07). On an own
+        Gemini key the connection closes part way; elsewhere the answer is dropped
+        on arrival. Spoken, because the status line is not where focus is."""
+        cancel = getattr(self._service, "cancel", None)
+        request = self._request_cancel
+        stopped = bool(cancel(request)) if callable(cancel) else False
+        self._idle()
+        message = "Stopped. The answer will not be shown." if stopped else "Nothing to stop."
+        self._status.SetValue(message)
+        self._announce(message)
 
     def _say(self, message: str) -> None:
         show_problem(self, self._status, message, self._announce)

@@ -71,5 +71,5 @@ class ChatGptUnavailableError(ChatGptError):
     code = "QUILL-AI-CHATGPT-UNAVAILABLE"
     user_hint = (
         "Using a ChatGPT plan from other apps is not available on this account "
-        "just now. Try again later, or use QUILL's free AI or your own OpenAI key."
+        "just now. Try again later, or use QUILL's free AI or your own API key."
     )

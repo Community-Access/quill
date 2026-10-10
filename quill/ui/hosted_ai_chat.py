@@ -15,7 +15,7 @@ one request, and the conversation so far goes with it only as far as it fits
 the ordinary size limit (:mod:`quill.core.ai.hosted_chat`). When the oldest
 part of a conversation stops being sent, the window says so -- once, when it
 first happens -- rather than leaving somebody to work out why the AI forgot
-what they told it ten minutes ago. With the user's own OpenAI key there is no
+what they told it ten minutes ago. With the user's own API key there is no
 such limit, and it says that instead.
 
 Nothing here edits the document without a button press, and that edit goes
@@ -162,8 +162,8 @@ class AiChatFrame(wx.Frame):
             return str(note()) + excerpts
         if self._direct():
             return (
-                "This conversation uses your own OpenAI key: no limits, billed to "
-                "your OpenAI account. The whole conversation goes with each message, "
+                "This conversation uses your own API key: no limits, billed to "
+                "your own account. The whole conversation goes with each message, "
                 "so a long one costs more per reply." + excerpts
             )
         return (

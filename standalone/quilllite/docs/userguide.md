@@ -5466,6 +5466,9 @@ pictures. The free service and an OpenAI key cannot, so with a Gemini key,
   free service.
 - **OpenAI or Google bills you** for each request, under their own terms and
   privacy policy.
+- While an answer is on its way, **Send** becomes **Stop** (`Alt+S`). Stopping
+  closes a Gemini stream immediately; for another route it discards that
+  request's eventual answer. It never stops a request from another AI window.
 - **Usage** (**Ctrl+Alt+Shift+F9**) opens a different window. It shows which
   model is answering, that no allowance applies, and an **Open My Usage**
   button that takes you to the usage page of your OpenAI or Google AI Studio

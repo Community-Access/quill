@@ -478,6 +478,40 @@ of it is QUILL's own code, shared, on QUILL's keys.
   used to be dropped without trace. It is now a review row in Activity, never
   spoken (`quill/ui/surface_lifetime.py`).
 
+### Your own API key can be a Google Gemini key, and you choose which (X-07)
+
+- **Use My Own API Key** (`Alt+F2`, was Use My Own OpenAI Key) now starts with a
+  **Provider** choice: OpenAI or Google Gemini. The explanation, the key box, the
+  model list and the cost estimates all follow it. The choice is saved as
+  `ai_own_key_provider`; empty means OpenAI, so a key saved in 1.1 keeps working
+  exactly as before.
+- **Chosen, never guessed.** Nothing is inferred from a key or a model name, and
+  nothing falls back from one provider to the other: with Gemini chosen and only
+  an OpenAI key saved, AI help stays on the free service and OK says the OpenAI
+  key is not being used. A key typed for one provider is cleared, and you are
+  told, when you change the provider.
+- **One key per provider**, each in Windows' credential store (or the portable
+  copy's encrypted file), shared with QUILL. Remove the Saved Key forgets only
+  the chosen provider's.
+- **Gemini answers stream**, from Google's `streamGenerateContent`, over HTTPS,
+  with the key in a request header rather than the address. Gemini models are
+  listed in a fixed order -- released before preview, newest first, Flash,
+  Flash-Lite, Pro -- with their own estimated costs, and the window says what
+  Google's free tier means for your text.
+- **Stop.** While a request is on its way the pad's Send button is **Stop**
+  (`Alt+S`): "Stopped. The answer will not be shown." On Gemini the connection
+  closes part way; on every other route the answer is dropped when it arrives.
+- **Plain, spoken errors that never contain your key**: a key Gemini refuses
+  (it answers HTTP 400, not 401) is `QUILL-AI-OWN-KEY-REJECTED`; a missing
+  model, a used-up quota and a busy service each have their own sentence
+  (`quill/core/ai/own_key.py`, `own_key_gemini.py`, `own_key_models.py`,
+  `quill/ui/hosted_ai_own_key.py`, `hosted_ai_service.py`,
+  `hosted_ai_route_words.py`, `hosted_ai_pad.py`;
+  `tests/unit/core/ai/test_own_key_gemini_route.py`,
+  `tests/unit/ui/test_own_key_dialog.py`,
+  `tests/unit/ui/test_hosted_ai_pad_stop.py`).
+- Setting: `ai_own_key_provider` (`"openai"` or `"gemini"`; empty means OpenAI).
+
 ### Large and networked files open without freezing the window (F-05)
 
 - **Opening read the whole file on the UI thread.** A large file, a slow

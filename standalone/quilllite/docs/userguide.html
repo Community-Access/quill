@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.12" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL Lite User Guide</title>
   <style>
@@ -7064,6 +7064,10 @@ through QUILL’s servers, so QUILL records nothing at all, not even the
 request count it keeps for the free service.</li>
 <li><strong>OpenAI or Google bills you</strong> for each request, under
 their own terms and privacy policy.</li>
+<li>While an answer is on its way, <strong>Send</strong> becomes
+<strong>Stop</strong> (<code>Alt+S</code>). Stopping closes a Gemini
+stream immediately; for another route it discards that request’s
+eventual answer. It never stops a request from another AI window.</li>
 <li><strong>Usage</strong> (<strong>Ctrl+Alt+Shift+F9</strong>) opens a
 different window. It shows which model is answering, that no allowance
 applies, and an <strong>Open My Usage</strong> button that takes you to

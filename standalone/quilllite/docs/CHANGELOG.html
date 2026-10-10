@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.12" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL Lite changelog</title>
   <style>
@@ -853,6 +853,50 @@ and the save that later works is said too
 lost.</strong> It used to be dropped without trace. It is now a review
 row in Activity, never spoken
 (<code>quill/ui/surface_lifetime.py</code>).</li>
+</ul>
+<h3
+id="your-own-api-key-can-be-a-google-gemini-key-and-you-choose-which-x-07">Your
+own API key can be a Google Gemini key, and you choose which (X-07)</h3>
+<ul>
+<li><strong>Use My Own API Key</strong> (<code>Alt+F2</code>, was Use My
+Own OpenAI Key) now starts with a <strong>Provider</strong> choice:
+OpenAI or Google Gemini. The explanation, the key box, the model list
+and the cost estimates all follow it. The choice is saved as
+<code>ai_own_key_provider</code>; empty means OpenAI, so a key saved in
+1.1 keeps working exactly as before.</li>
+<li><strong>Chosen, never guessed.</strong> Nothing is inferred from a
+key or a model name, and nothing falls back from one provider to the
+other: with Gemini chosen and only an OpenAI key saved, AI help stays on
+the free service and OK says the OpenAI key is not being used. A key
+typed for one provider is cleared, and you are told, when you change the
+provider.</li>
+<li><strong>One key per provider</strong>, each in Windows’ credential
+store (or the portable copy’s encrypted file), shared with QUILL. Remove
+the Saved Key forgets only the chosen provider’s.</li>
+<li><strong>Gemini answers stream</strong>, from Google’s
+<code>streamGenerateContent</code>, over HTTPS, with the key in a
+request header rather than the address. Gemini models are listed in a
+fixed order – released before preview, newest first, Flash, Flash-Lite,
+Pro – with their own estimated costs, and the window says what Google’s
+free tier means for your text.</li>
+<li><strong>Stop.</strong> While a request is on its way the pad’s Send
+button is <strong>Stop</strong> (<code>Alt+S</code>): “Stopped. The
+answer will not be shown.” On Gemini the connection closes part way; on
+every other route the answer is dropped when it arrives.</li>
+<li><strong>Plain, spoken errors that never contain your key</strong>: a
+key Gemini refuses (it answers HTTP 400, not 401) is
+<code>QUILL-AI-OWN-KEY-REJECTED</code>; a missing model, a used-up quota
+and a busy service each have their own sentence
+(<code>quill/core/ai/own_key.py</code>, <code>own_key_gemini.py</code>,
+<code>own_key_models.py</code>,
+<code>quill/ui/hosted_ai_own_key.py</code>,
+<code>hosted_ai_service.py</code>,
+<code>hosted_ai_route_words.py</code>, <code>hosted_ai_pad.py</code>;
+<code>tests/unit/core/ai/test_own_key_gemini_route.py</code>,
+<code>tests/unit/ui/test_own_key_dialog.py</code>,
+<code>tests/unit/ui/test_hosted_ai_pad_stop.py</code>).</li>
+<li>Setting: <code>ai_own_key_provider</code> (<code>"openai"</code> or
+<code>"gemini"</code>; empty means OpenAI).</li>
 </ul>
 <h3
 id="large-and-networked-files-open-without-freezing-the-window-f-05">Large

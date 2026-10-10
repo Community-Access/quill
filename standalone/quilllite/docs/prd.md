@@ -795,7 +795,7 @@ document question's excerpts attached). The window is modeless; focus lives in
 the message box and each reply is announced, because it lands in a transcript
 that does not have focus -- the one case GATE-13 says the app must speak.
 
-**With the user's own OpenAI key there is no trimming**: the whole conversation
+**With the user's own API key (OpenAI or Google Gemini) there is no trimming**: the whole conversation
 goes, and is shortened only past what the model can read at once.
 
 **Family rule 10 holds**: the window, the pad row and Follow Up live in the
@@ -820,6 +820,64 @@ action items** because a list is far quicker to review by ear than a
 paragraph; **Suggest headings** because headings are what a screen reader
 navigates by, so it turns a flat passage into one you can move through. The
 list of seventeen is a list box, so a first letter jumps to a tool.
+
+### 5.6c Your own API key: a provider chosen, never inferred (1.2, qc.md X-07)
+
+**Use My Own API Key** (`Alt+F2`, formerly Use My Own OpenAI Key) sends AI help
+straight to the provider the person chooses -- **OpenAI or Google Gemini** --
+on their own key, with no QUILL server and no allowance. The requirement that
+shaped it came from reviewing PR #1615, which made Gemini keys work by inferring
+the provider from a model name and falling back to whichever key was stored.
+That half was not taken. The requirements instead:
+
+- **The provider is an explicit choice**, the first control in the window, and
+  the persisted setting `ai_own_key_provider` (`"openai"` or `"gemini"`) is the
+  only thing that decides where a request goes. Nothing is inferred from a key's
+  shape or a model's name (`quill/core/ai/own_key.py`, `chosen_provider`).
+- **No fallback between providers.** With Gemini chosen and only an OpenAI key
+  saved, the route is not active and AI help is on the free service; OK says so
+  and names the unused key. A request made anyway is refused with a sentence
+  before anything is sent.
+- **Earlier consent is kept.** An empty `ai_own_key_provider` means OpenAI, the
+  only provider there was when 1.1 keys were saved. An unknown value means *no*
+  provider, never a guess.
+- **One key per provider, in the existing secure store**: the AI Hub's
+  per-provider credential targets (Windows Credential Manager, or the encrypted
+  file in a portable copy), shared with QUILL; never plaintext, never shown
+  again. A typed key is cleared, and the clearing announced, when the provider
+  choice moves, so a key cannot be saved under the wrong company.
+- **Gemini requests stream** from `streamGenerateContent?alt=sse` on
+  `generativelanguage.googleapis.com`, HTTPS only, the key in `x-goog-api-key`,
+  the gateway's instructions in `systemInstruction`
+  (`quill/core/ai/own_key_gemini.py`, built from the shared pure builders in
+  `quill/core/ai/endpoints.py` and `assistant_ai.build_chat_body`). OpenAI
+  requests are unchanged and not streamed, because OpenAI refuses streaming
+  from unverified organisations for some models.
+- **Stop works.** The pad's Send button is Stop while a request is on its way;
+  `AiService.cancel(request)` sets only that request's event, so stopping one
+  window cannot cancel work started by another. On Gemini the stream is closed
+  before the next piece is read; on every other route the outcome is dropped on
+  arrival. Neither an answer nor a failure is delivered after Stop.
+- **Errors are one sentence, spoken, actionable, and never contain the key.**
+  Gemini answers a wrong key with HTTP 400 `API_KEY_INVALID`, not 401, so the
+  key-rejected case is read from the body; 401 and 403 are rejections too
+  (`QUILL-AI-OWN-KEY-REJECTED`). 404, 429 and 5xx each have their own sentence
+  (`QUILL-AI-OWN-KEY-FAILED`), a busy Gemini is tried once more, and every
+  sentence passes through `own_key.scrub`.
+- **Model ordering is deterministic** (`quill/core/ai/own_key_models.py`):
+  Gemini's list is filtered (embeddings, Imagen, Veo, speech, live audio, image
+  generation, AQA) and ordered stable before preview, newest version first,
+  Flash, Flash-Lite, Pro, then by name; OpenAI's order is unchanged. Cost
+  estimates are per provider, and Gemini's note says what Google's free tier
+  means for privacy.
+- **Shared, so QUILL has it the same day** (family rule 10): the window
+  (`quill/ui/hosted_ai_own_key.py`), the service (`quill/ui/hosted_ai_service.py`,
+  with its route sentences split into `quill/ui/hosted_ai_route_words.py` under
+  GATE-11) and the pad are the shared `hosted_ai_*` modules both editors use.
+- One new egress site, `own_key_gemini._open_stream`, reviewed in the egress
+  audit. Tests: `tests/unit/core/ai/test_own_key_gemini_route.py` runs the
+  shipped code against a loopback server shaped like both providers, with
+  synthetic keys.
 
 ### 5.7 Every switch has a way back, from inside the app
 

@@ -142,3 +142,39 @@ def test_describe_image_reports_a_bad_file_as_its_own_sentence(service, monkeypa
     heard = []
     service.describe_image("nowhere.png", "", on_done=heard.append, on_error=heard.append)
     assert heard == ["There is no file at nowhere.png."]
+
+
+def test_cancelling_one_window_does_not_cancel_another_request(service, monkeypatch) -> None:
+    """A service is shared by windows; Stop owns only the request returned to it."""
+    import quill.ui.hosted_ai_service as module
+
+    submitted = []
+
+    def hold(_name, work, *, on_success, on_failure):
+        submitted.append((work, on_success, on_failure))
+
+    monkeypatch.setattr(module, "_submit", hold)
+    monkeypatch.setattr(module, "_call_after", lambda fn, *args: fn(*args))
+    first, second = [], []
+    request_one = service.ask(
+        "summarize",
+        "first",
+        None,
+        on_done=lambda text, _quota: first.append(text),
+        on_error=first.append,
+    )
+    request_two = service.ask(
+        "summarize",
+        "second",
+        None,
+        on_done=lambda text, _quota: second.append(text),
+        on_error=second.append,
+    )
+
+    assert service.cancel(request_one)
+    assert not request_two.is_set()
+    submitted[0][1]("quill-ai-ask", ("first answer", None))
+    submitted[1][1]("quill-ai-ask", ("second answer", None))
+
+    assert first == []
+    assert second == ["second answer"]

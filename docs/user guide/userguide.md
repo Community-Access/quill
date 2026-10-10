@@ -9432,6 +9432,9 @@ answers on a Gemini key just as it does on a ChatGPT subscription.
   service.
 - **OpenAI or Google bills you** for each request, under that company's own
   terms and privacy policy.
+- While an answer is on its way, **Send** becomes **Stop** (`Alt+S`). Stopping
+  closes a Gemini stream immediately; for another route it discards that
+  request's eventual answer. It never stops a request from another AI window.
 - **Usage** (`Ctrl+Alt+Shift+F2`) opens a different window. It tells you which
   model is answering and that no allowance applies, and its **Open My Usage**
   button takes you to the usage page of your OpenAI or Google AI Studio

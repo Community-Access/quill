@@ -1831,7 +1831,7 @@ Control coverage: 155 audited sites (155 helped).
 - `self._actions`: Choose what the AI should do with the text above. Each choice has its own description -- press F1 on one to hear it.
 - `self._question`: What you want to know. For a question about the document, QUILL finds the parts that answer it and sends only those; for a general question, only the question is sent.
 - `self._language`: The language Translate writes in. Only these languages are offered.
-- `self._send`: Sends the text above and uses one of your free requests.
+- `self._send`: Sends the text above and uses one of your free requests. While a request is on its way this button is Stop, and pressing it stops the request.
 #### AiResultFrame (`quill/ui/hosted_ai_pad.py`)
 
 - `replace`: Puts this in place of the text you had selected. Control Z takes it back.
