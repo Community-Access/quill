@@ -48,6 +48,9 @@ _RELATION_MARKERS = {
     "antonym": "antonym",
     "related term": "related",
 }
+_RELATION_SUFFIXES = tuple(
+    (f" ({marker})", relation) for marker, relation in _RELATION_MARKERS.items()
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -257,22 +260,28 @@ def _parse_mythes(text: str) -> dict[str, list[Meaning]]:
             # Strip surrounding parens if present: "(noun)" -> "noun".
             if raw_pos.startswith("(") and raw_pos.endswith(")"):
                 raw_pos = raw_pos[1:-1].strip()
-            buckets: dict[str, list[str]] = {"synonym": [], "antonym": [], "broader": []}
+            synonyms: list[str] = []
+            antonyms: list[str] = []
+            broader: list[str] = []
             for member in parts[1:]:
                 term, relation = _split_relation(member)
                 if not term:
                     continue
                 # "similar" and "related" can stand in for the headword;
                 # "broader" and "antonym" cannot. See Meaning's docstring.
-                substitutable = relation in ("", "similar", "related")
-                buckets["synonym" if substitutable else relation].append(term)
-            if any(buckets.values()):
+                if relation == "antonym":
+                    antonyms.append(term)
+                elif relation == "broader":
+                    broader.append(term)
+                else:
+                    synonyms.append(term)
+            if synonyms or antonyms or broader:
                 meanings.append(
                     Meaning(
                         part_of_speech=raw_pos or "",
-                        synonyms=tuple(buckets["synonym"]),
-                        antonyms=tuple(buckets["antonym"]),
-                        broader=tuple(buckets["broader"]),
+                        synonyms=tuple(synonyms),
+                        antonyms=tuple(antonyms),
+                        broader=tuple(broader),
                     )
                 )
         if word and meanings:
@@ -305,16 +314,20 @@ def _split_relation(raw: str) -> tuple[str, str]:
     a slightly odd term rather than a silently miscategorised one.
     """
     text = raw.strip()
-    if not text or not text.endswith(")"):
+    if not text:
         return text, ""
-    head, sep, marker = text.rpartition("(")
-    if not sep:
-        return text, ""
-    relation = _RELATION_MARKERS.get(marker[:-1].strip().lower())
-    if relation is None:
-        return text, ""
-    term = head.strip()
-    return (term, relation) if term else ("", "")
+    for suffix, relation in _RELATION_SUFFIXES:
+        if text.endswith(suffix):
+            term = text[: -len(suffix)].strip()
+            return (term, relation) if term else ("", "")
+    if text.endswith(")"):
+        head, separator, marker = text.rpartition("(")
+        if separator:
+            relation = _RELATION_MARKERS.get(marker[:-1].strip().lower())
+            if relation is not None:
+                term = head.strip()
+                return (term, relation) if term else ("", "")
+    return text, ""
 
 
 def preload() -> None:

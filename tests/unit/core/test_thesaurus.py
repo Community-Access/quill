@@ -138,6 +138,7 @@ class TestSplitRelation:
             ("capital (generic term)", ("capital", "broader")),
             ("cheerful (similar term)", ("cheerful", "similar")),
             ("aspect (related term)", ("aspect", "related")),
+            ("heavy (ANTONYM)", ("heavy", "antonym")),
             ("glad", ("glad", "")),
             ("  spaced  ", ("spaced", "")),
             ("", ("", "")),

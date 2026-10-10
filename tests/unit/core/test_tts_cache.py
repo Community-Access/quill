@@ -5,6 +5,8 @@ from __future__ import annotations
 import threading
 from pathlib import Path
 
+import pytest
+
 from quill.core.tts_cache import (
     TtsCache,
     cached_sentence_generator,
@@ -103,6 +105,30 @@ def test_cached_generator_renders_once_then_reuses(tmp_path: Path) -> None:
     out3 = tmp_path / "o3.wav"
     gen("A new sentence.", out3)
     assert calls == ["Repeated sentence.", "A new sentence."]
+
+
+def test_cached_generator_uses_a_hard_link_when_available(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    cache = TtsCache(tmp_path / "cache")
+    calls: list[str] = []
+
+    def render(sentence: str, out: Path) -> None:
+        calls.append(sentence)
+        _write_wav(out, payload=b"RIFF" + sentence.encode("utf-8"))
+
+    gen = cached_sentence_generator(("piper", "voiceA"), render, cache=cache)
+    gen("Repeated sentence.", tmp_path / "first.wav")
+
+    def fail_copy(_source: Path, _destination: Path) -> None:
+        raise AssertionError("same-volume cache hit should not copy audio bytes")
+
+    monkeypatch.setattr("quill.core.tts_cache.shutil.copyfile", fail_copy)
+    out = tmp_path / "second.wav"
+    gen("Repeated sentence.", out)
+
+    assert calls == ["Repeated sentence."]
+    assert out.read_bytes() == b"RIFFRepeated sentence."
 
 
 def test_cached_generator_separates_engine_configs(tmp_path: Path) -> None:
