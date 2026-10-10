@@ -323,10 +323,10 @@ def _split_relation(raw: str) -> tuple[str, str]:
     if text.endswith(")"):
         head, separator, marker = text.rpartition("(")
         if separator:
-            relation: str | None = _RELATION_MARKERS.get(marker[:-1].strip().lower())
-            if relation is not None:
+            marker_relation = _RELATION_MARKERS.get(marker[:-1].strip().lower())
+            if marker_relation is not None:
                 term = head.strip()
-                return (term, relation) if term else ("", "")
+                return (term, marker_relation) if term else ("", "")
     return text, ""
 
 
