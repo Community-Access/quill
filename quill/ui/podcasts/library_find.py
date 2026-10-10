@@ -37,6 +37,8 @@ import logging
 from collections.abc import Sequence
 from typing import Any
 
+from quill.ui.podcasts.say_status import say_status
+
 logger = logging.getLogger(__name__)
 
 __all__ = [
@@ -301,10 +303,7 @@ class CastLibraryFindMixin:
         said = match_count_sentence(outcome.total, outcome.query)
         status = getattr(self, "_find_status", None)
         if status is not None:
-            try:
-                status.SetLabel(said)
-            except RuntimeError:
-                pass
+            say_status(status, said)
         if announce:
             self._announce(said)
         return said

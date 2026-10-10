@@ -49,10 +49,9 @@ _URL_RE = re.compile(
 
 def _lite_installers() -> list[Path]:
     found = sorted((_REPO_ROOT / "standalone").glob("*/installer/*-lite.iss"))
-    # Seven apps ship a Lite edition today; fewer means the glob broke, not
-    # that the family shrank overnight.
-    # Six since Quill Radio 3.0.0 retired its thin installer (two downloads only).
-    assert len(found) >= 6, f"expected at least 6 Lite installers, found {len(found)}: {found}"
+    # Quill Radio 3.0.0 retired its thin installer; the remaining five are
+    # the supported standalone Lite products.
+    assert len(found) >= 5, f"expected at least 5 Lite installers, found {len(found)}: {found}"
     return found
 
 

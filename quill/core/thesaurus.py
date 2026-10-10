@@ -323,7 +323,7 @@ def _split_relation(raw: str) -> tuple[str, str]:
     if text.endswith(")"):
         head, separator, marker = text.rpartition("(")
         if separator:
-            relation = _RELATION_MARKERS.get(marker[:-1].strip().lower())
+            relation: str | None = _RELATION_MARKERS.get(marker[:-1].strip().lower())
             if relation is not None:
                 term = head.strip()
                 return (term, relation) if term else ("", "")

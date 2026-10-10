@@ -17,8 +17,6 @@ import wx
 from quill.core.settings_finder import SettingEntry
 from quill.ui.preferences_search import declare_settings, install_preferences_search
 
-pytestmark = pytest.mark.machine_global
-
 
 @pytest.fixture
 def application():
