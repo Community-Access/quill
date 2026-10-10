@@ -1,8 +1,18 @@
-# Builds the full QUILL Cast installer and portable ZIP from one onedir build:
+# Builds every QUILL Cast release artifact from one onedir build:
 #
 #   dist\QUILLCast\                       the staged app folder
-#   dist\QUILL-Cast-Portable-<ver>.zip    portable (with its data\ folder)
-#   dist\QUILL-Cast-Setup-Shared-<ver>.exe system installer
+#   dist\QUILL-Cast-Portable-<ver>.zip         portable (with its data\ folder)
+#   dist\QUILL-Cast-Setup-Shared-<ver>.exe     the installer (bundles the runtime)
+#
+# TWO downloads, as Quill Radio and QUILL Lite publish (owner decision,
+# 2026-10-05). The thin "Lite" installer and the Companion zip are gone before
+# Cast's first public release, so nobody has either installed. Both leaned on a
+# shared runtime being on the machine already -- the Companion zip installs
+# nothing, and the thin installer downloads the runtime on first launch -- which
+# is the wrong trade for a podcast player somebody wants working the moment the
+# installer closes. Two downloads also make Check for Updates a question with
+# one honest answer, portable or not (podcasts_preferences passes
+# match_edition=False).
 #
 # Usage:
 #   .\scripts\build_release.ps1 [-Python <python.exe>] [-FfmpegDir <dir>]
@@ -196,7 +206,7 @@ Compress-Archive -Path $appDir -DestinationPath $zipPath
 # installed copy into portable mode), so remove it before the installer runs.
 Remove-Item $dataDir -Recurse -Force
 
-# -- shared-runtime installer --------------------------------------------------
+# -- the installer: Setup-Shared -----------------------------------------------
 # Cast now consumes the shared QuillVille Runtime like Radio, Weather, Studio
 # and Inkwell (2026-08-18). Setup-Shared supersedes the old self-contained
 # Setup -- same AppId, so it upgrades it in place. The onedir above remains
@@ -223,8 +233,20 @@ if ($LASTEXITCODE -ne 0) { throw "Code signing (shared payload) failed." }
 & $Iscc @innoSign "/dAppVersion=$version" "/dAppBuild=$build" "/dAppFileVersion=$fileVersion" (Join-Path $repoRoot "installer\quill-cast-shared.iss") "/O$(Join-Path $repoRoot 'dist')"
 if ($LASTEXITCODE -ne 0) { throw "ISCC (Setup-Shared) failed with exit code $LASTEXITCODE" }
 
+# -- retired downloads never ride along ----------------------------------------
+# dist\ is a work area, and an older build of this script left the thin
+# installer and the Companion zip in it. Anything left there is one drag-and-drop
+# away from being published beside the real two, so this version's copies go.
+foreach ($retired in @("QUILL-Cast-Lite-Setup-$version.exe", "QUILL-Cast-Companion-$version.zip")) {
+    $stale = Join-Path $repoRoot "dist\$retired"
+    if (Test-Path $stale) {
+        Remove-Item $stale -Force
+        Write-Host "Removed retired artifact $retired (Cast ships two downloads)."
+    }
+}
+
 Write-Host ""
 Write-Host "Release artifacts in $(Join-Path $repoRoot 'dist'):"
-Get-ChildItem (Join-Path $repoRoot "dist") -File | ForEach-Object {
+Get-ChildItem (Join-Path $repoRoot "dist") -File -Filter "*-$version.*" | ForEach-Object {
     Write-Host ("  {0}  {1:N1} MB" -f $_.Name, ($_.Length / 1MB))
 }

@@ -350,6 +350,10 @@ class CastPreferencesMixin:
         constant: a sibling's newer runtime must never make this copy look up
         to date (release channels, Phase 0). The channel decides what may be
         offered (``app_shell.check_for_app_updates``).
+
+        Cast publishes two downloads, the installer and the portable zip, as
+        Quill Radio and QUILL Lite do (2026-10-05), so the only question is
+        "portable, or not": ``match_edition=False``.
         """
         from quill.ui.updates.shell import installed_app_version
 
@@ -358,6 +362,7 @@ class CastPreferencesMixin:
             current_version=installed_app_version("cast"),
             app_key="cast",
             silent_no_update=silent,
+            match_edition=False,
         )
 
     def open_release_channel(self) -> None:

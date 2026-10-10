@@ -31,9 +31,10 @@ def _assets(prefix: str, version: str) -> list[dict[str, str]]:
 
 
 LITE = _assets("QuillLite", "1.0.0")
-#: Quill Radio shipped four until 3.0.0; Cast still does, so it is the four-asset
-#: example now.
-CAST = _assets("Quill-Cast", "3.0.0")
+#: Quill Radio shipped four until 3.0.0 and QUILL Cast never did publicly (two
+#: since its first release, 2.0.0); QuillBeacon still does, so it is the
+#: four-asset example now.
+BEACON = _assets("Quill-Beacon", "3.0.0")
 
 
 @pytest.mark.parametrize(
@@ -68,8 +69,8 @@ def test_a_companion_listener_is_never_handed_an_exe(monkeypatch) -> None:
     import quill.core.install_edition as edition_module
 
     monkeypatch.setattr(edition_module, "detect", lambda *_a, **_k: edition.COMPANION)
-    assert _app_asset_url(CAST, "Quill-Cast", prefer_portable=False).endswith(
-        "Quill-Cast-Companion-3.0.0.zip"
+    assert _app_asset_url(BEACON, "Quill-Beacon", prefer_portable=False).endswith(
+        "Quill-Beacon-Companion-3.0.0.zip"
     )
 
 
@@ -152,8 +153,8 @@ def test_the_edition_step_is_untouched_for_the_apps_that_ship_four(monkeypatch) 
     import quill.core.install_edition as edition_module
 
     monkeypatch.setattr(edition_module, "detect", lambda *_a, **_k: edition.COMPANION)
-    assert _app_asset_url(CAST, "Quill-Cast", prefer_portable=False).endswith(
-        "Quill-Cast-Companion-3.0.0.zip"
+    assert _app_asset_url(BEACON, "Quill-Beacon", prefer_portable=False).endswith(
+        "Quill-Beacon-Companion-3.0.0.zip"
     )
 
 
@@ -161,7 +162,7 @@ def test_another_apps_assets_are_never_picked(monkeypatch) -> None:
     import quill.core.install_edition as edition_module
 
     monkeypatch.setattr(edition_module, "detect", lambda *_a, **_k: edition.INSTALLER_FULL)
-    assert _app_asset_url(CAST, "QuillLite", prefer_portable=False) == ""
+    assert _app_asset_url(BEACON, "QuillLite", prefer_portable=False) == ""
 
 
 def test_a_non_https_url_is_ignored(monkeypatch) -> None:
@@ -216,3 +217,31 @@ def test_quill_radio_asks_the_two_asset_question() -> None:
     calls = source.count("self.check_for_app_updates(")
     assert calls >= 2
     assert source.count("match_edition=_MATCH_EDITION") == calls
+
+
+@pytest.mark.parametrize("silent", [False, True])
+def test_quill_cast_asks_the_two_asset_question(monkeypatch, silent) -> None:
+    """Cast publishes two downloads from its first release (2026-10-05): Help >
+    Check for Updates and the quiet launch check both opt out of the edition
+    step, as Radio and QUILL Lite do."""
+    import quill.ui.updates.shell as shell
+    from quill.apps.podcasts_preferences import CastPreferencesMixin
+
+    monkeypatch.setattr(shell, "installed_app_version", lambda _key: "2.0.0")
+    calls: list[dict[str, object]] = []
+
+    class _Host(CastPreferencesMixin):
+        def check_for_app_updates(self, **kwargs: object) -> None:
+            calls.append(kwargs)
+
+    _Host()._check_cast_updates(silent=silent)
+
+    assert calls == [
+        {
+            "repo_slug": "Community-Access/quill",
+            "current_version": "2.0.0",
+            "app_key": "cast",
+            "silent_no_update": silent,
+            "match_edition": False,
+        }
+    ]
