@@ -224,8 +224,6 @@ class CastLibraryFindMixin:
                 pass
 
     def _start_library_find(self, *, announce: bool) -> str:
-        import wx
-
         query = self._library_find_query()
         if not query:
             return ""
@@ -252,8 +250,7 @@ class CastLibraryFindMixin:
             )
 
         manager = getattr(self, "_task_manager", None)
-        event_loop = wx.EventLoop.GetActive()
-        if manager is None or event_loop is None:
+        if manager is None:
             return self._apply_library_find(work(None), generation, announce=announce)
         task = manager.submit(
             "cast-library-find",
