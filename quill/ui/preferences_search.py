@@ -1,12 +1,34 @@
-"""Accessible control navigation for the family's existing settings dialogs."""
+"""Accessible control navigation for the family's existing settings dialogs.
+
+Two sources feed one search (qc.md X-01):
+
+* **Built controls** -- every labelled control the window already has, walked
+  when the search is installed and again on every query, so a notebook page
+  that builds itself later is found once it exists.
+* **Declared settings** -- rows a window hands over with
+  :func:`declare_settings`, from the wx-free index in
+  :mod:`quill.core.settings_finder`. These are what reach a settings area that
+  has no controls yet: a page QUILL's Settings dialog builds only when it is
+  first shown, a setting kept in the main window rather than in Preferences,
+  or a whole dialog the Preferences hub has not opened. A declared row whose
+  control does exist (``control_for``) replaces the walked one, so nothing is
+  listed twice and the declared aliases still count.
+
+Choosing a declared row with no control calls its ``go``. ``go`` returns the
+control to move to when the setting is in this window (after building or
+revealing its page), or ``None`` when it carried the person somewhere else --
+which is then that caller's to finish, focus and say.
+"""
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from typing import Any
 
 import wx
+
+from quill.core.settings_finder import SettingEntry, match_rank, result_label
 
 
 @dataclass(frozen=True)
@@ -17,20 +39,48 @@ class SettingTarget:
     #: For a setting on a part of the window not built yet (qc.md X-01): shows
     #: that part and returns the control to focus. *control* is then None.
     reveal: Callable[[], Any] | None = None
+    #: For a declared setting with no control yet: open its area. Returns the
+    #: control to focus, or None when the setting lives in another window.
+    go: Callable[[], Any] | None = None
 
     def enabled(self) -> bool:
         return self.control is None or bool(self.control.IsEnabled())
 
 
+@dataclass(frozen=True)
+class DeclaredSettings:
+    """The settings a window declares rather than builds."""
+
+    entries: tuple[SettingEntry, ...]
+    go: Callable[[SettingEntry], Any]
+    control_for: Callable[[SettingEntry], Any] | None = None
+
+
+def declare_settings(
+    window: Any,
+    entries: Iterable[SettingEntry],
+    go: Callable[[SettingEntry], Any],
+    *,
+    control_for: Callable[[SettingEntry], Any] | None = None,
+) -> DeclaredSettings:
+    """Hand *window*'s search the settings it cannot find by walking controls.
+
+    Call before the window is shown; the shared show paths install the search.
+    """
+    declared = DeclaredSettings(tuple(entries), go, control_for)
+    window._quill_declared_settings = declared
+    return declared
+
+
 def find_settings(targets: list[SettingTarget], query: str) -> list[SettingTarget]:
-    words = query.casefold().split()
-    if not words:
-        return []
-    return [
-        target
-        for target in targets
-        if all(word in f"{target.label} {target.description}".casefold() for word in words)
-    ]
+    """Every target matching all the words of *query*, best match first."""
+    ranked = []
+    for position, target in enumerate(targets):
+        rank = match_rank(target.label, target.description, query)
+        if rank is not None:
+            ranked.append((rank, position, target))
+    ranked.sort(key=lambda item: (item[0], item[1]))
+    return [target for _rank, _position, target in ranked]
 
 
 def _targets(parent: Any, prefix: str = "") -> list[SettingTarget]:
@@ -116,6 +166,28 @@ def registry_page_index(
     return targets
 
 
+def _declared_targets(window: Any) -> tuple[list[SettingTarget], set[int]]:
+    """Declared rows as targets, and the ids of the built controls they claim."""
+    declared = getattr(window, "_quill_declared_settings", None)
+    if not isinstance(declared, DeclaredSettings):
+        return [], set()
+    targets: list[SettingTarget] = []
+    claimed: set[int] = set()
+    for entry in declared.entries:
+        control = declared.control_for(entry) if declared.control_for is not None else None
+        if control is not None:
+            claimed.add(id(control))
+        targets.append(
+            SettingTarget(
+                result_label(entry),
+                entry.searchable_text(),
+                control,
+                go=None if control is not None else (lambda e=entry: declared.go(e)),
+            )
+        )
+    return targets, claimed
+
+
 class PreferencesSearch:
     """Find a setting and focus it without changing values or accepting edits."""
 
@@ -125,11 +197,8 @@ class PreferencesSearch:
         ensure_help_provider()
         self.dialog = dialog
         self.announce = announce or (lambda _message: None)
-        # A window whose settings are not all built at once (sections that are
-        # filled one at a time) offers its own index, so a search reaches the
-        # parts nobody has opened yet (qc.md X-01).
-        index = getattr(dialog, "_quill_settings_index", None)
-        self.targets = list(index()) if callable(index) else _targets(dialog)
+        self.panel: Any = None
+        self.targets = self._all_targets()
         self.matches: list[SettingTarget] = []
         self.timer: Any = None
         self.closed = False
@@ -172,9 +241,26 @@ class PreferencesSearch:
         outer.Fit(dialog)
         self.search.SetFocus()
 
+    def _all_targets(self) -> list[SettingTarget]:
+        """Built controls (not the search's own) plus declared settings."""
+        declared, claimed = _declared_targets(self.dialog)
+        # Older lazy settings surfaces provide a complete index themselves.
+        # Declarations supersede that index when present, avoiding duplicate
+        # unbuilt rows while retaining the legacy reveal contract elsewhere.
+        index = getattr(self.dialog, "_quill_settings_index", None)
+        indexed = list(index()) if callable(index) and not declared else _targets(self.dialog)
+        built = [
+            target
+            for target in indexed
+            if id(target.control) not in claimed
+            and (self.panel is None or target.control.GetParent() is not self.panel)
+        ]
+        return built + declared
+
     def _on_search(self, _event: Any) -> None:
         if self.closed:
             return
+        self.targets = self._all_targets()
         self.matches = find_settings(self.targets, self.search.GetValue())
         active = bool(self.search.GetValue().strip())
         self.results.Set([
@@ -200,16 +286,24 @@ class PreferencesSearch:
         if not 0 <= index < len(self.matches):
             return
         target = self.matches[index]
-        if not target.enabled():
+        control = target.control
+        if control is None:
+            action = target.go or target.reveal
+            if action is None:
+                return
+            if self.timer is not None:
+                self.timer.Stop()
+            control = action()
+            if control is None or self.closed:
+                return  # it lives in another window; the caller moves there
+        if not control.IsEnabled():
             self.announce("This setting is disabled")
             return
-        if target.reveal is not None:
-            control = target.reveal()
-            if control is not None:
-                self.dialog.Layout()
-                control.SetFocus()
-            return
-        child = target.control
+        self._navigate(control)
+
+    def _navigate(self, control: Any) -> None:
+        """Reveal the page *control* is on, then focus it."""
+        child = control
         while child is not self.dialog:
             parent = child.GetParent()
             if parent is None:
@@ -227,11 +321,11 @@ class PreferencesSearch:
                     break
             child = parent
         self.dialog.Layout()
-        target.control.SetFocus()
-        parent = target.control.GetParent()
+        control.SetFocus()
+        parent = control.GetParent()
         while parent is not None and parent is not self.dialog:
             if isinstance(parent, wx.ScrolledWindow):
-                parent.ScrollChildIntoView(target.control)
+                parent.ScrollChildIntoView(control)
                 break
             parent = parent.GetParent()
 

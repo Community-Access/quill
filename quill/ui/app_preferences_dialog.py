@@ -15,13 +15,24 @@ before groups existed, control for control.
 **The returned lists stay in spec order regardless of the layout.** Callers
 unpack by position, so a grouped arrangement that reordered its results would
 silently and completely corrupt somebody's settings.
+
+**Find a setting reaches beyond the dialog** (qc.md X-01). An app passes its
+declarative settings index as ``declared``: rows with a ``key`` matching one
+of this dialog's specs focus that control; rows that live elsewhere (the main
+window, another dialog) close Preferences and call ``go_elsewhere`` once it
+has gone. Leaving that way keeps any change already made here -- the dialog
+returns its values as if OK were pressed -- and leaves nothing unsaved behind;
+with nothing changed it returns ``None`` like Cancel.
 """
 
 from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from quill.core.settings_finder import SettingEntry
 
 
 @dataclass(slots=True)
@@ -40,6 +51,9 @@ class PreferenceCheckbox:
     #: copy of the app cannot honour (a portable copy does not change the
     #: computer it visits). ``help_text`` must then say why.
     enabled: bool = True
+    #: The :class:`~quill.core.settings_finder.SettingEntry` key this row is,
+    #: so Find a setting can name it by its declared label and aliases.
+    key: str = ""
 
 
 @dataclass(slots=True)
@@ -56,6 +70,9 @@ class PreferenceAction:
     #: Which labelled box this belongs in; empty for the ungrouped
     #: run at the top of the dialog.
     group: str = ""
+    #: The :class:`~quill.core.settings_finder.SettingEntry` key this row is,
+    #: so Find a setting can name it by its declared label and aliases.
+    key: str = ""
 
 
 @dataclass(slots=True)
@@ -72,6 +89,9 @@ class PreferenceText:
     #: Which labelled box this belongs in; empty for the ungrouped
     #: run at the top of the dialog.
     group: str = ""
+    #: The :class:`~quill.core.settings_finder.SettingEntry` key this row is,
+    #: so Find a setting can name it by its declared label and aliases.
+    key: str = ""
 
 
 @dataclass(slots=True)
@@ -89,6 +109,9 @@ class PreferenceChoice:
     #: Which labelled box this belongs in; empty for the ungrouped
     #: run at the top of the dialog.
     group: str = ""
+    #: The :class:`~quill.core.settings_finder.SettingEntry` key this row is,
+    #: so Find a setting can name it by its declared label and aliases.
+    key: str = ""
 
 
 class PreferencesDialog:
@@ -106,10 +129,18 @@ class PreferencesDialog:
         texts: list[PreferenceText] | None = None,
         actions: list[PreferenceAction] | None = None,
         announce_cb: Callable[[str], None] | None = None,
+        declared: list[SettingEntry] | None = None,
+        go_elsewhere: Callable[[SettingEntry], None] | None = None,
     ) -> None:
         import wx
 
         self._wx = wx
+        #: Each keyed spec's control, for Find a setting's declared rows.
+        self.controls_by_key: dict[str, Any] = {}
+        self._go_elsewhere = go_elsewhere
+        self._after_close: Callable[[], None] | None = None
+        #: The declared setting Find a setting left for, if it did.
+        self.left_for: SettingEntry | None = None
         self._announce = announce_cb or (lambda _m: None)
         self._result: tuple[list[bool], list[int], list[str]] | None = None
         self._action_buttons: list[Any] = []
@@ -153,6 +184,33 @@ class PreferencesDialog:
         self.dialog.SetSizer(root)
         root.Fit(self.dialog)
         save_btn.Bind(wx.EVT_BUTTON, self._on_save)
+        self._capture_result()
+        self._initial, self._result = self._result, None
+        if declared:
+            from quill.ui.preferences_search import declare_settings
+
+            declare_settings(
+                self.dialog,
+                declared,
+                self._leave_for,
+                control_for=lambda entry: self.controls_by_key.get(entry.key),
+            )
+
+    def _leave_for(self, entry: SettingEntry) -> None:
+        """Find a setting chose a setting outside this dialog: close, then go.
+
+        Values already changed here are kept (returned as on OK) rather than
+        silently dropped; an untouched dialog closes as Cancel would.
+        """
+        self._capture_result()
+        changed = self._result != self._initial
+        if not changed:
+            self._result = None
+        self.left_for = entry
+        if self._go_elsewhere is not None:
+            go = self._go_elsewhere
+            self._after_close = lambda: go(entry)
+        self.dialog.EndModal(self._wx.ID_OK if changed else self._wx.ID_CANCEL)
 
     # -- layout ---------------------------------------------------------------
 
@@ -209,7 +267,12 @@ class PreferencesDialog:
         choice.SetSelection(spec.selected_index)
         row.Add(choice, 1, wx.EXPAND)
         sizer.Add(row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 8)
-        return choice
+        return self._keyed(spec, choice)
+
+    def _keyed(self, spec: Any, control: Any) -> Any:
+        if spec.key:
+            self.controls_by_key[spec.key] = control
+        return control
 
     def _add_check(self, sizer: Any, parent: Any, spec: PreferenceCheckbox) -> Any:
         check = self._wx.CheckBox(parent, label=spec.name)
@@ -217,7 +280,7 @@ class PreferencesDialog:
         check.SetValue(spec.value)
         check.Enable(spec.enabled)
         sizer.Add(check, 0, self._wx.ALL, 8)
-        return check
+        return self._keyed(spec, check)
 
     def _add_text(self, sizer: Any, parent: Any, spec: PreferenceText) -> Any:
         wx = self._wx
@@ -225,7 +288,7 @@ class PreferencesDialog:
         text_ctrl = wx.TextCtrl(parent, value=spec.value)
         self._describe(text_ctrl, spec.help_text)
         sizer.Add(text_ctrl, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
-        return text_ctrl
+        return self._keyed(spec, text_ctrl)
 
     def _add_action(self, sizer: Any, parent: Any, spec: PreferenceAction) -> Any:
         wx = self._wx
@@ -233,7 +296,7 @@ class PreferencesDialog:
         self._describe(button, spec.help_text)
         button.Bind(wx.EVT_BUTTON, lambda _e, cb=spec.on_click: cb())
         sizer.Add(button, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
-        return button
+        return self._keyed(spec, button)
 
     # -- results --------------------------------------------------------------
 
@@ -291,3 +354,5 @@ class PreferencesDialog:
             return self._result if answer == self._wx.ID_OK else None
         finally:
             self.dialog.Destroy()
+            if self._after_close is not None:
+                self._wx.CallAfter(self._after_close)

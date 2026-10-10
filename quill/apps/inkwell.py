@@ -30,6 +30,7 @@ import wx
 
 from quill.apps.inkwell_dictation import InkwellDictationMixin
 from quill.apps.inkwell_keys import InkwellKeysMixin
+from quill.apps.inkwell_preferences import open_preferences
 from quill.core.abbreviations import (
     AbbreviationLibrary,
     load_abbreviation_library,
@@ -135,6 +136,9 @@ class QuillInkwellFrame(
         menu_bar.Append(abbr_menu, "&Abbreviations")
 
         options_menu = wx.Menu()
+        prefs_id = wx.NewIdRef()  # Ctrl+, in every app (qc.md X-01); P is pasting
+        options_menu.Append(prefs_id, "Pr&eferences...\tCtrl+,")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: open_preferences(self), id=prefs_id)
         self._startup_item_id = wx.NewIdRef()
         options_menu.AppendCheckItem(
             self._startup_item_id, "Start Quill Inkwell with &Windows\tCtrl+Alt+W"
@@ -246,6 +250,7 @@ class QuillInkwellFrame(
             self._paste_item_id,
             self._announce_item_id,
             excluded_id,
+            prefs_id,
             updates_id,
             about_id,
         )

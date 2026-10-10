@@ -37,6 +37,7 @@ from quill.ui.dialog_contract import (
     set_accessible_name,
 )
 from quill.ui.preferences_search import registry_page_index
+from quill.ui.preferences_search_registry import declare_hub_settings, declare_settings_pages
 
 
 class PreferencesMixin:
@@ -218,6 +219,12 @@ class PreferencesMixin:
             # on every platform.
             book.SetFocus()
             dialog._quill_keep_initial_focus = True
+
+            def _open_at(key: str) -> None:  # Find a setting -> Settings, there (X-01)
+                chosen["handler"] = lambda: self.open_general_preferences(focus_key=key)
+                dialog.EndModal(wx.ID_OK)
+
+            declare_hub_settings(dialog, self._feature_enabled, _open_at)
             self._show_modal_dialog(dialog, "More Preferences")
 
         handler = chosen["handler"]
@@ -434,7 +441,7 @@ class PreferencesMixin:
             pass
         return False
 
-    def open_general_preferences(self) -> None:
+    def open_general_preferences(self, focus_key: str = "") -> None:
         from quill.core import settings_registry as registry
         from quill.core.ai.model_manager import load_ai_enabled, save_ai_enabled
 
@@ -911,6 +918,7 @@ class PreferencesMixin:
                 text.Bind(wx.EVT_TEXT, _mark_dirty)
 
             page_index = 0
+            _declared: list[tuple[int, object, list]] = []  # (page, group, specs) for search
             _page_build_fns: list[Callable[[], None]] = []
             _page_specs: list[tuple[str, list]] = []
             _built_pages: set[int] = set()
@@ -1275,6 +1283,7 @@ class PreferencesMixin:
                         show_experimental,
                     )
                 )
+                _declared.append((page_index, group, specs))
                 page_index += 1
 
             outer.Add(notebook, 1, wx.EXPAND | wx.ALL, 8)
@@ -1398,6 +1407,10 @@ class PreferencesMixin:
             )
 
             notebook.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, _on_page_changed)
+            # Find a setting reaches pages not built yet; focus_key opens at one.
+            _pages = declare_settings_pages(dialog, notebook, _declared, _build_page, control_index)
+            if focus_key:
+                wx.CallAfter(_pages.focus, focus_key, self._announce)
 
             apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
             dialog.SetSize(wx.Size(720, 580))
@@ -1494,23 +1507,9 @@ class PreferencesMixin:
         self._settings_dialog_apply_refresh("Updated settings")
 
     def open_ai_preferences(self) -> None:
-        from quill.ui.assistant_tools import AssistantConnectionDialog
+        from quill.ui.ai_connection_flow import open_ai_connection
 
-        dialog = AssistantConnectionDialog(self.frame)
-        if dialog.show_modal():
-            self._set_ai_menu_status_badge(
-                dialog.last_verification_ok,
-                dialog.last_verification_message,
-            )
-            detail = self._compact_ai_status_detail(
-                self._plain_language_ai_status_detail(dialog.last_verification_message)
-            )
-            if dialog.last_verification_ok:
-                self._set_status(f"Updated AI connection settings. Ready. {detail}")
-            else:
-                self._set_status(f"Updated AI connection settings. Needs attention. {detail}")
-        else:
-            self._set_status("AI connection settings cancelled")
+        open_ai_connection(self)
 
     def _confirm_show_editor_border(self) -> bool:
         """Warning gate before the braille hide-border fix is turned off.

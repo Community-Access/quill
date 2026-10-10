@@ -66,6 +66,11 @@ def build_menu_bar(host: Any, wx: Any, *, title: str, version: str, repo: str) -
     add(file_menu, "Convert from &URL...\tCtrl+U", lambda: host._on_convert_url(None))
     file_menu.AppendSeparator()
     add(file_menu, "Open Output &Folder\tCtrl+Shift+F", host.open_output_folder)
+    # Ctrl+, is Preferences in every app in the family (qc.md X-01). P is
+    # Paste Files, so the access key is E.
+    from quill.apps.converter_preferences import open_preferences
+
+    add(file_menu, "Pr&eferences...\tCtrl+,", lambda: open_preferences(host))
     add(file_menu, "Minimize to &Tray\tCtrl+W", host.toggle_window_to_tray)
     host._append_show_hide_key_item(file_menu, "converter")
     add(file_menu, "E&xit\tCtrl+Q", host._exit_application)
@@ -91,6 +96,7 @@ def build_menu_bar(host: Any, wx: Any, *, title: str, version: str, repo: str) -
         wx.EVT_MENU, lambda e: host.set_advanced_visible(e.IsChecked()), id=advanced_item
     )
     ids.append(advanced_item)
+    host._advanced_item = advanced_item  # Preferences keeps the check mark true
     bar.Append(view_menu, "&View")
 
     convert_menu = wx.Menu()
@@ -108,6 +114,7 @@ def build_menu_bar(host: Any, wx: Any, *, title: str, version: str, repo: str) -
     convert_menu.Check(open_item, host._settings.open_folder_when_done)
     host.frame.Bind(wx.EVT_MENU, lambda e: host.set_open_when_done(e.IsChecked()), id=open_item)
     ids.append(open_item)
+    host._open_when_done_item = open_item
     bar.Append(convert_menu, "&Convert")
 
     from quill.ui.quillville_menu import build_quillville_menu
