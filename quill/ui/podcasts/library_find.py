@@ -194,6 +194,11 @@ class CastLibraryFindMixin:
             except Exception:  # noqa: BLE001
                 pass
             self._find_return_key = selected or ("", "")
+            self._find_return_place = getattr(self, "_current_place", "")
+        pane = getattr(self, "_content", None)
+        if pane is not None:
+            pane.show(pane.TREE)
+            pane.set_heading("Matches")
         self._start_library_find(announce=True)
 
     def _refresh_library_find(self) -> str:
@@ -219,6 +224,8 @@ class CastLibraryFindMixin:
                 pass
 
     def _start_library_find(self, *, announce: bool) -> str:
+        import wx
+
         query = self._library_find_query()
         if not query:
             return ""
@@ -245,7 +252,8 @@ class CastLibraryFindMixin:
             )
 
         manager = getattr(self, "_task_manager", None)
-        if manager is None:
+        event_loop = wx.EventLoop.GetActive()
+        if manager is None or event_loop is None:
             return self._apply_library_find(work(None), generation, announce=announce)
         task = manager.submit(
             "cast-library-find",
@@ -330,7 +338,12 @@ class CastLibraryFindMixin:
                 status.SetLabel("")
             except RuntimeError:
                 pass
-        self._reload_library_tree(keep_key=key if key and key[0] else None)
+        place = getattr(self, "_find_return_place", "")
+        self._find_return_place = ""
+        if place and callable(getattr(self, "show_place", None)):
+            self.show_place(place, focus=False, keep=key if key and key[0] else None)
+        else:
+            self._reload_library_tree(keep_key=key if key and key[0] else None)
         if announce:
             self._announce("Back to your library.")
 

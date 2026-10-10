@@ -340,17 +340,19 @@ class ManagerActionsMixin:
     def _on_show_settings(self, show: PodcastShow) -> None:
         """Per-show overrides: auto-download, queue expiry, Inbox caps, and
         the rest -- the settings that only make sense one podcast at a time."""
-        from quill.ui.podcasts.show_settings_dialog import ShowSettingsDialog
+        from quill.ui.podcasts.show_settings_dialog import open_show_settings
 
-        dialog = ShowSettingsDialog(
-            self.dialog,
+        open_show_settings(
+            self,
+            show,
             library=self._library,
-            show=show,
-            announce_cb=self._announce,
+            parent=self.dialog,
+            on_saved=self._after_show_settings_saved,
         )
-        if dialog.show():
-            self._on_library_changed()
-            self.refresh_tree()
+
+    def _after_show_settings_saved(self) -> None:
+        self._on_library_changed()
+        self.refresh_tree()
 
     def _on_episode_filters(self, show: PodcastShow) -> None:
         """Episode Filters: the rules that decide where new episodes go.
@@ -361,19 +363,21 @@ class ManagerActionsMixin:
         dozen controls would put it behind a lot of arrowing for somebody who
         opened the menu already knowing what they wanted.
         """
-        from quill.ui.podcasts.episode_filters_dialog import EpisodeFiltersDialog
+        from quill.ui.podcasts.episode_filters_dialog import open_episode_filters
 
-        dialog = EpisodeFiltersDialog(
-            self.dialog,
+        open_episode_filters(
+            self,
+            show,
             library=self._library,
-            show=show,
-            announce_cb=self._announce,
+            parent=self.dialog,
             playing=self._currently_playing(),
+            on_saved=self._after_filters_saved,
         )
-        if dialog.show():
-            self._on_library_changed()
-            self.refresh_tree()
-            self._fill_episodes(self._current_show)
+
+    def _after_filters_saved(self) -> None:
+        self._on_library_changed()
+        self.refresh_tree()
+        self._fill_episodes(self._current_show)
 
     def _on_filter_like_this(self, show: PodcastShow, episode: PodcastEpisode) -> None:
         """Filter Episodes Like This: Episode Filters, opened on a drafted rule."""

@@ -31,6 +31,7 @@ from quill.ui.main_frame_podcast_session import PodcastSessionMixin
 from quill.ui.main_frame_podcast_transfers import PodcastTransfersMixin
 from quill.ui.podcasts.check_monitor import PodcastCheckMonitor
 from quill.ui.podcasts.feed_refresh import refresh_feeds
+from quill.ui.podcasts.folder_watch import FolderWatchMixin
 from quill.ui.podcasts.player_controller import (
     PodcastPlaybackState,
     PodcastPlayerController,
@@ -46,6 +47,7 @@ _SAFE_MODE_MESSAGE = "Podcasts are disabled in Safe Mode. Restart QUILL normally
 
 
 class PodcastsMixin(
+    FolderWatchMixin,
     PodcastSessionMixin,
     QueueRunCommandsMixin,
     PodcastAcquisitionMixin,
@@ -922,6 +924,7 @@ class PodcastsMixin(
     # -- command palette registration ----------------------------------------
 
     def _register_podcasts_commands(self) -> None:
+        renamed: dict[str, str | None] = getattr(self, "_podcast_palette_titles", None) or {}
         for command_id, title, handler in (
             ("podcasts.open_manager", "Podcasts: Open Manager...", self.open_podcast_manager),
             (
@@ -1016,6 +1019,10 @@ class PodcastsMixin(
                 self.open_podcast_skip_settings,
             ),
         ):
+            if command_id in renamed:
+                if renamed[command_id] is None:
+                    continue
+                title = renamed[command_id]
             self.commands.try_register(
                 command_id,
                 title,

@@ -57,7 +57,7 @@ TITLE = "Episode Filters"
 
 _MODE_CHOICES = tuple(MODE_LABELS[mode] for mode in FILTER_MODES)
 
-__all__ = ["TITLE", "EpisodeFiltersWindow", "open_episode_filters"]
+__all__ = ["TITLE", "EpisodeFiltersDialog", "EpisodeFiltersWindow", "open_episode_filters"]
 
 
 class EpisodeFiltersWindow:
@@ -578,3 +578,6 @@ def open_episode_filters(
 
     window: EpisodeFiltersWindow = open_peer(host, "_episode_filters_window", _make, opener=opener)
     return window
+
+
+EpisodeFiltersDialog = EpisodeFiltersWindow
