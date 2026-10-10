@@ -136,6 +136,8 @@ class NowPlayingWindow:
             else None
         )
         if key != self._loaded_key or full:
+            if key != self._loaded_key and not self._save_note():
+                return
             self._loaded_key = key
             self._load_episode(show, episode, state)
         self._refresh_transport(controller, state)
@@ -465,8 +467,12 @@ class NowPlayingWindow:
 
     def _on_note_blur(self, event: Any) -> None:
         event.Skip()
+        self._save_note()
+
+    def _save_note(self) -> bool:
+        """Save the current draft before its episode key can change."""
         if self._note_key is None:
-            return
+            return True
         from quill.core.podcasts.episode_notes import set_episode_level_note
 
         text = self._note.GetValue().strip()
@@ -474,9 +480,10 @@ class NowPlayingWindow:
             changed = set_episode_level_note(self._note_key[0], self._note_key[1], text)
         except Exception:  # noqa: BLE001 - a note that cannot be written is said, not raised
             self._host._announce("Your note could not be saved.")
-            return
+            return False
         if changed:
             self._host._announce("Note saved." if text else "Note removed.")
+        return True
 
     def _remember_copy_format(self, fmt: str) -> None:
         history = getattr(self._host, "_podcast_history", None)

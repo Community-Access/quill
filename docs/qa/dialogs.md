@@ -321,6 +321,7 @@ state and lists any installed Quillins read-only.
 These open only from inside another dialog or flow. Test each by reaching its
 parent first.
 
+- [ ] Cast Notes Reader find prompt: Search in the Notes Reader window
 - [ ] Add or Edit Watch Profile (from Watch Folder Profiles)
 - [ ] Browse for folder (from Add or Edit Watch Profile)
 - [ ] Watch profile dry-run preview (from Add or Edit Watch Profile, Preview (dry run) button)

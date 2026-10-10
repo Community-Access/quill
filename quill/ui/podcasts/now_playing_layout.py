@@ -5,7 +5,7 @@ module is what the window *does*; this is what it is made of. Every label is
 created immediately before the control it names (wxMSW's accessible name), every
 control carries its help inline (GATE-CAST-HELP), and no two controls share an
 access key with each other or with the window's own menu bar (Now &Playing,
-&Window): the letters used are U S B F V X D M E I 5 C O N L R Y A K H T.
+&Window): the letters used are U S B F V X M E I 5 C O N L R Y A K H T.
 """
 
 from __future__ import annotations
@@ -82,7 +82,7 @@ def build_controls(self: Any, host: Any) -> None:
 
     # -- speed, volume, mute ----------------------------------------------
     levels = wx.BoxSizer(wx.HORIZONTAL)
-    wx.StaticText(panel, label="Spee&d:")
+    wx.StaticText(panel, label="Speed:")
     speed_caption = panel.GetChildren()[-1]
     self._speeds: list[float] = list(SPEEDS)
     self._speed = wx.Choice(

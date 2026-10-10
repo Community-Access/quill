@@ -62,6 +62,7 @@ class PodcastsAppFrame(
     AppShellFrame,
     CastPlaceRoutesMixin,  # the one window's doors, before the shared mixins
     CastExtensionsMixin,  # qc.md section 18: the listening keys
+    CastNowPlayingMixin,  # before PodcastsMixin: extends the player state hook
     PodcastsMixin,
     CastLibraryActionsMixin,
     CastCloseMixin,
@@ -69,7 +70,6 @@ class PodcastsAppFrame(
     CastHelpSurfacesMixin,
     CastMenuBarMixin,
     CastMainPanelMixin,
-    CastNowPlayingMixin,
     CastAiMixin,  # the shared hosted AI, through an adapter (ear.md A1)
     CastPlacesMixin,
     CastPlacesHostMixin,

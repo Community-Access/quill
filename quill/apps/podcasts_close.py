@@ -171,6 +171,13 @@ class CastCloseMixin:
         report.step("media_keys", BEST_EFFORT, lambda: self._unregister_media_keys())
         report.step("global_hotkeys", BEST_EFFORT, lambda: self._unregister_global_hotkeys())
         report.step("tray", BEST_EFFORT, lambda: self._remove_tray_icon())
+        # The peer windows have no parent, so nothing else destroys them -- and
+        # Now Playing exists, hidden, for the whole session (it is always row
+        # 2). Left alive, a hidden frame keeps the process running after Exit.
+        # Radio's shutdown has the same step for the same reason.
+        report.step(
+            "peer_windows", BEST_EFFORT, lambda: self._windows.destroy_all_except(self.frame)
+        )
         report.persist(app_data_dir())
 
     def _cast_launch_notices(self) -> None:

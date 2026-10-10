@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.12" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>QUILL dialog regression checklist</title>
+  <title>dialogs</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -180,68 +180,8 @@
       vertical-align: middle;
     }
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* The skip link above targets main, and a focusable main needs a ring for
-       the sighted keyboard user. These pages load no external stylesheet, so it
-       has to be inline; the colour is the site theme's --focus, hardcoded
-       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
-       makes main the click-focus target for every paragraph inside it, so
-       :focus would box the whole page on any ordinary click. The offset is inset
-       because main is full-bleed and an outset ring gets clipped into two
-       vertical lines. */
-    main[tabindex="-1"]:focus-visible {
-      outline: 3px solid #b8540a;
-      outline-offset: -3px;
-    }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-    /* Pandoc's own styles.html partial, injected near the top of this template,
-       ships `table { display: block; overflow-x: auto; }`. display: block takes
-       the table role out of the accessibility tree in Blink and Gecko, and the
-       row and cell roles go with it, so every rendered table reads as a flat run
-       of words -- 62 of them in QUILL Lite's user guide alone, all of them
-       keyboard reference tables, on a site whose readers are overwhelmingly
-       screen-reader users. Restoring display: table is not a preference.
-
-       The scroll affordance it was there for is given up rather than moved,
-       because Pandoc emits a bare table with no wrapper element to hang overflow
-       on -- the wrapper pattern compare.html uses is not available here. So the
-       exchange is a certain and total loss of table semantics against a possible
-       sideways page scroll on the widest tables, and the cells are taught to
-       break so that stays possible rather than likely.
-
-       This override also covers the governance pages built by
-       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
-       version nobody pins -- whatever styles.html that ships, this wins. */
-    table {
-      display: table;
-      overflow-x: visible;
-    }
-    table th,
-    table td {
-      overflow-wrap: break-word;
-      word-break: break-word;
-    }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content" tabindex="-1">
 <h1 id="quill-dialog-regression-checklist">QUILL dialog regression
 checklist</h1>
 <p>This is the master manual regression checklist for every user-facing
@@ -301,7 +241,7 @@ sign-off criteria.</li>
 <code>Ctrl+Shift+Grave</code> (backtick). “via menu” means there is no
 default keybinding; reach it through the named menu or the command
 palette (<code>Ctrl+Shift+P</code>).</p>
-<h2 id="a-file-open-save-and-session">A. File: open, save, and
+<h2 id="a.-file-open-save-and-session">A. File: open, save, and
 session</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />Open File:
@@ -419,7 +359,8 @@ changed</label></li>
 still remembered.”</label></li>
 </ul></li>
 </ul>
-<h3 id="a1-edit-over-ssh-issue-139">A.1. Edit over SSH (issue #139)</h3>
+<h3 id="a.1.-edit-over-ssh-issue-139">A.1. Edit over SSH (issue
+#139)</h3>
 <ul class="task-list">
 <li><label><input type="checkbox" />SSH Quick Connect: File &gt; Open
 over SSH &gt; Quick Connect… (no default key; command palette
@@ -445,7 +386,7 @@ until the required fields are filled</label></li>
 button and a tooltip explaining supported formats</label></li>
 </ul></li>
 </ul>
-<h2 id="b-application-settings">B. Application settings</h2>
+<h2 id="b.-application-settings">B. Application settings</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />Preferences hub (multi-page book
 control): <code>Ctrl+,</code>; verify Find a setting, Control+F return,
@@ -490,7 +431,7 @@ Accessibility</label></li>
 <li><label><input type="checkbox" />Command Palette:
 <code>Ctrl+Shift+P</code></label></li>
 </ul>
-<h2 id="c-navigate">C. Navigate</h2>
+<h2 id="c.-navigate">C. Navigate</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />Go To Line:
 <code>Ctrl+G</code></label></li>
@@ -507,7 +448,7 @@ menu</label></li>
 <li><label><input type="checkbox" />List Bookmarks:
 <code>Alt+Shift+B</code></label></li>
 </ul>
-<h2 id="d-tools-text-analysis">D. Tools: text analysis</h2>
+<h2 id="d.-tools-text-analysis">D. Tools: text analysis</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />Word Count:
 <code>Ctrl+Shift+W</code></label></li>
@@ -534,14 +475,14 @@ as a second utterance</label></li>
 Add to Dictionary): editor context menu (<code>Shift+F10</code>) &gt;
 Look Up</label></li>
 </ul>
-<h2 id="e-tools-accessibility">E. Tools: accessibility</h2>
+<h2 id="e.-tools-accessibility">E. Tools: accessibility</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />Validate Contrast: via Tools
 menu</label></li>
 <li><label><input type="checkbox" />Link Inventory and Alt-Text: via
 Tools menu</label></li>
 </ul>
-<h2 id="f-tools-document-intake">F. Tools: document intake</h2>
+<h2 id="f.-tools-document-intake">F. Tools: document intake</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />Document Intake Report:
 <code>Ctrl+Shift+I</code></label></li>
@@ -550,7 +491,7 @@ menu</label></li>
 <li><label><input type="checkbox" />Report Bad Extraction: via Tools
 menu</label></li>
 </ul>
-<h2 id="g-tools-read-aloud-and-ocr">G. Tools: read aloud and OCR</h2>
+<h2 id="g.-tools-read-aloud-and-ocr">G. Tools: read aloud and OCR</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />Read Aloud Voice Settings: via Tools
 menu</label></li>
@@ -571,14 +512,14 @@ window</label></li>
 Clipboard Image, OCR Screen Capture): appears after OCR
 completes</label></li>
 </ul>
-<h2 id="h-tools-sticky-notes">H. Tools: sticky notes</h2>
+<h2 id="h.-tools-sticky-notes">H. Tools: sticky notes</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />New Sticky Note: QUILL key, then
 <code>N</code></label></li>
 <li><label><input type="checkbox" />Manage Sticky Notes: via Tools
 menu</label></li>
 </ul>
-<h2 id="i-tools-formats-and-external-tools">I. Tools: formats and
+<h2 id="i.-tools-formats-and-external-tools">I. Tools: formats and
 external tools</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />External Tools and Formats: via
@@ -586,7 +527,7 @@ Tools menu</label></li>
 <li><label><input type="checkbox" />Pandoc Conversion Wizard: via Tools
 menu</label></li>
 </ul>
-<h2 id="j-tools-compare-documents">J. Tools: compare documents</h2>
+<h2 id="j.-tools-compare-documents">J. Tools: compare documents</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />Compare with File: via Tools
 menu</label></li>
@@ -597,7 +538,7 @@ menu</label></li>
 <li><label><input type="checkbox" />Compare Options: via Tools
 menu</label></li>
 </ul>
-<h2 id="j2-tools-quillins-extensions">J2. Tools: Quillins
+<h2 id="j2.-tools-quillins-extensions">J2. Tools: Quillins
 (extensions)</h2>
 <p>The Quillins Manager always opens, even when third-party Quillins are
 disabled (SEC-8 <code>core.third_party_plugins</code> is locked off for
@@ -608,7 +549,7 @@ read-only.</p>
 Enable/Disable/Reload/Remove): Tools &gt; Quillins &gt; Manage Quillins…
 (<code>tools.quillins_manager</code>)</label></li>
 </ul>
-<h2 id="k-tools-keyboard">K. Tools: keyboard</h2>
+<h2 id="k.-tools-keyboard">K. Tools: keyboard</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />Keymap Editor: via Tools
 menu</label></li>
@@ -620,7 +561,7 @@ menu</label></li>
 <li><label><input type="checkbox" />Import Keymap: via Tools
 menu</label></li>
 </ul>
-<h2 id="l-tools-appearance-and-behavior">L. Tools: appearance and
+<h2 id="l.-tools-appearance-and-behavior">L. Tools: appearance and
 behavior</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />Status Bar Layout: via Tools
@@ -637,7 +578,7 @@ menu)</label></li>
 nested in Import or Restore): opens before the Import or Restore
 preview</label></li>
 </ul>
-<h2 id="m-tools-watch-folder">M. Tools: watch folder</h2>
+<h2 id="m.-tools-watch-folder">M. Tools: watch folder</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />Watch Folder Profiles: Tools &gt;
 Dictation and Watch Folder &gt; Watch Folder Profiles…
@@ -646,12 +587,12 @@ Dictation and Watch Folder &gt; Watch Folder Profiles…
 Dictation and Watch Folder &gt; Watch Folder Queue…
 (<code>tools.watch_folder_status</code>)</label></li>
 </ul>
-<h2 id="n-tools-notifications">N. Tools: notifications</h2>
+<h2 id="n.-tools-notifications">N. Tools: notifications</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />Notifications: via Tools
 menu</label></li>
 </ul>
-<h2 id="o-tools-formatting">O. Tools: formatting</h2>
+<h2 id="o.-tools-formatting">O. Tools: formatting</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />Insert Link: <code>Ctrl+K</code>
 (shared accessible web form: display text + URL)</label></li>
@@ -660,7 +601,7 @@ menu</label></li>
 <li><label><input type="checkbox" />YAML Structure Editor: via Tools
 menu</label></li>
 </ul>
-<h2 id="o2-tools-the-other-editor">O2. Tools: the other editor</h2>
+<h2 id="o2.-tools-the-other-editor">O2. Tools: the other editor</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />Bring My QUILL Lite Settings:
 <code>Alt+Shift+F11</code>, or Tools &gt; Customize and Support</label>
@@ -680,12 +621,12 @@ never been run on this computer, or has nothing to bring</label></li>
 – QUILL wins every collision</label></li>
 </ul></li>
 </ul>
-<h2 id="p-tools-macros">P. Tools: macros</h2>
+<h2 id="p.-tools-macros">P. Tools: macros</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />Manage Macros: via Tools
 menu</label></li>
 </ul>
-<h2 id="q-tools-ai-and-assistant">Q. Tools: AI and assistant</h2>
+<h2 id="q.-tools-ai-and-assistant">Q. Tools: AI and assistant</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />AI Model and Connection: via Tools
 menu</label></li>
@@ -714,7 +655,7 @@ AI engine switcher when its SDK is not installed</label></li>
 &gt; Validate Agents…). Lints built-in agents by default; Choose
 Folder/File to validate your own</label></li>
 </ul>
-<h2 id="r-tools-quill-whisperer-speech">R. Tools: QUILL Whisperer
+<h2 id="r.-tools-quill-whisperer-speech">R. Tools: QUILL Whisperer
 (speech)</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />Announcement Backend: via Tools
@@ -734,7 +675,7 @@ via Tools menu</label></li>
 <li><label><input type="checkbox" />QUILL Whisperer Download Queue: via
 Tools menu</label></li>
 </ul>
-<h2 id="r2-publishing">R2. Publishing</h2>
+<h2 id="r2.-publishing">R2. Publishing</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />Publishing Connections: File &gt;
 Publish &gt; Publishing Connections…</label></li>
@@ -748,7 +689,7 @@ Publishing Connections</label></li>
 <li><label><input type="checkbox" />Schedule Publish: File &gt; Publish
 &gt; Schedule Publish…</label></li>
 </ul>
-<h2 id="s-help-features-and-profile">S. Help: features and profile</h2>
+<h2 id="s.-help-features-and-profile">S. Help: features and profile</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />Switch Feature Profile:
 <code>Alt+Shift+P</code></label>
@@ -769,7 +710,7 @@ menu</label></li>
 <li><label><input type="checkbox" />Profiles and Features: via Help
 menu</label></li>
 </ul>
-<h2 id="t-help-startup-and-support">T. Help: startup and support</h2>
+<h2 id="t.-help-startup-and-support">T. Help: startup and support</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />Startup Wizard: via Help
 menu</label>
@@ -788,16 +729,18 @@ menu</label></li>
 <li><label><input type="checkbox" />QUILL Whisperer About: via Help
 menu</label></li>
 </ul>
-<h2 id="u-selection-and-quill-key">U. Selection and QUILL key</h2>
+<h2 id="u.-selection-and-quill-key">U. Selection and QUILL key</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />Selection Actions: QUILL key, then
 <code>A</code> (with text selected)</label></li>
 </ul>
-<h2 id="v-nested-and-secondary-dialogs">V. Nested and secondary
+<h2 id="v.-nested-and-secondary-dialogs">V. Nested and secondary
 dialogs</h2>
 <p>These open only from inside another dialog or flow. Test each by
 reaching its parent first.</p>
 <ul class="task-list">
+<li><label><input type="checkbox" />Cast Notes Reader find prompt:
+Search in the Notes Reader window</label></li>
 <li><label><input type="checkbox" />Add or Edit Watch Profile (from
 Watch Folder Profiles)</label></li>
 <li><label><input type="checkbox" />Browse for folder (from Add or Edit
@@ -853,7 +796,7 @@ fs.read, fs.write, or net)</label></li>
 <li><label><input type="checkbox" />Site editor sub-dialog (from Manage
 Remote Sites, New site… or Edit site… button)</label></li>
 </ul>
-<h2 id="w-power-tools-and-recirculated-editor-conveniences">W. Power
+<h2 id="w.-power-tools-and-recirculated-editor-conveniences">W. Power
 Tools and recirculated editor conveniences</h2>
 <p>Editor power-tool conveniences (EDS-1..20). These commands carry no
 default keybinding; reach each from its conventional menu home (or the
@@ -886,7 +829,7 @@ File &gt; Rename Current File</label></li>
 <li><label><input type="checkbox" />Delete Current File (delete
 confirm): File &gt; Delete Current File</label></li>
 </ul>
-<h2 id="x-notebook-workspace-dialogs">X. Notebook (Workspace)
+<h2 id="x.-notebook-workspace-dialogs">X. Notebook (Workspace)
 dialogs</h2>
 <p>Multi-document workspace commands (§10.4 Milestone 2). All custom
 surfaces are <code>hardened_custom</code> per the dialog contract.</p>
@@ -912,7 +855,7 @@ navigator — <code>_show_tree_navigator</code>): Navigate &gt; Notebook
 navigator — <code>_show_tree_navigator</code>): Navigate &gt; Notebook
 &gt; Go to Heading…</label></li>
 </ul>
-<h2 id="y-startup-only-dialogs">Y. Startup-only dialogs</h2>
+<h2 id="y.-startup-only-dialogs">Y. Startup-only dialogs</h2>
 <p>These appear only during a specific startup condition. Test by
 reproducing the trigger.</p>
 <ul class="task-list">
@@ -950,11 +893,10 @@ stays a faithful, complete map.</p>
 assistant surfaces in section Q, the QUILL Whisperer surfaces in section
 R, the watch-folder network calls in section M, and the Agent Center all
 short-circuit. Manual verification: launch with
-<code>set QUILL_SAFE_MODE=1</code> (cmd) /
-<code>$env:QUILL_SAFE_MODE=1</code> (PowerShell) /
+<code>set QUILL_SAFE_MODE=1</code>
+(cmd) / <code>$env:QUILL_SAFE_MODE=1</code> (PowerShell) /
 <code>--safe-mode</code> (CLI flag); confirm the status-bar banner and
 the AI/assistant menu items are disabled.</li>
 </ul>
-</main>
 </body>
 </html>
