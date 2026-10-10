@@ -221,8 +221,13 @@ class PodcastsMixin(
                 self._podcast_current_chapters = list(getattr(result, "chapters", []) or [])
                 self._podcast_chapters_source = str(getattr(result, "label", ""))
 
+        def _on_failure(_op: str, error: object) -> None:
+            from quill.ui.podcasts.failure_report import report_failure
+
+            report_failure(self, "Could not load chapters for this episode.")
+
         self._task_manager.submit(
-            "podcast-chapters", _do_fetch, on_success=_on_success, on_failure=lambda *_a: None
+            "podcast-chapters", _do_fetch, on_success=_on_success, on_failure=_on_failure
         )
 
     def _maybe_surface_podcast_status_cell(self, active: bool) -> None:
@@ -753,11 +758,16 @@ class PodcastsMixin(
             if changed:
                 self._announce(f"Processed audio for {destination.name}")
 
+        def _on_failure(_op: str, error: object) -> None:
+            from quill.ui.podcasts.failure_report import report_failure
+
+            report_failure(self, "Could not process this downloaded audio.")
+
         self._task_manager.submit(
             "podcast-audio-process",
             _do_process,
             on_success=_on_success,
-            on_failure=lambda *_a: None,
+            on_failure=_on_failure,
         )
 
     # -- local (imported) podcasts (Phase 4) -----------------------------------
