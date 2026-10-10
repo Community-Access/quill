@@ -11,6 +11,18 @@ from __future__ import annotations
 
 from typing import Any
 
+__all__ = ["CAST_PALETTE_TITLES", "register_podcast_commands"]
+
+CAST_PALETTE_TITLES: dict[str, str | None] = {
+    "podcasts.open_manager": None,
+    "podcasts.acb_media": "Podcasts: Follow ACB Media Podcasts",
+    "podcasts.add_local": "Podcasts: Add Personal Audio...",
+    "podcasts.settings": "Podcasts: Fetching Preferences...",
+    "podcasts.skip_settings": "Podcasts: Playing Preferences...",
+    "podcasts.open_queue": "Podcasts: Play Queue",
+    "media.continue_listening": "Podcasts: Continue Listening",
+}
+
 
 def register_podcast_commands(host: Any) -> None:
     for command_id, title, handler in (
