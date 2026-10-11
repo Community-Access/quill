@@ -315,7 +315,7 @@ class CastLibraryFindMixin:
             return  # superseded: the newer search speaks for itself
         logger.warning("Find in library failed: %s", exc.__class__.__name__)
         if announce:
-            self._announce("Find could not search your library. Try again.")
+            self._announce("Find could not look through your library. Try again.")
 
     def _end_library_find(self, *, announce: bool = True) -> None:
         """Back to the library, the cursor on the row it left."""
@@ -330,10 +330,7 @@ class CastLibraryFindMixin:
         self._find_return_key = None
         status = getattr(self, "_find_status", None)
         if status is not None:
-            try:
-                status.SetLabel("")
-            except RuntimeError:
-                pass
+            say_status(status, "", speak=False)
         place = getattr(self, "_find_return_place", "")
         self._find_return_place = ""
         if place and callable(getattr(self, "show_place", None)):

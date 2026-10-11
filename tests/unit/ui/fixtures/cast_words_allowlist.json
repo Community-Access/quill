@@ -1,4 +1,6 @@
 {
+  "quill/ui/podcasts/manager_actions.py::unplayed episode(s)": "QUILL's Podcast Manager uses this standard podcast state; QUILL Cast never opens the Manager (qc.md section 6).",
+  "quill/ui/podcasts/manager_actions.py::unplayed episode(s) of": "QUILL's Podcast Manager uses this standard podcast state; QUILL Cast never opens the Manager (qc.md section 6).",
   "quill/ui/podcasts/manager_phase4.py::Narrows the episode list of the podcast you are on, matching episode titles and ": "QUILL's Podcast Manager and its Search Everywhere window, which QUILL Cast never opens (qc.md section 6: the Manager is gone from Cast); Search Everywhere is that window's own name.",
   "quill/ui/podcasts/manager_phase4.py::Search &Everywhere...": "QUILL's Podcast Manager and its Search Everywhere window, which QUILL Cast never opens (qc.md section 6: the Manager is gone from Cast); Search Everywhere is that window's own name.",
   "quill/ui/podcasts/manager_phase4.py::Which podcasts the folder tree shows -- all of them, or only the ones with somet": "QUILL's Podcast Manager and its Search Everywhere window, which QUILL Cast never opens (qc.md section 6: the Manager is gone from Cast); Search Everywhere is that window's own name.",
