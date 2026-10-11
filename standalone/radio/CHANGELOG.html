@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.12" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Changelog</title>
   <style>
@@ -246,6 +246,27 @@
 <p>All notable changes to Quill Radio are documented here. See
 <code>docs/release-notes-3.2.md</code> (Help &gt; Release Notes,
 Shift+F1) for the fuller narrative version of the latest release.</p>
+<h2 id="unreleased">[Unreleased]</h2>
+<ul>
+<li><strong>Show notes read as words, and their links work.</strong>
+Chris Nova reported that every apostrophe in a podcast’s show notes read
+as <code>&amp;#8217;</code>. Two faults did it: notes that were plain
+text were never decoded at all, and feeds that encode twice
+(<code>&amp;amp;#8217;</code>, common with WordPress podcast plugins)
+kept one layer after the other was taken off. Every piece of publisher
+text now goes through one shared cleaner that takes off every layer, up
+to three, and tidies non-breaking and zero-width spaces: show notes,
+episode and show titles, station names and descriptions from every
+source, YouTube descriptions, the ACB calendar and OPML titles
+(<code>quill/core/display_text.py</code>).</li>
+<li><strong>View Show Notes on an episode row.</strong> Station Details
+shows notes as plain text, which turns a link into an address to retype.
+An episode with notes now has <strong>View Show Notes…</strong> on its
+context menu, which opens QUILL Cast’s Show Notes window: links are
+links, Tab moves between them, Links in These Notes lists them, and Save
+As keeps them as links in HTML and Markdown
+(<code>quill/ui/radio/browse_show_notes.py</code>).</li>
+</ul>
 <h2 id="320---2026-10-03">[3.2.0] - 2026-10-03</h2>
 <p><strong>Everything 3.1 was going to be, and the two things that
 stopped an update from arriving.</strong> Check for Updates now reads
