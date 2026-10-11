@@ -372,7 +372,7 @@ def current_conditions_line(current: CurrentConditions, settings: WeatherSetting
 def quick_weather_line(report: WeatherReport, settings: WeatherSettings) -> str:
     """The one-line Quick Weather summary (PRD 6.2), composed per the user's
     include-toggles -- friendly and fully spoken."""
-    place = report.location.resolved_name or report.location.label
+    place = report.location.label
     bits: list[str] = [f"Here is the weather for {place}."]
     current = report.current
     if current and current.temperature_f is not None:

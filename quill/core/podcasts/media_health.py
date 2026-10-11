@@ -90,33 +90,28 @@ class CastMediaHealth:
             + "."
         )
 
-    def repair_hint(self, *, lite: bool = False) -> str:
+    def repair_hint(self) -> str:
         """What the listener can do about it, or "" when healthy.
 
         The download comes first because it is the answer that works for
-        everybody. *lite* is the thin installer, which carries no media tools
-        at all -- telling somebody to reinstall the edition that could not have
-        included FFmpeg is worse than telling them nothing.
+        everybody. Both of Cast's downloads carry FFmpeg, so reinstalling is
+        always true advice (the thin installer that did not went before the
+        first public release, 2026-10-05).
         """
         if self.healthy:
             return ""
-        if lite:
-            return (
-                "Choose Help, then Get FFmpeg, to download the official build. "
-                "It also ships inside the full QUILL Cast installer."
-            )
         return (
             "Choose Help, then Get FFmpeg, to download the official build. It "
             "also ships inside the QUILL Cast installer, so reinstalling restores it."
         )
 
-    def notice(self, *, lite: bool = False) -> str:
+    def notice(self) -> str:
         """The summary and the repair hint as one spoken paragraph."""
         if self.healthy:
             return ""
-        return f"{self.summary()} {self.repair_hint(lite=lite)}"
+        return f"{self.summary()} {self.repair_hint()}"
 
-    def readout(self, *, lite: bool = False) -> str:
+    def readout(self) -> str:
         """The answer to *asking*, which unlike the notice is never empty.
 
         Somebody who chose a menu item called Media Tools asked a question and
@@ -129,7 +124,7 @@ class CastMediaHealth:
                 "FFmpeg is installed. Trimming silence, evening out volume, "
                 "working out chapters, and Sound Enhancements are all available."
             )
-        return self.notice(lite=lite)
+        return self.notice()
 
 
 def _join(items: tuple[str, ...]) -> str:

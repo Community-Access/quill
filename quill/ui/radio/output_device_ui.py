@@ -21,8 +21,6 @@ def choose_output_device(frame: Any) -> None:
     """Prompt for an audio output device and route playback to it immediately."""
     import wx
 
-    from quill.core.paths import app_data_dir
-    from quill.core.radio import history as radio_history
     from quill.ui.audio.output_routing import (
         list_output_devices,
         output_device_routing_available,
@@ -82,7 +80,9 @@ def choose_output_device(frame: Any) -> None:
         )
         return
     history.output_device = chosen
-    radio_history.save_history(app_data_dir(), history)
+    from quill.ui.radio.history_save import save_history_async
+
+    save_history_async(frame, history)
     # A station already on air moves to the new device immediately.
     frame._radio_controller.set_output_device(chosen)
     frame._announce(f"Output device: {chosen_label}.")

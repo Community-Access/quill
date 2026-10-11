@@ -2003,7 +2003,7 @@ def test_prompt_file_search_uses_modal_ids() -> None:
     assert result is None
 
 
-def test_show_notifications_dialog_uses_close_for_affirmative_and_escape() -> None:
+def test_show_notifications_dialog_opens_selected_target_explicitly() -> None:
     frame = MainFrame.__new__(MainFrame)
 
     class _Dialog:
@@ -2012,6 +2012,7 @@ def test_show_notifications_dialog_uses_close_for_affirmative_and_escape() -> No
             self.size = size
             self.affirmative_id: int | None = None
             self.escape_id: int | None = None
+            self.modal_result: int | None = None
 
         def SetAffirmativeId(self, value: int) -> None:
             self.affirmative_id = value
@@ -2025,8 +2026,8 @@ def test_show_notifications_dialog_uses_close_for_affirmative_and_escape() -> No
         def Destroy(self) -> None:
             return
 
-        def EndModal(self, _result: int) -> None:
-            return
+        def EndModal(self, result: int) -> None:
+            self.modal_result = result
 
     class _BoxSizer:
         def __init__(self, _orientation: int) -> None:
@@ -2062,17 +2063,23 @@ def test_show_notifications_dialog_uses_close_for_affirmative_and_escape() -> No
             self.handlers[event_type] = handler
 
     class _Button:
+        made: list[_Button] = []
+
         def __init__(self, _parent: object, id: int | None = None, label: str = "") -> None:
             self.id = id
             self.label = label
             self.enabled = True
             self.handlers: dict[int, object] = {}
+            type(self).made.append(self)
 
         def Enable(self, enabled: bool) -> None:
             self.enabled = enabled
 
         def Bind(self, event_type: int, handler: object) -> None:
             self.handlers[event_type] = handler
+
+        def SetHelpText(self, _text: str) -> None:
+            return
 
     wx = type(
         "WX",
@@ -2090,11 +2097,13 @@ def test_show_notifications_dialog_uses_close_for_affirmative_and_escape() -> No
             "RIGHT": 16,
             "ID_CLEAR": 1001,
             "ID_CLOSE": 1000,
+            "ID_OK": 1002,
             "NOT_FOUND": -1,
             "EVT_LISTBOX": 200,
             "EVT_LISTBOX_DCLICK": 202,
             "EVT_KEY_DOWN": 203,
             "EVT_BUTTON": 201,
+            "CallAfter": lambda _wx, callback, *args: callback(*args),
         },
     )()
     frame._wx = wx
@@ -2104,22 +2113,30 @@ def test_show_notifications_dialog_uses_close_for_affirmative_and_escape() -> No
             timestamp="2026-01-01T00:00:00Z",
             category="info",
             message="Done",
+            target="dictation-transcript:0123456789abcdef0123456789abcdef",
         )
     ]
     frame._copy_to_clipboard = lambda _text: True
     frame._set_status = lambda _text: None
+    opened: list[str] = []
+    frame.open_notification_target = opened.append  # type: ignore[method-assign]
 
     def _show_modal(dialog: object, label: str) -> int:
         assert label == "Notifications"
-        assert dialog.affirmative_id == wx.ID_CLOSE  # type: ignore[attr-defined]
+        assert dialog.affirmative_id == wx.ID_OK  # type: ignore[attr-defined]
         assert dialog.escape_id == wx.ID_CLOSE  # type: ignore[attr-defined]
-        return wx.ID_CLOSE
+        open_button = next(button for button in _Button.made if button.label == "&Open")
+        open_button.handlers[wx.EVT_BUTTON](None)  # type: ignore[index,operator]
+        assert dialog.modal_result == wx.ID_OK  # type: ignore[attr-defined]
+        return wx.ID_OK
 
     frame._show_modal_dialog = _show_modal  # type: ignore[method-assign]
+    _Button.made.clear()
 
     result = frame._show_notifications_dialog()
 
-    assert result == wx.ID_CLOSE
+    assert result == wx.ID_OK
+    assert opened == ["dictation-transcript:0123456789abcdef0123456789abcdef"]
 
 
 def test_find_previous_sets_anchor_and_keeps_free_movement_when_mode_is_on() -> None:

@@ -127,8 +127,8 @@ class GlobalHotkeysMixin:
             table = {}
             self._global_hotkey_ids = table
         if command_id not in table:
-            table[command_id] = int(self._wx.NewIdRef())
-        return table[command_id]
+            table[command_id] = self._wx.NewIdRef()
+        return int(table[command_id])
 
     def _reload_global_hotkeys(self) -> None:
         if self._safe_mode:
@@ -172,7 +172,7 @@ class GlobalHotkeysMixin:
             return
         for hotkey_id in getattr(self, "_global_hotkey_ids", {}).values():
             try:
-                self.frame.UnregisterHotKey(hotkey_id)
+                self.frame.UnregisterHotKey(int(hotkey_id))
             except Exception:  # noqa: BLE001 - best-effort teardown
                 pass
         self._global_hotkey_map = {}

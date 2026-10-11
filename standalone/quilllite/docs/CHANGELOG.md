@@ -1,6 +1,52 @@
 # QUILL Lite changelog
 
+## Unreleased
+
+Testing rebuild: **1.2.0 (build 3)**, following the previously uploaded build 2.
+The new packages have not been published yet.
+
+- **Routine settings saves run in the background.** Preferences, recent
+  files, window/view settings, spelling, page setup, recovery-related settings
+  and update choices queue detached settings snapshots on one ordered writer.
+  Pending requests keep the latest settings; failures remain visible in
+  Activity with Retry and Open Folder. Shutdown waits for queued settings
+  writes; this is not a promise that every shutdown path is nonblocking.
+- **HTTPS uses the Windows certificate store.** Python HTTPS requests use
+  trusted Windows and organization-managed roots without turning off hostname
+  or certificate verification. Genuinely invalid certificates still fail.
+  Portable packaging checks that the declared certificate-store backend is
+  included.
+- **The installer is current-user only.** It no longer offers an all-users
+  install that requires administrator approval; QUILL Lite and the shared
+  runtime go in your Windows profile.
+- **Transcription results can be reopened from Notifications.** QUILL Lite
+  saves each completed transcript privately and adds a completion notice that
+  opens it on activation. The transcript stays separate from the document you
+  were editing.
+- **Transcription model availability is prepared in the background.** The
+  recording dialog no longer performs its potentially slow model inspection
+  while constructing the window. Cloud choices still require a usable key,
+  remain unavailable in Safe Mode, and are never selected automatically.
+- **Build 2's local-audio fix is retained.** The real cancellation-token
+  state is checked for every supported engine, and Windows Media Foundation
+  can supply duration when the other metadata readers cannot. The initial
+  1.2.0 workflow below opened results immediately; build 3 uses the saved
+  Notifications workflow above.
+
 ## 1.2.0 -- 2026-10-03
+
+### Local audio transcription
+
+- Fixed the shared background transcription runner so it checks the cancellation
+  token's state instead of treating the check method as a truthy value. Local
+  Whisper, Parakeet, and other supported engines can now return their transcript.
+- Added a Windows Media Foundation fallback for reading audio duration when the
+  other metadata readers cannot determine it, so the recording-length and
+  estimated-time details can be shown for supported files Windows can read.
+- Completed transcripts open in a new document. The destination picker is no
+  longer present. In the 1.2.0 release, results were not yet saved for
+  on-demand opening from Notifications; the later follow-up is recorded under
+  Unreleased above.
 
 ### Dictation gap plan: read-back marks, voice editing, live transcripts, Dictate Anywhere (2026-10-05)
 
@@ -86,9 +132,11 @@ words (QUILL: Tools > Speech > Live Dictation; QUILL Lite: Tools > Dictation).
   one chosen (`file_models.py`: Parakeet TDT, Parakeet Unified, Nemotron, the
   Whisper family large to small, then the built-in two), OpenAI's file models
   added live for a saved key outside Safe Mode and never preselected -- an
-  estimate from the measured speeds, where the text goes (a new document, or
-  the cursor when it finishes), Add timestamps (off unless checked), and Obey spoken
-  punctuation and commands (off: "new paragraph" in a recording is words).
+  estimate from the measured speeds, Add timestamps (off unless checked), and
+  Obey spoken punctuation and commands (off: "new paragraph" in a recording
+  is words).
+  There is no destination picker; the completed transcript opens in a new
+  document.
 - **The pipeline** (`file_transcribe.py`), on the task manager: decode to 16 kHz
   mono a second at a time (`audio_file.py`: libsndfile for WAV, FLAC, Ogg, Opus
   and MP3, Windows Media Foundation through `ctypes` for M4A, AAC, MP4 sound,
@@ -477,6 +525,40 @@ of it is QUILL's own code, shared, on QUILL's keys.
 - **Background work that finishes after its window closed is not lost.** It
   used to be dropped without trace. It is now a review row in Activity, never
   spoken (`quill/ui/surface_lifetime.py`).
+
+### Your own API key can be a Google Gemini key, and you choose which (X-07)
+
+- **Use My Own API Key** (`Alt+F2`, was Use My Own OpenAI Key) now starts with a
+  **Provider** choice: OpenAI or Google Gemini. The explanation, the key box, the
+  model list and the cost estimates all follow it. The choice is saved as
+  `ai_own_key_provider`; empty means OpenAI, so a key saved in 1.1 keeps working
+  exactly as before.
+- **Chosen, never guessed.** Nothing is inferred from a key or a model name, and
+  nothing falls back from one provider to the other: with Gemini chosen and only
+  an OpenAI key saved, AI help stays on the free service and OK says the OpenAI
+  key is not being used. A key typed for one provider is cleared, and you are
+  told, when you change the provider.
+- **One key per provider**, each in Windows' credential store (or the portable
+  copy's encrypted file), shared with QUILL. Remove the Saved Key forgets only
+  the chosen provider's.
+- **Gemini answers stream**, from Google's `streamGenerateContent`, over HTTPS,
+  with the key in a request header rather than the address. Gemini models are
+  listed in a fixed order -- released before preview, newest first, Flash,
+  Flash-Lite, Pro -- with their own estimated costs, and the window says what
+  Google's free tier means for your text.
+- **Stop.** While a request is on its way the pad's Send button is **Stop**
+  (`Alt+S`): "Stopped. The answer will not be shown." On Gemini the connection
+  closes part way; on every other route the answer is dropped when it arrives.
+- **Plain, spoken errors that never contain your key**: a key Gemini refuses
+  (it answers HTTP 400, not 401) is `QUILL-AI-OWN-KEY-REJECTED`; a missing
+  model, a used-up quota and a busy service each have their own sentence
+  (`quill/core/ai/own_key.py`, `own_key_gemini.py`, `own_key_models.py`,
+  `quill/ui/hosted_ai_own_key.py`, `hosted_ai_service.py`,
+  `hosted_ai_route_words.py`, `hosted_ai_pad.py`;
+  `tests/unit/core/ai/test_own_key_gemini_route.py`,
+  `tests/unit/ui/test_own_key_dialog.py`,
+  `tests/unit/ui/test_hosted_ai_pad_stop.py`).
+- Setting: `ai_own_key_provider` (`"openai"` or `"gemini"`; empty means OpenAI).
 
 ### Large and networked files open without freezing the window (F-05)
 

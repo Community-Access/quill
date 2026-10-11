@@ -40,6 +40,25 @@ def test_round_trip_and_missing_file(tmp_path: Path) -> None:
     assert loaded.last_station is not None and loaded.last_station.name == "keep"
 
 
+def test_website_overrides_round_trip_and_reject_invalid_addresses(tmp_path: Path) -> None:
+    save_history(
+        tmp_path,
+        RadioHistory(website_overrides={"station-key": "https://radio.example.org/listen"}),
+    )
+    loaded = load_history(tmp_path)
+    assert loaded.website_overrides == {"station-key": "https://radio.example.org/listen"}
+
+    (tmp_path / "radio_history.json").write_text(
+        '{"website_overrides": {"good": "https://radio.example.org", '
+        '"bad": "javascript:alert(1)", "clear": ""}}',
+        encoding="utf-8",
+    )
+    assert load_history(tmp_path).website_overrides == {
+        "good": "https://radio.example.org",
+        "clear": "",
+    }
+
+
 def test_corrupt_file_reads_empty(tmp_path: Path) -> None:
     (tmp_path / "radio_history.json").write_text("nope", encoding="utf-8")
     history = load_history(tmp_path)

@@ -28,9 +28,6 @@ from __future__ import annotations
 
 from typing import Any
 
-from quill.core.paths import app_data_dir
-from quill.core.radio import history as radio_history
-
 #: Menu/command label. Carries its own state for the Command Palette, which
 #: lists a command's title verbatim and has no checkmark to show it (#1383).
 _LABEL = "Internet Radio: Use One Volume for All Stations"
@@ -61,12 +58,16 @@ def toggle_global_volume(host: Any) -> None:
         playing = _current_volume(host)
         if playing >= 0:
             history.volume_percent = playing
-        radio_history.save_history(app_data_dir(), history)
+        from quill.ui.radio.history_save import save_history_async
+
+        save_history_async(host, history)
         level = history.volume_percent
         detail = f" Every station now plays at {level} percent." if level >= 0 else ""
         host._announce(f"One volume for all stations, on.{detail}.")
     else:
-        radio_history.save_history(app_data_dir(), history)
+        from quill.ui.radio.history_save import save_history_async
+
+        save_history_async(host, history)
         host._announce(
             "One volume for all stations, off. Each station goes back to its own remembered volume."
         )

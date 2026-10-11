@@ -84,7 +84,9 @@ def test_a_saved_row_offers_removal() -> None:
 
 
 def test_a_row_with_no_homepage_does_not_offer_to_open_one() -> None:
-    assert row_actions.OPEN_SITE not in _ids(actions_for("soma", station=_Row()))
+    ids = _ids(actions_for("soma", station=_Row()))
+    assert row_actions.OPEN_SITE not in ids
+    assert row_actions.EDIT_WEBSITE in ids
 
 
 def test_a_lazily_resolved_row_can_still_be_favorited() -> None:

@@ -86,12 +86,18 @@ def test_heal_runs_every_app_healer_and_reports_the_count(monkeypatch, capsys) -
     monkeypatch.setattr(
         runtime_cli,
         "_STARTUP_HEALERS",
-        (("mod.radio", "heal"), ("mod.weather", "heal"), ("mod.inkwell", "heal")),
+        (
+            ("mod.radio", "heal"),
+            ("mod.weather", "heal"),
+            ("mod.inkwell", "heal"),
+            ("mod.cast", "heal"),
+        ),
     )
     modules = {
         "mod.radio": _healer("radio", True),
         "mod.weather": _healer("weather", False),
         "mod.inkwell": _healer("inkwell", True),
+        "mod.cast": _healer("cast", False),
     }
 
     import importlib
@@ -101,7 +107,7 @@ def test_heal_runs_every_app_healer_and_reports_the_count(monkeypatch, capsys) -
 
     monkeypatch.setattr(importlib, "import_module", _import)
     assert runtime_cli.main(["heal-launch-entries"]) == 0
-    assert called == ["radio", "weather", "inkwell"]
+    assert called == ["radio", "weather", "inkwell", "cast"]
     # Two of the three had an entry to rewrite; the third had none.
     assert "repaired 2" in capsys.readouterr().out
 

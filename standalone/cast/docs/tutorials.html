@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.12" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL Cast Tutorials</title>
   <style>
@@ -348,7 +348,9 @@ Escape when you are done.</p>
 episodes it has.</li>
 <li>Worth knowing: Follow ACB Media Podcasts on the Podcasts menu
 follows ACB Media’s whole directory in one step, and Import OPML in the
-Add Podcast window brings your list across from another app.</li>
+Add Podcast window brings your list across from another app. File
+reading and planning happen in the background; imported subscriptions
+stay in your library if you stop the optional reachability check.</li>
 </ul></li>
 <li><p><strong>Play its next unheard episode.</strong> Now for the good
 part. Go to Podcasts, your library, with one row for each podcast you
@@ -419,10 +421,10 @@ you how much is waiting there.</p>
 count.</li>
 </ul></li>
 <li><p><strong>Peek, then step in and back out.</strong> Arrow up and
-down the list and the area beside it changes as you go, so you can peek
-into a place without going in. Enter or Right Arrow steps into the place
-you are on. Backspace, or Left Arrow on the first row, steps back out to
-the Places list.</p>
+down the list and the area beside it changes as you go while focus stays
+in Places, so you can peek without going in. Enter or Right Arrow steps
+into the place you are on. Backspace, or Left Arrow on the first row,
+steps back out to the Places list.</p>
 <ul>
 <li>Keys: Down Arrow, Enter, Backspace</li>
 <li>You should hear: Each place with its count, then the first row
@@ -745,13 +747,17 @@ piling up, and catch a new episode straight from its notice.</p>
 <p><em>8 steps, about 8 minutes.</em></p>
 <ol type="1">
 <li><p><strong>Check for anything new.</strong> Refresh All Now asks
-every podcast you follow whether it has anything new. Cast tells you how
-many it is checking, and the answers come in one podcast at a time. When
-you ask, Cast always answers, even if nothing is new.</p>
+every podcast you follow whether it has anything new. A separate
+progress window shows how many it has checked while the feed requests
+run in the background, so you can return to the editor and keep working.
+When you ask, Cast always answers, even if nothing is new.</p>
 <ul>
 <li>Keys: F5</li>
 <li>You should hear: How many podcasts it is checking, then what
 arrived.</li>
+<li>Worth knowing: Closing the progress window hides it without stopping
+the run. Stop remaining checks cancels feeds that have not started; a
+check already in progress finishes.</li>
 </ul></li>
 <li><p><strong>Choose what goes to the Inbox.</strong> Nothing goes to
 the Inbox until you say so, one podcast at a time. On a podcast, open
@@ -1890,7 +1896,7 @@ grown</h3>
 <p>Put your podcasts in folders and in your own order, listen from a
 whole folder at once, and hide what you have caught up on. You will also
 keep favorites close, and let a podcast go when you are done.</p>
-<p><em>7 steps, about 6 minutes.</em></p>
+<p><em>8 steps, about 6 minutes.</em></p>
 <ol type="1">
 <li><p><strong>Make a folder.</strong> Once you follow more than a
 handful, folders help: News, Comedy, Long Drives, whatever suits you.
@@ -1899,6 +1905,15 @@ Podcasts place.</p>
 <ul>
 <li>Keys: Ctrl+Shift+F</li>
 <li>You should hear: The new folder, in Podcasts.</li>
+</ul></li>
+<li><p><strong>Close a folder without leaving Podcasts.</strong> When a
+folder in the Podcasts tree is open, Left Arrow closes it and keeps
+focus on that folder. Right Arrow opens it again when you want its
+contents.</p>
+<ul>
+<li>Keys: Left Arrow, Right Arrow</li>
+<li>You should hear: The folder closes or opens, with focus still on its
+row.</li>
 </ul></li>
 <li><p><strong>File a podcast into it.</strong> Go to a podcast, open
 its menu and choose Move to Folder, then pick the folder. If you delete

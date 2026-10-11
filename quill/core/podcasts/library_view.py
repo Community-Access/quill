@@ -15,6 +15,7 @@ wx-free, strict-typed.
 
 from __future__ import annotations
 
+from collections.abc import Callable, Iterable, Iterator
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -23,6 +24,7 @@ __all__ = [
     "InboxRow",
     "Node",
     "inbox_rows",
+    "iter_inbox_rows",
     "library_nodes",
     "setting",
     "set_setting",
@@ -90,11 +92,18 @@ def _folder_totals(
     library: Any, shows: list[Any], unheard: dict[str, int]
 ) -> dict[str, tuple[int, int]]:
     """Folder id -> (podcasts, unheard episodes), over the whole subtree."""
-    totals: dict[str, tuple[int, int]] = {}
-    for folder in library.folders:
-        ids = _subtree_folder_ids(library, folder.id)
-        members = [show for show in shows if show.folder_id in ids]
-        totals[folder.id] = (len(members), sum(unheard.get(s.id, 0) for s in members))
+    parents = {folder.id: folder.parent_folder_id for folder in library.folders}
+    totals = {folder.id: (0, 0) for folder in library.folders}
+    from quill.core.podcasts.folder_membership import placements
+
+    for show in shows:
+        seen: set[str] = set()
+        for current in placements(library, show):
+            while current is not None and current in parents and current not in seen:
+                seen.add(current)
+                podcasts, episodes = totals[current]
+                totals[current] = (podcasts + 1, episodes + unheard.get(show.id, 0))
+                current = parents[current]
     return totals
 
 
@@ -124,19 +133,22 @@ def _folder_label(name: str, podcasts: int, unheard: int, counts: str) -> str:
 
 
 def _show_label(show: Any, unheard: int, counts: str) -> str:
-    if counts in ("unheard", "both") and unheard:
+    if counts in ("unheard", "both"):
         return f"{show.title} ({unheard} unheard)"
     return str(show.title)
 
 
-def library_nodes(library: Any, shows: list[Any]) -> list[Node]:
+def library_nodes(
+    library: Any, shows: list[Any], *, unheard: dict[str, int] | None = None
+) -> list[Node]:
     """The library tree for *shows* (already filtered and sorted), as chosen."""
     layout = str(setting(library, "library_layout"))
     counts = str(setting(library, "library_counts"))
     opened = str(setting(library, "library_folders_open")) == "open"
     hide_empty = bool(setting(library, "library_hide_empty_folders"))
     folder_mode = str(setting(library, "folder_sort_mode"))
-    unheard = _show_counts(library)
+    if unheard is None:
+        unheard = _show_counts(library)
     totals = _folder_totals(library, shows, unheard)
 
     def show_node(show: Any) -> Node:
@@ -146,9 +158,25 @@ def library_nodes(library: Any, shows: list[Any]) -> list[Node]:
         return [show_node(show) for show in shows]
 
     known = {folder.id for folder in library.folders}
+    from quill.core.podcasts.folder_membership import placements
+
+    children_by_parent: dict[str | None, list[Any]] = {}
+    for folder in library.folders:
+        children_by_parent.setdefault(folder.parent_folder_id or None, []).append(folder)
+    members_by_folder: dict[str, list[Any]] = {folder_id: [] for folder_id in known}
+    loose_shows: list[Any] = []
+    for show in shows:
+        is_loose = False
+        for folder_id in placements(library, show):
+            if folder_id is not None and folder_id in known:
+                members_by_folder[folder_id].append(show)
+            else:
+                is_loose = True
+        if is_loose:
+            loose_shows.append(show)
 
     def folder_nodes(parent: str | None) -> list[Node]:
-        children = [f for f in library.folders if (f.parent_folder_id or None) == parent]
+        children = children_by_parent.get(parent, [])
         nodes: list[Node] = []
         for folder in sort_folders(library, children, folder_mode, totals):
             podcasts, heard = totals.get(folder.id, (0, 0))
@@ -161,13 +189,13 @@ def library_nodes(library: Any, shows: list[Any]) -> list[Node]:
                 open=opened,
             )
             sub = folder_nodes(folder.id)
-            members = [show_node(s) for s in shows if s.folder_id == folder.id]
+            members = [show_node(s) for s in members_by_folder[folder.id]]
             node.children = _arrange(sub, members, layout)
             nodes.append(node)
         return nodes
 
     top_folders = folder_nodes(None)
-    loose = [show_node(s) for s in shows if not s.folder_id or s.folder_id not in known]
+    loose = [show_node(show) for show in loose_shows]
     if layout == "folders_only":
         if loose:
             podcasts = len(loose)
@@ -218,45 +246,59 @@ def _top_folder(library: Any, folder_id: str | None) -> str | None:
 
 def inbox_rows(library: Any, pairs: list[tuple[Any, Any]]) -> list[InboxRow]:
     """The Inbox as chosen: one list, folders then loose episodes, or folders only."""
+    return list(iter_inbox_rows(library, lambda: iter(pairs)))
+
+
+def iter_inbox_rows(
+    library: Any, pairs: Callable[[], Iterable[tuple[Any, Any]]]
+) -> Iterator[InboxRow]:
+    """Stream the same layout, revisiting detached pairs after counting folders."""
     layout = str(setting(library, "inbox_layout"))
     if layout == "episodes":
-        return [InboxRow("episode", pair=pair) for pair in pairs]
-    groups: dict[str, list[tuple[Any, Any]]] = {}
-    loose: list[tuple[Any, Any]] = []
-    for show, episode in pairs:
+        for pair in pairs():
+            yield InboxRow("episode", pair=pair)
+        return
+    groups: dict[str, int] = {}
+    loose = 0
+    for show, _episode in pairs():
         top = _top_folder(library, show.folder_id)
         if top is None:
-            loose.append((show, episode))
+            loose += 1
         else:
-            groups.setdefault(top, []).append((show, episode))
+            groups[top] = groups.get(top, 0) + 1
     folders = [f for f in library.folders if f.id in groups]
-    totals = {fid: (0, len(items)) for fid, items in groups.items()}
+    totals = {fid: (0, count) for fid, count in groups.items()}
     mode = str(setting(library, "folder_sort_mode"))
-    rows = [
-        InboxRow(
+    for folder in sort_folders(library, folders, mode, totals):
+        yield InboxRow(
             "inbox_folder",
             folder_id=folder.id,
-            label=f"{folder.name}, folder, {len(groups[folder.id])} in the Inbox",
+            label=f"{folder.name}, folder, {groups[folder.id]} in the Inbox",
         )
-        for folder in sort_folders(library, folders, mode, totals)
-    ]
     if layout == "folders_only":
         if loose:
-            rows.append(
-                InboxRow(
-                    "inbox_folder",
-                    folder_id=NO_FOLDER,
-                    label=f"{NO_FOLDER_LABEL}, folder, {len(loose)} in the Inbox",
-                )
+            yield InboxRow(
+                "inbox_folder",
+                folder_id=NO_FOLDER,
+                label=f"{NO_FOLDER_LABEL}, folder, {loose} in the Inbox",
             )
-        return rows
-    return [*rows, *(InboxRow("episode", pair=pair) for pair in loose)]
+        return
+    for pair in pairs():
+        if _top_folder(library, pair[0].folder_id) is None:
+            yield InboxRow("episode", pair=pair)
 
 
 def inbox_folder_pairs(
     library: Any, pairs: list[tuple[Any, Any]], folder_id: str
 ) -> list[tuple[Any, Any]]:
     """The Inbox episodes one folder row opens to."""
-    if folder_id == NO_FOLDER:
-        return [(s, e) for s, e in pairs if _top_folder(library, s.folder_id) is None]
-    return [(s, e) for s, e in pairs if _top_folder(library, s.folder_id) == folder_id]
+    return list(iter_inbox_folder_pairs(library, pairs, folder_id))
+
+
+def iter_inbox_folder_pairs(
+    library: Any, pairs: Iterable[tuple[Any, Any]], folder_id: str
+) -> Iterator[tuple[Any, Any]]:
+    wanted = None if folder_id == NO_FOLDER else folder_id
+    for pair in pairs:
+        if _top_folder(library, pair[0].folder_id) == wanted:
+            yield pair

@@ -7,6 +7,8 @@ on this computer and whether a key is saved are decided by the test.
 
 from __future__ import annotations
 
+import threading
+import time
 from pathlib import Path
 from typing import Any
 
@@ -51,6 +53,14 @@ def _ok(dialog: Any) -> bool:
     return dialog.choice() is not None
 
 
+def _wait_for_installed_models(dialog: Any) -> None:
+    deadline = time.monotonic() + 2
+    while dialog._model_scan_pending and time.monotonic() < deadline:
+        wx.Yield()
+        time.sleep(0.005)
+    assert not dialog._model_scan_pending
+
+
 def test_the_most_accurate_model_is_chosen_and_explained(wx_app, models, tmp_path) -> None:
     have, _key = models
     have.extend(["parakeet", "whisper_base"])
@@ -58,16 +68,16 @@ def test_the_most_accurate_model_is_chosen_and_explained(wx_app, models, tmp_pat
     _write_wav(recording, seconds=2)
     dialog, _warned = _dialog(paths=[recording])
     try:
+        _wait_for_installed_models(dialog)
         assert dialog.selected_model().id == "parakeet"
         about = dialog.about.GetValue()
         assert "The recording is 2 seconds long." in about
         assert "With NVIDIA Parakeet TDT 0.6B v3, transcribing it should take" in about
-        assert dialog.destination.GetSelection() == 0  # a new document by default
+        assert "Completed transcripts appear in Notifications" in dialog.output.GetLabel()
         assert not dialog.timestamps.GetValue() and not dialog.obey.GetValue()
         assert _ok(dialog)
         choice = dialog.choice()
         assert choice.paths == (recording,)
-        assert choice.destination == "new"
     finally:
         dialog.Destroy()
 
@@ -96,6 +106,7 @@ def test_spanish_keeps_only_spanish_models(wx_app, models) -> None:
     have.append("parakeet_unified")
     dialog, _warned = _dialog()
     try:
+        _wait_for_installed_models(dialog)
         dialog.language.SetSelection(1)
         dialog._fill_models()
         ids = [model.id for model in dialog._models]
@@ -127,6 +138,39 @@ def test_nothing_starts_without_a_recording_that_exists(wx_app, models, tmp_path
         dialog.set_paths([tmp_path / "missing.mp3"])
         assert not _ok(dialog)
         assert "missing.mp3 was not found" in warned[-1]
+    finally:
+        dialog.Destroy()
+
+
+def test_installed_model_scan_does_not_block_dialog_construction(
+    wx_app, models, monkeypatch
+) -> None:
+    from quill.core.windows_dictation import model_store
+
+    entered, release = threading.Event(), threading.Event()
+
+    def blocked_scan():
+        entered.set()
+        assert release.wait(2)
+        return []
+
+    monkeypatch.setattr(model_store, "installed_models", blocked_scan)
+    started = time.monotonic()
+    dialog, _warned = _dialog()
+    try:
+        assert time.monotonic() - started < 1.0
+        assert entered.wait(1)
+    finally:
+        release.set()
+        dialog.Destroy()
+
+
+def test_failed_installed_model_scan_is_explained(wx_app, models) -> None:
+    dialog, _warned = _dialog()
+    try:
+        dialog._installed_models_failed(OSError("model directory is unavailable"))
+        assert "Could not check downloaded speech models" in dialog.about.GetValue()
+        assert "model directory is unavailable" in dialog.about.GetValue()
     finally:
         dialog.Destroy()
 
@@ -203,21 +247,11 @@ def _quill_host(text: str = "Minutes.") -> Any:
     return Host()
 
 
-def test_quill_opens_the_transcript_in_a_new_tab() -> None:
-    from quill.core.windows_dictation.file_transcribe import FileJob
-
+def test_quill_saves_the_transcript_for_explicit_opening(tmp_path) -> None:
     host = _quill_host()
-    where = host._transcribe_deliver("Hello there.", FileJob(Path("a.mp3"), "moonshine"))
-    assert where == "in a new document"
-    assert host.tabs == ["Hello there."]
-    assert host._dictation_task_manager() is host._task_manager
-
-
-def test_quill_puts_it_at_the_cursor_as_paragraphs_of_its_own() -> None:
-    from quill.core.windows_dictation.file_transcribe import FileJob
-
-    host = _quill_host("Minutes.")
-    job = FileJob(Path("a.mp3"), "moonshine", destination="cursor")
-    assert host._transcribe_deliver("Hello there.", job) == "at the cursor"
-    assert host.editor.text == "Minutes.\n\nHello there."
+    host._dictation_data_dir = lambda: tmp_path
+    identifier = host._dictation_save_transcript("Hello there.")
+    transcript = tmp_path / "dictation" / "transcripts" / f"{identifier}.txt"
+    assert transcript.read_text(encoding="utf-8") == "Hello there."
     assert host.tabs == []
+    assert host._dictation_task_manager() is host._task_manager

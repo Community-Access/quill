@@ -3,8 +3,9 @@
 The map itself lives in :mod:`quill.ui.radio.winamp_keys` and is deliberately
 wx-free so a second surface can adopt it without a second implementation.
 This is that second surface: the same ``Z X C V B`` bottom row, the same
-arrow seeking, the same ``J`` / ``Ctrl+J`` / ``T``, dispatched against a
-podcast episode list instead of a recordings list.
+``Shift+Left`` / ``Shift+Right`` 30-second seeking, the same ``J`` /
+``Ctrl+J`` / ``T``. Cast binds these keys only in Now Playing, so letters
+remain available for typeahead in the main library and episode lists.
 
 Keeping one map matters more here than it looks. Somebody who came through
 Winamp has these in their fingers, and the whole value of muscle memory is
@@ -60,9 +61,7 @@ class CastWinampKeysMixin:
     def _winamp_keys_enabled(self) -> bool:
         """Whether the letter keys are live (Preferences, default on).
 
-        Every letter the map binds is otherwise unused on these surfaces, so
-        on is the right default; the checkbox exists for anyone who would
-        rather have the letters back for list typeahead.
+        The checkbox controls the Now Playing window's optional transport keys.
         """
         return True
 
@@ -86,8 +85,8 @@ class CastWinampKeysMixin:
         uses them to move across columns -- both are the control's own
         navigation, and a transport key that eats them removes the only
         keyboard route to a whole structure. The rule is narrow on purpose: it
-        applies to the arrows and not to the letters, because no letter in the
-        map navigates anything.
+        applies to the arrows; main-window typeahead is handled by binding
+        this mixin only in the separate Now Playing window.
         """
         wx = self._winamp_wx()
         try:
@@ -138,6 +137,9 @@ class CastWinampKeysMixin:
         if ctrl and not shift and not alt and key in ("UP", "DOWN"):
             self._winamp_volume(up=key == "UP")
             return
+        if key in ("LEFT", "RIGHT") and not ctrl and not shift and not alt:
+            event.Skip()
+            return
         if not self._winamp_keys_enabled():
             event.Skip()
             return
@@ -145,13 +147,8 @@ class CastWinampKeysMixin:
         if action is None:
             event.Skip()
             return
-        # An arrow is navigation before it is a transport key. Bare Left and
-        # Right mean seek-five-seconds here, and they were being swallowed
-        # anywhere but a text field -- including the library tree, where Left
-        # and Right are collapse and expand. So a keyboard listener could not
-        # collapse a folder in Cast's main surface: the keystroke was eaten and
-        # answered "nothing is playing" (reported 2026-09-30). The letters are
-        # unaffected, because no letter navigates a tree.
+        # Modified arrows keep their transport mapping except on controls that
+        # use arrows for their own navigation.
         if key in ("LEFT", "RIGHT") and self._winamp_focus_takes_arrows():
             event.Skip()
             return

@@ -132,7 +132,7 @@ def test_do_not_ask_again_is_kept_and_honoured(watched: Any, asked: _Asked) -> N
     _rewrite(watched, "first rewrite\n")
     watched._poll_disk_watch()
     assert watched.app.settings.external_change_always_keep == [".md"]
-    assert watched.app.saved_settings == 1
+    assert watched.app.queued_settings == 1
 
     _rewrite(watched, "second rewrite\n", 3_000_000_000)
     watched._poll_disk_watch()

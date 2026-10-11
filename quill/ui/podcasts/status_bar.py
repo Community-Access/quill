@@ -46,6 +46,7 @@ commands, ``_announce``).
 
 from __future__ import annotations
 
+from collections.abc import Generator
 from dataclasses import dataclass
 from typing import Any
 
@@ -177,17 +178,20 @@ class CastStatusBar:
     # -- labels, names and hints ----------------------------------------------
 
     def _button_label(self, spec: CellSpec) -> str:
-        if spec.action_label is not None:
-            return spec.action_label()
-        value = spec.text()
-        return f"{spec.name}: {value}" if value else spec.name
+        return self._button_face(spec)[0]
 
     def _button_name(self, spec: CellSpec) -> str:
+        return self._button_face(spec)[1]
+
+    def _button_face(self, spec: CellSpec) -> tuple[str, str]:
         if spec.action_label is not None:
             label = spec.action_label()
-            return f"{label} ({spec.key_hint})" if spec.key_hint else label
+            return label, f"{label} ({spec.key_hint})" if spec.key_hint else label
         value = spec.text()
-        return f"{spec.name}, {value}" if value else spec.name
+        return (
+            f"{spec.name}: {value}" if value else spec.name,
+            f"{spec.name}, {value}" if value else spec.name,
+        )
 
     def _cell_help(self, spec: CellSpec) -> str:
         """A cell's current hint: its live one where it has one, else the fixed
@@ -205,15 +209,30 @@ class CastStatusBar:
 
     def refresh(self) -> None:
         """Repaint every cell's label from live state (dead-widget safe)."""
-        for cell in self._cells:
-            try:
-                cell.button.SetLabel(self._button_label(cell.spec))
-                cell.button.SetName(self._button_name(cell.spec))
-                if cell.spec.live_help is not None:
-                    cell.button.SetHelpText(self._cell_help(cell.spec))
-            except RuntimeError:
-                continue
-        self._layout()
+        for _step in self.refresh_chunks():
+            pass
+
+    def refresh_chunks(self) -> Generator[None]:
+        relayout = False
+        try:
+            for cell in self._cells:
+                try:
+                    label, name = self._button_face(cell.spec)
+                    if cell.button.GetLabel() != label:
+                        cell.button.SetLabel(label)
+                        relayout = True
+                    if cell.button.GetName() != name:
+                        cell.button.SetName(name)
+                    if cell.spec.live_help is not None:
+                        help_text = self._cell_help(cell.spec)
+                        if cell.button.GetHelpText() != help_text:
+                            cell.button.SetHelpText(help_text)
+                except RuntimeError:
+                    continue
+                yield
+        finally:
+            if relayout:
+                self._layout()
 
     def is_shown(self) -> bool:
         panel = self._panel

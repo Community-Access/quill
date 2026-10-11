@@ -239,9 +239,10 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 hear="Quill Radio will pick up where you left off at launch.",
                 note=(
                     "Turn on Start Quill Radio with Windows too, on the same menu "
-                    "(Ctrl+Alt+W), and the radio is simply on when you sit down. "
-                    "It only affects your own Windows account, and you do not "
-                    "need to be an administrator."
+                    "(Ctrl+Alt+W), or turn it on in Preferences; both controls stay "
+                    "in sync. The radio is simply on when you sit down. It affects "
+                    "only your own Windows account, needs no administrator rights, "
+                    "and is unavailable in a portable copy."
                 ),
             ),
             Step(

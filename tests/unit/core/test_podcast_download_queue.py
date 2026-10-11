@@ -38,6 +38,34 @@ class _FakeResponse:
         return None
 
 
+def test_cancel_show_cancels_every_item_identity_but_preserves_other_subscriptions(
+    tmp_path: Path,
+) -> None:
+    queue = PodcastDownloadQueue()
+    try:
+        queue.pause_all()
+        for item_id, show_id in (
+            ("episode", "one"),
+            ("one:second", "one"),
+            ("other:episode", "other"),
+        ):
+            queue.enqueue(
+                item_id,
+                show_id=show_id,
+                episode_guid="episode",
+                url="https://example.invalid/audio.mp3",
+                destination=tmp_path / f"{show_id}-{item_id.replace(':', '-')}.mp3",
+            )
+
+        assert queue.cancel_show("one") == 2
+        assert queue.get("episode").status == "cancelled"
+        assert queue.get("one:second").status == "cancelled"
+        assert queue.get("other:episode").status == "queued"
+        assert queue.cancel_show("one") == 0
+    finally:
+        queue.shutdown()
+
+
 # -- _fetch_chunked (pure-ish, one mocked egress site) ----------------------
 
 

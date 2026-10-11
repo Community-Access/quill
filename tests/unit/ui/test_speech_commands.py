@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import threading
+import time
+from pathlib import Path
 from types import SimpleNamespace
 
 from quill.ui.main_frame_speech import SpeechCommandsMixin
@@ -48,3 +51,91 @@ def test_default_model_id_falls_back_when_nothing_is_saved() -> None:
     host.settings.speech_default_model_id = ""
     installed = [_Model("tiny"), _Model(RECOMMENDED_MODEL_ID)]
     assert host._default_model_id(installed) == RECOMMENDED_MODEL_ID
+
+
+def _run_in_worker(host: _Host, work, on_success) -> None:
+    def run() -> None:
+        result = work(lambda *_args: None)
+        on_success(result)
+
+    threading.Thread(target=run, daemon=True).start()
+
+
+def test_installed_model_enumeration_does_not_block_the_command_thread() -> None:
+    host = _Host()
+    entered, release, ready = threading.Event(), threading.Event(), threading.Event()
+
+    class Provider:
+        id = "whispercpp"
+
+        def list_installed_models(self):
+            entered.set()
+            assert release.wait(2)
+            return [_Model("small")]
+
+    host._run_background_task = lambda _label, work, success: _run_in_worker(  # type: ignore[attr-defined]
+        host, work, success
+    )
+    started = time.monotonic()
+    host._check_installed_speech_models(Provider(), "test", lambda _provider, _models: ready.set())
+    assert time.monotonic() - started < 0.2
+    assert entered.wait(1)
+    release.set()
+    assert ready.wait(1)
+
+
+def test_microphone_enumeration_does_not_block_the_command_thread(monkeypatch) -> None:
+    from quill.core.speech import capture
+
+    host = _Host()
+    entered, release = threading.Event(), threading.Event()
+
+    def blocked_devices():
+        entered.set()
+        assert release.wait(2)
+        return []
+
+    monkeypatch.setattr(capture, "list_input_devices", blocked_devices)
+    host._run_background_task = lambda _label, work, _success: _run_in_worker(  # type: ignore[attr-defined]
+        host, work, lambda _result: None
+    )
+    started = time.monotonic()
+    host.choose_dictation_microphone()
+    assert time.monotonic() - started < 0.2
+    assert entered.wait(1)
+    release.set()
+
+
+def test_caption_text_write_runs_off_the_command_thread(monkeypatch, tmp_path: Path) -> None:
+    from quill.core import storage
+
+    host = _Host()
+    entered, release, finished = threading.Event(), threading.Event(), threading.Event()
+
+    def blocked_write(*_args, **_kwargs):
+        entered.set()
+        assert release.wait(2)
+
+    monkeypatch.setattr(storage, "write_text_atomic", blocked_write)
+    host._run_background_task = lambda _label, work, success: _run_in_worker(  # type: ignore[attr-defined]
+        host, work, lambda result: (success(result), finished.set())
+    )
+    host._announce = lambda _message: None  # type: ignore[attr-defined]
+    started = time.monotonic()
+    host._save_caption_text(tmp_path / "caption.srt", "caption text")
+    assert time.monotonic() - started < 0.2
+    assert entered.wait(1)
+    release.set()
+    assert finished.wait(1)
+
+
+def test_voice_service_availability_does_not_enumerate_models(monkeypatch) -> None:
+    from quill.core.speech import capture
+    from quill.ui.voice_services import VoiceServices
+
+    class Provider:
+        def list_installed_models(self):
+            raise AssertionError("model enumeration belongs in the transcription worker")
+
+    monkeypatch.setattr(capture, "capture_available", lambda: True)
+    assert VoiceServices(stt_provider=Provider()).input_available()

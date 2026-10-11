@@ -6,8 +6,11 @@ directly on whatever list it already has in hand. wx-free, strict-typed.
 
 from __future__ import annotations
 
-from collections.abc import Callable, Collection
+from collections.abc import Callable, Collection, Iterable
+from dataclasses import dataclass
 from email.utils import parsedate_to_datetime
+from functools import lru_cache
+from heapq import nlargest, nsmallest
 from typing import TYPE_CHECKING, Any
 
 from quill.core.podcasts.models import PodcastEpisode, PodcastShow
@@ -35,6 +38,15 @@ EPISODE_SORT_MODES = (
 SHOW_SORT_MODES = ("title_az", "title_za", "unheard_first", "recently_updated", "custom")
 
 
+@dataclass(frozen=True, slots=True)
+class _DescendingKey:
+    value: Any
+
+    def __lt__(self, other: _DescendingKey) -> bool:
+        return bool(other.value < self.value)
+
+
+@lru_cache(maxsize=16_384)
 def _parse_published(published: str) -> float:
     """Best-effort RFC 2822 (typical RSS pubDate) parse to a sortable epoch
     timestamp; unparseable or empty dates sort as the oldest possible."""
@@ -76,18 +88,25 @@ def _episode_sort_key(mode: str) -> tuple[Callable[[PodcastEpisode], Any], bool]
     return (lambda e: _parse_published(e.published), True)
 
 
-def sort_episodes(episodes: list[PodcastEpisode], mode: str) -> list[PodcastEpisode]:
+def sort_episodes(
+    episodes: list[PodcastEpisode], mode: str, *, limit: int | None = None
+) -> list[PodcastEpisode]:
     """Return a new list of *episodes* sorted by *mode* (unknown modes fall
     back to ``date_newest``)."""
     key, reverse = _episode_sort_key(mode)
+    if limit is not None:
+        if limit < 0:
+            raise ValueError("Episode sort limit cannot be negative")
+        return (nlargest if reverse else nsmallest)(limit, episodes, key=key)
     return sorted(episodes, key=key, reverse=reverse)
 
 
 def sort_pairs(
     library: PodcastLibrary,
-    pairs: list[tuple[PodcastShow, PodcastEpisode]],
+    pairs: Iterable[tuple[PodcastShow, PodcastEpisode]],
     *,
     view_mode: str,
+    limit: int | None = None,
 ) -> list[tuple[PodcastShow, PodcastEpisode]]:
     """Sort/group cross-show ``(show, episode)`` pairs for a virtual view
     (Inbox, New Episodes, Continue Listening, Favorites) or an Inbox folder,
@@ -105,9 +124,28 @@ def sort_pairs(
       this same grouping as real tree nodes instead of a flat list (see
       manager_phase4.py); the grouping/sorting itself is identical.
     """
+    if limit is not None and limit < 0:
+        raise ValueError("Episode sort limit cannot be negative")
     if view_mode == "flat":
         key, reverse = _episode_sort_key(library.settings.episode_sort_mode)
+        if limit is not None:
+            return (nlargest if reverse else nsmallest)(limit, pairs, key=lambda pair: key(pair[1]))
         return sorted(pairs, key=lambda pair: key(pair[1]), reverse=reverse)
+    if limit is not None:
+        show_keys: dict[str, tuple[str, int, Callable[[PodcastEpisode], Any], bool]] = {}
+
+        def grouped_key(pair: tuple[PodcastShow, PodcastEpisode]) -> tuple[str, int, Any]:
+            show, episode = pair
+            entry = show_keys.get(show.id)
+            if entry is None:
+                key, reverse = _episode_sort_key(library.effective_settings(show).episode_sort_mode)
+                entry = (show.title.casefold(), len(show_keys), key, reverse)
+                show_keys[show.id] = entry
+            title, order, key, reverse = entry
+            value = key(episode)
+            return title, order, _DescendingKey(value) if reverse else value
+
+        return nsmallest(limit, pairs, key=grouped_key)
     by_show: dict[str, list[tuple[PodcastShow, PodcastEpisode]]] = {}
     show_by_id: dict[str, PodcastShow] = {}
     for show, episode in pairs:
@@ -115,9 +153,18 @@ def sort_pairs(
         show_by_id[show.id] = show
     result: list[tuple[PodcastShow, PodcastEpisode]] = []
     for show_id in sorted(by_show, key=lambda sid: show_by_id[sid].title.casefold()):
+        if limit is not None and len(result) >= limit:
+            break
         show = show_by_id[show_id]
         key, reverse = _episode_sort_key(library.effective_settings(show).episode_sort_mode)
-        result.extend(sorted(by_show[show_id], key=lambda pair: key(pair[1]), reverse=reverse))
+        if limit is None:
+            result.extend(sorted(by_show[show_id], key=lambda pair: key(pair[1]), reverse=reverse))
+        else:
+            result.extend(
+                (nlargest if reverse else nsmallest)(
+                    limit - len(result), by_show[show_id], key=lambda pair: key(pair[1])
+                )
+            )
     return result
 
 

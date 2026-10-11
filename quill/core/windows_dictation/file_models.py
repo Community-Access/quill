@@ -40,7 +40,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-from quill.core.windows_dictation.model_catalog import downloadable
+from quill.core.windows_dictation.model_catalog import DownloadableModel, downloadable
 
 __all__ = [
     "FILE_CONSENT_TEXT",
@@ -173,7 +173,12 @@ def openai_file_models(available: Sequence[str]) -> list[str]:
     return [model for model in available if not is_live_model(model)]
 
 
-def file_models(language: str = "en", openai_models: Sequence[str] = ()) -> list[FileModel]:
+def file_models(
+    language: str = "en",
+    openai_models: Sequence[str] = (),
+    *,
+    installed: Sequence[DownloadableModel] | None = None,
+) -> list[FileModel]:
     """Every model that can transcribe *language* here, most accurate first.
 
     *openai_models* is OpenAI's live list for the person's key (empty until it
@@ -181,11 +186,14 @@ def file_models(language: str = "en", openai_models: Sequence[str] = ()) -> list
     :func:`~quill.core.windows_dictation.openai_models.cloud_problem` has no
     objection.
     """
-    from quill.core.windows_dictation.model_store import installed_models
     from quill.core.windows_dictation.openai_models import cloud_problem
 
+    if installed is None:
+        from quill.core.windows_dictation.model_store import installed_models
+
+        installed = installed_models()
     rows = [model for model in _BUILT_IN if language in model.languages]
-    for model in installed_models():
+    for model in installed:
         if language in model.languages:
             rows.append(
                 FileModel(

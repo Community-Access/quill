@@ -17,13 +17,14 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from pathlib import Path
+from typing import Any
 
 from quill.core.podcasts import speed_choices
 from quill.core.podcasts.chapter_sources import (
     episode_has_possible_chapters,
 )
 from quill.core.podcasts.download_queue import PodcastDownloadQueue
-from quill.core.podcasts.models import PodcastEpisode, PodcastShow
+from quill.core.podcasts.models import PodcastEpisode, PodcastFolder, PodcastShow
 from quill.core.podcasts.sorting import (
     EPISODE_SORT_MODES,
     SHOW_SORT_MODES,
@@ -499,14 +500,35 @@ class PodcastManagerDialog(
         root = self._tree.AddRoot(_FOLDER_ROOT_LABEL)
         self._add_virtual_view_nodes(root)
         show_sort_mode = self._selected_show_sort_mode()
+        from quill.core.podcasts.sorting import unheard_count
+
+        show_unheard: dict[str, int] = {}
+        folder_unheard: dict[str, int] = {}
+        folders_by_id = {folder.id: folder for folder in self._library.folders}
+        folders_by_parent: dict[str | None, list[PodcastFolder]] = {}
+        shows_by_folder: dict[str | None, list[PodcastShow]] = {}
+        for folder in self._library.folders:
+            folders_by_parent.setdefault(folder.parent_folder_id, []).append(folder)
+        for folders in folders_by_parent.values():
+            folders.sort(key=lambda folder: folder.name.casefold())
+        for show in self._library.shows:
+            from quill.core.podcasts.folder_membership import placements
+
+            memberships = placements(self._library, show)
+            for folder_id in memberships:
+                shows_by_folder.setdefault(folder_id, []).append(show)
+            count = unheard_count(show)
+            show_unheard[show.id] = count
+            visited: set[str] = set()
+            for folder_id in memberships:
+                while folder_id in folders_by_id and folder_id not in visited:
+                    visited.add(folder_id)
+                    folder_unheard[folder_id] = folder_unheard.get(folder_id, 0) + count
+                    folder_id = folders_by_id[folder_id].parent_folder_id
 
         def add_folder_children(parent_item: object, folder_id: str | None) -> None:
-            child_folders = sorted(
-                (f for f in self._library.folders if f.parent_folder_id == folder_id),
-                key=lambda f: f.name.casefold(),
-            )
-            for folder in child_folders:
-                unheard = self._unheard_count_for_folder(folder.id)
+            for folder in folders_by_parent.get(folder_id, []):
+                unheard = folder_unheard.get(folder.id, 0)
                 label = f"{folder.name} ({unheard} unheard)" if unheard else folder.name
                 item = self._tree.AppendItem(parent_item, label)
                 self._tree_item_folder[_item_key(item)] = folder.id
@@ -515,12 +537,15 @@ class PodcastManagerDialog(
             add_shows(parent_item, folder_id)
 
         def add_shows(parent_item: object, folder_id: str | None) -> None:
-            matching = self._apply_show_filter([
-                s for s in self._library.shows if s.folder_id == folder_id
-            ])
-            for show in sort_shows(matching, show_sort_mode):
-                unheard = sum(1 for e in show.episodes if not e.played)
-                label = f"{show.title} ({unheard} unheard)" if unheard else show.title
+            matching = self._apply_show_filter(shows_by_folder.get(folder_id, []))
+            if show_sort_mode == "unheard_first":
+                matching.sort(key=lambda show: (-show_unheard[show.id], show.title.casefold()))
+                ordered = matching
+            else:
+                ordered = sort_shows(matching, show_sort_mode)
+            for show in ordered:
+                unheard = show_unheard[show.id]
+                label = f"{show.title} ({unheard} unheard)"
                 item = self._tree.AppendItem(parent_item, label)
                 self._tree_item_show[_item_key(item)] = show.id
 
@@ -609,45 +634,19 @@ class PodcastManagerDialog(
 
     # -- selection anchors (move/delete keep you near where you were) --------
 
-    def _neighbor_anchor_for_show(self, show_id: str) -> tuple[str, str] | None:
+    def _neighbor_anchor_for_show(self, show_id: str) -> tuple[Any, ...] | None:
         """What to select after *show_id* leaves its current tree spot: the
         next sibling show, else the previous one, else the containing folder.
         Never the tree top -- a move must not dump you back at the root."""
-        show = self._library.find_show(show_id)
-        if show is None:
-            return None
-        siblings = sort_shows(
-            [s for s in self._library.shows if s.folder_id == show.folder_id],
-            self._selected_show_sort_mode(),
-        )
-        ids = [s.id for s in siblings]
-        if show_id in ids:
-            index = ids.index(show_id)
-            for candidate in (index + 1, index - 1):
-                if 0 <= candidate < len(ids) and ids[candidate] != show_id:
-                    return ("show", ids[candidate])
-        if show.folder_id:
-            return ("folder", show.folder_id)
-        return None
+        from quill.ui.podcasts.manager_filing import neighbor_anchor
 
-    def _restore_tree_anchor(self, anchor: tuple[str, str] | None) -> None:
+        return neighbor_anchor(self, show_id)
+
+    def _restore_tree_anchor(self, anchor: tuple[Any, ...] | None) -> None:
         """Select the remembered neighbor after a refresh (best-effort)."""
-        if anchor is None:
-            return
-        kind, target_id = anchor
-        mapping = self._tree_item_show if kind == "show" else self._tree_item_folder
-        item = self._tree.GetRootItem()
-        stack = [item]
-        while stack:
-            current = stack.pop()
-            key = _item_key(current)
-            if mapping.get(key) == target_id:
-                self._tree.SelectItem(current)
-                return
-            child, cookie = self._tree.GetFirstChild(current)
-            while child.IsOk():
-                stack.append(child)
-                child, cookie = self._tree.GetNextChild(current, cookie)
+        from quill.ui.podcasts.manager_filing import restore_anchor
+
+        restore_anchor(self, anchor)
 
     # -- move / rename / delete ----------------------------------------------
 
@@ -1012,5 +1011,6 @@ class PodcastManagerDialog(
             show,
             announce=self._announce,
             on_change=self._on_library_changed,
+            download_queue=self._download_queue,
         ):
             self.refresh_tree()

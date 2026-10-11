@@ -262,6 +262,10 @@ class _SupportDialog:
 
     def _message_from_fields(self) -> SupportMessage:
         reader = self._reader.GetStringSelection()
+        from quill.core.support_screen_reader import screen_reader_support_facts
+
+        facts = dict(getattr(self, "_extra", {}))
+        facts.update(screen_reader_support_facts(reader))
         return SupportMessage(
             product=self._product,
             summary=self._summary.GetValue().strip(),
@@ -272,7 +276,7 @@ class _SupportDialog:
             reply_email=self._email.GetValue().strip(),
             platform=_platform_label(),
             screen_reader="" if reader == _SCREEN_READERS[0] else reader,
-            extra=getattr(self, "_extra", {}),
+            extra=facts,
         )
 
     def _submit(self) -> None:
@@ -465,8 +469,8 @@ def _platform_label() -> str:
 
 def _detected_screen_reader() -> str:
     try:
-        from quill.platform.windows.sr_detect import detect_screen_reader
+        from quill.core.support_screen_reader import detected_reader_name
 
-        return str(detect_screen_reader().name or "")
+        return detected_reader_name()
     except Exception:  # noqa: BLE001 - detection is a convenience, not a requirement
         return ""

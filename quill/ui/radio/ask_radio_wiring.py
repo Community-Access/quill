@@ -9,7 +9,7 @@ search, sign out), built here on a
 :class:`~quill.core.ai.chatgpt_account.ChatGptAccount` that signs in as
 "QUILL Radio" and is kept, with its own refresh token, apart from the editors'.
 
-Deliberately absent: QUILL's free AI service and Use My Own OpenAI Key. Quill
+Deliberately absent: QUILL's free AI service and Use My Own API Key. Quill
 Radio's assistant works one way, on the plan the listener already pays for, and
 the account window says so. Safe Mode refuses both commands, as it does every
 AI command in the family.

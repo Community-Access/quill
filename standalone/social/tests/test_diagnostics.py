@@ -6,7 +6,7 @@ from quill_social.security.diagnostics import build_bundle
 
 def _info():
     return {
-        "versions": {"quill_social": "0.1.0", "python": "3.12"},
+        "versions": {"quill_social": "0.1.0", "python": "3.13"},
         "capabilities": {"mastodon": {"char_limit": 500}},
         "error_codes": ["E_TRANSIENT", "E_PERMISSION"],
         "credentials": {"mastodon": "should-never-appear"},

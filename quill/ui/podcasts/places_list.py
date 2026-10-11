@@ -2,7 +2,8 @@
 
 A ``wx.ListBox`` of the places in the listener's order, each row with its
 live count ("Inbox (12)"). Arrow keys move between places; Enter or Right
-moves into the content pane; Delete hides a place; F2 renames it;
+updates the content pane without moving focus; Tab and Shift+Tab traverse
+between Places and content. Delete hides a place; F2 renames it;
 Alt+Shift+Up and Alt+Shift+Down move it (Radio's chord, caught in the frame's
 char hook because Windows routes Alt+arrow to the menu system before a list
 sees it); the Applications key offers what the place can do as a whole.
@@ -46,9 +47,11 @@ class PlacesList:
             "The places in your library, each with its count: the Inbox, New "
             "Episodes, Continue Listening, Favorites, Personal Audio, the Play "
             "Queue, Downloads, Notifications and your Podcasts. Enter or Right "
-            "Arrow moves into the place; Delete hides a row; F2 renames it; "
-            "Alt+Shift+Up and Down move it; the Applications key offers what the "
-            "whole place can do. View > Places restores anything hidden."
+            "Arrow updates the content beside this list without moving focus. "
+            "Tab moves to that content; Shift+Tab returns here. Delete hides a "
+            "row; F2 renames it; Alt+Shift+Up and Down move it; the Applications "
+            "key offers what the whole place can do. View > Places restores "
+            "anything hidden."
         )
         self.box.Bind(wx.EVT_LISTBOX, self._on_selected)
         self.box.Bind(wx.EVT_LISTBOX_DCLICK, self._on_activated)

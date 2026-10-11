@@ -650,6 +650,17 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "generativelanguage.googleapis.com URL); the key travels in the x-goog-api-key "
         "header, never in the URL; no silent background calls."
     ),
+    "core/ai/own_key_gemini.py::_open_stream": (
+        "AI help on the listener's own Google Gemini key (qc.md X-07; Use My Own API "
+        "Key in QUILL and QUILL Lite). Runs only on an explicit AI help request "
+        "(Summarize, Rewrite, a question, a conversation turn) after the listener has "
+        "CHOSEN Google Gemini as the provider and saved a Gemini key in that window -- "
+        "the provider is never inferred from a model name and never falls back to "
+        "another provider's key. HTTPS only to generativelanguage.googleapis.com with "
+        "a verified TLS context (plain HTTP is refused except to loopback, which only "
+        "tests use); the key travels in the x-goog-api-key header, never in the URL, "
+        "and is scrubbed from every error sentence. Stoppable mid-stream."
+    ),
     "core/ai/transcription.py::_post_audio": (
         "OpenAI Whisper audio transcription/translation. Triggered only by an explicit "
         "user action: AI > Transcribe Audio File or AI > Translate Audio File. The user "

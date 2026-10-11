@@ -439,3 +439,6 @@ def open_show_settings(
 
     window: ShowSettingsWindow = open_peer(host, "_show_settings_window", _make, opener=opener)
     return window
+
+
+ShowSettingsDialog = ShowSettingsWindow

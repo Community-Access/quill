@@ -129,6 +129,15 @@ def _open(host: Any):
     return open_now_playing(host, focus=False)
 
 
+def test_playback_letter_is_dispatched_from_now_playing(host) -> None:
+    window = _open(host)
+    routed: list[int] = []
+    host._on_winamp_char_hook = lambda event: routed.append(event.GetKeyCode())
+    event = SimpleNamespace(GetKeyCode=lambda: ord("C"))
+    window._on_player_key(event)
+    assert routed == [ord("C")]
+
+
 def test_the_window_loads_the_playing_episode_its_chapters_and_its_notes(host) -> None:
     window = _open(host)
 
@@ -281,6 +290,61 @@ def test_your_note_is_saved_on_blur_and_read_back(host) -> None:
     assert window._note.GetValue() == "Second half is the good half."
 
 
+def test_episode_change_saves_the_current_draft_before_loading_the_next_note(host) -> None:
+    from quill.core.podcasts import episode_notes as notes
+
+    window = _open(host)
+    window._note.SetValue("Keep this draft.")
+    next_episode = SimpleNamespace(
+        guid="next", title="Friday's episode", description="<p>Next notes.</p>", audio_url=""
+    )
+    next_show = SimpleNamespace(
+        title="The Daily",
+        is_favorite=False,
+        find_episode=lambda guid: next_episode if guid == "next" else None,
+        tags=None,
+        feed_url="https://daily.example/feed",
+    )
+    original_find_show = host._podcast_library.find_show
+    host._podcast_library.find_show = lambda show_id: (
+        next_show if show_id == "next-show" else original_find_show(show_id)
+    )
+    host._podcast_controller.state = PodcastPlaybackState(
+        PodcastPlayerState.PLAYING, "next-show", "next", "Friday's episode"
+    )
+
+    window.refresh()
+
+    kept = notes.episode_level_note(notes.load_episode_notes(), "show", "ep")
+    assert kept is not None and kept.text == "Keep this draft."
+    assert window._note_key == ("next-show", "next")
+    assert window._note.GetValue() == ""
+    assert window._episode.GetLabel() == "Friday's episode"
+
+
+def test_failed_save_keeps_the_current_draft_and_episode_during_refresh(host, monkeypatch) -> None:
+    from quill.core.podcasts import episode_notes as notes
+
+    window = _open(host)
+    window._note.SetValue("Unsaved draft.")
+    monkeypatch.setattr(
+        notes,
+        "set_episode_level_note",
+        lambda *_args: (_ for _ in ()).throw(OSError("disk full")),
+    )
+    host._podcast_controller.state = PodcastPlaybackState(
+        PodcastPlayerState.PLAYING, "other-show", "other-episode", "Other episode"
+    )
+
+    window.refresh()
+
+    assert window._loaded_key == ("show", "ep")
+    assert window._note_key == ("show", "ep")
+    assert window._note.GetValue() == "Unsaved draft."
+    assert window._episode.GetLabel() == "Thursday's episode"
+    assert host.announcements[-1] == "Your note could not be saved."
+
+
 def test_the_copy_format_chosen_from_the_button_menu_is_remembered(host) -> None:
     window = _open(host)
 
@@ -367,8 +431,44 @@ def test_tab_moves_between_links_and_timestamps_and_says_what_each_is(reader) ->
     assert reader.document.text[start:end] == "Jane & Co"
     assert reader._move_span(backwards=False) is True
     assert reader.said[-1] == "Timestamp, 40 seconds. Enter plays from there."
-    assert reader._move_span(backwards=False) is True  # wraps to the first
-    assert reader.said[-1] == "Link, Jane & Co."
+    last_announcement = reader.said[-1]
+    assert reader._move_span(backwards=False) is False
+    assert reader.said[-1] == last_announcement
+    reader.field.SetSelection(reader._spans[0].start, reader._spans[0].end)
+    assert reader._move_span(backwards=True) is False
+
+
+def test_tab_passes_focus_traversal_at_both_span_boundaries(reader) -> None:
+    class KeyEvent:
+        def __init__(self, *, shift: bool = False) -> None:
+            self.shift = shift
+            self.skipped = False
+
+        def GetKeyCode(self) -> int:
+            return wx.WXK_TAB
+
+        def ShiftDown(self) -> bool:
+            return self.shift
+
+        def ControlDown(self) -> bool:
+            return False
+
+        def AltDown(self) -> bool:
+            return False
+
+        def Skip(self) -> None:
+            self.skipped = True
+
+    first, last = reader._spans[0], reader._spans[-1]
+    reader.field.SetSelection(last.start, last.end)
+    forward = KeyEvent()
+    reader._on_key(forward)
+    assert forward.skipped
+
+    reader.field.SetSelection(first.start, first.end)
+    backward = KeyEvent(shift=True)
+    reader._on_key(backward)
+    assert backward.skipped
 
 
 def test_h_and_shift_h_move_between_headings_and_say_the_level(reader) -> None:
@@ -409,4 +509,3 @@ def test_empty_notes_disable_the_buttons_and_say_so(reader) -> None:
     assert not reader.links_btn.IsEnabled()
     assert not reader.copy_btn.IsEnabled()
     assert reader._move_span(backwards=False) is False
-    assert reader.said[-1] == "No links or timestamps in these notes."

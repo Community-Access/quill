@@ -31,7 +31,6 @@ import wx
 import quill.core.paths as paths_module
 import quill.ui.radio.close_confirm_dialog as close_confirm_dialog_module
 from quill.apps.radio import RadioAppFrame
-from quill.core.radio import history as radio_history_module
 from quill.ui.radio.playback_state import RadioPlayerState
 
 # ---------------------------------------------------------------------------
@@ -179,12 +178,14 @@ def test_force_favorites_manual_order_preserves_stored_order(monkeypatch) -> Non
     # recover it. Only the sort setting flips; the stored order is left untouched
     # (the caller reloads the tree to reveal it and announces "Switched to manual
     # order"), so no data is lost.
-    from quill.core.radio import history as rh
+    from quill.ui.radio import history_save
 
     monkeypatch.setattr(paths_module, "app_data_dir", lambda: "FAKE_APP_DATA_DIR")
     saved: dict = {}
     monkeypatch.setattr(
-        rh, "save_history", lambda data_dir, history: saved.setdefault("h", history)
+        history_save,
+        "save_history_async",
+        lambda _host, history=None: saved.setdefault("h", history),
     )
     calls: list[str] = []
     store = SimpleNamespace(
@@ -196,6 +197,7 @@ def test_force_favorites_manual_order_preserves_stored_order(monkeypatch) -> Non
         _radio_history=hist,
         _save_radio_favorites=lambda: calls.append("save"),
     )
+    frame._save_radio_history = lambda: history_save.save_history_async(frame, hist)
     RadioAppFrame._force_favorites_manual_order(frame)  # type: ignore[arg-type]
     assert store.favorites == ["c", "a", "b"], "the stored order is preserved, not baked"
     assert hist.favorites_sort == "manual"
@@ -412,15 +414,15 @@ def test_volume_persist_does_not_reload_tree(monkeypatch: pytest.MonkeyPatch) ->
     # override rebuilds the favorites tree and makes the screen reader
     # re-announce the station on every Volume Up/Down keystroke. It uses the
     # disk-only _persist_radio_favorites instead.
-    from quill.ui import main_frame_radio
     from quill.ui.main_frame_radio import RadioMixin
 
     calls: list[str] = []
-    monkeypatch.setattr(main_frame_radio, "app_data_dir", lambda: "unused")
+    from quill.ui.radio import history_save
+
     monkeypatch.setattr(
-        main_frame_radio.radio_history,
-        "save_history",
-        lambda _dir, _hist: calls.append("save_history(disk only)"),
+        history_save,
+        "save_history_async",
+        lambda _host, _hist=None: calls.append("save_history_async(snapshot)"),
     )
     favorite = SimpleNamespace(volume_percent=50)
     frame = SimpleNamespace(
@@ -430,6 +432,7 @@ def test_volume_persist_does_not_reload_tree(monkeypatch: pytest.MonkeyPatch) ->
             find=lambda _key: favorite,
             set_volume=lambda _key, vol: calls.append(f"set_volume={vol}"),
         ),
+        _save_radio_history=lambda: calls.append("save_history_async(snapshot)"),
         _save_radio_favorites=lambda: calls.append("save_radio_favorites(RELOADS TREE)"),
         _persist_radio_favorites=lambda: calls.append("persist_radio_favorites(disk only)"),
     )
@@ -447,7 +450,7 @@ def test_volume_persist_does_not_reload_tree(monkeypatch: pytest.MonkeyPatch) ->
     # #1263: the level is also remembered globally (disk-only history save) so a
     # non-favorite station doesn't come back at full volume next launch.
     assert frame._radio_history.volume_percent == 60
-    assert "save_history(disk only)" in calls
+    assert "save_history_async(snapshot)" in calls
 
 
 def test_resolve_volume_falls_back_to_last_global_level() -> None:
@@ -533,7 +536,16 @@ def _close_frame(
     )
     monkeypatch.setattr(paths_module, "app_data_dir", lambda: "FAKE_APP_DATA_DIR")
     saved: list[tuple[object, object]] = []
-    monkeypatch.setattr(radio_history_module, "save_history", lambda d, h: saved.append((d, h)))
+    from quill.ui.radio import history_save
+
+    monkeypatch.setattr(
+        history_save,
+        "save_history_async",
+        lambda host, history=None: saved.append((
+            "FAKE_APP_DATA_DIR",
+            history if history is not None else host._radio_history,
+        )),
+    )
 
     calls: list[str] = []
     deferred: list[tuple[Any, tuple[Any, ...]]] = []

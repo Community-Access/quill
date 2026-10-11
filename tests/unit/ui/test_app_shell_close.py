@@ -164,6 +164,36 @@ def test_forced_close_cannot_veto_runs_shutdown_and_skips() -> None:
     assert host._deferred == [], "no confirm deferred when we cannot veto"
 
 
+def test_background_teardown_vetoes_an_ordinary_close_without_blocking() -> None:
+    host = _host()
+    event, skipped, vetoed = _event()
+    AppShellFrame.handle_app_close(
+        host,
+        event,
+        close_action="exit",
+        protected=False,
+        confirm=lambda: "exit",
+        shutdown=lambda: False,
+    )
+    assert vetoed == [True]
+    assert skipped == []
+
+
+def test_forced_close_does_not_wait_for_background_teardown() -> None:
+    host = _host()
+    event, skipped, vetoed = _event(can_veto=False)
+    AppShellFrame.handle_app_close(
+        host,
+        event,
+        close_action="exit",
+        protected=False,
+        confirm=lambda: "exit",
+        shutdown=lambda: False,
+    )
+    assert vetoed == []
+    assert skipped == [True]
+
+
 def test_run_close_confirm_cancel_keeps_open_and_resets_guard() -> None:
     host = _host()
     host._closing_in_progress = True

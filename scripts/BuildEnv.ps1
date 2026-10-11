@@ -189,7 +189,7 @@ function Resolve-QuillPython {
     param(
         [string]$Preferred = "",
         [string]$QuillRepo = "",
-        [version]$Minimum = [version]"3.12"
+        [version]$Minimum = [version]"3.13"
     )
 
     if ($Preferred) {

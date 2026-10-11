@@ -38,9 +38,9 @@ def test_toggle_dark_saves_and_reapplies(lite_window):
     """Both halves: a setting that is not saved is a setting that does not last,
     and one that is not re-applied is one that needs a restart to be seen."""
     win = lite_window("hello")
-    before = (win.app.saved_settings, win.app.reapplied)
+    before = (win.app.queued_settings, win.app.reapplied)
     win.cmd_toggle_dark()
-    assert (win.app.saved_settings, win.app.reapplied) == (before[0] + 1, before[1] + 1)
+    assert (win.app.queued_settings, win.app.reapplied) == (before[0] + 1, before[1] + 1)
 
 
 def test_toggle_wrap_flips_and_announces(lite_window):
@@ -52,6 +52,7 @@ def test_toggle_wrap_flips_and_announces(lite_window):
     win.cmd_toggle_wrap()
     assert win.app.settings.word_wrap is True
     assert win.announcements[-1] == "Word wrap on"
+    assert win.app.queued_settings == 2
 
 
 def test_toggle_status_bar_flips_and_announces(lite_window):
@@ -62,6 +63,7 @@ def test_toggle_status_bar_flips_and_announces(lite_window):
     assert win.announcements[-1] == "Status bar hidden"
     win.cmd_toggle_status_bar()
     assert win.announcements[-1] == "Status bar shown"
+    assert win.app.queued_settings == 2
 
 
 # --------------------------------------------------------------------------- #
@@ -78,6 +80,7 @@ def test_zoom_in_and_out_move_one_point_at_a_time(lite_window):
     win.cmd_zoom_out()
     assert win.app.settings.font_size == 12
     assert win.announcements[-1] == "12 point"
+    assert win.app.queued_settings == 2
 
 
 def test_zoom_reset_goes_to_the_default_whatever_it_was(lite_window):

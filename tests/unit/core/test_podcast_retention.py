@@ -149,3 +149,35 @@ def test_on_episode_played_survives_a_show_it_cannot_place() -> None:
     episode = PodcastEpisode(guid="e1", title="e1", audio_url="https://x/e1.mp3")
 
     assert on_episode_played(None, None, episode) is False
+
+
+def test_a_failed_delete_keeps_its_metadata_and_is_not_counted(tmp_path: Path, monkeypatch) -> None:
+    from quill.core.podcasts.retention import remove_downloaded_copy
+
+    episode = _downloaded_episode(tmp_path, "locked.mp3", published="2026-07-01")
+    original = episode.downloaded_path
+
+    def locked(_path, **_kwargs):
+        raise PermissionError("File is in use")
+
+    monkeypatch.setattr(Path, "unlink", locked)
+    assert not remove_downloaded_copy(episode)
+    assert episode.downloaded_path == original
+
+
+def test_retention_hooks_are_not_shared_with_a_worker(tmp_path: Path) -> None:
+    from concurrent.futures import ThreadPoolExecutor
+
+    from quill.core.podcasts import retention
+
+    target = tmp_path / "worker.mp3"
+    target.write_bytes(b"audio")
+    captured: list[Path] = []
+    previous = retention.set_delete_hook(lambda path: captured.append(path) or True)
+    try:
+        with ThreadPoolExecutor(max_workers=1) as pool:
+            assert pool.submit(retention._delete_file, str(target)).result()
+        assert captured == []
+        assert not target.exists()
+    finally:
+        retention.set_delete_hook(previous)

@@ -38,3 +38,23 @@ def test_leaving_stops_both_directions(tmp_path: Path) -> None:
 
 def test_only_the_listed_choices_are_ever_shared() -> None:
     assert set(family.SHARED) == {"announce_dialog_transitions", "action_feedback"}
+
+
+def test_a_queued_preferences_snapshot_publishes_only_explicitly_changed_fields(
+    tmp_path: Path,
+) -> None:
+    cast = SimpleNamespace(announce_dialog_transitions=False, action_feedback="sound")
+    family.set_sharing(tmp_path, "cast", True, cast)
+    old_snapshot = SimpleNamespace(announce_dialog_transitions=False, action_feedback="sound")
+    cast.action_feedback = "speech"
+    family.publish(tmp_path, "cast", cast, changed={"action_feedback"})
+    old_snapshot.announce_dialog_transitions = True
+
+    family.publish(
+        tmp_path, "cast", old_snapshot, changed={"announce_dialog_transitions", "unrelated"}
+    )
+    radio = SimpleNamespace(announce_dialog_transitions=False, action_feedback="sound")
+    family.set_sharing(tmp_path, "radio", True, radio)
+
+    assert radio.announce_dialog_transitions is True
+    assert radio.action_feedback == "speech"

@@ -76,13 +76,9 @@ def ask_youtube_consent(host: Any) -> bool:
         host._announce("YouTube station cancelled.")
         return False
     history.youtube_consented = True
-    try:
-        from quill.core.paths import app_data_dir
-        from quill.core.radio import history as radio_history
+    from quill.ui.radio.history_save import save_history_async
 
-        radio_history.save_history(app_data_dir(), history)
-    except Exception:  # noqa: BLE001 - a failed save must never block playback
-        pass
+    save_history_async(host, history)
     return True
 
 

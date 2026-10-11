@@ -14,7 +14,7 @@ from quill.core.podcasts.models_queue import coerce_int as _coerce_int
 
 @dataclass(slots=True)
 class PodcastFolder:
-    """Organizes shows. A show lives in exactly one folder (or none).
+    """Organizes shared subscription placements, including top-level shows.
     Arbitrarily deep nesting via ``parent_folder_id`` (adjacency list)."""
 
     id: str

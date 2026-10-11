@@ -28,9 +28,13 @@ out of ``podcasts_view_menu.py``, which builds the menu rather than answering th
 
 from __future__ import annotations
 
+import logging
+from collections.abc import Generator
 from typing import Any
 
 __all__ = ["CastPlacesMixin"]
+
+logger = logging.getLogger(__name__)
 
 
 class CastPlacesMixin:
@@ -175,13 +179,16 @@ class CastPlacesMixin:
         the Inbox if anything is waiting, else Continue Listening if anything is
         half-heard, else Podcasts. Focus is on that place's content, first row."""
         from quill.core.podcasts import places as places_model
-        from quill.core.podcasts.virtual_views import virtual_view_pairs
+        from quill.core.podcasts.virtual_views import iter_virtual_view_pairs
 
         view_id = self._podcast_library.settings.default_launch_view
         if places_model.place(view_id) is None:
             view_id = "podcasts"
             for candidate in ("inbox", "continue_listening"):
-                if virtual_view_pairs(self._podcast_library, candidate):
+                if (
+                    next(iter_virtual_view_pairs(self._podcast_library, candidate), None)
+                    is not None
+                ):
                     view_id = candidate
                     break
         shown = [entry.id for entry in self._visible_places()]
@@ -273,15 +280,22 @@ class CastPlacesMixin:
     def _refresh_selection_buttons(self) -> None:
         """Re-describe the buttons that act on the library cursor.
 
-        Called on every selection change, because a button that names its object
-        is only honest while the object is current. Cheap: two labels and one
-        enable, no I/O. The object goes in the *label*: an accessible name on a
-        wxMSW button is never read (qc.md 6b, item 1).
+        Native selection changes coalesce a refresh on the next UI turn. A
+        button that names its object is only honest while the object is current.
+        Status cells refresh when playback or library state changes, not when
+        the cursor moves. The object goes in the *label*: an accessible name on
+        a wxMSW button is never read (qc.md 6b, item 1).
         """
-        try:
-            self._refresh_transport_controls()
-        except Exception:  # noqa: BLE001 - a redraw must never take the tree down
+        for _step in self._selection_button_chunks():
             pass
+
+    def _selection_button_chunks(self) -> Generator[None]:
+        try:
+            # Navigation changes button targets, not status state. Do not
+            # recount the library or read notifications on every arrow.
+            yield from self._transport_control_chunks(include_status=False)  # type: ignore[attr-defined]
+        except Exception:  # noqa: BLE001 - a redraw must never take the tree down
+            logger.exception("Could not refresh the Cast transport buttons")
         button = getattr(self, "_unfollow_btn", None)
         if button is None:
             return
@@ -292,6 +306,53 @@ class CastPlacesMixin:
         if button.GetLabel() != label:
             button.SetLabel(label)
         button.Enable(show is not None)
+        yield
+
+    def _refresh_transport_controls(self) -> None:
+        for _step in self._transport_control_chunks():
+            pass
+
+    def _transport_control_chunks(self, *, include_status: bool = True) -> Generator[None]:
+        from quill.core.podcasts import transport_intent
+        from quill.ui.podcasts.player_controller import PodcastPlayerState
+
+        state = self._podcast_controller.state.state
+        intent = {
+            PodcastPlayerState.PLAYING: transport_intent.PLAYING,
+            PodcastPlayerState.LOADING: transport_intent.PLAYING,
+            PodcastPlayerState.PAUSED: transport_intent.PAUSED,
+        }.get(state, transport_intent.STOPPED)
+        # The label depends on both the selection and the live player state.
+        label = self._transport_button_face(intent).label
+        button = getattr(self, "_play_pause_btn", None)
+        if button is not None and button.GetLabel() != label:
+            button.SetLabel(label)
+        yield
+        state = self._podcast_controller.state.state
+        stop_btn = getattr(self, "_stop_btn", None)
+        if stop_btn is not None:
+            stop_btn.Enable(state != PodcastPlayerState.STOPPED)
+        yield
+        self._refresh_favorite_toggle()
+        yield
+        if include_status:
+            yield from self._cast_status_bar_chunks()  # type: ignore[attr-defined]
+
+    def _refresh_favorite_toggle(self) -> None:
+        button = getattr(self, "_favorite_toggle_btn", None)
+        if button is None:
+            return
+        show_id = self._podcast_controller.state.show_id
+        show = self._podcast_library.find_show(show_id) if show_id else None
+        if show is None:
+            button.Enable(False)
+            if button.GetLabel() != "Add to &Favorites":
+                button.SetLabel("Add to &Favorites")
+            return
+        button.Enable(True)
+        label = "Remove from &Favorites" if show.is_favorite else "Add to &Favorites"
+        if button.GetLabel() != label:
+            button.SetLabel(label)
 
     def _unfollow_target(self):  # noqa: ANN202 - PodcastShow | None
         """The podcast Unfollow would act on: the selected show, or the selected
@@ -316,7 +377,12 @@ class CastPlacesMixin:
             self._refresh_selection_buttons()
 
         unsubscribe_show_prompt(
-            self.frame, self._podcast_library, show, announce=self._announce, on_change=changed
+            self.frame,
+            self._podcast_library,
+            show,
+            announce=self._announce,
+            on_change=changed,
+            download_queue=self._podcast_download_queue,
         )
 
     # -- what Play means on the cursor --------------------------------------- #

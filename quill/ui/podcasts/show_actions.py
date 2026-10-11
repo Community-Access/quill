@@ -62,39 +62,16 @@ def move_show_to_folder(
     *,
     announce: Callable[[str], None],
 ) -> bool:
-    """Pick (or create) the library folder this show lives in."""
-    import wx
+    """Move the primary placement; other folder copies stay where they are."""
+    from quill.ui.podcasts.show_filing import file_show
 
-    folders = sorted(library.folders, key=lambda f: f.name.casefold())
-    choices = [TOP_LEVEL_CHOICE, *(f.name for f in folders), NEW_FOLDER_CHOICE]
-    picker = wx.SingleChoiceDialog(
+    return file_show(
         parent,
-        "Where should this show live?",
-        f"Move {show.title} to Folder",
-        choices,
+        library,
+        show,
+        source_folder_id=show.folder_id,
+        announce=announce,
     )
-    try:
-        if picker.ShowModal() != wx.ID_OK:  # dialog_button_contract: exempt
-            return False
-        choice = picker.GetStringSelection()
-    finally:
-        picker.Destroy()
-    if choice == NEW_FOLDER_CHOICE:
-        from quill.ui.podcasts.folder_prompt import folder_name_prompt
-
-        name = folder_name_prompt(parent, announce=announce)
-        if not name:
-            return False
-        folder_id = library.add_folder(name).id
-    elif choice == TOP_LEVEL_CHOICE:
-        folder_id = None
-    else:
-        match = next((f for f in folders if f.name == choice), None)
-        folder_id = match.id if match is not None else None
-    show.folder_id = folder_id
-    label = next((f.name for f in library.folders if f.id == folder_id), None)
-    announce(f"Filed {show.title} under {label or 'the top level'}")
-    return True
 
 
 def start_episode_playback(
@@ -208,7 +185,6 @@ def enqueue_episode_download(
     from quill.ui.podcasts.manager_dialog import episode_destination
 
     destination = episode_destination(download_root, show, episode)
-    destination.parent.mkdir(parents=True, exist_ok=True)
     # The podcast's preferred audio variant (7.12). Podcasting 2.0's
     # alternateEnclosure tags were already being parsed and never used; a
     # podcast can now say "the smallest file" or "the best quality" and this is
@@ -366,6 +342,7 @@ def unsubscribe_show_prompt(
     *,
     announce: Callable[[str], None],
     on_change: Callable[[], None] | None = None,
+    download_queue: PodcastDownloadQueue | None = None,
 ) -> bool:
     """Confirm, then unsubscribe -- optionally deleting downloaded episodes
     per the show's (or library default's) delete-files-on-remove policy.
@@ -401,6 +378,8 @@ def unsubscribe_show_prompt(
     )
     if answer != wx.YES:
         return False
+    if download_queue is not None:
+        download_queue.cancel_show(show.id)
     delete_files = policy == "always"
     if downloaded and policy == "ask":
         delete_files = (
@@ -414,20 +393,51 @@ def unsubscribe_show_prompt(
         )
     held: dict[Path, Path] = {}
     if delete_files:
-        held = undo_last_ui.hold_or_delete([
-            Path(e.downloaded_path) for e in downloaded if e.downloaded_path
-        ])
+        held = undo_last_ui.hold_or_delete(
+            [Path(e.downloaded_path) for e in downloaded if e.downloaded_path],
+            downloads=downloaded,
+        )
     # Unsubscribing removes the show's stored private-feed password too --
     # no orphaned secrets in the credential store (spec S-3).
     from quill.core.podcasts import feed_auth
+    from quill.ui.undo_file_jobs import jobs as file_jobs
 
-    had_password = bool(feed_auth.load_feed_password(show.id))
-    feed_auth.delete_feed_password(show.id)
+    jobs = file_jobs()
+    if jobs is None:
+        had_password = bool(feed_auth.load_feed_password(show.id))
+        feed_auth.delete_feed_password(show.id)
+    else:
+        had_password = bool(show.feed_username)
+        show_id = str(show.id)
+        jobs.submit(
+            "Removing private-feed credentials",
+            lambda: feed_auth.delete_feed_password(show_id),
+        )
     position = library.shows.index(show) if show in library.shows else len(library.shows)
+    from quill.core.podcasts import subscription_curation
+    from quill.core.podcasts.opml_import import normalize_feed_url
+
+    curation = subscription_curation.capture(library, show.id)
     library.remove_show(show.id)
 
     def _undo() -> None:
+        if any(
+            existing.id == show.id
+            or (
+                show.feed_url
+                and existing.feed_url
+                and normalize_feed_url(existing.feed_url) == normalize_feed_url(show.feed_url)
+            )
+            for existing in library.shows
+        ):
+            raise ValueError(
+                "This podcast was already followed. It stays in your list; Undo did not replace it."
+            )
         library.shows.insert(min(position, len(library.shows)), show)
+        if show.folder_id and library.find_folder(show.folder_id) is None:
+            show.folder_id = None
+            announce("The former folder was deleted; the podcast was restored at the top level.")
+        subscription_curation.restore(library, show.id, curation)
         undo_last_ui.restore(held)
         if on_change is not None:
             on_change()
@@ -435,7 +445,7 @@ def unsubscribe_show_prompt(
     undo_last_ui.remember(
         "Unfollow",
         show.title,
-        _restores_phrase(len(show.episodes), len(held)),
+        _restores_phrase(len(show.episodes), len(downloaded) if delete_files else 0),
         _undo,
         # The password is gone by design (spec S-3, no orphaned secrets), and
         # an undo that quietly did not restore it would be the worse answer.
@@ -445,9 +455,17 @@ def unsubscribe_show_prompt(
             else ""
         ),
         dispose=lambda: undo_last_ui.discard(held),
+        files=held,
     )
     if delete_files and downloaded:
-        announce(undo_last_ui.offer(unfollowed(show.title, deleted_files=len(held))))
+        if jobs is not None:
+            announce(
+                undo_last_ui.offer(
+                    f"{unfollowed(show.title)}; removing downloaded files in the background"
+                )
+            )
+        else:
+            announce(undo_last_ui.offer(unfollowed(show.title, deleted_files=len(held))))
     else:
         announce(undo_last_ui.offer(unfollowed(show.title)))
     if on_change is not None:
@@ -530,13 +548,13 @@ def remove_all_episodes_prompt(
         )
     from quill.ui import undo_last_ui
 
-    for episode in show.episodes:
-        download_queue.cancel_item(episode.guid)
+    download_queue.cancel_show(show.id)
     held: dict[Path, Path] = {}
     if delete_files:
-        held = undo_last_ui.hold_or_delete([
-            Path(e.downloaded_path) for e in downloaded if e.downloaded_path
-        ])
+        held = undo_last_ui.hold_or_delete(
+            [Path(e.downloaded_path) for e in downloaded if e.downloaded_path],
+            downloads=downloaded,
+        )
     count = len(show.episodes)
     # The list itself is the undo: hold the removed episodes rather than the
     # ids of them, so Ctrl+Z restores play positions and played marks too.
@@ -544,7 +562,10 @@ def remove_all_episodes_prompt(
     show.episodes = []
 
     def _undo() -> None:
-        show.episodes = removed
+        current = {episode.guid: episode for episode in show.episodes}
+        show.episodes = [current.pop(episode.guid, episode) for episode in removed] + list(
+            current.values()
+        )
         undo_last_ui.restore(held)
         if on_change is not None:
             on_change()
@@ -552,16 +573,20 @@ def remove_all_episodes_prompt(
     undo_last_ui.remember(
         "Remove All Episodes",
         show.title,
-        _restores_phrase(count, len(held)),
+        _restores_phrase(count, len(downloaded) if delete_files else 0),
         _undo,
         dispose=lambda: undo_last_ui.discard(held),
+        files=held,
     )
     if delete_files and downloaded:
-        announce(
-            undo_last_ui.offer(
-                f"Removed {count} episode(s) of {show.title} and deleted their downloaded files"
-            )
-        )
+        from quill.ui.undo_file_jobs import jobs
+
+        if jobs() is not None:
+            files_result = "removing their downloaded files in the background"
+        else:
+            deleted = sum(not Path(episode.downloaded_path).exists() for episode in downloaded)
+            files_result = f"deleted {deleted} downloaded file(s)"
+        announce(undo_last_ui.offer(f"Removed {count} episode(s) of {show.title}; {files_result}"))
     else:
         announce(undo_last_ui.offer(f"Removed {count} episode(s) of {show.title}"))
     if on_change is not None:

@@ -533,7 +533,7 @@ class DocumentSpellingMixin(DocumentSpellingNavigationMixin):
         self.control.SetFocus()
         if not changed:
             return
-        self.app.save_settings()
+        self.app._queue_settings_save()
         # Every open document, not just this one: the voicing is a statement
         # about how you want to be spoken to, and a pause that is 600 ms in
         # document 2 and 900 ms in document 3 is a pause you cannot learn.

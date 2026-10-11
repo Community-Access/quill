@@ -130,6 +130,10 @@ everywhere, so you always know what is new to you.
 
 Open QUILL Cast from the Start menu.
 
+The installer is for the Windows account you are using. It does not offer an
+all-users installation, and a normal install does not require administrator
+approval. The shared runtime is installed for that account too.
+
 On a new install, Cast greets you with one short window called **Welcome to
 QUILL Cast**. It asks one question and then gets out of your way.
 
@@ -216,20 +220,25 @@ says so.
 
 Want a particular episode instead? Press **Right Arrow** on the podcast to
 open it, arrow down through its episodes, newest first, and press Enter on the
-one you want. Left Arrow takes you back up to the podcast.
+one you want. Left Arrow takes you back up to the podcast. On an expanded
+folder, Left Arrow collapses it and keeps focus on that row in the Podcasts
+tree; it does not jump to Places.
 
 Lose track of what is on? Press **Ctrl+T** from anywhere in Cast and it tells
 you.
 
 #### Pausing, skipping and volume
 
-Let the episode play for a moment, then try each of these. They work from
-anywhere in Cast, whichever list you are in.
+Let the episode play for a moment, then try each of these. The transport
+shortcuts work in the main window unless the focused control needs a key for
+text entry or arrow navigation. Text fields keep their editing keys; trees and
+lists keep their arrow navigation.
 
 1. Press **Ctrl+P** to pause. Press it again and the episode carries on from
    the same spot.
-2. Press **Ctrl+Right** to skip forward. Press **Ctrl+Left** to skip back.
-   Press it a couple of times and listen to the episode jump.
+2. Press **Shift+Right** to skip forward 30 seconds. Press **Shift+Left** to
+   skip back. Bare Left and Right stay with the focused control; in the Now
+   Playing window, they seek while its slider has focus.
 3. Press **Ctrl+Up** to make it louder and **Ctrl+Down** to make it quieter.
 4. Press **Ctrl+.** (Ctrl+Period) to stop.
 
@@ -264,11 +273,14 @@ place, with a count beside it: Inbox, New Episodes, Continue Listening,
 Favorites, Playlists, Personal Audio, Play Queue, Downloads, Notifications and
 Podcasts.
 
-Arrow down the list and the area beside it changes to match as you go. Press
-Enter or Right Arrow to go into a place, and Backspace to come back out. Two
-places worth knowing about today: the **Inbox** is where new episodes wait
-until you decide about them, and **Continue Listening** holds anything you
-have started and not finished.
+Arrow down the list and the area beside it changes to match as you go; focus
+stays in Places. Enter or Right Arrow updates the place without moving focus
+out of this list. Press Tab to move into the content and Shift+Tab to return
+to Places. Backspace
+returns from an opened show or playlist to its place. Two places worth knowing
+about today: the **Inbox** is where new episodes wait until you decide about
+them, and **Continue Listening** holds anything you have started and not
+finished.
 
 The menus are across the top: Podcasts (Alt+P), Edit (Alt+I), View (Alt+V),
 Episode (Alt+E), Downloads (Alt+D), Window (Alt+W) and Help (Alt+H). Every
@@ -288,7 +300,7 @@ These will carry you a long way.
 | Enter | Play the selected podcast or episode |
 | Ctrl+P | Pause or carry on |
 | Ctrl+. | Stop |
-| Ctrl+Right, Ctrl+Left | Skip forward or back |
+| Shift+Right, Shift+Left | Skip forward or back 30 seconds |
 | Ctrl+Up, Ctrl+Down | Volume up or down |
 | Ctrl+T | Say what is playing |
 | Space | Add the selected episode to the Play Queue |
@@ -487,8 +499,8 @@ straight there from anywhere in the window.
 | Inbox | New episodes waiting for you to decide about them | Ctrl+Shift+I |
 | New Episodes | Every unheard episode | Ctrl+Shift+W |
 | Continue Listening | Episodes you stopped partway through | Ctrl+Shift+L |
-| Favorites | Your favorite podcasts | Ctrl+Shift+V |
-| Playlists | Your playlists | Ctrl+Shift+Y |
+| Favorites | Your favorite podcasts | Alt+Shift+V |
+| Playlists | Your playlists | Alt+Shift+Y |
 | Personal Audio | Your own recordings and audiobooks | Ctrl+Shift+U |
 | Play Queue | What plays next, in order | Ctrl+Shift+Q |
 | Recently Expired | Episodes that waited in the queue too long (hidden until you show it) | Ctrl+Shift+X |
@@ -504,12 +516,34 @@ To wander between places:
 1. Press **Alt+L** to go to the Places list.
 2. Arrow up and down. The list beside it changes as you go, so you can peek
    into a place without going in.
-3. Press **Enter** or **Right Arrow** to step into the place you are on.
-4. Press **Backspace**, or **Left Arrow** on the first row, to step back out
-   to the Places list.
+3. Press **Enter** or **Right Arrow** to update that place without leaving
+   the Places list. Press **Tab** to move into its content.
+4. Press **Shift+Tab** to return to Places. Up or Left at the first content
+   row does not jump into another control. **Backspace** returns from an
+   opened podcast or playlist to its containing place.
 
 Walk into an empty place and Cast tells you, once, what fills it. In an empty
 Play Queue you hear "The queue is empty. Space on any episode adds it."
+
+In development builds, a large place shows **loading...** while Cast prepares
+its counts and rows from a detached catalogue. Choosing another place discards
+the earlier result rather than moving you back when it finishes. Downloads
+remains a place in this main window, not a separate storage-report dialog.
+Opening, row publication and transport/status updates happen in small UI
+steps. If you move focus while an opening is pending, its completion does
+not take focus back. Closing Cast during preparation also retires unfinished
+detached input in the background rather than waiting to free it.
+Large-library Windows responsiveness is still under release validation;
+build 3 has not been published.
+
+**Ctrl+F5** checks every podcast without repeatedly rebuilding the Podcasts
+tree as each feed answers. Expanded podcasts keep your selected episode while
+new rows and updated titles arrive. Moving a podcast to another folder leaves
+you on the next podcast where it came from, or on the previous podcast or
+containing folder if there is no next one. Rapid arrow presses keep the buttons
+pointed at your latest selection instead of updating every intermediate row.
+Closing Cast finishes pending file
+work and saves in the background while Windows continues processing events.
 
 #### Making the Places list your own
 
@@ -708,7 +742,7 @@ The menu bar reads **Podcasts** (Alt+P), **Edit** (Alt+I), **View** (Alt+V),
 (Alt+H). Every row shows its key, so a stroll through the menus on a quiet
 afternoon is a fine way to learn Cast.
 
-- **Podcasts** is your library. Refresh All Now (F5) and Add Podcast (Ctrl+N)
+- **Podcasts** is your library. Refresh All Now (Ctrl+F5) and Add Podcast (Ctrl+N)
   are at the top, with folders, Settings for This Podcast (Ctrl+Alt+,),
   Preferences (Ctrl+,), Send to Tray (Ctrl+W) and Exit (Ctrl+Q) further down.
 - **Edit** has Undo Last Action (Ctrl+Z).
@@ -825,6 +859,11 @@ Once it is playing, these keys work from anywhere in Cast:
    the sound back.
 4. **Ctrl+.** (Ctrl+Period) stops. Cast remembers your place, so next time the
    episode carries on where you left it.
+
+If the episode is still loading, Play/Pause changes whether it will start
+playing when it is ready. Pressing it again changes that choice back. Cast
+reports a playback problem if the audio backend refuses a request; it does
+not say that playback paused or resumed when it did not.
 
 Lost track of what is on? Press **Ctrl+T** (Episode > Say Current Episode)
 from anywhere, and Cast tells you the episode, the podcast and how far in you
@@ -1462,7 +1501,7 @@ You have fallen behind on a podcast and want a fresh start, without forty
 unheard episodes staring at you.
 
 1. Select the podcast, or play one of its episodes.
-2. Press **Ctrl+Shift+E** (Episode > Mark All as Played). In the Command
+2. Press **Alt+Shift+E** (Episode > Mark All as Played). In the Command
    Palette it is called **Mark All Episodes as Played**.
 3. Cast asks first, naming the podcast and how many episodes. Press **Mark Played**.
 
@@ -1485,8 +1524,9 @@ computer, and which chapter you are in.
 
 ### Winamp keys
 
-If your fingers learned on Winamp, the classic letter keys work in every list
-in the main window.
+If your fingers learned on Winamp, the classic playback keys work in the
+**Now Playing** window. Open it with Ctrl+2. In the main window, letters belong
+to the focused library or episode list and jump to matching rows.
 
 | Key | What it does |
 | --- | --- |
@@ -1504,10 +1544,10 @@ in the main window.
 | L | Play what is selected |
 | Ctrl+Up or Ctrl+Down | Volume up or down |
 
-The letters never fire while you are typing in a text box, and in a list or
-the Podcasts tree, Left and Right keep their usual job. If you would rather
-type letters to jump through a list by name, turn off **Winamp playback keys**
-in Preferences > Playing.
+The letters never fire while you are typing in a text box. In a list or the
+Podcasts tree, letters and arrows keep their usual navigation job. Turn off
+**Winamp playback keys** in Preferences > Playing if you do not want the
+optional keys in Now Playing.
 
 ### What you learned, and where to go next
 
@@ -1540,10 +1580,15 @@ of the time you never see it, because finding a podcast by name finds the
 feed for you.
 
 Most of this starts on the **Podcasts** menu (Alt+P). Its first two rows are
-the ones you will use most. **Refresh All Now** (F5) asks every podcast you
+the ones you will use most. **Refresh All Now** (Ctrl+F5) asks every podcast you
 follow whether it has anything new, and **Add Podcast...** (Ctrl+N) opens the
 window for finding new ones. The **Add Podcast** button in the main window
 (Alt+A) opens it too.
+
+During Refresh All Now, Cast waits until the requested feeds have finished
+before rebuilding the library tree and refreshing Podcast Manager, and it
+runs maintenance once at the end. This avoids repeating whole-library work
+for every feed in the run.
 
 A few rows mentioned here show only in Advanced mode, and this chapter says
 which. The Command Palette (Ctrl+Shift+P) reaches them in either mode.
@@ -1719,10 +1764,12 @@ have just brought across, and nothing is downloaded or added to a playlist
 because of it. The only exception is what you asked for under "When I follow
 a podcast, also fetch" in the podcast's settings.
 
-The import runs in the background, so carry on listening while it works. If
-you asked for the reachability check, Cast tells you how far along it is as
-it goes. **Stop Checking** (Alt+T) ends the check early and keeps everything
-already imported. A private feed that asks you to sign in counts as working.
+Reading the OPML file and preparing the import plan also run in the
+background, so a long list does not freeze Cast. Subscriptions are added
+before the optional reachability check starts. If you asked for that check,
+Cast tells you how far along it is as it goes. **Stop Checking** (Alt+T) ends
+the check early and keeps the subscriptions already imported. A private feed
+that asks you to sign in counts as working.
 An address that now opens a web page, a feed with nothing in it, and a host
 that turns podcast apps away do not.
 
@@ -1905,6 +1952,11 @@ To make a folder and fill it:
 2. Go to a podcast, press Shift+F10, and choose **Move to Folder...**.
 3. Pick the folder and press Enter.
 
+After moving, focus stays in the podcast tree on the next podcast in the
+source folder, or the previous one if you moved the last podcast. If no
+podcasts remain there, the containing folder is the fallback. Unchanged
+rows stay in place rather than the whole library being cleared and rebuilt.
+
 In the tree:
 
 - **Enter** on a podcast plays its next unheard episode.
@@ -1989,7 +2041,7 @@ never leaves any out.
 
 Some podcasts you reach for every day. Select one and press **Add to
 Favorites** (Alt+F), or choose it on the podcast's menu, and it appears in
-the **Favorites** place (Ctrl+Shift+V). Enter on a favourite opens its
+the **Favorites** place (Alt+Shift+V). Enter on a favourite opens its
 episodes right there, and Backspace brings you back. Delete takes a podcast
 out of Favorites, and you still follow it.
 
@@ -2356,6 +2408,12 @@ to ask:
 - **Refresh All Now** on the Podcasts place's Applications key menu does the
   same as F5.
 
+When you press F5, a separate, modeless progress window shows how many feeds
+have been checked. Feed requests run in the background, so you can switch
+back to the editor or keep using Cast. Closing the progress window hides it
+but does not stop the run. **Stop remaining checks** cancels feeds that have
+not started; a check already in progress finishes.
+
 A check you asked for always answers, even when nothing is new.
 
 To have Cast check without being asked, open Preferences > **When Cast
@@ -2678,7 +2736,7 @@ mixtape. A **smart playlist** holds whatever matches its rules right now and
 keeps itself up to date, like a standing order: "anything from my comedy
 podcasts under half an hour that I have not heard".
 
-Go to **Playlists** (View > Playlists, Ctrl+Shift+Y). Enter opens a playlist
+Go to **Playlists** (View > Playlists, Alt+Shift+Y). Enter opens a playlist
 in place, and Backspace comes back. The place's Applications key menu
 offers:
 
@@ -2993,6 +3051,13 @@ own. Change the skip distance here and every podcast skips that far.
 You can move between sections before you save, and Cast keeps what you
 changed in each one. When you press Save, it tells you what changed. If you
 get lost in a long section, Alt+S takes you back to the Section list.
+Saving refreshes the current library place only when **Hide caught-up
+podcasts** changes which rows are visible; other preference changes and
+closing without changes do not trigger that reload.
+Cast applies your choices before writing the podcast library, application
+history, and any changed shared-family choices in the background. An
+applied-changes message is not a saved-to-disk confirmation. If a write fails,
+Cast tells you which save failed instead of reporting that everything saved.
 
 Two sections have a shortcut by name. In the Command Palette (Ctrl+Shift+P),
 **Fetching Preferences** opens Preferences on Fetching, and **Playing
@@ -3002,7 +3067,8 @@ Here is what each of the nine sections is for, so you know where to look:
 
 - **When Cast opens.** Where Cast puts you when it starts, whether it picks up
   the last episode straight away, whether it checks your podcasts on opening,
-  and whether it looks for a new version of Cast.
+  whether it starts when you sign in to Windows, and whether it looks for a
+  new version of Cast.
 - **Playing.** Skip distances, skipping intros, what happens when an episode
   ends, the Winamp keys, and how show notes are copied.
 - **Fetching.** How often Cast looks for new episodes, how many it downloads
@@ -3037,14 +3103,17 @@ the ones people change most, and the reasons they do.
   Cast starts playing where you stopped the moment it opens. Leave it off and
   Cast opens without a sound, with the Now playing line telling you where you
   stopped.
+- **Start QUILL Cast with Windows** (When Cast opens). Start Cast when you
+  sign in to this Windows account. It is a per-user setting and needs no
+  administrator rights. It is available only for an installed copy on
+  Windows; a portable copy cannot change the computer's startup settings.
 - **Skip forward by** and **Skip back by** (Playing). Thirty seconds forward
   and fifteen back to start with. Set them to whatever suits your ears.
   **Skip the first** jumps over a long intro every time an episode starts.
 - **Play the next episode in the Play Queue** (Playing). On to start with.
   Turn it off and playback stops at the end of each episode.
-- **Winamp playback keys** (Playing). With these on, Z, X, C, V and B and the
-  arrow keys control playback while you are in a list. Turn them off if you
-  would rather type a letter to jump to a row.
+- **Winamp playback keys** (Playing). With these on, Z, X, C, V and B control
+  playback in Now Playing. Letters in the main lists always jump to rows.
 - **Automatically download** (Fetching). None, the newest few, or every
   episode. This is what makes new episodes arrive ready to play, even when
   your connection is not.
@@ -3072,6 +3141,8 @@ chapter where you would use them, and F1 on any row tells you more.
 
 - **Where to land on launch**: the place Cast opens on.
 - **Resume the last episode on launch**: start playing where you stopped.
+- **Start QUILL Cast with Windows**: open the installed copy when you sign in
+  to this Windows account; portable copies cannot change startup settings.
 - **Check for updates on launch**: look for a new version once a day.
 - **Check when Cast opens**, **Check when the computer wakes** and **Catch up
   on a missed check at the next launch**: when Cast looks for new episodes
@@ -3079,8 +3150,8 @@ chapter where you would use them, and F1 on any row tells you more.
 
 **Playing**
 
-- **Winamp playback keys (Z X C V B, arrows to seek)**: the Winamp letters in
-  your lists.
+- **Winamp playback keys (Z X C V B, arrows to seek)**: optional playback
+  keys in Now Playing; the main lists keep letter navigation.
 - **Switch to Now Playing when playback starts**: bring Now Playing to the
   front each time.
 - **Copy show notes as**: what Copy Notes puts on the clipboard.
@@ -3551,6 +3622,10 @@ switching windows.
 The first time, Cast warns you that a system-wide key can take over the same
 key in other programs. If another program already owns a key, Cast leaves it
 alone.
+
+The Play/Pause hotkey does not bring Cast to the front. It also changes the
+pending play choice while an episode is loading. Stop followed by Play can
+load the episode again without restarting Cast.
 
 The Keyboard reference at the end of this guide lists every key Cast comes
 with.
@@ -4314,8 +4389,9 @@ episode, press Enter on something new.
 
 #### A letter key does something unexpected in a list
 
-Those are the Winamp playback keys. Turn them off in Preferences, under
-Playing, if you would rather type letters to jump through a list.
+Letters in the main library and episode lists jump to matching rows. Winamp
+playback letters are available only in Now Playing; if a main list does not
+respond, check which control has focus and return to the list with Tab.
 
 #### A command or a whole menu is missing
 
@@ -4379,8 +4455,8 @@ Advanced appear on the menus only when Advanced Features is on.
 | Inbox | Ctrl+Shift+I |
 | New Episodes | Ctrl+Shift+W |
 | Continue Listening | Ctrl+Shift+L |
-| Favorites | Ctrl+Shift+V |
-| Playlists | Ctrl+Shift+Y |
+| Favorites | Alt+Shift+V |
+| Playlists | Alt+Shift+Y |
 | Personal Audio | Ctrl+Shift+U |
 | Play Queue | Ctrl+Shift+Q |
 | Recently Expired | Ctrl+Shift+X |
@@ -4470,11 +4546,11 @@ Playlists, Enter opens a playlist.
 | Audio Output Device | Ctrl+Shift+K |
 | Resume Last Episode on Launch, on or off | Ctrl+Alt+Shift+L |
 
-### Winamp keys in lists
+### Winamp keys in Now Playing
 
-These work in Cast's lists while Winamp playback keys are on, which they are
-to start with. Where the arrows move you around, such as in a folder tree,
-they keep doing that.
+These work in the Now Playing window while Winamp playback keys are on, which
+they are to start with. In the main window, letters jump through the focused
+list, and arrows navigate its rows or tree.
 
 | Action | Key |
 | --- | --- |
@@ -4491,7 +4567,7 @@ they keep doing that.
 | About This Episode | Ctrl+Shift+A |
 | Add Episode Note | Ctrl+Alt+N |
 | Keep This Episode | Ctrl+Alt+K |
-| Mark All as Played | Ctrl+Shift+E |
+| Mark All as Played | Alt+Shift+E |
 | Bookmarks | Ctrl+Alt+Shift+J |
 | Listening Statistics | Ctrl+Alt+Shift+S |
 
@@ -4499,7 +4575,7 @@ they keep doing that.
 
 | Action | Key |
 | --- | --- |
-| Refresh All Now | F5 |
+| Refresh All Now | Ctrl+F5 |
 | Add Podcast | Ctrl+N |
 | Follow, in Add Podcast | Alt+O |
 | New Folder | Ctrl+Shift+F |

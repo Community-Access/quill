@@ -44,7 +44,13 @@ _ROOT = Path(__file__).resolve().parents[2]
 APPS: dict[str, tuple[tuple[str, ...], tuple[str, ...]]] = {
     "cast": (
         ("quill/apps/podcasts_menu.py", "quill/apps/podcasts_view_menu.py"),
-        ("quill/ui/podcasts/main_panel.py",),
+        # Now Playing carries a copy of the main bar (qc.md section 5), so its
+        # controls answer to the same rule as the main panel's.
+        (
+            "quill/ui/podcasts/main_panel.py",
+            "quill/ui/podcasts/now_playing_layout.py",
+            "quill/ui/notes_reader.py",
+        ),
     ),
     "radio": (
         ("quill/apps/radio.py",),

@@ -152,12 +152,9 @@ class RadioFavoritesTreeMixin:
         from an A-Z view, with no way to recover it (#1186). The stored list is
         left untouched; only the sort setting changes.
         """
-        from quill.core.paths import app_data_dir
-        from quill.core.radio import history as radio_history
-
         self._radio_history.favorites_sort = "manual"
         self._radio_history.folder_sort_orders = {}
-        radio_history.save_history(app_data_dir(), self._radio_history)
+        self._save_radio_history()
         self._save_radio_favorites()
 
     def _on_favorites_context_menu(self, _event: object) -> None:
@@ -390,9 +387,6 @@ class RadioFavoritesTreeMixin:
         else:
             orders[path] = chosen
         self._radio_history.folder_sort_orders = orders
-        from quill.core.paths import app_data_dir
-        from quill.core.radio import history as radio_history
-
-        radio_history.save_history(app_data_dir(), self._radio_history)
+        self._save_radio_history()
         self._reload_favorites_tree()
         self._announce(f"{path}: {dict(zip(values, labels, strict=True))[chosen]}.")

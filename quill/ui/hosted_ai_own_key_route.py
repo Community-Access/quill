@@ -33,9 +33,9 @@ class OwnKeyRouteMixin:
     @property
     def own_key_provider(self) -> str:
         """``"openai"`` or ``"gemini"``: the provider the listener chose for their key."""
-        from quill.core.ai.own_key import provider_for
+        from quill.core.ai.own_key import chosen_provider
 
-        return provider_for(getattr(self._app, "settings", None))
+        return chosen_provider(getattr(self._app, "settings", None))
 
     @property
     def own_key_model(self) -> str:

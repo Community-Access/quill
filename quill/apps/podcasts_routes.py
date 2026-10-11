@@ -95,6 +95,26 @@ class CastPlaceRoutesMixin:
         frame.Bind(wx.EVT_MENU, lambda _e: self.say_now_playing(), id=say_id)
         self._keep_menu_ids(bookmark_id, silence_id, say_id)  # type: ignore[attr-defined]
 
+    def _append_queue_run_submenu(self, episode_menu: Any) -> None:
+        """Keep queue-run actions in their own access-key namespace (GATE-14)."""
+        import wx
+
+        queue_run = wx.Menu()
+        next_id, prev_id, played_next_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
+        queue_run.Append(next_id, "&Next in Queue\tCtrl+Alt+Down")
+        queue_run.Append(prev_id, "P&revious in Queue\tCtrl+Alt+Up")
+        label = self._menu_label(  # type: ignore[attr-defined]
+            "Mark as Played and Ne&xt", "podcasts.mark_played_and_next"
+        )
+        queue_run.Append(played_next_id, label)
+        episode_menu.AppendSubMenu(queue_run, "Pla&y Queue Run")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_next_in_queue(), id=next_id)  # type: ignore[attr-defined]
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_previous_in_queue(), id=prev_id)  # type: ignore[attr-defined]
+        self.frame.Bind(  # type: ignore[attr-defined]
+            wx.EVT_MENU, lambda _e: self.podcast_mark_played_and_next(), id=played_next_id
+        )
+        self._keep_menu_ids(next_id, prev_id, played_next_id)  # type: ignore[attr-defined]
+
     def _register_cast_tray_hotkey(self) -> None:
         """Cast's own show/hide chord, like QUILL's and Quill Radio's
         (core/family_chords.py). Without it the shared default added
@@ -112,6 +132,11 @@ class CastPlaceRoutesMixin:
         # Every Episode row of Cast's own is a command too, so the Command
         # Palette and the Tutorials' Try It can reach it, not only the menu.
         for command_id, title, handler in (
+            ("podcasts.refresh_feed", "Refresh Feed", "_on_library_refresh_feed"),
+            ("podcasts.move_to_folder", "Move to Folder", "_on_library_move_to_folder"),
+            ("podcasts.copy_to_folder", "Copy to Folder", "_on_library_copy_to_folder"),
+            ("podcasts.new_folder", "New Folder", "_on_library_new_folder"),
+            ("podcasts.mark_all_played", "Mark All as Played", "podcast_mark_all_played"),
             ("podcasts.time_remaining", "Time Remaining", "say_time_remaining"),
             ("podcasts.say_now_playing", "Say Current Episode", "say_now_playing"),
             ("podcasts.player_information", "Player Information", "podcast_player_information"),
@@ -338,6 +363,12 @@ class CastPlaceRoutesMixin:
         from quill.core.podcasts.cast_features import area_for_command
         from quill.ui.app_availability import CommandAvailabilityMixin
 
+        if getattr(self, "_cast_closing", False):
+            return "Cast is finishing its background work before closing"
+        if getattr(self, "_podcast_library_loading", False) and (
+            command_id.startswith("podcasts.") or command_id.startswith("cast.")
+        ):
+            return "podcast library still loading"
         area = area_for_command(command_id)
         if area and not self._cast_area_enabled(area):  # type: ignore[attr-defined]
             return "off in Customize Features"

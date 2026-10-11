@@ -4,7 +4,13 @@ All notable changes to Quill Weather are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.2.1] - 2026-10-08
+
+- Current conditions, Quick Weather, and local time use the saved friendly name when one is set.
+- Distribution uses the shared installer and portable zip; updates choose between those two editions.
+- The per-user installer records Weather's version independently of the shared runtime. Portable Weather keeps its launcher offline and does not register host startup entries or background tasks.
+- Help exposes Activity and Repeat Last Result, with the same F9 and Shift+F9 keys as the other apps.
+- Tray preferences and Windows startup/background choices report failed changes and keep their menu checks accurate.
 
 ### Changed
 

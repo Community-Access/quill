@@ -45,26 +45,9 @@ def current_health() -> CastMediaHealth:
     return CastMediaHealth(ffmpeg=ffmpeg)
 
 
-def _is_lite_install() -> bool:
-    """True on the thin installer, whose runtime carries no media tools.
-
-    Resolution belongs on this side of the line because the repair advice is
-    only true if it matches the edition the listener has. A failed probe
-    answers False: the full-installer advice is right for the common case, and
-    a probe must never be the thing that breaks a courtesy.
-    """
-    try:
-        from quill.core import install_edition
-
-        return install_edition.detect() == install_edition.INSTALLER_LITE
-    except Exception:  # noqa: BLE001 - never let edition detection break a notice
-        _log.exception("install edition probe failed; assuming the full installer")
-        return False
-
-
 def readout() -> str:
     """The answer to Help > Media Tools. Never empty -- somebody asked."""
-    return current_health().readout(lite=_is_lite_install())
+    return current_health().readout()
 
 
 def surface_media_health_startup(host: Any) -> None:
@@ -82,7 +65,7 @@ def surface_media_health_startup(host: Any) -> None:
         if _remembered(host) == signature:
             return
         _remember(host, signature)
-        host._announce(health.notice(lite=_is_lite_install()))
+        host._announce(health.notice())
     except Exception:  # noqa: BLE001 - a courtesy must not break a launch
         _log.exception("media health surfacing failed")
 

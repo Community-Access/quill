@@ -393,7 +393,7 @@ class AppShellFrame(
         close_action: str,
         protected: bool,
         confirm: Callable[[], str | None],
-        shutdown: Callable[[], None],
+        shutdown: Callable[[], bool | None],
     ) -> None:
         """Shared EVT_CLOSE flow for the standalone companion apps (Radio, Cast,
         Studio), so all three share one close path instead of three copies.
@@ -403,7 +403,8 @@ class AppShellFrame(
         (live playback, a recording, a running background job); ``confirm`` shows
         the app's own confirm dialog and returns "exit", "minimize", or ``None``
         (cancel / keep open); ``shutdown`` runs the app's teardown just before
-        the window closes.
+        the window closes. A teardown may return False to defer a vetoable
+        close while background writes finish; it must re-close the frame when ready.
 
         Crucially, ``confirm`` is NEVER called from inside this handler. Showing a
         modal from within an EVT_CLOSE handler is unreliable on wxMSW: notably
@@ -442,7 +443,9 @@ class AppShellFrame(
             event.Veto()
             self._send_to_tray()
             return
-        shutdown()
+        if shutdown() is False:
+            event.Veto()
+            return
         event.Skip()
 
     def _run_close_confirm(self, confirm: Callable[[], str | None]) -> None:

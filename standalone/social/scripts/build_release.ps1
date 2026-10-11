@@ -1,8 +1,8 @@
-# Builds every QUILL Social release artifact from one onedir build:
+# Builds the full QUILL Social installer and portable ZIP from one onedir build:
 #
 #   dist\QuillSocial\                        the staged app folder
 #   dist\QUILL-Social-Portable-<ver>.zip     portable (with its data\ folder)
-#   dist\QUILL-Social-Setup-<ver>.exe        system installer
+#   dist\QUILL-Social-Setup-Shared-<ver>.exe system installer
 #
 # Usage:
 #   .\scripts\build_release.ps1 [-Python <python.exe>] [-Iscc <path>]
@@ -115,7 +115,7 @@ Compress-Archive -Path $appDir -DestinationPath $zipPath
 # installed copy into portable mode), so remove it before the installer runs.
 Remove-Item $dataDir -Recurse -Force
 
-# -- shared-runtime flavors: Setup-Shared + Lite + Companion ------------------
+# -- shared-runtime installer --------------------------------------------------
 # Social now consumes the shared QuillVille Runtime like Radio, Weather,
 # Studio and Inkwell (2026-08-18): its quill_social package ships inside the
 # runtime (the quill-social wheel declared in pyproject [runtime]), so the
@@ -152,13 +152,6 @@ Copy-Item (Join-Path $appDir "docs\*") (Join-Path $launcherDir "docs") -Recurse 
 if ($LASTEXITCODE -ne 0) { throw "Code signing (shared payload) failed." }
 & $Iscc @innoSign "/dAppVersion=$version" "/dAppBuild=$build" "/dAppFileVersion=$fileVersion" (Join-Path $repoRoot "installer\quill-social-shared.iss") "/O$(Join-Path $repoRoot 'dist')"
 if ($LASTEXITCODE -ne 0) { throw "ISCC (Setup-Shared) failed with exit code $LASTEXITCODE" }
-& $Iscc @innoSign "/dAppVersion=$version" "/dAppBuild=$build" "/dAppFileVersion=$fileVersion" (Join-Path $repoRoot "installer\quill-social-lite.iss") "/O$(Join-Path $repoRoot 'dist')"
-if ($LASTEXITCODE -ne 0) { throw "ISCC (Lite) failed with exit code $LASTEXITCODE" }
-# Companion: the runtime-less stick (launcher + icon + docs, ~1 MB).
-$companionZip = Join-Path $repoRoot "dist\QUILL-Social-Companion-$version.zip"
-if (Test-Path $companionZip) { Remove-Item $companionZip -Force }
-Copy-Item (Join-Path $repoRoot "assets\quill-social.ico") $launcherDir -Force
-Compress-Archive -Path (Join-Path $launcherDir "*") -DestinationPath $companionZip
 
 Write-Host ""
 Write-Host "Release artifacts in $(Join-Path $repoRoot 'dist'):"

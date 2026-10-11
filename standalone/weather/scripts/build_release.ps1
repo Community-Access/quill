@@ -1,8 +1,8 @@
-# Builds every Quill Weather release artifact from one onedir build:
+# Builds the shared installer and portable Quill Weather release artifacts:
 #
 #   dist\QuillWeather\                        the staged app folder
 #   dist\Quill-Weather-Portable-<ver>.zip     portable (with its data\ folder)
-#   dist\Quill-Weather-Setup-<ver>.exe        system installer
+#   dist\Quill-Weather-Setup-Shared-<ver>.exe shared installer
 #
 # Usage:
 #   .\scripts\build_release.ps1 [-Python <python.exe>] [-Iscc <path>]
@@ -11,12 +11,9 @@
 #
 # Quill Weather is a small app: no ffmpeg, no mpv, no media/AI stacks -- so,
 # unlike Quill Radio's build, there is nothing to stage under its own tools\.
-# The *shared* runtime it builds does bundle both, though, which is why
-# -FfmpegDir/-LibmpvDir exist here; omit them and the pinned, SHA-256-verified
-# packs are staged automatically. Pass -SkipSharedRuntime to reuse a runtime
-# another app already built. It is
-# versioned in lockstep with Quill Radio (2.2.0) but built and released on its
-# own. Everything is bundled; the installer and zip perform no downloads.
+# The shared runtime also omits media tools. The legacy -FfmpegDir and
+# -LibmpvDir switches are accepted but unused. Pass -SkipSharedRuntime to
+# reuse a current runtime. The installer and zip perform no downloads.
 
 # Every path below defaults to "" and is resolved from the checkout itself, so a
 # clone builds on any machine. Hardcoded D:\ defaults used to make this script
@@ -33,13 +30,16 @@ param(
     [string]$Iscc = "",
     [string]$QuillRepo = "",
     [switch]$SkipSharedRuntime,
+    [switch]$SkipPublishedCheck,
+    [string]$DevVersion = "",
     [int]$Build = 0,
     [switch]$Sign
 )
 
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
-$version = "2.2.0"
+$version = "2.2.1"
+if ($DevVersion) { $version = $DevVersion }
 
 # Authenticode code signing is opt-in (docs/code-signing.md). -Sign turns it on
 # for this run via QUILL_SIGN, read by QUILL\scripts\code_signing.py. Without it
@@ -62,14 +62,15 @@ $Iscc = Resolve-QuillIscc -Preferred $Iscc
 # The build number: -Build, else the next one after the newest tag published
 # for $version. It must equal the app's build constant in source, which the
 # runtime carries; the installer records it and Windows shows X.Y.Z.B.
-$build, $fileVersion = Resolve-QuillReleaseBuild -QuillRepo $QuillRepo -Python $Python -App "weather" -Version $version -Build $Build
+$build, $fileVersion = Resolve-QuillReleaseBuild -QuillRepo $QuillRepo -Python $Python -App "weather" -Version $version -Build $Build -Dev:([bool]$DevVersion) -OfflineOk:$SkipPublishedCheck
 
 # Beta and Dev builds are never code-signed (owner decision 2026-10-04). For a
 # -dev, -alpha, -beta or -rc version, or a Dev build, this says so in one line
 # and switches -Sign off for the whole build, Inno's /DSign included; a
 # final-numbered build (a Stable candidate) signs as before. The rule is
 # scripts\code_signing.py build-decision; see docs\code-signing.md.
-$null = Resolve-QuillSigning -QuillRepo $QuillRepo -Python $Python -Version $version
+$null = Resolve-QuillSigning -QuillRepo $QuillRepo -Python $Python -Version $version -Dev:([bool]$DevVersion)
+Assert-QuillSiblingVersions -QuillRepo $QuillRepo -Python $Python -Releasing @("weather") -Skip:$SkipPublishedCheck
 
 # -- render docs (html + epub from the markdown source) -----------------------
 & (Join-Path $PSScriptRoot "render_docs.ps1")
@@ -111,6 +112,10 @@ if ($SkipSharedRuntime -and (Test-Path (Join-Path $sharedRuntimeDist "QuillVille
     }
 }
 
+# A reused runtime must carry this checkout's Weather implementation. The
+# installer otherwise compiles successfully with stale weather code inside it.
+Assert-QuillRuntimeHasModule -RuntimeDir $sharedRuntimeDist -Module "quill.apps.weather"
+
 # -- portable bundle (self-contained, genuine embeddable runtime) -------------
 # NOT a PyInstaller onedir and NOT a stamped pythonw.exe. See build_portable.py
 # and docs/design/native-launcher-2026-07-24.md: genuine unmodified
@@ -126,6 +131,9 @@ if ($LASTEXITCODE -ne 0) { throw "Portable bundle build failed." }
 if (-not (Test-Path (Join-Path $appDir "QuillWeather.exe"))) {
     throw "Portable build did not produce the native QuillWeather.exe launcher."
 }
+if (-not (Test-Path (Join-Path $repoRoot "dist\QuillWeather-installer\QuillWeather.exe"))) {
+    throw "Portable build did not produce the separate installer launcher."
+}
 if (-not (Test-Path (Join-Path $appDir "pythonw.exe"))) {
     throw "Portable build did not stage the genuine pythonw.exe interpreter."
 }
@@ -136,6 +144,10 @@ if (-not (Test-Path (Join-Path $appDir "pythonw.exe"))) {
 $signer = Join-Path $QuillRepo "scripts\code_signing.py"
 & $Python $signer sign-build $sharedRuntimeDist $appDir --label "weather payload"
 if ($LASTEXITCODE -ne 0) { throw "Code signing (payload) failed." }
+
+# Give the portable copy the version that the updater expects, including Dev
+# versions whose exact string differs from the source's stable constant.
+Set-Content -LiteralPath (Join-Path $appDir "quill-app-version.ini") -Value "[app]`r`nversion=$version`r`nversion_build=$version+$build" -Encoding ascii
 
 $zipPath = Join-Path $repoRoot "dist\Quill-Weather-Portable-$version.zip"
 if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
@@ -171,6 +183,7 @@ if ($LASTEXITCODE -ne 0) { throw "ISCC failed with exit code $LASTEXITCODE" }
 
 Write-Host ""
 Write-Host "Release artifacts in $(Join-Path $repoRoot 'dist'):"
-Get-ChildItem (Join-Path $repoRoot "dist") -File | ForEach-Object {
-    Write-Host ("  {0}  {1:N1} MB" -f $_.Name, ($_.Length / 1MB))
+@($zipPath, (Join-Path $repoRoot "dist\Quill-Weather-Setup-Shared-$version.exe")) | ForEach-Object {
+    $artifact = Get-Item -LiteralPath $_
+    Write-Host ("  {0}  {1:N1} MB" -f $artifact.Name, ($artifact.Length / 1MB))
 }

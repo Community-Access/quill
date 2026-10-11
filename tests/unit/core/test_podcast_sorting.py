@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import pytest
+
 from quill.core.podcasts.models import PodcastEpisode, PodcastSettings, PodcastShow
-from quill.core.podcasts.sorting import sort_episodes, sort_pairs, sort_shows
+from quill.core.podcasts.sorting import EPISODE_SORT_MODES, sort_episodes, sort_pairs, sort_shows
 from quill.core.podcasts.subscriptions import PodcastLibrary
 
 _OLD = "Wed, 01 Jul 2026 00:00:00 GMT"
@@ -213,3 +215,53 @@ def test_sort_shows_descending_and_custom() -> None:
     # list in place, and the store preserves it.
     assert sort_shows(shows, "custom") == [zebra, aard]
     assert sort_shows(shows, "custom") is not shows  # a copy, like every mode
+
+
+@pytest.mark.parametrize("view_mode", ["flat", "grouped", "folders"])
+@pytest.mark.parametrize("mode", EPISODE_SORT_MODES)
+@pytest.mark.parametrize("limit", [0, 1, 4, 20])
+def test_bounded_iterator_sort_matches_full_sort_with_mixed_directions_and_stable_ties(
+    view_mode, mode, limit
+) -> None:
+    first = _show("first", title="same title")
+    second = _show("second", title="SAME TITLE")
+    third = _show("third", title="Before")
+    library = PodcastLibrary(
+        shows=[first, second, third], settings=PodcastSettings(episode_sort_mode=mode)
+    )
+    library.scope_overrides["show:first"] = {"episode_sort_mode": "title_az"}
+    library.scope_overrides["show:second"] = {"episode_sort_mode": "title_za"}
+    pairs = [
+        (show, _episode(f"{show.id}-{number}", title=f"Episode {number % 2}", published=_OLD))
+        for number in range(3)
+        for show in (second, third, first)
+    ]
+    expected = sort_pairs(library, pairs, view_mode=view_mode)[:limit]
+    assert sort_pairs(library, iter(pairs), view_mode=view_mode, limit=limit) == expected
+
+
+def test_bounded_grouped_sort_does_not_keep_the_whole_candidate_catalogue() -> None:
+    active = peak = 0
+
+    class CountedEpisode(PodcastEpisode):
+        def __new__(cls, *args, **kwargs):
+            nonlocal active, peak
+            active += 1
+            peak = max(peak, active)
+            return super().__new__(cls)
+
+        def __del__(self):
+            nonlocal active
+            active -= 1
+
+    show = _show("show", title="Show")
+    library = PodcastLibrary(shows=[show])
+    library.settings.episode_sort_mode = "title_az"
+    candidates = (
+        (show, CountedEpisode(guid=str(index), title=str(index), audio_url=""))
+        for index in range(10_000)
+    )
+    result = sort_pairs(library, candidates, view_mode="grouped", limit=10)
+    assert len(result) == 10
+    assert peak <= 13
+    assert active == 10

@@ -29,9 +29,14 @@ wx-free, strict-typed.
 from __future__ import annotations
 
 from datetime import UTC, datetime
-from pathlib import Path
 
-from quill.core.podcasts.models import ExpiredEntry, PodcastShow, QueueItem, now_iso
+from quill.core.podcasts.models import (
+    ExpiredEntry,
+    PodcastEpisode,
+    PodcastShow,
+    QueueItem,
+    now_iso,
+)
 from quill.core.podcasts.subscriptions import PodcastLibrary
 
 #: How long an expired episode stays restorable before its file is deleted.
@@ -62,16 +67,6 @@ def _age_days(timestamp: str, now: datetime) -> float | None:
     if stamped is None:
         return None
     return (now - stamped).total_seconds() / 86400.0
-
-
-def _delete_file(path_str: str) -> bool:
-    if not path_str:
-        return False
-    try:
-        Path(path_str).unlink(missing_ok=True)
-    except OSError:
-        return False
-    return True
 
 
 def stamp_missing_added_at(library: PodcastLibrary, *, now: str | None = None) -> int:
@@ -107,11 +102,19 @@ def expire_stale_queue_items(
     stamp = moment.isoformat()
     kept: list[QueueItem] = []
     expired: list[ExpiredEntry] = []
+    shows = {show.id: show for show in library.shows}
+    episode_ids: dict[str, set[str]] = {}
+    limits: dict[str, int] = {}
     for item in library.queue:
-        show = library.find_show(item.show_id)
-        if show is None or show.find_episode(item.episode_guid) is None:
+        show = shows.get(item.show_id)
+        if show is None:
+            continue
+        if show.id not in episode_ids:
+            episode_ids[show.id] = {episode.guid for episode in show.episodes}
+            limits[show.id] = queue_age_limit_days(library, show)
+        if item.episode_guid not in episode_ids[show.id]:
             continue  # stale slot: self-heal, exactly as pop_next_playable does
-        limit = queue_age_limit_days(library, show)
+        limit = limits[show.id]
         age = _age_days(item.added_at, moment)
         if limit <= 0 or age is None or age < limit:
             kept.append(item)
@@ -146,29 +149,41 @@ def sweep_recently_expired(
     kept: list[ExpiredEntry] = []
     dropped: list[ExpiredEntry] = []
     deleted = 0
+    queued = {(item.show_id, item.episode_guid) for item in library.queue}
+    shows = {show.id: show for show in library.shows}
+    episodes: dict[str, dict[str, PodcastEpisode]] = {}
     for entry in library.recently_expired:
         age = _age_days(entry.expired_at, moment)
         if age is None or age < RECENTLY_EXPIRED_HOLD_DAYS:
             kept.append(entry)
             continue
-        dropped.append(entry)
-        show = library.find_show(entry.show_id)
-        episode = show.find_episode(entry.episode_guid) if show is not None else None
+        show = shows.get(entry.show_id)
+        if show is not None and show.id not in episodes:
+            episodes[show.id] = {episode.guid: episode for episode in show.episodes}
+        episode = episodes.get(entry.show_id, {}).get(entry.episode_guid)
         if episode is not None and episode.downloaded_path:
-            if _delete_file(episode.downloaded_path):
+            from quill.core.podcasts.retention import is_protected, remove_downloaded_copy
+
+            if show is not None and is_protected(library, show, episode, queued=queued):
+                kept.append(entry)
+                continue
+            if remove_downloaded_copy(episode):
                 deleted += 1
-            episode.downloaded_path = ""
+            else:
+                kept.append(entry)
+                continue
+        dropped.append(entry)
     library.recently_expired = kept
     return dropped, deleted
 
 
-def expired_pairs(library: PodcastLibrary) -> list[tuple[PodcastShow, object]]:
+def expired_pairs(library: PodcastLibrary) -> list[tuple[PodcastShow, PodcastEpisode]]:
     """``(show, episode)`` for every restorable entry, newest expiry first.
 
     Entries whose show or episode has since disappeared resolve to nothing
     and are skipped, the same way a stale queue slot is.
     """
-    pairs: list[tuple[PodcastShow, object]] = []
+    pairs: list[tuple[PodcastShow, PodcastEpisode]] = []
     for entry in sorted(library.recently_expired, key=lambda e: e.expired_at, reverse=True):
         show = library.find_show(entry.show_id)
         episode = show.find_episode(entry.episode_guid) if show is not None else None

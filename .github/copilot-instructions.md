@@ -15,7 +15,7 @@ developing, then run the narrowest applicable quality checks:
 
 ```powershell
 # Environment setup
-uv python install 3.12
+uv python install 3.13
 uv sync --all-extras
 pre-commit install
 

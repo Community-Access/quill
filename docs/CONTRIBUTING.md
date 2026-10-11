@@ -63,7 +63,7 @@ updates and `platform.windows.sr_announce.announce`.
 
 ## Development setup
 
-1. Install Python 3.12.
+1. Install Python 3.13.
 2. Install dependencies:
    - `pip install -e ".[ui,dev]"`
 3. Run QUILL locally:

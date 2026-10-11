@@ -10,6 +10,8 @@ the existing command-level tests.
 
 from __future__ import annotations
 
+from types import SimpleNamespace
+
 import pytest  # type: ignore[import-not-found]
 
 wx = pytest.importorskip("wx")
@@ -127,3 +129,52 @@ def test_recordings_manager_source_carries_the_peer_window_shape() -> None:
     assert 'windows.activate_title("Radio Recordings")' in caller, (
         "already open must mean raise, not a second copy"
     )
+
+
+@pytest.mark.parametrize("minimized", [False, True])
+@pytest.mark.parametrize("has_recording", [False, True])
+def test_recordings_opener_shows_and_reuses_the_native_window(
+    wx_app, tmp_path, monkeypatch, minimized: bool, has_recording: bool
+) -> None:
+    from quill.core.radio.history import RadioHistory
+    from quill.core.radio.recording import RecordingSettings
+    from quill.ui.main_frame_radio import RadioMixin
+
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+    if has_recording:
+        (tmp_path / "station.mp3").write_bytes(b"")
+    host = RadioMixin()
+    host._wx = wx
+    host.frame = wx.Frame(None)
+    host._windows = WindowManager(wx)
+    host._radio_recorder = SimpleNamespace(active_jobs=lambda: [])
+    host._radio_recording_settings = RecordingSettings(destination_root=str(tmp_path))
+    host._radio_scheduler = SimpleNamespace(entries=[])
+    host._radio_controller = SimpleNamespace()
+    host._radio_history = RadioHistory()
+    host._announce = lambda _message: None
+    host._save_radio_history = lambda: None
+    host._refresh_statusbar = lambda: None
+    surface = None
+    try:
+        surface = host.open_radio_recordings()
+        assert surface is not None
+        wx.Yield()
+        assert surface.dialog.IsShown()
+        assert surface._list.GetItemCount() == int(has_recording)
+        assert len(host._windows) == 1
+
+        if minimized:
+            surface.dialog.Iconize(True)
+            wx.Yield()
+            assert surface.dialog.IsIconized()
+
+        assert host.open_radio_recordings() is None
+        wx.Yield()
+        assert surface.dialog.IsShown()
+        assert not surface.dialog.IsIconized()
+        assert len(host._windows) == 1, "reopening must restore, not duplicate, the window"
+    finally:
+        if surface is not None and surface.dialog:
+            surface.dialog.Close()
+        host.frame.Destroy()

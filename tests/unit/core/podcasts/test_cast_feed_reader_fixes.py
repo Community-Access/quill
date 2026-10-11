@@ -9,6 +9,7 @@ recorder the real redirect handler writes to.
 
 from __future__ import annotations
 
+import ssl
 import urllib.error
 import urllib.request
 from email.message import Message
@@ -173,6 +174,25 @@ def test_the_redirect_handler_records_each_hop_it_follows() -> None:
     with feed_auth.recording_redirects() as hops:
         handler.redirect_request(request, None, 302, "Found", Message(), "https://b.example/x")
     assert hops == [(302, "https://b.example/x")]
+
+
+def test_certificate_failure_logs_redirect_host_without_path_or_query(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def fail_after_redirect(_request: object, **_kwargs: object) -> object:
+        hops = getattr(feed_auth._REDIRECTS, "hops", None)
+        if hops is not None:
+            hops.append((302, "https://cdn.example/private/feed?token=secret"))
+        raise urllib.error.URLError(ssl.SSLCertVerificationError(1, "unknown issuer"))
+
+    monkeypatch.setattr(feed_auth, "urlopen_auth_safe", fail_after_redirect)
+    monkeypatch.setattr("quill.core.net_retry.time.sleep", lambda _seconds: None)
+    with pytest.raises(FeedReaderError) as caught:
+        feed_reader.fetch_and_parse_feed("https://publisher.example/feed")
+
+    assert "redirects=302 https://cdn.example" in caught.value.detail
+    assert "/private/feed" not in caught.value.detail
+    assert "secret" not in caught.value.detail
 
 
 # -- bug 9: conditional requests ---------------------------------------------------

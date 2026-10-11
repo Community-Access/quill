@@ -32,24 +32,16 @@ from typing import Any
 import wx
 
 from quill.ui.podcasts.now_playing_layout import SPEEDS, TITLE, build_controls
+from quill.ui.podcasts.now_playing_peer import _install_peer
+from quill.ui.podcasts.now_playing_time import (
+    _NUDGE_MS,
+    _PAGE_MS,
+    SKIP_MS,
+    _ms_text,
+    _spoken,
+)
 
 __all__ = ["SKIP_MS", "SPEEDS", "TITLE", "NowPlayingWindow", "open_now_playing"]
-
-SKIP_MS = 30_000
-_NUDGE_MS = 5_000
-_PAGE_MS = 30_000
-
-
-def _ms_text(ms: int) -> str:
-    from quill.core.media.timecode import format_timecode
-
-    return format_timecode(max(0, int(ms)))
-
-
-def _spoken(ms: int) -> str:
-    from quill.core.media.timecode import format_spoken
-
-    return format_spoken(max(0, int(ms)))
 
 
 class NowPlayingWindow:
@@ -75,6 +67,9 @@ class NowPlayingWindow:
         self._slider.Bind(wx.EVT_SCROLL_THUMBRELEASE, lambda _e: self._dragging(False))
         self._slider.Bind(wx.EVT_SCROLL_CHANGED, lambda _e: self._on_slider())
         self._slider.Bind(wx.EVT_CHAR_HOOK, self._on_slider_key)
+        self.frame.Bind(wx.EVT_CHAR_HOOK, self._on_player_key)
+        self.frame.Bind(wx.EVT_KEY_UP, self._on_player_key_up)
+        self.frame.Bind(wx.EVT_ACTIVATE, self._on_player_activate)
         self._play.Bind(wx.EVT_BUTTON, lambda _e: self._call("podcast_toggle_play_pause"))
         self._stop.Bind(wx.EVT_BUTTON, lambda _e: self._call("podcast_stop"))
         self._back.Bind(wx.EVT_BUTTON, lambda _e: self._skip(-SKIP_MS))
@@ -98,6 +93,32 @@ class NowPlayingWindow:
         self._about.Bind(wx.EVT_BUTTON, lambda _e: self._call("open_podcast_episode_extras"))
         self._bookmarks.Bind(wx.EVT_BUTTON, lambda _e: self._call("open_episode_bookmarks"))
         del host
+
+    def _on_player_key(self, event: Any) -> None:
+        """Keep playback letters in this window, leaving library typeahead alone."""
+        scan = getattr(self._host, "_scan_hold", None)
+        if scan is not None and scan.handles(
+            key_code=event.GetKeyCode(),
+            shift=bool(event.ShiftDown()),
+            ctrl=bool(event.ControlDown()),
+            alt=bool(event.AltDown()),
+        ):
+            scan.press()
+            return
+        self._host._on_winamp_char_hook(event)
+
+    def _on_player_key_up(self, event: Any) -> None:
+        scan = getattr(self._host, "_scan_hold", None)
+        if scan is not None and scan.is_scanning and event.GetKeyCode() == wx.WXK_RIGHT:
+            scan.stop()
+        event.Skip()
+
+    def _on_player_activate(self, event: Any) -> None:
+        if not event.GetActive():
+            scan = getattr(self._host, "_scan_hold", None)
+            if scan is not None:
+                scan.stop()
+        event.Skip()
 
     # -- the host ----------------------------------------------------------------
 
@@ -136,6 +157,8 @@ class NowPlayingWindow:
             else None
         )
         if key != self._loaded_key or full:
+            if key != self._loaded_key and not self._save_note():
+                return
             self._loaded_key = key
             self._load_episode(show, episode, state)
         self._refresh_transport(controller, state)
@@ -336,6 +359,11 @@ class NowPlayingWindow:
     def _on_slider_key(self, event: Any) -> None:
         """Left/Right five seconds, Page keys thirty, Home/End the ends, said in time."""
         key = event.GetKeyCode()
+        if key == wx.WXK_RIGHT and event.ShiftDown():
+            # The frame owns hold-to-scan; a focused slider must not turn that
+            # gesture into a single five-second nudge.
+            event.Skip()
+            return
         steps = {
             wx.WXK_LEFT: -_NUDGE_MS,
             wx.WXK_RIGHT: _NUDGE_MS,
@@ -465,8 +493,12 @@ class NowPlayingWindow:
 
     def _on_note_blur(self, event: Any) -> None:
         event.Skip()
+        self._save_note()
+
+    def _save_note(self) -> bool:
+        """Save the current draft before its episode key can change."""
         if self._note_key is None:
-            return
+            return True
         from quill.core.podcasts.episode_notes import set_episode_level_note
 
         text = self._note.GetValue().strip()
@@ -474,9 +506,10 @@ class NowPlayingWindow:
             changed = set_episode_level_note(self._note_key[0], self._note_key[1], text)
         except Exception:  # noqa: BLE001 - a note that cannot be written is said, not raised
             self._host._announce("Your note could not be saved.")
-            return
+            return False
         if changed:
             self._host._announce("Note saved." if text else "Note removed.")
+        return True
 
     def _remember_copy_format(self, fmt: str) -> None:
         history = getattr(self._host, "_podcast_history", None)
@@ -556,23 +589,3 @@ def open_now_playing(host: Any, *, focus: bool = True) -> NowPlayingWindow:
         _install_peer(host, window)
     window.show(focus=focus)
     return window
-
-
-def _install_peer(host: Any, window: NowPlayingWindow) -> None:
-    """Menu bar (its own Close, the shared Window menu), and the window list."""
-    windows = getattr(host, "_windows", None)
-    frame = window.frame
-    menu_bar = wx.MenuBar()
-    own = wx.Menu()
-    close_id = wx.NewIdRef()
-    own.Append(close_id, "&Close\tCtrl+W")
-    frame.Bind(wx.EVT_MENU, lambda _e: frame.Close(), id=close_id)
-    menu_bar.Append(own, "Now &Playing")
-    if windows is not None:
-        windows.install(frame, menu_bar)
-    frame.SetMenuBar(menu_bar)
-    keep = getattr(host, "_keep_menu_ids", None)
-    if callable(keep):
-        keep(close_id)
-    if windows is not None:
-        windows.register(frame, TITLE, focus=lambda: window._slider.SetFocus())

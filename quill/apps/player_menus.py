@@ -15,6 +15,8 @@ from __future__ import annotations
 
 import wx
 
+from quill.apps.player_preferences import open_preferences
+
 __all__ = ["MediaPlayerMenuMixin"]
 
 
@@ -46,6 +48,12 @@ class MediaPlayerMenuMixin:
         bookmarks_menu.Append(import_sync_id, "&Import Sync Bundle...\tCtrl+Alt+I")
         file_menu.AppendSubMenu(bookmarks_menu, "Book&marks && Sync")
         file_menu.AppendSeparator()
+        # Ctrl+, is Preferences in every app in the family (qc.md X-01); P is
+        # Open Folder's access key here, so this one is E.
+        prefs_id = wx.NewIdRef()
+        file_menu.Append(prefs_id, "Pr&eferences...\tCtrl+,")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: open_preferences(self), id=prefs_id)
+        self._keep_menu_ids(prefs_id)
         file_menu.Append(tray_id, "Minimize to &Tray\tCtrl+W")
         self._append_show_hide_key_item(file_menu, "player")
         file_menu.Append(exit_id, "E&xit\tCtrl+Q")
@@ -133,6 +141,8 @@ class MediaPlayerMenuMixin:
         self.frame.Bind(wx.EVT_MENU, self._on_toggle_magical, id=magical_id)
         self.frame.Bind(wx.EVT_MENU, self._on_toggle_ontop, id=ontop_id)
         menu_bar.Append(view_menu, "&View")
+        # Preferences drives the same three rows and keeps their check marks true.
+        self._view_toggle_ids = {"compact": compact_id, "magical": magical_id, "on_top": ontop_id}
         self._keep_menu_ids(
             *sleep_refs,
             compact_id,

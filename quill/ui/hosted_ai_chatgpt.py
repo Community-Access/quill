@@ -61,7 +61,7 @@ def _explanation(agent: str) -> str:
         "While you are signed in, every AI request goes straight from this "
         "computer to OpenAI on your account, under OpenAI's terms and privacy "
         "policy. Nothing goes through QUILL's servers, and QUILL keeps no copy. "
-        "A ChatGPT sign-in is used ahead of a saved OpenAI key. "
+        "A ChatGPT sign-in is used ahead of a saved own API key. "
         f"The sign-in is kept in Windows' credential store, for {agent} alone; each "
         "QUILL app signs in on its own, and Sign Out here is how you undo it."
     )
@@ -339,8 +339,8 @@ class ChatGptFrame(wx.Frame):
         self._sign_out = wx.Button(panel, label="Sign &Out")
         self._sign_out.SetHelpText(
             f"Asks OpenAI to revoke {self.agent}'s sign-in and forgets it on this "
-            "computer. AI help goes back to QUILL's free service, or to a saved "
-            "OpenAI key if you have one. Press twice."
+            "computer. AI help goes back to QUILL's free service, or to your own "
+            "API key if you saved one. Press twice."
         )
         self._sign_out.Bind(wx.EVT_BUTTON, lambda _e: self._on_sign_out())
         forget = wx.Button(panel, label="&Forget on This Computer")

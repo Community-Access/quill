@@ -18,6 +18,16 @@ release notes.
 3. **Docs in sync.** `CHANGELOG.md`, `docs/release notes/release<X>.md`,
    the user guide, and `CONTROL_REFERENCE.md` agree on the closed issues,
    the menu paths, and the shipped feature set.
+   When a base dependency changes, reconcile every committed
+   `standalone/*/portable-inventory.json`, including Windows-only transitive
+   requirements for each product's extras. Inspect the actual bundle's drift
+   and dependency metadata before rebaselining with
+   `python scripts\check_runtime_inventory.py <portable-dir> --layout portable
+   --manifest <product-inventory> --write`; do not bypass the inventory gate.
+   Pure-Python modules in the frozen shared runtime may live inside its PYZ
+   archive rather than appear as directories in `_internal`, so verify
+   archive contents before concluding that an absent directory means the
+   dependency is missing.
 4. **Translations template current.** `quill/locale/quill.pot` shows the
    target version stamp and a fresh `POT-Creation-Date`.
 5. **No `.po` or `.mo` files ship.** Verified with

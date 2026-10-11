@@ -376,7 +376,7 @@ def test_page_setup_is_written_to_the_settings_file(
     win = lite_window("hello")
     win.cmd_page_setup()
     assert win.app.print_settings.stored == [win.app.settings]
-    assert win.app.saved_settings >= 1
+    assert win.app.queued_settings == 1
 
 
 def test_page_setup_is_not_used_as_a_context_manager(

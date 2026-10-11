@@ -156,3 +156,9 @@ def show(host: Any, visible: bool) -> None:
     host._settings.show_advanced = bool(visible)
     if visible:
         host._advanced_choices["adv_bitrate"][0].SetFocus()
+
+
+def reveal_for_navigation(host: Any) -> None:
+    """Reveal advanced controls without changing the saved visibility preference."""
+    host._main_sizer.Show(host._advanced_box, True, recursive=True)
+    host._main_panel.Layout()

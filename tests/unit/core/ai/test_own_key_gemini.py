@@ -17,7 +17,7 @@ from types import SimpleNamespace
 import pytest
 
 from quill.core import assistant_ai
-from quill.core.ai import own_key, own_key_models
+from quill.core.ai import own_key, own_key_gemini, own_key_models
 
 GOOD_KEY = "synthetic-gemini-key"
 
@@ -63,10 +63,13 @@ class _GeminiLike(BaseHTTPRequestHandler):
         if self.headers.get("x-goog-api-key") != GOOD_KEY:
             self._send(403, {"error": {"message": "API key not valid"}})
             return
-        self._send(
-            200,
-            {"candidates": [{"content": {"parts": [{"text": "A summary from Gemini."}]}}]},
-        )
+        payload = {"candidates": [{"content": {"parts": [{"text": "A summary from Gemini."}]}}]}
+        body = f"data: {json.dumps(payload)}\r\n\r\n".encode()
+        self.send_response(200)
+        self.send_header("Content-Type", "text/event-stream")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
 
 
 @pytest.fixture
@@ -79,6 +82,7 @@ def gemini_host(monkeypatch) -> Iterator[str]:
     host = f"http://127.0.0.1:{server.server_port}"
     monkeypatch.setattr(assistant_ai, "_validate_endpoint_security", lambda *_a: None)
     monkeypatch.setattr(assistant_ai, "default_host_for_provider", lambda p: host)
+    monkeypatch.setattr(own_key_gemini, "GEMINI_HOST", host)
     monkeypatch.setattr(
         assistant_ai, "load_provider_api_key", lambda p: GOOD_KEY if p == "gemini" else ""
     )
@@ -132,7 +136,7 @@ def test_asking_openai_with_only_a_gemini_key_says_so_rather_than_switching(monk
     )
     with pytest.raises(own_key.OwnKeyError) as caught:
         own_key.ask_with_own_key("summarize", "text", provider="openai")
-    assert "No OpenAI key is stored" in str(caught.value)
+    assert "No OpenAI key" in str(caught.value)
 
 
 def test_names_and_addresses_follow_the_provider() -> None:
@@ -158,7 +162,7 @@ def test_a_gemini_request_reaches_generatecontent_with_the_key_and_the_instructi
 
     assert answer == "A summary from Gemini."
     assert any(
-        path.startswith("/v1beta/models/gemini-2.5-flash:generateContent")
+        path.startswith("/v1beta/models/gemini-2.5-flash:streamGenerateContent")
         for path in _GeminiLike.paths
     ), _GeminiLike.paths
     assert not any("models/models/" in path for path in _GeminiLike.paths)
@@ -176,15 +180,15 @@ def test_a_model_from_geminis_own_list_is_usable_without_the_models_prefix(
     assert models[:3] == ["gemini-2.5-flash", "gemini-2.5-pro", "gemini-2.5-flash-lite"]
     assert "text-embedding-004" not in models and "imagen-4" not in models
     own_key.ask_with_own_key("summarize", "x", model=models[0], provider="gemini")
-    assert _GeminiLike.paths[-1].startswith("/v1beta/models/gemini-2.5-flash:generateContent")
+    assert _GeminiLike.paths[-1].startswith("/v1beta/models/gemini-2.5-flash:streamGenerateContent")
 
 
 def test_a_bad_key_is_a_sentence_with_the_providers_name(gemini_host: str, monkeypatch) -> None:
     monkeypatch.setattr(assistant_ai, "load_provider_api_key", lambda p: "wrong-key")
     with pytest.raises(own_key.OwnKeyError) as caught:
         own_key.ask_with_own_key("summarize", "x", model="gemini-2.5-flash", provider="gemini")
-    assert "Google Gemini did not answer" in str(caught.value)
-    assert caught.value.code == "QUILL-AI-OWN-KEY-FAILED"
+    assert "Google Gemini did not accept the saved key" in str(caught.value)
+    assert caught.value.code == "QUILL-AI-OWN-KEY-REJECTED"
 
 
 # -- the model list, by provider ---------------------------------------------------------------

@@ -28,7 +28,7 @@ class VoiceInteractionMixin:
 
     def _start_dictation(self) -> None:
         from quill.core.platform_nouns import primary_command_chord_label
-        from quill.core.speech.capture import MicRecorder, capture_available
+        from quill.core.speech.capture import capture_available
 
         wx = self._wx
         if not capture_available():
@@ -41,8 +41,14 @@ class VoiceInteractionMixin:
             )
             return
         provider = self._speech_provider()
-        if self._installed_or_prompt(provider, "Dictate (Offline)") is None:
-            return
+        self._check_installed_speech_models(
+            provider,
+            "Dictate (Offline)",
+            lambda selected, _models: self._begin_offline_dictation(selected),
+        )
+
+    def _begin_offline_dictation(self, _provider: object) -> None:
+        from quill.core.speech.capture import MicRecorder
         from quill.core.speech.service import load_input_device
 
         recorder = MicRecorder()
@@ -65,17 +71,16 @@ class VoiceInteractionMixin:
             self._set_status(f"Dictation failed: {exc}")
             return
         provider = self._speech_provider()
-        installed = provider.list_installed_models()  # type: ignore[attr-defined]
-        if not installed:
-            self._set_status("No speech model installed.")
-            return
-        model_id = self._default_model_id(installed)
-
-        from quill.core.speech.provider import TranscriptionRequest
-
-        request = TranscriptionRequest(source_path=wav_path, model_id=model_id)
 
         def _work(progress):
+            installed = provider.list_installed_models()  # type: ignore[attr-defined]
+            if not installed:
+                return None
+            from quill.core.speech.provider import TranscriptionRequest
+
+            model_id = self._default_model_id(installed)
+            request = TranscriptionRequest(source_path=wav_path, model_id=model_id)
+
             def _on_progress(fraction: float, message: str) -> None:
                 progress(message, int(fraction * 100), 100)
 
@@ -87,9 +92,15 @@ class VoiceInteractionMixin:
                 except OSError:
                     pass
 
+        def _done(result: object) -> None:
+            if result is None:
+                self._set_status("No speech model installed.")
+                return
+            self._insert_dictation_result(result)
+
         self._set_status_quiet("Transcribing dictation")
         self._announce("Transcribing dictation...")
-        self._run_background_task("Transcribing dictation", _work, self._insert_dictation_result)
+        self._run_background_task("Transcribing dictation", _work, _done)
 
     def _insert_dictation_result(self, result: object) -> None:
         text = (getattr(result, "full_text", "") or "").strip()
@@ -140,7 +151,7 @@ class VoiceInteractionMixin:
         self._start_voice_command()
 
     def _start_voice_command(self) -> None:
-        from quill.core.speech.capture import MicRecorder, capture_available
+        from quill.core.speech.capture import capture_available
 
         wx = self._wx
         if not capture_available():
@@ -152,8 +163,14 @@ class VoiceInteractionMixin:
             )
             return
         provider = self._voice_provider()
-        if self._installed_or_prompt(provider, "Voice Commands") is None:
-            return
+        self._check_installed_speech_models(
+            provider,
+            "Voice Commands",
+            lambda selected, _models: self._begin_voice_command(selected),
+        )
+
+    def _begin_voice_command(self, _provider: object) -> None:
+        from quill.core.speech.capture import MicRecorder
         from quill.core.speech.service import load_input_device
 
         recorder = MicRecorder()
@@ -176,17 +193,16 @@ class VoiceInteractionMixin:
             self._set_status(f"Voice command failed: {exc}")
             return
         provider = self._voice_provider()
-        installed = provider.list_installed_models()  # type: ignore[attr-defined]
-        if not installed:
-            self._set_status("No speech model installed.")
-            return
-        model_id = self._default_model_id(installed)
-
-        from quill.core.speech.provider import TranscriptionRequest
-
-        request = TranscriptionRequest(source_path=wav_path, model_id=model_id)
 
         def _work(progress):
+            installed = provider.list_installed_models()  # type: ignore[attr-defined]
+            if not installed:
+                return None
+            from quill.core.speech.provider import TranscriptionRequest
+
+            model_id = self._default_model_id(installed)
+            request = TranscriptionRequest(source_path=wav_path, model_id=model_id)
+
             def _on_progress(fraction: float, message: str) -> None:
                 progress(message, int(fraction * 100), 100)
 
@@ -198,8 +214,14 @@ class VoiceInteractionMixin:
                 except OSError:
                     pass
 
+        def _done(result: object) -> None:
+            if result is None:
+                self._set_status("No speech model installed.")
+                return
+            self._dispatch_voice_result(result)
+
         self._set_status("Recognizing command")
-        self._run_background_task("Recognizing command", _work, self._dispatch_voice_result)
+        self._run_background_task("Recognizing command", _work, _done)
 
     def _dispatch_voice_result(self, result: object) -> None:
         from quill.core.ai.agent import SAFE_TOOL_IDS
@@ -227,7 +249,6 @@ class VoiceInteractionMixin:
         warm audio cues for every state, a brief cancel window before a command
         runs, and a follow-up window so commands chain without re-arming.
         """
-        from quill.core.speech.conversation import Timing
         from quill.core.speech.voice_commands import voice_commands_available
 
         controller = getattr(self, "_conversation", None)
@@ -249,9 +270,14 @@ class VoiceInteractionMixin:
                 "'sounddevice' package)."
             )
             return
-        if self._installed_or_prompt(self._voice_provider(), "Conversation Mode") is None:
-            return
-        from quill.core.speech.conversation import ConversationController
+        self._check_installed_speech_models(
+            self._voice_provider(),
+            "Conversation Mode",
+            lambda _provider, _models: self._start_conversation(),
+        )
+
+    def _start_conversation(self) -> None:
+        from quill.core.speech.conversation import ConversationController, Timing
 
         controller = ConversationController(
             timing=Timing.from_settings(self.settings),
@@ -433,17 +459,16 @@ class VoiceInteractionMixin:
         if wav_path is None or controller is None:
             return
         provider = self._voice_provider()
-        installed = provider.list_installed_models()  # type: ignore[attr-defined]
-        if not installed:
-            self._conv_run(controller.stop())
-            return
-        model_id = self._default_model_id(installed)
-        from quill.core.speech.provider import TranscriptionRequest
-
-        request = TranscriptionRequest(source_path=wav_path, model_id=model_id)
 
         def _work(progress):
             try:
+                installed = provider.list_installed_models()  # type: ignore[attr-defined]
+                if not installed:
+                    return None
+                from quill.core.speech.provider import TranscriptionRequest
+
+                model_id = self._default_model_id(installed)
+                request = TranscriptionRequest(source_path=wav_path, model_id=model_id)
                 return provider.transcribe_file(  # type: ignore[attr-defined]
                     request, lambda f, m: progress(m, int(f * 100), 100)
                 )
@@ -453,7 +478,13 @@ class VoiceInteractionMixin:
                 except OSError:
                     pass
 
-        self._run_background_task("Recognizing command", _work, self._conv_on_transcript)
+        def _done(result: object) -> None:
+            if result is None:
+                self._conv_run(controller.stop())
+                return
+            self._conv_on_transcript(result)
+
+        self._run_background_task("Recognizing conversation", _work, _done)
 
     def _conv_on_transcript(self, result: object) -> None:
         from quill.core.ai.agent import SAFE_TOOL_IDS
@@ -533,11 +564,12 @@ class VoiceInteractionMixin:
         perceivable.
         """
         from quill.core.speech.voice_commands import voice_commands_available
-        from quill.ui.wakeword_switch import remember_wakeword
 
         wake = getattr(self, "_wake", None)
         if wake is not None and wake.state != "off":
             self._wake_run(wake.stop())
+            from quill.ui.wakeword_switch import remember_wakeword
+
             return remember_wakeword(self, False)
         if not voice_commands_available(
             self.settings, safe_mode_active=bool(getattr(self, "_safe_mode", False))
@@ -554,9 +586,15 @@ class VoiceInteractionMixin:
                 "'sounddevice' package)."
             )
             return
-        if self._installed_or_prompt(self._voice_provider(), "Hey QUILL") is None:
-            return
+        self._check_installed_speech_models(
+            self._voice_provider(),
+            "Hey QUILL",
+            lambda _provider, _models: self._start_wakeword(),
+        )
+
+    def _start_wakeword(self) -> None:
         from quill.core.speech.wakeword import WakeController
+        from quill.ui.wakeword_switch import remember_wakeword
 
         self._wake = WakeController()
         self._wake_run(self._wake.start())
@@ -644,23 +682,16 @@ class VoiceInteractionMixin:
             on_text("")
             return
         provider = self._voice_provider()
-        installed = provider.list_installed_models()  # type: ignore[attr-defined]
-        if not installed:
-            # No model: nothing will consume the recording, so delete it now
-            # instead of leaking a temp WAV per toggle (#794 review).
-            try:
-                wav_path.unlink(missing_ok=True)
-            except OSError:
-                pass
-            self._wake_run(self._wake.stop())
-            return
-        model_id = self._default_model_id(installed)
-        from quill.core.speech.provider import TranscriptionRequest
-
-        request = TranscriptionRequest(source_path=wav_path, model_id=model_id)
 
         def _work(progress):
             try:
+                installed = provider.list_installed_models()  # type: ignore[attr-defined]
+                if not installed:
+                    return None
+                from quill.core.speech.provider import TranscriptionRequest
+
+                model_id = self._default_model_id(installed)
+                request = TranscriptionRequest(source_path=wav_path, model_id=model_id)
                 result = provider.transcribe_file(  # type: ignore[attr-defined]
                     request, lambda f, m: progress(m, int(f * 100), 100)
                 )
@@ -671,7 +702,13 @@ class VoiceInteractionMixin:
                 except OSError:
                     pass
 
-        self._run_background_task("Listening", _work, on_text)
+        def _done(text: object) -> None:
+            if text is None:
+                self._wake_run(self._wake.stop())
+                return
+            on_text(str(text))
+
+        self._run_background_task("Listening", _work, _done)
 
     def _wake_finish_window(self) -> None:
         self._wake_transcribe(self._wake_on_window)

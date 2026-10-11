@@ -466,6 +466,20 @@ threads):
 Parakeet glues a currency sign to the word before it (`about$12,000`); the
 writer puts the space back after a lower-case letter, leaving `US$` alone.
 
+**File-command regression, 2026-10-05.** The background runner was checking
+`CancellationToken.is_cancelled` as a value rather than calling the method,
+so every real task token looked cancelled and no transcript was delivered,
+regardless of the selected model. The runner now calls `is_cancelled()`;
+command tests pass real active and cancelled tokens and make the fake
+transcriber honour cancellation. The duration estimate also tries Windows
+Media Foundation metadata when mutagen and libsndfile cannot report a length,
+without decoding the recording. An unknown length does not prevent transcription.
+Checked after the fix with the owner's 254-second MP3, local Whisper tiny,
+the real task manager and a real wx text control: 638 words delivered on the
+UI thread in 38 seconds, with no network. libsndfile reported malformed MP3
+frames but decoded the recording through to the end; those warnings did not
+prevent the transcript from being delivered.
+
 **Not built, and what each needs:**
 
 | Item | Needs |

@@ -261,6 +261,7 @@ def follow_action(dialog: Any) -> None:
         dialog._library,
         existing,
         announce=dialog._announce,
+        download_queue=getattr(getattr(dialog, "_host", None), "_podcast_download_queue", None),
         on_change=dialog._on_library_changed,
     ):
         return

@@ -1,8 +1,8 @@
-# Builds every QuillBeacon release artifact from one onedir build:
+# Builds the full QuillBeacon installer and portable ZIP from one onedir build:
 #
 #   dist\QuillBeacon\                          the staged app folder
 #   dist\Quill-Beacon-Portable-<ver>.zip       portable (with its data\ folder)
-#   dist\Quill-Beacon-Setup-<ver>.exe          system installer
+#   dist\Quill-Beacon-Setup-Shared-<ver>.exe   system installer
 #
 # Usage:
 #   .\scripts\build_release.ps1 [-Python <python.exe>] [-LibmpvDir <dir>]
@@ -120,7 +120,7 @@ Compress-Archive -Path $appDir -DestinationPath $zipPath
 # installed copy into portable mode), so remove it before the installer runs.
 Remove-Item $dataDir -Recurse -Force
 
-# -- shared-runtime flavors: Setup-Shared + Lite + Companion ------------------
+# -- shared-runtime installer --------------------------------------------------
 # Beacon now consumes the shared QuillVille Runtime like Radio, Weather,
 # Studio and Inkwell (2026-08-18): quill.apps.beacon already lives in the
 # shared quill package, so the installed app is a native launcher + docs.
@@ -156,13 +156,6 @@ Copy-Item (Join-Path $appDir "docs\*") (Join-Path $launcherDir "docs") -Recurse 
 if ($LASTEXITCODE -ne 0) { throw "Code signing (shared payload) failed." }
 & $Iscc @innoSign "/dAppVersion=$version" "/dAppBuild=$build" "/dAppFileVersion=$fileVersion" (Join-Path $repoRoot "installer\quill-beacon-shared.iss") "/O$(Join-Path $repoRoot 'dist')"
 if ($LASTEXITCODE -ne 0) { throw "ISCC (Setup-Shared) failed with exit code $LASTEXITCODE" }
-& $Iscc @innoSign "/dAppVersion=$version" "/dAppBuild=$build" "/dAppFileVersion=$fileVersion" (Join-Path $repoRoot "installer\quill-beacon-lite.iss") "/O$(Join-Path $repoRoot 'dist')"
-if ($LASTEXITCODE -ne 0) { throw "ISCC (Lite) failed with exit code $LASTEXITCODE" }
-# Companion: the runtime-less stick (launcher + icon + docs, ~1 MB).
-$companionZip = Join-Path $repoRoot "dist\Quill-Beacon-Companion-$version.zip"
-if (Test-Path $companionZip) { Remove-Item $companionZip -Force }
-Copy-Item (Join-Path $repoRoot "assets\quill-beacon.ico") $launcherDir -Force
-Compress-Archive -Path (Join-Path $launcherDir "*") -DestinationPath $companionZip
 
 Write-Host ""
 Write-Host "Release artifacts in $(Join-Path $repoRoot 'dist'):"

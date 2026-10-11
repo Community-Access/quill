@@ -14,6 +14,8 @@ None of those are distinguishable from working, so nobody reports them.
 
 from __future__ import annotations
 
+import pytest
+
 from quill.core.podcasts.media_health import FFMPEG_CAPABILITIES, CastMediaHealth
 
 
@@ -65,14 +67,15 @@ def test_the_repair_advice_leads_with_the_thing_that_works_for_everybody() -> No
     assert "reinstalling restores it" in hint
 
 
-def test_the_thin_installer_is_not_told_to_reinstall_it() -> None:
-    """The lite edition carries no media tools at all, so a reinstall cannot
-    help. Advice that sends somebody to repeat an install that could not have
-    worked is worse than no advice."""
-    hint = CastMediaHealth(ffmpeg=False).repair_hint(lite=True)
+def test_there_is_no_thin_installer_advice_left_to_give() -> None:
+    """Cast ships two downloads and both carry FFmpeg (2026-10-05), so the
+    one repair hint is true for everybody; a second, edition-shaped hint
+    would only be a way for the advice to disagree with the download."""
+    hint = CastMediaHealth(ffmpeg=False).repair_hint()
 
-    assert "reinstalling restores" not in hint
-    assert "full QUILL Cast installer" in hint
+    assert "full QUILL Cast installer" not in hint
+    with pytest.raises(TypeError):
+        CastMediaHealth(ffmpeg=False).repair_hint(lite=True)  # type: ignore[call-arg]
 
 
 def test_the_notice_is_the_summary_and_the_repair_together() -> None:

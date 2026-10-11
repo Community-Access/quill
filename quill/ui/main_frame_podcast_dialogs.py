@@ -93,6 +93,12 @@ class PodcastDialogsMixin:
                 safe_mode=host._safe_mode,
                 announce_cb=host._announce,
                 on_library_changed=host._podcast_library_added_to,
+                host=host,
+                on_import_finished=lambda show_ids: host._start_new_podcast_feed_check(
+                    show_ids,
+                    action="Refresh Imported Feeds",
+                    only_if_automatic_checks_enabled=True,
+                ),
                 # 11.6: when a feed is already followed, land the cursor on the
                 # row the listener already has rather than only refusing.
                 on_reveal_show=host._podcast_reveal_show,
@@ -157,22 +163,11 @@ class PodcastDialogsMixin:
         from pathlib import Path
 
         from quill.core.podcasts.opml_cli import describe_opened_file
-        from quill.ui.podcasts.opml_import_dialog import OpmlImportDialog
+        from quill.ui.podcasts.opml_import_dialog import open_import_window
 
         target = Path(str(path))
-        if not target.is_file():
-            self._announce(f"That subscription list could not be found: {target.name}")
-            return
         self._announce(describe_opened_file(target))
-        OpmlImportDialog(
-            self.frame,
-            library=self._podcast_library,
-            path=target,
-            task_manager=self._task_manager,
-            safe_mode=self._safe_mode,
-            announce_cb=self._announce,
-            on_library_changed=self._save_podcast_library,
-        ).show()
+        open_import_window(self, target)
 
     def _podcast_export_opml(self) -> None:
         wx = self._wx

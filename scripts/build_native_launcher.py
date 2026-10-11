@@ -127,6 +127,7 @@ PRODUCTS: dict[str, Product] = {
         name="QuillCast",
         display="QUILL Cast",
         module="quill.apps.podcasts",
+        version_from="podcasts_menu",
         icon_dir="cast",
         icon_name="quill-cast",
     ),
@@ -301,7 +302,7 @@ def find_cmake() -> str | None:
 def product_version(product: Product) -> str:
     """The dotted version compiled into the launcher's VERSIONINFO.
 
-    Read from ``quill/apps/<module>.py``'s ``_VERSION`` so a launcher can never
+    Read from ``quill/apps/<module>.py``'s ``_VERSION`` or ``APP_VERSION`` so a launcher can never
     disagree with the app it starts. Products that version in lockstep with
     QUILL (and any app whose ``_VERSION`` is just ``__version__``) fall through
     to ``quill.__version__``.
@@ -319,7 +320,7 @@ def product_version(product: Product) -> str:
             if not source.is_file():
                 continue
             match = re.search(
-                r'^(?:_VERSION|__version__)\s*=\s*["\']([0-9][0-9A-Za-z.\-]*)["\']',
+                r'^(?:_VERSION|APP_VERSION|__version__)\s*=\s*["\']([0-9][0-9A-Za-z.\-]*)["\']',
                 source.read_text(encoding="utf-8"),
                 re.MULTILINE,
             )
@@ -334,7 +335,7 @@ def product_version(product: Product) -> str:
 def product_file_version(product: Product) -> str:
     """The four-part Windows file version, ``X.Y.Z.B``, for the launcher's VERSIONINFO.
 
-    ``B`` is the app's build number (``_BUILD`` / ``__build__`` beside its version;
+    ``B`` is the app's build number (``_BUILD`` / ``APP_BUILD`` / ``__build__`` beside its version;
     docs/release/RELEASE.md, "Build numbers"), so Explorer's Details tab says which
     build of a version is installed. 0 when the app has no build constant.
     """
@@ -354,7 +355,9 @@ def product_file_version(product: Product) -> str:
         if not source.is_file():
             continue
         match = re.search(
-            r"^(?:_BUILD|__build__)\s*=\s*(\d+)", source.read_text(encoding="utf-8"), re.M
+            r"^(?:_BUILD|APP_BUILD|__build__)\s*=\s*(\d+)",
+            source.read_text(encoding="utf-8"),
+            re.M,
         )
         if match:
             build = int(match.group(1))

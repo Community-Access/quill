@@ -71,9 +71,13 @@ class _App:
     def __init__(self) -> None:
         self.settings = _Settings()
         self.saved = 0
+        self.queued = 0
 
     def save_settings(self) -> None:
         self.saved += 1
+
+    def _queue_settings_save(self) -> None:
+        self.queued += 1
 
 
 class _Window(DocumentHeadingsMixin, DocumentMarkupMixin):
@@ -396,7 +400,7 @@ def test_the_toggle_is_persisted() -> None:
     win = _Window()
     win.cmd_toggle_heading_announcements()
     assert win.app.settings.announce_headings is False
-    assert win.app.saved == 1
+    assert win.app.queued == 1
 
 
 def test_switching_off_still_feeds_the_latch() -> None:

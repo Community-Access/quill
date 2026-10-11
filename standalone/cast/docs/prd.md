@@ -68,10 +68,13 @@ Out of scope, by decision (D-1, "basic level of functionality"):
 
 ## 5. Packaging requirements
 
-- P-1. PyInstaller onedir build with the app's own icon; Inno Setup installer with its own AppId, installs to its own directory ({autopf}\QUILL Cast), per-user privileges by default.
+- P-1. PyInstaller onedir build with the app's own icon; Inno Setup installer
+  with its own AppId, installs to its own directory ({autopf}\QUILL Cast), and
+  is fixed to current-user privileges with no all-users override.
 - P-2. Everything bundled, nothing downloaded at install or runtime: the onedir build carries the whole quill package and data (`collect_all("quill")`); ffmpeg installs to {app}\tools\ffmpeg, found via the wrapper exporting QUILL_APP_ROOT. A portable zip ships the same onedir build plus a `data\` folder that switches storage to travel with the app.
 - P-3. Uninstall never deletes `%APPDATA%\Quill` -- QUILL or Quill Radio may still use it. Only the full QUILL uninstaller owns that decision.
 - P-4. Upgrade hygiene: the installer wipes its own `{app}\_internal` tree before re-laying files so module renames upstream never leave stale imports.
+- P-5. Windows startup is opt-in and per-user. Only an installed Windows copy may add or remove Cast's entry under the signed-in account's Run key; a portable copy never changes startup settings. This does not require administrator rights.
 
 ## 6. Update requirements
 
@@ -103,10 +106,12 @@ against a real one (1,307 feeds), refreshed to roughly 196,000 episodes.
   resolution index once and answer in constant time, so importing N entries
   into a library of M is O(N + M). Duplicates are matched on a normalized
   URL, so `http://` and `https://` forms of one feed are one feed.
-- **PF-2. No blocking work in a button handler.** Reading, parsing,
-  planning, and adding an OPML file all happen off the UI thread; the
-  reachability sweep runs afterwards on a bounded pool, reports progress,
-  and can be cancelled without losing what was already imported.
+- **PF-2. No blocking work in a button handler.** Reading, parsing and
+  planning an OPML import happen off the UI thread. Applying additions to
+  the live library yields between bounded UI-thread batches; workers never
+  mutate that live model. The reachability sweep runs afterwards on a
+  bounded pool, reports progress, and can be cancelled without losing what
+  was already imported.
 - **PF-3. Saves must not scale with the library.** A full library write is
   ~7 seconds and 164 MB at 196,000 episodes, and it is triggered by every
   position checkpoint. Above a threshold, writes and the main-page tree
@@ -1794,6 +1799,12 @@ a notice's Enter, the old openers (`apps/podcasts_routes.py` answers
 `open_continue_listening` with places, ahead of `PodcastsMixin`). Delete in a
 list removes from the place only, per place.
 
+Changing or activating a row in Places updates the content pane without
+stealing focus. Tab and Shift+Tab provide the normal path between Places and
+the content pane. In the Podcasts tree, Left Arrow collapses an expanded
+folder or show and otherwise remains with the tree; it never jumps focus to
+Places.
+
 The Manager's verbs moved to `ui/podcasts/manager_verbs.py`
 (`ManagerVerbsMixin`, 38 methods) and are shared by QUILL's Podcast Manager and
 Cast's frame; `ui/podcasts/episode_list.py` (`CastEpisodeListMixin`) gives the
@@ -1971,5 +1982,163 @@ through `label_samples()`, and `test_button_object_in_label.py` fails the
 build if `set_accessible_name` ever targets a `wx.Button` in Cast again.
 
 ---
+
+### 23.26 Current-user setup and responsive refreshes (2026-10-06)
+
+The Cast installer variants no longer offer an all-users privilege override;
+the shared runtime also installs under the current user's local application
+data. The opt-in **Start QUILL Cast with Windows** preference writes only to
+that account's Run key and is unavailable to portable copies.
+
+During a user-started Refresh All Now run, per-feed results no longer each
+trigger a library-tree rebuild, Podcast Manager refresh, and maintenance pass.
+The tree and manager refresh after the last feed, and maintenance runs once at
+completion. Saving Preferences refreshes the current library place only when
+Hide caught-up podcasts changed, since that is the preference that changes
+which rows are visible. A separate modeless progress window reports checked
+feeds while requests run off the UI thread; closing it hides the window, while
+**Stop remaining checks** cancels queued checks and lets any active check
+finish. OPML files are read and planned off the UI thread too. Subscriptions
+are added before the optional reachability sweep, so stopping that sweep does
+not remove them. In the Podcasts tree, Left Arrow collapses an expanded
+folder without moving focus out of the tree; arrowing through Places does not
+move focus into the content list until the user enters it.
+
+Preferences persistence uses ordered background writes of detached podcast,
+application-history, and changed family-preference data. Announcements
+distinguish applied changes from successful persistence and report failures.
+Production library snapshots serialize directly to the established JSON
+shape, without creating a second complete episode/tag model graph on the UI
+thread.
+
+Storage snapshots retain downloaded records, queue/Recently Expired
+references, and the Inbox candidates needed by maintenance, rather than
+copying unrelated episodes. Catalogue scans and metadata preparation yield
+in bounded UI turns; filesystem measurement and removal stay on workers.
+The shared QUILL podcast storage report uses the native virtual report list,
+preserving named columns, saved column layouts, selected-podcast restoration,
+and All/Unheard totals without per-row native insertion/deletion. Cast's
+Downloads command continues to route to its existing Downloads place rather
+than opening that shared dialog; Cast acceptance must exercise that route.
+
+Cast's read-only view preparation captures detached scalar episode fields,
+including Episode Filter person names, rather than a second episode/tag
+model graph. It reuses domain counts, filters, Inbox layout and sorting;
+cross-podcast sorting retains bounded candidates. Publication resolves only
+displayed live episodes by their source offsets and GUIDs and rejects stale
+generations. Capture and publication wait for yielding feed commits, stop
+on shutdown, and preserve genuine cursor movement during publication.
+Places opening and native row publication yield between UI operations.
+Deferred focus is applied only if the listener has not already moved it.
+Transport controls and individual status cells also refresh incrementally;
+labels, names and help are written only when changed, and interrupted status
+refreshes still finish required layout. Places labels publish in bounded turns.
+Worker scans periodically share the interpreter, check cancellation, and release
+their detached episode input and individual show metadata in bounded batches
+before result delivery. Canceled partial captures keep a strong reference until
+a dedicated cleanup worker owns them; shutdown neither waits for that worker
+nor discards its queued cleanup.
+
+Playback commands surface rejected native transport requests instead of
+announcing an optimistic state. Play/Pause during loading updates the pending
+play intent; repeated presses use the latest intent. Stopping unloads mpv
+media without destroying its reusable client, and shutdown releases every
+owned backend, including an inactive stream backend.
+
+#### Library navigation and close follow-up (2026-10-08)
+
+Periodic saves during Refresh All Now leave tree publication pending until the
+run completes or is stopped. Completion publishes that pending update even if
+the last periodic save already cleared the library's dirty flag. Counts-only
+view preparation also defers its tree update while the run remains active.
+Unchanged expanded episode rows retain their native identities; insertions,
+removals and label changes update only the affected children. Folder-copy keys
+keep the selected placement distinct. Structural changes reconcile native rows
+instead of clearing the tree: a folder move inserts the destination placement
+and removes the source while retaining unrelated rows. Genuine cursor movement during a yielding
+redraw wins over the earlier saved selection.
+Large libraries schedule their first tree drawing batch separately from view
+publication, so starting a redraw does not also consume another drawing turn
+inline. Small libraries retain their immediate initial selection.
+When cached counts are not ready, the temporary tree plan suppresses count
+labels through an isolated settings copy, without changing the user's defaults.
+
+Arrow selection schedules one Play/Unfollow refresh on the next UI turn,
+coalescing rapid moves and resolving the latest cursor. Accessible button
+relabeling no longer runs inside the native selection notification, and the
+refresh does not update status cells, read notifications from disk, or recount
+the Inbox. Move-to-folder retains
+the next sibling at the old position, falling back to the previous sibling and
+then the containing folder. Close teardown releases the event loop after each
+step; final file operations and writes are awaited by polling, not by blocking
+the UI thread. Native wx regression tests cover row identity, selection events,
+expanded and copied placements, drawing-time cursor movement and deferred
+refresh completion. Human screen-reader acceptance remains required.
+
+The follow-up to the repeated move-to-folder report found a missing regression:
+a counts publication arriving before the first drawing turn discarded the
+requested neighbor and selected the first row. The pending anchor now survives
+that interruption, unless the user has moved again. Tests confirm both the next
+row and the previous row at the bottom, including the real modal folder picker.
+Explicit moves update the tree during Refresh All instead of waiting for the
+feed run to finish. Neighbor lookup uses adjacent native siblings rather than
+scanning the entire folder. Structural reconciliation caches child ordering and
+only freezes/thaws a drawing turn when it actually changes a native row; a
+read-only pass must not repaint the whole tree.
+
+The focused visible-window move benchmark uses 1,300 podcasts / 195,000
+episodes and the actual filing, save and counts-publication route. Only the
+listener's destination choice is automated; separate native tests open and
+confirm the real picker. After the final optimization, moving the middle
+podcast settled the tree in 0.727 seconds and moving the bottom podcast in
+0.858 seconds. Each inserted/deleted only one show placement, retained the
+expected native neighbor through counts publication, and completed the final
+library write. The maximum measured UI callback was 30.31 ms, below the
+unchanged 100 ms ceiling; the focused gate also requires each move to settle
+in under one second. The final targeted regression run passed 141 tests.
+This verifies that specific move path, not the separate large-library startup
+gate or human screen-reader acceptance.
+
+Build 3 is still unpublished. Native responsiveness checks retain 16 ms as
+a diagnostic target, not a release-blocking cutoff for an isolated native
+update. The main-window regression rejects callbacks above 100 ms to catch
+meaningful blocking. Installer/portable and accessibility gates remain. A single passing
+save diagnostic and passing native transport tests do not waive remaining
+storage, startup, packaging, signing, or human screen-reader checks.
+
+Previously recorded complete visible-window `wx.App.MainLoop` repeats of the actual
+Downloads route used 1,300 podcasts / 195,000 episodes, including cancellation
+after capture had projected at least 1,200 shows:
+
+| Repeat | All: total / maximum UI callback | Unheard: total / maximum UI callback | Partial-capture cancellation | 16 ms diagnostic |
+| --- | --- | --- | --- | --- |
+| First | 4.64 s / 12.85 ms | 3.88 s / 8.67 ms | 6.25 ms | Passed |
+| Second | 5.16 s / 16.70 ms | 4.33 s / 7.39 ms | 5.26 ms | Exceeded |
+
+This replaces the original 23.57-second All preparation. The second repeat's
+longest callback was the
+native loading-heading update (16.37 ms inside the 16.70 ms turn); an earlier
+run also caught a 36.82 ms native item-count turn. The second repeat's queued
+responses were 27.21 ms for All, 39.54 ms for Unheard and 6.98 ms for cancellation.
+Native window show was separately measured at 226.74 ms, with a 259.14 ms
+showing-window queued response. A prior run recorded a 3.53-second window show,
+so startup also remains an acceptance concern. These wall timings do not prove
+the reason for intermittent native delays. An isolated 16.7 ms update is
+acceptable and is not evidence of "Not Responding."
+Earlier hidden-window and manually pumped results are not substitutes for
+visible-window checks. New Folder keeps `Ctrl+Shift+E`; Mark All as Played
+uses the approved `Alt+Shift+E`, removing their shortcut collision.
+
+Further visible-window checks on the JAWS-active development workstation
+verified the selection fixes but did not pass the unchanged 100 ms callback
+gate. After queued button updates, 100 library selections measured maxima of
+59.16 ms and 76.76 ms; final button labels and the absence of status recounts
+were verified. Large-tree opening/redrawing still exceeded the limit.
+Instrumented native operations included a single `SelectItem` at 105.20 ms
+wall time / 31.25 ms UI CPU. Removing per-turn `Thaw` did not resolve the
+failure: a single `AppendItem` took 107.93 ms within a 110.10 ms callback, so
+that trial was reverted. These observations do not establish that JAWS caused
+the delays. The native timing gate and human screen-reader acceptance remain
+open; passing functional regressions do not make either one complete.
 
 See `CHANGELOG.md` for the full, versioned history.

@@ -7,6 +7,7 @@ recordings were checked end to end on 2026-10-05 (the design note, section 12).
 
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -342,6 +343,53 @@ def test_the_picker_offers_every_format() -> None:
     wildcard = audio_file.file_filter()
     for extension in ("*.mp3", "*.m4a", "*.aac", "*.wav", "*.ogg", "*.opus", "*.flac", "*.wma"):
         assert extension in wildcard
+
+
+@pytest.mark.parametrize("failure", [False, True])
+@pytest.mark.skipif(sys.platform != "win32", reason="Windows metadata reader")
+def test_duration_uses_windows_metadata_when_optional_readers_are_missing(
+    monkeypatch, tmp_path, failure: bool
+) -> None:
+    from quill.core.windows_dictation import media_foundation
+
+    monkeypatch.setitem(sys.modules, "mutagen", None)
+    monkeypatch.setitem(sys.modules, "soundfile", None)
+    monkeypatch.setattr(media_foundation, "available", lambda: True)
+    opened: list[str] = []
+    closed: list[bool] = []
+
+    class Header:
+        duration = 254.25
+
+        def __init__(self, path: str) -> None:
+            opened.append(path)
+
+        def __enter__(self) -> Header:
+            if failure:
+                raise media_foundation.MediaFoundationError("Could not read the header.")
+            return self
+
+        def __exit__(self, *_exc: object) -> None:
+            closed.append(True)
+
+        def blocks(self) -> Any:
+            pytest.fail("Duration lookup must not decode audio.")
+
+    monkeypatch.setattr(media_foundation, "MediaFoundationReader", Header)
+    path = tmp_path / "talk.mp3"
+    assert audio_file.duration_of(path) == (0.0 if failure else 254.25)
+    assert opened == [str(path)]
+    assert closed == ([] if failure else [True])
+
+
+def test_unknown_duration_without_readers_on_non_windows(monkeypatch, tmp_path) -> None:
+    from types import SimpleNamespace
+
+    monkeypatch.setitem(sys.modules, "mutagen", None)
+    monkeypatch.setitem(sys.modules, "soundfile", None)
+    monkeypatch.setattr(audio_file, "sys", SimpleNamespace(platform="linux"))
+    monkeypatch.setitem(sys.modules, "quill.core.windows_dictation.media_foundation", None)
+    assert audio_file.duration_of(tmp_path / "talk.mp3") == 0.0
 
 
 # --------------------------------------------------------------------------- #

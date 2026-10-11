@@ -323,6 +323,7 @@ class ManagerActionsMixin:
             + (f" and {len(held)} downloaded file(s)" if held else ""),
             _undo,
             dispose=lambda: undo_last_ui.discard(held),
+            files=held,
         )
         self._on_library_changed()
         self.refresh_tree()
@@ -466,10 +467,13 @@ class ManagerActionsMixin:
         if monitor is None or self._safe_mode:
             self._announce("Feeds cannot be checked right now.")
             return
+        if monitor.is_checking:
+            self._announce("A feed check is already in progress.")
+            return
         # The count up front, because this is the one verb whose result
         # arrives show by show over the next few seconds: "checking three
         # feeds" tells you when it is finished, where "checking" does not.
-        started = monitor.check_now(force=True)
+        started = monitor.check_now(force=True, defer_start=True)
         if not started:
             self._announce("You follow no podcast with a feed to check.")
             return
@@ -480,3 +484,9 @@ class ManagerActionsMixin:
             getattr(self, "_transport_host", None) or self,
             list(getattr(monitor, "last_started_ids", [])),
         )
+        wx = getattr(self._transport_host, "_wx", None)
+        call_after = getattr(wx, "CallAfter", None)
+        if callable(call_after):
+            call_after(monitor.start_queued)
+        else:
+            monitor.start_queued()

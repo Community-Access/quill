@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 from pathlib import Path
 
 import pytest
@@ -115,7 +116,7 @@ def test_cast_and_radio_class_their_final_writes_as_must_record() -> None:
     root = Path(__file__).resolve().parents[3]
     cast = (root / "quill" / "apps" / "podcasts_close.py").read_text(encoding="utf-8")
     radio = (root / "quill" / "apps" / "radio_shutdown.py").read_text(encoding="utf-8")
-    assert 'report.step("podcast_library", MUST_RECORD' in cast
+    assert re.search(r'report\.step\(\s*"podcast_library",\s*MUST_RECORD', cast)
     assert 'report.step("listening_stats", MUST_RECORD' in cast
     assert 'report.step("last_seen", MUST_RECORD' in radio
     assert 'report.step("recording_marker", MUST_RECORD' in radio

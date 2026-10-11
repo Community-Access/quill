@@ -78,6 +78,7 @@ def _host(
         _unfollow_btn=_Button("&Unfollow"),
         _favorite_toggle_btn=_Button("Add to &Favorites"),
         _cast_status_bar=None,
+        _content_is_list=lambda: False,
         spoken=[],
         _selected_tree_data=lambda: selected,
     )
@@ -88,10 +89,13 @@ def _host(
     host._selected_show = PodcastsAppFrame._selected_show.__get__(host)
     host._selected_episode = PodcastsAppFrame._selected_episode.__get__(host)
     host._refresh_selection_buttons = CastPlacesMixin._refresh_selection_buttons.__get__(host)
+    host._selection_button_chunks = CastPlacesMixin._selection_button_chunks.__get__(host)
     host._play_selection_or_say_why = CastPlacesMixin._play_selection_or_say_why.__get__(host)
     host._refresh_transport_controls = PodcastsAppFrame._refresh_transport_controls.__get__(host)
+    host._transport_control_chunks = PodcastsAppFrame._transport_control_chunks.__get__(host)
     host._refresh_favorite_toggle = PodcastsAppFrame._refresh_favorite_toggle.__get__(host)
     host._refresh_cast_status_bar = lambda: None
+    host._cast_status_bar_chunks = lambda: iter(())
     return host
 
 
@@ -160,6 +164,17 @@ def test_an_unchanged_label_is_not_rewritten() -> None:
     host._refresh_transport_controls()
     host._refresh_transport_controls()
     assert host._play_pause_btn.labels == ["Pla&y The Daily"]
+
+
+def test_stop_availability_reads_current_playback_after_a_yield() -> None:
+    host = _host(selected=("show", "the daily"))
+    chunks = host._transport_control_chunks()
+    next(chunks)
+    assert host._play_pause_btn.label == "Pla&y The Daily"
+    host._podcast_controller.state.state = PodcastPlayerState.PLAYING
+    next(chunks)
+    assert host._stop_btn.enabled is True
+    chunks.close()
 
 
 # -- the dead state explains itself when pressed ------------------------------- #

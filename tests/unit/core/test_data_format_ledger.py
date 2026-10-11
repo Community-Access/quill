@@ -18,6 +18,7 @@ import pytest
 from quill.core import data_format_ledger as ledger_mod
 from quill.core.data_formats import FORMATS, DataFormat, formats_for
 from quill.core.updater import history, snapshots
+from quill.core.updater.feed_publish import formats_for_build
 
 
 def test_every_format_id_is_unique_and_reads_what_it_writes() -> None:
@@ -34,6 +35,17 @@ def test_shared_formats_belong_to_every_writer() -> None:
     assert "shared.media_bookmarks" in radio and "shared.media_bookmarks" in cast
     assert "radio.favorites" in radio and "radio.favorites" not in cast
     assert {fmt.location for fmt in formats_for("quilllite")} == {"lite_data"}
+
+
+def test_additive_library_and_lite_settings_formats_warn_about_old_readers() -> None:
+    for app_key, format_id in (
+        ("cast", "cast.library"),
+        ("quilllite", "lite.settings"),
+    ):
+        writes, reads, lossy = formats_for_build(app_key)
+        assert writes[format_id] == 2
+        assert reads[format_id] == 2
+        assert lossy[format_id] == 1
 
 
 def test_the_ledger_starts_the_clock_and_only_goes_up(tmp_path: Path) -> None:
@@ -72,7 +84,7 @@ def test_recording_at_launch_lands_in_the_right_folder(
     ledger_mod.record_running_build("quilllite", "1.2.0")
     shared = ledger_mod.read_ledger(Path(quill_data_dir))
     assert shared.high("radio.favorites") == 1 and shared.high("lite.settings") == 0
-    assert ledger_mod.read_ledger(lite).high("lite.settings") == 1
+    assert ledger_mod.read_ledger(lite).high("lite.settings") == 2
 
 
 def test_recording_never_breaks_a_launch(monkeypatch) -> None:

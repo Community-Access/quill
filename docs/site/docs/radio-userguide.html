@@ -399,10 +399,10 @@ installer, step by step</h3>
 from your Downloads folder.</li>
 <li>If Windows SmartScreen shows a warning, see “If your antivirus or
 SmartScreen speaks up” below.</li>
-<li>Setup may ask whether to install for you only or for everyone who
-uses the computer. Choose <strong>Install for me only</strong>. That
-needs no administrator rights. Installing for everyone asks Windows for
-permission.</li>
+<li>Setup installs for your Windows account only. It does not offer an
+all-users installation, so it does not need administrator rights or show
+a UAC prompt. Both Quill Radio and the shared runtime are installed in
+your user profile.</li>
 <li>The setup wizard opens. Press Enter on each page to accept the usual
 choices. The full installation includes this guide and the release
 notes. Then choose <strong>Install</strong>.</li>
@@ -853,8 +853,15 @@ pressing it tells you what would work. Stop does the same as
 website in your browser. If something is playing, you get that station’s
 site; if not, you get the site of the favorite you are on. It is the
 quickest way to a station’s schedule, such as Double Tap Live’s, and
-Quill Radio tells you which site it opened. If the station never gave a
-website, it says so and opens nothing.</li>
+Quill Radio tells you which site it opened. If no site is saved, Quill
+Radio asks whether you would like to add one. Choose <strong>Add
+Website</strong> and enter an HTTP or HTTPS address; a missing
+<code>https://</code> is added for you. Radio checks the address’s
+format but does not contact the site to test it. Check <strong>Don’t ask
+me again</strong> before choosing <strong>Add Website</strong> to skip
+this question in Quill Radio and QUILL in the future. When the address
+is saved, Radio opens it in your browser. Canceling or declining leaves
+the browser closed.</li>
 <li><strong>Mute</strong>, a button that stays pressed while the radio
 is muted. It always shows the real state, even if you muted from
 somewhere else.</li>
@@ -1297,10 +1304,10 @@ checkable item. When checked, opening Quill Radio plays your last
 station. It starts off.</li>
 <li><strong>Start Quill Radio with Windows</strong> (Ctrl+Alt+W): a
 checkable item. Quill Radio opens by itself when you sign in to Windows.
-It only affects your own account and needs no administrator rights. A
-portable copy does not offer it. If signing in ever opens the wrong
-thing, turn it off and on again, and Quill Radio writes the startup
-entry fresh.</li>
+It only affects your own account and needs no administrator rights. You
+can also change it in Preferences. A portable copy does not offer it. If
+signing in ever opens the wrong thing, turn it off and on again, and
+Quill Radio writes the startup entry fresh.</li>
 <li><strong>Download Preferences…</strong> (Ctrl+Alt+Shift+D): where
 downloads are saved and how they are filed.</li>
 <li><strong>Preferences…</strong> (Ctrl+,): see “Preferences” in Chapter
@@ -2704,8 +2711,9 @@ Favorites</strong>.</li>
 a recording).</li>
 <li><strong>Rename Favorite…</strong>, only on a row you have saved.
 Leave the name blank to go back to the directory’s own name.</li>
-<li><strong>Open Website</strong>, when the station has a home
-page.</li>
+<li><strong>Open Website</strong>, when the station has a home page, and
+<strong>Edit Website…</strong> for adding or correcting its
+address.</li>
 <li><strong>Download…</strong> or <strong>Remove Download</strong>,
 where the source allows saving.</li>
 <li><strong>Record This Station…</strong> and <strong>Schedule
@@ -2970,7 +2978,15 @@ Favorites</strong>, <strong>More Stations</strong>, <strong>Add Custom
 Station…</strong>, <strong>Find Streams from a Website…</strong> and
 <strong>Refresh</strong>. In the Music Genres category, Refresh reads
 the genre list again. Shift+F10 on a result offers Play or Stop, Add to
-or Remove from Favorites, Open Website and Report Bad Station….</p>
+or Remove from Favorites, Open Website, Edit Website… and Report Bad
+Station….</p>
+<p>An edited address is a local correction in this Radio profile; it
+does not change the directory’s station record. Choose <strong>Edit
+Website…</strong> again and leave the address blank to remove the
+correction and use the directory’s address again. The same <strong>Edit
+Website…</strong> action is on a station’s menu in Manage Favorite
+Stations. If a station has no stable identity to save against, Quill
+Radio says it cannot save that correction.</p>
 <p>The window’s menus are <strong>Go</strong> (Alt+G, with
 <strong>Close</strong>, Ctrl+W), <strong>Station</strong> (Alt+S) and
 <strong>Window</strong> (Alt+W). The Genre box also uses the letter G,
@@ -6582,6 +6598,11 @@ recording was in progress when Quill Radio quit” in Chapter 8.</li>
 <p>Each one is listed with how it starts:</p>
 <ul>
 <li><strong>Resume Last Station on Launch</strong>: off.</li>
+<li><strong>Start Quill Radio with Windows</strong>: off. Start Quill
+Radio automatically when you sign in to this Windows account. This is
+also available from Station &gt; Start Quill Radio with Windows; both
+controls stay in sync. Preferences reports when Windows does not allow
+the setting to change.</li>
 <li><strong>Check for updates automatically on launch</strong>: on. A
 quiet check once a day, which says nothing unless it finds
 something.</li>

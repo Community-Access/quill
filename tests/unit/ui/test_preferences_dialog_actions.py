@@ -190,3 +190,69 @@ def test_enter_on_a_button_or_a_multiline_box_is_left_alone(wx_app, monkeypatch)
     dialog._on_char_hook(key)
     assert ended == [] and key.skipped is True
     dialog.dialog.Destroy()
+
+
+def test_choice_options_can_be_replaced_after_dialog_construction(wx_app) -> None:
+    from quill.ui.app_preferences_dialog import PreferenceChoice
+
+    dialog = _dialog(
+        wx_app,
+        choices=[PreferenceChoice("Radio &output device:", "Output device", ["System default"], 0)],
+    )
+    dialog.set_choice_options(0, ["System default", "Speakers"], 1)
+    dialog.set_choice_help_text(0, "Choose an output device.")
+    dialog.set_choice_selection(0, 0)
+
+    choice = dialog._choice_controls[0]
+    assert choice.GetItems() == ["System default", "Speakers"]
+    assert dialog.choice_selection(0) == 0
+    assert choice.GetName() == "Choose an output device."
+    dialog.dialog.Destroy()
+
+
+def test_programmatic_choice_updates_do_not_count_as_user_changes(wx_app) -> None:
+    from quill.ui.app_preferences_dialog import PreferenceChoice
+
+    dialog = _dialog(
+        wx_app,
+        choices=[PreferenceChoice("Playback &engine:", "Playback engine", ["Auto", "MPV"], 0)],
+    )
+    choice = dialog._choice_controls[0]
+    assert dialog.choice_was_changed(0) is False
+    dialog.set_choice_selection(0, 1)
+    assert dialog.choice_was_changed(0) is False
+    event = wx.CommandEvent(wx.wxEVT_COMMAND_CHOICE_SELECTED, choice.GetId())
+    choice.GetEventHandler().ProcessEvent(event)
+    assert dialog.choice_was_changed(0) is True
+    dialog.dialog.Destroy()
+
+
+def test_modal_focus_lands_on_content_control_after_show(wx_app) -> None:
+    from quill.ui.app_preferences_dialog import PreferenceChoice
+
+    parent = wx.Frame(None, title="Preferences focus test")
+    parent.Show()
+    dialog = PreferencesDialog(
+        parent,
+        app_title="Quill Radio",
+        checkboxes=[PreferenceCheckbox("&Resume", "Resume playback", True)],
+        choices=[PreferenceChoice("Playback &engine:", "Playback engine", ["Auto"], 0)],
+    )
+    observed: list[tuple[object, bool]] = []
+
+    def _close_dialog() -> None:
+        observed.append((wx.Window.FindFocus(), dialog.dialog.IsActive()))
+        dialog.dialog.EndModal(wx.ID_CANCEL)
+
+    timer = wx.CallLater(100, _close_dialog)
+    try:
+        assert dialog.show() is None
+        assert len(observed) == 1
+        focused, active = observed[0]
+        while focused is not None and focused is not dialog._choice_controls[0]:
+            focused = focused.GetParent()
+        assert focused is dialog._choice_controls[0]
+        assert active is True
+        assert not timer.IsRunning()
+    finally:
+        parent.Destroy()

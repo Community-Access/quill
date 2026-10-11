@@ -10,8 +10,19 @@ Extracted from ``main_frame_podcasts.py`` under GATE-11.
 
 from __future__ import annotations
 
+import logging
+from pathlib import Path
 
-def share_place(show: object, episode: object, ms: int, *, finished: bool) -> None:
+
+def share_place(
+    show: object,
+    episode: object,
+    ms: int,
+    *,
+    finished: bool,
+    data_dir: Path | None = None,
+    strict: bool = False,
+) -> None:
     """Record this episode's place in the store Quill Radio also writes."""
 
     feed_url = str(getattr(show, "feed_url", "") or "")
@@ -23,7 +34,7 @@ def share_place(show: object, episode: object, ms: int, *, finished: bool) -> No
         from quill.core.podcasts.radio_listens import record_listen
 
         record_listen(
-            app_data_dir(),
+            data_dir if data_dir is not None else app_data_dir(),
             feed_url=feed_url,
             audio_url=audio_url,
             title=str(getattr(episode, "title", "") or ""),
@@ -32,4 +43,6 @@ def share_place(show: object, episode: object, ms: int, *, finished: bool) -> No
             app="cast",
         )
     except Exception:  # noqa: BLE001 - a shared place is never worth a crash
-        return
+        if strict:
+            raise
+        logging.getLogger(__name__).exception("Could not share a podcast listening position")

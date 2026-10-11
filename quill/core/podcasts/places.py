@@ -327,9 +327,9 @@ def count(library: PodcastLibrary, place_id: str, *, unread_notices: int = 0) ->
         return len(library.playlists)
     if place_id == "downloads":
         return sum(1 for show_ in library.shows for ep in show_.episodes if ep.downloaded_path)
-    from quill.core.podcasts.virtual_views import virtual_view_pairs
+    from quill.core.podcasts.virtual_views import iter_virtual_view_pairs
 
-    return len(virtual_view_pairs(library, place_id))
+    return sum(1 for _pair in iter_virtual_view_pairs(library, place_id))
 
 
 def empty_state(library: PodcastLibrary, place_id: str) -> str:

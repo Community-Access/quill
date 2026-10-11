@@ -21,6 +21,7 @@ never used makes no network call at all.
 
 from __future__ import annotations
 
+import threading
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
@@ -38,6 +39,7 @@ from quill.core.ai.gateway_session import (
     support_id_for,
 )
 from quill.ui.hosted_ai_own_key_route import OwnKeyRouteMixin
+from quill.ui.hosted_ai_route_words import RouteWords
 
 __all__ = ["AiService", "SignInCode"]
 
@@ -66,7 +68,7 @@ class SignInCode:
         return " ".join(self.user_code.replace("-", " dash "))
 
 
-class AiService(OwnKeyRouteMixin):
+class AiService(OwnKeyRouteMixin, RouteWords):
     """One per running QUILL Lite. Holds the session and does the waiting."""
 
     def __init__(self, app: Any) -> None:
@@ -150,64 +152,6 @@ class AiService(OwnKeyRouteMixin):
     def direct(self) -> bool:
         """Whether requests skip QUILL's service, and with it every QUILL limit."""
         return self.route != "free"
-
-    @property
-    def route_label(self) -> str:
-        """The route as a person hears it: "your ChatGPT subscription", "your own
-        OpenAI key" or "your own Google Gemini key"."""
-        if self.chatgpt_active:
-            return "your ChatGPT subscription"
-        from quill.core.ai.own_key import provider_name
-
-        return f"your own {provider_name(self.own_key_provider)} key"
-
-    @property
-    def direct_model(self) -> str:
-        """The model a direct route answers with, or "" when none is chosen yet."""
-        if self.chatgpt_active:
-            return str(self.chatgpt.model or "")
-        return self.own_key_model
-
-    def size_note(self, text: str) -> str:
-        """What sending *text* on a direct route means, for the pad's summary.
-
-        Empty on the free service, where the size limit speaks for itself. An
-        own key is priced per request; a plan is not, so its note says usage
-        rather than dollars (:func:`quill.core.ai.chatgpt_ai_help.size_note`).
-        """
-        if not self.direct:
-            return ""
-        free_tokens = self.free_limits.max_input_tokens
-        if self.chatgpt_active:
-            from quill.core.ai.chatgpt_ai_help import size_note
-
-            return size_note(text, self.direct_model, free_limit_tokens=free_tokens)
-        from quill.core.ai.own_key import size_warning
-
-        return size_warning(
-            text, self.own_key_model, free_limit_tokens=free_tokens, provider=self.own_key_provider
-        )
-
-    def conversation_note(self) -> str:
-        """What a conversation costs on this route, said once at the top of the window."""
-        if self.chatgpt_active:
-            return (
-                "This conversation uses your ChatGPT subscription: no QUILL limit, and "
-                "each message counts toward your plan's own usage. The whole "
-                "conversation goes with each message."
-            )
-        if self.own_key_active:
-            return (
-                "This conversation uses your own OpenAI key: no limits, billed to "
-                "your OpenAI account. The whole conversation goes with each message, "
-                "so a long one costs more per reply."
-            )
-        return (
-            "Each message uses one of your free requests. The conversation so far "
-            "goes with it as far as the free size limit allows, so a long "
-            "conversation gradually forgets its beginning; this window says when "
-            "that starts."
-        )
 
     # -- what the service allows ----------------------------------------- #
 
@@ -298,7 +242,7 @@ class AiService(OwnKeyRouteMixin):
         on_done: Callable[[str, GatewayQuota | None], None],
         on_error: Callable[[str], None],
         language: str = "",
-    ) -> None:
+    ) -> threading.Event:
         """Run one AI request. Returns at once; answers on the UI thread.
 
         *on_error* receives a finished sentence, never an exception. Every
@@ -306,6 +250,7 @@ class AiService(OwnKeyRouteMixin):
         for a person to hear, so rendering one at a user is the whole job.
         *language* is Translate's target language.
         """
+        stop = threading.Event()
         if self.chatgpt_active:
             from quill.core.ai.chatgpt_ai_help import ask_with_chatgpt
 
@@ -331,6 +276,7 @@ class AiService(OwnKeyRouteMixin):
                     model=model,
                     language=language or "English",
                     provider=provider,
+                    cancel=stop,
                 )
                 return answer, None
 
@@ -341,13 +287,30 @@ class AiService(OwnKeyRouteMixin):
                 return client.ask(feature, prompt, chunks, language=language)
 
         def done(_name: str, result: Any) -> None:
-            text, quota = result
-            _call_after(on_done, text, quota)
+            def deliver() -> None:
+                if stop.is_set():
+                    return
+                text, quota = result
+                on_done(text, quota)
+
+            _call_after(deliver)
 
         def failed(_name: str, error: BaseException) -> None:
-            _call_after(on_error, _sentence(error))
+            def deliver() -> None:
+                if not stop.is_set():
+                    on_error(_sentence(error))
+
+            _call_after(deliver)
 
         _submit("quill-ai-ask", work, on_success=done, on_failure=failed)
+        return stop
+
+    def cancel(self, request: threading.Event | None) -> bool:
+        """Cancel only *request*, leaving requests from other windows untouched."""
+        if request is None or request.is_set():
+            return False
+        request.set()
+        return True
 
     def converse(
         self,
@@ -357,7 +320,7 @@ class AiService(OwnKeyRouteMixin):
         *,
         on_done: Callable[[str, GatewayQuota | None, int], None],
         on_error: Callable[[str], None],
-    ) -> None:
+    ) -> threading.Event:
         """One conversation turn (:mod:`quill.core.ai.hosted_chat`). Returns at
         once; answers on the UI thread with ``(reply, quota, turns_dropped)``.
 
@@ -366,6 +329,7 @@ class AiService(OwnKeyRouteMixin):
         counted; on QUILL's service the service may trim further and says by
         how many turns.
         """
+        stop = threading.Event()
         if self.chatgpt_active:
             from quill.core.ai.chatgpt_ai_help import converse_with_chatgpt
 
@@ -377,10 +341,18 @@ class AiService(OwnKeyRouteMixin):
         elif self.own_key_active:
             from quill.core.ai.own_key import ask_with_own_key
 
-            model = self.own_key_model
+            model, provider = self.own_key_model, self.own_key_provider
 
             def work(**_kwargs: Any) -> tuple[str, GatewayQuota | None, int]:
-                reply = ask_with_own_key("chat", prompt, chunks, model=model, history=history)
+                reply = ask_with_own_key(
+                    "chat",
+                    prompt,
+                    chunks,
+                    model=model,
+                    history=history,
+                    provider=provider,
+                    cancel=stop,
+                )
                 return reply, None, 0
 
         else:
@@ -390,13 +362,23 @@ class AiService(OwnKeyRouteMixin):
                 return client.converse(prompt, chunks, history)
 
         def done(_name: str, result: Any) -> None:
-            text, quota, dropped = result
-            _call_after(on_done, text, quota, dropped)
+            def deliver() -> None:
+                if stop.is_set():
+                    return
+                text, quota, dropped = result
+                on_done(text, quota, dropped)
+
+            _call_after(deliver)
 
         def failed(_name: str, error: BaseException) -> None:
-            _call_after(on_error, _sentence(error))
+            def deliver() -> None:
+                if not stop.is_set():
+                    on_error(_sentence(error))
+
+            _call_after(deliver)
 
         _submit("quill-ai-converse", work, on_success=done, on_failure=failed)
+        return stop
 
     def describe_image(
         self,

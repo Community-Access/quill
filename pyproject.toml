@@ -7,7 +7,7 @@ name = "quill"
 dynamic = ["version"]
 description = "Screen-reader-first writing and document environment for Windows and macOS"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 license = { text = "MIT" }
 authors = [
   { name = "Community Access" },
@@ -15,7 +15,6 @@ authors = [
 ]
 classifiers = [
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Operating System :: Microsoft :: Windows",
   "Operating System :: MacOS",
@@ -36,6 +35,9 @@ dependencies = [
     # Runtime deps of the vendored autoupdate library (quill/_vendor/autoupdate).
     "requests>=2.34.2",
     "platform_utils>=1.6.3",
+    # Native system certificate stores for verified HTTPS in shared core
+    # networking, including podcast feeds and AI provider calls.
+    "truststore>=0.10.4",
     # Windows has no system IANA timezone database, so stdlib zoneinfo needs
     # this package to resolve real zone names (publishing schedule dialog).
     "tzdata>=2026.4",
@@ -82,6 +84,9 @@ ui = [
     # off to the update bootstrapper). Both are UI-reachable only, so it sits
     # in this extra rather than in the base set.
     "pywin32>=312; sys_platform == 'win32'",
+    # Shared support form reads the running JAWS/NVDA process and executable
+    # version without spawning a console process or requesting elevation.
+    "psutil>=5.9,<9; sys_platform == 'win32'",
     # CA bundle for verified HTTPS update checks (macOS Python lacks trusted roots).
     "certifi>=2026.7.22",
     # Prism screen-reader speech bridge (Windows) — routes announcements to
@@ -588,7 +593,7 @@ markers = [
 
 [tool.ruff]
 line-length = 100
-target-version = "py312"
+target-version = "py313"
 # Vendored, generated, and distribution trees are not first-party source and
 # must not be linted or format-checked.
 extend-exclude = [
@@ -659,7 +664,7 @@ select = ["E", "F", "I", "UP", "B"]
 "tests/unit/platform/macos/test_sr_detect.py" = ["E402"]
 
 [tool.mypy]
-python_version = "3.12"
+python_version = "3.13"
 warn_return_any = true
 warn_unused_configs = true
 strict_optional = true

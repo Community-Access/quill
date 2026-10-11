@@ -125,6 +125,8 @@ or the command palette (`Ctrl+Shift+P`).
   unopened nested dialogs and web forms are not a global index.
   - [ ] Category selector navigable by arrow keys with first-letter type-ahead, first category selected on open
   - [ ] Each category page opens its area with its `Open ...` button
+  - [ ] Default document folder chooser in QUILL and QUILL Lite opens a native
+        folder picker; clearing the field restores the Documents default
 - [ ] Settings (tabbed, registry-driven): `Ctrl+,` then `Open General`
 - [ ] Export settings to `.qsf` (button within Settings)
 - [ ] Import settings from `.qsf` (button within Settings)
@@ -275,6 +277,7 @@ state and lists any installed Quillins read-only.
 ## R. Tools: QUILL Whisperer (speech)
 
 - [ ] Announcement Backend: via Tools menu
+- [ ] Dictation Microphone: Tools > Speech > Dictation Microphone...
 - [ ] QUILL Whisperer Model Manager: via Tools menu
 - [ ] QUILL Whisperer Model Status: via Tools menu
 - [ ] QUILL Whisperer Provider Center: via Tools menu
@@ -282,6 +285,11 @@ state and lists any installed Quillins read-only.
 - [ ] QUILL Whisperer Readiness Check: via Tools menu
 - [ ] QUILL Whisperer Capability Matrix: via Tools menu
 - [ ] QUILL Whisperer Download Queue: via Tools menu
+- [ ] Transcribe Audio or Video (Offline): Tools > Speech > Transcribe Audio or
+      Video (Offline)...; choose transcript format, then choose an audio/video file
+- [ ] Generate Captions (Offline): Tools > Speech > Generate Captions (Offline)...
+      or Audio Studio > Generate Captions (Offline)...; choose an audio/video file,
+      caption format, and output file
 
 ## R2. Publishing
 
@@ -321,6 +329,7 @@ state and lists any installed Quillins read-only.
 These open only from inside another dialog or flow. Test each by reaching its
 parent first.
 
+- [ ] Cast Notes Reader find prompt: Search in the Notes Reader window
 - [ ] Add or Edit Watch Profile (from Watch Folder Profiles)
 - [ ] Browse for folder (from Add or Edit Watch Profile)
 - [ ] Watch profile dry-run preview (from Add or Edit Watch Profile, Preview (dry run) button)
@@ -401,6 +410,47 @@ trigger.
   and confirming the AI / assistant surfaces and watch-folder network calls
   short-circuit per `quill/stability/safe_mode.py`. Cross-reference: the
   pre-release review's N-10 / H-SAFE-1 fixes.
+
+## Z. QUILL Radio station websites
+
+- [ ] Add Station Website confirmation: main Website button when the playing
+  station (or selected favorite) has no valid website
+- [ ] Edit Station Website (native text-entry dialog): Browse/Search Stations
+  station context menu > Edit Website, or Manage Favorites > station context
+  menu > Edit Website; also follows Add Station Website confirmation
+  - Enter an address with or without `https://`; only HTTP(S) addresses save
+  - Blank removes the local override and restores the provider's address
+
+## Z2. Podcast storage
+
+- [ ] Podcast download storage report: via QUILL's Command Palette
+  (`Ctrl+Shift+P`) > Podcasts: Downloads...; Cast's same-named command opens
+  its Downloads place instead. Verify initial list focus, All/Unheard column values,
+  selected-podcast retention, filter-hidden counts, saved column layouts,
+  keyboard navigation across virtual rows, and Close/Escape focus return.
+  - [ ] Remove This Podcast's Downloads confirmation (from the storage report):
+    No is the default; queued, part-played, pinned, and active downloads stay.
+
+Companion main-window check (not a dialog):
+
+- [ ] Cast View > Downloads (`Ctrl+D`) with an isolated large catalogue:
+  verify All/Unheard rows, live episode actions, and keyboard responsiveness
+  while counts and rows are loading. Switch places before completion; the
+  superseded result must not change the place or restore an old selection.
+  Move focus between the loading pane, heading and row-publication steps;
+  a pending explicit opening must not reclaim focus after that movement.
+  Places count updates and unchanged status-bar refreshes must not move focus
+  or repeat control announcements. Cancel midway through a status refresh;
+  changed cells must still be laid out. Close during early opening, partial
+  capture, worker processing and publication; detached-input cleanup must
+  finish off-thread without delaying close or touching the destroyed window.
+
+## Z3. Cast episode actions
+
+- [ ] Mark All as Played confirmation: Cast Episode > Mark All as Played
+  (`Alt+Shift+E`). Verify the named podcast and count, the safe default,
+  cancellation without changes, and focus return. `Ctrl+Shift+E` must open
+  New Folder instead, never this bulk action.
 
 ## Maintenance note
 

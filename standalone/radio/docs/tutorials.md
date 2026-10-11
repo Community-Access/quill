@@ -1,6 +1,6 @@
 # Quill Radio Tutorials
 
-Welcome. There are 42 short lessons here, about 252 minutes in all, and you can take them in any order. Each one is a few small steps, and each step tells you what to press and what you should hear.
+Welcome. There are 43 short lessons here, about 256 minutes in all, and you can take them in any order. Each one is a few small steps, and each step tells you what to press and what you should hear.
 
 This page is the lessons written out, so you can read them anywhere. If you would rather be walked through, open **Help > Tutorials...** in Quill Radio. It does a step for you when you ask, and moves on by itself once it hears you have done one.
 
@@ -26,6 +26,7 @@ The keys here are the ones Quill Radio comes with. If you have changed a key, th
   - Folders, and an order of your own (8 minutes)
   - Ten stations, no list at all (4 minutes)
   - Decide what a row says, and what its menu offers first (6 minutes)
+  - Correct a station's website (4 minutes)
   - Make the keys yours (6 minutes)
   - The settings actually worth changing (8 minutes)
   - Quillins: extensions in a radio (4 minutes)
@@ -132,7 +133,7 @@ Save the station you are listening to as a favorite. After this, getting back to
 5. **Make the radio switch itself on.** Open the Station menu and check Resume Last Station on Launch. Now when you open Quill Radio, your station is already playing, just like turning on a radio in the kitchen.
    - Keys: Alt+S, Ctrl+Alt+L
    - You should hear: Quill Radio will pick up where you left off at launch.
-   - Worth knowing: Turn on Start Quill Radio with Windows too, on the same menu (Ctrl+Alt+W), and the radio is simply on when you sit down. It only affects your own Windows account, and you do not need to be an administrator.
+   - Worth knowing: Turn on Start Quill Radio with Windows too, on the same menu (Ctrl+Alt+W), or turn it on in Preferences; both controls stay in sync. The radio is simply on when you sit down. It affects only your own Windows account, needs no administrator rights, and is unavailable in a portable copy.
 
 6. **Learn the one-key way back.** Play Last Station starts whatever you had on last, with no searching at all. Reach for it when you stopped something by mistake, or when you come back to the computer after lunch.
    - Keys: Ctrl+L
@@ -617,6 +618,24 @@ Two windows that change how Quill Radio sounds to you: which details a list read
    - You should hear: Two lists, In the menu and Not in the menu, each place read with its number.
 
 Both windows are worth ten minutes, just once. A list that reads only the four things you care about feels very different from one that reads nine.
+
+Next: Correct a station's website; Make the keys yours.
+
+### Correct a station's website
+
+Add or correct a station's website for this Radio profile, then restore the directory's address whenever you want.
+
+*2 steps, about 4 minutes.*
+
+1. **Edit the address on a station.** On a station row in Browse Stations or Manage Favorite Stations, open its menu and choose Edit Website. Enter the HTTP or HTTPS address you want Quill Radio to use. This correction stays in your Radio profile; it does not change the directory or contact the site to check it.
+   - Keys: Shift+F10
+   - You should hear: Edit Website, the address field, and the saved correction.
+
+2. **Restore the directory's address.** Choose Edit Website again and clear the address. Quill Radio removes your local correction and goes back to the station's directory address.
+   - Keys: Shift+F10
+   - You should hear: The address correction is cleared.
+
+A corrected station website belongs to your Radio profile alone. You can open it from the row's menu or the Website button.
 
 Next: Make the keys yours.
 

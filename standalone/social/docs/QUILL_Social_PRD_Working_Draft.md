@@ -2,7 +2,7 @@
 ## Product Requirements Document — Current Specification
 
 **Product family:** QuillVille / QUILL ecosystem  
-**Primary platform:** Python 3.12+ with wxPython  
+**Primary platform:** Python 3.13+ with wxPython  
 **Initial operating system:** Windows 11  
 **Future platforms:** macOS and iOS through a shared service and data architecture  
 **Document status:** Current Specification (P0 slice implemented and verified)

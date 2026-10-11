@@ -36,6 +36,9 @@ READ_COMMENTS = "youtube.comments"
 LIVE_CHAT = "youtube.live_chat"
 VIDEO_DETAILS = "youtube.video"
 ABOUT_CHANNEL = "channel.about"
+ADD_CHANNEL = "youtube.add_channel"
+ADD_PLAYLIST = "youtube.add_playlist"
+ADD_VIDEO = "youtube.add_video"
 
 #: Folder kinds that are a YouTube channel, followed or not.
 CHANNEL_KINDS = frozenset({"youtubechannel", "ytchannel"})
@@ -85,6 +88,15 @@ def video_actions(station: Any, row_action: Any) -> list[Any]:
     ]
 
 
+def add_actions(row_action: Any) -> list[Any]:
+    """Add a Channel / Playlist / Video in the order the branch lists them."""
+    return [
+        row_action(ADD_CHANNEL, "Add a Chann&el..."),
+        row_action(ADD_PLAYLIST, "Add a Play&list..."),
+        row_action(ADD_VIDEO, "Add a Video &URL..."),
+    ]
+
+
 def subscribe_url(channel_url: str, handle_url: str = "") -> str:
     """YouTube's own subscribe-confirm page for a channel (pure).
 
@@ -100,6 +112,10 @@ def subscribe_url(channel_url: str, handle_url: str = "") -> str:
 
 __all__ = [
     "ABOUT_CHANNEL",
+    "ADD_CHANNEL",
+    "ADD_PLAYLIST",
+    "ADD_VIDEO",
+    "add_actions",
     "CHANNEL_KINDS",
     "LIVE_CHAT",
     "VIDEO_DETAILS",

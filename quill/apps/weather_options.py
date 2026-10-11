@@ -39,14 +39,25 @@ def set_launch_at_startup(host: Any, enabled: bool) -> None:
     """Add or remove the per-user sign-in entry, and say what actually took."""
     from quill.platform.windows import weather_startup
 
+    if not weather_startup.is_windows():
+        _check_menu_item(host, host._startup_item_id, False)
+        host._announce("Start with Windows needs Windows.")
+        return
+    if weather_startup.running_portable():
+        _check_menu_item(host, host._startup_item_id, False)
+        host._announce(weather_startup.PORTABLE_REFUSAL)
+        return
     weather_startup.set_launch_at_startup(enabled)
     actual = weather_startup.is_launch_at_startup_enabled()
     _check_menu_item(host, host._startup_item_id, actual)
-    host._announce(
-        "Quill Weather will start with Windows."
-        if actual
-        else "Quill Weather will not start with Windows."
-    )
+    if actual != enabled:
+        host._announce("Windows did not allow that startup change.")
+    else:
+        host._announce(
+            "Quill Weather will start with Windows."
+            if actual
+            else "Quill Weather will not start with Windows."
+        )
 
 
 def set_app_pref(host: Any, field: str, value: bool) -> None:
@@ -55,8 +66,19 @@ def set_app_pref(host: Any, field: str, value: bool) -> None:
 
     data_dir = host._weather_data_dir()
     settings = settings_mod.load_settings(data_dir)
+    previous = bool(getattr(settings, field))
     setattr(settings, field, value)
-    settings_mod.save_settings(data_dir, settings)
+    try:
+        settings_mod.save_settings(data_dir, settings)
+    except OSError:
+        item_id = {
+            "app_start_in_tray": "_start_tray_item_id",
+            "app_close_to_tray": "_close_tray_item_id",
+        }.get(field)
+        if item_id is not None:
+            _check_menu_item(host, getattr(host, item_id), previous)
+        host._announce("Weather could not save that setting. Check the data folder and try again.")
+        return
     on, off = _SAID.get(field, ("Setting saved.", "Setting saved."))
     host._announce(on if value else off)
 
@@ -71,6 +93,13 @@ def set_background_check(host: Any, enabled: bool) -> None:
         host._announce("Background alert checks need Windows.")
         reflect_background_check(host)
         return
+    if scheduled_task.running_portable():
+        host._announce(
+            "A portable copy does not change this computer's scheduled tasks. "
+            "Install Quill Weather for background checks when closed."
+        )
+        reflect_background_check(host, False)
+        return
     if enabled:
         interval = monitor.load_config(host._weather_data_dir()).interval_minutes
         scheduled_task.register(interval)
@@ -78,6 +107,9 @@ def set_background_check(host: Any, enabled: bool) -> None:
         scheduled_task.unregister()
     actual = scheduled_task.is_registered()
     reflect_background_check(host, actual)
+    if actual != enabled:
+        host._announce("Windows did not allow that background check change.")
+        return
     host._announce(
         "Quill Weather will check for alerts in the background, even when closed."
         if actual

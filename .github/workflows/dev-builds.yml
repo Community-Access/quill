@@ -54,7 +54,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-python@v7
         with:
-          python-version: "3.12"
+          python-version: "3.13"
       - name: Decide whether today's Dev build runs
         id: plan
         env:
@@ -79,12 +79,33 @@ jobs:
           ref: main
       - uses: actions/setup-python@v7
         with:
-          python-version: "3.12"
+          python-version: "3.13"
       - name: Install build dependencies
-        run: python -m pip install -e .[ui,spellcheck,dev]
+        run: python -m pip install -e .[ui,spellcheck,dev] "pyinstaller>=6.22.3" "pyinstaller-hooks-contrib>=2026.7" "packaging>=25"
+      - name: Install shared runtime dependencies for sibling apps
+        if: matrix.app != 'quill'
+        run: python -m pip install --find-links vendor/wheels -e ".[runtime,packaging]"
       - name: Install Inno Setup
         shell: pwsh
-        run: winget install --id JRSoftware.InnoSetup -e --accept-package-agreements --accept-source-agreements --disable-interactivity
+        run: winget install --id JRSoftware.InnoSetup.7 -e --accept-package-agreements --accept-source-agreements --disable-interactivity
+      - name: Stage pinned Pandoc for sibling documentation
+        if: matrix.app != 'quill'
+        shell: pwsh
+        run: |
+          # Match scripts/build_windows_distribution.py's pinned 3.10 archive.
+          # winget's MSI succeeds but its per-user path is not visible to the
+          # next runner step, where DocRender.ps1 resolves Pandoc.
+          $archive = Join-Path $env:RUNNER_TEMP 'pandoc-3.10.zip'
+          Invoke-WebRequest 'https://github.com/jgm/pandoc/releases/download/3.10/pandoc-3.10-windows-x86_64.zip' -OutFile $archive
+          $expected = 'bb808d00fd58762299d64582a9b4c3e4b106cd929e62c5f19bcdcb496f1e54ae'
+          if ((Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash.ToLowerInvariant() -ne $expected) {
+            throw 'Pandoc archive checksum did not match the repository pin.'
+          }
+          $target = Join-Path $env:RUNNER_TEMP 'quill-pandoc'
+          Expand-Archive -LiteralPath $archive -DestinationPath $target
+          $pandoc = Get-ChildItem -LiteralPath $target -Filter pandoc.exe -File -Recurse | Select-Object -First 1
+          if (-not $pandoc) { throw 'Pandoc archive contained no pandoc.exe.' }
+          "QUILL_PANDOC=$($pandoc.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
       - name: Pick this app's Dev version
         id: ver
         shell: pwsh
@@ -113,18 +134,21 @@ jobs:
           website = "https://quillforall.org"
           "@ | Set-Content -Encoding utf8 build/version.toml
           $env:QUILL_BUILD_NUMBER = $number
-          $iscc = @("$env:LOCALAPPDATA\Programs\Inno Setup 7\ISCC.exe", "C:\Program Files (x86)\Inno Setup 7\ISCC.exe") | Where-Object { Test-Path $_ } | Select-Object -First 1
-          python scripts/build_windows_distribution.py --bundle-python --compile-installer --iscc-path "$iscc" --output-dir dist/windows
+          python scripts/build_windows_distribution.py --bundle-python --compile-installer --output-dir dist/windows
           New-Item -ItemType Directory -Force dist/dev | Out-Null
           Get-ChildItem dist/windows/installer/Output/Quill-for-All-Setup-*.exe | Select-Object -First 1 | Copy-Item -Destination "dist/dev/Quill-for-All-Setup-$version.exe"
           Compress-Archive -Path dist/windows/portable/* -DestinationPath "dist/dev/Quill-Portable-$version.zip"
       - name: Build a sibling app (Dev, unsigned)
         if: matrix.app != 'quill'
         shell: pwsh
+        env:
+          QUILL_PODCAST_INDEX_KEY: ${{ secrets.QUILL_PODCAST_INDEX_KEY }}
+          QUILL_PODCAST_INDEX_SECRET: ${{ secrets.QUILL_PODCAST_INDEX_SECRET }}
         run: |
           $version = "${{ steps.ver.outputs.version }}"
           python scripts/fetch_build_deps.py
-          & "standalone/${{ matrix.app }}/scripts/build_release.ps1" -SkipPublishedCheck -SkipCatalog -DevVersion $version
+          $buildPython = python -c "import sys; print(sys.executable)"
+          & "standalone/${{ matrix.app }}/scripts/build_release.ps1" -Python $buildPython -SkipPublishedCheck -SkipCatalog -DevVersion $version
           New-Item -ItemType Directory -Force dist/dev | Out-Null
           Get-ChildItem "standalone/${{ matrix.app }}/dist" -File | Where-Object { $_.Name -like "*$version*" } | Copy-Item -Destination dist/dev
       - uses: actions/upload-artifact@v7

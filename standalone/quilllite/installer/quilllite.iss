@@ -42,10 +42,10 @@
 ; (docs/release/RELEASE.md, "Build numbers"). build_release.ps1 passes
 ; /dAppBuild= and /dAppFileVersion=; these literals are only the fallback.
 #ifndef AppBuild
-  #define AppBuild "1"
+  #define AppBuild "3"
 #endif
 #ifndef AppFileVersion
-  #define AppFileVersion "1.2.0.1"
+  #define AppFileVersion "1.2.0.3"
 #endif
 #define AppPublisher "Community Access"
 #define AppURL "https://github.com/Community-Access/quill"
@@ -89,7 +89,6 @@ DisableDirPage=no
 DisableProgramGroupPage=auto
 AllowNoIcons=yes
 PrivilegesRequired=lowest
-PrivilegesRequiredOverridesAllowed=dialog
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 MinVersion=10.0

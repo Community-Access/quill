@@ -1,9 +1,9 @@
 """QUILL Lite's guided tutorials: its tracks, and its lessons assembled.
 
-Ten lessons in two tracks, and the number is the point. QUILL has twenty-four
-in six, because QUILL is an environment somebody moves into; QUILL Lite is a
-Notepad replacement, and a Notepad replacement with a twenty-one-lesson course
-attached to it is advertising that it is not one.
+Sixteen lessons in two tracks, and the number is the point. QUILL has
+twenty-four in six, because QUILL is an environment somebody moves into;
+QUILL Lite is a Notepad replacement, and a Notepad replacement with a
+twenty-one-lesson course attached to it is advertising that it is not one.
 
 The engine -- what a step is, how one renders, where progress is kept -- is the
 shared :mod:`quill.core.tutorials`, the same one Quill Radio, QUILL Cast, Quill
@@ -54,7 +54,7 @@ TRACKS: tuple[Track, ...] = (
         "Once you are comfortable: select more than a few words, find your "
         "way back to where you were, skim something long, fix spelling without "
         "a red squiggle, ask a question about the document in front of you, and "
-        "write by talking.",
+        "write by talking or transcribe a recording.",
     ),
 )
 
@@ -64,13 +64,14 @@ CATALOGUE: TutorialSet = build(
     TRACKS,
     first_documents.TUTORIALS,
     working_in_it.TUTORIALS,
-    # 2026-10-05 (dict.md 3.10): five short dictation lessons, shared with QUILL.
+    # The five 2026-10-05 dictation lessons and the shared audio-file lesson.
     dictation_lessons(
         {
             "toggle": "cmd_toggle_dictation",
             "language": "cmd_switch_dictation_language",
             "transcript": "cmd_live_transcript",
             "status": "cmd_dictation_status",
+            "transcribe": "cmd_transcribe_audio_file",
         },
         track="working-in-it",
         surfaces=("QUILL Lite",),

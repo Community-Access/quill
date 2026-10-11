@@ -169,6 +169,7 @@ PRODUCTS: dict[str, Product] = {
         stage_engines=False,
         stage_ffmpeg=False,
         stage_mpv=False,
+        offline_portable_launcher=True,
     ),
     "inkwell": Product(
         key="inkwell",

@@ -30,6 +30,8 @@ import wx
 
 from quill.apps.inkwell_dictation import InkwellDictationMixin
 from quill.apps.inkwell_keys import InkwellKeysMixin
+from quill.apps.inkwell_preference_save import InkwellPreferenceSaver
+from quill.apps.inkwell_preferences import open_preferences
 from quill.core.abbreviations import (
     AbbreviationLibrary,
     load_abbreviation_library,
@@ -65,6 +67,11 @@ class QuillInkwellFrame(
 
         self._data_dir: Path = app_data_dir()
         self._settings: InkwellSettings = load_settings(self._data_dir)
+        self._preference_saver = InkwellPreferenceSaver(
+            self._data_dir,
+            self._task_manager,
+            self._announce,
+        )
         self._library: AbbreviationLibrary = load_abbreviation_library(self._data_dir)
         self._hook: Any = None
         self._windows = WindowManager(wx)
@@ -135,6 +142,9 @@ class QuillInkwellFrame(
         menu_bar.Append(abbr_menu, "&Abbreviations")
 
         options_menu = wx.Menu()
+        prefs_id = wx.NewIdRef()  # Ctrl+, in every app (qc.md X-01); P is pasting
+        options_menu.Append(prefs_id, "Pr&eferences...\tCtrl+,")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: open_preferences(self), id=prefs_id)
         self._startup_item_id = wx.NewIdRef()
         options_menu.AppendCheckItem(
             self._startup_item_id, "Start Quill Inkwell with &Windows\tCtrl+Alt+W"
@@ -246,6 +256,7 @@ class QuillInkwellFrame(
             self._paste_item_id,
             self._announce_item_id,
             excluded_id,
+            prefs_id,
             updates_id,
             about_id,
         )
@@ -478,11 +489,11 @@ class QuillInkwellFrame(
 
     def _set_pref(self, name: str, value: bool) -> None:
         setattr(self._settings, name, value)
-        save_settings(self._data_dir, self._settings)
+        self._preference_saver.queue(self._settings)
 
     def _set_injection_mode(self, paste: bool) -> None:
         self._settings.injection_mode = "paste" if paste else "type"
-        save_settings(self._data_dir, self._settings)
+        self._preference_saver.queue(self._settings)
         self._announce(
             "Expansions are pasted; the clipboard is restored afterwards."
             if paste
@@ -588,8 +599,11 @@ def main() -> int:
     try:
         app.MainLoop()
     finally:
-        release_primary_instance(slot=_IPC_SLOT)
-        log_listener.stop()
+        try:
+            frame._preference_saver.flush()
+        finally:
+            release_primary_instance(slot=_IPC_SLOT)
+            log_listener.stop()
     return 0
 
 

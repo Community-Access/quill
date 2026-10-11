@@ -8,6 +8,7 @@ download the one episode under the cursor (reported 2026-08-17).
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from types import SimpleNamespace
 
 import pytest
@@ -22,12 +23,22 @@ from quill.core.podcasts.subscriptions import PodcastLibrary
 class _Host(CastLibraryActionsMixin):
     """The mixin with just the state the entries builder reads."""
 
-    def __init__(self, library: PodcastLibrary, selected: tuple[str, str] | None) -> None:
+    def __init__(
+        self,
+        library: PodcastLibrary,
+        selected: tuple[str, str] | None,
+        *,
+        safe_mode: bool = False,
+    ) -> None:
         self._podcast_library = library
         self._selected = selected
+        self._safe_mode = safe_mode
         self.opened: list[str] = []
         self.said: list[str] = []
+        self.refresh_requests: list[str] = []
         self.changed = 0
+        self.frame = SimpleNamespace()
+        self._podcast_download_queue = None
         stopped = SimpleNamespace(name="STOPPED")
         self._podcast_controller = SimpleNamespace(
             state=SimpleNamespace(state=stopped, show_id=None, episode_guid=None)
@@ -43,6 +54,21 @@ class _Host(CastLibraryActionsMixin):
         show = self._podcast_library.find_show(show_id)
         episode = show.find_episode(guid) if show is not None else None
         return None if show is None or episode is None else (show, episode)
+
+    def _selected_show(self):
+        if self._selected is None or self._selected[0] != "show":
+            return None
+        return self._podcast_library.find_show(self._selected[1])
+
+    def refresh_podcast_feed(self, show_id: str) -> None:
+        self.refresh_requests.append(show_id)
+
+    def _on_refresh_feed(self, show: PodcastShow) -> None:
+        self._announce(f"Checking {show.title}...")
+        self.refresh_podcast_feed(show.id)
+
+    def _keep_menu_ids(self, *_ids: object) -> None:
+        pass
 
     # -- the Manager-shaped names folder_commands reads (CastEpisodeListMixin) --
 
@@ -78,6 +104,14 @@ def _library() -> PodcastLibrary:
     return library
 
 
+def _feed_library() -> PodcastLibrary:
+    library = _library()
+    show = library.find_show("s1")
+    show.is_local = False
+    show.feed_url = "https://example.com/feed.xml"
+    return library
+
+
 def _labels(host: _Host) -> list[str]:
     return [label for label, _handler in host._library_context_entries()]
 
@@ -92,6 +126,141 @@ def test_a_show_row_offers_custom_order_moves() -> None:
     labels = _labels(_Host(_library(), ("show", "s1")))
     assert any(label.startswith("Move Up in &Custom Order") for label in labels)
     assert any(label.startswith("Move Do&wn in Custom Order") for label in labels)
+
+
+def test_a_feed_backed_show_row_puts_refresh_feed_first() -> None:
+    host = _Host(_feed_library(), ("show", "s1"))
+    entries = host._library_context_entries()
+    labels = [label for label, _handler in entries]
+
+    assert labels[0] == "Refres&h Feed\tF5"
+    keys = [label.split("&", 1)[1][0].lower() for label in labels if "&" in label]
+    assert len(keys) == len(set(keys)), labels
+
+    dict(entries)["Refres&h Feed\tF5"]()
+
+    assert host.said[-1] == "Checking Show..."
+    assert host.refresh_requests == ["s1"]
+
+
+def test_refresh_feed_is_not_offered_for_local_shows_or_in_safe_mode() -> None:
+    local = _Host(_library(), ("show", "s1"))
+    safe = _Host(_feed_library(), ("show", "s1"), safe_mode=True)
+
+    assert not any(label.startswith("Refres&h Feed") for label in _labels(local))
+    assert not any(label.startswith("Refres&h Feed") for label in _labels(safe))
+
+
+def test_refresh_feed_is_first_in_the_real_popup_menu() -> None:
+    import wx
+
+    app = wx.GetApp() or wx.App(False)
+    assert app is not None
+    host = _Host(_feed_library(), ("show", "s1"))
+    popup_labels: list[str] = []
+
+    def capture_menu(menu: wx.Menu) -> None:
+        popup_labels.extend(item.GetItemLabelText() for item in menu.GetMenuItems())
+
+    host._shows_tree = SimpleNamespace(PopupMenu=capture_menu)
+
+    host._on_library_context_menu(None)
+
+    assert popup_labels[0] == "Refresh Feed"
+
+
+class _TreeNode:
+    def __init__(
+        self,
+        data: tuple[str, str] | None,
+        *,
+        expanded: bool = False,
+        children: list[_TreeNode] | None = None,
+        valid: bool = True,
+    ) -> None:
+        self.data = data
+        self.expanded = expanded
+        self.children = children or []
+        self.valid = valid
+
+    def IsOk(self) -> bool:
+        return self.valid
+
+
+class _VisibleTree:
+    def __init__(self, children: list[_TreeNode]) -> None:
+        self.root = _TreeNode(None, expanded=True, children=children)
+        self.invalid = _TreeNode(None, valid=False)
+
+    def GetRootItem(self) -> _TreeNode:
+        return self.root
+
+    def GetFirstChild(self, parent: _TreeNode) -> tuple[_TreeNode, int]:
+        if not parent.children:
+            return self.invalid, 0
+        return parent.children[0], 1
+
+    def GetNextChild(self, parent: _TreeNode, cookie: int) -> tuple[_TreeNode, int]:
+        if cookie >= len(parent.children):
+            return self.invalid, cookie
+        return parent.children[cookie], cookie + 1
+
+    def GetItemData(self, item: _TreeNode) -> tuple[str, str] | None:
+        return item.data
+
+    def IsExpanded(self, item: _TreeNode) -> bool:
+        return item.expanded
+
+
+def test_unfollow_selects_the_next_visible_show_and_undo_restores_the_removed_show(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import quill.ui.podcasts.show_actions as show_actions
+
+    library = _feed_library()
+    second = PodcastShow(id="s2", title="Second")
+    library.add_show(second)
+    host = _Host(library, ("show", "s1"))
+    hidden_folder = _TreeNode(
+        ("folder", "closed"),
+        expanded=False,
+        children=[_TreeNode(("show", "hidden"))],
+    )
+    host._shows_tree = _VisibleTree([
+        _TreeNode(("show", "s1")),
+        hidden_folder,
+        _TreeNode(("show", "s2")),
+    ])
+    saved_calls: list[tuple[tuple[str, str] | None, bool]] = []
+
+    def save_podcast_library(
+        *, keep_key: tuple[str, str] | None = None, refresh_now: bool = False
+    ) -> None:
+        saved_calls.append((keep_key, refresh_now))
+
+    host._save_podcast_library = save_podcast_library
+
+    def unsubscribe(
+        _parent: object,
+        current_library: PodcastLibrary,
+        show: PodcastShow,
+        *,
+        announce: Callable[[str], None],
+        on_change: Callable[[], None],
+        download_queue: object | None = None,
+    ) -> bool:
+        assert download_queue is host._podcast_download_queue
+        current_library.remove_show(show.id)
+        on_change()
+        current_library.shows.insert(0, show)
+        on_change()
+        return True
+
+    monkeypatch.setattr(show_actions, "unsubscribe_show_prompt", unsubscribe)
+
+    host._on_library_remove()
+
+    assert saved_calls == [(("show", "s2"), True), (("show", "s1"), True)]
 
 
 def test_no_row_offers_open_manager_or_the_view_renames() -> None:

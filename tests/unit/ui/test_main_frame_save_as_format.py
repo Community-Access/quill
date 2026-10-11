@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from types import SimpleNamespace
 
 from quill.ui.main_frame import MainFrame
 
@@ -53,6 +54,21 @@ def test_no_double_extension_created() -> None:
     result = frame._resolve_save_target(Path("report.txt"), 2)
     assert result.suffix == ".txt"
     assert str(result).count(".") == 1
+
+
+def test_default_file_dialog_folder_uses_the_user_setting(tmp_path: Path) -> None:
+    folder = tmp_path / "writing"
+    folder.mkdir()
+    frame = _frame()
+    frame._last_file_dir = ""
+    frame.settings = SimpleNamespace(startup_folder=str(folder))
+    frame._wx = SimpleNamespace(
+        StandardPaths=SimpleNamespace(
+            Get=lambda: SimpleNamespace(GetDocumentsDir=lambda: str(tmp_path))
+        )
+    )
+
+    assert MainFrame._file_dialog_default_dir(frame) == str(folder)
 
 
 # --------------------------------------------------------------------------- #
@@ -141,6 +157,12 @@ def test_announce_save_as_conversion_wording() -> None:
     frame._announce_save_as_conversion(Path("notes.md"))
     frame._announce_save_as_conversion(Path("notes.txt"))
     assert spoken == []
+
+
+def test_save_as_plain_text_uses_the_default_document_folder() -> None:
+    start = _SOURCE.index("def save_as_plain_text(")
+    body = _SOURCE[start : _SOURCE.index("\n    def ", start + 1)]
+    assert "defaultDir=self._file_dialog_default_dir()" in body
 
 
 def test_export_document_preserves_editor_line_breaks() -> None:

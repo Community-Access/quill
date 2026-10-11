@@ -45,11 +45,9 @@ def shows_in_folder_subtree(library: PodcastLibrary, folder_id: str) -> list[Pod
     stream/download) where "the folder" always means the whole subtree a
     user sees under that node, never just its direct children.
     """
-    shows = [show for show in library.shows if show.folder_id == folder_id]
-    for folder in library.folders:
-        if folder.parent_folder_id == folder_id:
-            shows.extend(shows_in_folder_subtree(library, folder.id))
-    return shows
+    from quill.core.podcasts.folder_actions import shows_in_folder
+
+    return shows_in_folder(library, folder_id)
 
 
 def item_key(item: object) -> int:
@@ -75,7 +73,9 @@ def shows_episodes(library: PodcastLibrary, folder_id: str) -> list[PodcastEpiso
     """Every episode belonging to a show directly in *folder_id* (not
     subfolders -- the caller recurses those separately)."""
     episodes: list[PodcastEpisode] = []
+    from quill.core.podcasts.folder_membership import placements
+
     for show in library.shows:
-        if show.folder_id == folder_id:
+        if folder_id in placements(library, show):
             episodes.extend(show.episodes)
     return episodes

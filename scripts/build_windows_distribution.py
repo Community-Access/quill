@@ -866,7 +866,7 @@ def _render_readme(
     else:
         runtime_paragraph = (
             "This bundle does not include a Python runtime. To run it,\n"
-            "install Python 3.12+ from https://www.python.org/downloads/windows/\n"
+            "install Python 3.13+ from https://www.python.org/downloads/windows/\n"
             "and run:  pip install wxPython pyttsx3\n"
             "Then double-click quill.exe."
         )

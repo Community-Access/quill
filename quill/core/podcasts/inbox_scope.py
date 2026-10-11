@@ -30,7 +30,9 @@ wx-free, strict-typed.
 
 from __future__ import annotations
 
-from quill.core.podcasts.inbox import inbox_pairs
+from collections.abc import Iterator
+
+from quill.core.podcasts.inbox import iter_inbox_pairs
 from quill.core.podcasts.models import PodcastEpisode, PodcastShow
 from quill.core.podcasts.subscriptions import PodcastLibrary
 
@@ -40,6 +42,7 @@ __all__ = [
     "empty_state",
     "folder_ids_with_inbox",
     "inbox_pairs_in_library_folder",
+    "iter_inbox_pairs_in_library_folder",
     "scope_label",
     "shows_in_subtree",
 ]
@@ -88,14 +91,23 @@ def inbox_pairs_in_library_folder(
     folder is a filter that is on, and showing the whole Inbox as though it were
     off would misreport what the listener is looking at.
     """
+    return list(iter_inbox_pairs_in_library_folder(library, scope))
+
+
+def iter_inbox_pairs_in_library_folder(
+    library: PodcastLibrary, scope: str | None
+) -> Iterator[tuple[PodcastShow, PodcastEpisode]]:
+    """Iterate the scoped Inbox, using the same membership as its list."""
     if scope is None or scope == ALL:
-        return inbox_pairs(library)
+        yield from iter_inbox_pairs(library)
+        return
     if scope == UNFILED:
-        return [(show, ep) for show, ep in inbox_pairs(library) if not show.folder_id]
+        yield from ((show, ep) for show, ep in iter_inbox_pairs(library) if not show.folder_id)
+        return
     if library.find_folder(scope) is None:
-        return []
+        return
     wanted = {show.id for show in shows_in_subtree(library, scope)}
-    return [(show, ep) for show, ep in inbox_pairs(library) if show.id in wanted]
+    yield from ((show, ep) for show, ep in iter_inbox_pairs(library) if show.id in wanted)
 
 
 def folder_ids_with_inbox(library: PodcastLibrary) -> list[str]:
@@ -137,14 +149,14 @@ def empty_state(library: PodcastLibrary, scope: str | None) -> str:
     if inbox_pairs_in_library_folder(library, scope):
         return ""
     if scope is None or scope == ALL:
-        if inbox_pairs(library):
+        if next(iter_inbox_pairs(library), None) is not None:
             return ""
         return (
             "The Inbox is empty. Episodes arrive here from podcasts marked Route "
             "to Inbox, in Podcast Settings."
         )
     label = scope_label(library, scope)
-    if inbox_pairs(library):
+    if next(iter_inbox_pairs(library), None) is not None:
         return (
             f"Nothing in the Inbox for {label}. The rest of the Inbox is still "
             "there -- choose All podcasts to see it."

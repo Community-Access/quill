@@ -66,6 +66,15 @@ def test_no_readable_file_means_nothing_to_merge_with(tmp_path: Path) -> None:
     assert loaded is not None and loaded.word_wrap is False
 
 
+def test_default_document_folder_round_trips_through_settings(tmp_path: Path) -> None:
+    folder = tmp_path / "writing"
+    folder.mkdir()
+    target = tmp_path / "settings.json"
+    settings_mod.save(Settings(startup_folder=str(folder)), target)
+
+    assert settings_mod.load(target).startup_folder == str(folder)
+
+
 # -- two instances, one file ------------------------------------------------------- #
 
 

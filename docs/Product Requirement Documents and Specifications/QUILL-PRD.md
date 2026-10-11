@@ -9,7 +9,7 @@ Independence notice: QUILL for All is developed independently of any assistive-t
 Target platform: Windows 10 and Windows 11
 Target screen readers: NVDA (primary), JAWS, Narrator
 UI framework: wxPython (wxWidgets 3.2 or newer)
-Language: Python 3.12 or newer
+Language: Python 3.13 or newer
 
 ### Command ownership and Preferences search (2026-09-30)
 
@@ -504,6 +504,11 @@ Customization:
   - **Code-block exchange**: GitHub Gist URLs and `.gist.json`, Pastebin `.txt`, snippet bundles.
 - `Ctrl+S` saves. For editable text formats, saves in place. For rendered/extracted formats, opens Save As.
 - `Ctrl+Shift+S` opens Save As directly.
+- File dialogs start in the most recently used folder during the current
+  session, then **Settings > General > Default document folder** (the
+  `startup_folder` setting), then the Windows Documents folder when that
+  setting is blank. A saved document keeps its existing location for ordinary
+  saves.
 - Recent files: last N (default 10, range 5 to 50). If empty, announce "No recent files."
 - File Explorer integration: settings panel lets the user register Quill with Windows for chosen extensions and add an "Open with Quill" verb.
 
@@ -2289,6 +2294,20 @@ removes it; `[InstallDelete]` does not touch it; the resolver still checks it), 
 upgrades never lose offline speech. Only components QUILL is licensed to redistribute
 are hosted this way (whisper.cpp is MIT, Kokoro Apache-2.0); license-unclear engines
 are not re-hosted, and ffmpeg is never re-hosted (it stays user-installed).
+
+**Audio-file transcription (`Shift+F5`, shared with QUILL Lite).** The
+screen-reader-accessible chooser selects one or more supported recordings,
+language, speech model, timestamps, and spoken-command handling, and reports
+the recording length and estimated processing time before starting. A
+background worker processes queued recordings without changing the document
+in front. Each successful transcript is saved privately under the active
+user-data directory and linked from a completion notice in Notifications;
+activating the notice opens the result in the editor. The transcript is never
+inserted into the document that was open when work began, and there is no
+destination picker. Activity retains the outcome and failure reason. Stopping
+transcription cancels the active job and queued jobs; no document is changed.
+Local models keep audio on the computer, and an OpenAI model requires the
+explicit consent gate before audio is sent.
 
 **Family-wide non-goals, recorded so they are not relitigated without new
 information.** **Telemetry of any kind** -- no Sentry, no PostHog, no counters.
@@ -4549,7 +4568,8 @@ do not move. The gateway spec's section 5.8 has the arithmetic.
 window), a **Have a conversation** row in the shared pad and **Follow Up** in the
 shared result window. Both editors reach it through `HostedAiMixin`, so QUILL and
 QUILL Lite 1.1 have it together and `HostedAiCommandsMixin` still has no commands
-of its own. With the user's own OpenAI key the whole conversation goes
+of its own. With the user's own API key (OpenAI or Google Gemini, section
+5.84m3) the whole conversation goes
 (`own_key.ask_with_own_key(..., history=...)`), shortened only past
 `CONTEXT_WARNING_TOKENS`.
 
@@ -4557,6 +4577,66 @@ of its own. With the user's own OpenAI key the whole conversation goes
 because it lands in an unfocused transcript (GATE-13's case for speaking); the
 transcript is a read-only field Tab reaches; the window says, once, when a long
 conversation stops sending its beginning.
+
+### 5.84m3 Your own API key: OpenAI or Google Gemini, chosen, never inferred (2026-10-02, qc.md X-07)
+
+**Use My Own API Key** (`Alt+F2`, formerly Use My Own OpenAI Key) sends AI help
+straight to the provider the person chooses -- **OpenAI or Google Gemini** --
+on their own key, with no QUILL server and no allowance. The requirement that
+shaped it came from reviewing PR #1615, which made Gemini keys work by inferring
+the provider from a model name and falling back to whichever key was stored.
+That half was not taken. The requirements instead:
+
+- **The provider is an explicit choice**, the first control in the window, and
+  the persisted setting `ai_own_key_provider` (`"openai"` or `"gemini"`) is the
+  only thing that decides where a request goes. Nothing is inferred from a key's
+  shape or a model's name (`quill/core/ai/own_key.py`, `chosen_provider`).
+- **No fallback between providers.** With Gemini chosen and only an OpenAI key
+  saved, the route is not active and AI help is on the free service; OK says so
+  and names the unused key. A request made anyway is refused with a sentence
+  before anything is sent.
+- **Earlier consent is kept.** An empty `ai_own_key_provider` means OpenAI, the
+  only provider there was when 1.1 keys were saved. An unknown value means *no*
+  provider, never a guess.
+- **One key per provider, in the existing secure store**: the AI Hub's
+  per-provider credential targets (Windows Credential Manager, or the encrypted
+  file in a portable copy), shared with QUILL; never plaintext, never shown
+  again. A typed key is cleared, and the clearing announced, when the provider
+  choice moves, so a key cannot be saved under the wrong company.
+- **Gemini requests stream** from `streamGenerateContent?alt=sse` on
+  `generativelanguage.googleapis.com`, HTTPS only, the key in `x-goog-api-key`,
+  the gateway's instructions in `systemInstruction`
+  (`quill/core/ai/own_key_gemini.py`, built from the shared pure builders in
+  `quill/core/ai/endpoints.py` and `assistant_ai.build_chat_body`). OpenAI
+  requests are unchanged and not streamed, because OpenAI refuses streaming
+  from unverified organisations for some models.
+- **Stop works.** The pad's Send button is Stop while a request is on its way;
+  `AiService.cancel(request)` sets only that request's event, so stopping one
+  window cannot cancel work started by another. On Gemini the stream is closed
+  before the next piece is read; on every other route the outcome is dropped on
+  arrival. Neither an answer nor a failure is delivered after Stop.
+- **Errors are one sentence, spoken, actionable, and never contain the key.**
+  Gemini answers a wrong key with HTTP 400 `API_KEY_INVALID`, not 401, so the
+  key-rejected case is read from the body; 401 and 403 are rejections too
+  (`QUILL-AI-OWN-KEY-REJECTED`). 404, 429 and 5xx each have their own sentence
+  (`QUILL-AI-OWN-KEY-FAILED`), a busy Gemini is tried once more, and every
+  sentence passes through `own_key.scrub`.
+- **Model ordering is deterministic** (`quill/core/ai/own_key_models.py`):
+  Gemini's list is filtered (embeddings, Imagen, Veo, speech, live audio, image
+  generation, AQA) and ordered stable before preview, newest version first,
+  Flash, Flash-Lite, Pro, then by name; OpenAI's order is unchanged. Cost
+  estimates are per provider, and Gemini's note says what Google's free tier
+  means for privacy.
+- **Shared, so QUILL Lite is not ahead** (family rule 10): QUILL's **AI ▸ Use
+  My Own API Key** row (`tools.hosted_ai_own_key`, `Alt+F2`, registered in
+  `quill/ui/main_frame_hosted_ai.py`) opens the same window
+  (`quill/ui/hosted_ai_own_key.py`), the service (`quill/ui/hosted_ai_service.py`,
+  with its route sentences split into `quill/ui/hosted_ai_route_words.py` under
+  GATE-11) and the pad are the shared `hosted_ai_*` modules both editors use.
+- One new egress site, `own_key_gemini._open_stream`, reviewed in the egress
+  audit. Tests: `tests/unit/core/ai/test_own_key_gemini_route.py` runs the
+  shipped code against a loopback server shaped like both providers, with
+  synthetic keys.
 
 ### 5.84d Free / low-cost AI for everyone (writing-first)
 
@@ -8581,7 +8661,7 @@ Every direct dependency is listed below with the pinned version range Quill 1.0 
 
 | Package | Version | License | Role | Notes |
 | --- | --- | --- | --- | --- |
-| `python` | 3.12.x | PSF | Runtime | Frozen with PyInstaller; 3.13 supported as soon as wxPython publishes wheels |
+| `python` | 3.13.x | PSF | Runtime | Frozen with PyInstaller |
 | `wxPython` | 4.2.2+ | wxWindows Library Licence | UI toolkit | Stock controls only; no `wx.lib.agw` controls in the writing path |
 | `pywin32` | 308+ | PSF-style | Windows shell, DPAPI, COM | Required for file associations, Jump List, DPAPI |
 | `comtypes` | 1.4+ | MIT | UIA notifications, SAPI 5 | Used by `quill.platform.windows.sr_announce` and `tts` |
@@ -8767,7 +8847,7 @@ All JSON files validate against schemas in `quill/core/schemas/`. All writes are
 
 ### 10.7 Build and dev environment
 
-- **Python 3.12** pinned via `uv python install`.
+- **Python 3.13** pinned via `uv python install`.
 - **Lockfile**: `uv.lock` committed; `uv sync` reproduces the dev environment exactly.
 - **Dev install**: `uv sync --all-extras` plus `pre-commit install` for hooks.
 - **Pre-commit**: ruff format, ruff lint, mypy on `core/` and `io/`, controlled-vocabulary linter, contrast checker, tab-order snapshot check, license-notice generator.
@@ -8777,7 +8857,7 @@ All JSON files validate against schemas in `quill/core/schemas/`. All writes are
 ### 10.8 Continuous integration and delivery
 
 - **Provider**: GitHub Actions.
-- **Matrix**: Windows 10 22H2, Windows 11 24H2; Python 3.12; wxPython current stable.
+- **Matrix**: Windows 10 22H2, Windows 11 24H2; Python 3.13; wxPython current stable.
 - **Jobs**:
   1. **Lint** (ruff, mypy, jsonschema validation of bundled schemas).
   2. **Unit tests** (`pytest tests/unit -n auto`).
@@ -11872,7 +11952,7 @@ The macOS build reuses the cross-platform wxPython core plus the
 
 ## Prerequisites
 
-- macOS 12+ (Apple Silicon or Intel), Python 3.11+
+- macOS 12+ (Apple Silicon or Intel), Python 3.13+
 - `pip install -e ".[ui,macos]"` (wxPython, comtypes on Windows, pyobjc, py2app)
 - For distribution: an Apple **Developer ID Application** certificate and a
   `notarytool` keychain profile (`xcrun notarytool store-credentials`).
@@ -12080,7 +12160,7 @@ vision. The `.iss` is generated by `build_inno_setup_script()` in
 
 From `scripts/build_windows_distribution.py` and the portable bundle layout:
 
-- A private embedded Python runtime (`python/`, amd64, pinned 3.12.x) with
+- A private embedded Python runtime (`python/`, amd64, pinned 3.13.x) with
   wxPython, comtypes (Windows SAPI 5 speech), and the other runtime wheels
   preinstalled, plus the vendored `quill-glow-core` contract wheel. End users
   install no Python.
@@ -13110,7 +13190,7 @@ The workflow produces three artifacts:
 - `quill-portable` — standalone folder, no installer required
 - `quill-release-artifacts` — checksums, SBOM, update feed stub
 
-To build locally (requires Inno Setup 6 and Python 3.12):
+To build locally (requires Inno Setup 6 and Python 3.13):
 
 ```powershell
 pip install -e .[ui,spellcheck,dev]

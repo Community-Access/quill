@@ -361,6 +361,7 @@ class DocumentStatusMixin:
             "encoding": self._encoding_cell(),
             "line_endings": self._line_endings_cell(),
             "saved": "Modified" if self.modified else "Saved",
+            "notifications": "Notifications",
         }
 
     def _heading_text(self, text: str) -> str:
@@ -610,6 +611,7 @@ _CELL_ACTIONS: dict[str, str] = {
     # about it.
     "list": "cmd_toggle_list_announcements",
     "dictation": "cmd_toggle_dictation",
+    "notifications": "open_dictation_notifications",
     "encoding": "cmd_file_format",
     "line_endings": "cmd_file_format",
     "saved": "cmd_save",

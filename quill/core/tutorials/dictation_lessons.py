@@ -1,10 +1,11 @@
-"""Five more dictation lessons, the same in QUILL and QUILL Lite.
+"""Six more dictation lessons, the same in QUILL and QUILL Lite.
 
 dict.md 3.10 (gap 12): one lesson for each thing the 2026-10-05 gap plan
 added -- punctuation and symbols, fixing a word by voice, snippets and clips by
 voice, switching to Spanish, and a live transcript. Written once, because the
 two editors teach the same dictation on the same keys; each editor passes its
-own command ids, so the lesson renders whatever key the person has bound.
+own command ids, so the lesson renders whatever key the person has bound. The
+2026-10-06 follow-up adds audio-file transcription to the same shared catalog.
 
 The wording follows :mod:`quill.core.tutorials.model`: one action a step, the
 reason as well as the instruction, what you should hear, and no key promised in
@@ -23,8 +24,7 @@ __all__ = ["dictation_lessons"]
 def dictation_lessons(
     ids: Mapping[str, str], *, track: str, surfaces: tuple[str, ...]
 ) -> tuple[Tutorial, ...]:
-    """The five lessons. *ids* maps ``toggle``, ``language``, ``transcript``
-    and ``status`` to this editor's command ids."""
+    """The six lessons. *ids* maps the shared dictation actions to editor commands."""
     toggle = ids["toggle"]
     return (
         Tutorial(
@@ -255,6 +255,70 @@ def dictation_lessons(
             closing=(
                 "Time stamps in live transcripts, in More Dictation Settings, puts the time "
                 "at the start of each paragraph."
+            ),
+        ),
+        Tutorial(
+            slug="dictation-transcribe-recording",
+            title="Transcribe a recording",
+            track=track,
+            minutes=5,
+            surfaces=surfaces,
+            summary=(
+                "Turn an audio recording into text in the background, then open its "
+                "saved transcript when you are ready."
+            ),
+            steps=(
+                Step(
+                    title="Open the recording transcriber",
+                    body=(
+                        "Transcribe a Recording opens a separate window for choosing "
+                        "the audio file and how to transcribe it."
+                    ),
+                    command=ids["transcribe"],
+                    hear="Transcribe a Recording, with focus in Recording.",
+                ),
+                Step(
+                    title="Choose the recording",
+                    body=(
+                        "Type a file path, browse for one or more supported audio files, "
+                        "or drop them on the window. The window reports the recording's "
+                        "length and estimates how long the chosen model should take."
+                    ),
+                    hear="The file path, followed by its length and estimated time.",
+                ),
+                Step(
+                    title="Choose the language and speech model",
+                    body=(
+                        "Choose English or Spanish and a model that knows that language. "
+                        "The most accurate available local model starts selected. Local "
+                        "models keep the recording on this computer; an OpenAI model "
+                        "uses your own key and asks before sending the recording."
+                    ),
+                    hear="The selected language and model, and the estimate for this recording.",
+                ),
+                Step(
+                    title="Start it and carry on",
+                    body=(
+                        "Press Enter to start. Transcription runs in the background, "
+                        "so the document you were editing stays untouched while you work."
+                    ),
+                    keys=("Enter",),
+                    hear="That the recording is being transcribed in the background.",
+                ),
+                Step(
+                    title="Open the result when it is ready",
+                    body=(
+                        "A completion notice appears in Notifications with a privately "
+                        "saved transcript. Activate the notice to open the transcript "
+                        "in a document; it is never inserted into the document you had "
+                        "open. Save the document normally if you want a separate file."
+                    ),
+                    hear="The completed transcript in its own document.",
+                ),
+            ),
+            closing=(
+                "The recording and your current document stay separate, and the result "
+                "is waiting in Notifications when you are ready for it."
             ),
         ),
     )

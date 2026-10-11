@@ -12,9 +12,6 @@ from __future__ import annotations
 
 from typing import Any
 
-from quill.core.paths import app_data_dir
-from quill.core.radio import history as radio_history
-
 __all__ = ["RadioCallbacksMixin"]
 
 
@@ -39,4 +36,4 @@ class RadioCallbacksMixin:
     def _on_radio_output_device_reverted(self, device: str) -> None:
         """output_device_guard gave a device back: save the setting it went back to."""
         self._radio_history.output_device = device
-        radio_history.save_history(app_data_dir(), self._radio_history)
+        self._save_radio_history()

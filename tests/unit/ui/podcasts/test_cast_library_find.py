@@ -141,7 +141,9 @@ class _Host(CastLibraryFindMixin):
 
 
 @pytest.fixture(autouse=True)
-def _no_notes(monkeypatch: pytest.MonkeyPatch) -> None:
+def _no_notes(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
+    # Find now reads the transcript cache too: never the real profile's.
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
     monkeypatch.setattr("quill.core.podcasts.episode_notes.load_episode_notes", lambda: [])
 
 
@@ -194,12 +196,12 @@ def test_down_arrow_moves_into_the_matches(library) -> None:
     assert skipped == []
 
 
-def test_a_huge_result_is_capped_with_a_row_that_says_how_many_more(
-    library, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    rows = [(f"Episode {i} -- an episode of X", ("episode", f"x\x00{i}")) for i in range(205)]
-    monkeypatch.setattr(library_find, "find_rows", lambda *_a, **_k: rows)
-    host = _Host(library)
+def test_a_huge_result_is_capped_with_a_row_that_says_how_many_more() -> None:
+    big = PodcastShow(id="x", title="X", feed_url="https://example.invalid/x")
+    big.episodes = [
+        _episode(f"x{i}", f"Episode {i}", f"2026-01-{i % 28 + 1:02d}") for i in range(205)
+    ]
+    host = _Host(PodcastLibrary(shows=[big]))
     host._find_box.value = "episode"
     host._refresh_library_find()
     assert len(host._shows_tree.rows) == 201

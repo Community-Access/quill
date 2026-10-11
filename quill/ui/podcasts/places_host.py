@@ -1,11 +1,12 @@
 """The main window's places: showing one, refreshing it, and what its keys do (qc.md 4.3, 4.4).
 
 ``show_place`` is the one verb every route uses -- the Places list, the View
-menu, Go To, the status-bar cells, a notification's Enter -- so going to a
-place always means landing on it, with focus, and an empty place always says
-what fills it, once, on arrival. The content pane's kind follows the place:
-the episode places and Favorites fill the report list, Notifications fills
-it with notices, and Podcasts shows the folder tree.
+menu, Go To, the status-bar cells, a notification's Enter. Selection and
+activation in the Places list update the content without stealing focus; Tab
+and Shift+Tab follow the normal focus order. An empty place says what fills
+it, once, on arrival. The content pane's kind follows the place: the episode
+places and Favorites fill the report list, Notifications fills it with
+notices, and Podcasts shows the folder tree.
 
 Delete in a content list removes the row *from this place* and never deletes
 an episode: from the queue, from the Inbox, from Downloads (the file), from
@@ -15,16 +16,21 @@ Episodes (marks it played). Each says what it did and what survived.
 
 from __future__ import annotations
 
+import logging
+from collections.abc import Generator
 from typing import Any
 
 from quill.core.podcasts import places as places_model
 from quill.core.sound_events import SoundEvent
 from quill.ui.podcasts.outcome_feedback import say_outcome
+from quill.ui.podcasts.place_content import CastPlaceContentMixin
 
 __all__ = ["CastPlacesHostMixin"]
 
+logger = logging.getLogger(__name__)
 
-class CastPlacesHostMixin:
+
+class CastPlacesHostMixin(CastPlaceContentMixin):
     """On ``PodcastsAppFrame``: the Places list and the content pane as one surface."""
 
     _current_place: str = ""
@@ -47,7 +53,16 @@ class CastPlacesHostMixin:
     def _place_label(self, place_id: str) -> str:
         library = self._podcast_library  # type: ignore[attr-defined]
         label = places_model.label(library, place_id)
-        count = places_model.count(library, place_id, unread_notices=self._unread_notice_count())
+        counter = getattr(self, "_cast_place_count", None)
+        count = (
+            counter(place_id)
+            if callable(counter)
+            else places_model.count(
+                library,
+                place_id,
+                unread_notices=self._unread_notice_count() if place_id == "notifications" else 0,
+            )
+        )
         return f"{label} ({count})" if count else label
 
     def _unread_notice_count(self) -> int:
@@ -55,7 +70,8 @@ class CastPlacesHostMixin:
             from quill.core.notifications import load_notifications, unread_count
 
             return int(unread_count(load_notifications()))
-        except Exception:  # noqa: BLE001 - a list that cannot be read counts nothing
+        except Exception:
+            logger.exception("Could not read the Cast notifications count")
             return 0
 
     def _rebuild_places(self, *, keep: str = "") -> None:
@@ -65,11 +81,26 @@ class CastPlacesHostMixin:
             places.set_rows(rows, keep=keep or self._current_place)
 
     def _refresh_place_counts(self) -> None:
+        for _step in self._place_count_chunks():
+            pass
+
+    def _place_count_chunks(self) -> Generator[None]:
         places = getattr(self, "_places", None)
         if places is None:
             return
         for entry in self._visible_places():
             places.relabel(entry.id, self._place_label(entry.id))
+            yield
+        if (
+            self._podcast_library_is_large()  # type: ignore[attr-defined]
+            and getattr(self, "_cast_counts_revision", -1)
+            != int(getattr(self, "_podcast_library_revision", 0))
+            and getattr(self, "_cast_view_snapshot", None) is None
+            and getattr(self, "_cast_view_task", None) is None
+        ):
+            self._request_cast_view_preparation(  # type: ignore[attr-defined]
+                self._current_place, counts_only=True
+            )
 
     # -- showing a place ------------------------------------------------------------ #
 
@@ -81,86 +112,29 @@ class CastPlacesHostMixin:
         if pane is None:
             return False
         changed = place_id != self._current_place
+        if not changed and keep is None:
+            if focus:
+                pane.focus()
+            return True
         self._current_place = place_id
         self._place_opened_inbox_folder = ""
         self._place_opened_show_id = ""
         self._place_opened_playlist_id = ""
+        if changed and self._podcast_library_is_large():  # type: ignore[attr-defined]
+            self._list_rows = []
+            self._current_episodes = []
+            self._pair_shows = []
+            self._episodes.set_rows(0)  # type: ignore[attr-defined]
         places = getattr(self, "_places", None)
         if places is not None and places.selected != place_id:
             places.select(place_id)
-        self._fill_place(place_id, keep=keep)
-        if focus:
-            pane.focus()
-        if changed or focus:
-            self._say_empty_place_once(place_id)
+        preparing = self._fill_place(place_id, keep=keep, focus=focus)
+        if not preparing:
+            if focus:
+                pane.focus()
+            if changed or focus:
+                self._say_empty_place_once(place_id)
         return True
-
-    def _fill_place(self, place_id: str, *, keep: Any = None) -> None:
-        from quill.core.podcasts import queue as queue_ops
-        from quill.core.podcasts.virtual_views import favorite_shows, virtual_view_pairs
-
-        library = self._podcast_library  # type: ignore[attr-defined]
-        pane = self._content  # type: ignore[attr-defined]
-        entry = places_model.place(place_id)
-        if entry is None:
-            return
-        kind = entry.kind
-        if kind == places_model.KIND_TREE:
-            pane.show(pane.TREE)
-            self._reload_library_tree(keep_key=keep)  # type: ignore[attr-defined]
-        elif kind == places_model.KIND_PODCASTS:
-            pane.show(pane.LIST)
-            self._fill_podcast_rows(favorite_shows(library))  # type: ignore[attr-defined]
-            self._select_list_key(keep) or self._select_list_row(0)  # type: ignore[attr-defined]
-        elif kind == places_model.KIND_PLAYLISTS:
-            pane.show(pane.LIST)
-            self._fill_playlist_rows()  # type: ignore[attr-defined]
-            self._select_list_key(keep) or self._select_list_row(0)  # type: ignore[attr-defined]
-        elif kind == places_model.KIND_NOTICES:
-            pane.show(pane.LIST)
-            from quill.core.notifications import load_notifications, newest_first
-
-            try:
-                notices = newest_first(load_notifications())
-            except Exception:  # noqa: BLE001
-                notices = []
-            self._fill_notice_rows(notices)  # type: ignore[attr-defined]
-            self._select_list_key(keep) or self._select_list_row(0)  # type: ignore[attr-defined]
-        else:
-            pane.show(pane.LIST)
-            if place_id == "queue":
-                pairs = [
-                    resolved
-                    for resolved in (queue_ops.resolve(library, item) for item in library.queue)
-                    if resolved is not None
-                ]
-            elif place_id == "downloads":
-                pairs = [
-                    (show, ep)
-                    for show in library.shows
-                    for ep in show.episodes
-                    if ep.downloaded_path
-                ]
-            elif place_id == "personal_audio":
-                pairs = [
-                    (show, ep) for show in library.shows if show.is_local for ep in show.episodes
-                ]
-            else:
-                pairs = list(virtual_view_pairs(library, place_id))
-            if place_id == "inbox":
-                from quill.ui.podcasts.inbox_view import fill_inbox
-
-                fill_inbox(self, pairs)
-            else:
-                self._fill_episodes_from_pairs(pairs)  # type: ignore[attr-defined]
-            self._select_list_key(keep) or self._select_list_row(0)  # type: ignore[attr-defined]
-        pane.set_heading(self._place_heading(place_id))
-        self._refresh_place_counts()
-        self._refresh_selection_buttons()  # type: ignore[attr-defined]
-        self._refresh_notes_pane()  # type: ignore[attr-defined]
-
-    def _place_heading(self, place_id: str) -> str:
-        return self._place_label(place_id)
 
     def _refresh_place(self, *, keep: bool = True) -> None:
         """Refill whatever is showing, the cursor back on the row it was on."""
@@ -169,6 +143,9 @@ class CastPlacesHostMixin:
         key = self._selected_tree_data() if keep else None  # type: ignore[attr-defined]
         episodes = getattr(self, "_episodes", None)
         self._list_previous_index = episodes.GetFirstSelected() if keep and episodes else -1
+        if self._podcast_library_is_large():  # type: ignore[attr-defined]
+            self._request_cast_view_preparation(self._current_place, keep=key)  # type: ignore[attr-defined]
+            return
         if self._place_opened_playlist_id:
             self._open_playlist_in_place(self._place_opened_playlist_id, keep=key)
             return
@@ -188,7 +165,17 @@ class CastPlacesHostMixin:
 
     def _say_empty_place_once(self, place_id: str) -> None:
         library = self._podcast_library  # type: ignore[attr-defined]
-        if places_model.count(library, place_id, unread_notices=self._unread_notice_count()):
+        counter = getattr(self, "_cast_place_count", None)
+        count = (
+            counter(place_id)
+            if callable(counter)
+            else places_model.count(
+                library,
+                place_id,
+                unread_notices=self._unread_notice_count() if place_id == "notifications" else 0,
+            )
+        )
+        if count is None or count:
             self._place_announced_empty = ""
             return
         if self._place_announced_empty == place_id:
@@ -210,7 +197,7 @@ class CastPlacesHostMixin:
         self._fill_episodes(show)  # type: ignore[attr-defined]
         self._select_list_row(0)  # type: ignore[attr-defined]
         count = unheard_count(show)
-        pane.set_heading(f"{show.title} ({count} unheard)" if count else show.title)
+        pane.set_heading(f"{show.title} ({count} unheard)")
         pane.focus()
         self._refresh_selection_buttons()  # type: ignore[attr-defined]
         self._refresh_notes_pane()  # type: ignore[attr-defined]
@@ -260,7 +247,7 @@ class CastPlacesHostMixin:
         self.show_place(place_id, focus=False)
 
     def _on_place_entered(self, place_id: str) -> None:
-        self.show_place(place_id, focus=True)
+        self.show_place(place_id, focus=False)
 
     def _on_place_hide(self, place_id: str) -> None:
         layout = places_model.hide(self._places_layout(), place_id)
@@ -350,12 +337,8 @@ class CastPlacesHostMixin:
             self._remove_from_place(selected)
             return
         if code == wx.WXK_BACK:
-            if not self._back_from_show_in_place():
-                self._places.focus()  # type: ignore[attr-defined]
-            return
-        if code == wx.WXK_LEFT and self._episodes.GetFirstSelected() <= 0:  # type: ignore[attr-defined]
-            self._places.focus()  # type: ignore[attr-defined]
-            return
+            if self._back_from_show_in_place():
+                return
         if code == wx.WXK_F2 and selected is not None and selected[0] == "episode":
             pair = self._selected_episode()  # type: ignore[attr-defined]
             if pair is not None:

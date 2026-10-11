@@ -65,7 +65,10 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 note=(
                     "Follow ACB Media Podcasts on the Podcasts menu follows ACB "
                     "Media's whole directory in one step, and Import OPML in the Add "
-                    "Podcast window brings your list across from another app."
+                    "Podcast window brings your list across from another app. File "
+                    "reading and planning happen in the background; imported "
+                    "subscriptions stay in your library if you stop the optional "
+                    "reachability check."
                 ),
             ),
             Step(
@@ -165,7 +168,8 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 title="Peek, then step in and back out",
                 body=(
                     "Arrow up and down the list and the area beside it changes as you "
-                    "go, so you can peek into a place without going in. Enter or Right "
+                    "go while focus stays in Places, so you can peek without going in. "
+                    "Enter or Right "
                     "Arrow steps into the place you are on. Backspace, or Left Arrow "
                     "on the first row, steps back out to the Places list."
                 ),

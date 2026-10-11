@@ -7,7 +7,7 @@ name = "quill-converter"
 version = "1.0.0"
 description = "Quill Converter -- accessible, screen-reader-first audio format converter as a standalone app"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 license = { text = "MIT" }
 authors = [
   { name = "Community Access" },

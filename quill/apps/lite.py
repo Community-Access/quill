@@ -428,6 +428,7 @@ class QuillLiteApp(
             if not frame.confirm_discard():
                 return
         self.remember_session()
+        self.flush_settings_writes()
         self.stop_background_sources()
         for frame in list(self.frames):
             frame.modified = False  # already answered for, above
