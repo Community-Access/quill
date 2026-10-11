@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>QUILL-Converter-Auphonic-Integration-PRD</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+<h1
+id="quill-converter--auphonic-integration----mvp-product-requirements">Quill
+Converter + Auphonic Integration -- MVP Product Requirements</h1>
+<p><strong>Status:</strong> Proposed; not implemented<br />
+<strong>Date:</strong> October 5, 2026<br />
+<strong>Scope:</strong> Optional, multi-file audio post-production
+through the user's own Auphonic account</p>
+<h2 id="1-product-summary">1. Product summary</h2>
+<p>Add a small, explicit Auphonic workflow to Quill Converter. A user
+selects local audio files and chooses whether to process them as
+separate productions (one per file) or as one multitrack production (one
+file per track, in queue order). The user chooses the account's default
+settings or a saved preset, reviews one confirmation for the whole
+submission, and lets Auphonic process the files. Quill Converter reports
+progress and saves the resulting audio file or files locally without
+changing the sources.</p>
+<p>This is an opt-in online service, separate from the existing local
+Convert workflow. Local conversion remains the default and continues to
+work without an account or network connection. Nothing is uploaded by
+opening the app, checking an account, selecting a preset, or adding a
+file to the queue.</p>
+<p>The first release intentionally exposes the Auphonic service's
+existing account presets rather than inventing a new processing
+interface. Named QUILL recipes, custom signal-processing controls, and
+content-generation features are future work.</p>
+<h2 id="2-repository-context-and-implementation-direction">2. Repository
+context and implementation direction</h2>
+<ul>
+<li>The released Converter is a local-first app with an explicit
+requirement that conversion does not upload media. Its existing behavior
+and packaging are described in <a
+href="../../standalone/converter/docs/prd.md">the Converter product
+requirements</a>.</li>
+<li>QUILL already has a wx-free Auphonic simple-API client in <a
+href="../../quill/core/publish/auphonic.py"><code>quill/core/publish/auphonic.py</code></a>.
+It supports account and preset lookup, a single-file upload, production
+status polling, and result downloads.</li>
+<li>The Audio Studio's Publish dialog already provides a user-entered
+Auphonic API token, account/preset lookup, an upload confirmation,
+background progress, cancellation, and result downloads in <a
+href="../../quill/ui/audio_studio/publish_dialog.py"><code>quill/ui/audio_studio/publish_dialog.py</code></a>.</li>
+<li>The API token is stored in Windows Credential Manager using the
+existing <code>CREDENTIAL_TARGET</code>; it is not a QUILL setting. The
+Converter integration should reuse this credential and client rather
+than add a second token store, duplicate HTTP implementation, SDK, OAuth
+flow, or OAuth broker.</li>
+<li>The Auphonic call site is already documented in the network-egress
+inventory. Any new or moved call site must remain covered by that
+audit.</li>
+<li>The existing client currently starts a production with one uploaded
+file. Multitrack mode requires extending that same service client and
+verifying Auphonic's supported multitrack API contract; it must not be
+approximated by submitting the tracks as separate jobs.</li>
+<li>The Simple API also exposes a limited set of processing options
+directly, including adaptive filtering, leveling, loudness
+normalization, noise reduction, and automatic cutters. The JSON API
+supports explicit output-file configuration and multitrack algorithms.
+The MVP should expose only a small plain-language subset of these
+capabilities.</li>
+</ul>
+<p>This proposal is a scoped exception to the released Converter's
+no-media-upload requirement, not a change to the existing conversion
+behavior. Until this feature is implemented and released, the shipped
+app remains exactly as currently specified: local conversion only.</p>
+<h2 id="3-users-and-problem">3. Users and problem</h2>
+<p>The target user has one or more audio recordings that would benefit
+from Auphonic post-production and wants to submit them without
+navigating a visually complex web workflow. The user may rely on a
+keyboard and screen reader and needs to know exactly what will be sent,
+which account, preset, and basic processing choices will be used, how
+each job is progressing, and where results were saved.</p>
+<h2 id="4-goals">4. Goals</h2>
+<ol type="1">
+<li>Offer a straightforward, accessible path from selected queued audio
+files to either separate Auphonic productions or one multitrack
+production.</li>
+<li>Reuse the user's own Auphonic account, saved credentials, and saved
+presets.</li>
+<li>Make every media upload an informed, explicit user action.</li>
+<li>Keep processing and downloads off the UI thread, cancellable where
+the service permits, and understandable by screen reader.</li>
+<li>Save results as new local files; never replace, modify, or delete
+the source.</li>
+<li>Keep the first implementation narrow enough to build on the current
+client.</li>
+</ol>
+<h2 id="5-mvp-scope">5. MVP scope</h2>
+<h3 id="51-entry-point-and-input">5.1 Entry point and input</h3>
+<ul>
+<li>Add a keyboard-reachable <strong>Process with Auphonic...</strong>
+command to the Converter, available from the selected queue items and an
+appropriate menu or command-search surface.</li>
+<li>Accept one or more queued, existing audio files when no other
+Converter task is running. Reject video files and files containing video
+streams, even if they also contain audio. Use the existing media probe
+and audio format knowledge where possible.</li>
+<li>If a selection contains unsupported or ineligible files, skip those
+entries and identify them before confirmation; process the eligible
+audio files. Block submission if no eligible files remain.</li>
+<li>Let the user choose one of two modes:
+<ul>
+<li><strong>Separate productions:</strong> create one production per
+eligible input file, using the same selected preset for every file in
+the batch.</li>
+<li><strong>One multitrack production:</strong> make each eligible file
+one track. Track names default to the filenames, and track order follows
+the Converter queue. Use one preset for the multitrack production.</li>
+</ul></li>
+<li>Multitrack mode requires the minimum number and types of tracks
+accepted by Auphonic. Validate these constraints before upload and
+explain any ineligible selection.</li>
+<li>In multitrack mode, default the production title and result-folder
+name to the first eligible track's filename; allow the user to edit the
+title before submission.</li>
+<li>Finalize the accepted input-format list against Auphonic's current
+API behavior during implementation. Unsupported, unreadable, or
+zero-length inputs must fail before upload with a speakable
+explanation.</li>
+<li>Do not accept folders, playlists, URLs, or video/multitrack source
+projects in this first release. Multitrack mode means multiple ordinary
+audio files submitted as separate tracks.</li>
+</ul>
+<h3 id="52-account-and-preset">5.2 Account and preset</h3>
+<ul>
+<li>Use the existing Auphonic API-token credential. If it is not
+available, provide a secure password-style token entry with a link or
+plain-language direction to obtain the token from Auphonic.</li>
+<li>Allow the user to check the account and load its saved presets
+without uploading media.</li>
+<li>Offer the account's default preset and the user's saved presets. A
+separate production batch uses one preset for all its jobs; multitrack
+mode has its own single preset choice. Show the account name and
+available credits when returned by the API; do not imply that QUILL can
+estimate the final charge unless Auphonic supplies a reliable
+estimate.</li>
+<li>Reuse the existing Windows Credential Manager target. Never write
+the token into <code>converter.json</code>, another settings file, a
+log, a report, or a diagnostics bundle. Follow the existing
+credential-save behavior and make any decision to remember a newly
+entered token clear to the user.</li>
+<li>Preset/account errors must be visible and actionable. Do not
+silently use a default preset after a failed lookup.</li>
+</ul>
+<h3 id="53-basic-processing-and-output">5.3 Basic processing and
+output</h3>
+<ul>
+<li>Keep the default workflow small and plain-language: preset, a
+compact <strong>Basic processing</strong> group, and one output-format
+choice. Do not display raw API fields, LUFS values, or DSP terminology
+on the main surface.</li>
+<li>Offer two processing modes:
+<ul>
+<li><strong>Use preset settings</strong> (default): use the selected
+Auphonic preset as-is.</li>
+<li><strong>Quick cleanup</strong>: enable Auphonic adaptive filtering,
+adaptive leveling, and loudness normalization using Auphonic's service
+defaults.</li>
+</ul></li>
+<li>In Quick cleanup, provide an optional <strong>Reduce background
+noise</strong> switch, off by default. Use automatic noise reduction; do
+not expose reduction amounts or individual denoising algorithms in the
+MVP. Explain that it may change quiet background sounds.</li>
+<li>Allow one output-format choice per production: <strong>Use preset
+outputs</strong> (default) or one verified format. Initial candidates
+are MP3, WAV, FLAC, AAC, and Opus; finalize the list against Auphonic
+and the result downloader. Multiple custom formats, bitrate, sample
+rate, and multitrack stem export are out of scope for the first
+implementation.</li>
+<li>When a format is selected, request it explicitly through Auphonic's
+production API. For multitrack, download the final mixdown only.</li>
+<li>For separate-file productions, pass through source title, basic
+available tags, and chapter marks where the input reader and Auphonic
+API support them. Do not add metadata or chapter-editing controls to the
+basic surface. In multitrack mode, use the editable production title and
+do not combine chapter marks or other metadata from separate
+tracks.</li>
+<li>Keep processing mode, noise-reduction choice, output format, and
+metadata behavior clear in the batch confirmation. Any override of the
+selected preset must be stated plainly.</li>
+</ul>
+<h3 id="54-confirmation-and-upload">5.4 Confirmation and upload</h3>
+<ul>
+<li>Show one accessible confirmation for the entire submission naming:
+<ul>
+<li>Auphonic as the external service;</li>
+<li>the eligible files and any skipped files;</li>
+<li>whether this will create separate productions or one multitrack
+production;</li>
+<li>the selected account preset(s) or account default;</li>
+<li>the processing mode, optional noise reduction, and output
+format(s);</li>
+<li>for multitrack, track names/order and the production title;</li>
+<li>that the media will be uploaded and processed using the user's
+Auphonic account and credits;</li>
+<li>the destination folder for downloaded results.</li>
+</ul></li>
+<li>Canceling this confirmation makes no upload request for any selected
+file.</li>
+<li>Do not upload the file as part of account checks or preset
+loading.</li>
+<li>Use HTTPS with normal certificate verification, bounded timeouts,
+and the existing Auphonic client. No credentials or media content may be
+written to logs.</li>
+<li>Auphonic processing is unavailable in Safe Mode.</li>
+</ul>
+<h3 id="55-progress-cancellation-and-failures">5.5 Progress,
+cancellation, and failures</h3>
+<ul>
+<li>Run account calls, upload, status polling, and downloads on the
+existing background-task infrastructure; all widget changes return to
+the UI thread.</li>
+<li>Run separate productions sequentially, one at a time; do not submit
+the whole batch concurrently.</li>
+<li>Show and announce the current filename or production, overall batch
+progress, upload progress, Auphonic processing, result download,
+per-item outcome, final summary, cancellation, and failure. Keep
+progress available in the Converter status surface while the window is
+minimized.</li>
+<li>Poll production status at a polite interval with an overall timeout.
+A failure for one separate production must be recorded and reported,
+then the batch continues with the remaining files. Report a
+service-reported failure as a failure, not as an empty successful
+result.</li>
+<li>Stopping during upload aborts the current upload when possible and
+prevents later files from being submitted. For any production already
+accepted by Auphonic, stop local polling/download and explain that the
+remote production may continue. Keep its minimal job record so the user
+can resume it later.</li>
+<li>A timeout or network failure must identify the phase that failed and
+tell the user whether the upload or remote production may already have
+started. Do not offer a blind retry that could create a duplicate
+production.</li>
+<li>Keep the UI responsive throughout. Do not block shutdown without an
+explicit user-facing choice.</li>
+</ul>
+<h3 id="56-results-and-local-files">5.6 Results and local files</h3>
+<ul>
+<li>Save returned audio results under the Converter's selected output
+directory; when none is set, use its normal default destination. For
+separate jobs, put each file's results in its own source-named
+subfolder. For multitrack, use a folder named after the editable
+production title.</li>
+<li>Never overwrite an existing file, the source, or files outside the
+chosen output location. Validate returned filenames and download
+destinations before writing. Use safe, collision-resistant names and
+clean up incomplete downloads after cancellation or failure.</li>
+<li>The MVP downloads supported audio result files only. If the service
+returns other artifact types, leave them out and say how many were not
+downloaded; do not imply that transcripts, captions, or reports were
+saved.</li>
+<li>On success, announce the number and location of files and offer to
+open the output folder using the Converter's existing behavior. The
+final batch summary lists each input's outcome and any skipped
+items.</li>
+<li>Persist only the minimum local state required to resume accepted
+productions after Converter exits. Store the Auphonic production ID,
+mode, input display names/track order, preset label, output location,
+and enough batch state to report outcomes. Do not persist credentials or
+media contents. Use the repository's atomic-write and recovery
+conventions.</li>
+<li>On the next launch, show pending Auphonic work and offer an explicit
+<strong>Resume</strong> action. Do not contact Auphonic automatically at
+startup.</li>
+<li>Remove a pending record after its result has been downloaded and
+reported, or after the user explicitly dismisses it. Do not build a full
+completed-job history in the MVP.</li>
+</ul>
+<h2 id="6-accessibility-and-interaction-requirements">6. Accessibility
+and interaction requirements</h2>
+<ul>
+<li>Every new control has an explicit accessible name and useful F1
+help.</li>
+<li>All functions, including account setup, preset selection,
+confirmation, progress, cancellation, and result review, are usable by
+keyboard.</li>
+<li>Every menu item follows Converter's menu-accelerator policy: show a
+working, non-conflicting keyboard route, and make the route discoverable
+in Keyboard Shortcuts and command search.</li>
+<li>Modal surfaces use the Converter host's accessible dialog contract,
+with explicit affirmative/cancel actions, Escape behavior, deterministic
+focus, and focus return.</li>
+<li>Announce action outcomes and meaningful background state changes
+only; do not repeat control names, focus announcements, or other
+information the screen reader already supplies.</li>
+<li>Show long status and error details in a reviewable text surface
+rather than relying only on transient speech or visual progress.</li>
+</ul>
+<h2 id="7-privacy-security-and-network-policy">7. Privacy, security, and
+network policy</h2>
+<ul>
+<li>Local conversion remains local. Auphonic is a distinct, optional
+network operation initiated by an explicit command and confirmed for
+each batch or multitrack production.</li>
+<li>Disclose that the selected media is sent to Auphonic, is processed
+under the user's Auphonic account, and is subject to Auphonic's own
+handling and retention terms. QUILL must not promise deletion or
+retention behavior it cannot control.</li>
+<li>Do not contact Auphonic automatically at startup, on queue
+insertion, or while a dialog opens. An account check is a separate,
+user-initiated request and must never upload media.</li>
+<li>Pending jobs discovered at startup are displayed without network
+access. Polling or downloading resumes only after the user chooses
+<strong>Resume</strong>.</li>
+<li>Use the existing credential store and reviewed network client. Never
+include the API token, authorization header, media bytes, or sensitive
+file content in logs or support diagnostics.</li>
+<li>Restrict result URLs and filenames to the expected HTTPS/API
+response contract; reject unsafe schemes, unexpected hosts, path
+traversal, and writes outside the output directory.</li>
+<li>Keep the existing three network paths and privacy statements
+accurate by updating the Converter requirements, network-egress audit,
+Safe Mode tests, and user-facing disclosure when implementation
+begins.</li>
+<li>No telemetry, QUILL-hosted proxy, QUILL-paid processing, or
+third-party account creation is part of this feature.</li>
+</ul>
+<h2 id="8-explicit-non-goals-for-the-mvp">8. Explicit non-goals for the
+MVP</h2>
+<ul>
+<li>OAuth, browser sign-in, client secrets, or a QUILL OAuth
+broker.</li>
+<li>Advanced processing controls such as custom LUFS/true-peak targets,
+denoising strength/method, reverb or breath reduction, speech isolation,
+per-track algorithm settings, and preview-before-upload.</li>
+<li>Automatic silence, filler, cough, or music cutting; these can remove
+or alter source content and need a separate accessible review
+design.</li>
+<li>Transcription, captions, translation, diarization, generated
+chapters, show notes, audiograms, publishing, and QUILL Cast
+workflows.</li>
+<li>Video input/processing, URL input, folder recursion, multitrack stem
+export, and multiple custom output formats per production.</li>
+<li>Completed-production history, webhooks, or notifications after the
+app has closed. Minimal active-job persistence and explicit resume are
+in scope.</li>
+<li>A new HTTP dependency, generalized online-services framework, or
+changes to the local FFmpeg conversion engine.</li>
+</ul>
+<p>These capabilities may be considered after the MVP is shipped and
+evaluated; they are not implied by acceptance of this PRD.</p>
+<h2 id="9-acceptance-criteria">9. Acceptance criteria</h2>
+<ol type="1">
+<li>Multiple eligible audio files can be submitted either as sequential
+one-production-per-file jobs with one shared preset, or as one
+multitrack production with filename-based track names and queue order.
+The account default and saved presets are available.</li>
+<li>Account and preset checks work without uploading a media file.</li>
+<li>One confirmation covers all eligible files, skipped files, mode,
+preset, and destination; canceling it produces no upload request.</li>
+<li>The existing token is reused across the Audio Studio and Converter,
+and a new token is never written to Converter settings or logs.</li>
+<li>Separate productions run sequentially; a failed file does not
+prevent remaining eligible files from processing, and the final report
+identifies every success, failure, and skipped file.</li>
+<li>Upload, remote processing, and download run without freezing the UI
+and expose accessible per-job and overall progress and outcomes.</li>
+<li>Stopping prevents unsubmitted files from starting and clearly
+explains that an accepted Auphonic production may continue
+remotely.</li>
+<li>Accepted jobs survive app restart as minimal local records. Startup
+does not contact Auphonic; choosing <strong>Resume</strong> does.
+Successful resume downloads the result and clears the pending
+record.</li>
+<li>Successful jobs save only supported audio result files to their
+designated output folders, never overwrite existing files, and leave the
+sources unchanged.</li>
+<li>Failed, timed-out, malformed, or cancelled operations are reported
+as such; incomplete output files are not presented as successful
+results.</li>
+<li>Ineligible selected files are skipped and identified before
+confirmation; no upload proceeds if there are no eligible files or the
+multitrack selection is invalid.</li>
+<li>Users can retain the selected preset's processing or choose Quick
+cleanup; the optional noise-reduction switch is off by default. A
+verified output format can override the preset outputs, and the
+confirmation describes those choices.</li>
+<li>Separate-file productions pass through available basic source
+metadata and chapter marks where supported; multitrack productions do
+not merge metadata from their tracks.</li>
+<li>The feature is unavailable in Safe Mode, and no Auphonic request
+occurs without the corresponding explicit user action.</li>
+<li>Keyboard-only and screen-reader acceptance covers account setup,
+both modes, queue-order track review, preset choice, batch confirmation,
+upload, waiting, stop, restart/resume, error, success, and opening the
+result folder.</li>
+<li>Tests cover single-file and multitrack client workflows, basic
+processing and output selection, metadata/chapter pass-through, batch
+sequencing and continue-on-failure, egress/audit registration, token and
+job-state persistence boundaries, confirmation-before-upload, safe
+result paths, explicit resume, and Converter UI behavior without live
+credentials.</li>
+</ol>
+<h2 id="10-success-measures">10. Success measures</h2>
+<ul>
+<li>A first-time user can complete either a separate-file batch or a
+multitrack production, choose basic processing and output options, and
+save results without using Auphonic's web interface or a mouse.</li>
+<li>A returning user can reuse the saved credential and preset choice
+without re-entering a token.</li>
+<li>In usability testing, participants can tell before upload which
+file, account, preset, and credit source will be used, and after
+processing where the results were saved.</li>
+<li>No network call is made by local conversion or by merely
+opening/checking the Auphonic UI.</li>
+</ul>
+<p>Do not add product telemetry to measure these outcomes.</p>
+<h2 id="11-delivery-sequence">11. Delivery sequence</h2>
+<ol type="1">
+<li><strong>Contract and safety:</strong> verify Auphonic's
+separate-file and multitrack API behavior, basic algorithm overrides,
+supported output formats, metadata and chapter pass-through, track
+limits, result metadata, polling, cancellation, restart behavior, and
+download URLs; update the egress inventory and define safe result-file
+handling.</li>
+<li><strong>Account and selection:</strong> reuse the existing
+credential, account check, saved-preset list, queue-order track model,
+and audio eligibility rules.</li>
+<li><strong>Production lifecycle:</strong> implement one batch
+confirmation, basic processing/output choices, sequential separate jobs,
+multitrack submission, continue-on-failure reporting, metadata/chapter
+pass-through, minimal atomic job persistence, explicit resume, result
+downloads, and accessible progress/errors.</li>
+<li><strong>Release readiness:</strong> update the Converter's product
+requirements, user guide, help text, Safe Mode, persistence, and network
+tests, plus packaging/release notes; verify manually with NVDA or JAWS
+and a real Auphonic test account.</li>
+</ol>
+<p>Do not begin later-phase features until these acceptance criteria
+pass and the MVP has been evaluated.</p>
+<h2 id="12-references">12. References</h2>
+<ul>
+<li><a href="../../quill-auphonic-integration-proposal.md">Initial
+Auphonic integration proposal</a></li>
+<li><a href="../../standalone/converter/docs/prd.md">Current Quill
+Converter product requirements</a></li>
+<li><a href="../../quill/core/publish/auphonic.py">Existing Auphonic API
+client</a></li>
+<li><a href="../../quill/ui/audio_studio/publish_dialog.py">Existing
+Audio Studio Auphonic workflow</a></li>
+<li><a href="https://auphonic.com/help/api/simple_api.html">Auphonic
+Simple API</a></li>
+<li><a href="https://auphonic.com/help/api/details.html">Auphonic JSON
+API production details</a></li>
+<li><a href="https://auphonic.com/help/api/multitrack.html">Auphonic
+multitrack API</a></li>
+</ul>
+</body>
+</html>
