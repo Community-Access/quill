@@ -1645,21 +1645,33 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
                 pass
         return registry.get(DEFAULT_PROVIDER_ID)  # type: ignore[attr-defined]
 
-    def _installed_or_prompt(self, provider: object, title: str) -> list | None:
-        """Return the provider's installed models, or None after offering to open
-        Manage Speech Models to download one."""
-        wx = self._wx
-        installed = provider.list_installed_models()  # type: ignore[attr-defined]
-        if installed:
-            return installed
-        offer = self._show_message_box(
-            "No offline speech model is installed yet. Open Manage Speech Models to download one?",
-            title,
-            wx.ICON_INFORMATION | wx.YES_NO,
-        )
-        if offer == wx.YES:
-            self.open_speech_models()
-        return None
+    def _check_installed_speech_models(
+        self,
+        provider: object,
+        title: str,
+        on_ready: Callable[[object, list], None],
+    ) -> None:
+        """Enumerate installed models off-thread, then continue on the UI thread."""
+
+        def work(_progress: Callable[[str, int, int], None]) -> object:
+            return provider.list_installed_models()  # type: ignore[attr-defined]
+
+        def ready(result: object) -> None:
+            installed = list(result)  # type: ignore[arg-type]
+            if installed:
+                on_ready(provider, installed)
+                return
+            wx = self._wx
+            offer = self._show_message_box(
+                "No offline speech model is installed yet. "
+                "Open Manage Speech Models to download one?",
+                title,
+                wx.ICON_INFORMATION | wx.YES_NO,
+            )
+            if offer == wx.YES:
+                self.open_speech_models()
+
+        self._run_background_task(f"Checking speech models for {title}", work, ready)
 
     def _default_model_id(self, installed: list) -> str:
         """The model id to transcribe with: the user's explicit default when it

@@ -25,12 +25,14 @@ host wiring:
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 from quill.core.paths import app_data_dir
 from quill.core.podcasts import playback_cache, retention
 from quill.core.podcasts.download_queue import DownloadItem, PodcastDownloadQueue
 from quill.core.sound_events import SoundEvent
+from quill.stability.wx_dispatch import call_ui_safely
 from quill.ui.companion_cues import post_cue
 
 
@@ -47,10 +49,12 @@ class PodcastTransfersMixin:
     # everything here must be wx.CallAfter-safe) ---------------------------
 
     def _on_podcast_download_status_changed(self, item: DownloadItem) -> None:
-        self._wx.CallAfter(self._apply_podcast_download_status, item)
+        if not getattr(self, "_cast_closing", False) and not getattr(self, "_cast_closed", False):
+            call_ui_safely(self._apply_podcast_download_status, item)
 
     def _on_podcast_download_completed(self, item: DownloadItem) -> None:
-        self._wx.CallAfter(self._apply_podcast_download_completed, item)
+        if not getattr(self, "_cast_closing", False) and not getattr(self, "_cast_closed", False):
+            call_ui_safely(self._apply_podcast_download_completed, item)
 
     def _on_podcast_download_reconnect(
         self, item: DownloadItem, attempt: int, max_attempts: int
@@ -61,6 +65,8 @@ class PodcastTransfersMixin:
         )
 
     def _apply_podcast_download_status(self, item: DownloadItem) -> None:
+        if getattr(self, "_cast_closing", False) or getattr(self, "_cast_closed", False):
+            return
         self._refresh_statusbar()
         self._podcast_cue_download_started(item)
         if item.status == "failed":
@@ -113,6 +119,8 @@ class PodcastTransfersMixin:
         post_cue(SoundEvent.CAST_DOWNLOAD_STARTED)
 
     def _apply_podcast_download_completed(self, item: DownloadItem) -> None:
+        if getattr(self, "_cast_closing", False) or getattr(self, "_cast_closed", False):
+            return
         # The queue calls this exactly once per finished download, so one
         # episode landing on disk makes exactly one sound (#1302).
         post_cue(SoundEvent.CAST_DOWNLOAD_COMPLETE)
@@ -312,6 +320,7 @@ class PodcastTransfersMixin:
             try:
                 queue.shutdown()
             except Exception:  # noqa: BLE001 - shutdown must never block exit
+                logging.getLogger(__name__).exception("Could not stop a podcast transfer queue")
                 continue
 
     def _podcast_cache_in_use(self) -> frozenset[Path]:
@@ -334,7 +343,8 @@ class PodcastTransfersMixin:
         playback_cache.evict_to_cap(cap_mb * 1024 * 1024, keep=self._podcast_cache_in_use())
 
     def _on_podcast_cache_completed(self, item: DownloadItem) -> None:
-        self._wx.CallAfter(self._apply_podcast_cache_completed, item)
+        if not getattr(self, "_cast_closing", False) and not getattr(self, "_cast_closed", False):
+            call_ui_safely(self._apply_podcast_cache_completed, item)
 
     def _apply_podcast_cache_completed(self, item: DownloadItem) -> None:
         """The episode is byte-backed now. Deliberately silent.
@@ -344,6 +354,8 @@ class PodcastTransfersMixin:
         about it. What changes is what is now *possible* -- Find Chapters, Deep
         transcription and Keep This Episode all work from here on.
         """
+        if getattr(self, "_cast_closing", False) or getattr(self, "_cast_closed", False):
+            return
         show = self._podcast_library.find_show(item.show_id)
         episode = show.find_episode(item.episode_guid) if show is not None else None
         url = str(getattr(episode, "audio_url", "") or "")

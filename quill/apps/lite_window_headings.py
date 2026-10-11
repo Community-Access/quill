@@ -418,7 +418,7 @@ class DocumentHeadingsMixin:
         """
         settings = self.app.settings
         settings.announce_lists = not getattr(settings, "announce_lists", True)
-        self.app.save_settings()
+        self.app._queue_settings_save()
         if settings.announce_lists:
             self.sync_structure_announcer()
             self._announce("Lists announced as you enter them")
@@ -438,7 +438,7 @@ class DocumentHeadingsMixin:
         """
         settings = self.app.settings
         settings.announce_headings = not settings.announce_headings
-        self.app.save_settings()
+        self.app._queue_settings_save()
         if settings.announce_headings:
             self.sync_structure_announcer()
             self._announce("Headings announced on arrival")

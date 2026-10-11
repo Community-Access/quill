@@ -13,6 +13,14 @@ from typing import Any
 
 __all__ = ["CAST_PALETTE_TITLES", "register_podcast_commands"]
 
+#: QUILL Cast's names for the palette commands the shared podcasts mixin
+#: registers (``main_frame_podcasts._register_podcasts_commands``), so the
+#: palette says what Cast's menus say: Cast follows rather than subscribes,
+#: calls local files Personal Audio, keeps the old Podcast Settings and Skip
+#: Settings windows as Preferences sections, and has its places rather than
+#: windows. ``None`` drops a command Cast does not have: Open Manager only led
+#: back to the Podcasts place. QUILL keeps its own titles; Go To keeps the
+#: Podcasts place under its own name.
 CAST_PALETTE_TITLES: dict[str, str | None] = {
     "podcasts.open_manager": None,
     "podcasts.acb_media": "Podcasts: Follow ACB Media Podcasts",
@@ -59,7 +67,7 @@ def register_podcast_commands(host: Any) -> None:
         ("podcasts.export_data", "Podcasts: Export My Data...", host.podcast_export_data),
         (
             "podcasts.delete_all_data",
-            "Podcasts: Delete All Podcast Data...",
+            "Podcasts: Clear All Podcast Data from This Computer...",
             host.podcast_delete_all_data,
         ),
         (
@@ -74,7 +82,14 @@ def register_podcast_commands(host: Any) -> None:
         ),
         # Feed Check (R2).
         ("podcasts.feed_check", "Podcasts: Feed Check...", host.open_cast_feed_check),
-        # Every feed at once, as one bounded batch -- and the one stop for it (F-09).
+        # Refresh Episode Audio (R3): also on the episode's own menu.
+        (
+            "podcasts.refresh_episode_audio",
+            "Podcasts: Refresh Episode Audio...",
+            lambda: _refresh_audio(host),
+        ),
+        # Every feed at once, paced and followed in Feed Check -- and the one
+        # stop for it (F-09).
         (
             "podcasts.check_all_feeds",
             "Podcasts: Check All Feeds Now",
@@ -141,3 +156,9 @@ def register_podcast_commands(host: Any) -> None:
     from quill.ui.radio import transport_keys
 
     transport_keys.register_commands(host, prefix="podcasts")
+
+
+def _refresh_audio(host: Any) -> None:
+    from quill.ui.podcasts.refresh_audio_command import refresh_episode_audio
+
+    refresh_episode_audio(host)

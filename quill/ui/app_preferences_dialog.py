@@ -153,6 +153,7 @@ class PreferencesDialog:
         # Slots, so every returned list stays in *spec* order however the boxes
         # are arranged on screen. A caller unpacks by position.
         self._choice_controls: list[Any] = [None] * len(choices or [])
+        self._choice_user_changed: set[int] = set()
         self._checks: list[Any] = [None] * len(checkboxes)
         self._text_controls: list[Any] = [None] * len(texts or [])
 
@@ -160,9 +161,14 @@ class PreferencesDialog:
             sizer, parent_window = self._container(root, group)
             for index, choice_spec in enumerate(choices or []):
                 if choice_spec.group == group:
-                    self._choice_controls[index] = self._add_choice(
-                        sizer, parent_window, choice_spec
+                    choice = self._add_choice(sizer, parent_window, choice_spec)
+                    choice.Bind(
+                        self._wx.EVT_CHOICE,
+                        lambda _event, choice_index=index: self._choice_user_changed.add(
+                            choice_index
+                        ),
                     )
+                    self._choice_controls[index] = choice
             for index, check_spec in enumerate(checkboxes):
                 if check_spec.group == group:
                     self._checks[index] = self._add_check(sizer, parent_window, check_spec)
@@ -274,6 +280,33 @@ class PreferencesDialog:
             self.controls_by_key[spec.key] = control
         return control
 
+    def choice_selection(self, index: int) -> int:
+        """The current selection index for one of the supplied choices."""
+        return int(self._choice_controls[index].GetSelection())
+
+    def choice_was_changed(self, index: int) -> bool:
+        """Whether the user changed one of the supplied choices."""
+        return index in self._choice_user_changed
+
+    def set_choice_options(self, index: int, options: list[str], selected_index: int) -> None:
+        """Replace one choice's options, for data that arrives after the dialog opens."""
+        if not options:
+            raise ValueError("A preference choice must have at least one option.")
+        if not 0 <= selected_index < len(options):
+            raise ValueError("selected_index must refer to an available option.")
+        choice = self._choice_controls[index]
+        choice.SetItems(options)
+        choice.SetSelection(selected_index)
+
+    def set_choice_selection(self, index: int, selected_index: int) -> None:
+        choice = self._choice_controls[index]
+        if not 0 <= selected_index < choice.GetCount():
+            raise ValueError("selected_index must refer to an available option.")
+        choice.SetSelection(selected_index)
+
+    def set_choice_help_text(self, index: int, help_text: str) -> None:
+        self._describe(self._choice_controls[index], help_text)
+
     def _add_check(self, sizer: Any, parent: Any, spec: PreferenceCheckbox) -> Any:
         check = self._wx.CheckBox(parent, label=spec.name)
         self._describe(check, spec.help_text)
@@ -336,7 +369,12 @@ class PreferencesDialog:
         self._on_save(None)
 
     def show(self) -> tuple[list[bool], list[int], list[str]] | None:
-        from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
+        from quill.ui.dialog_contract import (
+            apply_modal_ids,
+            dialog_alive,
+            focus_primary_control,
+            show_modal_dialog,
+        )
 
         self.dialog.CentreOnParent()
         self.dialog.Bind(self._wx.EVT_CHAR_HOOK, self._on_char_hook)
@@ -347,6 +385,20 @@ class PreferencesDialog:
             cancel_id=self._wx.ID_CANCEL,
             escape_id=self._wx.ID_CANCEL,
         )
+
+        primary_focus = focus_primary_control(self.dialog)
+
+        def _focus_primary() -> None:
+            if primary_focus is not None and dialog_alive(self.dialog):
+                set_focus = getattr(primary_focus, "SetFocus", None)
+                if callable(set_focus):
+                    set_focus()
+
+        call_after = getattr(self._wx, "CallAfter", None)
+        if callable(call_after):
+            call_after(_focus_primary)
+        else:
+            _focus_primary()
         try:
             answer = show_modal_dialog(
                 self.dialog, f"{self.dialog.GetTitle()}", announce=self._announce

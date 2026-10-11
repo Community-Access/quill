@@ -8308,14 +8308,15 @@ File is the one for Transcript Actions such as meeting minutes.
    about how long it should take on your computer, for example "The recording
    is 12 minutes long. With NVIDIA Parakeet TDT 0.6B v3, transcribing it should
    take about 6 minutes on this computer."
-5. Choose where the text goes in **Put the text in** (Alt+I): **A new
-   document**, which is already chosen, or **This document, at the cursor, when
-   it finishes**.
+5. The transcript is not inserted into the document you are editing. When it
+   is ready, its completion notice appears in **Notifications**; activate that
+   notice when you are ready to open the privately saved transcript.
 6. Press **Enter**. You hear "Transcribing meeting.mp3 in the background."
 7. Carry on with whatever you were doing. The status bar shows how far it has
    got, and every quarter of the way you hear it quietly: "meeting.mp3: 25
    percent". When it is done you hear one sentence, such as "Transcribed
-   meeting.mp3: 12 minutes, 1,804 words, in 6 minutes, in a new document."
+   meeting.mp3: 12 minutes, 1,804 words, in 6 minutes." The completion notice
+   stays in Notifications so you can open the result later.
 
 That is all there is to it. The rest of this section explains the choices.
 
@@ -8406,19 +8407,19 @@ last transcription finishes, which gives its memory back.
 
 ##### Where the text goes
 
-- **A new document.** The transcript opens in a new, untitled document when
-  it is ready. Nothing is saved until you save it with **Ctrl+S**.
-- **This document, at the cursor.** The transcript goes where the cursor is
-  in the document in front, at the moment it finishes, as paragraphs of
-  its own. **Ctrl+Z** takes the whole thing back in one step. If that document
-  has been closed or is read-only by then, the transcript opens in a new
-  document instead, and you are told why.
+- **The document in front stays untouched.** There is no destination picker,
+  and the transcript is not inserted into the text you were editing.
+- **Open it when you are ready.** QUILL saves the transcript privately and
+  adds a completion notice to **Notifications**. Activate that notice to open
+  the transcript in the editor. Save the document with **Ctrl+S** if you want
+  a separate file in a location you choose.
 
 ##### Several recordings, checking on it, and stopping
 
 - **Several at once.** In Browse, hold **Ctrl** and choose more than one file.
-  They are transcribed one after another with the same choices, and each one
-  arrives in its own new document. If one is already running when you start
+  They are transcribed one after another with the same choices, and each
+  completed recording gets its own notice in **Notifications**. Activate a
+  notice to open that transcript. If one is already running when you start
   another, you hear "Added to the queue".
 - **How far has it got?** Press **Shift+F5** again. At the top of the window,
   **Transcribing now** says which recording it is on, how far it has got, and
@@ -8427,8 +8428,9 @@ last transcription finishes, which gives its memory back.
 - **Stopping.** In that same window, press **Stop Transcribing** (Alt+S). The
   recording being transcribed stops, any waiting ones are forgotten, and
   nothing is written into a document.
-- **If you missed what it said.** **Shift+F9** opens Activity, which keeps
-  every transcription this session, finished or failed, with the reason when
+- **If you missed what it said.** Open **Notifications** to find and reopen a
+  completed transcript. **Shift+F9** opens Activity, which keeps every
+  transcription this session, finished or failed, with the reason when
   something went wrong.
 
 ##### Which files it can read
@@ -11953,7 +11955,7 @@ have changed something.
   it for you from a list.
 - **Confirm destructive actions** asks before your unsaved changes are thrown
   away, for example when you reload a file from disk. On to begin with.
-- **Default file-open folder** is where the Open and Save As windows start;
+- **Default document folder** is where the Open and Save As windows start;
   **Choose Default Folder...** picks it. Once you have opened or saved
   something, QUILL starts where you last were for the rest of that session.
   Left blank, it starts in Documents.

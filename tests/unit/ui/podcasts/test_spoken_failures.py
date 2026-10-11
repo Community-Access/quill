@@ -89,5 +89,5 @@ def test_the_check_failure_route_is_the_one_wired_to_the_task() -> None:
     source = (
         Path(__file__).resolve().parents[4] / "quill" / "ui" / "podcasts" / "opml_import_dialog.py"
     ).read_text(encoding="utf-8")
-    assert "self._wx.CallAfter(self._on_validation_failed)" in source
+    assert "self._on_validation_failed() if not cancelled.is_set() else None" in source
     assert "on_failure=lambda _op, _error: self._wx.CallAfter(self._on_validated, [])" not in source

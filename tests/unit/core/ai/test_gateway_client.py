@@ -354,26 +354,13 @@ def test_each_connection_failure_says_which_it_was(monkeypatch, reason, expected
     assert _names_host(str(caught.value))
 
 
-def test_the_tls_context_trusts_certifi_as_well_as_the_system_store(monkeypatch):
-    """The fix itself: a system store missing the root must not fail the chain."""
+def test_the_tls_context_uses_native_store_and_keeps_verification_enabled():
+    """The shared system-store context must not weaken certificate checks."""
     import ssl
-
-    import certifi
 
     from quill.core.ai import gateway_client as mod
 
-    loaded: list[str] = []
-
-    class Recording(ssl.SSLContext):
-        def load_verify_locations(self, cafile=None, *args, **kwargs):  # noqa: ANN001
-            loaded.append(str(cafile))
-            return super().load_verify_locations(cafile, *args, **kwargs)
-
-    monkeypatch.setattr(
-        mod.ssl, "create_default_context", lambda *a, **k: Recording(ssl.PROTOCOL_TLS_CLIENT)
-    )
     context = mod._verified_context()
-    assert loaded == [certifi.where()]
     assert context.verify_mode == ssl.CERT_REQUIRED
     assert context.check_hostname is True
 

@@ -246,7 +246,7 @@ class DocumentFileMixin:
     def _remember(self, path: Path) -> None:
         """Put *path* at the head of the recent list, in every window."""
         self.app.settings.remember_recent(str(path))
-        self.app.save_settings()
+        self.app._queue_settings_save()
         self.app.refresh_all_menus()
 
     # ------------------------------------------------------------------ #

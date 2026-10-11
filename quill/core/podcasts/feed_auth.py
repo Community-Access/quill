@@ -45,7 +45,13 @@ def recording_redirects() -> Iterator[list[tuple[int, str]]]:
     try:
         yield hops
     finally:
+        _REDIRECTS.last_hops = tuple(hops)
         _REDIRECTS.hops = previous
+
+
+def last_redirects() -> tuple[tuple[int, str], ...]:
+    """Redirects recorded by the most recent request on this thread."""
+    return getattr(_REDIRECTS, "last_hops", ())
 
 
 def _same_origin(url_a: str, url_b: str) -> bool:

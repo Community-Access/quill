@@ -936,8 +936,8 @@ level) (<code>quill/ui/radio/station_website_button.py</code>)</h4>
 <ul>
 <li><code>button</code>: Opens the website of the station that is
 playing, or of the favorite the list is on, in your web browser – often
-where a station keeps its schedule. If the station gave no website, it
-tells you.</li>
+where a station keeps its schedule. If none is saved, you can add a
+local website address.</li>
 </ul>
 <h4 id="radiostatsdialog-quilluiradiostats_dialogpy">RadioStatsDialog
 (<code>quill/ui/radio/stats_dialog.py</code>)</h4>
@@ -1250,6 +1250,10 @@ nothing.</p>
 do: exit, or keep playing with QUILL Cast tucked into the system tray.
 Cancel leaves everything as it was. Don’t ask me again remembers your
 answer, and Preferences can set it back to asking.</p>
+<p><strong>Copy to Folder.</strong> Choose another folder for the same
+subscription, or make a new folder. The podcast remains in its original
+folder and shares one episode list, download set, and listening history
+in every placement.</p>
 <p><strong>Downloads.</strong> The download queue, and everything you
 can do to it. Finished rows stay until you clear them so “did that
 actually download?” always has an answer, and Enter on a saved row opens
@@ -1275,6 +1279,11 @@ feed.</p>
 <p><strong>Feed Credentials.</strong> The user name and password for a
 private feed – a paid subscription, a members-only show. They are kept
 for this feed alone and sent to its own host, never to a directory.</p>
+<p><strong>Feed Refresh Progress.</strong> A background feed check:
+completed and total counts, active podcast names, and Stop Checks. Stop
+keeps feeds already updated and ignores late results; requests already
+running may finish their network timeout. Close hides this window; the
+Window menu brings it back.</p>
 <p><strong>Find This Show’s New Feed.</strong> Feeds that might be this
 podcast, found by searching the podcast directories for its title and
 checked to make sure each one answers, with how many episodes it has and
@@ -1610,6 +1619,18 @@ nothing else.</li>
 <li><code>cancel</code>: Closes this window. Nothing changes.</li>
 </ul>
 <h4
+id="_feedprogresswindow-quilluipodcastscheck_runpy">_FeedProgressWindow
+(<code>quill/ui/podcasts/check_run.py</code>)</h4>
+<ul>
+<li><code>self.status</code>: Shows completed feed counts and the
+podcasts currently being checked. Window menu, Control Tab, and Alt Tab
+return to the library without stopping.</li>
+<li><code>self.gauge</code>: The number of feeds checked so far.</li>
+<li><code>self.stop</code>: Stop this refresh immediately. Queued
+requests are cancelled and late results from requests already running
+are ignored. Completed checks are kept.</li>
+</ul>
+<h4
 id="castcloseconfirmdialog-quilluipodcastsclose_confirm_dialogpy">CastCloseConfirmDialog
 (<code>quill/ui/podcasts/close_confirm_dialog.py</code>)</h4>
 <ul>
@@ -1629,7 +1650,8 @@ id="downloadsdialog-quilluipodcastsdownloads_dialogpy">DownloadsDialog
 <ul>
 <li><code>self._list</code>: Every downloaded episode, grouped by
 podcast. Arrow through for sizes; Remove This Podcast’s Downloads
-deletes the files for the podcast you are on.</li>
+deletes the files for the podcast you are on. Queued, part-played,
+pinned, and active downloads are kept.</li>
 </ul>
 <h4
 id="episodeextraswindow-quilluipodcastsepisode_extras_dialogpy">EpisodeExtrasWindow
@@ -1680,8 +1702,8 @@ id="castepisodelistmixin-quilluipodcastsepisode_listpy">CastEpisodeListMixin
 <li><code>self._episodes</code>: The episodes (or podcasts) of the place
 you chose, one per row, read column by column. Enter plays an episode or
 opens a podcast; Space adds an episode to the queue; Delete removes it
-from this place; Shift+F10 offers everything else. Left Arrow at the top
-returns to Places.</li>
+from this place; Shift+F10 offers everything else. Tab and Shift+Tab
+move between Places and this content.</li>
 </ul>
 <h4
 id="feedcheckwindow-quilluipodcastsfeed_check_dialogpy">FeedCheckWindow
@@ -1731,9 +1753,9 @@ does not come back.</li>
 id="folderpickerdialog-quilluipodcastsfolder_picker_dialogpy">FolderPickerDialog
 (<code>quill/ui/podcasts/folder_picker_dialog.py</code>)</h4>
 <ul>
-<li><code>self._tree</code>: Your podcast folders. Choose the one to
-move into and press Move Here; New Folder creates one inside whatever is
-selected.</li>
+<li><code>self._tree</code>: Your podcast folders. Choose the
+destination and press Move Here or Copy Here; New Folder creates one
+inside whatever is selected.</li>
 </ul>
 <h4 id="module-level-quilluipodcastslibrary_view_dialogpy">(module
 level) (<code>quill/ui/podcasts/library_view_dialog.py</code>)</h4>
@@ -1757,8 +1779,9 @@ Enter goes to one, and Escape brings the place back. Ctrl+F comes here
 from anywhere.</li>
 <li><code>self._shows_tree</code>: Your podcasts and folders. Arrow
 through them; Enter on a podcast plays its next episode; expand a
-podcast to reach its episodes; Left Arrow at the top returns to Places.
-Shift F10 offers the row’s actions.</li>
+podcast to reach its episodes. Left Arrow collapses an expanded folder
+or podcast; it does not leave the tree. Tab and Shift+Tab move between
+Places and this tree. Shift+F10 offers the row’s actions.</li>
 <li><code>self._play_pause_btn</code>: Starts the selected podcast or
 episode when stopped, pauses current playback, or resumes it from the
 saved position when paused. The label names what it would play, pause or
@@ -1853,6 +1876,40 @@ the list follows playback without moving your cursor.</li>
 with your episode notes. Saved when you leave the field; empty removes
 it.</li>
 </ul>
+<h4
+id="opmlimportdialog-quilluipodcastsopml_import_dialogpy">OpmlImportDialog
+(<code>quill/ui/podcasts/opml_import_dialog.py</code>)</h4>
+<ul>
+<li><code>self._check_feeds</code>: After importing, check feed
+reachability on two background workers. Stop Checking ends the check
+without removing the shows you brought in.</li>
+<li><code>self._stream_only</code>: Keep imported podcasts streaming so
+their back catalogues do not start downloading.</li>
+<li><code>self._status</code>: Import and feed-check progress, including
+active podcasts.</li>
+<li><code>self._gauge</code>: How many imported feeds have been
+checked.</li>
+<li><code>self._start_btn</code>: Import this feed list in the
+background.</li>
+<li><code>self._cancel_check_btn</code>: Stop checking immediately, keep
+every show already added, and prepare a partial report.</li>
+<li><code>self._close_btn</code>: Hide this window without stopping the
+import. Return through the Window menu.</li>
+</ul>
+<h4
+id="opmlimportreportdialog-quilluipodcastsopml_import_report_dialogpy">OpmlImportReportDialog
+(<code>quill/ui/podcasts/opml_import_report_dialog.py</code>)</h4>
+<ul>
+<li><code>self._list</code>: Review feed errors, permanent moves, and
+duplicate podcasts. Export Report saves the findings; Save Pruned OPML
+saves a separate cleaned copy.</li>
+<li><code>export_btn</code>: Save the import report as a text file in
+the background.</li>
+<li><code>prune_btn</code>: Save a separate OPML copy without
+unreachable feeds. The source file is preserved.</li>
+<li><code>close_btn</code>: Hide this report and return to the window
+that opened it.</li>
+</ul>
 <h4 id="placeschooser-quilluipodcastsplaces_chooserpy">PlacesChooser
 (<code>quill/ui/podcasts/places_chooser.py</code>)</h4>
 <ul>
@@ -1872,9 +1929,11 @@ changed here is kept.</li>
 <li><code>self.box</code>: The places in your library, each with its
 count: the Inbox, New Episodes, Continue Listening, Favorites, Personal
 Audio, the Play Queue, Downloads, Notifications and your Podcasts. Enter
-or Right Arrow moves into the place; Delete hides a row; F2 renames it;
-Alt+Shift+Up and Down move it; the Applications key offers what the
-whole place can do. View &gt; Places restores anything hidden.</li>
+or Right Arrow updates the content beside this list without moving
+focus. Tab moves to that content; Shift+Tab returns here. Delete hides a
+row; F2 renames it; Alt+Shift+Up and Down move it; the Applications key
+offers what the whole place can do. View &gt; Places restores anything
+hidden.</li>
 </ul>
 <h4
 id="playqueuedialog-quilluipodcastsplay_queue_dialogpy">PlayQueueDialog
@@ -4431,6 +4490,16 @@ when you press OK.</li>
 parts of the app it keeps, which it removes, and anything else it
 sets.</li>
 </ul>
+<h4
+id="documentfolderprefs-quillappslite_preferences_save_folderpy">DocumentFolderPrefs
+(<code>quill/apps/lite_preferences_save_folder.py</code>)</h4>
+<ul>
+<li><code>self.folder</code>: Where Open and Save As start for a new
+document. Leave blank to use the Windows Documents folder. A document
+already saved keeps using its own folder.</li>
+<li><code>self.choose</code>: Choose an existing folder for new
+documents.</li>
+</ul>
 <h4 id="module-level-quillappslite_window_wordspy">(module level)
 (<code>quill/apps/lite_window_words.py</code>)</h4>
 <ul>
@@ -4863,10 +4932,9 @@ keep working.</li>
 <li><code>self.about</code>: What the chosen model is good for, how long
 the recording is, and about how long transcribing it should take on this
 computer.</li>
-<li><code>self.destination</code>: A new document is the default: the
-transcript opens in a document of its own when it is ready. This
-document puts it where the cursor is in this document at the moment it
-finishes, as one step Ctrl+Z can take back.</li>
+<li><code>self.output</code>: The editor stays where it is while
+transcription runs. Open Notifications and activate the completed result
+when you are ready to read it.</li>
 <li><code>self.timestamps</code>: Off unless you check it. A new
 paragraph starts wherever the recording pauses for two seconds or more;
 with timestamps checked, each paragraph begins with the hours, minutes
@@ -4880,8 +4948,8 @@ move the cursor are ignored.</li>
 <li><code>self.running</code>: What is being transcribed at the moment,
 how far it has got, and how many recordings are waiting after it.</li>
 <li><code>stop</code>: Stops the transcription that is running and
-forgets any recordings waiting after it. Nothing is written into a
-document.</li>
+cancels any recordings waiting after it. The outcomes remain in
+Notifications; nothing is written into a document.</li>
 </ul>
 <h4
 id="recentdocumentswindow-quilluirecent_documents_dialogpy">RecentDocumentsWindow

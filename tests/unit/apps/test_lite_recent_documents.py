@@ -27,6 +27,7 @@ class FakeApp:
         self.settings = settings
         self.opened: list = []
         self.saved_settings = 0
+        self.queued_settings = 0
         self.rebuilt_menus = 0
 
     def open_path(self, *args, **kwargs) -> bool:
@@ -35,6 +36,9 @@ class FakeApp:
 
     def save_settings(self) -> None:
         self.saved_settings += 1
+
+    def _queue_settings_save(self) -> None:
+        self.queued_settings += 1
 
     def refresh_all_menus(self) -> None:
         self.rebuilt_menus += 1
@@ -86,7 +90,7 @@ def test_choosing_a_document_opens_it(window: _Window, monkeypatch, tmp_path) ->
     assert asked[0][0] is window
     assert asked[0][3]["limit"] == 10
     assert window.app.opened == [((Path(target),), {})]
-    assert window.app.saved_settings == 0  # nothing about the list changed
+    assert window.app.queued_settings == 0  # nothing about the list changed
 
 
 def test_pins_removals_and_preferences_are_saved_even_without_opening(
@@ -103,7 +107,7 @@ def test_pins_removals_and_preferences_are_saved_even_without_opening(
     assert settings.pinned_recent_files == [kept]
     assert settings.recent_files_limit == 5
     assert settings.recent_files_auto_clear_missing is True
-    assert window.app.saved_settings == 1
+    assert window.app.queued_settings == 1
     assert window.app.rebuilt_menus == 1
     assert window.app.opened == []
     assert window.control.focused == 1

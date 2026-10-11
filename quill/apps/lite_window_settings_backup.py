@@ -110,7 +110,7 @@ class DocumentSettingsBackupMixin:
             self.control.SetFocus()
             return
         self.app.settings = settings
-        self.app.save_settings()
+        self.app._queue_settings_save()
         self.app.reapply_settings()
         self.app.rebuild_all_menus()
         self._announce(f"Settings restored from {source.name}. {report.summary()}")

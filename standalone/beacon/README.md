@@ -30,7 +30,7 @@ First slice: Phase-1 local-first desktop MVP (PRD 44.2).
 
 ## Run from source
 
-Requires Python 3.12+ and wxPython.
+Requires Python 3.13+ and wxPython.
 
 ```
 pip install wxPython

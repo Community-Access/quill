@@ -30,7 +30,7 @@ from quill.ui.main_frame_podcast_save import PodcastLibrarySaveMixin
 from quill.ui.main_frame_podcast_session import PodcastSessionMixin
 from quill.ui.main_frame_podcast_transfers import PodcastTransfersMixin
 from quill.ui.podcasts.check_monitor import PodcastCheckMonitor
-from quill.ui.podcasts.feed_refresh import refresh_feeds
+from quill.ui.podcasts.failure_report import report_failure
 from quill.ui.podcasts.folder_watch import FolderWatchMixin
 from quill.ui.podcasts.player_controller import (
     PodcastPlaybackState,
@@ -47,7 +47,7 @@ _SAFE_MODE_MESSAGE = "Podcasts are disabled in Safe Mode. Restart QUILL normally
 
 
 class PodcastsMixin(
-    FolderWatchMixin,
+    FolderWatchMixin,  # watched folders, shared with QUILL (qc.md 5d)
     PodcastSessionMixin,
     QueueRunCommandsMixin,
     PodcastAcquisitionMixin,
@@ -64,13 +64,23 @@ class PodcastsMixin(
 
     # -- setup ----------------------------------------------------------
 
-    def _init_podcasts(self) -> None:
-        self._podcast_library: PodcastLibrary = load_library(app_data_dir())
+    def _init_podcasts(self, *, defer_library_load: bool = False) -> None:
+        self._podcast_library: PodcastLibrary = (
+            PodcastLibrary() if defer_library_load else load_library(app_data_dir())
+        )
         # Catch up on Quill Radio before anything reads episode state, so the
         # Inbox and Continue Listening open already knowing.
         from quill.ui.podcasts.launch_catchup import catch_up_with_radio
 
-        catch_up_with_radio(self._podcast_library)
+        if not defer_library_load:
+            try:
+                catch_up_with_radio(self._podcast_library)
+            except Exception:
+                self._wx.CallAfter(
+                    self._announce,
+                    "The Quill Radio listening handoff could not be applied. "
+                    "Your podcast library is still available.",
+                )
         self._podcast_manager_dialog: PodcastManagerDialog | None = None
         self._podcast_ever_active = False
         self._podcast_current_chapters: list = []
@@ -124,18 +134,31 @@ class PodcastsMixin(
             ),
             library_provider=lambda: self._podcast_library,
             refresh_show=self.refresh_podcast_feed,
-            # Many feeds at once go through one bounded batch (F-09).
-            refresh_many=lambda ids, manual: refresh_feeds(self, ids, manual=manual),
             safe_mode=self._safe_mode,
             feature_enabled=lambda: self._feature_enabled("core.podcasts"),
+            on_refresh_error=lambda show_id, _error: self._podcast_check_start_failed(show_id),
+            library_changed=self._save_podcast_library,
         )
-        self._podcast_check_monitor.apply()
+        if not defer_library_load:
+            self._podcast_check_monitor.apply()
         # Housekeeping runs once at startup: the queue-age migration has to
         # happen before anything asks how old the queue is, and an expiry that
         # became due while the app was closed should be applied on the way in,
         # not on the next refresh. Quiet at launch -- a summary the moment the
         # window appears would talk over the screen reader announcing it.
-        self.podcast_run_maintenance(announce=False)
+        if not defer_library_load:
+            self.podcast_run_maintenance(announce=False)
+
+    def _podcast_check_start_failed(self, show_id: str) -> None:
+        """Count a feed whose worker could not be submitted as a failed check."""
+        from quill.ui.podcasts import check_run
+
+        show = self._podcast_library.find_show(show_id)
+        check_run.step(
+            self,
+            show_id,
+            failed_title=str(getattr(show, "title", "") or show_id),
+        )
 
     # -- controller callbacks (fire on the UI thread already, per PlayerPanel's
     # / audio engine's own contract of UI-thread callbacks) -----------------
@@ -149,6 +172,8 @@ class PodcastsMixin(
             radio.stop()
 
     def _on_podcast_state_changed(self, state: PodcastPlaybackState) -> None:
+        if getattr(self, "_cast_closing", False) or getattr(self, "_cast_closed", False):
+            return
         self._maybe_surface_podcast_status_cell(bool(state.title))
         self._podcast_track_history(state)
         self._podcast_manage_playback_cache(state)
@@ -177,9 +202,20 @@ class PodcastsMixin(
             show_title=show.title if show is not None else "",
             episode_title=state.title,
         )
-        podcast_history.save_history(app_data_dir(), self._podcast_history)
+        self._save_podcast_history()
 
     def _save_podcast_history(self) -> None:
+        if getattr(self, "_cast_ui_lifetime", None) is not None:
+            import copy
+
+            from quill.ui.podcasts import record_tasks
+
+            data_dir = app_data_dir()
+            snapshot = copy.deepcopy(self._podcast_history)
+            record_tasks.submit(
+                self, "cast_history", lambda: podcast_history.save_history(data_dir, snapshot)
+            )
+            return
         """Persist the podcast history record (settings, onboarding, recents).
 
         Named rather than inlined because the first-run flow needs a saver it
@@ -221,13 +257,14 @@ class PodcastsMixin(
                 self._podcast_current_chapters = list(getattr(result, "chapters", []) or [])
                 self._podcast_chapters_source = str(getattr(result, "label", ""))
 
-        def _on_failure(_op: str, error: object) -> None:
-            from quill.ui.podcasts.failure_report import report_failure
-
-            report_failure(self, "Could not load chapters for this episode.")
-
         self._task_manager.submit(
-            "podcast-chapters", _do_fetch, on_success=_on_success, on_failure=_on_failure
+            "podcast-chapters",
+            _do_fetch,
+            on_success=_on_success,
+            # An optional lookup Cast made on its own: written down, not said.
+            on_failure=lambda _op, error: report_failure(
+                self, f"Chapters for {episode.title} could not be read: {error}", quiet=True
+            ),
         )
 
     def _maybe_surface_podcast_status_cell(self, active: bool) -> None:
@@ -260,7 +297,9 @@ class PodcastsMixin(
         # (pause / stop / switch / shutdown), which is why the statistics log
         # is flushed here instead of on the once-a-second poll that feeds it.
         self._podcast_flush_stats()
-        self._save_podcast_library()
+        from quill.ui.podcasts.save_snapshot import save_show
+
+        save_show(self, show_id, episode_guid=episode_guid)
 
     def _podcast_share_place(
         self, show: object, episode: object, ms: int, *, finished: bool
@@ -268,9 +307,30 @@ class PodcastsMixin(
         """Write this episode's place where Quill Radio can read it (11.11)."""
         from quill.ui.podcasts.shared_place import share_place
 
+        if getattr(self, "_cast_ui_lifetime", None) is not None:
+            from types import SimpleNamespace
+
+            from quill.ui.podcasts import record_tasks
+
+            source = SimpleNamespace(feed_url=str(getattr(show, "feed_url", "") or ""))
+            target = SimpleNamespace(
+                audio_url=str(getattr(episode, "audio_url", "") or ""),
+                title=str(getattr(episode, "title", "") or ""),
+            )
+            data_dir = app_data_dir()
+            record_tasks.submit(
+                self,
+                "shared_positions",
+                lambda: share_place(
+                    source, target, ms, finished=finished, data_dir=data_dir, strict=True
+                ),
+            )
+            return
         share_place(show, episode, ms, finished=finished)
 
     def _on_podcast_episode_finished(self, show_id: str, episode_guid: str) -> None:
+        if getattr(self, "_cast_closing", False) or getattr(self, "_cast_closed", False):
+            return
         show = self._podcast_library.find_show(show_id)
         if show is None:
             return
@@ -683,13 +743,13 @@ class PodcastsMixin(
         refresh_feed(self, show_id)
 
     def podcast_check_all_feeds(self) -> None:
-        """Every feed now, a few at a time; the end is spoken (F-09)."""
+        """Every feed now, paced by the monitor and followed in Feed Check."""
         from quill.ui.podcasts.feed_refresh import check_all_feeds
 
         check_all_feeds(self)
 
     def podcast_stop_feed_checks(self) -> None:
-        """Stop a check of many feeds; its end sentence says how far it got."""
+        """Stop a check of many feeds; Feed Check's end sentence says how far it got."""
         from quill.ui.podcasts.feed_refresh import stop_feed_checks
 
         stop_feed_checks(self)
@@ -758,16 +818,15 @@ class PodcastsMixin(
             if changed:
                 self._announce(f"Processed audio for {destination.name}")
 
-        def _on_failure(_op: str, error: object) -> None:
-            from quill.ui.podcasts.failure_report import report_failure
-
-            report_failure(self, "Could not process this downloaded audio.")
-
         self._task_manager.submit(
             "podcast-audio-process",
             _do_process,
             on_success=_on_success,
-            on_failure=_on_failure,
+            on_failure=lambda _op, error: report_failure(
+                self,
+                f"Could not process the audio of {destination.name}: {error}",
+                background=True,
+            ),
         )
 
     # -- local (imported) podcasts (Phase 4) -----------------------------------
@@ -818,22 +877,6 @@ class PodcastsMixin(
             "Its files live outside your synced data folder by design."
         )
 
-    def scan_watched_podcast_folders(self) -> None:
-        """Scan every local show's watched folder for new audio files."""
-        from quill.core.podcasts.local_import import scan_watched_folder
-
-        added_total = 0
-        for show in self._podcast_library.shows:
-            if show.is_local and show.watched_folder:
-                added_total += scan_watched_folder(show)
-        if added_total:
-            self._save_podcast_library()
-            if self._podcast_manager_dialog is not None:
-                self._podcast_manager_dialog.refresh_tree()
-            self._announce(f"Watched folders added {added_total} new episode(s)")
-        else:
-            self._announce("No new files in watched folders")
-
     def subscribe_acb_media_podcasts(self) -> None:
         """One command subscribes ACB Media's whole podcast directory
         (idempotent; new arrivals are stream-only so nothing mass-downloads)."""
@@ -843,14 +886,24 @@ class PodcastsMixin(
             )
             return
         from quill.core.podcasts import acb_media_podcasts
+        from quill.core.podcasts.opml import parse_opml
+        from quill.core.podcasts.opml_import import apply_plan
 
         def _do_subscribe(**_kwargs: object):
-            return acb_media_podcasts.add_acb_media_podcasts(
-                self._podcast_library, safe_mode=self._safe_mode
-            )
+            return acb_media_podcasts.fetch_acb_media_directory(safe_mode=self._safe_mode)
 
-        def _on_success(_op: str, outcome: object) -> None:
-            added, skipped = outcome
+        def _on_success(_op: str, opml_text: object) -> None:
+            if not isinstance(opml_text, str):
+                report_failure(self, "ACB Media directory returned unreadable data.")
+                return
+            plan = acb_media_podcasts.plan_acb_media_subscriptions(self._podcast_library, opml_text)
+            added = apply_plan(
+                self._podcast_library,
+                plan,
+                stream_only=True,
+                into_folder=acb_media_podcasts.ACB_PODCASTS_FOLDER,
+            )
+            skipped = max(0, len(parse_opml(opml_text)) - len(added))
             self._save_podcast_library()
             if self._podcast_manager_dialog is not None:
                 self._podcast_manager_dialog.refresh_tree()
@@ -858,9 +911,14 @@ class PodcastsMixin(
                 f"ACB Media Podcasts: {len(added)} new show(s) subscribed, "
                 f"{skipped} already present."
             )
+            if added:
+                self._start_new_podcast_feed_check(
+                    [show.id for show in added],
+                    action="Refresh ACB Media Feeds",
+                )
 
         def _on_failure(_op: str, error: object) -> None:
-            self._announce(f"ACB Media Podcasts could not be fetched: {error}")
+            report_failure(self, f"ACB Media Podcasts could not be fetched: {error}")
 
         self._announce("Fetching the ACB Media podcast directory...")
         self._task_manager.submit(
@@ -869,6 +927,39 @@ class PodcastsMixin(
             on_success=_on_success,
             on_failure=_on_failure,
         )
+
+    def _start_new_podcast_feed_check(
+        self,
+        show_ids: list[str],
+        *,
+        action: str,
+        only_if_automatic_checks_enabled: bool = False,
+    ) -> None:
+        """Refresh just the feeds a completed import has newly subscribed."""
+        if only_if_automatic_checks_enabled:
+            settings = getattr(self, "settings", None) or getattr(self, "_podcast_history", None)
+            if not bool(getattr(settings, "podcast_check_enabled", False)):
+                return
+        monitor = getattr(self, "_podcast_check_monitor", None)
+        if monitor is None or not show_ids:
+            return
+        if monitor.is_checking:
+            self._announce(
+                f"{action}: feeds were added, but another feed check is already in progress."
+            )
+            return
+        started = monitor.check_now(
+            force=True,
+            defer_start=True,
+            show_ids={str(show_id) for show_id in show_ids},
+        )
+        if not started:
+            return
+        from quill.ui.podcasts import check_run
+
+        ids = list(getattr(monitor, "last_started_ids", []))
+        check_run.start(self, ids, action=action)
+        monitor.start_queued()
 
     def add_podcast_note(self) -> None:
         """Timestamped note on the playing episode (Phase 4 episode notes)."""
@@ -934,6 +1025,9 @@ class PodcastsMixin(
     # -- command palette registration ----------------------------------------
 
     def _register_podcasts_commands(self) -> None:
+        # A host may give these its own names, and drop one it has no use for
+        # (None): QUILL Cast's palette says Follow and Personal Audio, as its
+        # menus do. QUILL has no map and keeps the titles below.
         renamed: dict[str, str | None] = getattr(self, "_podcast_palette_titles", None) or {}
         for command_id, title, handler in (
             ("podcasts.open_manager", "Podcasts: Open Manager...", self.open_podcast_manager),
@@ -973,6 +1067,11 @@ class PodcastsMixin(
                 "podcasts.scan_watched",
                 "Podcasts: Scan Watched Folders for New Episodes",
                 self.scan_watched_podcast_folders,
+            ),
+            (
+                "podcasts.watched_folders",
+                "Podcasts: Watched Folders...",
+                self.open_watched_folders,
             ),
             (
                 "podcasts.acb_media",
@@ -1032,7 +1131,7 @@ class PodcastsMixin(
             if command_id in renamed:
                 if renamed[command_id] is None:
                     continue
-                title = renamed[command_id]
+                title = str(renamed[command_id])
             self.commands.try_register(
                 command_id,
                 title,

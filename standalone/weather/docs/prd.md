@@ -2,9 +2,17 @@
 
 This is the complete, authoritative product-requirements document for the QUILL Weather feature set -- the weather code shared by the standalone **Quill Weather** app, **Quill Radio**, and **QUILL**. It moved here from the Quill Radio PRD when Quill Weather became its own app (2.2.0). For what is specific to Quill Weather *as a standalone app* (its own process, tray, run-at-login, independent distribution), see the app-specific notes at the end of this document.
 
-## Implementation status (2.2.0)
+## Implementation status (2.2.1)
 
-Much of this roadmap is now shipped. As of 2.2.0 the following are **delivered**:
+Much of this roadmap is now shipped. As of 2.2.1 the following are **delivered**:
+
+- **Saved friendly names in reports** — Current conditions, Quick Weather, and
+  local-time text use the listener's saved name for a place, with the resolved
+  place name as the fallback. The Location chooser and alert monitoring use the
+  same label.
+- **Two complete Windows editions** — a shared-runtime installer and a
+  self-contained portable ZIP. Both contain current Weather code and bundled
+  documentation; Check for Updates chooses the matching edition.
 
 - **Weather Center** with current conditions, the NWS period forecast, the extended daily outlook, active alerts, and air quality (2.1.0), plus, new in 2.2.0, the **Hourly forecast** pane (§ "Hourly Conditions"), a locally-computed **moon almanac** (phase, illumination, moonrise, moonset), and a **two-clock time summary** (`render.time_summary`) that speaks the local time **at the searched location**, the local time **where the reviewer is**, and **when the reading was checked** — collapsing to a single clock, with "the same time zone", when both share a UTC offset.
 - **Weather Guardian (§5.2)** — background monitoring of US alerts that **speaks newly-issued watches/warnings** (forced/interrupting speech for Urgent-and-above), announces all-clear, shows a system-tray toast, keeps running while minimized to the tray, and auto-resumes on launch. A **severe-weather mode** tightens the poll (down to the NWS 30-second courtesy floor, default 60 s) while an alert is active and relaxes afterward — the free-API approximation of push latency. **Pause/Resume** snoozes it without turning it off. Since 2.2.0 the watch covers **every saved location at once** by default (§"Standalone Quill Weather app" item 8), one monitor state per place, with a single combined baseline summary; per-location *selection* UI is still to come.
@@ -2522,11 +2530,9 @@ from the shared weather feature set above.
    speech-synthesis *stacks* are bundled -- a much smaller download than Quill
    Radio. (Announcements still reach speech and a braille display, via the user's
    screen reader; see item 9. Nothing about that requires bundling an engine.)
-   The build MUST also exclude the libraries the app never runs at runtime that a
-   broad packaging rule would otherwise force in -- the i18n build tool, the PDF
-   stack, data-science, imaging, and video libraries -- which took the portable
-   ZIP from about 176 MB to 79 MB and the installer from about 123 MB to 52 MB
-   with no loss of function. Keeps the alert watch running while minimized to the
+   The build MUST also exclude libraries the app never runs at runtime that a
+   broad packaging rule would otherwise force in -- the i18n build tool, PDF
+   stack, data-science, imaging, and video libraries. It keeps the alert watch running while minimized to the
    tray, resumes on launch, and offers a run-at-login option and an OS-scheduled
    background check (no persistent process required).
 3. **Independent distribution and updates.** Its own installer and portable
@@ -2534,13 +2540,10 @@ from the shared weather feature set above.
    each app resolves **only its own release asset** (`Quill-Weather-Setup-*.exe`
    for an installed build, `Quill-Weather-Portable-*.zip` for a portable one) and
    its own app tag's version, so a Quill Radio release can never be offered as a
-   Quill Weather update and no app needs a separate repository. It carries the
-   **same version number as Quill Radio** (2.2.0,
-   shared weather code, released together) but a Quill Weather release can go out
-   without a Quill Radio release and vice versa. Quill Weather also participates
-   in the shared **QuillVille Runtime** distribution model, with a full portable
-   edition, a lightweight companion edition, a full (shared-runtime) installer,
-   and a thin installer -- detailed in "Distribution model" below.
+   Quill Weather update and no app needs a separate repository. Quill Weather and
+   Quill Radio share weather code but release independently. Quill Weather
+   participates in the shared **QuillVille Runtime** distribution model, with a
+   portable edition and a full (shared-runtime) installer, detailed below.
 4. **Sibling interoperability, through the shared QuillVille menu.** Quill
    Weather carries the family's top-level **QuillVille** menu -- the same menu,
    in the same place, in every QuillVille app -- listing "Open QUILL" and "Open
@@ -2606,11 +2609,9 @@ from the shared weather feature set above.
    preferences (braille on/off, braille style, dedupe window, sticky errors,
    sound cues in apps) are shared settings edited in QUILL and honored here,
    since the family shares one settings store per machine. Quill Weather does
-   **not** currently surface the shared **Repeat Last Announcement** and
-   **Announcement Self-Test** commands: it ships no command palette or keymap
-   editor, so the shell's command registration is not called. Exposing both --
-   the self-test in particular, which distinguishes "braille is broken" from "no
-   display is connected" -- is an open requirement.
+   expose the shared **Repeat Last Announcement** and **Announcement Self-Test**
+   commands through its Command Palette. Its Help menu also exposes **Activity**
+   (Shift+F9) and **Repeat Last Result** (F9), using the shared session result log.
 
 ### Distribution model: editions and the QuillVille Runtime
 
@@ -2626,33 +2627,26 @@ runtime is removed only when the last app that needs it is uninstalled. This
 keeps total disk use down (one runtime, not one per app) without ever pulling the
 runtime out from under an app that still needs it.
 
-**Editions.** Four downloads are offered for Quill Weather, so the user can trade
-download size against self-containment:
+**Editions.** Two downloads are offered for Quill Weather:
 
-1. **Full portable** (`Quill-Weather-Portable-<version>.zip`, about 82 MB) --
+1. **Portable** (`Quill-Weather-Portable-<version>.zip`) --
    fully self-contained: runs from a USB stick with no installation and no
    internet, carrying a genuine, unmodified copy of Python. Weather bundles no
    audio, AI, transcription, braille, or speech-synthesis stacks, so this build
    is already compact. A `data` folder beside the exe with a `storage-mode.json`
    marker (`{"mode": "portable"}`) keeps all state on the removable medium.
-2. **Companion edition** (`Quill-Weather-Companion-<version>.zip`, about 2 MB) --
-   feather-light: only the app and its docs, running on the shared QuillVille
-   Runtime. On first launch, if the runtime is not already installed, the app
-   offers to download and install it (about 230 MB, once) with a fully
-   accessible progress bar; afterward this app and every other QuillVille app
-   start instantly.
-3. **Full installer** (`Quill-Weather-Setup-Shared-<version>.exe`) -- installs
-   the shared runtime (if not already present) plus the app, with a Start Menu
-   entry, an uninstaller, and the shared data store.
-4. **Thin installer** (the `-Lite` setup) -- a tiny installer that downloads the
-   shared runtime only if it is not already present, then installs the app.
+2. **Shared installer** (`Quill-Weather-Setup-Shared-<version>.exe`) -- runs per
+   user without elevation and includes the shared runtime, installing it if
+   absent. It adds the app, a Start Menu entry, an uninstaller, and the shared
+   data store. A per-app version marker keeps About and updates independent of
+   the shared runtime's other apps.
 
-**Accessible runtime downloads (requirement).** Any time the QuillVille Runtime
-is downloaded -- whether triggered by an installer or by an app's own first
-launch -- the operation MUST present a fully accessible progress bar that works
-with NVDA, JAWS, and Narrator, announcing progress as a spoken percentage. The
-one-time nature of the download (once per user, then reused) MUST be clear to the
-user before it begins.
+Both editions include their required runtime. Neither downloads one on first
+launch. The portable launcher must remain offline when its bundle is damaged;
+the installed launcher may repair a missing shared runtime with the user's
+consent. Portable Weather must not register a Windows startup entry or a
+scheduled background task on its host. The corresponding menu choices must
+explain this and show their actual disabled state.
 
 **Security and antivirus (requirement).** The app's launcher MUST be a genuine,
 tiny native program, and the bundled Python MUST be the official, unmodified

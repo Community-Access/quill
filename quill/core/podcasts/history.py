@@ -88,9 +88,8 @@ class PodcastHistory:
     #: RadioHistory.alt_f4_to_tray.
     alt_f4_to_tray: bool = False
     #: Winamp classic-skin transport letters (Z X C V B, arrows to seek, J,
-    #: T, L) in the library and episode lists. On by default -- every letter
-    #: the map claims is otherwise unused on those surfaces, and the muscle
-    #: memory is real for anyone who came through Winamp. Mirrors Quill
+    #: T, L) in the Now Playing window. Library and episode lists always keep
+    #: their letter typeahead. Mirrors Quill
     #: Radio's RadioHistory.winamp_playback_keys, and shares its key map.
     winamp_playback_keys: bool = True
     #: What closing the window means: "ask" every time, "exit", or

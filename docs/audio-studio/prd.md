@@ -573,7 +573,7 @@ requirement, not a layer.
 
 - P-1. The Python entry point must be `quill-audio-studio =
   quill_audio_studio:main` (gui-script), a thin wrapper over
-  `quill.apps.studio`; package `quill-audio-studio`, Python 3.12+. The
+  `quill.apps.studio`; package `quill-audio-studio`, Python 3.13+. The
   packaging version is the shared QuillVille family version (2.2.0), aligned
   with Quill Radio and Quill Weather because the three install on one shared
   runtime; releases remain independent per app.

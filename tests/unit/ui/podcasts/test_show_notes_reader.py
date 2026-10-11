@@ -74,6 +74,23 @@ def test_the_reader_takes_a_windows_own_access_keys_and_a_placeholder(wx_app) ->
         frame.Destroy()
 
 
+def test_empty_notes_replace_a_placeholder_even_when_the_content_key_matches(wx_app) -> None:
+    from quill.ui.notes_reader import NotesReader
+
+    frame = wx.Frame(None)
+    try:
+        panel = wx.Panel(frame)
+        reader = NotesReader(panel, wx.BoxSizer(wx.VERTICAL), announce=lambda _message: None)
+        reader.set_notes("", title="")
+        reader.set_placeholder("Loading show notes...")
+        reader.set_notes("", title="")
+        assert reader.field.GetValue() != "Loading show notes..."
+        assert reader._placeholder is None
+        assert not reader.copy_btn.IsEnabled()
+    finally:
+        frame.Destroy()
+
+
 def test_the_main_panel_pane_follows_the_library_cursor(wx_app) -> None:
     """The mixin's refresh, driven on a stand-in with the pane and a selection."""
     from types import SimpleNamespace

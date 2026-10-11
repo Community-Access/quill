@@ -295,7 +295,7 @@
   "spoken_echo_on_double_press": "documented",
   "ssh_trust_first_use": "documented",
   "start_with_no_document_open": "documented",
-  "startup_folder": "grandfathered",
+  "startup_folder": "documented",
   "status_bar_hidden": "documented",
   "status_bar_order": "documented",
   "status_page_refresh_announcement_cadence": "grandfathered",

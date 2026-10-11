@@ -208,6 +208,12 @@ CELLS: tuple[StatusCell, ...] = (
         "stop dictation.",
     ),
     StatusCell(
+        "notifications",
+        "Notifications",
+        "Progress and results from background work, including audio transcription. "
+        "Press Enter to read a notification or open its result.",
+    ),
+    StatusCell(
         "encoding",
         "Encoding",
         "The character encoding this file was read with and will be written back "

@@ -7,7 +7,7 @@ name = "quill-inkwell"
 version = "1.0.0"
 description = "Quill Inkwell -- accessible, screen-reader-first abbreviation expansion in every Windows application, sharing one library with QUILL"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 license = { text = "MIT" }
 authors = [
   { name = "Community Access" },

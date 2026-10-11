@@ -78,10 +78,12 @@ def subtree_show_ids(library: PodcastLibrary, folder_id: str) -> list[str]:
     wanted = set(subtree_folder_ids(library, folder_id))
     if not wanted:
         return []
+    from quill.core.podcasts.folder_membership import placements
+
     return [
         str(show.id)
         for show in getattr(library, "shows", []) or []
-        if str(getattr(show, "folder_id", "") or "") in wanted
+        if any(folder in wanted for folder in placements(library, show))
     ]
 
 

@@ -38,6 +38,16 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 hear="The new folder, in Podcasts.",
             ),
             Step(
+                title="Close a folder without leaving Podcasts",
+                body=(
+                    "When a folder in the Podcasts tree is open, Left Arrow closes "
+                    "it and keeps focus on that folder. Right Arrow opens it again "
+                    "when you want its contents."
+                ),
+                keys=("Left Arrow", "Right Arrow"),
+                hear="The folder closes or opens, with focus still on its row.",
+            ),
+            Step(
                 title="File a podcast into it",
                 body=(
                     "Go to a podcast, open its menu and choose Move to Folder, then "

@@ -1127,6 +1127,21 @@ paragraphs</td>
 <p>Parakeet glues a currency sign to the word before it
 (<code>about$12,000</code>); the writer puts the space back after a
 lower-case letter, leaving <code>US$</code> alone.</p>
+<p><strong>File-command regression, 2026-10-05.</strong> The background
+runner was checking <code>CancellationToken.is_cancelled</code> as a
+value rather than calling the method, so every real task token looked
+cancelled and no transcript was delivered, regardless of the selected
+model. The runner now calls <code>is_cancelled()</code>; command tests
+pass real active and cancelled tokens and make the fake transcriber
+honour cancellation. The duration estimate also tries Windows Media
+Foundation metadata when mutagen and libsndfile cannot report a length,
+without decoding the recording. An unknown length does not prevent
+transcription. Checked after the fix with the owner’s 254-second MP3,
+local Whisper tiny, the real task manager and a real wx text control:
+638 words delivered on the UI thread in 38 seconds, with no network.
+libsndfile reported malformed MP3 frames but decoded the recording
+through to the end; those warnings did not prevent the transcript from
+being delivered.</p>
 <p><strong>Not built, and what each needs:</strong></p>
 <table>
 <thead>

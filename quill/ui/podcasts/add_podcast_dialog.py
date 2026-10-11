@@ -20,32 +20,8 @@ from quill.core.podcasts.models import PodcastShow
 from quill.core.podcasts.subscriptions import PodcastLibrary, new_id
 from quill.ui.media.list_columns_view import build_columns, columns_for, fill_row
 from quill.ui.podcasts.say_status import say_status
+from quill.ui.podcasts.subscription_backfill import _apply_backfill
 from quill.ui.surface_lifetime import surface_tasks
-
-
-def _apply_backfill(library: Any, show: Any) -> int:
-    """Collect this podcast's back catalogue once, if it was asked for (7.2).
-
-    Separate from the automatic download count, which only ever looks forward:
-    "fetch the newest 3 from now on" and "when I subscribe, also get the last
-    ten" are different questions, and until now only Always Sync -- meaning
-    *everything* -- answered the second.
-
-    A one-off, at the one moment it can be: subscribing. It marks episodes for
-    download and never plays, queues or deletes anything, and a podcast whose
-    setting says "nothing" (the default, and every existing subscription) does
-    exactly what it did before.
-    """
-    try:
-        from quill.core.podcasts.show_policy import backfill_episodes
-
-        wanted = backfill_episodes(library, show, show.episodes)
-    except Exception:  # noqa: BLE001 - a backfill must never break subscribing
-        return 0
-    for episode in wanted:
-        if not episode.downloaded_path and episode.mode_override != "stream":
-            episode.mode_override = "download"
-    return len(wanted)
 
 
 class AddPodcastWindow:
@@ -68,6 +44,8 @@ class AddPodcastWindow:
         announce_cb: Callable[[str], None] | None = None,
         on_library_changed: Callable[[], None] | None = None,
         on_reveal_show: Callable[[str], bool] | None = None,
+        on_import_finished: Callable[[list[str]], None] | None = None,
+        host: Any = None,
     ) -> None:
         import wx
 
@@ -78,6 +56,8 @@ class AddPodcastWindow:
         self._safe_mode = safe_mode
         self._announce = announce_cb or (lambda _m: None)
         self._on_library_changed = on_library_changed or (lambda: None)
+        self._on_import_finished = on_import_finished or (lambda _ids: None)
+        self._host = host
         #: Land the cursor on a show already in the library (11.6). Returns
         #: whether it could; None where there is no list to move in.
         self._on_reveal_show = on_reveal_show
@@ -574,7 +554,7 @@ class AddPodcastWindow:
         """
         from pathlib import Path
 
-        from quill.ui.podcasts.opml_import_dialog import OpmlImportDialog
+        from quill.ui.podcasts.opml_import_dialog import OpmlImportDialog, open_import_window
 
         wx = self._wx
         with wx.FileDialog(
@@ -586,6 +566,10 @@ class AddPodcastWindow:
             if dialog.ShowModal() != wx.ID_OK:
                 return
             path = Path(dialog.GetPath())
+        if self._host is not None:
+            open_import_window(self._host, path)
+            say_status(self._status, f"Import window opened for {path.name}.", speak=False)
+            return
         importer = OpmlImportDialog(
             self.frame,
             library=self._library,
@@ -594,7 +578,7 @@ class AddPodcastWindow:
             safe_mode=self._safe_mode,
             announce_cb=self._announce,
             on_library_changed=self._on_library_changed,
+            on_import_finished=self._on_import_finished,
         )
         importer.show()
-        # The import window has already said what it imported.
-        say_status(self._status, f"Finished importing {path.name}.", speak=False)
+        say_status(self._status, f"Import window opened for {path.name}.", speak=False)

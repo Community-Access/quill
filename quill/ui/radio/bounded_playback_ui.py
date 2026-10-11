@@ -271,13 +271,9 @@ def toggle_skip_silence(host: Any) -> None:
     history = getattr(host, "_radio_history", None)
     if history is not None:
         history.skip_silence = enabled
-        from quill.core.paths import app_data_dir
-        from quill.core.radio.history import save_history
+        from quill.ui.radio.history_save import save_history_async
 
-        try:
-            save_history(app_data_dir(), history)
-        except OSError:
-            pass
+        save_history_async(host, history)
     station = getattr(getattr(controller, "_state", None), "station", None)
     host._announce(bounded_prefs.describe_skip_silence(enabled, bounded_prefs.kind_for(station)))
 

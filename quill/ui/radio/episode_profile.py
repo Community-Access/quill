@@ -222,12 +222,9 @@ def _remember_kind_speed(host: Any, station: Any) -> str:
     rate = float(getattr(host, "_playback_rate", 1.0))
     if not bounded_prefs.set_speed_for_kind(history, kind, rate):
         return ""
-    from quill.core.paths import app_data_dir
-    from quill.core.radio.history import save_history
+    from quill.ui.radio.history_save import save_history_async
 
-    try:
-        save_history(app_data_dir(), history)
-    except OSError:
+    if not save_history_async(host, history):
         return ""
     return bounded_prefs.speed_sentence(rate, kind)
 

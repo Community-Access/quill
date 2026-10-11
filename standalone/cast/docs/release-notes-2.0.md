@@ -230,7 +230,7 @@ into the queue. A daily news podcast can expire, too: choose **Queue
 Expiry...** on its menu, and yesterday's headlines step aside to **Recently
 Expired** (Ctrl+Shift+X), where they wait a week in case you want them back.
 
-Fallen behind on a podcast? **Mark All as Played...** (Ctrl+Shift+E) catches
+Fallen behind on a podcast? **Mark All as Played...** (Alt+Shift+E) catches
 you up in one go. It asks first, and your downloads stay where they are.
 
 Which of your podcasts have stopped working? Podcasts > **Feed Check...**
@@ -407,6 +407,16 @@ History** button shows everything the updater has done.
 Help > About now shows a build number after the version: this release is
 2.0.0 (build 1). If a fix comes out without a new version number, it is a
 newer build, and Check for Updates offers it to you.
+
+## Dev preview: 2.0.0-dev.20261006.2
+
+This preview is separate from the 2.0.0 (build 1) release above. It makes
+large podcast imports and refreshes easier to work through: OPML files are
+read and planned in the background, and imported subscriptions stay in your
+library if you stop the optional feed check. Refresh All has a separate
+progress window; closing it does not stop the run, while **Stop remaining
+checks** cancels only feeds that have not started. In the Podcasts tree, Left
+Arrow now closes an expanded folder without moving focus out of the tree.
 
 ## When you need a hand
 

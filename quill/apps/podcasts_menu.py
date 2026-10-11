@@ -24,7 +24,7 @@ from quill.core import http_client
 #: import the other direction would need.
 APP_TITLE = "QUILL Cast"
 APP_VERSION = "2.0.0"
-APP_BUILD = 1  # this version's build (docs/release/RELEASE.md, "Build numbers")
+APP_BUILD = 3  # this version's build (docs/release/RELEASE.md, "Build numbers")
 APP_REPO = "Community-Access/quill"
 # Every feed, episode and directory request names QUILL Cast and its release
 # (check.md bug 1), the way Quill Radio and Quill Weather already do.
@@ -50,12 +50,21 @@ class CastMenuBarMixin:
             wx.NewIdRef(),
             wx.NewIdRef(),
         )
-        subs_menu.Append(manager_id, "Refresh All N&ow\tF5")
+        refresh_id = wx.NewIdRef()
+        subs_menu.Append(refresh_id, "Refres&h Feed\tF5")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self._on_library_refresh_feed(), id=refresh_id)
+        subs_menu.Append(manager_id, "Refresh All N&ow\tCtrl+F5")
         subs_menu.Append(add_id, "&Add Podcast...\tCtrl+N")
         self._advanced_row(subs_menu, "import_opml", import_id, "&Import OPML...\tCtrl+Alt+I")
         self._advanced_row(subs_menu, "export_opml", export_id, "&Export OPML...\tCtrl+Alt+E")
         folder_id = wx.NewIdRef()
-        subs_menu.Append(folder_id, "New &Folder...\tCtrl+Shift+F")
+        subs_menu.Append(folder_id, self._menu_label("New &Folder...", "podcasts.new_folder"))
+        move_id, copy_id = wx.NewIdRef(), wx.NewIdRef()
+        subs_menu.Append(move_id, "&Move to Folder...\tCtrl+Shift+V")
+        subs_menu.Append(copy_id, "Cop&y to Folder...\tCtrl+Shift+Y")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self._on_library_move_to_folder(), id=move_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self._on_library_copy_to_folder(), id=copy_id)
+        self._keep_menu_ids(refresh_id, move_id, copy_id)
         # Sort Podcasts: how the library tree orders shows. Radio items so the
         # current mode is always visible; "custom" is also entered implicitly
         # by Alt+Up/Alt+Down on a show (see _on_library_move_show).
@@ -172,7 +181,7 @@ class CastMenuBarMixin:
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.open_show_settings_for_selection(), id=settings_id
         )
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self._new_library_folder(), id=folder_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self._on_library_new_folder(), id=folder_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.add_local_podcast(), id=local_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_watched_folders(), id=watched_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.subscribe_acb_media_podcasts(), id=acb_id)
@@ -256,7 +265,10 @@ class CastMenuBarMixin:
         queue_id = wx.NewIdRef()
         self._append_queue_run_submenu(episode_menu)
         mark_all_id = wx.NewIdRef()
-        episode_menu.Append(mark_all_id, "Mar&k All as Played...\tCtrl+Shift+E")
+        episode_menu.Append(
+            mark_all_id, self._menu_label("Mar&k All as Played...", "podcasts.mark_all_played")
+        )
+        self._keep_menu_ids(mark_all_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_mark_all_played(), id=mark_all_id)
         # Dimmed when the current show has nothing unheard (in-memory check;
         # EVT_UPDATE_UI fires far too often for a disk read).
@@ -565,36 +577,3 @@ class CastMenuBarMixin:
         item_id = ids.get(self._podcast_library.settings.show_sort_mode)
         if item_id is not None:
             menu_bar.Check(int(item_id), True)
-
-    def _append_queue_run_submenu(self, episode_menu: object) -> None:
-        """The Play Queue read as a run you step through (ear.md R2, R3).
-
-        **A submenu, and not three more rows in the Episode menu**, for a reason
-        that is not tidiness: the Episode menu already claims 22 of the 26
-        available access-key letters, and not one of the four still free (G, J, Y,
-        Z) appears in "Next in Queue", "Previous in Queue" or "Mark as Played and
-        Next". Windows cycles focus between duplicate mnemonics instead of
-        pressing, so one of a colliding pair silently cannot be reached and
-        nothing announces the loss (GATE-14). A submenu is its own local, which is
-        its own namespace, which is also how Windows treats it -- so these three
-        get a fresh alphabet. The submenu's own label takes the Y.
-
-        The keys were chosen against what Cast has already bound, in the menu
-        literals *and* in ``APP_KEYMAPS["cast"]``: Ctrl+Alt+Up and Ctrl+Alt+Down
-        are free (Ctrl+Up/Down is volume, Ctrl+Shift+Up/Down is speed,
-        Ctrl+Alt+Left/Right is chapters). Mark as Played and Next is Next in
-        Queue with Shift added, and its key is in ``APP_KEYMAPS["cast"]``: its
-        old Ctrl+Alt+Shift+Q was QUILL's system-wide show/hide key.
-        """
-        queue_run = wx.Menu()
-        next_id, prev_id, played_next_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
-        queue_run.Append(next_id, "&Next in Queue\tCtrl+Alt+Down")
-        queue_run.Append(prev_id, "P&revious in Queue\tCtrl+Alt+Up")
-        label = self._menu_label("Mark as Played and Ne&xt", "podcasts.mark_played_and_next")
-        queue_run.Append(played_next_id, label)
-        episode_menu.AppendSubMenu(queue_run, "Pla&y Queue Run")
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_next_in_queue(), id=next_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_previous_in_queue(), id=prev_id)
-        self.frame.Bind(
-            wx.EVT_MENU, lambda _e: self.podcast_mark_played_and_next(), id=played_next_id
-        )

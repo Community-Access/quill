@@ -53,6 +53,7 @@ FAVORITE_FOLDER = "favorite.folder"
 COPY_LINK = "copy.link"
 COPY_FEED = "copy.feed"
 OPEN_SITE = "open.site"
+EDIT_WEBSITE = "website.edit"
 DOWNLOAD = "download"
 DOWNLOAD_ALL = "download.all"
 REMOVE_DOWNLOAD = "download.remove"
@@ -88,9 +89,9 @@ HIDE_SOURCE = "source.hide"
 RESET_SOURCES = "source.reset"
 REMOVE_SAVED = "youtube.remove_saved"
 #: The YouTube branch's three ways in (rows only while it is empty).
-ADD_YOUTUBE_CHANNEL = "youtube.add_channel"
-ADD_YOUTUBE_PLAYLIST = "youtube.add_playlist"
-ADD_YOUTUBE_VIDEO = "youtube.add_video"
+ADD_YOUTUBE_CHANNEL = row_actions_youtube.ADD_CHANNEL
+ADD_YOUTUBE_PLAYLIST = row_actions_youtube.ADD_PLAYLIST
+ADD_YOUTUBE_VIDEO = row_actions_youtube.ADD_VIDEO
 VIEW_TRANSCRIPT = "view.transcript"
 NEW_PODCAST_FOLDER = "podcastfolder.new"
 RENAME_PODCAST_FOLDER = "podcastfolder.rename"
@@ -273,7 +274,7 @@ def playing_actions(*, has_chapters: bool, has_captions: bool) -> list[RowAction
     # and Transcript holds I.
     actions.append(RowAction(PLAYING_WHERE, "Where &Am I?"))
     actions.append(RowAction(PLAYING_SPEED_UP, "Speed &Up"))
-    actions.append(RowAction(PLAYING_SPEED_DOWN, "Slow&er"))
+    actions.append(RowAction(PLAYING_SPEED_DOWN, "Slowe&r"))
     actions.append(RowAction(PLAYING_SPEED_RESET, "Bac&k to Normal Speed"))
     return actions
 
@@ -368,6 +369,7 @@ def station_actions(
         actions.append(RowAction(RENAME_FAVORITE, "Rena&me Favorite..."))
     if has_homepage:
         actions.append(RowAction(OPEN_SITE, open_site_label))
+    actions.append(RowAction(EDIT_WEBSITE, "&Edit Website..."))
     if can_download:
         actions.append(
             RowAction(REMOVE_DOWNLOAD, "Remo&ve Download")
@@ -480,7 +482,7 @@ def folder_actions(kind: str, state: FolderState) -> list[RowAction]:
         actions.append(RowAction(REMOVE_SAVED, "Remo&ve from YouTube"))
 
     if kind in YOUTUBE_ROWS:
-        actions.extend(youtube_add_actions())
+        actions.extend(row_actions_youtube.add_actions(RowAction))
 
     # "&Add", not "to &Favorites": Copy Feed Address already claims F on a
     # podcast show, and that collision was live on the one menu this module
@@ -553,19 +555,6 @@ def folder_actions(kind: str, state: FolderState) -> list[RowAction]:
 YOUTUBE_ROWS = frozenset({"youtube", "youtubechannel", "youtubevideos", "ytplaylist", "ytvideo"})
 
 
-def youtube_add_actions() -> list[RowAction]:
-    """Add a Channel / Playlist / Video, in the order the branch lists them.
-
-    "&e", "&l", "&U" are free on a root source's menu (&A/&C/&O/&R/&S/&H/&t
-    are taken) *and* on a saved row's (&V is "Remo&ve from YouTube").
-    """
-    return [
-        RowAction(ADD_YOUTUBE_CHANNEL, "Add a Chann&el..."),
-        RowAction(ADD_YOUTUBE_PLAYLIST, "Add a Play&list..."),
-        RowAction(ADD_YOUTUBE_VIDEO, "Add a Video &URL..."),
-    ]
-
-
 def actions_for(
     kind: str,
     *,
@@ -575,6 +564,7 @@ def actions_for(
     can_download: bool = False,
     can_report: bool = False,
     open_site_label: str = "Open &Website",
+    has_homepage: bool | None = None,
     is_folder: bool = False,
     resolve_lazily: bool = False,
     folder_state: FolderState | None = None,
@@ -590,7 +580,9 @@ def actions_for(
         actions = station_actions(
             playing=playing,
             saved=saved,
-            has_homepage=bool(getattr(station, "homepage", "")),
+            has_homepage=(
+                bool(getattr(station, "homepage", "")) if has_homepage is None else has_homepage
+            ),
             can_download=can_download,
             can_report=can_report,
             is_recording=bool(getattr(station, "is_recording", False)),
@@ -614,7 +606,7 @@ def actions_for(
         actions.extend(row_actions_youtube.video_actions(station, RowAction))
         if kind == "ytvideo":  # removable from the menu that plays it
             actions.append(RowAction(REMOVE_SAVED, "Remo&ve from YouTube"))
-            actions.extend(youtube_add_actions())
+            actions.extend(row_actions_youtube.add_actions(RowAction))
         # Any row worth playing is worth being reminded about (7.1).
         actions.append(row_reminders.reminder_action(RowAction, has_reminder=has_reminder))
         # ...and worth writing a line to yourself about (3.1.0). Beside the

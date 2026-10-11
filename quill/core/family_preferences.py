@@ -19,6 +19,7 @@ The record is a small file in the shared data folder. wx-free, strict-typed.
 from __future__ import annotations
 
 import json
+from collections.abc import Collection
 from pathlib import Path
 from typing import Any
 
@@ -60,13 +61,15 @@ def is_sharing(data_dir: Path, app: str) -> bool:
     return bool(_read(data_dir)["apps"].get(app, False))
 
 
-def publish(data_dir: Path, app: str, source: Any) -> None:
-    """When *app* shares, record its current values of every shared choice it has."""
+def publish(
+    data_dir: Path, app: str, source: Any, *, changed: Collection[str] | None = None
+) -> None:
+    """Publish shared choices, optionally limited to explicitly changed fields."""
     record = _read(data_dir)
     if not record["apps"].get(app):
         return
     for name in SHARED:
-        if hasattr(source, name):
+        if (changed is None or name in changed) and hasattr(source, name):
             record["values"][name] = getattr(source, name)
     _write(data_dir, record)
 

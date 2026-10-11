@@ -21,10 +21,14 @@ Extracted from ``main_frame_podcasts`` under GATE-11.
 
 from __future__ import annotations
 
+import logging
+from pathlib import Path
 from typing import Any
 
+logger = logging.getLogger(__name__)
 
-def catch_up_with_radio(library: Any) -> tuple[int, int]:
+
+def catch_up_with_radio(library: Any, *, data_dir: Path | None = None) -> tuple[int, int]:
     """Merge both Radio handoffs into *library* and save if anything changed.
 
     Returns ``(positions_updated, instructions_applied)``. Never raises: a
@@ -40,11 +44,12 @@ def catch_up_with_radio(library: Any) -> tuple[int, int]:
         from quill.core.podcasts.radio_listens import merge_radio_listens
         from quill.core.podcasts.subscriptions import save_library
 
-        data_dir = app_data_dir()
+        data_dir = data_dir if data_dir is not None else app_data_dir()
         updated, _finished = merge_radio_listens(data_dir, library)
         applied, _said = merge_radio_actions(data_dir, library)
         if updated or applied:
             save_library(data_dir, library)
         return (updated, applied)
-    except Exception:  # noqa: BLE001 - a handoff must never block launch
-        return (0, 0)
+    except Exception:
+        logger.exception("Could not apply the Quill Radio listening handoff")
+        raise

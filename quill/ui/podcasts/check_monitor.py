@@ -34,6 +34,7 @@ default) the timer never starts and this class costs one object.
 from __future__ import annotations
 
 import logging
+from collections import deque
 from collections.abc import Callable
 from typing import Any
 
@@ -43,6 +44,9 @@ from quill.core.monitor_policy import MONITOR_PODCASTS, MonitorPolicy, resolve_m
 from quill.core.podcasts import refresh_policy
 
 logger = logging.getLogger(__name__)
+
+MAX_REFRESHES_IN_FLIGHT = 2
+REFRESH_START_CADENCE_MS = 250
 
 
 class PodcastCheckMonitor:
@@ -63,25 +67,33 @@ class PodcastCheckMonitor:
         safe_mode: bool = False,
         post_tick: Callable[[str], None] | None = None,
         feature_enabled: Callable[[], bool] | None = None,
-        refresh_many: Callable[[list[str], bool], int] | None = None,
+        on_refresh_error: Callable[[str, BaseException], None] | None = None,
+        library_changed: Callable[[], None] | None = None,
     ) -> None:
         self._settings_provider = settings_provider
         self._library_provider = library_provider
         self._refresh_show = refresh_show
-        #: The bounded batch (F-09): given every due podcast at once and
-        #: whether somebody asked, it fetches a few at a time. Omitted, each
-        #: show is handed to ``refresh_show`` as before.
-        self._refresh_many = refresh_many
         self._safe_mode = safe_mode
         #: Asked on every enablement check so a Podcasts feature that is off --
         #: including a build where it is not released yet -- never polls feeds
         #: in the background, whatever the saved setting says. Omitted means
         #: "no feature gate" (the standalone apps).
         self._feature_enabled = feature_enabled
+        self._on_refresh_error = on_refresh_error
+        self._library_changed = library_changed
         self._post_tick = post_tick
         self._policy = resolve_monitor_policy(self._settings(), MONITOR_PODCASTS)
         self._timer = wx.Timer(parent)
         parent.Bind(wx.EVT_TIMER, self._on_timer, self._timer)
+        self._refresh_queue: deque[str] = deque()
+        self._refreshes_in_flight: set[str] = set()
+        self._refresh_pump: Any = None
+        self._refresh_pump_pending = False
+
+    @property
+    def is_checking(self) -> bool:
+        """Whether a feed sweep still has queued or in-flight work."""
+        return bool(self._refresh_queue or self._refreshes_in_flight)
 
     # -- policy ---------------------------------------------------------
 
@@ -157,18 +169,99 @@ class PodcastCheckMonitor:
         if self._timer.IsRunning():
             self._timer.Stop()
 
+    def shutdown(self) -> None:
+        """Stop scheduling feeds before the app tears down its worker pool."""
+        self.stop()
+        self._refresh_queue.clear()
+        self._refreshes_in_flight.clear()
+        pump = self._refresh_pump
+        self._refresh_pump = None
+        self._refresh_pump_pending = False
+        if pump is not None:
+            pump.Stop()
+
+    def refresh_completed(self, show_id: str) -> None:
+        """Release one slot after the feed's UI-side merge has completed."""
+        if show_id not in self._refreshes_in_flight:
+            return
+        self._refreshes_in_flight.remove(show_id)
+        if self._refresh_queue:
+            self._schedule_refresh_pump(REFRESH_START_CADENCE_MS)
+
+    def cancel_queued(self) -> list[str]:
+        """Drop feeds not yet started; in-flight requests are allowed to finish."""
+        cancelled = list(self._refresh_queue)
+        self._refresh_queue.clear()
+        pump = self._refresh_pump
+        self._refresh_pump = None
+        self._refresh_pump_pending = False
+        if pump is not None:
+            pump.Stop()
+        return cancelled
+
+    def cancel_all(self) -> list[str]:
+        """Release this sweep immediately; its host suppresses old worker delivery."""
+        cancelled = self.cancel_queued()
+        cancelled.extend(self._refreshes_in_flight)
+        self._refreshes_in_flight.clear()
+        return cancelled
+
+    def _schedule_refresh_pump(self, delay_ms: int = 0) -> None:
+        if self._refresh_pump_pending or not self._refresh_queue:
+            return
+        if len(self._refreshes_in_flight) >= MAX_REFRESHES_IN_FLIGHT:
+            return
+        self._refresh_pump_pending = True
+        if delay_ms:
+            self._refresh_pump = wx.CallLater(delay_ms, self._pump_refresh_queue)
+        else:
+            wx.CallAfter(self._pump_refresh_queue)
+
+    def _pump_refresh_queue(self, *, schedule_next: bool = True) -> None:
+        self._refresh_pump = None
+        self._refresh_pump_pending = False
+        if not self._refresh_queue or len(self._refreshes_in_flight) >= MAX_REFRESHES_IN_FLIGHT:
+            return
+
+        show_id = self._refresh_queue.popleft()
+        self._refreshes_in_flight.add(show_id)
+        try:
+            self._refresh_show(show_id)
+        except Exception as error:  # noqa: BLE001 - one failed submission cannot strand the sweep
+            logger.exception("Podcast background check could not start for show %s", show_id)
+            self._refreshes_in_flight.discard(show_id)
+            if self._on_refresh_error is not None:
+                self._on_refresh_error(show_id, error)
+            if self._refresh_queue:
+                self._schedule_refresh_pump(REFRESH_START_CADENCE_MS)
+            return
+
+        if (
+            schedule_next
+            and self._refresh_queue
+            and len(self._refreshes_in_flight) < MAX_REFRESHES_IN_FLIGHT
+        ):
+            self._schedule_refresh_pump(REFRESH_START_CADENCE_MS)
+
     def _on_timer(self, event: Any) -> None:
         # One wx.Timer per frame shares EVT_TIMER with every other timer bound
         # to the same parent, so identity has to be checked before acting.
         if event.GetId() != self._timer.GetId():
             event.Skip()
             return
-        self.check_now()
+        if self.check_now(defer_start=True):
+            wx.CallAfter(self.start_queued)
 
     # -- the check ------------------------------------------------------
 
-    def check_now(self, *, force: bool = False) -> int:
-        """Refresh every eligible subscribed feed once. Returns how many ran.
+    def check_now(
+        self,
+        *,
+        force: bool = False,
+        defer_start: bool = False,
+        show_ids: set[str] | None = None,
+    ) -> int:
+        """Queue every eligible feed once. Returns how many will be checked.
 
         The tick fires first (when enabled and when the check is actually
         going to run): it announces that a *check happened*, which is exactly
@@ -191,8 +284,14 @@ class PodcastCheckMonitor:
         if not force and not self._claim_this_round(library):
             return 0  # the other app checked inside this interval
         self._tick()
-        due: list[str] = []
+        #: The shows this round started, for a run a person asked for (check_run).
+        self.last_started_ids: list[str] = []
+        scheduled = set(self._refresh_queue) | self._refreshes_in_flight
         for show in list(getattr(library, "shows", []) or []):
+            if str(show.id) in scheduled:
+                continue
+            if show_ids is not None and str(show.id) not in show_ids:
+                continue
             if not refresh_policy.can_refresh(show):
                 continue
             if not force and refresh_policy.is_paused(show):
@@ -204,22 +303,16 @@ class PodcastCheckMonitor:
             # own inherits the shared one and behaves exactly as before.
             if not force and not self._show_is_due(library, show):
                 continue
-            due.append(str(show.id))
-        if self._refresh_many is not None and due:
-            try:
-                return int(self._refresh_many(due, force))
-            except Exception:  # noqa: BLE001 - a batch that will not start is logged, not raised
-                logger.exception("Podcast check could not start its batch")
-                return 0
-        started = 0
-        for show_id in due:
-            try:
-                self._refresh_show(show_id)
-            except Exception:  # noqa: BLE001 - one bad feed never stops the rest
-                logger.exception("Podcast background check failed for show %s", show_id)
-                continue
-            started += 1
-        return started
+            self.last_started_ids.append(str(show.id))
+            scheduled.add(str(show.id))
+        self._refresh_queue.extend(self.last_started_ids)
+        if not defer_start:
+            self.start_queued()
+        return len(self.last_started_ids)
+
+    def start_queued(self) -> None:
+        """Start only the first small batch; the remaining feeds are paced."""
+        self._pump_refresh_queue()
 
     def _show_is_due(self, library: Any, show: Any) -> bool:
         """Whether this one podcast's own interval has elapsed.
@@ -258,14 +351,15 @@ class PodcastCheckMonitor:
             getattr(library, "last_auto_check", ""), self.interval_minutes(), now
         ):
             return False
+        if self._library_changed is None:
+            raise RuntimeError("The podcast monitor has no asynchronous persistence callback")
+        previous = library.last_auto_check
+        library.last_auto_check = refresh_policy.stamp_now(now)
         try:
-            from quill.core.paths import app_data_dir
-            from quill.core.podcasts.subscriptions import save_library
-
-            library.last_auto_check = refresh_policy.stamp_now(now)
-            save_library(app_data_dir(), library)
-        except Exception:  # noqa: BLE001 - a stamp that will not save costs one
-            logger.exception("could not claim the podcast check round")
+            self._library_changed()
+        except Exception:
+            library.last_auto_check = previous
+            raise
         return True
 
     def _tick(self) -> None:

@@ -30,6 +30,7 @@ wx-free; ``numpy`` and ``soundfile`` are imported lazily.
 from __future__ import annotations
 
 import math
+import sys
 from collections.abc import Callable, Iterator
 from dataclasses import dataclass
 from pathlib import Path
@@ -198,9 +199,26 @@ def duration_of(path: Path) -> float:
         import soundfile  # type: ignore[import-not-found,import-untyped,unused-ignore]
 
         info = soundfile.info(str(path))
-        return float(info.frames) / float(info.samplerate or 1)
+        length = float(info.frames) / float(info.samplerate or 1)
+        if length > 0:
+            return length
     except Exception:  # noqa: BLE001 - unknown is an answer
+        pass
+    if sys.platform != "win32":
         return 0.0
+    from quill.core.windows_dictation.media_foundation import (
+        MediaFoundationError,
+        MediaFoundationReader,
+        available,
+    )
+
+    if available():
+        try:
+            with MediaFoundationReader(str(path)) as header:
+                return header.duration
+        except (MediaFoundationError, OSError):
+            pass
+    return 0.0
 
 
 def _soundfile_source(path: Path) -> AudioSource:

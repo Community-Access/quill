@@ -253,6 +253,26 @@ can leave yourself a note on any station. Apple’s podcast categories are
 full lists now, and Preferences has a box that finds a setting as you
 type. And updates install themselves properly again, after one last
 update by hand.</p>
+<h2 id="testing-rebuild-320-build-2">Testing rebuild: 3.2.0 (build
+2)</h2>
+<p>This rebuild adds <strong>Start Quill Radio with Windows</strong> to
+Preferences, using the same setting as the Station menu. Portable copies
+do not change Windows startup settings. Routine history and preference
+saves run in the background, and the startup update check avoids a
+synchronous bookkeeping write.</p>
+<p><strong>Record &gt; Recordings…</strong> (Ctrl+Shift+R) opens the
+recordings list or restores its existing window, including when it is
+minimized. The last public 3.0.4 build could silently leave that window
+minimized. The shared opener has now also been checked with real Windows
+controls for empty and populated folders.</p>
+<p>You can add or correct a station’s website locally without contacting
+that website. Python HTTPS requests use the Windows certificate store
+while still checking certificates and hostnames. The installer is
+current-user only and does not offer an administrator-only
+installation.</p>
+<p>The bundled changelog records the complete build changes. These
+testing packages are not a GitHub release or a Stable-channel
+promotion.</p>
 <h2 id="a-word-about-the-number">A word about the number</h2>
 <p>The last Quill Radio you could download was 3.0.4, and this one is
 3.2.0. You have not missed anything in between. This release was
@@ -919,6 +939,21 @@ Quill app where you have turned this on. Quill Radio tells you when it
 picks up a choice from another app. Nothing about your keys, your cursor
 or your screen reader is ever shared, and it stays off until you turn it
 on.</p>
+<h2 id="preview-for-testers-changes-after-320-build-1">Preview for
+testers: changes after 3.2.0 (build 1)</h2>
+<p>These changes are not part of the 3.2.0 (build 1) release above.</p>
+<ul>
+<li><strong>Correct a station’s website locally.</strong> Choose
+<strong>Edit Website…</strong> on a station row in Browse Stations or
+Manage Favorite Stations. The correction is saved in this Radio profile
+only; it does not change the directory, and Quill Radio checks only the
+address format, not the website itself. Clear the address to return to
+the directory’s version.</li>
+<li><strong>Start Quill Radio when you sign in.</strong> The
+Station-menu item and the Preferences checkbox control the same per-user
+Windows setting. It is available for an installed copy, needs no
+administrator rights, and is unavailable for portable copies.</li>
+</ul>
 <h2 id="choose-stable-beta-or-dev">Choose Stable, Beta or Dev</h2>
 <p>New in this version: <strong>Release Channel…</strong>, on the Help
 menu. Every copy stays on <strong>Stable</strong>, the version we check

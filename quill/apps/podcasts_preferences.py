@@ -36,6 +36,19 @@ def _shown_channel() -> str:
 def app_rows(host: Any) -> list[AppRow]:
     """The history-backed rows, by section."""
     from quill.core.podcasts.notes_export import FORMAT_LABELS
+    from quill.platform.windows import cast_startup
+
+    startup_enabled = cast_startup.is_windows() and not cast_startup.running_portable()
+    if cast_startup.running_portable():
+        startup_help = cast_startup.PORTABLE_REFUSAL
+    elif startup_enabled:
+        startup_help = (
+            "Starts QUILL Cast when you sign in to this Windows account. "
+            "This uses your per-user startup settings and needs no administrator rights. "
+            "A portable copy does not change this computer's startup."
+        )
+    else:
+        startup_help = "Starting with Windows is only available on Windows."
 
     rows = [
         AppRow(
@@ -45,6 +58,15 @@ def app_rows(host: Any) -> list[AppRow]:
             "opens quiet and the Now Playing line says what you stopped on; "
             "nothing is downloaded either way.",
             "opens",
+        ),
+        AppRow(
+            "launch_at_startup",
+            "Start QUILL Cast with &Windows",
+            startup_help,
+            "opens",
+            kind="machine_bool",
+            value=cast_startup.is_launch_at_startup_enabled(),
+            enabled=startup_enabled,
         ),
         AppRow(
             "check_updates_on_startup",
@@ -66,8 +88,8 @@ def app_rows(host: Any) -> list[AppRow]:
         AppRow(
             "winamp_playback_keys",
             "&Winamp playback keys (Z X C V B, arrows to seek)",
-            "The classic Winamp letter keys in the lists. Off, those letters go "
-            "back to list typeahead; the Episode menu's keys are unchanged.",
+            "The classic Winamp playback keys in the Now Playing window. "
+            "Letters in the main library and episode lists always jump to rows.",
             "playing",
         ),
         AppRow(
@@ -288,8 +310,6 @@ class CastPreferencesMixin:
     """Opens Preferences and writes a saved result back."""
 
     def _open_preferences(self, *, section: str = "") -> None:
-        from quill.core.paths import app_data_dir
-        from quill.core.podcasts import history as podcast_history
         from quill.core.podcasts import schedule_policy, settings_catalog
         from quill.core.podcasts.settings_resolver import set_value
         from quill.core.podcasts.settings_types import LEVEL_GLOBAL
@@ -312,19 +332,30 @@ class CastPreferencesMixin:
         if result is None:
             return
         app_changes, default_changes = result
+        startup_said = ""
+        if "launch_at_startup" in app_changes:
+            from quill.platform.windows import cast_startup
+
+            requested = bool(app_changes.pop("launch_at_startup"))
+            cast_startup.set_launch_at_startup(requested)
+            actual = cast_startup.is_launch_at_startup_enabled()
+            if actual == requested:
+                startup_said = (
+                    "QUILL Cast will start with Windows."
+                    if actual
+                    else "QUILL Cast will not start with Windows."
+                )
+            else:
+                startup_said = "Windows did not allow the startup setting to change."
         for key, value in app_changes.items():
             setattr(history, key, value)
-        if app_changes:
-            podcast_history.save_history(app_data_dir(), history)
-            from quill.ui.family_sharing import after_preferences
-
-            after_preferences(self, "cast", history, app_changes)
         written = 0
         for setting_id, value in default_changes.items():
             definition = settings_catalog.definition(setting_id)
             if definition is not None and set_value(library, definition, value, level=LEVEL_GLOBAL):
                 written += 1
         if written:
+            self._podcast_save_success_message = "Podcast defaults saved."
             self._save_podcast_library()  # type: ignore[attr-defined]
         menu_bar = self.frame.GetMenuBar()  # type: ignore[attr-defined]
         if menu_bar is not None and hasattr(self, "_resume_menu_item_id"):
@@ -334,14 +365,23 @@ class CastPreferencesMixin:
         if monitor is not None and ("podcast_check_enabled" in app_changes or default_changes):
             monitor.apply()
             said = str(monitor.describe())
-        count = len(app_changes) + written
+        count = len(app_changes) + written + int(bool(startup_said))
         if count:
+            pending = bool(app_changes or written)
             self._announce(
-                f"Preferences saved: {count} change{'' if count == 1 else 's'}. {said}".strip()
+                f"Preferences {'applied' if pending else 'saved'}: "
+                f"{count} change{'' if count == 1 else 's'}. "
+                f"{startup_said} {said} "
+                f"{'Saving in the background.' if pending else ''}".strip()
             )  # type: ignore[attr-defined]
+            if app_changes:
+                from quill.ui.podcasts.preferences_tasks import save_preferences
+
+                save_preferences(self, app_changes)
         else:
             self._announce("Preferences closed; nothing changed.")  # type: ignore[attr-defined]
-        self._refresh_place(keep=True)  # type: ignore[attr-defined]
+        if "hide_caught_up" in app_changes:
+            self._refresh_place(keep=True)  # type: ignore[attr-defined]
 
     def _check_cast_updates(self, *, silent: bool = False) -> None:
         """Help > Check for Updates..., and the quiet once-a-day check at launch.

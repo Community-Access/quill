@@ -15,6 +15,21 @@ than slipping past.
 Everything works from the keyboard and tells you how it went, the way the rest
 of QUILL Lite does.
 
+## Testing rebuild: 1.2.0 (build 3)
+
+Build 3 retains build 2's local-recording transcription fix and Windows audio
+duration fallback. It prepares downloaded model availability in the background,
+and completed transcripts are saved privately for opening from **Notifications**.
+Your current document stays unchanged until you choose to open a result.
+
+Routine settings saves also run in the background and still report failures
+through Activity. Python HTTPS requests use the Windows certificate store while
+checking certificates and hostnames. The installer is current-user only and
+does not offer an administrator-only installation.
+
+The bundled changelog records the complete build changes. These testing
+packages are not a GitHub release or a Stable-channel promotion.
+
 ## If you already use QUILL Lite
 
 Your settings, recent
@@ -169,6 +184,11 @@ have the same box in their Preferences.
 
 ## Making QUILL Lite your text editor
 
+The installer is for your Windows account only. It does not offer an all-users
+install or need administrator approval. The separate option below that opens
+QUILL Lite whenever a program asks for Notepad changes a computer-wide setting,
+so Windows still asks for administrator approval for that action.
+
 Every QUILL Lite install now tells Windows that QUILL Lite can open text,
 Markdown, rich text, HTML and CSV files. It takes nothing over. QUILL Lite
 simply shows up in **Open with**, and in Windows Settings under Default apps,
@@ -226,9 +246,11 @@ If an update ever fails to start, it undoes itself, puts back the version you
 had, and tells you so the next time QUILL Lite opens. The window's **Update
 History** button shows everything the updater has done.
 
-Help > About now shows a build number after the version: this release is
-1.2.0 (build 1). If a fix comes out without a new version number, it is a
-newer build, and Check for Updates offers it to you.
+Help > About shows a build number after the version. The initial 1.2.0 release
+was build 1; this testing rebuild is **1.2.0 (build 3)**. If a newer build is
+published to your update channel without a new version number, Check for
+Updates offers it to you. Uploading a testing package alone does not publish
+it to an update channel.
 
 ## Dictating in Spanish
 
@@ -389,18 +411,29 @@ uses the same speech engines you dictate with:
   is and about how long it will take.
 - **MP3, M4A, AAC, WAV, Ogg, Opus, FLAC and WMA**, read with parts of Windows
   already on your computer, so there is nothing to download.
-- **Your text, your way.** It goes into a new document, or at the cursor when
-  it finishes. Paragraphs start where the recording pauses. Timestamps, like
-  [00:01:23], are off unless you check Add timestamps.
+- **A new document when it is ready.** There is no destination picker and the
+  transcript is not inserted into the document you were editing. Paragraphs
+  start where the recording pauses. Timestamps, like [00:01:23], are off unless
+  you check Add timestamps.
 - **Never in your way.** You hear the percentage at each quarter and one
   sentence when it is done. Press **Shift+F5** again to see how far it has got,
   or to stop it. Choose several files and they are done one after another.
+- **A length and time estimate.** QUILL Lite reads duration from the audio
+  metadata, and on Windows can use Media Foundation when another reader cannot
+  determine the length.
 - **Private unless you say otherwise.** With the models on your computer,
   nothing leaves it. OpenAI is never chosen for you, and asks before each
   recording is sent.
 
 The user guide's "Transcribing an audio file" has the whole story, including
 which model suits which recording.
+
+## Follow-up for testers: reopen a completed transcript
+
+This is a follow-up after the 1.2.0 release, not part of 1.2.0. A completed
+transcript is now saved privately and linked from its completion notice in
+Notifications. Activate the notice when you are ready to open the result; it
+stays separate from the document you were editing.
 
 ## Your recent documents, one key away
 

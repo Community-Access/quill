@@ -399,6 +399,9 @@ keys with first-letter type-ahead, first category selected on
 open</label></li>
 <li><label><input type="checkbox" />Each category page opens its area
 with its <code>Open ...</code> button</label></li>
+<li><label><input type="checkbox" />Default document folder chooser in
+QUILL and QUILL Lite opens a native folder picker; clearing the field
+restores the Documents default</label></li>
 </ul></li>
 <li><label><input type="checkbox" />Settings (tabbed, registry-driven):
 <code>Ctrl+,</code> then <code>Open General</code></label></li>
@@ -660,6 +663,8 @@ Folder/File to validate your own</label></li>
 <ul class="task-list">
 <li><label><input type="checkbox" />Announcement Backend: via Tools
 menu</label></li>
+<li><label><input type="checkbox" />Dictation Microphone: Tools &gt;
+Speech &gt; Dictation Microphone…</label></li>
 <li><label><input type="checkbox" />QUILL Whisperer Model Manager: via
 Tools menu</label></li>
 <li><label><input type="checkbox" />QUILL Whisperer Model Status: via
@@ -674,6 +679,13 @@ Tools menu</label></li>
 via Tools menu</label></li>
 <li><label><input type="checkbox" />QUILL Whisperer Download Queue: via
 Tools menu</label></li>
+<li><label><input type="checkbox" />Transcribe Audio or Video (Offline):
+Tools &gt; Speech &gt; Transcribe Audio or Video (Offline)…; choose
+transcript format, then choose an audio/video file</label></li>
+<li><label><input type="checkbox" />Generate Captions (Offline): Tools
+&gt; Speech &gt; Generate Captions (Offline)… or Audio Studio &gt;
+Generate Captions (Offline)…; choose an audio/video file, caption
+format, and output file</label></li>
 </ul>
 <h2 id="r2.-publishing">R2. Publishing</h2>
 <ul class="task-list">
@@ -872,6 +884,61 @@ var before launch and confirming the AI / assistant surfaces and
 watch-folder network calls short-circuit per
 <code>quill/stability/safe_mode.py</code>. Cross-reference: the
 pre-release review’s N-10 / H-SAFE-1 fixes.</label></li>
+</ul>
+<h2 id="z-quill-radio-station-websites">Z. QUILL Radio station
+websites</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Add Station Website confirmation:
+main Website button when the playing station (or selected favorite) has
+no valid website</label></li>
+<li><label><input type="checkbox" />Edit Station Website (native
+text-entry dialog): Browse/Search Stations station context menu &gt;
+Edit Website, or Manage Favorites &gt; station context menu &gt; Edit
+Website; also follows Add Station Website confirmation</label>
+<ul>
+<li>Enter an address with or without <code>https://</code>; only HTTP(S)
+addresses save</li>
+<li>Blank removes the local override and restores the provider’s
+address</li>
+</ul></li>
+</ul>
+<h2 id="z2-podcast-storage">Z2. Podcast storage</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Podcast download storage report: via
+QUILL’s Command Palette (<code>Ctrl+Shift+P</code>) &gt; Podcasts:
+Downloads…; Cast’s same-named command opens its Downloads place instead.
+Verify initial list focus, All/Unheard column values, selected-podcast
+retention, filter-hidden counts, saved column layouts, keyboard
+navigation across virtual rows, and Close/Escape focus return.</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />Remove This Podcast’s Downloads
+confirmation (from the storage report): No is the default; queued,
+part-played, pinned, and active downloads stay.</label></li>
+</ul></li>
+</ul>
+<p>Companion main-window check (not a dialog):</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />Cast View &gt; Downloads
+(<code>Ctrl+D</code>) with an isolated large catalogue: verify
+All/Unheard rows, live episode actions, and keyboard responsiveness
+while counts and rows are loading. Switch places before completion; the
+superseded result must not change the place or restore an old selection.
+Move focus between the loading pane, heading and row-publication steps;
+a pending explicit opening must not reclaim focus after that movement.
+Places count updates and unchanged status-bar refreshes must not move
+focus or repeat control announcements. Cancel midway through a status
+refresh; changed cells must still be laid out. Close during early
+opening, partial capture, worker processing and publication;
+detached-input cleanup must finish off-thread without delaying close or
+touching the destroyed window.</label></li>
+</ul>
+<h2 id="z3-cast-episode-actions">Z3. Cast episode actions</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Mark All as Played confirmation:
+Cast Episode &gt; Mark All as Played (<code>Alt+Shift+E</code>). Verify
+the named podcast and count, the safe default, cancellation without
+changes, and focus return. <code>Ctrl+Shift+E</code> must open New
+Folder instead, never this bulk action.</label></li>
 </ul>
 <h2 id="maintenance-note">Maintenance note</h2>
 <p>This checklist was generated from a full source scrub of

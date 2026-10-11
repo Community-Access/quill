@@ -61,9 +61,6 @@ def switch(app: Any, view_id: str) -> None:
     records what was asked for rather than silently reverting -- and the
     host says out loud which view it fell back to.
     """
-    from quill.core.paths import app_data_dir
-    from quill.core.radio import history as radio_history
-
     wanted = main_view.normalize(view_id)
     host = getattr(app, "_main_view_host", None)
     if host is None:
@@ -74,14 +71,16 @@ def switch(app: Any, view_id: str) -> None:
         host.focus_current()
         return
     app._radio_history.main_view = wanted
-    radio_history.save_history(app_data_dir(), app._radio_history)
+    from quill.ui.radio.history_save import save_history_async
+
+    save_history_async(app)
     shown = host.show(wanted)
     if shown != wanted:
         # The fallback is what is actually on screen, so it is what the menu
         # must show and what is stored -- a checkmark on a view that failed to
         # build is a menu lying about where you are.
         app._radio_history.main_view = shown
-        radio_history.save_history(app_data_dir(), app._radio_history)
+        save_history_async(app)
     sync_checkmarks(app)
 
 

@@ -2,27 +2,35 @@ from __future__ import annotations
 
 import ssl
 
-__all__ = ["verified_ssl_context"]
+import truststore
+
+__all__ = ["configure_ssl_trust", "ssl_trust_configured", "verified_ssl_context"]
+
+_SSL_TRUST_CONFIGURED = False
+
+
+def configure_ssl_trust() -> None:
+    """Use the operating system certificate store for app-wide HTTPS."""
+    global _SSL_TRUST_CONFIGURED
+    if _SSL_TRUST_CONFIGURED:
+        return
+    truststore.inject_into_ssl()
+    _SSL_TRUST_CONFIGURED = True
+
+
+def ssl_trust_configured() -> bool:
+    """Whether the application installed truststore's SSL integration."""
+    return _SSL_TRUST_CONFIGURED
 
 
 def verified_ssl_context() -> ssl.SSLContext:
-    """Return an SSL context that always verifies certificates.
+    """Return a native-store SSL context that always verifies certificates.
 
-    Certificate verification and hostname checking are required for every
-    outbound HTTPS request in Quill: AI provider calls, update checks, and
-    optional downloads. Python on macOS ships without trusted roots wired into
-    ``urllib`` (which otherwise raises ``CERTIFICATE_VERIFY_FAILED``), so prefer
-    certifi's CA bundle and fall back to the system default. The context is
-    never weakened: ``check_hostname`` and ``verify_mode`` stay at their secure
-    defaults (``True`` and ``CERT_REQUIRED``).
+    The operating-system store can include organization-managed roots and
+    retrieve missing intermediates. Certificate and hostname verification
+    remain enabled.
     """
-    try:
-        import certifi
-
-        context = ssl.create_default_context(cafile=certifi.where())
-    except Exception:  # noqa: BLE001 - certifi is optional; system roots suffice
-        context = ssl.create_default_context()
-    # Defensive: guarantee verification even if a future default changes.
+    context = truststore.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
     context.check_hostname = True
     context.verify_mode = ssl.CERT_REQUIRED
     return context

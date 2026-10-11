@@ -25,6 +25,13 @@ from quill.stability.safe_subprocess import run_subprocess_safely
 _TASK_NAME = "QuillWeatherAlertCheck"
 
 
+def running_portable() -> bool:
+    """Portable Weather must not create or remove host scheduled tasks."""
+    from quill.core.paths import portable_bundle_root
+
+    return portable_bundle_root() is not None
+
+
 def is_windows() -> bool:
     return sys.platform.startswith("win")
 
@@ -67,6 +74,8 @@ def _schtasks(args: list[str]) -> bool:
 
 def is_registered() -> bool:
     """Whether the background-check task currently exists."""
+    if running_portable():
+        return False
     return _schtasks(["/Query", "/TN", _TASK_NAME])
 
 
@@ -74,6 +83,8 @@ def register(interval_minutes: int) -> bool:
     """Create (or replace) the per-user task to run every ``interval_minutes``
     (minimum 1). ``/F`` overwrites an existing one so changing the cadence is a
     plain re-register."""
+    if running_portable():
+        return False
     minutes = max(1, int(interval_minutes))
     return _schtasks([
         "/Create",
@@ -91,7 +102,7 @@ def register(interval_minutes: int) -> bool:
 
 def unregister() -> bool:
     """Remove the background-check task (True if it is gone afterwards)."""
-    if not is_windows():
+    if not is_windows() or running_portable():
         return False
     if _schtasks(["/Delete", "/TN", _TASK_NAME, "/F"]):
         return True

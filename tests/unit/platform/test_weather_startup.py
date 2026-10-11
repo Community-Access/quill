@@ -6,6 +6,8 @@ from __future__ import annotations
 
 import sys
 
+import pytest
+
 from quill.platform.windows import weather_startup
 
 
@@ -34,3 +36,17 @@ def test_no_ops_and_never_raise_off_windows() -> None:
     weather_startup.set_launch_at_startup(True)
     assert weather_startup.is_launch_at_startup_enabled() is False
     weather_startup.set_launch_at_startup(False)  # idempotent no-op
+
+
+def test_portable_does_not_read_or_change_host_startup(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(weather_startup, "is_windows", lambda: True)
+    monkeypatch.setattr(weather_startup, "running_portable", lambda: True)
+
+    class ForbiddenRegistry:
+        def OpenKey(self, *_args: object) -> None:
+            raise AssertionError("portable copy touched the host registry")
+
+    monkeypatch.setattr(weather_startup, "winreg", ForbiddenRegistry())
+    assert weather_startup.is_launch_at_startup_enabled() is False
+    weather_startup.set_launch_at_startup(True)
+    weather_startup.set_launch_at_startup(False)

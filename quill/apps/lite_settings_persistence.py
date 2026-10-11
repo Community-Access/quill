@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+import copy
 import logging
+from concurrent.futures import ThreadPoolExecutor
+from threading import Lock
 
 import wx
 
@@ -22,6 +25,81 @@ class LiteSettingsPersistenceMixin:
 
     settings_dirty = False
     _settings_notice_pending = False
+
+    def _queue_settings_save(self) -> None:
+        """Persist a detached, latest-wins settings snapshot off the UI thread."""
+        self._ensure_write_reports()
+        if not hasattr(self, "_settings_save_executor"):
+            self._settings_save_lock = Lock()
+            self._settings_save_executor = ThreadPoolExecutor(
+                max_workers=1, thread_name_prefix="quill-lite-settings"
+            )
+            self._settings_save_generation = 0
+            self._settings_save_pending = None
+            self._settings_save_future = None
+        with self._settings_save_lock:
+            self._settings_save_generation += 1
+            self._settings_save_pending = (
+                self._settings_save_generation,
+                copy.deepcopy(self.settings),
+                copy.deepcopy(getattr(self, "_settings_baseline", None)),
+            )
+            if self._settings_save_future is None:
+                self._settings_save_future = self._settings_save_executor.submit(
+                    self._save_settings_queue
+                )
+
+    def _save_settings_queue(self) -> None:
+        while True:
+            with self._settings_save_lock:
+                item = self._settings_save_pending
+                self._settings_save_pending = None
+                if item is None:
+                    self._settings_save_future = None
+                    return
+            generation, settings, baseline = item
+            to_write = settings
+            if baseline is not None:
+                disk = settings_merge.load_if_present()
+                if disk is not None:
+                    to_write = settings_merge.merge_for_save(baseline, settings, disk)
+            try:
+                settings_mod.save(to_write)
+            except OSError:
+                with self._settings_save_lock:
+                    current = generation == self._settings_save_generation
+                if current:
+                    self.settings_dirty = True
+                    self._queue_settings_failure_report()
+                continue
+            with self._settings_save_lock:
+                current = generation == self._settings_save_generation
+            if current:
+                self.settings_dirty = False
+                if baseline is not None:
+                    self._settings_baseline = copy.deepcopy(settings)
+
+    def _queue_settings_failure_report(self) -> None:
+        if self._settings_notice_pending:
+            return
+        self._settings_notice_pending = True
+        call_after = getattr(wx, "CallAfter", None)
+        if callable(call_after) and not self.shutting_down:
+            call_after(self._report_settings_failure)
+        else:
+            self._report_settings_failure()
+
+    def flush_settings_writes(self) -> None:
+        """Wait for queued writes during shutdown, when durability is required."""
+        executor = getattr(self, "_settings_save_executor", None)
+        if executor is None:
+            return
+        with self._settings_save_lock:
+            future = self._settings_save_future
+        if future is not None:
+            future.result()
+        executor.shutdown(wait=True)
+        self._settings_save_executor = None
 
     def _ensure_write_reports(self) -> None:
         """Failed writes reach Activity with Retry and Open Folder (qc.md F-01).
@@ -70,8 +148,6 @@ class LiteSettingsPersistenceMixin:
             return False
         self.settings_dirty = False
         if baseline is not None:
-            import copy
-
             self._settings_baseline = copy.deepcopy(self.settings)
         return True
 

@@ -21,8 +21,11 @@ the shared dialog contract.
 
 from __future__ import annotations
 
+import copy
+import logging
 import os
 import sys
+import threading
 from pathlib import Path
 from typing import Any
 
@@ -52,6 +55,7 @@ _VERSION = "1.0.0"
 _BUILD = 1  # this version's build (docs/release/RELEASE.md, "Build numbers")
 _REPO = "Community-Access/quill"
 _IPC_SLOT = "inkwell"
+logger = logging.getLogger(__name__)
 
 
 class QuillInkwellFrame(
@@ -66,6 +70,14 @@ class QuillInkwellFrame(
 
         self._data_dir: Path = app_data_dir()
         self._settings: InkwellSettings = load_settings(self._data_dir)
+        self._preference_save_lock = threading.Lock()
+        self._preference_save_generation = 0
+        self._preference_save_pending: tuple[int, InkwellSettings] | None = None
+        self._preference_save_running = False
+        self._preference_save_task: Any = None
+        self._preference_save_failed_generation: int | None = None
+        self._preference_save_reported_generation: int | None = None
+        self._preference_save_dirty = False
         self._library: AbbreviationLibrary = load_abbreviation_library(self._data_dir)
         self._hook: Any = None
         self._windows = WindowManager(wx)
@@ -483,16 +495,127 @@ class QuillInkwellFrame(
 
     def _set_pref(self, name: str, value: bool) -> None:
         setattr(self._settings, name, value)
-        save_settings(self._data_dir, self._settings)
+        self._queue_preference_save()
 
     def _set_injection_mode(self, paste: bool) -> None:
         self._settings.injection_mode = "paste" if paste else "type"
-        save_settings(self._data_dir, self._settings)
+        self._queue_preference_save()
         self._announce(
             "Expansions are pasted; the clipboard is restored afterwards."
             if paste
             else "Expansions are typed; the clipboard is never touched."
         )
+
+    def _queue_preference_save(self) -> None:
+        """Queue a detached, coalesced settings snapshot without blocking wx."""
+        with self._preference_save_lock:
+            self._preference_save_generation += 1
+            generation = self._preference_save_generation
+            self._preference_save_pending = (generation, copy.deepcopy(self._settings))
+            if self._preference_save_running:
+                return
+            self._preference_save_running = True
+
+        try:
+            self._preference_save_task = self._task_manager.submit(
+                "inkwell-preference-save",
+                self._persist_preference_snapshots,
+                on_success=self._preference_save_succeeded,
+                on_failure=self._preference_save_failed,
+                safe_to_cancel=False,
+            )
+        except RuntimeError:
+            with self._preference_save_lock:
+                if generation == self._preference_save_generation:
+                    self._preference_save_dirty = True
+                    self._preference_save_failed_generation = generation
+                    self._preference_save_pending = None
+                self._preference_save_running = False
+            logger.warning("INKWELL-SETTINGS-WRITE: could not queue preference persistence")
+            self._report_preference_save_failure(generation)
+
+    def _persist_preference_snapshots(self, **_task_args: Any) -> int:
+        """Write only the newest pending snapshot, serially, on a worker."""
+        latest_generation = 0
+        while True:
+            with self._preference_save_lock:
+                pending = self._preference_save_pending
+                self._preference_save_pending = None
+                if pending is None:
+                    self._preference_save_running = False
+                    return latest_generation
+            generation, settings = pending
+            try:
+                save_settings(self._data_dir, settings)
+            except OSError:
+                with self._preference_save_lock:
+                    if generation != self._preference_save_generation:
+                        continue
+                    self._preference_save_dirty = True
+                    self._preference_save_failed_generation = generation
+                    self._preference_save_running = False
+                raise
+            with self._preference_save_lock:
+                latest_generation = generation
+                if generation == self._preference_save_generation:
+                    self._preference_save_dirty = False
+
+    def _preference_save_failed(self, _operation_id: str, _error: BaseException) -> None:
+        with self._preference_save_lock:
+            generation = self._preference_save_failed_generation
+        if generation is None:
+            return
+        logger.warning("INKWELL-SETTINGS-WRITE: preference persistence failed")
+        self._report_preference_save_failure(generation)
+
+    def _report_preference_save_failure(self, generation: int) -> None:
+        with self._preference_save_lock:
+            if (
+                generation != self._preference_save_generation
+                or generation != self._preference_save_failed_generation
+                or not self._preference_save_dirty
+                or generation == self._preference_save_reported_generation
+            ):
+                return
+            self._preference_save_reported_generation = generation
+        self._announce(
+            "Inkwell preferences could not be saved. Changes remain active for this session."
+        )
+
+    def _preference_save_succeeded(self, _operation_id: str, generation: Any) -> None:
+        with self._preference_save_lock:
+            if (
+                generation != self._preference_save_generation
+                or self._preference_save_dirty
+                or self._preference_save_reported_generation is None
+            ):
+                return
+            self._preference_save_reported_generation = None
+        self._announce("Inkwell preferences saved now, after the earlier failure.")
+
+    def _flush_preference_writes(self) -> None:
+        """Wait for queued settings writes before the application exits."""
+        while True:
+            with self._preference_save_lock:
+                task = self._preference_save_task
+                running = self._preference_save_running
+                pending = self._preference_save_pending
+            if task is None and not running and pending is None:
+                return
+            if task is None:
+                return
+            try:
+                generation = task.future.result()
+            except OSError:
+                with self._preference_save_lock:
+                    failed_generation = self._preference_save_failed_generation
+                if failed_generation is not None:
+                    self._report_preference_save_failure(failed_generation)
+                return
+            self._preference_save_succeeded("", generation)
+            with self._preference_save_lock:
+                if not self._preference_save_running and self._preference_save_pending is None:
+                    return
 
     def _launch_at_startup_enabled(self) -> bool:
         try:
@@ -593,8 +716,11 @@ def main() -> int:
     try:
         app.MainLoop()
     finally:
-        release_primary_instance(slot=_IPC_SLOT)
-        log_listener.stop()
+        try:
+            frame._flush_preference_writes()
+        finally:
+            release_primary_instance(slot=_IPC_SLOT)
+            log_listener.stop()
     return 0
 
 

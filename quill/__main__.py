@@ -371,6 +371,10 @@ class LaunchRequest:
 
 
 def main() -> int:
+    from quill.core.net import configure_ssl_trust
+
+    configure_ssl_trust()
+
     # Headless `quill convert ...` subcommand: route to the wx-free converter CLI
     # before the GUI argument parse (which treats leading tokens as files to open).
     if sys.argv[1:2] == ["convert"]:

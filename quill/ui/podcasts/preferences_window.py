@@ -132,6 +132,9 @@ class AppRow:
     options: tuple[tuple[object, str], ...] = ()
     #: For a button row: what it opens.
     action: Callable[[], None] | None = None
+    #: A machine-local value that is not stored in podcast history/library.
+    value: object | None = None
+    enabled: bool = True
 
 
 @dataclass(slots=True)
@@ -165,7 +168,7 @@ class _Built:
         if self.row.kind == "choice":
             index = max(0, self.control.GetSelection())
             return self.row.options[index][0] if index < len(self.row.options) else self.original
-        if self.row.kind == "bool":
+        if self.row.kind in ("bool", "machine_bool"):
             return bool(self.control.GetValue())
         return self.original
 
@@ -311,7 +314,6 @@ class CastPreferencesWindow:
     def _on_section(self) -> None:
         self._remember()
         self._fill()
-        self._announce(f"{len(self._built)} settings.")
 
     def _fill(self) -> None:
         wx = self._wx
@@ -344,13 +346,26 @@ class CastPreferencesWindow:
 
     def _build_app_row(self, grid: Any, row: AppRow) -> None:
         wx = self._wx
-        original = getattr(self._history, row.key, None) if row.kind != "action" else None
+        original = (
+            row.value
+            if row.kind == "machine_bool"
+            else getattr(self._history, row.key, None)
+            if row.kind != "action"
+            else None
+        )
         value = self._value_for(row.key, original, app=True)
         if row.kind == "bool":
             grid.Add(wx.StaticText(self._panel, label=""), 0)
             control = wx.CheckBox(self._panel, label=self._key(row.label))
             control.SetValue(bool(value))
             control.SetHelpText(row.help)
+            grid.Add(control, 1, wx.EXPAND)
+        elif row.kind == "machine_bool":
+            grid.Add(wx.StaticText(self._panel, label=""), 0)
+            control = wx.CheckBox(self._panel, label=self._key(row.label))
+            control.SetValue(bool(value))
+            control.SetHelpText(row.help)
+            control.Enable(row.enabled)
             grid.Add(control, 1, wx.EXPAND)
         elif row.kind == "choice":
             grid.Add(

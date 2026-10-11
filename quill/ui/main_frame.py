@@ -7275,6 +7275,7 @@ class MainFrame(
         with wx.FileDialog(
             self.frame,
             "Save as plain text",
+            defaultDir=self._file_dialog_default_dir(),
             defaultFile=self._suggested_save_basename(),
             wildcard="Text files (*.txt)|*.txt|All files (*.*)|*.*",
             style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
@@ -11110,6 +11111,7 @@ class MainFrame(
         self._set_status("Cleared all notifications")
 
     def open_notifications(self) -> None:
+        self._notifications = load_notifications()
         wx = self._wx
         result = self._show_notifications_dialog()
         if result == wx.ID_CLEAR:
@@ -11148,9 +11150,15 @@ class MainFrame(
         root.Add(chooser, 1, wx.ALL | wx.EXPAND, 8)
         button_row = wx.BoxSizer(wx.HORIZONTAL)
         copy_button = wx.Button(dialog, label="Copy Selected")
+        open_button = wx.Button(dialog, wx.ID_OK, label="&Open")
+        open_button.SetHelpText(
+            "Opens the selected result when this notification has one. "
+            "A transcription opens only after you choose Open."
+        )
         clear_button = wx.Button(dialog, id=wx.ID_CLEAR, label="Clear Notifications")
         close_button = wx.Button(dialog, id=wx.ID_CLOSE, label="Close")
         button_row.Add(copy_button, 0, wx.RIGHT, 8)
+        button_row.Add(open_button, 0, wx.RIGHT, 8)
         button_row.Add(clear_button, 0, wx.RIGHT, 8)
         button_row.AddStretchSpacer(1)
         button_row.Add(close_button, 0)
@@ -11180,6 +11188,20 @@ class MainFrame(
                 return
             self._set_status("Copied notification to clipboard")
 
+        def open_selected() -> None:
+            selection = chooser.GetSelection()
+            entries = self._notifications[-200:]
+            if selection == wx.NOT_FOUND or selection >= len(entries):
+                self._set_status("No notification selected")
+                return
+            target = str(getattr(entries[selection], "target", "") or "")
+            opener = getattr(self, "open_notification_target", None)
+            if not target or not callable(opener):
+                self._set_status("There is nothing to open for this notification")
+                return
+            dialog.EndModal(wx.ID_OK)
+            wx.CallAfter(opener, target)
+
         # Copy is *explicit* only: double-click or Ctrl+C on the list, or the button.
         # Do NOT bind EVT_LISTBOX (selection-changed) — that fires on every arrow-key
         # move, so screen-reader users navigating the list would silently clobber the
@@ -11194,9 +11216,10 @@ class MainFrame(
         chooser.Bind(wx.EVT_LISTBOX_DCLICK, lambda _e: copy_selected())
         chooser.Bind(wx.EVT_KEY_DOWN, _on_list_key)
         copy_button.Bind(wx.EVT_BUTTON, lambda _e: copy_selected())
+        open_button.Bind(wx.EVT_BUTTON, lambda _e: open_selected())
         clear_button.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_CLEAR))
         close_button.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_CLOSE))
-        apply_modal_ids(dialog, affirmative_id=wx.ID_CLOSE, escape_id=wx.ID_CLOSE)
+        apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CLOSE)
 
         try:
             return self._show_modal_dialog(dialog, "Notifications")
@@ -11937,10 +11960,6 @@ class MainFrame(
                 candidate = get_provider()
                 if candidate is not None and candidate.is_available():
                     provider = candidate
-                    installed = candidate.list_installed_models()
-                    if installed:
-                        first = installed[0]
-                        model_id = getattr(first, "model_id", "") or getattr(first, "id", "")
             except Exception:  # noqa: BLE001
                 provider, model_id = None, ""
 

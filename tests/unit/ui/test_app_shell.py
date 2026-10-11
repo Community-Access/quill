@@ -118,6 +118,38 @@ def test_update_check_fetch_accepts_task_manager_kwargs(monkeypatch):
     assert calls == ["https://api.github.com/repos/Community-Access/quill-radio/releases"]
 
 
+class _DeferredTaskManager:
+    def __init__(self) -> None:
+        self.submitted = None
+
+    def submit(self, name, func, *, on_success=None, on_failure=None, **_options):
+        self.submitted = (name, func, on_success, on_failure)
+        return None
+
+
+def test_update_check_does_not_fetch_inline(monkeypatch):
+    import quill.core.updates as updates
+
+    calls: list[str] = []
+    monkeypatch.setattr(updates, "fetch_releases", lambda *_a, **_kw: calls.append("fetch") or [])
+    shell = _bare_shell()
+    shell._announce = lambda _msg: None
+    shell._running_portable_build = lambda: False
+    manager = _DeferredTaskManager()
+    shell._task_manager = manager
+
+    shell.check_for_app_updates(
+        repo_slug="Community-Access/quill-radio", current_version="1.0.0", silent_no_update=True
+    )
+
+    assert calls == []
+    assert manager.submitted is not None
+    manager.submitted[1](
+        cancellation_token=object(), operation_id="test-op", progress_callback=None
+    )
+    assert calls == ["fetch"]
+
+
 def test_silent_update_check_says_nothing_when_up_to_date(monkeypatch):
     """The automatic startup check (silent_no_update=True) must not announce
     "Checking for updates" or "You are up to date" -- only a genuine

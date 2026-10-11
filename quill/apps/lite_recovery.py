@@ -75,7 +75,7 @@ class LiteRecoveryMixin:
             recovery_mod.discard(slot)
         if answer.offer_untitled is not None:
             self.settings.recover_untitled_documents = bool(answer.offer_untitled)
-            self.save_settings()
+            self._queue_settings_save()
         restored = 0
         for slot in answer.restore:
             self.new_window(slot.mode, recovery_slot=slot)

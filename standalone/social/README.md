@@ -38,7 +38,7 @@ Implemented as interfaces with deterministic defaults and an `available()` probe
 
 ## Running from source
 
-Requires Python 3.12+ and wxPython.
+Requires Python 3.13+ and wxPython.
 
 ```
 pip install -e .

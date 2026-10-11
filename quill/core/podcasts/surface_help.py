@@ -131,6 +131,12 @@ PURPOSES: dict[str, str] = {
         "were already followed, and every feed that could not be read, with "
         "its reason. Copy All takes the report with you."
     ),
+    "Feed Refresh Progress": (
+        "A background feed check: completed and total counts, active podcast "
+        "names, and Stop Checks. Stop keeps feeds already updated and ignores "
+        "late results; requests already running may finish their network timeout. "
+        "Close hides this window; the Window menu brings it back."
+    ),
     "Smart Playlist Rules": (
         "The rules that build a smart playlist: which shows it draws from, "
         "how old an episode may be, whether played episodes count, and how "
@@ -247,6 +253,11 @@ PURPOSES: dict[str, str] = {
         "Choose the folder to file into, or make a new one. Folders are "
         "yours to invent, and filing changes nothing about what is "
         "downloaded or played."
+    ),
+    "Copy to Folder": (
+        "Choose another folder for the same subscription, or make a new folder. "
+        "The podcast remains in its original folder and shares one episode "
+        "list, download set, and listening history in every placement."
     ),
     "Year in Review": (
         "Your listening year as a short report: the shows you gave the most "

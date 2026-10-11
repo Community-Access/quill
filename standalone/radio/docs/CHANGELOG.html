@@ -252,7 +252,49 @@ href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <code>quill</code> package, so features and fixes land in both at once;
 this repository carries only the wrapper, installer, icon, and docs.</p>
 <h2 id="unreleased">[Unreleased]</h2>
+<p>Testing rebuild: <strong>3.2.0 (build 2)</strong>. The packages have
+not been published yet.</p>
 <ul>
+<li><strong>Recordings opens or restores its existing window.</strong>
+This build includes the minimized-window fix described under 3.2.0
+below: Record &gt; Recordings… and Ctrl+Shift+R bring an already-open,
+minimized list back instead of silently leaving it in the taskbar.
+Native Windows regression tests now exercise the shared opener with
+empty and populated recordings folders, including restoration without
+creating a second window.</li>
+<li><strong>Routine history saves run in the background.</strong>
+Preferences, station website corrections, favorites and related settings
+use detached snapshots on one ordered writer. Pending changes are
+coalesced, storage failures are reported, and shutdown records whether
+the final save was confirmed within its bounded wait instead of silently
+claiming success.</li>
+<li><strong>Startup checks avoid an unnecessary settings write.</strong>
+Starting the existing background update check no longer synchronously
+writes the bookkeeping timestamp while the main window opens.</li>
+<li><strong>HTTPS uses the Windows certificate store.</strong> Shared
+podcast requests and other Python HTTPS clients recognize trusted
+Windows and organization-managed roots while keeping hostname and
+certificate verification enabled. Invalid certificates still fail;
+podcast diagnostic reports include verification details without exposing
+feed credentials. Portable packaging also checks that the declared
+certificate-store backend and required Windows dependencies are
+included.</li>
+<li><strong>Start Quill Radio with Windows is also in
+Preferences.</strong> The Preferences checkbox and Station-menu item use
+the same per-user startup entry and stay in sync. Preferences reports if
+Windows prevents a requested change. Portable copies leave Windows
+startup settings alone.</li>
+<li><strong>Add or correct a station website locally.</strong> The
+Website button asks before adding a missing address; choosing
+<strong>Add Website</strong> with <strong>Don’t ask me again</strong>
+checked also disables the question in QUILL. <strong>Edit
+Website…</strong> is available on station rows in Browse Stations and
+Manage Favorite Stations. HTTP(S) addresses are checked for valid format
+without contacting the site; an empty edit removes the local correction
+and falls back to the station’s directory address.</li>
+<li><strong>The installer is current-user only.</strong> It no longer
+offers an all-users install that requires administrator approval; the
+app and shared runtime go in your Windows profile.</li>
 <li><strong>Internet Archive searches put the best matches
 first.</strong> A listener looked for the Yours Truly, Johnny Dollar
 half-hour series that Old Time Radio Researchers uploaded on 1 October

@@ -663,11 +663,13 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | --- | --- | --- |
 | Alt+F2 | Use My Own AI Key... | `tools.hosted_ai_own_key` |
 | Alt+F5 | Use My ChatGPT Subscription... | `tools.hosted_ai_chatgpt` |
+| Alt+Shift+E | Podcasts: Mark All Episodes as Played... | `podcasts.mark_all_played` |
 | Alt+Shift+F2 | Privacy Agreement... | `tools.hosted_ai_privacy` |
 | Ctrl+Alt+2 | Podcasts: Now Playing window | `podcasts.now_playing` |
 | Ctrl+Alt+A | Bookmark This Moment | `app.bookmark_moment` |
 | Ctrl+Alt+F1 | Podcasts: Tutorials... | `podcasts.tutorials` |
 | Ctrl+Alt+F12 | Restore | `app.restore` |
+| Ctrl+Alt+F5 | Ask About an Image... | `tools.hosted_ai_image` |
 | Ctrl+Alt+G | Free AI Assistant... | `tools.hosted_ai_assistant` |
 | Ctrl+Alt+J | Podcasts: Go to Position... | `podcasts.go_to_position` |
 | Ctrl+Alt+Shift+B | Backup | `app.backup` |
@@ -683,16 +685,20 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+Shift+X | Export My Setup... | `app.export_setup` |
 | Ctrl+Alt+Shift+Z | Quiet Hours... | `app.quiet_hours` |
 | Ctrl+Alt+Z | Ask About This Document... | `tools.hosted_ai_ask_document` |
-| Ctrl+F5 | Ask About an Image... | `tools.hosted_ai_image` |
+| Ctrl+F5 | Refresh podcasts | `media.refresh_podcasts` |
 | Ctrl+G | Go to | `app.go_to` |
 | Ctrl+I | Player Information... | `podcasts.player_information` |
 | Ctrl+Shift+9 | Skip silence | `podcasts.skip_silence` |
 | Ctrl+Shift+D | Bookmark note | `podcasts.bookmark_note` |
+| Ctrl+Shift+E | New folder | `podcasts.new_folder` |
 | Ctrl+Shift+J | Episode bookmarks | `podcasts.episode_bookmarks` |
 | Ctrl+Shift+T | Podcasts: Time Remaining | `podcasts.time_remaining` |
+| Ctrl+Shift+V | Move to folder | `podcasts.move_to_folder` |
+| Ctrl+Shift+Y | Copy to folder | `podcasts.copy_to_folder` |
 | Ctrl+Shift+Z | Undo History... | `app.undo_history` |
 | Ctrl+T | Say now playing | `podcasts.say_now_playing` |
 | Ctrl+Z | Undo Last Action | `app.undo_last` |
+| F5 | Refresh feed | `podcasts.refresh_feed` |
 | F9 | Repeat Last Result | `app.repeat_last_result` |
 | Shift+F9 | Activity... | `app.activity` |
 

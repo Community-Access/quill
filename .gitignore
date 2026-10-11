@@ -1,4 +1,4 @@
-__pycache__/
+__pycache__/    
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
@@ -63,6 +63,8 @@ msg.txt
 /x2.md
 /x3.md
 /todo.md
+# Green-up plan and running checklist (2026-10-11); local working file.
+/xyzzy.md
 # Session handoff for the chapter work (2026-08-20). Describes what is in the
 # working tree and not yet committed, so a committed copy would describe nothing.
 /todo2.md
@@ -129,6 +131,10 @@ fix.md
 # The draft reply to a user's bug report, written for copy-and-paste and
 # never part of the repository (2026-09-30).
 /reply.md
+# Local, user-specific support and product-planning notes; keep in the working
+# copy but do not include them in the public repository.
+/jessica.md
+/quilltranscribe.md
 # The running ledger of what is in the working tree and not yet committed
 # (2026-08-18). Untracked on purpose: it describes the uncommitted diff, so a
 # committed copy would be a description of nothing.

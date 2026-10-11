@@ -60,6 +60,12 @@ Two downloads. You want one of them.
 | `QuillLite-Setup-Shared-<version>.exe` | You want to install it. Everything is in it. |
 | `QuillLite-Portable-<version>.zip` | You want it on a USB stick, settings and recovered work included. |
 
+The installer is **for your Windows account only**. Setup does not offer an
+all-users install and does not need administrator approval; the app and its
+shared runtime are installed in your user profile. The separate **Open QUILL
+Lite instead of Notepad** setting changes what Notepad means for everyone on
+the computer, so turning that on still asks Windows for administrator approval.
+
 Two, deliberately. The other QuillVille apps also publish a thin installer and a
 launcher-only Companion zip, which reuse a shared runtime someone already has.
 QUILL Lite does not, because it is the app people install when they have nothing

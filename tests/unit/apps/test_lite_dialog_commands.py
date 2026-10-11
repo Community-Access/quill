@@ -77,8 +77,8 @@ def test_get_help_from_support_writes_as_quilllite(lite_window, monkeypatch):
     win = lite_window("hello")
     win.cmd_get_help_from_support()
 
-    # With its build, as About says it: "1.2.0 (build 1)" tells support which
-    # build of a version somebody is on, which a fix shipped as build 2 needs.
+    # With its build, as About says it: support can distinguish a 1.2.0
+    # installation from a later corrected build.
     assert calls == [{"source_app": APP_NAME, "app_version": version_label()}]
 
 
@@ -173,6 +173,24 @@ def test_preferences_saved_reapplies_without_rebuilding_the_menus(lite_window, l
     assert win.announcements[-1] == "Preferences saved"
 
 
+def test_default_document_folder_preference_updates_the_settings(wx_app, tmp_path):
+    from quill.apps.lite_preferences_save_folder import DocumentFolderPrefs
+    from quill.core.lite.settings import Settings
+
+    dialog = wx.Dialog(None, title="Preferences")
+    try:
+        settings = Settings()
+        prefs = DocumentFolderPrefs(dialog, wx.BoxSizer(wx.VERTICAL), settings)
+        prefs.folder.SetValue(str(tmp_path))
+
+        assert prefs.apply() is True
+        assert settings.startup_folder == str(tmp_path)
+        assert prefs.folder.GetName() == "Default document folder"
+        assert prefs.choose.GetName() == "Choose default document folder"
+    finally:
+        dialog.Destroy()
+
+
 def test_a_changed_feature_profile_rebuilds_every_menu_and_says_so(lite_window, lite_dialogs):
     from quill.apps.lite_preferences import PreferencesResult
 
@@ -207,7 +225,7 @@ def test_customize_features_saved_writes_both_files_and_rebuilds(lite_window, li
     win.cmd_customize_features()
 
     assert win.app.saved_features == 1
-    assert win.app.saved_settings == 1
+    assert win.app.queued_settings == 1
     assert win.app.rebuilt_menus == 1
     assert "Features saved" in win.announcements[-1]
 
@@ -357,7 +375,7 @@ def test_saving_the_spelling_voice_refreshes_every_open_document(lite_window, li
     win.app.settings.spell_aloud_delay_ms = 1200
     win.cmd_spelling_voice_settings()
 
-    assert win.app.saved_settings == 1
+    assert win.app.queued_settings == 1
     assert other._spell_voice.policy.delay_ms == 1200
     assert win.announcements[-1] == "Spelling announcements saved"
 
@@ -478,7 +496,7 @@ def test_editor_font_applies_to_every_window_and_is_announced(lite_window, fake_
     win.cmd_editor_font()
 
     assert (win.app.settings.font_name, win.app.settings.font_size) == ("Consolas", 14)
-    assert win.app.saved_settings == 1
+    assert win.app.queued_settings == 1
     assert win.app.reapplied == 1
     assert win.announcements[-1] == "Editor font Consolas, 14 point"
 

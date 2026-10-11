@@ -38,7 +38,7 @@ _TITLE = "Quill Radio"
 from quill.core.app_version import describe_version, installed_version  # noqa: E402
 
 _VERSION = "3.2.0"
-_BUILD = 1  # this version's build (docs/release/RELEASE.md, "Build numbers")
+_BUILD = 2  # this version's build (docs/release/RELEASE.md, "Build numbers")
 _REPO = "Community-Access/quill"
 #: Two downloads since 3.0.0 (installer, portable zip): Check for Updates asks "portable,
 #: or not" and nothing else, as QUILL Lite does (AppShell.check_for_app_updates says why).
@@ -716,12 +716,9 @@ class RadioAppFrame(
         """Flip Show Station Details and persist it. The Browse and Search Stations
         surfaces read it when they open, so the change takes effect next time you
         open one."""
-        from quill.core.paths import app_data_dir
-        from quill.core.radio import history as radio_history
-
         history = self._radio_history
         history.show_station_details = not history.show_station_details
-        radio_history.save_history(app_data_dir(), history)
+        self._save_radio_history()
         self._announce(
             "Station details will be shown."
             if history.show_station_details
@@ -730,12 +727,9 @@ class RadioAppFrame(
 
     def _toggle_show_status_bar(self) -> None:
         """Flip Show Status Bar, persist it, and show/hide the bar right away."""
-        from quill.core.paths import app_data_dir
-        from quill.core.radio import history as radio_history
-
         history = self._radio_history
         history.show_status_bar = not history.show_status_bar
-        radio_history.save_history(app_data_dir(), history)
+        self._save_radio_history()
         menu_bar = self.frame.GetMenuBar()
         if menu_bar is not None:
             menu_bar.Check(int(self._status_bar_item_id), history.show_status_bar)
@@ -749,28 +743,22 @@ class RadioAppFrame(
     def _set_favorites_sort(self, value: str) -> None:
         """View > Sort Favorites: change the favorites sort order and reload the
         tree. Same setting Preferences carries; announced so the change is heard."""
-        from quill.core.paths import app_data_dir
-        from quill.core.radio import history as radio_history
-
         history = self._radio_history
         if history.favorites_sort == value:
             return
         history.favorites_sort = value
-        radio_history.save_history(app_data_dir(), history)
+        self._save_radio_history()
         self._reload_favorites_tree()
         labels = dict(zip(_FAVORITES_SORT_VALUES, _FAVORITES_SORT_LABELS, strict=True))
         self._announce(f"Sorted favorites: {labels[value]}.")
 
     def _set_text_size(self, scale: float) -> None:
         """View > Text Size: persist the font scale and apply it right away."""
-        from quill.core.paths import app_data_dir
-        from quill.core.radio import history as radio_history
-
         history = self._radio_history
         if abs(history.ui_font_scale - scale) < 0.01:
             return
         history.ui_font_scale = scale
-        radio_history.save_history(app_data_dir(), history)
+        self._save_radio_history()
         self._apply_text_size()
         names = {1.0: "Normal", 1.25: "Large", 1.5: "Larger"}
         self._announce(f"Text size: {names.get(scale, 'Normal')}.")
@@ -816,12 +804,9 @@ class RadioAppFrame(
         status_bar.focus_bar(return_focus=getattr(self, "_favorites_tree", None))
 
     def _toggle_resume_on_launch(self) -> None:
-        from quill.core.paths import app_data_dir
-        from quill.core.radio import history as radio_history
-
         history = self._radio_history
         history.resume_on_launch = not history.resume_on_launch
-        radio_history.save_history(app_data_dir(), history)
+        self._save_radio_history()
         menu_bar = self.frame.GetMenuBar()
         if menu_bar is not None:
             menu_bar.Check(int(self._resume_menu_item_id), history.resume_on_launch)
@@ -843,16 +828,20 @@ class RadioAppFrame(
         if radio_startup.running_portable():
             self._announce(radio_startup.PORTABLE_REFUSAL)
             return
-        radio_startup.set_launch_at_startup(not radio_startup.is_launch_at_startup_enabled())
+        requested = not radio_startup.is_launch_at_startup_enabled()
+        radio_startup.set_launch_at_startup(requested)
         actual = radio_startup.is_launch_at_startup_enabled()
         menu_bar = self.frame.GetMenuBar()
         if menu_bar is not None:
             menu_bar.Check(int(self._startup_menu_item_id), actual)
-        self._announce(
-            "Quill Radio will start with Windows."
-            if actual
-            else "Quill Radio will not start with Windows."
-        )
+        if requested != actual:
+            self._announce("Windows did not allow the startup setting to change.")
+        else:
+            self._announce(
+                "Quill Radio will start with Windows."
+                if actual
+                else "Quill Radio will not start with Windows."
+            )
 
     # -- switchable feature areas ----------------------------------------------
 
@@ -1036,16 +1025,14 @@ class RadioAppFrame(
         exists. Preferences (Ctrl+,) turns this off."""
         from datetime import UTC, datetime
 
-        from quill.core.paths import app_data_dir
-        from quill.core.radio import history as radio_history
-
         history = self._radio_history
         if not history.check_updates_on_startup:
             return
         if not self._app_update_check_due(history.last_update_check):
             return
+        # Keep this launch throttled in memory; an update-check timestamp does
+        # not need to outlive a launch that found nothing new.
         history.last_update_check = datetime.now(UTC).isoformat()
-        radio_history.save_history(app_data_dir(), history)
         self.check_for_app_updates(
             repo_slug=_REPO,
             current_version=installed_version(_VERSION, build=_BUILD),
@@ -1167,8 +1154,6 @@ class RadioAppFrame(
         the choice ("exit"/"minimize"/None), persisting "Don't ask me again" to
         close_action. Run deferred by the shared close flow, never from inside
         EVT_CLOSE (see AppShellFrame.handle_app_close)."""
-        from quill.core.paths import app_data_dir
-        from quill.core.radio import history as radio_history
         from quill.ui.radio.close_confirm_dialog import RadioCloseConfirmDialog
 
         recording_active = bool(getattr(self._radio_recorder, "is_recording", False))
@@ -1180,7 +1165,7 @@ class RadioAppFrame(
         action, dont_ask_again = result
         if dont_ask_again:
             self._radio_history.close_action = action
-            radio_history.save_history(app_data_dir(), self._radio_history)
+            self._save_radio_history()
         return action
 
     def _radio_shutdown(self) -> None:

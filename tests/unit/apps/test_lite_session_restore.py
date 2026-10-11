@@ -49,6 +49,7 @@ class _App:
         self.shell = object()
         self.opened: list[Path] = []
         self.saved = 0
+        self.queued = 0
 
     def open_path(self, path: Path) -> bool:
         self.opened.append(Path(path))
@@ -57,10 +58,14 @@ class _App:
     def save_settings(self) -> None:
         self.saved += 1
 
+    def _queue_settings_save(self) -> None:
+        self.queued += 1
+
     # The three methods under test, taken from the real class.
     choose_session_documents = QuillLiteApp.choose_session_documents
     _open_session_entries = QuillLiteApp._open_session_entries
     _restore_session = QuillLiteApp._restore_session
+    remember_session = QuillLiteApp.remember_session
 
 
 @pytest.fixture
@@ -233,7 +238,7 @@ def test_forgetting_shortens_the_list_and_leaves_the_files(monkeypatch, three: l
     app.choose_session_documents()
 
     assert app.settings.session_files == [three[0]]
-    assert app.saved >= 1, "a Forget that is not saved is a Forget that did not happen"
+    assert app.queued == 1, "a Forget that is not saved is a Forget that did not happen"
     assert all(Path(path).is_file() for path in three), "forgetting must not delete"
 
 
@@ -293,6 +298,16 @@ def test_ask_me_next_time_puts_never_ask_again_back(monkeypatch, three: list[str
     app.choose_session_documents()
 
     assert app.settings.session_restore_ask == ASK_WHEN_IT_MATTERS
+
+
+def test_remembering_session_stays_synchronous_for_shutdown() -> None:
+    app = _App([])
+    app.frames = []
+
+    app.remember_session()
+
+    assert app.saved == 1
+    assert app.queued == 0
 
 
 def test_nothing_remembered_says_so_rather_than_opening_an_empty_window(monkeypatch) -> None:

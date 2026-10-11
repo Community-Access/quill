@@ -43,14 +43,14 @@ class DocumentViewCommandsMixin:
     def cmd_toggle_dark(self) -> None:
         settings = self.app.settings
         settings.theme = "system" if settings.theme == "dark" else "dark"
-        self.app.save_settings()
+        self.app._queue_settings_save()
         self.app.reapply_settings()
         self._announce("Dark mode on" if settings.theme == "dark" else "Dark mode off")
 
     def cmd_toggle_wrap(self) -> None:
         settings = self.app.settings
         settings.word_wrap = not settings.word_wrap
-        self.app.save_settings()
+        self.app._queue_settings_save()
         self.app.reapply_settings()
         self._announce("Word wrap on" if settings.word_wrap else "Word wrap off")
 
@@ -59,7 +59,7 @@ class DocumentViewCommandsMixin:
         settings = self.app.settings
         settings.font_size = points
         settings.normalized()  # clamps into range, so 4 and 400 both land somewhere legible
-        self.app.save_settings()
+        self.app._queue_settings_save()
         self.app.reapply_settings()
         self._announce(f"{settings.font_size} point")
 
@@ -92,7 +92,7 @@ class DocumentViewCommandsMixin:
         settings.font_name = font.GetFaceName()
         settings.font_size = font.GetPointSize()
         settings.normalized()
-        self.app.save_settings()
+        self.app._queue_settings_save()
         self.app.reapply_settings()
         self._announce(f"Editor font {settings.font_name}, {settings.font_size} point")
 
@@ -160,7 +160,7 @@ class DocumentViewCommandsMixin:
         """
         settings = self.app.settings
         settings.show_status_bar = not settings.show_status_bar
-        self.app.save_settings()
+        self.app._queue_settings_save()
         self.app.reapply_settings()
         self._announce("Status bar shown" if settings.show_status_bar else "Status bar hidden")
 
@@ -212,7 +212,7 @@ class DocumentViewCommandsMixin:
         # A profile may have changed a setting as well as a set of areas, and
         # the dialog only ever writes to the object -- persisting it is the
         # caller's, exactly as it is for the features.
-        self.app.save_settings()
+        self.app._queue_settings_save()
         self.app.rebuild_all_menus()
         self._dictation_feature_changed()  # switched off: the microphone closes
         self.control.SetFocus()

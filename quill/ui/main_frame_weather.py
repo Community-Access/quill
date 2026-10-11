@@ -240,7 +240,7 @@ class WeatherMixin:
         if isinstance(result, WeatherReport):
             line = render.quick_weather_line(result, settings)
             if settings.show_local_time and result.time_zone:
-                place = result.location.resolved_name or result.location.label
+                place = result.location.label
                 local_time = render.time_summary(datetime.now(UTC), result.time_zone, place=place)
                 if local_time:
                     line = f"{line} {local_time}"

@@ -48,6 +48,47 @@ def test_call_ui_safely_schedules_through_callafter(monkeypatch) -> None:
     assert called == ["done"]
 
 
+def test_call_ui_safely_never_calls_wx_after_the_app_closed(monkeypatch, caplog) -> None:
+    def call_after(_callback):
+        raise AssertionError("wx.CallAfter must not be called without an app")
+
+    monkeypatch.setattr(
+        wx_dispatch_module, "wx", SimpleNamespace(CallAfter=call_after, GetApp=lambda: None)
+    )
+    called = []
+    with caplog.at_level(logging.INFO):
+        call_ui_safely(lambda: called.append(True))
+
+    assert not called
+    assert "wx.App has already closed" in caplog.text
+
+
+def test_task_result_survives_shutdown_without_scheduling_a_ui_callback(monkeypatch) -> None:
+    from quill.stability import task_manager as task_module
+
+    entered = threading.Event()
+    release = threading.Event()
+    scheduled = []
+    monkeypatch.setattr(task_module, "call_ui_safely", lambda callback: scheduled.append(callback))
+    manager = TaskManager(max_workers=1)
+
+    def worker(**_kwargs):
+        entered.set()
+        assert release.wait(2)
+        return 42
+
+    task = manager.submit("closing", worker, on_success=lambda *_args: None)
+    try:
+        assert entered.wait(2)
+        manager.shutdown(wait=False)
+        release.set()
+        assert task.future.result(2) == 42
+        assert scheduled == []
+    finally:
+        release.set()
+        manager.shutdown()
+
+
 def test_coalesced_ui_reporter_uses_latest_value(monkeypatch) -> None:
     scheduled: list[object] = []
     monkeypatch.setattr(

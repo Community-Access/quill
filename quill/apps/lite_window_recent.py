@@ -53,7 +53,7 @@ class DocumentRecentMixin:
             settings.recent_files_auto_clear_missing,
         )
         if after != before:
-            self.app.save_settings()
+            self.app._queue_settings_save()
             self.app.refresh_all_menus()
         if answer.open_path:
             self.app.open_path(Path(answer.open_path))

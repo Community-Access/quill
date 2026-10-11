@@ -21,6 +21,7 @@ import urllib.request
 
 from quill.core import http_client
 from quill.core.error_codes import CodedError
+from quill.core.net import verified_ssl_context
 from quill.core.podcasts.feed_reader import refuse_in_safe_mode
 from quill.core.podcasts.opml import (
     ImportedShow,
@@ -29,6 +30,7 @@ from quill.core.podcasts.opml import (
     import_opml,
     parse_opml,
 )
+from quill.core.podcasts.opml_import import ImportPlan, parse_and_plan
 from quill.core.podcasts.subscriptions import PodcastLibrary
 
 #: ACB's own published podcast directory (the file ACB Link itself reads).
@@ -71,7 +73,7 @@ def _fetch_opml_bytes(url: str = ACB_PODCASTS_OPML_URL) -> bytes:
     parameter is one thing to review instead of two things to keep in step.
     """
     request = urllib.request.Request(url, headers={"User-Agent": http_client.podcast_user_agent()})
-    context = ssl.create_default_context()
+    context = verified_ssl_context()
     try:
         with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:
             payload: bytes = resp.read(_MAX_BYTES)
@@ -117,5 +119,16 @@ def add_acb_media_podcasts(
     """
     refuse_in_safe_mode(safe_mode)
     if opml_text is None:
-        opml_text = decode_opml_bytes(_fetch_opml_bytes())
+        opml_text = fetch_acb_media_directory()
     return import_opml(library, opml_text, stream_only=True, into_folder=ACB_PODCASTS_FOLDER)
+
+
+def fetch_acb_media_directory(*, safe_mode: bool = False) -> str:
+    """Fetch ACB's subscription directory without mutating the library."""
+    refuse_in_safe_mode(safe_mode)
+    return decode_opml_bytes(_fetch_opml_bytes())
+
+
+def plan_acb_media_subscriptions(library: PodcastLibrary, opml_text: str) -> ImportPlan:
+    """Plan a directory import for later application on the UI thread."""
+    return parse_and_plan(library, opml_text)

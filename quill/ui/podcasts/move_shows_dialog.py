@@ -180,23 +180,49 @@ def open_move_shows(dialog: Any, preselect: str = "") -> None:
         return
 
     count = len(chosen)
+    folders_changed = False
+
+    def save_folders() -> None:
+        nonlocal folders_changed
+        folders_changed = True
+        dialog._on_library_changed()
+
     picker = FolderPickerDialog(
         dialog.dialog,
         library=dialog._library,
         title=f"Move {count} Podcast{'' if count == 1 else 's'} to Folder",
         announce_cb=dialog._announce,
+        on_library_changed=save_folders,
     )
     result = picker.show()
     if not result.confirmed:
+        if folders_changed:
+            dialog.refresh_tree()
         return
     folder_id = result.folder_id
+    from quill.core.podcasts.folder_membership import move_to
+
+    current = {show.id: show for show in dialog._library.shows}
+    moved = 0
+    skipped = 0
     for show in chosen:
-        show.folder_id = folder_id or None
-    dialog._on_library_changed()
-    dialog.refresh_tree()
+        if current.get(show.id) is not show:
+            skipped += 1
+            continue
+        try:
+            moved += move_to(dialog._library, show, folder_id, source=show.folder_id)
+        except ValueError as error:
+            dialog._announce(str(error))
+            break
+    if moved:
+        dialog._on_library_changed()
+    if moved or folders_changed:
+        dialog.refresh_tree()
     destination = dialog._library.find_folder(folder_id) if folder_id else None
     where = destination.name if destination is not None else "the top level"
-    dialog._announce(f"Moved {count} podcast{'' if count == 1 else 's'} to {where}.")
+    dialog._announce(f"Moved {moved} podcast{'' if moved == 1 else 's'} to {where}.")
+    if skipped:
+        dialog._announce(f"Skipped {skipped} podcast(s) that are no longer followed.")
 
 
 def move_one_show(dialog: Any, show: Any) -> None:
@@ -206,25 +232,29 @@ def move_one_show(dialog: Any, show: Any) -> None:
     same thing to a different number of shows, and reading them together is how
     the announcement and the anchor handling stay in step.
     """
-    from quill.ui.podcasts.folder_picker_dialog import FolderPickerDialog
+    from quill.ui.podcasts.manager_filing import source_folder
+    from quill.ui.podcasts.show_filing import file_show
 
-    picker = FolderPickerDialog(
-        dialog.dialog,
-        library=dialog._library,
-        title=f"Move {show.title} to Folder",
-        announce_cb=dialog._announce,
-    )
-    result = picker.show()
-    if not result.confirmed:
-        return
-    chosen = result.folder_id
-    # Taken before the move: once the show has left, the row it was next to is
-    # where the cursor has to land, and afterwards there is nothing to ask.
+    source = source_folder(dialog, show)
     anchor = dialog._neighbor_anchor_for_show(show.id)
-    show.folder_id = chosen or None
-    dialog._on_library_changed()
-    dialog.refresh_tree()
-    dialog._restore_tree_anchor(anchor)
-    destination = dialog._library.find_folder(chosen) if chosen else None
-    where = destination.name if destination is not None else "the top level"
-    dialog._announce(f"Moved {show.title} to {where}")
+    folders_changed = False
+
+    def save_folders() -> None:
+        nonlocal folders_changed
+        folders_changed = True
+        dialog._on_library_changed()
+
+    moved = file_show(
+        dialog.dialog,
+        dialog._library,
+        show,
+        source_folder_id=source,
+        announce=dialog._announce,
+        on_library_changed=save_folders,
+    )
+    if moved:
+        dialog._on_library_changed()
+    if moved or folders_changed:
+        dialog.refresh_tree()
+    if moved:
+        dialog._restore_tree_anchor(anchor)

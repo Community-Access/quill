@@ -526,9 +526,9 @@ class PreferencesMixin:
                         _t.SetValue(_cur)
                         _t.SetName(_sl)
                         _t.SetHint(
-                            "e.g. /Users/YourName/Documents (blank = last used)"
+                            "e.g. /Users/YourName/Documents (blank = Documents)"
                             if sys.platform == "darwin"
-                            else "e.g. C:\\Users\\YourName\\Documents (blank = last used)"
+                            else "e.g. C:\\Users\\YourName\\Documents (blank = Documents)"
                         )
                         _b = wx.Button(_pp, label="Choose Default Folder...")
                         _b.SetName(f"Choose default folder for {_sl}")
@@ -536,12 +536,12 @@ class PreferencesMixin:
                         def _on_browse(_evt, __t=_t, __pp=_pp) -> None:
                             with wx.DirDialog(
                                 __pp,
-                                "Choose default file-open folder",
+                                "Choose default document folder",
                                 defaultPath=__t.GetValue().strip(),
                                 style=wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST,
                             ) as ddlg:
                                 if (
-                                    self._show_modal_dialog(ddlg, "Default file-open folder")
+                                    self._show_modal_dialog(ddlg, "Default document folder")
                                     == wx.ID_OK
                                 ):
                                     __t.SetValue(ddlg.GetPath())

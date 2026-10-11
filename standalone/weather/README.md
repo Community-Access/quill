@@ -4,7 +4,7 @@ Accessible, screen-reader-first weather -- with background alert monitoring that
 
 Quill Weather is not a fork. The whole application lives in the [quill](https://github.com/Community-Access/quill) package (`quill.apps.weather`) and runs the exact same weather feature code QUILL and Quill Radio use: the same National Weather Service client, the same Weather Center, the same Weather Guardian alert monitoring. This repository holds only what exists because QUILL is not in the picture: the product wrapper (entry point), the installer, and this app's own documentation. Everything shared stays upstream, so Quill Weather tracks QUILL automatically.
 
-**Quill Weather and Quill Radio are a pair.** They ship the same weather code and are released together, so they share a version line (this is **2.2.0**). But they are separate, independently distributed and **independently updated** apps -- install one, both, or neither. When both are installed they can open each other, and each has its own system-tray icon, so they run happily side by side.
+**Quill Weather and Quill Radio share weather code.** They are independently released and updated; Quill Weather is now **2.2.1**. Install one, both, or neither. When both are installed they can open each other, and each has its own system-tray icon.
 
 ## What it does
 
@@ -22,7 +22,7 @@ Deliberately not included: QUILL's editor, AI, transcription, braille, and speec
 
 Two flavors, both on this repository's Releases page:
 
-- **`Quill-Weather-Setup-<version>.exe`** -- the system install: its own directory, Start Menu entry, uninstaller. Uses the shared Quill data in your Windows profile, so your weather locations are the same ones QUILL and Quill Radio see.
+- **`Quill-Weather-Setup-Shared-<version>.exe`** -- the system install: its own directory, Start Menu entry, uninstaller. Uses the shared Quill data in your Windows profile, so your weather locations are the same ones QUILL and Quill Radio see.
 - **`Quill-Weather-Portable-<version>.zip`** -- extract anywhere (a USB stick included) and run `QuillWeather\QuillWeather.exe`. The bundled `data` folder keeps your locations and settings inside the app folder, so the whole thing travels.
 
 Help > Check for Updates knows which flavor you run and downloads the matching artifact directly. **Quill Weather updates independently of Quill Radio** -- updating one never touches the other.
@@ -46,4 +46,4 @@ python -m quill.apps.weather --tray
 
 ## Versioning and releases
 
-Quill Weather carries the **same version number as Quill Radio** (2.2.0), because the two were split from one weather effort and ship the same underlying code. That shared number is a courtesy to users who run both; the two apps otherwise have **separate release cadences and separate update feeds**, so a Quill Weather release can go out without a Quill Radio release and vice versa. See `docs/release-notes-2.2.md` for what is new.
+Quill Weather and Quill Radio use the same underlying weather code, but have **separate release cadences and update feeds**. Quill Weather 2.2.1 fixes friendly location names and offers a shared installer and portable zip. See `docs/release-notes-2.2.1.md` for this release.

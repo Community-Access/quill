@@ -7,12 +7,6 @@ are the same ones documented in the Quill Radio User Guide's Weather section
 
 ## Starting the app
 
-The next maintenance update adds **Find a setting** to Weather Settings. Type
-a term from a setting's label or help, press Down for matches, and Enter to focus
-a setting. Control+F returns to search; Escape clears a search before closing.
-Search does not alter values or save the dialog. Its ordinary OK/Cancel behavior
-is unchanged.
-
 Launch **Quill Weather** from the Start Menu, or run `QuillWeather.exe` from the
 portable folder. On first run there is no saved location yet, so choose
 **Weather menu > Add Location...** (or the **Add Location...** button) and search
@@ -167,31 +161,32 @@ installed it, every app you add afterward starts instantly. The runtime is
 reference-counted: it is removed only when the last app that needs it is
 uninstalled.
 
-There are four downloads. Pick the one that fits how you want to run Quill
+There are two downloads. Pick the one that fits how you want to run Quill
 Weather:
 
-- **Full portable** (`Quill-Weather-Portable-<version>.zip`, about 82 MB) is
+- **Portable** (`Quill-Weather-Portable-<version>.zip`) is
   fully self-contained: it runs from a USB stick with no installation and no
   internet, and it carries a genuine, unmodified copy of Python. Weather is a
   small app, so this build is already compact. Extract it anywhere and run
   `QuillWeather.exe`. A `data` folder next to the exe (holding a
   `storage-mode.json` marker set to portable) keeps everything on the stick.
-- **Companion edition** (`Quill-Weather-Companion-<version>.zip`, about 2 MB) is
-  feather-light: just the app and its docs, running on the shared QuillVille
-  Runtime. The first time you launch it, if the runtime is not already
-  installed, it offers to download and install it (about 230 MB, once) with a
-  fully accessible progress bar. After that, this app and every other QuillVille
-  app start instantly.
-- **Full installer** (`Quill-Weather-Setup-Shared-<version>.exe`) installs the
-  shared runtime, if it is not already present, plus the app, with a Start Menu
+- **Shared installer** (`Quill-Weather-Setup-Shared-<version>.exe`) runs per
+  user, without an administrator prompt. It includes the shared runtime and
+  installs it if it is not already present, plus the app, with a Start Menu
   entry and an uninstaller.
-- **Thin installer** (the `-Lite` setup) is a tiny installer that downloads the
-  shared runtime only if it is not already present, then installs the app.
 
-Whenever the QuillVille Runtime is downloaded -- whether an installer or the
-app's own first launch starts it -- you get a fully accessible progress bar that
-works with NVDA, JAWS, and Narrator, announcing progress as a percentage. You
-can follow it and know exactly how far along the one-time download is.
+Both downloads include the runtime they need and work without a first-launch
+runtime download. The portable launcher also stays offline if its bundled
+runtime is damaged: extract a fresh copy to repair it.
+
+The installed copy can start with Windows in the tray and register a scheduled
+background alert check through the Options menu. A portable copy does neither:
+those choices would leave startup entries or scheduled tasks on the host PC, so
+Weather explains that installation is required and leaves its menu checks off.
+
+**Help > Activity...** (Shift+F9) shows recent results and any available
+retry. **Help > Repeat Last Result** (F9) speaks the latest important result
+again. These commands use the same result history as the other Quill apps.
 
 **A note on antivirus:** the app's launcher is now a genuine, tiny native
 program, and the bundled Python is the official unmodified build. Earlier
@@ -252,7 +247,7 @@ keys the app ships with; only the window can know the ones you rebound.
 
 ## Updating
 
-Help > About shows your version with a build number, such as 3.2.0 (build 2). The
+Help > About shows your version with a build number, such as 2.2.1 (build 1). The
 build number tells you which build of a version you have: when a fix comes out
 without a new version number, it is a newer build, and Check for Updates offers it.
 
@@ -301,6 +296,11 @@ safety channels.
 4. The first location you add becomes your primary location. Add as many as you
    like and switch between them with the **Location** chooser in Weather Now.
 
+The friendly name is what Weather uses in Current conditions, Quick Weather,
+local time, the Location chooser, and spoken monitoring messages. For example,
+save two places as **Home** and **Summer Home** and each report names the place
+you chose. Leave the name blank to use the search result's place name.
+
 **Removing a location:** in Weather Now, select it in the Location chooser and
 press **Remove Location** (or the **Delete** key).
 
@@ -338,7 +338,7 @@ you are playing untouched.
 **Weather menu > Quick Weather** (or **Ctrl+Shift+Q**) speaks a one-line summary
 of your primary location without opening a window -- for example:
 
-> Here is the weather for Tucson, Arizona. It is 96 degrees Fahrenheit and mostly
+> Here is the weather for Home. It is 96 degrees Fahrenheit and mostly
 > clear. It feels like 101 degrees. The wind is blowing from the west-northwest
 > at 5 miles per hour. There is one active alert. The most urgent is an Excessive
 > Heat Warning.

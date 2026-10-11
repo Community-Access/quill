@@ -16,6 +16,8 @@ import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from quill.core.error_codes import CodedError
+from quill.core.podcasts.library_payload import LibraryPayload, serialize
 from quill.core.podcasts.models import (
     ExpiredEntry,
     Playlist,
@@ -30,9 +32,12 @@ from quill.core.podcasts.models_filters import EpisodeFilterConfiguration
 from quill.core.podcasts.onboarding import OnboardingState
 from quill.core.podcasts.watched_folders import WatchedFolder
 from quill.core.podcasts.watched_folders import parse as parse_watched
-from quill.core.podcasts.watched_folders import serialise as serialise_watched
 
 _FILE_NAME = "podcasts_library.json"
+
+
+class PodcastLibraryReadError(CodedError):
+    code = "QUILL-PODCASTS-LIBRARY-READ"
 
 
 def new_id() -> str:
@@ -109,9 +114,8 @@ class PodcastLibrary:
     #: Operations live in podcasts.settings_resolver.
     scope_overrides: dict[str, dict[str, object]] = field(default_factory=dict)
     #: Free-text labels per podcast: show id -> the listener's own words for
-    #: it. A folder is one home; labels are as many as somebody likes, which is
-    #: why they -- not folders-as-a-set -- are the answer to "this show is both
-    #: news and short". Usable as a smart-playlist rule and as a tree filter.
+    #: it. Labels describe a show independently of its folder placements.
+    #: Usable as a smart-playlist rule and as a tree filter.
     show_labels: dict[str, list[str]] = field(default_factory=dict)
     #: Per-podcast check bookkeeping: show id -> ``{"checked", "failures",
     #: "published"}``. Needed the moment a podcast can have a cadence of its
@@ -126,6 +130,7 @@ class PodcastLibrary:
     #: stamp, so a tip added next year still fires for somebody who has been
     #: using Cast for a year. Operations live in podcasts.onboarding.
     onboarding: OnboardingState = field(default_factory=OnboardingState)
+    show_folder_copies: dict[str, list[str | None]] = field(default_factory=dict)
 
     def queue_episode(self, show_id: str, episode_guid: str, reason: str = "") -> bool:
         """Append an episode to the Play Queue (False when already queued).
@@ -168,25 +173,24 @@ class PodcastLibrary:
     def remove_show(self, show_id: str) -> bool:
         before = len(self.shows)
         self.shows = [s for s in self.shows if s.id != show_id]
+        if len(self.shows) != before:
+            from quill.core.podcasts.subscription_curation import clear
+
+            clear(self, {show_id})
         return len(self.shows) != before
 
     def move_show(self, show_id: str, offset: int) -> bool:
         """Move a show one place up (*offset* -1) or down (+1) among the
-        shows of its own folder -- the Move Up/Down behind the ``"custom"``
-        show sort. Shows in other folders are untouched: swapping with the
-        adjacent *sibling* keeps every folder's own custom order intact even
-        though all shows live in one flat list. Returns False at the edge."""
+        shows of its primary folder -- the Move Up/Down behind the ``"custom"``
+        show sort. A subscription's custom order is shared by its folder
+        placements; a folder without both swapped shows stays unchanged.
+        Returns False at the edge."""
         show = self.find_show(show_id)
         if show is None:
             return False
-        siblings = [s for s in self.shows if s.folder_id == show.folder_id]
-        position = siblings.index(show) + offset
-        if offset not in (-1, 1) or not 0 <= position < len(siblings):
-            return False
-        other = siblings[position]
-        i, j = self.shows.index(show), self.shows.index(other)
-        self.shows[i], self.shows[j] = self.shows[j], self.shows[i]
-        return True
+        from quill.core.podcasts.folder_membership import reorder
+
+        return reorder(self, show, offset, folder_id=show.folder_id)
 
     def add_folder(self, name: str, *, parent_folder_id: str | None = None) -> PodcastFolder:
         folder = PodcastFolder(id=new_id(), name=name, parent_folder_id=parent_folder_id)
@@ -216,8 +220,14 @@ class PodcastLibrary:
         parent_id = folder.parent_folder_id
         removed: list[PodcastShow] = []
         if contents == "remove":
-            removed = [s for s in self.shows if s.folder_id in subtree]
-            self.shows = [s for s in self.shows if s.folder_id not in subtree]
+            from quill.core.podcasts.folder_membership import placements
+
+            removed = [s for s in self.shows if any(f in subtree for f in placements(self, s))]
+            removed_ids = {show.id for show in removed}
+            self.shows = [s for s in self.shows if s.id not in removed_ids]
+            from quill.core.podcasts.subscription_curation import clear
+
+            clear(self, removed_ids)
             self.folders = [f for f in self.folders if f.id not in subtree]
         else:
             # Promote keeps the subtree's inner structure intact: only the
@@ -227,6 +237,13 @@ class PodcastLibrary:
             for show in self.shows:
                 if show.folder_id == folder_id:
                     show.folder_id = parent_id
+                extra = self.show_folder_copies.get(show.id, [])
+                extra = list(dict.fromkeys(parent_id if f == folder_id else f for f in extra))
+                extra = [f for f in extra if f != show.folder_id]
+                if extra:
+                    self.show_folder_copies[show.id] = extra
+                else:
+                    self.show_folder_copies.pop(show.id, None)
             for candidate in self.folders:
                 if candidate.parent_folder_id == folder_id:
                     candidate.parent_folder_id = parent_id
@@ -323,6 +340,26 @@ class PodcastLibrary:
         return True
 
 
+def merge_episode_metadata(current: PodcastEpisode, fetched_episode: PodcastEpisode) -> None:
+    """Refresh publisher-owned fields without replacing a listener-owned record."""
+    if current.feed_title:
+        current.feed_title = fetched_episode.title
+    else:
+        current.title = fetched_episode.title
+    current.audio_url = fetched_episode.audio_url
+    current.published = fetched_episode.published
+    current.duration_seconds = fetched_episode.duration_seconds
+    current.season = fetched_episode.season or current.season
+    current.episode_number = fetched_episode.episode_number or current.episode_number
+    current.episode_type = fetched_episode.episode_type or current.episode_type
+    current.description = fetched_episode.description
+    current.chapters_url = fetched_episode.chapters_url
+    current.transcript_url = fetched_episode.transcript_url
+    current.transcript_type = fetched_episode.transcript_type
+    if not fetched_episode.tags.is_empty:
+        current.tags = fetched_episode.tags
+
+
 def merge_episodes(
     show: PodcastShow,
     fetched: list[PodcastEpisode],
@@ -361,32 +398,7 @@ def merge_episodes(
             and fetched_episode.published > current.published
         ):
             republished.append(current.guid)
-        # A listener's rename survives the refresh (ear.md R8).
-        if current.feed_title:
-            current.feed_title = fetched_episode.title
-        else:
-            current.title = fetched_episode.title
-        current.audio_url = fetched_episode.audio_url
-        current.published = fetched_episode.published
-        current.duration_seconds = fetched_episode.duration_seconds
-        # Feed-supplied like everything around it, and only ever *upward*: a
-        # publisher who adds numbering later gets it on the next refresh, and
-        # a partial feed that stopped sending it does not un-number episodes
-        # that a sort is currently relying on.
-        current.season = fetched_episode.season or current.season
-        current.episode_number = fetched_episode.episode_number or current.episode_number
-        current.episode_type = fetched_episode.episode_type or current.episode_type
-        current.description = fetched_episode.description
-        current.chapters_url = fetched_episode.chapters_url
-        current.transcript_url = fetched_episode.transcript_url
-        current.transcript_type = fetched_episode.transcript_type
-        # Feed-supplied like everything above it: a publisher who adds a guest
-        # credit or marks a soundbite after publishing gets it on the next
-        # refresh. Never cleared by a feed that has stopped carrying them --
-        # a namespace the publisher dropped is not a reason to forget what it
-        # said, and an empty replacement is far more often a partial feed.
-        if not fetched_episode.tags.is_empty:
-            current.tags = fetched_episode.tags
+        merge_episode_metadata(current, fetched_episode)
     return new_count
 
 
@@ -394,14 +406,29 @@ def _store_path(data_dir: Path) -> Path:
     return data_dir / _FILE_NAME
 
 
-def load_library(data_dir: Path) -> PodcastLibrary:
+def library_path(data_dir: Path) -> Path:
+    """The shared library store, for launch planning and diagnostics."""
+    return _store_path(data_dir)
+
+
+def load_library(data_dir: Path, *, strict: bool = False) -> PodcastLibrary:
     """Read the saved library (an absent or broken file reads as empty)."""
     path = _store_path(data_dir)
     try:
         raw = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, ValueError):
+    except FileNotFoundError:
+        return PodcastLibrary()
+    except (OSError, ValueError) as error:
+        if strict:
+            raise PodcastLibraryReadError(
+                "The saved podcast library could not be read. It has not been replaced."
+            ) from error
         return PodcastLibrary()
     if not isinstance(raw, dict):
+        if strict:
+            raise PodcastLibraryReadError(
+                "The saved podcast library is not a library record. It has not been replaced."
+            )
         return PodcastLibrary()
     shows: list[PodcastShow] = []
     for entry in raw.get("shows", []) if isinstance(raw.get("shows"), list) else []:
@@ -498,9 +525,12 @@ def load_library(data_dir: Path) -> PodcastLibrary:
                 cleaned = [str(guid) for guid in guids if str(guid)]
                 if cleaned:
                     episode_filter_exceptions[str(show_id)] = cleaned
+    from quill.core.podcasts.folder_membership import parse as parse_folder_copies
+
     library = PodcastLibrary(
         shows=shows,
         folders=folders,
+        show_folder_copies=parse_folder_copies(raw.get("show_folder_copies")),
         settings=settings,
         queue=queue,
         inbox_folders=inbox_folders,
@@ -543,7 +573,7 @@ def _migrate_row_order(library: PodcastLibrary) -> None:
         library.extra_settings["row_order"] = "podcast_first"
 
 
-def save_library(data_dir: Path, library: PodcastLibrary) -> None:
+def save_library(data_dir: Path, library: PodcastLibrary | LibraryPayload) -> None:
     """Persist the library atomically."""
     from quill.core.persistence_outcome import guarded_write
     from quill.core.storage import write_json_atomic
@@ -554,43 +584,6 @@ def save_library(data_dir: Path, library: PodcastLibrary) -> None:
         path,
         lambda: write_json_atomic(
             path,
-            {
-                "shows": [s.to_dict() for s in library.shows],
-                "folders": [f.to_dict() for f in library.folders],
-                "settings": library.settings.to_dict(),
-                "queue": [q.to_dict() for q in library.queue],
-                "inbox_folders": [f.to_dict() for f in library.inbox_folders],
-                "inbox_assignments": dict(library.inbox_assignments),
-                "playlists": [p.to_dict() for p in library.playlists],
-                "recently_expired": [e.to_dict() for e in library.recently_expired],
-                "episode_filters": {
-                    show_id: config.to_dict() for show_id, config in library.episode_filters.items()
-                },
-                "episode_filter_reviews": dict(library.episode_filter_reviews),
-                "episode_filter_exceptions": {
-                    show_id: list(guids)
-                    for show_id, guids in library.episode_filter_exceptions.items()
-                },
-                "extra_settings": dict(library.extra_settings),
-                # Empty buckets are dropped rather than written: an override map
-                # with nothing in it is the absence of an opinion, and storing one
-                # would make "has this level said anything?" answerable two ways.
-                "scope_overrides": {
-                    scope: dict(values)
-                    for scope, values in library.scope_overrides.items()
-                    if values
-                },
-                "show_labels": {
-                    show_id: list(names) for show_id, names in library.show_labels.items() if names
-                },
-                "show_check_state": {
-                    show_id: dict(state)
-                    for show_id, state in library.show_check_state.items()
-                    if state
-                },
-                "onboarding": library.onboarding.to_dict(),
-                "last_auto_check": library.last_auto_check,
-                "watched_folders": serialise_watched(library.watched_folders),
-            },
+            library.data if isinstance(library, LibraryPayload) else serialize(library),
         ),
     )

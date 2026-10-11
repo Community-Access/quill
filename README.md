@@ -140,8 +140,8 @@ with Audio Studio adding the family's first per-app Offline Edition.
 
 ## Running from source
 
-You need **Python 3.13** on Windows (the version releases are built and
-tested against; 3.12 is the floor) or macOS.
+You need **Python 3.13** on Windows or macOS; it is the minimum supported
+version and the version releases are built and tested against.
 
 ```powershell
 # 1. Clone, then install the editor with UI and dev tooling

@@ -16,6 +16,8 @@ touching the player panel:
   ``resume`` says so.
 - ``on_finished`` fires once when playback reaches the end.
 - All calls happen on the UI thread; callbacks arrive on the UI thread.
+- Transport refusals raise ``OSError``; returning means the backend accepted
+  the request, not that an announcement alone changed the audio.
 """
 
 from __future__ import annotations
@@ -30,7 +32,11 @@ _log = logging.getLogger(__name__)
 
 
 class AudioEngine(Protocol):
-    """What the player panel needs from a playback backend."""
+    """What the player panel needs from a playback backend.
+
+    ``close`` unloads media and permits a subsequent ``load``. Backends with
+    native resources may additionally expose ``terminate`` for final shutdown.
+    """
 
     def load(self, path: str) -> bool: ...
 
@@ -107,12 +113,12 @@ class WxMediaEngine:
         self._loaded = False
 
     def play(self) -> None:
-        if self._loaded:
-            self._media.Play()
+        if not self._loaded or not self._media.Play():
+            raise OSError("Windows Media could not start playback.")
 
     def pause(self) -> None:
-        if self._loaded:
-            self._media.Pause()
+        if not self._loaded or not self._media.Pause():
+            raise OSError("Windows Media could not pause playback.")
 
     def stop(self) -> None:
         if self._loaded:
@@ -126,9 +132,9 @@ class WxMediaEngine:
         self._media.Seek(max(0, int(ms)))
         should_play = was_playing if resume is None else resume
         if should_play:
-            self._media.Play()
+            self.play()
         else:
-            self._media.Pause()
+            self.pause()
 
     def position_ms(self) -> int:
         try:

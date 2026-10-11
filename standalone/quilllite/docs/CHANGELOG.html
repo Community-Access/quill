@@ -243,7 +243,57 @@
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content" tabindex="-1">
 <h1 id="quill-lite-changelog">QUILL Lite changelog</h1>
+<h2 id="unreleased">Unreleased</h2>
+<p>Testing rebuild: <strong>1.2.0 (build 3)</strong>, following the
+previously uploaded build 2. The new packages have not been published
+yet.</p>
+<ul>
+<li><strong>Routine settings saves run in the background.</strong>
+Preferences, recent files, window/view settings, spelling, page setup,
+recovery-related settings and update choices queue detached settings
+snapshots on one ordered writer. Pending requests keep the latest
+settings; failures remain visible in Activity with Retry and Open
+Folder. Shutdown waits for queued settings writes; this is not a promise
+that every shutdown path is nonblocking.</li>
+<li><strong>HTTPS uses the Windows certificate store.</strong> Python
+HTTPS requests use trusted Windows and organization-managed roots
+without turning off hostname or certificate verification. Genuinely
+invalid certificates still fail. Portable packaging checks that the
+declared certificate-store backend is included.</li>
+<li><strong>The installer is current-user only.</strong> It no longer
+offers an all-users install that requires administrator approval; QUILL
+Lite and the shared runtime go in your Windows profile.</li>
+<li><strong>Transcription results can be reopened from
+Notifications.</strong> QUILL Lite saves each completed transcript
+privately and adds a completion notice that opens it on activation. The
+transcript stays separate from the document you were editing.</li>
+<li><strong>Transcription model availability is prepared in the
+background.</strong> The recording dialog no longer performs its
+potentially slow model inspection while constructing the window. Cloud
+choices still require a usable key, remain unavailable in Safe Mode, and
+are never selected automatically.</li>
+<li><strong>Build 2’s local-audio fix is retained.</strong> The real
+cancellation-token state is checked for every supported engine, and
+Windows Media Foundation can supply duration when the other metadata
+readers cannot. The initial 1.2.0 workflow below opened results
+immediately; build 3 uses the saved Notifications workflow above.</li>
+</ul>
 <h2 id="120--2026-10-03">1.2.0 – 2026-10-03</h2>
+<h3 id="local-audio-transcription">Local audio transcription</h3>
+<ul>
+<li>Fixed the shared background transcription runner so it checks the
+cancellation token’s state instead of treating the check method as a
+truthy value. Local Whisper, Parakeet, and other supported engines can
+now return their transcript.</li>
+<li>Added a Windows Media Foundation fallback for reading audio duration
+when the other metadata readers cannot determine it, so the
+recording-length and estimated-time details can be shown for supported
+files Windows can read.</li>
+<li>Completed transcripts open in a new document. The destination picker
+is no longer present. In the 1.2.0 release, results were not yet saved
+for on-demand opening from Notifications; the later follow-up is
+recorded under Unreleased above.</li>
+</ul>
 <h3
 id="dictation-gap-plan-read-back-marks-voice-editing-live-transcripts-dictate-anywhere-2026-10-05">Dictation
 gap plan: read-back marks, voice editing, live transcripts, Dictate
@@ -351,10 +401,11 @@ Browse with several at once, or dropped), the language, the speech model
 local one chosen (<code>file_models.py</code>: Parakeet TDT, Parakeet
 Unified, Nemotron, the Whisper family large to small, then the built-in
 two), OpenAI’s file models added live for a saved key outside Safe Mode
-and never preselected – an estimate from the measured speeds, where the
-text goes (a new document, or the cursor when it finishes), Add
+and never preselected – an estimate from the measured speeds, Add
 timestamps (off unless checked), and Obey spoken punctuation and
-commands (off: “new paragraph” in a recording is words).</li>
+commands (off: “new paragraph” in a recording is words). There is no
+destination picker; the completed transcript opens in a new
+document.</li>
 <li><strong>The pipeline</strong> (<code>file_transcribe.py</code>), on
 the task manager: decode to 16 kHz mono a second at a time
 (<code>audio_file.py</code>: libsndfile for WAV, FLAC, Ogg, Opus and

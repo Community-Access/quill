@@ -77,6 +77,7 @@ class FolderPickerDialog:
         *,
         library: PodcastLibrary | None = None,
         title: str = "Move to Folder",
+        action_label: str = "&Move Here",
         scope: str = "library",
         folders_provider: Callable[[], list] | None = None,
         create_folder: Callable[[str, str | None], object] | None = None,
@@ -89,6 +90,7 @@ class FolderPickerDialog:
         import wx
 
         self._wx = wx
+        self._purpose = "Copy to Folder" if action_label.startswith("&Copy") else "Move to Folder"
         self._library = library
         self._scope = scope if scope in _TOP_LEVEL_LABELS else "library"
         # Generic mode (e.g. Radio favorites): the caller supplies the folder
@@ -127,8 +129,8 @@ class FolderPickerDialog:
             style=wx.TR_DEFAULT_STYLE | wx.TR_LINES_AT_ROOT | wx.TR_SINGLE,
         )
         self._tree.SetHelpText(
-            "Your podcast folders. Choose the one to move into and press Move "
-            "Here; New Folder creates one inside whatever is selected."
+            "Your podcast folders. Choose the destination and press Move Here "
+            "or Copy Here; New Folder creates one inside whatever is selected."
         )
         root.Add(tree_label, 0, wx.LEFT | wx.RIGHT, 10)
         root.Add(self._tree, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
@@ -144,7 +146,7 @@ class FolderPickerDialog:
             "Delete the selected folder; whatever is inside moves up to its parent"
         )
         self._delete_btn.Enable(False)
-        move_btn = wx.Button(self.dialog, wx.ID_OK, label="&Move Here")
+        move_btn = wx.Button(self.dialog, wx.ID_OK, label=action_label)
         move_btn.SetDefault()
         cancel_btn = wx.Button(self.dialog, wx.ID_CANCEL, label="Cancel")
         btn_row.Add(new_folder_btn, 0, wx.RIGHT, 6)
@@ -180,7 +182,7 @@ class FolderPickerDialog:
         self.dialog.CentreOnParent()
         apply_modal_ids(self.dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
         try:
-            outcome = show_modal_dialog(self.dialog, "Move to Folder", announce=self._announce)
+            outcome = show_modal_dialog(self.dialog, self._purpose, announce=self._announce)
             if outcome == wx.ID_OK and not self._result.confirmed:
                 # The default OK button ended the modal directly (Enter from
                 # the search field or the tree); adopt the tree selection.

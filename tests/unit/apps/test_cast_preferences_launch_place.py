@@ -17,7 +17,7 @@ import pytest
 from quill.apps.podcasts_preferences import CastPreferencesMixin, app_rows
 from quill.core.podcasts import launch_place, settings_catalog
 from quill.core.podcasts.subscriptions import PodcastLibrary
-from quill.ui.podcasts.preferences_window import section_of
+from quill.ui.podcasts.preferences_window import CastPreferencesWindow, section_of
 
 
 class _FakeWindow:
@@ -41,18 +41,29 @@ def host(monkeypatch: pytest.MonkeyPatch, tmp_path) -> SimpleNamespace:
     monkeypatch.setattr(window_module, "CastPreferencesWindow", _FakeWindow)
     monkeypatch.setattr(podcast_history, "save_history", lambda *_a, **_k: None)
     monkeypatch.setattr("quill.core.paths.app_data_dir", lambda: tmp_path)
+    requests = []
+
+    def submit(_host, _step, work, **options):
+        request = SimpleNamespace(work=work, options=options)
+        requests.append(request)
+        return request
+
+    monkeypatch.setattr("quill.ui.podcasts.record_tasks.submit", submit)
     library = PodcastLibrary()
     saved: list[str] = []
     spoken: list[str] = []
+    refreshed: list[bool] = []
     obj = SimpleNamespace(
         frame=SimpleNamespace(GetMenuBar=lambda: None),
         _podcast_history=SimpleNamespace(resume_on_launch=False),
         _podcast_library=library,
         _announce=spoken.append,
         _save_podcast_library=lambda: saved.append(library.settings.default_launch_view),
-        _refresh_place=lambda **_k: None,
+        _refresh_place=lambda **kwargs: refreshed.append(kwargs["keep"]),
         saved=saved,
         spoken=spoken,
+        refreshed=refreshed,
+        requests=requests,
     )
     obj.open = lambda: CastPreferencesMixin._open_preferences(obj)
     return obj
@@ -79,20 +90,52 @@ def test_choosing_a_place_saves_it_on_the_library(host) -> None:
     host.open()
     assert host._podcast_library.settings.default_launch_view == "inbox"
     assert host.saved == ["inbox"]
-    assert host.spoken[-1].startswith("Preferences saved")
+    assert host.refreshed == []
+    assert host.spoken[-1].startswith("Preferences applied")
+    assert host._podcast_save_success_message == "Podcast defaults saved."
 
 
 def test_leaving_it_alone_does_not_rewrite_the_library(host) -> None:
     _FakeWindow.answer = ({}, {})
     host.open()
     assert host.saved == []
+    assert host.refreshed == []
     assert host.spoken[-1] == "Preferences closed; nothing changed."
+
+
+def test_history_preferences_refresh_the_view_only_when_visibility_changes(
+    host, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _FakeWindow.answer = ({"resume_on_launch": True}, {})
+    host.open()
+    assert host.refreshed == []
+
+    import quill.core.podcasts.history as podcast_history
+
+    monkeypatch.setattr(podcast_history, "save_history", lambda *_a, **_k: None)
+    _FakeWindow.answer = ({"hide_caught_up": True}, {})
+    host.open()
+    assert host.refreshed == [True]
 
 
 def test_cancel_changes_nothing(host) -> None:
     _FakeWindow.answer = None
     host.open()
     assert host.saved == [] and host.spoken == []
+
+
+def test_changing_preferences_section_does_not_announce_a_settings_count() -> None:
+    announced: list[str] = []
+    window = SimpleNamespace(
+        _built=[object(), object()],
+        _announce=announced.append,
+        _remember=lambda: None,
+        _fill=lambda: None,
+    )
+
+    CastPreferencesWindow._on_section(window)
+
+    assert announced == []
 
 
 def test_every_app_row_has_a_section_and_help_that_says_what_it_does_not_do() -> None:
@@ -104,3 +147,41 @@ def test_every_app_row_has_a_section_and_help_that_says_what_it_does_not_do() ->
         assert row.section in sections, row.key
         lowered = row.help.lower()
         assert any(word in lowered for word in ("not", "never", "nothing", "off")), row.key
+
+
+def test_start_with_windows_is_machine_local_and_disabled_for_portable(
+    monkeypatch, tmp_path
+) -> None:
+    from quill.platform.windows import cast_startup
+
+    monkeypatch.setattr(cast_startup, "is_windows", lambda: True)
+    monkeypatch.setattr(cast_startup, "running_portable", lambda: True)
+    row = next(row for row in app_rows(SimpleNamespace()) if row.key == "launch_at_startup")
+
+    assert row.kind == "machine_bool"
+    assert row.value is False
+    assert row.enabled is False
+    assert "portable copy" in row.help
+
+
+def test_saving_windows_startup_does_not_store_it_in_library_or_history(host, monkeypatch) -> None:
+    from quill.platform.windows import cast_startup
+
+    monkeypatch.setattr(cast_startup, "is_windows", lambda: True)
+    monkeypatch.setattr(cast_startup, "running_portable", lambda: False)
+    state = [False]
+
+    def set_startup(value: bool) -> None:
+        writes.append(value)
+        state[0] = value
+
+    monkeypatch.setattr(cast_startup, "is_launch_at_startup_enabled", lambda: state[0])
+    writes: list[bool] = []
+    monkeypatch.setattr(cast_startup, "set_launch_at_startup", set_startup)
+    _FakeWindow.answer = ({"launch_at_startup": True}, {})
+
+    host.open()
+
+    assert writes == [True]
+    assert host.saved == []
+    assert host.spoken[-1] == "Preferences saved: 1 change. QUILL Cast will start with Windows."

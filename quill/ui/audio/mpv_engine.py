@@ -148,10 +148,20 @@ class _MpvClient:
             ("terminal", "no"),
             ("input-default-bindings", "no"),
             ("osc", "no"),
+            ("load-scripts", "no"),
+            ("load-stats-overlay", "no"),
+            ("load-console", "no"),
+            ("load-auto-profiles", "no"),
+            ("load-select", "no"),
+            ("load-positioning", "no"),
+            ("load-commands", "no"),
+            ("load-context-menu", "no"),
             ("idle", "yes"),
             ("keep-open", "yes"),
         ):
-            lib.mpv_set_option_string(self._handle, option.encode(), value.encode())
+            status = lib.mpv_set_option_string(self._handle, option.encode(), value.encode())
+            if status < 0:
+                _log.warning("libmpv did not accept embedded-player option %s", option)
         if lib.mpv_initialize(self._handle) < 0:
             lib.mpv_terminate_destroy(self._handle)
             raise OSError("mpv_initialize failed")
@@ -162,15 +172,23 @@ class _MpvClient:
             self._handle = ctypes.c_void_p(None)
 
     def command(self, *args: str) -> None:
+        if not self._handle:
+            raise OSError("The mpv client is no longer available.")
         encoded = [a.encode("utf-8") for a in args]
         array = (ctypes.c_char_p * (len(encoded) + 1))(*encoded, None)
-        self._lib.mpv_command(self._handle, array)
+        status = int(self._lib.mpv_command(self._handle, array))
+        if status < 0:
+            raise OSError(f"mpv rejected an audio command (status {status}).")
 
     def set_str(self, name: str, value: str) -> int:
         """Set a property; the mpv status (0 on success, negative on refusal)."""
+        if not self._handle:
+            raise OSError("The mpv client is no longer available.")
         return int(self._lib.mpv_set_property_string(self._handle, name.encode(), value.encode()))
 
     def get_double(self, name: str) -> float | None:
+        if not self._handle:
+            raise OSError("The mpv client is no longer available.")
         out = ctypes.c_double(0.0)
         status = self._lib.mpv_get_property(
             self._handle, name.encode(), _MPV_FORMAT_DOUBLE, ctypes.byref(out)
@@ -178,6 +196,8 @@ class _MpvClient:
         return float(out.value) if status >= 0 else None
 
     def get_flag(self, name: str) -> bool | None:
+        if not self._handle:
+            raise OSError("The mpv client is no longer available.")
         out = ctypes.c_int(0)
         status = self._lib.mpv_get_property(
             self._handle, name.encode(), _MPV_FORMAT_FLAG, ctypes.byref(out)
@@ -190,6 +210,8 @@ class _MpvClient:
         The returned C string is owned by libmpv and must be released with
         ``mpv_free`` -- copied out before freeing.
         """
+        if not self._handle:
+            raise OSError("The mpv client is no longer available.")
         out = ctypes.c_char_p(None)
         status = self._lib.mpv_get_property(
             self._handle, name.encode(), _MPV_FORMAT_STRING, ctypes.byref(out)
@@ -219,6 +241,8 @@ class MpvAudioEngine:
         dll_path: Path | None = None,
         audio_device: str = "",
     ) -> None:
+        self._parent = parent
+        self._parent_id = parent.GetId()
         path = dll_path or find_libmpv()
         if path is None:
             raise OSError("libmpv is not installed")
@@ -230,6 +254,7 @@ class MpvAudioEngine:
         self._on_finished = on_finished
         self._on_error = on_error
         self._loaded = False
+        self._terminated = False
         self._eof_fired = False
         self._length_ms = 0
         self._timer = wx.Timer(parent)
@@ -243,7 +268,7 @@ class MpvAudioEngine:
         self._eof_fired = False
         self._length_ms = 0
         try:
-            self._mpv.set_str("pause", "yes")
+            self._set_pause(True)
             self._mpv.command("loadfile", path, "replace")
         except Exception:  # noqa: BLE001 - a bad file must not crash the studio
             _log.exception("mpv loadfile failed")
@@ -253,24 +278,43 @@ class MpvAudioEngine:
         return True
 
     def close(self) -> None:
-        try:
-            self._timer.Stop()
-        except Exception:  # noqa: BLE001
-            pass
+        self._stop_timer()
+        self._loaded = False
+        if not self._terminated:
+            self._mpv.command("stop")
+
+    def terminate(self) -> None:
+        if self._terminated:
+            return
+        self._terminated = True
+        self._stop_timer()
         self._loaded = False
         self._mpv.close()
 
+    def _stop_timer(self) -> None:
+        try:
+            self._timer.Stop()
+        except RuntimeError:
+            _log.exception("The mpv polling timer was already destroyed")
+
+    def _set_pause(self, paused: bool) -> None:
+        status = self._mpv.set_str("pause", "yes" if paused else "no")
+        if status < 0:
+            raise OSError(f"mpv rejected a playback change (status {status}).")
+
     def play(self) -> None:
-        if self._loaded:
-            self._mpv.set_str("pause", "no")
+        if not self._loaded:
+            raise OSError("There is no loaded mpv audio to play.")
+        self._set_pause(False)
 
     def pause(self) -> None:
-        if self._loaded:
-            self._mpv.set_str("pause", "yes")
+        if not self._loaded:
+            raise OSError("There is no loaded mpv audio to pause.")
+        self._set_pause(True)
 
     def stop(self) -> None:
         if self._loaded:
-            self._mpv.set_str("pause", "yes")
+            self._set_pause(True)
             self.seek(0, resume=False)
 
     def seek(self, ms: int, *, resume: bool | None = None) -> None:
@@ -280,7 +324,7 @@ class MpvAudioEngine:
         self._eof_fired = False
         self._mpv.command("seek", f"{max(0, int(ms)) / 1000.0:.3f}", "absolute+exact")
         should_play = was_playing if resume is None else resume
-        self._mpv.set_str("pause", "no" if should_play else "yes")
+        self._set_pause(not should_play)
 
     def position_ms(self) -> int:
         if not self._loaded:
@@ -339,13 +383,15 @@ class MpvAudioEngine:
     # -- polling ---------------------------------------------------------------
 
     def _on_poll(self, _evt: wx.TimerEvent) -> None:
+        if self._terminated:
+            return
         try:
             if not self._loaded:
                 duration = self._mpv.get_double("duration")
                 if duration is not None and duration > 0:
                     self._loaded = True
                     self._length_ms = int(duration * 1000)
-                    self._mpv.set_str("pause", "yes")
+                    self._set_pause(True)
                     self._on_loaded(self._length_ms)
                 return
             if not self._eof_fired and self._mpv.get_flag("eof-reached"):
@@ -353,8 +399,13 @@ class MpvAudioEngine:
                 self._on_finished()
         except Exception:  # noqa: BLE001 - polling must never take the app down
             _log.exception("mpv poll failed")
-            self._timer.Stop()
+            self._stop_timer()
+            self._on_error("The audio engine could not continue playback.")
 
     def _on_parent_destroyed(self, evt: wx.WindowDestroyEvent) -> None:
+        from quill.ui.surface_lifetime import destroy_event_matches
+
         evt.Skip()
-        self.close()
+        if not destroy_event_matches(evt, self._parent, self._parent_id):
+            return
+        self.terminate()

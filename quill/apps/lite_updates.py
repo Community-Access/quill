@@ -265,7 +265,7 @@ class DocumentUpdatesMixin:
     def cmd_check_updates(self) -> None:
         """Help > Check for Updates... -- the family key, Ctrl+Alt+U."""
         self.app.settings.last_update_check = datetime.now(UTC).isoformat()
-        self.app.save_settings()
+        self.app._queue_settings_save()
         check_for_updates(self)
 
     def cmd_release_channel(self) -> None:

@@ -15,6 +15,7 @@ wx-free, strict-typed.
 
 from __future__ import annotations
 
+from collections.abc import Iterator
 from datetime import UTC, datetime, timedelta
 
 from quill.core.podcasts.models import PodcastEpisode, PodcastFolder, PodcastShow
@@ -183,6 +184,11 @@ def inbox_pairs(library: PodcastLibrary) -> list[tuple[PodcastShow, PodcastEpiso
     (which stays unplayed in its show's own list -- see :func:`trim_inbox`),
     minus anything that show's own Episode Filter rejects while its Inbox
     scope is on (which likewise stays exactly where it was)."""
+    return list(iter_inbox_pairs(library))
+
+
+def iter_inbox_pairs(library: PodcastLibrary) -> Iterator[tuple[PodcastShow, PodcastEpisode]]:
+    """The same Inbox membership without allocating its entire episode list."""
     # Episode Filters (see core/podcasts/episode_filter_maintenance.py) are
     # asked here rather than stamped onto an episode when it arrived, which is
     # what lets somebody uncheck the Inbox scope and have the episodes back on
@@ -191,7 +197,6 @@ def inbox_pairs(library: PodcastLibrary) -> list[tuple[PodcastShow, PodcastEpiso
     # -- almost all of them -- pays a single dict lookup each.
     from quill.core.podcasts.episode_filter_maintenance import hide_predicate
 
-    pairs: list[tuple[PodcastShow, PodcastEpisode]] = []
     for show in library.shows:
         if not in_inbox(library, show):
             continue
@@ -206,8 +211,7 @@ def inbox_pairs(library: PodcastLibrary) -> list[tuple[PodcastShow, PodcastEpiso
                 continue
             if hidden is not None and hidden(episode):
                 continue
-            pairs.append((show, episode))
-    return pairs
+            yield show, episode
 
 
 def inbox_pairs_in_folder(

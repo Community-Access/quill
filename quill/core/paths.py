@@ -23,7 +23,7 @@ def _is_constrained_to_home(candidate: Path) -> bool:
     ``Path.resolve()`` follows symlinks, so a malicious
     ``QUILL_DATA_DIR=/home/user/.config/Quill`` that is a symlink into
     ``/etc`` will fail the check. ``is_relative_to`` is new in Python 3.9
-    and QUILL's PRD pins 3.12.
+    and QUILL's PRD pins 3.13.
     """
     try:
         home = Path.home().resolve()

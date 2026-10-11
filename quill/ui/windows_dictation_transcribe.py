@@ -6,11 +6,13 @@ and QUILL reaches it on the same key (Shift+F5) through its adapter, which
 answers two hooks and has no command of its own.
 
 **What happens.** The window (:mod:`quill.ui.dictation_transcribe_dialog`)
-asks for the recording, the model, the language and where the text goes. The
-work runs on the editor's task manager -- never on the interface thread -- in
+asks for the recording, model, language and transcription options. The work
+runs on the editor's task manager -- never on the interface thread -- in
 :class:`~quill.core.windows_dictation.file_transcribe.FileTranscriber`, so the
 person keeps editing while it runs. Several recordings wait their turn and run
-one after another.
+one after another. Progress and outcomes are retained in Notifications. A
+successful transcript is saved privately and opened only when its notice is
+activated.
 
 **What is heard** (GATE-13: only what the screen reader cannot know):
 
@@ -35,9 +37,11 @@ from __future__ import annotations
 import itertools
 import threading
 from collections.abc import Callable
+from concurrent.futures import Future, ThreadPoolExecutor
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
+from uuid import uuid4
 
 import wx
 
@@ -56,6 +60,10 @@ class _Entry:
     cancel: threading.Event = field(default_factory=threading.Event)
     operation: str = ""
     percent: int = 0
+    notice_id: str = ""
+    notified_percent: int = 0
+    notice_error: str = ""
+    notice_future: Future[bool] | None = None
 
 
 @dataclass
@@ -76,7 +84,19 @@ class _Queue:
         return text
 
 
+class _TranscriptPersistenceError(Exception):
+    """Transcription succeeded, but its saved transcript could not be recorded."""
+
+
 _QUEUE = _Queue()
+_NOTICE_WRITER = ThreadPoolExecutor(max_workers=1, thread_name_prefix="quill-transcription-notices")
+
+
+@dataclass(frozen=True, slots=True)
+class _Result:
+    transcript: Any = None
+    error: BaseException | None = None
+    notice_error: str = ""
 
 
 def queue_text() -> str:
@@ -101,15 +121,6 @@ class DictationTranscribeMixin:
                 app.task_manager = manager
         return manager
 
-    def _dictation_new_document(self, text: str, name: str) -> None:
-        """Open *text* as a new untitled document (QUILL Lite: a new window)."""
-        app = self.app  # type: ignore[attr-defined]
-        window = app.new_window(app.settings.default_mode)
-        window.control.SetValue(text)
-        window.control.SetInsertionPoint(0)
-        window._set_modified(True)
-        window._touch_status()
-
     # -- the command ----------------------------------------------------------- #
 
     def cmd_transcribe_audio_file(self, paths: list[Path] | None = None) -> None:
@@ -133,8 +144,15 @@ class DictationTranscribeMixin:
             return
         if choice is None:
             return
-        if choice.model.cloud and not self._transcribe_consent():
-            return
+        if choice.model.cloud:
+            from quill.core.windows_dictation.openai_models import cloud_problem
+
+            problem = cloud_problem()
+            if problem:
+                self._dictation_say(problem)  # type: ignore[attr-defined]
+                return
+            if not self._transcribe_consent():
+                return
         from quill.core.windows_dictation.file_transcribe import FileJob
 
         keywords: tuple[str, ...] = ()
@@ -149,10 +167,17 @@ class DictationTranscribeMixin:
                 obey_commands=choice.obey_commands,
                 remove_fillers=preferences.remove_fillers,
                 dash=preferences.dash,
-                destination=choice.destination,
                 keywords=keywords,
             )
-            _QUEUE.waiting.append(_Entry(job, self, preferences.rewrite))
+            entry = _Entry(job, self, preferences.rewrite)
+            _QUEUE.waiting.append(entry)
+            _queue_notice(
+                entry,
+                title=f"Transcription queued: {path.name}",
+                body="Waiting for the recordings ahead of it.",
+                category="progress",
+                create=True,
+            )
         if _QUEUE.current is not None:
             count = len(_QUEUE.waiting)
             self._dictation_say(  # type: ignore[attr-defined]
@@ -184,55 +209,156 @@ class DictationTranscribeMixin:
             return ()
 
     def _transcribe_stop(self) -> None:
-        waiting = len(_QUEUE.waiting)
+        waiting = list(_QUEUE.waiting)
         _QUEUE.waiting.clear()
         current = _QUEUE.current
+        for entry in waiting:
+            _cancel_notice(entry)
         if current is None:
             self._dictation_say("Nothing is being transcribed.")  # type: ignore[attr-defined]
             return
         current.cancel.set()
-        plural = "s" if waiting != 1 else ""
-        extra = f", and {waiting} waiting recording{plural} forgotten" if waiting else ""
+        plural = "s" if len(waiting) != 1 else ""
+        extra = f", and {len(waiting)} waiting recording{plural} canceled" if waiting else ""
         self._dictation_say(f"Stopping the transcription of {current.job.path.name}{extra}.")  # type: ignore[attr-defined]
 
-    def _transcribe_deliver(self, text: str, job: Any) -> str:
-        """Put *text* where *job* asked; returns where it went, for the sentence."""
-        name = Path(job.path).stem
-        if job.destination == "cursor":
-            reason = self._transcribe_cursor_problem()
-            if not reason:
-                self._transcribe_insert(text)
-                return "at the cursor"
-            self._dictation_new_document(text, name)
-            return f"in a new document, because {reason}"
-        self._dictation_new_document(text, name)
-        return "in a new document"
+    def _dictation_data_dir(self) -> Path:
+        app = getattr(self, "app", None)
+        if getattr(app, "frames", None) is not None:
+            app_data = getattr(app, "data_dir", None)
+            if app_data is not None:
+                return Path(app_data)
+            from quill.core.lite.paths import data_dir
 
-    def _transcribe_cursor_problem(self) -> str:
+            return data_dir()
+        from quill.core.paths import app_data_dir
+
+        return app_data_dir()
+
+    def _dictation_notification_path(self) -> Path:
+        from quill.core.notifications import notifications_path
+
+        return notifications_path(self._dictation_data_dir())
+
+    def _dictation_app_name(self) -> str:
+        if getattr(getattr(self, "app", None), "frames", None) is not None:
+            from quill.core.lite import APP_NAME
+
+            return APP_NAME
+        return "QUILL"
+
+    def _dictation_open_transcript(self, path: Path) -> None:
+        self._dictation_open_file(path)  # type: ignore[attr-defined]
+
+    def open_dictation_notifications(self) -> None:
+        from quill.ui.notification_center import open_notification_center
+
+        open_notification_center(
+            self,
+            on_open=self.open_notification_target,
+            path=self._dictation_notification_path(),
+        )
+
+    def open_notification_target(self, target: str) -> None:
+        """Open a saved dictation transcript only after its notice is activated."""
+        prefix = "dictation-transcript:"
+        target = str(target)
+        identifier = target[len(prefix) :].lower() if target.startswith(prefix) else ""
+        if len(identifier) != 32 or any(
+            char not in "0123456789abcdef" for char in identifier.lower()
+        ):
+            self._dictation_say("This notification has no transcript to open.")  # type: ignore[attr-defined]
+            return
+        path = self._dictation_data_dir() / "dictation" / "transcripts" / f"{identifier}.txt"
+        if not path.is_file():
+            self._dictation_say("That transcript is no longer available.")  # type: ignore[attr-defined]
+            return
+        self._dictation_open_transcript(path)
+
+    def _dictation_save_transcript(self, text: str) -> str:
+        from quill.core.storage import write_text_atomic
+
+        identifier = uuid4().hex
+        path = self._dictation_data_dir() / "dictation" / "transcripts" / f"{identifier}.txt"
         try:
-            control = self._dictation_control()  # type: ignore[attr-defined]
-            if not control:
-                return "the document it was meant for has been closed"
-            if not control.IsEditable():
-                return "that document is read-only"
-        except Exception:  # noqa: BLE001 - a window that has gone away
-            return "the document it was meant for has been closed"
-        return ""
+            write_text_atomic(path, text, encoding="utf-8", newline="")
+        except Exception as error:
+            raise _TranscriptPersistenceError(str(error)) from error
+        return identifier
 
-    def _transcribe_insert(self, text: str) -> None:
-        """The transcript at the cursor, as paragraphs of its own, in one undo step."""
-        from quill.ui.atomic_edit import replace_as_one_undo
 
-        control = self._dictation_control()  # type: ignore[attr-defined]
-        start, end = (int(value) for value in control.GetSelection())
-        before = control.GetRange(max(0, start - 1), start)
-        after = control.GetRange(end, min(end + 1, control.GetLastPosition()))
-        if before and before not in "\r\n":
-            text = "\n\n" + text
-        if after and after not in "\r\n":
-            text += "\n\n"
-        replace_as_one_undo(control, start, end, text)
-        self._dictation_after_edit()  # type: ignore[attr-defined]
+def _queue_notice(
+    entry: _Entry,
+    *,
+    title: str,
+    body: str,
+    category: str,
+    target: str = "",
+    create: bool = False,
+) -> Future[bool]:
+    """Serialize notification-store I/O on a worker, never on the UI event path."""
+
+    def write() -> bool:
+        try:
+            from quill.core.notifications import add_notice, update_notice
+
+            path = entry.host._dictation_notification_path()
+            if create or not entry.notice_id:
+                notices = add_notice(
+                    app=entry.host._dictation_app_name(),
+                    title=title,
+                    body=body,
+                    target=target,
+                    category=category,
+                    path=path,
+                )
+                if not notices:
+                    raise OSError("The notification was not saved.")
+                entry.notice_id = notices[-1].id
+            elif not entry.notice_id or not update_notice(
+                entry.notice_id,
+                title=title,
+                body=body,
+                target=target,
+                category=category,
+                path=path,
+            ):
+                raise OSError("The notification is no longer available.")
+            entry.notice_error = ""
+            return True
+        except Exception as error:  # noqa: BLE001 - notification failure is separate from transcription
+            entry.notice_error = f"{type(error).__name__}: notification could not be saved."
+            return False
+
+    try:
+        future = _NOTICE_WRITER.submit(write)
+    except RuntimeError:
+        entry.notice_error = "RuntimeError: notification could not be saved."
+        future = Future()
+        future.set_result(False)
+    entry.notice_future = future
+    return future
+
+
+def _cancel_notice(entry: _Entry) -> None:
+    future = _queue_notice(
+        entry,
+        title=f"Transcription canceled: {entry.job.path.name}",
+        body="Canceled before it started.",
+        category="warning",
+        create=entry.notice_future is None,
+    )
+
+    def report_failure(done: Future[bool]) -> None:
+        if done.result():
+            return
+        wx.CallAfter(
+            entry.host._dictation_say,
+            f"The canceled transcription of {entry.job.path.name} could not be kept "
+            f"in Notifications. {entry.notice_error}",
+        )
+
+    future.add_done_callback(report_failure)
 
 
 def _start_next() -> None:
@@ -257,15 +383,92 @@ def _start_next() -> None:
     from quill.core.windows_dictation.file_transcribe import FileTranscriber
 
     def work(cancellation_token: Any = None, progress_callback: Any = None, **_kwargs: Any) -> Any:
+        if entry.notice_future is None:
+            _queue_notice(
+                entry,
+                title=f"Transcription queued: {name}",
+                body="Waiting to start.",
+                category="progress",
+                create=True,
+            )
+        _queue_notice(
+            entry,
+            title=f"Transcribing: {name}",
+            body="Transcription is running.",
+            category="progress",
+        )
+
         def cancelled() -> bool:
-            token_says = bool(cancellation_token is not None and cancellation_token.is_cancelled)
+            token_says = bool(cancellation_token is not None and cancellation_token.is_cancelled())
             return entry.cancel.is_set() or token_says
 
         def progress(fraction: float | None, seconds: float) -> None:
+            if fraction is not None:
+                percent = int(fraction * 100)
+                if percent >= entry.notified_percent + 25 and percent < 100:
+                    entry.notified_percent = percent - (percent % 25)
+                    _queue_notice(
+                        entry,
+                        title=f"Transcribing: {name}",
+                        body=f"{entry.notified_percent} percent complete.",
+                        category="progress",
+                    )
             if progress_callback is not None:
                 progress_callback((fraction, seconds))
 
-        return FileTranscriber(entry.job, rewrite=entry.rewrite).run(progress, cancelled)
+        from quill.core.windows_dictation.file_transcribe import (
+            TranscriptionCancelled,
+            done_sentence,
+            plain,
+        )
+
+        try:
+            transcript = FileTranscriber(entry.job, rewrite=entry.rewrite).run(progress, cancelled)
+            if entry.cancel.is_set():
+                raise TranscriptionCancelled("Transcription stopped.")
+        except Exception as error:  # noqa: BLE001 - persist terminal state without failing the worker
+            canceled = isinstance(error, TranscriptionCancelled)
+            notice_saved = _queue_notice(
+                entry,
+                title=f"Transcription {'canceled' if canceled else 'failed'}: {name}",
+                body=plain(error),
+                category="warning" if canceled else "error",
+            ).result()
+            return _Result(error=error, notice_error="" if notice_saved else entry.notice_error)
+
+        text = transcript.text(entry.job.timestamps)
+        sentence = done_sentence(name, transcript)
+        transcript_id = ""
+        storage_error: BaseException | None = None
+        if text.strip():
+            try:
+                transcript_id = host._dictation_save_transcript(text)
+            except Exception as error:  # noqa: BLE001 - transcription succeeded; delivery did not
+                storage_error = error
+        if transcript.notice:
+            sentence += " " + transcript.notice
+        if storage_error is not None:
+            title = f"Transcript could not be saved: {name}"
+            body = f"{sentence} The transcript could not be saved privately."
+            target = ""
+            category = "error"
+        else:
+            title = f"Transcription complete: {name}"
+            body = sentence
+            target = f"dictation-transcript:{transcript_id}" if transcript_id else ""
+            category = "success"
+        notice_saved = _queue_notice(
+            entry,
+            title=title,
+            body=body,
+            target=target,
+            category=category,
+        ).result()
+        return _Result(
+            transcript=transcript,
+            error=storage_error,
+            notice_error="" if notice_saved else entry.notice_error,
+        )
 
     def on_progress(_operation: str, payload: Any) -> None:
         fraction, seconds = payload
@@ -299,7 +502,7 @@ def _start_next() -> None:
 
 
 def _finish(entry: _Entry, transcript: Any, error: BaseException | None) -> None:
-    """Deliver or report one recording, then start the next."""
+    """Report one recording without opening or changing an editor."""
     from quill.core import activity
     from quill.core.sound_events import SoundEvent
     from quill.core.windows_dictation.file_transcribe import (
@@ -314,32 +517,76 @@ def _finish(entry: _Entry, transcript: Any, error: BaseException | None) -> None
     host = entry.host
     name = entry.job.path.name
     host._dictation_status("")
+    has_worker_result = isinstance(transcript, _Result)
+    result = transcript if has_worker_result else _Result(transcript, error)
+    transcript = result.transcript
+    error = result.error
     if isinstance(error, TranscriptionCancelled):
+        if not has_worker_result:
+            _report_notice_failure(
+                entry,
+                _queue_notice(
+                    entry,
+                    title=f"Transcription canceled: {name}",
+                    body="Transcription stopped.",
+                    category="warning",
+                ),
+                f"The canceled transcription of {name} could not be kept in Notifications.",
+            )
         keep_outcome(_ACTION, f"Stopped transcribing {name}.", object_name=name)
-        host._dictation_say(f"Stopped transcribing {name}.")
+        sentence = f"Stopped transcribing {name}."
+        if result.notice_error:
+            sentence += f" It could not be kept in Notifications. {result.notice_error}"
+        host._dictation_say(sentence)
     elif error is not None:
         reason = plain(error)
-        summary = f"Could not transcribe {name}."
+        if isinstance(error, _TranscriptPersistenceError):
+            summary = f"Transcribed {name}, but could not save the transcript."
+            reason = (
+                f"The recording was transcribed, but the transcript could not be saved: {reason}"
+            )
+        else:
+            summary = f"Could not transcribe {name}."
+        if not has_worker_result:
+            _report_notice_failure(
+                entry,
+                _queue_notice(
+                    entry,
+                    title=f"Transcription failed: {name}",
+                    body=reason,
+                    category="error",
+                ),
+                f"The outcome for {name} could not be kept in Notifications.",
+            )
+        if result.notice_error:
+            reason += f" The outcome could not be kept in Notifications. {result.notice_error}"
         keep_outcome(_ACTION, summary, object_name=name, failed=True, reason=reason)
         host._dictation_cue(SoundEvent.WINDOWS_DICTATION_ERROR)
-        host._dictation_say(f"Could not transcribe {name}. {reason}")
+        host._dictation_say(f"{summary} {reason}")
     else:
         sentence = done_sentence(name, transcript)
         text = transcript.text(entry.job.timestamps)
-        if text.strip():
-            try:
-                where = host._transcribe_deliver(text, entry.job)
-            except Exception as problem:  # noqa: BLE001 - the text must not be lost
-                where = ""
-                host._dictation_copy(text)
-                sentence += (
-                    f" It could not be put in a document ({plain(problem)}), "
-                    "so it is on the clipboard."
-                )
-            if where:
-                sentence = sentence[:-1] + f", {where}."
         if transcript.notice:
             sentence += " " + transcript.notice
+        if result.notice_error:
+            sentence += (
+                " The transcript was saved privately, but its completion could not "
+                f"be recorded in Notifications. {result.notice_error}"
+            )
+        elif text.strip():
+            sentence += " Open Notifications to read the transcript."
+        else:
+            sentence += " No transcript text was produced."
         keep_outcome(_ACTION, sentence, object_name=name)
         host._dictation_say(sentence)
     _start_next()
+
+
+def _report_notice_failure(entry: _Entry, future: Future[bool], message: str) -> None:
+    """Surface an asynchronous notice-write failure through the UI announcer."""
+
+    def completed(done: Future[bool]) -> None:
+        if not done.result():
+            wx.CallAfter(entry.host._dictation_say, f"{message} {entry.notice_error}")
+
+    future.add_done_callback(completed)

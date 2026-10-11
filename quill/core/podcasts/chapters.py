@@ -21,6 +21,7 @@ from dataclasses import dataclass
 
 from quill.core import http_client
 from quill.core.error_codes import CodedError
+from quill.core.net import verified_ssl_context
 from quill.core.podcasts import feed_auth, transport
 
 _TIMEOUT_SECONDS = 10.0
@@ -95,7 +96,7 @@ def _fetch_chapters_bytes(url: str, *, auth_header: str = "") -> bytes:
     if auth_header:
         headers["Authorization"] = auth_header
     request = urllib.request.Request(url, headers=headers)
-    context = ssl.create_default_context()
+    context = verified_ssl_context()
     try:
         with feed_auth.urlopen_auth_safe(
             request, timeout=_TIMEOUT_SECONDS, context=context

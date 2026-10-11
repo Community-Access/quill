@@ -18,6 +18,7 @@ from dataclasses import dataclass
 
 from quill.core import http_client
 from quill.core.error_codes import CodedError
+from quill.core.net import verified_ssl_context
 from quill.core.net_retry import retry_transient
 
 _BASE_URL = "https://itunes.apple.com/search"
@@ -79,7 +80,7 @@ def _http_json(url: str) -> object:
     request = urllib.request.Request(
         url, headers={"User-Agent": http_client.podcast_user_agent(), "Accept": "application/json"}
     )
-    context = ssl.create_default_context()
+    context = verified_ssl_context()
 
     def _fetch_once() -> str:
         """One attempt. The reviewed egress site; the retry wraps it."""

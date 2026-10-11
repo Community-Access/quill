@@ -129,6 +129,15 @@ def _open(host: Any):
     return open_now_playing(host, focus=False)
 
 
+def test_playback_letter_is_dispatched_from_now_playing(host) -> None:
+    window = _open(host)
+    routed: list[int] = []
+    host._on_winamp_char_hook = lambda event: routed.append(event.GetKeyCode())
+    event = SimpleNamespace(GetKeyCode=lambda: ord("C"))
+    window._on_player_key(event)
+    assert routed == [ord("C")]
+
+
 def test_the_window_loads_the_playing_episode_its_chapters_and_its_notes(host) -> None:
     window = _open(host)
 
@@ -422,8 +431,44 @@ def test_tab_moves_between_links_and_timestamps_and_says_what_each_is(reader) ->
     assert reader.document.text[start:end] == "Jane & Co"
     assert reader._move_span(backwards=False) is True
     assert reader.said[-1] == "Timestamp, 40 seconds. Enter plays from there."
-    assert reader._move_span(backwards=False) is True  # wraps to the first
-    assert reader.said[-1] == "Link, Jane & Co."
+    last_announcement = reader.said[-1]
+    assert reader._move_span(backwards=False) is False
+    assert reader.said[-1] == last_announcement
+    reader.field.SetSelection(reader._spans[0].start, reader._spans[0].end)
+    assert reader._move_span(backwards=True) is False
+
+
+def test_tab_passes_focus_traversal_at_both_span_boundaries(reader) -> None:
+    class KeyEvent:
+        def __init__(self, *, shift: bool = False) -> None:
+            self.shift = shift
+            self.skipped = False
+
+        def GetKeyCode(self) -> int:
+            return wx.WXK_TAB
+
+        def ShiftDown(self) -> bool:
+            return self.shift
+
+        def ControlDown(self) -> bool:
+            return False
+
+        def AltDown(self) -> bool:
+            return False
+
+        def Skip(self) -> None:
+            self.skipped = True
+
+    first, last = reader._spans[0], reader._spans[-1]
+    reader.field.SetSelection(last.start, last.end)
+    forward = KeyEvent()
+    reader._on_key(forward)
+    assert forward.skipped
+
+    reader.field.SetSelection(first.start, first.end)
+    backward = KeyEvent(shift=True)
+    reader._on_key(backward)
+    assert backward.skipped
 
 
 def test_h_and_shift_h_move_between_headings_and_say_the_level(reader) -> None:
@@ -464,4 +509,3 @@ def test_empty_notes_disable_the_buttons_and_say_so(reader) -> None:
     assert not reader.links_btn.IsEnabled()
     assert not reader.copy_btn.IsEnabled()
     assert reader._move_span(backwards=False) is False
-    assert reader.said[-1] == "No links or timestamps in these notes."

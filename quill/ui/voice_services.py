@@ -42,12 +42,16 @@ class VoiceServices:
     # -- availability ------------------------------------------------------
 
     def input_available(self) -> bool:
-        """True when a mic and a speech-to-text model are both usable."""
+        """True when capture and a speech provider are available.
+
+        Installed models are resolved during worker-side transcription so
+        opening the voice UI never enumerates model files synchronously.
+        """
         try:
             from quill.core.speech.capture import capture_available
         except Exception:  # noqa: BLE001
             return False
-        return bool(capture_available() and self._stt_provider is not None and self._stt_model_id)
+        return bool(capture_available() and self._stt_provider is not None)
 
     def output_available(self) -> bool:
         """True when synthesized speech (with save/playback) is available."""
@@ -78,17 +82,31 @@ class VoiceServices:
         if recorder is None:
             return ""
         wav_path = recorder.stop()
-        from quill.core.speech.dictation_profile import load_profile
-        from quill.core.speech.provider import TranscriptionRequest
-
-        profile = load_profile()
-        request = TranscriptionRequest(
-            source_path=Path(wav_path),
-            model_id=self._stt_model_id,
-            initial_prompt=profile.initial_prompt() or None,
-        )
         try:
-            result = self._stt_provider.transcribe_file(request)
+            provider = self._stt_provider
+            if provider is None:
+                raise RuntimeError("No speech-to-text provider is available.")
+            from quill.core.speech.dictation_profile import load_profile
+            from quill.core.speech.provider import TranscriptionRequest
+
+            model_id = self._stt_model_id
+            if not model_id:
+                installed = provider.list_installed_models()
+                if not installed:
+                    raise RuntimeError("No offline speech model is installed.")
+                first = installed[0]
+                model_id = getattr(first, "model_id", "") or getattr(first, "id", "")
+                if not model_id:
+                    raise RuntimeError("The installed speech model has no usable identifier.")
+                self._stt_model_id = model_id
+
+            profile = load_profile()
+            request = TranscriptionRequest(
+                source_path=Path(wav_path),
+                model_id=model_id,
+                initial_prompt=profile.initial_prompt() or None,
+            )
+            result = provider.transcribe_file(request)
             text = (getattr(result, "full_text", "") or "").strip()
             return profile.apply_replacements(text)
         finally:

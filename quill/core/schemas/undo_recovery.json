@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "QUILL interrupted Undo file recovery",
+  "type": "object",
+  "required": ["version", "files"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {"type": "integer", "const": 1},
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["held", "original"],
+        "additionalProperties": false,
+        "properties": {
+          "held": {"type": "string", "pattern": "^\\d+-[^\\\\/]+$"},
+          "original": {"type": "string", "minLength": 1}
+        }
+      }
+    }
+  }
+}

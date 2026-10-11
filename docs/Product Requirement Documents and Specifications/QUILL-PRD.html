@@ -324,7 +324,7 @@ screen-reader names appear throughout this document for compatibility
 and certification purposes only; they remain the property of their
 respective owners. Target platform: Windows 10 and Windows 11 Target
 screen readers: NVDA (primary), JAWS, Narrator UI framework: wxPython
-(wxWidgets 3.2 or newer) Language: Python 3.12 or newer</p>
+(wxWidgets 3.2 or newer) Language: Python 3.13 or newer</p>
 <h3 id="command-ownership-and-preferences-search-2026-09-30">Command
 ownership and Preferences search (2026-09-30)</h3>
 <p><code>CommandRegistry</code> is confined to its creating thread,
@@ -1590,6 +1590,11 @@ bundles.</li>
 <li><code>Ctrl+S</code> saves. For editable text formats, saves in
 place. For rendered/extracted formats, opens Save As.</li>
 <li><code>Ctrl+Shift+S</code> opens Save As directly.</li>
+<li>File dialogs start in the most recently used folder during the
+current session, then <strong>Settings &gt; General &gt; Default
+document folder</strong> (the <code>startup_folder</code> setting), then
+the Windows Documents folder when that setting is blank. A saved
+document keeps its existing location for ordinary saves.</li>
 <li>Recent files: last N (default 10, range 5 to 50). If empty, announce
 “No recent files.”</li>
 <li>File Explorer integration: settings panel lets the user register
@@ -5146,6 +5151,20 @@ resolver still checks it), so upgrades never lose offline speech. Only
 components QUILL is licensed to redistribute are hosted this way
 (whisper.cpp is MIT, Kokoro Apache-2.0); license-unclear engines are not
 re-hosted, and ffmpeg is never re-hosted (it stays user-installed).</p>
+<p><strong>Audio-file transcription (<code>Shift+F5</code>, shared with
+QUILL Lite).</strong> The screen-reader-accessible chooser selects one
+or more supported recordings, language, speech model, timestamps, and
+spoken-command handling, and reports the recording length and estimated
+processing time before starting. A background worker processes queued
+recordings without changing the document in front. Each successful
+transcript is saved privately under the active user-data directory and
+linked from a completion notice in Notifications; activating the notice
+opens the result in the editor. The transcript is never inserted into
+the document that was open when work began, and there is no destination
+picker. Activity retains the outcome and failure reason. Stopping
+transcription cancels the active job and queued jobs; no document is
+changed. Local models keep audio on the computer, and an OpenAI model
+requires the explicit consent gate before audio is sent.</p>
 <p><strong>Family-wide non-goals, recorded so they are not relitigated
 without new information.</strong> <strong>Telemetry of any kind</strong>
 – no Sentry, no PostHog, no counters. A crash-report bundle is a local
@@ -15086,11 +15105,10 @@ development.</p>
 <tbody>
 <tr>
 <td><code>python</code></td>
-<td>3.12.x</td>
+<td>3.13.x</td>
 <td>PSF</td>
 <td>Runtime</td>
-<td>Frozen with PyInstaller; 3.13 supported as soon as wxPython
-publishes wheels</td>
+<td>Frozen with PyInstaller</td>
 </tr>
 <tr>
 <td><code>wxPython</code></td>
@@ -15951,7 +15969,7 @@ download location the same way.</li>
 <h3 id="107-build-and-dev-environment">10.7 Build and dev
 environment</h3>
 <ul>
-<li><strong>Python 3.12</strong> pinned via
+<li><strong>Python 3.13</strong> pinned via
 <code>uv python install</code>.</li>
 <li><strong>Lockfile</strong>: <code>uv.lock</code> committed;
 <code>uv sync</code> reproduces the dev environment exactly.</li>
@@ -15975,7 +15993,7 @@ integration and delivery</h3>
 <ul>
 <li><strong>Provider</strong>: GitHub Actions.</li>
 <li><strong>Matrix</strong>: Windows 10 22H2, Windows 11 24H2; Python
-3.12; wxPython current stable.</li>
+3.13; wxPython current stable.</li>
 <li><strong>Jobs</strong>:
 <ol type="1">
 <li><strong>Lint</strong> (ruff, mypy, jsonschema validation of bundled
@@ -20840,7 +20858,7 @@ re-run the behavioral simulation before relying on CI.</p>
 plan.</p>
 <h2 id="prerequisites">Prerequisites</h2>
 <ul>
-<li>macOS 12+ (Apple Silicon or Intel), Python 3.11+</li>
+<li>macOS 12+ (Apple Silicon or Intel), Python 3.13+</li>
 <li><code>pip install -e ".[ui,macos]"</code> (wxPython, comtypes on
 Windows, pyobjc, py2app)</li>
 <li>For distribution: an Apple <strong>Developer ID Application</strong>
@@ -21544,7 +21562,7 @@ stay in sync).</p>
 portable bundle layout:</p>
 <ul>
 <li>A private embedded Python runtime (<code>python/</code>, amd64,
-pinned 3.12.x) with wxPython, comtypes (Windows SAPI 5 speech), and the
+pinned 3.13.x) with wxPython, comtypes (Windows SAPI 5 speech), and the
 other runtime wheels preinstalled, plus the vendored
 <code>quill-glow-core</code> contract wheel. End users install no
 Python.</li>
@@ -23112,7 +23130,7 @@ required</li>
 <li><code>quill-release-artifacts</code> — checksums, SBOM, update feed
 stub</li>
 </ul>
-<p>To build locally (requires Inno Setup 6 and Python 3.12):</p>
+<p>To build locally (requires Inno Setup 6 and Python 3.13):</p>
 <div class="sourceCode" id="cb48"><pre
 class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>pip install <span class="op">-</span>e <span class="op">.[</span>ui<span class="op">,</span>spellcheck<span class="op">,</span>dev<span class="op">]</span></span>
 <span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>build_windows_distribution<span class="op">.</span><span class="fu">py</span> `</span>

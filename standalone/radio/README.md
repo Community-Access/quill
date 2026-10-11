@@ -26,10 +26,14 @@ Deliberately not included: QUILL's editor, AI writing tools, transcription, brai
 
 Downloads are on the [QUILL Releases page](https://github.com/Community-Access/quill/releases/tag/quill-radio-v3.2.0), under the tag `quill-radio-v3.2.0`. There are two:
 
-- **`Quill-Radio-Setup-Shared-3.2.0.exe`** -- the installer, and the right choice for most people. It installs the shared **QuillVille Runtime** if it is not already on the computer, then the app, with a Start Menu entry and an uninstaller. Your settings, favorites and recordings live in the shared Quill data folder in your Windows profile, so QUILL and QUILL Cast see them too.
+- **`Quill-Radio-Setup-Shared-3.2.0.exe`** -- the installer, and the right choice for most people. It installs Quill Radio and the shared **QuillVille Runtime** in your Windows profile, with a Start Menu entry and an uninstaller. Setup is current-user only: it has no all-users option and does not require administrator approval or a UAC prompt. Your settings, favorites and recordings live in the shared Quill data folder in your Windows profile, so QUILL and QUILL Cast see them too.
 - **`Quill-Radio-Portable-3.2.0.zip`** -- the portable copy. It is fully self-contained, with its own genuine Python and the bundled FFmpeg and mpv. Unpack it anywhere, a USB stick included, and run `QuillRadio\QuillRadio.exe`. Nothing downloads when it runs.
 
 A portable copy writes nothing to the computer it runs on, from the very first launch, with no setting to find first. Settings, favorites, history, logs and caches live in the `data` folder beside `QuillRadio.exe`; recordings and downloads go to `Recordings` and `Downloads` folders beside it. Start with Windows and the wake-for-recording task are unavailable, because both would write to the host. Delete the `data` folder and it becomes an ordinary copy that uses this computer's profile.
+
+For an installed copy, **Station > Start Quill Radio with Windows** and the
+matching checkbox in **Preferences** control the same per-user sign-in
+setting. The startup option is unavailable in a portable copy.
 
 QUILL, Quill Radio, Quill Weather and QUILL Audio Studio share one QuillVille Runtime, installed once per user and reference-counted, so it is removed only when the last app that needs it is uninstalled.
 

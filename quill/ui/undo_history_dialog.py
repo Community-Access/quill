@@ -63,9 +63,10 @@ def show_undo_history(host: Any) -> None:
     action = history.take_at(index)
     if action is None:
         return
-    try:
-        action.undo()
-    except Exception as error:  # noqa: BLE001 - an undo that fails must say so
-        host._announce(f"Could not undo {action.verb}: {error}.")
-        return
-    host._announce(action.done())
+    from quill.ui.undo_file_jobs import execute_undo
+
+    execute_undo(
+        action,
+        host._announce,
+        retry=lambda: undo_last_ui.return_failed_action(history, action, entries[index + 1 :]),
+    )

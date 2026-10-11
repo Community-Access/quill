@@ -55,6 +55,11 @@ also retry without a loop. Shutdown flushes a pending warning before teardown.
 Logs contain only the stable `QUILL-LITE-SETTINGS-WRITE` diagnostic and storage
 category, not raw exception text or user paths.
 
+Document Open and Save As dialogs use the configured default document folder
+when no saved document location applies. A blank setting resolves to the
+Windows Documents folder; a document already saved continues to use its own
+folder.
+
 Application shutdown owns the inbox timer through
 `QuillLiteApp.stop_background_sources()`. Confirmed Exit and shell close stop
 polling before document destruction; `OnExit` repeats that cleanup safely.
@@ -1009,6 +1014,19 @@ a dictation command, key or setting.
   once (`settings_fields.DictationSettings`), inherited by both editors'
   `Settings`.
 
+### 5.10 Transcribing a recording (2026-10-06)
+
+QUILL Lite's **Transcribe a Recording** command (Shift+F5) transcribes supported
+audio files in the background using the shared dictation speech engines. Its
+window reports recording length and estimated transcription time; on Windows,
+duration lookup falls back to Media Foundation when the other metadata readers
+cannot determine the length. Several selected recordings run in sequence.
+
+The transcript is saved privately and is not inserted into the document the
+user was editing. A completion notice in Notifications opens the saved
+transcript when activated; Activity retains the outcome and failure reason.
+There is no destination picker.
+
 ## 6. Release packaging
 
 **Two** artifacts, where the family contract is four -- the reason is the
@@ -1056,6 +1074,11 @@ carries its own interpreter and never touches it at all.
 **Neither ffmpeg nor libmpv is staged** —
 QUILL Lite declares no media components, and the build strips any a sibling app
 left in the shared work area, so build order cannot change what ships.
+
+The installer is per-user: `PrivilegesRequired=lowest`, with no elevated
+all-users override. App files and the shared runtime are installed for the
+signed-in user. The optional runtime setting that replaces Notepad for every
+user remains a separate, explicitly elevated action.
 
 Code signing is opt-in (`-Sign` / `QUILL_SIGN=1`), the same convention as every
 sibling; see `docs/code-signing.md`.

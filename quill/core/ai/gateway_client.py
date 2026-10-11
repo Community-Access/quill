@@ -49,6 +49,7 @@ from quill.core.ai.gateway_errors import (
     GatewayTooLargeError,
     GatewayUnreachableError,
 )
+from quill.core.net import verified_ssl_context
 
 __all__ = [
     "DEFAULT_BASE_URL",
@@ -189,34 +190,8 @@ class GatewayQuota:
 
 
 def _verified_context() -> ssl.SSLContext:
-    """A TLS context that verifies. Never relaxed, for any host.
-
-    What travels on this connection is a bearer token and the user's own
-    writing, so there is no deployment convenience worth an unverified
-    certificate.
-
-    It trusts **Windows' own root store and certifi's bundle together**. The
-    store alone was the whole trust list until 2026-09-25, and it failed on a
-    Windows 10 machine whose internet was fine: Windows downloads most root
-    certificates only when its own networking first needs one, so a machine
-    whose browsers carry their own root stores may never have fetched the one
-    this service's certificate chains to -- and Python reads the store without
-    triggering that download. certifi ships the roots, so the chain verifies
-    anyway; the store is kept because it is where a work network's or an
-    antivirus's inspecting root lives, and dropping it would break those users
-    instead. Adding trust anchors never weakens verification: every
-    certificate is still checked, against a longer list of authorities.
-    """
-    context = ssl.create_default_context()
-    try:
-        import certifi
-
-        context.load_verify_locations(cafile=certifi.where())
-    except Exception:  # noqa: BLE001 - certifi missing leaves the system store
-        pass
-    context.check_hostname = True
-    context.verify_mode = ssl.CERT_REQUIRED
-    return context
+    """Return the shared native-store TLS context; verification stays enabled."""
+    return verified_ssl_context()
 
 
 def _unreachable(url: str, error: BaseException) -> GatewayError:

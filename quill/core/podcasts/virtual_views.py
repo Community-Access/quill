@@ -7,6 +7,8 @@ constructing any UI.
 
 from __future__ import annotations
 
+from collections.abc import Iterator
+
 from quill.core.podcasts.models import PodcastEpisode, PodcastShow
 from quill.core.podcasts.subscriptions import PodcastLibrary
 
@@ -71,6 +73,13 @@ def virtual_view_pairs(
 ) -> list[tuple[PodcastShow, PodcastEpisode]]:
     """``(show, episode)`` pairs for one of :data:`VIRTUAL_VIEWS` -- kept as
     real pairs (not a bare episode list) since these aggregate across shows."""
+    return list(iter_virtual_view_pairs(library, view_id))
+
+
+def iter_virtual_view_pairs(
+    library: PodcastLibrary, view_id: str
+) -> Iterator[tuple[PodcastShow, PodcastEpisode]]:
+    """Iterate a view once; counts must not build and filter a second catalogue."""
     if view_id == "inbox":
         # Delegated so the Inbox has exactly one definition: notably, an
         # episode an Inbox cap trimmed out is not in the Inbox any more, and
@@ -78,28 +87,25 @@ def virtual_view_pairs(
         # ...and through the folder scope (R4), so the tree count, the
         # Manager's list and the window title narrow together. A second
         # place that applied the filter is a place that could forget to.
-        from quill.core.podcasts.inbox_scope import inbox_pairs_in_library_folder
+        from quill.core.podcasts.inbox_scope import iter_inbox_pairs_in_library_folder
 
-        return inbox_pairs_in_library_folder(
+        yield from iter_inbox_pairs_in_library_folder(
             library, getattr(library.settings, "inbox_folder_scope", None)
         )
+        return
     if view_id == "recently_expired":
         from quill.core.podcasts.expiration import expired_pairs
 
-        return [(show, episode) for show, episode in expired_pairs(library)]  # type: ignore[misc]
-    pairs: list[tuple[PodcastShow, PodcastEpisode]] = []
-    for show in library.shows:
-        for episode in show.episodes:
-            if view_id == "new_episodes" and not episode.played:
-                pairs.append((show, episode))
-            elif view_id == "continue_listening" and episode.position_ms > 0 and not episode.played:
-                pairs.append((show, episode))
-    # Episode Filters, when the podcast's own rules were given the "views"
-    # scope. Applied here rather than in each caller so New Episodes and
-    # Continue Listening can never disagree about it, and asked live -- so
-    # unchecking the scope brings the episodes back on the next redraw. A
-    # podcast without a filter costs one dictionary lookup.
-    from quill.core.podcasts.episode_filter_maintenance import visible_pairs
+        yield from expired_pairs(library)
+        return
+    from quill.core.podcasts.episode_filter_maintenance import hide_predicate
     from quill.core.podcasts.models_filters import SCOPE_VIEWS
 
-    return visible_pairs(library, pairs, SCOPE_VIEWS)
+    for show in library.shows:
+        hidden = hide_predicate(library, show, SCOPE_VIEWS)
+        for episode in show.episodes:
+            included = (view_id == "new_episodes" and not episode.played) or (
+                view_id == "continue_listening" and episode.position_ms > 0 and not episode.played
+            )
+            if included and (hidden is None or not hidden(episode)):
+                yield show, episode

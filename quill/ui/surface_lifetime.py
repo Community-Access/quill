@@ -25,7 +25,16 @@ from typing import Any
 
 from quill.stability.task_manager import UiLifetimeToken
 
-__all__ = ["SurfaceTasks", "lifetime_for", "surface_tasks"]
+__all__ = ["SurfaceTasks", "destroy_event_matches", "lifetime_for", "surface_tasks"]
+
+
+def destroy_event_matches(event: Any, window: Any, window_id: int | None) -> bool:
+    """wx may return a fresh Python wrapper during destruction; use its stable ID."""
+    get_id = getattr(event, "GetId", None)
+    if window_id is not None and callable(get_id):
+        return bool(get_id() == window_id)
+    get_window = getattr(event, "GetWindow", None)
+    return (get_window() if callable(get_window) else event.GetEventObject()) is window
 
 
 class SurfaceTasks:
@@ -172,10 +181,13 @@ def lifetime_for(window: Any) -> UiLifetimeToken:
     try:
         import wx
 
+        get_id = getattr(window, "GetId", None)
+        window_id = get_id() if callable(get_id) else None
+
         def on_destroy(event: Any) -> None:
             # Children are destroyed too and send their own events up; only the
             # window's own destruction ends its lifetime.
-            if event.GetEventObject() is window:
+            if destroy_event_matches(event, window, window_id):
                 token.invalidate()
             event.Skip()
 

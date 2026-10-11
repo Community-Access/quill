@@ -49,6 +49,14 @@ def test_weather_app_builds_with_expected_menus(app, data_dir) -> None:
         assert "Weather" in titles
         assert "Options" in titles
         assert "Help" in titles
+        help_menu = bar.GetMenu(titles.index("Help"))
+        help_labels = [
+            help_menu.FindItemByPosition(i).GetItemLabelText()
+            for i in range(help_menu.GetMenuItemCount())
+            if help_menu.FindItemByPosition(i).GetKind() != wx.ITEM_SEPARATOR
+        ]
+        assert "Activity..." in help_labels
+        assert "Repeat Last Result" in help_labels
         # The shared Weather menu brought the monitoring toggle with it.
         weather_menu = bar.GetMenu(titles.index("Weather"))
         labels = [
@@ -71,6 +79,26 @@ def test_close_minimizes_to_tray_by_default(app, data_dir) -> None:
         assert flags["vetoed"] is True  # close was intercepted...
         assert hidden == [True]  # ...and the window went to the tray
         assert flags["skipped"] is False  # not a real close
+    finally:
+        frame.frame.Destroy()
+
+
+def test_failed_tray_setting_save_restores_menu_state(app, data_dir, monkeypatch) -> None:
+    from quill.core.weather import settings as settings_mod
+
+    frame = WeatherAppFrame(safe_mode=True)
+    try:
+        said: list[str] = []
+        frame._announce = said.append
+        item = frame.frame.GetMenuBar().FindItemById(frame._close_tray_item_id)
+        assert item.IsChecked()
+        item.Check(False)
+        monkeypatch.setattr(
+            settings_mod, "save_settings", lambda *_args: (_ for _ in ()).throw(OSError("full"))
+        )
+        frame._set_app_pref("app_close_to_tray", False)
+        assert item.IsChecked()
+        assert "could not save" in said[-1]
     finally:
         frame.frame.Destroy()
 

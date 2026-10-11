@@ -424,6 +424,7 @@ class CastDomainAiMixin:
                     show,
                     announce=self._announce,  # type: ignore[attr-defined]
                     on_change=self._save_podcast_library,  # type: ignore[attr-defined]
+                    download_queue=self._podcast_download_queue,  # type: ignore[attr-defined]
                 )
         self._save_podcast_library()  # type: ignore[attr-defined]
         self._after_library_change()

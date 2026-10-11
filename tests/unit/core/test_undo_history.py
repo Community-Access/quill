@@ -42,3 +42,25 @@ def test_the_eleventh_step_disposes_of_the_oldest() -> None:
         history.remember(_step(str(index), [], disposed))
     assert len(history.entries()) == HISTORY_LIMIT
     assert disposed == ["0"]
+
+
+def test_a_failed_older_preparation_keeps_its_place_behind_newer_work() -> None:
+    history = UndoHistory()
+    for name in ("a", "b", "c"):
+        history.remember(_step(name, [], []))
+    older = history.entries()[2:]
+    action = history.take_at(1)
+    assert action is not None
+    history.remember(_step("d", [], []))
+    history.restore_failed(action, older=older)
+    assert [entry.subject for entry in history.entries()] == ["d", "c", "b", "a"]
+
+
+def test_returning_a_retry_to_a_full_history_retains_it_without_growing() -> None:
+    history = UndoHistory()
+    action = _step("retry", [], [])
+    for index in range(HISTORY_LIMIT):
+        history.remember(_step(str(index), [], []))
+    history.restore_failed(action, older=[])
+    assert len(history.entries()) == HISTORY_LIMIT
+    assert history.entries()[-1] is action

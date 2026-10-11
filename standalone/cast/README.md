@@ -23,6 +23,9 @@ Version 2.0.0, released 2026-10-03.
 - Let Cast keep up for you. Each podcast can be checked on its own schedule,
   new episodes can download on their own, and notifications wait for you if
   you were busy.
+- Start the installed copy with Windows when you sign in, if you choose. This
+  setting applies only to your Windows account; portable copies do not add a
+  startup entry.
 - Turn off anything you do not use. Customize Features hides a whole feature,
   menu rows and all.
 - Add your own recordings and audiobooks as Personal Audio.
@@ -30,6 +33,9 @@ Version 2.0.0, released 2026-10-03.
 ## Install
 
 Download `QUILL-Cast-Setup-<version>.exe` from the Releases page and run it.
+The installer is for the current Windows account and does not offer an
+all-users installation; a normal install does not require administrator
+approval.
 If you would rather not install anything, the portable zip runs from any
 folder or USB stick and keeps your library in its own `data` folder.
 Everything Cast needs is in the download, including ffmpeg.

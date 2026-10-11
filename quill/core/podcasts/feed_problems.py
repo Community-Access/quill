@@ -34,6 +34,7 @@ from __future__ import annotations
 
 import socket
 import ssl
+import sys
 import urllib.error
 from dataclasses import dataclass
 
@@ -74,7 +75,11 @@ _SENTENCES: dict[str, str] = {
     REMOVED: "The host says this feed has been removed for good.",
     NO_SUCH_HOST: "This podcast's web address no longer exists.",
     REFUSED: "The podcast's site is refusing every connection.",
-    CERTIFICATE: "The site's security certificate is not valid, so no podcast app can trust it.",
+    CERTIFICATE: (
+        "The site's security certificate could not be verified. Check this device's date and time, "
+        "install system updates, or ask your network administrator whether security software "
+        "inspects secure connections."
+    ),
     TLS: "The site's secure connection is broken.",
     TIMEOUT: "The host took too long to answer.",
     WEB_PAGE: "This address returns a web page, not a podcast feed.",
@@ -189,7 +194,15 @@ def classify(error: BaseException, *, had_credentials: bool = False) -> Problem:
         if isinstance(link, ConnectionRefusedError):
             return Problem(REFUSED, sentence_for(REFUSED), detail)
         if isinstance(link, ssl.SSLCertVerificationError):
-            return Problem(CERTIFICATE, sentence_for(CERTIFICATE), detail)
+            verify_code = getattr(link, "verify_code", None)
+            verify_message = getattr(link, "verify_message", "")
+            python_version = ".".join(str(part) for part in sys.version_info[:3])
+            diagnostic = (
+                f"{detail}; verify_code={verify_code}; verify_message={verify_message}; "
+                f"python={python_version}; "
+                f"openssl={ssl.OPENSSL_VERSION}"
+            )
+            return Problem(CERTIFICATE, sentence_for(CERTIFICATE), diagnostic)
         if isinstance(link, ssl.SSLError):
             return Problem(TLS, sentence_for(TLS), detail)
         if isinstance(link, TimeoutError | socket.timeout):

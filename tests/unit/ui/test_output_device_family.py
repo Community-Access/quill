@@ -281,6 +281,23 @@ def test_the_caller_cannot_mutate_the_cache(monkeypatch) -> None:
     assert routing.list_output_devices() == [("wasapi/{aaa}", "Speakers")]
 
 
+def test_cached_devices_can_be_read_after_background_enumeration(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import quill.ui.audio.output_routing as routing
+
+    devices = [("wasapi/{aaa}", "Speakers")]
+    monkeypatch.setattr(routing, "_cached", None)
+    routing.cache_output_devices(devices)
+    devices.clear()
+
+    cached = routing.cached_output_devices()
+    assert cached == [("wasapi/{aaa}", "Speakers")]
+    assert cached is not None
+    cached.clear()
+    assert routing.cached_output_devices() == [("wasapi/{aaa}", "Speakers")]
+
+
 # -- what an engine can do, and why unknown means yes ------------------------
 
 

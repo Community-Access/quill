@@ -46,6 +46,7 @@ from quill.core.spotify.models import is_spotify_uri
 from quill.ui.audio.audio_engine import AudioEngine, create_engine
 from quill.ui.media.output_device_mixin import OutputDeviceMixin
 from quill.ui.podcasts.player_spotify import PodcastSpotifyEngineMixin
+from quill.ui.podcasts.player_transport import PodcastTransportMixin
 from quill.ui.podcasts.player_volume import PodcastPlayerVolumeMixin
 
 if TYPE_CHECKING:
@@ -79,7 +80,7 @@ class PodcastPlaybackState:
         if self.state is PodcastPlayerState.STOPPED or not self.title:
             return "Podcasts: stopped"
         if self.state is PodcastPlayerState.LOADING:
-            return f"Podcasts: loading {self.title}..."
+            return f"Podcasts: loading {self.title}... {self.message}".strip()
         if self.state is PodcastPlayerState.PLAYING:
             return f"Podcasts: playing {self.title}"
         if self.state is PodcastPlayerState.PAUSED:
@@ -90,7 +91,7 @@ class PodcastPlaybackState:
 
 
 class PodcastPlayerController(
-    OutputDeviceMixin, PodcastSpotifyEngineMixin, PodcastPlayerVolumeMixin
+    OutputDeviceMixin, PodcastSpotifyEngineMixin, PodcastPlayerVolumeMixin, PodcastTransportMixin
 ):
     """Play/pause/stop one podcast episode at a time."""
 
@@ -395,17 +396,6 @@ class PodcastPlayerController(
         engine, which has no sound card of ours to choose."""
         return self._stream_engine
 
-    def toggle_play_pause(self) -> None:
-        if self._engine is None:
-            return
-        if self._state.state is PodcastPlayerState.PLAYING:
-            self._checkpoint_current()
-            self._engine.pause()
-            self._set_state(PodcastPlayerState.PAUSED)
-        elif self._state.state is PodcastPlayerState.PAUSED:
-            self._engine.play()
-            self._set_state(PodcastPlayerState.PLAYING)
-
     def stop(self) -> None:
         self._checkpoint_current()
         if self._engine is not None:
@@ -462,19 +452,28 @@ class PodcastPlayerController(
 
     def shutdown(self) -> None:
         """Release the engine; called once, from the frame's close path."""
-        self._checkpoint_current()
+        if getattr(self, "_closed", False):
+            return
+        self._closed = True
         try:
-            if self._engine is not None:
-                self._engine.close()
+            self._checkpoint_current()
         except Exception:  # noqa: BLE001 - never block app close
-            _log.exception("podcast engine close failed during shutdown")
-        # Close the Spotify WebView engine if it exists and was not the active
-        # engine just closed above (tears down the hidden WebView + page host).
-        if self._spotify_engine is not None and self._engine is not self._spotify_engine:
+            _log.exception("podcast position checkpoint failed during shutdown")
+        released: list[AudioEngine] = []
+        for engine in (self._engine, self._stream_engine, self._spotify_engine):
+            if engine is None or any(engine is previous for previous in released):
+                continue
+            released.append(engine)
             try:
-                self._spotify_engine.close()
+                engine.close()
             except Exception:  # noqa: BLE001 - never block app close
-                _log.exception("Spotify engine close failed during shutdown")
+                _log.exception("podcast engine close failed during shutdown")
+            terminate = getattr(engine, "terminate", None)
+            if callable(terminate):
+                try:
+                    terminate()
+                except Exception:  # noqa: BLE001 - never block app close
+                    _log.exception("podcast engine termination failed during shutdown")
         self._spotify_engine = None
         try:
             self._enhance_relay.shutdown()
@@ -514,6 +513,8 @@ class PodcastPlayerController(
         as if it had reached its own true end -- see play_episode's
         auto_skip_outro_ms docstring. Also the one-second heartbeat the
         listening-statistics accumulator rides."""
+        if getattr(self, "_closed", False):
+            return
         if self._on_second_tick is not None:
             try:
                 self._on_second_tick()
@@ -534,29 +535,6 @@ class PodcastPlayerController(
         self._on_finished()
 
     # -- engine callbacks -------------------------------------------------
-
-    def _on_loaded(self, _length_ms: int) -> None:
-        if self._engine is None:
-            return
-        if self._is_enhanced():
-            # The relay already started at the right offset via ffmpeg -ss;
-            # nothing to seek, just play or pause per the caller's intent.
-            self._engine.play() if self._pending_play_after_load else self._engine.pause()
-        elif self._resume_ms:
-            # resume=<intent>, not hardcoded True: a seek/enhancement-toggle
-            # reload while paused must land back on PAUSED, not force play.
-            self._engine.seek(self._resume_ms, resume=self._pending_play_after_load)
-        elif self._pending_play_after_load:
-            self._engine.play()
-        else:
-            self._engine.pause()
-        self._resume_ms = 0
-        self._engine.set_rate(self._pending_rate)
-        self._set_state(
-            PodcastPlayerState.PLAYING
-            if self._pending_play_after_load
-            else PodcastPlayerState.PAUSED
-        )
 
     def _on_finished(self) -> None:
         show_id, episode_guid = self._state.show_id, self._state.episode_guid

@@ -812,8 +812,10 @@ carried (3.0.0, 2026-09-26; the same two QUILL Lite ships):
 (<code>Quill-Radio-Setup-Shared-&lt;version&gt;.exe</code>), recommended
 for most people: installs the shared runtime if it is absent, then the
 app, with a Start Menu entry and an uninstaller; Inno Setup, its own
-AppId, <code>{autopf}\Quill Radio</code>, per-user by default. Uses the
-shared <code>%APPDATA%\Quill</code> data (R-3).</li>
+AppId, <code>{autopf}\Quill Radio</code>, current-user only (no
+all-users choice or elevation/UAC prompt). The shared runtime is also
+installed per-user. Uses the shared <code>%APPDATA%\Quill</code> data
+(R-3).</li>
 <li><em>Portable zip</em>
 (<code>Quill-Radio-Portable-&lt;version&gt;.zip</code>): fully
 self-contained, no install, no runtime network use, runs from anywhere
@@ -1066,6 +1068,22 @@ technically in the URL” is not consent. Add-from-playlist is its own
 explicit command.</p>
 <h2 id="8-since-10">8. Since 1.0</h2>
 <ul>
+<li><p><strong>Local station website corrections and the Windows startup
+preference (unreleased).</strong> A station’s Website button opens the
+playing station’s website, or the selected favorite’s when nothing is
+playing. If no address is available, the button asks whether to add one;
+the question is suppressed in Quill Radio and QUILL only when
+<strong>Add Website</strong> is confirmed with <strong>Don’t ask me
+again</strong> checked. <strong>Edit Website…</strong> is available from
+station-row menus in Browse Stations and Manage Favorite Stations. A
+saved correction is kept in Radio’s local history, keyed to station
+identity, and takes precedence over the directory’s homepage without
+changing the provider record. Only HTTP(S) URL syntax is validated; no
+validation request is sent. Leaving an edit blank clears the correction.
+The Preferences checkbox and Station-menu check item both control the
+same per-user Windows Run entry; the Preferences checkbox is disabled
+for portable copies and reports a failed change if Windows refuses an
+installed copy’s request.</p></li>
 <li><p><strong>Local Media: the listener’s own files, in playlists
 (3.2.0; <code>core/radio/local_media.py</code>,
 <code>local_media_files.py</code>, <code>local_media_edit.py</code>,
@@ -2479,7 +2497,8 @@ sibling-app launchers.</li>
 (<code>platform/windows/radio_startup.py</code>).</em> A Station-menu
 check item adding/removing a per-user autostart entry – the same
 no-elevation mechanism QUILL uses. Pairs with Resume Last Station on
-Launch for a sign-in appliance.</li>
+Launch for a sign-in appliance. The same setting is also exposed as a
+checkbox in Preferences; the two controls stay synchronized.</li>
 <li><em>Weather Guardian and the weather suite in Quill Radio
 (<code>core/weather/monitor.py</code>,
 <code>core/weather/astronomy.py</code>,

@@ -68,6 +68,58 @@ def test_a_character_the_encoding_cannot_hold_is_named_before_the_write(
     assert UNENCODABLE in (tmp_path / "notes.txt").read_text(encoding="utf-8")
 
 
+def test_save_as_uses_the_configured_folder_for_an_untitled_document(
+    lite_window, fake_wx_dialog, tmp_path
+) -> None:
+    folder = tmp_path / "writing"
+    folder.mkdir()
+    win = lite_window("hello", cursor=0)
+    win.app.settings.startup_folder = str(folder)
+    dialog = fake_wx_dialog("FileDialog", wx.ID_CANCEL)
+
+    assert win.cmd_save_as() is False
+    assert dialog.constructed[-1][1]["defaultDir"] == str(folder)
+
+
+def test_save_as_keeps_a_saved_documents_folder_ahead_of_the_preference(
+    lite_window, fake_wx_dialog, tmp_path
+) -> None:
+    document_folder = tmp_path / "existing"
+    document_folder.mkdir()
+    configured_folder = tmp_path / "preferred"
+    configured_folder.mkdir()
+    win = lite_window("hello", cursor=0)
+    win.path = document_folder / "notes.txt"
+    win.app.settings.startup_folder = str(configured_folder)
+    dialog = fake_wx_dialog("FileDialog", wx.ID_CANCEL)
+
+    assert win.cmd_save_as() is False
+    assert dialog.constructed[-1][1]["defaultDir"] == str(document_folder)
+
+
+def test_default_document_folder_uses_the_windows_documents_directory(
+    lite_window, monkeypatch, tmp_path
+) -> None:
+    from types import SimpleNamespace
+
+    from quill.apps import lite_window_commands
+
+    documents = tmp_path / "Documents"
+    documents.mkdir()
+    monkeypatch.setattr(
+        lite_window_commands,
+        "wx",
+        SimpleNamespace(
+            StandardPaths=SimpleNamespace(
+                Get=lambda: SimpleNamespace(GetDocumentsDir=lambda: str(documents))
+            )
+        ),
+    )
+
+    win = lite_window("hello", cursor=0)
+    assert win._default_document_folder() == str(documents)
+
+
 def test_saying_no_saves_as_asked_and_loses_them_knowingly(lite_window, answers, tmp_path) -> None:
     win = lite_window(f"a tick: {UNENCODABLE}", cursor=0)
     win.encoding = "cp1252"

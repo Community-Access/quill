@@ -75,13 +75,14 @@ CATALOGUE: TutorialSet = build(
     writing.TUTORIALS,
     reading.TUTORIALS,
     voice_and_ai.TUTORIALS,
-    # 2026-10-05 (dict.md 3.10): five short dictation lessons, shared with QUILL Lite.
+    # The five 2026-10-05 dictation lessons and the shared audio-file lesson.
     dictation_lessons(
         {
             "toggle": "tools.windows_dictation_toggle",
             "language": "tools.windows_dictation_switch_language",
             "transcript": "tools.windows_dictation_live_transcript",
             "status": "tools.dictation_status",
+            "transcribe": "tools.windows_dictation_transcribe_file",
         },
         track="voice",
         surfaces=("QUILL",),

@@ -185,6 +185,9 @@ class Settings(DictationSettings):
     #: QUILL installed must not grow a Quill data folder because somebody opened
     #: a text file.
     window_maximized: bool = True
+    #: Default folder for opening and saving documents. Blank follows the
+    #: Windows Documents folder; a saved document still keeps its own folder.
+    startup_folder: str = ""
     recent_files: list[str] = field(default_factory=list)
     #: QUILL's names and rules (quill.core.recent_documents); pins sit atop the limit.
     pinned_recent_files: list[str] = field(default_factory=list)
