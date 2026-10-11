@@ -140,3 +140,56 @@ def test_publisher_text_is_decoded_through_display_text() -> None:
         "decode_entities), not html.unescape: one unescape leaves a double-encoded "
         f"feed reading '&#8217;' aloud. Found: {offenders}"
     )
+
+
+# -- Quill Radio --------------------------------------------------------------
+
+
+def test_a_radio_row_reads_words_whatever_source_built_it() -> None:
+    from quill.core.radio.models import RadioStation
+
+    station = RadioStation(
+        name="Don&amp;#8217;t Panic", stream_url="https://x/a.mp3", notes="It&#8217;s here"
+    )
+    assert station.name == f"Don{RSQUO}t Panic"
+    assert station.notes == f"It{RSQUO}s here"
+    assert RadioStation.from_dict({"name": "A&#8217;s", "stream_url": "u"}) == RadioStation(
+        name=f"A{RSQUO}s", stream_url="u"
+    )
+
+
+def test_an_episode_row_keeps_its_notes_as_html_and_offers_view_show_notes() -> None:
+    from types import SimpleNamespace
+
+    from quill.core.radio import row_actions
+    from quill.core.radio.browse_libraries import _episode_leaves
+
+    episode = SimpleNamespace(
+        title="Episode&#8217;s title",
+        audio_url="https://x/e.mp3",
+        transcript_url="",
+        transcript_type="",
+        description='<p>Don&amp;#8217;t miss <a href="https://example.org">this</a></p>',
+    )
+    (node,) = _episode_leaves(SimpleNamespace(episodes=[episode]), "https://x/feed", source="RSS")
+    station = node.station
+    assert station.name == f"Episode{RSQUO}s title"
+    assert station.notes.startswith(f"Don{RSQUO}t miss this")
+    assert station.notes_html == episode.description
+    ids = [a.id for a in row_actions.actions_for("podepisode", station=station)]
+    assert row_actions.VIEW_SHOW_NOTES in ids
+
+
+def test_a_station_without_html_notes_offers_no_view_show_notes() -> None:
+    from quill.core.radio import row_actions
+    from quill.core.radio.models import RadioStation
+
+    station = RadioStation(name="KUOW", stream_url="https://x/live", notes="Public radio")
+    ids = [a.id for a in row_actions.actions_for("rbstation", station=station)]
+    assert row_actions.VIEW_SHOW_NOTES not in ids
+
+
+def test_a_youtube_description_reads_words() -> None:
+    from quill.core.radio.youtube_saved import clean_description
+
+    assert clean_description("It&#39;s live") == "It's live"
