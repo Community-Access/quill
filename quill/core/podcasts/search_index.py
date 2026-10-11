@@ -39,7 +39,6 @@ wx-free and strict-typed; the UI half is ``quill/ui/podcasts/library_find.py``.
 from __future__ import annotations
 
 import heapq
-import html
 import re
 import threading
 from array import array
@@ -48,6 +47,7 @@ from collections.abc import Callable, Iterable, Iterator, Sequence
 from dataclasses import dataclass
 from typing import Any
 
+from quill.core.display_text import decode_entities
 from quill.stability.task_manager import CancelledError
 
 __all__ = [
@@ -134,7 +134,7 @@ def _notes_text(description: str, cap: int) -> str:
     if "<" in text:
         text = _TAG_RE.sub(" ", text)
     if "&" in text:
-        text = html.unescape(text)
+        text = decode_entities(text)
     return " ".join(text.split())[:cap].replace("\n", " ").casefold()
 
 

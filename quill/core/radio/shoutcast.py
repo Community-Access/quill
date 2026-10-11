@@ -48,7 +48,6 @@ an explicit browse, search or refresh, and refused in Safe Mode via
 
 from __future__ import annotations
 
-import html as _html
 import json
 import re
 import ssl
@@ -58,6 +57,7 @@ import urllib.request
 from typing import Any
 
 from quill.core import http_client
+from quill.core.display_text import clean_display_text
 from quill.core.error_codes import CodedError
 from quill.core.radio import directory_cache
 from quill.core.radio.models import RadioStation
@@ -273,7 +273,7 @@ def parse_genres(page_html: str) -> list[str]:
     """
     seen: dict[str, str] = {}
     for raw in _GENRE_LINK_RE.findall(page_html):
-        name = _html.unescape(urllib.parse.unquote_plus(raw)).strip()
+        name = clean_display_text(urllib.parse.unquote_plus(raw)).strip()
         key = name.casefold()
         if key not in seen and is_useful_genre(name):
             seen[key] = name

@@ -15,6 +15,8 @@ from __future__ import annotations
 import re
 from html.parser import HTMLParser
 
+from quill.core.display_text import clean_display_text, unwrap_escaped_html
+
 #: Tags whose *end* implies a paragraph break in the plain-text conversion.
 _BLOCK_END_TAGS = frozenset({"p", "div", "li", "h1", "h2", "h3", "h4", "h5", "h6", "blockquote"})
 #: Tags that are themselves a line break (no matching end-tag content).
@@ -49,7 +51,9 @@ class _PlainTextParser(HTMLParser):
             self._parts.append("\n\n")
 
     def handle_data(self, data: str) -> None:
-        self._parts.append(data)
+        # The parser took one layer of encoding off; a double-encoded feed
+        # (``&amp;#8217;``) still has another (display_text).
+        self._parts.append(clean_display_text(data))
 
     def text(self) -> str:
         return "".join(self._parts)
@@ -59,9 +63,14 @@ def html_to_plain_text(html: str) -> str:
     """Convert *html* to plain text with real paragraph line breaks and
     ``link text (url)`` in place of ``<a>`` tags. Tolerant of malformed HTML
     (:class:`html.parser.HTMLParser` never raises on bad markup); returns the
-    input unchanged if it contains no tags at all (already-plain text)."""
+    input with its entities decoded if it contains no tags at all
+    (already-plain text). HTML published as escaped text (``&lt;p&gt;``) is
+    read as the HTML it is."""
+    html = unwrap_escaped_html(html)
     if "<" not in html:
-        return html.strip()
+        # Plain text still carries entities: ``Don&#8217;t`` must read as a
+        # word, not as a code (QUILLVille list, 2026-10-11).
+        return clean_display_text(html).strip()
     parser = _PlainTextParser()
     parser.feed(html)
     parser.close()

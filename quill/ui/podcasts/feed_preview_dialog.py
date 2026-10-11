@@ -128,13 +128,14 @@ def _plain_text(raw: str) -> str:
     Feeds put HTML in here more often than not, and a read-only field showing
     ``<p>`` tags is a field somebody has to read around.
     """
-    import html
     import re
 
-    text = re.sub(r"(?i)<\s*br\s*/?>", "\n", raw)
+    from quill.core.display_text import clean_display_text, unwrap_escaped_html
+
+    text = re.sub(r"(?i)<\s*br\s*/?>", "\n", unwrap_escaped_html(raw))
     text = re.sub(r"(?i)</\s*(p|div|li)\s*>", "\n", text)
     text = re.sub(r"<[^>]+>", "", text)
-    return html.unescape(text).strip() or "No description."
+    return clean_display_text(text).strip() or "No description."
 
 
 def _episode_label(episode: Any) -> str:
