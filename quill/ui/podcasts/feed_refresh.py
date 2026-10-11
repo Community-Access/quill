@@ -31,6 +31,33 @@ from typing import Any
 from quill.core.podcasts import feed_auth
 from quill.core.podcasts.subscriptions import merge_episodes
 
+FEED_CHECK_WORKERS = 3
+
+
+def feed_check_pool(host: Any) -> Any:
+    """Return the dedicated feed-check pool, preserving lightweight test doubles."""
+    existing = getattr(host, "_feed_check_pool", None)
+    if existing is not None:
+        return existing
+    from quill.stability.task_manager import TaskManager
+
+    shared = getattr(host, "_task_manager", None)
+    if shared is not None and not isinstance(shared, TaskManager):
+        pool = shared
+    else:
+        pool = TaskManager(max_workers=FEED_CHECK_WORKERS)
+    host._feed_check_pool = pool
+    return pool
+
+
+def shutdown_feed_checks(host: Any) -> None:
+    """Stop and forget a dedicated feed-check pool during application close."""
+    pool = getattr(host, "_feed_check_pool", None)
+    if pool is not None and pool is not getattr(host, "_task_manager", None):
+        pool.shutdown(wait=False)
+    if pool is not None:
+        host._feed_check_pool = None
+
 
 def _follow_redirect(host: Any, show: Any, redirected_to: list[str]) -> None:
     """Update a podcast's stored address when it asked to, and it may.
@@ -112,12 +139,16 @@ def refresh_feed(
                 on_done(show_id, ok=True, new_episodes=len(arrived))
 
     def _take_in(info: feed_reader.FeedInfo) -> list[Any]:
+        from quill.core.podcasts import check_state
+
+        baseline = not show.episodes and not check_state.is_empty(host._podcast_library, show)
         known = {episode.guid for episode in show.episodes}
         republished: list[str] = []
         if not info.tags.is_empty:
             show.tags = info.tags
         merge_episodes(show, info.episodes, republished=republished)
         arrived = [episode for episode in show.episodes if episode.guid not in known]
+        routed = [] if baseline else arrived
         # The merge may have rewritten existing episodes' titles and notes in
         # place, which the search index's cheap fingerprint cannot see (F-09).
         index_changed = getattr(host, "podcast_search_index_changed", None)
@@ -129,7 +160,7 @@ def refresh_feed(
         # coherent and this is where it is honoured. A podcast with no filter
         # gets the arrived list back for every scope, so nothing below this
         # line can tell the difference.
-        outcome = host._podcast_filter_new_episodes(show, arrived)
+        outcome = host._podcast_filter_new_episodes(show, routed)
         fresh = host._podcast_filter_scope(show, outcome, "notify")
         new_count = len(fresh)
         queued = host._podcast_route_new_episodes(
@@ -143,9 +174,12 @@ def refresh_feed(
         # when it last carried something, and the failure run this success
         # ends. It decides when the *next* check is due and when the two
         # notices fire; it never decides whether to check at all.
-        from quill.core.podcasts import check_state
-
-        check_state.record_success(host._podcast_library, show, new_episodes=len(arrived))
+        check_state.record_success(
+            host._podcast_library,
+            show,
+            new_episodes=0 if baseline else len(arrived),
+            published=check_state.newest_episode_date(show),
+        )
         _follow_redirect(host, show, redirected_to)
         # A podcast that has stopped publishing does not announce it, and an
         # absence is precisely the thing nobody notices. Latched, so an hourly
@@ -182,7 +216,11 @@ def refresh_feed(
                 if new_count:
                     host._announce(
                         host._podcast_new_episode_message(show, new_count, queued),
-                        force=host._podcast_check_monitor.interrupt_speech,
+                        force=getattr(
+                            getattr(host, "_podcast_check_monitor", None),
+                            "interrupt_speech",
+                            False,
+                        ),
                     )
                     host._podcast_notify_new_episodes(show, fresh)
                 host._podcast_announce_episode_filter(show, outcome)
@@ -194,7 +232,7 @@ def refresh_feed(
         # Aging the queue and trimming the Inbox belong right after new
         # episodes arrive: that is the moment the counts actually change.
         host.podcast_run_maintenance()
-        return arrived
+        return routed
 
     from quill.ui.podcasts.show_actions import announce_if_feed_auth_failure
 
@@ -213,13 +251,19 @@ def refresh_feed(
                 on_done(show_id, ok=False)
 
     def _record_failure(exc: BaseException) -> None:
+        from quill.core.podcasts.feed_problems import plain
+
         announce_if_feed_auth_failure(exc, show, announce=host._announce)
         # A run of failures earns one sentence, not one per check (7.19). Cast
         # keeps trying either way -- the notice says so, because "this feed has
         # failed" otherwise reads as "and I have given up".
         from quill.core.podcasts import check_state
 
-        check_state.record_failure(host._podcast_library, show)
+        check_state.record_failure(
+            host._podcast_library,
+            show,
+            reason=plain(exc),
+        )
         notice = check_state.failure_notice(host._podcast_library, show)
         if notice:
             host._announce(notice, force=True)
@@ -233,7 +277,7 @@ def refresh_feed(
             app_data_dir(),
             problem_log.KIND_FEED,
             show.title or show.feed_url,
-            str(exc) or exc.__class__.__name__,
+            plain(exc),
             target=show.id,
         )
 

@@ -16,13 +16,14 @@ no audio in memory -- only file paths and sizes -- so memory stays flat.
 
 The public seam used by ``read_aloud`` is :func:`cached_sentence_generator`,
 which wraps an engine's ``generate_sentence_wav`` closure so the existing
-playback loop needs no changes: on a cache hit the cached WAV is copied to the
-caller's output path instead of being re-rendered.
+playback loop needs no changes: on a cache hit the cached WAV is materialized
+at the caller's output path instead of being re-rendered.
 """
 
 from __future__ import annotations
 
 import hashlib
+import os
 import shutil
 import threading
 from collections import OrderedDict
@@ -180,15 +181,23 @@ def cached_sentence_generator(
 
     store = cache if cache is not None else default_cache()
 
+    def materialize(hit: Path, out: Path) -> bool:
+        try:
+            out.unlink(missing_ok=True)
+            os.link(hit, out)
+            return True
+        except OSError:
+            try:
+                shutil.copyfile(hit, out)
+                return True
+            except OSError:
+                return False
+
     def generate(sentence: str, out: Path) -> None:
         key = signature(seed, sentence)
         hit = store.get(key)
-        if hit is not None:
-            try:
-                shutil.copyfile(hit, out)
-                return
-            except OSError:
-                pass
+        if hit is not None and materialize(hit, out):
+            return
         generate_sentence_wav(sentence, out)
         try:
             if out.exists() and out.stat().st_size > 0:

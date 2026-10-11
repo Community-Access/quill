@@ -94,15 +94,21 @@ def test_an_imported_shows_first_check_routes_and_announces_nothing(
 ) -> None:
     show = PodcastShow(id="s1", title="The Mayan Crystal", feed_url="https://rss.art19.com/m")
     host = _Host(show)
+    completed: list[tuple[str, dict[str, Any]]] = []
     monkeypatch.setattr(
         feed_reader,
         "fetch_and_parse_feed",
         lambda *_a, **_k: FeedInfo(title="T", homepage="", artwork_url="", episodes=_episodes()),
     )
 
-    feed_refresh.refresh_feed(host, "s1")
+    feed_refresh.refresh_feed(
+        host,
+        "s1",
+        on_done=lambda show_id, **result: completed.append((show_id, result)),
+    )
 
     assert host.routed == [[]]
+    assert completed == [("s1", {"ok": True, "new_episodes": 0})]
     assert not [line for line in host.spoken if "new episode" in line.lower()]
     assert len(show.episodes) == 3
     assert host.saved == 1

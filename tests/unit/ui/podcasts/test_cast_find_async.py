@@ -165,7 +165,7 @@ def test_a_failed_search_says_so_once_and_a_superseded_one_says_nothing(host: _H
     host._find_box.value = "b"
     host._run_library_find()
     host._task_manager.jobs[0]["on_failure"]("op0", RuntimeError("disk"))
-    assert host.spoken == ["Find could not search your library. Try again."]
+    assert host.spoken == ["Find could not look through your library. Try again."]
     host._task_manager.jobs[0]["on_failure"]("op0", CancelledError("superseded"))
     assert len(host.spoken) == 1
 

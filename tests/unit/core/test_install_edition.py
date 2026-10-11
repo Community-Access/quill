@@ -117,13 +117,12 @@ def test_running_portable_agrees_about_numbered_uninstallers(tmp_path, monkeypat
 def test_the_installers_ship_their_edition_marker() -> None:
     """The wiring half: each installer stages a marker the updater can read."""
     repo = Path(__file__).resolve().parents[3]
-    # Quill Radio ships one installer since 3.0.0 (the thin one was retired, as
-    # QUILL Lite's was), so the thin-installer half is checked on Cast, which
-    # still ships both.
+    # Radio, Converter, and Cast now each ship one full installer. Their retired
+    # thin installers must not remain as stale hand-buildable release surfaces.
     for app, name, expected in (
         ("radio", "quill-radio.iss", edition.INSTALLER_FULL),
         ("converter", "quill-converter.iss", edition.INSTALLER_FULL),
-        ("cast", "quill-cast-lite.iss", edition.INSTALLER_LITE),
+        ("cast", "quill-cast-shared.iss", edition.INSTALLER_FULL),
     ):
         installer_dir = repo / "standalone" / app / "installer"
         source = (installer_dir / name).read_text(encoding="utf-8")

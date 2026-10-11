@@ -37,6 +37,8 @@ import logging
 from collections.abc import Sequence
 from typing import Any
 
+from quill.ui.podcasts.say_status import say_status
+
 logger = logging.getLogger(__name__)
 
 __all__ = [
@@ -224,8 +226,6 @@ class CastLibraryFindMixin:
                 pass
 
     def _start_library_find(self, *, announce: bool) -> str:
-        import wx
-
         query = self._library_find_query()
         if not query:
             return ""
@@ -252,8 +252,7 @@ class CastLibraryFindMixin:
             )
 
         manager = getattr(self, "_task_manager", None)
-        event_loop = wx.EventLoop.GetActive()
-        if manager is None or event_loop is None:
+        if manager is None:
             return self._apply_library_find(work(None), generation, announce=announce)
         task = manager.submit(
             "cast-library-find",
@@ -304,10 +303,7 @@ class CastLibraryFindMixin:
         said = match_count_sentence(outcome.total, outcome.query)
         status = getattr(self, "_find_status", None)
         if status is not None:
-            try:
-                status.SetLabel(said)
-            except RuntimeError:
-                pass
+            say_status(status, said)
         if announce:
             self._announce(said)
         return said
@@ -319,7 +315,7 @@ class CastLibraryFindMixin:
             return  # superseded: the newer search speaks for itself
         logger.warning("Find in library failed: %s", exc.__class__.__name__)
         if announce:
-            self._announce("Find could not search your library. Try again.")
+            self._announce("Find could not look through your library. Try again.")
 
     def _end_library_find(self, *, announce: bool = True) -> None:
         """Back to the library, the cursor on the row it left."""
@@ -334,10 +330,7 @@ class CastLibraryFindMixin:
         self._find_return_key = None
         status = getattr(self, "_find_status", None)
         if status is not None:
-            try:
-                status.SetLabel("")
-            except RuntimeError:
-                pass
+            say_status(status, "", speak=False)
         place = getattr(self, "_find_return_place", "")
         self._find_return_place = ""
         if place and callable(getattr(self, "show_place", None)):

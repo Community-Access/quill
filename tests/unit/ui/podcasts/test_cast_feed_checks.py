@@ -201,6 +201,7 @@ def test_a_merged_feed_reports_its_new_episodes_and_refreshes_the_search_index(
     show, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     monkeypatch.setattr("quill.ui.quiet_hours_ui.held_back", lambda _kind: True)
+    show.episodes.append(PodcastEpisode(guid="old", title="Existing", audio_url=""))
     host = _RefreshHost(show)
     done: list[tuple[str, dict]] = []
     feed_refresh.refresh_feed(host, "p", on_done=lambda sid, **kw: done.append((sid, kw)))

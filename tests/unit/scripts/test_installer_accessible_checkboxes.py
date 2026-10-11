@@ -50,7 +50,6 @@ def test_every_family_installer_is_covered() -> None:
         "quilllite.iss",
         "quill-cast.iss",
         "quill-cast-shared.iss",
-        "quill-cast-lite.iss",
         "quill-weather.iss",
         "quill-weather-lite.iss",
         "quill-audio-studio.iss",
