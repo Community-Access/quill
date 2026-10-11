@@ -146,3 +146,42 @@ def test_live_companion_preferences_search_and_keyboard_preserve_values(applicat
     finally:
         surface.dialog.Destroy()
         application.Yield()
+
+
+@pytest.mark.machine_global
+def test_disabled_setting_is_labelled_and_not_focused(application):
+    """A greyed-out setting still turns up, says so in its row, and is not moved to."""
+    from quill.ui.app_context_help import ensure_help_provider
+
+    ensure_help_provider()
+    dialog = wx.Dialog(None, title="Test Preferences")
+    root = wx.BoxSizer(wx.VERTICAL)
+    page = wx.Panel(dialog)
+    on_start = wx.CheckBox(page, label="Play a sound when the app starts")
+    on_close = wx.CheckBox(page, label="Play a sound when the app closes")
+    on_close.Disable()
+    rows = wx.BoxSizer(wx.VERTICAL)
+    rows.Add(on_start)
+    rows.Add(on_close)
+    page.SetSizer(rows)
+    root.Add(page, 1, wx.EXPAND)
+    dialog.SetSizer(root)
+    spoken = []
+    try:
+        search = install_preferences_search(dialog, announce=spoken.append)
+        dialog.Show()
+        application.Yield()
+        search.search.SetValue("play a sound")
+        application.Yield()
+        assert search.results.GetStrings() == [
+            "Play a sound when the app starts",
+            "Play a sound when the app closes (disabled)",
+        ]
+        search.results.SetSelection(1)
+        search._on_choose(None)
+        assert spoken == ["This setting is disabled"]
+        assert wx.Window.FindFocus() is not on_close
+        search.close()
+    finally:
+        dialog.Destroy()
+        application.Yield()
