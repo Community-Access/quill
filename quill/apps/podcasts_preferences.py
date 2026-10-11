@@ -89,7 +89,8 @@ def app_rows(host: Any) -> list[AppRow]:
             "winamp_playback_keys",
             "&Winamp playback keys (Z X C V B, arrows to seek)",
             "The classic Winamp playback keys in the Now Playing window. "
-            "Letters in the main library and episode lists always jump to rows.",
+            "Turn them off to keep those letters available for list typeahead; "
+            "letters in the main library and episode lists always jump to rows.",
             "playing",
         ),
         AppRow(

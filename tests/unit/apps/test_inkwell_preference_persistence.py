@@ -23,7 +23,7 @@ def frame(app, tmp_path, monkeypatch):
 
     instance = QuillInkwellFrame(safe_mode=True)
     yield instance
-    instance._flush_preference_writes()
+    instance._preference_saver.flush()
     instance._task_manager.shutdown(wait=True)
     timer = getattr(instance, "_ipc_timer", None)
     if timer is not None:
@@ -33,7 +33,7 @@ def frame(app, tmp_path, monkeypatch):
 
 
 def test_preference_effect_is_immediate_while_storage_is_blocked(frame, monkeypatch):
-    from quill.apps import inkwell
+    from quill.apps import inkwell_preference_save as inkwell
 
     entered = threading.Event()
     release = threading.Event()
@@ -62,7 +62,7 @@ def test_preference_effect_is_immediate_while_storage_is_blocked(frame, monkeypa
 
 
 def test_repeated_changes_coalesce_to_a_detached_latest_snapshot(frame, monkeypatch):
-    from quill.apps import inkwell
+    from quill.apps import inkwell_preference_save as inkwell
 
     entered = threading.Event()
     release = threading.Event()
@@ -86,7 +86,7 @@ def test_repeated_changes_coalesce_to_a_detached_latest_snapshot(frame, monkeypa
     finally:
         release.set()
 
-    frame._flush_preference_writes()
+    frame._preference_saver.flush()
     assert len(saved) == 2
     assert saved[0].announce_expansions
     assert not saved[0].start_in_tray
@@ -97,7 +97,7 @@ def test_repeated_changes_coalesce_to_a_detached_latest_snapshot(frame, monkeypa
 
 
 def test_failed_preference_write_is_announced_and_keeps_live_value(frame, monkeypatch):
-    from quill.apps import inkwell
+    from quill.apps import inkwell_preference_save as inkwell
     from quill.stability import task_manager
 
     callbacks = []
@@ -111,15 +111,15 @@ def test_failed_preference_write_is_announced_and_keeps_live_value(frame, monkey
     monkeypatch.setattr(frame, "_announce", announcements.append)
     frame._set_pref("start_in_tray", True)
 
-    task = frame._preference_save_task
+    task = frame._preference_saver._task
     with pytest.raises(OSError, match="settings file unavailable"):
         task.future.result(timeout=5)
-    frame._flush_preference_writes()
+    frame._preference_saver.flush()
     for callback in callbacks:
         callback()
 
     assert frame._settings.start_in_tray
-    assert frame._preference_save_dirty
+    assert frame._preference_saver._dirty
     assert announcements == [
         "Inkwell preferences could not be saved. Changes remain active for this session."
     ]

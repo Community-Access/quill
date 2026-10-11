@@ -24,9 +24,11 @@ from __future__ import annotations
 import base64
 import re
 import ssl
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
+from collections.abc import Callable
 from dataclasses import dataclass, field
 
 import feedparser
@@ -38,6 +40,7 @@ from quill.core.net_retry import retry_transient
 from quill.core.podcasts import feed_auth, feed_problems, namespace_tags, transport
 from quill.core.podcasts.models import PodcastEpisode
 from quill.core.podcasts.namespace_tags import NamespaceTags
+from quill.stability.task_manager import CancelledError
 
 _TIMEOUT_SECONDS = 15.0
 #: The secure try at a plain-http address is a courtesy, so it gets one
@@ -88,6 +91,10 @@ class FeedAuthError(FeedReaderError):
     (check.md bug 6), because Feed Credentials cannot fix either."""
 
     code = "QUILL-PODCASTS-FEED-AUTH"
+
+
+class FeedTimeoutError(FeedReaderError):
+    code = "QUILL-PODCASTS-FEED-TIMEOUT"
 
 
 def refuse_in_safe_mode(safe_mode: bool) -> None:
@@ -323,6 +330,25 @@ def _fetch_feed_bytes(
     )
 
 
+def _read_bounded(response: object, deadline: float | None, is_cancelled: object) -> bytes:
+    """Read a response in chunks while honoring cancellation and a deadline."""
+    if deadline is None and not callable(is_cancelled):
+        raw = response.read(_MAX_BYTES)  # type: ignore[attr-defined]
+        if not isinstance(raw, bytes):
+            raise TypeError("Podcast feed response did not return bytes.")
+        return raw
+    chunks: list[bytes] = []
+    while True:
+        if callable(is_cancelled) and is_cancelled():
+            raise CancelledError()
+        if deadline is not None and time.monotonic() >= deadline:
+            raise FeedTimeoutError("Podcast feed took too long to answer.")
+        chunk = response.read(64 * 1024)  # type: ignore[attr-defined]
+        if not chunk:
+            return b"".join(chunks)
+        chunks.append(chunk)
+
+
 def _parse_number(raw: object) -> int:
     """``itunes:season`` / ``itunes:episode`` as a count; 0 when unreadable.
 
@@ -497,6 +523,7 @@ def fetch_and_parse_feed(
     safe_mode: bool = False,
     redirected_to: list[str] | None = None,
     notes: FetchNotes | None = None,
+    is_cancelled: Callable[[], bool] | None = None,
 ) -> FeedInfo:
     """Fetch *url* and parse it in one step.
 
@@ -510,12 +537,16 @@ def fetch_and_parse_feed(
     ``not_modified`` set -- nothing to merge, and nothing wrong.
     """
     refuse_in_safe_mode(safe_mode)
+    if is_cancelled is not None and is_cancelled():
+        raise CancelledError()
     notes = notes if notes is not None else FetchNotes()
     raw_bytes = _fetch_feed_bytes(
         url, username=username, password=password, redirected_to=redirected_to, notes=notes
     )
     if notes.not_modified:
         return FeedInfo(title="", homepage="", artwork_url="", episodes=[], not_modified=True)
+    if is_cancelled is not None and is_cancelled():
+        raise CancelledError()
     info = parse_feed(raw_bytes)
     info.truncated = notes.truncated
     return info
