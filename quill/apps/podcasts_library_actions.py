@@ -59,7 +59,7 @@ class CastLibraryActionsMixin:
                 ("&Stop" if playing else "&Play Next Episode", self._on_library_play_stop_context),
                 (fav_label, self._on_library_favorite_toggle_context),
                 ("&Move to Folder...\tCtrl+Shift+V", self._on_library_move_to_folder),
-                ("&Copy to Folder...\tCtrl+Shift+Y", self._on_library_copy_to_folder),
+                ("Cop&y to Folder...\tCtrl+Shift+Y", self._on_library_copy_to_folder),
                 ("Move Up in &Custom Order\tAlt+Up", lambda: self._on_library_move_show(-1)),
                 ("Move Do&wn in Custom Order\tAlt+Down", lambda: self._on_library_move_show(1)),
                 ("Download &All Episodes", self._on_library_download_all_episodes),
