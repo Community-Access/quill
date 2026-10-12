@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>building-windows-family</title>
+  <title>Building the QUILL Windows family</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -245,14 +245,74 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
 <h1 id="building-the-quill-windows-family">Building the QUILL Windows
 family</h1>
 <p>Run these commands in PowerShell from the repository root on Windows.
 They build unsigned local artifacts; they do not publish a release. Use
 a clean checkout at the commit you want to ship. Inno Setup 7, Pandoc
-3.10, and Python 3.13 are required. The build scripts check the Python
+3.10, and Python 3.14 are required. The build scripts check the Python
 environment and the shared runtime before packaging.</p>
 <p>QUILL Lite is an editor app in its own right. The <strong>Lite
 installer edition</strong> and <strong>Companion ZIP edition</strong> of
@@ -262,7 +322,7 @@ a portable ZIP for each app.</p>
 environment</h2>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="va">$ErrorActionPreference</span> <span class="op">=</span> <span class="st">&#39;Stop&#39;</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="va">$python</span> <span class="op">=</span> py <span class="op">-</span><span class="dv">3.13</span> <span class="op">-</span>c <span class="st">&#39;import sys; print(sys.executable)&#39;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="va">$python</span> <span class="op">=</span> py <span class="op">-</span><span class="dv">3.14</span> <span class="op">-</span>c <span class="st">&#39;import sys; print(sys.executable)&#39;</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="va">$iscc</span> <span class="op">=</span> <span class="fu">Join-Path</span> <span class="va">$env</span><span class="op">:</span><span class="va">LOCALAPPDATA</span> <span class="st">&#39;Programs\Inno Setup 7\ISCC.exe&#39;</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="op">(-not</span> <span class="op">(</span><span class="fu">Test-Path</span> <span class="op">-</span>LiteralPath <span class="va">$iscc</span><span class="op">))</span> <span class="op">{</span> <span class="cf">throw</span> <span class="st">&#39;Install Inno Setup 7 or set $iscc to its ISCC.exe.&#39;</span> <span class="op">}</span></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="va">$python</span> <span class="op">-</span>m pip install <span class="op">--</span>find-links vendor<span class="op">/</span>wheels <span class="op">-</span>e <span class="st">&#39;.[runtime,packaging,dev]&#39;</span></span>
@@ -275,7 +335,7 @@ counterparts to files containing the values, or retain an existing
 ignored <code>quill/_podcast_index_key.py</code> from a prior build. The
 key file must never be committed. The build stops if neither source
 supplies a pair.</p>
-<p>GitHub's <code>dev-builds</code> workflow also requires repository
+<p>GitHub’s <code>dev-builds</code> workflow also requires repository
 secrets named <code>QUILL_PODCAST_INDEX_KEY</code> and
 <code>QUILL_PODCAST_INDEX_SECRET</code>. The workflow passes them only
 to the sibling build step. Without them, the shared runtime correctly
@@ -349,5 +409,6 @@ class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb5-
 <code>standalone/weather-ios/</code> have no Windows
 <code>build_release.ps1</code> target. Build and test the macOS and iOS
 projects on their respective platform toolchains.</p>
+</main>
 </body>
 </html>
