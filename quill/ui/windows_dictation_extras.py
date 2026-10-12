@@ -219,6 +219,8 @@ class DictationExtrasMixin:
         except OSError as error:
             self._dictation_say(f"Quill Inkwell could not be given your settings: {error}")  # type: ignore[attr-defined]
             return
+        if self._dictation_hand_to_transcribe():
+            return
         if not launch_app("inkwell", extra_args=("--dictate-anywhere",)):
             self._dictation_say(  # type: ignore[attr-defined]
                 "Quill Inkwell is not installed with this copy. Install it from "
@@ -229,6 +231,27 @@ class DictationExtrasMixin:
             "Quill Inkwell is starting with your dictation settings. Choose the "
             "Dictate Anywhere key in its File menu."
         )
+
+    def _dictation_hand_to_transcribe(self) -> bool:
+        """QUILL Transcribe owns Dictate Anywhere where it runs or is released:
+        hand the settings there instead of to Inkwell (quill/core/dictation_owner.py)."""
+        from quill.core.app_launcher import is_app_released, launch_app
+        from quill.core.dictation_owner import current_owner
+
+        if current_owner() == "transcribe":
+            from quill.core.ipc import enqueue_open_request
+
+            enqueue_open_request(None, slot="transcribe")  # it takes the hand-off when shown
+        elif not (
+            is_app_released("transcribe")
+            and launch_app("transcribe", extra_args=("--dictate-anywhere",))
+        ):
+            return False
+        self._dictation_say(  # type: ignore[attr-defined]
+            "QUILL Transcribe has your dictation settings. Use its start and stop key, "
+            "or its tray menu, in the program you want to dictate into."
+        )
+        return True
 
     # -- status --------------------------------------------------------------------- #
 

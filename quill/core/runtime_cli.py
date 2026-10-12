@@ -49,6 +49,7 @@ _STARTUP_HEALERS = (
     ("quill.platform.windows.weather_startup", "heal_launch_at_startup"),
     ("quill.platform.windows.inkwell_startup", "heal_launch_at_startup"),
     ("quill.platform.windows.cast_startup", "heal_launch_at_startup"),
+    ("quill.platform.windows.transcribe_startup", "heal_launch_at_startup"),
 )
 
 

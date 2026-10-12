@@ -19,6 +19,11 @@ Settings, **Dictate in Other Programs...**. The read-back defaults to a tone:
 the screen reader echoes typed characters itself.
 
 Refused in Safe Mode, which exists to touch nothing.
+
+**One owner** (2026-10-11): while QUILL Transcribe runs it owns Dictate Anywhere,
+and Inkwell's key is passed on to it rather than opening a second microphone
+(:mod:`quill.core.dictation_owner`). Inkwell holds the owner lock only for the
+length of its own session.
 """
 
 from __future__ import annotations
@@ -151,14 +156,47 @@ class InkwellDictationMixin:
         controller = self._anywhere_controller()
         if controller.active:
             controller.finish()  # keeps the phrase being spoken
+            return
+        if self._passed_to_transcribe():
+            return
+        controller.start()
+        if not controller.active:
+            self._release_anywhere_owner()
+
+    # -- one owner (quill/core/dictation_owner.py) ----------------------------- #
+
+    def _passed_to_transcribe(self) -> bool:
+        """QUILL Transcribe owns Dictate Anywhere while it runs: pass the key on.
+
+        Otherwise Inkwell takes the owner lock for this one session, so QUILL
+        Transcribe cannot start a second microphone while Inkwell is listening.
+        """
+        from quill.core.dictation_owner import OwnerLock, send_request
+
+        lock = getattr(self, "_anywhere_owner", None)
+        if lock is None:
+            lock = OwnerLock("inkwell")
+            self._anywhere_owner = lock
+        if lock.claim():
+            return False
+        if send_request("toggle", sender="inkwell"):
+            self._set_status("Dictate Anywhere passed to QUILL Transcribe.")  # type: ignore[attr-defined]
         else:
-            controller.start()
+            self._announce("QUILL Transcribe is dictating, and could not be reached.")  # type: ignore[attr-defined]
+        return True
+
+    def _release_anywhere_owner(self) -> None:
+        lock = getattr(self, "_anywhere_owner", None)
+        if lock is not None:
+            lock.release()
 
     def dictate_anywhere_active(self) -> bool:
         controller = getattr(self, "_anywhere", None)
         return bool(controller is not None and controller.active)
 
     def _dictation_anywhere_changed(self) -> None:
+        if not self.dictate_anywhere_active():
+            self._release_anywhere_owner()  # the session is over: QUILL Transcribe may own it
         item = getattr(self, "_anywhere_item_id", None)
         menu_bar = self.frame.GetMenuBar() if item is not None else None
         if menu_bar is not None:
@@ -214,3 +252,4 @@ class InkwellDictationMixin:
         controller = getattr(self, "_anywhere", None)
         if controller is not None:
             controller.shut_down()
+        self._release_anywhere_owner()

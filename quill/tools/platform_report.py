@@ -157,6 +157,11 @@ GATES: tuple[Gate, ...] = (
         (sys.executable, "-m", "quill.tools.inkwell_help_audit"),
     ),
     Gate(
+        "transcribe-help",
+        "GATE-TRANSCRIBE-HELP: every QUILL Transcribe surface and control answers F1",
+        (sys.executable, "-m", "quill.tools.transcribe_help_audit"),
+    ),
+    Gate(
         "weather-help",
         "GATE-WEATHER-HELP: every Weather surface and control answers F1",
         (sys.executable, "-m", "quill.tools.weather_help_audit"),
