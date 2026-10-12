@@ -445,7 +445,7 @@ Control coverage: 294 audited sites (180 helped, 114 named-help).
 
 ## QUILL Cast
 
-Control coverage: 302 audited sites (198 helped, 104 named-help).
+Control coverage: 305 audited sites (209 helped, 96 named-help).
 
 ### Every window, and what it is for
 
@@ -1549,7 +1549,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## QUILL Lite
 
-Control coverage: 155 audited sites (155 helped).
+Control coverage: 156 audited sites (156 helped).
 
 ### Every window, and what it is for
 
