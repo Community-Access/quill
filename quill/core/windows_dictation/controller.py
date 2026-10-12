@@ -45,6 +45,7 @@ from collections.abc import Callable
 from quill.core.action_feedback import resolve
 from quill.core.error_codes import CodedError
 from quill.core.windows_dictation.composer import compose, spoken_form
+from quill.core.windows_dictation.echo_guard import EchoGuard
 from quill.core.windows_dictation.editing import EditingMixin
 from quill.core.windows_dictation.history import DictatedPhrase, PhraseHistory
 from quill.core.windows_dictation.live import LiveMixin
@@ -139,6 +140,7 @@ class DictationController(
         self._restarted = False  # the one silent engine restart, spent
         self._last_spoken = ""
         self._init_live()  # live.py: preview, anchor, finishing, muting
+        self._echo = EchoGuard(self._clock)  # echo_guard.py: the read-back, heard again
         self._init_voice_commands()  # voice_commands.py: modes, targets, the library
         self._init_transcript()  # transcript.py: live transcripts
         self._init_target_hold()  # target_hold.py: paused while the field cannot be written
@@ -318,7 +320,13 @@ class DictationController(
             return  # paused for its field: kept, not written (target_hold.py)
         if self._state not in _LIVE:
             return
-        heard = wake_words(" ".join(word.display for word in phrase.words))
+        said = " ".join(word.display for word in phrase.words)
+        if self._echo.is_echo(said):
+            self._feedback.show(
+                f"Not written again: {said} (the read-back, heard by the microphone)."
+            )
+            return
+        heard = wake_words(said)
         if is_stop_phrase(heard, preferences.stop_phrase):
             self.stop()
             return
@@ -464,6 +472,7 @@ class DictationController(
         self.history.push(DictatedPhrase(text, start, end, auto_period=parsed.auto_period))
         self._after_insert(text)
         self.recent.appendleft(" ".join(text.split()))
+        self._echo.wrote(text)
         spoken = spoken_form(pieces, text)
         heard = spoken_marks(text, preferences.speech_language)
         if not preferences.readback_marks or not any(c.isalnum() for c in text):
