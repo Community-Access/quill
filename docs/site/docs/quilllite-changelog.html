@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.12" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL Lite changelog</title>
   <style>
@@ -243,7 +243,57 @@
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content" tabindex="-1">
 <h1 id="quill-lite-changelog">QUILL Lite changelog</h1>
+<h2 id="unreleased">Unreleased</h2>
+<p>Testing rebuild: <strong>1.2.0 (build 3)</strong>, following the
+previously uploaded build 2. The new packages have not been published
+yet.</p>
+<ul>
+<li><strong>Routine settings saves run in the background.</strong>
+Preferences, recent files, window/view settings, spelling, page setup,
+recovery-related settings and update choices queue detached settings
+snapshots on one ordered writer. Pending requests keep the latest
+settings; failures remain visible in Activity with Retry and Open
+Folder. Shutdown waits for queued settings writes; this is not a promise
+that every shutdown path is nonblocking.</li>
+<li><strong>HTTPS uses the Windows certificate store.</strong> Python
+HTTPS requests use trusted Windows and organization-managed roots
+without turning off hostname or certificate verification. Genuinely
+invalid certificates still fail. Portable packaging checks that the
+declared certificate-store backend is included.</li>
+<li><strong>The installer is current-user only.</strong> It no longer
+offers an all-users install that requires administrator approval; QUILL
+Lite and the shared runtime go in your Windows profile.</li>
+<li><strong>Transcription results can be reopened from
+Notifications.</strong> QUILL Lite saves each completed transcript
+privately and adds a completion notice that opens it on activation. The
+transcript stays separate from the document you were editing.</li>
+<li><strong>Transcription model availability is prepared in the
+background.</strong> The recording dialog no longer performs its
+potentially slow model inspection while constructing the window. Cloud
+choices still require a usable key, remain unavailable in Safe Mode, and
+are never selected automatically.</li>
+<li><strong>Build 2’s local-audio fix is retained.</strong> The real
+cancellation-token state is checked for every supported engine, and
+Windows Media Foundation can supply duration when the other metadata
+readers cannot. The initial 1.2.0 workflow below opened results
+immediately; build 3 uses the saved Notifications workflow above.</li>
+</ul>
 <h2 id="120--2026-10-03">1.2.0 – 2026-10-03</h2>
+<h3 id="local-audio-transcription">Local audio transcription</h3>
+<ul>
+<li>Fixed the shared background transcription runner so it checks the
+cancellation token’s state instead of treating the check method as a
+truthy value. Local Whisper, Parakeet, and other supported engines can
+now return their transcript.</li>
+<li>Added a Windows Media Foundation fallback for reading audio duration
+when the other metadata readers cannot determine it, so the
+recording-length and estimated-time details can be shown for supported
+files Windows can read.</li>
+<li>Completed transcripts open in a new document. The destination picker
+is no longer present. In the 1.2.0 release, results were not yet saved
+for on-demand opening from Notifications; the later follow-up is
+recorded under Unreleased above.</li>
+</ul>
 <h3
 id="dictation-gap-plan-read-back-marks-voice-editing-live-transcripts-dictate-anywhere-2026-10-05">Dictation
 gap plan: read-back marks, voice editing, live transcripts, Dictate
@@ -351,10 +401,11 @@ Browse with several at once, or dropped), the language, the speech model
 local one chosen (<code>file_models.py</code>: Parakeet TDT, Parakeet
 Unified, Nemotron, the Whisper family large to small, then the built-in
 two), OpenAI’s file models added live for a saved key outside Safe Mode
-and never preselected – an estimate from the measured speeds, where the
-text goes (a new document, or the cursor when it finishes), Add
+and never preselected – an estimate from the measured speeds, Add
 timestamps (off unless checked), and Obey spoken punctuation and
-commands (off: “new paragraph” in a recording is words).</li>
+commands (off: “new paragraph” in a recording is words). There is no
+destination picker; the completed transcript opens in a new
+document.</li>
 <li><strong>The pipeline</strong> (<code>file_transcribe.py</code>), on
 the task manager: decode to 16 kHz mono a second at a time
 (<code>audio_file.py</code>: libsndfile for WAV, FLAC, Ogg, Opus and
@@ -853,6 +904,50 @@ and the save that later works is said too
 lost.</strong> It used to be dropped without trace. It is now a review
 row in Activity, never spoken
 (<code>quill/ui/surface_lifetime.py</code>).</li>
+</ul>
+<h3
+id="your-own-api-key-can-be-a-google-gemini-key-and-you-choose-which-x-07">Your
+own API key can be a Google Gemini key, and you choose which (X-07)</h3>
+<ul>
+<li><strong>Use My Own API Key</strong> (<code>Alt+F2</code>, was Use My
+Own OpenAI Key) now starts with a <strong>Provider</strong> choice:
+OpenAI or Google Gemini. The explanation, the key box, the model list
+and the cost estimates all follow it. The choice is saved as
+<code>ai_own_key_provider</code>; empty means OpenAI, so a key saved in
+1.1 keeps working exactly as before.</li>
+<li><strong>Chosen, never guessed.</strong> Nothing is inferred from a
+key or a model name, and nothing falls back from one provider to the
+other: with Gemini chosen and only an OpenAI key saved, AI help stays on
+the free service and OK says the OpenAI key is not being used. A key
+typed for one provider is cleared, and you are told, when you change the
+provider.</li>
+<li><strong>One key per provider</strong>, each in Windows’ credential
+store (or the portable copy’s encrypted file), shared with QUILL. Remove
+the Saved Key forgets only the chosen provider’s.</li>
+<li><strong>Gemini answers stream</strong>, from Google’s
+<code>streamGenerateContent</code>, over HTTPS, with the key in a
+request header rather than the address. Gemini models are listed in a
+fixed order – released before preview, newest first, Flash, Flash-Lite,
+Pro – with their own estimated costs, and the window says what Google’s
+free tier means for your text.</li>
+<li><strong>Stop.</strong> While a request is on its way the pad’s Send
+button is <strong>Stop</strong> (<code>Alt+S</code>): “Stopped. The
+answer will not be shown.” On Gemini the connection closes part way; on
+every other route the answer is dropped when it arrives.</li>
+<li><strong>Plain, spoken errors that never contain your key</strong>: a
+key Gemini refuses (it answers HTTP 400, not 401) is
+<code>QUILL-AI-OWN-KEY-REJECTED</code>; a missing model, a used-up quota
+and a busy service each have their own sentence
+(<code>quill/core/ai/own_key.py</code>, <code>own_key_gemini.py</code>,
+<code>own_key_models.py</code>,
+<code>quill/ui/hosted_ai_own_key.py</code>,
+<code>hosted_ai_service.py</code>,
+<code>hosted_ai_route_words.py</code>, <code>hosted_ai_pad.py</code>;
+<code>tests/unit/core/ai/test_own_key_gemini_route.py</code>,
+<code>tests/unit/ui/test_own_key_dialog.py</code>,
+<code>tests/unit/ui/test_hosted_ai_pad_stop.py</code>).</li>
+<li>Setting: <code>ai_own_key_provider</code> (<code>"openai"</code> or
+<code>"gemini"</code>; empty means OpenAI).</li>
 </ul>
 <h3
 id="large-and-networked-files-open-without-freezing-the-window-f-05">Large

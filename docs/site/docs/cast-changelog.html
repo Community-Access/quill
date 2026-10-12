@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.12" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Changelog</title>
   <style>
@@ -251,6 +251,20 @@ changes; this file keeps the engineering record. The 1.x release notes
 were retired on 2026-10-03.</p>
 <h2 id="unreleased">Unreleased</h2>
 <ul>
+<li><strong>Show notes read as words.</strong> A feed that encodes its
+text twice (<code>&amp;amp;#8217;</code>, common with WordPress podcast
+plugins) left <code>&amp;#8217;</code> in show notes, titles and the
+feed preview, and a screen reader spelled it out. Notes published as
+escaped HTML (<code>&amp;lt;p&amp;gt;</code>) showed their tags. Both
+are read properly now, through one shared cleaner, and a test fails if a
+new reader of publisher text decodes it by hand
+(<code>quill/core/display_text.py</code>).</li>
+<li><strong>Feeds over http and https, explained.</strong> The user
+guide has a new section, “Feeds over http and https” under Feed Check:
+https is tried first, Player Information marks a feed that really is
+plain http, a password is never sent over plain http, and what to do
+when a certificate cannot be verified. Feed Check’s list of reasons now
+quotes the certificate sentence Cast actually says.</li>
 <li>Playback letters now work only in Now Playing. Main library, Places,
 and episode lists keep their letter typeahead; Shift+Right scanning
 moves with the other player keys. This fixes C announcing “Nothing is

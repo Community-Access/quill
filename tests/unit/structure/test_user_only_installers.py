@@ -11,7 +11,6 @@ REPO = Path(__file__).resolve().parents[3]
 USER_ONLY_INSTALLERS = (
     REPO / "standalone" / "cast" / "installer" / "quill-cast.iss",
     REPO / "standalone" / "cast" / "installer" / "quill-cast-shared.iss",
-    REPO / "standalone" / "cast" / "installer" / "quill-cast-lite.iss",
     REPO / "standalone" / "radio" / "installer" / "quill-radio.iss",
     REPO / "standalone" / "quilllite" / "installer" / "quilllite.iss",
 )

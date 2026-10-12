@@ -160,7 +160,7 @@ class PreferencesDataLoad:
     def _report_failure(self) -> None:
         from quill.ui.dialog_contract import dialog_alive
 
-        if dialog_alive(self.dialog.dialog):
+        if dialog_alive(getattr(self.dialog, "dialog", None)):
             self.app._announce(
                 "Radio could not refresh some Preferences data. "
                 "The saved audio device and podcast interval are unchanged."

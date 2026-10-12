@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.12" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Quill Radio User Guide</title>
   <style>
@@ -4254,6 +4254,24 @@ so you can look them up later. See “Notifications” in Chapter 12.</li>
 </ul>
 <p>If you also use QUILL Cast, the two apps share a note of when each
 show was last checked, so they do not both ask the same podcast.</p>
+<h3 id="podcasts-with-http-and-https-addresses">Podcasts with http and
+https addresses</h3>
+<p>Most podcast addresses start with “https”, which means the feed comes
+to you encrypted. Some older shows still use plain “http”, and Quill
+Radio plays those too. It reads feeds the same way QUILL Cast does:</p>
+<ul>
+<li>When an address starts with “http”, Quill Radio asks for it over
+https first, and only uses plain http if the secure way does not
+work.</li>
+<li>A password for a private feed is never sent over plain http. If the
+secure connection turns the sign-in down, Quill Radio stops there.</li>
+<li>Certificates are checked the way Windows checks them, so a site that
+opens in your web browser should open here too.</li>
+</ul>
+<p>If a feed says its security certificate could not be verified, check
+that this computer’s date and time are right and run Windows Update. At
+work, or with security software that inspects secure connections, ask
+whoever looks after the network.</p>
 <h3 id="handing-an-episode-to-quill-cast">Handing an episode to QUILL
 Cast</h3>
 <p>Quill Radio finds and plays podcast episodes. QUILL Cast, its sister

@@ -12,7 +12,6 @@ from __future__ import annotations
 
 import json
 import logging
-import re
 from pathlib import Path
 
 import pytest
@@ -114,13 +113,17 @@ def test_persist_never_raises_even_when_the_folder_cannot_be_written(tmp_path: P
 
 def test_cast_and_radio_class_their_final_writes_as_must_record() -> None:
     root = Path(__file__).resolve().parents[3]
-    cast = (root / "quill" / "apps" / "podcasts_close.py").read_text(encoding="utf-8")
+    # Cast's close moved to ui/podcasts/close_tasks.py, and the library's final
+    # write (now on a worker) records its own failure in main_frame_podcast_save.
+    cast = (root / "quill" / "ui" / "podcasts" / "close_tasks.py").read_text(encoding="utf-8")
+    library = (root / "quill" / "ui" / "main_frame_podcast_save.py").read_text(encoding="utf-8")
     radio = (root / "quill" / "apps" / "radio_shutdown.py").read_text(encoding="utf-8")
-    assert re.search(r'report\.step\(\s*"podcast_library",\s*MUST_RECORD', cast)
-    assert 'report.step("listening_stats", MUST_RECORD' in cast
+    assert '"podcast_library"]):' in library and "ShutdownFailure(str(step), MUST_RECORD" in library
+    assert '("listening_stats", MUST_RECORD, host._podcast_flush_stats)' in cast
     assert 'report.step("last_seen", MUST_RECORD' in radio
     assert 'report.step("recording_marker", MUST_RECORD' in radio
-    assert "report.persist(app_data_dir())" in cast and "report.persist(app_data_dir())" in radio
+    assert "report.persist(data_dir)" in cast and "report.persist(data_dir)" in library
+    assert "report.persist(app_data_dir())" in radio
 
 
 def test_radio_shutdown_runs_every_step_and_persists_through_a_failure(

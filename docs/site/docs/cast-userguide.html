@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.12" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL Cast User Guide</title>
   <style>
@@ -2945,10 +2945,12 @@ failing feed again, press <strong>Retry All Failed</strong>
 or ended.</li>
 <li><strong>This podcast’s web address no longer exists.</strong> The
 website’s name has lapsed.</li>
-<li><strong>The podcast’s site is refusing every connection</strong>,
-<strong>the site’s secure connection is broken</strong>, or <strong>its
-security certificate is not valid</strong>. The site itself is
-broken.</li>
+<li><strong>The podcast’s site is refusing every connection</strong>, or
+<strong>the site’s secure connection is broken</strong>. The site itself
+is broken.</li>
+<li><strong>The site’s security certificate could not be
+verified.</strong> Usually the site’s fault, but not always. See “Feeds
+over http and https” below.</li>
 <li><strong>This address returns a web page, not a podcast
 feed.</strong> The address now leads somewhere else entirely.</li>
 <li><strong>The feed is there, but it has no episodes.</strong> The
@@ -2987,6 +2989,42 @@ secure connection first. Feed checks also run on their own, so a big
 check never holds up a download or anything else you are doing. If a
 feed is so large that Cast cannot read all of it, Player Information
 says so; the newest episodes are always there.</p>
+<h4 id="feeds-over-http-and-https">Feeds over http and https</h4>
+<p>Most podcast addresses start with “https”. That means the feed
+travels to you encrypted, and Cast can check it really came from the
+podcast’s site. Some long-running shows, often small and independent
+ones, still use a plain “http” address. Cast plays those too.</p>
+<ul>
+<li><strong>https comes first.</strong> When an address starts with
+“http”, Cast asks for it over https anyway, and only uses plain http
+when the secure way does not work. Many sites quietly support both, so
+you get the secure one without doing anything.</li>
+<li><strong>You can tell which one a podcast uses.</strong> Player
+Information says <strong>Feed: not encrypted (plain http)</strong> for a
+podcast that really is on plain http. It says nothing about the rest, so
+the line only turns up when it matters.</li>
+<li><strong>Your password is never sent over plain http.</strong> If a
+podcast needs a sign-in and the secure connection says no, Cast stops
+there and tells you. It does not try again in a way that would send your
+username and password where anyone on the network could read them.</li>
+<li><strong>Certificates are checked the way Windows checks
+them.</strong> Cast trusts the same certificates Windows does, so a site
+that opens in your web browser should open here too.</li>
+</ul>
+<p>When a feed will not load:</p>
+<ol type="1">
+<li>Open <strong>Feed Check</strong> and read the reason on the
+podcast’s row.</li>
+<li>If it says the security certificate could not be verified, check
+that this computer’s date and time are right, then run Windows Update.
+An out of date clock is the most common cause.</li>
+<li>At work, or with security software that inspects secure connections,
+ask whoever looks after the network. That software has to be trusted by
+Windows for Cast to trust it.</li>
+<li>If the site really is broken, nothing on your side will fix it.
+<strong>Find This Show’s New Feed…</strong> may find the show somewhere
+else.</li>
+</ol>
 <h3 id="being-told-about-new-episodes">Being told about new
 episodes</h3>
 <p>Cast keeps a list of what it has told you, so the episode that

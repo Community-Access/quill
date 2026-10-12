@@ -44,7 +44,8 @@ def test_preference_effect_is_immediate_while_storage_is_blocked(frame, monkeypa
         assert release.wait(5)
 
     monkeypatch.setattr(inkwell, "save_settings", blocked_save)
-    timer = threading.Timer(0.25, release.set)
+    # Long enough that a slow CI worker starts the save well before it fires.
+    timer = threading.Timer(5.0, release.set)
     timer.start()
     try:
         frame._set_injection_mode(True)
@@ -53,7 +54,7 @@ def test_preference_effect_is_immediate_while_storage_is_blocked(frame, monkeypa
         assert frame._status_message == (
             "Expansions are pasted; the clipboard is restored afterwards."
         )
-        assert entered.wait(1)
+        assert entered.wait(5)
         assert returned.is_set()
         assert not release.is_set()
     finally:

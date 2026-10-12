@@ -61,7 +61,7 @@ class CastMenuBarMixin:
         subs_menu.Append(folder_id, self._menu_label("New &Folder...", "podcasts.new_folder"))
         move_id, copy_id = wx.NewIdRef(), wx.NewIdRef()
         subs_menu.Append(move_id, "&Move to Folder...\tCtrl+Shift+V")
-        subs_menu.Append(copy_id, "Cop&y to Folder...\tCtrl+Shift+Y")
+        subs_menu.Append(copy_id, "&Copy to Folder...\tCtrl+Shift+Y")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._on_library_move_to_folder(), id=move_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._on_library_copy_to_folder(), id=copy_id)
         self._keep_menu_ids(refresh_id, move_id, copy_id)

@@ -20,22 +20,30 @@ from __future__ import annotations
 
 from pathlib import Path
 
-_SOURCE = Path(__file__).resolve().parents[3] / "quill" / "apps" / "podcasts.py"
+_ROOT = Path(__file__).resolve().parents[3]
+# The shows tree is built in ui/podcasts/main_panel.py since the 2026-10
+# integration; the app module and every Cast UI module are scanned, so moving
+# the tree again cannot quietly drop the guard.
+_TREE_SOURCE = _ROOT / "quill" / "ui" / "podcasts" / "main_panel.py"
+_CAST_SOURCES = [
+    _ROOT / "quill" / "apps" / "podcasts.py",
+    *sorted((_ROOT / "quill" / "ui" / "podcasts").glob("*.py")),
+    *sorted((_ROOT / "quill" / "ui").glob("main_frame_podcast*.py")),
+]
 
 
 def test_the_shows_tree_hides_its_root() -> None:
-    source = _SOURCE.read_text(encoding="utf-8")
+    source = _TREE_SOURCE.read_text(encoding="utf-8")
     assert "wx.TR_HIDE_ROOT" in source
 
 
 def test_expanding_the_root_is_guarded_by_the_hide_root_style() -> None:
-    source = _SOURCE.read_text(encoding="utf-8")
-
-    assert "if not (tree.GetWindowStyle() & wx.TR_HIDE_ROOT):" in source
-    # The guard has to be the line immediately before the Expand, or a later
-    # edit could drift them apart and restore the crash.
-    lines = [line.strip() for line in source.splitlines()]
-    expand_lines = [i for i, line in enumerate(lines) if line == "tree.Expand(root)"]
-    assert expand_lines, "the root expansion moved; re-check the hidden-root guard"
-    for index in expand_lines:
-        assert lines[index - 1] == "if not (tree.GetWindowStyle() & wx.TR_HIDE_ROOT):"
+    # Any expansion of a root must be the line right after the hidden-root
+    # guard, or a later edit could drift them apart and restore the crash.
+    for path in _CAST_SOURCES:
+        lines = [line.strip() for line in path.read_text(encoding="utf-8").splitlines()]
+        for index, line in enumerate(lines):
+            if line in ("tree.Expand(root)", "self._shows_tree.Expand(root)"):
+                assert lines[index - 1] == "if not (tree.GetWindowStyle() & wx.TR_HIDE_ROOT):", (
+                    f"{path.name}:{index + 1} expands a root without the hidden-root guard"
+                )

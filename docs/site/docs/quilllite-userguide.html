@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.12" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL Lite User Guide</title>
   <style>
@@ -257,6 +257,12 @@ this guide tells you, and tells you what it means for you.</p>
 <p>If you write letters, notes, stories, web pages or settings files,
 and you find your way around Windows with NVDA or JAWS, QUILL Lite is
 for you. It is free, and it is small on purpose.</p>
+<p>The installer is <strong>for your Windows account only</strong> and
+does not need administrator approval. It puts QUILL Lite and its shared
+runtime in your user profile. One separate setting, <strong>Open QUILL
+Lite instead of Notepad</strong>, changes Notepad for everyone who uses
+the computer and therefore does require administrator approval; that
+setting is described later in this guide.</p>
 <h3 id="what-you-will-be-able-to-do">What you will be able to do</h3>
 <p>By the time you have read this guide you will be able to open any
 text file and save it back without changing a thing you did not mean to
@@ -858,6 +864,12 @@ spelling, or waiting for the wake phrase</td>
 <td>starts or stops dictation</td>
 </tr>
 <tr>
+<td><strong>Notifications</strong></td>
+<td>Progress and results from background work, including audio
+transcription</td>
+<td>reads a notification or opens its result</td>
+</tr>
+<tr>
 <td><strong>Encoding</strong></td>
 <td>How this file stores its letters and accents</td>
 <td>change it</td>
@@ -874,7 +886,7 @@ spelling, or waiting for the wake phrase</td>
 </tr>
 </tbody>
 </table>
-<p>That is fourteen parts. Most of them explain themselves. A few are
+<p>That is fifteen parts. Most of them explain themselves. A few are
 worth a closer look.</p>
 <h5 id="status-message">Status Message</h5>
 <p>Speech is gone the moment it is spoken. If QUILL Lite said something
@@ -6048,9 +6060,10 @@ how long the recording is, and about how long it should take on your
 computer, for example “The recording is 12 minutes long. With NVIDIA
 Parakeet TDT 0.6B v3, transcribing it should take about 6 minutes on
 this computer.”</li>
-<li>Choose where the text goes in <strong>Put the text in</strong>
-(Alt+I): <strong>A new document</strong>, which is already chosen, or
-<strong>This document, at the cursor, when it finishes</strong>.</li>
+<li>There is no output-location choice. QUILL Lite saves the finished
+transcript privately. Activate its completion notice in
+<strong>Notifications</strong> to open it in a new document; it does not
+insert text into the document you were editing.</li>
 <li>Press <strong>Enter</strong>. You hear “Transcribing meeting.mp3 in
 the background.”</li>
 <li>Carry on with whatever you were doing. The status bar shows how far
@@ -6182,24 +6195,20 @@ few minutes after the last transcription finishes, which gives its
 memory back.</p>
 <h4 id="where-the-text-goes">Where the text goes</h4>
 <ul>
-<li><strong>A new document.</strong> The transcript opens in a new,
-untitled window when it is ready. Nothing is saved until you save it
-with <strong>Ctrl+S</strong>.</li>
-<li><strong>This document, at the cursor.</strong> The transcript goes
-where the cursor is in the window you started from, at the moment it
-finishes, as paragraphs of its own. <strong>Ctrl+Z</strong> takes the
-whole thing back in one step. If that window has been closed or is
-read-only by then, the transcript opens in a new document instead, and
-you are told why.</li>
+<li><strong>Saved privately until you open it.</strong> When
+transcription finishes, the transcript is saved without changing the
+document you were editing. Activate the completion notice in
+<strong>Notifications</strong> to open it in a new document; the
+Transcribe a Recording window has no destination picker.</li>
 </ul>
 <h4 id="several-recordings-checking-on-it-and-stopping">Several
 recordings, checking on it, and stopping</h4>
 <ul>
 <li><strong>Several at once.</strong> In Browse, hold
 <strong>Ctrl</strong> and choose more than one file. They are
-transcribed one after another with the same choices, and each one
-arrives in its own new document. If one is already running when you
-start another, you hear “Added to the queue”.</li>
+transcribed one after another with the same choices, and each one opens
+in its own new document when it finishes. If one is already running when
+you start another, you hear “Added to the queue”.</li>
 <li><strong>How far has it got?</strong> Press <strong>Shift+F5</strong>
 again. At the top of the window, <strong>Transcribing now</strong> says
 which recording it is on, how far it has got, and how many are waiting.
@@ -6209,10 +6218,11 @@ on.</li>
 Transcribing</strong> (Alt+S). The recording being transcribed stops,
 any waiting ones are forgotten, and nothing is written into a
 document.</li>
-<li><strong>If you missed what it said.</strong>
-<strong>Shift+F9</strong> opens Activity, which keeps every
-transcription this session, finished or failed, with the reason when
-something went wrong.</li>
+<li><strong>If you missed the result sentence.</strong>
+<strong>Shift+F9</strong> opens Activity, which keeps the transcription
+outcome and any failure reason for this session. To open the saved
+transcript, activate its completion notice in
+<strong>Notifications</strong>.</li>
 </ul>
 <h4 id="which-files-it-can-read">Which files it can read</h4>
 <p>MP3, M4A, AAC, WAV, Ogg, Opus, FLAC and WMA, and also the sound in an
@@ -7064,6 +7074,10 @@ through QUILL’s servers, so QUILL records nothing at all, not even the
 request count it keeps for the free service.</li>
 <li><strong>OpenAI or Google bills you</strong> for each request, under
 their own terms and privacy policy.</li>
+<li>While an answer is on its way, <strong>Send</strong> becomes
+<strong>Stop</strong> (<code>Alt+S</code>). Stopping closes a Gemini
+stream immediately; for another route it discards that request’s
+eventual answer. It never stops a request from another AI window.</li>
 <li><strong>Usage</strong> (<strong>Ctrl+Alt+Shift+F9</strong>) opens a
 different window. It shows which model is answering, that no allowance
 applies, and an <strong>Open My Usage</strong> button that takes you to
@@ -7373,6 +7387,13 @@ search, Enter moves you to a setting; it does not save. Escape clears
 what you typed first, and closes the window if the box is already empty.
 Searching never changes a setting for you, and OK and Cancel work just
 as before.</p>
+<h4 id="choosing-the-default-document-folder">Choosing the default
+document folder</h4>
+<p><strong>Default document folder</strong> chooses where Open and Save
+As start when you are working in a new document. Leave it blank to use
+your Windows <strong>Documents</strong> folder, or type a path or use
+<strong>Choose default folder…</strong> to pick another existing folder.
+A document you already saved continues to use its own folder.</p>
 <h4 id="if-your-settings-could-not-be-saved">If your settings could not
 be saved</h4>
 <p>Sometimes Windows will not let QUILL Lite save your settings, for

@@ -207,7 +207,10 @@ def test_open_notifications_clears_from_dialog_action(monkeypatch) -> None:
 
 def test_open_notifications_marks_viewed_when_not_cleared(monkeypatch) -> None:
     frame = _build_frame()
-    frame._notifications = [Notification.create("Recovered autosave snapshot", "recovery")]
+    held = [Notification.create("Recovered autosave snapshot", "recovery")]
+    # open_notifications reloads from disk; hand it this list rather than
+    # whatever an earlier test in the same worker left behind.
+    monkeypatch.setattr(main_frame_module, "load_notifications", lambda: list(held))
     frame._wx = type("Wx", (), {"ID_CLEAR": 1001})()
     monkeypatch.setattr(frame, "_show_notifications_dialog", lambda: 1000)
 
@@ -218,7 +221,7 @@ def test_open_notifications_marks_viewed_when_not_cleared(monkeypatch) -> None:
 
 def test_open_notifications_reports_empty_state(monkeypatch) -> None:
     frame = _build_frame()
-    frame._notifications = []
+    monkeypatch.setattr(main_frame_module, "load_notifications", lambda: [])
     frame._wx = type("Wx", (), {"ID_CLEAR": 1001})()
     monkeypatch.setattr(frame, "_show_notifications_dialog", lambda: 1000)
 

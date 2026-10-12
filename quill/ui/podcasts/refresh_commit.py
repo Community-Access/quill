@@ -3,11 +3,11 @@
 from __future__ import annotations
 
 import copy
-import html
 from collections.abc import Callable, Generator
 from time import perf_counter
 from typing import Any
 
+from quill.core.display_text import clean_display_text
 from quill.core.podcasts.subscriptions import merge_episode_metadata
 
 ITEMS_PER_TURN = 128
@@ -106,7 +106,7 @@ def commit_steps(
         or revision != int(host.__dict__.get("_podcast_unscoped_revision", 0))
     ):
         return None
-    show.title = html.unescape(show.title)
+    show.title = clean_display_text(show.title)
     show.tags = source.tags
     show.episodes = merged
     progress["changed"] = True
