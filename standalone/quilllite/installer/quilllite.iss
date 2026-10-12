@@ -55,7 +55,7 @@
 ; It MUST stay "quilllite" forever -- renaming it would orphan the previous
 ; reference and double-count, leaving a phantom install the uninstaller cannot
 ; reclaim.
-#define RuntimeVersion "3.13.15"
+#define RuntimeVersion "3.14.8"
 #define RuntimeSourceDir "..\..\runtime\dist\QuillVilleRuntime"
 #define AppRefId "quilllite"
 

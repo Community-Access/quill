@@ -2,7 +2,7 @@
 
 ``runtime_resolve.c`` reads ``[runtime] slot=`` from the
 ``quill-app-version.ini`` beside the launcher and resolves
-``Runtime\\<slot>``; with no ``slot=`` it uses ``Runtime\\3.13`` exactly as
+``Runtime\\<slot>``; with no ``slot=`` it uses ``Runtime\\3.14`` exactly as
 before, and with a slot it never falls back to Stable's folder. A missing Beta
 runtime repairs from ``runtime-beta``; a Dev one does not repair itself. The C
 is not compiled here (no binaries are built in this repository's tests), so
@@ -86,8 +86,43 @@ def test_the_c_source_keeps_the_same_rules() -> None:
     assert 'ql_strnicmp(s, "[runtime]", 9)' in source
     assert 'strcmp(p, "-beta") == 0 || strcmp(p, "-dev") == 0' in source
     assert '"/runtime-latest/"' in source and "/runtime-beta/" in source
-    # With a slot, never Stable's folder; without one, the old 3.13 path.
+    # With a slot, never Stable's folder; without one, the Stable path.
     assert "path_join(runtime_dir, sizeof(runtime_dir), base, slot);" in source
-    assert 'path_join(runtime_dir, sizeof(runtime_dir), base, "3.13");' in source
+    assert "path_join(runtime_dir, sizeof(runtime_dir), base, QL_PYTHON_MAJOR);" in source
     assert "ql_runtime_url_for_slot(PRODUCT_RUNTIME_URL, runtime.slot" in launcher
     assert "Reinstall the Dev build" in launcher
+
+
+def test_one_python_minor_everywhere() -> None:
+    """The launcher, the slot rule, the embeddable pins and every installer agree.
+
+    Moving Python is five kinds of file (the 3.13 -> 3.14 move, 2026-10-11): the
+    launcher refuses a runtime whose marker names another minor and looks in
+    ``Runtime\\<minor>``, the installers lay the runtime down by
+    ``RuntimeVersion``, and the build scripts download ``EMBEDDED_PYTHON_VERSION``.
+    Any one of them left behind is an app that cannot find its interpreter.
+    """
+    import re
+
+    from quill.core.updater.runtime_slots import PYTHON_MAJOR
+
+    source = (LAUNCHER / "runtime_resolve.c").read_text(encoding="utf-8")
+    macro = re.search(r'#define QL_PYTHON_MAJOR "([0-9.]+)"', source)
+    assert macro is not None
+    assert macro.group(1) == PYTHON_MAJOR
+
+    pins = {
+        "scripts/build_windows_distribution.py": r'EMBEDDED_PYTHON_VERSION = "([0-9.]+)"',
+        "standalone/studio/scripts/build_portable.py": r'EMBEDDED_PYTHON_VERSION = "([0-9.]+)"',
+    }
+    for iss in sorted((REPO / "standalone").glob("*/installer/*.iss")):
+        if "RuntimeVersion" in iss.read_text(encoding="utf-8"):
+            pins[iss.relative_to(REPO).as_posix()] = r'#define RuntimeVersion "([0-9.]+)"'
+    assert len(pins) > 2, "no installer declares RuntimeVersion any more"
+    versions = {}
+    for rel, pattern in pins.items():
+        found = re.search(pattern, (REPO / rel).read_text(encoding="utf-8"))
+        assert found is not None, rel
+        versions[rel] = found.group(1)
+    assert len(set(versions.values())) == 1, versions
+    assert next(iter(versions.values())).startswith(PYTHON_MAJOR + "."), versions

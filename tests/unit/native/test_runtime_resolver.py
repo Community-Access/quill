@@ -78,8 +78,8 @@ def _read_python_version_from_marker(path: str) -> str | None:
 
 
 def _python_version_compatible(marker_python: str) -> bool:
-    """Match the C version of this function: '3.13' baseline, prefix compare."""
-    baseline = "3.13"
+    """Match the C version of this function: QL_PYTHON_MAJOR baseline, prefix compare."""
+    baseline = "3.14"
     if not marker_python.startswith(baseline):
         return False
     next_char = marker_python[len(baseline) :]
@@ -96,7 +96,7 @@ def try_shared_runtime(local_appdata: str | None) -> QlRuntime | None:
     base = _path_join(local_appdata, _path_join("QuillVille", "Runtime"))
     if not _path_exists(base):
         return None
-    runtime_dir = _path_join(base, "3.13")
+    runtime_dir = _path_join(base, "3.14")
     if not _path_exists(runtime_dir):
         return None
     marker = _path_join(runtime_dir, "quillville-runtime.json")
@@ -170,12 +170,12 @@ def fake_local_appdata(tmp_path: Path) -> Path:
 
 @pytest.fixture
 def shared_runtime(fake_local_appdata: Path) -> Path:
-    """A real shared runtime layout under fake_local_appdata/QuillVille/Runtime/3.13/."""
-    runtime = fake_local_appdata / "QuillVille" / "Runtime" / "3.13"
+    """A real shared runtime layout under fake_local_appdata/QuillVille/Runtime/3.14/."""
+    runtime = fake_local_appdata / "QuillVille" / "Runtime" / "3.14"
     runtime.mkdir(parents=True)
     (runtime / SHARED_RUNTIME_EXE).write_bytes(b"MZ" + b"\x00" * 100)  # fake PE header
     (runtime / "quillville-runtime.json").write_text(
-        json.dumps({"python": "3.13.14", "build": "2026-07-24"}),
+        json.dumps({"python": "3.14.8", "build": "2026-07-24"}),
         encoding="utf-8",
     )
     return runtime
@@ -195,7 +195,7 @@ def test_shared_runtime_ignored_when_marker_missing(
     fake_local_appdata: Path, tmp_path: Path
 ) -> None:
     """Without a marker, the resolver falls through to the private runtime."""
-    runtime = fake_local_appdata / "QuillVille" / "Runtime" / "3.13"
+    runtime = fake_local_appdata / "QuillVille" / "Runtime" / "3.14"
     runtime.mkdir(parents=True)
     (runtime / SHARED_RUNTIME_EXE).write_bytes(b"MZ")  # shared exe present, marker absent
     self_dir = tmp_path / "QuillRadio"
@@ -212,7 +212,7 @@ def test_shared_runtime_ignored_when_marker_missing(
 
 
 def test_shared_runtime_ignored_when_marker_wrong_version(fake_local_appdata: Path) -> None:
-    """A 3.12 marker must not be selected by a 3.13-baselined launcher.
+    """A 3.13 marker must not be selected by a 3.14-baselined launcher.
 
     Asserted against ``try_shared_runtime`` directly, not through
     ``ql_resolve_runtime``: private-first (see the resolver's "WHY PRIVATE
@@ -220,11 +220,11 @@ def test_shared_runtime_ignored_when_marker_wrong_version(fake_local_appdata: Pa
     whether or not the marker was rejected, which makes the end-to-end version
     of this assertion pass for the wrong reason.
     """
-    runtime = fake_local_appdata / "QuillVille" / "Runtime" / "3.13"
+    runtime = fake_local_appdata / "QuillVille" / "Runtime" / "3.14"
     runtime.mkdir(parents=True)
     (runtime / SHARED_RUNTIME_EXE).write_bytes(b"MZ")
     (runtime / "quillville-runtime.json").write_text(
-        json.dumps({"python": "3.12.5", "build": "2026-01-01"}),
+        json.dumps({"python": "3.13.15", "build": "2026-01-01"}),
         encoding="utf-8",
     )
 
@@ -294,7 +294,7 @@ def test_no_runtime_found_returns_empty(tmp_path: Path) -> None:
 
 def test_marker_with_garbage_json_is_rejected(tmp_path: Path, fake_local_appdata: Path) -> None:
     """A malformed marker must not crash the resolver -- it's a no-op fallback."""
-    runtime = fake_local_appdata / "QuillVille" / "Runtime" / "3.13"
+    runtime = fake_local_appdata / "QuillVille" / "Runtime" / "3.14"
     runtime.mkdir(parents=True)
     (runtime / SHARED_RUNTIME_EXE).write_bytes(b"MZ")
     (runtime / "quillville-runtime.json").write_text("not json at all", encoding="utf-8")
@@ -308,7 +308,7 @@ def test_marker_with_garbage_json_is_rejected(tmp_path: Path, fake_local_appdata
 
 def test_marker_missing_python_key_is_rejected(tmp_path: Path, fake_local_appdata: Path) -> None:
     """A JSON marker without a 'python' key is treated as absent."""
-    runtime = fake_local_appdata / "QuillVille" / "Runtime" / "3.13"
+    runtime = fake_local_appdata / "QuillVille" / "Runtime" / "3.14"
     runtime.mkdir(parents=True)
     (runtime / SHARED_RUNTIME_EXE).write_bytes(b"MZ")
     (runtime / "quillville-runtime.json").write_text(
@@ -323,14 +323,14 @@ def test_marker_missing_python_key_is_rejected(tmp_path: Path, fake_local_appdat
 
 
 def test_python_version_compatible_accepts_patch(tmp_path: Path) -> None:
-    """A 3.13.14 marker is compatible with a 3.13 launcher."""
-    assert _python_version_compatible("3.13.14")
+    """A 3.14.8 marker is compatible with a 3.14 launcher."""
+    assert _python_version_compatible("3.14.8")
 
 
 def test_python_version_compatible_rejects_minor_mismatch() -> None:
-    """A 3.12 marker is not compatible with a 3.13 launcher."""
-    assert not _python_version_compatible("3.12.5")
-    assert not _python_version_compatible("3.14.0")
+    """A 3.13 marker is not compatible with a 3.14 launcher."""
+    assert not _python_version_compatible("3.13.15")
+    assert not _python_version_compatible("3.15.0")
     assert not _python_version_compatible("4.0.0")
 
 
@@ -348,11 +348,11 @@ def test_private_runtime_preferred_over_shared(fake_local_appdata: Path, tmp_pat
     thin installers ship the launcher alone, so they still reach the shared
     branch; nothing about the shared-runtime story changes for them.
     """
-    shared = fake_local_appdata / "QuillVille" / "Runtime" / "3.13"
+    shared = fake_local_appdata / "QuillVille" / "Runtime" / "3.14"
     shared.mkdir(parents=True)
     (shared / SHARED_RUNTIME_EXE).write_bytes(b"MZ")
     (shared / "quillville-runtime.json").write_text(
-        json.dumps({"python": "3.13.14", "build": "2026-07-24"}),
+        json.dumps({"python": "3.14.8", "build": "2026-07-24"}),
         encoding="utf-8",
     )
 
@@ -378,11 +378,11 @@ def test_thin_install_still_uses_the_shared_runtime(
     fake_local_appdata: Path, tmp_path: Path
 ) -> None:
     """The Lite/Companion flavors ship the launcher alone -- shared still wins."""
-    shared = fake_local_appdata / "QuillVille" / "Runtime" / "3.13"
+    shared = fake_local_appdata / "QuillVille" / "Runtime" / "3.14"
     shared.mkdir(parents=True)
     (shared / SHARED_RUNTIME_EXE).write_bytes(b"MZ")
     (shared / "quillville-runtime.json").write_text(
-        json.dumps({"python": "3.13.14", "build": "2026-07-24"}),
+        json.dumps({"python": "3.14.8", "build": "2026-07-24"}),
         encoding="utf-8",
     )
 
@@ -411,13 +411,13 @@ def test_shared_runtime_finds_quillville_runtime_exe_not_python(fake_local_appda
     PyInstaller bootloader in favour of a real CPython at the same path; this
     test will be updated to assert the new probe name at that time.
     """
-    runtime = fake_local_appdata / "QuillVille" / "Runtime" / "3.13"
+    runtime = fake_local_appdata / "QuillVille" / "Runtime" / "3.14"
     runtime.mkdir(parents=True)
     # BOTH files present: bootloader wins, python.exe is ignored.
     (runtime / "python.exe").write_bytes(b"MZ")
     (runtime / SHARED_RUNTIME_EXE).write_bytes(b"MZ")
     (runtime / "quillville-runtime.json").write_text(
-        json.dumps({"python": "3.13.14", "build": "2026-07-24"}),
+        json.dumps({"python": "3.14.8", "build": "2026-07-24"}),
         encoding="utf-8",
     )
     # A launcher-only directory (the thin-install layout), so the private

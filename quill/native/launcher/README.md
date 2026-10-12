@@ -145,7 +145,7 @@ cross-product storage-mode allowlist check.
 
 ## What this is NOT
 
-- **Not a Python C-API host.** The launcher does not link `python313.dll`
+- **Not a Python C-API host.** The launcher does not link `python314.dll`
   on Windows. It `exec`s a separate process that does.
 - **Not a PyInstaller bootloader.** The PyInstaller bootloaders were the
   same repackaging pattern this launcher was designed to remove.

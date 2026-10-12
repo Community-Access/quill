@@ -113,7 +113,7 @@ def test_the_installer_lays_the_runtime_where_the_launcher_looks_for_it() -> Non
     )
     fragment = FRAGMENT.read_text(encoding="utf-8")
     assert '"%s\\\\QuillVille\\\\Runtime", local' in resolver, "the launcher's base folder moved"
-    assert 'path_join(runtime_dir, sizeof(runtime_dir), base, "3.13")' in resolver, (
+    assert "path_join(runtime_dir, sizeof(runtime_dir), base, QL_PYTHON_MAJOR)" in resolver, (
         "the launcher no longer appends the major -- change the installer in lockstep"
     )
     assert "RuntimeMajor()" in fragment, (

@@ -8,7 +8,7 @@ One builder, many products (studio / radio / weather). Layout (mirrors the old
         <App>.exe                native C launcher (spawns pythonw.exe -m quill.apps.<x>)
         <App>.ico
         python.exe / pythonw.exe genuine, UNMODIFIED CPython embeddable trampolines
-        python313.dll / python3.dll / python313.zip / python313._pth
+        python314.dll / python3.dll / python314.zip / python314._pth
         *.pyd, vcruntime*.dll, libssl-3/libcrypto-3/libffi-8/sqlite3 ...
         Lib/site-packages/       quill dependency closure + the quill source
         data/                    (studio) offline speech/TTS engines
@@ -53,12 +53,12 @@ from pathlib import Path
 # Pinned embeddable CPython -- kept in lockstep with
 # scripts/build_windows_distribution.py::EMBEDDED_PYTHON_* so every QuillVille
 # product ships the identical interpreter.
-EMBEDDED_PYTHON_VERSION = "3.13.15"
+EMBEDDED_PYTHON_VERSION = "3.14.8"
 EMBEDDED_PYTHON_URL = (
     f"https://www.python.org/ftp/python/{EMBEDDED_PYTHON_VERSION}/"
     f"python-{EMBEDDED_PYTHON_VERSION}-embed-amd64.zip"
 )
-EMBEDDED_PYTHON_SHA256 = "d1f04d990aee1253d8569e8e5104e30fa9f5fa830899f14843448872d936a2cf"
+EMBEDDED_PYTHON_SHA256 = "a93abe456ab01bd96d7a085b3cdb6566b3063f4241360d114142fbdb07f0a310"
 GET_PIP_URL = "https://bootstrap.pypa.io/get-pip.py"
 
 # ``build`` is the CMake scratch tree left by compiling the native pieces in
