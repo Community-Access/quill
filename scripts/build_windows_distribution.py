@@ -171,7 +171,9 @@ KOKORO_VOICES_SHA256 = "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c2
 # the Offline Edition never needs PyPI for any of these. Kept in sync with the
 # matching _*_REQUIREMENTS tuples in quill.core.speech.engine_install and the
 # pyproject extras.
-KOKORO_WHEELHOUSE_REQUIREMENTS = ("kokoro-onnx>=0.5.0", "soundfile>=0.14.0")
+# kokoro-onnx resolves from the patched wheel in vendor/wheels on 3.14 (every
+# PyPI release caps Requires-Python <3.14); see _stage_patched_wheels.
+KOKORO_WHEELHOUSE_REQUIREMENTS = ("kokoro-onnx>=0.6.1", "soundfile>=0.14.0")
 FASTER_WHISPER_WHEELHOUSE_REQUIREMENTS = ("faster-whisper>=1.0", "huggingface_hub>=0.20")
 VOSK_WHEELHOUSE_REQUIREMENTS = ("vosk>=0.3.45",)
 MP3_WHEELHOUSE_REQUIREMENTS = ("mutagen>=1.48.1",)
@@ -702,6 +704,7 @@ def build_windows_distribution(
             shutil.move(str(entry), str(dest))
         staged_runtime.rmdir()
         python_runtime_dir = portable_dir
+        _stage_patched_wheels(portable_dir, resolved_source_root)
 
         # Stage every on-demand engine's pip wheelhouse now that the embedded
         # runtime's own python.exe is at its final location -- using that
@@ -713,7 +716,11 @@ def build_windows_distribution(
         if bundle_offline:
             python_exe = portable_dir / "python.exe"
             _stage_pip_wheelhouse(
-                portable_dir, python_exe, "kokoro", KOKORO_WHEELHOUSE_REQUIREMENTS
+                portable_dir,
+                python_exe,
+                "kokoro",
+                KOKORO_WHEELHOUSE_REQUIREMENTS,
+                find_links=(resolved_source_root / "vendor" / "wheels",),
             )
             _stage_pip_wheelhouse(
                 portable_dir,
@@ -2986,6 +2993,7 @@ def _stage_pip_wheelhouse(
     requirements: tuple[str, ...],
     *,
     exclude: tuple[str, ...] = (),
+    find_links: tuple[Path, ...] = (),
 ) -> bool:
     """``pip download`` an on-demand engine's package tree into portable/wheels/<name>/.
 
@@ -3010,6 +3018,9 @@ def _stage_pip_wheelhouse(
     dependency, read back from the first pass's own wheel METADATA rather
     than hand-duplicated here (so this never silently drifts from whatever
     the pinned version actually declares).
+
+    ``find_links`` adds local wheel folders beside PyPI -- Kokoro's points at
+    vendor/wheels, the only place a 3.14-installable kokoro-onnx exists.
     """
     target = portable_dir / "wheels" / name
     target.mkdir(parents=True, exist_ok=True)
@@ -3025,6 +3036,7 @@ def _stage_pip_wheelhouse(
         "--no-input",
         "--disable-pip-version-check",
         "--only-binary=:all:",
+        *(arg for folder in find_links for arg in ("--find-links", str(folder))),
         "--dest",
         str(target),
     ]
@@ -3039,6 +3051,34 @@ def _stage_pip_wheelhouse(
     if deps:
         subprocess.run([*base_command, *sorted(deps)], check=True)
     return any(target.glob("*.whl"))
+
+
+#: Wheels from vendor/wheels that every bundled-Python build ships under
+#: wheels\patched, for engine_install._patched_wheels_dir.
+PATCHED_WHEEL_GLOBS = ("kokoro_onnx-*.whl",)
+
+
+def _stage_patched_wheels(portable_dir: Path, source_root: Path) -> list[Path]:
+    """Copy QUILL's patched wheels into portable/wheels/patched/.
+
+    kokoro-onnx 0.6.1 with its ``Requires-Python <3.14`` cap lifted (nothing
+    else changed; upstream PR thewh1teagle/kokoro-onnx#195) is the only
+    kokoro-onnx the 3.14 runtime can install, so install_kokoro_onnx() offers
+    this folder beside PyPI. 26 KB, so it ships in every build rather than
+    only the Offline Edition. Returns the staged files.
+    """
+    vendor = source_root / "vendor" / "wheels"
+    wheels = [w for pattern in PATCHED_WHEEL_GLOBS for w in sorted(vendor.glob(pattern))]
+    if not wheels:
+        print(f"Warning: no patched wheels in {vendor}; Kokoro cannot install on demand.")
+        return []
+    target = portable_dir / "wheels" / "patched"
+    target.mkdir(parents=True, exist_ok=True)
+    staged = []
+    for wheel in wheels:
+        shutil.copy2(wheel, target / wheel.name)
+        staged.append(target / wheel.name)
+    return staged
 
 
 def _wheel_metadata_dependency_names(wheel_dir: Path) -> set[str]:

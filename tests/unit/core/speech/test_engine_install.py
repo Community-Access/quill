@@ -260,6 +260,7 @@ def test_kokoro_install_falls_back_to_pypi_without_wheelhouse(monkeypatch, tmp_p
     """No bundled wheelhouse (the regular installer, portable, or a source run)
     means the existing live-PyPI install path is unchanged."""
     monkeypatch.delenv("QUILL_APP_ROOT", raising=False)
+    monkeypatch.setattr("quill.core.speech.patched_wheels.patched_wheels_dir", lambda: None)
     monkeypatch.setattr(ei, "is_kokoro_onnx_available", lambda: True)
     captured: dict = {}
     ei.install_kokoro_onnx(
@@ -268,6 +269,48 @@ def test_kokoro_install_falls_back_to_pypi_without_wheelhouse(monkeypatch, tmp_p
     cmd = captured["command"]
     assert "--no-index" not in cmd
     assert "--find-links" not in cmd
+
+
+def test_kokoro_floor_never_lets_pip_settle_on_the_uncapped_0_4_7() -> None:
+    """Every PyPI kokoro-onnx from 0.5.0 on caps Requires-Python <3.14, so a
+    loose floor resolves to 0.4.7 on 3.14 without a word. 0.6.1 is the version
+    QUILL's patched wheel provides."""
+    assert "kokoro-onnx>=0.6.1" in ei._KOKORO_ONNX_REQUIREMENTS
+
+
+def test_kokoro_install_adds_patched_wheels_beside_pypi(monkeypatch, tmp_path: Path) -> None:
+    """With no offline wheelhouse, the patched kokoro-onnx wheel is offered as an
+    extra --find-links while PyPI still supplies onnxruntime and the rest, so
+    --no-index must not appear."""
+    patched = tmp_path / "app-root" / "wheels" / "patched"
+    patched.mkdir(parents=True)
+    (patched / "kokoro_onnx-0.6.1-py3-none-any.whl").write_bytes(b"x")
+    monkeypatch.setenv("QUILL_APP_ROOT", str(tmp_path / "app-root"))
+    monkeypatch.setattr(ei, "is_kokoro_onnx_available", lambda: True)
+    captured: dict = {}
+    ei.install_kokoro_onnx(
+        dest_dir=tmp_path / "kok", python_executable="py.exe", runner=_make_runner(captured)
+    )
+    cmd = captured["command"]
+    assert "--no-index" not in cmd
+    assert cmd[cmd.index("--find-links") + 1] == str(patched)
+
+
+def test_patched_wheels_dir_falls_back_to_the_repo_vendor_wheels(monkeypatch) -> None:
+    """A source run has no app root; the repo's vendor/wheels carries the wheel."""
+    from quill.core.speech import patched_wheels as pw
+
+    monkeypatch.delenv("QUILL_APP_ROOT", raising=False)
+    assert pw.patched_wheels_dir() == pw.SOURCE_VENDOR_WHEELS
+    assert any(pw.SOURCE_VENDOR_WHEELS.glob("kokoro_onnx-*.whl"))
+
+
+def test_patched_wheels_dir_none_when_nothing_is_staged(monkeypatch, tmp_path: Path) -> None:
+    from quill.core.speech import patched_wheels as pw
+
+    monkeypatch.setenv("QUILL_APP_ROOT", str(tmp_path))
+    monkeypatch.setattr(pw, "SOURCE_VENDOR_WHEELS", tmp_path / "no-vendor")
+    assert pw.patched_wheels_dir() is None
 
 
 def test_kokoro_install_ignores_wheelhouse_when_requirements_overridden(

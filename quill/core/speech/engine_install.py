@@ -44,6 +44,7 @@ from pathlib import Path
 from quill.core.error_codes import CodedError
 from quill.core.speech import models
 from quill.core.speech.engine_pack_imports import prefer_pack_module
+from quill.core.speech.patched_wheels import kokoro_find_links
 
 ProgressCallback = Callable[[float, str], None]
 
@@ -78,12 +79,10 @@ _VOSK_REQUIREMENTS: tuple[str, ...] = ("vosk>=0.3.45",)
 _KOKORO_ONNX_PACK = "kokoro-onnx"
 _KOKORO_ONNX_MODULE = "kokoro_onnx"
 
-# kokoro-onnx pulls in onnxruntime as a transitive dep; soundfile handles WAV I/O.
-# Keep these floors in sync with the pyproject ``kokoro`` extra -- the latest
-# kokoro-onnx is 0.5.0 (capped at Python <3.14), so an earlier >=0.9 floor here
-# was unsatisfiable and the on-demand install could never resolve a version.
+# kokoro-onnx pulls in onnxruntime; soundfile handles WAV I/O. Sync with pyproject's
+# ``kokoro``. On 3.14 only patched_wheels.py's wheel fits; the floor blocks 0.4.7.
 _KOKORO_ONNX_REQUIREMENTS: tuple[str, ...] = (
-    "kokoro-onnx>=0.5.0",
+    "kokoro-onnx>=0.6.1",
     "soundfile>=0.14.0",
 )
 
@@ -309,7 +308,7 @@ def install_kokoro_onnx(
     # An explicit `requirements` override (tests / advanced callers) is used
     # as-is, skipping the bundled-wheelhouse lookup, same as the Vosk pattern.
     wheelhouse = _bundled_wheelhouse_dir("kokoro") if requirements is None else None
-    extra_args = ("--no-index", "--find-links", str(wheelhouse)) if wheelhouse is not None else ()
+    extra_args = kokoro_find_links(wheelhouse, use_patched=requirements is None)
 
     if progress is not None:
         progress(0.05, "Preparing to install Kokoro ONNX...")

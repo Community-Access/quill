@@ -11,11 +11,22 @@ import pytest
 
 @pytest.fixture
 def app():
+    """A live ``wx.App``, reused when the worker already has one.
+
+    This used to create its own App and destroy it in teardown; under CI's
+    ``--dist=loadfile`` sharding that met another file's App and failed with
+    "The wx.App object must be created first!" (main, 2026-10-12). Same cure as
+    ``tests/unit/apps/conftest.py``'s ``wx_app``: ask wx, never destroy.
+    """
     import wx
 
-    a = wx.App(False)
-    yield a
-    a.Destroy()
+    a = wx.GetApp()
+    if a is not None:
+        try:
+            a.GetAppName()  # raises once the C++ peer is gone
+        except Exception:  # noqa: BLE001 - any failure means "not usable"
+            a = None
+    return a if a is not None else wx.App(False)
 
 
 class _FakePlayer:

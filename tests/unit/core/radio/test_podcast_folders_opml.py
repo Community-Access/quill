@@ -198,7 +198,10 @@ def test_the_real_downcast_export_imports(tmp_path: Path) -> None:
     outcome = import_opml_file(tmp_path, _REAL_OPML)
 
     assert outcome.added > 1000
-    assert outcome.unusable == 0
+    # Exactly one: Braillecast's ``http://feed/``, a scheme and a word that
+    # _host_problem now rejects instead of importing a feed that fails every
+    # check for ever (check.md bug 12).
+    assert outcome.unusable == 1
     library = load_library(tmp_path)
     assert len(library.shows) == outcome.added
     assert library.folders == []  # the export is flat, so no folders appear

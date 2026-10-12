@@ -1171,6 +1171,55 @@ def test_stage_pip_wheelhouse_reuses_already_staged(monkeypatch, tmp_path: Path)
     )
 
 
+def test_stage_pip_wheelhouse_passes_find_links_beside_pypi(monkeypatch, tmp_path: Path) -> None:
+    """The Offline Edition's Kokoro wheelhouse can only resolve kokoro-onnx on
+    3.14 from the patched wheel in vendor/wheels, so that folder is offered as
+    --find-links -- without --no-index, since PyPI still supplies the rest."""
+    captured: dict = {}
+
+    def fake_run(command, *, check):
+        captured["command"] = list(command)
+        target = Path(command[command.index("--dest") + 1])
+        (target / "fake_wheel-0.1-py3-none-any.whl").write_bytes(b"fake wheel")
+
+    monkeypatch.setattr("scripts.build_windows_distribution.subprocess.run", fake_run)
+    vendor = tmp_path / "vendor" / "wheels"
+    _stage_pip_wheelhouse(
+        tmp_path / "portable",
+        tmp_path / "python.exe",
+        "kokoro",
+        KOKORO_WHEELHOUSE_REQUIREMENTS,
+        find_links=(vendor,),
+    )
+    cmd = captured["command"]
+    assert cmd[cmd.index("--find-links") + 1] == str(vendor)
+    assert "--no-index" not in cmd
+    assert "kokoro-onnx>=0.6.1" in cmd
+
+
+def test_stage_patched_wheels_copies_the_kokoro_wheel(tmp_path: Path) -> None:
+    """Every bundled-Python build ships the patched kokoro-onnx wheel under
+    wheels\\patched, where engine_install._patched_wheels_dir looks for it, and
+    the installer's Excludes leave that folder in."""
+    from scripts.build_windows_distribution import _stage_patched_wheels
+
+    vendor = tmp_path / "src" / "vendor" / "wheels"
+    vendor.mkdir(parents=True)
+    (vendor / "kokoro_onnx-0.6.1-py3-none-any.whl").write_bytes(b"x")
+    (vendor / "quill_social-0.3.0-py3-none-any.whl").write_bytes(b"x")
+    portable_dir = tmp_path / "portable"
+    staged = _stage_patched_wheels(portable_dir, tmp_path / "src")
+    assert [p.name for p in staged] == ["kokoro_onnx-0.6.1-py3-none-any.whl"]
+    assert (portable_dir / "wheels" / "patched" / staged[0].name).is_file()
+
+
+def test_the_repo_carries_the_patched_kokoro_wheel() -> None:
+    """dev-builds installs [runtime] with --find-links vendor/wheels; without
+    this wheel in git, kokoro-onnx>=0.6.1 has no match on 3.14 at all."""
+    repo = Path(__file__).resolve().parents[3]
+    assert list((repo / "vendor" / "wheels").glob("kokoro_onnx-0.6.1-*.whl"))
+
+
 def test_speech_asset_manifest_reports_wheelhouse_presence(tmp_path: Path) -> None:
     portable_dir = tmp_path / "portable"
     portable_dir.mkdir()
