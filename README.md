@@ -42,7 +42,7 @@ editor and a family of companion apps -- together, **QuillVille**:
 
 The companion apps share one **QuillVille Runtime** -- a single Python
 runtime (about 294 MB) installed once at
-`%LOCALAPPDATA%\QuillVille\Runtime\3.13` and reused by every app, so a
+`%LOCALAPPDATA%\QuillVille\Runtime\3.14` and reused by every app, so a
 person who installs three apps downloads the shared engine once. Media
 tools (ffmpeg, libmpv, about 304 MB) ride only with the apps that declare
 them: Radio, Cast, and Audio Studio. Everything an installer ships works
@@ -93,7 +93,7 @@ already offers the right one.
 
 **The installer** installs the tiny app itself -- a native launcher, an
 icon, docs -- and installs (or reuses) the shared QuillVille Runtime at
-`%LOCALAPPDATA%\QuillVille\Runtime\3.13`. One runtime serves every app;
+`%LOCALAPPDATA%\QuillVille\Runtime\3.14`. One runtime serves every app;
 each app registers a reference to it, and the media tools an app needs
 ride inside the runtime's `tools` folder. Everything is per-user, so no
 elevation is ever needed. First launch just works, offline; bigger
@@ -115,7 +115,7 @@ phones home.
 
 ## Running from source
 
-You need **Python 3.13** on Windows or macOS; it is the minimum supported
+You need **Python 3.14** on Windows or macOS; it is the minimum supported
 version and the version releases are built and tested against.
 
 ```powershell

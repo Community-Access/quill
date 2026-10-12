@@ -3,7 +3,7 @@
 # GitHub looks for a job named EXACTLY `copilot-setup-steps`. Everything this job
 # installs is available to the agent before it starts working, so it does not
 # waste its first turn discovering the toolchain. This mirrors the PR CI jobs
-# (Python 3.13 + `pip install -e .[dev]`) and adds pandoc so the agent can
+# (Python 3.14 + `pip install -e .[dev]`) and adds pandoc so the agent can
 # regenerate golden.html / docs artifacts exactly like the local workflow.
 #
 # The coding agent runs on Linux, so wxPython UI is NOT importable here. That is
@@ -30,10 +30,10 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v7
 
-      - name: Set up Python 3.13
+      - name: Set up Python 3.14
         uses: actions/setup-python@v7
         with:
-          python-version: "3.13"
+          python-version: "3.14"
 
       - name: Install pandoc (docs/golden.html regeneration)
         run: |

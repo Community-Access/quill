@@ -7,7 +7,7 @@ name = "quill-weather"
 version = "2.2.1"
 description = "Quill Weather -- accessible, screen-reader-first weather with background alert monitoring, as a standalone app"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 license = { text = "MIT" }
 authors = [
   { name = "Community Access" },

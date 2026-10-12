@@ -659,8 +659,8 @@ Type: filesandordirs; Name: "{app}\Lib"
 
 [Code]
 // -- Bundled launcher resolution ------------------------------------------------
-// The embedded runtime is flattened into {app}: python313.dll, python313.zip,
-// the .pyd modules and python313._pth sit at the install root next to
+// The embedded runtime is flattened into {app}: python314.dll, python314.zip,
+// the .pyd modules and python314._pth sit at the install root next to
 // {app}\quill.exe (a VERSIONINFO-stamped copy of pythonw.exe, issue #615).
 // So {app}\quill.exe loads the bundled interpreter in isolation (correct
 // sys.prefix, pywin32 bootstrap runs) and the sitecustomize self-run hook

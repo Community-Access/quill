@@ -44,7 +44,7 @@ _DEFAULT_MANIFEST = _REPO_ROOT / "standalone" / "runtime" / "runtime-inventory.j
 #: ``name-1.2.3.dist-info`` -> ``name``; case folded elsewhere.
 _DIST_INFO = re.compile(r"^(?P<name>.+?)-[0-9][^-]*\.dist-info$", re.IGNORECASE)
 
-#: ``_brotli.cp313-win_amd64.pyd`` -> ``_brotli``; ``python313.dll`` stays
+#: ``_brotli.cp314-win_amd64.pyd`` -> ``_brotli``; ``python314.dll`` stays
 #: itself. Interpreter tags churn with Python upgrades and must not.
 _EXT_TAG = re.compile(r"\.cp3\d+[^.]*\.(pyd|dll)$", re.IGNORECASE)
 

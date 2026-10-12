@@ -93,7 +93,7 @@ _ALWAYS_CORE = frozenset({
     "quill",
     "base_library.zip",
     "python3.dll",
-    "python313.dll",
+    "python314.dll",
     "msvcp140.dll",
     "vcruntime140.dll",
     "vcruntime140_1.dll",

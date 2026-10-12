@@ -106,7 +106,7 @@ if (-not $LibmpvDir -or -not (Test-Path (Join-Path $LibmpvDir "libmpv-2.dll"))) 
 # -- shared QuillVille Runtime (the onedir the per-app installer ships) -----
 # The shared runtime at ..\..\runtime\dist\QuillVilleRuntime\ is what the
 # per-app installer (quill-audio-studio.iss) installs into
-# %LOCALAPPDATA%\QuillVille\Runtime\3.13\ on first use. Audio Studio uses
+# %LOCALAPPDATA%\QuillVille\Runtime\3.14\ on first use. Audio Studio uses
 # both ffmpeg (recording) and the mpv engine (player preview) -- both go
 # into the shared runtime's tools\, not the per-app $appDir\tools\, so the
 # per-app install stays tiny. The portable zip below still gets its own

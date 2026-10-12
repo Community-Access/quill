@@ -21,7 +21,7 @@
 # Release channel slots (2026-10): -Channel stable (the default) publishes to
 # `runtime-stable` AND `runtime-latest`, the alias every installed launcher has
 # compiled in and which therefore stays for ever. -Channel beta builds the
-# installer for Runtime\3.13-beta (its own AppId, so it never replaces the
+# installer for Runtime\3.14-beta (its own AppId, so it never replaces the
 # Stable runtime's uninstall entry) and publishes to `runtime-beta`, where a Beta
 # app's launcher repairs a missing Beta runtime from. There is no Dev runtime
 # installer: Dev runtimes do not repair themselves ("Reinstall the Dev build").
@@ -75,8 +75,8 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 # Version stamp: the python minor the runtime is built for plus the build
-# date from its own marker, e.g. "3.13.20260818". The install path and the
-# Lite installers' presence check key on the 3.13, so that leads.
+# date from its own marker, e.g. "3.14.20261011". The install path and the
+# Lite installers' presence check key on the 3.14, so that leads.
 $markerData = Get-Content $marker -Raw | ConvertFrom-Json
 $buildDate = ([datetime]$markerData.build).ToString("yyyyMMdd")
 $pythonMinor = ($markerData.python -split "\.")[0..1] -join "."
@@ -97,7 +97,10 @@ $innoSign = @()
 if ($env:QUILL_SIGN -eq "1") {
     $innoSign = @("/DSign", "/Squilltrusted=`$q$Python`$q `$q$signer`$q sign `$f")
 }
-$slotDefine = @()
+# The slot always comes from the built runtime's own marker, never from the
+# .iss default, so a runtime built on a new Python minor cannot be packaged
+# into the previous minor's folder.
+$slotDefine = @("/dRuntimeSlot=$pythonMinor")
 if ($Channel -eq "beta") { $slotDefine = @("/dRuntimeSlot=$pythonMinor-beta") }
 & $Iscc @innoSign @slotDefine "/dAppVersion=$version" (Join-Path $runtimeRoot "installer\quillville-runtime.iss") "/O$(Join-Path $runtimeRoot 'dist')"
 if ($LASTEXITCODE -ne 0) { throw "ISCC failed with exit code $LASTEXITCODE" }

@@ -36,7 +36,7 @@
 
 ; -- shared runtime parameters (read by installer\shared-runtime.iss) ----------
 ; AppRefId MUST stay "social" forever; renaming orphans the reference.
-#define RuntimeVersion "3.13.15"
+#define RuntimeVersion "3.14.8"
 #define RuntimeSourceDir "..\..\runtime\dist\QuillVilleRuntime"
 #define AppRefId "social"
 

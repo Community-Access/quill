@@ -16,7 +16,7 @@
  *      "python" key matching the current CPython major.minor.
  *
  *      RELEASE CHANNEL SLOTS (2026-10). When the quill-app-version.ini beside
- *      the launcher says [runtime] slot=3.13-beta (or 3.13-dev), the folder is
+ *      the launcher says [runtime] slot=3.14-beta (or 3.14-dev), the folder is
  *      Runtime/<slot>/ instead, and there is NO fallback to the Stable folder:
  *      a Beta app silently running Stable's copy of the code is exactly the
  *      mix-up slots exist to prevent. A missing slot= keeps the old behaviour.
@@ -217,12 +217,16 @@ static int read_python_version_from_marker(
     return (i > 0) ? 0 : -1;
 }
 
-/* Best-effort: read this launcher's compiled-in major.minor.
- * Hard-coded for now to 3.13 since the platform pin is in
- * scripts/build_windows_distribution.py:102. A future change can expose this
- * via the version marker instead. */
+/* The CPython major.minor this launcher runs, and the Stable runtime folder's
+ * name. Moves in lockstep with EMBEDDED_PYTHON_VERSION in
+ * scripts/build_windows_distribution.py, PYTHON_MAJOR in
+ * quill/core/updater/runtime_slots.py and every installer's RuntimeVersion
+ * (3.13 until 2026-10-11). A runtime whose marker names another minor is
+ * refused, so a launcher and runtime from different majors never meet. */
+#define QL_PYTHON_MAJOR "3.14"
+
 static void launcher_python_baseline(char *out, size_t out_size) {
-    snprintf(out, out_size, "3.13");
+    snprintf(out, out_size, "%s", QL_PYTHON_MAJOR);
 }
 
 static int python_version_compatible(const char *marker_python) {
@@ -325,15 +329,15 @@ static int try_shared_runtime(const char *slot, char *out_python, size_t out_siz
     if (!path_exists(base)) return -1;
 
     /* Walk subdirectories: runtime/3.13/, runtime/3.14/, etc.
-     * The current build only supports 3.13, so the directory is hard-coded.
+     * A build supports one minor (QL_PYTHON_MAJOR), so the directory is fixed.
      * A future runtime major can be added by reading the marker JSON's
      * "python" key. */
     char runtime_dir[QL_PATH_MAX];
     if (slot && *slot) {
-        /* A release-channel slot: Runtime/3.13-beta, never Stable's folder. */
+        /* A release-channel slot: Runtime/3.14-beta, never Stable's folder. */
         path_join(runtime_dir, sizeof(runtime_dir), base, slot);
     } else {
-        path_join(runtime_dir, sizeof(runtime_dir), base, "3.13");
+        path_join(runtime_dir, sizeof(runtime_dir), base, QL_PYTHON_MAJOR);
     }
     if (!path_exists(runtime_dir)) return -1;
 
@@ -358,7 +362,7 @@ static int try_shared_runtime(const char *slot, char *out_python, size_t out_siz
      *
      * Phase 4 (see docs/design/native-launcher-2026-07-24.md §7) drops
      * the PyInstaller bootloader in favour of a real embeddable CPython
-     * (python.exe / python313.dll / Lib/) extracted at the same path.
+     * (python.exe / python314.dll / Lib/) extracted at the same path.
      * When that lands, change the probe below back to "python.exe" /
      * "bin/python3". The Python mirror in
      * tests/unit/native/test_runtime_resolver.py must change in lockstep. */

@@ -19,8 +19,8 @@ typedef struct QlRuntime {
     char install_root[QL_PATH_MAX]; /* directory to set as QUILL_APP_ROOT */
     char data_dir[QL_PATH_MAX];    /* directory the child should treat as portable root */
     /* The release-channel runtime slot named by [runtime] slot= in the
-     * quill-app-version.ini beside the launcher ("3.13-beta"), or "" when the
-     * ini has none -- then the Stable folder "3.13" is used, as before.
+     * quill-app-version.ini beside the launcher ("3.14-beta"), or "" when the
+     * ini has none -- then the Stable folder "3.14" is used, as before.
      * Filled in even when resolution fails, so the caller can choose where a
      * missing runtime is repaired from. */
     char slot[QL_SLOT_MAX];
@@ -37,7 +37,7 @@ int ql_get_self_path(char *out, size_t out_size);
 int ql_resolve_runtime(const char *self_path, QlRuntime *out);
 
 /* Read and validate [runtime] slot= from <self_dir>/quill-app-version.ini.
- * Returns 0 and fills `out` with e.g. "3.13-beta"; -1 when absent or invalid
+ * Returns 0 and fills `out` with e.g. "3.14-beta"; -1 when absent or invalid
  * (out is then ""). Valid: <digits>.<digits>, optionally -beta or -dev. */
 int ql_runtime_slot(const char *self_dir, char *out, size_t out_size);
 

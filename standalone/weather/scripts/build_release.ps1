@@ -86,7 +86,7 @@ Assert-QuillSiblingVersions -QuillRepo $QuillRepo -Python $Python -Releasing @("
 # -- shared QuillVille Runtime (the onedir the per-app installer ships) -----
 # The shared runtime at ..\..\runtime\dist\QuillVilleRuntime\ is what the
 # per-app installer (quill-weather.iss) installs into
-# %LOCALAPPDATA%\QuillVille\Runtime\3.13\ on first use. It no longer carries
+# %LOCALAPPDATA%\QuillVille\Runtime\3.14\ on first use. It no longer carries
 # ffmpeg or libmpv, so this is a plain runtime build with nothing to stage.
 $sharedRuntimeDist = Join-Path $repoRoot "..\runtime\dist\QuillVilleRuntime"
 if ($SkipSharedRuntime -and (Test-Path (Join-Path $sharedRuntimeDist "QuillVilleRuntime.exe"))) {

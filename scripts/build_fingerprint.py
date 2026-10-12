@@ -80,7 +80,7 @@ _RUNTIME_DIST = "standalone/runtime/dist/QuillVilleRuntime"
 #: dist/windows (slim) and dist/windows-offline (Offline Edition): the portable
 #: zip sits at the top of each tree and the compiled Setup.exe under
 #: installer/Output. Deliberately not dist/** -- the portable/ tree is build
-#: payload (python313.zip, launcher exes), not artifacts.
+#: payload (python314.zip, launcher exes), not artifacts.
 _DIST_GLOBS = (
     "standalone/*/dist/*.exe",
     "standalone/*/dist/*.zip",

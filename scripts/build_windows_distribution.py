@@ -96,14 +96,14 @@ def _assert_no_retired_credential(target_dir: Path) -> None:
 
 # Pinned Windows embeddable Python. Bumping these values is the only
 # thing needed to ship on a new Python point release.
-EMBEDDED_PYTHON_VERSION = "3.13.15"
+EMBEDDED_PYTHON_VERSION = "3.14.8"
 EMBEDDED_PYTHON_URL = (
     f"https://www.python.org/ftp/python/{EMBEDDED_PYTHON_VERSION}/"
     f"python-{EMBEDDED_PYTHON_VERSION}-embed-amd64.zip"
 )
 # SHA-256 of the official embeddable zip. If python.org rotates the file
 # the build will fail loudly rather than ship an unverified runtime.
-EMBEDDED_PYTHON_SHA256 = "d1f04d990aee1253d8569e8e5104e30fa9f5fa830899f14843448872d936a2cf"
+EMBEDDED_PYTHON_SHA256 = "a93abe456ab01bd96d7a085b3cdb6566b3063f4241360d114142fbdb07f0a310"
 
 DECTALK_RELEASE_ZIP_URL = (
     "https://github.com/dectalk/dectalk/releases/download/2023-10-30/vs2022.zip"
@@ -683,7 +683,7 @@ def build_windows_distribution(
             offline_edition=offline_edition,
         )
         # Flatten the runtime to the bundle root. quill.exe (a VERSIONINFO-stamped
-        # pythonw.exe) can only bootstrap when its python313.dll/zip/_pth sit next
+        # pythonw.exe) can only bootstrap when its python314.dll/zip/_pth sit next
         # to it; nesting them in python\ orphaned the root quill.exe (#722). With
         # the runtime at the root, double-clicking quill.exe loads its own
         # interpreter and the sitecustomize self-run hook starts QUILL -- no
@@ -866,7 +866,7 @@ def _render_readme(
     else:
         runtime_paragraph = (
             "This bundle does not include a Python runtime. To run it,\n"
-            "install Python 3.13+ from https://www.python.org/downloads/windows/\n"
+            "install Python 3.14+ from https://www.python.org/downloads/windows/\n"
             "and run:  pip install wxPython pyttsx3\n"
             "Then double-click quill.exe."
         )
@@ -1491,8 +1491,8 @@ def build_inno_setup_script(
         "",
         "[Code]",
         "// -- Bundled launcher resolution ------------------------------------------------",
-        "// The embedded runtime is flattened into {app}: python313.dll, python313.zip,",
-        "// the .pyd modules and python313._pth sit at the install root next to",
+        "// The embedded runtime is flattened into {app}: python314.dll, python314.zip,",
+        "// the .pyd modules and python314._pth sit at the install root next to",
         "// {app}\\quill.exe (a VERSIONINFO-stamped copy of pythonw.exe, issue #615).",
         "// So {app}\\quill.exe loads the bundled interpreter in isolation (correct",
         "// sys.prefix, pywin32 bootstrap runs) and the sitecustomize self-run hook",
@@ -3319,7 +3319,9 @@ def _base_version_from_init_py(source_root: Path) -> str:
 
     init_py = source_root / "quill" / "__init__.py"
     if init_py.exists():
-        match = re.search(r'^__version__\s*=\s*["\']([^"\']+)["\']', init_py.read_text(), re.M)
+        match = re.search(
+            r'^__version__\s*=\s*["\']([^"\']+)["\']', init_py.read_text(encoding="utf-8"), re.M
+        )
         if match:
             raw = match.group(1)
             # Keep only the leading "X.Y.Z" — drop a/b/rc/dev suffixes.

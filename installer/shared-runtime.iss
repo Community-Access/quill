@@ -21,7 +21,7 @@
 ; Python mirror: quill/core/updater/runtime_slots.py.
 ;
 ; The app installer must define these BEFORE #include-ing this file:
-;   #define RuntimeVersion   "3.13.1"     ; the CPython version the runtime ships
+;   #define RuntimeVersion   "3.14.8"     ; the CPython version the runtime ships
 ;   #define RuntimeSourceDir "..\..\runtime\dist\QuillVilleRuntime"  ; built payload
 ;   #define AppRefId         "radio"      ; this app's stable id in runtime_refs
 ; and, for a media app, one define per tool it declares in REQUIRED_COMPONENTS:
@@ -115,13 +115,13 @@ Source: "{#RuntimeSourceDir}\OptiLabCore-NOTICE.txt"; DestDir: "{code:RuntimeDir
 
 [INI]
 ; Which runtime slot this install runs from, and the channel it was made for.
-; The launcher beside this file reads slot=; with none it uses Runtime\3.13.
+; The launcher beside this file reads slot=; with none it uses Runtime\3.14.
 Filename: "{app}\quill-app-version.ini"; Section: "runtime"; Key: "slot"; String: "{code:RuntimeSlot}"
 Filename: "{app}\quill-app-version.ini"; Section: "app"; Key: "channel"; String: "{code:InstallChannel}"
 
 [Run]
 ; Record that this app needs this runtime SLOT (idempotent). Keyed by slot
-; ("3.13", "3.13-beta") so a Beta slot is removed when its last app leaves
+; ("3.14", "3.14-beta") so a Beta slot is removed when its last app leaves
 ; (runtime_refs.slot_of treats an older "3.13.1" key as the Stable slot). Runs
 ; the shared runtime's own Python so the tested refcount logic does the work.
 Filename: "{code:RuntimeExe}"; Parameters: "-m quill.core.runtime_cli register {#AppRefId} {code:RuntimeSlot}"; \
@@ -143,7 +143,7 @@ var
   Version: string;
   Dot: Integer;
 begin
-  // "3.13.14" -> "3.13": the runtime is keyed by MAJOR, never overwritten in
+  // "3.14.8" -> "3.14": the runtime is keyed by MAJOR, never overwritten in
   // place, so a future Python major lands alongside rather than on top of it.
   Version := '{#RuntimeVersion}';
   Dot := Pos('.', Version);
@@ -176,7 +176,7 @@ begin
   end;
 end;
 
-// "3.13" for Stable, "3.13-beta", "3.13-dev".
+// "3.14" for Stable, "3.14-beta", "3.14-dev".
 function RuntimeSlot(Param: string): string;
 begin
   Result := RuntimeMajor();

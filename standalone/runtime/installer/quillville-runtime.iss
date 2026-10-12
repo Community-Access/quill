@@ -20,13 +20,13 @@
 
 #define AppName "QuillVille Runtime"
 ; The release-channel slot this installer fills (build_runtime_installer.ps1
-; -Channel beta passes /dRuntimeSlot=3.13-beta). Stable is the folder that
-; always existed; the app installers' fragment uses the same names.
+; -Channel beta passes /dRuntimeSlot=3.14-beta, Stable /dRuntimeSlot=3.14).
+; The app installers' fragment uses the same names.
 #ifndef RuntimeSlot
-  #define RuntimeSlot "3.13"
+  #define RuntimeSlot "3.14"
 #endif
 #ifndef AppVersion
-  #define AppVersion "3.13"
+  #define AppVersion "3.14"
 #endif
 #define AppPublisher "Community Access"
 #define AppURL "https://github.com/Community-Access/quill"
@@ -38,12 +38,18 @@
 SignTool=quilltrusted
 SignedUninstaller=yes
 #endif
+; Each slot has its own AppId, so installing one never replaces another's
+; uninstall entry -- and, because Inno reuses the folder recorded under an
+; AppId, never lands in another slot's folder. The two 3.13 IDs are the ones
+; already on users' machines and must not change. A later Python major gets
+; IDs of its own (2026-10-11, the move to 3.14): sharing 3.13's would make
+; the 3.14 runtime install over Runtime\3.13, where no 3.14 launcher looks.
 #if RuntimeSlot == "3.13"
 AppId={{6D6B0E7C-51A4-4B5E-9E0D-2F8B4C0A9137}}
-#else
-; A channel slot's runtime (build_runtime_installer.ps1 -Channel beta): its own
-; AppId, so installing it never replaces the Stable runtime's uninstall entry.
+#elif RuntimeSlot == "3.13-beta"
 AppId={{6D6B0E7C-51A4-4B5E-9E0D-2F8B4C0A9138}}
+#else
+AppId={{6D6B0E7C-51A4-4B5E-9E0D-2F8B4C0A9137}-{#RuntimeSlot}
 #endif
 AppName={#AppName}
 AppVersion={#AppVersion}
@@ -52,7 +58,7 @@ AppPublisherURL={#AppURL}
 AppSupportURL={#AppURL}
 VersionInfoCompany={#AppPublisher}
 VersionInfoDescription=Shared Python runtime for the QuillVille apps
-; Runtime\3.13 for Stable, Runtime\3.13-beta for the Beta slot.
+; Runtime\3.14 for Stable, Runtime\3.14-beta for the Beta slot.
 DefaultDirName={localappdata}\QuillVille\Runtime\{#RuntimeSlot}
 ; The path IS the contract (quill.core.runtime_marker and every per-app
 ; launcher resolve it); letting a user relocate it would strand every app.

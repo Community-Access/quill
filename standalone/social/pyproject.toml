@@ -7,7 +7,7 @@ name = "quill-social"
 version = "0.3.0"
 description = "QUILL Social -- accessibility-first, screen-reader-first social reading, publishing, and community workspace for Mastodon and Bluesky"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 license = { text = "MIT" }
 authors = [
   { name = "Community Access" },

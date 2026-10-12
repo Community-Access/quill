@@ -7,7 +7,7 @@ name = "quill-radio"
 version = "3.2.0"
 description = "Quill Radio -- accessible, screen-reader-first internet radio as a standalone app"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 license = { text = "MIT" }
 authors = [
   { name = "Community Access" },
