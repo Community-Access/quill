@@ -8,7 +8,29 @@ be unit-tested with a tiny stand-in namespace.
 
 from __future__ import annotations
 
+import sys
 from typing import Any
+
+#: Windows virtual-key codes for the punctuation keys on a US layout, used when
+#: the live layout cannot be asked (:func:`_punctuation_vk`). A punctuation
+#: character's own code point is NOT its virtual key: ``ord("\\")`` is 0x5C,
+#: VK_RWIN, so Alt+Shift+\ registered as Alt+Shift+Right Windows -- Windows
+#: accepted it, nothing warned, and the real key dinged in Outlook (QUILL
+#: Transcribe, 2026-10-12). The same held for every key here (``,`` was Print
+#: Screen, ``.`` Delete, ``-`` Insert).
+_US_PUNCTUATION_VK = {
+    ";": 0xBA,
+    "=": 0xBB,
+    ",": 0xBC,
+    "-": 0xBD,
+    ".": 0xBE,
+    "/": 0xBF,
+    "`": 0xC0,
+    "[": 0xDB,
+    "\\": 0xDC,
+    "]": 0xDD,
+    "'": 0xDE,
+}
 
 _NAMED_KEYS = {
     "ENTER": "WXK_RETURN",
@@ -29,11 +51,31 @@ _NAMED_KEYS = {
 }
 
 
+def _punctuation_vk(char: str) -> int | None:
+    """The virtual key that types *char* on this keyboard layout.
+
+    ``VkKeyScanW`` answers for the live layout (on a UK keyboard ``\\`` is not
+    where a US one has it); the US table covers other platforms and a layout
+    with no such key. ``None`` when neither knows it.
+    """
+    if sys.platform == "win32":
+        try:
+            import ctypes
+
+            scan = int(ctypes.windll.user32.VkKeyScanW(ord(char)))
+            if scan != -1 and (scan & 0xFF) != 0xFF:
+                return scan & 0xFF
+        except Exception:  # noqa: BLE001 - fall back to the US layout
+            pass
+    return _US_PUNCTUATION_VK.get(char)
+
+
 def parse_hotkey(wx: Any, chord: str | None) -> tuple[int, int] | None:
     """``"Ctrl+Alt+Shift+R"`` -> ``(flags, key_code)`` for ``RegisterHotKey``,
     or ``None`` when the chord is empty or unparseable. Modifiers are Ctrl / Alt
-    / Shift (Cmd maps to Ctrl); the final token is a letter, F1-F12, or a named
-    key (Home/End/arrows/...)."""
+    / Shift (Cmd maps to Ctrl); the final token is a letter, a digit, a
+    punctuation key (``\\``, ``;``, ``,`` ...), F1-F12, or a named key
+    (Home/End/arrows/...)."""
     if not chord:
         return None
     parts = [part.strip() for part in chord.split("+") if part.strip()]
@@ -54,7 +96,10 @@ def parse_hotkey(wx: Any, chord: str | None) -> tuple[int, int] | None:
             return None
     token = parts[-1].upper()
     if len(token) == 1:
-        return flags, ord(token)
+        if token.isascii() and token.isalnum():
+            return flags, ord(token)  # A-Z and 0-9 are their own virtual keys
+        vk = _punctuation_vk(parts[-1])
+        return None if vk is None else (flags, vk)
     if token.startswith("F") and token[1:].isdigit() and 1 <= int(token[1:]) <= 12:
         return flags, getattr(wx, f"WXK_F{int(token[1:])}")
     named = _NAMED_KEYS.get(token)
