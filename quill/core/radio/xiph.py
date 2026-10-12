@@ -17,13 +17,13 @@ context with a bounded timeout/size, disabled in Safe Mode via
 
 from __future__ import annotations
 
-import html as _html
 import re
 import ssl
 import urllib.error
 import urllib.request
 
 from quill.core import http_client
+from quill.core.display_text import clean_display_text
 from quill.core.error_codes import CodedError
 from quill.core.radio import directory_cache
 from quill.core.radio.models import RadioStation
@@ -140,7 +140,7 @@ def parse_genres(page_html: str) -> list[str]:
 
     seen: dict[str, str] = {}
     for raw in _GENRE_LINK_RE.findall(page_html):
-        name = _html.unescape(urllib.parse.unquote(raw)).strip()
+        name = clean_display_text(urllib.parse.unquote(raw)).strip()
         key = name.casefold()
         if name and key not in seen and is_useful_genre(name):
             seen[key] = name
@@ -164,7 +164,7 @@ def parse_stations(page_html: str) -> list[RadioStation]:
         url = match.group("url").strip()
         if not url or url in seen:
             continue
-        title = _html.unescape(re.sub(r"<[^>]+>", "", match.group("title"))).strip()
+        title = clean_display_text(re.sub(r"<[^>]+>", "", match.group("title"))).strip()
         if not title:
             continue
         seen.add(url)

@@ -155,7 +155,11 @@ def clean_description(text: str) -> str:
     Blank runs collapse to one blank line -- YouTube descriptions are padded
     with them, and a screen reader reads every one of them as a pause.
     """
-    lines = [line.rstrip() for line in (text or "").replace("\r\n", "\n").split("\n")]
+    from quill.core.display_text import clean_display_text
+
+    lines = [
+        line.rstrip() for line in clean_display_text(text or "").replace("\r\n", "\n").split("\n")
+    ]
     cleaned: list[str] = []
     for line in lines:
         if not line and cleaned and not cleaned[-1]:

@@ -8,6 +8,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from quill.core.display_text import clean_display_text
+
 
 def _coerce_int(value: object, default: int = 0) -> int:
     """Best-effort ``int(value)`` for a loosely-typed JSON/dict field."""
@@ -68,6 +70,11 @@ class RadioStation:
     #: (reported 2026-08-18). Transient and excluded from equality, exactly
     #: like ``alt_sources``: it describes a row, it does not identify one.
     notes: str = field(default="", compare=False)
+    #: The same description as the publisher sent it, HTML and all, so View
+    #: Show Notes can open it in the Notes reader with its links still links
+    #: (QUILLVille list, 2026-10-11). Empty for anything that is not a podcast
+    #: episode. Transient and excluded from equality, like ``notes``.
+    notes_html: str = field(default="", compare=False)
     #: Radio Browser's own checker's verdict on this stream: True when it
     #: played, False when it did not, ``None`` when nobody published a check
     #: (every other directory, and any station saved before this field existed).
@@ -108,6 +115,13 @@ class RadioStation:
     #: :mod:`quill.core.radio.station_lookup`). Shown in the row and the details
     #: panel; search-only and transient, excluded from equality like the rest.
     match_reason: str = field(default="", compare=False)
+
+    def __post_init__(self) -> None:
+        # Every source -- Radio Browser, LibriVox, the Internet Archive, a feed
+        # -- hands publisher text through here, so one cleaning covers them
+        # all: "Don&#8217;t" must read as a word (QUILLVille list, 2026-10-11).
+        self.name = clean_display_text(self.name)
+        self.notes = clean_display_text(self.notes)
 
     @property
     def display_name(self) -> str:

@@ -30,10 +30,10 @@ wx-free, strict-typed.
 
 from __future__ import annotations
 
-import html
 from dataclasses import dataclass, field
 from datetime import datetime
 
+from quill.core.display_text import clean_display_text
 from quill.core.podcasts import check_state, feed_problems
 from quill.core.podcasts.feed_reader import FeedInfo, FetchNotes
 from quill.core.podcasts.models import PodcastEpisode, PodcastShow
@@ -101,7 +101,7 @@ def _heal_title(show: PodcastShow) -> None:
     """
     title = show.title or ""
     if "&" in title and ";" in title:
-        healed = html.unescape(title).strip()
+        healed = clean_display_text(title).strip()
         if healed and healed != title:
             show.title = healed
 

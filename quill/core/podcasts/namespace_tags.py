@@ -46,6 +46,8 @@ import re
 from dataclasses import asdict, dataclass, field
 from dataclasses import fields as dataclass_fields
 
+from quill.core.display_text import clean_display_text
+
 _ATTR = r'{name}\s*=\s*"([^"]*)"'
 
 
@@ -57,7 +59,7 @@ def _attr(fragment: str, name: str) -> str:
 def _text(fragment: str) -> str:
     """The text inside one tag, with markup and entities resolved."""
     body = re.sub(r"<[^>]+>", "", fragment)
-    return html.unescape(body).strip()
+    return clean_display_text(body).strip()
 
 
 @dataclass(frozen=True, slots=True)

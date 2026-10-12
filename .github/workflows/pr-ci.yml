@@ -51,17 +51,21 @@ jobs:
         run: |
           ruff check .
 
-  unit-tests:
-    # GATE-5: the full suite must pass and coverage of quill/core and quill/io
-    # may not fall below the floor. Raise the floor as coverage improves; never
-    # lower it.
+  unit-tests-shard:
+    # GATE-5, split four ways (2026-10-11). One runner stopped finishing the
+    # full suite inside the 30-minute ceiling, so each shard runs a quarter of
+    # the test files: tests/conftest.py _keep_this_shard deals whole files to
+    # shards by size, so a file's module fixtures and xdist group stay
+    # together. The required check is still "unit-tests" below, which waits for
+    # every shard and enforces the coverage floor over their combined data.
     runs-on: windows-latest
-    # A healthy full run finishes in ~15 minutes (install + suite). Two runs
-    # on 2026-07-14 sat "in progress" for an hour with the log frozen at the
-    # same 93% point -- a deterministic test hang. The job-level ceiling makes
-    # a hang cost 30 minutes instead of GitHub's 6-hour default, and the
+    # A hang costs 30 minutes instead of GitHub's 6-hour default, and the
     # per-test --timeout below makes the hanging test name itself.
     timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
@@ -71,7 +75,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e .[dev,ui]
-      - name: Run unit and accessibility tests
+      - name: Run unit and accessibility tests (shard ${{ matrix.shard }} of 4)
         # -n 4 --dist=loadfile: the single-process run was silently
         # accumulating native Windows window-creation resources across the
         # suite's ~8700+ tests (dozens of test files each construct their own
@@ -110,6 +114,8 @@ jobs:
         # -n 4 --dist=loadfile is kept for wall-clock and because loadfile
         # keeps each file's tests together so module-scoped wx_app fixtures
         # still work -- no longer as a handle workaround.
+        env:
+          QUILL_TEST_SHARD: ${{ matrix.shard }}/4
         run: |
           pytest tests\unit tests\accessibility -q -n 4 --dist=loadfile `
             --timeout=300 --timeout-method=thread `
@@ -119,15 +125,54 @@ jobs:
             --cov=quill.core --cov=quill.io `
             --cov-report=
       - name: Run dialog-inventory gate tests (isolated process)
+        if: matrix.shard == 1
         run: |
           pytest tests\unit\ui\test_dialog_inventory.py -q `
             --timeout=300 --timeout-method=thread -p no:cacheprovider
-      - name: Enforce coverage floor
-        # A separate step reading the persisted .coverage data, decoupled
-        # from the xdist test-runner process above -- if that process exits
-        # in some unusual way, the coverage floor is still checked from what
-        # was actually recorded rather than silently skipped.
+      - name: Keep this shard's coverage data
         run: |
+          Move-Item .coverage ".coverage.shard${{ matrix.shard }}"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: coverage-shard-${{ matrix.shard }}
+          path: .coverage.shard${{ matrix.shard }}
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 3
+
+  unit-tests:
+    # GATE-5: the full suite must pass and coverage of quill/core and quill/io
+    # may not fall below the floor. Raise the floor as coverage improves; never
+    # lower it. This is the job branch protection requires: it passes only when
+    # every shard passed, then checks the floor over all four shards' coverage
+    # together.
+    needs: unit-tests-shard
+    if: ${{ always() }}
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - name: Every shard passed
+        if: ${{ needs.unit-tests-shard.result != 'success' }}
+        run: |
+          Write-Error "A unit-test shard did not pass: ${{ needs.unit-tests-shard.result }}"
+          exit 1
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Install coverage
+        run: |
+          python -m pip install --upgrade pip
+          pip install "coverage[toml]"
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: coverage-shard-*
+          merge-multiple: true
+      - name: Enforce coverage floor
+        # The shards ran on separate runners at the same checkout path, so
+        # their data files combine directly.
+        run: |
+          coverage combine
           coverage report --skip-covered --show-missing --fail-under=70
 
   characterization:

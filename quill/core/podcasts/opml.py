@@ -17,13 +17,13 @@ wx-free, strict-typed.
 
 from __future__ import annotations
 
-import html
 import xml.etree.ElementTree as ET
 from collections.abc import Iterator
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from email.utils import format_datetime
 
+from quill.core.display_text import clean_display_text
 from quill.core.error_codes import CodedError
 from quill.core.podcasts.models import PodcastShow
 from quill.core.podcasts.subscriptions import PodcastLibrary
@@ -186,7 +186,7 @@ def _display_text(raw: str) -> str:
     show. 47 of the 1,307 shows in one real Downcast export carried it.
     Unescaping a title that was escaped only once changes nothing.
     """
-    return html.unescape(raw).strip()
+    return clean_display_text(raw).strip()
 
 
 def _walk_outline(element: ET.Element, path: list[str]) -> list[ImportedShow]:

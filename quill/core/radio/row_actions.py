@@ -93,6 +93,7 @@ ADD_YOUTUBE_CHANNEL = row_actions_youtube.ADD_CHANNEL
 ADD_YOUTUBE_PLAYLIST = row_actions_youtube.ADD_PLAYLIST
 ADD_YOUTUBE_VIDEO = row_actions_youtube.ADD_VIDEO
 VIEW_TRANSCRIPT = "view.transcript"
+VIEW_SHOW_NOTES = "view.show_notes"
 NEW_PODCAST_FOLDER = "podcastfolder.new"
 RENAME_PODCAST_FOLDER = "podcastfolder.rename"
 DELETE_PODCAST_FOLDER = "podcastfolder.delete"
@@ -603,6 +604,8 @@ def actions_for(
                 # (the same request playing would make) fetches them, no
                 # playback required.
                 actions.append(RowAction(VIEW_TRANSCRIPT, "View Transcr&ipt..."))
+        if getattr(station, "notes_html", ""):  # links followable, unlike Details
+            actions.append(RowAction(VIEW_SHOW_NOTES, "View Show Not&es..."))
         actions.extend(row_actions_youtube.video_actions(station, RowAction))
         if kind == "ytvideo":  # removable from the menu that plays it
             actions.append(RowAction(REMOVE_SAVED, "Remo&ve from YouTube"))

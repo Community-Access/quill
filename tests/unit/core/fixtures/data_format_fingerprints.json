@@ -1290,6 +1290,7 @@
             "alt_sources": "tuple[str, ...]",
             "is_recording": "bool",
             "notes": "str",
+            "notes_html": "str",
             "last_check_ok": "bool | None",
             "listeners": "int",
             "place_confirmed": "bool",
@@ -1299,7 +1300,7 @@
         "function:quill.core.radio.favorites:save_favorites": "sha256:07ac4b1c29bb2410"
       },
       "classification": "additive, compatible",
-      "note": "fingerprint method moved from ast.dump to ast.unparse (Python 3.12/3.13 stable); shape unchanged"
+      "note": "RadioStation.notes_html is transient: to_dict never writes it, so the files on disk do not change and older builds read them as before"
     },
     "radio.history": {
       "current": 2,
@@ -1396,6 +1397,7 @@
             "alt_sources": "tuple[str, ...]",
             "is_recording": "bool",
             "notes": "str",
+            "notes_html": "str",
             "last_check_ok": "bool | None",
             "listeners": "int",
             "place_confirmed": "bool",
@@ -1415,7 +1417,7 @@
         "function:quill.core.radio.history_store:save_history": "sha256:ab4ddc8289ea7635"
       },
       "classification": "version bumped",
-      "note": "Radio history version 2 adds website overrides; earlier builds can read the file but discard overrides if saved."
+      "note": "Radio history version 2 adds website overrides; earlier builds can read the file but discard overrides if saved. RadioStation.notes_html is transient and never written."
     },
     "shared.listens": {
       "current": 1,

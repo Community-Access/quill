@@ -4,6 +4,7 @@ All notable changes to QUILL Cast are documented here. QUILL Cast 2.0 is the fir
 
 ## Unreleased
 
+- **Show notes read as words.** A feed that encodes its text twice (`&amp;#8217;`, common with WordPress podcast plugins) left `&#8217;` in show notes, titles and the feed preview, and a screen reader spelled it out. Notes published as escaped HTML (`&lt;p&gt;`) showed their tags. Both are read properly now, through one shared cleaner, and a test fails if a new reader of publisher text decodes it by hand (`quill/core/display_text.py`).
 - **Feeds over http and https, explained.** The user guide has a new section,
   "Feeds over http and https" under Feed Check: https is tried first, Player
   Information marks a feed that really is plain http, a password is never sent

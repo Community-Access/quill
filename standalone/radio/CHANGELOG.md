@@ -4,6 +4,8 @@ All notable changes to Quill Radio are documented here. See `docs/release-notes-
 
 ## [Unreleased]
 
+- **Show notes read as words, and their links work.** Chris Nova reported that every apostrophe in a podcast's show notes read as `&#8217;`. Two faults did it: notes that were plain text were never decoded at all, and feeds that encode twice (`&amp;#8217;`, common with WordPress podcast plugins) kept one layer after the other was taken off. Every piece of publisher text now goes through one shared cleaner that takes off every layer, up to three, and tidies non-breaking and zero-width spaces: show notes, episode and show titles, station names and descriptions from every source, YouTube descriptions, the ACB calendar and OPML titles (`quill/core/display_text.py`).
+- **View Show Notes on an episode row.** Station Details shows notes as plain text, which turns a link into an address to retype. An episode with notes now has **View Show Notes...** on its context menu, which opens QUILL Cast's Show Notes window: links are links, Tab moves between them, Links in These Notes lists them, and Save As keeps them as links in HTML and Markdown (`quill/ui/radio/browse_show_notes.py`).
 - **Podcasts over http and https, explained.** The user guide has a new section,
   "Podcasts with http and https addresses": https is tried first, a password is
   never sent over plain http, certificates are checked the way Windows checks

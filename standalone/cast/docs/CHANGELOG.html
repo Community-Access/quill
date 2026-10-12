@@ -251,6 +251,14 @@ changes; this file keeps the engineering record. The 1.x release notes
 were retired on 2026-10-03.</p>
 <h2 id="unreleased">Unreleased</h2>
 <ul>
+<li><strong>Show notes read as words.</strong> A feed that encodes its
+text twice (<code>&amp;amp;#8217;</code>, common with WordPress podcast
+plugins) left <code>&amp;#8217;</code> in show notes, titles and the
+feed preview, and a screen reader spelled it out. Notes published as
+escaped HTML (<code>&amp;lt;p&amp;gt;</code>) showed their tags. Both
+are read properly now, through one shared cleaner, and a test fails if a
+new reader of publisher text decodes it by hand
+(<code>quill/core/display_text.py</code>).</li>
 <li><strong>Feeds over http and https, explained.</strong> The user
 guide has a new section, “Feeds over http and https” under Feed Check:
 https is tried first, Player Information marks a feed that really is
