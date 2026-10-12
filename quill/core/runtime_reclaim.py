@@ -19,6 +19,14 @@ while any of these hold:
   before that and never updated runs on the Python its launcher was built for,
   which is older than the current one, so every older Stable slot stays.
 
+* a Start menu, Desktop or Startup shortcut, or a ``Run`` entry, launches from
+  it. The earliest installers had no ini and pointed their shortcuts straight
+  at ``Runtime\\3.13\\QuillVilleRuntime.exe -m quill.apps.radio``; the runtime
+  carries the app's code, so such a shortcut still works -- found on a real
+  machine whose Radio 3.0.0 install folder was long gone (2026-10-12);
+* it is a Stable slot and a Community Access install folder exists with
+  neither an ini nor a private runtime of its own.
+
 An app with its own private runtime (``python.exe`` or ``_internal\\python.exe``
 beside its ini) uses no shared slot and is ignored. Removing a runtime an app
 still needs would stop that app starting, so every doubt keeps the slot.
@@ -43,13 +51,18 @@ from quill.core.updater.channels import STABLE
 from quill.core.updater.runtime_slots import channel_of_slot, is_valid_slot
 
 __all__ = [
+    "InstallScan",
     "ReclaimResult",
-    "installed_app_dirs",
+    "launch_references",
     "older_slots",
     "reclaim",
     "runtime_root",
+    "scan_installs",
+    "slots_launched_by",
     "slots_named_by_installs",
 ]
+
+_PUBLISHER = "Community Access"
 
 #: The Inno uninstall keys of the runtime installers for the two 3.13 slots;
 #: later slots use ``<base>-<slot>_is1`` (``quillville-runtime.iss``).
@@ -123,8 +136,16 @@ def slots_named_by_installs(app_dirs: Iterable[Path]) -> tuple[set[str], bool]:
     return named, unknown
 
 
-def installed_app_dirs() -> list[Path]:
-    """Install folders of every Uninstall entry that holds a QuillVille ini."""
+@dataclass(frozen=True, slots=True)
+class InstallScan:
+    """Installed apps with an ini, and whether any install exists without one."""
+
+    app_dirs: list[Path]
+    unknown_install: bool
+
+
+def _uninstall_entries() -> list[tuple[str, str]]:
+    """``(InstallLocation, Publisher)`` of every Uninstall entry, all hives."""
     if sys.platform != "win32":
         return []
     import winreg
@@ -134,7 +155,7 @@ def installed_app_dirs() -> list[Path]:
         (winreg.HKEY_LOCAL_MACHINE, winreg.KEY_WOW64_64KEY),
         (winreg.HKEY_LOCAL_MACHINE, winreg.KEY_WOW64_32KEY),
     )
-    found: dict[str, Path] = {}
+    entries: list[tuple[str, str]] = []
     for hive, view in hives:
         try:
             root = winreg.OpenKey(hive, _UNINSTALL, 0, winreg.KEY_READ | view)
@@ -148,15 +169,97 @@ def installed_app_dirs() -> list[Path]:
                 except OSError:
                     break
                 index += 1
+                values: list[str] = []
                 try:
                     with winreg.OpenKey(root, name) as entry:
-                        location, _kind = winreg.QueryValueEx(entry, "InstallLocation")
+                        for value_name in ("InstallLocation", "Publisher"):
+                            try:
+                                values.append(str(winreg.QueryValueEx(entry, value_name)[0]))
+                            except OSError:
+                                values.append("")
                 except OSError:
                     continue
-                path = Path(str(location).strip().strip('"'))
-                if str(path) and (path / "quill-app-version.ini").is_file():
-                    found[str(path).lower()] = path
-    return list(found.values())
+                entries.append((values[0], values[1]))
+    return entries
+
+
+def scan_installs(entries: Iterable[tuple[str, str]] | None = None) -> InstallScan:
+    """Which installed apps carry an ini, and whether a Community Access install
+    folder exists with neither an ini nor a private runtime (assume it is old)."""
+    found: dict[str, Path] = {}
+    unknown = False
+    for location, publisher in _uninstall_entries() if entries is None else entries:
+        text = location.strip().strip('"')
+        if not text:
+            continue
+        path = Path(text)
+        if (path / "quill-app-version.ini").is_file():
+            found[str(path).lower()] = path
+        elif publisher.strip() == _PUBLISHER and path.is_dir() and not _has_private_runtime(path):
+            unknown = True
+    return InstallScan(list(found.values()), unknown)
+
+
+def launch_references() -> list[bytes]:
+    """The raw bytes of everything that can launch an app at a click or login:
+    Start menu, Desktop and Startup shortcuts, and ``Run`` values. Searched for a
+    slot's path, so no shortcut parsing (or COM) is needed."""
+    blobs: list[bytes] = []
+    folders = [
+        Path(os.environ.get("APPDATA", "")) / "Microsoft" / "Windows" / "Start Menu",
+        Path(os.environ.get("PROGRAMDATA", "")) / "Microsoft" / "Windows" / "Start Menu",
+        Path(os.environ.get("USERPROFILE", "")) / "Desktop",
+        Path(os.environ.get("PUBLIC", "")) / "Desktop",
+    ]
+    for folder in folders:
+        if not str(folder) or not folder.is_dir():
+            continue
+        for link in folder.rglob("*.lnk"):
+            try:
+                blobs.append(link.read_bytes())
+            except OSError:
+                continue
+    if sys.platform == "win32":
+        import winreg
+
+        for hive in (winreg.HKEY_CURRENT_USER, winreg.HKEY_LOCAL_MACHINE):
+            try:
+                key = winreg.OpenKey(hive, r"Software\Microsoft\Windows\CurrentVersion\Run")
+            except OSError:
+                continue
+            with key:
+                index = 0
+                while True:
+                    try:
+                        _name, value, _kind = winreg.EnumValue(key, index)
+                    except OSError:
+                        break
+                    index += 1
+                    blobs.append(str(value).encode("utf-16-le"))
+    return blobs
+
+
+def slots_launched_by(root: Path, slots: Iterable[str], blobs: Iterable[bytes]) -> set[str]:
+    """The *slots* whose folder a shortcut or ``Run`` value points into.
+
+    A ``.lnk`` stores its target in ANSI and/or UTF-16, so both are searched,
+    case-insensitively, with a trailing separator so ``3.13`` never matches
+    ``3.13-beta``.
+    """
+    needles = {
+        slot: [
+            f"{root / slot}\\".lower().encode(encoding, "ignore")
+            for encoding in ("mbcs" if sys.platform == "win32" else "latin-1", "utf-16-le")
+        ]
+        for slot in slots
+    }
+    hits: set[str] = set()
+    for blob in blobs:
+        lowered = blob.lower()
+        for slot, patterns in needles.items():
+            if any(pattern in lowered for pattern in patterns):
+                hits.add(slot)
+    return hits
 
 
 def _forget_uninstall_entry(slot: str, slot_dir: Path) -> None:
@@ -204,18 +307,24 @@ def reclaim(
     data_dir: Path,
     root: Path,
     current_slot: str,
-    app_dirs: Iterable[Path],
+    installs: InstallScan,
+    launch_blobs: Iterable[bytes],
     *,
     remove: Callable[[Path, str], bool] = _remove_slot,
 ) -> list[ReclaimResult]:
     """Remove every older-Python slot nothing can still need; say what happened."""
-    named, unknown = slots_named_by_installs(app_dirs)
+    named, unknown = slots_named_by_installs(installs.app_dirs)
+    unknown = unknown or installs.unknown_install
+    candidates = older_slots(root, current_slot)
+    launched = slots_launched_by(root, candidates, launch_blobs)
     results: list[ReclaimResult] = []
-    for slot in older_slots(root, current_slot):
+    for slot in candidates:
         if slot_referenced(data_dir, slot):
             results.append(ReclaimResult(slot, "kept", "an app is registered on it"))
         elif slot in named:
             results.append(ReclaimResult(slot, "kept", "an installed app's ini names it"))
+        elif slot in launched:
+            results.append(ReclaimResult(slot, "kept", "a shortcut or startup entry runs from it"))
         elif unknown and channel_of_slot(slot) == STABLE:
             results.append(
                 ReclaimResult(slot, "kept", "an installed app predates slot= and may use it")

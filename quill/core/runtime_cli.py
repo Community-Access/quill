@@ -106,7 +106,8 @@ def _reclaim_old_slots(current_slot: str) -> int:
         _data_dir(),
         runtime_reclaim.runtime_root(),
         current_slot,
-        runtime_reclaim.installed_app_dirs(),
+        runtime_reclaim.scan_installs(),
+        runtime_reclaim.launch_references(),
     )
     for result in results:
         print(f"reclaim-old-slots: {result.slot} {result.action} ({result.reason})")

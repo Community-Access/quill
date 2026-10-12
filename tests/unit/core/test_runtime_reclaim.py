@@ -11,7 +11,14 @@ from pathlib import Path
 import pytest
 
 from quill.core import runtime_cli, runtime_reclaim, runtime_refs
-from quill.core.runtime_reclaim import older_slots, reclaim, slots_named_by_installs
+from quill.core.runtime_reclaim import (
+    InstallScan,
+    older_slots,
+    reclaim,
+    scan_installs,
+    slots_launched_by,
+    slots_named_by_installs,
+)
 
 
 def _slots(root: Path, *names: str) -> None:
@@ -55,7 +62,7 @@ def test_an_unused_old_slot_is_removed(tmp_path: Path) -> None:
     runtime_refs.register(data, "radio", "3.14")
     app = _app(tmp_path / "apps", "radio", "[runtime]\nslot=3.14\n")
     remover = _Remover()
-    results = reclaim(data, root, "3.14", [app], remove=remover)
+    results = reclaim(data, root, "3.14", InstallScan([app], False), [], remove=remover)
     assert remover.removed == ["3.13"]
     assert [(r.slot, r.action) for r in results] == [("3.13", "removed")]
 
@@ -68,7 +75,7 @@ def test_a_registered_app_keeps_its_slot(tmp_path: Path) -> None:
     data.mkdir()
     runtime_refs.register(data, "weather", "3.13.1")
     remover = _Remover()
-    results = reclaim(data, root, "3.14", [], remove=remover)
+    results = reclaim(data, root, "3.14", InstallScan([], False), [], remove=remover)
     assert remover.removed == []
     assert results[0].action == "kept"
 
@@ -79,7 +86,7 @@ def test_an_installed_apps_ini_keeps_its_slot(tmp_path: Path) -> None:
     data.mkdir()
     app = _app(tmp_path / "apps", "cast", "[runtime]\nslot=3.13-beta\n")
     remover = _Remover()
-    reclaim(data, root, "3.14", [app], remove=remover)
+    reclaim(data, root, "3.14", InstallScan([app], False), [], remove=remover)
     assert remover.removed == []
 
 
@@ -91,7 +98,10 @@ def test_an_ini_without_slot_keeps_every_older_stable_slot(tmp_path: Path) -> No
     data.mkdir()
     app = _app(tmp_path / "apps", "lite", "[app]\nversion=1.1.2\n")
     remover = _Remover()
-    results = {r.slot: r.action for r in reclaim(data, root, "3.14", [app], remove=remover)}
+    results = {
+        r.slot: r.action
+        for r in reclaim(data, root, "3.14", InstallScan([app], False), [], remove=remover)
+    }
     assert results == {"3.13": "kept", "3.13-beta": "removed"}
 
 
@@ -110,7 +120,9 @@ def test_a_failed_removal_is_reported_as_kept(tmp_path: Path) -> None:
     root, data = tmp_path / "Runtime", tmp_path / "data"
     _slots(root, "3.13")
     data.mkdir()
-    results = reclaim(data, root, "3.14", [], remove=_Remover(succeeds=False))
+    results = reclaim(
+        data, root, "3.14", InstallScan([], False), [], remove=_Remover(succeeds=False)
+    )
     assert results[0].action == "kept"
 
 
@@ -128,7 +140,8 @@ def test_the_cli_reports_and_never_fails(monkeypatch, tmp_path: Path, capsys) ->
     data.mkdir()
     monkeypatch.setattr(runtime_cli, "_data_dir", lambda: data)
     monkeypatch.setattr(runtime_reclaim, "runtime_root", lambda: root)
-    monkeypatch.setattr(runtime_reclaim, "installed_app_dirs", lambda: [])
+    monkeypatch.setattr(runtime_reclaim, "scan_installs", lambda: InstallScan([], False))
+    monkeypatch.setattr(runtime_reclaim, "launch_references", lambda: [])
     assert runtime_cli.main(["reclaim-old-slots", "3.14"]) == 0
     assert "3.13 removed" in capsys.readouterr().out
     assert not (root / "3.13").exists() and (root / "3.14").exists()
@@ -142,3 +155,45 @@ def test_every_app_installer_reclaims_after_registering() -> None:
     register = fragment.index("runtime_cli register {#AppRefId} {code:RuntimeSlot}")
     reclaim_at = fragment.index("runtime_cli reclaim-old-slots {code:RuntimeSlot}")
     assert register < reclaim_at
+
+
+def test_a_shortcut_that_runs_from_a_slot_keeps_it(tmp_path: Path) -> None:
+    """The earliest installers had no ini and pointed the Start menu straight at
+    Runtime/3.13/QuillVilleRuntime.exe -m quill.apps.radio. That shortcut still
+    works -- the runtime carries the app -- so the slot stays (a real machine,
+    2026-10-12, whose Radio 3.0.0 install folder was long gone)."""
+    root, data = tmp_path / "Runtime", tmp_path / "data"
+    _slots(root, "3.13", "3.13-beta")
+    data.mkdir()
+    target = str(root / "3.13" / "QuillVilleRuntime.exe")
+    lnk = b"L\x00\x00\x00junk" + target.encode("utf-16-le") + b"\x00\x00-m quill.apps.radio"
+    remover = _Remover()
+    results = {
+        r.slot: r.action
+        for r in reclaim(data, root, "3.14", InstallScan([], False), [lnk], remove=remover)
+    }
+    assert results == {"3.13": "kept", "3.13-beta": "removed"}
+
+
+def test_shortcut_matching_is_by_folder_not_prefix(tmp_path: Path) -> None:
+    root = tmp_path / "Runtime"
+    beta = str(root / "3.13-beta" / "QuillVilleRuntime.exe").upper().encode("latin-1")
+    assert slots_launched_by(root, ["3.13", "3.13-beta"], [beta]) == {"3.13-beta"}
+
+
+def test_an_old_install_without_an_ini_keeps_stable_slots(tmp_path: Path) -> None:
+    old = tmp_path / "Quill Radio"
+    old.mkdir()
+    (old / "QuillRadio.exe").write_bytes(b"")
+    gone = tmp_path / "removed long ago"
+    scan = scan_installs([
+        (str(old), "Community Access"),
+        (f'"{gone}"', "Community Access"),
+        (str(tmp_path), "Someone Else"),
+    ])
+    assert scan == InstallScan([], True)
+    root, data = tmp_path / "Runtime", tmp_path / "data"
+    _slots(root, "3.13", "3.13-dev")
+    data.mkdir()
+    results = {r.slot: r.action for r in reclaim(data, root, "3.14", scan, [], remove=_Remover())}
+    assert results == {"3.13": "kept", "3.13-dev": "removed"}
