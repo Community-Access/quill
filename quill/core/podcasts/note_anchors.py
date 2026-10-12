@@ -49,10 +49,10 @@ wx-free, strict-typed, pure. No network, no ffmpeg, no model.
 
 from __future__ import annotations
 
-import html
 import re
 from collections.abc import Sequence
 
+from quill.core.display_text import clean_display_text
 from quill.core.podcasts.chapter_inference import TimedCue, _content_words
 from quill.core.podcasts.chapters import PodcastChapter
 
@@ -111,7 +111,7 @@ def topic_phrases(description: str) -> list[str]:
     text = re.sub(r"(?i)<\s*br\s*/?>", "\n", description or "")
     text = re.sub(r"(?i)</\s*(p|div|li|tr|h[1-6])\s*>", "\n", text)
     text = re.sub(r"<[^>]+>", " ", text)
-    text = html.unescape(text)
+    text = clean_display_text(text)
     text = re.sub(r"\s+", " ", text)
 
     pieces = re.split(

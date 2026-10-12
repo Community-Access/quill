@@ -203,17 +203,9 @@ def _decode_entities(value: str) -> str:
     ``&amp;amp;`` gets eaten -- and because an unbounded loop on hostile input
     is not something a calendar needs to own.
     """
-    if "&" not in value:
-        return value
-    import html
+    from quill.core.display_text import decode_entities
 
-    text = value
-    for _pass in range(3):
-        decoded = html.unescape(text)
-        if decoded == text:
-            break
-        text = decoded
-    return text
+    return decode_entities(value)
 
 
 def _tzid_of(line: str) -> str:

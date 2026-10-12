@@ -31,10 +31,10 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
-from html import unescape
 from html.parser import HTMLParser
 
 from quill.core import text_links
+from quill.core.display_text import clean_display_text, unwrap_escaped_html
 
 __all__ = [
     "BLOCK_HEADING",
@@ -298,6 +298,8 @@ class _NotesParser(HTMLParser):
     def handle_data(self, data: str) -> None:
         if self._skip or not data:
             return
+        # Cleaned before anything records a position in it (display_text).
+        data = clean_display_text(data)
         text = data if self._pre else re.sub(r"\s+", " ", data)
         href = self._hrefs[-1] if self._hrefs else ""
         self._runs.append(Run(text, href=href, bold=self._bold > 0, italic=self._italic > 0))
@@ -375,7 +377,7 @@ def _split_bare_links(block: Block) -> Block:
 
 def parse_notes(content: str) -> NotesDocument:
     """Read *content* (HTML, or plain text) into a :class:`NotesDocument`."""
-    content = content or ""
+    content = unwrap_escaped_html(content or "")
     if "<" in content and ">" in content:
         parser = _NotesParser()
         try:
@@ -386,7 +388,7 @@ def parse_notes(content: str) -> NotesDocument:
         blocks = parser.blocks
         images = parser.images
     else:
-        blocks = _plain_blocks(unescape(content))
+        blocks = _plain_blocks(clean_display_text(content))
         images = []
     return _lay_out([_split_bare_links(block) for block in blocks], images)
 

@@ -132,6 +132,7 @@ def _episode_leaves(info: FeedInfo, feed_url: str, *, source: str) -> list[Brows
             if episode.transcript_url
             else ""
         )
+        description = str(getattr(episode, "description", "") or "")
         nodes.append(
             leaf(
                 RadioStation(
@@ -145,7 +146,8 @@ def _episode_leaves(info: FeedInfo, feed_url: str, *, source: str) -> list[Brows
                     # showing two addresses and nothing else.
                     # getattr: a feed parser that carried no description at
                     # all is a feed with no show notes, not a crash.
-                    notes=html_to_plain_text(str(getattr(episode, "description", "") or "")),
+                    notes=html_to_plain_text(description),
+                    notes_html=description,
                 ),
                 node_id=node_id,
                 note="transcript available" if episode.transcript_url else "",

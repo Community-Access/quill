@@ -106,6 +106,9 @@ def _handlers(dialog: Any, node: Any, data: dict, kind: str, args: list[str]) ->
     handlers[row_actions.VIEW_TRANSCRIPT] = lambda: browse_transcript.view(
         dialog, kind, args, station
     )
+    from quill.ui.radio import browse_show_notes
+
+    handlers[row_actions.VIEW_SHOW_NOTES] = lambda: browse_show_notes.view(dialog, station)
     handlers.update(yt_menu.add_handlers(dialog))
     handlers.update(yt_menu.channel_handlers(dialog, node, args, station))
     # The subscription-library verbs (folders, OPML, Mark All as Played) live

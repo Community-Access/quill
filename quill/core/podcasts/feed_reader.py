@@ -33,6 +33,7 @@ from dataclasses import dataclass, field
 import feedparser
 
 from quill.core import http_client
+from quill.core.display_text import clean_display_text
 from quill.core.error_codes import CodedError
 from quill.core.net_retry import retry_transient
 from quill.core.podcasts import feed_auth, feed_problems, namespace_tags, transport
@@ -387,7 +388,7 @@ def _split_item_fragments(raw_text: str) -> list[str]:
 
 
 def _entry_to_episode(entry: object, entry_xml: str) -> PodcastEpisode | None:
-    title = str(getattr(entry, "title", "")).strip()
+    title = clean_display_text(str(getattr(entry, "title", ""))).strip()
     enclosures = getattr(entry, "enclosures", None) or []
     audio_url = ""
     for enclosure in enclosures:
@@ -455,7 +456,7 @@ def parse_feed(raw_bytes: bytes) -> FeedInfo:
             detail=f"no feed element; first bytes {raw_bytes[:120]!r}",
         )
     feed = getattr(parsed, "feed", None)
-    title = str(getattr(feed, "title", "")) if feed is not None else ""
+    title = clean_display_text(str(getattr(feed, "title", ""))) if feed is not None else ""
     homepage = str(getattr(feed, "link", "")) if feed is not None else ""
     image = getattr(feed, "image", None) if feed is not None else None
     artwork_url = str(image.get("href", "")) if isinstance(image, dict) else ""

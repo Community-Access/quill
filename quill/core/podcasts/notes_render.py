@@ -24,8 +24,9 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
-from html import unescape
 from html.parser import HTMLParser
+
+from quill.core.display_text import clean_display_text, unwrap_escaped_html
 
 HEADING = "heading"
 PARAGRAPH = "paragraph"
@@ -275,7 +276,8 @@ class _NotesParser(HTMLParser):
     def handle_data(self, data: str) -> None:
         if self._skip:
             return
-        self._parts.append(data)
+        # A double-encoded feed still has a layer left (display_text).
+        self._parts.append(clean_display_text(data))
 
     def close(self) -> None:
         super().close()
@@ -284,12 +286,12 @@ class _NotesParser(HTMLParser):
 
 def render_notes(html: str) -> NotesDocument:
     """Read *html* into a :class:`NotesDocument`. Never raises."""
-    source = html or ""
+    source = unwrap_escaped_html(html or "")
     if "<" not in source:
         # Plain text notes: paragraphs on blank lines, every line otherwise.
         parser_blocks: list[Block] = []
         had_media = False
-        for chunk in re.split(r"\n\s*\n", unescape(source)):
+        for chunk in re.split(r"\n\s*\n", clean_display_text(source)):
             text = " ".join(chunk.split())
             if text:
                 parser_blocks.append(Block(PARAGRAPH, text))

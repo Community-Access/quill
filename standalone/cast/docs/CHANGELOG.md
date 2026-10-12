@@ -2,6 +2,10 @@
 
 All notable changes to QUILL Cast are documented here. QUILL Cast 2.0 is the first release most people will meet, so its release notes (`docs/release-notes-2.0.md`, Help > Release Notes in the app) are written as a welcome for new users rather than a list of changes; this file keeps the engineering record. The 1.x release notes were retired on 2026-10-03.
 
+## Unreleased
+
+- **Show notes read as words.** A feed that encodes its text twice (`&amp;#8217;`, common with WordPress podcast plugins) left `&#8217;` in show notes, titles and the feed preview, and a screen reader spelled it out. Notes published as escaped HTML (`&lt;p&gt;`) showed their tags. Both are read properly now, through one shared cleaner, and a test fails if a new reader of publisher text decodes it by hand (`quill/core/display_text.py`).
+
 ## 2.0.0 -- 2026-10-03
 
 QUILL Cast 2.0. The main window, Find in
