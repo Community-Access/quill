@@ -2289,7 +2289,13 @@ class MainFrame(
         # The declarative keymap table has no "any digit" wildcard, so these 20
         # chords are intercepted here instead, mirroring the Ctrl+K/Ctrl+W
         # frame-level handling immediately above.
-        if key_code in _DIGIT_KEY_CODES and self._focus_is_in_document_surface():
+        # #1613/#1617/#1619/#1634: focus can sit on the empty tab host before the
+        # first document exists (first-run wizard), and every handler below
+        # reads self.editor, so no editor counts as "not in a document".
+        in_document = (
+            self._focus_is_in_document_surface() and getattr(self, "editor", None) is not None
+        )
+        if key_code in _DIGIT_KEY_CODES and in_document:
             slot = _DIGIT_KEY_CODES[key_code]
             if event.AltDown() and event.ShiftDown() and not event.ControlDown():
                 self.set_quick_bookmark(slot)
@@ -2297,7 +2303,7 @@ class MainFrame(
             if event.ControlDown() and event.AltDown() and event.ShiftDown():
                 self.go_to_quick_bookmark(slot)
                 return
-        if not self._focus_is_in_document_surface():
+        if not in_document:
             # Modal dialogs (including WebView-hosted HTML surfaces) should
             # receive keys directly. If browse mode was active in the editor,
             # drop it silently when focus leaves the document surface.
@@ -5946,12 +5952,19 @@ class MainFrame(
         # with it) while it was read and pushed into the control on the UI
         # thread. Warn before opening, and (below) read a large non-office file
         # on a worker thread so the UI stays responsive while it loads.
+        from quill.ui import large_file_guard as size_guard
         from quill.ui.large_file_guard import is_large_file, large_file_warning
 
         try:
             file_size = selected_path.stat().st_size
         except OSError:
             file_size = 0
+        if size_guard.is_too_large_to_open(file_size):  # #1614: MemoryError, not a refusal
+            self._show_message_box(
+                size_guard.too_large_message(selected_path.name, file_size), "File too large"
+            )
+            self._set_status("Open cancelled")
+            return
         large_file = is_large_file(file_size)
         if large_file:
             proceed = self._show_message_box(

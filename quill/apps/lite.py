@@ -343,22 +343,20 @@ class QuillLiteApp(
         a recent-files entry and a session restore -- so the guard is asked
         once and cannot be walked around.
         """
-        from quill.ui.large_file_guard import is_large_file, large_file_warning
+        from quill.ui.large_file_guard import open_prompt
 
         try:
             size = path.stat().st_size
         except OSError:
             return True  # unreadable size is the open path's problem to report
-        if not is_large_file(size):
+        prompt = open_prompt(path.name, size, APP_NAME)
+        if prompt is None:
             return True
-        return (
-            show_message_box(
-                large_file_warning(path.name, size, APP_NAME),
-                APP_NAME,
-                wx.YES_NO | wx.ICON_QUESTION,
-            )
-            == wx.YES
-        )
+        message, refused = prompt
+        if refused:  # #1614: past the shared hard ceiling, say no instead of crashing
+            show_message_box(message, APP_NAME, wx.OK)
+            return False
+        return show_message_box(message, APP_NAME, wx.YES_NO | wx.ICON_QUESTION) == wx.YES
 
     def _offer_to_create(self, path: Path) -> bool:
         """Notepad's oldest behaviour: a name that does not exist offers to be one."""
