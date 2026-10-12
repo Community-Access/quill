@@ -7,7 +7,7 @@ name = "quill"
 dynamic = ["version"]
 description = "Screen-reader-first writing and document environment for Windows and macOS"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 license = { text = "MIT" }
 authors = [
   { name = "Community Access" },
@@ -15,7 +15,7 @@ authors = [
 ]
 classifiers = [
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Operating System :: Microsoft :: Windows",
   "Operating System :: MacOS",
 ]
@@ -598,6 +598,10 @@ markers = [
 
 [tool.ruff]
 line-length = 100
+# Held at py313 while CI keeps its Python 3.13 compatibility leg (pr-ci.yml,
+# lint-py313). At py314 ruff format rewrites every `except (A, B):` into the
+# PEP 758 `except A, B:` form, which 3.13 cannot parse, so the leg would fail
+# on import. Raise this to py314 and run `ruff format .` when the leg goes.
 target-version = "py313"
 # Vendored, generated, and distribution trees are not first-party source and
 # must not be linted or format-checked.
@@ -669,7 +673,7 @@ select = ["E", "F", "I", "UP", "B"]
 "tests/unit/platform/macos/test_sr_detect.py" = ["E402"]
 
 [tool.mypy]
-python_version = "3.13"
+python_version = "3.14"
 warn_return_any = true
 warn_unused_configs = true
 strict_optional = true
