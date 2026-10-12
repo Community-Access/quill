@@ -120,8 +120,8 @@ class ResilienceMixin:
     def on_microphone_back(self) -> None:
         from quill.core.windows_dictation.controller import DictationState
 
-        if self._state is not DictationState.PAUSED:
-            return
+        if self._state is not DictationState.PAUSED or bool(getattr(self, "_hold_reason", None)):
+            return  # paused for its field (target_hold.py): only the person resumes that
         self._ignore_until_speech = False
         self._set_state(DictationState.LISTENING)
         self._say("Microphone back. Listening.")

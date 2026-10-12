@@ -57,6 +57,8 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # settings to Quill Inkwell (read once and deleted).
     "core/windows_dictation/contexts.py::save": "content",
     "core/windows_dictation/anywhere.py::write_handoff": "cache",
+    "core/transcribe/settings.py::save_settings": "versioned",  # QUILL Transcribe
+    "core/dictation_owner.py::claim": "marker",  # who owns Dictate Anywhere; lock-backed
     # qc.md X-03 and X-05 (2026-10-03): small, self-describing, "version": 1 stamped;
     # an unreadable file reads as nothing on and nothing shared.
     "core/settings_recipes.py::save_state": "marker",
@@ -252,8 +254,6 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # told about, and no amount of recomputation brings it back -- content,
     # not cache, and the reason the store is atomic like the rest.
     "core/radio/reminders.py::save_reminders": "content",
-    "core/radio/history.py::save_history": "content",
-    "core/radio/history_store.py::save_history": "content",
     # 2026-10-11: the same history written from a worker; Undo Recovery's schema-checked marker.
     "core/radio/history_store.py::save_history_snapshot": "content",
     "core/undo_recovery.py::prepare_restore": "versioned",
