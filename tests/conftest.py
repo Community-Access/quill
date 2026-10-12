@@ -218,6 +218,45 @@ def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item
             item.add_marker(pytest.mark.xdist_group(MACHINE_GLOBAL_GROUP))
             continue
         item.add_marker(pytest.mark.xdist_group(str(item.fspath).replace("\\", "/")))
+    _keep_this_shard(config, items)
+
+
+def _keep_this_shard(config: pytest.Config, items: list[pytest.Item]) -> None:
+    """Under ``QUILL_TEST_SHARD=k/n``, keep only shard *k*'s files (1-based).
+
+    PR CI splits the suite across *n* runners because one runner no longer
+    finishes it inside the job ceiling. Whole files go to one shard, so a
+    module-scoped fixture and a file's ``xdist_group`` stay together. Every
+    shard collects the same tree, so the split is deterministic without any
+    shared state: files are dealt largest first to whichever shard holds the
+    fewest tests so far, which keeps the shards' run times close.
+    """
+    spec = os.environ.get("QUILL_TEST_SHARD", "").strip()
+    if not spec:
+        return
+    index_text, _, count_text = spec.partition("/")
+    index, count = int(index_text), int(count_text)
+    if not 1 <= index <= count:
+        raise pytest.UsageError(f"QUILL_TEST_SHARD={spec!r}: expected k/n with 1 <= k <= n")
+    root = Path(str(config.rootpath))
+    per_file: dict[str, int] = {}
+    for item in items:
+        key = Path(str(item.fspath)).resolve().relative_to(root.resolve()).as_posix()
+        per_file[key] = per_file.get(key, 0) + 1
+    loads = [0] * count
+    owner: dict[str, int] = {}
+    for key, size in sorted(per_file.items(), key=lambda pair: (-pair[1], pair[0])):
+        shard = loads.index(min(loads))
+        owner[key] = shard
+        loads[shard] += size
+    kept: list[pytest.Item] = []
+    dropped: list[pytest.Item] = []
+    for item in items:
+        key = Path(str(item.fspath)).resolve().relative_to(root.resolve()).as_posix()
+        (kept if owner[key] == index - 1 else dropped).append(item)
+    if dropped:
+        config.hook.pytest_deselected(items=dropped)
+        items[:] = kept
 
 
 def _prune_stale_runs(root: Path, *, max_age_seconds: float = 6 * 60 * 60) -> None:

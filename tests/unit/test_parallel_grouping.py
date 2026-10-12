@@ -64,10 +64,14 @@ def _collect(*paths: Path) -> dict[str, list[str]]:
                     mark.args[0] for mark in item.iter_markers("xdist_group") if mark.args
                 ]
 
-    result = pytest.main(
-        [*(str(path) for path in paths), "--collect-only", "-q", "-p", "no:cacheprovider"],
-        plugins=[_Probe()],
-    )
+    with pytest.MonkeyPatch.context() as patch:
+        # Under PR CI's shards the outer run has QUILL_TEST_SHARD set; the probe
+        # must see every test in the files it names, not one shard's share.
+        patch.delenv("QUILL_TEST_SHARD", raising=False)
+        result = pytest.main(
+            [*(str(path) for path in paths), "--collect-only", "-q", "-p", "no:cacheprovider"],
+            plugins=[_Probe()],
+        )
     assert result == 0, "the probe collection itself failed"
     assert _Probe.groups, "nothing was collected; has the layout moved?"
     return dict(_Probe.groups)
