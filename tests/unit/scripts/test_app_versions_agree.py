@@ -80,6 +80,7 @@ def _readme_version(app: str) -> str:
         ("converter", "quill/apps/converter.py"),
         ("weather", "quill/apps/weather.py"),
         ("inkwell", "quill/apps/inkwell.py"),
+        ("transcribe", "quill/apps/transcribe.py"),
     ],
 )
 def test_the_app_constant_matches_its_package(app: str, module: str) -> None:
@@ -138,6 +139,7 @@ def test_quill_lite_says_one_build_everywhere() -> None:
         ("converter", "quill/apps/converter.py"),
         ("weather", "quill/apps/weather.py"),
         ("inkwell", "quill/apps/inkwell.py"),
+        ("transcribe", "quill/apps/transcribe.py"),
     ],
 )
 def test_every_installer_carries_the_apps_build(app: str, module: str) -> None:

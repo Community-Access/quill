@@ -16,7 +16,7 @@ import pytest
 from quill.core.app_launcher import RELEASED_APPS, is_app_released
 
 PUBLIC = ("quill", "radio", "weather", "inkwell", "converter")
-GATED = ("player", "cast", "studio", "beacon")
+GATED = ("player", "cast", "studio", "beacon", "transcribe")
 
 
 def test_released_apps_are_only_the_public_set() -> None:

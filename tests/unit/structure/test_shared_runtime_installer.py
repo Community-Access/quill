@@ -49,6 +49,7 @@ SHARED_RUNTIME_INSTALLERS = {
     "standalone/cast/installer/quill-cast-shared.iss",
     "standalone/converter/installer/quill-converter.iss",
     "standalone/inkwell/installer/quill-inkwell.iss",
+    "standalone/transcribe/installer/quill-transcribe.iss",
     "standalone/quilllite/installer/quilllite.iss",
     "standalone/radio/installer/quill-radio.iss",
     "standalone/social/installer/quill-social-shared.iss",

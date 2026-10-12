@@ -235,6 +235,19 @@ def _quilllite(background):
     return image
 
 
+def _transcribe(background):
+    """A text caret with words arriving at it: speech becoming text where the
+    cursor is. The tall I-beam is the one upright, serifed silhouette in the
+    family; the two amber lines are the words, the second ending at the caret."""
+    image, drawer = _tile(background)
+    drawer.rounded_rectangle([640, 176, 724, 848], radius=36, fill=WHITE)
+    drawer.rounded_rectangle([560, 176, 804, 252], radius=36, fill=WHITE)
+    drawer.rounded_rectangle([560, 772, 804, 848], radius=36, fill=WHITE)
+    drawer.rounded_rectangle([196, 360, 476, 452], radius=46, fill=AMBER)
+    drawer.rounded_rectangle([196, 572, 588, 664], radius=46, fill=AMBER)
+    return image
+
+
 def _runtime(background):
     """A hub with three spokes to smaller nodes: one shared engine, many apps
     drawing from it. The QuillVille Runtime is the only "app" here that is
@@ -261,6 +274,7 @@ _GLYPHS = {
     "beacon": _beacon,
     "social": _social,
     "quilllite": _quilllite,
+    "transcribe": _transcribe,
     "runtime": _runtime,
 }
 
@@ -321,6 +335,12 @@ APPS: tuple[App, ...] = (
         "standalone/quilllite/assets/quill-lite.ico",
         (34, 96, 52, 255),
         "a page with a folded corner and two lines of text",
+    ),
+    App(
+        "transcribe",
+        "standalone/transcribe/assets/quill-transcribe.ico",
+        (150, 52, 150, 255),
+        "a text caret with words arriving at it",
     ),
     App(
         "runtime",

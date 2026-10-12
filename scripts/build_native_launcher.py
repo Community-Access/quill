@@ -143,6 +143,15 @@ PRODUCTS: dict[str, Product] = {
         icon_dir="inkwell",
         icon_name="quill-inkwell",
     ),
+    "transcribe": Product(
+        key="transcribe",
+        name="QuillTranscribe",
+        display="QUILL Transcribe",
+        module="quill.apps.transcribe",
+        version_from="transcribe",
+        icon_dir="transcribe",
+        icon_name="quill-transcribe",
+    ),
     "beacon": Product(
         key="beacon",
         name="QuillBeacon",

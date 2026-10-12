@@ -39,6 +39,7 @@ PORTABLE_LAUNCHER_EXES: tuple[str, ...] = (
     "QuillConverter.exe",
     "QuillLite.exe",
     "QuillInkwell.exe",
+    "QuillTranscribe.exe",
     "QuillBeacon.exe",
     "QuillSocial.exe",
     "QuillMediaPlayer.exe",

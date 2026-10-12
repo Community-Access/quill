@@ -75,6 +75,7 @@ SHOW_HIDE_DEFAULTS: dict[str, str] = {
     "converter": "",
     "player": "",
     "inkwell": "",
+    "transcribe": "",
 }
 
 #: The keys the four apps registered until 2026-10-05. A saved key equal to one
@@ -210,6 +211,7 @@ def _app_for(relative: str) -> str:
         (("apps", "converter"), "converter"),
         (("apps", "player"), "player"),
         (("apps", "inkwell"), "inkwell"),
+        (("apps", "transcribe"), "transcribe"),
     )
     for (folder, stem), app in prefixes:
         if head[0] == folder and (name.startswith(stem) or (len(head) > 2 and head[1] == stem)):

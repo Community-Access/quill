@@ -11,7 +11,7 @@ import pytest
 from quill.core import family_chords, show_hide_keys
 from quill.core.expansion.settings import InkwellSettings, load_settings, save_settings
 
-FOUR = ("weather", "converter", "player", "inkwell")
+FOUR = ("weather", "converter", "player", "inkwell", "transcribe")
 
 
 def test_radio_quill_and_cast_keep_their_keys_and_the_other_four_have_none() -> None:

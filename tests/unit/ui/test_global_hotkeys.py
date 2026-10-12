@@ -197,6 +197,8 @@ _REGISTER_HOTKEY_SITES: dict[str, str] = {
     "ui/main_frame_hotkeys.py": "Settings.global_hotkeys",
     # Inkwell's Quick Insert and Expand Word keys: InkwellSettings defaults.
     "apps/inkwell_keys.py": "InkwellSettings quick_insert_hotkey, expand_now_hotkey",
+    # QUILL Transcribe's start and stop key: none until the listener chooses one.
+    "apps/transcribe_keys.py": "TranscribeSettings.dictation_hotkey, empty by default",
     # A momentary probe of who owns a key the listener asked about; registers
     # nothing that stays.
     "platform/windows/hotkey_owner.py": "probe only",
@@ -286,6 +288,7 @@ def test_the_show_hide_keys_come_from_the_one_table() -> None:
         "converter",
         "player",
         "inkwell",
+        "transcribe",
     }
     owners = _family_show_hide_keys()
     assert owners[chord_identity("Ctrl+Alt+Shift+R")] == "radio"

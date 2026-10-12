@@ -1,0 +1,32 @@
+[build-system]
+requires = ["hatchling>=1.31.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "quill-transcribe"
+version = "1.0.0"
+description = "QUILL Transcribe -- accessible, screen-reader-first dictation into the Windows program you are using, with QUILL's own local speech models"
+readme = "README.md"
+requires-python = ">=3.13"
+license = { text = "MIT" }
+authors = [
+  { name = "Community Access" },
+  { name = "Community Access" },
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Operating System :: Microsoft :: Windows",
+]
+# The whole app lives in the quill package (quill.apps.transcribe); this
+# project is the thin product wrapper: entry point, docs, installer.
+dependencies = ["quill[ui] @ git+https://github.com/Community-Access/quill.git"]
+
+[project.gui-scripts]
+quill-transcribe = "quill_transcribe:main"
+
+[project.urls]
+Homepage = "https://github.com/Community-Access/quill"
+Upstream = "https://github.com/Community-Access/quill"
+
+[tool.hatch.build.targets.wheel]
+packages = ["quill_transcribe"]

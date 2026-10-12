@@ -34,6 +34,7 @@ _MAIN_WINDOW: dict[str, str] = {
     "converter": "quill/apps/converter.py",
     "player": "quill/apps/player.py",
     "inkwell": "quill/apps/inkwell.py",
+    "transcribe": "quill/apps/transcribe.py",
 }
 
 

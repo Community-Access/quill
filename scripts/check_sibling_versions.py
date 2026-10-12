@@ -89,6 +89,9 @@ SITES: tuple[AppVersionSite, ...] = (
     ),
     AppVersionSite("weather", "quill/apps/weather.py", "_VERSION", "quill-weather-v", "_BUILD"),
     AppVersionSite("inkwell", "quill/apps/inkwell.py", "_VERSION", "quill-inkwell-v", "_BUILD"),
+    AppVersionSite(
+        "transcribe", "quill/apps/transcribe.py", "_VERSION", "quill-transcribe-v", "_BUILD"
+    ),
     AppVersionSite("player", "quill/apps/player.py", "_VERSION", "quill-player-v", "_BUILD"),
     AppVersionSite(
         "cast", "quill/apps/podcasts_menu.py", "APP_VERSION", "quill-cast-v", "APP_BUILD"
