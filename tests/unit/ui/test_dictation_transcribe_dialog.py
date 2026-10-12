@@ -54,7 +54,8 @@ def _ok(dialog: Any) -> bool:
 
 
 def _wait_for_installed_models(dialog: Any) -> None:
-    deadline = time.monotonic() + 2
+    # The scan runs on a worker; a busy CI runner can take a few seconds to start it.
+    deadline = time.monotonic() + 15
     while dialog._model_scan_pending and time.monotonic() < deadline:
         wx.Yield()
         time.sleep(0.005)
