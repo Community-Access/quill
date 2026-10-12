@@ -69,6 +69,7 @@ from quill.core.windows_dictation.preferences import (
     DictationPreferences,
 )
 from quill.core.windows_dictation.readback import spoken_marks
+from quill.core.windows_dictation.reader_gate import started_gate
 from quill.core.windows_dictation.resilience import ResilienceMixin, engine_failure_message
 from quill.core.windows_dictation.target_hold import TargetHoldMixin
 from quill.core.windows_dictation.transcript import TranscriptMixin
@@ -141,6 +142,7 @@ class DictationController(
         self._last_spoken = ""
         self._init_live()  # live.py: preview, anchor, finishing, muting
         self._echo = EchoGuard(self._clock)  # echo_guard.py: the read-back, heard again
+        self._heard_from = 0.0  # when the phrase being heard began
         self._init_voice_commands()  # voice_commands.py: modes, targets, the library
         self._init_transcript()  # transcript.py: live transcripts
         self._init_target_hold()  # target_hold.py: paused while the field cannot be written
@@ -293,7 +295,17 @@ class DictationController(
 
     # -- recogniser events ------------------------------------------------ #
 
+    def _reader_was_talking(self) -> bool:
+        """For an engine that hears the microphone itself (reader_gate.py): was
+        the screen reader talking for most of this phrase? The built-in models
+        never hear it -- their audio is silenced at the source -- and say so."""
+        gate = started_gate()
+        if gate is None or not getattr(self._recognizer, "hears_reader", True):
+            return False
+        return gate.mostly_reader(self._heard_from)
+
     def on_speech_started(self) -> None:
+        self._heard_from = self._clock()
         self._ignore_until_speech = False
         if self._state is DictationState.LISTENING:
             self._set_state(DictationState.RECOGNIZING)
@@ -321,9 +333,9 @@ class DictationController(
         if self._state not in _LIVE:
             return
         said = " ".join(word.display for word in phrase.words)
-        if self._echo.is_echo(said):
+        if self._echo.is_echo(said) or self._reader_was_talking():
             self._feedback.show(
-                f"Not written again: {said} (the read-back, heard by the microphone)."
+                f"Not written: {said} (the screen reader, heard by the microphone)."
             )
             return
         heard = wake_words(said)

@@ -612,6 +612,23 @@ def _no_ambient_provider_api_keys(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 @pytest.fixture(autouse=True)
+def _no_live_screen_reader_capture(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Give every test a screen-reader gate that captures nothing.
+
+    Starting a dictation recogniser starts capturing the running screen
+    reader's audio (``quill/core/windows_dictation/reader_gate.py``). In a test
+    that would be the developer's real JAWS or NVDA: its speech opened the gate
+    and silenced the tests' fake microphone, and four QUILL Lite dictation
+    tests failed whenever the reader spoke during a parallel run (2026-10-12).
+    A fresh gate with no capture behind it is never open; tests of the gate
+    feed it themselves.
+    """
+    from quill.core.windows_dictation import reader_gate
+
+    monkeypatch.setattr(reader_gate, "_GATE", reader_gate.ReaderGate())
+
+
+@pytest.fixture(autouse=True)
 def _no_saved_own_ai_key(monkeypatch: pytest.MonkeyPatch) -> None:
     """Hide the developer's saved OpenAI key from AI help.
 
