@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>QUILL Transcribe - Product Requirements Document</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="quill-transcribe---product-requirements-document">QUILL
+Transcribe - Product Requirements Document</h1>
+<p><strong>Working product name:</strong> QUILL Transcribe<br />
+<strong>Product family:</strong> QuillVille / QUILL<br />
+<strong>Document type:</strong> Product Requirements Document and
+implementation blueprint<br />
+<strong>Status:</strong> Proposed; architecture and scope for product
+review<br />
+<strong>Last updated:</strong> 2026-10-05<br />
+<strong>Initial platform:</strong> Windows desktop<br />
+<strong>Proposed product identifier:</strong>
+<code>QuillTranscribe</code></p>
+<h2 id="1-executive-decision">1. Executive decision</h2>
+<p>QUILL Transcribe is a tray-first Windows application for speaking
+text into the text field the person is using now. It brings QUILL’s
+existing dictation engines, model choice, vocabulary, and
+screen-reader-first interaction to Outlook, web forms in Edge, Chrome,
+and Firefox, Notepad, Word, and other supported Windows text-entry
+surfaces.</p>
+<p>This is a focused product shell over the QUILL framework, not a new
+speech recognition stack. QUILL and QUILL Lite already provide dictation
+and audio-file transcription. QUILL Inkwell already hosts the shared
+“Dictate Anywhere” workflow: it runs in the tray, owns a user-selected
+system-wide key, uses the shared dictation controller, and types through
+a guarded external-document adapter. The product gap is that this
+capability is one item inside Inkwell, whose main purpose is
+abbreviation expansion. QUILL Transcribe gives cross-application
+transcription a dedicated, recognizable, independently launchable home
+without creating a second implementation.</p>
+<h3 id="recommended-product-decisions">Recommended product
+decisions</h3>
+<ol type="1">
+<li><strong>Make QUILL Transcribe the focused shell and product identity
+for Dictate Anywhere.</strong> Keep QUILL Inkwell’s
+abbreviation-expansion product intact. Inkwell and the QUILL editors
+become clients of the same cross-application dictation service and
+shared settings; they must not start competing recognizers or register
+duplicate transcription hotkeys.</li>
+<li><strong>Keep all speech logic in the shared QUILL packages.</strong>
+Reuse <code>quill.core.windows_dictation</code>, the external document
+port, model catalogue, model store, and task manager. Extract a shared
+shell-neutral service only where necessary; do not fork or copy the
+controller, recognizers, or text injection logic.</li>
+<li><strong>Make the system tray a required, first-class entry
+point.</strong> The tray menu must start and stop transcription, reveal
+the main window, show the selected model and current state, and open
+settings. If Windows cannot provide a usable tray, keep a visible,
+keyboard-accessible window and explain the limitation rather than hiding
+the application.</li>
+<li><strong>Local processing is the default.</strong> The person chooses
+the exact supported model. A cloud model is absent from the choices
+unless its credential is configured, and no speech is sent to a network
+provider without explicit consent for that action.</li>
+<li><strong>Do not silently retarget text.</strong> When the foreground
+text target changes, pause insertion and require an intentional
+resume/retarget action before writing into the new field.</li>
+</ol>
+<h2 id="2-product-statement-and-promise">2. Product statement and
+promise</h2>
+<h3 id="21-vision">2.1 Vision</h3>
+<p>Let people dictate into the Windows application they already use,
+with the accuracy, model choice, accessibility, and privacy controls
+they expect from QUILL.</p>
+<h3 id="22-product-promise">2.2 Product promise</h3>
+<blockquote>
+<p>Choose your model, press your key, speak, and see your words in the
+field you chose. Your speech stays on your PC unless you explicitly
+choose otherwise.</p>
+</blockquote>
+<h3 id="23-position-in-the-family">2.3 Position in the family</h3>
+<table>
+<thead>
+<tr>
+<th>Product</th>
+<th>Primary job</th>
+<th>Relationship to QUILL Transcribe</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>QUILL</td>
+<td>Write, edit, organize, and work with documents</td>
+<td>Keeps in-editor dictation and file transcription; can launch or
+configure the shared cross-app service</td>
+</tr>
+<tr>
+<td>QUILL Lite</td>
+<td>Accessible plain-text and rich-text editing</td>
+<td>Keeps its own editor workflows; can configure and invoke the same
+cross-app service</td>
+</tr>
+<tr>
+<td>QUILL Inkwell</td>
+<td>Abbreviation expansion across applications</td>
+<td>Continues expansion; routes Dictate Anywhere to the one shared
+transcription owner</td>
+</tr>
+<tr>
+<td>QUILL Transcribe</td>
+<td>Speak into other applications and fields</td>
+<td>Dedicated tray-first product for cross-application dictation and
+transcript delivery</td>
+</tr>
+</tbody>
+</table>
+<p>QUILL Transcribe is not a replacement for QUILL or QUILL Lite, and it
+is not a new location for features that belong in the editors. A
+standalone install must work without either editor being installed.</p>
+<h2 id="3-problem-and-opportunity">3. Problem and opportunity</h2>
+<p>People who dictate into an editor still have to switch workflows when
+they need to write an email, complete a web form, answer a message,
+enter a note in a desktop program, or fill a document in Word. A
+general-purpose dictation feature is often difficult to configure, does
+not expose the model that is doing the recognition, or gives
+screen-reader users too little feedback about whether the microphone is
+active and where words will go.</p>
+<p>QUILL has already built the difficult shared components: offline
+engines, downloadable models, phrase composition, language and
+vocabulary settings, file transcription, task cancellation, and a
+guarded adapter for typing into other programs. QUILL Transcribe turns
+those components into a discoverable, dedicated workflow and gives the
+user a consistent way to select and trust the model.</p>
+<h2 id="4-goals">4. Goals</h2>
+<ol type="1">
+<li>Start and stop dictation without leaving the foreground
+application.</li>
+<li>Insert recognized speech at the caret in supported text fields
+across applications.</li>
+<li>Let the user select and retain a specific supported model, language,
+microphone, and dictation profile.</li>
+<li>Make microphone, recognition, pause, target, and error states
+understandable without relying on sight.</li>
+<li>Provide a usable keyboard-accessible system-tray menu and a compact
+main window.</li>
+<li>Keep local models and audio processing on the device by
+default.</li>
+<li>Preserve QUILL’s voice vocabulary, My Words and Phrases,
+punctuation, formatting, and familiar outcome language where those
+features are safe in an external field.</li>
+<li>Keep the current QUILL, QUILL Lite, and Inkwell capabilities
+available while establishing one owner for cross-app capture and
+insertion.</li>
+<li>Ship as a standalone Windows application with a signed installer and
+portable package using the repository’s release and update
+mechanisms.</li>
+</ol>
+<h2 id="5-non-goals">5. Non-goals</h2>
+<p>The initial release will not:</p>
+<ul>
+<li>Replace Windows Voice Access, Windows voice typing, or accessibility
+APIs.</li>
+<li>Read, index, summarize, or modify the contents of the target
+application.</li>
+<li>Provide a general-purpose writing assistant, grammar checker, or
+editor.</li>
+<li>Execute voice commands that require reading or searching the target
+application’s document.</li>
+<li>Install a browser extension, Outlook add-in, Word add-in, or
+application plugin to make ordinary text insertion work.</li>
+<li>Record continuously, start listening at login, or capture audio
+before an explicit start action.</li>
+<li>Upload audio or transcript history for analytics, training, support,
+or telemetry.</li>
+<li>Support arbitrary user-supplied model binaries, model code, or
+inference plugins in version 1.0.</li>
+<li>Promise insertion into every control in every application. Password
+fields, elevated applications, protected surfaces, and
+inaccessible/custom controls may be refused with a clear
+explanation.</li>
+<li>Replace the existing file-transcription workflow in QUILL or QUILL
+Lite.</li>
+</ul>
+<h2 id="6-audiences-and-jobs-to-be-done">6. Audiences and jobs to be
+done</h2>
+<h3 id="61-screen-reader-first-writer">6.1 Screen-reader-first
+writer</h3>
+<p>“I need to write an email or fill in a form without moving my hands
+from the keyboard. Tell me when you are listening, where the words will
+go, and whether they were inserted.”</p>
+<h3 id="62-model-conscious-user">6.2 Model-conscious user</h3>
+<p>“I have a preferred local model, language, and microphone. Do not
+silently change them because another model is installed or a request
+failed.”</p>
+<h3 id="63-privacy-conscious-user">6.3 Privacy-conscious user</h3>
+<p>“I want offline transcription by default. If an online model is
+available, tell me what will be sent before the first request and let me
+opt out.”</p>
+<h3 id="64-cross-application-professional">6.4 Cross-application
+professional</h3>
+<p>“I use Outlook, a browser, Word, Notepad, and line-of-business
+software. I want the same start/stop gesture and correction vocabulary
+everywhere.”</p>
+<h3 id="65-quill-family-user">6.5 QUILL family user</h3>
+<p>“I already use QUILL or QUILL Lite. I want my language, vocabulary,
+and model preferences to work in other applications without setting up a
+second speech system.”</p>
+<h2 id="7-core-experience">7. Core experience</h2>
+<h3 id="71-first-launch-and-setup">7.1 First launch and setup</h3>
+<p>The first-run experience is short, keyboard-first, and optional to
+complete in one pass. It should:</p>
+<ol type="1">
+<li>Explain that QUILL Transcribe writes into the currently focused
+application and does not read that application’s document.</li>
+<li>Identify available microphones and let the user test/select
+one.</li>
+<li>List the supported models already installed, clearly marking local
+versus network-backed operation, language support, download size, and
+license/source information.</li>
+<li>Allow exact model selection. If a model requires a download, show
+its size and require a deliberate download action. Verify the pinned
+files before making the model available.</li>
+<li>Offer to choose a system-wide start/stop key. No system-wide
+transcription key is registered until the user chooses one; the tray
+menu remains a keyboard-accessible alternative.</li>
+<li>Check for hotkey conflicts using the shared Windows probe. Explain
+that Windows can say a key is already in use but cannot reliably
+identify the other application.</li>
+<li>Offer an optional launch-at-login setting, off by default.</li>
+<li>Run a brief microphone and target test without sending audio to a
+provider.</li>
+</ol>
+<p>Every step has Skip, Back, and Finish actions. Skipping setup must
+not leave a microphone open or install a model in the background.</p>
+<h3 id="72-live-dictation-workflow">7.2 Live dictation workflow</h3>
+<ol type="1">
+<li>The person places focus in a supported text field.</li>
+<li>The person starts dictation from the chosen global key or the tray
+menu.</li>
+<li>Before opening the microphone, the application verifies that the
+foreground target is not a password field, an unsupported application,
+an elevated process, or one of QUILL Transcribe’s own controls.</li>
+<li>The application gives one concise state cue (screen-reader
+announcement, sound, or both according to the shared feedback setting)
+and starts capture.</li>
+<li>Speech is recognized by the selected model and processed by the
+shared dictation composer. Phrases are inserted at the caret without
+moving focus.</li>
+<li>If the target loses focus or becomes unsafe, the application pauses
+delivery, retains any uncommitted phrase only for the current session,
+and explains how to resume or discard it. It never silently sends the
+phrase to a different application or field.</li>
+<li>The user stops from the same key, the tray menu, or the spoken stop
+phrase. The current recognized phrase is flushed when safe; the
+microphone closes.</li>
+<li>The application reports the outcome once, without repeating text
+that the screen reader already echoes from the target field.</li>
+</ol>
+<p>Start, stop, and resume actions are idempotent. A repeated start must
+not open a second microphone session or another recognizer.</p>
+<h3 id="73-tray-first-operation">7.3 Tray-first operation</h3>
+<p>The Windows notification-area icon is required for version 1.0. Its
+accessible name and tooltip expose the product name and concise current
+state, for example “QUILL Transcribe - Ready” or “QUILL Transcribe -
+Listening”.</p>
+<p>The keyboard-operable tray menu provides:</p>
+<ul>
+<li>Start Dictation / Stop Dictation, with state reflected in the
+menu.</li>
+<li>Pause / Resume when the foreground target changes.</li>
+<li>Show QUILL Transcribe.</li>
+<li>Select Model.</li>
+<li>Select Microphone.</li>
+<li>Open Dictation Settings.</li>
+<li>Open Model Library / Manage Installed Models.</li>
+<li>Transcribe Audio File (when enabled in the release scope).</li>
+<li>View Help and Keyboard Shortcuts.</li>
+<li>Check for Updates.</li>
+<li>Exit.</li>
+</ul>
+<p>Hiding or minimizing the main window does not stop an active session.
+Exiting does stop capture, flushes or discards pending audio according
+to the user’s explicit choice, releases global hotkeys, and removes the
+tray icon. If the tray is unavailable, closing the window must not make
+the application unreachable: keep the window visible or minimize it to
+the taskbar and announce the fallback.</p>
+<h3 id="74-main-window">7.4 Main window</h3>
+<p>The main window is a compact, resizable, standard wxPython window,
+not a custom-drawn dashboard. It includes:</p>
+<ul>
+<li>A large, clearly named current-state control: Ready, Listening,
+Paused, Recognizing, or Error.</li>
+<li>The selected model and microphone.</li>
+<li>A Start/Stop control that is operable by keyboard and has a
+state-specific accessible name.</li>
+<li>A target-safety explanation when a session cannot start or
+continue.</li>
+<li>Direct access to model, microphone, language, hotkey, privacy, and
+dictation settings.</li>
+<li>A help surface describing what is supported and what the app does
+not read.</li>
+</ul>
+<p>The window is not raised automatically when a global hotkey starts
+dictation. The user keeps focus in the target application.</p>
+<h3 id="75-model-selection-and-lifecycle">7.5 Model selection and
+lifecycle</h3>
+<p>The user can choose a specific model from the shared, approved QUILL
+dictation catalogue. Each entry presents:</p>
+<ul>
+<li>Exact model and engine name.</li>
+<li>Local or network-backed operation.</li>
+<li>Supported languages.</li>
+<li>Installed/download-required status.</li>
+<li>Download size and required disk space.</li>
+<li>A concise latency/quality description grounded in available
+evidence.</li>
+<li>Model source, license, and any relevant restrictions.</li>
+<li>Whether it supports streaming preview or returns a phrase after a
+pause.</li>
+</ul>
+<p>The selected model is sticky. QUILL Transcribe does not switch
+engines because another engine is faster, a model download completes, or
+a request fails. Fallback is a separate, visible action and announces
+the model actually used. Uninstalled models are not selectable as if
+they were ready.</p>
+<p>Downloads are user initiated, pinned to immutable upstream revisions,
+verified by SHA-256, resumable where the shared model store supports it,
+cancellable, and installed atomically. A failed or cancelled download
+never leaves a model marked as usable.</p>
+<p>Cloud models:</p>
+<ul>
+<li>Are not listed as usable choices until a credential is
+configured.</li>
+<li>Use the shared secure credential store; keys never appear in
+settings files, logs, crash reports, or the interface after entry.</li>
+<li>Require explicit consent for the selected network action, including
+a clear statement that speech audio will leave the device and the
+destination provider.</li>
+<li>Show connection/progress state and report errors without a
+success-shaped fallback.</li>
+<li>Are never selected automatically, even if the user has configured a
+key.</li>
+</ul>
+<h3 id="76-dictation-settings-and-profiles">7.6 Dictation settings and
+profiles</h3>
+<p>The product uses the shared <code>DictationPreferences</code>
+vocabulary and settings loader. Version 1.0 should expose, at
+minimum:</p>
+<ul>
+<li>Model and speech language.</li>
+<li>Microphone/device.</li>
+<li>Start/stop hotkey and optional hold-to-talk behavior.</li>
+<li>Pause sensitivity and phrase preview mode.</li>
+<li>Automatic punctuation, capitalization, and spoken punctuation.</li>
+<li>Filler removal.</li>
+<li>My Words and Phrases / rewrite corrections.</li>
+<li>Number, date, and dash formatting where supported.</li>
+<li>Phrase feedback: speech, sound, both, or silent, following shared
+<code>action_feedback</code> guarantees.</li>
+<li>Optional named profiles for common contexts such as email, notes,
+and forms.</li>
+</ul>
+<p>Profiles may change correction and formatting choices, but cannot
+bypass target safety or cloud consent. Profiles are explicit user
+choices; automatic application-sensitive profiles are out of scope until
+a privacy review proves they can be implemented without reading document
+content.</p>
+<h3 id="77-safe-external-text-delivery">7.7 Safe external text
+delivery</h3>
+<p>QUILL Transcribe treats the foreground application as a write-only
+target. It does not read the text already in the field, scrape a browser
+DOM, inspect email bodies, or infer surrounding prose.</p>
+<p>Before a session and before each phrase is committed, the target
+adapter checks that:</p>
+<ul>
+<li>A supported text-entry target is focused.</li>
+<li>The target is still the one the user authorized for this session,
+unless the user explicitly retargeted.</li>
+<li>The target is not a password/secret field.</li>
+<li>The target is not running elevated when QUILL Transcribe is not
+elevated.</li>
+<li>The target is not one of the application’s own windows.</li>
+</ul>
+<p>If a check fails, do not inject partial content. Pause and report
+why. A “Resume in the current field” action explicitly approves a new
+eligible target. The application may identify a supported application or
+control class for diagnostics, but it must not log the target’s text,
+title if it may contain private content, or user-entered values.</p>
+<p>The external document adapter may retain only the text QUILL
+Transcribe itself inserted in the current target session, and only as
+long as required for safe spacing and the supported “Scratch that”
+command. It may issue backspaces only if the same target remains focused
+and the remembered inserted range is still the suffix it wrote.
+Otherwise it refuses the undo and explains why. It never claims to
+provide document undo when the target application does not expose
+it.</p>
+<p>Use the existing checked text-injection boundary. If an injection is
+incomplete or uncertain, say that the phrase may be incomplete; do not
+announce success. Do not add an unreviewed clipboard-paste fallback that
+overwrites or leaks the user’s clipboard.</p>
+<h3 id="78-commands-and-correction">7.8 Commands and correction</h3>
+<p>Only commands that do not need to read the target application are
+available while dictating into another program. The initial safe command
+set includes:</p>
+<ul>
+<li>Stop dictation.</li>
+<li>Scratch that, subject to the same-window and same-target safety
+checks.</li>
+<li>Spell a word / spelling mode.</li>
+<li>Capitalization and spacing modes.</li>
+<li>Supported language switch.</li>
+<li>Spoken punctuation and paragraph breaks.</li>
+<li>Help / list dictation commands.</li>
+</ul>
+<p>Commands such as “select that”, “correct the last word”, “go to the
+heading”, “replace this paragraph”, or commands that inspect
+selection/document context are refused in external targets. The refusal
+is brief, consistent, and tells the user that the command is available
+in a QUILL document but not in another application.</p>
+<h3 id="79-audio-file-transcription">7.9 Audio-file transcription</h3>
+<p>The existing QUILL and QUILL Lite file-transcription pipeline is a
+natural second workflow for QUILL Transcribe, but it must not delay or
+complicate the core tray-first live-dictation release.</p>
+<p><strong>Recommended 1.0 inclusion if the current shared pipeline can
+be reused without an editor dependency:</strong> choose an audio file,
+choose the exact model, show accessible cancellable progress, review the
+result in a read-only/multiline text control, then explicitly copy, save
+as text, open in QUILL, or insert into the currently authorized external
+text target. Insertion is a separate confirmation and must revalidate
+the target immediately before writing.</p>
+<p>If that integration cannot meet the same safety and accessibility
+contract, ship it in 1.1. Do not duplicate <code>FileTranscriber</code>,
+audio decoding, duration handling, or worker orchestration inside the
+new app.</p>
+<h3 id="710-transcript-retention-and-actions">7.10 Transcript retention
+and actions</h3>
+<p>The default is no transcript history and no retained raw audio. The
+current phrase buffer is discarded after successful delivery or session
+exit, except for the minimum current-session text required by safe
+correction behavior.</p>
+<p>Optional transcript history is off by default, local-only,
+user-visible, and clearable. If enabled, the user chooses whether to
+save transcript text; audio recording is a separate opt-in and is never
+implied by enabling text history. History is never synchronized or
+uploaded in version 1.0.</p>
+<p>User-directed output actions include:</p>
+<ul>
+<li>Continue typing into the authorized field.</li>
+<li>Copy a reviewed transcript, with an explicit action and no
+background clipboard monitoring.</li>
+<li>Save a transcript to a user-selected file.</li>
+<li>Open a transcript in QUILL or QUILL Lite when installed.</li>
+</ul>
+<h2 id="8-accessibility-and-interaction-requirements">8. Accessibility
+and interaction requirements</h2>
+<ol type="1">
+<li>Stock wxPython controls and standard Windows accessibility APIs are
+used for the main window and dialogs. No custom-drawn writing or
+model-selection controls.</li>
+<li>Every action is keyboard reachable; the tray menu is usable without
+a mouse. The user can open the main window, change the selected model,
+start/stop, pause/resume, and exit using documented keyboard
+routes.</li>
+<li>The main window, dialogs, tray menu, and model rows have descriptive
+names, roles, state, help, deterministic focus, Enter behavior, Escape
+behavior, and reviewable text. Any modal follows QUILL’s dialog contract
+and inventory.</li>
+<li>F1 explains the purpose of the current window and then the focused
+control’s help. Help is authored at control construction sites and
+included in the generated help reference.</li>
+<li>Announce only information not already conveyed by the screen reader.
+Announce state transitions, target refusal, model changes, completion,
+failure, and cancellation. Do not duplicate the words a target field
+already speaks.</li>
+<li>Listening state is available non-visually through a concise
+speech/sound setting and visually through text/icon state; color alone
+never carries it.</li>
+<li>Do not steal focus when a session starts, a phrase arrives, a
+download completes, or a target changes. Use an accessible status
+surface and announcement.</li>
+<li>Respect high-contrast themes, scaling, increased text size, reduced
+motion, and the system color scheme.</li>
+<li>Avoid rapid progress speech. Download/file progress is coarse and
+meaningful; live phrase output is not accompanied by a second
+announcement of the same text.</li>
+<li>Document and test with NVDA, JAWS, Narrator, keyboard-only
+navigation, and high-contrast mode. Manual verification is required for
+shipped UI.</li>
+</ol>
+<h2 id="9-privacy-security-and-safety">9. Privacy, security, and
+safety</h2>
+<h3 id="91-audio-and-network">9.1 Audio and network</h3>
+<ul>
+<li>The microphone opens only after a start action and closes on stop,
+exit, device loss, fatal error, or timeout policy.</li>
+<li>Local models process audio on the device. No network request is made
+for audio recognition in local mode.</li>
+<li>Cloud transcription requires provider configuration and per-action
+consent; consent identifies the provider and states that audio is
+transmitted.</li>
+<li>Network calls are recorded in the repository’s egress audit and pass
+through the shared consent boundary.</li>
+<li>No telemetry, usage analytics, audio collection, or transcript
+collection.</li>
+</ul>
+<h3 id="92-data-minimization">9.2 Data minimization</h3>
+<ul>
+<li>Never log audio samples, recognized phrases, target text, clipboard
+content, API keys, or raw exception text containing user data.</li>
+<li>Diagnostics contain operational categories and error codes, not
+transcript content or field values.</li>
+<li>Do not observe the system clipboard continuously.</li>
+<li>Do not save raw audio unless the user explicitly starts a separately
+named recording action and selects a destination.</li>
+<li>Settings and history use validated schemas and atomic writes;
+credentials use Windows Credential Manager/DPAPI via the shared secrets
+facade.</li>
+</ul>
+<h3 id="93-safe-mode-and-shutdown">9.3 Safe Mode and shutdown</h3>
+<p>Safe Mode disables global hooks, microphone activation, model
+downloads, and networked transcription. Shutdown cancels active jobs,
+stops the audio device, unregisters every hotkey, destroys the tray
+icon, and leaves no hidden listener. Each lifecycle path is tested,
+including forced application close and Windows logoff.</p>
+<h2 id="10-architecture-and-reuse">10. Architecture and reuse</h2>
+<h3 id="101-product-shell">10.1 Product shell</h3>
+<p>The product source belongs under <code>quill/</code> so it is visible
+to repository-wide accessibility, security, reachability, help, and
+public-surface gates. The standalone packaging shell belongs under
+<code>standalone/quilltranscribe/</code>.</p>
+<p>Proposed ownership:</p>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Proposed location</th>
+<th>Responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Product entry point and shell</td>
+<td><code>quill/apps/transcribe/</code></td>
+<td>Frame, menus, tray integration, first-run, settings and command
+wiring</td>
+</tr>
+<tr>
+<td>Shared speech logic</td>
+<td><code>quill/core/windows_dictation/</code></td>
+<td>Existing controller, engines, preferences, model catalogue/store,
+transcript and file pipeline</td>
+</tr>
+<tr>
+<td>External text target</td>
+<td><code>quill/ui/windows_dictation_external.py</code> and
+<code>quill/platform/windows/</code></td>
+<td>Existing target eligibility checks and checked text injection;
+extract only shell-neutral contracts if needed</td>
+</tr>
+<tr>
+<td>Shared process/IPC ownership</td>
+<td><code>quill/core/ipc.py</code> plus a narrowly scoped owner
+protocol</td>
+<td>Ensure one capture/controller/hotkey owner and route requests from
+QUILL, Lite, and Inkwell</td>
+</tr>
+<tr>
+<td>Standalone package</td>
+<td><code>standalone/quilltranscribe/</code></td>
+<td>Launcher, installer, portable build, icons, release docs</td>
+</tr>
+<tr>
+<td>Tests</td>
+<td><code>tests/unit/apps/</code>, <code>tests/unit/ui/</code>,
+<code>tests/integration/</code>, <code>tests/a11y/</code></td>
+<td>Pure controller, shell contracts, injection safety, lifecycle and
+manual accessibility gates</td>
+</tr>
+</tbody>
+</table>
+<p>These names are proposals, not a mandate to create every directory.
+The implementation should follow the nearest existing app pattern and
+keep new modules below the repository’s module-size budgets.</p>
+<h3 id="102-existing-quill-components-to-reuse">10.2 Existing QUILL
+components to reuse</h3>
+<ul>
+<li><code>quill.core.windows_dictation.controller.DictationController</code>
+for the shared dictation state machine.</li>
+<li><code>quill.core.windows_dictation.preferences.DictationPreferences</code>
+and the shared settings loader for model, language, composition,
+feedback, and command behavior.</li>
+<li><code>quill.core.windows_dictation.engines</code>,
+<code>model_catalog</code>, <code>model_store</code>,
+<code>model_loader</code>, and the OpenAI provider gating for engine
+discovery and lifecycle.</li>
+<li><code>quill.core.windows_dictation.anywhere</code> for the shared
+external-dictation preferences/handoff shape.</li>
+<li><code>quill.ui.windows_dictation_external.ExternalDocument</code>
+and the Windows foreground/UIA/text-injection adapters for write-only,
+checked delivery.</li>
+<li><code>quill.stability.task_manager.QuillTaskManager</code> for
+bounded cancellable background work; marshal every UI callback through
+<code>wx.CallAfter</code> or <code>wx.CallLater</code>.</li>
+<li><code>quill.ui.app_shell.AppShellFrame</code>, the Inkwell hotkey
+picker, and <code>quill.apps.beacon.tray.TrayIcon</code> as patterns for
+shell, key conflict, and tray behavior.</li>
+<li><code>quill.core.windows_dictation.file_transcribe.FileTranscriber</code>
+and <code>audio_file.py</code> if the file workflow is included.</li>
+</ul>
+<p>QUILL Transcribe must not import <code>wx</code> into
+<code>quill.core</code>. The core receives ports; the Windows/UI shell
+supplies capture, feedback, target, and insertion adapters. Do not
+introduce shared mutable-state locking in core; preserve the
+snapshot/worker model and explicit cancellation.</p>
+<h3 id="103-single-owner-rule">10.3 Single-owner rule</h3>
+<p>There is one microphone capture session and one cross-application
+insertion owner per interactive user session. The product must not
+create one global hotkey in QUILL, another in Lite, and a third in
+Inkwell for the same feature.</p>
+<p>Before implementation, choose and test one of these compliant
+arrangements:</p>
+<ol type="1">
+<li><strong>Preferred:</strong> QUILL Transcribe owns the service and
+tray when installed; QUILL, Lite, and Inkwell use an authenticated local
+IPC request to show it, configure it, start/stop it, or hand off
+settings. IPC carries commands and preference identifiers only, never
+transcript text or audio.</li>
+<li><strong>Fallback for the first increment:</strong> reuse the
+existing Inkwell single-instance owner and expose a dedicated QUILL
+Transcribe launch/brand mode only if it is genuinely the same process
+and cannot register a second listener. The two product labels must not
+result in two independent controllers.</li>
+</ol>
+<p>The owner has a clear lifecycle, request validation, same-user access
+checks, and an explicit response for unavailable/not-installed/refused
+requests. Do not build an unauthenticated local network endpoint.</p>
+<h3 id="104-threading-and-operations">10.4 Threading and operations</h3>
+<ul>
+<li>UI thread owns every wx widget and does not block on model load,
+audio I/O, transcription, or downloads.</li>
+<li>Audio capture and inference run on the appropriate existing worker
+path.</li>
+<li>HTTP operations use the shared async/network conventions and consent
+gate.</li>
+<li>Cancellation is checked at bounded points; cancelling a file job or
+stopping live dictation stops work and reports the outcome.</li>
+<li>Every worker reports exactly one terminal state: complete,
+cancelled, or failed. Errors remain errors; never return an empty
+transcript as apparent success.</li>
+<li>Partial phrase delivery is tracked so retry or stop cannot duplicate
+text.</li>
+</ul>
+<h2 id="11-settings-data-and-migration">11. Settings, data, and
+migration</h2>
+<p>Use one canonical shared dictation preference model and a small
+product-owned settings namespace for product-specific details such as
+tray startup and the chosen external hotkey. Follow QUILL’s schema
+validation, backup, atomic-write, and version-migration rules.</p>
+<p>Proposed data ownership:</p>
+<table>
+<thead>
+<tr>
+<th>Data</th>
+<th>Policy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Model files</td>
+<td>Shared verified QUILL dictation model store; one copy when
+feasible</td>
+</tr>
+<tr>
+<td>Provider credentials</td>
+<td>Shared secrets facade, never product settings or logs</td>
+</tr>
+<tr>
+<td>Dictation preferences</td>
+<td>One canonical preference shape; changes in one client are visible to
+the others</td>
+</tr>
+<tr>
+<td>Global hotkey ownership</td>
+<td>One active owner and one conflict-checked setting</td>
+</tr>
+<tr>
+<td>Transcript history</td>
+<td>Off by default, local-only, explicit opt-in and clear action</td>
+</tr>
+<tr>
+<td>Raw audio</td>
+<td>Not retained by default; separately named explicit recording
+only</td>
+</tr>
+<tr>
+<td>Usage analytics</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p>Migration from the current Inkwell Dictate Anywhere settings must be
+non-destructive and idempotent. Preserve the selected engine, language,
+microphone, corrections, and user hotkey when valid. On collision or
+invalid configuration, retain the old data, explain the conflict, and
+ask the user to choose a replacement; do not silently register an old
+default globally.</p>
+<p>If QUILL Transcribe is removed, it must not delete shared model
+files, credentials, or QUILL/Inkwell settings without a separate,
+explicit user choice.</p>
+<h2 id="12-compatibility-and-supported-targets">12. Compatibility and
+supported targets</h2>
+<h3 id="121-initial-compatibility-matrix">12.1 Initial compatibility
+matrix</h3>
+<p>The release team must maintain a tested matrix, not promise universal
+support. Initial candidates:</p>
+<ul>
+<li>Microsoft Outlook text-entry fields.</li>
+<li>Microsoft Word body and supported text controls.</li>
+<li>Notepad and standard Windows edit controls.</li>
+<li>Edge, Chrome, and Firefox web text fields and common form
+controls.</li>
+<li>Other applications whose controls accept checked Windows text
+injection and pass the target-safety tests.</li>
+</ul>
+<p>The initial release does not require browser extensions. Browser
+versions, Outlook variants, protected document modes, remote desktops,
+virtual machines, and unusual custom controls are individually recorded
+as supported, best-effort, or unsupported based on test evidence.</p>
+<h3 id="122-explicit-refusal-cases">12.2 Explicit refusal cases</h3>
+<p>At minimum, refuse or pause before microphone start or phrase
+insertion when:</p>
+<ul>
+<li>The focused field is identified as a password/secret input.</li>
+<li>Windows blocks injection because the target is elevated.</li>
+<li>Focus is in QUILL Transcribe itself or another protected internal
+surface.</li>
+<li>The focus moves to a different top-level target during a
+session.</li>
+<li>The target cannot safely accept text or checked injection reports
+incomplete.</li>
+<li>The selected model/device is unavailable or the chosen language is
+unsupported.</li>
+</ul>
+<p>Every refusal says what happened and offers a safe next action. It
+does not pretend the text was inserted.</p>
+<h2 id="13-performance-and-reliability-targets">13. Performance and
+reliability targets</h2>
+<p>Targets are measured on a documented reference Windows machine and
+published with the test environment; model latency is reported per model
+rather than hidden in one product-wide average.</p>
+<ul>
+<li>Starting or stopping capture through the tray or hotkey produces an
+acknowledged state change within 500 ms at p95, excluding cold model
+load.</li>
+<li>With a selected model already loaded, a phrase-ending pause is
+reflected in the target or an explicit error within 2 seconds at p95 for
+the reference workload. Streaming models report their mode and progress
+honestly.</li>
+<li>Cold model-load time is measured and announced; it must not freeze
+the UI.</li>
+<li>A 30-minute continuous dictation soak has no lost committed phrase,
+duplicate insertion, unbounded memory growth, or capture continuing
+after stop.</li>
+<li>A changed/invalid target never receives text from a phrase started
+for a different target.</li>
+<li>A task cancellation completes within a bounded interval established
+by the active engine, releases the microphone, and leaves no
+success-shaped result.</li>
+<li>Model downloads show size/progress, verify hashes, and can be
+cancelled and retried without corrupting the active installation.</li>
+</ul>
+<p>The 500 ms and 2 second values are product goals, not claims that
+every model can meet them. If a model cannot meet a goal, label its
+expected behavior and offer a better-matched choice rather than
+suppressing the measurement.</p>
+<h2 id="14-acceptance-criteria-for-version-10">14. Acceptance criteria
+for version 1.0</h2>
+<p>The release is ready only when all applicable criteria pass:</p>
+<ol type="1">
+<li>A clean standalone install launches without QUILL or QUILL Lite
+installed.</li>
+<li>The tray icon and keyboard-operable tray menu expose all required
+actions; loss/unavailability of the tray leaves the app reachable.</li>
+<li>No global dictation hotkey is registered before the user chooses
+one. Conflicts are detected, explained, and recoverable.</li>
+<li>At least one bundled local engine works offline from first launch,
+and the chosen model is visible before and during use.</li>
+<li>The user can select and retain a specific model and supported
+language; the engine does not silently change.</li>
+<li>Model download is opt-in, pinned, integrity-verified, cancellable,
+and recoverable.</li>
+<li>Live speech is inserted at the caret in each claimed supported app
+with the selected model and shared composition preferences.</li>
+<li>Password fields, elevated targets, the product’s own windows, and
+targets that lose authorization do not receive text.</li>
+<li>A focus change pauses delivery and requires explicit
+retarget/resume; a partial injection is reported honestly and never
+described as complete.</li>
+<li>Stop and shutdown close the microphone, release hotkeys, cancel
+work, and remove tray resources.</li>
+<li>Cloud models cannot be selected without a configured credential, and
+no audio is transmitted without explicit action consent.</li>
+<li>No audio, transcript, target text, provider key, or clipboard data
+appears in logs, diagnostics, analytics, or support bundles.</li>
+<li>Screen-reader, keyboard-only, high-contrast, scaling, and manual UI
+regression passes are documented for NVDA, JAWS, and Narrator.</li>
+<li>Core/unit tests cover the controller, external target safety,
+lifecycle, model selection, migration, and error paths; UI
+source/behavior tests cover tray and dialog contracts; integration tests
+cover process ownership and text insertion.</li>
+<li>All product modules are reachable from an app entry point; public
+API, F1-help, dialog inventory, key ownership, privacy/egress, and
+release gates pass.</li>
+<li>The standalone release is signed, versioned, and distributed through
+the repository’s documented release/update mechanism.</li>
+</ol>
+<h2 id="15-test-strategy">15. Test strategy</h2>
+<h3 id="151-unit-and-contract-tests">15.1 Unit and contract tests</h3>
+<ul>
+<li>Dictation state transitions: start, stop, pause, resume, target
+change, device loss, model error, cancellation, and shutdown.</li>
+<li>Correctly selected model is the one passed to the recognizer; no
+automatic fallback or hidden auto-selection.</li>
+<li>Destination preflight refuses protected fields and the process’s own
+windows.</li>
+<li>Target changes between recognition and injection do not redirect
+text.</li>
+<li>“Scratch that” only removes the final text written by the current
+session to the same target.</li>
+<li>Partial injection, empty speech, recognition failure, and
+cancellation have distinct terminal outcomes.</li>
+<li>No worker directly touches wx; callbacks marshal to the UI
+thread.</li>
+<li>Settings migration preserves data, rejects invalid/hijacked values,
+and never writes credentials or transcript text to settings.</li>
+<li>Safe Mode creates no microphone session, global hook, or network
+request.</li>
+</ul>
+<h3 id="152-integration-and-manual-tests">15.2 Integration and manual
+tests</h3>
+<ul>
+<li>Actual tray interaction and taskbar behavior on supported Windows
+versions.</li>
+<li>Checked insertion in every application listed as supported in the
+release compatibility matrix.</li>
+<li>NVDA, JAWS, and Narrator feedback for start, stop, phrase delivery,
+pause, target refusal, and errors.</li>
+<li>Screen-reader typing echo is not duplicated by QUILL
+Transcribe.</li>
+<li>Model setup, download, deletion, update, failure, and low-disk-space
+paths.</li>
+<li>Microphone unplug/replug, permission denial, sleep/resume, user
+switching, logoff, and application forced exit.</li>
+<li>Two clients attempting to start at the same time yield one owner,
+one recognizer, and a clear response to the second request.</li>
+<li>Cloud consent refusal produces no request; consent acceptance sends
+only the audio required by the chosen provider.</li>
+</ul>
+<h2 id="16-delivery-plan">16. Delivery plan</h2>
+<h3 id="phase-0---product-and-architecture-validation">Phase 0 - Product
+and architecture validation</h3>
+<ul>
+<li>Verify the current Inkwell Dictate Anywhere path against Outlook,
+browsers, Word, Notepad, and target-safety cases.</li>
+<li>Agree on the single-owner/IPC arrangement and Inkwell migration
+behavior.</li>
+<li>Confirm product name, icon family, supported Windows baseline, and
+release channel.</li>
+<li>Freeze the version 1.0 support matrix and model list.</li>
+</ul>
+<h3 id="phase-1---quill-transcribe-10">Phase 1 - QUILL Transcribe
+1.0</h3>
+<ul>
+<li>Dedicated standalone shell, first-run setup, required tray menu,
+state UI, key selection/conflict handling, model/microphone/language
+settings.</li>
+<li>Shared live dictation controller and external-target adapter, with
+safe retarget/resume behavior.</li>
+<li>Local model path first; cloud model path only if shared consent,
+credential, and egress gates are already complete.</li>
+<li>Shared Inkwell/QUILL/Lite preference handoff and one-owner
+lifecycle.</li>
+<li>Signed installer and portable package, F1 reference, user guide, and
+compatibility matrix.</li>
+<li>Include audio-file transcription only if the recommended 1.0
+criteria in section 7.9 are satisfied without duplicating the existing
+pipeline.</li>
+</ul>
+<h3 id="phase-2---11-follow-up">Phase 2 - 1.1 follow-up</h3>
+<p>Candidates, each gated by user research and privacy review:</p>
+<ul>
+<li>Full file-to-text workflow if deferred from 1.0.</li>
+<li>Optional local transcript history and user-selected save rules.</li>
+<li>Named per-context profiles with explicit manual switching.</li>
+<li>Richer model comparison using reproducible local benchmarks.</li>
+<li>Better recovery for applications whose text targets expose
+incomplete UIA.</li>
+<li>Additional accessible onboarding and in-product diagnostics.</li>
+</ul>
+<p>No candidate becomes committed scope until its shared-core ownership,
+tests, privacy impact, documentation, and QUILL/QUILL Lite parity are
+reviewed.</p>
+<h2 id="17-risks-and-mitigations">17. Risks and mitigations</h2>
+<table>
+<thead>
+<tr>
+<th>Risk</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A second app duplicates Inkwell’s existing Dictate Anywhere
+implementation</td>
+<td>Treat this as a dedicated product surface over the current shared
+path; establish a single controller/hotkey owner before adding a second
+entry point</td>
+</tr>
+<tr>
+<td>A focus change sends words to the wrong field</td>
+<td>Lock the target per session, pause on change, revalidate at commit,
+require explicit retarget</td>
+</tr>
+<tr>
+<td>Screen readers echo typed text and the app repeats it</td>
+<td>Default external read-back to sound/status; test NVDA, JAWS, and
+Narrator; announce outcomes, not inserted words</td>
+</tr>
+<tr>
+<td>A global key steals a key from another app</td>
+<td>No default global registration; shared conflict probe/picker; allow
+tray-only use</td>
+</tr>
+<tr>
+<td>Model switches unexpectedly after failure</td>
+<td>Keep exact selection sticky; make fallback an explicit action;
+announce the engine used</td>
+</tr>
+<tr>
+<td>User assumes a supported app means every custom field works</td>
+<td>Publish per-application/version/control compatibility evidence and
+clear unsupported-target messages</td>
+</tr>
+<tr>
+<td>Cloud credential presence is mistaken for consent</td>
+<td>Separate credential availability from per-action audio consent;
+never list unavailable providers as selectable</td>
+</tr>
+<tr>
+<td>Transcript or audio appears in support diagnostics</td>
+<td>Data minimization tests and a redaction audit; no speech payloads in
+logs</td>
+</tr>
+<tr>
+<td>Coexisting QUILL, Lite, Inkwell, and Transcribe processes compete
+for the mic/hotkey</td>
+<td>One-owner service/IPC contract with integration tests and
+migration</td>
+</tr>
+<tr>
+<td>Tray service exits or becomes hidden</td>
+<td>Tray availability check, keyboard-operable menu, visible fallback,
+and startup/shutdown lifecycle tests</td>
+</tr>
+</tbody>
+</table>
+<h2 id="18-decisions-to-confirm-before-implementation">18. Decisions to
+confirm before implementation</h2>
+<p>These are product decisions, not reasons to block this proposal:</p>
+<ol type="1">
+<li><strong>Name:</strong> QUILL Transcribe is the requested working
+name; confirm final casing, icon, and product identifier before
+installer/brand assets are generated.</li>
+<li><strong>Owner architecture:</strong> Prefer a dedicated product
+shell and one shared service owner, with Inkwell as a client. Confirm
+whether IPC is the version 1.0 boundary or whether the first release can
+reuse Inkwell’s single process.</li>
+<li><strong>Version 1.0 file workflow:</strong> Include file
+transcription only if the current <code>FileTranscriber</code> can be
+reused with safe external insertion and review; else ship live dictation
+first and deliver file transcription in 1.1.</li>
+<li><strong>Cloud model catalogue:</strong> Include only providers
+already covered by the shared credential, consent, privacy, and
+network-egress contracts.</li>
+<li><strong>Compatibility claims:</strong> Final supported
+application/version matrix must be based on Windows and screen-reader
+testing, not assumed from a successful generic
+<code>SendInput</code>.</li>
+</ol>
+<h2 id="19-source-architecture-references">19. Source architecture
+references</h2>
+<ul>
+<li>QUILL product requirements:
+<code>docs/Product Requirement Documents and Specifications/QUILL-PRD.md</code></li>
+<li>QUILL Lite product requirements:
+<code>standalone/quilllite/docs/PRD.md</code></li>
+<li>Existing Dictate Anywhere client:
+<code>quill/apps/inkwell_dictation.py</code></li>
+<li>Inkwell system-wide keys:
+<code>quill/apps/inkwell_keys.py</code></li>
+<li>External target adapter:
+<code>quill/ui/windows_dictation_external.py</code></li>
+<li>Shared external preferences/handoff:
+<code>quill/core/windows_dictation/anywhere.py</code></li>
+<li>Shared controller and engine/catalogue modules:
+<code>quill/core/windows_dictation/</code></li>
+<li>Existing tray shell pattern: <code>quill/ui/app_shell.py</code> and
+<code>quill/apps/beacon/tray.py</code></li>
+<li>Windows hotkey conflict probe:
+<code>quill/platform/windows/hotkey_owner.py</code></li>
+<li>Repository release and signing policy:
+<code>docs/release/RELEASE.md</code> and
+<code>docs/code-signing.md</code></li>
+</ul>
+</main>
+</body>
+</html>
