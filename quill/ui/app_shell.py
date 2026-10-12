@@ -861,13 +861,11 @@ class AppShellFrame(
         update still shows the same interactive prompt either way, since
         these small apps have no notification-center equivalent to defer to.
 
-        ``match_edition=False`` is for an app that publishes two downloads, an
-        installer and a portable zip, rather than four (Quill Radio since 3.0.0,
-        as QUILL Lite since 1.0): "portable, or not" is then the only question,
-        and the four-way edition chooser can only add a way to be wrong -- an
-        installed app's ``QUILL_APP_ROOT`` is the shared runtime's folder, where
-        ``install_edition.detect()`` answers "companion". See
-        :mod:`quill.apps.lite_updates`.
+        Every app publishes two downloads, an installer and a portable zip
+        (owner decision, 2026-10-11), and either value of ``match_edition``
+        chooses between those two only. ``match_edition=False`` lets the
+        portable check above decide on its own instead of also asking
+        ``install_edition.detect()``. See :mod:`quill.apps.lite_updates`.
         """
         from quill.core.updates import fetch_app_releases, fetch_releases, is_newer_version
 

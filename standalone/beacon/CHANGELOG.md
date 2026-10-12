@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- **Two downloads, nothing else** (2026-10-11). QuillBeacon now comes as the
+  installer and the portable zip. The small Lite installer and the Companion
+  zip are gone. If you used the Lite installer, take the installer; if you
+  used the Companion zip, take the portable zip. Check for Updates already
+  offers the right one.
+
 - QuillBeacon has an application icon. It had none: the spec carried a
   "drop a real assets/quill-beacon.ico in once it exists" comment, and until
   then the build wore PyInstaller's generic default -- the same generic default

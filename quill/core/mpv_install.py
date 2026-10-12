@@ -1,13 +1,12 @@
 """On-demand download of libmpv, the mpv playback engine.
 
-**Why this module exists.** libmpv ships inside every full installer and
-portable zip, so for most listeners it is simply there. Two editions cannot
-carry it: the thin ``-Lite`` installer downloads the base shared runtime, which
-holds no media tools at all (ffmpeg + libmpv are 306 MB, and four of the seven
-QuillVille apps never call them), and a Companion stick has no runtime of its
-own either. For those, "it ships inside the installer" was the only answer the
-apps had -- which is not an answer, it is a description of somebody else's
-install.
+**Why this module exists.** libmpv ships inside every installer and portable
+zip, so for most listeners it is simply there. It was written for two editions
+that could not carry it -- the thin ``-Lite`` installer and the Companion zip,
+both retired since (2026-10-11) -- and it stays as the repair for a copy that
+has lost it, or one still running from one of those old downloads. For them,
+"it ships inside the installer" was the only answer the apps had -- which is
+not an answer, it is a description of somebody else's install.
 
 The asset itself was never the missing piece. ``libmpv-pack.zip`` has been
 pinned by SHA-256 on QUILL's own ``assets-v1`` release for as long as the

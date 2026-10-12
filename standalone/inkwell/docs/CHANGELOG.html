@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.12" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Quill Inkwell changelog</title>
   <style>
@@ -245,7 +245,12 @@
 <h1 id="quill-inkwell-changelog">Quill Inkwell changelog</h1>
 <h2 id="unreleased">Unreleased</h2>
 <ul>
-<li><strong>Dictate Anywhere</strong> (2026-10-05). Inkwell now hosts
+<li><p><strong>Two downloads, nothing else</strong> (2026-10-11). Quill
+Inkwell now comes as the installer and the portable zip. The small Lite
+installer and the Companion zip are gone. If you used the Lite
+installer, take the installer; if you used the Companion zip, take the
+portable zip. Check for Updates already offers the right one.</p></li>
+<li><p><strong>Dictate Anywhere</strong> (2026-10-05). Inkwell now hosts
 dictation into other programs, with the editors’ shared controller,
 engines, My Words and Phrases (<code>dictation.md</code> in the shared
 data folder) and commands (<code>quill/apps/inkwell_dictation.py</code>,
@@ -266,8 +271,8 @@ QUILL’s own windows (Ctrl+F11 there) and Inkwell’s own window. The
 read-back defaults to a tone, since the screen reader echoes typing. An
 editor’s <strong>Dictate in Other Programs…</strong> hands its settings
 over once (<code>dictate-anywhere.json</code>) and starts Inkwell,
-opening the key chooser if no key is set. Off in Safe Mode.</li>
-<li><strong>No show and hide key until you choose one</strong>
+opening the key chooser if no key is set. Off in Safe Mode.</p></li>
+<li><p><strong>No show and hide key until you choose one</strong>
 (2026-10-05). The app registered Ctrl+Alt+Shift+I system-wide, and other
 QuillVille apps use that key for menu commands, so while this app ran
 theirs never fired. It now has no key by default; <strong>File &gt; Show
@@ -278,8 +283,8 @@ Somebody who had the old key is moved to none and told once, at the next
 launch; a key somebody chose is kept
 (<code>quill/core/family_chords.py</code>,
 <code>quill/core/show_hide_keys.py</code>,
-<code>quill/ui/show_hide_key_picker.py</code>).</li>
-<li><strong>No Quick Insert or Expand Word key until you choose
+<code>quill/ui/show_hide_key_picker.py</code>).</p></li>
+<li><p><strong>No Quick Insert or Expand Word key until you choose
 one</strong> (2026-10-05). Ctrl+Alt+Shift+K (Quick Insert) and
 Ctrl+Alt+Shift+X (expand the word just typed) were registered
 system-wide too, and both are commands elsewhere in the family – X is
@@ -290,7 +295,7 @@ same refusals, and also refuse a key Inkwell already uses for one of its
 other two. Somebody still on the old keys is moved to none and told once
 in one sentence; a key somebody chose is kept
 (<code>quill/apps/inkwell_keys.py</code>,
-<code>InkwellSettings.take_system_keys</code>).</li>
+<code>InkwellSettings.take_system_keys</code>).</p></li>
 </ul>
 <h2 id="100--2026-08-11">1.0.0 – 2026-08-11</h2>
 <p>First release. Abbreviation expansion in every Windows application,

@@ -30,6 +30,15 @@ like `Ctrl+Shift+P`, hold the first two and press the last. There is exactly
 one unusual key in QUILL, and it gets its own chapter much later, after your
 hands already trust the ordinary ones.
 
+And a note on which keys. This book teaches the keys QUILL comes with in
+version 1.0 and later. A good number of keys moved on the way to 1.0, so if
+you are running one of the 0.9 betas, some of what you hear here will not
+match what your copy does. Help, then About QUILL, tells you which version
+you have, and the current one is on quillforall.org. If you ever change a key
+yourself, the book cannot know that either. Whatever your copy, the Command
+Palette from chapter three reads out each command's key as it is set on your
+computer, so when the book and the program disagree, believe the program.
+
 That is the whole introduction. Let's open the program.
 
 ## Chapter 1: Meet the window
@@ -678,10 +687,10 @@ Why would a program complicate a keystroke this way? Arithmetic. The
 ordinary combinations — Ctrl plus this, Ctrl and Shift plus that — are nearly
 all spoken for, in QUILL and in Windows itself. The prefix opens a whole
 second keyboard: every letter, fresh again, and QUILL uses that space for
-its bigger machinery. You already know `QUILL Key + R`, reading aloud. QUILL
-Key + D starts dictation — speaking your words instead of typing them, on
-machines set up for it. `QUILL Key + I` asks QUILL to describe an image. QUILL
-Key + Y turns a whole document into spoken audio you can keep.
+its bigger machinery. You already know `QUILL Key + R`, reading aloud.
+`QUILL Key + P` speaks the full path of the file you are in. `QUILL Key + I`
+asks QUILL to describe an image. QUILL Key + Y turns a whole document into
+spoken audio you can keep.
 None of these need to be learned today; what should settle in is the shape —
 prefix, tone, one letter — because every big feature you meet from now on
 will speak it.
@@ -727,7 +736,8 @@ one topic. Ask it questions; do not move into it.
 
 And QUILL can do things this book deliberately left alone: take dictation,
 describe images, translate, sit an AI assistant beside your work for the
-days you want one — all of it switched off until you ask. When you get
+days you want one — all of it switched off until you ask. Dictation is the
+easiest to try: press `Ctrl+F11`, talk, and press `Ctrl+F11` again to stop. When you get
 curious, the Help menu's tutorials, on `Ctrl+Alt+F1`, include gentle
 introductions, and the setup wizards walk you through anything that needs
 installing. Curiosity is the only prerequisite.

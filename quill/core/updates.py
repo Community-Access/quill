@@ -334,8 +334,8 @@ def _pick_asset(assets: list, *, prefer_portable: bool | None = None) -> str:
         if name.endswith(_foreign_platform_suffixes()):
             continue
         usable.append((name, str(url)))
-    # The edition actually running wins over the extension rules below: four
-    # assets ship per release and they are not interchangeable (see
+    # The edition actually running wins over the extension rules below: the
+    # portable zip and the installer are not interchangeable (see
     # core/install_edition.py). Falls through when this release published no
     # asset for that edition, rather than leaving the listener with nothing.
     from quill.core.install_edition import detect, matches_asset
@@ -432,20 +432,15 @@ def _app_asset_url(
     """The download URL of ``app_prefix``'s own asset in one release's asset list,
     or "" when this release carries no asset for that app.
 
-    **The edition actually running decides**, as in :func:`_pick_asset`. Four
-    assets ship per release (full installer, thin installer, portable zip,
-    Companion zip) and they are not interchangeable. Choosing by extension alone
-    -- what this did until 2026-09-12 -- took whichever ``-setup-*.exe`` GitHub
-    listed last, and handed a Companion listener an ``.exe`` it cannot use: the
-    two failures ``core/install_edition.py`` was written to end, which outlived
-    the fix here because the fix only reached ``_pick_asset``. The extension
-    rules stay as the fall-through, for a release that published nothing for
-    this edition and for a source run with no edition at all.
+    **The edition actually running decides**, as in :func:`_pick_asset`. Every
+    app ships two downloads, the installer and the portable zip, and they are
+    not interchangeable. Older releases also carry a thin ``-Lite-Setup-`` exe
+    and a ``-Companion-`` zip; those editions are retired (2026-10-11) and are
+    never offered, not even when going back to a release that has them.
 
-    ``match_edition=False`` skips the edition step for an app that publishes
-    **two** assets rather than four (QUILL Lite, 2026-09-15): "portable, or not"
-    decides, and a four-way chooser pointed at two can only add a way to be
-    wrong. See :mod:`quill.apps.lite_updates` for the way it nearly did.
+    ``match_edition=False`` skips asking the running copy which edition it is
+    and lets *prefer_portable* decide "portable, or not" on its own. Both paths
+    choose between the same two downloads. See :mod:`quill.apps.lite_updates`.
     """
     if not isinstance(assets, list):
         return ""
@@ -459,9 +454,9 @@ def _app_asset_url(
         if not url.lower().startswith("https://") or not name.startswith(low):
             continue
         candidates.append((name, url))
-    if match_edition:
-        from quill.core.install_edition import detect, matches_asset
+    from quill.core.install_edition import INSTALLER_FULL, PORTABLE, detect, matches_asset
 
+    if match_edition:
         edition = detect()
         if edition:
             for name, url in candidates:
@@ -469,9 +464,9 @@ def _app_asset_url(
                     return url
     installer = portable = ""
     for name, url in candidates:
-        if "-portable-" in name and name.endswith(".zip"):
+        if "-portable-" in name and matches_asset(PORTABLE, name, app_prefix=app_prefix):
             portable = url
-        elif "-setup-" in name and name.endswith(".exe"):
+        elif "-setup-" in name and matches_asset(INSTALLER_FULL, name, app_prefix=app_prefix):
             installer = url
     if prefer_portable and portable:
         return portable

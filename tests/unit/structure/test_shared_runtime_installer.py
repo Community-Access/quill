@@ -39,8 +39,8 @@ def test_the_skip_test_compares_the_payload_build_against_the_installed_one() ->
 #: The installers that ship the shared QuillVille Runtime, and must therefore
 #: carry the fragment. Adding or removing one is a deliberate edit here.
 #:
-#: Not every installer is on this list, and that is correct: the ``-lite``
-#: variants download the runtime rather than shipping it. Beacon, Cast and
+#: The thin ``-lite`` installers that downloaded the runtime instead of
+#: shipping it are retired (2026-10-11). Beacon, Cast and
 #: Social joined on 2026-08-18, when the last three self-contained apps were
 #: promoted to the shared-runtime layout (their ``-shared`` installers
 #: supersede the old onedir ones under the same AppIds).
@@ -124,16 +124,12 @@ def test_the_installer_lays_the_runtime_where_the_launcher_looks_for_it() -> Non
     )
 
 
-def test_every_thin_installer_probes_that_same_versioned_path() -> None:
-    """A thin installer probing the wrong folder either re-downloads the
-    230 MB runtime on every install (a path that never exists) or skips one
-    that is genuinely absent."""
-    thin = list(REPO.glob("standalone/*/installer/*-lite.iss"))
-    assert thin, "expected to find the thin installers"
-    for path in thin:
-        assert "Runtime\\3.13\\quillville-runtime.json" in path.read_text(encoding="utf-8"), (
-            path.name
-        )
+def test_no_thin_installer_is_left_to_probe_the_runtime_path() -> None:
+    """The thin installers that probed this path are retired (2026-10-11);
+    every app installer now ships the runtime it needs. quilllite.iss is
+    QUILL Lite's own full installer, not a thin one, despite the suffix."""
+    thin = [p for p in REPO.glob("standalone/*/installer/*-lite.iss") if p.name != "quilllite.iss"]
+    assert thin == []
 
 
 # -- the media tools must not ride inside the runtime's install-if-newer gate --

@@ -73,8 +73,7 @@ def test_a_missing_tool_names_what_it_costs_and_how_to_fix_it() -> None:
     assert "Help > Repair FFmpeg" in ffmpeg.detail
 
     # Both tools name their own download now (2026-08-21). "Reinstall" used to
-    # be the only thing this row could say, and for a Lite install it was not
-    # even true -- the thin installer carries no media tools at all.
+    # be the only thing this row could say.
     rows = build_report(_healthy(mpv_present=False, active_engine="wx"))
     assert "Repair mpv Playback Engine" in _row(rows, "mpv playback engine").detail
 

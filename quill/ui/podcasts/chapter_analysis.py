@@ -196,8 +196,10 @@ def _review(
         announce_cb=getattr(host, "_announce", None),
     )
     try:
-        kept = host._show_modal_dialog(dialog)
-    except AttributeError:
+        # The review dialog runs its own modal contract (label, OK/Cancel ids)
+        # and answers with the chapters kept. Handing the wrapper to
+        # host._show_modal_dialog was the #1616 crash shape: no label, a
+        # non-wx object, and an int where a chapter list was expected.
         kept = dialog.show()
     finally:
         player.close()

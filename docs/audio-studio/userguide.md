@@ -20,18 +20,16 @@ Every QuillVille app - QUILL, Quill Radio, Quill Weather, and QUILL Audio Studio
 
 The runtime is reference-counted: it is removed only when the last app that needs it is uninstalled, so removing one app never leaves the others unable to start.
 
-You choose how much of that runtime to download when you get the Studio. Four editions are offered:
+The Studio comes as two downloads. Pick the one that fits how you work:
 
-- **Full portable** (`QUILL-Audio-Studio-Portable-Lean-<version>.zip`, about 675 MB) - fully self-contained. It runs from a USB stick with no installation and no internet, carrying a genuine, unmodified copy of Python plus the bundled offline speech and text-to-speech engines (whisper.cpp, DECtalk, eSpeak-NG, Piper, and neural Kokoro). Best when you want everything in one folder with nothing to install.
-- **Companion edition** (`QUILL-Audio-Studio-Companion-<version>.zip`, about 2 to 3 MB) - feather-light. It contains only the app and its docs, and runs on the shared QuillVille Runtime. The first time you launch it, if the runtime is not already installed, it offers to download and install it (about 230 MB, once) with a fully accessible progress bar. After that, this app and every other QuillVille app start instantly. Best once you already run, or plan to run, more than one Quill app.
-- **Full installer** (`QUILL-Audio-Studio-Setup-Shared-<version>.exe`) - installs the shared runtime, if it is not already present, plus the app. See "The installer" below.
-- **Thin installer** (the `-Lite` setup) - a tiny installer that downloads the shared runtime only if it is not already present, then installs the app.
+- **Installer** (`QUILL-Audio-Studio-Setup-Shared-<version>.exe`) - installs the shared runtime, if it is not already present, plus the app. See "The installer" below.
+- **Portable** (`QUILL-Audio-Studio-Portable-Lean-<version>.zip`, about 675 MB) - fully self-contained. It runs from a USB stick with no installation and no internet, carrying a genuine, unmodified copy of Python plus the bundled offline speech and text-to-speech engines (whisper.cpp, DECtalk, eSpeak-NG, Piper, and neural Kokoro). Best when you want everything in one folder with nothing to install.
 
-Whenever the runtime is downloaded - by an installer or by an app's own first launch - it shows a fully accessible progress bar that works with NVDA, JAWS, and Narrator, announcing progress as a percentage. See "Downloading the QuillVille Runtime" below.
+Earlier test builds also came as a small "Lite" installer and a "Companion" zip. Those are gone. If you have one, take the installer in place of the Lite installer, or the portable zip in place of the Companion zip. Help > Check for Updates offers the right one for you.
 
 ### The installer
 
-Run the full installer (`QUILL-Audio-Studio-Setup-Shared-<version>.exe`) or the thin `-Lite` installer. Either one makes sure the shared QuillVille Runtime is present (installing or downloading it only if it is not) and then installs the Studio to its own folder with a Start Menu group (including a User Guide shortcut) and an uninstaller. Your data lives in the shared Quill store in your Windows profile (`%APPDATA%\Quill`), the same store QUILL, Quill Radio, and QUILL Cast use. Uninstalling never deletes that shared data, and never removes the shared runtime while another Quill app still needs it.
+Run the installer (`QUILL-Audio-Studio-Setup-Shared-<version>.exe`). It makes sure the shared QuillVille Runtime is present (installing it only if it is not) and then installs the Studio to its own folder with a Start Menu group (including a User Guide shortcut) and an uninstaller. Your data lives in the shared Quill store in your Windows profile (`%APPDATA%\Quill`), the same store QUILL, Quill Radio, and QUILL Cast use. Uninstalling never deletes that shared data, and never removes the shared runtime while another Quill app still needs it.
 
 Windows SmartScreen may warn on first run because this release is not code-signed; choose "More info" then "Run anyway".
 
@@ -43,7 +41,7 @@ Both packaged flavors bundle ffmpeg and the mpv player engine in a `tools` folde
 
 ### Downloading the QuillVille Runtime
 
-When you run the Companion edition or the thin installer and the shared runtime is not yet on your machine, the Studio offers to download it - about 230 MB, one time. This download always shows a **fully accessible progress bar** that works with NVDA, JAWS, and Narrator, whether the download was triggered by the installer or by the app's own first launch. Progress is announced as a percentage, so you always know how far along it is and never face a silent wait. Once the runtime is installed, this app and every other QuillVille app start instantly, and you are never asked to download it again unless every Quill app has been removed.
+The installer and the portable zip both carry everything the Studio needs, so you should never see this. If the shared runtime has gone missing from an installed copy - removed by hand, say - the Studio offers to download it again, about 230 MB, one time. This download always shows a **fully accessible progress bar** that works with NVDA, JAWS, and Narrator, whether the download was triggered by the installer or by the app's own first launch. Progress is announced as a percentage, so you always know how far along it is and never face a silent wait. Once the runtime is installed, this app and every other QuillVille app start instantly, and you are never asked to download it again unless every Quill app has been removed.
 
 ### A note on antivirus
 

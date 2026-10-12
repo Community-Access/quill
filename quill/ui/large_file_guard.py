@@ -15,9 +15,42 @@ from __future__ import annotations
 LARGE_FILE_WARN_BYTES = 8 * 1024 * 1024  # 8 MiB
 
 
+#: Above this size the file is not opened at all (#1614). Opening reads the whole
+#: file into memory and then decodes it, so a multi-gigabyte file (an AI model,
+#: a disk image, an installer) ran out of memory and crashed instead of saying
+#: no. Nothing this size is editable text in a screen-reader editor anyway.
+TOO_LARGE_TO_OPEN_BYTES = 1024 * 1024 * 1024  # 1 GiB
+
+
 def is_large_file(size_bytes: int) -> bool:
     """True when *size_bytes* is large enough to warn about / read off-thread."""
     return size_bytes >= LARGE_FILE_WARN_BYTES
+
+
+def is_too_large_to_open(size_bytes: int) -> bool:
+    """True when *size_bytes* is past the point where opening is refused."""
+    return size_bytes > TOO_LARGE_TO_OPEN_BYTES
+
+
+def too_large_message(name: str, size_bytes: int, app_name: str = "QUILL") -> str:
+    """What to say instead of trying to open a file past the hard ceiling."""
+    return (
+        f"{name} is {human_size(size_bytes)}, which is too large for {app_name} to "
+        f"open. {app_name} opens files up to {human_size(TOO_LARGE_TO_OPEN_BYTES)}."
+    )
+
+
+def open_prompt(name: str, size_bytes: int, app_name: str = "QUILL") -> tuple[str, bool] | None:
+    """What to say before opening a file of *size_bytes*, if anything.
+
+    ``None`` opens without asking; otherwise ``(message, refused)``, where a
+    refusal is final and anything else is a yes/no question.
+    """
+    if is_too_large_to_open(size_bytes):
+        return too_large_message(name, size_bytes, app_name), True
+    if is_large_file(size_bytes):
+        return large_file_warning(name, size_bytes, app_name), False
+    return None
 
 
 def human_size(size_bytes: int) -> str:

@@ -590,20 +590,16 @@ requirement, not a layer.
   that depends on it increments the count, uninstalling an app decrements it,
   and the runtime is removed only when the last dependent app is uninstalled.
   Uninstalling one app must never strand another.
-- P-11. The Studio must ship in four editions:
-  - Full portable (`QUILL-Audio-Studio-Portable-Lean-<version>.zip`, roughly
+- P-11. The Studio must ship in exactly two editions, like every app in the
+  family (owner decision, 2026-10-11):
+  - Installer (`QUILL-Audio-Studio-Setup-Shared-<version>.exe`): installs
+    the shared runtime, if not already present, plus the app.
+  - Portable (`QUILL-Audio-Studio-Portable-Lean-<version>.zip`, roughly
     675 MB): fully self-contained, runs from a USB stick with no installation
     and no internet, bundling a genuine, unmodified copy of Python plus the
     offline speech and text-to-speech engines (whisper.cpp, DECtalk, eSpeak-NG,
     Piper, and neural Kokoro).
-  - Companion edition (`QUILL-Audio-Studio-Companion-<version>.zip`, roughly
-    2 to 3 MB): the app and its docs only, running on the shared QuillVille
-    Runtime. On first launch, if the runtime is absent, it must offer to
-    download and install it (about 230 MB, once) before running.
-  - Full installer (`QUILL-Audio-Studio-Setup-Shared-<version>.exe`): installs
-    the shared runtime, if not already present, plus the app.
-  - Thin installer (the `-Lite` setup): a small installer that downloads the
-    shared runtime only if it is not already present, then installs the app.
+  The thin `-Lite` installer and the runtime-less Companion zip are retired.
 - P-12. Every QuillVille Runtime download -- whether triggered by an installer
   or by an app's own first launch -- must show a fully accessible progress bar
   that works with NVDA, JAWS, and Narrator, announcing progress as a

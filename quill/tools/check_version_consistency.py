@@ -159,7 +159,7 @@ def _check_changelog(repo_root: Path, canonical: str) -> list[str]:
 
 
 #: ``standalone/`` entries that are not an app with a version of its own.
-#: ``runtime`` is the shared CPython the thin installers download; its
+#: ``runtime`` is the shared CPython the app installers lay down; its
 #: "AppVersion" is the Python version (3.13) and has nothing to do with any
 #: app's release number.
 _STANDALONE_NOT_AN_APP = frozenset({"runtime"})

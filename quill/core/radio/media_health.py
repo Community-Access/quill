@@ -155,14 +155,13 @@ class MediaHealth:
             + ". Everything else works normally."
         )
 
-    def repair_hint(self, *, lite: bool = False) -> str:
+    def repair_hint(self) -> str:
         """What the listener can actually do about it, or "" when healthy.
 
         Leads with the download, because the download is the answer that works
-        for everybody. Both tools ship inside the full Quill Radio installer, so
-        a missing one usually means a damaged installation -- but "reinstall" is
-        a poor first instruction and, for one edition, a useless one, so it
-        comes second.
+        for everybody. Both tools ship inside both Quill Radio downloads, so a
+        missing one usually means a damaged installation -- but "reinstall" is
+        a poor first instruction, so it comes second.
 
         Two things had to be fixed before this text could be true. Until
         2026-08-21 libmpv genuinely had no in-app download and this said so;
@@ -174,26 +173,17 @@ class MediaHealth:
         sibling app's runtime skipped them. ``installer\\shared-runtime.iss``
         now lays them down unconditionally.
 
-        *lite* is the thin installer, which downloads the base shared runtime
-        and carries no media tools at all (they are 306 MB, and four of the
-        seven QuillVille apps never call them). Reinstalling it cannot help, so
-        it is pointed at the full installer instead -- advice that sends
-        somebody to repeat the install that could not have helped is worse than
-        no advice. The *download* works there exactly as it does everywhere,
-        which is the point of having one.
+        There is one hint for everybody. The thin installer, which carried no
+        media tools and needed advice of its own, is retired (2026-10-11): every
+        app now ships only the portable zip and the installer, and both carry
+        the tools.
         """
         if self.healthy:
             return ""
-        if lite:
-            also_one = "It also ships inside the full Quill Radio installer."
-            also_both = "They also ship inside the full Quill Radio installer."
-        else:
-            also_one = (
-                "It also ships inside the Quill Radio installer, so reinstalling restores it."
-            )
-            also_both = (
-                "They also ship inside the Quill Radio installer, so reinstalling restores them."
-            )
+        also_one = "It also ships inside the Quill Radio installer, so reinstalling restores it."
+        also_both = (
+            "They also ship inside the Quill Radio installer, so reinstalling restores them."
+        )
         if not self.ffmpeg and self.mpv:
             return f"Choose Help, then Repair FFmpeg, to download the official build. {also_one}"
         if self.ffmpeg and not self.mpv:
@@ -203,13 +193,13 @@ class MediaHealth:
             f"to download them. {also_both}"
         )
 
-    def notice(self, *, lite: bool = False) -> str:
+    def notice(self) -> str:
         """The summary and the repair hint as one spoken paragraph."""
         if self.healthy:
             return ""
-        return f"{self.summary()} {self.repair_hint(lite=lite)}"
+        return f"{self.summary()} {self.repair_hint()}"
 
-    def format_refusal(self, station_name: str, *, lite: bool = False) -> str:
+    def format_refusal(self, station_name: str) -> str:
         """Why *this* station will not play, when the reason is the missing engine.
 
         The generic stream error ("could not play") is true and useless here:
@@ -219,7 +209,7 @@ class MediaHealth:
         name = station_name.strip() or "This station"
         return (
             f"{name} uses Ogg, Opus or HLS audio, which needs the mpv playback "
-            f"engine. It is missing from this installation. {self.repair_hint(lite=lite)}"
+            f"engine. It is missing from this installation. {self.repair_hint()}"
         )
 
 

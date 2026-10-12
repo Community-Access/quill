@@ -30,8 +30,7 @@ copying them to the \installs collection folder.
 
 .EXAMPLE
 .\build.ps1 radio
-Build every Quill Radio artifact: the portable zip, the Companion zip, the
-shared installer and the Lite installer.
+Build both Quill Radio downloads: the portable zip and the installer.
 
 .EXAMPLE
 .\build.ps1 radio -SkipSharedRuntime

@@ -12,14 +12,9 @@ This build has not been published. Audio Studio is not yet offered in the cross-
 
 The single biggest change is how the Studio is delivered. Every Quill app - QUILL, Quill Radio, Quill Weather, and QUILL Audio Studio - now shares one Python engine, the **QuillVille Runtime**, installed once per user and reused by all of them. Install it a single time with any Quill app, and every app you add afterward launches immediately instead of downloading its own copy of everything. The runtime is reference-counted: it is removed only when the last app that needs it is uninstalled, so removing one app never leaves another unable to start.
 
-That unlocks two feather-light ways to get the Studio, alongside the fully self-contained editions:
+The Studio comes as two downloads. The **portable** zip (about 675 MB) runs from a USB stick with no installation and no internet, carrying a genuine, unmodified copy of Python plus the offline speech and text-to-speech engines. The **installer** installs the shared runtime, if it is not already present, plus the app. The installer now also offers a choice of setup: Full, Compact (the program without the bundled documentation), or Custom.
 
-- **Companion edition** (about 2 to 3 MB) - just the app and its documentation. The first time you launch it, if the runtime is not already on your machine, it offers to download and install it (about 230 MB, once). After that, this app and every other Quill app start instantly.
-- **Thin installer** (the "Lite" setup) - a small installer that downloads the shared runtime only if it is not already present, then installs the app.
-
-The fully self-contained editions are still there: the **full portable** zip (about 675 MB) runs from a USB stick with no installation and no internet, carrying a genuine, unmodified copy of Python plus the offline speech and text-to-speech engines, and the **full installer** installs the shared runtime, if it is not already present, plus the app. The installer now also offers a choice of setup: Full, Compact (the program without the bundled documentation), or Custom.
-
-Every runtime download - whether an installer started it or the app did on its own first launch - shows a **fully accessible progress bar** that works with NVDA, JAWS, and Narrator and announces progress as a percentage. There is no silent wait where you cannot tell whether anything is happening.
+Earlier test builds also came as a small "Lite" installer and a "Companion" zip. Those are gone. Take the installer in place of the Lite installer, or the portable zip in place of the Companion zip.
 
 The Studio's launcher is now a genuine, tiny native program, and the bundled Python is the official unmodified build. Earlier versions used a renamed and modified copy of Python's own launcher, a pattern some antivirus tools flagged as a false positive. That pattern is gone, so the Quill apps are far less likely to be flagged. Releases are still not code-signed, so SmartScreen may caution on first run.
 

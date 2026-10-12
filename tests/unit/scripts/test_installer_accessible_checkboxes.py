@@ -51,17 +51,12 @@ def test_every_family_installer_is_covered() -> None:
         "quill-cast.iss",
         "quill-cast-shared.iss",
         "quill-weather.iss",
-        "quill-weather-lite.iss",
         "quill-audio-studio.iss",
-        "quill-audio-studio-lite.iss",
         "quill-inkwell.iss",
-        "quill-inkwell-lite.iss",
         "quill-social.iss",
         "quill-social-shared.iss",
-        "quill-social-lite.iss",
         "quill-beacon.iss",
         "quill-beacon-shared.iss",
-        "quill-beacon-lite.iss",
     ):
         assert expected in names
 

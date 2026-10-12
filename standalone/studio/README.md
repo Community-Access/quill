@@ -18,16 +18,14 @@ QUILL Audio Studio is not a fork. The whole application lives in the [quill](htt
 
 ## Install
 
-Audio Studio is built at 2.2.0 -- the shared QuillVille family version -- but has **not been publicly released yet**, so there is no download page for it. When it ships it will be published, like every QuillVille app, from the [quill](https://github.com/Community-Access/quill) Releases page, where each app recognizes its own downloads:
+Audio Studio is built at 2.2.0 -- the shared QuillVille family version -- but has **not been publicly released yet**, so there is no download page for it. When it ships it will be published, like every QuillVille app, from the [quill](https://github.com/Community-Access/quill) Releases page, where each app recognizes its own downloads. There are two:
 
 - **`QUILL-Audio-Studio-Setup-Shared-<version>.exe`** -- the system install: its own directory, Start Menu entry, uninstaller. Choose per-user or per-machine at install time. Installs the shared QuillVille Runtime if it is not already present, plus the app. Uses the shared Quill data in your Windows profile.
-- **`QUILL-Audio-Studio-Lite-Setup-<version>.exe`** -- the thin installer: downloads the shared runtime only if it is missing, then installs the app.
 - **`QUILL-Audio-Studio-Portable-Lean-<version>.zip`** -- extract anywhere (a USB stick included) and run `QuillAudioStudio\QuillAudioStudio.exe`. Fully self-contained: a genuine, unmodified CPython plus the offline speech engines, ffmpeg, and mpv. The bundled `data` folder keeps your settings inside the app folder, so the whole thing travels -- exactly like QUILL portable.
-- **`QUILL-Audio-Studio-Companion-<version>.zip`** -- the feather-light edition (a few MB): the app and its docs only, running on the shared QuillVille Runtime, which it offers to download once on first launch.
 
 FFmpeg is bundled. The neural TTS engine and any transcription engine are fetched on demand through QUILL's shared, SHA-verified component system (the assets-v1 mirrors); to ship a fully-offline Studio with TTS bundled, see the note in `quill-audio-studio.spec`.
 
-Help > Check for Updates knows which flavor you run, resolves Audio Studio's own artifact from the shared releases page, and can install it and restart the app for you in one step.
+Help > Check for Updates knows which of the two you run, resolves Audio Studio's own artifact from the shared releases page, and can install it and restart the app for you in one step.
 
 ### A note on the SmartScreen warning (unsigned builds)
 

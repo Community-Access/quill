@@ -19,21 +19,10 @@ installed it, every app you add afterward starts instantly. The runtime is
 reference-counted: it is removed only when the last app that needs it is
 uninstalled.
 
-That shared runtime adds two feather-light ways to get Quill Weather, alongside
-the fully self-contained editions:
-
-- **Companion edition** -- just the app and its docs (about 2 MB). The first
-  time you launch it, if the runtime is not already on your machine, it offers
-  to download and install it (about 230 MB, once) with a fully accessible
-  progress bar. After that, this app and every other QuillVille app start
-  instantly.
-- **Thin installer** -- a tiny installer that downloads the shared runtime only
-  if it is not already present.
-
-Every runtime download, whether triggered by an installer or by the app's own
-first launch, shows a fully accessible progress bar that works with NVDA, JAWS,
-and Narrator, announcing progress as a percentage. See "Editions and the
-QuillVille Runtime" below for the full list of downloads.
+Quill Weather comes as two downloads: the installer and the portable zip. See
+"Editions and the QuillVille Runtime" below for what each one gives you.
+(Earlier builds also offered a small "Lite" installer and a "Companion" zip.
+Those are gone; take the installer or the portable zip instead.)
 
 The app's launcher is also now a genuine, tiny native program, and the bundled
 Python is the official unmodified build. Earlier versions used a renamed and
@@ -205,30 +194,18 @@ All QuillVille apps now share one Python runtime, the **QuillVille Runtime**,
 installed once per user and reused by every app. Install it a single time and
 every Quill app you add afterward starts instantly. It is reference-counted, so
 it is removed only when the last app that needs it is uninstalled. Pick the
-edition that fits how you want to run Quill Weather:
+download that fits how you want to run Quill Weather:
 
-- **Full portable** (`Quill-Weather-Portable-<version>.zip`, about 82 MB) --
+- **Portable** (`Quill-Weather-Portable-<version>.zip`, about 82 MB) --
   fully self-contained: runs from a USB stick with no installation and no
   internet. It carries a genuine, unmodified copy of Python. Weather is a small
   app, so this build is already compact. Extract anywhere and run
   `QuillWeather.exe`; a `data` folder next to the exe holding a
   `storage-mode.json` marker (`{"mode": "portable"}`) keeps everything on the
   stick.
-- **Companion edition** (`Quill-Weather-Companion-<version>.zip`, about 2 MB) --
-  feather-light: just the app and its docs, running on the shared QuillVille
-  Runtime. The first time you launch it, if the runtime is not already
-  installed, it offers to download and install it (about 230 MB, once) with a
-  fully accessible progress bar. After that, this app and every other QuillVille
-  app start instantly.
-- **Full installer** (`Quill-Weather-Setup-Shared-<version>.exe`) -- installs
+- **Installer** (`Quill-Weather-Setup-Shared-<version>.exe`) -- installs
   the shared runtime, if it is not already present, plus the app, with a Start
   Menu group, an uninstaller, and the shared data store.
-- **Thin installer** (the `-Lite` setup) -- a tiny installer that downloads the
-  shared runtime only if it is not already present, then installs the app.
-
-Every runtime download, whether triggered by an installer or by the app's own
-first launch, shows a fully accessible progress bar that works with NVDA, JAWS,
-and Narrator, and announces progress as a percentage.
 
 ## The app teaches itself
 

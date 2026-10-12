@@ -57,86 +57,61 @@ The [Quillin Hub](https://hub.quillforall.org) hosts community-created
 extensions (Quillins) -- from research tools to accessibility auditors --
 verified for security and WCAG 2.2 AA compliance.
 
-## The editions: five ways to get one app
+## The editions: two ways to get one app
 
-Each app ships in up to five flavors, so nobody pays for delivery they
-don't need:
+Every app comes as two downloads. Pick the one that fits how you work:
 
 | Edition | What it carries | Who it is for |
 |---|---|---|
-| Setup | The app plus the shared runtime and the app's declared media tools; works offline from first launch | Most people |
+| Installer | The app plus the shared runtime and the app's media tools; works offline from first launch | Most people |
 | Portable | The same, self-contained in a zip with its own `data` folder; travels on a stick | No-install machines, USB workflows |
-| Companion | A ~1 MB runtime-less stick: launcher and docs, running off the machine's shared runtime | Stick users on machines that have the runtime |
-| Lite | A 2-3 MB installer: just the native launcher and docs | Machines that already have (or will share) the runtime |
-| Offline | Setup plus the app's on-demand components pre-bundled -- engines, models, dictionaries; zero downloads ever | People the internet cannot reach |
+
+QUILL and Audio Studio also have an Offline edition: the installer with the
+optional components already inside, for people the internet cannot reach.
 
 ### Which file do I want?
 
-- **Installing an app the normal way?** Take its Setup (named
+- **Installing an app the normal way?** Take its installer (named
   `-Setup-Shared-` for the shared-runtime apps). Run it, press Next, done.
   The app works offline the moment the installer finishes -- stations,
   media tools, docs, everything its core job needs is inside.
-- **Already have a QuillVille app, adding another?** Take the new app's
-  Lite Setup if it has one. It is 2-3 MB because the shared engine is
-  already on your machine from the first app -- the Lite installer finds it
-  and installs in seconds.
-- **No internet, or almost none?** Take an Offline edition. QUILL's
-  bundles every optional component; Audio Studio's bundles the dictation
-  engine and a starter model -- and because the runtime is shared,
-  installing it gives every QuillVille app on that machine offline
-  dictation.
-- **USB stick, no installation at all?** Take a Portable zip. Unzip
+- **USB stick, no installation at all?** Take the Portable zip. Unzip
   anywhere and run the exe inside; settings and downloads live in the
-  `data` folder next to the app, so the whole thing travels. Already have
-  the runtime installed? The Companion zip is the same stick at ~1 MB.
+  `data` folder next to the app, so the whole thing travels.
+- **No internet, or almost none?** Either download works offline from the
+  first launch. QUILL's Offline edition also bundles every optional
+  component; Audio Studio's bundles the dictation engine and a starter
+  model -- and because the runtime is shared, installing it gives every
+  QuillVille app on that machine offline dictation.
+
+Older releases also listed a small "Lite" installer and a "Companion" zip.
+Those are gone. If you used one, take the installer (for the Lite installer)
+or the Portable zip (for the Companion zip) instead; Check for Updates
+already offers the right one.
 
 ### What actually happens when you run each one
 
-**A Setup installer** installs the tiny app itself -- a native launcher, an
+**The installer** installs the tiny app itself -- a native launcher, an
 icon, docs -- and installs (or reuses) the shared QuillVille Runtime at
 `%LOCALAPPDATA%\QuillVille\Runtime\3.13`. One runtime serves every app;
-each app registers a reference to it, and the media tools an app declares
+each app registers a reference to it, and the media tools an app needs
 ride inside the runtime's `tools` folder. Everything is per-user, so no
 elevation is ever needed. First launch just works, offline; bigger
 optional features appear in-app as consented, size-labelled,
-SHA-256-verified downloads that are yours forever once fetched.
+SHA-256-verified downloads that are yours forever once fetched. The
+installer leaves an edition marker beside the app, so Check for Updates
+offers the installer again next time.
 
-**A Lite installer** installs the same tiny app, then checks for the
-shared runtime. Already there? Done in seconds. Missing? It downloads
-`QuillVille-Runtime-Setup.exe` from this repository's `runtime-latest`
-release tag (a moving tag republished whenever the runtime itself is
-released, independent of the editor's release train)
--- through Inno Setup's built-in download page, a standard progress
-bar and status text that NVDA, JAWS and Narrator read -- and runs it.
-Decline, or lose the connection, and nothing breaks: the app itself offers
-the runtime download again on first launch. Lite and full installers share
-one AppId per app, so either upgrades the other, and an edition marker
-tells the updater which flavor to offer next time.
+**The Portable zip** involves no installer at all: the app, its own
+runtime, its media tools, and a `data` folder whose presence is the
+portable-mode switch. Delete the `data` folder and the app uses the
+computer's shared Quill data instead.
 
-**An Offline installer** does everything the Setup does, with the app's
+**An Offline installer** does everything the installer does, with the app's
 on-demand components already in the box -- fetched at build time from the
 same pinned, SHA-256-verified vault the in-app downloads use, so offline
 and online users end up with byte-identical components. Nothing ever
 phones home.
-
-**A Portable zip** involves no installer at all: the app, its runtime (or
-none, for the Companion), its declared media tools, and a `data` folder
-whose presence is the portable-mode switch. Delete the `data` folder and
-the app uses the computer's shared Quill data instead.
-
-**The runtime's own installer** (`QuillVille-Runtime-Setup.exe`, built by
-`standalone\runtime\build_runtime_installer.ps1`) is what the Lite
-installers download; it ships the *base* runtime only -- no media tools,
-because a Weather user should never download 300 MB of them. Media apps'
-full installers carry their own copies, and a Lite install offers them as
-verified on-demand downloads.
-
-The Offline flavor is built by an app's `build_release.ps1 -Offline`.
-Apps with no on-demand components (Weather, Inkwell, Beacon) need no
-separate Offline flavor: their Setup already is one. As of 2026-08-18
-every companion app is on the shared-runtime layout, and all seven ship
-the full flavor set -- Setup-Shared, Portable, Lite, and Companion --
-with Audio Studio adding the family's first per-app Offline Edition.
 
 ## Running from source
 
@@ -219,7 +194,7 @@ nothing has to be remembered about where a build script lives, what
 interpreter it wants, or which flags it takes:
 
 ```powershell
-build-radio                  # Quill Radio: portable, Companion, Setup, Lite
+build-radio                  # Quill Radio: portable zip and installer
 build-runtime                # the shared QuillVille Runtime
 build-runtime-installer      # QuillVille-Runtime-Setup.exe
 build-quill                  # QUILL itself
