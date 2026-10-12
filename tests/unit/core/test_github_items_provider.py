@@ -1341,7 +1341,9 @@ def test_download_artifact_follows_redirect_and_drops_auth_header(
 
     captured_final_request: list[urllib.request.Request] = []
 
-    def _fake_urlopen(request: urllib.request.Request, timeout: int = 60) -> _FakeHTTPResponse:
+    def _fake_urlopen(
+        request: urllib.request.Request, timeout: int = 60, context: object = None
+    ) -> _FakeHTTPResponse:
         captured_final_request.append(request)
         return _FakeHTTPResponse(b"zipdata", {"Content-Length": "7"})
 

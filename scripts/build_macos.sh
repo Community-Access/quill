@@ -44,7 +44,7 @@ DMG="dist/Quill.dmg"
 # drop it from the zip, so the inside-out signing pass below reaches the .so.
 # Derive the bundled Python version from the interpreter that built the app
 # (py2app bundles whatever Python ran setup_macos.py; that script now enforces
-# >=3.13, #755). This was hard-coded to 3.11 / "311", which on any other version
+# >=3.14, #755). This was hard-coded to 3.11 / "311", which on any other version
 # silently skipped both the native-lib lift below and the framework codesign.
 PYVER="$(python -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')"
 PYTAG="${PYVER//./}"

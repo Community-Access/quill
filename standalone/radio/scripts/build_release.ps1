@@ -179,7 +179,7 @@ $DenoDir = Join-Path $QuillRepo "build\deps\deno"
 # -- shared QuillVille Runtime (the onedir the per-app installer ships) -----
 # The shared runtime at ..\..\runtime\dist\QuillVilleRuntime\ is what the
 # per-app installer (quill-radio.iss) installs into
-# %LOCALAPPDATA%\QuillVille\Runtime\3.13\ on first use. ffmpeg/mpv go
+# %LOCALAPPDATA%\QuillVille\Runtime\3.14\ on first use. ffmpeg/mpv go
 # here, not into the per-app $appDir\tools\, so the per-app install
 # stays tiny -- the C launcher + docs only. The portable zip below
 # still gets its own ffmpeg/mpv copy at $appDir\tools\ so the stick

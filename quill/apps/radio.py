@@ -18,6 +18,7 @@ from quill.apps.radio_menu_bar import RadioMenuBarMixin
 from quill.core import http_client
 from quill.core.app_features import AppArea, load_app_features
 from quill.core.family_chords import SHOW_HIDE_DEFAULTS
+from quill.core.net import configure_ssl_trust
 from quill.core.radio import reading_services
 from quill.core.radio.radio_browser import RadioBrowserError
 from quill.core.sound_events import SoundEvent
@@ -1190,6 +1191,7 @@ _IPC_SLOT = "radio"
 
 
 def main() -> int:
+    configure_ssl_trust()  # one certificate check, before any network use
     from quill.core.data_location import apply_pending_at_launch
 
     # A queued Data Folder move/import applies before any data file is read

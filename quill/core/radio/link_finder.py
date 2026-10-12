@@ -40,6 +40,7 @@ from html.parser import HTMLParser
 
 from quill.core import http_client
 from quill.core.error_codes import CodedError
+from quill.core.net import verified_ssl_context
 from quill.core.radio import securenet
 from quill.core.radio.page_url import normalize_page_url
 from quill.stability.redaction import format_args_for_log
@@ -285,7 +286,7 @@ _FETCH_ERRORS = (urllib.error.URLError, TimeoutError, ssl.SSLError, OSError)
 def _http_get_text(url: str) -> str:
     """One GET returning decoded text, certificates always fully verified."""
     request = urllib.request.Request(url, headers={"User-Agent": http_client.user_agent()})
-    context = ssl.create_default_context()
+    context = verified_ssl_context()
     with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:
         payload: bytes = resp.read(_MAX_BYTES)
     return payload.decode("utf-8", errors="replace")

@@ -57,6 +57,7 @@ from dataclasses import dataclass
 
 from quill.core import http_client
 from quill.core.error_codes import CodedError
+from quill.core.net import verified_ssl_context
 from quill.core.radio import directory_cache, radio_browser
 from quill.core.radio.models import RadioStation
 
@@ -123,7 +124,7 @@ def _fetch(query: str) -> str:
             "Accept": "application/sparql-results+json",
         },
     )
-    context = ssl.create_default_context()
+    context = verified_ssl_context()
     try:
         with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:
             payload: bytes = resp.read(_MAX_BYTES)

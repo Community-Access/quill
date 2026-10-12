@@ -44,6 +44,7 @@ from pathlib import Path
 from typing import Any
 
 from quill.core.error_codes import CodedError
+from quill.core.net import verified_ssl_context
 
 logger = logging.getLogger(__name__)
 
@@ -138,7 +139,7 @@ def datalab_configured(settings: object) -> bool:
 
 
 def _ssl_context() -> ssl.SSLContext:
-    return ssl.create_default_context()
+    return verified_ssl_context()
 
 
 def _default_opener(request: urllib.request.Request, timeout: float) -> Any:

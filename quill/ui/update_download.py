@@ -29,6 +29,7 @@ from typing import Any, Protocol
 import wx
 
 from quill.core.file_manager import reveal_command
+from quill.core.net import certificate_problem
 from quill.ui.accessible_names import set_accessible_name
 from quill.ui.dialog_contract import apply_modal_ids
 
@@ -180,7 +181,7 @@ def download_and_offer_install(
     def _failed(_name: str, error: BaseException) -> None:
         wx.CallAfter(
             show_message_box,
-            f"Update download failed: {error}",
+            f"Update download failed: {certificate_problem(error) or error}",
             "Check for Updates",
             wx.ICON_ERROR | wx.OK,
         )

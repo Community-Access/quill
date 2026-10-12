@@ -35,7 +35,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
-          python-version: "3.13"
+          python-version: "3.14"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -50,6 +50,36 @@ jobs:
         # script literals) declared in pyproject.toml.
         run: |
           ruff check .
+
+  lint-py313:
+    # Python 3.13 compatibility leg, kept for one release after the move to
+    # 3.14 (2026-10-11) so a contributor still on 3.13 is not broken silently.
+    # Deliberately NOT a required check: branch protection requires
+    # "unit-tests", and this job's name is new. It lints and runs the smoke
+    # subset only. requires-python is >=3.14, so the install has to say
+    # --ignore-requires-python. Delete this job, and raise ruff's
+    # target-version to py314 in pyproject.toml, when the leg is retired.
+    name: Python 3.13 compatibility (informational)
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install --ignore-requires-python -e .[dev,ui]
+      - name: Lint
+        run: |
+          ruff check .
+      - name: Import smoke
+        run: |
+          python -c "import quill"
+      - name: Smoke tests
+        run: |
+          pytest -m smoke -q --timeout=300 --timeout-method=thread -p no:cacheprovider
 
   unit-tests-shard:
     # GATE-5, split four ways (2026-10-11). One runner stopped finishing the
@@ -70,12 +100,13 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
-          python-version: "3.13"
+          python-version: "3.14"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -e .[dev,ui]
       - name: Run unit and accessibility tests (shard ${{ matrix.shard }} of 4)
+        timeout-minutes: 20
         # -n 4 --dist=loadfile: the single-process run was silently
         # accumulating native Windows window-creation resources across the
         # suite's ~8700+ tests (dozens of test files each construct their own
@@ -123,6 +154,7 @@ jobs:
             --ignore=tests\unit\core\test_thesaurus.py `
             --ignore=tests\unit\ui\test_dialog_inventory.py `
             --ignore=tests\unit\ui\test_rich_heading_organizer.py `
+            --ignore=tests\unit\apps\test_cast_peer_windows.py `
             --cov=quill.core --cov=quill.io `
             --cov-report=
       - name: Run dialog-inventory gate tests (isolated process)
@@ -130,13 +162,14 @@ jobs:
         run: |
           pytest tests\unit\ui\test_dialog_inventory.py -q `
             --timeout=300 --timeout-method=thread -p no:cacheprovider
-      - name: Run the rich heading organizer tests (isolated process)
+      - name: Run the native-window tests that can crash a worker (isolated process)
         # A native RichEdit crash in this file took a whole xdist worker down
-        # on 2026-10-12, and the shard then sat until the job limit. In its own
+        # on 2026-10-12, as did test_cast_peer_windows.py's Add Podcast window, and the
+        # shard then sat until the job limit. In its own
         # process a crash fails one step quickly instead.
         if: matrix.shard == 1
         run: |
-          pytest tests\unit\ui\test_rich_heading_organizer.py -q `
+          pytest tests\unit\ui\test_rich_heading_organizer.py tests\unit\apps\test_cast_peer_windows.py -q `
             --timeout=300 --timeout-method=thread -p no:cacheprovider
       - name: Keep this shard's coverage data
         run: |
@@ -193,7 +226,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
-          python-version: "3.13"
+          python-version: "3.14"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -211,7 +244,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
-          python-version: "3.13"
+          python-version: "3.14"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -250,7 +283,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
-          python-version: "3.13"
+          python-version: "3.14"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip

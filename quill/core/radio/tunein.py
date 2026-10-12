@@ -40,6 +40,7 @@ from dataclasses import dataclass
 
 from quill.core import http_client
 from quill.core.error_codes import CodedError
+from quill.core.net import verified_ssl_context
 from quill.core.radio.models import RadioStation
 
 _TIMEOUT_SECONDS = 12.0
@@ -286,7 +287,7 @@ def _fetch(url: str) -> str:
     HTTPS-only over a verified TLS context, bounded timeout and response size.
     """
     request = urllib.request.Request(url, headers={"User-Agent": http_client.user_agent()})
-    context = ssl.create_default_context()
+    context = verified_ssl_context()
     try:
         with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:
             payload: bytes = resp.read(_MAX_BYTES)

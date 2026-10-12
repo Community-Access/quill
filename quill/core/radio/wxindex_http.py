@@ -10,6 +10,7 @@ from collections.abc import Callable
 
 from quill.core import http_client
 from quill.core.error_codes import CodedError
+from quill.core.net import verified_ssl_context
 
 _BASE = "https://api.wxindex.org"
 _TIMEOUT_SECONDS = 15.0
@@ -36,7 +37,7 @@ def _default_fetch(url: str) -> str:
     request = urllib.request.Request(
         url, headers={"User-Agent": http_client.user_agent(), "Accept": "application/json"}
     )
-    context = ssl.create_default_context()
+    context = verified_ssl_context()
     try:
         with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:
             body: bytes = resp.read()

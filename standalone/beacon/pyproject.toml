@@ -7,7 +7,7 @@ name = "quill-beacon"
 version = "0.1.0"
 description = "QuillBeacon -- accessible, screen-reader-first bookmark and location manager as a standalone app"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 license = { text = "MIT" }
 authors = [
   { name = "Community Access" },

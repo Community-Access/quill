@@ -28,6 +28,7 @@ from quill.apps import player_close
 from quill.apps.player_menus import MediaPlayerMenuMixin
 from quill.core.media import DspSettings, build_audio_filters, format_spoken
 from quill.core.media.bookmarks import BookmarkStore, MediaBookmark
+from quill.core.net import configure_ssl_trust
 from quill.core.speech.chapter_io import format_timestamp
 from quill.ui.accessible_names import set_accessible_name
 from quill.ui.app_shell import AppShellFrame
@@ -909,6 +910,7 @@ class QuillMediaPlayerFrame(
 
 
 def main() -> int:
+    configure_ssl_trust()  # one certificate check, before any network use
     from quill.core.data_location import apply_pending_at_launch
 
     apply_pending_at_launch()  # queued Data Folder move, before any data read

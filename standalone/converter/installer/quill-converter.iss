@@ -60,7 +60,7 @@
 ; It MUST stay "converter" forever -- renaming it would orphan the previous
 ; reference and double-count, leaving a phantom install the uninstaller cannot
 ; reclaim. It matches quill.apps.converter's register_running_app("converter").
-#define RuntimeVersion "3.13.15"
+#define RuntimeVersion "3.14.8"
 #define RuntimeSourceDir "..\..\runtime\dist\QuillVilleRuntime"
 #define AppRefId "converter"
 ; The media tools Converter declares (quill.apps.converter REQUIRED_COMPONENTS =

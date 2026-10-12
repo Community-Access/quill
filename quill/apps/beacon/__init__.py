@@ -11,6 +11,8 @@ Tagline: *Find your way back to anything.*
 
 from __future__ import annotations
 
+from quill.core.net import configure_ssl_trust
+
 __version__ = "0.1.0"
 __title__ = "QuillBeacon"
 
@@ -24,6 +26,7 @@ OPTIONAL_COMPONENTS: tuple[str, ...] = ("mpv",)
 
 def main() -> int:
     """Entry point used by the console/gui script and the PyInstaller launcher."""
+    configure_ssl_trust()  # one certificate check, before any network use
     from quill.core import components
 
     components.register_running_app("beacon", OPTIONAL_COMPONENTS)

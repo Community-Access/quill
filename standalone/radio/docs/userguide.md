@@ -6433,6 +6433,24 @@ installed copy keeps it at `%APPDATA%\Quill\logs\QuillRadio-launch.log`, next
 to `quill.log`. Each start replaces it, so send it before you try again. It
 contains file locations from your computer and nothing else personal.
 
+#### "The site's security certificate could not be verified"
+
+Quill Radio trusts the same security certificates Windows trusts, for station
+lists, podcasts, YouTube sign-in, downloads and Check for Updates. A site that
+opens in your web browser should open here too. When one will not:
+
+1. Check that this computer's date and time are right. A clock that is off,
+   even by a day, is the most common cause.
+2. Run Windows Update. It keeps the list of certificates Windows trusts up to
+   date.
+3. If your antivirus scans secure web pages, or you are on a work or school
+   network, Windows has to trust that software's certificate for Quill Radio
+   to trust it. Ask whoever looks after your computer or network.
+
+Quill Radio does not skip the check to get past the message, because a
+certificate that cannot be verified can mean someone is between you and the
+site.
+
 #### Everything else
 
 - **My YouTube will not open, or says your browser keeps its sign-in locked

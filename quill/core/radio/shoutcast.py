@@ -59,6 +59,7 @@ from typing import Any
 from quill.core import http_client
 from quill.core.display_text import clean_display_text
 from quill.core.error_codes import CodedError
+from quill.core.net import verified_ssl_context
 from quill.core.radio import directory_cache
 from quill.core.radio.models import RadioStation
 
@@ -316,7 +317,7 @@ def _request(url: str, fields: dict[str, str] | None = None) -> str:
         data = urllib.parse.urlencode(fields).encode("utf-8")
         headers["Content-Type"] = "application/x-www-form-urlencoded"
     request = urllib.request.Request(url, data=data, headers=headers)
-    context = ssl.create_default_context()
+    context = verified_ssl_context()
     try:
         with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:
             payload: bytes = resp.read(_MAX_BYTES + 1)

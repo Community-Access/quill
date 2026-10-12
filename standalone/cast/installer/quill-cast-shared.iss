@@ -35,7 +35,7 @@
 ; -- shared runtime parameters (read by installer\shared-runtime.iss) ----------
 ; AppRefId MUST stay "cast" forever (quill.apps.podcasts registers "cast");
 ; renaming it would orphan the previous reference in runtime.state.json.
-#define RuntimeVersion "3.13.15"
+#define RuntimeVersion "3.14.8"
 #define RuntimeSourceDir "..\..\runtime\dist\QuillVilleRuntime"
 #define AppRefId "cast"
 ; The launcher both shared-runtime editions install into {app}. It is

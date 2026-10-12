@@ -41,7 +41,7 @@ def _fake_shasums(filename: str = "node-v20.0.0-win-x64.zip") -> str:
 
 
 def _patch_ssl_context_for_fake_platform(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Prevent ssl.create_default_context() from touching the real OS cert store.
+    """Prevent the shared verified context from touching the real OS cert store.
 
     These tests fake sys.platform = "win32" to exercise node_install's Windows
     URL-building logic without a real Windows machine. But sys is a process-wide
@@ -55,7 +55,7 @@ def _patch_ssl_context_for_fake_platform(monkeypatch: pytest.MonkeyPatch) -> Non
     unloaded SSLContext is a sufficient stand-in.
     """
     monkeypatch.setattr(
-        node_mod.ssl, "create_default_context", lambda: ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+        node_mod, "verified_ssl_context", lambda: ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
     )
 
 

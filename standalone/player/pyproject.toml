@@ -7,7 +7,7 @@ name = "quill-media-player"
 version = "1.0.0"
 description = "Quill Media Player -- accessible, screen-reader-first audiobook and media player as a standalone app"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 license = { text = "MIT" }
 authors = [
   { name = "Community Access" },

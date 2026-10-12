@@ -17,10 +17,10 @@ audio beyond the first metadata block. wx-free, strict-typed.
 from __future__ import annotations
 
 import re
-import ssl
 import urllib.request
 
 from quill.core import http_client
+from quill.core.net import verified_ssl_context
 
 _TIMEOUT_SECONDS = 8.0
 _MAX_AUDIO_SKIP = 512 * 1024  # refuse absurd metaint values (DoS guard)
@@ -47,7 +47,7 @@ def read_stream_title(stream_url: str, *, timeout: float = _TIMEOUT_SECONDS) -> 
     request = urllib.request.Request(
         stream_url, headers={"Icy-MetaData": "1", "User-Agent": http_client.user_agent()}
     )
-    context = ssl.create_default_context()
+    context = verified_ssl_context()
     try:
         with urllib.request.urlopen(  # noqa: S310 - http(s) checked above
             request, timeout=timeout, context=context

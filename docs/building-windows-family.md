@@ -1,6 +1,6 @@
 # Building the QUILL Windows family
 
-Run these commands in PowerShell from the repository root on Windows. They build unsigned local artifacts; they do not publish a release. Use a clean checkout at the commit you want to ship. Inno Setup 7, Pandoc 3.10, and Python 3.13 are required. The build scripts check the Python environment and the shared runtime before packaging.
+Run these commands in PowerShell from the repository root on Windows. They build unsigned local artifacts; they do not publish a release. Use a clean checkout at the commit you want to ship. Inno Setup 7, Pandoc 3.10, and Python 3.14 are required. The build scripts check the Python environment and the shared runtime before packaging.
 
 QUILL Lite is an editor app in its own right. The **Lite installer edition** and **Companion ZIP edition** of other apps are retired. The Windows release set is a full installer and a portable ZIP for each app.
 
@@ -8,7 +8,7 @@ QUILL Lite is an editor app in its own right. The **Lite installer edition** and
 
 ```powershell
 $ErrorActionPreference = 'Stop'
-$python = py -3.13 -c 'import sys; print(sys.executable)'
+$python = py -3.14 -c 'import sys; print(sys.executable)'
 $iscc = Join-Path $env:LOCALAPPDATA 'Programs\Inno Setup 7\ISCC.exe'
 if (-not (Test-Path -LiteralPath $iscc)) { throw 'Install Inno Setup 7 or set $iscc to its ISCC.exe.' }
 & $python -m pip install --find-links vendor/wheels -e '.[runtime,packaging,dev]'

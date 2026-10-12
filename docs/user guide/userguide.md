@@ -14394,6 +14394,31 @@ The **Update History** button in the Release Channel window shows what the updat
 
 Switching channels sends nothing about you. When QUILL checks for updates, the only thing it sends is a request for the list of versions.
 
+### Secure connections and certificates
+
+QUILL trusts the same security certificates Windows trusts. Whenever it goes
+online, to check for updates, download something, talk to an AI service or
+open a web address, it checks the site's certificate the way your web browser
+does. A site that opens in Microsoft Edge should open in QUILL too. QUILL
+Lite, Quill Radio, QUILL Cast and the other QuillVille apps all check the same
+way.
+
+If QUILL says "The site's security certificate could not be verified":
+
+1. Check that this computer's date and time are right. A clock that is off,
+   even by a day, is the most common cause.
+2. Run Windows Update. It keeps the list of certificates Windows trusts up to
+   date.
+3. If your antivirus scans secure web pages, or you are on a work or school
+   network, that software looks inside secure connections, and Windows has to
+   trust its certificate for QUILL to trust it. Most antivirus programs set
+   that up when they are installed. If yours did not, or you are at work, ask
+   whoever looks after your computer or network.
+
+QUILL does not skip the check to get past this message. When a certificate
+cannot be verified, someone may be sitting between you and the site, so QUILL
+stops before sending anything.
+
 ### Beta Feedback and Bug Reporting
 
 QUILL is ready for serious beta use, and it has a real support starting point

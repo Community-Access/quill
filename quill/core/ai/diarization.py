@@ -8,13 +8,13 @@ from __future__ import annotations
 
 import json
 import mimetypes
-import ssl
 from dataclasses import dataclass, field
 from pathlib import Path
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 from quill.core.error_codes import CodedError
+from quill.core.net import verified_ssl_context
 
 DEEPGRAM_ENDPOINT = "https://api.deepgram.com/v1/listen"
 MAX_FILE_SIZE_BYTES = 2 * 1024 * 1024 * 1024  # 2 GB (Deepgram limit)
@@ -134,7 +134,7 @@ def _diarize_deepgram(
         },
         method="POST",
     )
-    ctx = ssl.create_default_context()
+    ctx = verified_ssl_context()
     try:
         with urlopen(req, context=ctx, timeout=600) as resp:
             data = json.loads(resp.read())

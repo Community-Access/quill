@@ -695,11 +695,15 @@ def pull_ollama_model(
     import json
     import urllib.request
 
+    from quill.core.net import context_for
+
     url = f"{host.rstrip('/')}/api/pull"
     body = json.dumps({"name": model, "stream": True}).encode("utf-8")
     request = urllib.request.Request(url, data=body, headers={"Content-Type": "application/json"})
     try:
-        with urllib.request.urlopen(request, timeout=timeout_seconds) as response:
+        with urllib.request.urlopen(
+            request, timeout=timeout_seconds, context=context_for(url)
+        ) as response:
             for raw_line in response:
                 line = raw_line.decode("utf-8", errors="replace").strip()
                 if not line:

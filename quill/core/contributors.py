@@ -58,6 +58,8 @@ def fetch_contributors() -> tuple[tuple[str, str], ...]:
     import json
     import urllib.request
 
+    from quill.core.net import verified_ssl_context
+
     url = f"https://api.github.com/repos/{_REPO}/contributors?per_page=100&anon=0"
     request = urllib.request.Request(url, headers={"Accept": "application/vnd.github+json"})
     import os
@@ -65,7 +67,7 @@ def fetch_contributors() -> tuple[tuple[str, str], ...]:
     token = os.environ.get("GITHUB_TOKEN", "").strip()
     if token:
         request.add_header("Authorization", f"Bearer {token}")
-    with urllib.request.urlopen(request, timeout=15) as response:  # noqa: S310 - fixed GitHub host
+    with urllib.request.urlopen(request, timeout=15, context=verified_ssl_context()) as response:  # noqa: S310 - fixed GitHub host
         payload = json.loads(response.read().decode("utf-8"))
 
     contributors: list[tuple[str, str]] = []

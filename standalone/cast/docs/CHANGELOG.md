@@ -10,6 +10,11 @@ All notable changes to QUILL Cast are documented here. QUILL Cast 2.0 is the fir
   Information marks a feed that really is plain http, a password is never sent
   over plain http, and what to do when a certificate cannot be verified. Feed
   Check's list of reasons now quotes the certificate sentence Cast actually says.
+- **One certificate check for everything.** Podcast searches, downloads and
+  Check for Updates now check certificates through the same shared check as
+  feeds, and the certificate sentence comes from one place for every app
+  (`quill/core/net.py`), so Feed Check, Check for Updates and every other app
+  say it in the same words.
 - Playback letters now work only in Now Playing. Main library, Places, and
   episode lists keep their letter typeahead; Shift+Right scanning moves with
   the other player keys. This fixes C announcing "Nothing is playing" when

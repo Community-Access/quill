@@ -161,7 +161,10 @@ def empty_verdict(children: list[Any]) -> tuple[bool, str]:
     from quill.core.radio.browse_failure import last_error_was_network, listener_reason
 
     if last_error_was_network():
-        return True, ""
+        # A certificate failure is the one network fault with something to
+        # do about it, so it is said as a reason rather than "unreachable".
+        certificate = listener_reason()
+        return (False, certificate) if certificate else (True, "")
     return False, listener_reason()
 
 

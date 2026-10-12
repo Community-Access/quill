@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
-          python-version: "3.13"
+          python-version: "3.14"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -63,7 +63,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
-          python-version: "3.13"
+          python-version: "3.14"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -83,7 +83,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
-          python-version: "3.13"
+          python-version: "3.14"
       - name: Run banned-pattern gate
         run: |
           python -m quill.tools.check_banned_patterns
@@ -103,7 +103,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
-          python-version: "3.13"
+          python-version: "3.14"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -123,7 +123,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
-          python-version: "3.13"
+          python-version: "3.14"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip

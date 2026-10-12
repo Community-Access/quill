@@ -44,7 +44,9 @@ def _resolve_version(source_root: Path) -> str:
     import re
 
     init_py = source_root / "quill" / "__init__.py"
-    match = re.search(r'^__version__\s*=\s*["\']([^"\']+)["\']', init_py.read_text(), re.M)
+    match = re.search(
+        r'^__version__\s*=\s*["\']([^"\']+)["\']', init_py.read_text(encoding="utf-8"), re.M
+    )
     return match.group(1) if match else "unknown"
 
 

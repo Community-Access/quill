@@ -28,6 +28,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 from quill.core import http_client
 from quill.core.error_codes import CodedError
+from quill.core.net import verified_ssl_context
 from quill.core.radio.models import RadioStation
 
 _CHANNELS_URL = "https://somafm.com/channels.json"
@@ -81,7 +82,7 @@ def _http_text(url: str) -> str:
     if not url.startswith("https://"):
         raise SomaFmError("Only https:// URLs can be fetched.")
     request = urllib.request.Request(url, headers={"User-Agent": http_client.user_agent()})
-    context = ssl.create_default_context()
+    context = verified_ssl_context()
     try:
         with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:
             text: str = resp.read().decode("utf-8", errors="replace")

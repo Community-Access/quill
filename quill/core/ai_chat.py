@@ -8,7 +8,6 @@ for threading (use QuillTaskManager).
 from __future__ import annotations
 
 import json
-import ssl
 import urllib.error
 import urllib.request
 from dataclasses import dataclass
@@ -16,6 +15,7 @@ from typing import TYPE_CHECKING
 
 from quill.core.assistant_ai import provider_credential_target
 from quill.core.error_codes import CodedError
+from quill.core.net import verified_ssl_context
 
 if TYPE_CHECKING:
     pass
@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 TIMEOUT_CHAT_S = 60
 TIMEOUT_MODELS_S = 10
 
-_VERIFIED_CTX = ssl.create_default_context()
+_VERIFIED_CTX = verified_ssl_context()
 
 
 class AIChatError(CodedError):

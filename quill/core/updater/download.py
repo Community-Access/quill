@@ -82,13 +82,14 @@ def _megabytes(count: int) -> str:
 def _default_opener(url: str, start: int) -> _Response:
     from urllib.request import Request, urlopen
 
-    from quill.core.updates import _ssl_context, _validate_remote_url
+    from quill.core.net import verified_ssl_context
+    from quill.core.updates import _validate_remote_url
 
     _validate_remote_url(url)
     headers = {"User-Agent": "QuillVille-Updater/2"}
     if start > 0:
         headers["Range"] = f"bytes={start}-"
-    response = urlopen(Request(url, headers=headers), timeout=60, context=_ssl_context())
+    response = urlopen(Request(url, headers=headers), timeout=60, context=verified_ssl_context())
     return response  # type: ignore[no-any-return]
 
 

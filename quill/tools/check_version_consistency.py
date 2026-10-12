@@ -53,7 +53,9 @@ def _authoritative_version(repo_root: Path) -> str:
             return f"{base} Release Candidate {pre}"
         return f"{base} Dev"
     init_py = repo_root / "quill" / "__init__.py"
-    match = re.search(r'^__version__\s*=\s*["\']([^"\']+)["\']', init_py.read_text(), re.M)
+    match = re.search(
+        r'^__version__\s*=\s*["\']([^"\']+)["\']', init_py.read_text(encoding="utf-8"), re.M
+    )
     if not match:
         raise RuntimeError(f"Could not find __version__ in {init_py}")
     return match.group(1)

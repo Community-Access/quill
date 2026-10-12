@@ -6,16 +6,16 @@ build wins, as it always has. Across slots nothing is shared.**
 =========== ====================================== ===========================
 Channel     Folder under ``%LOCALAPPDATA%\\QuillVille\\Runtime``  Repairs itself from
 =========== ====================================== ===========================
-Stable      ``3.13`` (the folder that already exists) ``runtime-stable``, and the
+Stable      ``3.14`` (``3.13`` before 2026-10-11)  ``runtime-stable``, and the
                                                    ``runtime-latest`` alias that
                                                    installed launchers know
-Beta        ``3.13-beta``                          ``runtime-beta``
-Dev         ``3.13-dev``                           nothing: "Reinstall the Dev build"
+Beta        ``3.14-beta``                          ``runtime-beta``
+Dev         ``3.14-dev``                           nothing: "Reinstall the Dev build"
 =========== ====================================== ===========================
 
-So a Beta Quill Radio puts its runtime in ``3.13-beta``, and a Stable QUILL Lite
-on the same computer keeps running from ``3.13``, untouched. Going back to
-Stable installs into ``3.13`` again, and when the last app leaves a slot its
+So a Beta Quill Radio puts its runtime in ``3.14-beta``, and a Stable QUILL Lite
+on the same computer keeps running from ``3.14``, untouched. Going back to
+Stable installs into ``3.14`` again, and when the last app leaves a slot its
 uninstaller removes it -- about 335 MB comes back.
 
 The installer (``installer/shared-runtime.iss``) chooses the slot from
@@ -24,7 +24,7 @@ no ``/CHANNEL``, Stable for a final version and Beta for any pre-release. It
 writes ``[runtime] slot=`` and ``[app] channel=`` into the app's
 ``quill-app-version.ini``, and the native launcher reads ``slot=`` from there
 (``quill/native/launcher/runtime_resolve.c``); with no ``slot=`` it uses
-``3.13``, exactly as before.
+``3.14``, exactly as before.
 
 This module is the Python mirror of those two, unit-tested, plus what the
 updater and the risk window need to know. wx-free and strict-typed.
@@ -52,7 +52,7 @@ __all__ = [
     "slots_in_use",
 ]
 
-PYTHON_MAJOR = "3.13"
+PYTHON_MAJOR = "3.14"
 
 #: About how much disk a Beta or Dev slot adds until the last app leaves it.
 #: The risk window says this number plainly (owner decision, 2026-10-03).
@@ -71,7 +71,7 @@ _SLOT_RE = re.compile(r"^\d+\.\d+(?:-(?:beta|dev))?$")
 
 
 def slot_for(channel: str, python_major: str = PYTHON_MAJOR) -> str:
-    """``3.13`` for Stable, ``3.13-beta``, ``3.13-dev``."""
+    """``3.14`` for Stable, ``3.14-beta``, ``3.14-dev``."""
     ch = normalize_channel(channel)
     return python_major if ch == STABLE else f"{python_major}-{ch}"
 

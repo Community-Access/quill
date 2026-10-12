@@ -1,7 +1,7 @@
 """Release channels, Phase 3: channel runtime slots for the shared runtime.
 
-Each channel has its own runtime folder (``Runtime\\3.13``, ``3.13-beta``,
-``3.13-dev``); within a slot the newest build wins, across slots nothing is
+Each channel has its own runtime folder (``Runtime\\3.14``, ``3.14-beta``,
+``3.14-dev``); within a slot the newest build wins, across slots nothing is
 shared. This pins the Python side (``runtime_slots``, slot-keyed
 ``runtime_refs``, the marker reader, the lifted interim rule, the risk window's
 disk sentence, the update helper's ``/CHANNEL``, and the channel-aware
@@ -44,10 +44,10 @@ REPO = Path(__file__).resolve().parents[3]
 
 
 def test_each_channel_has_its_own_slot() -> None:
-    assert slot_for("stable") == "3.13"
-    assert slot_for("beta") == "3.13-beta"
-    assert slot_for("dev") == "3.13-dev"
-    assert [channel_of_slot(s) for s in ("3.13", "3.13-beta", "3.13-dev")] == [
+    assert slot_for("stable") == "3.14"
+    assert slot_for("beta") == "3.14-beta"
+    assert slot_for("dev") == "3.14-dev"
+    assert [channel_of_slot(s) for s in ("3.14", "3.14-beta", "3.14-dev")] == [
         "stable",
         "beta",
         "dev",
@@ -70,16 +70,16 @@ def test_the_installers_default_channel(version, requested, channel) -> None:
 
 
 def test_self_heal_tags_and_runtime_latest_stays_an_alias() -> None:
-    assert self_heal_tag("3.13") == "runtime-latest"
-    assert self_heal_tag("3.13-beta") == "runtime-beta"
-    assert self_heal_tag("3.13-dev") is None
+    assert self_heal_tag("3.14") == "runtime-latest"
+    assert self_heal_tag("3.14-beta") == "runtime-beta"
+    assert self_heal_tag("3.14-dev") is None
 
 
 def test_launcher_rule_in_python(tmp_path: Path) -> None:
-    assert launcher_slot_dir(tmp_path, "3.13-beta") == tmp_path / "QuillVille/Runtime/3.13-beta"
-    for bad in ("", "..\\..\\Windows", "3.13-evil", "3", "beta"):
+    assert launcher_slot_dir(tmp_path, "3.14-beta") == tmp_path / "QuillVille/Runtime/3.14-beta"
+    for bad in ("", "..\\..\\Windows", "3.14-evil", "3", "beta"):
         assert not is_valid_slot(bad)
-        assert launcher_slot_dir(tmp_path, bad) == tmp_path / "QuillVille/Runtime/3.13"
+        assert launcher_slot_dir(tmp_path, bad) == tmp_path / "QuillVille/Runtime/3.14"
 
 
 def test_installer_args_always_name_the_channel() -> None:
@@ -213,7 +213,12 @@ def test_the_runtime_installer_builds_a_beta_slot_and_publishes_both_tags() -> N
         encoding="utf-8"
     )
     assert "DefaultDirName={localappdata}\\QuillVille\\Runtime\\{#RuntimeSlot}" in iss
-    assert iss.count("AppId=") == 2
+    # One AppId per slot: the two 3.13 IDs already on users' machines, and a
+    # slot-suffixed one for any later Python major (so 3.14 never reuses
+    # Runtime\\3.13 as its recorded folder).
+    assert iss.count("AppId=") == 3
+    assert "AppId={{6D6B0E7C-51A4-4B5E-9E0D-2F8B4C0A9137}-{#RuntimeSlot}" in iss
+    assert '/dRuntimeSlot=$pythonMinor")' in script
     assert '@("runtime-stable", "runtime-latest")' in script
     assert '@("runtime-beta")' in script
     assert "/dRuntimeSlot=$pythonMinor-beta" in script
