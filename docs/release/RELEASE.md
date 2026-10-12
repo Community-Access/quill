@@ -372,11 +372,18 @@ python scripts/feed_tool.py refresh --app radio
 ### Runtime slots
 
 Beta and Dev apps run on their own copy of the shared runtime
-(`Runtime\3.13-beta`, `Runtime\3.13-dev`). Publish a Stable runtime with
-`build_runtime_installer.ps1 -Publish` (it goes to `runtime-stable` and to
-`runtime-latest`, which installed launchers know and which stays for ever) and
-a Beta runtime with `-Publish -Channel beta` (`runtime-beta`). There is no Dev
-runtime installer: Dev runtimes do not repair themselves.
+(`Runtime\3.14-beta`, `Runtime\3.14-dev`). Publish a Stable runtime with
+`build_runtime_installer.ps1 -Publish` and a Beta runtime with
+`-Publish -Channel beta`. Each goes to the tag named for its slot,
+`runtime-3.14` or `runtime-3.14-beta`, and each app's launcher repairs a missing
+runtime from its own slot's tag. There is no Dev runtime installer: Dev
+runtimes do not repair themselves.
+
+`runtime-latest` and `runtime-beta` are frozen at the last Python 3.13 runtime
+(decided 2026-10-12) and the script refuses to publish to them. Launchers built
+for 3.13 have those tags compiled in. A 3.14 runtime published there would
+install into `Runtime\3.14` while those launchers keep looking in
+`Runtime\3.13`, so an old app that lost its runtime would never start again.
 
 ### One-time setup (owner)
 

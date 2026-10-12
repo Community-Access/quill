@@ -349,8 +349,8 @@ int wmain(int argc, wchar_t *wargv[])
          * if its own runtime is missing. A portable launcher has no URL, so
          * ql_bootstrap_runtime returns at once and it says what is wrong. If
          * the user declines or it fails, fall back to the clean error. */
-        /* Release channels: a Beta app repairs from runtime-beta, and a Dev
-         * app does not repair itself at all -- it says to reinstall. */
+        /* Each slot repairs from its own tag (runtime-3.14, runtime-3.14-beta),
+         * and a Dev app does not repair itself at all -- it says to reinstall. */
         char heal_url[1024];
         if (ql_runtime_url_for_slot(PRODUCT_RUNTIME_URL, runtime.slot,
                                     heal_url, sizeof(heal_url)) != 0) {

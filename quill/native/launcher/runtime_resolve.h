@@ -41,11 +41,10 @@ int ql_resolve_runtime(const char *self_path, QlRuntime *out);
  * (out is then ""). Valid: <digits>.<digits>, optionally -beta or -dev. */
 int ql_runtime_slot(const char *self_dir, char *out, size_t out_size);
 
-/* Where a missing runtime in `slot` is downloaded from. Copies `base_url` (the
- * compiled-in runtime-latest URL) for the Stable slot, swaps its
- * /runtime-latest/ segment for /runtime-beta/ for the Beta slot, and returns
- * -1 for a Dev slot: Dev runtimes do not repair themselves ("Reinstall the Dev
- * build"). Returns 0 on success. */
+/* Where a missing runtime in `slot` is downloaded from. Swaps `base_url`'s (the
+ * compiled-in URL) /runtime-.../ segment for /runtime-<slot>/ -- runtime-3.14,
+ * runtime-3.14-beta -- and returns -1 for a Dev slot: Dev runtimes do not
+ * repair themselves ("Reinstall the Dev build"). Returns 0 on success. */
 int ql_runtime_url_for_slot(const char *base_url, const char *slot, char *out, size_t out_size);
 
 #endif /* QL_RUNTIME_RESOLVE_H */

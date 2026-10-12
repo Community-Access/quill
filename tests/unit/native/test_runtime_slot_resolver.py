@@ -3,8 +3,9 @@
 ``runtime_resolve.c`` reads ``[runtime] slot=`` from the
 ``quill-app-version.ini`` beside the launcher and resolves
 ``Runtime\\<slot>``; with no ``slot=`` it uses ``Runtime\\3.14`` exactly as
-before, and with a slot it never falls back to Stable's folder. A missing Beta
-runtime repairs from ``runtime-beta``; a Dev one does not repair itself. The C
+before, and with a slot it never falls back to Stable's folder. A missing
+runtime repairs from the tag named for its slot (``runtime-3.14``,
+``runtime-3.14-beta``); a Dev one does not repair itself. The C
 is not compiled here (no binaries are built in this repository's tests), so
 the contract is pinned twice: a Python mirror of the parser, exercised, and the
 C source checked for the same rules.
@@ -21,7 +22,7 @@ from quill.core.updater.runtime_slots import is_valid_slot
 REPO = Path(__file__).resolve().parents[3]
 LAUNCHER = REPO / "quill" / "native" / "launcher"
 BASE_URL = (
-    "https://github.com/Community-Access/quill/releases/download/runtime-latest/"
+    "https://github.com/Community-Access/quill/releases/download/runtime-3.14/"
     "QuillVille-Runtime-Setup.exe"
 )
 
@@ -48,8 +49,10 @@ def ql_runtime_url_for_slot(base: str, slot: str) -> str | None:
     """Mirror of ``ql_runtime_url_for_slot``."""
     if slot.endswith("-dev"):
         return None
-    if slot.endswith("-beta") and "/runtime-latest/" in base:
-        return base.replace("/runtime-latest/", "/runtime-beta/", 1)
+    seg = base.find("/runtime-")
+    end = base.find("/", seg + 1) if seg >= 0 else -1
+    if seg >= 0 and end >= 0 and slot:
+        return f"{base[:seg]}/runtime-{slot}{base[end:]}"
     return base
 
 
@@ -69,12 +72,34 @@ def test_slot_parsing(tmp_path: Path, ini: str, slot: str) -> None:
 
 
 def test_self_heal_url_per_slot() -> None:
+    from quill.core.updater.runtime_slots import self_heal_tag
+
     assert ql_runtime_url_for_slot(BASE_URL, "") == BASE_URL
-    assert ql_runtime_url_for_slot(BASE_URL, "3.13") == BASE_URL
-    assert "/runtime-beta/QuillVille-Runtime-Setup.exe" in ql_runtime_url_for_slot(
-        BASE_URL, "3.13-beta"
+    assert ql_runtime_url_for_slot(BASE_URL, "3.14") == BASE_URL
+    for slot in ("3.14-beta", "3.15", "3.15-beta"):
+        url = ql_runtime_url_for_slot(BASE_URL, slot)
+        assert url == BASE_URL.replace("/runtime-3.14/", f"/{self_heal_tag(slot)}/")
+    assert ql_runtime_url_for_slot(BASE_URL, "3.14-dev") is None
+
+
+def test_the_compiled_default_is_this_pythons_tag_never_a_frozen_one() -> None:
+    """runtime-latest and runtime-beta hold 3.13 for the launchers built before
+    2026-10-12. A launcher whose default pointed there would repair a 3.14 app
+    with a 3.13 runtime it never looks for."""
+    from quill.core.updater.runtime_slots import (
+        LEGACY_RUNTIME_TAGS,
+        PYTHON_MAJOR,
+        self_heal_tag,
     )
-    assert ql_runtime_url_for_slot(BASE_URL, "3.13-dev") is None
+
+    want = f"/download/{self_heal_tag(PYTHON_MAJOR)}/QuillVille-Runtime-Setup.exe"
+    cmake = (LAUNCHER / "CMakeLists.txt").read_text(encoding="utf-8")
+    script = (REPO / "scripts" / "build_native_launcher.py").read_text(encoding="utf-8")
+    assert want in cmake
+    assert f"/download/{self_heal_tag(PYTHON_MAJOR)}/" in script  # split across two literals
+    for frozen in LEGACY_RUNTIME_TAGS:
+        assert f"/download/{frozen}/" not in cmake
+        assert f"/download/{frozen}/" not in script
 
 
 def test_the_c_source_keeps_the_same_rules() -> None:
@@ -85,7 +110,9 @@ def test_the_c_source_keeps_the_same_rules() -> None:
     assert 'path_join(ini, sizeof(ini), self_dir, "quill-app-version.ini");' in source
     assert 'ql_strnicmp(s, "[runtime]", 9)' in source
     assert 'strcmp(p, "-beta") == 0 || strcmp(p, "-dev") == 0' in source
-    assert '"/runtime-latest/"' in source and "/runtime-beta/" in source
+    assert 'strstr(base_url, "/runtime-")' in source
+    assert '"%.*s/runtime-%s%s"' in source
+    assert "/runtime-latest/" not in source and "/runtime-beta/" not in source
     # With a slot, never Stable's folder; without one, the Stable path.
     assert "path_join(runtime_dir, sizeof(runtime_dir), base, slot);" in source
     assert "path_join(runtime_dir, sizeof(runtime_dir), base, QL_PYTHON_MAJOR);" in source

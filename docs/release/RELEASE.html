@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.12" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>QUILL Release Process</title>
+  <title>RELEASE</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -245,68 +245,8 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* The skip link above targets main, and a focusable main needs a ring for
-       the sighted keyboard user. These pages load no external stylesheet, so it
-       has to be inline; the colour is the site theme's --focus, hardcoded
-       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
-       makes main the click-focus target for every paragraph inside it, so
-       :focus would box the whole page on any ordinary click. The offset is inset
-       because main is full-bleed and an outset ring gets clipped into two
-       vertical lines. */
-    main[tabindex="-1"]:focus-visible {
-      outline: 3px solid #b8540a;
-      outline-offset: -3px;
-    }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-    /* Pandoc's own styles.html partial, injected near the top of this template,
-       ships `table { display: block; overflow-x: auto; }`. display: block takes
-       the table role out of the accessibility tree in Blink and Gecko, and the
-       row and cell roles go with it, so every rendered table reads as a flat run
-       of words -- 62 of them in QUILL Lite's user guide alone, all of them
-       keyboard reference tables, on a site whose readers are overwhelmingly
-       screen-reader users. Restoring display: table is not a preference.
-
-       The scroll affordance it was there for is given up rather than moved,
-       because Pandoc emits a bare table with no wrapper element to hang overflow
-       on -- the wrapper pattern compare.html uses is not available here. So the
-       exchange is a certain and total loss of table semantics against a possible
-       sideways page scroll on the widest tables, and the cells are taught to
-       break so that stays possible rather than likely.
-
-       This override also covers the governance pages built by
-       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
-       version nobody pins -- whatever styles.html that ships, this wins. */
-    table {
-      display: table;
-      overflow-x: visible;
-    }
-    table th,
-    table td {
-      overflow-wrap: break-word;
-      word-break: break-word;
-    }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content" tabindex="-1">
 <h1 id="quill-release-process">QUILL Release Process</h1>
 <p>This file documents the operational steps for cutting a QUILL
 release. It is the canonical checklist referenced from
@@ -331,8 +271,8 @@ branch.</li>
 paths, and the shipped feature set. When a base dependency changes,
 reconcile every committed
 <code>standalone/*/portable-inventory.json</code>, including
-Windows-only transitive requirements for each product’s extras. Inspect
-the actual bundle’s drift and dependency metadata before rebaselining
+Windows-only transitive requirements for each product's extras. Inspect
+the actual bundle's drift and dependency metadata before rebaselining
 with
 <code>python scripts\check_runtime_inventory.py &lt;portable-dir&gt; --layout portable --manifest &lt;product-inventory&gt; --write</code>;
 do not bypass the inventory gate. Pure-Python modules in the frozen
@@ -353,7 +293,7 @@ manifest that the public feed still points at during pre-release.</li>
 <li><strong>Quillin Hub service code shipped.</strong>
 <code>quillin-hub/</code> is a Flask service in this repo; the registry
 API, Submission Forge, sync worker, and smoke test are all in-tree.
-Public deployment (<code>hub.quillforall.org</code> – DNS, hosting,
+Public deployment (<code>hub.quillforall.org</code> -- DNS, hosting,
 Postgres) is a separate ops track and is tracked separately from the
 release cut. The Ed25519 publisher signature gate
 (<code>quill/tools/signing.py</code> plus the Submission Forge
@@ -407,12 +347,12 @@ changes a list signs it as it writes, unless you pass
 change cannot merge until you run
 <code>python scripts/feed_tool.py sign --app &lt;app&gt;</code>.</p>
 <h3 id="build-numbers">Build numbers</h3>
-<p>Every app’s version has a build number, so the same release number
+<p>Every app's version has a build number, so the same release number
 can ship more than once. If Quill Radio 3.2.0 goes out and a fix has to
 follow without a new number, the fix is 3.2.0 build 2, and Check for
 Updates offers it to everyone on build 1.</p>
 <ul>
-<li><strong>Where it lives.</strong> Next to each app’s version
+<li><strong>Where it lives.</strong> Next to each app's version
 constant: <code>_BUILD</code> in <code>quill/apps/radio.py</code> (and
 Converter, Weather, Inkwell, Player, Studio, Beacon),
 <code>APP_BUILD</code> in <code>quill/core/lite/__init__.py</code> and
@@ -422,15 +362,15 @@ Converter, Weather, Inkwell, Player, Studio, Beacon),
 starts at build 1.</li>
 <li><strong>How it is written.</strong> The canonical form is
 <code>3.2.0+2</code> (and <code>3.3.0-beta.2+5</code> for a
-pre-release). People see “3.2.0 (build 2)” in About, Update History,
+pre-release). People see "3.2.0 (build 2)" in About, Update History,
 update notices and the Release Channel window. Release notes, changelog
 headings and file names keep saying <code>3.2.0</code>.</li>
 <li><strong>Tags.</strong> A build is tagged as a pre-release
 identifier, never with a plus: <code>quill-radio-v3.2.0-build.2</code>,
 <code>quill-lite-v1.2.0-build.1</code>, <code>v1.0.0-build.1</code>,
 <code>v1.1.0-beta.1.build.3</code>. Copies installed before build
-numbers read a <code>+</code> in a sibling’s tag as no version at all
-and in QUILL’s own tag as part of the patch number
+numbers read a <code>+</code> in a sibling's tag as no version at all
+and in QUILL's own tag as part of the patch number
 (<code>v1.0.0+2</code> was 1.0.2 to them). They read
 <code>-build.2</code> as a pre-release of 3.2.0, so a copy on an older
 release (3.1.1) still sees the rebuild as newer and takes the newest
@@ -451,7 +391,7 @@ copy on an older release is offered the newest build.</li>
 <li><strong>The installer.</strong> Each <code>.iss</code> takes
 <code>/dAppBuild=</code> and <code>/dAppFileVersion=</code> from
 <code>build_release.ps1</code>. Windows shows <code>X.Y.Z.B</code>
-(3.2.0.2) in the file’s Details tab, and the installer writes
+(3.2.0.2) in the file's Details tab, and the installer writes
 <code>version_build=3.2.0+2</code> beside <code>version=3.2.0</code> in
 <code>quill-app-version.ini</code>. It is a separate key so older
 runtimes, which read only <code>version</code>, are not confused, and it
@@ -462,7 +402,7 @@ ignored.</li>
 <ol type="1">
 <li>Fix the problem. Keep the version; set the build constant to the
 next build (<code>_BUILD = 2</code>).</li>
-<li>Add a line under the existing version’s section in the app’s
+<li>Add a line under the existing version's section in the app's
 changelog. There is no new section; the build is not a new release.</li>
 <li>Build: <code>.\standalone\radio\scripts\build_release.ps1</code>.
 Without <code>-Build</code>, the script asks
@@ -483,14 +423,14 @@ the newest build already on GitHub.</li>
 A version without a build is refused with the builds it could mean.</li>
 </ol>
 <p>GATE-SIBVER compares builds when both the source and the published
-tag carry one, and GATE-APPVER checks that each app’s build constant,
-its installers’ <code>AppBuild</code> and <code>AppFileVersion</code>,
+tag carry one, and GATE-APPVER checks that each app's build constant,
+its installers' <code>AppBuild</code> and <code>AppFileVersion</code>,
 and its build script agree.</p>
 <h3 id="a-joint-release-of-several-apps-decided-2026-10-05">A joint
 release of several apps (decided 2026-10-05)</h3>
 <p>Every app build ships the shared runtime, and the runtime carries
-every app’s version. When several apps release together before any of
-them is published, each app’s own GATE-SIBVER check fails on the others,
+every app's version. When several apps release together before any of
+them is published, each app's own GATE-SIBVER check fails on the others,
 because it names only the app it builds. For that case, run the check
 once naming every app in the release:</p>
 <div class="sourceCode" id="cb1"><pre
@@ -513,8 +453,8 @@ version number decides:</p>
 <code>3.3.1-dev.20261003.1</code>, anything built with
 <code>-DevVersion</code>) is never signed. <code>-Sign</code> and
 <code>QUILL_SIGN_REQUIRED=1</code> are ignored, and the build says so in
-one line: “Beta and Dev builds are not code-signed; signing
-skipped.”</li>
+one line: "Beta and Dev builds are not code-signed; signing
+skipped."</li>
 <li>A <strong>final-numbered</strong> build (<code>3.3.0</code>) is a
 Stable candidate. Build it with <code>-Sign</code> (or
 <code>QUILL_SIGN=1</code>): it is signed when it is built, listed on
@@ -533,7 +473,7 @@ build (and a signed Beta or Dev one) before creating anything, and
 promotion check P5 refuses Stable for anything unsigned. If P5 fails,
 rebuild with <code>-Sign</code>; the rebuild gets the next build number,
 goes on Beta, and is promoted from there. Details:
-<code>docs/code-signing.md</code>, “Which builds are signed”.</p>
+<code>docs/code-signing.md</code>, "Which builds are signed".</p>
 <h3 id="publishing-to-beta">Publishing to Beta</h3>
 <p>A sibling app built on this computer:</p>
 <div class="sourceCode" id="cb2"><pre
@@ -541,11 +481,11 @@ class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>publish_release<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>app radio <span class="op">--</span>version <span class="dv">3.3</span><span class="op">.</span><span class="dv">0</span><span class="op">-</span>beta<span class="op">.</span><span class="dv">1</span> `</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>channel beta <span class="op">--</span>dist standalone<span class="op">/</span>radio<span class="op">/</span>dist <span class="op">--</span>notes-file notes<span class="op">.</span><span class="fu">md</span></span></code></pre></div>
 <p>This hashes the files locally, creates the GitHub release as a
-prerelease that is never “Latest”, uploads the files, lists the build on
-Beta, and signs the list. QUILL’s own release is still built by
+prerelease that is never "Latest", uploads the files, lists the build on
+Beta, and signs the list. QUILL's own release is still built by
 <code>windows-release.yml</code> from a tag; list it afterwards with
 <code>--existing</code>, which downloads and hashes the files here
-rather than trusting GitHub’s numbers:</p>
+rather than trusting GitHub's numbers:</p>
 <div class="sourceCode" id="cb3"><pre
 class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>publish_release<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>app quill <span class="op">--</span>version <span class="dv">1.0</span><span class="op">.</span><span class="dv">0</span><span class="op">-</span>rc<span class="op">.</span><span class="dv">1</span> <span class="op">--</span>channel beta <span class="op">--</span>existing</span></code></pre></div>
 <p>QUILL 1.0.0 becomes Stable this way: tag <code>v1.0.0-rc.1</code>,
@@ -559,7 +499,7 @@ you list it; the release candidate stays unsigned.</p>
 <p><strong>The page budget.</strong> Installed Quill Radio 3.0.4 and
 QUILL Lite 1.1.2 read only the first 30 releases of
 <code>Community-Access/quill</code>. <code>publish_release.py</code>
-refuses to publish when any app’s newest Stable release would be more
+refuses to publish when any app's newest Stable release would be more
 than 20 releases down, and when a newer Beta is published it deletes the
 older Beta release objects (the tags stay) and drops them from the list.
 Pass <code>--keep-superseded</code> to keep them. <code>--dry-run</code>
@@ -572,11 +512,11 @@ class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb4-
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>promote_release<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>app radio <span class="op">--</span>version <span class="dv">3.3</span><span class="op">.</span><span class="dv">0</span> <span class="op">--</span>to stable</span></code></pre></div>
 <p>Every check is printed as PASS, WARN or FAIL, and one FAIL stops it:
 the release exists; every file downloads again with the size and SHA-256
-in the list; the list’s signature is valid; Stable takes only a
+in the list; the list's signature is valid; Stable takes only a
 final-numbered build that was on Beta first; for Stable, every installer
 and every program in the portable zip carries an Authenticode signature
-(always – Stable is never unsigned); tag, version and file names agree;
-nothing the build carries is ahead of that app’s own channel; the
+(always -- Stable is never unsigned); tag, version and file names agree;
+nothing the build carries is ahead of that app's own channel; the
 changelog has the version; for Stable, a screen-reader sign-off sheet at
 <code>docs/qa/signoffs/&lt;app&gt;-&lt;version&gt;.md</code> with
 <code>Result: pass</code>, <code>Tester:</code>,
@@ -585,23 +525,23 @@ days on Beta (1 on Dev before Beta); and the documentation gates. A
 warning says when going back to the previous Stable would need a saved
 copy.</p>
 <p>A shorter soak needs a reason, and the reason is written into the
-build’s history in the list:
+build's history in the list:
 <code>--skip-soak "fixes a crash on start in 3.2.0"</code>.</p>
 <p><strong>Stable release notes.</strong> A promotion to Stable rolls
 the notes up for you: every changelog section after the current Stable
-build, up to this one, merged into “What’s new since 3.2.0”. Lines
+build, up to this one, merged into "What's new since 3.2.0". Lines
 marked <code>[beta-only]</code> are left out (with anything indented
-under them), so are each Beta’s “Known rough edges”, and “Before you
-update” comes first when a data format moved. <code>--dry-run</code>
+under them), so are each Beta's "Known rough edges", and "Before you
+update" comes first when a data format moved. <code>--dry-run</code>
 prints the result; the real run makes it the GitHub release body and the
-feed’s summary. <code>--notes-file</code> gives your own notes instead.
+feed's summary. <code>--notes-file</code> gives your own notes instead.
 To see or save them before promoting:</p>
 <div class="sourceCode" id="cb5"><pre
 class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>rollup_release_notes<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>app radio <span class="op">--</span>from <span class="dv">3.2</span><span class="op">.</span><span class="dv">0</span> <span class="op">--</span>to <span class="dv">3.3</span><span class="op">.</span><span class="dv">0</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>rollup_release_notes<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>app radio <span class="op">--</span>to <span class="dv">3.3</span><span class="op">.</span><span class="dv">0</span> <span class="op">--</span>out notes<span class="op">.</span><span class="fu">md</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>rollup_release_notes<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>app radio <span class="op">--</span>to <span class="dv">3.3</span><span class="op">.</span><span class="dv">0</span> <span class="op">--</span>summary</span></code></pre></div>
-<p>On success the GitHub release stops being a prerelease (only QUILL’s
-own Stable release becomes “Latest”), its title says when it was
+<p>On success the GitHub release stops being a prerelease (only QUILL's
+own Stable release becomes "Latest"), its title says when it was
 promoted, the list moves it to Stable with a fresh 90-day expiry, and a
 line goes into <code>docs/release/promotions.log</code>.</p>
 <p><strong>From GitHub instead.</strong> Actions &gt; promote-release
@@ -636,7 +576,7 @@ class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb7-
 <p>The build is marked withdrawn in the list, so it is never offered
 again and is never a way back. Each channel that offered it falls back
 to the build before it, and the script says which. Its GitHub release
-title gains “(withdrawn)”. Nothing is deleted: people who have it can
+title gains "(withdrawn)". Nothing is deleted: people who have it can
 still move forward or back, and the files stay downloadable. The list is
 signed as it is written, or left unsigned with <code>--no-sign</code>
 for <code>python scripts/feed_tool.py sign --app radio</code> later.
@@ -647,7 +587,7 @@ the one to use.</p>
 what the newer one saved, and that is decided from the version numbers
 in <code>quill/core/data_formats.py</code>. GATE-DATAFMT keeps them
 honest: it fingerprints what each format is saved from (dataclass fields
-and types, QUILL’s settings groups, schema stamps, and the serializer
+and types, QUILL's settings groups, schema stamps, and the serializer
 code for stores with no dataclass) against
 <code>tests/unit/core/fixtures/data_format_fingerprints.json</code>. It
 runs in <code>tests/unit/core/test_data_formats.py</code> and as the
@@ -676,13 +616,13 @@ class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb8-
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="va">$env</span><span class="op">:</span><span class="va">QUILL_UPDATE_FEED_BASE</span> <span class="op">=</span> <span class="st">&quot;https://rehearsal.example/updates/v2/&quot;</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="va">$env</span><span class="op">:</span><span class="va">QUILL_REHEARSAL_SERVE_DIR</span> <span class="op">=</span> <span class="st">&quot;D:/rehearsal/updates/v2&quot;</span></span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>pytest tests<span class="op">/</span>integration<span class="op">/</span>test_channel_rehearsal<span class="op">.</span><span class="fu">py</span> <span class="op">-</span>v</span></code></pre></div>
-<p>The server’s host must be trusted
-(<code>QUILL_UPDATE_TRUSTED_HOSTS</code> if it is not GitHub’s). Nothing
+<p>The server's host must be trusted
+(<code>QUILL_UPDATE_TRUSTED_HOSTS</code> if it is not GitHub's). Nothing
 touches the real lists, your key or GitHub.</p>
 <h3 id="feed-expiry-and-the-14-day-warning">Feed expiry and the 14-day
 warning</h3>
 <p>Each list expires 90 days after it was last written. A list past its
-date is treated as “couldn’t check” on every computer, so an expired
+date is treated as "couldn't check" on every computer, so an expired
 list stops every update. Every publish or promotion refreshes it.
 Between releases, <code>publish_release.py</code>,
 <code>promote_release.py</code>, <code>feed_tool.py verify</code> and
@@ -692,13 +632,20 @@ is within 14 days of expiring. To refresh one without a release:</p>
 class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>feed_tool<span class="op">.</span><span class="fu">py</span> refresh <span class="op">--</span>app radio</span></code></pre></div>
 <h3 id="runtime-slots">Runtime slots</h3>
 <p>Beta and Dev apps run on their own copy of the shared runtime
-(<code>Runtime\3.13-beta</code>, <code>Runtime\3.13-dev</code>). Publish
+(<code>Runtime\3.14-beta</code>, <code>Runtime\3.14-dev</code>). Publish
 a Stable runtime with <code>build_runtime_installer.ps1 -Publish</code>
-(it goes to <code>runtime-stable</code> and to
-<code>runtime-latest</code>, which installed launchers know and which
-stays for ever) and a Beta runtime with
-<code>-Publish -Channel beta</code> (<code>runtime-beta</code>). There
-is no Dev runtime installer: Dev runtimes do not repair themselves.</p>
+and a Beta runtime with <code>-Publish -Channel beta</code>. Each goes
+to the tag named for its slot, <code>runtime-3.14</code> or
+<code>runtime-3.14-beta</code>, and each app's launcher repairs a
+missing runtime from its own slot's tag. There is no Dev runtime
+installer: Dev runtimes do not repair themselves.</p>
+<p><code>runtime-latest</code> and <code>runtime-beta</code> are frozen
+at the last Python 3.13 runtime (decided 2026-10-12) and the script
+refuses to publish to them. Launchers built for 3.13 have those tags
+compiled in. A 3.14 runtime published there would install into
+<code>Runtime\3.14</code> while those launchers keep looking in
+<code>Runtime\3.13</code>, so an old app that lost its runtime would
+never start again.</p>
 <h3 id="one-time-setup-owner">One-time setup (owner)</h3>
 <ul>
 <li>Create the repository
@@ -719,7 +666,7 @@ list and its CI key (decided 2026-10-04)</h3>
 <p>The old v1 update list (<code>.quill-update-feed-v1.json</code>) is
 still signed in CI by <code>windows-release.yml</code> with the
 <code>QUILL_FEED_SIGNING_KEY</code> secret, because copies from before
-release channels read it. Leave that alone for now. Once every app’s
+release channels read it. Leave that alone for now. Once every app's
 channel-aware release (QUILL 1.0.0, QUILL Lite 1.2.0, Quill Radio 3.2.0,
 QUILL Cast 2.0.0) has been out for one full release cycle, remove the
 secret from CI and stop signing the v1 list. Until then, do not touch
@@ -856,6 +803,5 @@ run.</li>
 <code>docs/release/macos-signed-notarized-release-day-checklist.md</code></p>
 <p>Command-only script:
 <code>docs/release/macos-release-day-commands.ps1</code></p>
-</main>
 </body>
 </html>
