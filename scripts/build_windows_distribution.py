@@ -3319,7 +3319,9 @@ def _base_version_from_init_py(source_root: Path) -> str:
 
     init_py = source_root / "quill" / "__init__.py"
     if init_py.exists():
-        match = re.search(r'^__version__\s*=\s*["\']([^"\']+)["\']', init_py.read_text(), re.M)
+        match = re.search(
+            r'^__version__\s*=\s*["\']([^"\']+)["\']', init_py.read_text(encoding="utf-8"), re.M
+        )
         if match:
             raw = match.group(1)
             # Keep only the leading "X.Y.Z" — drop a/b/rc/dev suffixes.
