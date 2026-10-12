@@ -265,6 +265,10 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         # Stamp that QUILL Radio was running now so the next launch can report
         # scheduled recordings missed while it was closed.
         self._stamp_radio_last_seen()
+        from quill.ui.radio.history_save import close_history_writer
+
+        if not close_history_writer(self):
+            self._announce("Radio settings could not be confirmed saved as Quill closed.")
         # Close the station catalog's read connection so the next refresh (or
         # a rebuild) can collect this generation's file.
         from quill.ui.radio import catalog_ui
@@ -364,10 +368,7 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
             self._radio_history.recording_resume_choice = (
                 "always" if action == "resume" else "never"
             )
-            from quill.core.paths import app_data_dir
-            from quill.core.radio import history as radio_history
-
-            radio_history.save_history(app_data_dir(), self._radio_history)
+            self._save_radio_history()
         if action == "resume":
             for marker, left in resumable:
                 self._start_radio_resume(marker, left)
@@ -551,12 +552,9 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         """
         from datetime import datetime
 
-        from quill.core.paths import app_data_dir
-        from quill.core.radio import history as radio_history
-
         history = self._radio_history
         history.last_seen = datetime.now().isoformat()
-        radio_history.save_history(app_data_dir(), history)
+        self._save_radio_history()
 
     def _report_missed_recordings(self) -> None:
         """Announce scheduled recordings whose time passed while closed (#4).
@@ -865,7 +863,7 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
             # A different station just started.
             self._radio_history_key = key
             self._radio_history.record(station)
-            radio_history.save_history(app_data_dir(), self._radio_history)
+            self._save_radio_history()
             return
         if state.muted:
             return
@@ -874,7 +872,7 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         # default every time. Disk-only; the tree shows no volume.
         if state.volume_percent != self._radio_history.volume_percent:
             self._radio_history.volume_percent = state.volume_percent
-            radio_history.save_history(app_data_dir(), self._radio_history)
+            self._save_radio_history()
         # A favorite additionally remembers its own per-station volume -- unless
         # one volume answers for every station, in which case the level just
         # saved above IS the answer and writing a per-station copy would quietly
@@ -1271,7 +1269,7 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         (mpv engine). The 0-100 volume scale everywhere else is untouched."""
         history = self._radio_history
         history.volume_boost = not history.volume_boost
-        radio_history.save_history(app_data_dir(), history)
+        self._save_radio_history()
         effective = self._radio_controller.set_volume_boost(history.volume_boost)
         if not history.volume_boost:
             self._announce("Volume Boost off.")
@@ -1291,7 +1289,7 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
     def radio_toggle_title_announcements(self) -> None:
         history = self._radio_history
         history.announce_track_titles = not history.announce_track_titles
-        radio_history.save_history(app_data_dir(), history)
+        self._save_radio_history()
         # Keep the palette entry honest about the new state (#1383).
         self.commands.set_title(
             "radio.toggle_title_announcements", self._radio_title_announce_command_title()
@@ -1798,7 +1796,6 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         Edits the currently-playing station's own override if it's a
         favorite, otherwise the shared default -- see
         RadioFavoritesStore.set_enhancement."""
-        from quill.core.radio import history as radio_history
         from quill.ui.sound_enhance_dialog import SoundEnhanceDialog
 
         history = self._radio_history
@@ -1910,7 +1907,7 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
             history.optilab_auto_adapt = options.optilab_auto_adapt
             history.optilab_exact = options.optilab_exact
             history.optilab_exact_live = options.optilab_exact_live
-            radio_history.save_history(app_data_dir(), history)
+            self._save_radio_history()
             target = "the shared default"
         # Apply the final values to what's playing (one apply for the whole set).
         self._radio_controller.preview_enhancements(
@@ -1997,12 +1994,9 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         """Persist that favorites are now in manual order after the Favorites
         Manager reorders from a sorted view (the dialog bakes the store order;
         this records the sort switch in history so it survives a reload)."""
-        from quill.core.paths import app_data_dir
-        from quill.core.radio import history as radio_history
-
         self._radio_history.favorites_sort = "manual"
         self._radio_history.folder_sort_orders = {}
-        radio_history.save_history(app_data_dir(), self._radio_history)
+        self._save_radio_history()
 
     def open_local_media(self) -> None:
         """Local Media...: your playlists (body in ui/radio/local_media_commands)."""
@@ -2195,14 +2189,10 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         spotify_commands.connect(self)
 
     def _save_radio_history(self) -> None:
-        """Persist RadioHistory. A failed save must never block the UI."""
-        try:
-            from quill.core.paths import app_data_dir
-            from quill.core.radio import history as radio_history
+        """Snapshot and queue RadioHistory without blocking the UI."""
+        from quill.ui.radio.history_save import save_history_async
 
-            radio_history.save_history(app_data_dir(), self._radio_history)
-        except Exception:  # noqa: BLE001 - a setting that did not persist is not fatal
-            pass
+        save_history_async(self)
 
     def radio_search_sources(self) -> None:
         """Choose which directories Find Stations searches (remembered).

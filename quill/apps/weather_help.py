@@ -13,7 +13,7 @@ from typing import Any
 #: Which document each Help-menu item opens, by its file stem.
 DOC_TITLES: dict[str, str] = {
     "userguide": "Quill Weather User Guide",
-    "release-notes-2.2": "Quill Weather Release Notes",
+    "release-notes-2.2.1": "Quill Weather 2.2.1 Release Notes",
     "tutorials": "Quill Weather Tutorials",
 }
 

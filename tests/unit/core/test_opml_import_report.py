@@ -33,4 +33,10 @@ def test_report_summarizes_counts() -> None:
 def test_report_with_no_failures_says_so() -> None:
     results = [OpmlValidationResult("A", "https://a", True)]
     text = format_report_text(results)
-    assert "Every imported feed was reachable." in text
+    assert "Every checked feed was reachable." in text
+
+
+def test_unchecked_report_does_not_claim_the_feeds_were_reachable() -> None:
+    text = format_report_text([])
+    assert "No feed checks were completed." in text
+    assert "Every" not in text

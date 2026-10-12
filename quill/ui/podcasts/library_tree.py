@@ -79,7 +79,7 @@ def fill_view_children(host: Any, item: Any, view_id: str) -> None:
 
         for show in sort_shows(favorite_shows(library), library.settings.show_sort_mode):
             count = unheard_count(show)
-            label = f"{show.title} ({count} unheard)" if count else show.title
+            label = f"{show.title} ({count} unheard)"
             child = tree.AppendItem(item, label)
             tree.SetItemData(child, ("show", show.id))
             # The same placeholder a podcast gets at the top level, so a favourite

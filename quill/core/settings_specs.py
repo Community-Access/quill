@@ -312,11 +312,19 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
     ),
     SettingSpec(
         "startup_folder",
-        "Default file-open folder",
+        "Default document folder",
         "general",
         "text",
-        "Initial folder for Open and Save As dialogs. Leave blank to use the Documents folder.",
-        keywords=("startup folder", "default folder", "open folder", "file dialog", "start folder"),
+        "Initial folder for Open and Save As dialogs. Leave blank to use the Documents folder; "
+        "the most recently used folder takes precedence during the current session.",
+        keywords=(
+            "startup folder",
+            "default folder",
+            "document folder",
+            "save folder",
+            "open folder",
+            "file dialog",
+        ),
     ),
     SettingSpec(
         "use_simple_file_dialog",

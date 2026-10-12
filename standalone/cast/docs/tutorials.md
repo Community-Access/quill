@@ -60,7 +60,7 @@ Follow your first podcast, play one of its episodes, pause it, skip around in it
 3. **Follow the one you want.** Move to the Results list and arrow through it. When you hear the one you want, press Follow. Not sure it is the right one? Press Enter on it instead, and Cast lets you hear about it and its recent episodes before you decide. Press Escape when you are done.
    - Keys: Alt+R, Alt+O
    - You should hear: Now following, the podcast's name, and how many episodes it has.
-   - Worth knowing: Follow ACB Media Podcasts on the Podcasts menu follows ACB Media's whole directory in one step, and Import OPML in the Add Podcast window brings your list across from another app.
+   - Worth knowing: Follow ACB Media Podcasts on the Podcasts menu follows ACB Media's whole directory in one step, and Import OPML in the Add Podcast window brings your list across from another app. File reading and planning happen in the background; imported subscriptions stay in your library if you stop the optional reachability check.
 
 4. **Play its next unheard episode.** Now for the good part. Go to Podcasts, your library, with one row for each podcast you follow. Arrow to the one you just followed and press Enter. Cast plays its next unheard episode. Want a particular one? Right Arrow opens the podcast so you can pick from its episodes, newest first.
    - Keys: Ctrl+Shift+S, Enter, Right Arrow
@@ -96,7 +96,7 @@ Everything in Cast happens in one window, and the Places list is its map. You wi
    - Keys: Alt+L
    - You should hear: Places, then the place you are on with its count.
 
-2. **Peek, then step in and back out.** Arrow up and down the list and the area beside it changes as you go, so you can peek into a place without going in. Enter or Right Arrow steps into the place you are on. Backspace, or Left Arrow on the first row, steps back out to the Places list.
+2. **Peek, then step in and back out.** Arrow up and down the list and the area beside it changes as you go while focus stays in Places, so you can peek without going in. Enter or Right Arrow steps into the place you are on. Backspace, or Left Arrow on the first row, steps back out to the Places list.
    - Keys: Down Arrow, Enter, Backspace
    - You should hear: Each place with its count, then the first row inside it.
    - Worth knowing: Walk into an empty place and Cast tells you, once, what fills it -- in an empty Play Queue, that Space on any episode adds it.
@@ -265,9 +265,10 @@ Choose which podcasts send new episodes to the Inbox, then sort through it like 
 
 *8 steps, about 8 minutes.*
 
-1. **Check for anything new.** Refresh All Now asks every podcast you follow whether it has anything new. Cast tells you how many it is checking, and the answers come in one podcast at a time. When you ask, Cast always answers, even if nothing is new.
+1. **Check for anything new.** Refresh All Now asks every podcast you follow whether it has anything new. A separate progress window shows how many it has checked while the feed requests run in the background, so you can return to the editor and keep working. When you ask, Cast always answers, even if nothing is new.
    - Keys: F5
    - You should hear: How many podcasts it is checking, then what arrived.
+   - Worth knowing: Closing the progress window hides it without stopping the run. Stop remaining checks cancels feeds that have not started; a check already in progress finishes.
 
 2. **Choose what goes to the Inbox.** Nothing goes to the Inbox until you say so, one podcast at a time. On a podcast, open its menu and choose Route New Episodes to Inbox. The same row then reads Stop Routing to Inbox, to turn it off again.
    - Keys: Shift+F10
@@ -870,33 +871,37 @@ Tidy a library that has grown, choose what a row says and what Enter does, and m
 
 Put your podcasts in folders and in your own order, listen from a whole folder at once, and hide what you have caught up on. You will also keep favorites close, and let a podcast go when you are done.
 
-*7 steps, about 6 minutes.*
+*8 steps, about 6 minutes.*
 
 1. **Make a folder.** Once you follow more than a handful, folders help: News, Comedy, Long Drives, whatever suits you. New Folder, on the Podcasts menu, asks for a name. Folders live in the Podcasts place.
    - Keys: Ctrl+Shift+F
    - You should hear: The new folder, in Podcasts.
 
-2. **File a podcast into it.** Go to a podcast, open its menu and choose Move to Folder, then pick the folder. If you delete a folder later, its podcasts just move out of it, so you never lose one that way.
+2. **Close a folder without leaving Podcasts.** When a folder in the Podcasts tree is open, Left Arrow closes it and keeps focus on that folder. Right Arrow opens it again when you want its contents.
+   - Keys: Left Arrow, Right Arrow
+   - You should hear: The folder closes or opens, with focus still on its row.
+
+3. **File a podcast into it.** Go to a podcast, open its menu and choose Move to Folder, then pick the folder. If you delete a folder later, its podcasts just move out of it, so you never lose one that way.
    - Keys: Shift+F10, Enter
    - You should hear: The podcast in its new folder.
 
-3. **Put them in your own order.** In the Podcasts place, Alt+Up and Alt+Down move a podcast or a folder. The first time you do it, Cast switches Sort Podcasts to Custom Order for you, starting from the order you already had, so nothing jumps around.
+4. **Put them in your own order.** In the Podcasts place, Alt+Up and Alt+Down move a podcast or a folder. The first time you do it, Cast switches Sort Podcasts to Custom Order for you, starting from the order you already had, so nothing jumps around.
    - Keys: Alt+Up, Alt+Down
    - You should hear: Where it moved.
 
-4. **Listen from a whole folder.** On a folder's menu, Play All Unheard queues the newest unheard episode from each podcast in it and starts playing. Add All to Queue adds every unheard episode instead.
+5. **Listen from a whole folder.** On a folder's menu, Play All Unheard queues the newest unheard episode from each podcast in it and starts playing. Add All to Queue adds every unheard episode instead.
    - Keys: Shift+F10
    - You should hear: The first episode playing, and how many were queued.
 
-5. **Hide what you have caught up on.** Hide Caught-Up Podcasts, on the View menu, hides the podcasts with nothing unheard, so only the ones with something new for you are left. Press it again to show them all.
+6. **Hide what you have caught up on.** Hide Caught-Up Podcasts, on the View menu, hides the podcasts with nothing unheard, so only the ones with something new for you are left. Press it again to show them all.
    - Keys: Ctrl+Shift+H
    - You should hear: Caught-up podcasts hidden, and how many.
 
-6. **Keep your favorites close.** Add to Favorites, in the main window, works on the podcast that is playing. Favorites is a place: Enter on one opens its episodes right there, and Delete takes it out of Favorites while you still follow it.
+7. **Keep your favorites close.** Add to Favorites, in the main window, works on the podcast that is playing. Favorites is a place: Enter on one opens its episodes right there, and Delete takes it out of Favorites while you still follow it.
    - Keys: Alt+F, Ctrl+Shift+V
    - You should hear: Favorites, then the podcasts in it.
 
-7. **Let a podcast go.** Unfollow, in the main window, or Delete on a podcast in the Podcasts place. Cast asks first, and asks separately about any downloads. Changed your mind? Ctrl+Z brings it back with its episodes and your place in them.
+8. **Let a podcast go.** Unfollow, in the main window, or Delete on a podcast in the Podcasts place. Cast asks first, and asks separately about any downloads. Changed your mind? Ctrl+Z brings it back with its episodes and your place in them.
    - Keys: Alt+U, Ctrl+Z
    - You should hear: A question that starts on No; after Ctrl+Z, the podcast back.
 

@@ -42,20 +42,48 @@ from quill.core.undo_last import (
 #: Set by :func:`activate`; None in QUILL, which owns Ctrl+Z for the editor.
 _slot: UndoSlot | None = None
 _data_dir: Path | None = None
+_owner: Any = None
 
 #: The tail every undoable announcement ends with, so the offer is heard.
 OFFER_TAIL = "Ctrl+Z undoes this."
 
 
-def activate(data_dir: Path) -> UndoSlot:
+def activate(data_dir: Path, *, task_manager: Any = None, owner: Any = None) -> UndoSlot:
     """Claim the slot for this app, holding deleted files under *data_dir*."""
-    global _slot, _data_dir
+    global _slot, _data_dir, _owner
     _slot = UndoHistory()  # Ctrl+Z is still once; the list is Undo History
     _data_dir = data_dir
+    _owner = owner
+    from quill.ui import undo_file_jobs
+
+    undo_file_jobs.configure(task_manager, owner, data_dir)
     # A holding folder left behind by a crash is one step of deletions nobody
     # can reach any more: clear it on the way in rather than growing it.
-    sweep_holding_dir()
+    jobs = undo_file_jobs.jobs()
+    if jobs is None:
+        sweep_holding_dir()
+    else:
+        import time
+
+        before = time.time_ns()
+        jobs.submit(
+            "Clearing old Undo files",
+            lambda: sweep_holding_dir(data_dir / HELD_DIR_NAME, before=before),
+        )
     return _slot
+
+
+def deactivate(owner: Any) -> None:
+    """Release only this window's process-wide Undo state on destruction."""
+    global _slot, _data_dir, _owner
+    if _owner is not owner:
+        return
+    from quill.ui import undo_file_jobs
+
+    undo_file_jobs.deactivate(owner)
+    _slot = None
+    _data_dir = None
+    _owner = None
 
 
 def is_active() -> bool:
@@ -74,21 +102,31 @@ def holding_dir() -> Path | None:
     return _data_dir / HELD_DIR_NAME
 
 
-def sweep_holding_dir() -> None:
+def sweep_holding_dir(directory: Path | None = None, *, before: int | None = None) -> None:
     """Empty the holding folder (startup, and after the slot is disposed)."""
-    directory = holding_dir()
+    directory = directory if directory is not None else holding_dir()
     if directory is None or not directory.exists():
         return
     import shutil
 
-    for path in directory.iterdir():
+    from quill.core.undo_recovery import MARKER, recover
+
+    for path in list(directory.iterdir()):
         try:
+            if before is not None and path.stat().st_mtime_ns > before:
+                continue
             if path.is_dir():
-                shutil.rmtree(path, ignore_errors=True)
+                if (path / MARKER).exists():
+                    _restored, failed = recover(path)
+                    if failed:
+                        continue
+                shutil.rmtree(path)
             elif path.is_file():
                 path.unlink(missing_ok=True)
-        except OSError:
-            continue
+        except Exception:
+            import logging
+
+            logging.getLogger(__name__).exception("Could not clean up old Undo files")
 
 
 def _step_dir() -> Path | None:
@@ -109,10 +147,19 @@ def remember(
     *,
     caveat: str = "",
     dispose: Callable[[], None] | None = None,
+    files: dict[Path, Path] | None = None,
 ) -> bool:
     """Hold one undoable step. False (and nothing held) when no app owns undo."""
     if _slot is None:
         return False
+    from quill.ui import undo_file_jobs
+
+    jobs = undo_file_jobs.jobs()
+    prepare = (
+        (lambda ready, failed: jobs.prepare(files, ready, failed=failed))
+        if jobs is not None and files is not None
+        else None
+    )
     _slot.remember(
         UndoableAction(
             verb=verb,
@@ -121,6 +168,7 @@ def remember(
             undo=undo,
             caveat=caveat,
             dispose=dispose,
+            prepare=prepare,
         )
     )
     return True
@@ -141,7 +189,16 @@ def offer(sentence: str) -> str:
     return f"{text} {OFFER_TAIL}".strip()
 
 
-def hold_or_delete(paths: list[Path]) -> dict[Path, Path]:
+def return_failed_action(
+    history: UndoSlot, action: UndoableAction, older: list[UndoableAction]
+) -> None:
+    if isinstance(history, UndoHistory):
+        history.restore_failed(action, older=older)
+    else:
+        history.remember(action)
+
+
+def hold_or_delete(paths: list[Path], *, downloads: list[Any] | None = None) -> dict[Path, Path]:
     """Move *paths* aside so Ctrl+Z can bring them back -- or delete them.
 
     Returns the held mapping (empty when nothing was held). With no active
@@ -149,6 +206,15 @@ def hold_or_delete(paths: list[Path]) -> dict[Path, Path]:
     before: undo must never turn a delete into a leak.
     """
     directory = _step_dir()
+    from quill.ui import undo_file_jobs
+
+    jobs = undo_file_jobs.jobs()
+    if jobs is not None:
+        return jobs.hold(
+            list(paths),
+            directory if _slot is not None else None,
+            references=[(episode, str(episode.downloaded_path)) for episode in downloads or ()],
+        )
     if _slot is None or directory is None:
         for path in paths:
             try:
@@ -180,6 +246,29 @@ def capturing_deletes() -> Iterator[dict[Path, Path]]:
     if _slot is None or directory is None:
         yield held
         return
+    from quill.ui import undo_file_jobs
+
+    jobs = undo_file_jobs.jobs()
+    if jobs is not None:
+        paths: list[Path] = []
+        references: list[tuple[Any, str]] = []
+
+        def collect(path: Path) -> bool:
+            paths.append(path)
+            return True
+
+        previous = retention.set_delete_hook(collect)
+        previous_observer = retention.set_delete_observer(
+            lambda episode, path: references.append((episode, path))
+        )
+        try:
+            yield held
+        finally:
+            retention.set_delete_hook(previous)
+            retention.set_delete_observer(previous_observer)
+            if paths:
+                jobs.hold(paths, directory, held=held, references=references)
+        return
 
     def _hook(path: Path) -> bool:
         captured = hold_files([path], directory)
@@ -206,12 +295,21 @@ def capturing_deletes() -> Iterator[dict[Path, Path]]:
 
 def restore(held: dict[Path, Path]) -> int:
     """Move held files back; the undo half of :func:`hold_or_delete`."""
-    return restore_held(held)
+    from quill.ui import undo_file_jobs
+
+    jobs = undo_file_jobs.jobs()
+    return jobs.restore(held) if jobs is not None else restore_held(held)
 
 
 def discard(held: dict[Path, Path]) -> None:
     """Delete held files for good; the disposer half."""
-    discard_held(held)
+    from quill.ui import undo_file_jobs
+
+    jobs = undo_file_jobs.jobs()
+    if jobs is not None:
+        jobs.discard(held)
+    else:
+        discard_held(held)
 
 
 class UndoLastMixin:
@@ -226,7 +324,15 @@ class UndoLastMixin:
     def _init_undo_last(self) -> None:
         from quill.core.paths import app_data_dir
 
-        activate(app_data_dir())
+        activate(
+            app_data_dir(),
+            task_manager=(
+                getattr(self, "_task_manager", None)
+                if getattr(self, "_cast_ui_lifetime", None) is not None
+                else None
+            ),
+            owner=self,
+        )
 
     def _register_undo_last_command(self) -> None:
         commands: Any = self.commands  # type: ignore[attr-defined]
@@ -255,19 +361,27 @@ class UndoLastMixin:
         """Ctrl+Z: take back the last destructive step, once."""
         announce: Any = getattr(self, "_announce", None)
         current = slot()
+        older = current.entries()[1:] if isinstance(current, UndoHistory) else []
         action = current.take() if current is not None else None
         if action is None:
             if callable(announce):
                 announce("Nothing to undo.")
             return
-        try:
-            action.undo()
-        except Exception as error:  # noqa: BLE001 - an undo that fails must say so
-            if callable(announce):
-                announce(f"Could not undo {action.verb}: {error}.")
-            return
-        if callable(announce):
-            announce(action.done())
+        from quill.ui.undo_file_jobs import execute_undo
+
+        if not callable(announce):
+            import logging
+
+            def announce(_message: str) -> None:
+                logging.getLogger(__name__).warning("Undo feedback is unavailable")
+
+        execute_undo(
+            action,
+            announce,
+            retry=(lambda: return_failed_action(current, action, older))
+            if current is not None
+            else None,
+        )
 
     def open_undo_history(self) -> None:
         """Edit > Undo History...: the last ten steps, each with its own Undo."""

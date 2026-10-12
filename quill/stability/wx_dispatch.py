@@ -58,7 +58,16 @@ def call_ui_safely(func: Callable[..., Any], *args: Any, **kwargs: Any) -> None:
 
     call_after = getattr(wx, "CallAfter", None) if wx is not None else None
     if callable(call_after):
-        call_after(wrapped)
+        get_app = getattr(wx, "GetApp", None)
+        if callable(get_app) and get_app() is None:
+            logger.info("UI callback retained only by its worker: wx.App has already closed")
+            return
+        try:
+            call_after(wrapped)
+        except AssertionError:
+            if not callable(get_app) or get_app() is not None:
+                raise
+            logger.info("UI callback not delivered: wx.App closed while scheduling it")
         return
     logger.warning(
         "call_ui_safely: wx.CallAfter unavailable; running %s synchronously on caller thread",

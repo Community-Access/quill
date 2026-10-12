@@ -40,10 +40,10 @@
 ; (docs/release/RELEASE.md, "Build numbers"). build_release.ps1 passes
 ; /dAppBuild= and /dAppFileVersion=; these literals are only the fallback.
 #ifndef AppBuild
-  #define AppBuild "1"
+  #define AppBuild "2"
 #endif
 #ifndef AppFileVersion
-  #define AppFileVersion "3.2.0.1"
+  #define AppFileVersion "3.2.0.2"
 #endif
 #define AppPublisher "Community Access"
 #define AppURL "https://github.com/Community-Access/quill-radio"
@@ -95,7 +95,6 @@ DisableDirPage=no
 DisableProgramGroupPage=auto
 AllowNoIcons=yes
 PrivilegesRequired=lowest
-PrivilegesRequiredOverridesAllowed=dialog
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 MinVersion=10.0

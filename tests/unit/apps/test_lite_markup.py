@@ -88,9 +88,13 @@ class _App:
     def __init__(self) -> None:
         self.settings = _Settings()
         self.saved = 0
+        self.queued = 0
 
     def save_settings(self) -> None:
         self.saved += 1
+
+    def _queue_settings_save(self) -> None:
+        self.queued += 1
 
 
 class _Window(DocumentMarkupMixin, DocumentFormatCommandsMixin, DocumentHeadingsMixin):
@@ -362,7 +366,7 @@ def test_the_list_toggle_names_the_consequence_and_persists() -> None:
     win.cmd_toggle_list_announcements()
     assert win.app.settings.announce_lists is False
     assert win.said == ["Lists will not be announced"]
-    assert win.app.saved == 1
+    assert win.app.queued == 1
     win.cmd_toggle_list_announcements()
     assert win.said[-1] == "Lists announced as you enter them"
 

@@ -63,6 +63,7 @@ import urllib.request
 
 from quill.core import http_client
 from quill.core.error_codes import CodedError
+from quill.core.net import verified_ssl_context
 from quill.core.net_retry import retry_transient
 from quill.core.podcasts.itunes_search import PodcastSearchResult
 
@@ -221,7 +222,7 @@ def _http_json(url: str, headers: dict[str, str]) -> object:
     if not url.startswith("https://"):
         raise PodcastIndexError("Refusing a non-HTTPS Podcast Index request.")
     request = urllib.request.Request(url, headers=headers)
-    context = ssl.create_default_context()
+    context = verified_ssl_context()
 
     def _fetch_once() -> str:
         with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:

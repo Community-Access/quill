@@ -1,6 +1,6 @@
 # QUILL Lite Tutorials
 
-Welcome. There are 15 short lessons here, about 69 minutes in all, and you can take them in any order. Each one is a few small steps, and each step tells you what to press and what you should hear.
+Welcome. There are 16 short lessons here, about 74 minutes in all, and you can take them in any order. Each one is a few small steps, and each step tells you what to press and what you should hear.
 
 This page is the lessons written out, so you can read them anywhere. If you would rather be walked through, open **Help > Tutorials... (Ctrl+Alt+F1)** in QUILL Lite. It does a step for you when you ask, and moves on by itself once it hears you have done one.
 
@@ -13,7 +13,7 @@ The keys here are the ones QUILL Lite comes with. If you have changed a key, the
   - Four kinds of document, and how to say which (4 minutes)
   - Your documents are numbered (3 minutes)
   - What to press when you are lost (3 minutes)
-- **Working in a document**: Once you are comfortable: select more than a few words, find your way back to where you were, skim something long, fix spelling without a red squiggle, ask a question about the document in front of you, and write by talking.
+- **Working in a document**: Once you are comfortable: select more than a few words, find your way back to where you were, skim something long, fix spelling without a red squiggle, ask a question about the document in front of you, and write by talking or transcribe a recording.
   - Selecting more than a few words (6 minutes)
   - Finding your way back (5 minutes)
   - Skimming something long (5 minutes)
@@ -25,6 +25,7 @@ The keys here are the ones QUILL Lite comes with. If you have changed a key, the
   - Snippets and clips by voice (4 minutes)
   - Switch to Spanish and back (3 minutes)
   - Make a live transcript (4 minutes)
+  - Transcribe a recording (5 minutes)
 
 ## Your first documents
 
@@ -131,7 +132,7 @@ Whenever you are unsure, one of these three keys will explain where you are.
 
 ## Working in a document
 
-Once you are comfortable: select more than a few words, find your way back to where you were, skim something long, fix spelling without a red squiggle, ask a question about the document in front of you, and write by talking.
+Once you are comfortable: select more than a few words, find your way back to where you were, skim something long, fix spelling without a red squiggle, ask a question about the document in front of you, and write by talking or transcribe a recording.
 
 ### Selecting more than a few words
 
@@ -407,3 +408,28 @@ Write down a talk or a meeting as it happens, in its own document, while you kee
    - You should hear: "Live transcript stopped" and the number of words.
 
 Time stamps in live transcripts, in More Dictation Settings, puts the time at the start of each paragraph.
+
+### Transcribe a recording
+
+Turn an audio recording into text in the background, then open its saved transcript when you are ready.
+
+*5 steps, about 5 minutes.*
+
+1. **Open the recording transcriber.** Transcribe a Recording opens a separate window for choosing the audio file and how to transcribe it.
+   - Keys: Shift+F5
+   - You should hear: Transcribe a Recording, with focus in Recording.
+
+2. **Choose the recording.** Type a file path, browse for one or more supported audio files, or drop them on the window. The window reports the recording's length and estimates how long the chosen model should take.
+   - You should hear: The file path, followed by its length and estimated time.
+
+3. **Choose the language and speech model.** Choose English or Spanish and a model that knows that language. The most accurate available local model starts selected. Local models keep the recording on this computer; an OpenAI model uses your own key and asks before sending the recording.
+   - You should hear: The selected language and model, and the estimate for this recording.
+
+4. **Start it and carry on.** Press Enter to start. Transcription runs in the background, so the document you were editing stays untouched while you work.
+   - Keys: Enter
+   - You should hear: That the recording is being transcribed in the background.
+
+5. **Open the result when it is ready.** A completion notice appears in Notifications with a privately saved transcript. Activate the notice to open the transcript in a document; it is never inserted into the document you had open. Save the document normally if you want a separate file.
+   - You should hear: The completed transcript in its own document.
+
+The recording and your current document stay separate, and the result is waiting in Notifications when you are ready for it.

@@ -1,4 +1,4 @@
-# Builds every QUILL Cast release artifact from one onedir build:
+# Builds the QUILL Cast Portable and Setup-Shared release artifacts from one onedir build:
 #
 #   dist\QUILLCast\                       the staged app folder
 #   dist\QUILL-Cast-Portable-<ver>.zip         portable (with its data\ folder)
@@ -46,6 +46,10 @@ $repoRoot = Split-Path -Parent $PSScriptRoot
 $version = "2.0.0"
 if ($DevVersion) { $version = $DevVersion }
 
+# Authenticode code signing is opt-in (docs/code-signing.md). Set the request
+# before the policy decision so required signing is preserved.
+if ($Sign) { $env:QUILL_SIGN = "1" }
+
 # -- resolve the toolchain ----------------------------------------------------
 # standalone\cast -> standalone -> the QUILL checkout root.
 if (-not $QuillRepo) {
@@ -72,11 +76,6 @@ Assert-QuillBuildEnv -Python $Python -QuillRepo $QuillRepo
 # GATE-SIBVER (2026-10-03, as Radio's script): the runtime this build ships carries
 # every app's version constant, so no sibling may be ahead of its published release.
 Assert-QuillSiblingVersions -QuillRepo $QuillRepo -Python $Python -Releasing @("cast") -Skip:$SkipPublishedCheck
-
-# Authenticode code signing is opt-in (docs/code-signing.md). -Sign turns it on
-# for this run via QUILL_SIGN, read by QUILL\scripts\code_signing.py. Without it
-# the sign-build steps below are no-ops, so a plain build is unchanged.
-if ($Sign) { $env:QUILL_SIGN = "1" }
 
 # -- render docs (html + epub from the markdown source) -----------------------
 & (Join-Path $PSScriptRoot "render_docs.ps1")

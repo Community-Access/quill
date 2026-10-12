@@ -39,7 +39,7 @@ def _handlers(dialog: Any, node: Any, data: dict, kind: str, args: list[str]) ->
     """Action id -> what to run. Only ids that appear get used."""
     station = data.get("station")
     host = getattr(dialog, "_download_host", dialog)
-    from quill.ui.radio import download_command
+    from quill.ui.radio import download_command, station_website_button
 
     handlers: dict[str, Callable[[], None]] = {
         row_actions.PLAY: dialog._play_selected,
@@ -62,7 +62,12 @@ def _handlers(dialog: Any, node: Any, data: dict, kind: str, args: list[str]) ->
         )
         handlers[row_actions.COPY_LINK] = lambda: dialog._copy_text(station.stream_url)
         handlers[row_actions.DETAILS] = lambda: _speak_details(dialog, station)
-        handlers[row_actions.OPEN_SITE] = lambda: dialog._open_url(station.homepage)
+        handlers[row_actions.OPEN_SITE] = lambda: dialog._open_url(
+            station_website_button.website_for(host, station)
+        )
+        handlers[row_actions.EDIT_WEBSITE] = lambda: station_website_button.edit_website(
+            host, station, parent=getattr(dialog, "_win", None) or dialog
+        )
         handlers[row_actions.DOWNLOAD] = lambda: download_command.download_station(
             # The show's name rides along so a podcast episode files under
             # Podcasts\<Show>\ like Download All's do -- without it the
@@ -261,6 +266,9 @@ def show_for_event(dialog: Any, event: Any) -> None:
     from quill.ui.radio import browse_podcast_actions, download_command
 
     host = getattr(dialog, "_download_host", dialog)
+    from quill.ui.radio import station_website_button
+
+    website = station_website_button.website_for(host, station) if station is not None else ""
     entries = row_actions.actions_for(
         kind,
         station=station,
@@ -269,6 +277,7 @@ def show_for_event(dialog: Any, event: Any) -> None:
         can_download=bool(station is not None and download_command.can_download(station)),
         can_report=dialog._on_report_bad_station is not None,
         open_site_label=open_link_label(station) if station is not None else "Open &Website",
+        has_homepage=bool(website),
         is_folder=dialog._is_folder_data(data),
         resolve_lazily=bool(data.get("resolve_lazily")),
         folder_state=_folder_state(dialog, node, kind, args)

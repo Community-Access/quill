@@ -73,6 +73,26 @@ def test_mpv_pack_dir_under_engine_packs() -> None:
     assert mpv_pack_dir().parent.name != ""
 
 
+def test_destroying_a_child_does_not_close_the_parent_audio_engine() -> None:
+    from types import SimpleNamespace
+
+    from quill.ui.audio.mpv_engine import MpvAudioEngine
+
+    parent = object()
+    calls: list[str] = []
+    engine = SimpleNamespace(_parent=parent, _parent_id=42, terminate=lambda: calls.append("close"))
+    child_event = SimpleNamespace(
+        GetId=lambda: 43, GetWindow=lambda: object(), Skip=lambda: calls.append("skip")
+    )
+    MpvAudioEngine._on_parent_destroyed(engine, child_event)
+    assert calls == ["skip"]
+    parent_event = SimpleNamespace(
+        GetId=lambda: 42, GetWindow=lambda: object(), Skip=lambda: calls.append("skip")
+    )
+    MpvAudioEngine._on_parent_destroyed(engine, parent_event)
+    assert calls == ["skip", "skip", "close"]
+
+
 def test_the_client_reads_no_mpv_conf_and_never_runs_a_host_yt_dlp(monkeypatch) -> None:
     """Set before mpv_initialize, where "config" only takes effect: no mpv.conf
     from the user's profile, and no ytdl hook shelling out to a yt-dlp.exe on
@@ -97,7 +117,36 @@ def test_the_client_reads_no_mpv_conf_and_never_runs_a_host_yt_dlp(monkeypatch) 
     me._MpvClient(Path("libmpv-2.dll"))
 
     assert "config=no" in order and "ytdl=no" in order
+    for option in (
+        "load-scripts",
+        "load-stats-overlay",
+        "load-console",
+        "load-auto-profiles",
+        "load-select",
+        "load-positioning",
+        "load-commands",
+        "load-context-menu",
+    ):
+        assert f"{option}=no" in order
+        assert order.index(f"{option}=no") < order.index("init")
     assert order.index("config=no") < order.index("init")
+
+
+def test_radio_parent_destruction_matches_native_id_not_python_wrapper() -> None:
+    from types import SimpleNamespace
+
+    from quill.ui.radio.mpv_radio_engine import MpvRadioEngine
+
+    calls: list[str] = []
+    engine = SimpleNamespace(
+        _parent=object(), _parent_id=42, terminate=lambda: calls.append("terminate")
+    )
+    for identifier in (43, 42):
+        event = SimpleNamespace(
+            GetId=lambda identifier=identifier: identifier, Skip=lambda: calls.append("skip")
+        )
+        MpvRadioEngine._on_parent_destroyed(engine, event)
+    assert calls == ["skip", "skip", "terminate"]
 
 
 def test_find_libmpv_beside_the_runtime_without_app_root(monkeypatch, tmp_path: Path) -> None:

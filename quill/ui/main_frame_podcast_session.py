@@ -27,11 +27,11 @@ episodes expiring must not be twelve interruptions.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from pathlib import Path
 
 from quill.core.paths import app_data_dir
-from quill.core.podcasts import expiration, quick_actions, retention, stats
-from quill.core.podcasts.subscriptions import PodcastLibrary
+from quill.core.podcasts import quick_actions, stats
 
 
 class PodcastSessionMixin:
@@ -181,6 +181,17 @@ class PodcastSessionMixin:
             speed=self._podcast_stats_speed,
             completed=completed,
         )
+        if getattr(self, "_cast_ui_lifetime", None) is not None:
+            from quill.ui.podcasts import record_tasks
+
+            data_dir = app_data_dir()
+            days = self._podcast_stats_retention_days()
+            record_tasks.submit(
+                self,
+                "listening_stats",
+                lambda: stats.append_session(data_dir, session, retention_days=days),
+            )
+            return
         try:
             stats.append_session(
                 app_data_dir(), session, retention_days=self._podcast_stats_retention_days()
@@ -335,6 +346,7 @@ class PodcastSessionMixin:
     def open_podcast_downloads(self) -> None:
         """Downloads > Downloads...: what is on disk, and how to free it."""
         from quill.ui.podcasts.downloads_dialog import DownloadsDialog
+        from quill.ui.podcasts.storage_tasks import for_host
 
         dialog = DownloadsDialog(
             self.frame,
@@ -342,91 +354,49 @@ class PodcastSessionMixin:
             announce_cb=self._announce,
             on_library_changed=self._save_podcast_library,
             on_free_space=self.podcast_free_up_space,
+            storage_jobs=for_host(self),
         )
         dialog.show()
 
-    def podcast_free_up_space(self) -> int:
-        """Apply the age limit and the storage cap now, on request.
+    def podcast_free_up_space(self, *, completed: Callable[[int], None] | None = None) -> None:
+        """Apply storage rules asynchronously; report actual reclaimed bytes."""
+        from quill.ui.podcasts.storage_reconcile import StorageOutcome
+        from quill.ui.podcasts.storage_tasks import for_host
 
-        Returns the bytes reclaimed. The same rules the maintenance pass
-        applies -- this is the manual button for them, for the moment you
-        actually need the disk back.
-        """
-        aged = retention.apply_age_limit(self._podcast_library)
-        capped = retention.enforce_storage_cap(self._podcast_library)
-        reclaimed = sum(size for _s, _e, size in [*aged, *capped])
-        if not aged and not capped:
-            self._announce("Nothing to free up: no download is past its age limit or over the cap.")
-            return 0
-        self._save_podcast_library()
-        self._announce(
-            f"Freed {retention.format_bytes(reclaimed)} from "
-            f"{len(aged) + len(capped)} downloaded episode(s)"
-        )
-        return reclaimed
+        def finished(outcome: StorageOutcome) -> None:
+            self._announce(outcome.freed())
+            if completed is not None:
+                completed(outcome.reclaimed)
+
+        self._announce("Checking download storage...")
+        for_host(self).run("free", finished)
 
     # -- maintenance ----------------------------------------------------
 
-    def podcast_run_maintenance(self, *, announce: bool = True) -> str:
-        """Expire, sweep, trim, and enforce -- one pass, one sentence.
+    def podcast_run_maintenance(
+        self, *, announce: bool = True, completed: Callable[[str], None] | None = None
+    ) -> None:
+        """Expire, sweep, trim, and enforce without blocking the UI.
 
-        Runs once at startup and again after every feed refresh. Everything
-        it does is reported: an expired queue item, a trimmed Inbox episode
-        and an evicted download are all state the listener did not ask for
-        in that moment, and A-4 says none of them happen in silence.
+        The completed summary describes reconciled outcomes, never proposals.
+        Repeated refresh requests share the in-flight maintenance pass.
         """
-        library: PodcastLibrary = self._podcast_library
-        changed = False
-        parts: list[str] = []
+        from quill.ui.podcasts.storage_reconcile import StorageOutcome
+        from quill.ui.podcasts.storage_tasks import for_host
 
-        if expiration.stamp_missing_added_at(library):
-            changed = True  # migration only; nothing to announce
+        def finished(outcome: StorageOutcome) -> None:
+            summary = outcome.housekeeping()
+            if (
+                summary
+                and (announce or outcome.error or outcome.failed or outcome.unreadable)
+                and getattr(self, "_podcast_maintenance_announced", None) is not outcome
+            ):
+                self._podcast_maintenance_announced = outcome
+                self._announce(f"Podcast housekeeping: {summary}.")
+            if completed is not None:
+                completed(summary)
 
-        expired = expiration.expire_stale_queue_items(library)
-        if expired:
-            changed = True
-            parts.append(
-                f"{len(expired)} episode(s) expired from the queue -- "
-                "find them under Recently Expired"
-            )
-        dropped, deleted_files = expiration.sweep_recently_expired(library)
-        if dropped:
-            changed = True
-            if deleted_files:
-                parts.append(
-                    f"{len(dropped)} expired episode(s) passed the "
-                    f"{expiration.RECENTLY_EXPIRED_HOLD_DAYS}-day hold; "
-                    f"{deleted_files} downloaded file(s) removed"
-                )
-            else:
-                parts.append(f"{len(dropped)} expired episode(s) passed the hold window")
-
-        from quill.core.podcasts.inbox import trim_inbox
-
-        trimmed = trim_inbox(library)
-        if trimmed:
-            changed = True
-            parts.append(
-                f"{len(trimmed)} episode(s) left the Inbox at its limit "
-                "(still unplayed in their shows)"
-            )
-
-        aged = retention.apply_age_limit(library)
-        capped = retention.enforce_storage_cap(library)
-        if aged or capped:
-            changed = True
-            reclaimed = sum(size for _s, _e, size in [*aged, *capped])
-            parts.append(
-                f"{len(aged) + len(capped)} old download(s) removed, "
-                f"{retention.format_bytes(reclaimed)} freed"
-            )
-
-        if changed:
-            self._save_podcast_library()
-        summary = "; ".join(parts)
-        if summary and announce:
-            self._announce(f"Podcast housekeeping: {summary}.")
-        return summary
+        for_host(self).run("maintenance", finished)
 
     # -- data export / reset (Cast's answer to "it is my data") ----------
 

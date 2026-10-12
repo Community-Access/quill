@@ -600,6 +600,7 @@ class FakeApp:
         self.frames: list[Any] = []
         self.starting_up = False
         self.saved_settings = 0
+        self.queued_settings = 0
         self.reapplied = 0
         self.rebuilt_menus = 0
         self.exited = 0
@@ -661,6 +662,9 @@ class FakeApp:
 
     def save_settings(self) -> None:
         self.saved_settings += 1
+
+    def _queue_settings_save(self) -> None:
+        self.queued_settings += 1
 
     def reapply_settings(self) -> None:
         self.reapplied += 1

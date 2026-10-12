@@ -59,18 +59,11 @@ class _LiveDictationServices:
         return self._repo
 
     def start_capture(self, session: Any) -> None:
-        from quill.core.speech.capture import MicRecorder, list_input_devices
+        from quill.core.speech.capture import MicRecorder
         from quill.core.speech.service import load_input_device
 
         device = load_input_device()
-        try:
-            name = next(
-                (n for i, n in list_input_devices() if i == device),
-                "system default" if device < 0 else f"index {device}",
-            )
-        except Exception:  # noqa: BLE001 - logging must not block capture
-            name = "?"
-        logger.info("dictation: capture start, mic index=%s (%s)", device, name)
+        logger.info("dictation: capture start, mic index=%s", device)
         recorder = MicRecorder()
         recorder.start(device)  # raises on failure -> MIC_UNAVAILABLE
         self._recorder = recorder
@@ -379,7 +372,7 @@ class DictationHotkeysMixin(WindowsDictationCommandsMixin):
                 force=True,
             )
             return False
-        provider = self._dictation_provider()
+        provider = self._speech_provider()
         try:
             if not provider.is_available():  # type: ignore[attr-defined]
                 # The engine (the whisper.cpp binary) is no longer bundled (PRD
@@ -401,13 +394,6 @@ class DictationHotkeysMixin(WindowsDictationCommandsMixin):
                         "any time from Tools, Speech, Download Offline Speech Engine.",
                         force=True,
                     )
-                return False
-            if not provider.list_installed_models():  # type: ignore[attr-defined]
-                self._announce(
-                    "No speech model is installed. Open Tools, Speech and Dictation "
-                    "to download one.",
-                    force=True,
-                )
                 return False
         except Exception:  # noqa: BLE001 - a provider probe must not block the editor
             return False

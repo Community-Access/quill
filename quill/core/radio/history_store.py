@@ -17,11 +17,12 @@ Re-exported from ``history`` so no caller had to move with it.
 from __future__ import annotations
 
 import json
+from copy import deepcopy
 from pathlib import Path
 
 from quill.core.audio_enhance import EQ_PRESETS
 from quill.core.podcasts import transcript_export
-from quill.core.radio import browse_visibility
+from quill.core.radio import browse_visibility, website_overrides
 from quill.core.radio import search_sources as search_sources_model
 from quill.core.radio.history import (
     _FILE_NAME,
@@ -53,6 +54,7 @@ def load_history(data_dir: Path) -> RadioHistory:
         history.announce_track_titles = bool(raw.get("announce_track_titles", False))
         history.share_play_counts = bool(raw.get("share_play_counts", True))
         history.show_station_details = bool(raw.get("show_station_details", True))
+        history.website_overrides = website_overrides.clean_overrides(raw.get("website_overrides"))
         history.confirm_browse_delete = bool(raw.get("confirm_browse_delete", True))
         history.explain_browse_delete = bool(raw.get("explain_browse_delete", True))
         history.winamp_playback_keys = bool(raw.get("winamp_playback_keys", True))
@@ -233,8 +235,96 @@ def load_history(data_dir: Path) -> RadioHistory:
     return history
 
 
-def save_history(data_dir: Path, history: RadioHistory) -> None:
-    """Persist history atomically."""
+def snapshot_history(history: RadioHistory) -> dict[str, object]:
+    """Return a detached JSON-ready snapshot of a history record."""
+    return deepcopy({
+        "resume_on_launch": history.resume_on_launch,
+        "announce_track_titles": history.announce_track_titles,
+        "share_play_counts": history.share_play_counts,
+        "show_station_details": history.show_station_details,
+        "website_overrides": history.website_overrides,
+        "confirm_browse_delete": history.confirm_browse_delete,
+        "explain_browse_delete": history.explain_browse_delete,
+        "winamp_playback_keys": history.winamp_playback_keys,
+        "podcast_refresh_minutes": history.podcast_refresh_minutes,
+        "podcast_refresh_on_launch": history.podcast_refresh_on_launch,
+        "reminder_default_lead_seconds": history.reminder_default_lead_seconds,
+        "reminder_sound": history.reminder_sound,
+        "skip_silence": history.skip_silence,
+        "recording_speed": history.recording_speed,
+        "youtube_speed": history.youtube_speed,
+        "recordings_shuffle": history.recordings_shuffle,
+        "recordings_repeat": history.recordings_repeat,
+        "search_sources_enabled": list(history.search_sources_enabled),
+        "search_sources_epoch": history.search_sources_epoch,
+        "source_options": dict(history.source_options),
+        "search_source_facet": history.search_source_facet,
+        "recent_searches": search_history_to_json(history.recent_searches),
+        **(
+            {
+                "browse_sources_enabled": list(history.browse_sources_enabled),
+                "browse_sources_epoch": history.browse_sources_epoch,
+            }
+            if history.browse_sources_enabled is not None
+            else {}
+        ),
+        "show_status_bar": history.show_status_bar,
+        "ui_font_scale": history.ui_font_scale,
+        "prevent_sleep": history.prevent_sleep,
+        "keep_awake_before_recording": history.keep_awake_before_recording,
+        "wake_for_scheduled_recording": history.wake_for_scheduled_recording,
+        "catalog_enabled": history.catalog_enabled,
+        "catalog_refresh_on_startup": history.catalog_refresh_on_startup,
+        "catalog_refresh_hours": history.catalog_refresh_hours,
+        "subscription_episode_limit": history.subscription_episode_limit,
+        "youtube_consented": history.youtube_consented,
+        "check_updates_on_startup": history.check_updates_on_startup,
+        "last_update_check": history.last_update_check,
+        "eq_bass_db": history.eq_bass_db,
+        "eq_mid_db": history.eq_mid_db,
+        "eq_treble_db": history.eq_treble_db,
+        "compressor_enabled": history.compressor_enabled,
+        "close_action": history.close_action,
+        "announce_dialog_transitions": history.announce_dialog_transitions,
+        "share_family_prefs": history.share_family_prefs,
+        "transcript_detail": history.transcript_detail,
+        "now_playing_template": history.now_playing_template,
+        "recover_from_website": history.recover_from_website,
+        "output_device": history.output_device,
+        "media_notice_signature": history.media_notice_signature,
+        "onboarding": history.onboarding.to_dict(),
+        "playback_engine": history.playback_engine,
+        "volume_boost": history.volume_boost,
+        "volume_percent": history.volume_percent,
+        "favorites_sort": history.favorites_sort,
+        "folder_sort_orders": history.folder_sort_orders,
+        "channel_mode": history.channel_mode,
+        # Keep writing the legacy bool for one release so an older build can
+        # still read the mono choice if the user downgrades.
+        "mono_enabled": history.channel_mode == "mono",
+        "night_mode_enabled": history.night_mode_enabled,
+        "optilab_enabled": history.optilab_enabled,
+        "optilab_mode": history.optilab_mode,
+        "optilab_input_db": history.optilab_input_db,
+        "optilab_auto_adapt": history.optilab_auto_adapt,
+        "optilab_exact": history.optilab_exact,
+        "optilab_exact_live": history.optilab_exact_live,
+        "alt_f4_to_tray": history.alt_f4_to_tray,
+        "open_browse_at_startup": history.open_browse_at_startup,
+        "startup_window": history.startup_window,
+        "main_view": history.main_view,
+        "debug_mode": history.debug_mode,
+        "last_seen": history.last_seen,
+        "log_dir": history.log_dir,
+        "use_global_volume": history.use_global_volume,
+        "song_history_enabled": history.song_history_enabled,
+        "recording_resume_choice": history.recording_resume_choice,
+        "stations": [station.to_dict() for station in history.stations],
+    })
+
+
+def save_history_snapshot(data_dir: Path, snapshot: dict[str, object]) -> None:
+    """Persist a previously detached history snapshot atomically."""
     from quill.core.persistence_outcome import guarded_write
     from quill.core.storage import write_json_atomic
 
@@ -242,90 +332,10 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
     guarded_write(
         "Quill Radio's settings",
         path,
-        lambda: write_json_atomic(
-            path,
-            {
-                "resume_on_launch": history.resume_on_launch,
-                "announce_track_titles": history.announce_track_titles,
-                "share_play_counts": history.share_play_counts,
-                "show_station_details": history.show_station_details,
-                "confirm_browse_delete": history.confirm_browse_delete,
-                "explain_browse_delete": history.explain_browse_delete,
-                "winamp_playback_keys": history.winamp_playback_keys,
-                "podcast_refresh_minutes": history.podcast_refresh_minutes,
-                "podcast_refresh_on_launch": history.podcast_refresh_on_launch,
-                "reminder_default_lead_seconds": history.reminder_default_lead_seconds,
-                "reminder_sound": history.reminder_sound,
-                "skip_silence": history.skip_silence,
-                "recording_speed": history.recording_speed,
-                "youtube_speed": history.youtube_speed,
-                "recordings_shuffle": history.recordings_shuffle,
-                "recordings_repeat": history.recordings_repeat,
-                "search_sources_enabled": list(history.search_sources_enabled),
-                "search_sources_epoch": history.search_sources_epoch,
-                "source_options": dict(history.source_options),
-                "search_source_facet": history.search_source_facet,
-                "recent_searches": search_history_to_json(history.recent_searches),
-                **(
-                    {
-                        "browse_sources_enabled": list(history.browse_sources_enabled),
-                        "browse_sources_epoch": history.browse_sources_epoch,
-                    }
-                    if history.browse_sources_enabled is not None
-                    else {}
-                ),
-                "show_status_bar": history.show_status_bar,
-                "ui_font_scale": history.ui_font_scale,
-                "prevent_sleep": history.prevent_sleep,
-                "keep_awake_before_recording": history.keep_awake_before_recording,
-                "wake_for_scheduled_recording": history.wake_for_scheduled_recording,
-                "catalog_enabled": history.catalog_enabled,
-                "catalog_refresh_on_startup": history.catalog_refresh_on_startup,
-                "catalog_refresh_hours": history.catalog_refresh_hours,
-                "subscription_episode_limit": history.subscription_episode_limit,
-                "youtube_consented": history.youtube_consented,
-                "check_updates_on_startup": history.check_updates_on_startup,
-                "last_update_check": history.last_update_check,
-                "eq_bass_db": history.eq_bass_db,
-                "eq_mid_db": history.eq_mid_db,
-                "eq_treble_db": history.eq_treble_db,
-                "compressor_enabled": history.compressor_enabled,
-                "close_action": history.close_action,
-                "announce_dialog_transitions": history.announce_dialog_transitions,
-                "share_family_prefs": history.share_family_prefs,
-                "transcript_detail": history.transcript_detail,
-                "now_playing_template": history.now_playing_template,
-                "recover_from_website": history.recover_from_website,
-                "output_device": history.output_device,
-                "media_notice_signature": history.media_notice_signature,
-                "onboarding": history.onboarding.to_dict(),
-                "playback_engine": history.playback_engine,
-                "volume_boost": history.volume_boost,
-                "volume_percent": history.volume_percent,
-                "favorites_sort": history.favorites_sort,
-                "folder_sort_orders": history.folder_sort_orders,
-                "channel_mode": history.channel_mode,
-                # Keep writing the legacy bool for one release so an older build can
-                # still read the mono choice if the user downgrades.
-                "mono_enabled": history.channel_mode == "mono",
-                "night_mode_enabled": history.night_mode_enabled,
-                "optilab_enabled": history.optilab_enabled,
-                "optilab_mode": history.optilab_mode,
-                "optilab_input_db": history.optilab_input_db,
-                "optilab_auto_adapt": history.optilab_auto_adapt,
-                "optilab_exact": history.optilab_exact,
-                "optilab_exact_live": history.optilab_exact_live,
-                "alt_f4_to_tray": history.alt_f4_to_tray,
-                "open_browse_at_startup": history.open_browse_at_startup,
-                "startup_window": history.startup_window,
-                "main_view": history.main_view,
-                "debug_mode": history.debug_mode,
-                "last_seen": history.last_seen,
-                "log_dir": history.log_dir,
-                "use_global_volume": history.use_global_volume,
-                "song_history_enabled": history.song_history_enabled,
-                "recording_resume_choice": history.recording_resume_choice,
-                "stations": [station.to_dict() for station in history.stations],
-            },
-        ),
+        lambda: write_json_atomic(path, snapshot),
     )
+
+
+def save_history(data_dir: Path, history: RadioHistory) -> None:
+    """Persist history atomically (synchronous for startup and non-UI callers)."""
+    save_history_snapshot(data_dir, snapshot_history(history))

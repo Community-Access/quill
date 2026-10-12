@@ -85,6 +85,18 @@ def register_podcast_commands(host: Any) -> None:
             "Podcasts: Stop Checking Feeds",
             host.podcast_stop_feed_checks,
         ),
+        # Every feed at once, paced and followed in Feed Check -- and the one
+        # stop for it (F-09).
+        (
+            "podcasts.check_all_feeds",
+            "Podcasts: Check All Feeds Now",
+            host.podcast_check_all_feeds,
+        ),
+        (
+            "podcasts.stop_feed_checks",
+            "Podcasts: Stop Checking Feeds",
+            host.podcast_stop_feed_checks,
+        ),
         # The three verbs Earshot publishes to Siri (R5). No menu row: they are
         # one-press keys whose whole point is not opening a menu, and the palette
         # is where somebody looks for a command by name.

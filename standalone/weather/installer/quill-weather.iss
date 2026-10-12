@@ -13,7 +13,7 @@
 ;     (built by ..\..\runtime\quillville-runtime.spec, marker stamped;
 ;     build_runtime.ps1 chains the spec, the marker stamp, and the
 ;     ffmpeg/mpv stage);
-;   - the per-app QuillWeather.exe at ..\dist\QuillWeather\QuillWeather.exe
+;   - the per-app QuillWeather.exe at ..\dist\QuillWeather-installer\QuillWeather.exe
 ;     (built by build_native_launcher.py);
 ;   - the per-app icon at ..\assets\quill-weather.ico;
 ;   - the rendered Weather docs at ..\dist\QuillWeather\docs.
@@ -23,7 +23,7 @@
 ; /dAppVersion=<version> to ISCC. The literal below is only the fallback for a
 ; manual ISCC run and must be kept in step with build_release.ps1's $version.
 #ifndef AppVersion
-  #define AppVersion "2.2.0"
+  #define AppVersion "2.2.1"
 #endif
 ; The build of this version and the Windows file version (X.Y.Z.B)
 ; (docs/release/RELEASE.md, "Build numbers"). build_release.ps1 passes
@@ -32,7 +32,7 @@
   #define AppBuild "1"
 #endif
 #ifndef AppFileVersion
-  #define AppFileVersion "2.2.0.1"
+  #define AppFileVersion "2.2.1.1"
 #endif
 #define AppPublisher "Community Access"
 #define AppURL "https://github.com/Community-Access/quill-weather"
@@ -75,7 +75,6 @@ DisableDirPage=no
 DisableProgramGroupPage=auto
 AllowNoIcons=yes
 PrivilegesRequired=lowest
-PrivilegesRequiredOverridesAllowed=dialog
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 MinVersion=10.0
@@ -112,13 +111,18 @@ Name: "runtime"; Description: "Shared QuillVille runtime (Python) -- installed o
 Name: "main"; Description: "{#AppName} (required)"; Types: full compact custom; Flags: fixed
 Name: "docs"; Description: "Documentation (User Guide, Release Notes, Product Requirements)"; Types: full custom
 
+[INI]
+; The app's installed version, independent of whichever shared runtime is present.
+Filename: "{app}\quill-app-version.ini"; Section: "app"; Key: "version"; String: "{#AppVersion}"
+Filename: "{app}\quill-app-version.ini"; Section: "app"; Key: "version_build"; String: "{#AppVersion}+{#AppBuild}"
+
 [Files]
 ; Weather's own payload is tiny: just its icon, the per-app C launcher
 ; (the portable-mode anchor), and (optionally) its docs. The program
 ; itself lives in the shared runtime, installed by the fragment below.
 Source: "..\assets\quill-weather.ico"; DestDir: "{app}"; Components: main; Flags: ignoreversion
-Source: "..\dist\QuillWeather\QuillWeather.exe"; DestDir: "{app}"; Components: main; Flags: ignoreversion
-Source: "..\dist\QuillWeather\docs\*"; DestDir: "{app}\docs"; Components: docs; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\dist\QuillWeather-installer\QuillWeather.exe"; DestDir: "{app}"; Components: main; Flags: ignoreversion
+Source: "..\dist\QuillWeather\docs\*"; DestDir: "{app}\docs"; Components: docs; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "*.epub"
 
 ; The shared runtime (install-if-absent) + reference registration + orphan
 ; removal on uninstall. Defines RuntimeDir/RuntimeExe used by [Icons]/[Run].

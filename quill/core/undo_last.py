@@ -31,8 +31,9 @@ UI supplied, and this file never learns what a podcast is.
 
 from __future__ import annotations
 
+import logging
 import shutil
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -50,6 +51,7 @@ __all__ = [
 #: The folder under an app's data directory that holds the one undoable
 #: deletion. Never more than one step's worth: the slot empties it.
 HELD_DIR_NAME = "undo-hold"
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True, slots=True)
@@ -70,6 +72,8 @@ class UndoableAction:
     #: Called when this action is displaced or the slot is cleared without
     #: being used -- the point at which held files become genuinely deleted.
     dispose: Callable[[], None] | None = None
+    #: Return True when preparation will call a completion or retry continuation later.
+    prepare: Callable[[Callable[[], None], Callable[[], None]], bool] | None = None
 
     def _tail(self) -> str:
         return f" {self.caveat.strip().rstrip('.')}." if self.caveat.strip() else ""
@@ -136,7 +140,7 @@ class UndoSlot:
         try:
             action.dispose()
         except Exception:  # noqa: BLE001 - a disposer bug must not break the app
-            pass
+            logger.exception("Could not dispose of an Undo action")
 
 
 #: How many steps Undo History keeps (qc.md section 18 item 12).
@@ -167,7 +171,7 @@ class UndoHistory(UndoSlot):
                 try:
                     dropped.dispose()
                 except Exception:  # noqa: BLE001 - a disposer bug must not break the app
-                    pass
+                    logger.exception("Could not dispose of an old Undo action")
 
     def take(self) -> UndoableAction | None:
         action = self._action
@@ -187,13 +191,40 @@ class UndoHistory(UndoSlot):
             return self._older.pop(older)
         return None
 
+    def restore_failed(self, action: UndoableAction, *, older: Sequence[UndoableAction]) -> None:
+        """Return a failed preparation to its chronological place, behind newer work."""
+        entries = self.entries()
+        if any(entry is action for entry in entries):
+            return
+        index = next(
+            (
+                position
+                for position, entry in enumerate(entries)
+                if any(entry is previous for previous in older)
+            ),
+            len(entries),
+        )
+        entries.insert(index, action)
+        while len(entries) > HISTORY_LIMIT:
+            position = len(entries) - 1
+            if entries[position] is action:
+                position -= 1
+            dropped = entries.pop(position)
+            if dropped.dispose is not None:
+                try:
+                    dropped.dispose()
+                except Exception:  # noqa: BLE001 - keep the retry even if disposal fails
+                    logger.exception("Could not dispose of an old Undo action")
+        self._action = entries[0]
+        self._older = entries[1:]
+
     def clear(self) -> None:
         for action in self.entries():
             if action.dispose is not None:
                 try:
                     action.dispose()
                 except Exception:  # noqa: BLE001
-                    pass
+                    logger.exception("Could not clear an Undo action")
         self._action = None
         self._older = []
 
@@ -201,7 +232,12 @@ class UndoHistory(UndoSlot):
 # -- holding deleted files ------------------------------------------------------
 
 
-def hold_files(paths: list[Path], holding_dir: Path) -> dict[Path, Path]:
+def hold_files(
+    paths: list[Path],
+    holding_dir: Path,
+    *,
+    on_error: Callable[[Path, BaseException], None] | None = None,
+) -> dict[Path, Path]:
     """Move *paths* aside into *holding_dir*; map held path -> original path.
 
     The step that replaces ``path.unlink()`` wherever a destructive verb wants
@@ -217,7 +253,11 @@ def hold_files(paths: list[Path], holding_dir: Path) -> dict[Path, Path]:
         return held
     try:
         holding_dir.mkdir(parents=True, exist_ok=True)
-    except OSError:
+    except OSError as error:
+        logger.warning("Could not prepare files for Undo", exc_info=True)
+        if on_error is not None:
+            for original in paths:
+                on_error(original, error)
         return held
     for index, original in enumerate(paths):
         try:
@@ -226,23 +266,33 @@ def hold_files(paths: list[Path], holding_dir: Path) -> dict[Path, Path]:
             target = holding_dir / f"{index:04d}-{original.name}"
             shutil.move(str(original), str(target))
             held[target] = original
-        except (OSError, shutil.Error):
-            continue
+        except (OSError, shutil.Error) as error:
+            logger.warning("Could not hold a file for Undo", exc_info=True)
+            if on_error is not None:
+                on_error(original, error)
     return held
 
 
-def restore_held(held: dict[Path, Path]) -> int:
+def restore_held(
+    held: dict[Path, Path], *, on_error: Callable[[Path, BaseException], None] | None = None
+) -> int:
     """Move held files back where they came from; return how many landed."""
     restored = 0
     for target, original in held.items():
         try:
             if not target.exists():
+                if not original.exists():
+                    raise FileNotFoundError("The file to restore is no longer available")
                 continue
+            if original.exists():
+                raise FileExistsError("Undo will not overwrite a file already at its old location")
             original.parent.mkdir(parents=True, exist_ok=True)
             shutil.move(str(target), str(original))
             restored += 1
-        except (OSError, shutil.Error):
-            continue
+        except (OSError, shutil.Error) as error:
+            logger.warning("Could not restore a held file", exc_info=True)
+            if on_error is not None:
+                on_error(original, error)
     return restored
 
 
@@ -252,4 +302,4 @@ def discard_held(held: dict[Path, Path]) -> None:
         try:
             target.unlink(missing_ok=True)
         except OSError:
-            continue
+            logger.warning("Could not dispose of a held file", exc_info=True)

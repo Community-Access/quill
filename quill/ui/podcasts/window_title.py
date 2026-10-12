@@ -29,10 +29,12 @@ __all__ = ["CastWindowTitleMixin", "compose_title", "inbox_count"]
 
 def inbox_count(library: Any) -> int:
     """How many episodes are in the Inbox right now."""
-    from quill.core.podcasts.inbox import inbox_pairs
+    from quill.core.podcasts.places import count
 
+    if library is None:
+        return 0
     try:
-        return len(inbox_pairs(library))
+        return count(library, "inbox")
     except Exception:  # noqa: BLE001 - a title is never worth a crash
         return 0
 
@@ -51,7 +53,9 @@ class CastWindowTitleMixin:
         library = getattr(self, "_podcast_library", None)
         if library is None:
             return
-        wanted = compose_title(APP_TITLE, inbox_count(library))
+        counter = getattr(self, "_cast_place_count", None)
+        count = counter("inbox") if callable(counter) else inbox_count(library)
+        wanted = compose_title(APP_TITLE, count or 0)
         frame = getattr(self, "frame", None)
         if frame is not None and frame.GetTitle() != wanted:
             # Only when it differs: SetTitle fires a window-name change that the

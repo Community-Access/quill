@@ -55,13 +55,6 @@ def _close_action_index(value: str) -> int:
         return 1
 
 
-def _shutdown_feed_checks(host: object) -> None:
-    """Stop the feed checks' own pool (check.md bug 10), dropping unstarted ones."""
-    from quill.ui.podcasts.feed_refresh import shutdown_feed_checks
-
-    shutdown_feed_checks(host)
-
-
 def _close_action_value(index: int) -> str:
     """The stored answer for a combo row; out of range is Exit."""
     return _CLOSE_ACTION_VALUES[index] if 0 <= index < len(_CLOSE_ACTION_VALUES) else "exit"
@@ -71,6 +64,13 @@ class CastCloseMixin:
     """Closing QUILL Cast: the answer, the stakes, the confirm, the teardown."""
 
     def _on_cast_app_close(self, event: wx.CloseEvent) -> None:
+        if getattr(self, "_cast_shutdown_finished", False):
+            event.Skip()
+            return
+        if getattr(self, "_cast_closing", False) and event.CanVeto():
+            event.Veto()
+            return
+        self._cast_close_forced = not event.CanVeto()
         # Three answers rather than one (list.md 5.4), through the same shared
         # flow all the companion apps use. "protected" is what makes the
         # question worth asking at all: with nothing playing and nothing
@@ -133,57 +133,14 @@ class CastCloseMixin:
             podcast_history.save_history(app_data_dir(), self._podcast_history)
         return action
 
-    def _cast_shutdown(self) -> None:
-        """Teardown just before the window closes. Every step is guarded and
-        classed (qc.md F-06): a failed final write is kept for the next launch,
-        which says so once; anything else is logged. Close always completes."""
-        try:
-            from quill.core.paths import app_data_dir
-            from quill.core.podcasts import history as podcast_history
+    def _cast_shutdown(self) -> bool:
+        """Keep wx alive until final writes finish, without blocking its event loop."""
+        from quill.ui.podcasts.close_tasks import begin
 
-            self._stamp_last_seen()
-            podcast_history.save_history(app_data_dir(), self._podcast_history)
-        except Exception:  # noqa: BLE001 - a stamp is never worth a crash at close
-            pass
-        from quill.core.paths import app_data_dir
-        from quill.core.shutdown_report import (
-            BACKGROUND,
-            BEST_EFFORT,
-            MUST_RECORD,
-            ShutdownReport,
-        )
-
-        report = ShutdownReport("cast", "QUILL Cast")
-        # Lambdas, not bound methods: the lookup must happen inside the guard.
-        report.step("quillins", BEST_EFFORT, lambda: self._app_host.shutdown())
-        # Forced writes rather than the coalescing path: this is the last
-        # chance, and a pending timer will never fire.
-        report.step("listening_stats", MUST_RECORD, lambda: self._podcast_flush_stats())
-        report.step("podcast_library", MUST_RECORD, lambda: self._flush_podcast_library())
-        for name, action in (
-            ("scan_hold", getattr(getattr(self, "_scan_hold", None), "shutdown", None)),
-            ("player", getattr(getattr(self, "_podcast_controller", None), "shutdown", None)),
-            ("transfers", getattr(self, "_shutdown_podcast_transfers", None)),
-        ):
-            report.step(name, BEST_EFFORT, action)
-        # A check of many feeds and a search in flight are told to stop, so the
-        # worker threads let go at their next read rather than finishing (F-09).
-        report.step("feed_checks", BACKGROUND, lambda: self._stop_cast_background_work())
-        report.step("tasks", BACKGROUND, lambda: self._task_manager.shutdown(wait=False))
-        report.step("feed_checks", BACKGROUND, lambda: _shutdown_feed_checks(self))
-        report.step("media_keys", BEST_EFFORT, lambda: self._unregister_media_keys())
-        report.step("global_hotkeys", BEST_EFFORT, lambda: self._unregister_global_hotkeys())
-        report.step("tray", BEST_EFFORT, lambda: self._remove_tray_icon())
-        # The peer windows have no parent, so nothing else destroys them -- and
-        # Now Playing exists, hidden, for the whole session (it is always row
-        # 2). Left alive, a hidden frame keeps the process running after Exit.
-        # Radio's shutdown has the same step for the same reason.
-        report.step(
-            "peer_windows", BEST_EFFORT, lambda: self._windows.destroy_all_except(self.frame)
-        )
-        report.persist(app_data_dir())
+        return begin(self, forced=bool(getattr(self, "_cast_close_forced", False)))
 
     def _stop_cast_background_work(self) -> None:
+        """A feed check and a search in flight are told to stop at close (F-09)."""
         from quill.ui.podcasts.feed_refresh import stop_feed_checks
 
         stop_feed_checks(self, announce=False)
@@ -201,5 +158,7 @@ class CastCloseMixin:
     def _retry_cast_final_writes(self) -> str:
         """Recent Problems' Retry on a "Closing" row: the same two writes, now."""
         self._podcast_flush_stats()
+        self._podcast_library_dirty = True
+        self._podcast_save_success_message = "Your podcast library has now been saved."
         self._flush_podcast_library()
-        return "Saved your podcast library and listening statistics now."
+        return "Saving your podcast library and any pending listening statistics in the background."

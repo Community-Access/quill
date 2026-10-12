@@ -23,7 +23,7 @@ It pairs with three references you'll reach for along the way:
   Covenant every Quillin must keep.
 
 > **Prerequisite:** a working QUILL dev checkout (`pip install -e ".[ui,dev]"`,
-> Python 3.12). The linter itself is `wx`-free, so `pip install -e .` is enough
+> Python 3.13). The linter itself is `wx`-free, so `pip install -e .` is enough
 > to lint.
 
 ---

@@ -78,8 +78,12 @@ class ContentPane:
     def show(self, page: str) -> None:
         if page == self._showing:
             return
+        focus = self._wx.Window.FindFocus()
+        outside = focus is not None and not self._is_within(focus, self.book)
         self._showing = page
         self.book.ChangeSelection(1 if page == self.TREE else 0)
+        if outside and self._wx.Window.FindFocus() is not focus:
+            focus.SetFocus()
 
     def set_heading(self, text: str) -> None:
         heading = self.heading

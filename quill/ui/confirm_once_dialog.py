@@ -41,6 +41,7 @@ def confirm_once(
     question_key: str,
     announce: Callable[[str], None] | None = None,
     quiet_note: str = "",
+    applies_to: str = "in Quill Radio and Quill Cast alike",
 ) -> bool:
     """Ask *message*, unless the listener has said not to. True means proceed.
 
@@ -61,6 +62,7 @@ def confirm_once(
         affirmative=affirmative,
         announce_cb=announce,
         quiet_note=quiet_note or title,
+        applies_to=applies_to,
     ).show()
     if confirmed and dont_ask:
         ask_prefs.set_should_ask(data_dir, question_key, False)
@@ -79,12 +81,14 @@ class ConfirmOnceDialog:
         affirmative: str,
         announce_cb: Callable[[str], None] | None = None,
         quiet_note: str = "",
+        applies_to: str = "in Quill Radio and Quill Cast alike",
     ) -> None:
         import wx
 
         self._wx = wx
         self._title = title
         self._announce = announce_cb or (lambda _m: None)
+        self._applies_to = applies_to
 
         self.dialog = wx.Dialog(parent, title=title)
         root = wx.BoxSizer(wx.VERTICAL)
@@ -95,7 +99,7 @@ class ConfirmOnceDialog:
         self._dont_ask_check = wx.CheckBox(self.dialog, label="&Don't ask me again")
         self._dont_ask_check.SetName(
             f"Don't ask me again -- {quiet_note or title} happens without this "
-            "question from now on, in Quill Radio and Quill Cast alike"
+            f"question from now on {self._applies_to}"
         )
         root.Add(self._dont_ask_check, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 

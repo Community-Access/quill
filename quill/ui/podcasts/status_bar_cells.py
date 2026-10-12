@@ -288,7 +288,12 @@ def queue_text(host: Any) -> str:
 
 def inbox_text(host: Any) -> str:
     """The Inbox as the Inbox view counts it, so the two cannot disagree."""
-    count = inbox_count(getattr(host, "_podcast_library", None))
+    counter = getattr(host, "_cast_place_count", None)
+    count = (
+        counter("inbox")
+        if callable(counter)
+        else inbox_count(getattr(host, "_podcast_library", None))
+    )
     return str(count) if count else ""
 
 

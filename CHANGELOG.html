@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.12" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Changelog</title>
   <style>
@@ -244,6 +244,16 @@
 <main id="main-content" tabindex="-1">
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
+<h3
+id="secure-connections-are-checked-the-way-windows-checks-them-2026-10-11">Secure
+connections are checked the way Windows checks them (2026-10-11)</h3>
+<p>QUILL and every QuillVille app now trust the certificates Windows
+trusts (<code>quill/core/net.py</code>, through the
+<code>truststore</code> package), so a site that opens in your web
+browser opens in QUILL too, including behind company networks and
+security software that Windows already trusts. Podcast feeds keep their
+rule of https first, and a password is never sent over plain http; the
+QUILL Cast and Quill Radio user guides explain both.</p>
 <h3
 id="dictation-gap-plan-read-back-marks-voice-editing-live-transcripts-dictate-anywhere-2026-10-05">Dictation
 gap plan: read-back marks, voice editing, live transcripts, Dictate

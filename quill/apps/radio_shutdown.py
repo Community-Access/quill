@@ -57,10 +57,22 @@ def run_radio_shutdown(app: Any) -> None:
     ):
         report.step(name, BEST_EFFORT, action)
     report.step("tasks", BACKGROUND, lambda: app._task_manager.shutdown(wait=False))
+    report.step(
+        "radio_history",
+        MUST_RECORD,
+        lambda: _flush_radio_history(app),
+    )
     report.step("media_keys", BEST_EFFORT, lambda: app._unregister_media_keys())
     report.step("global_hotkeys", BEST_EFFORT, lambda: app._unregister_global_hotkeys())
     report.step("tray", BEST_EFFORT, lambda: app._remove_tray_icon())
     report.persist(app_data_dir())
+
+
+def _flush_radio_history(app: Any) -> None:
+    from quill.ui.radio.history_save import close_history_writer
+
+    if not close_history_writer(app):
+        raise TimeoutError("Radio history snapshot was not confirmed before shutdown")
 
 
 def retry_radio_final_writes(app: Any) -> str:

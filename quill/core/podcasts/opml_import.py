@@ -36,34 +36,34 @@ wx-free, strict-typed. The probe is a reviewed egress site (GATE-9).
 from __future__ import annotations
 
 import ssl
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
 from collections.abc import Callable, Iterable
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
 from dataclasses import dataclass, field
 from pathlib import Path
 
 from quill.core import http_client
 from quill.core.counted import plural
+from quill.core.net import verified_ssl_context
 from quill.core.net_retry import retry_transient
 from quill.core.podcasts import feed_auth, feed_problems
-from quill.core.podcasts.models import PodcastSettings, PodcastShow
 from quill.core.podcasts.opml import (
     ImportedShow,
     OpmlValidationResult,
     parse_opml,
     parse_opml_folders,
 )
-from quill.core.podcasts.subscriptions import PodcastLibrary, new_id
+from quill.core.podcasts.subscriptions import PodcastLibrary
 
 #: Short by design. A probe answers "is anything there", and a feed that
 #: takes longer than this to say hello is one worth flagging anyway.
 PROBE_TIMEOUT_SECONDS = 8.0
-#: Concurrency for the reachability sweep. Enough that 2,000 feeds finish in
-#: minutes rather than hours; low enough to stay a well-behaved client and to
-#: not saturate a home connection while something is playing.
-DEFAULT_WORKERS = 8
+#: Concurrency for the reachability sweep. Keep this deliberately low so
+#: checking a large import does not overwhelm the app or a listener's network.
+DEFAULT_WORKERS = 2
 #: Only ever read this much of a probe response -- we want the status line,
 #: not the feed.
 _PROBE_READ_BYTES = 2048
@@ -90,10 +90,10 @@ def normalize_feed_url(url: str) -> str:
         return ""
     try:
         parsed = urllib.parse.urlsplit(text)
+        port = parsed.port
     except ValueError:
         return text.casefold()
     host = (parsed.hostname or "").casefold()
-    port = parsed.port
     if port and not (
         (parsed.scheme == "http" and port == 80) or (parsed.scheme == "https" and port == 443)
     ):
@@ -163,6 +163,8 @@ class ImportPlan:
     #: Every folder the file has, as name paths in document order -- empty
     #: ones included, so the file's structure arrives whole.
     folders: list[list[str]] = field(default_factory=list)
+    folder_placements: dict[str, list[list[str]]] = field(default_factory=dict)
+    copied_placements: int = 0
 
     @property
     def total_seen(self) -> int:
@@ -233,18 +235,19 @@ def plan_import(
             plan.unusable.append((f"{title} ({feed_url})", bad_host))
             continue
         key = normalize_feed_url(feed_url)
+        paths = plan.folder_placements.setdefault(key, [])
+        entry_path = list(entry.folder_path)
+        if entry_path not in paths:
+            paths.append(entry_path)
         if key in subscribed:
             plan.duplicates_in_library.append(f"{title} ({feed_url})")
             continue
         if key in seen_in_file:
-            # One podcast filed in two folders: it is followed once, in the
-            # first place the file lists it, and the report says both places.
             first = seen_in_file[key]
-            entry_path = list(entry.folder_path)
             if entry_path != first:
                 plan.duplicates_in_file.append(
                     f"{title} ({feed_url}), also listed in {_where(entry_path)}; "
-                    f"kept in {_where(first)}"
+                    f"one subscription shared with {_where(first)}"
                 )
             else:
                 plan.duplicates_in_file.append(f"{title} ({feed_url})")
@@ -271,56 +274,6 @@ def plan_import(
             )
         )
     return plan
-
-
-def apply_plan(
-    library: PodcastLibrary,
-    plan: ImportPlan,
-    *,
-    stream_only: bool = False,
-    into_folder: str | None = None,
-) -> list[PodcastShow]:
-    """Add every planned show to *library*; returns the shows added.
-
-    Folder paths are memoized, so a file whose two thousand entries live in
-    forty folders walks the folder tree forty times rather than two thousand.
-    ``library.add_show`` is deliberately bypassed: the plan has already ruled
-    out duplicates in constant time, and re-scanning every show per entry is
-    exactly the quadratic behavior this module exists to remove.
-    """
-    folder_cache: dict[tuple[str, ...], str | None] = {}
-    added: list[PodcastShow] = []
-
-    def resolve_folder(path: list[str]) -> str | None:
-        full = tuple([into_folder, *path] if into_folder else path)
-        if not full:
-            return None
-        if full in folder_cache:
-            return folder_cache[full]
-        folder_id = library.find_or_create_folder_path(list(full))
-        folder_cache[full] = folder_id
-        return folder_id
-
-    # The file's folders first, in its own order, so empty ones exist and the
-    # tree reads in the order the file gave it.
-    for path in plan.folders:
-        resolve_folder(path)
-    for candidate in plan.new:
-        show = PodcastShow(
-            id=new_id(),
-            title=candidate.title,
-            feed_url=candidate.feed_url,
-            homepage=candidate.homepage,
-            folder_id=resolve_folder(candidate.folder_path),
-            description=candidate.description,
-            language=candidate.language,
-            category=candidate.category,
-        )
-        if stream_only:
-            show.settings = PodcastSettings(playback_mode="stream")
-        library.shows.append(show)
-        added.append(show)
-    return added
 
 
 @dataclass(frozen=True, slots=True)
@@ -372,7 +325,7 @@ def import_opml_file(data_dir: Path | str, opml_path: Path | str) -> OpmlImportO
     plan = plan_import(library, entries, folders=parse_opml_folders(text))
     folders_before = len(library.folders)
     added = apply_plan(library, plan)
-    if added or plan.new or len(library.folders) != folders_before:
+    if added or plan.new or plan.copied_placements or len(library.folders) != folders_before:
         save_library(Path(data_dir), library)
     return OpmlImportOutcome(
         added=len(added),
@@ -430,7 +383,7 @@ def probe_feed(url: str, *, timeout: float = PROBE_TIMEOUT_SECONDS) -> OpmlValid
             "Accept": "application/rss+xml, application/xml, */*",
         },
     )
-    context = ssl.create_default_context()
+    context = verified_ssl_context()
 
     def _probe_once() -> OpmlValidationResult:
         """One attempt. The reviewed egress site; the retry wraps it."""
@@ -482,6 +435,9 @@ def validate_feeds(
     on_progress: Callable[[int, int], None] | None = None,
     should_cancel: Callable[[], bool] | None = None,
     safe_mode: bool = False,
+    start_interval: float = 0.25,
+    on_started: Callable[[str, str], None] | None = None,
+    on_result: Callable[[OpmlValidationResult], None] | None = None,
 ) -> list[OpmlValidationResult]:
     """Probe every ``(title, feed_url)`` concurrently; returns the results.
 
@@ -503,30 +459,70 @@ def validate_feeds(
         ]
     results: list[OpmlValidationResult] = []
     done = 0
-    with ThreadPoolExecutor(max_workers=max(1, workers)) as pool:
-        futures = {
-            pool.submit(probe_feed, url, timeout=timeout): (title, url) for title, url in feeds
-        }
-        for future in as_completed(futures):
-            title, url = futures[future]
+    feed_iter = iter(feeds)
+    interval = max(0.0, start_interval)
+    last_submitted = 0.0
+    cancelled = False
+    pool = ThreadPoolExecutor(max_workers=max(1, workers))
+    try:
+        futures: dict[Future[OpmlValidationResult], tuple[str, str]] = {}
+
+        def submit_next() -> bool:
+            nonlocal last_submitted
+            if should_cancel is not None and should_cancel():
+                return False
+            if last_submitted and interval:
+                time.sleep(max(0.0, interval - (time.monotonic() - last_submitted)))
+            if should_cancel is not None and should_cancel():
+                return False
             try:
-                result = future.result()
-            except Exception as error:  # noqa: BLE001 - one bad probe never stops the sweep
-                result = OpmlValidationResult(title, url, False, feed_problems.plain(error))
-            # probe_feed only knows the URL; restore the show's own title so
-            # the report reads as a list of shows, not a list of URLs.
-            results.append(
-                OpmlValidationResult(
+                title, url = next(feed_iter)
+            except StopIteration:
+                return False
+            future = pool.submit(probe_feed, url, timeout=timeout)
+            futures[future] = (title, url)
+            if on_started is not None:
+                on_started(title, url)
+            last_submitted = time.monotonic()
+            return True
+
+        for _ in range(min(max(1, workers), total)):
+            if not submit_next():
+                cancelled = True
+                break
+
+        while futures:
+            if should_cancel is not None and should_cancel():
+                cancelled = True
+                break
+            completed, _pending = wait(futures, timeout=0.1, return_when=FIRST_COMPLETED)
+            for future in completed:
+                title, url = futures.pop(future)
+                try:
+                    result = future.result()
+                except Exception as error:  # noqa: BLE001 - one bad probe never stops the sweep
+                    result = OpmlValidationResult(title, url, False, feed_problems.plain(error))
+                recorded = OpmlValidationResult(
                     title, result.feed_url, result.ok, result.error, result.corrected_url
                 )
-            )
-            done += 1
-            if on_progress is not None:
-                on_progress(done, total)
-            if should_cancel is not None and should_cancel():
+                results.append(recorded)
+                if on_result is not None:
+                    on_result(recorded)
+                done += 1
+                if on_progress is not None:
+                    on_progress(done, total)
+                if should_cancel is not None and should_cancel():
+                    cancelled = True
+                    break
+                if not submit_next():
+                    cancelled = should_cancel is not None and should_cancel()
+                    break
+            if cancelled:
                 for pending in futures:
                     pending.cancel()
                 break
+    finally:
+        pool.shutdown(wait=not cancelled, cancel_futures=cancelled)
     return results
 
 
@@ -535,7 +531,13 @@ def parse_and_plan(library: PodcastLibrary, text: str) -> ImportPlan:
     return plan_import(library, parse_opml(text), folders=parse_opml_folders(text))
 
 
-# Re-exported: the import window and its tests reach both through this module.
+# Re-exported: the import window and its tests reach these through this module.
+from quill.core.podcasts.opml_apply import (  # noqa: E402
+    apply_plan as apply_plan,
+)
+from quill.core.podcasts.opml_apply import (  # noqa: E402
+    apply_plan_steps as apply_plan_steps,
+)
 from quill.core.podcasts.opml_import_after import (  # noqa: E402
     apply_permanent_moves as apply_permanent_moves,
 )
@@ -550,6 +552,7 @@ __all__ = [
     "ImportPlan",
     "apply_permanent_moves",
     "apply_plan",
+    "apply_plan_steps",
     "normalize_feed_url",
     "parse_and_plan",
     "plan_import",

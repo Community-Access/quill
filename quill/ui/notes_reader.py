@@ -15,8 +15,9 @@ had is kept on top of it:
   not work inside an edit field, so the field answers them itself.
 * **Links are links.** Underlined, **Tab** / **Shift+Tab** move between them
   (and between timestamps) selecting the link text so the reader reads it,
-  with "Link, Jane and Co" said; **Enter** opens the link in the browser after
-  saying so. The link text is what is read, never the raw address.
+  with "Link, Jane and Co" said; at either end, normal keyboard focus
+  traversal continues. **Enter** opens the link in the browser after saying
+  so. The link text is what is read, never the raw address.
 * **Timestamps are links to the episode.** Enter on "12:34" seeks there when
   the host gave the reader an ``on_seek``; the caller decides what to do when
   nothing is playing.
@@ -106,8 +107,9 @@ class NotesReader:
         self.field.SetHelpText(
             "The notes the show published, with their headings, lists and links kept. "
             "Read only: arrow through it; H and Shift+H move between headings; Tab and "
-            "Shift+Tab move between links and timestamps and Enter opens or seeks; "
-            "Ctrl+F finds and F3 finds the next."
+            "Shift+Tab move between links and timestamps, then continue through the "
+            "window's normal focus order at either end; Enter opens or seeks; Ctrl+F "
+            "finds and F3 finds the next."
         )
         sizer.Add(self.caption, 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
         sizer.Add(self.field, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
@@ -148,10 +150,22 @@ class NotesReader:
 
     def set_notes(self, html: str, *, title: str, podcast: str = "") -> None:
         """Show *html* as structured notes; empty cases say so in words."""
+        if (html or "", title, podcast) == getattr(self, "_content_key", None) and getattr(
+            self, "_placeholder", None
+        ) is None:
+            return
+        self.set_document(render_notes(html), html=html, title=title, podcast=podcast)
+
+    def set_document(
+        self, document: NotesDocument, *, html: str, title: str, podcast: str = ""
+    ) -> None:
+        """Apply notes prepared off-thread without parsing them again on wx."""
+        self._placeholder = None
+        self._content_key = (html or "", title, podcast)
         self._title = title
         self._podcast = podcast
         self._html = html or ""
-        self._doc = render_notes(html)
+        self._doc = document
         self._find_at = -1
         if self._doc.is_empty:
             self.field.SetValue(empty_sentence(self._doc))
@@ -171,8 +185,12 @@ class NotesReader:
 
     def set_placeholder(self, text: str) -> None:
         """No episode to read: say so in the field and dim the buttons."""
+        if text == getattr(self, "_placeholder", None):
+            return
         self.set_notes("", title="", podcast="")
-        self.field.SetValue(text)
+        self._placeholder = text
+        if self.field.GetValue() != text:
+            self.field.SetValue(text)
 
     def _style(self) -> None:
         base = self.field.GetFont()
@@ -227,17 +245,20 @@ class NotesReader:
 
     def _move_span(self, *, backwards: bool) -> bool:
         if not self._spans:
-            self._announce("No links or timestamps in these notes.")
             return False
         caret = self.field.GetInsertionPoint()
         current = self._span_at_caret()
         if backwards:
             candidates = [s for s in self._spans if s.start < (current.start if current else caret)]
-            target = candidates[-1] if candidates else self._spans[-1]
+            if not candidates:
+                return False
+            target = candidates[-1]
         else:
             after = current.end if current else caret
             candidates = [s for s in self._spans if s.start >= after and s is not current]
-            target = candidates[0] if candidates else self._spans[0]
+            if not candidates:
+                return False
+            target = candidates[0]
         self.field.SetSelection(target.start, target.end)
         self.field.ShowPosition(target.start)
         self._announce(self._span_sentence(target))

@@ -38,6 +38,7 @@ import wx
 from quill.apps.lite_dialogs import _stack
 from quill.apps.lite_preferences_files import FileChangePrefs
 from quill.apps.lite_preferences_profile import ProfileRow
+from quill.apps.lite_preferences_save_folder import DocumentFolderPrefs
 from quill.core.action_feedback import ACTION_FEEDBACK_LABELS
 from quill.core.action_feedback import coerce as coerce_feedback
 from quill.core.app_features import (
@@ -114,6 +115,8 @@ def edit_preferences(
     mode_choice.SetHelpText("What Control N creates. New Plain Text and New Rich Text ignore this.")
     mode_choice.SetSelection(1 if settings.default_mode == "rich" else 0)
     _stack(root, mode_label, mode_choice)
+
+    document_folder = DocumentFolderPrefs(dialog, root, settings, pad=_PAD)
 
     def _profile_claimed(values: dict[str, object]) -> None:
         """Move the controls a profile claims, rather than overruling them later.
@@ -512,6 +515,7 @@ def edit_preferences(
         if show_modal_dialog(dialog, "Preferences") != wx.ID_OK:
             return PreferencesResult(False, False)
         features_changed = profile_row.apply()
+        folder_changed = document_folder.apply()
         files_changed = file_prefs.apply()
         before = (
             settings.default_mode,
@@ -562,7 +566,8 @@ def edit_preferences(
         settings.font_size = int(chosen["size"])
         settings.normalized()
         return PreferencesResult(
-            files_changed
+            folder_changed
+            or files_changed
             or features_changed
             or before
             != (

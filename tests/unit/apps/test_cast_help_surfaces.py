@@ -86,10 +86,10 @@ def test_the_launch_notice_is_deferred_rather_than_run_inline() -> None:
     focus the app has not settled yet (#259)."""
     # Since 2026-10-01 the media-health notice and the previous session's
     # closing notice (F-06) share one deferred launch hook.
-    assert "wx.CallAfter(self._cast_launch_notices)" in FRAME
-    close = (
-        Path(__file__).resolve().parents[3] / "quill" / "apps" / "podcasts_close.py"
-    ).read_text(encoding="utf-8")
+    assert "self._when_cast_library_ready(self._cast_launch_notices)" in FRAME
+    startup = (REPO / "quill" / "ui" / "podcasts" / "startup_load.py").read_text(encoding="utf-8")
+    assert "self._wx.CallAfter(action)" in startup
+    close = (REPO / "quill" / "apps" / "podcasts_close.py").read_text(encoding="utf-8")
     assert "self.surface_cast_media_health()" in close
 
 

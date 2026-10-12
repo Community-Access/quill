@@ -11,6 +11,26 @@ yourself a note on any station. Apple's podcast categories are full lists
 now, and Preferences has a box that finds a setting as you type. And updates
 install themselves properly again, after one last update by hand.
 
+## Testing rebuild: 3.2.0 (build 2)
+
+This rebuild adds **Start Quill Radio with Windows** to Preferences, using the
+same setting as the Station menu. Portable copies do not change Windows startup
+settings. Routine history and preference saves run in the background, and the
+startup update check avoids a synchronous bookkeeping write.
+
+**Record > Recordings...** (Ctrl+Shift+R) opens the recordings list or restores
+its existing window, including when it is minimized. The last public 3.0.4
+build could silently leave that window minimized. The shared opener has now
+also been checked with real Windows controls for empty and populated folders.
+
+You can add or correct a station's website locally without contacting that
+website. Python HTTPS requests use the Windows certificate store while still
+checking certificates and hostnames. The installer is current-user only and
+does not offer an administrator-only installation.
+
+The bundled changelog records the complete build changes. These testing
+packages are not a GitHub release or a Stable-channel promotion.
+
 ## A word about the number
 
 The last Quill Radio you could download was 3.0.4, and this one is 3.2.0. You
@@ -666,6 +686,20 @@ every other Quill app where you have turned this on. Quill Radio tells you
 when it picks up a choice from another app. Nothing about your keys, your
 cursor or your screen reader is ever shared, and it stays off until you turn
 it on.
+
+## Preview for testers: changes after 3.2.0 (build 1)
+
+These changes are not part of the 3.2.0 (build 1) release above.
+
+- **Correct a station's website locally.** Choose **Edit Website...** on a
+  station row in Browse Stations or Manage Favorite Stations. The correction
+  is saved in this Radio profile only; it does not change the directory, and
+  Quill Radio checks only the address format, not the website itself. Clear
+  the address to return to the directory's version.
+- **Start Quill Radio when you sign in.** The Station-menu item and the
+  Preferences checkbox control the same per-user Windows setting. It is
+  available for an installed copy, needs no administrator rights, and is
+  unavailable for portable copies.
 
 ## Choose Stable, Beta or Dev
 

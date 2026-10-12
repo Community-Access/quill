@@ -76,6 +76,17 @@ def test_a_reader_error_keeps_the_kind_it_was_raised_with() -> None:
     assert classify(error).sentence == "This address returns a web page, not a podcast feed."
 
 
+def test_certificate_problem_keeps_verification_diagnostics_for_logs() -> None:
+    error = urllib.error.URLError(ssl.SSLCertVerificationError(1, "certificate verify failed"))
+    problem = classify(error)
+    assert problem.kind == feed_problems.CERTIFICATE
+    assert "verify_code=" in problem.detail
+    assert "verify_message=" in problem.detail
+    assert "certificate verify failed" in problem.detail
+    assert "openssl=" in problem.detail
+    assert "system updates" in problem.sentence
+
+
 def test_only_lost_feeds_are_worth_a_search() -> None:
     assert feed_problems.GONE in feed_problems.WORTH_A_SEARCH
     assert feed_problems.WEB_PAGE in feed_problems.WORTH_A_SEARCH

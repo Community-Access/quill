@@ -96,7 +96,7 @@ class LiteSessionMixin:
         self.settings.session_files = list(answer.remembered)
         if answer.ask_mode:
             self.settings.session_restore_ask = answer.ask_mode
-        self.save_settings()
+        self._queue_settings_save()
         opened_paths = answer.open_paths
         opened = self._open_session_entries(opened_paths)
         parts = [describe_opened(opened, len(opened_paths))]

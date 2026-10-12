@@ -118,6 +118,11 @@ class TaskManager:
         token = CancellationToken()
 
         def deliver(callback: Callable[..., Any], payload: Any) -> None:
+            if not self._ui_lifetime.is_alive or (
+                ui_lifetime is not None and not ui_lifetime.is_alive
+            ):
+                return
+
             def guarded() -> None:
                 if self._ui_lifetime.is_alive and (ui_lifetime is None or ui_lifetime.is_alive):
                     callback(operation_id, payload)

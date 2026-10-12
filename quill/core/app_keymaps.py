@@ -239,6 +239,12 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
     # QUILL Cast had no app keymap at all until undo needed one: every other
     # Cast accelerator is either a shared default or baked into a menu label.
     "cast": {
+        "podcasts.refresh_feed": "F5",
+        "media.refresh_podcasts": "Ctrl+F5",
+        "podcasts.move_to_folder": "Ctrl+Shift+V",
+        "podcasts.copy_to_folder": "Ctrl+Shift+Y",
+        "podcasts.new_folder": "Ctrl+Shift+E",
+        "podcasts.mark_all_played": "Alt+Shift+E",
         "app.undo_last": "Ctrl+Z",
         # Undo History (qc.md 18.12). Not Radio's chord: Ctrl+Alt+Shift+H is Cast's
         # Global Hotkeys, and Ctrl+Shift+Z is Radio's Sleep Timer.
@@ -273,7 +279,8 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         # Sheet), which takes Alt+Shift+F2, beside the own key on Alt+F2.
         "tools.hosted_ai_assistant": "Ctrl+Alt+G",
         "tools.hosted_ai_ask_document": "Ctrl+Alt+Z",
-        "tools.hosted_ai_image": "Ctrl+F5",
+        # Refresh All owns Ctrl+F5 in Cast; image generation is less frequent.
+        "tools.hosted_ai_image": "Ctrl+Alt+F5",
         "tools.hosted_ai_usage": "Ctrl+Alt+Shift+F2",
         "tools.hosted_ai_sign_in": "Ctrl+Alt+Shift+F4",
         "tools.hosted_ai_privacy": "Alt+Shift+F2",

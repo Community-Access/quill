@@ -20,6 +20,12 @@ If you write letters, notes, stories, web pages or settings files, and you
 find your way around Windows with NVDA or JAWS, QUILL Lite is for you. It is
 free, and it is small on purpose.
 
+The installer is **for your Windows account only** and does not need
+administrator approval. It puts QUILL Lite and its shared runtime in your user
+profile. One separate setting, **Open QUILL Lite instead of Notepad**, changes
+Notepad for everyone who uses the computer and therefore does require
+administrator approval; that setting is described later in this guide.
+
 ### What you will be able to do
 
 By the time you have read this guide you will be able to open any text file
@@ -559,11 +565,12 @@ If you press F6 while the bar is hidden, QUILL Lite tells you it is hidden.
 | **Heading** | Which heading you are inside | lists every heading |
 | **List** | Which list you are inside, how many items, which one you are on | stops or resumes announcing lists |
 | **Dictation** | What dictation is doing: off, listening, hearing you, writing, spelling, or waiting for the wake phrase | starts or stops dictation |
+| **Notifications** | Progress and results from background work, including audio transcription | reads a notification or opens its result |
 | **Encoding** | How this file stores its letters and accents | change it |
 | **Line Endings** | How this file marks the end of a line | change it |
 | **Saved State** | Whether you have unsaved changes | saves |
 
-That is fourteen parts. Most of them explain themselves. A few are worth a
+That is fifteen parts. Most of them explain themselves. A few are worth a
 closer look.
 
 ##### Status Message
@@ -4611,9 +4618,9 @@ writing while it listens, and it tells you when it is done.
    about how long it should take on your computer, for example "The recording
    is 12 minutes long. With NVIDIA Parakeet TDT 0.6B v3, transcribing it should
    take about 6 minutes on this computer."
-5. Choose where the text goes in **Put the text in** (Alt+I): **A new
-   document**, which is already chosen, or **This document, at the cursor, when
-   it finishes**.
+5. There is no output-location choice. QUILL Lite saves the finished transcript
+   privately. Activate its completion notice in **Notifications** to open it in
+   a new document; it does not insert text into the document you were editing.
 6. Press **Enter**. You hear "Transcribing meeting.mp3 in the background."
 7. Carry on with whatever you were doing. The status bar shows how far it has
    got, and every quarter of the way you hear it quietly: "meeting.mp3: 25
@@ -4709,20 +4716,17 @@ last transcription finishes, which gives its memory back.
 
 #### Where the text goes
 
-- **A new document.** The transcript opens in a new, untitled window when it
-  is ready. Nothing is saved until you save it with **Ctrl+S**.
-- **This document, at the cursor.** The transcript goes where the cursor is
-  in the window you started from, at the moment it finishes, as paragraphs of
-  its own. **Ctrl+Z** takes the whole thing back in one step. If that window
-  has been closed or is read-only by then, the transcript opens in a new
-  document instead, and you are told why.
+- **Saved privately until you open it.** When transcription finishes, the
+  transcript is saved without changing the document you were editing. Activate
+  the completion notice in **Notifications** to open it in a new document; the
+  Transcribe a Recording window has no destination picker.
 
 #### Several recordings, checking on it, and stopping
 
 - **Several at once.** In Browse, hold **Ctrl** and choose more than one file.
   They are transcribed one after another with the same choices, and each one
-  arrives in its own new document. If one is already running when you start
-  another, you hear "Added to the queue".
+  opens in its own new document when it finishes. If one is already running
+  when you start another, you hear "Added to the queue".
 - **How far has it got?** Press **Shift+F5** again. At the top of the window,
   **Transcribing now** says which recording it is on, how far it has got, and
   how many are waiting. Press **Escape** to close the window and let it carry
@@ -4730,9 +4734,10 @@ last transcription finishes, which gives its memory back.
 - **Stopping.** In that same window, press **Stop Transcribing** (Alt+S). The
   recording being transcribed stops, any waiting ones are forgotten, and
   nothing is written into a document.
-- **If you missed what it said.** **Shift+F9** opens Activity, which keeps
-  every transcription this session, finished or failed, with the reason when
-  something went wrong.
+- **If you missed the result sentence.** **Shift+F9** opens Activity, which
+  keeps the transcription outcome and any failure reason for this session.
+  To open the saved transcript, activate its completion notice in
+  **Notifications**.
 
 #### Which files it can read
 
@@ -5765,6 +5770,13 @@ names of the settings, what your screen reader calls them, and their help text.
 setting; it does not save. Escape clears what you typed first, and closes the
 window if the box is already empty. Searching never changes a setting for you,
 and OK and Cancel work just as before.
+
+#### Choosing the default document folder
+
+**Default document folder** chooses where Open and Save As start when you are
+working in a new document. Leave it blank to use your Windows **Documents**
+folder, or type a path or use **Choose default folder...** to pick another
+existing folder. A document you already saved continues to use its own folder.
 
 #### If your settings could not be saved
 

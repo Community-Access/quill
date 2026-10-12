@@ -25,6 +25,10 @@ _MARK_ALL_KEY = "ask_before_mark_all_played"
 #: time is a tax -- exactly the shape Mark All as Played already had.
 REMOVE_FAVORITE_KEY = "ask_before_remove_favorite"
 
+# Adding a local website to a station without one, from Quill Radio's Website
+# button. The answer is a user choice, shared with embedded Radio in QUILL.
+ADD_STATION_WEBSITE_KEY = "ask_before_adding_station_website"
+
 
 def _path(data_dir: Path) -> Path:
     return data_dir / _FILE_NAME

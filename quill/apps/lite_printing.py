@@ -282,7 +282,7 @@ class DocumentPrintMixin:
         # Written to disk, not just to memory: "Page setup saved" was a sentence
         # about a variable until 2026-09-16 (bad.md F13, PR2).
         settings.store_into(self.app.settings)
-        self.app.save_settings()
+        self.app._queue_settings_save()
         self._announce("Page setup saved")
 
     def cmd_print_preview(self) -> None:

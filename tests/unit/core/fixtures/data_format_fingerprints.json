@@ -68,7 +68,7 @@
       "note": "fingerprint method moved from ast.dump to ast.unparse (Python 3.12/3.13 stable); shape unchanged"
     },
     "cast.library": {
-      "current": 1,
+      "current": 2,
       "shape": {
         "dataclass:quill.core.podcasts.subscriptions:PodcastLibrary": {
           "quill.core.podcasts.filter_conditions:FilterCondition": {
@@ -316,7 +316,8 @@
             "show_labels": "dict[str, list[str]]",
             "show_check_state": "dict[str, dict[str, object]]",
             "watched_folders": "list[WatchedFolder]",
-            "onboarding": "OnboardingState"
+            "onboarding": "OnboardingState",
+            "show_folder_copies": "dict[str, list[str | None]]"
           },
           "quill.core.podcasts.watched_folders:WatchedFolder": {
             "path": "str",
@@ -337,10 +338,10 @@
             "seen": "dict[str, str]"
           }
         },
-        "function:quill.core.podcasts.subscriptions:save_library": "sha256:db84609879b574fa"
+        "function:quill.core.podcasts.subscriptions:save_library": "sha256:4a4485eeda51a642"
       },
-      "classification": "additive, compatible",
-      "note": "fingerprint method moved from ast.dump to ast.unparse (Python 3.12/3.13 stable); shape unchanged"
+      "classification": "version bumped",
+      "note": "Added optional podcast folder-copy metadata and Lite startup-folder preference; older readers ignore these fields."
     },
     "lite.keymap": {
       "current": 1,
@@ -351,7 +352,7 @@
       "note": "fingerprint method moved from ast.dump to ast.unparse (Python 3.12/3.13 stable); shape unchanged"
     },
     "lite.settings": {
-      "current": 1,
+      "current": 2,
       "shape": {
         "dataclass:quill.core.lite.settings:Settings": {
           "quill.core.lite.settings:Settings": {
@@ -394,6 +395,7 @@
             "window_width": "int",
             "window_height": "int",
             "window_maximized": "bool",
+            "startup_folder": "str",
             "recent_files": "list[str]",
             "pinned_recent_files": "list[str]",
             "recent_files_limit": "int",
@@ -453,8 +455,8 @@
         },
         "constant:quill.core.lite.settings:SCHEMA": "1"
       },
-      "classification": "additive, compatible",
-      "note": "three optional dictation fields (read-back marks, transcript time stamps, the once-only transcript sentence); older builds ignore them and every one defaults"
+      "classification": "version bumped",
+      "note": "Added optional podcast folder-copy metadata and Lite startup-folder preference; older readers ignore these fields."
     },
     "quill.keymap": {
       "current": 1,
@@ -1301,7 +1303,7 @@
       "note": "RadioStation.notes_html is transient: to_dict never writes it, so the files on disk do not change and older builds read them as before"
     },
     "radio.history": {
-      "current": 1,
+      "current": 2,
       "shape": {
         "dataclass:quill.core.radio.history:RadioHistory": {
           "quill.core.radio.history:RadioHistory": {
@@ -1313,6 +1315,7 @@
             "announce_track_titles": "bool",
             "share_play_counts": "bool",
             "show_station_details": "bool",
+            "website_overrides": "dict[str, str]",
             "confirm_browse_delete": "bool",
             "explain_browse_delete": "bool",
             "winamp_playback_keys": "bool",
@@ -1411,10 +1414,10 @@
             "country": "str"
           }
         },
-        "function:quill.core.radio.history_store:save_history": "sha256:f19259917c7e17ad"
+        "function:quill.core.radio.history_store:save_history": "sha256:ab4ddc8289ea7635"
       },
-      "classification": "additive, compatible",
-      "note": "RadioStation.notes_html is transient: to_dict never writes it, so the files on disk do not change and older builds read them as before"
+      "classification": "version bumped",
+      "note": "Radio history version 2 adds website overrides; earlier builds can read the file but discard overrides if saved. RadioStation.notes_html is transient and never written."
     },
     "shared.listens": {
       "current": 1,

@@ -11,11 +11,14 @@ The model/component *download* surface (``SpeechDownloadsMixin``,
 ``main_frame_speech_downloads.py``) and the offline *voice interaction* surface
 -- dictation, voice commands, conversation mode, Hey QUILL wake word
 (``VoiceInteractionMixin``, ``main_frame_speech_voice.py``) -- were split out of
-this mixin (CQ-1); all three compose onto ``MainFrame`` together.
+this mixin (CQ-1), and the installed/default model checks they share went to
+``SpeechModelsMixin`` (``main_frame_speech_models.py``, GATE-11); all four
+compose onto ``MainFrame`` together.
 """
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from pathlib import Path
 
 # Transcribe/Captions accept these; ffmpeg transcodes them to 16 kHz mono WAV.
@@ -87,11 +90,7 @@ class SpeechCommandsMixin:
             registry = self._speech_registry()
             provider = registry.get(chosen)  # type: ignore[attr-defined]
             try:
-                if (
-                    provider is not None
-                    and provider.is_available()
-                    and provider.list_installed_models()
-                ):
+                if provider is not None and provider.is_available():
                     return provider
             except Exception:  # noqa: BLE001 - fall back to the main engine
                 pass
@@ -191,15 +190,6 @@ class SpeechCommandsMixin:
         ("HTML", "html"),
     )
 
-    def _select_model_and_diarize(self, installed: list) -> tuple[str, bool]:
-        """Prefer an installed speaker-detection model (enables diarization)."""
-        from quill.core.speech.catalog import is_diarization_model
-
-        for model in installed:
-            if is_diarization_model(model.id):
-                return model.id, True
-        return self._default_model_id(installed), False
-
     def _choose_transcript_format(self, title: str) -> str | None:
         wx = self._wx
         labels = [label for label, _key in self._TRANSCRIPT_FORMATS]
@@ -212,11 +202,15 @@ class SpeechCommandsMixin:
         return "text"
 
     def transcribe_audio_offline(self) -> None:
-        wx = self._wx
         provider = self._speech_provider()
-        installed = self._installed_or_prompt(provider, "Transcribe Audio or Video")
-        if installed is None:
-            return
+        self._check_installed_speech_models(
+            provider,
+            "Transcribe Audio or Video",
+            self._transcribe_audio_offline_with_models,
+        )
+
+    def _transcribe_audio_offline_with_models(self, provider: object, installed: list) -> None:
+        wx = self._wx
         model_id, diarize = self._select_model_and_diarize(installed)
         fmt = self._choose_transcript_format("Transcribe Audio or Video")
         if fmt is None:
@@ -305,41 +299,18 @@ class SpeechCommandsMixin:
             f"Transcription complete{extra}. {words} words. Review the draft transcript."
         )
 
-    def _installed_or_prompt(self, provider: object, title: str) -> list | None:
-        """Return installed models, or None after offering to open the manager."""
-        wx = self._wx
-        installed = provider.list_installed_models()  # type: ignore[attr-defined]
-        if installed:
-            return installed
-        offer = self._show_message_box(
-            "No offline speech model is installed yet. Open Manage Speech Models to download one?",
-            title,
-            wx.ICON_INFORMATION | wx.YES_NO,
-        )
-        if offer == wx.YES:
-            self.open_speech_models()
-        return None
-
-    def _default_model_id(self, installed: list) -> str:
-        """The model id to transcribe/dictate with: the user's explicit "Set as
-        Default" choice when it is actually installed, else the catalog's
-        recommended model, else whichever model is installed first."""
-        from quill.core.speech.catalog import RECOMMENDED_MODEL_ID
-
-        ids = [m.id for m in installed]
-        preferred = str(getattr(self.settings, "speech_default_model_id", "") or "")
-        if preferred and preferred in ids:
-            return preferred
-        return RECOMMENDED_MODEL_ID if RECOMMENDED_MODEL_ID in ids else ids[0]
-
     # -- captions --------------------------------------------------------- #
 
     def generate_captions_offline(self) -> None:
-        wx = self._wx
         provider = self._speech_provider()
-        installed = self._installed_or_prompt(provider, "Generate Captions")
-        if installed is None:
-            return
+        self._check_installed_speech_models(
+            provider,
+            "Generate Captions",
+            self._generate_captions_with_models,
+        )
+
+    def _generate_captions_with_models(self, provider: object, installed: list) -> None:
+        wx = self._wx
         model_id = self._default_model_id(installed)
         with wx.FileDialog(
             self.frame,
@@ -396,17 +367,39 @@ class SpeechCommandsMixin:
             if self._show_modal_dialog(dialog, "Save captions") != wx.ID_OK:
                 return
             target = Path(dialog.GetPath())
-        target.write_text(text, encoding="utf-8", newline="\n")
-        self._announce(f"Captions saved to {target.name}.")
+        self._save_caption_text(target, text)
+
+    def _save_caption_text(self, target: Path, text: str) -> None:
+        from quill.core.storage import write_text_atomic
+
+        def work(_progress: Callable[[str, int, int], None]) -> None:
+            write_text_atomic(target, text, encoding="utf-8", newline="\n")
+
+        self._run_background_task(
+            f"Saving captions to {target.name}",
+            work,
+            lambda _result: self._announce(f"Captions saved to {target.name}."),
+        )
 
     # -- microphone selection --------------------------------------------- #
 
     def choose_dictation_microphone(self) -> None:
         from quill.core.speech.capture import list_input_devices
+
+        def work(_progress: Callable[[str, int, int], None]) -> object:
+            return list_input_devices()
+
+        self._run_background_task(
+            "Looking for dictation microphones",
+            work,
+            self._show_dictation_microphones,
+        )
+
+    def _show_dictation_microphones(self, result: object) -> None:
         from quill.core.speech.service import load_input_device, save_input_device
 
         wx = self._wx
-        devices = list_input_devices()
+        devices = list(result)  # type: ignore[arg-type]
         if not devices:
             self._show_message_box(
                 "No microphones were found, or microphone-capture support (the "

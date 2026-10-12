@@ -328,7 +328,18 @@ branch.</li>
 <li><strong>Docs in sync.</strong> <code>CHANGELOG.md</code>,
 <code>docs/release notes/release&lt;X&gt;.md</code>, the user guide, and
 <code>CONTROL_REFERENCE.md</code> agree on the closed issues, the menu
-paths, and the shipped feature set.</li>
+paths, and the shipped feature set. When a base dependency changes,
+reconcile every committed
+<code>standalone/*/portable-inventory.json</code>, including
+Windows-only transitive requirements for each product’s extras. Inspect
+the actual bundle’s drift and dependency metadata before rebaselining
+with
+<code>python scripts\check_runtime_inventory.py &lt;portable-dir&gt; --layout portable --manifest &lt;product-inventory&gt; --write</code>;
+do not bypass the inventory gate. Pure-Python modules in the frozen
+shared runtime may live inside its PYZ archive rather than appear as
+directories in <code>_internal</code>, so verify archive contents before
+concluding that an absent directory means the dependency is
+missing.</li>
 <li><strong>Translations template current.</strong>
 <code>quill/locale/quill.pot</code> shows the target version stamp and a
 fresh <code>POT-Creation-Date</code>.</li>

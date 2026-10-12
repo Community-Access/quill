@@ -33,7 +33,7 @@ _TITLE = "Quill Weather"
 #: they had missed a major release that does not exist. The two update
 #: independently (each resolves its own release asset), so nothing requires the
 #: numbers to agree.
-_VERSION = "2.2.0"
+_VERSION = "2.2.1"
 _BUILD = 1  # this version's build (docs/release/RELEASE.md, "Build numbers")
 #: Every QuillVille app now updates from the one shared repo, each resolving its
 #: own release asset (Quill-Weather-*), so they update and maintain independently.
@@ -210,8 +210,14 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin):
         help_menu.Append(notes_id, "&Release Notes...\tCtrl+Alt+R")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_weather_doc("userguide"), id=guide_id)
         self.frame.Bind(
-            wx.EVT_MENU, lambda _e: self._open_weather_doc("release-notes-2.2"), id=notes_id
+            wx.EVT_MENU, lambda _e: self._open_weather_doc("release-notes-2.2.1"), id=notes_id
         )
+        help_menu.AppendSeparator()
+        activity_id, repeat_id = wx.NewIdRef(), wx.NewIdRef()
+        help_menu.Append(activity_id, "Acti&vity...\tShift+F9")
+        help_menu.Append(repeat_id, "Re&peat Last Result\tF9")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_activity(), id=activity_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.repeat_last_result(), id=repeat_id)
         help_menu.AppendSeparator()
         updates_id = wx.NewIdRef()
         help_menu.Append(updates_id, "&Check for Updates...\tCtrl+Alt+U")
@@ -221,6 +227,7 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin):
                 repo_slug=_REPO,
                 current_version=installed_version(_VERSION, build=_BUILD),
                 app_key="weather",
+                match_edition=False,
             ),
             id=updates_id,
         )
@@ -248,6 +255,8 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin):
             tutorials_id,
             guide_id,
             notes_id,
+            activity_id,
+            repeat_id,
             updates_id,
             about_id,
         )

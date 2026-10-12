@@ -2,7 +2,7 @@
 
 These are the hands-on checks for everything built in late September and early
 October 2026 across QUILL Cast, Quill Radio, QUILL Lite and QUILL. There are
-210 of them. Each one says where to go, what to press and what you should
+226 of them. Each one says where to go, what to press and what you should
 hear. Check a box only after you have tried it yourself with a screen reader;
 passing automated tests do not count.
 
@@ -873,3 +873,65 @@ microphone does not hear the read-back.
 - [ ] In Inkwell, the Dictation menu reads Dictate Anywhere as a checked or
   unchecked item, and Dictation Settings (Ctrl+Alt+D) opens the same window the
   editors use.
+
+## The October 11 Integration
+
+Checks for the work that landed together on 2026-10-11. Test a source build
+from that date or later.
+
+### Show notes and links (Radio and Cast)
+
+- [ ] In Quill Radio, find a podcast episode whose notes have apostrophes or
+  quotes (most WordPress-hosted shows do). Station Details reads them as
+  words. You should never hear "ampersand number 8 2 1 7".
+- [ ] On that episode row, press the Applications key. **View Show Notes...**
+  is there. Choose it: Cast's Show Notes window opens, Tab moves between the
+  links, and Links in These Notes lists them.
+- [ ] Ask for View Show Notes on a second episode. The same window comes back
+  with the new notes; a second copy does not open.
+
+### Settings search marks what is greyed out
+
+- [ ] In any Preferences window with Find a setting, type a word that matches
+  a setting that is currently unavailable. Its row ends in "(disabled)".
+- [ ] Press Enter on that row. You hear "This setting is disabled" and focus
+  stays in the search, rather than landing on a control you cannot change.
+
+### Feed checks you can follow and stop
+
+- [ ] In Cast, open the command palette and run Podcasts: Check All Feeds
+  Now. You hear the count up front, for example "Checking 42 feeds...".
+- [ ] The Feed Refresh Progress window opens. Its status list and progress bar
+  are both named when you Tab to them ("Feed refresh status and active
+  podcasts", "Feed refresh progress").
+- [ ] Press Stop (Alt+S). The check stops and the end sentence says how far it
+  got. Closing Cast during a check is silent.
+- [ ] Ask for Check All Feeds Now again while one is running. You are told a
+  check is already in progress; a second one does not start.
+
+### Cast opens before the library has finished loading
+
+- [ ] With a large library, start Cast. The window appears at once with a
+  loading status, and the library fills in shortly after.
+- [ ] On a fresh profile, the welcome appears only once the library has
+  loaded, not over an empty window.
+
+### QUILL Lite's default document folder
+
+- [ ] Preferences: **Default document folder** has a text field and a
+  **Choose default folder...** button, both read with their labels.
+- [ ] Leave it blank and open a new document's Save As: the dialog starts in
+  your Documents folder. Set a folder, and Open and Save As start there.
+
+### Inkwell saves preferences without a pause
+
+- [ ] In Quill Inkwell, change several menu preferences quickly. Each takes
+  effect at once, with no stall.
+- [ ] Quit Inkwell and start it again: the last choice you made is the one
+  that stuck.
+
+### Your own Gemini key
+
+- [ ] In the own-key dialog, the provider choice offers Google Gemini beside
+  OpenAI, and the help under it says a Gemini key also works with Ask About
+  an Image.

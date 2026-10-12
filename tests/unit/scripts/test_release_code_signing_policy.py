@@ -175,6 +175,14 @@ def test_every_build_release_script_decides_before_it_signs() -> None:
             )
 
 
+@pytest.mark.parametrize("app", ["cast", "radio", "quilllite"])
+def test_release_batch_enables_requested_signing_before_the_policy_decision(app: str) -> None:
+    text = (REPO / "standalone" / app / "scripts" / "build_release.ps1").read_text("utf-8")
+    request = 'if ($Sign) { $env:QUILL_SIGN = "1" }'
+    assert text.count(request) == 1
+    assert text.index(request) < text.index("$null = Resolve-QuillSigning")
+
+
 def test_the_runtime_installer_decides_too() -> None:
     text = (REPO / "standalone" / "runtime" / "build_runtime_installer.ps1").read_text("utf-8")
     decide = text.find("Resolve-QuillSigning")

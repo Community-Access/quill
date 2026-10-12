@@ -54,6 +54,12 @@ def test_standalone_markdown_with_both_artifacts_passes() -> None:
     })
 
 
+def test_ignored_rendered_artifacts_are_not_required() -> None:
+    assert not _validate_docs_artifacts({
+        "standalone/social/docs/QUILL_Social_PRD_Working_Draft.md"
+    })
+
+
 def test_partial_artifact_regeneration_is_reported() -> None:
     errors = _validate_docs_artifacts({
         "standalone/weather/docs/prd.md",

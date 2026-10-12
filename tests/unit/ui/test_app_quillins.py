@@ -54,11 +54,17 @@ def test_apps_shut_down_the_host() -> None:
     # three close answers landed (list.md 5.4).
     # Radio's teardown moved to apps/radio_shutdown.py with the closing report
     # (qc.md F-06), where every step is a guarded lambda.
-    cast = _read("quill/apps/podcasts.py") + _read("quill/apps/podcasts_close.py")
+    # Since the 2026-10 integration Cast's teardown steps live in
+    # ui/podcasts/close_tasks.py, each a guarded call like Radio's.
+    cast = (
+        _read("quill/apps/podcasts.py")
+        + _read("quill/apps/podcasts_close.py")
+        + _read("quill/ui/podcasts/close_tasks.py")
+    )
     radio = _read("quill/apps/radio.py") + _read("quill/apps/radio_shutdown.py")
     assert "app._app_host.shutdown()" in radio
     assert "run_radio_shutdown" in _read("quill/apps/radio.py")
-    assert "self._app_host.shutdown()" in cast
+    assert 'getattr(getattr(host, "_app_host", None), "shutdown", None)' in cast
 
 
 # -- capability split (app-neutral vs editor-only) ---------------------------

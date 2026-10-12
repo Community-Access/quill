@@ -18,7 +18,7 @@ from types import SimpleNamespace
 from typing import Any
 
 from quill.ui.podcasts import status_bar_cells
-from quill.ui.podcasts.status_bar import CastStatusBar, clamp_index
+from quill.ui.podcasts.status_bar import CastStatusBar, _Cell, clamp_index
 
 
 def _controller(
@@ -71,6 +71,86 @@ def _label(bar: CastStatusBar, key: str) -> str:
 
 def _name(bar: CastStatusBar, key: str) -> str:
     return bar._button_name(_spec(bar, key))
+
+
+def test_refresh_reads_each_cell_once_and_updates_only_changed_native_values() -> None:
+    value = {"text": "1", "help": "One waiting episode"}
+    reads = []
+    writes = []
+    native = {"label": "Queue: 1", "name": "Queue, 1", "help": value["help"]}
+    spec = status_bar_cells.CellSpec(
+        key="queue",
+        name="Queue",
+        text=lambda: reads.append(True) or value["text"],
+        activate=lambda: None,
+        help="Queue",
+        live_help=lambda: value["help"],
+    )
+
+    def write(key, text):
+        writes.append((key, text))
+        native[key] = text
+
+    button = SimpleNamespace(
+        GetLabel=lambda: native["label"],
+        GetName=lambda: native["name"],
+        GetHelpText=lambda: native["help"],
+        SetLabel=lambda text: write("label", text),
+        SetName=lambda text: write("name", text),
+        SetHelpText=lambda text: write("help", text),
+    )
+    bar = CastStatusBar(_host())
+    bar._cells = [_Cell(spec, button)]
+    bar._layout = lambda: writes.append(("layout", ""))
+    bar.refresh()
+    assert reads == [True]
+    assert writes == []
+    value.update(text="2", help="Two waiting episodes")
+    bar.refresh()
+    assert reads == [True, True]
+    assert writes == [
+        ("label", "Queue: 2"),
+        ("name", "Queue, 2"),
+        ("help", "Two waiting episodes"),
+        ("layout", ""),
+    ]
+    writes.clear()
+    value["help"] = "A changed hint without a changed count"
+    bar.refresh()
+    assert writes == [("help", value["help"])]
+
+
+def test_incremental_refresh_yields_between_cells_and_layouts_when_cancelled() -> None:
+    bar = CastStatusBar(_host())
+    reads = []
+    writes = []
+    cells = []
+    for index in range(2):
+        spec = status_bar_cells.CellSpec(
+            key=str(index),
+            name=f"Cell {index}",
+            text=lambda i=index: reads.append(i) or "new",
+            activate=lambda: None,
+            help="A test cell",
+        )
+        native = {"label": "old", "name": "old"}
+        button = SimpleNamespace(
+            GetLabel=lambda n=native: n["label"],
+            GetName=lambda n=native: n["name"],
+            SetLabel=lambda text, n=native: n.update(label=text),
+            SetName=lambda text, n=native: n.update(name=text),
+        )
+        cells.append(_Cell(spec, button))
+    bar._cells = cells
+    bar._layout = lambda: writes.append("layout")
+    chunks = bar.refresh_chunks()
+    next(chunks)
+    assert reads == [0]
+    assert cells[0].button.GetLabel() == "Cell 0: new"
+    assert cells[1].button.GetLabel() == "old"
+    chunks.close()
+    assert writes == ["layout"]
+    assert reads == [0]
 
 
 # ---------------------------------------------------------------------------

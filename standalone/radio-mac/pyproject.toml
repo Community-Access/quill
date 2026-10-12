@@ -7,7 +7,7 @@ name = "quill-radio-mac"
 version = "1.0.0"
 description = "Quill Radio for Mac -- accessible, screen-reader-first internet radio, standalone wxPython app for macOS"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.13"
 license = { text = "MIT" }
 authors = [
   { name = "Community Access" },

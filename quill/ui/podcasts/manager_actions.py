@@ -282,7 +282,7 @@ class ManagerActionsMixin:
             self._announce(f"Every episode of {show.title} is already played.")
             return
         answer = show_message_box(
-            f"Mark all {len(unplayed)} unplayed episode(s) of {show.title} as played? "
+            f"Mark all {len(unplayed)} unheard episode(s) of {show.title} as played? "
             "They stay in your library; downloaded files are not deleted.",
             "Mark All as Played",
             wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION,
@@ -319,10 +319,11 @@ class ManagerActionsMixin:
         undo_last_ui.remember(
             "Mark All as Played",
             show.title,
-            f"{len(unplayed)} unplayed episode(s)"
+            f"{len(unplayed)} unheard episode(s)"
             + (f" and {len(held)} downloaded file(s)" if held else ""),
             _undo,
             dispose=lambda: undo_last_ui.discard(held),
+            files=held,
         )
         self._on_library_changed()
         self.refresh_tree()
@@ -351,6 +352,7 @@ class ManagerActionsMixin:
         )
 
     def _after_show_settings_saved(self) -> None:
+        """Settings for This Podcast saved (its window stays open): redraw."""
         self._on_library_changed()
         self.refresh_tree()
 
@@ -375,6 +377,7 @@ class ManagerActionsMixin:
         )
 
     def _after_filters_saved(self) -> None:
+        """Episode Filters saved (its window stays open): redraw what it changed."""
         self._on_library_changed()
         self.refresh_tree()
         self._fill_episodes(self._current_show)
@@ -383,21 +386,18 @@ class ManagerActionsMixin:
         """Filter Episodes Like This: Episode Filters, opened on a drafted rule."""
         from quill.core.podcasts.episode_filters import newest_episodes
         from quill.core.podcasts.filter_suggestions import suggest_rule
-        from quill.ui.podcasts.episode_filters_dialog import EpisodeFiltersDialog
+        from quill.ui.podcasts.episode_filters_dialog import open_episode_filters
 
         suggestion = suggest_rule(episode, show.episodes, newest=newest_episodes)
-        dialog = EpisodeFiltersDialog(
-            self.dialog,
+        open_episode_filters(
+            self,
+            show,
             library=self._library,
-            show=show,
-            announce_cb=self._announce,
+            parent=self.dialog,
             playing=self._currently_playing(),
             suggestion=suggestion,
+            on_saved=self._after_filters_saved,
         )
-        if dialog.show():
-            self._on_library_changed()
-            self.refresh_tree()
-            self._fill_episodes(self._current_show)
 
     def _on_toggle_filter_exempt(self, show: PodcastShow, episode: PodcastEpisode) -> None:
         """Exempt one episode from its podcast's Episode Filter, or put it back.
@@ -464,8 +464,12 @@ class ManagerActionsMixin:
         firing, and "Quill Radio did that a moment ago" is not an answer.
         """
         # One implementation, shared with the palette's Check All Feeds Now:
-        # the count up front, and a check already running answered with where
-        # it is (F-09's batch) rather than with a second check beside it.
+        # the count up front, a check already running answered rather than
+        # doubled, the feeds paced by the monitor and followed in Feed Check.
         from quill.ui.podcasts.feed_refresh import check_all_feeds
 
-        check_all_feeds(self._transport_host, announce=self._announce, safe_mode=self._safe_mode)
+        check_all_feeds(
+            getattr(self, "_transport_host", None) or self,
+            announce=self._announce,
+            safe_mode=self._safe_mode,
+        )

@@ -60,7 +60,7 @@ def _can_start_quietly(host: Any) -> bool:
     if not capture_available():
         return False
     provider = host._voice_provider()
-    return bool(provider.list_installed_models())
+    return bool(provider.is_available())
 
 
 def start_wakeword_if_enabled(host: Any) -> None:
@@ -71,10 +71,28 @@ def start_wakeword_if_enabled(host: Any) -> None:
         host._wakeword_applied = wanted
         if not wanted or wakeword_running(host) or not _can_start_quietly(host):
             return
-        from quill.core.speech.wakeword import WakeController
+        provider = host._voice_provider()
 
-        host._wake = WakeController()
-        host._wake_run(host._wake.start())
+        def work(_progress: Any) -> bool:
+            return bool(provider.list_installed_models())
+
+        def ready(installed: object) -> None:
+            settings = getattr(host, "settings", None)
+            if not installed:
+                host._set_status_quiet(
+                    "Hey QUILL did not start because no offline speech model is installed."
+                )
+                return
+            if not bool(getattr(settings, "voice_wakeword_enabled", False)) or wakeword_running(
+                host
+            ):
+                return
+            from quill.core.speech.wakeword import WakeController
+
+            host._wake = WakeController()
+            host._wake_run(host._wake.start())
+
+        host._run_background_task("Checking speech models for Hey QUILL", work, ready)
     except Exception:  # noqa: BLE001 - a startup task must never raise
         pass
 

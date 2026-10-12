@@ -36,6 +36,7 @@ class _FakeQueue:
         self._in_flight = in_flight or set()
         self.enqueued: list[tuple[str, str, str, str, Path]] = []
         self.cancelled: list[str] = []
+        self.cancelled_shows: list[str] = []
 
     def get(self, item_id: str) -> object | None:
         return object() if item_id in self._in_flight else None
@@ -55,6 +56,10 @@ class _FakeQueue:
     def cancel_item(self, item_id: str) -> bool:
         self.cancelled.append(item_id)
         return True
+
+    def cancel_show(self, show_id: str) -> int:
+        self.cancelled_shows.append(show_id)
+        return 0
 
 
 def test_download_all_episodes_skips_downloaded_and_already_queued(tmp_path: Path) -> None:
@@ -137,7 +142,7 @@ def test_remove_all_episodes_prompt_confirmed_without_deleting_files(
     assert result is True
     assert show.episodes == []
     assert downloaded_file.exists()  # not deleted
-    assert queue.cancelled == ["e1"]
+    assert queue.cancelled_shows == ["show-1"]
     assert "deleted" not in announced[-1]
 
 

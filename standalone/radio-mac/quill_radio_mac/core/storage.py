@@ -59,8 +59,8 @@ _TRANSIENT_LOCK_ERRNOS = frozenset({
 })
 
 # Upstream declares this with PEP 695 syntax (``def f[T](...)``), which
-# needs Python 3.12; this port's floor is 3.11, so a classic TypeVar is
-# used instead. Behavior is identical.
+# uses Python 3.12 syntax; a classic TypeVar keeps this helper compatible
+# with the Python 3.13 runtime used by this port. Behavior is identical.
 T = TypeVar("T")
 
 

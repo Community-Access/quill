@@ -94,7 +94,7 @@ class DocumentCommandsMixin(
         with wx.FileDialog(
             self,
             "Open",
-            defaultDir=str(self.path.parent) if self.path else "",
+            defaultDir=str(self.path.parent) if self.path else self._default_document_folder(),
             wildcard=OPEN_WILDCARD,
             style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST | wx.FD_MULTIPLE,
         ) as dialog:
@@ -114,6 +114,14 @@ class DocumentCommandsMixin(
     def cmd_save(self) -> None:
         self.save()
 
+    def _default_document_folder(self) -> str:
+        """Configured folder, then the user's Windows Documents folder."""
+        configured = str(getattr(self.app.settings, "startup_folder", "")).strip()
+        if configured and Path(configured).is_dir():
+            return configured
+        documents = wx.StandardPaths.Get().GetDocumentsDir()
+        return documents if documents and Path(documents).is_dir() else ""
+
     def cmd_save_as(self) -> bool:
         """Ask for a name, converting the document if the extension asks for it."""
         rich = self.editor.mode == RICH
@@ -125,7 +133,7 @@ class DocumentCommandsMixin(
         with wx.FileDialog(
             self,
             "Save As",
-            defaultDir=str(self.path.parent) if self.path else "",
+            defaultDir=str(self.path.parent) if self.path else self._default_document_folder(),
             defaultFile=default_name,
             wildcard=SAVE_WILDCARD_RICH if rich else SAVE_WILDCARD_PLAIN,
             style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,

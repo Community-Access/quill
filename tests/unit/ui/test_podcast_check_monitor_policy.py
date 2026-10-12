@@ -71,6 +71,7 @@ def _monitor(frame, settings: _Settings, library: PodcastLibrary, *, safe_mode: 
         library_provider=lambda: library,
         refresh_show=refreshed.append,
         safe_mode=safe_mode,
+        library_changed=lambda: None,
     )
     return monitor, refreshed
 
@@ -122,6 +123,8 @@ def test_a_forced_check_asks_the_paused_show_too(frame) -> None:
     monitor, refreshed = _monitor(frame, _Settings(), library)
 
     monitor.check_now(force=True)
+    monitor._refresh_pump.Stop()
+    monitor._pump_refresh_queue()
 
     assert refreshed == ["live", "resting"]
 
@@ -174,6 +177,7 @@ def test_the_round_is_claimed_before_the_work(frame) -> None:
         library_provider=lambda: library,
         refresh_show=lambda _id: stamp_when_asked.append(str(library.last_auto_check)),
         safe_mode=False,
+        library_changed=lambda: None,
     )
 
     monitor.check_now()
@@ -208,8 +212,92 @@ def test_one_bad_feed_never_stops_the_rest(frame) -> None:
         safe_mode=False,
     )
 
-    assert monitor.check_now(force=True) == 1
+    assert monitor.check_now(force=True) == 2
+    monitor._refresh_pump.Stop()
+    monitor._pump_refresh_queue()
     assert refreshed == ["good"]
+
+
+def test_refresh_all_starts_at_most_two_feeds_and_paces_the_rest(
+    frame, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    scheduled: list[tuple[int, object]] = []
+
+    class _Later:
+        def __init__(self, delay: int, callback: object) -> None:
+            self.delay = delay
+            self.callback = callback
+
+        def Stop(self) -> None:
+            return
+
+        def run(self) -> None:
+            self.callback()  # type: ignore[operator]
+
+    def _call_later(delay: int, callback: object) -> _Later:
+        later = _Later(delay, callback)
+        scheduled.append((delay, later))
+        return later
+
+    monkeypatch.setattr(wx, "CallLater", _call_later)
+    library = _Library([_Show(str(i)) for i in range(5)])
+    monitor, refreshed = _monitor(frame, _Settings(), library)
+
+    assert monitor.check_now(force=True) == 5
+    assert refreshed == ["0"]
+    assert len(monitor._refreshes_in_flight) == 1
+    assert scheduled[-1][0] == 250
+    scheduled.pop(0)[1].run()  # type: ignore[attr-defined]
+    assert refreshed == ["0", "1"]
+    assert len(monitor._refreshes_in_flight) == 2
+
+    monitor.refresh_completed("0")
+    assert scheduled[-1][0] == 250
+    scheduled.pop(0)[1].run()  # type: ignore[attr-defined]
+    assert refreshed == ["0", "1", "2"]
+    assert len(monitor._refreshes_in_flight) == 2
+
+    monitor.refresh_completed("1")
+    scheduled.pop(0)[1].run()  # type: ignore[attr-defined]
+    assert refreshed == ["0", "1", "2", "3"]
+    monitor.refresh_completed("2")
+    monitor.refresh_completed("3")
+    scheduled.pop(0)[1].run()  # type: ignore[attr-defined]
+    assert refreshed == ["0", "1", "2", "3", "4"]
+    monitor.refresh_completed("4")
+    assert not monitor.is_checking
+
+
+def test_another_request_preserves_already_queued_checks(frame) -> None:
+    library = _Library([_Show(str(i)) for i in range(5)])
+    monitor, refreshed = _monitor(frame, _Settings(), library)
+    assert monitor.check_now(force=True, defer_start=True, show_ids={"0", "1", "2"}) == 3
+    assert monitor.check_now(force=True, defer_start=True, show_ids={"1", "3", "4"}) == 2
+    assert list(monitor._refresh_queue) == ["0", "1", "2", "3", "4"]
+    assert refreshed == []
+    monitor.shutdown()
+
+
+def test_the_claim_requests_async_persistence_without_serializing_library(
+    frame, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    library = _Library([_Show("live")])
+    saved: list[str] = []
+    monkeypatch.setattr(
+        "quill.core.podcasts.subscriptions.save_library",
+        lambda *_args: pytest.fail("The monitor must not write the library on wx"),
+    )
+    monitor = PodcastCheckMonitor(
+        frame,
+        settings_provider=lambda: _Settings(),
+        library_provider=lambda: library,
+        refresh_show=lambda _id: None,
+        library_changed=lambda: saved.append(library.last_auto_check),
+    )
+    assert monitor.check_now(defer_start=True) == 1
+    assert saved == [library.last_auto_check]
+    assert saved[0]
+    monitor.shutdown()
 
 
 # -- the feature gate -----------------------------------------------------------

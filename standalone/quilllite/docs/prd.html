@@ -298,6 +298,10 @@ without a loop. Shutdown flushes a pending warning before teardown. Logs
 contain only the stable <code>QUILL-LITE-SETTINGS-WRITE</code>
 diagnostic and storage category, not raw exception text or user
 paths.</p>
+<p>Document Open and Save As dialogs use the configured default document
+folder when no saved document location applies. A blank setting resolves
+to the Windows Documents folder; a document already saved continues to
+use its own folder.</p>
 <p>Application shutdown owns the inbox timer through
 <code>QuillLiteApp.stop_background_sources()</code>. Confirmed Exit and
 shell close stop polling before document destruction;
@@ -1498,6 +1502,18 @@ minutes after the last session.</li>
 (<code>settings_fields.DictationSettings</code>), inherited by both
 editors’ <code>Settings</code>.</li>
 </ul>
+<h3 id="510-transcribing-a-recording-2026-10-06">5.10 Transcribing a
+recording (2026-10-06)</h3>
+<p>QUILL Lite’s <strong>Transcribe a Recording</strong> command
+(Shift+F5) transcribes supported audio files in the background using the
+shared dictation speech engines. Its window reports recording length and
+estimated transcription time; on Windows, duration lookup falls back to
+Media Foundation when the other metadata readers cannot determine the
+length. Several selected recordings run in sequence.</p>
+<p>The transcript is saved privately and is not inserted into the
+document the user was editing. A completion notice in Notifications
+opens the saved transcript when activated; Activity retains the outcome
+and failure reason. There is no destination picker.</p>
 <h2 id="6-release-packaging">6. Release packaging</h2>
 <p><strong>Two</strong> artifacts, where the family contract is four –
 the reason is the paragraph under the table:</p>
@@ -1566,6 +1582,11 @@ touches it at all. <strong>Neither ffmpeg nor libmpv is staged</strong>
 — QUILL Lite declares no media components, and the build strips any a
 sibling app left in the shared work area, so build order cannot change
 what ships.</p>
+<p>The installer is per-user: <code>PrivilegesRequired=lowest</code>,
+with no elevated all-users override. App files and the shared runtime
+are installed for the signed-in user. The optional runtime setting that
+replaces Notepad for every user remains a separate, explicitly elevated
+action.</p>
 <p>Code signing is opt-in (<code>-Sign</code> /
 <code>QUILL_SIGN=1</code>), the same convention as every sibling; see
 <code>docs/code-signing.md</code>.</p>

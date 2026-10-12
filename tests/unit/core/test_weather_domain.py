@@ -248,9 +248,17 @@ def test_current_conditions_block_is_complete_and_toggleable() -> None:
 def test_quick_weather_line_is_friendly() -> None:
     report = _report_with_current()
     line = render.quick_weather_line(report, WeatherSettings())
-    assert line.startswith("Here is the weather for Tucson, AZ.")
+    assert line.startswith("Here is the weather for Home.")
     assert "It is 96 degrees Fahrenheit and clear." in line
     assert "The most urgent is a Excessive Heat Warning." in line
+
+
+def test_quick_weather_uses_resolved_place_without_friendly_name() -> None:
+    report = _report_with_current()
+    report.location.display_name = ""
+    assert render.quick_weather_line(report, WeatherSettings()).startswith(
+        "Here is the weather for Tucson, AZ."
+    )
 
 
 def test_quick_weather_line_no_alerts() -> None:

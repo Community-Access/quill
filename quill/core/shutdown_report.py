@@ -61,6 +61,10 @@ STEP_PHRASES: dict[str, str] = {
     "listening_stats": "save your listening statistics",
     "recording_marker": "clear the note that a recording was running",
     "last_seen": "note when it closed, which is how missed recordings are found",
+    "radio_history": "finish saving Radio settings before it closed",
+    "cast_history": "save Cast preferences and recently played episodes",
+    "file_operations": "finish a pending file removal or Undo",
+    "shared_positions": "share your latest listening position",
 }
 
 

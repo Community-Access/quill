@@ -84,6 +84,10 @@ def entries_for(dialog: Any) -> list[tuple[str, Callable[[], None]]]:
             ("&Note to Self...", lambda: favorites_details.edit_note(dialog)),
             # Words a search should find it by: a team, a show, your own label.
             ("Edit Station &Tags...", lambda: favorites_details.edit_tags(dialog)),
+            (
+                "Edit &Website...",
+                lambda: _edit_website(dialog),
+            ),
         ]
         if dialog._marked_key is not None:
             entries.insert(5, ("Move &Above", lambda: dialog._on_move_marked(True)))
@@ -96,6 +100,21 @@ def entries_for(dialog: Any) -> list[tuple[str, Callable[[], None]]]:
         ("Rena&me Folder...\tF2", dialog._on_rename_folder),
         ("&Delete Folder...", dialog._on_delete_folder),
     ]
+
+
+def _edit_website(dialog: Any) -> None:
+    favorite = dialog._selected_favorite()
+    if favorite is None:
+        return
+    from quill.ui.radio import station_website_button
+
+    host = _folder_host(dialog)
+    station_website_button.edit_website(
+        host,
+        favorite.station,
+        parent=dialog.dialog,
+    )
+    dialog._on_selection_changed()
 
 
 def popup(dialog: Any, _event: Any) -> list[Any]:

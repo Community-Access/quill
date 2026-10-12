@@ -80,6 +80,10 @@ class RadioHistory:
     #: Show the read-only Station Details pane in Browse/Search Stations. On by
     #: default; View > Show Station Details toggles it, honored by every surface.
     show_station_details: bool = True
+    #: User-authored website corrections for directory stations. The provider's
+    #: record stays untouched; website_overrides keys join corrections back to
+    #: a station regardless of which browse surface it appeared on.
+    website_overrides: dict[str, str] = field(default_factory=dict)
     #: Ask before the Delete key removes a browse row. Off means the listener
     #: checked "Don't ask me again" in that question -- a preference they set
     #: from inside the thing it governs, which is the only place anybody would

@@ -108,6 +108,7 @@
     "requests",
     "sounddevice",
     "sounddevice.py",
+    "truststore",
     "typing-extensions",
     "typing_extensions.py",
     "tzdata",

@@ -8,6 +8,8 @@ speech provider and the save faked.
 
 from __future__ import annotations
 
+import threading
+import time
 from types import SimpleNamespace
 from typing import Any
 
@@ -25,6 +27,9 @@ class _Provider:
     def list_installed_models(self) -> list[Any]:
         return self._models
 
+    def is_available(self) -> bool:
+        return True
+
 
 class _Host(VoiceInteractionMixin):
     def __init__(self, settings: Settings, *, models: bool = True, safe_mode: bool = False) -> None:
@@ -33,9 +38,18 @@ class _Host(VoiceInteractionMixin):
         self._provider = _Provider([SimpleNamespace(id="m")] if models else [])
         self.announced: list[str] = []
         self.listen_windows = 0
+        self.status: list[str] = []
 
     def _voice_provider(self) -> _Provider:
         return self._provider
+
+    def _check_installed_speech_models(self, provider, _title, on_ready) -> None:
+        installed = provider.list_installed_models()
+        if installed:
+            on_ready(provider, installed)
+
+    def _run_background_task(self, _label, work, on_success) -> None:
+        on_success(work(lambda *_args: None))
 
     def _installed_or_prompt(self, provider: _Provider, title: str) -> list[Any] | None:
         return provider.list_installed_models() or None
@@ -44,7 +58,7 @@ class _Host(VoiceInteractionMixin):
         self.announced.append(message)
 
     def _set_status_quiet(self, message: str) -> None:
-        pass
+        self.status.append(message)
 
     def _play_speech_sound(self, cue: str) -> None:
         pass
@@ -107,6 +121,38 @@ def test_startup_is_quiet_when_it_cannot_listen(saved: list[bool]) -> None:
         wakeword_switch.start_wakeword_if_enabled(host)
         assert not wakeword_switch.wakeword_running(host)
         assert host.announced == []
+
+
+def test_startup_model_scan_does_not_block_the_event_handler(saved: list[bool]) -> None:
+    entered, release, started = threading.Event(), threading.Event(), time.monotonic()
+    host = _Host(_voice_on(voice_wakeword_enabled=True))
+
+    def blocked_scan() -> list[Any]:
+        entered.set()
+        assert release.wait(2)
+        return [SimpleNamespace(id="m")]
+
+    host._provider.list_installed_models = blocked_scan
+
+    def run_background_task(_label, work, on_success) -> None:
+        def worker() -> None:
+            on_success(work(lambda *_args: None))
+
+        threading.Thread(target=worker, daemon=True).start()
+
+    host._run_background_task = run_background_task
+    wakeword_switch.start_wakeword_if_enabled(host)
+    try:
+        assert time.monotonic() - started < 0.2
+        assert entered.wait(1)
+        assert not wakeword_switch.wakeword_running(host)
+    finally:
+        release.set()
+
+    deadline = time.monotonic() + 1
+    while not wakeword_switch.wakeword_running(host) and time.monotonic() < deadline:
+        time.sleep(0.01)
+    assert wakeword_switch.wakeword_running(host)
 
 
 @pytest.mark.parametrize("persist", [False, True])

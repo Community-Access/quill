@@ -59,11 +59,17 @@ updates:
   # resolves llama-cpp-python from PyPI, so it must not use the CPU wheel
   # registry above: its GitHub release redirects receive 401 from Dependabot's
   # proxy even for unrelated security updates such as PyJWT.
+  #
+  # Security updates only (2026-10-11). With version updates on, pip and uv both
+  # bumped the same pyproject pins and every bump arrived twice (huggingface-hub
+  # as #1581 and #1587). A limit of 0 turns off uv's version updates; its
+  # security updates are not counted against the limit, so the lock-only alerts
+  # this entry exists for still get a pull request.
   - package-ecosystem: "uv"
     directory: "/"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 0
     reviewers:
       - "Community-Access/maintainers"
     labels:

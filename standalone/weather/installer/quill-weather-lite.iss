@@ -9,7 +9,7 @@
 
 #define AppName "Quill Weather"
 #ifndef AppVersion
-  #define AppVersion "2.2.0"
+  #define AppVersion "2.2.1"
 #endif
 ; The build of this version and the Windows file version (X.Y.Z.B)
 ; (docs/release/RELEASE.md, "Build numbers"). build_release.ps1 passes
@@ -18,7 +18,7 @@
   #define AppBuild "1"
 #endif
 #ifndef AppFileVersion
-  #define AppFileVersion "2.2.0.1"
+  #define AppFileVersion "2.2.1.1"
 #endif
 #define AppPublisher "Community Access"
 #define AppURL "https://github.com/Community-Access/quill-weather"

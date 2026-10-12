@@ -59,27 +59,10 @@ def resolve_dictation_provider(frame: Any) -> Any:
 def start_transcription(frame: Any, session: Any) -> None:
     """Kick off the background transcription for *session* (fire-and-forget)."""
     controller = frame._live_dictation
-    provider = frame._dictation_provider()
-    installed = provider.list_installed_models()
-    if not installed:
-        controller.transcription_failed(session.session_id, "No speech model installed.")
-        return
-    model_id = frame._default_model_id(installed)
     audio_path = Path(session.audio_path) if session.audio_path else None
     session_id = session.session_id
 
-    from quill.core.speech.dictation_profile import load_profile
     from quill.core.speech.provider import SpeechError, TranscriptionRequest
-
-    # Dictation profile: vocabulary -> initial_prompt (engines that accept a
-    # hint); the same vocabulary reaches every other engine via the fuzzy
-    # corrector inside the controller's refine pass.
-    profile = load_profile()
-    prompt = profile.initial_prompt() or None
-    request = TranscriptionRequest(source_path=audio_path, model_id=model_id, initial_prompt=prompt)
-    asize = audio_path.stat().st_size if (audio_path and audio_path.exists()) else -1
-    logger.info("dictation: transcribe model=%s audio size=%d bytes", model_id, asize)
-
     from quill.ui.ai_transcribe_dialog import AIProgressDialog
 
     wx = frame._wx
@@ -103,6 +86,29 @@ def start_transcription(frame: Any, session: Any) -> None:
 
     def _run() -> None:
         try:
+            provider = frame._dictation_provider()
+            installed = provider.list_installed_models()
+            if not installed:
+                wx.CallAfter(progress.close)
+                wx.CallAfter(
+                    controller.transcription_failed,
+                    session_id,
+                    "No speech model installed.",
+                )
+                return
+            model_id = frame._default_model_id(installed)
+            from quill.core.speech.dictation_profile import load_profile
+
+            # The prompt is engine input; replacements remain in the controller's
+            # result pass so every provider follows the same dictation rules.
+            profile = load_profile()
+            request = TranscriptionRequest(
+                source_path=audio_path,
+                model_id=model_id,
+                initial_prompt=profile.initial_prompt() or None,
+            )
+            asize = audio_path.stat().st_size if (audio_path and audio_path.exists()) else -1
+            logger.info("dictation: transcribe model=%s audio size=%d bytes", model_id, asize)
             effective = request
             with tempfile.TemporaryDirectory(prefix="quill-dictation-vad-") as vad_tmp:
                 from quill.core.speech.speech_vad import trim_for_transcription

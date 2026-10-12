@@ -15,43 +15,9 @@ from __future__ import annotations
 
 from typing import Any
 
+from quill.apps import radio_preferences_load
+from quill.apps.radio_preferences_load import PreferencesDataLoad, podcast_schedule_help
 from quill.core.radio import main_view, reminders
-
-
-def _shared_check_minutes(history: Any) -> int:
-    """How often feeds are checked -- the value both apps read since 3.1.0.
-
-    The shared library settings are the answer. Radio's own field is the
-    fallback for an install that has not been migrated yet (the monitor does
-    that once, at apply), so Preferences shows the cadence somebody actually
-    chose rather than a zero that would read as "off".
-    """
-    from quill.core.podcasts import episode_alerts
-
-    try:
-        from quill.core.paths import app_data_dir
-        from quill.core.podcasts.subscriptions import load_library
-
-        shared = episode_alerts.interval_for_show(load_library(app_data_dir()).settings)
-    except Exception:  # noqa: BLE001 - unreadable library: fall back
-        shared = 0
-    if shared > 0:
-        return shared
-    return int(getattr(history, "podcast_refresh_minutes", 0) or 0)
-
-
-def _save_shared_check_minutes(minutes: int) -> None:
-    """Write the cadence where QUILL Cast will see it. Best effort."""
-    try:
-        from quill.core.paths import app_data_dir
-        from quill.core.podcasts.subscriptions import load_library, save_library
-
-        data_dir = app_data_dir()
-        library = load_library(data_dir)
-        library.settings.check_interval_minutes = int(minutes)
-        save_library(data_dir, library)
-    except Exception:  # noqa: BLE001 - losing the share beats losing the save
-        return
 
 
 def _open_data_folder(app: Any) -> None:
@@ -88,6 +54,28 @@ PORTABLE_WAKE_HELP = (
 )
 
 
+def _startup_checkbox() -> Any:
+    from quill.platform.windows import radio_startup
+    from quill.ui.app_preferences_dialog import PreferenceCheckbox
+
+    enabled = radio_startup.is_windows() and not radio_startup.running_portable()
+    if radio_startup.running_portable():
+        help_text = radio_startup.PORTABLE_REFUSAL
+    elif enabled:
+        help_text = (
+            "Starts Quill Radio when you sign in to this Windows account. "
+            "This uses your per-user startup settings and needs no administrator rights."
+        )
+    else:
+        help_text = "Starting with Windows is only available on Windows."
+    return PreferenceCheckbox(
+        "Start Quill Radio with &Windows",
+        help_text,
+        radio_startup.is_launch_at_startup_enabled(),
+        enabled=enabled,
+    )
+
+
 def _wake_checkbox(value: bool) -> Any:
     """The one preference that changes the machine, so the one a portable copy
     cannot offer: registering a wake task on a friend's computer would outlive
@@ -109,7 +97,6 @@ def _wake_checkbox(value: bool) -> Any:
     )
 
 
-#: "Interrupted recordings at launch": the stored value, then what it reads.
 #: Until 2026-09-25 "Don't ask me again" on the Resume Recording dialog wrote
 #: this with no way back; this row is the way back.
 RESUME_CHOICES: tuple[tuple[str, str], ...] = (
@@ -150,7 +137,6 @@ def open_preferences(app: Any) -> None:
     )
     from quill.core.paths import app_data_dir
     from quill.core.podcasts import refresh_policy
-    from quill.core.radio import history as radio_history
     from quill.core.radio.playback_engine_choices import engine_choices
     from quill.ui.app_preferences_dialog import (
         PreferenceAction,
@@ -160,7 +146,7 @@ def open_preferences(app: Any) -> None:
         PreferenceText,
     )
     from quill.ui.audio.audio_engine import windows_engine_routes_devices
-    from quill.ui.audio.output_routing import list_output_devices
+    from quill.ui.audio.output_routing import cached_output_devices
     from quill.ui.radio.mpv_radio_engine import (
         mpv_output_device_available,
         output_device_choices,
@@ -170,16 +156,23 @@ def open_preferences(app: Any) -> None:
     from quill.apps import radio_youtube_signin_prefs as yt_signin
     from quill.ui.radio import media_player_registration as media_player
 
+    fallback_shared_check_minutes = int(getattr(history, "podcast_refresh_minutes", 0) or 0)
+    initial_podcast_schedule_index = refresh_policy.interval_index(fallback_shared_check_minutes)
+    podcast_schedule_choice_index = 7
+    podcast_schedule_options = [label for _minutes, label in refresh_policy.INTERVAL_CHOICES]
     yt_check, yt_choice, yt_file = yt_signin.rows(app)
     close_action_index = _CLOSE_ACTION_VALUES.index(history.close_action)
+    mpv_present = mpv_output_device_available()
+    cached_devices = cached_output_devices()
     device_labels, device_names, device_index = output_device_choices(
-        list_output_devices(), history.output_device
+        cached_devices or [], history.output_device
     )
     engine_labels, engine_values, engine_index = engine_choices(
         history.playback_engine,
-        mpv_present=mpv_output_device_available(),
+        mpv_present=mpv_present,
         modern_windows_media=windows_engine_routes_devices(),
     )
+    output_device_choice_index = 3
     catalog_interval_labels = [
         "Every 6 hours",
         "Every 12 hours",
@@ -217,6 +210,7 @@ def open_preferences(app: Any) -> None:
                 "Resume Last Station on Launch",
                 history.resume_on_launch,
             ),
+            _startup_checkbox(),
             PreferenceCheckbox(
                 "&Check for updates automatically on launch",
                 "Check for updates automatically on launch",
@@ -384,17 +378,11 @@ def open_preferences(app: Any) -> None:
                 "Check subscribed podcast &feeds:",
                 # The rule from section 3: what it does, then the misreading it
                 # prevents. Every misread here has been about the second half.
-                refresh_policy.describe_schedule(
-                    _shared_check_minutes(history),
-                    on_launch=history.podcast_refresh_on_launch,
-                )
-                + " QUILL Cast reads this same setting since 3.1.0, so "
-                "turning it on here turns it on there; whichever app checks "
-                "first, the other skips that round rather than asking the "
-                "same feeds twice. A single podcast can say Manually only in "
-                "its own settings while the rest keep this cadence.",
-                [label for _minutes, label in refresh_policy.INTERVAL_CHOICES],
-                refresh_policy.interval_index(_shared_check_minutes(history)),
+                podcast_schedule_help(
+                    fallback_shared_check_minutes, on_launch=history.podcast_refresh_on_launch
+                ),
+                podcast_schedule_options,
+                initial_podcast_schedule_index,
                 group=_PODCASTS,
             ),
             PreferenceChoice(
@@ -466,12 +454,28 @@ def open_preferences(app: Any) -> None:
         ],
         announce_cb=app._announce,
     )
+
+    # The device list and the shared cadence are slow to read, so they arrive
+    # after the dialog is up (radio_preferences_load).
+    data_load = PreferencesDataLoad(
+        app,
+        dialog,
+        cached_devices=cached_devices,
+        mpv_present=mpv_present,
+        device_names=device_names,
+        output_device_choice_index=output_device_choice_index,
+        podcast_schedule_choice_index=podcast_schedule_choice_index,
+        fallback_shared_check_minutes=fallback_shared_check_minutes,
+    )
+    data_load.schedule()
+
     result = dialog.show()
     if result is None:
         return
     checkbox_values, choice_indices, text_values = result
     (
         history.resume_on_launch,
+        launch_at_startup,
         history.check_updates_on_startup,
         history.announce_dialog_transitions,
         history.share_family_prefs,
@@ -489,6 +493,24 @@ def open_preferences(app: Any) -> None:
         history.reminder_sound,
         youtube_signin_on,
     ) = checkbox_values
+    from quill.platform.windows import radio_startup
+
+    startup_said = ""
+    if launch_at_startup != radio_startup.is_launch_at_startup_enabled():
+        radio_startup.set_launch_at_startup(launch_at_startup)
+        actual_startup = radio_startup.is_launch_at_startup_enabled()
+        menu_bar = app.frame.GetMenuBar()
+        if menu_bar is not None:
+            menu_bar.Check(int(app._startup_menu_item_id), actual_startup)
+        startup_said = (
+            "Quill Radio will start with Windows."
+            if actual_startup
+            else (
+                "Quill Radio will not start with Windows."
+                if not launch_at_startup
+                else "Windows did not allow the startup setting to change."
+            )
+        )
     youtube_said = yt_signin.apply(youtube_signin_on, choice_indices[10], app=app)
     # Apply verbose logging immediately (quill-radio #5) so it takes effect
     # this session, not just the next launch.
@@ -519,7 +541,7 @@ def open_preferences(app: Any) -> None:
         history.playback_engine = chosen_engine
         # A playing station reconnects through the newly chosen backend.
         app._radio_controller.set_playback_engine(chosen_engine)
-    chosen_device = device_names[choice_indices[3]]
+    chosen_device = device_names[choice_indices[output_device_choice_index]]
     if chosen_device != history.output_device:
         history.output_device = chosen_device
         # Reconnects a playing station through the right engine; a
@@ -531,9 +553,12 @@ def open_preferences(app: Any) -> None:
     # Into the shared library, which is where both apps read it from since
     # 3.1.0. Radio's own field is kept in step so a downgrade still finds a
     # cadence rather than silently losing one.
-    chosen_minutes = refresh_policy.interval_from_index(choice_indices[7])
-    history.podcast_refresh_minutes = chosen_minutes
-    _save_shared_check_minutes(chosen_minutes)
+    schedule_index = choice_indices[podcast_schedule_choice_index]
+    cadence_changed = dialog.choice_was_changed(podcast_schedule_choice_index)
+    if data_load.shared_check_minutes_loaded or cadence_changed:
+        chosen_minutes = refresh_policy.interval_from_index(schedule_index)
+        history.podcast_refresh_minutes = chosen_minutes
+        radio_preferences_load.save_shared_check_minutes(chosen_minutes)
     history.reminder_default_lead_seconds = reminders.LEAD_CHOICES[
         min(max(0, choice_indices[8]), len(reminders.LEAD_CHOICES) - 1)
     ][0]
@@ -556,7 +581,9 @@ def open_preferences(app: Any) -> None:
 
             target = Path(new_log_dir) if new_log_dir else app_data_dir() / "logs"
             relocate_log(listener, target)
-    radio_history.save_history(app_data_dir(), history)
+    from quill.ui.radio.history_save import save_history_async
+
+    save_history_async(app, history)
     # The feed check takes effect now rather than at the next launch, and says
     # what it will do -- a cadence you cannot hear you have changed is one you
     # have to restart the app to believe.
@@ -569,4 +596,4 @@ def open_preferences(app: Any) -> None:
     menu_bar = app.frame.GetMenuBar()
     if menu_bar is not None:
         menu_bar.Check(int(app._resume_menu_item_id), history.resume_on_launch)
-    app._announce(f"Preferences saved. {schedule_said} {youtube_said}".strip())
+    app._announce(f"Preferences saved. {startup_said} {schedule_said} {youtube_said}".strip())

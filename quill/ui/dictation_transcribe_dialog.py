@@ -1,4 +1,4 @@
-"""Transcribe a Recording: choose the recording, the model, and where the text goes.
+"""Transcribe a Recording: choose the recording, model and transcription options.
 
 Shared by QUILL and QUILL Lite (Tools > Dictation in QUILL Lite, Tools >
 Speech > Live Dictation in QUILL, Shift+F5 in both). One small window:
@@ -10,9 +10,9 @@ Speech > Live Dictation in QUILL, Shift+F5 in both). One small window:
   with OpenAI's models joining the list once OpenAI has said which ones the
   saved key may use. Under it, what the model is good for and how long this
   recording should take with it.
-* **Language**, **where the text goes** (a new document, or this one at the
-  cursor), **timestamps** on each paragraph, and whether spoken punctuation and
-  commands are obeyed.
+* **Language**, **timestamps** on each paragraph, and whether spoken punctuation
+  and commands are obeyed. The transcript is kept in Notifications and opens
+  only when the person activates its notification.
 
 While a transcription is running the window says so, and **Stop Transcribing**
 stops it and anything waiting. The work itself is
@@ -37,16 +37,10 @@ from quill.core.windows_dictation.file_models import (
 from quill.core.windows_dictation.speech_language import SPEECH_LANGUAGES
 from quill.ui.dialog_contract import apply_modal_ids
 
-__all__ = ["DESTINATIONS", "STOP_TRANSCRIBING", "TranscribeChoice", "TranscribeFileDialog"]
+__all__ = ["STOP_TRANSCRIBING", "TranscribeChoice", "TranscribeFileDialog"]
 
 #: What Stop Transcribing ends the window with.
 STOP_TRANSCRIBING = 5811
-
-#: (value, label) for where the text goes.
-DESTINATIONS: tuple[tuple[str, str], ...] = (
-    ("new", "A new document"),
-    ("cursor", "This document, at the cursor, when it finishes"),
-)
 
 _PAD = 8
 
@@ -58,7 +52,6 @@ class TranscribeChoice:
     paths: tuple[Path, ...]
     model: FileModel
     language: str
-    destination: str
     timestamps: bool
     obey_commands: bool
 
@@ -93,6 +86,10 @@ class TranscribeFileDialog(wx.Dialog):
         self._paths: list[Path] = [Path(path) for path in paths]
         self._openai: list[str] = []
         self._models: list[FileModel] = []
+        self._installed_models: list[Any] | None = None
+        self._model_scan_pending = True
+        self._model_scan_error = ""
+        self._selected_model_id: str | None = None
         self._weak = _weak_computer() if weak is None else weak
         self._warn = warn
         self.chosen: TranscribeChoice | None = None
@@ -110,8 +107,9 @@ class TranscribeFileDialog(wx.Dialog):
             )
             stop = wx.Button(self, STOP_TRANSCRIBING, label="&Stop Transcribing")
             stop.SetHelpText(
-                "Stops the transcription that is running and forgets any recordings "
-                "waiting after it. Nothing is written into a document."
+                "Stops the transcription that is running and cancels any recordings "
+                "waiting after it. The outcomes remain in Notifications; nothing is "
+                "written into a document."
             )
             stop.Bind(wx.EVT_BUTTON, lambda _e: self.EndModal(STOP_TRANSCRIBING))
             root.Add(running_label, 0, wx.LEFT | wx.TOP, _PAD)
@@ -162,7 +160,7 @@ class TranscribeFileDialog(wx.Dialog):
             "OpenAI key is saved. A slower model is fine for a recording: nobody is "
             "waiting for each phrase, and you can keep working."
         )
-        self.model.Bind(wx.EVT_CHOICE, lambda _e: self._describe())
+        self.model.Bind(wx.EVT_CHOICE, self._on_model_choice)
         about_label = wx.StaticText(self, label="About this model and this recording:")
         self.about = wx.TextCtrl(self, style=wx.TE_READONLY | wx.TE_MULTILINE, size=(-1, 90))
         self.about.SetName("About this model and this recording")
@@ -175,17 +173,17 @@ class TranscribeFileDialog(wx.Dialog):
         root.Add(about_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
         root.Add(self.about, 0, wx.EXPAND | wx.ALL, _PAD)
 
-        where_label = wx.StaticText(self, label="Put the text &in:")
-        self._destinations = [value for value, _label in DESTINATIONS]
-        self.destination = wx.Choice(self, choices=[label for _v, label in DESTINATIONS])
-        self.destination.SetSelection(0)
-        self.destination.SetHelpText(
-            "A new document is the default: the transcript opens in a document of its "
-            "own when it is ready. This document puts it where the cursor is in this "
-            "document at the moment it finishes, as one step Ctrl+Z can take back."
+        self.output = wx.StaticText(
+            self,
+            label=(
+                "Completed transcripts appear in Notifications and open only when you choose one."
+            ),
         )
-        root.Add(where_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
-        root.Add(self.destination, 0, wx.EXPAND | wx.ALL, _PAD)
+        self.output.SetHelpText(
+            "The editor stays where it is while transcription runs. Open Notifications "
+            "and activate the completed result when you are ready to read it."
+        )
+        root.Add(self.output, 0, wx.EXPAND | wx.ALL, _PAD)
 
         self.timestamps = wx.CheckBox(self, label="Add &timestamps")
         self.timestamps.SetValue(False)  # off unless the person checks it (owner, 2026-10-05)
@@ -219,6 +217,7 @@ class TranscribeFileDialog(wx.Dialog):
         self.SetSizerAndFit(root)
         apply_modal_ids(self, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
         self.file.SetFocus()
+        self._load_installed_models()
         if load_openai:
             self._load_openai()
 
@@ -228,6 +227,45 @@ class TranscribeFileDialog(wx.Dialog):
         self._paths = [Path(path) for path in paths if str(path).strip()]
         self._show_paths()
         self._describe()
+
+    def _load_installed_models(self) -> None:
+        """Scan optional installed models away from the dialog's event thread."""
+        from quill.core.windows_dictation.model_store import installed_models
+        from quill.ui.update_download import thread_submit
+
+        def work(**_kwargs: Any) -> list[Any]:
+            return installed_models()
+
+        def done(_name: str, result: Any) -> None:
+            wx.CallAfter(self._installed_models_done, list(result))
+
+        def failed(_name: str, error: BaseException) -> None:
+            wx.CallAfter(self._installed_models_failed, error)
+
+        thread_submit(
+            "quill-transcribe-installed-models",
+            work,
+            on_success=done,
+            on_failure=failed,
+        )
+
+    def _installed_models_done(self, models: list[Any]) -> None:
+        if not self:
+            return
+        self._installed_models = models
+        self._model_scan_pending = False
+        self._fill_models()
+
+    def _installed_models_failed(self, error: BaseException) -> None:
+        if not self:
+            return
+        self._installed_models = []
+        self._model_scan_pending = False
+        self._model_scan_error = str(error) or error.__class__.__name__
+        self._fill_models()
+        self.about.SetValue(
+            f"Could not check downloaded speech models. Built-in models remain available. {error}"
+        )
 
     def _show_paths(self) -> None:
         if len(self._paths) > 1:
@@ -262,15 +300,23 @@ class TranscribeFileDialog(wx.Dialog):
         return self._languages[max(0, self.language.GetSelection())]
 
     def _fill_models(self) -> None:
-        chosen = self.selected_model()
-        self._models = file_models(self._language(), self._openai)
+        self._models = file_models(
+            self._language(),
+            self._openai,
+            installed=self._installed_models or (),
+        )
         self.model.Set([model.label for model in self._models])
         ids = [model.id for model in self._models]
-        keep = chosen.id if chosen is not None and chosen.id in ids else None
+        keep = self._selected_model_id if self._selected_model_id in ids else None
         fallback = default_model(self._models)
         target = keep or (fallback.id if fallback is not None else None)
         if target is not None:
             self.model.SetSelection(ids.index(target))
+        self._describe()
+
+    def _on_model_choice(self, _event: Any) -> None:
+        selected = self.selected_model()
+        self._selected_model_id = selected.id if selected is not None else None
         self._describe()
 
     def selected_model(self) -> FileModel | None:
@@ -280,11 +326,27 @@ class TranscribeFileDialog(wx.Dialog):
     def _describe(self) -> None:
         model = self.selected_model()
         if model is None:
-            self.about.SetValue("No speech model is available for this language here.")
+            message = (
+                "Checking downloaded speech models..."
+                if self._model_scan_pending
+                else "No speech model is available for this language here."
+            )
+            if self._model_scan_error:
+                message += f"\nCould not check downloaded speech models: {self._model_scan_error}"
+            self.about.SetValue(message)
             return
         from quill.core.windows_dictation.audio_file import duration_of
 
         lines = [model.description]
+        if self._model_scan_pending:
+            lines.append(
+                "Checking for downloaded speech models; built-in models are available now."
+            )
+        elif self._model_scan_error:
+            lines.append(
+                "Could not check downloaded speech models; built-in models are available. "
+                f"{self._model_scan_error}"
+            )
         if len(self._paths) == 1 and self._paths[0].is_file():
             lines.append(estimate_sentence(model, duration_of(self._paths[0]), weak=self._weak))
         elif len(self._paths) > 1:
@@ -337,7 +399,6 @@ class TranscribeFileDialog(wx.Dialog):
             paths=tuple(self._paths),
             model=model,
             language=self._language(),
-            destination=self._destinations[max(0, self.destination.GetSelection())],
             timestamps=self.timestamps.GetValue(),
             obey_commands=self.obey.GetValue(),
         )

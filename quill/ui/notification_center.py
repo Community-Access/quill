@@ -33,6 +33,7 @@ back to the thing itself.
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 __all__ = ["TITLE", "NotificationCenterMixin", "open_notification_center", "row_label"]
@@ -102,7 +103,7 @@ def row_label(notice: Any) -> str:
     return " -- ".join(parts)
 
 
-def open_notification_center(host: Any, *, on_open: Any = None) -> None:
+def open_notification_center(host: Any, *, on_open: Any = None, path: Path | None = None) -> None:
     """Show the list. *on_open* is called with a notice's target, if it has one.
 
     *host* supplies ``_announce`` and, where it has one, ``_show_modal_dialog``
@@ -122,7 +123,7 @@ def open_notification_center(host: Any, *, on_open: Any = None) -> None:
 
     say = getattr(host, "_announce", None) or (lambda _m: None)
     # Stored oldest-first, read newest-first: the order it is asked about.
-    notices = newest_first(load_notifications())
+    notices = newest_first(load_notifications(path=path))
 
     parent = getattr(host, "frame", None) or host
     dialog = wx.Dialog(parent, title=TITLE, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
@@ -157,7 +158,7 @@ def open_notification_center(host: Any, *, on_open: Any = None) -> None:
         # Reading it IS opening it: a row you have just acted on is not still
         # new, and making somebody mark it separately is busywork.
         if not notice.read:
-            notices[:] = newest_first(mark_read(notice.id))
+            notices[:] = newest_first(mark_read(notice.id, path=path))
         index = listbox.GetSelection()
         target = str(getattr(notice, "target", "") or "")
         _refresh(index)
@@ -207,7 +208,7 @@ def open_notification_center(host: Any, *, on_open: Any = None) -> None:
 
     def _mark_all(_event: Any) -> None:
         unread = sum(1 for n in notices if not n.read)
-        notices[:] = newest_first(mark_all_read())
+        notices[:] = newest_first(mark_all_read(path=path))
         _refresh(listbox.GetSelection())
         # A count, which no tone carries and the reader cannot infer.
         say("Nothing was unread." if not unread else f"Marked {unread} as read.")
@@ -217,7 +218,7 @@ def open_notification_center(host: Any, *, on_open: Any = None) -> None:
             say("The list is already empty.")
             return
         removed = len(notices)
-        clear_notifications()
+        clear_notifications(path=path)
         notices.clear()
         _refresh()
         say(f"Cleared {removed} notification{'s' if removed != 1 else ''}.")
@@ -233,6 +234,8 @@ def open_notification_center(host: Any, *, on_open: Any = None) -> None:
     listbox.SetFocus()
 
     shower = getattr(host, "_show_modal_dialog", None)
+    if not callable(shower):
+        shower = getattr(host, "_dictation_run_modal", None)
     if callable(shower):
         shower(dialog, TITLE)
     else:

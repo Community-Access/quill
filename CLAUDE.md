@@ -32,6 +32,12 @@ pytest -q
 # serially. `pytest -q` is the answer that counts.
 pytest -q -n 8 --dist loadgroup
 
+# One CI shard locally (PR CI splits tests\unit + tests\accessibility four
+# ways since 2026-10-11; tests/conftest.py _keep_this_shard deals whole files
+# to shards). A test that runs pytest.main itself must clear QUILL_TEST_SHARD
+# or its inner run deselects what it names (test_parallel_grouping.py).
+$env:QUILL_TEST_SHARD = "2/4"; pytest tests\unit tests\accessibility -q -n 4 --dist loadfile
+
 # Fast smoke subset (high-signal core checks; seconds, not minutes)
 pytest -m smoke -q
 

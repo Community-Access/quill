@@ -17,8 +17,10 @@ navigates anything -- which is the whole reason the guard is narrow.
 
 from __future__ import annotations
 
+from types import SimpleNamespace
 from typing import Any
 
+from quill.ui.podcasts.main_panel import CastMainPanelMixin
 from quill.ui.podcasts.winamp_mixin import CastWinampKeysMixin
 
 
@@ -178,22 +180,32 @@ def test_left_and_right_pass_through_to_a_focused_list() -> None:
 # -- and the guard stays narrow ----------------------------------------------- #
 
 
-def test_the_letters_still_work_in_a_tree() -> None:
-    """No letter in the Winamp map navigates anything, so the guard must not
-    touch them -- otherwise the fix costs the feature."""
+def test_main_window_passes_player_letters_to_list_typeahead() -> None:
+    """C must reach the focused list instead of announcing playback status."""
+    host = SimpleNamespace(
+        _podcast_history=SimpleNamespace(alt_f4_to_tray=False),
+        _on_winamp_char_hook=lambda _event: (_ for _ in ()).throw(
+            AssertionError("main window dispatched a player key")
+        ),
+    )
+    event = _Event(ord("C"))
+    CastMainPanelMixin._on_main_char_hook(host, event)
+    assert event.skipped
+
+
+def test_bare_arrows_pass_through_from_buttons_and_status_controls() -> None:
+    """Bare arrows belong to the focused control; Now Playing has its own slider."""
+    for code in (LEFT, RIGHT):
+        host, event = _press(_FakeButton(), code)
+        assert host.ran == []
+        assert event.skipped
+
+
+def test_shift_arrows_still_seek_from_a_non_navigational_control() -> None:
     from quill.ui.radio import winamp_keys as wk
 
-    host, _event = _press(_FakeTree(), X)
-    assert host.ran == [wk.ACTION_PLAY]
-
-
-def test_arrows_still_seek_when_focus_is_not_a_navigational_control() -> None:
-    """A button, the panel, the status bar: nothing there wants an arrow, so the
-    transport keeps them."""
-    from quill.ui.radio import winamp_keys as wk
-
-    host, _event = _press(_FakeButton(), LEFT)
-    assert host.ran == [wk.ACTION_BACK_5]
+    host, _event = _press(_FakeButton(), LEFT, shift=True)
+    assert host.ran == [wk.ACTION_BACK_30]
 
 
 def test_a_text_field_still_swallows_nothing_at_all() -> None:

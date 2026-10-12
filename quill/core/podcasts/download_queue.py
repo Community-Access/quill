@@ -38,6 +38,7 @@ from typing import Literal
 
 from quill.core import http_client
 from quill.core.error_codes import CodedError
+from quill.core.net import verified_ssl_context
 from quill.core.podcasts import feed_auth, transport
 
 _log = logging.getLogger(__name__)
@@ -115,7 +116,7 @@ def _fetch_chunked(
     if resume_from:
         headers["Range"] = f"bytes={resume_from}-"
     request = urllib.request.Request(url, headers=headers)
-    context = ssl.create_default_context()
+    context = verified_ssl_context()
     try:
         with feed_auth.urlopen_auth_safe(
             request, timeout=_TIMEOUT_SECONDS, context=context
@@ -293,6 +294,22 @@ class PodcastDownloadQueue:
         self._on_status_changed(item)
         return True
 
+    def cancel_show(self, show_id: str) -> int:
+        """Cancel a subscription's transfers, including legacy and qualified item ids."""
+        with self._lock:
+            items = [
+                item
+                for item in self._items.values()
+                if item.show_id == show_id and item.status not in ("completed", "cancelled")
+            ]
+            for item in items:
+                item._cancel_event.set()
+                if item.status in ("queued", "paused"):
+                    item.status = "cancelled"
+        for item in items:
+            self._on_status_changed(item)
+        return len(items)
+
     def get(self, item_id: str) -> DownloadItem | None:
         with self._lock:
             return self._items.get(item_id)
@@ -319,7 +336,11 @@ class PodcastDownloadQueue:
         item.status = status
 
     def shutdown(self) -> None:
-        self._shutdown = True
+        with self._lock:
+            self._shutdown = True
+            for item in self._items.values():
+                if item.status not in ("completed", "failed", "cancelled"):
+                    item._cancel_event.set()
         self._wake.set()
 
     # -- worker -----------------------------------------------------------

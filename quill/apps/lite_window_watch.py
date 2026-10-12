@@ -160,7 +160,7 @@ class DocumentDiskWatchMixin:
             forget_hint=_FORGET_HINT,
         )
         if remember_answer(self.app.settings, name, answer.remembered_value):
-            self.app.save_settings()
+            self.app._queue_settings_save()
         if answer.action == RELOAD:
             if self._reload_from_disk(current):
                 self._announce(f"Reloaded {name} from disk.")

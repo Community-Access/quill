@@ -403,6 +403,7 @@ def show_modeless_surface(
     *,
     announce: Callable[[str], None] | None = None,
     enter_region: Callable[[str], None] | None = None,
+    focus: bool = True,
 ) -> None:
     """Show a modeless surface *frame* with the same accessibility onboarding a
     modal dialog gets from :func:`show_modal_dialog`, minus the blocking loop.
@@ -424,14 +425,17 @@ def show_modeless_surface(
     except Exception:  # noqa: BLE001 - a naming failure must never block the window
         pass
     _install_context_help(frame)
-    if enter_region is not None:
+    if focus and enter_region is not None:
         enter_region(label)
-    if announce is not None and _transition_cues_enabled():
+    if focus and announce is not None and _transition_cues_enabled():
         announce(f"Entered {label}")
-    show = getattr(frame, "Show", None)
+    show = getattr(frame, "Show" if focus else "ShowWithoutActivating", None)
+    if not callable(show):
+        show = getattr(frame, "Show", None)
     if callable(show):
         show()
-    focus_primary_control(frame)
+    if focus:
+        focus_primary_control(frame)
 
 
 def announce_surface_exit(label: str, announce: Callable[[str], None] | None) -> bool:

@@ -31,9 +31,7 @@ def is_wx_main_thread() -> bool:
 
 
 @contextmanager
-def timed_operation(
-    name: str, warn_after_ms: float = 100.0, **context: Any
-) -> Generator[None, None, None]:
+def timed_operation(name: str, warn_after_ms: float = 100.0, **context: Any) -> Generator[None]:
     started = time.monotonic()
     try:
         yield

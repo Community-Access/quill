@@ -34,7 +34,7 @@ def delete_folder(dialog: Any, folder: Any) -> None:
         "Delete Folder",
         [
             "Move them up to the parent folder (safe)",
-            "Unfollow them too",
+            "Unfollow them everywhere, including copies in other folders",
         ],
     ) as picker:
         if picker.ShowModal() != wx.ID_OK:

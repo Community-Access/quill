@@ -433,7 +433,7 @@ class WeatherCenterDialog:
         # Skip an empty read-only field in the tab order (no alert -> no box).
         self._show_field(self._alert_detail_label, self._alert_detail, bool(alerts))
 
-        place = location.resolved_name or location.label
+        place = location.label
         today = result.daily[0] if result.daily else None
         local_time = ""
         if self._settings.show_local_time and result.time_zone:

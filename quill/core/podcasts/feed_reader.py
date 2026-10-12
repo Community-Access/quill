@@ -26,6 +26,7 @@ import re
 import ssl
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -35,6 +36,7 @@ import feedparser
 from quill.core import http_client
 from quill.core.display_text import clean_display_text
 from quill.core.error_codes import CodedError
+from quill.core.net import verified_ssl_context
 from quill.core.net_retry import retry_transient
 from quill.core.podcasts import feed_auth, feed_problems, namespace_tags, transport
 from quill.core.podcasts.models import PodcastEpisode
@@ -183,9 +185,26 @@ def permanent_landing(url: str, hops: list[tuple[int, str]]) -> str:
 def _failure(error: BaseException, *, had_credentials: bool) -> FeedReaderError:
     """The exception to raise for *error*, worded for a person."""
     problem = feed_problems.classify(error, had_credentials=had_credentials)
+    detail = problem.detail
+    if problem.kind == feed_problems.CERTIFICATE:
+        redirects = []
+        for status, target in feed_auth.last_redirects():
+            try:
+                parsed = urllib.parse.urlsplit(target)
+            except ValueError:
+                safe_target = "<unparseable redirect>"
+            else:
+                safe_target = (
+                    f"{parsed.scheme}://{parsed.hostname}"
+                    if parsed.scheme and parsed.hostname
+                    else "<unparseable redirect>"
+                )
+            redirects.append(f"{status} {safe_target}")
+        if redirects:
+            detail = f"{detail}; redirects={' -> '.join(redirects)}"
     if problem.kind == feed_problems.SIGN_IN:
-        return FeedAuthError(problem.sentence, kind=problem.kind, detail=problem.detail)
-    return FeedReaderError(problem.sentence, kind=problem.kind, detail=problem.detail)
+        return FeedAuthError(problem.sentence, kind=problem.kind, detail=detail)
+    return FeedReaderError(problem.sentence, kind=problem.kind, detail=detail)
 
 
 def _attempt(
@@ -265,7 +284,7 @@ def _fetch_feed_bytes(
         # the header up front matches every other client's behavior for
         # feeds that expect it unconditionally.
         headers["Authorization"] = _basic_auth_header(username, password)
-    context = ssl.create_default_context()
+    context = verified_ssl_context()
 
     #: Where the server said this feed now lives, when it said so permanently.
     #: Collected rather than acted on: rewriting a subscription's address is a

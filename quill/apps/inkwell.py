@@ -30,6 +30,7 @@ import wx
 
 from quill.apps.inkwell_dictation import InkwellDictationMixin
 from quill.apps.inkwell_keys import InkwellKeysMixin
+from quill.apps.inkwell_preference_save import InkwellPreferenceSaver
 from quill.apps.inkwell_preferences import open_preferences
 from quill.core.abbreviations import (
     AbbreviationLibrary,
@@ -66,6 +67,12 @@ class QuillInkwellFrame(
 
         self._data_dir: Path = app_data_dir()
         self._settings: InkwellSettings = load_settings(self._data_dir)
+        self._preference_saver = InkwellPreferenceSaver(
+            self._data_dir,
+            self._task_manager,
+            # Late-bound, so the announce in force when a save ends is the one used.
+            lambda message: self._announce(message),
+        )
         self._library: AbbreviationLibrary = load_abbreviation_library(self._data_dir)
         self._hook: Any = None
         self._windows = WindowManager(wx)
@@ -483,11 +490,11 @@ class QuillInkwellFrame(
 
     def _set_pref(self, name: str, value: bool) -> None:
         setattr(self._settings, name, value)
-        save_settings(self._data_dir, self._settings)
+        self._preference_saver.queue(self._settings)
 
     def _set_injection_mode(self, paste: bool) -> None:
         self._settings.injection_mode = "paste" if paste else "type"
-        save_settings(self._data_dir, self._settings)
+        self._preference_saver.queue(self._settings)
         self._announce(
             "Expansions are pasted; the clipboard is restored afterwards."
             if paste
@@ -593,8 +600,11 @@ def main() -> int:
     try:
         app.MainLoop()
     finally:
-        release_primary_instance(slot=_IPC_SLOT)
-        log_listener.stop()
+        try:
+            frame._preference_saver.flush()
+        finally:
+            release_primary_instance(slot=_IPC_SLOT)
+            log_listener.stop()
     return 0
 
 

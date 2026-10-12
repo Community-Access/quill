@@ -1,11 +1,12 @@
 """Track 3, first half: your stations, your order, and what a row says.
 
-These three lessons are about the difference between a list of stations and a
+These four lessons are about the difference between a list of stations and a
 list that is *yours*. Folders and order come first, because that is the part
 people put off and then cannot face doing at two hundred stations. Then the
 ten slots that skip the list entirely. Then the two windows that decide what a
 row reads out and what pressing Enter on it does -- both of which are speech
-settings wearing a list setting's clothes.
+settings wearing a list setting's clothes. The last one fixes a station's
+website address on this computer without changing the directory.
 """
 
 from __future__ import annotations
@@ -354,6 +355,46 @@ TUTORIALS: tuple[Tutorial, ...] = (
             "Both windows are worth ten minutes, just once. A list that reads "
             "only the four things you care about feels very different from one "
             "that reads nine."
+        ),
+        then=("station-website-address", "keys-that-are-yours"),
+    ),
+    Tutorial(
+        slug="station-website-address",
+        title="Correct a station's website",
+        track="yours",
+        minutes=4,
+        surfaces=("Browse Stations", "Manage Favorite Stations", "Quill Radio"),
+        summary=(
+            "Add or correct a station's website for this Radio profile, then restore "
+            "the directory's address whenever you want."
+        ),
+        steps=(
+            Step(
+                title="Edit the address on a station",
+                body=(
+                    "On a station row in Browse Stations or Manage Favorite Stations, "
+                    "open its menu and choose Edit Website. Enter the HTTP or HTTPS "
+                    "address you want Quill Radio to use. This correction stays in "
+                    "your Radio profile; it does not change the directory or contact "
+                    "the site to check it."
+                ),
+                keys=("Shift+F10",),
+                hear="Edit Website, the address field, and the saved correction.",
+            ),
+            Step(
+                title="Restore the directory's address",
+                body=(
+                    "Choose Edit Website again and clear the address. Quill Radio "
+                    "removes your local correction and goes back to the station's "
+                    "directory address."
+                ),
+                keys=("Shift+F10",),
+                hear="The address correction is cleared.",
+            ),
+        ),
+        closing=(
+            "A corrected station website belongs to your Radio profile alone. "
+            "You can open it from the row's menu or the Website button."
         ),
         then=("keys-that-are-yours",),
     ),

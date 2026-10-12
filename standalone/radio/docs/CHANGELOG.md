@@ -8,6 +8,43 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 ## [Unreleased]
 
+Testing rebuild: **3.2.0 (build 2)**. The packages have not been published yet.
+
+- **Recordings opens or restores its existing window.** This build includes
+  the minimized-window fix described under 3.2.0 below: Record > Recordings...
+  and Ctrl+Shift+R bring an already-open, minimized list back instead of
+  silently leaving it in the taskbar. Native Windows regression tests now
+  exercise the shared opener with empty and populated recordings folders,
+  including restoration without creating a second window.
+- **Routine history saves run in the background.** Preferences, station
+  website corrections, favorites and related settings use detached snapshots
+  on one ordered writer. Pending changes are coalesced, storage failures are
+  reported, and shutdown records whether the final save was confirmed within
+  its bounded wait instead of silently claiming success.
+- **Startup checks avoid an unnecessary settings write.** Starting the
+  existing background update check no longer synchronously writes the
+  bookkeeping timestamp while the main window opens.
+- **HTTPS uses the Windows certificate store.** Shared podcast requests and
+  other Python HTTPS clients recognize trusted Windows and
+  organization-managed roots while keeping hostname and certificate
+  verification enabled. Invalid certificates still fail; podcast diagnostic
+  reports include verification details without exposing feed credentials.
+  Portable packaging also checks that the declared certificate-store backend
+  and required Windows dependencies are included.
+- **Start Quill Radio with Windows is also in Preferences.** The Preferences
+  checkbox and Station-menu item use the same per-user startup entry and stay
+  in sync. Preferences reports if Windows prevents a requested change.
+  Portable copies leave Windows startup settings alone.
+- **Add or correct a station website locally.** The Website button asks before
+  adding a missing address; choosing **Add Website** with **Don't ask me
+  again** checked also disables the question in QUILL. **Edit Website...** is
+  available on station rows in Browse Stations and Manage Favorite Stations.
+  HTTP(S) addresses are checked for valid format without contacting the site;
+  an empty edit removes the local correction and falls back to the station's
+  directory address.
+- **The installer is current-user only.** It no longer offers an all-users
+  install that requires administrator approval; the app and shared runtime go
+  in your Windows profile.
 - **Internet Archive searches put the best matches first.** A listener looked for the Yours Truly, Johnny Dollar half-hour series that Old Time Radio Researchers uploaded on 1 October 2026 and found only older releases: Find on an Internet Archive folder, and the libraries part of Search, took the first 40 results in alphabetical order of the Archive's item names, and the new uploads start with "YTJD". They now ask the Archive for its own relevance order; browsing a folder keeps its stable order so paging still works (`quill/core/radio/internet_archive.py`).
 - **Ctrl+Alt+Shift+R is Quill Radio's alone, and four Radio keys work beside the other apps.** QUILL's Keymap Editor, QUILL Lite's Keyboard Manager, QUILL Cast's Restore from a Backup and Audio Studio's Resume Last Book on Launch sat on Radio's system-wide show and hide key and have moved. Quill Weather, Inkwell, the Media Player and Converter no longer take a show and hide key by default, so Restore from Backup (Ctrl+Alt+Shift+W), Recording Settings (Ctrl+Alt+Shift+I), Recent Problems (Ctrl+Alt+Shift+P) and Choose Columns (Ctrl+Alt+Shift+C) fire while those apps run (`quill/core/family_chords.py`).
 - **CBC podcasts work again, and every request says who is asking honestly.** Quill Radio, QUILL Cast and QUILL now send one shared User-Agent, `<app>/<version> (+https://www.quillforall.org)` -- for this app, `Quill Radio/<version>` -- and podcast requests add that they come from a podcast app: `Quill Radio/<version> (podcast app; +https://www.quillforall.org)`. CBC's servers stall the bare crawler shape the old one had, so every CBC podcast timed out (`quill/core/http_client.py`).

@@ -19,6 +19,7 @@ and ignored the listener's columns -- fixed by being replaced).
 
 from __future__ import annotations
 
+from collections.abc import Generator
 from typing import Any
 
 from quill.core.podcasts.models import PodcastEpisode, PodcastShow
@@ -98,6 +99,8 @@ class CastEpisodeListMixin:
     def refresh_tree(self) -> None:
         """What the Manager's verbs call after changing the library: in the one
         window, both the tree and whichever place is showing."""
+        if getattr(self, "_cast_closing", False) or getattr(self, "_cast_closed", False):
+            return
         self._reload_library_tree()  # type: ignore[attr-defined]
         self._refresh_place(keep=True)  # type: ignore[attr-defined]
 
@@ -168,25 +171,87 @@ class CastEpisodeListMixin:
         """The one report list, multi-select, with the episode columns to start."""
         wx = self._wx
         from quill.ui.media.list_columns_view import columns_for
+        from quill.ui.virtual_list import virtual_report_list
 
         # The heading the content pane shows above the list, created first so it
         # is the list's accessible name on wxMSW ("Inbox (6)").
         self._list_heading = wx.StaticText(parent, label="Places")
-        self._episodes = wx.ListCtrl(parent, style=wx.LC_REPORT)
+        self._episodes = virtual_report_list(wx, parent, self._list_cell_text)
         self._episodes.SetHelpText(
             "The episodes (or podcasts) of the place you chose, one per row, read "
             "column by column. Enter plays an episode or opens a podcast; Space "
             "adds an episode to the queue; Delete removes it from this place; "
-            "Shift+F10 offers everything else. Left Arrow at the top returns to Places."
+            "Shift+F10 offers everything else. Tab and Shift+Tab move between "
+            "Places and this content."
         )
         self._current_show: PodcastShow | None = None
         self._current_episodes: list[PodcastEpisode] = []
         self._pair_shows: list[PodcastShow] = []
         self._list_kind = "episodes"
         self._list_rows: list[Any] = []
+        self._list_items: list[Any] = []
+        self._list_cell_cache: dict[int, dict[str, str]] = {}
         self._episode_columns = columns_for("cast", "cast.episodes")
         self._apply_list_columns("episodes")
         return self._episodes
+
+    def _list_cell_text(self, row: int, column: int) -> str:
+        if not (0 <= row < len(self._list_rows) and 0 <= column < len(self._list_columns)):
+            return ""
+        values = self._list_cell_cache.get(row)
+        if values is None:
+            if self._list_kind == "episodes":
+                episode = self._current_episodes[row]
+                show = self._show_for_selected_episode(row)
+                values = (
+                    self._episode_row_values(episode, show)  # type: ignore[attr-defined]
+                    if self._list_rows[row][0] == "episode"
+                    else {"title": episode.title}
+                )
+            elif self._list_kind == "podcasts":
+                from quill.core.podcasts.sorting import unheard_count
+
+                show = self._list_items[row]
+                folder = self._library.find_folder(show.folder_id) if show.folder_id else None
+                values = {
+                    "title": show.title,
+                    "unheard": str(unheard_count(show)),
+                    "last_new": max((ep.published for ep in show.episodes), default="")[:16],
+                    "folder": folder.name if folder is not None else "",
+                }
+            elif self._list_kind == "playlists":
+                playlist = self._list_items[row]
+                counts = getattr(self, "_cast_playlist_counts", {})
+                if playlist.id in counts:
+                    count: Any = counts[playlist.id]
+                elif self._podcast_library_is_large():  # type: ignore[attr-defined]
+                    count = "Checking..."
+                else:
+                    from quill.core.podcasts.playlists import resolve_playlist
+
+                    count = len(resolve_playlist(self._library, playlist))
+                values = {
+                    "title": playlist.name,
+                    "kind": "Smart" if playlist.kind == "smart" else "By hand",
+                    "count": str(count),
+                }
+            else:
+                from quill.ui.notification_center import _ago
+
+                notice = self._list_items[row]
+                title = str(getattr(notice, "title", "") or "")
+                body = str(getattr(notice, "body", "") or "")
+                values = {
+                    "title": f"{title} -- {body}" if body else title,
+                    "when": _ago(str(getattr(notice, "timestamp", "") or "")),
+                    "state": "New" if not getattr(notice, "read", True) else "",
+                }
+            self._list_cell_cache[row] = values
+        return str(values.get(self._list_columns[column].id, ""))
+
+    def _show_list_rows(self) -> None:
+        self._list_cell_cache = {}
+        self._episodes.set_rows(len(self._list_rows))
 
     def _apply_list_columns(self, kind: str) -> None:
         from quill.core.media.list_columns import ColumnDef
@@ -211,34 +276,36 @@ class CastEpisodeListMixin:
         """Choose Columns saved a layout: rebuild the list in it, now."""
         self._refresh_place(keep=True)  # type: ignore[attr-defined]
 
-    def _fill_episodes(self, show: PodcastShow | None) -> None:
+    def _fill_episodes(
+        self, show: PodcastShow | None, *, prepared_episodes: list[PodcastEpisode] | None = None
+    ) -> None:
         """One podcast's episodes, as the Manager filled them."""
         from quill.core.podcasts.sorting import sort_episodes
-        from quill.ui.media.list_columns_view import fill_row
 
         if self._list_kind != "episodes":
             self._apply_list_columns("episodes")
         self._episodes.DeleteAllItems()
-        episodes = self._visible_show_episodes(show) if show is not None else []
+        if prepared_episodes is None and show is not None and len(show.episodes) > 20_000:
+            self._request_cast_view_preparation(self._current_place)  # type: ignore[attr-defined]
+            return
+        episodes = (
+            self._visible_show_episodes(show)
+            if prepared_episodes is None and show is not None
+            else []
+        )
         self._current_show = show
-        self._current_episodes = sort_episodes(episodes, self._selected_episode_sort_mode())
+        self._current_episodes = (
+            prepared_episodes
+            if prepared_episodes is not None
+            else sort_episodes(episodes, self._selected_episode_sort_mode())
+        )
         self._pair_shows = []
         self._list_rows = (
             [("episode", f"{show.id}\x00{ep.guid}") for ep in self._current_episodes]
             if show
             else []
         )
-        self._episodes.Freeze()
-        try:
-            for row, episode in enumerate(self._current_episodes):
-                fill_row(
-                    self._episodes,
-                    row,
-                    self._episode_columns,
-                    self._episode_row_values(episode, show),  # type: ignore[attr-defined]
-                )
-        finally:
-            self._episodes.Thaw()
+        self._show_list_rows()
 
     def _visible_show_episodes(self, show: PodcastShow) -> list[PodcastEpisode]:
         """The podcast's own Episode Filter, the catalogue limit, then the View > Show filter."""
@@ -262,7 +329,21 @@ class CastEpisodeListMixin:
         *,
         view_label: str = "",
         lead_rows: list[tuple[str, str, str]] | None = None,
+        prepared: bool = False,
     ) -> None:
+        for _step in self._episode_pair_row_chunks(
+            pairs, view_label=view_label, lead_rows=lead_rows, prepared=prepared
+        ):
+            pass
+
+    def _episode_pair_row_chunks(
+        self,
+        pairs: list[tuple[PodcastShow, PodcastEpisode]],
+        *,
+        view_label: str = "",
+        lead_rows: list[tuple[str, str, str]] | None = None,
+        prepared: bool = False,
+    ) -> Generator[None]:
         """Cross-podcast rows, in the listener's columns (never by position).
 
         *lead_rows* are ``(kind, value, label)`` rows drawn first -- the Inbox's
@@ -272,21 +353,25 @@ class CastEpisodeListMixin:
         """
         from quill.core.podcasts.filtering import filter_episodes
         from quill.core.podcasts.sorting import sort_pairs
-        from quill.ui.media.list_columns_view import fill_row
 
         del view_label
         if self._list_kind != "episodes":
             self._apply_list_columns("episodes")
         mode = self._episode_show_filter()
-        if mode != "all":
+        if not prepared and mode != "all":
             wanted = {id(ep) for ep in filter_episodes([ep for _s, ep in pairs], mode)}
             pairs = [(show, ep) for show, ep in pairs if id(ep) in wanted]
-        pairs = sort_pairs(
-            self._library, pairs, view_mode=self._library.settings.episode_list_view_mode
-        )
+        if not prepared:
+            pairs = sort_pairs(
+                self._library,
+                pairs,
+                view_mode=self._library.settings.episode_list_view_mode,
+                limit=_MAX_ROWS,
+            )
         shown = pairs[:_MAX_ROWS]
         lead = list(lead_rows or [])
         self._episodes.DeleteAllItems()
+        yield
         self._current_show = None
         self._current_episodes = [
             PodcastEpisode(guid="", title=label, audio_url="") for _k, _v, label in lead
@@ -295,107 +380,43 @@ class CastEpisodeListMixin:
         self._pair_shows = [None] * len(lead) + [show for show, _episode in shown]
         self._list_rows = [(kind, value) for kind, value, _label in lead]
         self._list_rows += [("episode", f"{show.id}\x00{ep.guid}") for show, ep in shown]
-        self._episodes.Freeze()
-        try:
-            for row, (_kind, _value, label) in enumerate(lead):
-                fill_row(self._episodes, row, self._episode_columns, {"title": label})
-            for row, (show, episode) in enumerate(shown, start=len(lead)):
-                fill_row(
-                    self._episodes,
-                    row,
-                    self._episode_columns,
-                    self._episode_row_values(episode, show),  # type: ignore[attr-defined]
-                )
-        finally:
-            self._episodes.Thaw()
+        self._list_cell_cache = {}
+        yield
+        self._episodes.SetItemCount(len(self._list_rows))
+        yield
+        self._episodes.Refresh()
+        yield
 
     def _fill_podcast_rows(self, shows: list[PodcastShow]) -> None:
         """Favorites: podcast rows with Title, Unheard, Last new episode, Folder."""
-        from quill.core.podcasts.sorting import unheard_count
-        from quill.ui.media.list_columns_view import fill_row
-
         self._apply_list_columns("podcasts")
         self._current_show = None
         self._current_episodes = []
         self._pair_shows = []
         self._list_rows = [("show", show.id) for show in shows]
-        self._episodes.Freeze()
-        try:
-            for row, show in enumerate(shows):
-                folder = self._library.find_folder(show.folder_id) if show.folder_id else None
-                newest = max((ep.published for ep in show.episodes), default="")
-                fill_row(
-                    self._episodes,
-                    row,
-                    self._list_columns,
-                    {
-                        "title": show.title,
-                        "unheard": str(unheard_count(show)),
-                        "last_new": newest[:16],
-                        "folder": folder.name if folder is not None else "",
-                    },
-                )
-        finally:
-            self._episodes.Thaw()
+        self._list_items = shows
+        self._show_list_rows()
 
     def _fill_playlist_rows(self) -> None:
         """Playlists: one row each, smart or by hand, with its live count."""
-        from quill.core.podcasts.playlists import resolve_playlist
-        from quill.ui.media.list_columns_view import fill_row
-
         self._apply_list_columns("playlists")
         self._current_show = None
         self._current_episodes = []
         self._pair_shows = []
         playlists = sorted(self._library.playlists, key=lambda p: p.name.casefold())
         self._list_rows = [("playlist", p.id) for p in playlists]
-        self._episodes.Freeze()
-        try:
-            for row, playlist in enumerate(playlists):
-                try:
-                    count = len(resolve_playlist(self._library, playlist))
-                except Exception:  # noqa: BLE001 - a broken rule counts nothing
-                    count = 0
-                fill_row(
-                    self._episodes,
-                    row,
-                    self._list_columns,
-                    {
-                        "title": playlist.name,
-                        "kind": "Smart" if playlist.kind == "smart" else "By hand",
-                        "count": str(count),
-                    },
-                )
-        finally:
-            self._episodes.Thaw()
+        self._list_items = playlists
+        self._show_list_rows()
 
     def _fill_notice_rows(self, notices: list[Any]) -> None:
         """Notifications: one row per notice, newest first."""
-        from quill.ui.media.list_columns_view import fill_row
-        from quill.ui.notification_center import _ago
-
         self._apply_list_columns("notices")
         self._current_show = None
         self._current_episodes = []
         self._pair_shows = []
         self._list_rows = [("notice", str(getattr(n, "id", ""))) for n in notices]
-        self._episodes.Freeze()
-        try:
-            for row, notice in enumerate(notices):
-                title = str(getattr(notice, "title", "") or "")
-                body = str(getattr(notice, "body", "") or "")
-                fill_row(
-                    self._episodes,
-                    row,
-                    self._list_columns,
-                    {
-                        "title": f"{title} -- {body}" if body else title,
-                        "when": _ago(str(getattr(notice, "timestamp", "") or "")),
-                        "state": "New" if not getattr(notice, "read", True) else "",
-                    },
-                )
-        finally:
-            self._episodes.Thaw()
+        self._list_items = notices
+        self._show_list_rows()
 
     # -- selection ---------------------------------------------------------------- #
 
@@ -462,36 +483,25 @@ class CastEpisodeListMixin:
     # -- rows that change under a download ------------------------------------------- #
 
     def _refresh_episode_row_for_item(self, item: Any) -> None:
-        from quill.ui.media.list_columns_view import set_row
-
         if self._list_kind != "episodes":
             return
         for row, episode in enumerate(self._current_episodes):
             if episode.guid and episode.guid == item.episode_guid:
                 show = self._show_for_selected_episode(row)
-                set_row(
-                    self._episodes,
-                    row,
-                    self._episode_columns,
-                    self._episode_row_values(episode, show),  # type: ignore[attr-defined]
-                )
+                if show is None or show.id != item.show_id:
+                    continue
+                self._list_cell_cache.pop(row, None)
+                self._episodes.RefreshItem(row)
                 break
 
     def _refresh_selected_episode_row(self) -> None:
-        from quill.ui.media.list_columns_view import set_row
-
         index = self._episodes.GetFirstSelected()
         if self._list_kind != "episodes" or not (0 <= index < len(self._current_episodes)):
             return
         if index < len(self._list_rows) and self._list_rows[index][0] != "episode":
             return  # an Inbox folder row is not an episode to redraw
-        episode = self._current_episodes[index]
-        set_row(
-            self._episodes,
-            index,
-            self._episode_columns,
-            self._episode_row_values(episode, self._show_for_selected_episode(index)),  # type: ignore[attr-defined]
-        )
+        self._list_cell_cache.pop(index, None)
+        self._episodes.RefreshItem(index)
 
     def _on_episode_selected(self, _event: object = None) -> None:
         """The Manager enabled four buttons here; the one window has none to enable."""

@@ -14,18 +14,18 @@ from pathlib import Path
 # py2app bundles whatever interpreter runs this build, so the build Python *is*
 # the app's Python. QUILL's source uses PEP 695 generics (e.g. ``def name[T]``
 # in quill/core/storage.py and versioned_store.py) that only parse on 3.12+, and
-# pyproject requires >=3.12. Building on 3.11 produced a bundle that raised a
+# pyproject requires >=3.13. Building below 3.13 produced a bundle that raised a
 # SyntaxError on the first QUILL import and hung on py2app's error screen (#755).
 # Abort loudly here so a too-old interpreter can never ship that bundle again.
-# noqa rationale: UP036 assumes the running Python is >= the project's 3.12
-# target, but this guards the *build* interpreter, which can be an older 3.11.
-if sys.version_info < (3, 12):  # noqa: UP036
+# noqa rationale: UP036 assumes the running Python is >= the project's 3.13
+# target, but this guards the *build* interpreter.
+if sys.version_info < (3, 13):  # noqa: UP036
     raise SystemExit(
-        "QUILL's macOS app must be built with Python 3.12 or newer "
+        "QUILL's macOS app must be built with Python 3.13 or newer "
         f"(py2app bundles the interpreter it runs under; this is "
         f"{sys.version_info.major}.{sys.version_info.minor}). QUILL's source uses "
-        "PEP 695 generics a 3.11 bundle cannot parse, so the app would crash on "
-        "launch (#755). Re-run with Python 3.12+."
+        "PEP 695 generics a pre-3.12 bundle cannot parse, so the app would crash on "
+        "launch (#755). Re-run with Python 3.13+."
     )
 
 # This build script lives in scripts/ (build tooling, deliberately outside the

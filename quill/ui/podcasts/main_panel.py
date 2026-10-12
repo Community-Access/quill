@@ -16,20 +16,27 @@ name of a plain control comes from the ``wx.StaticText`` constructed immediately
 before it in z-order; ``SetName`` sets wxWindow's own name and the screen reader
 never sees it. ``quill/tools/check_control_labels.py`` is the gate that catches it.
 
-**One EVT_CHAR_HOOK, not several.** Alt+F4-to-tray, the scan hold, F6 into the
-status bar, Alt+Shift+Up/Down on a place (Windows routes Alt+arrow to the menu
-system before a list sees it) and the Winamp transport letters are all
-dispatched from one handler, in that order, and the order is the priority.
+**One EVT_CHAR_HOOK, not several.** Alt+F4-to-tray, F6 into the status bar,
+and Alt+Shift+Up/Down on a place (Windows routes Alt+arrow to the menu system
+before a list sees it) share one handler. Playback letters belong to the
+separate Now Playing window, leaving list typeahead intact here.
 """
 
 from __future__ import annotations
+
+import logging
+from collections.abc import Generator
+from typing import Any
 
 import wx
 
 from quill.ui.dialog_contract import set_accessible_name
 from quill.ui.podcasts.library_find import CastLibraryFindMixin
+from quill.ui.surface_lifetime import window_is_going
 
 __all__ = ["CastMainPanelMixin"]
+
+logger = logging.getLogger(__name__)
 
 
 class CastMainPanelMixin(CastLibraryFindMixin):
@@ -100,8 +107,10 @@ class CastMainPanelMixin(CastLibraryFindMixin):
         )
         self._shows_tree.SetHelpText(
             "Your podcasts and folders. Arrow through them; Enter on a podcast "
-            "plays its next episode; expand a podcast to reach its episodes; Left "
-            "Arrow at the top returns to Places. Shift F10 offers the row's actions."
+            "plays its next episode; expand a podcast to reach its episodes. Left "
+            "Arrow collapses an expanded folder or podcast; it does not leave the "
+            "tree. Tab and Shift+Tab move between Places and this tree. Shift+F10 "
+            "offers the row's actions."
         )
         set_accessible_name(
             self._shows_tree,
@@ -124,7 +133,7 @@ class CastMainPanelMixin(CastLibraryFindMixin):
         self._shows_tree.Bind(wx.EVT_TREE_ITEM_EXPANDING, self._on_library_expanding)
         self._shows_tree.Bind(
             wx.EVT_TREE_SEL_CHANGED,
-            lambda e: (self._refresh_selection_buttons(), self._refresh_notes_pane(), e.Skip()),
+            self._on_cast_content_selected,
         )
         self._episodes.Bind(
             wx.EVT_LIST_ITEM_ACTIVATED,
@@ -135,7 +144,7 @@ class CastMainPanelMixin(CastLibraryFindMixin):
             self._episodes.Bind(context_event, self._on_content_context_menu)
         self._episodes.Bind(
             wx.EVT_LIST_ITEM_SELECTED,
-            lambda e: (self._refresh_selection_buttons(), self._refresh_notes_pane(), e.Skip()),
+            self._on_cast_content_selected,
         )
 
         # The show notes of the selected episode, one Tab from the list (Jeff,
@@ -220,6 +229,7 @@ class CastMainPanelMixin(CastLibraryFindMixin):
 
         panel.SetSizer(root)
         self._main_panel = panel
+        panel.Enable(not getattr(self, "_podcast_library_loading", False))
         self._rebuild_places()
         self._reload_library_tree()
         self._refresh_transport_controls()
@@ -235,26 +245,116 @@ class CastMainPanelMixin(CastLibraryFindMixin):
 
     # -- the notes pane follows the cursor ------------------------------------ #
 
+    def _on_cast_content_selected(self, event: Any) -> None:
+        if (
+            getattr(self, "_cast_closed", False)
+            or getattr(self, "_cast_closing", False)
+            or getattr(self, "_cast_list_mutating", False)
+            or window_is_going(self.frame)
+        ):
+            event.Skip()
+            return
+        if not getattr(self, "_cast_tree_mutating", False):
+            self._cast_cursor_revision = int(getattr(self, "_cast_cursor_revision", 0)) + 1
+        if not getattr(self, "_cast_selection_refresh_pending", False):
+            self._cast_selection_refresh_pending = True
+
+            def refresh() -> None:
+                self._cast_selection_refresh_pending = False
+                if (
+                    getattr(self, "_cast_closed", False)
+                    or getattr(self, "_cast_closing", False)
+                    or window_is_going(self.frame)
+                ):
+                    return
+                self._refresh_selection_buttons()
+
+            # Finish native selection before changing accessible button labels.
+            call_after = getattr(self._wx, "CallAfter", None)
+            if callable(call_after):
+                call_after(refresh)
+            else:
+                refresh()
+        later = getattr(self, "_cast_notes_later", None)
+        if later is not None:
+            later.Stop()
+        call_later = getattr(self._wx, "CallLater", None)
+        if callable(call_later):
+            self._cast_notes_later = call_later(120, self._refresh_notes_pane)
+        else:
+            self._refresh_notes_pane()
+        event.Skip()
+
     def _refresh_notes_pane(self) -> None:
         """The pane follows the library cursor: an episode's notes, a podcast's
         description, or a sentence saying what to select."""
         pane = getattr(self, "_notes_pane", None)
-        if pane is None:
+        frame = getattr(self, "frame", None)
+        if (
+            pane is None
+            or getattr(self, "_cast_closed", False)
+            or getattr(self, "_cast_closing", False)
+            or (frame is not None and window_is_going(frame))
+        ):
             return
+        later = getattr(self, "_cast_notes_later", None)
+        if later is not None:
+            later.Stop()
+            self._cast_notes_later = None
         pair = self._selected_episode()
         if pair is not None:
             show, episode = pair
-            pane.set_notes(
-                str(getattr(episode, "description", "") or ""),
-                title=str(getattr(episode, "title", "")),
-                podcast=str(getattr(show, "title", "")),
+            content = (
+                str(episode.description or ""),
+                str(episode.title),
+                str(show.title),
             )
+        else:
+            show = self._selected_show()
+            content = (
+                (str(show.description), str(show.title), str(show.title))
+                if show is not None and str(show.description or "").strip()
+                else ("", "", "")
+            )
+        if content == getattr(self, "_cast_notes_content", None):
             return
-        show = self._selected_show()
-        if show is not None and str(getattr(show, "description", "") or "").strip():
-            pane.set_notes(str(show.description), title=str(show.title), podcast=str(show.title))
-            return
-        pane.set_placeholder("Select an episode to read its show notes here.")
+        self._cast_notes_content = content
+        html, title, podcast = content
+        if not title:
+            pane.set_placeholder("Select an episode to read its show notes here.")
+        elif len(html) <= 16_384:
+            pane.set_notes(html, title=title, podcast=podcast)
+        else:
+            from quill.core.podcasts.notes_render import render_notes
+
+            pane.set_placeholder("Preparing show notes...")
+
+            def rendered(_operation: str, document: Any) -> None:
+                if (
+                    content == getattr(self, "_cast_notes_content", None)
+                    and not getattr(self, "_cast_closed", False)
+                    and not getattr(self, "_cast_closing", False)
+                    and self.frame
+                    and not self.frame.IsBeingDeleted()
+                ):
+                    pane.set_document(document, html=html, title=title, podcast=podcast)
+
+            def failed(_operation: str, error: BaseException) -> None:
+                if (
+                    content != getattr(self, "_cast_notes_content", None)
+                    or getattr(self, "_cast_closed", False)
+                    or getattr(self, "_cast_closing", False)
+                ):
+                    return
+                self._cast_notes_content = None
+                self._announce(f"Could not prepare the show notes. {error}")
+
+            self._task_manager.submit(
+                "cast-show-notes",
+                lambda **_kwargs: render_notes(html),
+                on_success=rendered,
+                on_failure=failed,
+            )
 
     def _seek_selected_episode(self, ms: int) -> None:
         """Enter on a timestamp in the pane: seek the playing episode, or start
@@ -344,7 +444,7 @@ class CastMainPanelMixin(CastLibraryFindMixin):
             menu.Destroy()
 
     def _on_main_char_hook(self, event: wx.KeyEvent) -> None:
-        """Alt+F4-to-tray first, then the Winamp transport letters.
+        """Handle main-window navigation and pass list typeahead through.
 
         One hook rather than two: two EVT_CHAR_HOOK bindings on the same
         window means only one of them decides whether the key travels on, and
@@ -360,9 +460,7 @@ class CastMainPanelMixin(CastLibraryFindMixin):
             return
         # F6 moves into the status bar and a second F6 hands focus back, the same
         # region key the QUILL editor and Quill Radio use. Before the scan hold and
-        # the transport letters because it is a navigation key, and a navigation key
-        # a transport swallows is a region a keyboard listener cannot reach -- the
-        # same mistake bare Left and Right were making in the library tree.
+        # list typeahead because it is a navigation key.
         if (
             event.GetKeyCode() == wx.WXK_F6
             and not event.AltDown()
@@ -386,18 +484,9 @@ class CastMainPanelMixin(CastLibraryFindMixin):
         extension = getattr(self, "_cast_extension_key", None)
         if callable(extension) and extension(event):
             return  # Ctrl+Home, Shift+Space (qc.md section 18)
-        scan = getattr(self, "_scan_hold", None)
-        if scan is not None and scan.handles(
-            key_code=event.GetKeyCode(),
-            shift=bool(event.ShiftDown()),
-            ctrl=bool(event.ControlDown()),
-            alt=bool(event.AltDown()),
-        ):
-            # Every auto-repeat comes through here, which is how the hold is
-            # measured; press() is idempotent for exactly that reason.
-            scan.press()
-            return
-        self._on_winamp_char_hook(event)
+        # Playback keys live in Now Playing. Let letters reach the focused list
+        # so wx and screen readers can jump to a row by its first letter.
+        event.Skip()
 
     def _on_main_key_up(self, event: wx.KeyEvent) -> None:
         """End a scan the moment the key actually comes up.
@@ -440,10 +529,14 @@ class CastMainPanelMixin(CastLibraryFindMixin):
         thing that changed, and the bar is the least important surface in the
         window by definition.
         """
+        for _step in self._cast_status_bar_chunks():
+            pass
+
+    def _cast_status_bar_chunks(self) -> Generator[None]:
         bar = getattr(self, "_cast_status_bar", None)
         if bar is None:
             return
         try:
-            bar.refresh()
+            yield from bar.refresh_chunks()
         except Exception:  # noqa: BLE001 - a stale readout is not worth a crash
-            pass
+            logger.exception("Could not refresh the Cast status bar")

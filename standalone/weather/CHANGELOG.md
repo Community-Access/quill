@@ -4,11 +4,16 @@ All notable changes to Quill Weather are recorded here. The fuller, more
 detailed version of this changelog lives in `docs/CHANGELOG.md` (and its HTML
 and EPUB twins) and ships with the app.
 
-Quill Weather is versioned in lockstep with Quill Radio (they ship the same
-weather code), but the two release and update independently. Its first public
-release is 2.2.0.
+Quill Weather shares weather code with Quill Radio, but the two release and
+update independently. This version history begins with 2.2.0.
 
-## Unreleased
+## 2.2.1 - 2026-10-08
+
+- Current conditions, Quick Weather, and local time now use a saved place's friendly name, such as Home or Summer Home.
+- Builds now offer only the shared installer and self-contained portable zip, with matching update selection and shared-runtime freshness checks.
+- The installer is per-user and records Weather's own version; the portable launcher stays offline and cannot register Windows startup or scheduled background checks.
+- Help now exposes Activity and Repeat Last Result, which were already available through the shared app shell.
+- Tray settings and Windows startup/background toggles now report failed changes and restore the menu's actual state.
 
 ### Show and hide key off by default (2026-10-05)
 

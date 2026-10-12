@@ -13,7 +13,9 @@ pressure is not a reason to throw away the thing somebody is halfway through.
 
 from __future__ import annotations
 
-from collections.abc import Callable
+import logging
+from collections.abc import Callable, Mapping, Set
+from contextvars import ContextVar
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
@@ -26,7 +28,13 @@ from quill.core.podcasts.subscriptions import PodcastLibrary
 #: aside for one step of undo -- see :func:`quill.ui.undo_last_ui.capturing_deletes`)
 #: and False to let the ordinary unlink proceed. None in every other case, so
 #: the default behaviour is exactly what it was.
-_delete_hook: Callable[[Path], bool] | None = None
+logger = logging.getLogger(__name__)
+_delete_hook: ContextVar[Callable[[Path], bool] | None] = ContextVar(
+    "podcast_delete_hook", default=None
+)
+_delete_observer: ContextVar[Callable[[PodcastEpisode, str], None] | None] = ContextVar(
+    "podcast_delete_observer", default=None
+)
 
 
 def set_delete_hook(hook: Callable[[Path], bool] | None) -> Callable[[Path], bool] | None:
@@ -37,26 +45,33 @@ def set_delete_hook(hook: Callable[[Path], bool] | None) -> Callable[[Path], boo
     catch all of them without knowing which one fired. One hook, installed for
     the duration of that verb, does it.
     """
-    global _delete_hook
-    previous = _delete_hook
-    _delete_hook = hook
+    previous = _delete_hook.get()
+    _delete_hook.set(hook)
     return previous
 
 
-def _delete_file(path_str: str) -> None:
+def set_delete_observer(
+    observer: Callable[[PodcastEpisode, str], None] | None,
+) -> Callable[[PodcastEpisode, str], None] | None:
+    """Observe metadata removals in this context so a deferred failure can repair them."""
+    previous = _delete_observer.get()
+    _delete_observer.set(observer)
+    return previous
+
+
+def _delete_file(path_str: str) -> bool:
     if not path_str:
-        return
+        return False
     path = Path(path_str)
-    if _delete_hook is not None:
-        try:
-            if _delete_hook(path):
-                return
-        except Exception:  # noqa: BLE001 - a hook bug must not strand the file
-            pass
+    hook = _delete_hook.get()
+    if hook is not None and hook(path):
+        return True
     try:
         path.unlink(missing_ok=True)
     except OSError:
-        pass
+        logger.warning("Could not remove a podcast download; its metadata was kept", exc_info=True)
+        return False
+    return True
 
 
 def remove_downloaded_copy(episode: PodcastEpisode) -> bool:
@@ -70,7 +85,12 @@ def remove_downloaded_copy(episode: PodcastEpisode) -> bool:
     """
     if not episode.downloaded_path:
         return False
-    _delete_file(episode.downloaded_path)
+    original = episode.downloaded_path
+    if not _delete_file(original):
+        return False
+    observer = _delete_observer.get()
+    if observer is not None:
+        observer(episode, original)
     episode.downloaded_path = ""
     return True
 
@@ -85,10 +105,7 @@ def apply_keep_last_n(show: PodcastShow, settings: PodcastSettings) -> list[Podc
         return []
     downloaded.sort(key=lambda e: e.published, reverse=True)
     to_prune = downloaded[settings.retention_count :]
-    for episode in to_prune:
-        _delete_file(episode.downloaded_path)
-        episode.downloaded_path = ""
-    return to_prune
+    return [episode for episode in to_prune if remove_downloaded_copy(episode)]
 
 
 def wants_delete_after_play(settings: PodcastSettings) -> bool:
@@ -124,9 +141,7 @@ def apply_delete_after_play(
         return False
     if download_in_progress:
         return False
-    _delete_file(episode.downloaded_path)
-    episode.downloaded_path = ""
-    return True
+    return remove_downloaded_copy(episode)
 
 
 def on_episode_played(library: Any, show: Any, episode: Any) -> bool:
@@ -174,14 +189,19 @@ def _published_moment(episode: PodcastEpisode) -> datetime:
 
 
 def downloaded_episodes(
-    library: PodcastLibrary,
+    library: PodcastLibrary, *, sizes: Mapping[str, int] | None = None
 ) -> list[tuple[PodcastShow, PodcastEpisode, int]]:
     """Every episode with a local file: ``(show, episode, bytes)``."""
     result: list[tuple[PodcastShow, PodcastEpisode, int]] = []
     for show in library.shows:
         for episode in show.episodes:
             if episode.downloaded_path:
-                result.append((show, episode, file_size(episode.downloaded_path)))
+                size = (
+                    file_size(episode.downloaded_path)
+                    if sizes is None
+                    else sizes[episode.downloaded_path]
+                )
+                result.append((show, episode, size))
     return result
 
 
@@ -204,7 +224,23 @@ def per_show_usage(library: PodcastLibrary) -> list[tuple[PodcastShow, int, int]
     return sorted(rows, key=lambda row: row[2], reverse=True)
 
 
-def is_protected(library: PodcastLibrary, show: PodcastShow, episode: PodcastEpisode) -> bool:
+def protection_keys(library: PodcastLibrary) -> set[tuple[str, str]]:
+    """Queue commitments and downloads still held for Recently Expired."""
+    return {
+        (item.show_id, item.episode_guid)
+        for items in (library.queue, library.recently_expired)
+        for item in items
+    }
+
+
+def is_protected(
+    library: PodcastLibrary,
+    show: PodcastShow,
+    episode: PodcastEpisode,
+    *,
+    queued: Set[tuple[str, str]] | None = None,
+    pinned: bool | None = None,
+) -> bool:
     """Whether this download is exempt from age limits and the storage cap.
 
     Three ways in, and all three are the same statement: **the listener has
@@ -218,17 +254,19 @@ def is_protected(library: PodcastLibrary, show: PodcastShow, episode: PodcastEpi
     """
     from quill.core.podcasts.show_policy import is_pinned
 
-    if is_pinned(library, show):
+    if is_pinned(library, show) if pinned is None else pinned:
         return True
     if episode.position_ms > 0 and not episode.played:
         return True
-    return any(
-        item.show_id == show.id and item.episode_guid == episode.guid for item in library.queue
-    )
+    keys = protection_keys(library) if queued is None else queued
+    return (show.id, episode.guid) in keys
 
 
 def apply_age_limit(
-    library: PodcastLibrary, *, now: datetime | None = None
+    library: PodcastLibrary,
+    *,
+    now: datetime | None = None,
+    sizes: Mapping[str, int] | None = None,
 ) -> list[tuple[PodcastShow, PodcastEpisode, int]]:
     """Delete downloads older than ``download_retention_days``.
 
@@ -238,25 +276,37 @@ def apply_age_limit(
     """
     moment = now or datetime.now(UTC)
     removed: list[tuple[PodcastShow, PodcastEpisode, int]] = []
+    queued = protection_keys(library)
+    from quill.core.podcasts.show_policy import is_pinned
+
     for show in library.shows:
         days = max(0, int(library.effective_settings(show).download_retention_days))
         if days <= 0:
             continue
+        pinned = is_pinned(library, show)
         cutoff = moment - timedelta(days=days)
         for episode in show.episodes:
-            if not episode.downloaded_path or is_protected(library, show, episode):
+            if not episode.downloaded_path or is_protected(
+                library, show, episode, queued=queued, pinned=pinned
+            ):
                 continue
             if _published_moment(episode) >= cutoff:
                 continue
-            size = file_size(episode.downloaded_path)
-            _delete_file(episode.downloaded_path)
-            episode.downloaded_path = ""
-            removed.append((show, episode, size))
+            size = (
+                file_size(episode.downloaded_path)
+                if sizes is None
+                else sizes[episode.downloaded_path]
+            )
+            if remove_downloaded_copy(episode):
+                removed.append((show, episode, size))
     return removed
 
 
 def enforce_storage_cap(
-    library: PodcastLibrary, *, cap_bytes: int | None = None
+    library: PodcastLibrary,
+    *,
+    cap_bytes: int | None = None,
+    sizes: Mapping[str, int] | None = None,
 ) -> list[tuple[PodcastShow, PodcastEpisode, int]]:
     """Evict downloads until total storage fits under the cap.
 
@@ -270,24 +320,27 @@ def enforce_storage_cap(
     cap = library.settings.storage_cap_mb * 1024 * 1024 if cap_bytes is None else cap_bytes
     if cap <= 0:
         return []
-    entries = downloaded_episodes(library)
+    entries = downloaded_episodes(library, sizes=sizes)
     total = sum(size for _s, _e, size in entries)
     if total <= cap:
         return []
+    from quill.core.podcasts.show_policy import is_pinned
+
+    queued = protection_keys(library)
+    pinned = {show.id: is_pinned(library, show) for show in library.shows}
     evictable = [
         (show, episode, size)
         for show, episode, size in entries
-        if not is_protected(library, show, episode)
+        if not is_protected(library, show, episode, queued=queued, pinned=pinned[show.id])
     ]
     evictable.sort(key=lambda row: (not row[1].played, _published_moment(row[1])))
     removed: list[tuple[PodcastShow, PodcastEpisode, int]] = []
     for show, episode, size in evictable:
         if total <= cap:
             break
-        _delete_file(episode.downloaded_path)
-        episode.downloaded_path = ""
-        total -= size
-        removed.append((show, episode, size))
+        if remove_downloaded_copy(episode):
+            total -= size
+            removed.append((show, episode, size))
     return removed
 
 
@@ -315,5 +368,6 @@ __all__ = [
     "format_bytes",
     "is_protected",
     "per_show_usage",
+    "protection_keys",
     "total_download_bytes",
 ]

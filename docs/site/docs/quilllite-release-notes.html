@@ -254,6 +254,21 @@ again, and if something goes wrong while you are busy elsewhere, it
 waits for you rather than slipping past.</p>
 <p>Everything works from the keyboard and tells you how it went, the way
 the rest of QUILL Lite does.</p>
+<h2 id="testing-rebuild-120-build-3">Testing rebuild: 1.2.0 (build
+3)</h2>
+<p>Build 3 retains build 2’s local-recording transcription fix and
+Windows audio duration fallback. It prepares downloaded model
+availability in the background, and completed transcripts are saved
+privately for opening from <strong>Notifications</strong>. Your current
+document stays unchanged until you choose to open a result.</p>
+<p>Routine settings saves also run in the background and still report
+failures through Activity. Python HTTPS requests use the Windows
+certificate store while checking certificates and hostnames. The
+installer is current-user only and does not offer an administrator-only
+installation.</p>
+<p>The bundled changelog records the complete build changes. These
+testing packages are not a GitHub release or a Stable-channel
+promotion.</p>
 <h2 id="if-you-already-use-quill-lite">If you already use QUILL
 Lite</h2>
 <p>Your settings, recent files and recovered work come with you exactly
@@ -409,6 +424,11 @@ changes a setting, and OK and Cancel work just as before. Quill Radio
 and QUILL Cast have the same box in their Preferences.</p>
 <h2 id="making-quill-lite-your-text-editor">Making QUILL Lite your text
 editor</h2>
+<p>The installer is for your Windows account only. It does not offer an
+all-users install or need administrator approval. The separate option
+below that opens QUILL Lite whenever a program asks for Notepad changes
+a computer-wide setting, so Windows still asks for administrator
+approval for that action.</p>
 <p>Every QUILL Lite install now tells Windows that QUILL Lite can open
 text, Markdown, rich text, HTML and CSV files. It takes nothing over.
 QUILL Lite simply shows up in <strong>Open with</strong>, and in Windows
@@ -464,9 +484,12 @@ Stable.</p>
 version you had, and tells you so the next time QUILL Lite opens. The
 window’s <strong>Update History</strong> button shows everything the
 updater has done.</p>
-<p>Help &gt; About now shows a build number after the version: this
-release is 1.2.0 (build 1). If a fix comes out without a new version
-number, it is a newer build, and Check for Updates offers it to you.</p>
+<p>Help &gt; About shows a build number after the version. The initial
+1.2.0 release was build 1; this testing rebuild is <strong>1.2.0 (build
+3)</strong>. If a newer build is published to your update channel
+without a new version number, Check for Updates offers it to you.
+Uploading a testing package alone does not publish it to an update
+channel.</p>
 <h2 id="dictating-in-spanish">Dictating in Spanish</h2>
 <p>New, and ready for you to try: you can dictate in Spanish. Open
 Dictation Settings (<strong>Alt+Shift+F6</strong>), choose
@@ -649,20 +672,31 @@ you how long the recording is and about how long it will take.</li>
 <li><strong>MP3, M4A, AAC, WAV, Ogg, Opus, FLAC and WMA</strong>, read
 with parts of Windows already on your computer, so there is nothing to
 download.</li>
-<li><strong>Your text, your way.</strong> It goes into a new document,
-or at the cursor when it finishes. Paragraphs start where the recording
-pauses. Timestamps, like [00:01:23], are off unless you check Add
+<li><strong>A new document when it is ready.</strong> There is no
+destination picker and the transcript is not inserted into the document
+you were editing. Paragraphs start where the recording pauses.
+Timestamps, like [00:01:23], are off unless you check Add
 timestamps.</li>
 <li><strong>Never in your way.</strong> You hear the percentage at each
 quarter and one sentence when it is done. Press
 <strong>Shift+F5</strong> again to see how far it has got, or to stop
 it. Choose several files and they are done one after another.</li>
+<li><strong>A length and time estimate.</strong> QUILL Lite reads
+duration from the audio metadata, and on Windows can use Media
+Foundation when another reader cannot determine the length.</li>
 <li><strong>Private unless you say otherwise.</strong> With the models
 on your computer, nothing leaves it. OpenAI is never chosen for you, and
 asks before each recording is sent.</li>
 </ul>
 <p>The user guide’s “Transcribing an audio file” has the whole story,
 including which model suits which recording.</p>
+<h2 id="follow-up-for-testers-reopen-a-completed-transcript">Follow-up
+for testers: reopen a completed transcript</h2>
+<p>This is a follow-up after the 1.2.0 release, not part of 1.2.0. A
+completed transcript is now saved privately and linked from its
+completion notice in Notifications. Activate the notice when you are
+ready to open the result; it stays separate from the document you were
+editing.</p>
 <h2 id="your-recent-documents-one-key-away">Your recent documents, one
 key away</h2>
 <p>New: press <strong>Alt+Shift+0</strong> (or choose <strong>File &gt;

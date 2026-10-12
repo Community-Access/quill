@@ -9,6 +9,8 @@ is exactly what the reporter was trying to avoid.
 from __future__ import annotations
 
 import json
+import threading
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
@@ -130,6 +132,38 @@ def test_cancelling_a_restore_changes_nothing(lite_window, monkeypatch) -> None:
     win.cmd_backup_settings()
     assert win.app.settings.font_size == 21
     assert win.announcements == []
+
+
+def test_restoring_settings_queues_persistence(lite_window, tmp_path, monkeypatch) -> None:
+    import wx
+
+    win = lite_window("hello")
+    win.app.settings.font_size = 14
+    source = _backup_file(tmp_path, win)
+    payload = json.loads(source.read_text(encoding="utf-8"))
+    payload["settings"]["font_size"] = 23
+    source.write_text(json.dumps(payload), encoding="utf-8")
+
+    class _Dialog:
+        def __init__(self, *a, **k):
+            pass
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *exc):
+            return False
+
+        def GetPath(self):
+            return str(source)
+
+    monkeypatch.setattr(wx, "FileDialog", _Dialog)
+    monkeypatch.setattr(type(win), "_show_lite_modal", lambda self, d, label: wx.ID_OK)
+    win.cmd_restore_settings()
+
+    assert win.app.settings.font_size == 23
+    assert win.app.queued_settings == 1
+    assert win.app.saved_settings == 0
 
 
 @pytest.mark.parametrize("closing", [False, True])
@@ -263,4 +297,109 @@ def test_shutdown_flushes_pending_settings_warning_once(monkeypatch):
     QuillLiteApp.stop_background_sources(app)
     for callback in queued:
         callback()
+    assert spoken == [persistence.SETTINGS_NOT_SAVED]
+
+
+def test_recent_file_remember_does_not_wait_for_settings_write(monkeypatch):
+    from quill.apps import lite_settings_persistence as persistence
+    from quill.apps.lite_window_file import DocumentFileMixin
+
+    class App(persistence.LiteSettingsPersistenceMixin):
+        pass
+
+    class Window(DocumentFileMixin):
+        def __init__(self, app):
+            self.app = app
+            self.refreshed = False
+
+        def refresh_recent_menu(self):
+            self.refreshed = True
+
+    started = threading.Event()
+    release = threading.Event()
+    app = App()
+    app.settings = persistence.settings_mod.Settings()
+    app.frames = []
+    app.shutting_down = False
+    app._settings_baseline = None
+    app.refresh_all_menus = lambda: setattr(app, "refreshed", True)
+    monkeypatch.setattr(
+        persistence, "wx", type("Wx", (), {"CallAfter": staticmethod(lambda cb: cb())})
+    )
+
+    def blocked_save(_settings):
+        started.set()
+        assert release.wait(timeout=2)
+
+    monkeypatch.setattr(persistence.settings_mod, "save", blocked_save)
+    window = Window(app)
+    window._remember(Path("recent.txt"))
+    assert app.refreshed
+    assert started.wait(timeout=1)
+    release.set()
+    app.flush_settings_writes()
+
+
+def test_recent_file_stale_write_cannot_clear_newer_dirty_state(monkeypatch):
+    from quill.apps import lite_settings_persistence as persistence
+
+    class App(persistence.LiteSettingsPersistenceMixin):
+        pass
+
+    first_started = threading.Event()
+    release_first = threading.Event()
+    writes = []
+    app = App()
+    app.settings = persistence.settings_mod.Settings()
+    app.frames = []
+    app.shutting_down = False
+    app._settings_baseline = None
+    monkeypatch.setattr(
+        persistence, "wx", type("Wx", (), {"CallAfter": staticmethod(lambda cb: cb())})
+    )
+
+    def save(snapshot):
+        writes.append(list(snapshot.recent_files))
+        if len(writes) == 1:
+            first_started.set()
+            assert release_first.wait(timeout=2)
+
+    monkeypatch.setattr(persistence.settings_mod, "save", save)
+    app.settings.remember_recent("old.txt")
+    app._queue_settings_save()
+    assert first_started.wait(timeout=1)
+    app.settings.remember_recent("new.txt")
+    app._queue_settings_save()
+    release_first.set()
+    app.flush_settings_writes()
+    assert writes == [["old.txt"], ["new.txt", "old.txt"]]
+    assert app.settings_dirty is False
+
+
+def test_queued_settings_failure_is_reported(monkeypatch):
+    from quill.apps import lite_settings_persistence as persistence
+
+    class App(persistence.LiteSettingsPersistenceMixin):
+        pass
+
+    app = App()
+    app.settings = persistence.settings_mod.Settings(word_wrap=False)
+    app.shutting_down = False
+    app.frames = []
+    spoken = []
+    queued = []
+    app.voice = SimpleNamespace(speak=spoken.append)
+    app._ensure_write_reports = lambda: None
+    monkeypatch.setattr(persistence.wx, "CallAfter", queued.append)
+
+    def fail(_settings):
+        raise PermissionError("private path")
+
+    monkeypatch.setattr(persistence.settings_mod, "save", fail)
+    app._queue_settings_save()
+    app.flush_settings_writes()
+
+    assert app.settings_dirty
+    assert len(queued) == 1
+    queued[0]()
     assert spoken == [persistence.SETTINGS_NOT_SAVED]

@@ -326,12 +326,14 @@ class WinRtMediaEngine:
             pass
 
     def play(self) -> None:
-        if self._loaded:
-            self._player.play()
+        if not self._loaded:
+            raise OSError("There is no loaded Windows Media audio to play.")
+        self._player.play()
 
     def pause(self) -> None:
-        if self._loaded:
-            self._player.pause()
+        if not self._loaded:
+            raise OSError("There is no loaded Windows Media audio to pause.")
+        self._player.pause()
 
     def stop(self) -> None:
         if self._loaded:

@@ -33,12 +33,18 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 title="Check for anything new",
                 body=(
                     "Refresh All Now asks every podcast you follow whether it has "
-                    "anything new. Cast tells you how many it is checking, and the "
-                    "answers come in one podcast at a time. When you ask, Cast always "
-                    "answers, even if nothing is new."
+                    "anything new. A separate progress window shows how many it has "
+                    "checked while the feed requests run in the background, so you "
+                    "can return to the editor and keep working. When you ask, Cast "
+                    "always answers, even if nothing is new."
                 ),
                 keys=("F5",),
                 hear="How many podcasts it is checking, then what arrived.",
+                note=(
+                    "Closing the progress window hides it without stopping the run. "
+                    "Stop remaining checks cancels feeds that have not started; a "
+                    "check already in progress finishes."
+                ),
             ),
             Step(
                 title="Choose what goes to the Inbox",

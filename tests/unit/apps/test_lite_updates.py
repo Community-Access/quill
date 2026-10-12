@@ -218,5 +218,5 @@ def test_the_help_menu_command_runs_the_check_and_stamps_the_clock(lite_window, 
     win.cmd_check_updates()
 
     assert win.app.settings.last_update_check != ""
-    assert win.app.saved_settings >= 1
+    assert win.app.queued_settings == 1
     assert "up to date" in updates.boxes[0]

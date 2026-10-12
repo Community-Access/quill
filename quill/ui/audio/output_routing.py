@@ -9,6 +9,8 @@ it is present; otherwise Windows does, in the same naming. wx-free.
 from __future__ import annotations
 
 __all__ = [
+    "cache_output_devices",
+    "cached_output_devices",
     "engine_routes_devices",
     "forget_output_devices",
     "list_output_devices",
@@ -45,6 +47,26 @@ def forget_output_devices() -> None:
     _cached = None
 
 
+def cached_output_devices() -> list[tuple[str, str]] | None:
+    """Return a fresh cached device list without triggering enumeration."""
+    import time
+
+    cached = _cached
+    if cached is None or time.monotonic() - cached[0] >= _CACHE_SECONDS:
+        return None
+    return list(cached[1])
+
+
+def cache_output_devices(devices: list[tuple[str, str]]) -> None:
+    """Remember a successful device query performed outside this module."""
+    if not devices:
+        return
+    import time
+
+    global _cached
+    _cached = (time.monotonic(), list(devices))
+
+
 def _enumerate_output_devices() -> list[tuple[str, str]]:
     """``[(name, description)]``: mpv's list when libmpv is present, else Windows'."""
     from quill.ui.radio.mpv_radio_engine import list_audio_devices, mpv_output_device_available
@@ -67,15 +89,11 @@ def list_output_devices() -> list[tuple[str, str]]:
     cached -- that is the shape a failed or timed-out query takes, and caching
     it would turn one bad moment into twenty seconds of "no devices".
     """
-    global _cached
-    import time
-
-    now = time.monotonic()
-    if _cached is not None and now - _cached[0] < _CACHE_SECONDS:
-        return list(_cached[1])
+    cached = cached_output_devices()
+    if cached is not None:
+        return cached
     devices = _enumerate_output_devices()
-    if devices:
-        _cached = (now, list(devices))
+    cache_output_devices(devices)
     return devices
 
 

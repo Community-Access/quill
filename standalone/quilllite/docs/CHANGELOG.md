@@ -1,6 +1,52 @@
 # QUILL Lite changelog
 
+## Unreleased
+
+Testing rebuild: **1.2.0 (build 3)**, following the previously uploaded build 2.
+The new packages have not been published yet.
+
+- **Routine settings saves run in the background.** Preferences, recent
+  files, window/view settings, spelling, page setup, recovery-related settings
+  and update choices queue detached settings snapshots on one ordered writer.
+  Pending requests keep the latest settings; failures remain visible in
+  Activity with Retry and Open Folder. Shutdown waits for queued settings
+  writes; this is not a promise that every shutdown path is nonblocking.
+- **HTTPS uses the Windows certificate store.** Python HTTPS requests use
+  trusted Windows and organization-managed roots without turning off hostname
+  or certificate verification. Genuinely invalid certificates still fail.
+  Portable packaging checks that the declared certificate-store backend is
+  included.
+- **The installer is current-user only.** It no longer offers an all-users
+  install that requires administrator approval; QUILL Lite and the shared
+  runtime go in your Windows profile.
+- **Transcription results can be reopened from Notifications.** QUILL Lite
+  saves each completed transcript privately and adds a completion notice that
+  opens it on activation. The transcript stays separate from the document you
+  were editing.
+- **Transcription model availability is prepared in the background.** The
+  recording dialog no longer performs its potentially slow model inspection
+  while constructing the window. Cloud choices still require a usable key,
+  remain unavailable in Safe Mode, and are never selected automatically.
+- **Build 2's local-audio fix is retained.** The real cancellation-token
+  state is checked for every supported engine, and Windows Media Foundation
+  can supply duration when the other metadata readers cannot. The initial
+  1.2.0 workflow below opened results immediately; build 3 uses the saved
+  Notifications workflow above.
+
 ## 1.2.0 -- 2026-10-03
+
+### Local audio transcription
+
+- Fixed the shared background transcription runner so it checks the cancellation
+  token's state instead of treating the check method as a truthy value. Local
+  Whisper, Parakeet, and other supported engines can now return their transcript.
+- Added a Windows Media Foundation fallback for reading audio duration when the
+  other metadata readers cannot determine it, so the recording-length and
+  estimated-time details can be shown for supported files Windows can read.
+- Completed transcripts open in a new document. The destination picker is no
+  longer present. In the 1.2.0 release, results were not yet saved for
+  on-demand opening from Notifications; the later follow-up is recorded under
+  Unreleased above.
 
 ### Dictation gap plan: read-back marks, voice editing, live transcripts, Dictate Anywhere (2026-10-05)
 
@@ -86,9 +132,11 @@ words (QUILL: Tools > Speech > Live Dictation; QUILL Lite: Tools > Dictation).
   one chosen (`file_models.py`: Parakeet TDT, Parakeet Unified, Nemotron, the
   Whisper family large to small, then the built-in two), OpenAI's file models
   added live for a saved key outside Safe Mode and never preselected -- an
-  estimate from the measured speeds, where the text goes (a new document, or
-  the cursor when it finishes), Add timestamps (off unless checked), and Obey spoken
-  punctuation and commands (off: "new paragraph" in a recording is words).
+  estimate from the measured speeds, Add timestamps (off unless checked), and
+  Obey spoken punctuation and commands (off: "new paragraph" in a recording
+  is words).
+  There is no destination picker; the completed transcript opens in a new
+  document.
 - **The pipeline** (`file_transcribe.py`), on the task manager: decode to 16 kHz
   mono a second at a time (`audio_file.py`: libsndfile for WAV, FLAC, Ogg, Opus
   and MP3, Windows Media Foundation through `ctypes` for M4A, AAC, MP4 sound,

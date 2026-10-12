@@ -153,9 +153,10 @@ under the tag `quill-radio-v3.2.0`.
    Downloads folder.
 2. If Windows SmartScreen shows a warning, see "If your antivirus or
    SmartScreen speaks up" below.
-3. Setup may ask whether to install for you only or for everyone who uses the
-   computer. Choose **Install for me only**. That needs no administrator
-   rights. Installing for everyone asks Windows for permission.
+3. Setup installs for your Windows account only. It does not offer an
+   all-users installation, so it does not need administrator rights or show a
+   UAC prompt. Both Quill Radio and the shared runtime are installed in your
+   user profile.
 4. The setup wizard opens. Press Enter on each page to accept the usual
    choices. The full installation includes this guide and the release notes.
    Then choose **Install**.
@@ -546,8 +547,13 @@ through six stops, in this order.
    browser. If something is playing, you get that station's site; if not, you
    get the site of the favorite you are on. It is the quickest way to a
    station's schedule, such as Double Tap Live's, and Quill Radio tells you
-   which site it opened. If the station never gave a website, it says so and
-   opens nothing.
+   which site it opened. If no site is saved, Quill Radio asks whether you
+   would like to add one. Choose **Add Website** and enter an HTTP or HTTPS
+   address; a missing `https://` is added for you. Radio checks the address's
+   format but does not contact the site to test it. Check **Don't ask me
+   again** before choosing **Add Website** to skip this question in Quill Radio
+   and QUILL in the future. When the address is saved, Radio opens it in your
+   browser. Canceling or declining leaves the browser closed.
 5. **Mute**, a button that stays pressed while the radio is muted. It always
    shows the real state, even if you muted from somewhere else.
 6. **Volume** (Alt+O), a slider. Up and Right make it louder, Down and Left
@@ -876,9 +882,10 @@ rather than something to learn.
   checked, opening Quill Radio plays your last station. It starts off.
 - **Start Quill Radio with Windows** (Ctrl+Alt+W): a checkable item. Quill
   Radio opens by itself when you sign in to Windows. It only affects your own
-  account and needs no administrator rights. A portable copy does not offer
-  it. If signing in ever opens the wrong thing, turn it off and on again, and
-  Quill Radio writes the startup entry fresh.
+  account and needs no administrator rights. You can also change it in
+  Preferences. A portable copy does not offer it. If signing in ever opens
+  the wrong thing, turn it off and on again, and Quill Radio writes the startup
+  entry fresh.
 - **Download Preferences...** (Ctrl+Alt+Shift+D): where downloads are saved and
   how they are filed.
 - **Preferences...** (Ctrl+,): see "Preferences" in Chapter 14.
@@ -2104,7 +2111,8 @@ In this order:
 - **Copy Stream Link** (or **Copy Link** for a recording).
 - **Rename Favorite...**, only on a row you have saved. Leave the name blank
   to go back to the directory's own name.
-- **Open Website**, when the station has a home page.
+- **Open Website**, when the station has a home page, and **Edit Website...**
+  for adding or correcting its address.
 - **Download...** or **Remove Download**, where the source allows saving.
 - **Record This Station...** and **Schedule Recording...**, on a live station.
   Both come filled in with this station.
@@ -2327,8 +2335,15 @@ After the results, Tab reaches a **Station details** box, the status line,
 plays), **Add to Favorites**, **More Stations**, **Add Custom Station...**,
 **Find Streams from a Website...** and **Refresh**. In the Music Genres
 category, Refresh reads the genre list again. Shift+F10 on a result offers
-Play or Stop, Add to or Remove from Favorites, Open Website and Report Bad
-Station....
+Play or Stop, Add to or Remove from Favorites, Open Website, Edit Website...
+and Report Bad Station....
+
+An edited address is a local correction in this Radio profile; it does not
+change the directory's station record. Choose **Edit Website...** again and
+leave the address blank to remove the correction and use the directory's
+address again. The same **Edit Website...** action is on a station's menu in
+Manage Favorite Stations. If a station has no stable identity to save against,
+Quill Radio says it cannot save that correction.
 
 The window's menus are **Go** (Alt+G, with **Close**, Ctrl+W), **Station**
 (Alt+S) and **Window** (Alt+W). The Genre box also uses the letter G, so if
@@ -3412,6 +3427,24 @@ itself:
 
 If you also use QUILL Cast, the two apps share a note of when each show was
 last checked, so they do not both ask the same podcast.
+
+### Podcasts with http and https addresses
+
+Most podcast addresses start with "https", which means the feed comes to you
+encrypted. Some older shows still use plain "http", and Quill Radio plays
+those too. It reads feeds the same way QUILL Cast does:
+
+- When an address starts with "http", Quill Radio asks for it over https
+  first, and only uses plain http if the secure way does not work.
+- A password for a private feed is never sent over plain http. If the secure
+  connection turns the sign-in down, Quill Radio stops there.
+- Certificates are checked the way Windows checks them, so a site that opens
+  in your web browser should open here too.
+
+If a feed says its security certificate could not be verified, check that
+this computer's date and time are right and run Windows Update. At work, or
+with security software that inspects secure connections, ask whoever looks
+after the network.
 
 ### Handing an episode to QUILL Cast
 
@@ -5455,6 +5488,10 @@ These come first:
 Each one is listed with how it starts:
 
 - **Resume Last Station on Launch**: off.
+- **Start Quill Radio with Windows**: off. Start Quill Radio automatically
+  when you sign in to this Windows account. This is also available from
+  Station > Start Quill Radio with Windows; both controls stay in sync.
+  Preferences reports when Windows does not allow the setting to change.
 - **Check for updates automatically on launch**: on. A quiet check once a day,
   which says nothing unless it finds something.
 - **Announce dialog transitions (more spoken detail)**: off. When it is on,

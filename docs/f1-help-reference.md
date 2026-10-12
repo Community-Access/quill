@@ -324,7 +324,7 @@ Control coverage: 294 audited sites (180 helped, 114 named-help).
 - `directory_box`: The tags the station directory already lists for this station. They are searched too, and cannot be changed here.
 #### (module level) (`quill/ui/radio/station_website_button.py`)
 
-- `button`: Opens the website of the station that is playing, or of the favorite the list is on, in your web browser -- often where a station keeps its schedule. If the station gave no website, it tells you.
+- `button`: Opens the website of the station that is playing, or of the favorite the list is on, in your web browser -- often where a station keeps its schedule. If none is saved, you can add a local website address.
 #### RadioStatsDialog (`quill/ui/radio/stats_dialog.py`)
 
 - `copy_btn`: Copies the whole report to the clipboard as plain text.
@@ -445,7 +445,7 @@ Control coverage: 294 audited sites (180 helped, 114 named-help).
 
 ## QUILL Cast
 
-Control coverage: 302 audited sites (198 helped, 104 named-help).
+Control coverage: 305 audited sites (209 helped, 96 named-help).
 
 ### Every window, and what it is for
 
@@ -457,6 +457,8 @@ Control coverage: 302 audited sites (198 helped, 104 named-help).
 
 **Closing QUILL Cast.** What closing the window should do: exit, or keep playing with QUILL Cast tucked into the system tray. Cancel leaves everything as it was. Don't ask me again remembers your answer, and Preferences can set it back to asking.
 
+**Copy to Folder.** Choose another folder for the same subscription, or make a new folder. The podcast remains in its original folder and shares one episode list, download set, and listening history in every placement.
+
 **Downloads.** The download queue, and everything you can do to it. Finished rows stay until you clear them so "did that actually download?" always has an answer, and Enter on a saved row opens the folder it landed in.
 
 **Episode Filter Rule.** One rule inside a podcast's Episode Filters: a title pattern, a minimum length, and any more tests -- show notes, people, type, age, season or number -- with every test or any one having to match. Try It says what the rule catches among the newest episodes. A rule is a label plus a test; it decides nothing until the filter itself is saved, and it never deletes an episode.
@@ -466,6 +468,8 @@ Control coverage: 302 audited sites (198 helped, 104 named-help).
 **Feed Check.** Which of the podcasts you follow need something, worst first: failing feeds with the reason, empty feeds, then quiet ones, then the healthy rest. Opening it checks nothing; Retry checks the selected feed and Retry All Failed every failing one. When a feed has been removed or now leads nowhere, Find This Show's New Feed looks for where the show went. Cast never stops trying a failing feed.
 
 **Feed Credentials.** The user name and password for a private feed -- a paid subscription, a members-only show. They are kept for this feed alone and sent to its own host, never to a directory.
+
+**Feed Refresh Progress.** A background feed check: completed and total counts, active podcast names, and Stop Checks. Stop keeps feeds already updated and ignores late results; requests already running may finish their network timeout. Close hides this window; the Window menu brings it back.
 
 **Find This Show's New Feed.** Feeds that might be this podcast, found by searching the podcast directories for its title and checked to make sure each one answers, with how many episodes it has and the newest one's date. Replace Feed moves the podcast to the one you choose and keeps everything you have already heard; Cancel changes nothing.
 
@@ -625,6 +629,11 @@ Control coverage: 302 audited sites (198 helped, 104 named-help).
 - `skip_all`: Marks every suggestion Skip, so you can accept just a few.
 - `apply_btn`: Does every suggestion marked Accept, and nothing else.
 - `cancel`: Closes this window. Nothing changes.
+#### _FeedProgressWindow (`quill/ui/podcasts/check_run.py`)
+
+- `self.status`: Shows completed feed counts and the podcasts currently being checked. Window menu, Control Tab, and Alt Tab return to the library without stopping.
+- `self.gauge`: The number of feeds checked so far.
+- `self.stop`: Stop this refresh immediately. Queued requests are cancelled and late results from requests already running are ignored. Completed checks are kept.
 #### CastCloseConfirmDialog (`quill/ui/podcasts/close_confirm_dialog.py`)
 
 - `self._dont_ask_check`: Stops this question appearing and always does what you choose here. Preferences can set it back to Ask every time.
@@ -633,7 +642,7 @@ Control coverage: 302 audited sites (198 helped, 104 named-help).
 - `cancel_btn`: Returns to QUILL Cast with everything as it was.
 #### DownloadsDialog (`quill/ui/podcasts/downloads_dialog.py`)
 
-- `self._list`: Every downloaded episode, grouped by podcast. Arrow through for sizes; Remove This Podcast's Downloads deletes the files for the podcast you are on.
+- `self._list`: Every downloaded episode, grouped by podcast. Arrow through for sizes; Remove This Podcast's Downloads deletes the files for the podcast you are on. Queued, part-played, pinned, and active downloads are kept.
 #### EpisodeExtrasWindow (`quill/ui/podcasts/episode_extras_dialog.py`)
 
 - `self._action_btn`: Does what its name says to the highlighted row: opens the link, plays the stream, follows the podcast, or plays from the bookmark. Its name changes as you move through the list.
@@ -654,7 +663,7 @@ Control coverage: 302 audited sites (198 helped, 104 named-help).
 - `cancel_btn`: Closes this window and returns to where you were. Anything not saved is left exactly as it was.
 #### CastEpisodeListMixin (`quill/ui/podcasts/episode_list.py`)
 
-- `self._episodes`: The episodes (or podcasts) of the place you chose, one per row, read column by column. Enter plays an episode or opens a podcast; Space adds an episode to the queue; Delete removes it from this place; Shift+F10 offers everything else. Left Arrow at the top returns to Places.
+- `self._episodes`: The episodes (or podcasts) of the place you chose, one per row, read column by column. Enter plays an episode or opens a podcast; Space adds an episode to the queue; Delete removes it from this place; Shift+F10 offers everything else. Tab and Shift+Tab move between Places and this content.
 #### FeedCheckWindow (`quill/ui/podcasts/feed_check_dialog.py`)
 
 - `self._list`: Every podcast you follow, worst first: the ones failing to check, with the reason, then any whose feed is empty, any never checked, any that have gone quiet, and then the healthy ones. Nothing here has been unfollowed and nothing has stopped being checked -- Cast keeps trying a failing feed. Shift+F10 opens what you can do to a row.
@@ -673,7 +682,7 @@ Control coverage: 302 audited sites (198 helped, 104 named-help).
 - `skip`: Goes to Cast and changes nothing. This welcome does not come back.
 #### FolderPickerDialog (`quill/ui/podcasts/folder_picker_dialog.py`)
 
-- `self._tree`: Your podcast folders. Choose the one to move into and press Move Here; New Folder creates one inside whatever is selected.
+- `self._tree`: Your podcast folders. Choose the destination and press Move Here or Copy Here; New Folder creates one inside whatever is selected.
 #### (module level) (`quill/ui/podcasts/library_view_dialog.py`)
 
 - `empty`: Empty folders are still there, and come back the moment a podcast is filed in one.
@@ -682,7 +691,7 @@ Control coverage: 302 audited sites (198 helped, 104 named-help).
 
 - `self._now_playing_text`: What is playing, how far in, and the speed when it is not normal. Read only; arrow through it to check a title. Ctrl+T says it from anywhere.
 - `self._find_box`: Type part of a podcast name, an episode title or one of your notes. The content pane becomes the matches, each row saying what it is and where it lives; Down Arrow moves into them, Enter goes to one, and Escape brings the place back. Ctrl+F comes here from anywhere.
-- `self._shows_tree`: Your podcasts and folders. Arrow through them; Enter on a podcast plays its next episode; expand a podcast to reach its episodes; Left Arrow at the top returns to Places. Shift F10 offers the row's actions.
+- `self._shows_tree`: Your podcasts and folders. Arrow through them; Enter on a podcast plays its next episode; expand a podcast to reach its episodes. Left Arrow collapses an expanded folder or podcast; it does not leave the tree. Tab and Shift+Tab move between Places and this tree. Shift+F10 offers the row's actions.
 - `self._play_pause_btn`: Starts the selected podcast or episode when stopped, pauses current playback, or resumes it from the saved position when paused. The label names what it would play, pause or resume.
 - `self._stop_btn`: Stops the current episode. Enabled only while something is playing or paused; Play starts playback again.
 - `self._favorite_toggle_btn`: Adds the playing podcast to Favorites, or removes it if already there. Disabled when there is no playing podcast.
@@ -715,6 +724,21 @@ Control coverage: 302 audited sites (198 helped, 104 named-help).
 - `self._volume`: Playback volume, from silent to full. Arrow keys change it.
 - `self._chapters`: This episode's chapters. Enter jumps to the selected one; the playing chapter says so in its Status column and the list follows playback without moving your cursor.
 - `self._note`: A note of your own about this episode, kept with your episode notes. Saved when you leave the field; empty removes it.
+#### OpmlImportDialog (`quill/ui/podcasts/opml_import_dialog.py`)
+
+- `self._check_feeds`: After importing, check feed reachability on two background workers. Stop Checking ends the check without removing the shows you brought in.
+- `self._stream_only`: Keep imported podcasts streaming so their back catalogues do not start downloading.
+- `self._status`: Import and feed-check progress, including active podcasts.
+- `self._gauge`: How many imported feeds have been checked.
+- `self._start_btn`: Import this feed list in the background.
+- `self._cancel_check_btn`: Stop checking immediately, keep every show already added, and prepare a partial report.
+- `self._close_btn`: Hide this window without stopping the import. Return through the Window menu.
+#### OpmlImportReportDialog (`quill/ui/podcasts/opml_import_report_dialog.py`)
+
+- `self._list`: Review feed errors, permanent moves, and duplicate podcasts. Export Report saves the findings; Save Pruned OPML saves a separate cleaned copy.
+- `export_btn`: Save the import report as a text file in the background.
+- `prune_btn`: Save a separate OPML copy without unreachable feeds. The source file is preserved.
+- `close_btn`: Hide this report and return to the window that opened it.
 #### PlacesChooser (`quill/ui/podcasts/places_chooser.py`)
 
 - `self._list`: Every place, in the order the main window lists them. Up and Down move the selected place; Hide takes it out of the main window's list and Show puts it back; Rename gives it your own name; Reset restores the shipped order and names. Nothing here changes what is in a place.
@@ -722,7 +746,7 @@ Control coverage: 302 audited sites (198 helped, 104 named-help).
 - `cancel`: Closes this window without saving; nothing you changed here is kept.
 #### PlacesList (`quill/ui/podcasts/places_list.py`)
 
-- `self.box`: The places in your library, each with its count: the Inbox, New Episodes, Continue Listening, Favorites, Personal Audio, the Play Queue, Downloads, Notifications and your Podcasts. Enter or Right Arrow moves into the place; Delete hides a row; F2 renames it; Alt+Shift+Up and Down move it; the Applications key offers what the whole place can do. View > Places restores anything hidden.
+- `self.box`: The places in your library, each with its count: the Inbox, New Episodes, Continue Listening, Favorites, Personal Audio, the Play Queue, Downloads, Notifications and your Podcasts. Enter or Right Arrow updates the content beside this list without moving focus. Tab moves to that content; Shift+Tab returns here. Delete hides a row; F2 renames it; Alt+Shift+Up and Down move it; the Applications key offers what the whole place can do. View > Places restores anything hidden.
 #### PlayQueueDialog (`quill/ui/podcasts/play_queue_dialog.py`)
 
 - `self._list`: The queue in play order; Enter plays the selected episode now. Shift and arrow extend the selection, Ctrl and Space adds one, and Remove takes everything selected.
@@ -1525,7 +1549,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## QUILL Lite
 
-Control coverage: 155 audited sites (155 helped).
+Control coverage: 156 audited sites (156 helped).
 
 ### Every window, and what it is for
 
@@ -1753,6 +1777,10 @@ Control coverage: 155 audited sites (155 helped).
 #### ProfileRow (`quill/apps/lite_preferences_profile.py`)
 
 - `self.impact`: What the profile above would change: which parts of the app it keeps, which it removes, and anything else it sets.
+#### DocumentFolderPrefs (`quill/apps/lite_preferences_save_folder.py`)
+
+- `self.folder`: Where Open and Save As start for a new document. Leave blank to use the Windows Documents folder. A document already saved keeps using its own folder.
+- `self.choose`: Choose an existing folder for new documents.
 #### (module level) (`quill/apps/lite_window_words.py`)
 
 - `field`: How many words each dictionary holds and where each file is. Read only; arrow through it, and copy any line you need.
@@ -1908,11 +1936,11 @@ Control coverage: 155 audited sites (155 helped).
 - `self.language`: English or Spanish. The model list shows only the models that know the language chosen here.
 - `self.model`: Every speech model on this computer, most accurate first, with the most accurate one chosen for you: the two built into QUILL, any you downloaded in Dictation Settings, Speech Models, and OpenAI's models when your own OpenAI key is saved. A slower model is fine for a recording: nobody is waiting for each phrase, and you can keep working.
 - `self.about`: What the chosen model is good for, how long the recording is, and about how long transcribing it should take on this computer.
-- `self.destination`: A new document is the default: the transcript opens in a document of its own when it is ready. This document puts it where the cursor is in this document at the moment it finishes, as one step Ctrl+Z can take back.
+- `self.output`: The editor stays where it is while transcription runs. Open Notifications and activate the completed result when you are ready to read it.
 - `self.timestamps`: Off unless you check it. A new paragraph starts wherever the recording pauses for two seconds or more; with timestamps checked, each paragraph begins with the hours, minutes and seconds into the recording where it was said, like [00:01:23], so you can find it again.
 - `self.obey`: Off by default: in a recording, somebody who says new paragraph or comma usually means the words. Turn it on for a recording you dictated on purpose, and comma, period, new line, new paragraph and scratch that work as they do in dictation. Commands that move the cursor are ignored.
 - `self.running`: What is being transcribed at the moment, how far it has got, and how many recordings are waiting after it.
-- `stop`: Stops the transcription that is running and forgets any recordings waiting after it. Nothing is written into a document.
+- `stop`: Stops the transcription that is running and cancels any recordings waiting after it. The outcomes remain in Notifications; nothing is written into a document.
 #### RecentDocumentsWindow (`quill/ui/recent_documents_dialog.py`)
 
 - `self.listbox`: Every document you opened recently, pinned ones first. Enter opens the one you are on. Delete takes it off this list without touching the file. A row that says not found is a file that has moved or been deleted.

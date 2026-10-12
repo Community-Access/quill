@@ -297,6 +297,7 @@ class MpvRadioEngine(VideoOutputMixin):
         self._bounded = False
         self.set_audio_device(audio_device)
         self._parent = parent
+        self._parent_id = parent.GetId()
         self._timer = wx.Timer(parent)
         parent.Bind(wx.EVT_TIMER, self._on_poll, self._timer)
         parent.Bind(wx.EVT_WINDOW_DESTROY, self._on_parent_destroyed)
@@ -586,6 +587,8 @@ class MpvRadioEngine(VideoOutputMixin):
         # child's destruction must not tear down libmpv early (#1195). Only act
         # when the frame we bound to is the one being destroyed. terminate() is
         # idempotent, so this is safe even if shutdown() already ran.
-        if evt.GetWindow() is not self._parent:
+        from quill.ui.surface_lifetime import destroy_event_matches
+
+        if not destroy_event_matches(evt, self._parent, self._parent_id):
             return
         self.terminate()

@@ -27,6 +27,19 @@ def test_no_ops_off_windows(monkeypatch) -> None:
     assert scheduled_task.unregister() is False
 
 
+def test_portable_does_not_query_or_change_host_task(monkeypatch) -> None:
+    monkeypatch.setattr(scheduled_task, "is_windows", lambda: True)
+    monkeypatch.setattr(scheduled_task, "running_portable", lambda: True)
+    monkeypatch.setattr(
+        scheduled_task,
+        "_schtasks",
+        lambda _args: (_ for _ in ()).throw(AssertionError("host task was touched")),
+    )
+    assert scheduled_task.is_registered() is False
+    assert scheduled_task.register(15) is False
+    assert scheduled_task.unregister() is False
+
+
 def _fake_ok(*_a, **_k) -> subprocess.CompletedProcess:
     return subprocess.CompletedProcess(args=[], returncode=0, stdout="", stderr="")
 

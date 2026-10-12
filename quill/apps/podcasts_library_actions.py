@@ -10,6 +10,8 @@ that class or ``PodcastsMixin``.
 
 from __future__ import annotations
 
+from collections.abc import Callable
+
 import wx
 
 
@@ -36,7 +38,7 @@ class CastLibraryActionsMixin:
                 "can't be renamed. Folders can, with F2."
             )
 
-    def _library_context_entries(self) -> list[tuple[str, object]]:
+    def _library_context_entries(self) -> list[tuple[str, Callable[[], object]]]:
         """The context menu for whatever library row is selected, as (label,
         handler) rows -- split from the popup itself so the menu each kind of
         row offers is testable without wx."""
@@ -44,7 +46,7 @@ class CastLibraryActionsMixin:
         if selected is None:
             return []
         kind, key = selected
-        entries: list[tuple[str, object]] = []
+        entries: list[tuple[str, Callable[[], object]]] = []
         if kind == "show":
             show = self._podcast_library.find_show(key)
             if show is None:
@@ -56,7 +58,8 @@ class CastLibraryActionsMixin:
             entries = [
                 ("&Stop" if playing else "&Play Next Episode", self._on_library_play_stop_context),
                 (fav_label, self._on_library_favorite_toggle_context),
-                ("&Move to Folder...", self._on_library_move_to_folder),
+                ("&Move to Folder...\tCtrl+Shift+V", self._on_library_move_to_folder),
+                ("Cop&y to Folder...\tCtrl+Shift+Y", self._on_library_copy_to_folder),
                 ("Move Up in &Custom Order\tAlt+Up", lambda: self._on_library_move_show(-1)),
                 ("Move Do&wn in Custom Order\tAlt+Down", lambda: self._on_library_move_show(1)),
                 ("Download &All Episodes", self._on_library_download_all_episodes),
@@ -66,11 +69,13 @@ class CastLibraryActionsMixin:
                 ("Remove All Down&loads...", self._on_library_remove_all_downloads),
                 ("&Remove All Episodes...", self._on_library_remove_all_episodes),
             ]
+            if show.feed_url and not getattr(self, "_safe_mode", False):
+                entries.insert(0, ("Refres&h Feed\tF5", self._on_library_refresh_feed))
             if show.feed_url:
                 entries.append(("Feed Cre&dentials...", self._on_library_feed_credentials))
             entries += [
                 ("Un&follow...\tDelete", self._on_library_remove),
-                ("New F&older...", self._on_library_new_folder),
+                ("New F&older...\tCtrl+Shift+E", self._on_library_new_folder),
             ]
         elif kind == "folder":
             # The listening verbs lead (folder_menu says why), from the one
@@ -83,7 +88,7 @@ class CastLibraryActionsMixin:
             entries += [
                 ("Rena&me Folder...\tF2", self._on_library_rename_folder),
                 ("&Delete Folder...\tDelete", self._on_library_remove),
-                ("New F&older...", self._on_library_new_folder),
+                ("New F&older...\tCtrl+Shift+E", self._on_library_new_folder),
                 # On branches, never on shows or episodes -- those already ARE
                 # subscriptions; Add belongs where new things get filed.
                 ("&Add Podcast...", lambda: self._podcast_open_add_dialog()),
@@ -161,6 +166,18 @@ class CastLibraryActionsMixin:
         else:
             self._play_show_next_episode(show.id)
 
+    def _on_library_refresh_feed(self) -> None:
+        show = self._selected_show()
+        if show is None:
+            return
+        if not show.feed_url:
+            self._announce(f"{show.title} has no feed address to refresh.")
+            return
+        if getattr(self, "_safe_mode", False):
+            self._announce("Feed refresh is unavailable in Safe Mode.")
+            return
+        self._on_refresh_feed(show)
+
     def _on_library_favorite_toggle_context(self) -> None:
         from quill.ui.podcasts.show_actions import toggle_favorite
 
@@ -196,11 +213,62 @@ class CastLibraryActionsMixin:
         ):
             self._save_podcast_library()
 
-    def _save_and_reload_library(self) -> None:
-        """Persist the library and rebuild the tree -- what a destructive verb
-        and its Ctrl+Z both need doing afterwards (11.3)."""
-        self._save_podcast_library()
-        self._reload_library_tree()
+    def _save_and_reload_library(self, *, keep_key: tuple[str, str] | None = None) -> None:
+        """Persist a library change and retain its intended tree selection."""
+        self._save_podcast_library(keep_key=keep_key, refresh_now=True)
+
+    def _visible_library_show_ids(self) -> list[str]:
+        """Show ids in the tree's current visible order, skipping closed folders."""
+        tree = self._shows_tree
+        show_ids: list[str] = []
+
+        def collect(parent: object) -> None:
+            item, cookie = tree.GetFirstChild(parent)
+            while item.IsOk():
+                data = tree.GetItemData(item)
+                if isinstance(data, tuple) and len(data) == 2 and data[0] == "show":
+                    show_ids.append(str(data[1]))
+                if tree.IsExpanded(item):
+                    collect(item)
+                item, cookie = tree.GetNextChild(parent, cookie)
+
+        collect(tree.GetRootItem())
+        return show_ids
+
+    def _next_visible_library_show_key(self, show_id: str) -> tuple[str, str] | None:
+        """Choose the next visible show after removal, or the previous one at the end."""
+        show_ids = self._visible_library_show_ids()
+        try:
+            index = show_ids.index(show_id)
+        except ValueError:
+            return None
+        for candidate in show_ids[index + 1 :]:
+            if candidate != show_id:
+                return ("show", candidate)
+        for candidate in reversed(show_ids[:index]):
+            if candidate != show_id:
+                return ("show", candidate)
+        return None
+
+    def _neighbor_of_selected_placement(self) -> tuple[str, ...] | None:
+        """A remaining sibling at the selected row's position, then its folder."""
+        from quill.ui.podcasts.library_tree_updates import row_key
+
+        tree = self._shows_tree
+        selected = tree.GetSelection()
+        if not selected.IsOk():
+            return None
+        parent = tree.GetItemParent(selected)
+        if not parent.IsOk():
+            return None
+        for step in (tree.GetNextSibling, tree.GetPrevSibling):
+            item = step(selected)
+            while item.IsOk():
+                key = row_key(self, item)
+                if key is not None and key[0] == "show":
+                    return key
+                item = step(item)
+        return row_key(self, parent)
 
     def _on_library_remove_all_episodes(self) -> None:
         from quill.ui.podcasts.show_actions import remove_all_episodes_prompt
@@ -210,14 +278,13 @@ class CastLibraryActionsMixin:
             return
         # on_change runs after the removal *and* after Ctrl+Z, so the saved
         # library and the tree agree either way (11.3).
-        if remove_all_episodes_prompt(
+        remove_all_episodes_prompt(
             self.frame,
             self._podcast_download_queue,
             show,
             announce=self._announce,
             on_change=self._save_and_reload_library,
-        ):
-            self._save_podcast_library()
+        )
 
     def _on_library_feed_credentials(self) -> None:
         from quill.ui.podcasts.show_actions import feed_credentials_prompt
@@ -231,13 +298,50 @@ class CastLibraryActionsMixin:
             self._save_podcast_library()
 
     def _on_library_move_to_folder(self) -> None:
-        from quill.ui.podcasts.show_actions import move_show_to_folder
+        self._file_selected_show(copy=False)
+
+    def _on_library_copy_to_folder(self) -> None:
+        self._file_selected_show(copy=True)
+
+    def _file_selected_show(self, *, copy: bool) -> None:
+        from quill.ui.podcasts.library_tree_updates import row_key
+        from quill.ui.podcasts.show_filing import file_show
 
         show = self._selected_show()
         if show is None:
+            self._announce("Choose a podcast first.")
             return
-        if move_show_to_folder(self.frame, self._podcast_library, show, announce=self._announce):
-            self._save_podcast_library()
+        source = show.folder_id
+        selected_key = None
+        next_key = None
+        if getattr(self, "_current_place", "podcasts") == "podcasts":
+            item = self._shows_tree.GetSelection()
+            selected_key = row_key(self, item)
+            if not copy:
+                next_key = self._neighbor_of_selected_placement()
+            while item.IsOk():
+                data = self._shows_tree.GetItemData(item)
+                if isinstance(data, tuple) and len(data) == 2:
+                    if data[0] == "folder":
+                        source = data[1]
+                        break
+                    if data[0] == "group":
+                        source = None
+                        break
+                item = self._shows_tree.GetItemParent(item)
+        if file_show(
+            self.frame,
+            self._podcast_library,
+            show,
+            source_folder_id=source,
+            copy=copy,
+            announce=self._announce,
+            on_library_changed=self._save_podcast_library,
+        ):
+            # Moving removes the selected placement. Keep the cursor at its
+            # former position, including when a show has copies elsewhere.
+            keep_key = next_key if not copy else selected_key
+            self._save_podcast_library(keep_key=keep_key, refresh_now=True)
 
     def _on_library_episode_play_stop(self) -> None:
         pair = self._selected_episode()
@@ -342,11 +446,19 @@ class CastLibraryActionsMixin:
             return
         if self._podcast_library.settings.show_sort_mode != "custom":
             self._set_show_sort_mode("custom", announce=False)
-        if not self._podcast_library.move_show(show.id, offset):
+        from quill.core.podcasts.folder_membership import reorder
+        from quill.ui.podcasts.library_tree_updates import row_key
+
+        source = show.folder_id
+        if not self._content_is_list():
+            selected = row_key(self, self._shows_tree.GetSelection())
+            if selected is not None and len(selected) == 3:
+                source = selected[2]
+        if not reorder(self._podcast_library, show, offset, folder_id=source):
             edge = "top" if offset < 0 else "bottom"
             self._announce(f"{show.title} is already at the {edge}.")
             return
-        self._save_podcast_library()
+        self._save_podcast_library(refresh_now=True)
         self._announce(f"Moved {show.title} {'up' if offset < 0 else 'down'}.")
 
     def _set_show_sort_mode(self, mode: str, *, announce: bool = True) -> None:
@@ -406,14 +518,26 @@ class CastLibraryActionsMixin:
         kind, key = selected
         if kind == "show":
             show = self._podcast_library.find_show(key)
-            if show is not None and unsubscribe_show_prompt(
+            if show is None:
+                return
+            next_key = self._next_visible_library_show_key(show.id)
+
+            def save_after_change() -> None:
+                keep_key = (
+                    ("show", show.id)
+                    if self._podcast_library.find_show(show.id) is not None
+                    else next_key
+                )
+                self._save_and_reload_library(keep_key=keep_key)
+
+            unsubscribe_show_prompt(
                 self.frame,
                 self._podcast_library,
                 show,
                 announce=self._announce,
-                on_change=self._save_and_reload_library,
-            ):
-                self._save_podcast_library()
+                on_change=save_after_change,
+                download_queue=self._podcast_download_queue,
+            )
         elif kind == "folder":
             if delete_folder_prompt(
                 self.frame, self._podcast_library, key, announce=self._announce

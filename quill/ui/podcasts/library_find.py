@@ -201,7 +201,22 @@ class CastLibraryFindMixin:
         if pane is not None:
             pane.show(pane.TREE)
             pane.set_heading("Matches")
+        # The library rows leave now, not when the worker answers: a tree
+        # headed "Matches" must not go on showing (or chunk-filling) the library.
+        self._clear_library_tree_for_find()
         self._start_library_find(announce=True)
+
+    def _clear_library_tree_for_find(self) -> None:
+        """Stop any chunked library redraw and empty the tree and its maps."""
+        from quill.ui.podcasts.library_tree_updates import cancel_tree_update
+
+        cancel_tree_update(self)
+        self._cast_tree_items = {}
+        self._cast_tree_labels = {}
+        self._cast_tree_episode_items = {}
+        self._cast_tree_children = {}
+        self._cast_tree_shape = None
+        self._shows_tree.DeleteAllItems()
 
     def _refresh_library_find(self) -> str:
         """Search again for the current query, without speaking.
@@ -285,7 +300,7 @@ class CastLibraryFindMixin:
             except Exception:  # noqa: BLE001
                 keep = None
         tree = self._shows_tree
-        tree.DeleteAllItems()
+        self._clear_library_tree_for_find()
         root = tree.AddRoot("Matches")
         first = chosen = None
         for label, data in rows:
@@ -353,6 +368,11 @@ class CastLibraryFindMixin:
         if code == wx.WXK_DOWN and self._library_find_active():
             self._shows_tree.SetFocus()
             return
+        if code == wx.WXK_ESCAPE and not self._library_find_query():
+            pane = getattr(self, "_content", None)
+            if pane is not None:
+                pane.focus()
+                return
         event.Skip()
 
     def focus_library_find(self) -> None:

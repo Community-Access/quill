@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.12" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Changelog</title>
   <style>
@@ -249,6 +249,199 @@ is the first release most people will meet, so its release notes
 app) are written as a welcome for new users rather than a list of
 changes; this file keeps the engineering record. The 1.x release notes
 were retired on 2026-10-03.</p>
+<h2 id="unreleased">Unreleased</h2>
+<ul>
+<li><strong>Show notes read as words.</strong> A feed that encodes its
+text twice (<code>&amp;amp;#8217;</code>, common with WordPress podcast
+plugins) left <code>&amp;#8217;</code> in show notes, titles and the
+feed preview, and a screen reader spelled it out. Notes published as
+escaped HTML (<code>&amp;lt;p&amp;gt;</code>) showed their tags. Both
+are read properly now, through one shared cleaner, and a test fails if a
+new reader of publisher text decodes it by hand
+(<code>quill/core/display_text.py</code>).</li>
+<li><strong>Feeds over http and https, explained.</strong> The user
+guide has a new section, “Feeds over http and https” under Feed Check:
+https is tried first, Player Information marks a feed that really is
+plain http, a password is never sent over plain http, and what to do
+when a certificate cannot be verified. Feed Check’s list of reasons now
+quotes the certificate sentence Cast actually says.</li>
+<li>Playback letters now work only in Now Playing. Main library, Places,
+and episode lists keep their letter typeahead; Shift+Right scanning
+moves with the other player keys. This fixes C announcing “Nothing is
+playing” when trying to jump to a podcast.</li>
+</ul>
+<p>Testing rebuild: <strong>2.0.0 (build 3)</strong>. Build 3 has not
+been published. Functional, installer/portable and signing checks remain
+required; the 16 ms diagnostic target is not a release-blocking cutoff
+for an isolated native UI update.</p>
+<ul>
+<li><p><strong>HTTPS uses the Windows certificate store.</strong> Feed
+checks, downloads, chapters, transcripts, podcast directories and OPML
+reachability checks use the shared native certificate-trust helper.
+Trusted Windows and organization-managed roots can be recognized without
+disabling hostname or certificate verification. Invalid certificates
+still fail; diagnostic reports include certificate-verification details
+without feed credentials. This does not claim to resolve a particular
+listener’s feed without testing that exact URL on their
+computer.</p></li>
+<li><p><strong>The installers are current-user only.</strong> The Cast
+installers no longer offer an all-users installation that requires
+administrator approval. Cast and its shared runtime install for the
+current Windows account. The release builder applies <code>-Sign</code>
+before deciding the signing policy, so required signing is not
+accidentally downgraded to optional signing.</p></li>
+<li><p><strong>Start QUILL Cast with Windows.</strong> An opt-in setting
+under Preferences &gt; When Cast opens starts the installed copy when
+you sign in to this Windows account. It is machine-local, uses per-user
+startup settings, and is unavailable to portable copies; it needs no
+administrator rights.</p></li>
+<li><p><strong>Preferences avoid unnecessary library reloads.</strong>
+Saving only refreshes the current library place when the changed setting
+can alter its visible rows (Hide caught-up podcasts).
+Application-history and family-sharing writes run on the ordered
+bookkeeping worker too. Cast distinguishes applying the changes from
+successfully saving them and reports persistence failures.</p></li>
+<li><p><strong>Refresh All Now batches library work.</strong> Cast
+defers library-tree and Podcast Manager refreshes until the requested
+feeds have finished, then runs maintenance once, rather than repeating
+that work for each feed. Periodic saves during a run do not redraw the
+tree or lose its final pending update.</p></li>
+<li><p><strong>The library cursor stays put while feeds change.</strong>
+Expanded podcasts update their episode rows in place, keeping unchanged
+native rows and the selected folder copy. New episodes and updated
+titles do not briefly select the parent podcast. A necessary tree
+rebuild restores the expanded episode, and an arrow press during drawing
+takes precedence over the saved selection. Moving a podcast leaves the
+cursor on its next sibling, then the previous sibling or containing
+folder when there is no next row.</p></li>
+<li><p><strong>Folder moves no longer clear the entire podcast
+tree.</strong> Unchanged native rows remain in place, and the
+next/previous-row anchor survives an overlapping counts refresh.
+Explicit moves are shown even during Refresh All. Neighbor lookup uses
+adjacent siblings, and read-only drawing turns no longer trigger native
+repaint cycles. Regression tests exercise the actual folder picker, not
+only the anchor helper.</p></li>
+<li><p><strong>Arrowing and closing do less work in one turn.</strong>
+Selection changes update button targets on the next UI turn, coalescing
+rapid moves into the latest selection instead of relabeling inside
+native tree selection. They do not reread notifications or recount
+status cells. Closing yields between teardown steps and waits for final
+file work through asynchronous polling, keeping Windows able to process
+events.</p></li>
+<li><p><strong>Refresh All and OPML import stay responsive.</strong>
+All-feed refresh has a reusable, modeless progress window that can be
+reached without leaving the main window disabled. Closing it hides it.
+Stop ends the run without waiting for outstanding network requests, and
+late results from that run are ignored; updates already completed are
+kept. OPML reading and planning run on a worker, while additions to the
+live library yield between bounded batches. Stopping the optional
+reachability check keeps the subscriptions already imported.</p></li>
+<li><p><strong>Library saves no longer write files on the UI
+thread.</strong> Detached JSON generations are prepared in bounded turns
+and written atomically on a worker. Episode records are encoded directly
+instead of allocating another complete catalogue of episode and
+empty-tag model objects. Writes are serialized so an older save cannot
+overwrite a newer one. Playback-position updates catch up individual
+records instead of restarting the whole copy. Long feed-check runs can
+save periodically, but a snapshot waits for a yielding feed commit to
+finish before copying its changes.</p></li>
+<li><p><strong>Feed results preserve the live listening state.</strong>
+Feed merging and routing decisions run on detached data. Applying the
+result retains the live episode objects, playback positions and
+listener-owned names. A late result cannot restore an unfollowed show or
+episodes removed while that request was running. Refresh All uses two
+dedicated feed workers rather than filling the shared background
+pool.</p></li>
+<li><p><strong>Unfollow and downloaded-file Undo use background file
+jobs.</strong> Removing the subscription updates the library without
+waiting for file moves or deletion. Undo waits asynchronously for any
+pending file hold, preserves recovery copies after a restore failure,
+and reports the completed outcome rather than claiming success before
+the file job finishes. Unfollow removes the show’s local queue,
+playlist, Inbox and folder-copy references; Undo restores that show’s
+references without replacing unrelated current changes.</p></li>
+<li><p><strong>Copy a podcast to another folder without following it
+twice.</strong> Folder copies share one subscription, episode list,
+listening history and downloads. Move changes the selected placement.
+OPML export and import preserve multiple placements of the same feed.
+Unfollowing removes every placement; destructive folder removal warns
+that copies outside that folder disappear too.</p></li>
+<li><p><strong>Podcast and folder shortcuts are consistent.</strong> F5
+checks the selected podcast; Ctrl+F5 checks all podcasts. Ctrl+Shift+V
+moves a podcast, Ctrl+Shift+Y copies it, and Ctrl+Shift+E creates a
+folder. Favorites moves to Alt+Shift+V and Playlists to Alt+Shift+Y;
+Notifications remains Ctrl+Shift+N. Cast’s image-generation shortcut
+moves to Ctrl+Alt+F5 so it does not conflict with Refresh All. Mark All
+as Played moves to Alt+Shift+E, keeping Ctrl+Shift+E exclusively for New
+Folder. The New Folder menu uses the same selected-parent action and
+configurable binding as the command palette.</p></li>
+<li><p><strong>Arrow keys stay in the control being used.</strong> Left
+Arrow collapses an expanded folder before leaving the Podcasts tree.
+Selecting Podcasts in Places does not automatically move focus into the
+tree, and Up Arrow at the first list row stays in that list. Podcast
+context menus expose Refresh Feed. Opening an empty podcast starts a
+check before treating it as genuinely empty.</p></li>
+<li><p><strong>Embedded playback does not load standalone mpv
+scripts.</strong> Cast disables mpv’s default script loading for its
+embedded player, avoiding an unnecessary startup and shutdown path while
+leaving the standalone mpv configuration untouched.</p></li>
+<li><p><strong>Global hotkeys retain their wx identifiers.</strong> The
+host keeps the allocated ID references while the routes exist,
+preventing another control or hotkey from recycling an identifier that
+is still registered with Windows.</p></li>
+<li><p><strong>Play/Pause checks backend acceptance.</strong> Rejected
+transport requests report a playback error instead of changing the
+reported state to Playing or Paused. A press while an episode loads
+changes whether it should start paused; pause reaches the audio engine
+before position bookkeeping. Stopping an mpv episode unloads it without
+destroying the reusable player; shutdown releases both active and
+inactive native engines, with parent destruction as a fallback.</p></li>
+<li><p><strong>Storage checks avoid cloning unrelated feed
+entries.</strong> Detached storage generations retain every download,
+queued/recently expired episode, and eligible Inbox-cap candidate,
+including opt-out Inbox membership. Unrelated catalogue entries are
+scanned in bounded blocks without allocating duplicate episode/tag
+graphs or scheduling a separate wx timer turn for each small group. The
+shared QUILL podcast storage report also uses a native virtual list,
+avoiding a Windows row insertion/deletion for every podcast when
+All/Unheard changes. Cast itself continues to open its Downloads place,
+not that dialog.</p></li>
+<li><p><strong>Large views use a lightweight detached
+catalogue.</strong> View preparation no longer deep-copies every episode
+and its namespace-tag graph. It captures the fields needed by the
+existing view rules in bounded UI turns, retains person names for
+Episode Filters, and streams cross-podcast candidates into bounded
+sorting. Result publication resolves only the displayed episodes, checks
+their live identities, and rejects stale generations. Queued selection
+and notes updates stop when the main window is closing. Opening a large
+place, publishing native rows, and refreshing transport/status controls
+yield between UI operations. A delayed opening does not reclaim focus
+after the listener moves it. Status cells no longer rewrite unchanged
+labels, names, or help; interrupted refreshes still finish any required
+layout. The worker shares the interpreter between bounded scan turns and
+releases its detached episode input and show metadata in bounded batches
+before delivery. A canceled partial capture retains that input for a
+separate cleanup worker, including during shutdown, instead of freeing
+the catalogue on the UI thread.</p>
+<p><strong>Responsiveness measurements.</strong> The visible-window
+native test prepares Downloads for 1,300 podcasts / 195,000 episodes in
+about four to five seconds rather than the original 24 seconds. One
+complete run stayed below the 16 ms diagnostic target: All took 4.64
+seconds with a 12.85 ms maximum callback, Unheard took 3.88 seconds /
+8.67 ms, and partial-capture cancellation took 6.25 ms. The next repeat
+exceeded that diagnostic target: All took 5.16 seconds / 16.70 ms, with
+the longest callback in the native loading-heading update; Unheard took
+4.33 seconds / 7.39 ms and cancellation took 5.26 ms. An earlier run
+also caught a 36.82 ms native item-count update. Startup and
+phase-specific queued responses remain separately measured, not hidden
+by these view results. An isolated 16.7 ms native update is not a “Not
+Responding” freeze and does not by itself hold up packaging. Release
+checks instead focus on sustained blocking, usable background
+operations, safe saving/cancellation, and the installer/portable
+payload. The native view regression retains 16 ms as a diagnostic target
+and rejects callbacks above 100 ms to catch meaningful main-thread
+stalls without failing a normal 16.7 ms update.</p></li>
+</ul>
 <h2 id="200--2026-10-03">2.0.0 – 2026-10-03</h2>
 <p>QUILL Cast 2.0. The main window, Find in library and the rest of this
 release are described for listeners in

@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from quill.core.net import verified_ssl_context
+from quill.core.net import configure_ssl_trust, ssl_trust_configured, verified_ssl_context
 
 _QUILL_ROOT = Path(__file__).resolve().parents[3] / "quill"
 
@@ -22,6 +22,40 @@ def test_verified_context_requires_certificates() -> None:
     context = verified_ssl_context()
     assert context.verify_mode == ssl.CERT_REQUIRED
     assert context.check_hostname is True
+
+
+def test_application_truststore_configuration_is_idempotent() -> None:
+    configure_ssl_trust()
+    assert ssl_trust_configured()
+    context = ssl.create_default_context()
+    assert context.verify_mode == ssl.CERT_REQUIRED
+    assert context.check_hostname is True
+
+
+def test_application_entrypoints_configure_truststore_before_running() -> None:
+    main_source = (_QUILL_ROOT / "__main__.py").read_text(encoding="utf-8")
+    main_tree = ast.parse(main_source)
+    main = next(
+        node for node in main_tree.body if isinstance(node, ast.FunctionDef) and node.name == "main"
+    )
+    first = main.body[0]
+    second = main.body[1]
+    assert isinstance(first, ast.ImportFrom)
+    assert first.module == "quill.core.net"
+    assert isinstance(second, ast.Expr)
+    assert isinstance(second.value, ast.Call)
+    assert isinstance(second.value.func, ast.Name)
+    assert second.value.func.id == "configure_ssl_trust"
+
+    apps_source = (_QUILL_ROOT / "apps" / "__init__.py").read_text(encoding="utf-8")
+    apps_tree = ast.parse(apps_source)
+    assert any(
+        isinstance(node, ast.Expr)
+        and isinstance(node.value, ast.Call)
+        and isinstance(node.value.func, ast.Name)
+        and node.value.func.id == "configure_ssl_trust"
+        for node in apps_tree.body
+    )
 
 
 def _python_sources() -> list[Path]:
@@ -76,7 +110,7 @@ def test_assistant_context_only_for_https(url: str, expect_https: bool) -> None:
 
     context = _context_for(url)
     if expect_https:
-        assert isinstance(context, ssl.SSLContext)
+        assert context is not None
         assert context.verify_mode == ssl.CERT_REQUIRED
     else:
         assert context is None

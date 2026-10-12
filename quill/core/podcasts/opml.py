@@ -97,10 +97,12 @@ def export_opml(library: PodcastLibrary) -> str:
             _emit_shows(folder_xml, folder.id)
 
     def _emit_shows(parent_xml: ET.Element, folder_id: str | None) -> None:
+        from quill.core.podcasts.folder_membership import placements
+
         for show in library.shows:
             if show.is_local or not show.feed_url:
                 continue
-            if show.folder_id != folder_id:
+            if folder_id not in placements(library, show):
                 continue
             ET.SubElement(parent_xml, "outline", _show_outline_attrs(show))
 
@@ -131,6 +133,8 @@ def export_subtree(library: PodcastLibrary, folder_id: str) -> str:
     body = ET.SubElement(root, "body")
 
     def _emit(parent_xml: ET.Element, current_id: str) -> None:
+        from quill.core.podcasts.folder_membership import placements
+
         this_folder = next((f for f in library.folders if f.id == current_id), None)
         if this_folder is None:
             return
@@ -139,7 +143,7 @@ def export_subtree(library: PodcastLibrary, folder_id: str) -> str:
             if child.parent_folder_id == current_id and child.id in wanted:
                 _emit(folder_xml, child.id)
         for show in library.shows:
-            if show.is_local or not show.feed_url or show.folder_id != current_id:
+            if show.is_local or not show.feed_url or current_id not in placements(library, show):
                 continue
             ET.SubElement(folder_xml, "outline", _show_outline_attrs(show))
 

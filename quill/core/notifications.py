@@ -52,6 +52,7 @@ __all__ = [
     "newest_first",
     "notifications_path",
     "save_notifications",
+    "update_notice",
     "unread_count",
 ]
 
@@ -118,18 +119,19 @@ class Notification:
         return not self.read
 
 
-def notifications_path() -> Path:
-    return app_data_dir() / "notifications.json"
+def notifications_path(data_dir: Path | None = None) -> Path:
+    """The notification file for *data_dir*, or QUILL's default store."""
+    return (data_dir if data_dir is not None else app_data_dir()) / "notifications.json"
 
 
-def load_notifications() -> list[Notification]:
+def load_notifications(*, path: Path | None = None) -> list[Notification]:
     """Every stored entry, oldest first. ``[]`` when there is none.
 
     A row with no message *and* no title is dropped rather than shown as a
     blank line: an empty entry reads as a bug to somebody arrowing through it,
     and there is nothing to say about it.
     """
-    raw = read_json(notifications_path(), default=[])
+    raw = read_json(path if path is not None else notifications_path(), default=[])
     if not isinstance(raw, list):
         return []
     entries: list[Notification] = []
@@ -158,36 +160,81 @@ def load_notifications() -> list[Notification]:
     return entries
 
 
-def save_notifications(entries: list[Notification], limit: int = MAX_NOTICES) -> None:
+def save_notifications(
+    entries: list[Notification], limit: int = MAX_NOTICES, *, path: Path | None = None
+) -> None:
     trimmed = entries[-limit:]
-    write_json_atomic(notifications_path(), [asdict(entry) for entry in trimmed])
+    write_json_atomic(
+        path if path is not None else notifications_path(), [asdict(entry) for entry in trimmed]
+    )
 
 
 def add_notification(
-    message: str, category: str = "info", limit: int = MAX_NOTICES
+    message: str, category: str = "info", limit: int = MAX_NOTICES, *, path: Path | None = None
 ) -> list[Notification]:
-    entries = load_notifications()
+    entries = load_notifications(path=path)
     entries.append(Notification.create(message, category))
-    save_notifications(entries, limit=limit)
+    save_notifications(entries, limit=limit, path=path)
     return entries[-limit:]
 
 
 def add_notice(
-    *, app: str, title: str, body: str = "", target: str = "", category: str = "info"
+    *,
+    app: str,
+    title: str,
+    body: str = "",
+    target: str = "",
+    category: str = "info",
+    path: Path | None = None,
 ) -> list[Notification]:
     """Record the richer shape. Returns the whole list, oldest first."""
-    entries = load_notifications()
+    entries = load_notifications(path=path)
     entries.append(
         Notification.notice(app=app, title=title, body=body, target=target, category=category)
     )
-    save_notifications(entries)
+    save_notifications(entries, path=path)
     return entries[-MAX_NOTICES:]
 
 
-def clear_notifications() -> None:
+def update_notice(
+    notice_id: str,
+    *,
+    title: str | None = None,
+    body: str | None = None,
+    target: str | None = None,
+    category: str | None = None,
+    path: Path | None = None,
+) -> bool:
+    """Update a notice in place; return False if it has already been removed."""
+    entries = load_notifications(path=path)
+    updated: list[Notification] = []
+    found = False
+    for entry in entries:
+        if entry.id != notice_id:
+            updated.append(entry)
+            continue
+        found = True
+        new_title = entry.title if title is None else str(title).strip()
+        new_body = entry.body if body is None else str(body).strip()
+        updated.append(
+            dataclasses.replace(
+                entry,
+                title=new_title,
+                body=new_body,
+                message=f"{new_title} -- {new_body}" if new_body else new_title,
+                target=entry.target if target is None else str(target).strip(),
+                category=entry.category if category is None else str(category).strip() or "info",
+            )
+        )
+    if found:
+        save_notifications(updated, path=path)
+    return found
+
+
+def clear_notifications(*, path: Path | None = None) -> None:
     """Empty the list. It removes the record of being told, never the thing it
     was telling you about."""
-    write_json_atomic(notifications_path(), [])
+    write_json_atomic(path if path is not None else notifications_path(), [])
 
 
 def newest_first(entries: list[Notification]) -> list[Notification]:
@@ -199,18 +246,18 @@ def unread_count(entries: list[Notification]) -> int:
     return sum(1 for entry in entries if not entry.read)
 
 
-def mark_read(notice_id: str) -> list[Notification]:
+def mark_read(notice_id: str, *, path: Path | None = None) -> list[Notification]:
     """Mark one entry read. Returns the whole list, oldest first."""
-    entries = load_notifications()
+    entries = load_notifications(path=path)
     updated = [
         dataclasses.replace(entry, read=True) if entry.id == notice_id else entry
         for entry in entries
     ]
-    save_notifications(updated)
+    save_notifications(updated, path=path)
     return updated
 
 
-def mark_all_read() -> list[Notification]:
-    entries = [dataclasses.replace(entry, read=True) for entry in load_notifications()]
-    save_notifications(entries)
+def mark_all_read(*, path: Path | None = None) -> list[Notification]:
+    entries = [dataclasses.replace(entry, read=True) for entry in load_notifications(path=path)]
+    save_notifications(entries, path=path)
     return entries

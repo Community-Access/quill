@@ -22,14 +22,19 @@ def generate_captions(host: Any) -> None:
     """Transcribe an audio/video file to timed captions on this machine, then
     save them as .srt or .vtt -- a faithful port of QUILL's Tools > Speech >
     Generate Captions (Offline). Disabled in Safe Mode."""
-    wx = host._wx
     if bool(getattr(host, "_safe_mode", False)):
         host._announce("Generating captions is disabled in Safe Mode.")
         return
     provider = host._speech_provider()
-    installed = host._installed_or_prompt(provider, "Generate Captions")
-    if installed is None:
-        return
+    host._check_installed_speech_models(
+        provider,
+        "Generate Captions",
+        lambda selected, installed: _generate_captions_with_models(host, selected, installed),
+    )
+
+
+def _generate_captions_with_models(host: Any, provider: object, installed: list) -> None:
+    wx = host._wx
     model_id = host._default_model_id(installed)
     with wx.FileDialog(
         host.frame,
@@ -85,8 +90,16 @@ def _save_captions(host: Any, result: object, source: Path) -> None:
         if host._show_modal_dialog(dialog, "Save captions") != wx.ID_OK:
             return
         target = Path(dialog.GetPath())
-    target.write_text(text, encoding="utf-8", newline="\n")
-    host._announce(f"Captions saved to {target.name}.")
+    from quill.core.storage import write_text_atomic
+
+    def work(_progress):
+        write_text_atomic(target, text, encoding="utf-8", newline="\n")
+
+    host._run_background_task(
+        f"Saving captions to {target.name}",
+        work,
+        lambda _result: host._announce(f"Captions saved to {target.name}."),
+    )
 
 
 def _wildcard() -> str:

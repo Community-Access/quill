@@ -21,6 +21,18 @@ except ImportError:  # pragma: no cover - non-Windows fallback
 _RUN_KEY_PATH = r"Software\Microsoft\Windows\CurrentVersion\Run"
 _VALUE_NAME = "QuillWeather"
 
+PORTABLE_REFUSAL = (
+    "A portable copy does not add itself to this computer's startup. "
+    "Install Quill Weather to start it with Windows."
+)
+
+
+def running_portable() -> bool:
+    """Whether this copy stores its data inside the portable bundle."""
+    from quill.core.paths import portable_bundle_root
+
+    return portable_bundle_root() is not None
+
 
 #: The native launcher an installed copy starts from, and the app's module;
 #: on the shared runtime ``sys.executable`` alone is not the app (2026-09-27).
@@ -42,7 +54,7 @@ def is_windows() -> bool:
 
 def is_launch_at_startup_enabled() -> bool:
     """True if Quill Weather currently has its per-user Run-key entry."""
-    if not is_windows():
+    if not is_windows() or running_portable():
         return False
     try:
         with winreg.OpenKey(winreg.HKEY_CURRENT_USER, _RUN_KEY_PATH) as key:
@@ -71,7 +83,7 @@ def set_launch_at_startup(enabled: bool) -> None:
     A no-op on non-Windows platforms; never raises -- a locked-down registry
     (corporate policy) must not crash the app or block saving other settings.
     """
-    if not is_windows():
+    if not is_windows() or running_portable():
         return
     try:
         with winreg.OpenKey(

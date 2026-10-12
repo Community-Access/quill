@@ -41,6 +41,7 @@ class FakeApp(LiteRecoveryMixin):
         self.shell = None
         self.opened: list[Any] = []
         self.saved = 0
+        self.queued = 0
 
     def new_window(self, mode: str, recovery_slot: Any = None) -> Any:
         self.opened.append(recovery_slot)
@@ -48,6 +49,9 @@ class FakeApp(LiteRecoveryMixin):
 
     def save_settings(self) -> None:
         self.saved += 1
+
+    def _queue_settings_save(self) -> None:
+        self.queued += 1
 
 
 @pytest.fixture
@@ -207,7 +211,7 @@ def test_never_offer_untitled_is_saved_as_a_preference(
     app._restore_pending_work()
 
     assert app.settings.recover_untitled_documents is False
-    assert app.saved == 1
+    assert app.queued == 1
 
 
 def test_an_empty_store_asks_nothing_and_says_nothing(

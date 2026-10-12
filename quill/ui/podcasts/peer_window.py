@@ -96,11 +96,13 @@ def open_peer(
         )
     from quill.ui.dialog_contract import show_modeless_surface
 
-    if window.frame.IsIconized():
+    if focus and window.frame.IsIconized():
         window.frame.Iconize(False)
-    show_modeless_surface(window.frame, window.TITLE, announce=getattr(host, "_announce", None))
-    window.frame.Raise()
+    show_modeless_surface(
+        window.frame, window.TITLE, announce=getattr(host, "_announce", None), focus=focus
+    )
     if focus:
+        window.frame.Raise()
         target = window.focus_target()
         if _alive(target):
             target.SetFocus()

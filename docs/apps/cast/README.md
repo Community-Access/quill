@@ -113,7 +113,7 @@ The same dialog also offers, only when a podcast is loaded, **auto-skip intro** 
 
 #### Sorting and finding what's unheard
 
-**Sort episodes**, above the episode list, offers newest first, oldest first, title A-Z, longest first, shortest first, or unplayed first. **Sort shows**, above the folder tree, offers title A-Z, most unheard first, or recently updated first. Every folder and show name in the tree also shows its own unheard-episode count in parentheses, so you can see where you're behind without opening each show.
+**Sort episodes**, above the episode list, offers newest first, oldest first, title A-Z, longest first, shortest first, or unplayed first. **Sort shows**, above the folder tree, offers title A-Z, most unheard first, or recently updated first. Every podcast row shows its unplayed-episode count in parentheses, including `(0 unheard)`, so you can see where you're behind without opening each show.
 
 #### Show notes
 
@@ -127,7 +127,7 @@ An episode's right-click context menu includes **View Show Notes...**, which ope
 
 #### Rich context menus
 
-Right-click an episode (or open its context menu from the keyboard) for: Play/Pause, Stop, Download, Pause/Resume Download, Remove Downloaded Copy, Mark as Played/Unplayed, Copy Episode Link, View Show Notes..., and Send Show Notes to Editor. Right-click a show in the tree for: Refresh Feed, Pause/Resume This Podcast's Downloads, and Unsubscribe. Right-click a folder for: New Folder.
+Right-click an episode (or open its context menu from the keyboard) for: Play/Pause, Stop, Download, Pause/Resume Download, Remove Downloaded Copy, Mark as Played/Unplayed, Copy Episode Link, View Show Notes..., and Send Show Notes to Editor. Right-click a feed-backed show in the tree for: Refresh Feed (the first item), Pause/Resume This Podcast's Downloads, and Unsubscribe. Right-click a folder for: New Folder.
 
 #### The pinned views: Favorites, New Episodes, Continue Listening, and the Inbox
 

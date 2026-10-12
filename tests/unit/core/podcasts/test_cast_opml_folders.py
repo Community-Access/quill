@@ -85,7 +85,7 @@ def test_a_podcast_in_two_folders_is_followed_once_and_the_report_says_where(imp
     assert [s.title for s in library.shows].count("The Moth") == 1
     assert plan.duplicates_in_file == [
         "The Moth (http://feeds.feedburner.com/themothpodcast), also listed in "
-        "Café Français; kept in News & Politics"
+        "Café Français; one subscription shared with News & Politics"
     ]
 
 

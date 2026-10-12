@@ -192,6 +192,9 @@ class TestPruneOpml:
 
 
 class TestValidateFeeds:
+    def test_default_probe_concurrency_is_responsiveness_first(self) -> None:
+        assert opml_import.DEFAULT_WORKERS == 2
+
     def test_safe_mode_reports_rather_than_connecting(self) -> None:
         results = opml_import.validate_feeds([("A", "https://a/feed")], safe_mode=True)
 
@@ -229,10 +232,68 @@ class TestValidateFeeds:
             lambda url, timeout=0: OpmlValidationResult(url, url, True),
         )
 
+        from threading import Event
+
+        cancelled = Event()
+
         results = opml_import.validate_feeds(
             [("A", f"https://{i}") for i in range(20)],
             workers=1,
-            should_cancel=lambda: True,
+            should_cancel=cancelled.is_set,
+            on_progress=lambda _done, _total: cancelled.set(),
+            start_interval=0,
         )
 
         assert 0 < len(results) < 20
+
+    def test_cancel_does_not_wait_for_a_running_network_request(self, monkeypatch) -> None:
+        from concurrent.futures import ThreadPoolExecutor
+        from threading import Event
+
+        from quill.core.podcasts.opml import OpmlValidationResult
+
+        entered, release, cancelled = Event(), Event(), Event()
+
+        def probe(url, timeout=0):
+            entered.set()
+            assert release.wait(5)
+            return OpmlValidationResult(url, url, True)
+
+        monkeypatch.setattr(opml_import, "probe_feed", probe)
+        with ThreadPoolExecutor(max_workers=1) as runner:
+            future = runner.submit(
+                opml_import.validate_feeds,
+                [("A", "https://a.example/feed")],
+                should_cancel=cancelled.is_set,
+            )
+            try:
+                assert entered.wait(2)
+                cancelled.set()
+                assert future.result(timeout=0.5) == []
+            finally:
+                release.set()
+
+
+def test_import_revalidates_a_feed_followed_or_changed_between_batches() -> None:
+    from quill.core.podcasts.models import PodcastShow
+    from quill.core.podcasts.opml import ImportedShow
+
+    existing = PodcastShow(id="existing", title="Existing", feed_url="https://old.example/feed")
+    library = PodcastLibrary(shows=[existing])
+    plan = opml_import.plan_import(
+        library,
+        [
+            ImportedShow(title="A", feed_url="https://a.example/feed", homepage="", folder_path=[]),
+            ImportedShow(title="B", feed_url="http://b.example/feed/", homepage="", folder_path=[]),
+        ],
+    )
+    revision = [0]
+    steps = opml_import.apply_plan_steps(library, plan, revision=lambda: revision[0])
+    assert next(steps).title == "A"
+    existing.feed_url = "https://B.example/feed"
+    revision[0] += 1
+    assert all(show is None for show in steps)
+    assert len(library.shows) == 2
+    assert len(plan.new) == 1
+    assert len(plan.duplicates_in_library) == 1
+    assert plan.total_seen == 2

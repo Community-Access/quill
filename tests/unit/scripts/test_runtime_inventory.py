@@ -13,7 +13,12 @@ from __future__ import annotations
 import importlib.util
 import json
 import sys
+import tomllib
 from pathlib import Path
+
+import pytest
+from packaging.requirements import Requirement
+from packaging.utils import canonicalize_name
 
 _SCRIPT = Path(__file__).resolve().parents[3] / "scripts" / "check_runtime_inventory.py"
 _spec = importlib.util.spec_from_file_location("check_runtime_inventory", _SCRIPT)
@@ -153,3 +158,36 @@ def test_missing_manifest_says_how_to_create_one(tmp_path: Path, capsys) -> None
     dist = _make_dist(tmp_path, ["wx"])
     assert _run([str(dist), "--manifest", str(tmp_path / "none.json")]) == 2
     assert "--write" in capsys.readouterr().err
+
+
+@pytest.mark.parametrize("app", ["radio", "quilllite", "converter"])
+def test_portable_inventories_require_declared_base_dependencies(app: str) -> None:
+    root = _SCRIPT.parents[1]
+    project = tomllib.loads((root / "pyproject.toml").read_text(encoding="utf-8"))["project"]
+    manifest = json.loads(
+        (root / "standalone" / app / "portable-inventory.json").read_text(encoding="utf-8")
+    )
+    required = {
+        canonicalize_name(name)
+        for name in manifest["site-packages"]
+        if name not in manifest.get("optional", [])
+    }
+    windows = {"sys_platform": "win32", "os_name": "nt", "platform_system": "Windows"}
+    for dependency in project["dependencies"]:
+        requirement = Requirement(dependency)
+        if requirement.marker is None or requirement.marker.evaluate(windows):
+            assert canonicalize_name(requirement.name) in required, (
+                f"{app} portable inventory must require the base dependency {requirement.name}"
+            )
+
+
+@pytest.mark.parametrize("app", ["radio", "converter"])
+def test_youtube_portable_inventories_require_colorlogs_windows_dependency(app: str) -> None:
+    manifest = json.loads(
+        (_SCRIPT.parents[1] / "standalone" / app / "portable-inventory.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert "colorlog" in manifest["site-packages"]
+    assert "colorama" in manifest["site-packages"]
+    assert "colorama" not in manifest.get("optional", [])
