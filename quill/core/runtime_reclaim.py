@@ -1,0 +1,227 @@
+"""Reclaim shared-runtime slots for a Python no installed app runs on any more.
+
+Moving the shared runtime to a new Python minor (3.13 -> 3.14, 2026-10-11)
+leaves the old slot behind: each updated app moves its reference to the new
+slot, and an app's uninstaller only ever removes the slot its own ini names, so
+nothing removes ``Runtime\\3.13`` (about 335 MB) once every app has moved on.
+Every app installer runs :func:`reclaim` (``runtime_cli reclaim-old-slots``)
+right after registering, so the last app to move is the one that frees it.
+
+**Only an older Python's slot, and only when nothing can still need it.** A
+slot for the current or a newer minor is never touched. An older one is kept
+while any of these hold:
+
+* :func:`quill.core.runtime_refs.slot_referenced` -- an app is registered
+  against it (apps register at every launch, not only at install);
+* an installed app's ``quill-app-version.ini`` names it in ``[runtime] slot=``;
+* it is a Stable slot and some installed app's ini has no ``slot=`` at all.
+  Installers write ``slot=`` since release channels (2026-10); an app installed
+  before that and never updated runs on the Python its launcher was built for,
+  which is older than the current one, so every older Stable slot stays.
+
+An app with its own private runtime (``python.exe`` or ``_internal\\python.exe``
+beside its ini) uses no shared slot and is ignored. Removing a runtime an app
+still needs would stop that app starting, so every doubt keeps the slot.
+
+wx-free; Windows registry reads are confined to :func:`installed_app_dirs`.
+"""
+
+from __future__ import annotations
+
+import os
+import shutil
+import subprocess
+import sys
+import time
+from collections.abc import Callable, Iterable
+from configparser import ConfigParser
+from dataclasses import dataclass
+from pathlib import Path
+
+from quill.core.runtime_refs import slot_referenced
+from quill.core.updater.channels import STABLE
+from quill.core.updater.runtime_slots import channel_of_slot, is_valid_slot
+
+__all__ = [
+    "ReclaimResult",
+    "installed_app_dirs",
+    "older_slots",
+    "reclaim",
+    "runtime_root",
+    "slots_named_by_installs",
+]
+
+#: The Inno uninstall keys of the runtime installers for the two 3.13 slots;
+#: later slots use ``<base>-<slot>_is1`` (``quillville-runtime.iss``).
+_RUNTIME_APPID_BASE = "{6D6B0E7C-51A4-4B5E-9E0D-2F8B4C0A9137}"
+_LEGACY_UNINSTALL_KEYS = {
+    "3.13": "{6D6B0E7C-51A4-4B5E-9E0D-2F8B4C0A9137}_is1",
+    "3.13-beta": "{6D6B0E7C-51A4-4B5E-9E0D-2F8B4C0A9138}_is1",
+}
+_UNINSTALL = r"Software\Microsoft\Windows\CurrentVersion\Uninstall"
+_UNINSTALLER_WAIT_S = 60.0
+
+
+@dataclass(frozen=True, slots=True)
+class ReclaimResult:
+    """What happened to one older slot: ``removed`` or ``kept``, and why."""
+
+    slot: str
+    action: str
+    reason: str
+
+
+def runtime_root() -> Path:
+    """``%LOCALAPPDATA%\\QuillVille\\Runtime``, where every slot lives."""
+    return Path(os.environ.get("LOCALAPPDATA", "")) / "QuillVille" / "Runtime"
+
+
+def _minor(slot: str) -> tuple[int, int] | None:
+    if not is_valid_slot(slot):
+        return None
+    major, minor = slot.split("-", 1)[0].split(".")
+    return int(major), int(minor)
+
+
+def older_slots(root: Path, current_slot: str) -> list[str]:
+    """Slot folders under *root* for a Python older than *current_slot*'s."""
+    current = _minor(current_slot)
+    if current is None:
+        return []
+    try:
+        names = [entry.name for entry in root.iterdir() if entry.is_dir()]
+    except OSError:
+        return []
+    return sorted(name for name in names if (m := _minor(name)) is not None and m < current)
+
+
+def _has_private_runtime(app_dir: Path) -> bool:
+    return (app_dir / "python.exe").is_file() or (app_dir / "_internal" / "python.exe").is_file()
+
+
+def slots_named_by_installs(app_dirs: Iterable[Path]) -> tuple[set[str], bool]:
+    """The slots installed apps' inis name, and whether any ini names none.
+
+    An ini that cannot be read counts as naming none: the safe answer.
+    """
+    named: set[str] = set()
+    unknown = False
+    for app_dir in app_dirs:
+        ini_path = app_dir / "quill-app-version.ini"
+        if not ini_path.is_file() or _has_private_runtime(app_dir):
+            continue
+        parser = ConfigParser(interpolation=None)
+        try:
+            parser.read(ini_path, encoding="utf-8-sig")
+            slot = parser.get("runtime", "slot", fallback="").strip()
+        except Exception:  # noqa: BLE001 - unreadable means "assume the old slot"
+            slot = ""
+        if is_valid_slot(slot):
+            named.add(slot)
+        else:
+            unknown = True
+    return named, unknown
+
+
+def installed_app_dirs() -> list[Path]:
+    """Install folders of every Uninstall entry that holds a QuillVille ini."""
+    if sys.platform != "win32":
+        return []
+    import winreg
+
+    hives = (
+        (winreg.HKEY_CURRENT_USER, 0),
+        (winreg.HKEY_LOCAL_MACHINE, winreg.KEY_WOW64_64KEY),
+        (winreg.HKEY_LOCAL_MACHINE, winreg.KEY_WOW64_32KEY),
+    )
+    found: dict[str, Path] = {}
+    for hive, view in hives:
+        try:
+            root = winreg.OpenKey(hive, _UNINSTALL, 0, winreg.KEY_READ | view)
+        except OSError:
+            continue
+        with root:
+            index = 0
+            while True:
+                try:
+                    name = winreg.EnumKey(root, index)
+                except OSError:
+                    break
+                index += 1
+                try:
+                    with winreg.OpenKey(root, name) as entry:
+                        location, _kind = winreg.QueryValueEx(entry, "InstallLocation")
+                except OSError:
+                    continue
+                path = Path(str(location).strip().strip('"'))
+                if str(path) and (path / "quill-app-version.ini").is_file():
+                    found[str(path).lower()] = path
+    return list(found.values())
+
+
+def _forget_uninstall_entry(slot: str, slot_dir: Path) -> None:
+    """Drop the slot's Programs and Features entry once its folder is gone."""
+    if sys.platform != "win32":
+        return
+    import winreg
+
+    key = _LEGACY_UNINSTALL_KEYS.get(slot, f"{_RUNTIME_APPID_BASE}-{slot}_is1")
+    try:
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, f"{_UNINSTALL}\\{key}") as entry:
+            location, _kind = winreg.QueryValueEx(entry, "InstallLocation")
+        if Path(str(location).strip().strip('"')).resolve() != slot_dir.resolve():
+            return  # not this folder's entry; leave it alone
+        winreg.DeleteKey(winreg.HKEY_CURRENT_USER, f"{_UNINSTALL}\\{key}")
+    except OSError:
+        pass
+
+
+def _remove_slot(slot_dir: Path, slot: str) -> bool:
+    """Its own uninstaller first (so its Programs and Features entry goes), then
+    whatever is left. True when the folder is gone."""
+    uninstaller = slot_dir / "unins000.exe"
+    if uninstaller.is_file():
+        try:
+            subprocess.run(
+                [str(uninstaller), "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART"],
+                check=False,
+                timeout=_UNINSTALLER_WAIT_S,
+            )
+        except (OSError, subprocess.SubprocessError):
+            pass
+        # Inno's uninstaller hands the work to a copy of itself and exits.
+        deadline = time.monotonic() + _UNINSTALLER_WAIT_S
+        while slot_dir.exists() and time.monotonic() < deadline:
+            time.sleep(1.0)
+    shutil.rmtree(slot_dir, ignore_errors=True)
+    gone = not slot_dir.exists()
+    if gone:
+        _forget_uninstall_entry(slot, slot_dir)
+    return gone
+
+
+def reclaim(
+    data_dir: Path,
+    root: Path,
+    current_slot: str,
+    app_dirs: Iterable[Path],
+    *,
+    remove: Callable[[Path, str], bool] = _remove_slot,
+) -> list[ReclaimResult]:
+    """Remove every older-Python slot nothing can still need; say what happened."""
+    named, unknown = slots_named_by_installs(app_dirs)
+    results: list[ReclaimResult] = []
+    for slot in older_slots(root, current_slot):
+        if slot_referenced(data_dir, slot):
+            results.append(ReclaimResult(slot, "kept", "an app is registered on it"))
+        elif slot in named:
+            results.append(ReclaimResult(slot, "kept", "an installed app's ini names it"))
+        elif unknown and channel_of_slot(slot) == STABLE:
+            results.append(
+                ReclaimResult(slot, "kept", "an installed app predates slot= and may use it")
+            )
+        elif remove(root / slot, slot):
+            results.append(ReclaimResult(slot, "removed", "no installed app uses it"))
+        else:
+            results.append(ReclaimResult(slot, "kept", "could not remove it (files in use?)"))
+    return results
