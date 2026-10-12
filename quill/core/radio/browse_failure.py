@@ -27,6 +27,8 @@ import ssl
 import threading
 import urllib.error
 
+from quill.core.net import certificate_problem
+
 #: The last browse failure on each thread, so a caller can ask whether an empty
 #: result was *empty* or *broken*. Per thread because the tree fetches on the
 #: task manager while other code may browse elsewhere, and a shared slot would
@@ -102,9 +104,18 @@ def listener_reason(error: BaseException | None = None) -> str:
     no key entered, a key the service rejected -- read exactly like a folder
     with nothing in it, which is how "the categories do not load at all" reached
     a listener as an empty folder instead of an instruction.
+
+    One network failure does get a sentence of its own: a certificate that
+    did not verify. "Could not be reached, try again" would send the listener
+    round in a circle; the shared certificate sentence says what to check.
     """
     failure = error if error is not None else LAST_FAILURE.get(_thread_key())
-    if failure is None or last_error_was_network(failure):
+    if failure is None:
+        return ""
+    certificate = certificate_problem(failure)
+    if certificate:
+        return certificate
+    if last_error_was_network(failure):
         return ""
     seen: set[int] = set()
     current: BaseException | None = failure

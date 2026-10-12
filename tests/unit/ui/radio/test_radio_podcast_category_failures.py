@@ -99,6 +99,19 @@ def test_the_network_keeps_its_own_sentence() -> None:
     assert browse_feedback.empty_verdict([]) == (True, "")
 
 
+def test_a_bad_certificate_says_what_to_check() -> None:
+    import ssl
+
+    from quill.core.net import CERTIFICATE_SENTENCE
+
+    cause = ssl.SSLCertVerificationError(1, "certificate verify failed")
+    try:
+        raise podcast_index.PodcastIndexError("Could not reach Podcast Index") from cause
+    except podcast_index.PodcastIndexError as error:
+        browse_failure.remember_failure(error)
+    assert browse_feedback.empty_verdict([]) == (False, CERTIFICATE_SENTENCE)
+
+
 def test_an_ordinary_error_has_no_listener_sentence() -> None:
     browse_failure.remember_failure(ValueError("int() got junk"))
     assert browse_feedback.empty_verdict([]) == (False, "")

@@ -37,6 +37,7 @@ from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from quill.core import http_client
+from quill.core.net import verified_ssl_context
 from quill.core.radio.ics import CalendarEvent, parse_calendar
 
 #: ACB's My Calendar ICS export (confirmed against acbmedia.org, 2026-08-24).
@@ -182,7 +183,6 @@ def _fetch_ics(moment: datetime, *, no_cache: bool = False) -> list[dict[str, An
     intermediaries that ignore ``Cache-Control``). They are omitted on an
     unattended read, where a cached hop is a saving rather than a lie.
     """
-    import ssl
     import urllib.request
 
     headers = {"User-Agent": http_client.user_agent(), "Accept": "text/calendar, text/plain"}
@@ -191,7 +191,7 @@ def _fetch_ics(moment: datetime, *, no_cache: bool = False) -> list[dict[str, An
         headers["Pragma"] = "no-cache"
     request = urllib.request.Request(ics_url(moment), headers=headers)
     with urllib.request.urlopen(  # noqa: S310 - literal HTTPS constant, no user input
-        request, timeout=_TIMEOUT_SECONDS, context=ssl.create_default_context()
+        request, timeout=_TIMEOUT_SECONDS, context=verified_ssl_context()
     ) as response:
         raw = response.read()
     # errors="replace" rather than strict: a schedule with one bad byte in a

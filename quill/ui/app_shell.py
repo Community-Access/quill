@@ -27,6 +27,7 @@ from quill.core.a11y_regions import RegionTracker
 from quill.core.commands import CommandRegistry
 from quill.core.features import FeatureManager
 from quill.core.keymap import DEFAULT_KEYMAP, load_keymap
+from quill.core.net import certificate_problem
 from quill.core.safety.feature_lock import load_feature_locks
 from quill.core.settings import load_settings
 from quill.platform.announce_engine import AnnouncementEngine
@@ -957,7 +958,7 @@ class AppShellFrame(
                 return
             wx.CallAfter(
                 self._show_message_box,
-                f"Could not check for updates: {error}",
+                f"Could not check for updates: {certificate_problem(error) or error}",
                 "Check for Updates",
                 wx.ICON_ERROR | wx.OK,
             )

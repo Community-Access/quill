@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import json
 import mimetypes
-import ssl
 import uuid
 from collections.abc import Sequence
 from dataclasses import dataclass
@@ -27,8 +26,9 @@ from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 from quill.core.error_codes import CodedError
+from quill.core.net import verified_ssl_context
 
-_VERIFIED_TLS = ssl.create_default_context()
+_VERIFIED_TLS = verified_ssl_context()
 _TIMEOUT_S = 300.0
 
 

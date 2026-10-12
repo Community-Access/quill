@@ -30,6 +30,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from quill.core.error_codes import CodedError
+from quill.core.net import verified_ssl_context
 
 # (fraction 0.0-1.0, human message) — same shape as the speech ProgressCallback.
 ProgressCallback = Callable[[float, str], None]
@@ -317,7 +318,9 @@ def _download_resumable(
                 request = urllib.request.Request(url)
                 if have:
                     request.add_header("Range", f"bytes={have}-")
-                with urllib.request.urlopen(request, timeout=timeout) as resp:  # noqa: S310 - HTTPS enforced
+                with urllib.request.urlopen(  # noqa: S310 - HTTPS enforced
+                    request, timeout=timeout, context=verified_ssl_context()
+                ) as resp:
                     status = getattr(resp, "status", 200)
                     # If the server ignored Range (200 not 206), restart from zero.
                     append = bool(have) and status == 206

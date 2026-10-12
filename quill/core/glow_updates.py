@@ -39,9 +39,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from quill.core.glow import glow_engine_versions
+from quill.core.net import verified_ssl_context
 from quill.core.updates import (
     URLError,
-    _ssl_context,
     _validate_remote_url,
     download_release_asset,
     is_newer_version,
@@ -125,7 +125,7 @@ def fetch_glow_manifest(
     _validate_remote_url(url)
     from urllib.request import urlopen
 
-    with urlopen(url, timeout=timeout, context=_ssl_context()) as response:
+    with urlopen(url, timeout=timeout, context=verified_ssl_context()) as response:
         payload = response.read().decode("utf-8", errors="strict")
     return parse_glow_manifest(payload)
 

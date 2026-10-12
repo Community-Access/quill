@@ -28,6 +28,7 @@ from quill import build_info
 from quill.core.browser_preview import (
     render_preview_body,
 )
+from quill.core.net import certificate_problem
 from quill.core.paths import app_data_dir
 from quill.core.settings import save_settings
 from quill.core.text_utils import strip_md_to_plain as _strip_md_to_plain
@@ -137,9 +138,9 @@ class UpdatesMixin:
                 ):
                     releases = fetch_releases()
             except (URLError, ValueError, OSError) as exc:
-                fetch_error = str(exc)
+                fetch_error = certificate_problem(exc) or str(exc)
             except Exception as exc:  # noqa: BLE001
-                fetch_error = str(exc)
+                fetch_error = certificate_problem(exc) or str(exc)
             return manifest, releases, fetch_error
 
         call_after = getattr(wx, "CallAfter", None)

@@ -28,11 +28,11 @@ from __future__ import annotations
 
 import json
 import re
-import ssl
 import urllib.parse
 import urllib.request
 
 from quill.core import http_client
+from quill.core.net import verified_ssl_context
 
 _TIMEOUT_SECONDS = 8.0
 _MAX_BYTES = 256 * 1024
@@ -127,7 +127,7 @@ def _http_get_text(url: str, timeout: float) -> str:
     if not url.lower().startswith(("http://", "https://")):
         return ""
     request = urllib.request.Request(url, headers={"User-Agent": http_client.user_agent()})
-    context = ssl.create_default_context()
+    context = verified_ssl_context()
     try:
         with urllib.request.urlopen(  # noqa: S310 - http(s) checked above
             request, timeout=timeout, context=context

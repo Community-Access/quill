@@ -44,6 +44,7 @@ from dataclasses import dataclass
 
 from quill.core import http_client
 from quill.core.error_codes import CodedError
+from quill.core.net import verified_ssl_context
 from quill.core.radio import directory_cache
 from quill.core.radio.models import RadioStation
 
@@ -147,7 +148,7 @@ def _fetch(url: str) -> str:
     if not url.startswith("https://"):
         raise FreeMusicError("Only https:// URLs can be fetched.")
     request = urllib.request.Request(url, headers={"User-Agent": http_client.user_agent()})
-    context = ssl.create_default_context()
+    context = verified_ssl_context()
     previous_maxline = http.client._MAXLINE  # type: ignore[attr-defined]
     if previous_maxline < _MAX_HEADER_BYTES:
         http.client._MAXLINE = _MAX_HEADER_BYTES  # type: ignore[attr-defined]

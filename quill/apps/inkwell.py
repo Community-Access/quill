@@ -45,6 +45,7 @@ from quill.core.expansion.settings import (
     load_settings,
     save_settings,
 )
+from quill.core.net import configure_ssl_trust
 from quill.ui.app_shell import AppShellFrame
 from quill.ui.inkwell_expansion import InkwellExpansionMixin
 
@@ -567,6 +568,7 @@ class QuillInkwellFrame(
 
 
 def main() -> int:
+    configure_ssl_trust()  # one certificate check, before any network use
     from quill.core.data_location import apply_pending_at_launch
 
     apply_pending_at_launch()  # queued Data Folder move, before any data read

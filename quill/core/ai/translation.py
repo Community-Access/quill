@@ -7,13 +7,13 @@ and optional local LibreTranslate for privacy-sensitive workflows.
 from __future__ import annotations
 
 import json
-import ssl
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 from quill.core.ai.custom_instructions import split_instruction
 from quill.core.assistant_ai import AssistantConnectionSettings, generate_assistant_response
 from quill.core.error_codes import CodedError
+from quill.core.net import verified_ssl_context
 
 SUPPORTED_LANGUAGES: dict[str, str] = {
     "Afrikaans": "af",
@@ -183,7 +183,7 @@ def _translate_libretranslate(
             headers={"Content-Type": "application/json"},
             method="POST",
         )
-        ctx = ssl.create_default_context()
+        ctx = verified_ssl_context()
         with urlopen(req, context=ctx, timeout=15) as resp:
             detected = json.loads(resp.read())
             if isinstance(detected, list) and detected:
@@ -204,7 +204,7 @@ def _translate_libretranslate(
         method="POST",
     )
     try:
-        ctx = ssl.create_default_context()
+        ctx = verified_ssl_context()
         with urlopen(req, context=ctx, timeout=60) as resp:
             result = json.loads(resp.read())
             translated = result.get("translatedText", "")

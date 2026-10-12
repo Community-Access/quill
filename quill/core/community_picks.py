@@ -35,6 +35,7 @@ from typing import Any
 
 from quill.core import http_client
 from quill.core.error_codes import CodedError
+from quill.core.net import verified_ssl_context
 
 #: Versioned in the path, so a breaking change cannot reach a v1 client.
 PICKS_URL = "https://quillforall.org/picks/v1/picks.json"
@@ -132,7 +133,7 @@ class Catalogue:
 def _fetch(url: str = PICKS_URL) -> bytes:
     """One HTTPS GET for the catalogue -- the reviewed egress site."""
     request = urllib.request.Request(url, headers={"User-Agent": http_client.user_agent()})
-    context = ssl.create_default_context()
+    context = verified_ssl_context()
     try:
         with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:
             payload: bytes = resp.read(_MAX_BYTES)

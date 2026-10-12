@@ -56,7 +56,7 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "that is off owns nothing, so an install that has not turned it on "
         "makes no call from here at all. No provider key ever passes through "
         "this code; the client holds only a QUILL-issued device token. TLS is "
-        "verified (ssl.create_default_context, never relaxed) because what "
+        "verified (quill.core.net's system-store context, never relaxed) because what "
         "travels is that token and the user's own writing. What is sent is "
         "shown to the user in the AI Assistant window before Send, and the "
         "consent notice is the feature area's own description."
