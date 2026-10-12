@@ -60,6 +60,10 @@ def _wait_for_installed_models(dialog: Any) -> None:
         wx.Yield()
         time.sleep(0.005)
     assert not dialog._model_scan_pending
+    # The about text is written on a later UI turn than the scan's answer.
+    while not dialog.about.GetValue() and time.monotonic() < deadline:
+        wx.Yield()
+        time.sleep(0.005)
 
 
 def test_the_most_accurate_model_is_chosen_and_explained(wx_app, models, tmp_path) -> None:
