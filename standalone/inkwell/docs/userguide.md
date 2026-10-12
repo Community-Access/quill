@@ -478,6 +478,14 @@ words again, or scratch that."
   dictate into their own documents directly.
 - Inkwell's own window. Switch to the program you want to dictate into first.
 
+**With QUILL Transcribe.** QUILL Transcribe is the QuillVille app made just for
+dictating into other programs. Only one of the two dictates at a time. While
+QUILL Transcribe is running, pressing your Dictate Anywhere key passes the press
+to QUILL Transcribe, and it does the dictating; Inkwell's status line says so.
+When QUILL Transcribe is not running, Inkwell dictates as described here. If
+QUILL or QUILL Lite's **Dictate in Other Programs...** finds QUILL Transcribe
+running, it hands your settings to QUILL Transcribe instead of Inkwell.
+
 **Safe Mode.** With Safe Mode on, Dictate Anywhere is off.
 
 **Privacy.** Your speech is handled exactly as it is in the editors: on this
