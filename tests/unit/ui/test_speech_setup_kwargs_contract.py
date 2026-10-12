@@ -140,3 +140,34 @@ def test_omitting_the_kokoro_pair_is_no_longer_fatal() -> None:
     ).read_text(encoding="utf-8")
     assert "is_kokoro_onnx_available()" in source
     assert "kokoro_onnx_install_supported()" in source
+
+
+def test_every_module_that_builds_the_speech_hub_is_a_listed_builder() -> None:
+    """BUILDERS is a hand-kept list; a third builder must not slip past it.
+
+    #1604, #1605, #1621, #1630 and #1631 were this TypeError again, from older
+    0.9.0 installs. The gate above only checks the modules it is told about --
+    which is how Audio Studio went unguarded before #1460 -- so this finds
+    every ``SpeechHubDialog(`` construction in the tree and insists each one
+    is on the list.
+    """
+    repo = pathlib.Path(__file__).resolve().parents[3]
+    constructing: set[str] = set()
+    for path in sorted((repo / "quill").rglob("*.py")):
+        source = path.read_text(encoding="utf-8", errors="replace")
+        if "SpeechHubDialog(" not in source:
+            continue
+        for node in ast.walk(ast.parse(source)):
+            if not isinstance(node, ast.Call):
+                continue
+            func = node.func
+            name = func.attr if isinstance(func, ast.Attribute) else getattr(func, "id", "")
+            if name == "SpeechHubDialog":
+                constructing.add(path.relative_to(repo).as_posix())
+
+    assert constructing, "found no SpeechHubDialog construction at all"
+    unlisted = sorted(constructing - set(BUILDERS))
+    assert not unlisted, (
+        "These modules build the Speech Hub but are not in BUILDERS, so nothing "
+        "checks they supply SpeechSetupDialog's required arguments: " + ", ".join(unlisted)
+    )
