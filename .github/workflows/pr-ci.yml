@@ -122,12 +122,21 @@ jobs:
             --ignore=tests\unit\core\test_net_tls.py `
             --ignore=tests\unit\core\test_thesaurus.py `
             --ignore=tests\unit\ui\test_dialog_inventory.py `
+            --ignore=tests\unit\ui\test_rich_heading_organizer.py `
             --cov=quill.core --cov=quill.io `
             --cov-report=
       - name: Run dialog-inventory gate tests (isolated process)
         if: matrix.shard == 1
         run: |
           pytest tests\unit\ui\test_dialog_inventory.py -q `
+            --timeout=300 --timeout-method=thread -p no:cacheprovider
+      - name: Run the rich heading organizer tests (isolated process)
+        # A native RichEdit crash in this file took a whole xdist worker down
+        # on 2026-10-12, and the shard then sat until the job limit. In its own
+        # process a crash fails one step quickly instead.
+        if: matrix.shard == 1
+        run: |
+          pytest tests\unit\ui\test_rich_heading_organizer.py -q `
             --timeout=300 --timeout-method=thread -p no:cacheprovider
       - name: Keep this shard's coverage data
         run: |
