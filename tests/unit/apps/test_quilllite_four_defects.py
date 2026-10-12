@@ -85,7 +85,9 @@ def test_quilllite_asks_before_opening_a_large_file() -> None:
 
     source = _P("quill/apps/lite.py").read_text(encoding="utf-8")
     assert "_confirm_large_file" in source
-    assert "is_large_file" in source
+    # The shared large_file_guard.open_prompt asks is_large_file (and, since
+    # #1614, refuses past the hard ceiling) for both editors.
+    assert "open_prompt" in source
 
 
 def test_the_guard_sits_on_the_one_funnel_every_route_uses() -> None:
