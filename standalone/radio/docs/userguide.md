@@ -3428,6 +3428,24 @@ itself:
 If you also use QUILL Cast, the two apps share a note of when each show was
 last checked, so they do not both ask the same podcast.
 
+### Podcasts with http and https addresses
+
+Most podcast addresses start with "https", which means the feed comes to you
+encrypted. Some older shows still use plain "http", and Quill Radio plays
+those too. It reads feeds the same way QUILL Cast does:
+
+- When an address starts with "http", Quill Radio asks for it over https
+  first, and only uses plain http if the secure way does not work.
+- A password for a private feed is never sent over plain http. If the secure
+  connection turns the sign-in down, Quill Radio stops there.
+- Certificates are checked the way Windows checks them, so a site that opens
+  in your web browser should open here too.
+
+If a feed says its security certificate could not be verified, check that
+this computer's date and time are right and run Windows Update. At work, or
+with security software that inspects secure connections, ask whoever looks
+after the network.
+
 ### Handing an episode to QUILL Cast
 
 Quill Radio finds and plays podcast episodes. QUILL Cast, its sister app, is a

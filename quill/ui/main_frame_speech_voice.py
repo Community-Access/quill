@@ -10,10 +10,13 @@ and the wake-word listener (Phase 3). Extracted verbatim from
 ``main_frame_speech.py``; runs on ``MainFrame`` (``self``) and shares its
 provider accessors and speech registry. Safety law unchanged: voice commands
 are off by default, Safe-Mode gated, and only ever dispatch ids in
-``SAFE_TOOL_IDS``.
+``SAFE_TOOL_IDS``. Transcribing a captured recording with the default model is
+shared with ``SpeechModelsMixin`` (``main_frame_speech_models.py``, GATE-11).
 """
 
 from __future__ import annotations
+
+from quill.ui.main_frame_speech_models import discard_recording
 
 
 class VoiceInteractionMixin:
@@ -73,24 +76,7 @@ class VoiceInteractionMixin:
         provider = self._speech_provider()
 
         def _work(progress):
-            installed = provider.list_installed_models()  # type: ignore[attr-defined]
-            if not installed:
-                return None
-            from quill.core.speech.provider import TranscriptionRequest
-
-            model_id = self._default_model_id(installed)
-            request = TranscriptionRequest(source_path=wav_path, model_id=model_id)
-
-            def _on_progress(fraction: float, message: str) -> None:
-                progress(message, int(fraction * 100), 100)
-
-            try:
-                return provider.transcribe_file(request, _on_progress)  # type: ignore[attr-defined]
-            finally:
-                try:
-                    wav_path.unlink(missing_ok=True)
-                except OSError:
-                    pass
+            return self._transcribe_recording(provider, wav_path, progress)
 
         def _done(result: object) -> None:
             if result is None:
@@ -195,24 +181,7 @@ class VoiceInteractionMixin:
         provider = self._voice_provider()
 
         def _work(progress):
-            installed = provider.list_installed_models()  # type: ignore[attr-defined]
-            if not installed:
-                return None
-            from quill.core.speech.provider import TranscriptionRequest
-
-            model_id = self._default_model_id(installed)
-            request = TranscriptionRequest(source_path=wav_path, model_id=model_id)
-
-            def _on_progress(fraction: float, message: str) -> None:
-                progress(message, int(fraction * 100), 100)
-
-            try:
-                return provider.transcribe_file(request, _on_progress)  # type: ignore[attr-defined]
-            finally:
-                try:
-                    wav_path.unlink(missing_ok=True)
-                except OSError:
-                    pass
+            return self._transcribe_recording(provider, wav_path, progress)
 
         def _done(result: object) -> None:
             if result is None:
@@ -462,21 +431,9 @@ class VoiceInteractionMixin:
 
         def _work(progress):
             try:
-                installed = provider.list_installed_models()  # type: ignore[attr-defined]
-                if not installed:
-                    return None
-                from quill.core.speech.provider import TranscriptionRequest
-
-                model_id = self._default_model_id(installed)
-                request = TranscriptionRequest(source_path=wav_path, model_id=model_id)
-                return provider.transcribe_file(  # type: ignore[attr-defined]
-                    request, lambda f, m: progress(m, int(f * 100), 100)
-                )
+                return self._transcribe_recording(provider, wav_path, progress)
             finally:
-                try:
-                    wav_path.unlink(missing_ok=True)
-                except OSError:
-                    pass
+                discard_recording(wav_path)
 
         def _done(result: object) -> None:
             if result is None:
@@ -685,22 +642,14 @@ class VoiceInteractionMixin:
 
         def _work(progress):
             try:
-                installed = provider.list_installed_models()  # type: ignore[attr-defined]
-                if not installed:
-                    return None
-                from quill.core.speech.provider import TranscriptionRequest
-
-                model_id = self._default_model_id(installed)
-                request = TranscriptionRequest(source_path=wav_path, model_id=model_id)
-                result = provider.transcribe_file(  # type: ignore[attr-defined]
-                    request, lambda f, m: progress(m, int(f * 100), 100)
+                return self._transcribe_recording(
+                    provider,
+                    wav_path,
+                    progress,
+                    lambda result: (getattr(result, "full_text", "") or "").strip(),
                 )
-                return (getattr(result, "full_text", "") or "").strip()
             finally:
-                try:
-                    wav_path.unlink(missing_ok=True)
-                except OSError:
-                    pass
+                discard_recording(wav_path)
 
         def _done(text: object) -> None:
             if text is None:

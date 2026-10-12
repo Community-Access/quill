@@ -545,21 +545,21 @@ def check_all_feeds(
     (``check_monitor.MAX_REFRESHES_IN_FLIGHT``) and the run is followed in Feed
     Check (``check_run``).
     """
-    say = announce or host._announce
+    announce = announce or host._announce
     monitor = getattr(host, "_podcast_check_monitor", None)
     if safe_mode is None:
         safe_mode = bool(getattr(host, "_safe_mode", False))
     if monitor is None or safe_mode:
-        say("Feeds cannot be checked right now.")
+        announce("Feeds cannot be checked right now.")
         return 0
     if getattr(monitor, "is_checking", False):
-        say("A feed check is already in progress.")
+        announce("A feed check is already in progress.")
         return 0
     started = int(monitor.check_now(force=True, defer_start=True) or 0)
     if not started:
-        say("You follow no podcast with a feed to check.")
+        announce("You follow no podcast with a feed to check.")
         return 0
-    say(f"Checking {started:,} feed{'' if started == 1 else 's'}...")
+    announce(f"Checking {started:,} feed{'' if started == 1 else 's'}...")
     from quill.ui.podcasts import check_run
 
     check_run.start(host, list(getattr(monitor, "last_started_ids", [])))

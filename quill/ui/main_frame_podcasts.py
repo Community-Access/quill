@@ -29,9 +29,11 @@ from quill.ui.main_frame_podcast_dialogs import PodcastDialogsMixin
 from quill.ui.main_frame_podcast_save import PodcastLibrarySaveMixin
 from quill.ui.main_frame_podcast_session import PodcastSessionMixin
 from quill.ui.main_frame_podcast_transfers import PodcastTransfersMixin
+from quill.ui.podcasts import record_writes
 from quill.ui.podcasts.check_monitor import PodcastCheckMonitor
 from quill.ui.podcasts.failure_report import report_failure
 from quill.ui.podcasts.folder_watch import FolderWatchMixin
+from quill.ui.podcasts.new_feed_check import check_start_failed, start_new_feed_check
 from quill.ui.podcasts.player_controller import (
     PodcastPlaybackState,
     PodcastPlayerController,
@@ -136,7 +138,7 @@ class PodcastsMixin(
             refresh_show=self.refresh_podcast_feed,
             safe_mode=self._safe_mode,
             feature_enabled=lambda: self._feature_enabled("core.podcasts"),
-            on_refresh_error=lambda show_id, _error: self._podcast_check_start_failed(show_id),
+            on_refresh_error=lambda show_id, _error: check_start_failed(self, show_id),
             library_changed=self._save_podcast_library,
         )
         if not defer_library_load:
@@ -148,17 +150,6 @@ class PodcastsMixin(
         # window appears would talk over the screen reader announcing it.
         if not defer_library_load:
             self.podcast_run_maintenance(announce=False)
-
-    def _podcast_check_start_failed(self, show_id: str) -> None:
-        """Count a feed whose worker could not be submitted as a failed check."""
-        from quill.ui.podcasts import check_run
-
-        show = self._podcast_library.find_show(show_id)
-        check_run.step(
-            self,
-            show_id,
-            failed_title=str(getattr(show, "title", "") or show_id),
-        )
 
     # -- controller callbacks (fire on the UI thread already, per PlayerPanel's
     # / audio engine's own contract of UI-thread callbacks) -----------------
@@ -205,24 +196,14 @@ class PodcastsMixin(
         self._save_podcast_history()
 
     def _save_podcast_history(self) -> None:
-        if getattr(self, "_cast_ui_lifetime", None) is not None:
-            import copy
-
-            from quill.ui.podcasts import record_tasks
-
-            data_dir = app_data_dir()
-            snapshot = copy.deepcopy(self._podcast_history)
-            record_tasks.submit(
-                self, "cast_history", lambda: podcast_history.save_history(data_dir, snapshot)
-            )
-            return
         """Persist the podcast history record (settings, onboarding, recents).
 
         Named rather than inlined because the first-run flow needs a saver it
         can look up by name on whatever host it was handed, exactly as Quill
-        Radio's does.
+        Radio's does. QUILL Cast queues the write instead (record_writes).
         """
-        podcast_history.save_history(app_data_dir(), self._podcast_history)
+        if not record_writes.queue_history_save(self):
+            podcast_history.save_history(app_data_dir(), self._podcast_history)
 
     def _maybe_reload_podcast_chapters(self, state: PodcastPlaybackState) -> None:
         if not state.show_id or not state.episode_guid:
@@ -307,26 +288,8 @@ class PodcastsMixin(
         """Write this episode's place where Quill Radio can read it (11.11)."""
         from quill.ui.podcasts.shared_place import share_place
 
-        if getattr(self, "_cast_ui_lifetime", None) is not None:
-            from types import SimpleNamespace
-
-            from quill.ui.podcasts import record_tasks
-
-            source = SimpleNamespace(feed_url=str(getattr(show, "feed_url", "") or ""))
-            target = SimpleNamespace(
-                audio_url=str(getattr(episode, "audio_url", "") or ""),
-                title=str(getattr(episode, "title", "") or ""),
-            )
-            data_dir = app_data_dir()
-            record_tasks.submit(
-                self,
-                "shared_positions",
-                lambda: share_place(
-                    source, target, ms, finished=finished, data_dir=data_dir, strict=True
-                ),
-            )
-            return
-        share_place(show, episode, ms, finished=finished)
+        if not record_writes.queue_shared_place(self, show, episode, ms, finished=finished):
+            share_place(show, episode, ms, finished=finished)
 
     def _on_podcast_episode_finished(self, show_id: str, episode_guid: str) -> None:
         if getattr(self, "_cast_closing", False) or getattr(self, "_cast_closed", False):
@@ -936,30 +899,12 @@ class PodcastsMixin(
         only_if_automatic_checks_enabled: bool = False,
     ) -> None:
         """Refresh just the feeds a completed import has newly subscribed."""
-        if only_if_automatic_checks_enabled:
-            settings = getattr(self, "settings", None) or getattr(self, "_podcast_history", None)
-            if not bool(getattr(settings, "podcast_check_enabled", False)):
-                return
-        monitor = getattr(self, "_podcast_check_monitor", None)
-        if monitor is None or not show_ids:
-            return
-        if monitor.is_checking:
-            self._announce(
-                f"{action}: feeds were added, but another feed check is already in progress."
-            )
-            return
-        started = monitor.check_now(
-            force=True,
-            defer_start=True,
-            show_ids={str(show_id) for show_id in show_ids},
+        start_new_feed_check(
+            self,
+            show_ids,
+            action=action,
+            only_if_automatic_checks_enabled=only_if_automatic_checks_enabled,
         )
-        if not started:
-            return
-        from quill.ui.podcasts import check_run
-
-        ids = list(getattr(monitor, "last_started_ids", []))
-        check_run.start(self, ids, action=action)
-        monitor.start_queued()
 
     def add_podcast_note(self) -> None:
         """Timestamped note on the playing episode (Phase 4 episode notes)."""

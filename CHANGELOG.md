@@ -2,6 +2,15 @@
 
 ## 1.0.0
 
+### Secure connections are checked the way Windows checks them (2026-10-11)
+
+QUILL and every QuillVille app now trust the certificates Windows trusts
+(`quill/core/net.py`, through the `truststore` package), so a site that opens in
+your web browser opens in QUILL too, including behind company networks and
+security software that Windows already trusts. Podcast feeds keep their rule
+of https first, and a password is never sent over plain http; the QUILL Cast
+and Quill Radio user guides explain both.
+
 ### Dictation gap plan: read-back marks, voice editing, live transcripts, Dictate Anywhere (2026-10-05)
 
 Everything below is shared code, in both editors on the same keys and the same

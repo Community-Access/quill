@@ -144,7 +144,9 @@ def test_the_app_actually_calls_it() -> None:
     """The whole bug: a dialog nothing invoked."""
     source = (REPO / "quill" / "apps" / "podcasts.py").read_text(encoding="utf-8")
     assert "maybe_run_first_run" in source
-    assert "wx.CallAfter(maybe_run_first_run, self)" in source
+    # The library loads in the background, so the welcome waits for it: queued
+    # until the load lands, or posted with CallAfter when it already has.
+    assert "self._when_cast_library_ready(lambda: maybe_run_first_run(self))" in source
 
 
 def test_the_launch_path_shows_the_window_before_it_runs_the_loop() -> None:

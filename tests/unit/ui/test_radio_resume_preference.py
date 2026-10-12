@@ -13,7 +13,7 @@ from unittest.mock import MagicMock
 
 import pytest  # type: ignore[import-not-found]
 
-from quill.apps import radio_preferences
+from quill.apps import radio_preferences, radio_preferences_load
 from quill.core.radio.history import RadioHistory
 
 _LABEL = "Interrup&ted recordings at launch:"
@@ -248,7 +248,7 @@ def test_preferences_data_loads_after_open_without_overwriting_edits(
         lambda _devices: events.append("cached"),
     )
     monkeypatch.setattr(
-        radio_preferences,
+        radio_preferences_load,
         "_load_shared_check_minutes",
         lambda _fallback: events.append("cadence loaded") or 60,
     )
@@ -291,7 +291,7 @@ def test_saving_before_podcast_cadence_load_does_not_replace_shared_value(
 ) -> None:
     writes: list[int] = []
     app._radio_history.podcast_refresh_minutes = 180
-    monkeypatch.setattr(radio_preferences, "_save_shared_check_minutes", writes.append)
+    monkeypatch.setattr(radio_preferences_load, "save_shared_check_minutes", writes.append)
     _FakeDialog.pick = 0
 
     radio_preferences.open_preferences(app)
@@ -305,7 +305,7 @@ def test_a_changed_podcast_cadence_is_saved_before_background_load_completes(
 ) -> None:
     writes: list[int] = []
     app._radio_history.podcast_refresh_minutes = 60
-    monkeypatch.setattr(radio_preferences, "_save_shared_check_minutes", writes.append)
+    monkeypatch.setattr(radio_preferences_load, "save_shared_check_minutes", writes.append)
     _FakeDialog.pick = 0
     _FakeDialog.choice_picks = {"Check subscribed podcast &feeds:": 1}
 

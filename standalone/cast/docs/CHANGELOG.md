@@ -4,6 +4,11 @@ All notable changes to QUILL Cast are documented here. QUILL Cast 2.0 is the fir
 
 ## Unreleased
 
+- **Feeds over http and https, explained.** The user guide has a new section,
+  "Feeds over http and https" under Feed Check: https is tried first, Player
+  Information marks a feed that really is plain http, a password is never sent
+  over plain http, and what to do when a certificate cannot be verified. Feed
+  Check's list of reasons now quotes the certificate sentence Cast actually says.
 - Playback letters now work only in Now Playing. Main library, Places, and
   episode lists keep their letter typeahead; Shift+Right scanning moves with
   the other player keys. This fixes C announcing "Nothing is playing" when

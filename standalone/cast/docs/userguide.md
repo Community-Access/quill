@@ -2504,9 +2504,10 @@ The reasons you may hear:
   good**. The podcast has probably moved or ended.
 - **This podcast's web address no longer exists.** The website's name has
   lapsed.
-- **The podcast's site is refusing every connection**, **the site's secure
-  connection is broken**, or **its security certificate is not valid**. The
-  site itself is broken.
+- **The podcast's site is refusing every connection**, or **the site's
+  secure connection is broken**. The site itself is broken.
+- **The site's security certificate could not be verified.** Usually the
+  site's fault, but not always. See "Feeds over http and https" below.
 - **This address returns a web page, not a podcast feed.** The address now
   leads somewhere else entirely.
 - **The feed is there, but it has no episodes.** The publisher has emptied
@@ -2542,6 +2543,40 @@ connection first. Feed checks also run on their own, so a big check never
 holds up a download or anything else you are doing. If a feed is so large
 that Cast cannot read all of it, Player Information says so; the newest
 episodes are always there.
+
+#### Feeds over http and https
+
+Most podcast addresses start with "https". That means the feed travels to
+you encrypted, and Cast can check it really came from the podcast's site.
+Some long-running shows, often small and independent ones, still use a plain
+"http" address. Cast plays those too.
+
+- **https comes first.** When an address starts with "http", Cast asks for it
+  over https anyway, and only uses plain http when the secure way does not
+  work. Many sites quietly support both, so you get the secure one without
+  doing anything.
+- **You can tell which one a podcast uses.** Player Information says **Feed:
+  not encrypted (plain http)** for a podcast that really is on plain http. It
+  says nothing about the rest, so the line only turns up when it matters.
+- **Your password is never sent over plain http.** If a podcast needs a sign-in
+  and the secure connection says no, Cast stops there and tells you. It does
+  not try again in a way that would send your username and password where
+  anyone on the network could read them.
+- **Certificates are checked the way Windows checks them.** Cast trusts the
+  same certificates Windows does, so a site that opens in your web browser
+  should open here too.
+
+When a feed will not load:
+
+1. Open **Feed Check** and read the reason on the podcast's row.
+2. If it says the security certificate could not be verified, check that
+   this computer's date and time are right, then run Windows Update. An out
+   of date clock is the most common cause.
+3. At work, or with security software that inspects secure connections, ask
+   whoever looks after the network. That software has to be trusted by
+   Windows for Cast to trust it.
+4. If the site really is broken, nothing on your side will fix it. **Find
+   This Show's New Feed...** may find the show somewhere else.
 
 ### Being told about new episodes
 

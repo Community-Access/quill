@@ -8,9 +8,10 @@ from pathlib import Path
 from types import SimpleNamespace
 
 from quill.ui.main_frame_speech import SpeechCommandsMixin
+from quill.ui.main_frame_speech_models import SpeechModelsMixin
 
 
-class _Host(SpeechCommandsMixin):
+class _Host(SpeechCommandsMixin, SpeechModelsMixin):
     def __init__(self) -> None:
         self.settings = SimpleNamespace(speech_whisper_path="")
 

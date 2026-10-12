@@ -15,41 +15,9 @@ from __future__ import annotations
 
 from typing import Any
 
+from quill.apps import radio_preferences_load
+from quill.apps.radio_preferences_load import PreferencesDataLoad, podcast_schedule_help
 from quill.core.radio import main_view, reminders
-
-
-def _load_shared_check_minutes(fallback_minutes: int) -> int:
-    """Read the shared cadence, falling back to Radio's saved value.
-
-    The shared library is authoritative since 3.1.0; Radio's saved field is
-    only the fallback for an install that has not been migrated yet.
-    """
-    from quill.core.podcasts import episode_alerts
-
-    try:
-        from quill.core.paths import app_data_dir
-        from quill.core.podcasts.subscriptions import load_library
-
-        shared = episode_alerts.interval_for_show(load_library(app_data_dir()).settings)
-    except Exception:  # noqa: BLE001 - unreadable library: fall back
-        shared = 0
-    if shared > 0:
-        return shared
-    return fallback_minutes
-
-
-def _save_shared_check_minutes(minutes: int) -> None:
-    """Write the cadence where QUILL Cast will see it. Best effort."""
-    try:
-        from quill.core.paths import app_data_dir
-        from quill.core.podcasts.subscriptions import load_library, save_library
-
-        data_dir = app_data_dir()
-        library = load_library(data_dir)
-        library.settings.check_interval_minutes = int(minutes)
-        save_library(data_dir, library)
-    except Exception:  # noqa: BLE001 - losing the share beats losing the save
-        return
 
 
 def _open_data_folder(app: Any) -> None:
@@ -154,8 +122,6 @@ def _lead_index(seconds: object) -> int:
 
 def open_preferences(app: Any) -> None:
     """Show Preferences, then apply every answer it came back with."""
-    import wx
-
     # The app module owns these display tables; imported at call time so this
     # module and quill.apps.radio never import each other at import time.
     from quill.apps.radio import (
@@ -180,10 +146,8 @@ def open_preferences(app: Any) -> None:
         PreferenceText,
     )
     from quill.ui.audio.audio_engine import windows_engine_routes_devices
-    from quill.ui.audio.output_routing import cache_output_devices, cached_output_devices
-    from quill.ui.dialog_contract import dialog_alive
+    from quill.ui.audio.output_routing import cached_output_devices
     from quill.ui.radio.mpv_radio_engine import (
-        list_audio_devices,
         mpv_output_device_available,
         output_device_choices,
     )
@@ -196,20 +160,6 @@ def open_preferences(app: Any) -> None:
     initial_podcast_schedule_index = refresh_policy.interval_index(fallback_shared_check_minutes)
     podcast_schedule_choice_index = 7
     podcast_schedule_options = [label for _minutes, label in refresh_policy.INTERVAL_CHOICES]
-    podcast_schedule_help_suffix = (
-        " QUILL Cast reads this same setting since 3.1.0, so "
-        "turning it on here turns it on there; whichever app checks "
-        "first, the other skips that round rather than asking the "
-        "same feeds twice. A single podcast can say Manually only in "
-        "its own settings while the rest keep this cadence."
-    )
-
-    def _podcast_schedule_help(minutes: int) -> str:
-        return (
-            refresh_policy.describe_schedule(minutes, on_launch=history.podcast_refresh_on_launch)
-            + podcast_schedule_help_suffix
-        )
-
     yt_check, yt_choice, yt_file = yt_signin.rows(app)
     close_action_index = _CLOSE_ACTION_VALUES.index(history.close_action)
     mpv_present = mpv_output_device_available()
@@ -428,7 +378,9 @@ def open_preferences(app: Any) -> None:
                 "Check subscribed podcast &feeds:",
                 # The rule from section 3: what it does, then the misreading it
                 # prevents. Every misread here has been about the second half.
-                _podcast_schedule_help(fallback_shared_check_minutes),
+                podcast_schedule_help(
+                    fallback_shared_check_minutes, on_launch=history.podcast_refresh_on_launch
+                ),
                 podcast_schedule_options,
                 initial_podcast_schedule_index,
                 group=_PODCASTS,
@@ -503,86 +455,19 @@ def open_preferences(app: Any) -> None:
         announce_cb=app._announce,
     )
 
-    shared_check_minutes_loaded = False
-
-    def _read_preferences_data(
-        **_task_kwargs: Any,
-    ) -> tuple[list[tuple[str, str]], int]:
-        if cached_devices is not None:
-            devices = list(cached_devices)
-        elif mpv_present:
-            devices = list_audio_devices()
-        else:
-            devices = []
-        shared_minutes = _load_shared_check_minutes(fallback_shared_check_minutes)
-        return devices, shared_minutes
-
-    def _preferences_data_loaded(
-        _operation_id: str, result: tuple[list[tuple[str, str]], int]
-    ) -> None:
-        nonlocal shared_check_minutes_loaded
-        devices, shared_minutes = result
-        shared_check_minutes_loaded = True
-        if cached_devices is None and devices:
-            cache_output_devices(devices)
-        if not dialog_alive(dialog.dialog):
-            return
-        if cached_devices is None:
-            if not devices:
-                # WinRT retains DeviceInformation objects for the UI-thread
-                # playback engine, so only its string list is requested here.
-                from quill.ui.audio.winrt_engine import list_audio_devices as list_windows_devices
-
-                devices = list_windows_devices()
-                if devices:
-                    cache_output_devices(devices)
-            if devices:
-                selected_index = dialog.choice_selection(output_device_choice_index)
-                selected_device = (
-                    device_names[selected_index]
-                    if 0 <= selected_index < len(device_names)
-                    else history.output_device
-                )
-                labels, names, index = output_device_choices(devices, selected_device)
-                device_names[:] = names
-                dialog.set_choice_options(output_device_choice_index, labels, index)
-        if not dialog.choice_was_changed(podcast_schedule_choice_index):
-            dialog.set_choice_selection(
-                podcast_schedule_choice_index,
-                refresh_policy.interval_index(shared_minutes),
-            )
-        dialog.set_choice_help_text(
-            podcast_schedule_choice_index, _podcast_schedule_help(shared_minutes)
-        )
-
-    def _report_preferences_load_failure() -> None:
-        if dialog_alive(dialog.dialog):
-            app._announce(
-                "Radio could not refresh some Preferences data. "
-                "The saved audio device and podcast interval are unchanged."
-            )
-
-    def _preferences_load_failed(_operation_id: str, _error: BaseException) -> None:
-        _report_preferences_load_failure()
-
-    def _start_preferences_data_load() -> None:
-        task_manager = getattr(app, "_task_manager", None)
-        if task_manager is None:
-            _report_preferences_load_failure()
-            return
-        task_manager.submit(
-            "radio-preferences-data",
-            _read_preferences_data,
-            on_success=_preferences_data_loaded,
-            on_failure=_preferences_load_failed,
-        )
-
-    call_after = getattr(wx, "CallAfter", None)
-    get_app = getattr(wx, "GetApp", None)
-    if callable(call_after) and callable(get_app) and get_app() is not None:
-        call_after(_start_preferences_data_load)
-    else:
-        _start_preferences_data_load()
+    # The device list and the shared cadence are slow to read, so they arrive
+    # after the dialog is up (radio_preferences_load).
+    data_load = PreferencesDataLoad(
+        app,
+        dialog,
+        cached_devices=cached_devices,
+        mpv_present=mpv_present,
+        device_names=device_names,
+        output_device_choice_index=output_device_choice_index,
+        podcast_schedule_choice_index=podcast_schedule_choice_index,
+        fallback_shared_check_minutes=fallback_shared_check_minutes,
+    )
+    data_load.schedule()
 
     result = dialog.show()
     if result is None:
@@ -669,10 +554,11 @@ def open_preferences(app: Any) -> None:
     # 3.1.0. Radio's own field is kept in step so a downgrade still finds a
     # cadence rather than silently losing one.
     schedule_index = choice_indices[podcast_schedule_choice_index]
-    if shared_check_minutes_loaded or dialog.choice_was_changed(podcast_schedule_choice_index):
+    cadence_changed = dialog.choice_was_changed(podcast_schedule_choice_index)
+    if data_load.shared_check_minutes_loaded or cadence_changed:
         chosen_minutes = refresh_policy.interval_from_index(schedule_index)
         history.podcast_refresh_minutes = chosen_minutes
-        _save_shared_check_minutes(chosen_minutes)
+        radio_preferences_load.save_shared_check_minutes(chosen_minutes)
     history.reminder_default_lead_seconds = reminders.LEAD_CHOICES[
         min(max(0, choice_indices[8]), len(reminders.LEAD_CHOICES) - 1)
     ][0]

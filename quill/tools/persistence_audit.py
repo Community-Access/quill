@@ -254,6 +254,9 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     "core/radio/reminders.py::save_reminders": "content",
     "core/radio/history.py::save_history": "content",
     "core/radio/history_store.py::save_history": "content",
+    # 2026-10-11: the same history written from a worker; Undo Recovery's schema-checked marker.
+    "core/radio/history_store.py::save_history_snapshot": "content",
+    "core/undo_recovery.py::prepare_restore": "versioned",
     # An observed log of what each station played, not user-authored config:
     # every field is additive with a tolerant loader, there is no default whose
     # meaning could silently change, and losing it costs only the "what was that

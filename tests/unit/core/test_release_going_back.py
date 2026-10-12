@@ -178,13 +178,15 @@ def test_restore_puts_the_copy_back_and_lowers_the_ledger(tmp_path: Path) -> Non
     # Beta moves on: newer files, a newer format in the ledger.
     (data / "podcasts_library.json").write_text('{"new": true}', encoding="utf-8")
     (data / "media_bookmarks.json").write_text('{"bookmarks": "new"}', encoding="utf-8")
+    # Derived from the table, not written in: the library format moves on.
+    shipped = next(f.current for f in formats_for("cast") if f.id == "cast.library")
     raised = tuple(
-        type(f)(**{**f.__dict__, "current": 2})
+        type(f)(**{**f.__dict__, "current": shipped + 1})
         for f in formats_for("cast")
         if f.id == "cast.library"
     )
     record(data, raised, "cast 2.1.0-beta.1")
-    assert read_ledger(data).high("cast.library") == 2
+    assert read_ledger(data).high("cast.library") == shipped + 1
     outcome = restore_snapshot(
         "cast",
         copy,
@@ -197,7 +199,7 @@ def test_restore_puts_the_copy_back_and_lowers_the_ledger(tmp_path: Path) -> Non
     assert json.loads((data / "media_bookmarks.json").read_text("utf-8")) == {"bookmarks": "new"}
     assert "media_bookmarks.json" in outcome.kept
     assert outcome.before.is_file() and "before-restore" in outcome.before.name
-    assert read_ledger(data).high("cast.library") == 1
+    assert read_ledger(data).high("cast.library") == shipped
 
 
 def test_quill_restores_only_its_own_files_from_the_shared_folder(tmp_path: Path) -> None:

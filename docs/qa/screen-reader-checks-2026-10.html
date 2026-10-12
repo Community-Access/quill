@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.12" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Checks to Try With Your Screen Reader, October 2026</title>
   <style>
@@ -246,7 +246,7 @@
 Try With Your Screen Reader, October 2026</h1>
 <p>These are the hands-on checks for everything built in late September
 and early October 2026 across QUILL Cast, Quill Radio, QUILL Lite and
-QUILL. There are 210 of them. Each one says where to go, what to press
+QUILL. There are 226 of them. Each one says where to go, what to press
 and what you should hear. Check a box only after you have tried it
 yourself with a screen reader; passing automated tests do not count.</p>
 <p>Try them with NVDA, JAWS and Narrator where you can. When something
@@ -1334,6 +1334,86 @@ dictate here.”</label></li>
 <li><label><input type="checkbox" />In Inkwell, the Dictation menu reads
 Dictate Anywhere as a checked or unchecked item, and Dictation Settings
 (Ctrl+Alt+D) opens the same window the editors use.</label></li>
+</ul>
+<h2 id="the-october-11-integration">The October 11 Integration</h2>
+<p>Checks for the work that landed together on 2026-10-11. Test a source
+build from that date or later.</p>
+<h3 id="show-notes-and-links-radio-and-cast">Show notes and links (Radio
+and Cast)</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />In Quill Radio, find a podcast
+episode whose notes have apostrophes or quotes (most WordPress-hosted
+shows do). Station Details reads them as words. You should never hear
+“ampersand number 8 2 1 7”.</label></li>
+<li><label><input type="checkbox" />On that episode row, press the
+Applications key. <strong>View Show Notes…</strong> is there. Choose it:
+Cast’s Show Notes window opens, Tab moves between the links, and Links
+in These Notes lists them.</label></li>
+<li><label><input type="checkbox" />Ask for View Show Notes on a second
+episode. The same window comes back with the new notes; a second copy
+does not open.</label></li>
+</ul>
+<h3 id="settings-search-marks-what-is-greyed-out">Settings search marks
+what is greyed out</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />In any Preferences window with Find
+a setting, type a word that matches a setting that is currently
+unavailable. Its row ends in “(disabled)”.</label></li>
+<li><label><input type="checkbox" />Press Enter on that row. You hear
+“This setting is disabled” and focus stays in the search, rather than
+landing on a control you cannot change.</label></li>
+</ul>
+<h3 id="feed-checks-you-can-follow-and-stop">Feed checks you can follow
+and stop</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />In Cast, open the command palette
+and run Podcasts: Check All Feeds Now. You hear the count up front, for
+example “Checking 42 feeds…”.</label></li>
+<li><label><input type="checkbox" />The Feed Refresh Progress window
+opens. Its status list and progress bar are both named when you Tab to
+them (“Feed refresh status and active podcasts”, “Feed refresh
+progress”).</label></li>
+<li><label><input type="checkbox" />Press Stop (Alt+S). The check stops
+and the end sentence says how far it got. Closing Cast during a check is
+silent.</label></li>
+<li><label><input type="checkbox" />Ask for Check All Feeds Now again
+while one is running. You are told a check is already in progress; a
+second one does not start.</label></li>
+</ul>
+<h3 id="cast-opens-before-the-library-has-finished-loading">Cast opens
+before the library has finished loading</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />With a large library, start Cast.
+The window appears at once with a loading status, and the library fills
+in shortly after.</label></li>
+<li><label><input type="checkbox" />On a fresh profile, the welcome
+appears only once the library has loaded, not over an empty
+window.</label></li>
+</ul>
+<h3 id="quill-lites-default-document-folder">QUILL Lite’s default
+document folder</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />Preferences: <strong>Default
+document folder</strong> has a text field and a <strong>Choose default
+folder…</strong> button, both read with their labels.</label></li>
+<li><label><input type="checkbox" />Leave it blank and open a new
+document’s Save As: the dialog starts in your Documents folder. Set a
+folder, and Open and Save As start there.</label></li>
+</ul>
+<h3 id="inkwell-saves-preferences-without-a-pause">Inkwell saves
+preferences without a pause</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />In Quill Inkwell, change several
+menu preferences quickly. Each takes effect at once, with no
+stall.</label></li>
+<li><label><input type="checkbox" />Quit Inkwell and start it again: the
+last choice you made is the one that stuck.</label></li>
+</ul>
+<h3 id="your-own-gemini-key">Your own Gemini key</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />In the own-key dialog, the provider
+choice offers Google Gemini beside OpenAI, and the help under it says a
+Gemini key also works with Ask About an Image.</label></li>
 </ul>
 </main>
 </body>
