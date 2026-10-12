@@ -223,7 +223,7 @@ from quill.tools.network_egress_entries import _REVIEWED_EGRESS  # noqa: E402
 #   Triggered: Manage Speech Models > Install Vosk, or Tools > Speech > Install Vosk.
 #
 # quill/core/speech/engine_install.py::install_kokoro_onnx
-#   Installs kokoro-onnx>=0.5.0 and soundfile>=0.14.0 (~20 MB + onnxruntime transitive).
+#   Installs kokoro-onnx>=0.6.1 (shipped patched wheel) + soundfile>=0.14.0 (~20 MB + onnxruntime).
 #   Triggered automatically alongside the Kokoro model files via
 #   Help > Download Optional Components.
 #

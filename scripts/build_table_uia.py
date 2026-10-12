@@ -16,6 +16,7 @@ Usage::
 
 from __future__ import annotations
 
+import importlib.machinery
 import shutil
 import subprocess
 import sys
@@ -86,7 +87,9 @@ def main() -> int:
         # (compiler probes like CompilerIdCXX.exe included). Only the staged
         # .pyd may remain, whatever the build outcome.
         shutil.rmtree(build_dir, ignore_errors=True)
-    pyd = next(_NATIVE_DIR.glob("_quill_table_uia*.pyd"), None)
+    # This interpreter's ABI only; an older build's cp313 .pyd sorts first.
+    suffixes = importlib.machinery.EXTENSION_SUFFIXES
+    pyd = next((p for s in suffixes if (p := _NATIVE_DIR / f"_quill_table_uia{s}").is_file()), None)
     if pyd is None:
         print("Build reported success but no .pyd was produced; using the MSAA fallback.")
         return 0

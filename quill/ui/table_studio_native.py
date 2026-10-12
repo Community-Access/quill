@@ -50,12 +50,16 @@ def _load_module() -> Any | None:
 
 def _load_from_source_tree() -> Any | None:
     """Import a locally built ``.pyd`` out of ``quill/native/table_uia``."""
+    import importlib.machinery
     import importlib.util
     from pathlib import Path
 
     native_dir = Path(__file__).resolve().parent.parent / "native" / "table_uia"
+    # Only this interpreter's ABI: a stale cp313 build left beside a cp314 one
+    # sorts first and would otherwise win, fail to load, and hide the good one.
+    names = [f"_quill_table_uia{s}" for s in importlib.machinery.EXTENSION_SUFFIXES]
     try:
-        candidate = next(native_dir.glob("_quill_table_uia*.pyd"), None)
+        candidate = next((native_dir / n for n in names if (native_dir / n).is_file()), None)
     except OSError:  # noqa: BLE001 - an unreadable tree is simply no module
         return None
     if candidate is None:

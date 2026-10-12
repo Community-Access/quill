@@ -11,11 +11,22 @@ import pytest
 
 @pytest.fixture
 def app():
+    """A live ``wx.App``, reused when the worker already has one.
+
+    This used to create its own App and destroy it in teardown; under CI's
+    ``--dist=loadfile`` sharding that met another file's App and failed with
+    "The wx.App object must be created first!" (main, 2026-10-12). Same cure as
+    ``tests/unit/apps/conftest.py``'s ``wx_app``: ask wx, never destroy.
+    """
     import wx
 
-    a = wx.App(False)
-    yield a
-    a.Destroy()
+    a = wx.GetApp()
+    if a is not None:
+        try:
+            a.GetAppName()  # raises once the C++ peer is gone
+        except Exception:  # noqa: BLE001 - any failure means "not usable"
+            a = None
+    return a if a is not None else wx.App(False)
 
 
 class _FakePlayer:
@@ -118,10 +129,12 @@ def test_queue_advances_after_finish_then_close(app, tmp_path, monkeypatch) -> N
         # Simulate book A finishing, then the workbench closing.
         frame._on_book_finished(str(a))
         frame._on_book_closed(str(a), position_ms=1000, chapter=2)
-        assert len(scheduled) == 1
-        fn, args = scheduled[0]
-        assert fn == frame.open_book
-        assert str(args[0]) == str(b)
+        # Only the advance is this test's business: with the worker's shared
+        # App, background work from other tests can CallAfter in this window
+        # too (CI shard 2, 2026-10-12, saw three entries).
+        advances = [args for fn, args in scheduled if fn == frame.open_book]
+        assert len(advances) == 1
+        assert str(advances[0][0]) == str(b)
     finally:
         frame.frame.Destroy()
 
