@@ -41,6 +41,7 @@ from quill.core.audio.convert import available_output_formats
 from quill.core.audio.effect_recipes import CUSTOM_RECIPE_ID, recipe_by_id, recipe_choices
 from quill.core.audio.formats import INPUT_EXTENSIONS, format_label, is_video_format, open_wildcard
 from quill.core.audio.presets import preset_choices
+from quill.core.net import configure_ssl_trust
 from quill.ui.accessible_names import set_accessible_name
 from quill.ui.app_shell import AppShellFrame
 
@@ -548,6 +549,7 @@ def _find_ffmpeg() -> str | None:
 
 
 def main() -> int:
+    configure_ssl_trust()  # one certificate check, before any network use
     from quill.core.data_location import apply_pending_at_launch
 
     # A queued Data Folder move/import applies before a single data file is

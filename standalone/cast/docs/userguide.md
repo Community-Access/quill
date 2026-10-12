@@ -2564,7 +2564,9 @@ Some long-running shows, often small and independent ones, still use a plain
   anyone on the network could read them.
 - **Certificates are checked the way Windows checks them.** Cast trusts the
   same certificates Windows does, so a site that opens in your web browser
-  should open here too.
+  should open here too. The same check covers everything else Cast reaches:
+  podcast searches, episode downloads and Check for Updates. Wherever a
+  certificate cannot be verified, Cast says it in the same words.
 
 When a feed will not load:
 

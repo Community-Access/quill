@@ -38,6 +38,8 @@ import sys
 import urllib.error
 from dataclasses import dataclass
 
+from quill.core.net import CERTIFICATE_SENTENCE
+
 __all__ = [
     "GONE",
     "KINDS",
@@ -75,11 +77,7 @@ _SENTENCES: dict[str, str] = {
     REMOVED: "The host says this feed has been removed for good.",
     NO_SUCH_HOST: "This podcast's web address no longer exists.",
     REFUSED: "The podcast's site is refusing every connection.",
-    CERTIFICATE: (
-        "The site's security certificate could not be verified. Check this device's date and time, "
-        "install system updates, or ask your network administrator whether security software "
-        "inspects secure connections."
-    ),
+    CERTIFICATE: CERTIFICATE_SENTENCE,
     TLS: "The site's secure connection is broken.",
     TIMEOUT: "The host took too long to answer.",
     WEB_PAGE: "This address returns a web page, not a podcast feed.",

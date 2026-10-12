@@ -11,6 +11,19 @@ security software that Windows already trusts. Podcast feeds keep their rule
 of https first, and a password is never sent over plain http; the QUILL Cast
 and Quill Radio user guides explain both.
 
+Every secure connection now goes through that one check. More than fifty call
+sites that built their own context (Radio's station directories, ICY metadata
+and station status, YouTube, podcasts, AI providers, speech downloads,
+weather) use the shared one, every app's `main()` sets it up before anything
+else, and `tests/unit/core/test_tls_one_check.py` fails the build on a context
+built anywhere else, on anything that turns verification off, and on a urllib
+call in a module that never reaches `quill/core/net.py`. A certificate that
+does not verify is said in one sentence everywhere (`net.certificate_problem`):
+Check for Updates, update downloads, Open from a web address, Radio's Browse
+Stations and Cast's Feed Check. The QUILL user guide has a new section,
+"Secure connections and certificates", on what to do behind antivirus or a
+company network that inspects secure connections.
+
 ### Dictation gap plan: read-back marks, voice editing, live transcripts, Dictate Anywhere (2026-10-05)
 
 Everything below is shared code, in both editors on the same keys and the same

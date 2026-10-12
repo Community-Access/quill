@@ -202,7 +202,7 @@ def test_download_falls_back_to_a_mirror(monkeypatch: pytest.MonkeyPatch, tmp_pa
             self._sent = True
             return b"abc"
 
-    def fake_urlopen(request, timeout):
+    def fake_urlopen(request, timeout, context=None):
         calls.append(request.full_url)
         if "primary" in request.full_url:
             raise OSError("primary host is down")

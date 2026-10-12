@@ -10,6 +10,14 @@ All notable changes to Quill Radio are documented here. See `docs/release-notes-
   "Podcasts with http and https addresses": https is tried first, a password is
   never sent over plain http, certificates are checked the way Windows checks
   them, and what to try when a certificate cannot be verified.
+- **One certificate check for everything.** Station lists, ICY song titles,
+  station status checks, YouTube and every other secure connection now check
+  certificates the same way Windows does, through the one shared check, and a
+  test fails the build if a new one does not (`quill/core/net.py`,
+  `tests/unit/core/test_tls_one_check.py`). When a certificate cannot be
+  verified, Browse Stations says so in one sentence with what to check, instead
+  of "could not be reached". The Troubleshooting chapter has a new section on
+  it.
 
 ## [3.2.0] - 2026-10-03
 

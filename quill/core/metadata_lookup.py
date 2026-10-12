@@ -26,6 +26,7 @@ from pathlib import Path
 
 from quill.core import http_client
 from quill.core.error_codes import CodedError
+from quill.core.net import verified_ssl_context
 
 _MB_BASE = "https://musicbrainz.org/ws/2"
 _OL_BASE = "https://openlibrary.org"
@@ -76,7 +77,7 @@ def _http_json(url: str) -> dict[str, object]:
     request = urllib.request.Request(
         url, headers={"User-Agent": http_client.user_agent(), "Accept": "application/json"}
     )
-    context = ssl.create_default_context()
+    context = verified_ssl_context()
     try:
         with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:
             payload = resp.read().decode("utf-8")
@@ -197,7 +198,7 @@ def fetch_cover(cover_id: int, target: Path) -> Path:
         raise LookupError_("That match has no cover image.")
     url = cover_url(cover_id)
     request = urllib.request.Request(url, headers={"User-Agent": http_client.user_agent()})
-    context = ssl.create_default_context()
+    context = verified_ssl_context()
     try:
         with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:
             payload = bytes(resp.read())

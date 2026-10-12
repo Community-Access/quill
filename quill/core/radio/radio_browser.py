@@ -32,6 +32,7 @@ import urllib.request
 
 from quill.core import http_client
 from quill.core.error_codes import CodedError
+from quill.core.net import verified_ssl_context
 from quill.core.radio.models import RadioStation, _coerce_int
 
 _ALL_HOSTS = "all.api.radio-browser.info"
@@ -116,7 +117,7 @@ def _http_json(url_path: str) -> object:
         request = urllib.request.Request(
             url, headers={"User-Agent": http_client.user_agent(), "Accept": "application/json"}
         )
-        context = ssl.create_default_context()
+        context = verified_ssl_context()
         try:
             with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:
                 payload = resp.read().decode("utf-8")

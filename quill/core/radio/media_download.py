@@ -43,6 +43,7 @@ from typing import Any
 
 from quill.core import http_client
 from quill.core.error_codes import CodedError
+from quill.core.net import verified_ssl_context
 
 _TIMEOUT_SECONDS = 30.0
 _CHUNK_BYTES = 256 * 1024
@@ -114,7 +115,7 @@ def _fetch_to_file(
     if resume_from:
         headers["Range"] = f"bytes={resume_from}-"
     request = urllib.request.Request(url, headers=headers)
-    context = ssl.create_default_context()
+    context = verified_ssl_context()
 
     try:
         with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:

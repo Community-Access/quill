@@ -51,6 +51,7 @@ from quill.core.github.notifications import (
 )
 from quill.core.github.notifications import mark_notification_read as _mark_notification_read_raw
 from quill.core.github.workflows import GitHubWorkflow, list_workflows
+from quill.core.net import verified_ssl_context
 
 #: Default page cap for a single fetch. The dialog loads this many, then offers
 #: "View more" for the next batch -- mirrors GHManage's 30-at-a-time behaviour.
@@ -1130,7 +1131,8 @@ class GitHubItemsProvider:
             def redirect_request(self, *_args: object, **_kwargs: object) -> None:
                 return None  # signal the opener: do not auto-follow
 
-        opener = urllib.request.build_opener(_NoRedirect)
+        ctx = verified_ssl_context()
+        opener = urllib.request.build_opener(_NoRedirect, urllib.request.HTTPSHandler(context=ctx))
         try:
             final_request = request
             try:
@@ -1142,7 +1144,7 @@ class GitHubItemsProvider:
                         raise GitHubItemsError("Artifact redirect target was not HTTPS.") from exc
                     # Deliberately no Authorization header on the redirect target.
                     final_request = urllib.request.Request(location)
-                    probe = urllib.request.urlopen(final_request, timeout=60)  # noqa: S310
+                    probe = urllib.request.urlopen(final_request, timeout=60, context=ctx)  # noqa: S310
                 else:
                     raise GitHubItemsError(f"Could not download artifact: {exc}") from exc
             with probe as response:

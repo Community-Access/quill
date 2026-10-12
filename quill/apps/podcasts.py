@@ -24,6 +24,7 @@ from quill.apps.podcasts_now_playing import CastNowPlayingMixin
 from quill.apps.podcasts_preferences import CastPreferencesMixin
 from quill.apps.podcasts_routes import CastPlaceRoutesMixin
 from quill.apps.podcasts_view_menu import CastViewMenuMixin
+from quill.core.net import configure_ssl_trust
 from quill.ui.app_quillins import QuillinsAppMixin
 from quill.ui.app_shell import AppShellFrame
 from quill.ui.app_support import ListeningAppSupportMixin
@@ -681,6 +682,7 @@ class PodcastsAppFrame(
 
 
 def main() -> int:
+    configure_ssl_trust()  # one certificate check, before any network use
     from quill.core.data_location import apply_pending_at_launch
 
     # A queued Data Folder move/import applies before a single data file is

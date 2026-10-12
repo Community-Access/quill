@@ -31,11 +31,11 @@ import urllib.request
 from dataclasses import dataclass
 
 from quill.core import http_client
+from quill.core.net import context_for
 from quill.core.radio.youtube_oauth import (
     _TIMEOUT_SECONDS,
     Opener,
     YouTubeOAuthError,
-    _context_for,
 )
 
 API_ROOT = "https://www.googleapis.com/youtube/v3"
@@ -145,7 +145,7 @@ def call(
             status, raw = opener(request)
         else:
             with urllib.request.urlopen(
-                request, timeout=_TIMEOUT_SECONDS, context=_context_for(url)
+                request, timeout=_TIMEOUT_SECONDS, context=context_for(url)
             ) as resp:
                 status, raw = int(resp.status or 200), resp.read()
     except urllib.error.HTTPError as error:

@@ -46,6 +46,7 @@ from pathlib import Path
 
 from quill.core import http_client
 from quill.core.error_codes import CodedError
+from quill.core.net import verified_ssl_context
 from quill.core.paths import app_data_dir
 from quill.core.radio.models import RadioStation
 from quill.core.storage import read_json, write_json_atomic
@@ -183,7 +184,7 @@ def _fetch(url: str) -> str:
     if not url.startswith(("http://", "https://")):
         raise MyServersError("That does not look like a server address.")
     request = urllib.request.Request(url, headers={"User-Agent": http_client.user_agent()})
-    context = ssl.create_default_context()
+    context = verified_ssl_context()
     try:
         with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:
             payload: bytes = resp.read(_MAX_BYTES)

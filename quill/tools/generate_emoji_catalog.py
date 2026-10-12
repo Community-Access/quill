@@ -46,6 +46,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from quill.core.net import verified_ssl_context
 from quill.core.safe_xml import fromstring as _safe_xml_fromstring
 
 _EMOJI_VERSION = "16.0"
@@ -81,7 +82,7 @@ class RawEmoji:
 def _fetch(url: str, *, timeout: float = _DEFAULT_TIMEOUT) -> str:
     if not url.lower().startswith("https://"):
         raise ValueError(f"Refusing a non-HTTPS source URL: {url}")
-    with urllib.request.urlopen(url, timeout=timeout) as resp:  # noqa: S310 - HTTPS enforced
+    with urllib.request.urlopen(url, timeout=timeout, context=verified_ssl_context()) as resp:  # noqa: S310 - HTTPS enforced
         return resp.read().decode("utf-8")
 
 
@@ -241,7 +242,7 @@ def _openai_batch_descriptions(
         },
         method="POST",
     )
-    with urllib.request.urlopen(request, timeout=timeout) as resp:  # noqa: S310 - HTTPS enforced
+    with urllib.request.urlopen(request, timeout=timeout, context=verified_ssl_context()) as resp:  # noqa: S310 - HTTPS enforced
         body = json.loads(resp.read().decode("utf-8"))
     content = body["choices"][0]["message"]["content"]
     parsed = json.loads(content)

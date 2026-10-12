@@ -29,6 +29,7 @@ from urllib.request import Request, urlopen
 
 from quill.core import updates
 from quill.core.app_launcher import app_name, portable_sibling_dirname
+from quill.core.net import verified_ssl_context
 
 #: app key -> the release-asset basename prefix each app publishes. Kept beside
 #: the launcher's app table on purpose: a new app is added in both places.
@@ -148,7 +149,7 @@ def fetch_companion_asset(
             url,
             headers={"Accept": "application/vnd.github+json", "User-Agent": "Quill-Updater"},
         )
-        with urlopen(request, timeout=timeout, context=updates._ssl_context()) as response:  # noqa: S310 - https-only API URL
+        with urlopen(request, timeout=timeout, context=verified_ssl_context()) as response:  # noqa: S310 - https-only API URL
             payload = response.read().decode("utf-8")
         return resolve_companion_asset(app_key, json.loads(payload), portable=bool(portable))
     except Exception:  # noqa: BLE001 - discovery failure is non-fatal; caller offers the web page
