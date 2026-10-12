@@ -21,6 +21,7 @@ from __future__ import annotations
 import ctypes
 import logging
 import time
+from collections.abc import Callable
 from ctypes import wintypes
 from dataclasses import dataclass
 
@@ -60,8 +61,32 @@ class _KEYBDINPUT(ctypes.Structure):
     ]
 
 
+class _MOUSEINPUT(ctypes.Structure):
+    _fields_ = [
+        ("dx", wintypes.LONG),
+        ("dy", wintypes.LONG),
+        ("mouseData", wintypes.DWORD),
+        ("dwFlags", wintypes.DWORD),
+        ("time", wintypes.DWORD),
+        ("dwExtraInfo", ctypes.c_void_p),
+    ]
+
+
+class _HARDWAREINPUT(ctypes.Structure):
+    _fields_ = [
+        ("uMsg", wintypes.DWORD),
+        ("wParamL", wintypes.WORD),
+        ("wParamH", wintypes.WORD),
+    ]
+
+
 class _INPUT_UNION(ctypes.Union):
-    _fields_ = [("ki", _KEYBDINPUT)]
+    # All three members, though only ``ki`` is used: MOUSEINPUT is the largest,
+    # and it is what makes sizeof(INPUT) 40 on 64-bit Windows. With ``ki`` alone
+    # it was 32, SendInput rejected every call with ERROR_INVALID_PARAMETER
+    # (87), and nothing dictated or expanded ever reached another program --
+    # QUILL Transcribe into Outlook, 2026-10-12: "delivered 0 of 42 events".
+    _fields_ = [("ki", _KEYBDINPUT), ("mi", _MOUSEINPUT), ("hi", _HARDWAREINPUT)]
 
 
 class _INPUT(ctypes.Structure):
@@ -107,9 +132,44 @@ class InjectionResult:
         return self.sent_events >= self.requested_events
 
 
+#: Keys that turn a typed letter into a command while they are held. Shift is
+#: not one: it changes nothing about a KEYEVENTF_UNICODE character.
+_COMMAND_MODIFIERS = (0x12, 0x11, 0x5B, 0x5C)  # Alt, Ctrl, left and right Windows
+#: How long to wait for them to be let go before typing anyway is refused.
+_MODIFIER_WAIT_S = 2.0
+
+
+def _command_modifier_held() -> bool:
+    state = _user32.GetAsyncKeyState
+    return any(int(state(vk)) & 0x8000 for vk in _COMMAND_MODIFIERS)
+
+
+def _wait_for_modifiers_released(
+    held: Callable[[], bool] | None = None,
+    timeout_s: float | None = None,
+) -> bool:
+    """Wait until Alt, Ctrl and Windows are up. False when one is still held.
+
+    Typing while one is down sends commands instead of letters. Pressing
+    Alt+Shift+\\ to stop QUILL Transcribe writes the last phrase at once --
+    while the fingers are still on Alt -- and Outlook took its letters as Alt
+    shortcuts: an "s" anywhere in the phrase was Alt+S, Send (2026-10-12).
+    """
+    held = held or _command_modifier_held
+    deadline = time.monotonic() + (_MODIFIER_WAIT_S if timeout_s is None else timeout_s)
+    while held():
+        if time.monotonic() >= deadline:
+            return False
+        time.sleep(0.02)
+    return True
+
+
 def _send(inputs: list[_INPUT]) -> InjectionResult:
     if not inputs:
         return InjectionResult(0, 0)
+    if not _wait_for_modifiers_released():
+        logger.warning("Not typing %d events: Alt, Ctrl or Windows is still held", len(inputs))
+        return InjectionResult(len(inputs), 0)
     array = (_INPUT * len(inputs))(*inputs)
     sent = int(_user32.SendInput(len(inputs), array, ctypes.sizeof(_INPUT)))
     if sent != len(inputs):
