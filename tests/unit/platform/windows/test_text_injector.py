@@ -35,3 +35,16 @@ def test_checked_expansion_stops_after_partial_backspaces(monkeypatch) -> None:
 
     assert not result.complete
     assert typed == []
+
+
+def test_input_is_the_size_windows_requires() -> None:
+    """SendInput rejects the whole call when cbSize is not sizeof(INPUT): 40 on
+    64-bit Windows, 28 on 32-bit, set by the union's largest member (MOUSEINPUT).
+    With only KEYBDINPUT in the union it was 32, every call failed with
+    ERROR_INVALID_PARAMETER, and nothing dictated reached Outlook (2026-10-12)."""
+    import ctypes
+
+    from quill.platform.windows import text_injector
+
+    expected = 40 if ctypes.sizeof(ctypes.c_void_p) == 8 else 28
+    assert ctypes.sizeof(text_injector._INPUT) == expected

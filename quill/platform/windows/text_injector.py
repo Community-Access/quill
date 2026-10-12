@@ -60,8 +60,32 @@ class _KEYBDINPUT(ctypes.Structure):
     ]
 
 
+class _MOUSEINPUT(ctypes.Structure):
+    _fields_ = [
+        ("dx", wintypes.LONG),
+        ("dy", wintypes.LONG),
+        ("mouseData", wintypes.DWORD),
+        ("dwFlags", wintypes.DWORD),
+        ("time", wintypes.DWORD),
+        ("dwExtraInfo", ctypes.c_void_p),
+    ]
+
+
+class _HARDWAREINPUT(ctypes.Structure):
+    _fields_ = [
+        ("uMsg", wintypes.DWORD),
+        ("wParamL", wintypes.WORD),
+        ("wParamH", wintypes.WORD),
+    ]
+
+
 class _INPUT_UNION(ctypes.Union):
-    _fields_ = [("ki", _KEYBDINPUT)]
+    # All three members, though only ``ki`` is used: MOUSEINPUT is the largest,
+    # and it is what makes sizeof(INPUT) 40 on 64-bit Windows. With ``ki`` alone
+    # it was 32, SendInput rejected every call with ERROR_INVALID_PARAMETER
+    # (87), and nothing dictated or expanded ever reached another program --
+    # QUILL Transcribe into Outlook, 2026-10-12: "delivered 0 of 42 events".
+    _fields_ = [("ki", _KEYBDINPUT), ("mi", _MOUSEINPUT), ("hi", _HARDWAREINPUT)]
 
 
 class _INPUT(ctypes.Structure):
