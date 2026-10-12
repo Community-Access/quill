@@ -52,10 +52,11 @@ _LAUNCHER_SRC = _REPO_ROOT / "quill" / "native" / "launcher"
 _REPO = "Community-Access/quill"
 
 #: Where an installed launcher self-heals a missing shared runtime from (the
-#: moving ``runtime-latest`` tag; mirrors CMakeLists.txt's default). Always
+#: slot-named ``runtime-3.14`` tag, the launcher swapping in its own slot;
+#: mirrors CMakeLists.txt's default -- see runtime_slots.self_heal_tag). Always
 #: passed explicitly, never left to the CMake cache.
 DEFAULT_RUNTIME_URL = (
-    "https://github.com/Community-Access/quill/releases/download/runtime-latest/"
+    "https://github.com/Community-Access/quill/releases/download/runtime-3.14/"
     "QuillVille-Runtime-Setup.exe"
 )
 

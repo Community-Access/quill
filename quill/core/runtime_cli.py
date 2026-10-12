@@ -13,6 +13,10 @@ that JSON bookkeeping in Pascal, the installer runs this CLI:
     # the installer may delete the shared runtime folder"
     <runtime>\\python.exe -m quill.core.runtime_cli unregister radio 3.13.1
 
+    # after registering: remove an older Python's slot no installed app still
+    # needs (Runtime\\3.13 once every app is on 3.14). Always exits 0.
+    <runtime>\\python.exe -m quill.core.runtime_cli reclaim-old-slots 3.14
+
     # optional: print the shared data dir (where components/runtime state lives)
     <runtime>\\python.exe -m quill.core.runtime_cli data-dir
 
@@ -90,12 +94,35 @@ def _heal_launch_entries(launcher_dir: str) -> int:
     return 0
 
 
+def _reclaim_old_slots(current_slot: str) -> int:
+    """Remove older-Python runtime slots nothing needs. Always exits 0.
+
+    Never fails the install: a slot that cannot be removed costs disk space,
+    and :mod:`quill.core.runtime_reclaim` keeps every slot it has any doubt about.
+    """
+    from quill.core import runtime_reclaim
+
+    results = runtime_reclaim.reclaim(
+        _data_dir(),
+        runtime_reclaim.runtime_root(),
+        current_slot,
+        runtime_reclaim.scan_installs(),
+        runtime_reclaim.launch_references(),
+    )
+    for result in results:
+        print(f"reclaim-old-slots: {result.slot} {result.action} ({result.reason})")
+    if not results:
+        print("reclaim-old-slots: no older runtime slots")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     args = list(sys.argv[1:] if argv is None else argv)
     if not args:
         print(
             "usage: runtime_cli "
-            "<register|unregister|is-referenced|data-dir|heal-launch-entries> ..."
+            "<register|unregister|is-referenced|data-dir|heal-launch-entries"
+            "|reclaim-old-slots> ..."
         )
         return 2
     command = args[0]
@@ -130,6 +157,11 @@ def main(argv: list[str] | None = None) -> int:
             return 0 if runtime_refs.is_referenced(_data_dir(), args[1]) else _UNREFERENCED_EXIT
         if command == "heal-launch-entries":
             return _heal_launch_entries(args[1] if len(args) > 1 else "")
+        if command == "reclaim-old-slots":
+            if len(args) < 2:
+                print("usage: runtime_cli reclaim-old-slots <current_slot>")
+                return 2
+            return _reclaim_old_slots(args[1])
         print(f"unknown command: {command}")
         return 2
     except Exception as exc:  # noqa: BLE001 - never wedge an install/uninstall

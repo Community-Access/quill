@@ -6,12 +6,18 @@ build wins, as it always has. Across slots nothing is shared.**
 =========== ====================================== ===========================
 Channel     Folder under ``%LOCALAPPDATA%\\QuillVille\\Runtime``  Repairs itself from
 =========== ====================================== ===========================
-Stable      ``3.14`` (``3.13`` before 2026-10-11)  ``runtime-stable``, and the
-                                                   ``runtime-latest`` alias that
-                                                   installed launchers know
-Beta        ``3.14-beta``                          ``runtime-beta``
+Stable      ``3.14`` (``3.13`` before 2026-10-11)  ``runtime-3.14``
+Beta        ``3.14-beta``                          ``runtime-3.14-beta``
 Dev         ``3.14-dev``                           nothing: "Reinstall the Dev build"
 =========== ====================================== ===========================
+
+**A runtime's tag is named for its slot, so a launcher only ever repairs from
+the Python it looks for.** Launchers built for 3.13 have ``runtime-latest``
+compiled in and swap it for ``runtime-beta``; had a 3.14 runtime been published
+there, an old app missing its runtime would install one into ``Runtime\\3.14``,
+keep looking in ``Runtime\\3.13``, and never start. So both of those tags stay
+frozen at the last 3.13 runtime (:data:`LEGACY_RUNTIME_TAGS`) and nothing
+publishes to them again; 3.15 will get ``runtime-3.15`` with no code change.
 
 So a Beta Quill Radio puts its runtime in ``3.14-beta``, and a Stable QUILL Lite
 on the same computer keeps running from ``3.14``, untouched. Going back to
@@ -39,8 +45,8 @@ from quill.core.updater.channels import BETA, DEV, STABLE, Channel, normalize_ch
 from quill.core.versioning import ReleaseVersion
 
 __all__ = [
+    "LEGACY_RUNTIME_TAGS",
     "PYTHON_MAJOR",
-    "RUNTIME_TAGS",
     "SLOT_EXTRA_MB",
     "channel_of_slot",
     "default_channel",
@@ -58,14 +64,9 @@ PYTHON_MAJOR = "3.14"
 #: The risk window says this number plainly (owner decision, 2026-10-03).
 SLOT_EXTRA_MB = 335
 
-#: The GitHub release tags each slot's runtime installer is published under.
-#: ``runtime-latest`` stays an alias of Stable for ever: installed launchers
-#: have it compiled in.
-RUNTIME_TAGS: dict[str, tuple[str, ...]] = {
-    STABLE: ("runtime-stable", "runtime-latest"),
-    BETA: ("runtime-beta",),
-    DEV: (),
-}
+#: Tags that hold the last Python 3.13 runtime for ever, for the launchers that
+#: have them compiled in. Nothing may publish to these again (module docstring).
+LEGACY_RUNTIME_TAGS: tuple[str, ...] = ("runtime-latest", "runtime-beta")
 
 _SLOT_RE = re.compile(r"^\d+\.\d+(?:-(?:beta|dev))?$")
 
@@ -106,11 +107,11 @@ def installer_args(channel: str) -> list[str]:
 
 
 def self_heal_tag(slot: str) -> str | None:
-    """The release tag a missing runtime in *slot* is downloaded from; ``None`` for Dev."""
-    tags = RUNTIME_TAGS[channel_of_slot(slot)]
-    if not tags:
+    """The release tag a missing runtime in *slot* is downloaded from, and the one
+    its installer is published under: ``runtime-<slot>``. ``None`` for Dev."""
+    if channel_of_slot(slot) == DEV:
         return None
-    return "runtime-latest" if channel_of_slot(slot) == STABLE else tags[0]
+    return f"runtime-{slot}"
 
 
 def launcher_slot_dir(local_app_data: Path, slot: str) -> Path:

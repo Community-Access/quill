@@ -295,13 +295,16 @@ int ql_runtime_url_for_slot(const char *base_url, const char *slot, char *out, s
     const char *dash = slot ? strrchr(slot, '-') : NULL;
     if (dash && strcmp(dash, "-dev") == 0) return -1;
     if (!base_url) base_url = "";
-    if (dash && strcmp(dash, "-beta") == 0) {
-        const char *seg = strstr(base_url, "/runtime-latest/");
-        if (seg) {
-            snprintf(out, out_size, "%.*s/runtime-beta/%s",
-                     (int)(seg - base_url), base_url, seg + strlen("/runtime-latest/"));
-            return 0;
-        }
+    /* Each runtime is published under a tag named for its slot (runtime-3.14,
+     * runtime-3.14-beta), so swap the compiled URL's /runtime-.../ segment for
+     * this slot's. Never runtime-latest: that tag holds 3.13 for the launchers
+     * built before 2026-10-12, and a runtime from another Python installs into
+     * a slot this launcher never looks in. */
+    const char *seg = strstr(base_url, "/runtime-");
+    const char *end = seg ? strchr(seg + 1, '/') : NULL;
+    if (seg && end && slot && slot[0]) {
+        snprintf(out, out_size, "%.*s/runtime-%s%s", (int)(seg - base_url), base_url, slot, end);
+        return 0;
     }
     snprintf(out, out_size, "%s", base_url);
     return 0;

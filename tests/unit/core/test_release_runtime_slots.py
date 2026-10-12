@@ -69,10 +69,18 @@ def test_the_installers_default_channel(version, requested, channel) -> None:
     assert default_channel(version, requested) == channel
 
 
-def test_self_heal_tags_and_runtime_latest_stays_an_alias() -> None:
-    assert self_heal_tag("3.14") == "runtime-latest"
-    assert self_heal_tag("3.14-beta") == "runtime-beta"
+def test_self_heal_tags_are_named_for_the_slot() -> None:
+    """A launcher only ever repairs from the Python it looks for. runtime-latest
+    and runtime-beta are frozen at 3.13 for the launchers that have them compiled
+    in; a 3.14 runtime there would install into a slot they never look in."""
+    from quill.core.updater.runtime_slots import LEGACY_RUNTIME_TAGS
+
+    assert self_heal_tag("3.14") == "runtime-3.14"
+    assert self_heal_tag("3.14-beta") == "runtime-3.14-beta"
+    assert self_heal_tag("3.15") == "runtime-3.15"
     assert self_heal_tag("3.14-dev") is None
+    for slot in ("3.14", "3.14-beta", "3.15", "3.15-beta"):
+        assert self_heal_tag(slot) not in LEGACY_RUNTIME_TAGS
 
 
 def test_launcher_rule_in_python(tmp_path: Path) -> None:
@@ -218,7 +226,10 @@ def test_the_runtime_installer_builds_a_beta_slot_and_publishes_both_tags() -> N
     # Runtime\\3.13 as its recorded folder).
     assert iss.count("AppId=") == 3
     assert "AppId={{6D6B0E7C-51A4-4B5E-9E0D-2F8B4C0A9137}-{#RuntimeSlot}" in iss
-    assert '/dRuntimeSlot=$pythonMinor")' in script
-    assert '@("runtime-stable", "runtime-latest")' in script
-    assert '@("runtime-beta")' in script
-    assert "/dRuntimeSlot=$pythonMinor-beta" in script
+    # The slot (and so the tag) comes from the built runtime's own marker.
+    assert '$runtimeSlot = if ($Channel -eq "beta") { "$pythonMinor-beta" }' in script
+    assert '/dRuntimeSlot=$runtimeSlot")' in script
+    assert '$RuntimeTags = @("runtime-$runtimeSlot")' in script
+    # ... and the 3.13 tags old launchers have compiled in are refused.
+    assert '$LegacyRuntimeTags = @("runtime-latest", "runtime-beta")' in script
+    assert "refusing to publish there" in script
