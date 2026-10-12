@@ -8,7 +8,8 @@ this script would write (``tests/unit/scripts/test_dictation_sounds.py``).
 The design is the one in ``docs/design/dictation for windows only`` (PRD
 sections 23 to 27): short sine tones between 300 and 1000 Hz, fades so nothing
 clicks, peaks well below full scale, and the phrase cue -- heard hundreds of
-times an hour -- the shortest and quietest of the four.
+times an hour -- the shortest and quietest of the four, with edges slow enough
+that it is heard as a tone and never as a letter (:data:`PHRASE_ATTACK_MS`).
 
 Usage::
 
@@ -50,6 +51,36 @@ def tone(freq: float, duration_ms: float, volume: float) -> list[int]:
     ]
 
 
+#: The phrase cue's slow edges. A tone that reaches full volume in a few
+#: milliseconds is heard as a consonant: the first phrase cue (two tones mixed,
+#: 55 ms, 8 ms fades) was reported as a spoken "c" before every read-back
+#: (2026-10-12). Rising over 25 ms and dying over 60 ms, it is a tone and
+#: nothing else.
+PHRASE_ATTACK_MS = 25.0
+PHRASE_RELEASE_MS = 60.0
+
+
+def soft_tone(
+    freq: float, duration_ms: float, volume: float, attack_ms: float, release_ms: float
+) -> list[int]:
+    """A sine with a slow, curved rise and fall: no transient to hear as a letter."""
+    total = max(1, int(SAMPLE_RATE * duration_ms / 1000))
+    rise = max(1, int(SAMPLE_RATE * attack_ms / 1000))
+    fall = max(1, int(SAMPLE_RATE * release_ms / 1000))
+
+    def gain(i: int) -> float:
+        if i < rise:
+            return math.sin(0.5 * math.pi * i / rise) ** 2
+        if i >= total - fall:
+            return math.sin(0.5 * math.pi * max(0, total - i - 1) / fall) ** 2
+        return 1.0
+
+    return [
+        int(MAX_AMP * volume * gain(i) * math.sin(2 * math.pi * freq * i / SAMPLE_RATE))
+        for i in range(total)
+    ]
+
+
 def silence(duration_ms: float) -> list[int]:
     return [0] * max(1, int(SAMPLE_RATE * duration_ms / 1000))
 
@@ -71,8 +102,11 @@ def sounds() -> dict[str, list[int]]:
     return {
         # Two short ascending tones: listening.
         "windows_dictation_on.wav": concat(tone(520, 80, 0.20), silence(18), tone(760, 95, 0.20)),
-        # A very short, soft two-note chime: this phrase is in the document.
-        "windows_dictation_phrase.wav": mix(tone(720, 55, 0.11), tone(960, 55, 0.07)),
+        # One soft, round note: this phrase is in the document. Slow edges, so
+        # it is never heard as a letter (PHRASE_ATTACK_MS).
+        "windows_dictation_phrase.wav": soft_tone(
+            880, 130, 0.12, PHRASE_ATTACK_MS, PHRASE_RELEASE_MS
+        ),
         # The start sound, descending: no longer listening.
         "windows_dictation_off.wav": concat(tone(760, 80, 0.20), silence(18), tone(520, 95, 0.20)),
         # A low double pulse: needs attention. Distinct, not loud.
