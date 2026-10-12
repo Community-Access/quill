@@ -49,7 +49,7 @@ pyenchant>=3.3.0
 # (e.g. Phi-4-mini Q4) into <app data>/models or set QUILL_LLAMA_MODEL.
 # Use llama-cpp-python CPU wheels to avoid source builds and Windows long-path failures.
 # Pin to the newest version with a prebuilt CPU wheel on the index below
-# (py3-none-win_amd64 wheels; 0.3.35 is the newest — 0.3.31 has NO wheel there,
+# (py3-none-win_amd64 wheels; 0.3.36 is the newest (checked 2026-10-11) — 0.3.31 has NO wheel there,
 # so that pin silently fell back to the PyPI sdist and pip tried to compile
 # llama.cpp from source via CMake, which fails or hangs). Bump only after
 # confirming the index actually publishes a wheel for the new version:
@@ -58,7 +58,7 @@ pyenchant>=3.3.0
 # cannot check that — it reads PyPI, where an sdist always exists — so a
 # dependency bump of this pin is only safe once somebody has looked.
 --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
-llama-cpp-python==0.3.35
+llama-cpp-python==0.3.36
 
 # Dictation / voice input (mic permission required).
 SpeechRecognition>=3.17.0
