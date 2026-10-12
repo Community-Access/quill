@@ -66,12 +66,9 @@ shared runtime are installed in your user profile. The separate **Open QUILL
 Lite instead of Notepad** setting changes what Notepad means for everyone on
 the computer, so turning that on still asks Windows for administrator approval.
 
-Two, deliberately. The other QuillVille apps also publish a thin installer and a
-launcher-only Companion zip, which reuse a shared runtime someone already has.
-QUILL Lite does not, because it is the app people install when they have nothing
-else: the runtime is usually absent, so the thin flavours download it anyway,
-and the Companion zip cannot install one at all -- it runs against whatever is
-on the machine, including a runtime older than QUILL Lite itself.
+That is the whole list. Every QuillVille app, QUILL Lite included, comes as
+just these two: the portable zip and the installer. Both have everything in
+them, so neither needs to download anything else the first time you start it.
 
 The installer offers *Open .txt and .rtf files with QUILL Lite* as an
 **optional** component. It adds QUILL Lite to the Open With list and never

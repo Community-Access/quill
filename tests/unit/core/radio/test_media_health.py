@@ -9,6 +9,8 @@ text rather than only the booleans.
 
 from __future__ import annotations
 
+import pytest
+
 from quill.core.radio.media_health import (
     FFMPEG_CAPABILITIES,
     MPV_CAPABILITIES,
@@ -165,43 +167,30 @@ def test_the_capability_list_is_semicolon_separated() -> None:
     assert "Ogg Vorbis, Opus and HLS stations" in summary
 
 
-# -- the advice has to match the edition the listener actually has -------------
+# -- one piece of advice for everybody ------------------------------------------
 #
-# The thin ("-Lite") installer downloads the base shared runtime, which carries
-# no media tools at all -- so "reinstall" is the one instruction that cannot
-# help a Lite listener, and it is the instruction they used to be given.
+# The thin ("-Lite") installer carried no media tools, so it once needed advice
+# of its own. It is retired (2026-10-11): both downloads carry the tools, so the
+# one hint is true for everybody, and a second, edition-shaped hint would only
+# be a way for the advice to disagree with the download.
 
 
-def test_a_lite_install_is_told_to_get_the_full_installer_not_to_reinstall() -> None:
-    for health in (NO_MPV, NO_FFMPEG, NEITHER):
-        hint = health.repair_hint(lite=True)
-        assert "full Quill Radio installer" in hint
-        assert "reinstall" not in hint.lower(), (
-            "reinstalling the Lite installer re-downloads a runtime that never "
-            f"carried the tools: {hint}"
-        )
-
-
-def test_a_full_install_is_still_told_that_reinstalling_works() -> None:
+def test_reinstalling_is_true_advice_for_everybody() -> None:
     # True only because installer\shared-runtime.iss lays the tools down
     # unconditionally; see test_shared_runtime_installer.py.
     for health in (NO_MPV, NO_FFMPEG, NEITHER):
         assert "reinstall" in health.repair_hint().lower()
+        assert "full Quill Radio installer" not in health.repair_hint()
 
 
-def test_the_download_is_offered_to_a_lite_install_too() -> None:
-    # The whole point of having a download: it is the one repair that does not
-    # depend on which edition the listener installed.
-    assert "Repair mpv Playback Engine" in NO_MPV.repair_hint(lite=True)
-    assert "Repair FFmpeg" in NO_FFMPEG.repair_hint(lite=True)
+def test_there_is_no_thin_installer_advice_left_to_give() -> None:
+    with pytest.raises(TypeError):
+        NO_MPV.repair_hint(lite=True)  # type: ignore[call-arg]
+    with pytest.raises(TypeError):
+        NO_MPV.notice(lite=True)  # type: ignore[call-arg]
+    with pytest.raises(TypeError):
+        NO_MPV.format_refusal("SomaFM", lite=True)  # type: ignore[call-arg]
 
 
-def test_the_lite_notice_and_refusal_carry_the_edition_through() -> None:
-    assert NO_MPV.repair_hint(lite=True) in NO_MPV.notice(lite=True)
-    assert NO_MPV.repair_hint(lite=True) in NO_MPV.format_refusal("SomaFM", lite=True)
-
-
-def test_every_lite_hint_ends_as_a_sentence() -> None:
-    for health in (NO_MPV, NO_FFMPEG, NEITHER):
-        assert health.repair_hint(lite=True).endswith(".")
-        assert health.notice(lite=True).endswith(".")
+def test_the_refusal_carries_the_same_hint() -> None:
+    assert NO_MPV.repair_hint() in NO_MPV.format_refusal("SomaFM")

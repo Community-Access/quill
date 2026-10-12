@@ -1,10 +1,10 @@
 ; QUILL Lite installer -- shared-runtime layout.
 ;
-; Named quilllite.iss rather than quill-lite.iss on purpose: the family
-; reserves the "*-lite.iss" suffix for the THIN installer flavour, and
-; "quill-lite.iss" ends in it, so the shared installer was being audited as a
-; thin one (tests/unit/structure/test_lite_installer_assets.py globs
-; standalone/*/installer/*-lite.iss). The product key is "quilllite"
+; Named quilllite.iss rather than quill-lite.iss on purpose: the family used
+; the "*-lite.iss" suffix for the THIN installer flavour (retired 2026-10-11),
+; and "quill-lite.iss" ends in it, so the shared installer was being audited as
+; a thin one. tests/unit/core/test_install_edition.py now fails on any
+; standalone/*/installer/*-lite.iss other than this one. The product key is "quilllite"
 ; everywhere else -- the folder, AppRefId, the launcher product -- so the
 ; installers match it.
 ;

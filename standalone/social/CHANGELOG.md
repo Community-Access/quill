@@ -9,6 +9,12 @@ semantic versioning once it reaches a stable release.
 QUILL Social became a feed reader as well as a social client, and grew an
 installer of its own.
 
+- **Two downloads, nothing else** (2026-10-11). QUILL Social now comes as the
+  installer and the portable zip. The small Lite installer and the Companion
+  zip are gone. If you used the Lite installer, take the installer; if you
+  used the Companion zip, take the portable zip. Check for Updates already
+  offers the right one.
+
 ### Added — QUILL Social has an application icon
 
 - **An icon of its own, for the app and the installer.** QUILL Social shipped

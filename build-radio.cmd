@@ -1,5 +1,5 @@
 @echo off
-REM Build radio: Quill Radio -- portable zip, Companion zip, shared installer, Lite installer.
+REM Build radio: Quill Radio -- the portable zip and the installer.
 REM
 REM Options are passed straight through, so these all work:
 REM   build-radio          build it, log to local\build-logs

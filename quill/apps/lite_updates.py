@@ -19,15 +19,12 @@ amount that genuinely differs:
   settings file, because QUILL Lite must never adopt QUILL's;
 * the dialog's parent is the *document window*, not a top-level app frame,
   since QUILL Lite is MDI and the active document is where the user is;
-* and the asset is chosen **without** the four-edition machinery. QUILL Lite
-  publishes two downloads, an installer and a portable zip, so the question is
-  "portable, or not" and nothing else. The four-way chooser exists because the
-  other apps ship four non-interchangeable assets; pointed at two it can only
-  add a way to be wrong, and it nearly did -- an installed app resolves
-  ``QUILL_APP_ROOT`` to the shared runtime's folder, where ``detect()`` finds
-  no marker and answers "companion". QUILL Lite came out right anyway, because
-  it publishes no Companion zip and fell through to the installer. Right for
-  the wrong reason is not something to leave holding a download link.
+* and the asset is chosen by one question: portable, or not. QUILL Lite, like
+  every app in the family, ships exactly two downloads -- the portable zip and
+  the installer (``installer/quilllite.iss``) -- so ``match_edition=False``
+  lets the portable check below decide and nothing else. Older releases that
+  still carry a thin installer or a Companion zip never offer either one
+  (:mod:`quill.core.install_edition`).
 """
 
 from __future__ import annotations

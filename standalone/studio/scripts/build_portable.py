@@ -518,17 +518,6 @@ def main() -> int:
     )
     parser.add_argument("--version", default="2.2.0")
     parser.add_argument("--cache-dir", type=Path, default=None)
-    parser.add_argument(
-        "--no-runtime",
-        action="store_true",
-        help=(
-            "Build the tiny 'Companion' variant: native launcher + docs + "
-            "per-app engines only, with NO embedded Python/Lib. It runs off the "
-            "shared QuillVille Runtime the native launcher resolves at "
-            "%%LOCALAPPDATA%%\\QuillVille\\Runtime (installed once, reused by "
-            "every app). Drops ~900 MB vs the full self-contained bundle."
-        ),
-    )
     args = parser.parse_args()
 
     product = PRODUCTS[args.product]
@@ -542,80 +531,42 @@ def main() -> int:
         shutil.rmtree(out_dir)
     out_dir.mkdir(parents=True)
 
-    if args.no_runtime:
-        print(f"[1/6] Companion (runtime-less) build for {product.display}")
-        print("      no embedded Python -- runs off the shared QuillVille Runtime")
-    else:
-        print(f"[1/8] Embeddable CPython ({product.display})")
-        python_exe = _extract_embeddable(out_dir, cache_dir)
-        _enable_site_packages(out_dir)
+    print(f"[1/8] Embeddable CPython ({product.display})")
+    python_exe = _extract_embeddable(out_dir, cache_dir)
+    _enable_site_packages(out_dir)
 
-        print(f"[2/8] pip + runtime dependencies {product.dep_groups}")
-        _bootstrap_pip_and_deps(python_exe, source_root / "pyproject.toml", product.dep_groups)
+    print(f"[2/8] pip + runtime dependencies {product.dep_groups}")
+    _bootstrap_pip_and_deps(python_exe, source_root / "pyproject.toml", product.dep_groups)
 
-        print("[3/8] quill package source")
-        _copy_quill_source(out_dir, source_root)
-        _prune_build_only(out_dir)
+    print("[3/8] quill package source")
+    _copy_quill_source(out_dir, source_root)
+    _prune_build_only(out_dir)
 
-    print(f"[{'2/6' if args.no_runtime else '4/8'}] native launcher")
-    # The Companion edition runs off the shared runtime, so it keeps the offer.
-    offline = product.offline_portable_launcher and not args.no_runtime
+    print("[4/8] native launcher")
+    offline = product.offline_portable_launcher
     _build_native_launcher(out_dir, source_root, product, runtime_download=not offline)
     if offline:
         _build_native_launcher(installer_launcher_dir(out_dir, product), source_root, product)
 
-    if args.no_runtime:
-        # Companion: ffmpeg/mpv come from the shared runtime's tools\ (found via
-        # QUILL_APP_ROOT); speech engines download on demand into %APPDATA%\Quill.
-        # So we stage neither -- only the portable-mode marker + docs. That is
-        # what keeps the Companion feather-light.
-        print("[3/6] portable marker (no bundled engines/tools -- shared runtime provides them)")
-        _write_portable_marker(out_dir, product.display)
-        print("[4/6] docs/")
-        _stage_docs(out_dir, product, source_root)
+    print("[5/8] offline engines -> data/")
+    if product.stage_engines:
+        staged = _stage_engines(out_dir, args.engines_dir)
+        print(f"      staged: {', '.join(staged) if staged else '(none found)'}")
     else:
-        print("[5/8] offline engines -> data/")
-        if product.stage_engines:
-            staged = _stage_engines(out_dir, args.engines_dir)
-            print(f"      staged: {', '.join(staged) if staged else '(none found)'}")
-        else:
-            print("      (product ships no bundled engines)")
-        _write_portable_marker(out_dir, product.display)
+        print("      (product ships no bundled engines)")
+    _write_portable_marker(out_dir, product.display)
 
-        print("[6/8] tools/ (ffmpeg, mpv, deno)")
-        _stage_tools(out_dir, product, args.ffmpeg_dir, args.mpv_dir)
-        if product.stage_deno:
-            _stage_deno(out_dir, args.deno_dir)
+    print("[6/8] tools/ (ffmpeg, mpv, deno)")
+    _stage_tools(out_dir, product, args.ffmpeg_dir, args.mpv_dir)
+    if product.stage_deno:
+        _stage_deno(out_dir, args.deno_dir)
 
-        print("[7/8] docs/")
-        _stage_docs(out_dir, product, source_root)
+    print("[7/8] docs/")
+    _stage_docs(out_dir, product, source_root)
 
-    print(f"[{'6/6' if args.no_runtime else '8/8'}] sanity check")
+    print("[8/8] sanity check")
     if not (out_dir / f"{product.exe}.exe").is_file():
         raise RuntimeError(f"Bundle missing native {product.exe}.exe launcher")
-    if args.no_runtime:
-        # No interpreter is bundled; the launcher resolves the shared runtime.
-        # Leave a human-readable note so the layout is self-explanatory.
-        (out_dir / "READ-ME-FIRST.txt").write_text(
-            f"{product.display} -- Companion edition\n\n"
-            "This is the lightweight edition. It does NOT include its own copy of\n"
-            "Python; it runs on the shared QuillVille Runtime that any QuillVille\n"
-            "app installs once. If the runtime is not present the first time you\n"
-            f"launch {product.display}, it will offer to download and install it\n"
-            "(about 230 MB, once) -- after that every QuillVille app starts\n"
-            "instantly. To stay fully offline instead, use the full portable\n"
-            "edition, which bundles everything.\n",
-            encoding="utf-8",
-        )
-        zip_name = (
-            product.zip_name
-            .format(ver=args.version)
-            .replace("-Portable", "-Companion")
-            .replace("-Lean", "")
-        )
-        print(f"\nCompanion bundle ready: {out_dir}")
-        print(f"(zip as: {zip_name})")
-        return 0
     if not (out_dir / "pythonw.exe").is_file():
         raise RuntimeError("Bundle missing genuine pythonw.exe")
     check = subprocess.run(

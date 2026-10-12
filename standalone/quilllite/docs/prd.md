@@ -1029,15 +1029,15 @@ There is no destination picker.
 
 ## 6. Release packaging
 
-**Two** artifacts, where the family contract is four -- the reason is the
-paragraph under the table:
+**Two** artifacts: the portable build and the system installer. That is the
+family contract for every app (2026-10-11), and QUILL Lite reached it first:
 
 | Artifact | Built from | Output | Measured |
 |---|---|---|---|
 | Installer | `installer/quilllite.iss` | `QuillLite-Setup-Shared-1.0.0.exe` | 117 MB |
 | Full portable | `build_portable.py --product quilllite` | `QuillLite-Portable-1.0.0.zip` | 94 MB |
 
-**Two artifacts, where the other apps publish four** (2026-09-15). QUILL Lite used
+**Why two** (2026-09-15). QUILL Lite used
 to ship the thin `QuillLite-Lite-Setup` and the launcher-only
 `QuillLite-Companion` zip as well, and both were wrong for this product. The
 Companion zip installs nothing, so it binds to whatever shared runtime is
@@ -1050,15 +1050,16 @@ one app somebody installs *because* they have nothing else -- so the runtime is
 usually absent and the saving is notional. Retiring both is safe for anyone
 already on one: the two installers share an AppId, so this one upgrades a thin
 install in place, and `core/updates.py` falls through to an installable asset
-when a release publishes none for the running edition. The other eight apps are
-unchanged.
+when a release publishes none for the running edition. On 2026-10-11 the rest
+of the family followed: every app now ships only the portable build and the
+installer.
 
 The download names spell the product as one mixed-case word, `QuillLite-*`,
 never `Quill-Lite-*`: a screen reader speaks `QUILL Lite` as the product's name,
 where a hyphenated form is read out punctuation and all.
 
 The installer script is named `quilllite.iss`, not `quill-lite.iss`: the family
-reserves the `*-lite.iss` suffix for the *thin* installer flavour, and
+used the `*-lite.iss` suffix for the retired *thin* installer flavour, and
 `quill-lite.iss` ends in it -- so the installer was being audited as a thin one.
 Every other identifier for this product is already `quilllite` (the folder, the
 `AppRefId`, the launcher product key), so the installer matches it.

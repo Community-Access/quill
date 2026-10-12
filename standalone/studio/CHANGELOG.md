@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [2.2.0] - built, not yet released
 
+- **Two downloads, nothing else** (2026-10-11). QUILL Audio Studio now comes as the installer and the portable zip. The small Lite installer and the Companion zip are gone. If you used the Lite installer, take the installer; if you used the Companion zip, take the portable zip. Check for Updates already offers the right one.
+
 Audio Studio jumps from 1.0.0 to 2.2.0 with no 2.0 or 2.1 in between. On 2026-07-21 the standalone build shell was rebuilt from the shared QuillVille template and adopted the family version number, the same number Quill Radio (2026-07-24) and Quill Weather (2026-07-23) carry, because all of them now install and run on one shared runtime. The number is aligned; the releases are still independent.
 
 This version is built but not yet published: Audio Studio is not offered in the QuillVille menu, and there is no 2.2.0 download page. Everything below is in the build.

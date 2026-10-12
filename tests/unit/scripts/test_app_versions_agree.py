@@ -163,7 +163,7 @@ def test_studio_says_one_version_everywhere() -> None:
     assert _module_version("quill/apps/studio.py") == expected
     assert _release_script_version("studio") == expected
     build = _module_build("quill/apps/studio.py")
-    for iss in ("quill-audio-studio.iss", "quill-audio-studio-lite.iss"):
+    for iss in ("quill-audio-studio.iss",):
         path = f"standalone/studio/installer/{iss}"
         assert _inno_version(path) == expected, iss
         _assert_inno_build(path, expected, build)

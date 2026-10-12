@@ -28,9 +28,10 @@
  * portable bundle stop being portable on any machine where some other
  * QuillVille app had installed the shared runtime. A launcher that ships an
  * interpreter beside it IS a self-contained install (the portable zips and
- * the main QUILL distribution); the thin installers ship the launcher ALONE,
- * so they still reach branch 2 and nothing about the shared-runtime story
- * changes. Two bugs came out of the old order:
+ * the main QUILL distribution); a launcher shipped ALONE (the thin installers
+ * did this until they were retired on 2026-10-11) still reaches branch 2, so
+ * nothing about the shared-runtime story changes. Two bugs came out of the
+ * old order:
  *
  *   * QUILL Lite's portable zip died at launch with "No module named
  *     quill.apps.lite" -- it was running a shared runtime frozen in August,

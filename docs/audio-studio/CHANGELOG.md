@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## Unreleased
 
+### Changed
+
+- **Two downloads, nothing else** (2026-10-11). QUILL Audio Studio now comes as the installer and the portable zip. The small Lite installer and the Companion zip are gone. If you used the Lite installer, take the installer; if you used the Companion zip, take the portable zip. Check for Updates already offers the right one.
+
 ### Added
 
 - **Copy Sections** (Voices > Copy Sections..., or the Command Palette). Cutting

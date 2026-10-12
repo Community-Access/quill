@@ -1,31 +1,31 @@
 """Which edition of the app is running, so an update offers *that* one back.
 
-Reported by a user, 2026-08-16: "fix the installer upgrade so it doesn't show
-the wrong installer." They are right, and the fault was structural. A release
-publishes four assets -- a full installer, a thin "Lite" installer, a portable
-zip and an app-only Companion zip -- and the updater chose between them by
-file extension alone. Every installed user therefore got whichever ``.exe``
-GitHub happened to list first, so someone who installed the full edition was
-handed the 2.6 MB thin installer and a Companion user was handed an ``.exe``
-they cannot use at all. #1100 fixed *one* axis of this (portable versus
-installed) and left the other, which is why the complaint outlived the fix.
+Every app in the family ships exactly two downloads (owner decision,
+2026-10-11): the **portable** zip, which runs from any folder and keeps its
+settings in a ``data`` folder beside the app, and the **installer**, which
+puts the app on the machine for everyone who uses it. The thin "Lite"
+installer and the runtime-less Companion zip are gone.
 
-Extension is not identity. This module answers the actual question, in order
-of how much the evidence is worth:
+The question still matters, because the two are not interchangeable: a
+portable user handed the installer gets an app in Program Files they never
+asked for, and an installed user handed the zip gets a second copy that
+updates nothing. Reported by a user on 2026-08-16 ("fix the installer upgrade
+so it doesn't show the wrong installer") and in #1100 before that.
+
+The answer comes from, in order of how much the evidence is worth:
 
 1. **A marker the installer wrote** (``quill-edition.txt`` beside the app).
    Exact, because the thing that installed the app is the only thing that
    knows which installer it was.
 2. **The shape of the folder**, for installs that predate the marker and for
-   the zips: a portable bundle carries its own ``data`` folder, an Inno
-   install always drops ``unins000``, and a Companion bundle has neither.
+   the zip: an Inno install always drops an ``unins*`` uninstaller, and a
+   portable bundle carries its own ``data`` folder. Anything else -- an
+   installed app whose ``QUILL_APP_ROOT`` is the shared runtime's folder, say
+   -- is the installer, because that is the one download that upgrades it.
 
-An install that predates the marker and cannot be told apart resolves to
-:data:`INSTALLER_LITE` on purpose: the thin installer carries the same AppId
-as the full one, so it upgrades either, and it fetches the shared runtime only
-when the runtime is genuinely absent. It is the smallest download that is
-correct for every installed listener -- provided its runtime check works,
-which is a sibling fix in the same release.
+A marker left behind by a retired edition still reads sensibly: an old thin
+install is an Inno install and takes the installer, and an old Companion
+folder takes the portable zip, its nearest living relative.
 
 wx-free and side-effect free: it only reads.
 """
@@ -36,16 +36,18 @@ import os
 import sys
 from pathlib import Path
 
-#: The four things a release publishes, and what a listener is running.
+#: The two things a release publishes, and what a listener is running.
 PORTABLE = "portable"
-COMPANION = "companion"
 INSTALLER_FULL = "installer-full"
-INSTALLER_LITE = "installer-lite"
+
+#: Every edition a running copy can report.
+EDITIONS = (PORTABLE, INSTALLER_FULL)
 
 #: Written into the app folder by each installer / staged into each zip.
 MARKER_NAME = "quill-edition.txt"
 
-_VALID = frozenset({PORTABLE, COMPANION, INSTALLER_FULL, INSTALLER_LITE})
+#: Markers written by editions that no longer ship, and what replaces each.
+_RETIRED_MARKERS = {"installer-lite": INSTALLER_FULL, "companion": PORTABLE}
 
 
 def app_root() -> Path | None:
@@ -76,7 +78,9 @@ def read_marker(root: Path) -> str:
         text = (root / MARKER_NAME).read_text(encoding="utf-8").strip().lower()
     except OSError:
         return ""
-    return text if text in _VALID else ""
+    if text in EDITIONS:
+        return text
+    return _RETIRED_MARKERS.get(text, "")
 
 
 def is_inno_install(root: Path) -> bool:
@@ -108,40 +112,33 @@ def detect(root: Path | None = None) -> str:
         return marker
     # No marker: an install from before this shipped, or a hand-unpacked zip.
     if is_inno_install(root):
-        return INSTALLER_LITE  # the installer that correctly upgrades either
+        return INSTALLER_FULL
     if (root / "data").is_dir():
         return PORTABLE  # the portable bundle carries its own data folder
-    return COMPANION
+    return INSTALLER_FULL
 
 
 def matches_asset(edition: str, asset_name: str, *, app_prefix: str = "") -> bool:
     """Whether *asset_name* is the download for *edition* (pure).
 
-    Names are matched on what the build scripts actually produce:
-    ``Quill-Beacon-Setup-Shared-3.0.0.exe``, ``Quill-Beacon-Lite-Setup-3.0.0.exe``,
-    ``Quill-Beacon-Portable-3.0.0.zip``, ``Quill-Beacon-Companion-3.0.0.zip``.
-    (Quill Radio, QUILL Lite and QUILL Cast publish only the first and third,
-    and skip this question entirely -- ``fetch_app_releases(match_edition=False)``.)
+    Names are matched on what the build scripts produce:
+    ``Quill-Beacon-Setup-Shared-3.0.0.exe`` (the installer) and
+    ``Quill-Beacon-Portable-3.0.0.zip`` (the portable zip). Older releases also
+    carry a thin ``...-Lite-Setup-...exe`` and a ``...-Companion-...zip``;
+    neither matches anything, so going back to an old release never offers one.
 
     *app_prefix* is the app's own asset basename, stripped before matching, and
-    it is not optional in spirit: the markers below are words, and an app whose
-    **name** contains one of them cannot be told apart without it.
+    it is not optional in spirit: "lite" is a word, and an app whose **name**
+    contains it cannot be told apart without it.
     ``QuillLite-Setup-Shared-1.0.0.exe`` contains "lite", so without the prefix
-    the full installer reads as the thin one and ``INSTALLER_FULL`` matches
-    nothing this product ever publishes -- which is the whole family of wrong
-    answers this module exists to prevent, arriving through the product name
-    instead of through the file extension.
+    the installer reads as a retired thin one and matches nothing.
     """
     name = asset_name.lower()
     prefix = app_prefix.lower()
     if prefix and name.startswith(prefix):
         name = name[len(prefix) :].lstrip("-_. ")
     if edition == PORTABLE:
-        return name.endswith(".zip") and "portable" in name
-    if edition == COMPANION:
-        return name.endswith(".zip") and "companion" in name
-    if edition == INSTALLER_LITE:
-        return name.endswith(".exe") and "lite" in name
+        return name.endswith(".zip") and "portable" in name and "companion" not in name
     if edition == INSTALLER_FULL:
         return name.endswith(".exe") and "lite" not in name
     return False

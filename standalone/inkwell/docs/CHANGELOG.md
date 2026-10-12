@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- **Two downloads, nothing else** (2026-10-11). Quill Inkwell now comes as the
+  installer and the portable zip. The small Lite installer and the Companion
+  zip are gone. If you used the Lite installer, take the installer; if you
+  used the Companion zip, take the portable zip. Check for Updates already
+  offers the right one.
+
 - **Dictate Anywhere** (2026-10-05). Inkwell now hosts dictation into other
   programs, with the editors' shared controller, engines, My Words and Phrases
   (`dictation.md` in the shared data folder) and commands

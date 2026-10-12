@@ -84,11 +84,12 @@ class ComponentDownloadsMixin:
         """Fetch libmpv for an installation that has none.
 
         The twin of :meth:`download_ffmpeg_component`, and it exists for a
-        listener the ffmpeg one never had to think about. The full installer and
-        the portable zip bundle libmpv, but the thin ``-Lite`` installer
-        downloads the *base* shared runtime, which carries no media tools at
-        all -- so a Lite listener had a Radio permanently on the Windows Media
-        backend and the app's own advice was to reinstall, which could not help.
+        listener the ffmpeg one never had to think about. The installer and the
+        portable zip bundle libmpv. The thin ``-Lite`` installer, retired since
+        (2026-10-11), did not -- a listener on it had a Radio permanently on the
+        Windows Media backend and the app's own advice was to reinstall, which
+        could not help. A copy from that old download, or one that lost the
+        engine, still needs this.
         The pack has been SHA-pinned on QUILL's ``assets-v1`` release all along
         (the build fetches it from there); this is the route from the running
         app to the same verified zip.

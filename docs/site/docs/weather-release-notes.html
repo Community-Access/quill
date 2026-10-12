@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.12" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Quill Weather 2.2 -- Release Notes</title>
   <style>
@@ -262,22 +262,11 @@ and QUILL Audio Studio). It is installed once per user and reused by all
 of them, so once any Quill app has installed it, every app you add
 afterward starts instantly. The runtime is reference-counted: it is
 removed only when the last app that needs it is uninstalled.</p>
-<p>That shared runtime adds two feather-light ways to get Quill Weather,
-alongside the fully self-contained editions:</p>
-<ul>
-<li><strong>Companion edition</strong> – just the app and its docs
-(about 2 MB). The first time you launch it, if the runtime is not
-already on your machine, it offers to download and install it (about 230
-MB, once) with a fully accessible progress bar. After that, this app and
-every other QuillVille app start instantly.</li>
-<li><strong>Thin installer</strong> – a tiny installer that downloads
-the shared runtime only if it is not already present.</li>
-</ul>
-<p>Every runtime download, whether triggered by an installer or by the
-app’s own first launch, shows a fully accessible progress bar that works
-with NVDA, JAWS, and Narrator, announcing progress as a percentage. See
-“Editions and the QuillVille Runtime” below for the full list of
-downloads.</p>
+<p>Quill Weather comes as two downloads: the installer and the portable
+zip. See “Editions and the QuillVille Runtime” below for what each one
+gives you. (Earlier builds also offered a small “Lite” installer and a
+“Companion” zip. Those are gone; take the installer or the portable zip
+instead.)</p>
 <p>The app’s launcher is also now a genuine, tiny native program, and
 the bundled Python is the official unmodified build. Earlier versions
 used a renamed and modified copy of Python’s <code>pythonw.exe</code> as
@@ -459,10 +448,10 @@ Runtime</h2>
 <strong>QuillVille Runtime</strong>, installed once per user and reused
 by every app. Install it a single time and every Quill app you add
 afterward starts instantly. It is reference-counted, so it is removed
-only when the last app that needs it is uninstalled. Pick the edition
+only when the last app that needs it is uninstalled. Pick the download
 that fits how you want to run Quill Weather:</p>
 <ul>
-<li><strong>Full portable</strong>
+<li><strong>Portable</strong>
 (<code>Quill-Weather-Portable-&lt;version&gt;.zip</code>, about 82 MB) –
 fully self-contained: runs from a USB stick with no installation and no
 internet. It carries a genuine, unmodified copy of Python. Weather is a
@@ -470,25 +459,11 @@ small app, so this build is already compact. Extract anywhere and run
 <code>QuillWeather.exe</code>; a <code>data</code> folder next to the
 exe holding a <code>storage-mode.json</code> marker
 (<code>{"mode": "portable"}</code>) keeps everything on the stick.</li>
-<li><strong>Companion edition</strong>
-(<code>Quill-Weather-Companion-&lt;version&gt;.zip</code>, about 2 MB) –
-feather-light: just the app and its docs, running on the shared
-QuillVille Runtime. The first time you launch it, if the runtime is not
-already installed, it offers to download and install it (about 230 MB,
-once) with a fully accessible progress bar. After that, this app and
-every other QuillVille app start instantly.</li>
-<li><strong>Full installer</strong>
+<li><strong>Installer</strong>
 (<code>Quill-Weather-Setup-Shared-&lt;version&gt;.exe</code>) – installs
 the shared runtime, if it is not already present, plus the app, with a
 Start Menu group, an uninstaller, and the shared data store.</li>
-<li><strong>Thin installer</strong> (the <code>-Lite</code> setup) – a
-tiny installer that downloads the shared runtime only if it is not
-already present, then installs the app.</li>
 </ul>
-<p>Every runtime download, whether triggered by an installer or by the
-app’s own first launch, shows a fully accessible progress bar that works
-with NVDA, JAWS, and Narrator, and announces progress as a
-percentage.</p>
 <h2 id="the-app-teaches-itself">The app teaches itself</h2>
 <p><strong>Help &gt; Tutorials… (Ctrl+Alt+F1)</strong> opens 11 guided
 tutorials – 60 steps, about three quarters of an hour of material –
