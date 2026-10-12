@@ -39,6 +39,7 @@ from quill.apps.transcribe_files import TranscribeFilesMixin
 from quill.apps.transcribe_keys import TranscribeKeysMixin
 from quill.apps.transcribe_menus import build_menu_bar, build_tray_menu, start_stop_label
 from quill.core.app_version import describe_version, installed_version
+from quill.core.net import configure_ssl_trust
 from quill.core.support_message import SUPPORT_EMAIL
 from quill.core.transcribe.settings import TranscribeSettings, load_settings, take_from_inkwell
 from quill.ui.app_shell import AppShellFrame
@@ -408,6 +409,7 @@ class QuillTranscribeFrame(
 
 
 def main() -> int:
+    configure_ssl_trust()  # one certificate check, before any network use
     from quill.core.data_location import apply_pending_at_launch
 
     apply_pending_at_launch()  # queued Data Folder move, before any data read

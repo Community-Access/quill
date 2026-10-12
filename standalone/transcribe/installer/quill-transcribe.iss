@@ -37,7 +37,7 @@
 ; -- shared runtime parameters (read by installer\shared-runtime.iss) ----------
 ; AppRefId is the stable per-app key the fragment uses in runtime.state.json.
 ; It MUST stay "transcribe" forever -- renaming it would orphan the reference.
-#define RuntimeVersion "3.13.15"
+#define RuntimeVersion "3.14.8"
 #define RuntimeSourceDir "..\..\runtime\dist\QuillVilleRuntime"
 #define AppRefId "transcribe"
 
