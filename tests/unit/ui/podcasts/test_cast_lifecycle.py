@@ -31,7 +31,10 @@ def test_destroying_the_native_frame_invalidates_delivery_and_releases_undo(monk
         loop.ProcessIdle()
         assert host._cast_closed
         assert not host._cast_ui_lifetime.is_alive
-        assert released == [host]
+        # Pumping events also delivers the destroy of any frame an earlier test
+        # left behind, and those release their own hosts; this host is released
+        # exactly once.
+        assert [item for item in released if item is host] == [host]
     finally:
         wx.EventLoop.SetActive(previous)
 
