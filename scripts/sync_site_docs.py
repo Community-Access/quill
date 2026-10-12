@@ -110,6 +110,12 @@ SYNC_MAP: dict[str, dict[str, str]] = {
         "userguide": "userguide.html",
         "prd": "prd.html",
     },
+    "transcribe": {
+        "userguide": "userguide.html",
+        "prd": "prd.html",
+        "release-notes": "release-notes-1.0.html",
+        "changelog": "CHANGELOG.html",
+    },
     "quilllite": {
         "userguide": "userguide.html",
         "prd": "prd.html",

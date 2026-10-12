@@ -1185,6 +1185,92 @@ Control coverage: 3 audited sites (3 helped).
 - `manage_btn`: Open the Manage Abbreviations dialog: create, edit, delete, enable or disable entries, and import or export the whole library. Changes save immediately and work in QUILL too.
 - `quick_btn`: Pick an abbreviation and have its expansion typed into the window you were just working in -- the way to use entries set to expand only manually. Also on Ctrl+K here, and from any program on the key you choose with File, Quick Insert Key.
 
+## QUILL Transcribe
+
+Control coverage: 28 audited sites (28 helped).
+
+### Every window, and what it is for
+
+**Choose Microphone.** The microphone QUILL Transcribe listens on. The Windows default follows whatever Windows is set to; a named microphone stays chosen.
+
+**Choose Model.** Every speech model QUILL knows, each marked as running on this computer or sending your speech over the internet, with its languages and whether it is downloaded. The model you choose is used every time until you choose another.
+
+**Dictation Commands.** Everything dictation understands, to read with the arrow keys. In another program only the commands that do not need to read its text work.
+
+**Dictation Settings.** The dictation settings QUILL Transcribe uses: the model, microphone, language, punctuation, and what you hear after each phrase. They are the same settings as dictation in QUILL and QUILL Lite, kept for this app.
+
+**Exit QUILL Transcribe.** Dictation is paused with words that were never written. Exit throws them away and closes QUILL Transcribe; Cancel keeps it running so you can resume.
+
+**Find a Setting or Command.** Every menu command in this app, searchable by name. Type part of a name; Down moves into the matches; Enter does the highlighted one.
+
+**More Dictation Settings.** The rest of dictation's settings: pauses, fillers, dashes, wake phrase and the OpenAI model. Some only matter inside QUILL's own documents.
+
+**Notifications.** Finished, failed and cancelled transcriptions. Open one to review its transcript.
+
+**QUILL Transcribe.** QUILL Transcribe types what you say into the program you are using. This window shows whether dictation is on, which model and microphone it uses, and what happened last. Start dictation from your start and stop key or the tray menu; it writes only into the field you started in, and pauses if you move. Closing this window keeps QUILL Transcribe in the tray.
+
+**Review Transcript.** A finished transcript of a recording, read-only. Copy it, save it as a text file, or open it in QUILL; nothing is copied or typed anywhere unless you choose it.
+
+**Save Transcript As.** Choose where to save the transcript as a plain text file.
+
+**Send this recording to OpenAI?.** Before a recording goes to OpenAI, this says what is sent. No sends nothing.
+
+**Set Up QUILL Transcribe.** Choose your microphone, the speech model and, if you want one, the key that starts and stops dictation from any program. Finish keeps your choices; Skip changes nothing. Nothing listens and nothing downloads here.
+
+**Show and Hide Key.** Choose one key that shows and hides the QUILL Transcribe window from any program, or leave the box empty for no key. A key another QuillVille app already uses is refused, and you are told whose it is.
+
+**Speech Models.** The Model Library: download, check or remove the optional speech models. Each download shows its size first, is checked before it is used, and can be cancelled. A model that did not finish is never marked ready.
+
+**Start and Stop Key.** Choose the key that starts and stops dictation from any program. There is none until you choose one. Type it, or leave the box empty for no key; a key another QuillVille app already uses is refused, and you are told whose it is.
+
+**Transcribe a Recording.** Choose a recording and a model; it is transcribed in the background and the transcript waits in Notifications for you to review.
+
+**Update downloaded.** A new QUILL Transcribe is on disk and ready. Install and restart applies it and relaunches -- your settings are kept -- or Open folder shows the installer.
+
+**Use OpenAI.** Before your speech goes to OpenAI, this says what is sent and where. No keeps the model you had; nothing is sent unless you agree.
+
+**Windows titled "Help:...".** This is the help window itself: the purpose of the window you were in, then the control you were on. Escape returns you to it.
+
+### Every authored control help sentence
+
+#### QuillTranscribeFrame (`quill/apps/transcribe.py`)
+
+- `self._state_text`: What dictation is doing now: Ready, Listening, Hearing you, Paused with words held, or Waiting for you to switch to a field. The tray icon's name says the same.
+- `self._start_button`: Starts dictation in the next field you switch to, or stops it. From another program, your start and stop key does the same without coming here.
+- `self._resume_button`: When dictation is paused: writes the held words into the field you started in, once you are back there, and carries on.
+- `self._here_button`: When dictation is paused: makes the field you switch to next the one dictation writes into, after the same safety checks as a new start.
+- `self._discard_button`: When dictation is paused: throws away the words held while paused. Dictation stays paused until you resume or stop.
+- `self._setup_text`: The speech model, microphone and start and stop key dictation uses now. The model you chose is the one that runs; it never changes on its own.
+- `self._next_text`: What starting dictation will do, why it paused or could not start, and the last thing it said.
+- `model_button`: Choose the speech model: each is marked as running on this computer or sending your speech over the internet.
+- `mic_button`: Choose the microphone dictation listens on.
+- `settings_button`: Language, punctuation, fillers, pauses and what you hear after each phrase: the same settings as dictation in QUILL.
+#### SetupDialog (`quill/apps/transcribe_dialogs.py`)
+
+- `self.intro`: What QUILL Transcribe does and does not do, to read with the arrow keys. Tab moves on to the choices.
+- `self.microphone`: The microphone QUILL Transcribe listens on. The Windows default follows whatever Windows is set to; a named one stays chosen.
+- `self.test_button`: Records four seconds on the chosen microphone and says how loud it was and what it heard. The recording stays on this computer and is not kept.
+- `self.test_result`: What the last microphone test found.
+- `self.model`: The model that turns your speech into text. Only models already on this computer are listed here; more can be downloaded later from the Model Library. The one you choose is used every time until you change it.
+- `self.key`: Type the key that starts and stops dictation from any program, for example Ctrl+Alt+PageDown. Leave it empty to use the tray menu instead. Nothing is registered with Windows until you choose a key here.
+- `self.at_login`: Opens QUILL Transcribe in the tray when you sign in, so your key works straight away. It does not start listening until you start dictation.
+- `finish`: Keep these choices and close setup.
+- `skip`: Close setup without changing anything. Setup is on the Help menu whenever you want it.
+#### ChooseModelDialog (`quill/apps/transcribe_dialogs.py`)
+
+- `self.list`: Every speech model QUILL knows. Each says whether it runs on this computer or sends your speech over the internet, which languages it knows, and whether it is downloaded. Enter uses the one you are on.
+- `self.details`: The model you are on: where it runs, its languages and size, who publishes it and under which licence.
+- `use`: Make this your model. It is used every time you dictate until you choose another; QUILL Transcribe never switches on its own.
+- `library`: Download, check or remove the optional models. Downloads are your choice, show their size first, and are checked before they are used.
+- `cancel`: Keep the model you have.
+#### TranscriptReviewDialog (`quill/apps/transcribe_files.py`)
+
+- `self.text`: The transcript, read-only. Read it with the arrow keys; select part of it and press Ctrl+C to copy just that part.
+- `copy`: Put the whole transcript on the clipboard.
+- `save`: Save the transcript as a text file where you choose.
+- `quill`: Open the transcript in QUILL to edit it.
+- `close`: Close the transcript. It stays in Notifications.
+
 ## Quill Weather
 
 Control coverage: 40 audited sites (40 helped).

@@ -184,6 +184,22 @@ PRODUCTS: dict[str, Product] = {
         stage_ffmpeg=False,
         stage_mpv=False,
     ),
+    "transcribe": Product(
+        key="transcribe",
+        module="quill.apps.transcribe",
+        exe="QuillTranscribe",
+        display="QUILL Transcribe",
+        zip_name="QUILL-Transcribe-Portable-{ver}.zip",
+        # Dictation into other programs, and nothing else: the one engine it
+        # carries is dictation's (live-dictation: sherpa-onnx, numpy,
+        # sounddevice), as QUILL Lite does; the models are staged beside the
+        # launcher by build_release.ps1, not in here.
+        dep_groups=("ui", "live-dictation"),
+        stage_engines=False,
+        stage_ffmpeg=False,
+        stage_mpv=False,
+        offline_portable_launcher=True,
+    ),
     "converter": Product(
         key="converter",
         module="quill.apps.converter",

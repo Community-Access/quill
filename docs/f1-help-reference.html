@@ -3053,9 +3053,173 @@ typed into the window you were just working in – the way to use entries
 set to expand only manually. Also on Ctrl+K here, and from any program
 on the key you choose with File, Quick Insert Key.</li>
 </ul>
+<h2 id="quill-transcribe">QUILL Transcribe</h2>
+<p>Control coverage: 28 audited sites (28 helped).</p>
+<h3 id="every-window-and-what-it-is-for-5">Every window, and what it is
+for</h3>
+<p><strong>Choose Microphone.</strong> The microphone QUILL Transcribe
+listens on. The Windows default follows whatever Windows is set to; a
+named microphone stays chosen.</p>
+<p><strong>Choose Model.</strong> Every speech model QUILL knows, each
+marked as running on this computer or sending your speech over the
+internet, with its languages and whether it is downloaded. The model you
+choose is used every time until you choose another.</p>
+<p><strong>Dictation Commands.</strong> Everything dictation
+understands, to read with the arrow keys. In another program only the
+commands that do not need to read its text work.</p>
+<p><strong>Dictation Settings.</strong> The dictation settings QUILL
+Transcribe uses: the model, microphone, language, punctuation, and what
+you hear after each phrase. They are the same settings as dictation in
+QUILL and QUILL Lite, kept for this app.</p>
+<p><strong>Exit QUILL Transcribe.</strong> Dictation is paused with
+words that were never written. Exit throws them away and closes QUILL
+Transcribe; Cancel keeps it running so you can resume.</p>
+<p><strong>Find a Setting or Command.</strong> Every menu command in
+this app, searchable by name. Type part of a name; Down moves into the
+matches; Enter does the highlighted one.</p>
+<p><strong>More Dictation Settings.</strong> The rest of dictation’s
+settings: pauses, fillers, dashes, wake phrase and the OpenAI model.
+Some only matter inside QUILL’s own documents.</p>
+<p><strong>Notifications.</strong> Finished, failed and cancelled
+transcriptions. Open one to review its transcript.</p>
+<p><strong>QUILL Transcribe.</strong> QUILL Transcribe types what you
+say into the program you are using. This window shows whether dictation
+is on, which model and microphone it uses, and what happened last. Start
+dictation from your start and stop key or the tray menu; it writes only
+into the field you started in, and pauses if you move. Closing this
+window keeps QUILL Transcribe in the tray.</p>
+<p><strong>Review Transcript.</strong> A finished transcript of a
+recording, read-only. Copy it, save it as a text file, or open it in
+QUILL; nothing is copied or typed anywhere unless you choose it.</p>
+<p><strong>Save Transcript As.</strong> Choose where to save the
+transcript as a plain text file.</p>
+<p><strong>Send this recording to OpenAI?.</strong> Before a recording
+goes to OpenAI, this says what is sent. No sends nothing.</p>
+<p><strong>Set Up QUILL Transcribe.</strong> Choose your microphone, the
+speech model and, if you want one, the key that starts and stops
+dictation from any program. Finish keeps your choices; Skip changes
+nothing. Nothing listens and nothing downloads here.</p>
+<p><strong>Show and Hide Key.</strong> Choose one key that shows and
+hides the QUILL Transcribe window from any program, or leave the box
+empty for no key. A key another QuillVille app already uses is refused,
+and you are told whose it is.</p>
+<p><strong>Speech Models.</strong> The Model Library: download, check or
+remove the optional speech models. Each download shows its size first,
+is checked before it is used, and can be cancelled. A model that did not
+finish is never marked ready.</p>
+<p><strong>Start and Stop Key.</strong> Choose the key that starts and
+stops dictation from any program. There is none until you choose one.
+Type it, or leave the box empty for no key; a key another QuillVille app
+already uses is refused, and you are told whose it is.</p>
+<p><strong>Transcribe a Recording.</strong> Choose a recording and a
+model; it is transcribed in the background and the transcript waits in
+Notifications for you to review.</p>
+<p><strong>Update downloaded.</strong> A new QUILL Transcribe is on disk
+and ready. Install and restart applies it and relaunches – your settings
+are kept – or Open folder shows the installer.</p>
+<p><strong>Use OpenAI.</strong> Before your speech goes to OpenAI, this
+says what is sent and where. No keeps the model you had; nothing is sent
+unless you agree.</p>
+<p><strong>Windows titled “Help:…”.</strong> This is the help window
+itself: the purpose of the window you were in, then the control you were
+on. Escape returns you to it.</p>
+<h3 id="every-authored-control-help-sentence-5">Every authored control
+help sentence</h3>
+<h4 id="quilltranscribeframe-quillappstranscribepy">QuillTranscribeFrame
+(<code>quill/apps/transcribe.py</code>)</h4>
+<ul>
+<li><code>self._state_text</code>: What dictation is doing now: Ready,
+Listening, Hearing you, Paused with words held, or Waiting for you to
+switch to a field. The tray icon’s name says the same.</li>
+<li><code>self._start_button</code>: Starts dictation in the next field
+you switch to, or stops it. From another program, your start and stop
+key does the same without coming here.</li>
+<li><code>self._resume_button</code>: When dictation is paused: writes
+the held words into the field you started in, once you are back there,
+and carries on.</li>
+<li><code>self._here_button</code>: When dictation is paused: makes the
+field you switch to next the one dictation writes into, after the same
+safety checks as a new start.</li>
+<li><code>self._discard_button</code>: When dictation is paused: throws
+away the words held while paused. Dictation stays paused until you
+resume or stop.</li>
+<li><code>self._setup_text</code>: The speech model, microphone and
+start and stop key dictation uses now. The model you chose is the one
+that runs; it never changes on its own.</li>
+<li><code>self._next_text</code>: What starting dictation will do, why
+it paused or could not start, and the last thing it said.</li>
+<li><code>model_button</code>: Choose the speech model: each is marked
+as running on this computer or sending your speech over the
+internet.</li>
+<li><code>mic_button</code>: Choose the microphone dictation listens
+on.</li>
+<li><code>settings_button</code>: Language, punctuation, fillers, pauses
+and what you hear after each phrase: the same settings as dictation in
+QUILL.</li>
+</ul>
+<h4 id="setupdialog-quillappstranscribe_dialogspy">SetupDialog
+(<code>quill/apps/transcribe_dialogs.py</code>)</h4>
+<ul>
+<li><code>self.intro</code>: What QUILL Transcribe does and does not do,
+to read with the arrow keys. Tab moves on to the choices.</li>
+<li><code>self.microphone</code>: The microphone QUILL Transcribe
+listens on. The Windows default follows whatever Windows is set to; a
+named one stays chosen.</li>
+<li><code>self.test_button</code>: Records four seconds on the chosen
+microphone and says how loud it was and what it heard. The recording
+stays on this computer and is not kept.</li>
+<li><code>self.test_result</code>: What the last microphone test
+found.</li>
+<li><code>self.model</code>: The model that turns your speech into text.
+Only models already on this computer are listed here; more can be
+downloaded later from the Model Library. The one you choose is used
+every time until you change it.</li>
+<li><code>self.key</code>: Type the key that starts and stops dictation
+from any program, for example Ctrl+Alt+PageDown. Leave it empty to use
+the tray menu instead. Nothing is registered with Windows until you
+choose a key here.</li>
+<li><code>self.at_login</code>: Opens QUILL Transcribe in the tray when
+you sign in, so your key works straight away. It does not start
+listening until you start dictation.</li>
+<li><code>finish</code>: Keep these choices and close setup.</li>
+<li><code>skip</code>: Close setup without changing anything. Setup is
+on the Help menu whenever you want it.</li>
+</ul>
+<h4
+id="choosemodeldialog-quillappstranscribe_dialogspy">ChooseModelDialog
+(<code>quill/apps/transcribe_dialogs.py</code>)</h4>
+<ul>
+<li><code>self.list</code>: Every speech model QUILL knows. Each says
+whether it runs on this computer or sends your speech over the internet,
+which languages it knows, and whether it is downloaded. Enter uses the
+one you are on.</li>
+<li><code>self.details</code>: The model you are on: where it runs, its
+languages and size, who publishes it and under which licence.</li>
+<li><code>use</code>: Make this your model. It is used every time you
+dictate until you choose another; QUILL Transcribe never switches on its
+own.</li>
+<li><code>library</code>: Download, check or remove the optional models.
+Downloads are your choice, show their size first, and are checked before
+they are used.</li>
+<li><code>cancel</code>: Keep the model you have.</li>
+</ul>
+<h4
+id="transcriptreviewdialog-quillappstranscribe_filespy">TranscriptReviewDialog
+(<code>quill/apps/transcribe_files.py</code>)</h4>
+<ul>
+<li><code>self.text</code>: The transcript, read-only. Read it with the
+arrow keys; select part of it and press Ctrl+C to copy just that
+part.</li>
+<li><code>copy</code>: Put the whole transcript on the clipboard.</li>
+<li><code>save</code>: Save the transcript as a text file where you
+choose.</li>
+<li><code>quill</code>: Open the transcript in QUILL to edit it.</li>
+<li><code>close</code>: Close the transcript. It stays in
+Notifications.</li>
+</ul>
 <h2 id="quill-weather">Quill Weather</h2>
 <p>Control coverage: 40 audited sites (40 helped).</p>
-<h3 id="every-window-and-what-it-is-for-5">Every window, and what it is
+<h3 id="every-window-and-what-it-is-for-6">Every window, and what it is
 for</h3>
 <p><strong>Add Weather Location.</strong> Save a new place to watch.
 Type a ZIP code, city, county, or address and press Search; the matching
@@ -3099,7 +3263,7 @@ Cancel changes nothing.</p>
 <p><strong>Windows titled “Help:…”.</strong> This is the help window
 itself: the purpose of the window you were in, then the control you were
 on. Escape returns you to it.</p>
-<h3 id="every-authored-control-help-sentence-5">Every authored control
+<h3 id="every-authored-control-help-sentence-6">Every authored control
 help sentence</h3>
 <h4
 id="addlocationdialog-quilluiweatheradd_location_dialogpy">AddLocationDialog
@@ -3262,7 +3426,7 @@ primary one the alert watch follows.</li>
 </ul>
 <h2 id="quill-converter">Quill Converter</h2>
 <p>Control coverage: 26 audited sites (26 helped).</p>
-<h3 id="every-window-and-what-it-is-for-6">Every window, and what it is
+<h3 id="every-window-and-what-it-is-for-7">Every window, and what it is
 for</h3>
 <p><strong>Chapter Workbench.</strong> Edit the chapters of an MP3, M4B
 or M4A: hear it, then add, rename, move, split and merge chapters at the
@@ -3328,7 +3492,7 @@ touched.</p>
 <p><strong>Windows titled “Help:…”.</strong> This is the help window
 itself: the purpose of the window you were in, then the control you were
 on. Escape returns you to it.</p>
-<h3 id="every-authored-control-help-sentence-6">Every authored control
+<h3 id="every-authored-control-help-sentence-7">Every authored control
 help sentence</h3>
 <h4 id="quillconverterframe-quillappsconverterpy">QuillConverterFrame
 (<code>quill/apps/converter.py</code>)</h4>
@@ -3453,7 +3617,7 @@ download.</li>
 </ul>
 <h2 id="quill-beacon">Quill Beacon</h2>
 <p>Control coverage: 127 audited sites (127 helped).</p>
-<h3 id="every-window-and-what-it-is-for-7">Every window, and what it is
+<h3 id="every-window-and-what-it-is-for-8">Every window, and what it is
 for</h3>
 <p><strong>Accessibility Settings.</strong> How the app speaks and
 looks: announcement verbosity, high contrast, text scale, and reduced
@@ -3548,7 +3712,7 @@ on. Escape returns you to it.</p>
 one bookmark at a time. The list shows every step with its completion
 mark, Mark Complete toggles the current one, and Open Current opens its
 bookmark. Your place and progress are saved as you go.</p>
-<h3 id="every-authored-control-help-sentence-7">Every authored control
+<h3 id="every-authored-control-help-sentence-8">Every authored control
 help sentence</h3>
 <h4 id="beaconframe-quillappsbeaconapppy">BeaconFrame
 (<code>quill/apps/beacon/app.py</code>)</h4>
@@ -3932,7 +4096,7 @@ text, when one is available. Empty otherwise.</li>
 </ul>
 <h2 id="quill-lite">QUILL Lite</h2>
 <p>Control coverage: 156 audited sites (156 helped).</p>
-<h3 id="every-window-and-what-it-is-for-8">Every window, and what it is
+<h3 id="every-window-and-what-it-is-for-9">Every window, and what it is
 for</h3>
 <p><strong>AI Assistant.</strong> Ask QUILL’s free AI to summarize,
 rewrite, proofread or explain the passage shown here, or to answer a
@@ -4263,7 +4427,7 @@ on. Escape returns you to it.</p>
 <p><strong>Windows titled “Key for …”.</strong> Press the key
 combination you want, and it appears in the box. Pressing another
 replaces it. Escape leaves the command on the key it has now.</p>
-<h3 id="every-authored-control-help-sentence-8">Every authored control
+<h3 id="every-authored-control-help-sentence-9">Every authored control
 help sentence</h3>
 <h4 id="module-level-quillappslite_dialogspy">(module level)
 (<code>quill/apps/lite_dialogs.py</code>)</h4>

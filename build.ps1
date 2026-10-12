@@ -59,7 +59,7 @@ param(
         'list', 'all',
         'runtime', 'runtime-installer',
         'quill',
-        'radio', 'cast', 'weather', 'studio', 'inkwell', 'beacon', 'social'
+        'radio', 'cast', 'weather', 'studio', 'inkwell', 'transcribe', 'beacon', 'social'
     )]
     [string]$Product = 'list',
 
@@ -120,6 +120,7 @@ $Products = [ordered]@{
     'weather' = @{ Kind = 'app'; Dir = 'weather'; Desc = 'Quill Weather' }
     'studio'  = @{ Kind = 'app'; Dir = 'studio';  Desc = 'Quill Audio Studio (add -Offline for the Offline Edition)' }
     'inkwell' = @{ Kind = 'app'; Dir = 'inkwell'; Desc = 'Quill Inkwell' }
+    'transcribe' = @{ Kind = 'app'; Dir = 'transcribe'; Desc = 'QUILL Transcribe' }
     'beacon'  = @{ Kind = 'app'; Dir = 'beacon';  Desc = 'Quill Beacon' }
     'social'  = @{ Kind = 'app'; Dir = 'social';  Desc = 'Quill Social' }
 }
@@ -127,7 +128,7 @@ $Products = [ordered]@{
 # See the ordering note in the header.
 $AllOrder = @(
     'runtime', 'runtime-installer',
-    'radio', 'cast', 'studio', 'weather', 'inkwell', 'beacon', 'social',
+    'radio', 'cast', 'studio', 'weather', 'inkwell', 'transcribe', 'beacon', 'social',
     'quill'
 )
 

@@ -69,6 +69,7 @@ from quill.core.windows_dictation.preferences import (
 )
 from quill.core.windows_dictation.readback import spoken_marks
 from quill.core.windows_dictation.resilience import ResilienceMixin, engine_failure_message
+from quill.core.windows_dictation.target_hold import TargetHoldMixin
 from quill.core.windows_dictation.transcript import TranscriptMixin
 from quill.core.windows_dictation.vocabulary import Command
 from quill.core.windows_dictation.voice_commands import VoiceCommandsMixin
@@ -107,7 +108,12 @@ _LIVE = frozenset({
 
 
 class DictationController(
-    ResilienceMixin, EditingMixin, LiveMixin, VoiceCommandsMixin, TranscriptMixin
+    ResilienceMixin,
+    EditingMixin,
+    LiveMixin,
+    VoiceCommandsMixin,
+    TranscriptMixin,
+    TargetHoldMixin,
 ):
     """One app's dictation session: one microphone, one document at a time."""
 
@@ -135,6 +141,7 @@ class DictationController(
         self._init_live()  # live.py: preview, anchor, finishing, muting
         self._init_voice_commands()  # voice_commands.py: modes, targets, the library
         self._init_transcript()  # transcript.py: live transcripts
+        self._init_target_hold()  # target_hold.py: paused while the field cannot be written
         #: Called when the wake phrase is heard, before dictation starts: the
         #: host points the controller at whichever document is in front now.
         self.on_wake: Callable[[], None] | None = None
@@ -227,6 +234,7 @@ class DictationController(
         if not self.active:
             return
         message = self._transcript_stopping(message)  # transcript.py: how much it wrote
+        message = self._held_stopping(message)  # target_hold.py: what was never written
         preferences = self._preferences()
         self._set_state(DictationState.STOPPING)
         self.history.clear()
@@ -249,6 +257,7 @@ class DictationController(
         """Close everything, silently: the window or the app is going away."""
         self._close_recognizer()
         self.history.clear()
+        self._drop_held()
         self._set_state(DictationState.OFF)
 
     def _open(
@@ -305,6 +314,8 @@ class DictationController(
         if self._state is DictationState.STANDBY:
             self._on_standby_phrase(phrase, preferences)
             return
+        if self._holding_more(phrase, preferences):
+            return  # paused for its field: kept, not written (target_hold.py)
         if self._state not in _LIVE:
             return
         heard = wake_words(" ".join(word.display for word in phrase.words))
@@ -316,7 +327,7 @@ class DictationController(
         try:
             self._apply(self._parse(phrase, preferences), preferences)
         except Exception:  # noqa: BLE001 - a failed edit ends the session, never the app
-            self._abandon("Dictation stopped: the phrase could not be written into the document.")
+            self._abandon(self._write_failure())
             return
         if self._state is DictationState.PROCESSING:
             self._set_state(DictationState.LISTENING)
@@ -420,7 +431,8 @@ class DictationController(
             return  # caps, no space, the language: nothing written (voice_commands.py)
         reason = self._writing_reason()
         if reason:
-            self._abandon(reason)
+            if not self._hold(parsed, reason):  # target_hold.py: pause, never retarget
+                self._abandon(reason)
             return
         if self._live_command(command) or self._voice_command(parsed, preferences):
             return
@@ -492,6 +504,7 @@ class DictationController(
         """End the session because something went wrong, and say what."""
         self._close_recognizer()
         self.history.clear()
+        self._drop_held()
         self.spelling = False
         self._set_state(DictationState.OFF)
         self._fail(message, self._preferences())

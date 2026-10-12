@@ -49,6 +49,7 @@ BUILD_CONSTANTS: dict[str, tuple[str, str]] = {
     "converter": ("quill/apps/converter.py", "_BUILD"),
     "weather": ("quill/apps/weather.py", "_BUILD"),
     "inkwell": ("quill/apps/inkwell.py", "_BUILD"),
+    "transcribe": ("quill/apps/transcribe.py", "_BUILD"),
     "player": ("quill/apps/player.py", "_BUILD"),
     "studio": ("quill/apps/studio.py", "_BUILD"),
     "beacon": ("quill/apps/beacon/app.py", "_BUILD"),

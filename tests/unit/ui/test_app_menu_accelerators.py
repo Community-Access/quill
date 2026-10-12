@@ -52,6 +52,8 @@ APP_MENU_FILES = (
     "inkwell.py",
     # Inkwell's Dictation menu, Dictate Anywhere (2026-10-05).
     "inkwell_dictation.py",
+    # QUILL Transcribe builds its bar and tray menu in one module (2026-10-11).
+    "transcribe_menus.py",
     "weather.py",
     "converter.py",
     "beacon/app.py",

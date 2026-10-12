@@ -171,6 +171,17 @@
         "Text expansion. No media, no documents."
       ]
     },
+    "transcribe": {
+      "name": "QUILL Transcribe",
+      "entry": "quill/apps/transcribe.py",
+      "standalone": "standalone/transcribe",
+      "components": [],
+      "optional_components": [],
+      "layers": [],
+      "notes": [
+        "Dictation into other programs. Carries dictation's engine and models beside its launcher, as QUILL Lite does; no media."
+      ]
+    },
     "quilllite": {
       "name": "QuillLite",
       "entry": "quill/apps/lite.py",

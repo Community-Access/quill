@@ -35,6 +35,7 @@ _HELP_MENU: dict[str, str] = {
     "converter": "quill/apps/converter_menu.py",  # its own module since 1.0.0
     "player": "quill/apps/player_menus.py",  # menu bar + About moved there (GATE-11)
     "inkwell": "quill/apps/inkwell.py",
+    "transcribe": "quill/apps/transcribe_menus.py",
 }
 
 #: Where each app's About box is written. The address belongs here too: About is
@@ -49,6 +50,7 @@ _ABOUT: dict[str, str] = {
     "converter": "quill/apps/converter_actions.py",  # About moved there in 1.0.0
     "player": "quill/apps/player_menus.py",  # menu bar + About moved there (GATE-11)
     "inkwell": "quill/apps/inkwell.py",
+    "transcribe": "quill/apps/transcribe.py",
     "beacon": "quill/apps/beacon/app.py",
     "lite": "quill/apps/lite_window_commands.py",
 }

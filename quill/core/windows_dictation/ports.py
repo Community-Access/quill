@@ -30,7 +30,7 @@ class DictationState(StrEnum):
     LISTENING = "listening"
     RECOGNIZING = "recognizing"
     PROCESSING = "processing"
-    PAUSED = "paused"  # the microphone went away; still on, writing nothing
+    PAUSED = "paused"  # the microphone went away, or the field (target_hold.py); writing nothing
     STOPPING = "stopping"
 
 

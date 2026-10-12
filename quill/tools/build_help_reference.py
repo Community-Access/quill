@@ -89,6 +89,13 @@ APPS: tuple[AppConfig, ...] = (
         "inkwell_help_inventory.json",
     ),
     AppConfig(
+        "QUILL Transcribe",
+        "quill.core.transcribe.surface_help",
+        (),
+        ("quill/apps/transcribe*.py",),
+        "transcribe_help_inventory.json",
+    ),
+    AppConfig(
         "Quill Weather",
         "quill.core.weather.surface_help",
         ("quill/ui/weather",),

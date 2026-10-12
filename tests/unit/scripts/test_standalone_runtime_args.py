@@ -42,6 +42,7 @@ _DECLARES_MEDIA: dict[str, bool] = {
     "studio": True,
     "weather": False,
     "inkwell": False,
+    "transcribe": False,
 }
 
 

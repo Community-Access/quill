@@ -64,6 +64,7 @@ MENU_NAMES: dict[str, str] = {
     "studio": "&Audio Studio",
     "converter": "Quill Con&verter",
     "inkwell": "Quill &Inkwell",
+    "transcribe": "QUILL &Transcribe",
     "player": "Quill Media &Player",
 }
 

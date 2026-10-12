@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>QUILL Transcribe User Guide</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="quill-transcribe-user-guide">QUILL Transcribe User Guide</h1>
+<p>QUILL Transcribe types what you say into the program you are using.
+Write an email in Outlook, fill in a form in Edge, Chrome or Firefox,
+add a note in Notepad or a paragraph in Word, all by speaking, without
+leaving the program.</p>
+<p>It uses the same speech models and the same dictation as QUILL and
+QUILL Lite. If you already dictate in QUILL, the words, punctuation and
+commands you know work here too.</p>
+<p>Version 1.0.0.</p>
+<h2 id="what-it-promises">What it promises</h2>
+<ul>
+<li><strong>Your words go where you started.</strong> Dictation writes
+into the field that had the focus when you started it, and only that
+field. If you move somewhere else, dictation pauses and keeps your words
+until you say where they go.</li>
+<li><strong>It never reads the other program.</strong> QUILL Transcribe
+types into the field. It does not read what is already there, what the
+page says, or what is in your email.</li>
+<li><strong>Your speech stays on your computer.</strong> The built-in
+models run on this computer. Your speech only goes over the internet if
+you choose an internet model yourself, and you are asked first.</li>
+<li><strong>The model you choose is the model it uses.</strong> It never
+switches models on its own.</li>
+<li><strong>Nothing listens until you start.</strong> The microphone
+opens when you start dictation and closes when you stop.</li>
+</ul>
+<h2 id="getting-started">Getting started</h2>
+<h3 id="the-first-time">The first time</h3>
+<p>The first time QUILL Transcribe opens, it shows <strong>Set Up QUILL
+Transcribe</strong>. It has one page:</p>
+<ol type="1">
+<li><strong>About QUILL Transcribe</strong> - a short description to
+read with the arrow keys.</li>
+<li><strong>Microphone</strong> - the Windows default, or a microphone
+you name. Press <strong>Test Microphone</strong> to record four seconds
+and hear how loud it was and what it heard. The test stays on your
+computer and nothing is kept.</li>
+<li><strong>Speech model</strong> - the models already on this computer.
+Moonshine is a good place to start: it is quick and adds punctuation for
+you.</li>
+<li><strong>Start and stop key</strong> - type the key you want to use
+from any program, for example Ctrl+Alt+PageDown, or leave it empty.
+Nothing is registered with Windows until you choose a key, and a key
+another QuillVille app already uses is refused with the name of the app
+that uses it.</li>
+<li><strong>Start QUILL Transcribe when I sign in to Windows</strong> -
+off unless you check it. When it is on, QUILL Transcribe opens in the
+tray. It still does not listen until you start dictation.</li>
+</ol>
+<p>Press <strong>Finish</strong> to keep your choices or
+<strong>Skip</strong> to change nothing. You can open setup again at any
+time from the Help menu (Ctrl+Alt+S).</p>
+<h3 id="the-tray">The tray</h3>
+<p>QUILL Transcribe lives in the notification area, the system tray. To
+reach it from the keyboard, press Windows+B, find QUILL Transcribe with
+the arrow keys, and press the Applications key or Shift+F10 for its
+menu.</p>
+<p>The menu starts with two lines you can read but not press: what
+dictation is doing, and which model it uses. Then:</p>
+<ul>
+<li><strong>Start Dictation</strong> or <strong>Stop
+Dictation</strong></li>
+<li><strong>Resume</strong>, <strong>Resume in This Field</strong> and
+<strong>Discard Held Words</strong>, when dictation is paused</li>
+<li><strong>Choose Model</strong>, <strong>Choose Microphone</strong>,
+<strong>Dictation Settings</strong> and <strong>Model
+Library</strong></li>
+<li><strong>Transcribe a Recording</strong></li>
+<li><strong>User Guide</strong> and <strong>Check for
+Updates</strong></li>
+<li><strong>Show QUILL Transcribe</strong> and <strong>Exit QUILL
+Transcribe</strong></li>
+</ul>
+<p>The tray icon’s name also says what dictation is doing, for example
+“QUILL Transcribe - Listening”.</p>
+<p>If Windows has no notification area for QUILL Transcribe, its window
+stays open instead, and closing it puts it on the taskbar. QUILL
+Transcribe says so when it starts.</p>
+<h3 id="the-window">The window</h3>
+<p>Press Enter on <strong>Show QUILL Transcribe</strong> in the tray
+menu, or your show and hide key if you chose one. The window shows:</p>
+<ul>
+<li><strong>State</strong> - Ready, Listening, Hearing you, Paused, or
+Waiting for you to switch to a field.</li>
+<li><strong>Start Dictation</strong> - the button changes to Stop
+Dictation while dictation is on.</li>
+<li><strong>Resume</strong>, <strong>Resume in This Field</strong> and
+<strong>Discard Held Words</strong> - for when dictation is paused.</li>
+<li><strong>Model and microphone</strong> - the model, microphone and
+key in use.</li>
+<li><strong>What happens next</strong> - what starting dictation will
+do, or why it paused or could not start.</li>
+<li><strong>Choose Model</strong>, <strong>Choose Microphone</strong>
+and <strong>Dictation Settings</strong>.</li>
+</ul>
+<p>Closing the window keeps QUILL Transcribe running in the tray. To
+quit, choose <strong>Exit</strong> in the File menu (Ctrl+Q) or
+<strong>Exit QUILL Transcribe</strong> in the tray menu.</p>
+<h2 id="dictating">Dictating</h2>
+<h3 id="with-your-key">With your key</h3>
+<ol type="1">
+<li>Go to the field you want to write in: the body of an email, a box on
+a web page, a document.</li>
+<li>Press your start and stop key. You hear the dictation tone and
+“Dictation on”.</li>
+<li>Speak. When you pause, what you said is typed where the cursor
+is.</li>
+<li>Press the key again, or say “stop dictation”, to stop. Anything you
+were still saying is written first.</li>
+</ol>
+<h3 id="from-the-tray-or-the-window">From the tray or the window</h3>
+<p>When you start from the tray or the window, QUILL Transcribe has the
+focus, and it never types into itself. So it waits: QUILL Transcribe
+says “Switch to the field you want”, and dictation starts as soon as you
+are back in another program. Alt+Tab, or Escape out of the tray menu,
+takes you there. If no other program comes forward within 20 seconds, it
+gives up and says so. Choosing the same command again while it waits
+cancels it.</p>
+<h3 id="what-you-hear">What you hear</h3>
+<p>You hear a tone when dictation starts and stops, and after each
+phrase. Your screen reader already reads what is typed, so QUILL
+Transcribe does not read the words back unless you ask it to in
+<strong>Dictation Settings</strong>.</p>
+<p>It speaks when something happens that your screen reader cannot tell
+you: that dictation paused, that it could not start and why, that a
+phrase may be incomplete.</p>
+<h2 id="when-the-focus-moves-paused-not-lost">When the focus moves:
+paused, not lost</h2>
+<p>If you move to another field, another program or another window while
+dictating, QUILL Transcribe stops typing. It does not follow you. You
+hear “Dictation paused” and the reason.</p>
+<p>While it is paused, it keeps listening and holds what you say.
+Nothing is typed anywhere. Then you choose:</p>
+<ul>
+<li><strong>Resume</strong> (Ctrl+R in the window) - go back to the
+field you started in first. The held words are typed there and dictation
+carries on.</li>
+<li><strong>Resume in This Field</strong> (Ctrl+Shift+R) - make the
+field you are in now the one dictation writes into. It gets the same
+safety checks as a fresh start. If you choose it from the tray or the
+window, it waits for you to switch to the field, as starting does.</li>
+<li><strong>Discard Held Words</strong> (Ctrl+Shift+D) - throw away what
+was held. Dictation stays paused until you resume or stop.</li>
+</ul>
+<p>While paused, “scratch that” takes back the last held phrase, and
+“stop dictation” stops. If you stop or exit while words are held, you
+are told how many were not written, and exiting asks before throwing
+them away.</p>
+<p>Up to 50 phrases are held. Held words are kept only in memory and
+only until you resume, discard, stop or exit.</p>
+<h2 id="where-it-will-not-type">Where it will not type</h2>
+<p>QUILL Transcribe refuses, with a sentence saying why, when:</p>
+<ul>
+<li>the field is a password field;</li>
+<li>the program is running as administrator and QUILL Transcribe is not,
+because Windows does not allow it;</li>
+<li>the focus is in QUILL Transcribe itself, or in a QUILL window (in
+QUILL, press Ctrl+F11 to dictate into the document instead);</li>
+<li>the chosen model or microphone is not available.</li>
+</ul>
+<p>If Windows does not take all of a phrase, QUILL Transcribe stops and
+says part of it may be missing. Check the field before you carry on. It
+never says a phrase went in when it is not sure.</p>
+<h2 id="commands-while-dictating-into-other-programs">Commands while
+dictating into other programs</h2>
+<p>These work in any program:</p>
+<ul>
+<li>“stop dictation”</li>
+<li>“scratch that” - removes the last phrase, but only while you are
+still in the same field</li>
+<li>spelling: “start spelling” and “stop spelling”</li>
+<li>capitals and spacing: “caps on”, “all caps on”, “no space on” and
+their “off” forms</li>
+<li>“switch to Spanish” and “switch to English”</li>
+<li>punctuation and layout: “comma”, “period”, “new line”, “new
+paragraph” and the rest</li>
+<li>“what can I say” for the list of commands</li>
+</ul>
+<p>Commands that need to read the text, such as “select that” or
+“correct that”, only work in QUILL’s own documents. In another program
+you hear “That works in QUILL’s own documents” and nothing changes. The
+full list is in <strong>Dictation Commands</strong> (Ctrl+Shift+C).</p>
+<h2 id="models">Models</h2>
+<h3 id="choosing-a-model">Choosing a model</h3>
+<p>Open <strong>Choose Model</strong> (Ctrl+M). Every model is listed
+with:</p>
+<ul>
+<li>whether it runs <strong>on this computer</strong> or <strong>sends
+your speech over the internet</strong>;</li>
+<li>the languages it knows;</li>
+<li>whether it is downloaded yet.</li>
+</ul>
+<p>The box below the list says more about the one you are on: its size,
+who publishes it and its licence. Press <strong>Use This Model</strong>
+to choose it. It stays your model until you choose another.</p>
+<p>A model that is not downloaded is listed so you know it exists, but
+you cannot use it until it is downloaded. Choose <strong>Model
+Library</strong> to download it.</p>
+<h3 id="the-model-library">The Model Library</h3>
+<p><strong>Model Library</strong> (Ctrl+L) is the same one QUILL uses.
+Each download shows its size first, is your choice, can be cancelled,
+and is checked before it is used. A download that did not finish is
+never marked ready. Models downloaded here are shared with QUILL and
+QUILL Lite, so you only download a model once.</p>
+<h3 id="when-your-model-cannot-run">When your model cannot run</h3>
+<p>If your chosen model is missing or will not load, QUILL Transcribe
+does not quietly use another one. It says which model could not run and
+what to do.</p>
+<p>To dictate anyway, choose <strong>Use the Built-in Model This
+Time</strong> in the Dictation menu (Ctrl+B). It uses Moonshine for one
+session and says so. Your chosen model stays your choice, and the next
+session tries it again.</p>
+<h3 id="openai">OpenAI</h3>
+<p>If you have saved an OpenAI key in QUILL’s Use My Own AI Key, OpenAI
+appears in the list. It is never chosen for you. The first time you
+choose it, QUILL Transcribe tells you exactly what is sent and where,
+and nothing is sent unless you agree. No is the default.</p>
+<h2 id="settings">Settings</h2>
+<h3 id="microphone">Microphone</h3>
+<p><strong>Choose Microphone</strong> (Ctrl+Shift+M) lists your
+microphones. The Windows default follows whatever Windows is set to. A
+named microphone stays chosen even if the default changes.</p>
+<h3 id="dictation-settings">Dictation Settings</h3>
+<p><strong>Dictation Settings</strong> (Ctrl+,) is the same window QUILL
+and QUILL Lite use: language, punctuation, filler words, how long a
+pause ends a phrase, what you hear after each phrase, and your dictation
+word list. QUILL Transcribe keeps its own copy of these settings, so
+changing them here does not change QUILL’s.</p>
+<p>If you choose <strong>Dictate in Other Programs</strong> in QUILL or
+QUILL Lite while QUILL Transcribe is running, your editor’s dictation
+settings are handed to QUILL Transcribe.</p>
+<h3 id="keys">Keys</h3>
+<p>There are two keys you can choose, both in the File menu, and neither
+is set until you choose it:</p>
+<ul>
+<li><strong>Start and Stop Key</strong> (Ctrl+Alt+Shift+D) - starts and
+stops dictation from any program.</li>
+<li><strong>Show and Hide Key</strong> (Ctrl+Alt+Shift+H) - shows and
+hides the QUILL Transcribe window from any program.</li>
+</ul>
+<p>Type the key, or leave the box empty for none. If the family already
+uses the key, you are told which app uses it. If another program has
+already taken it, Windows says so, but Windows does not say which
+program, so neither can QUILL Transcribe.</p>
+<h3 id="options">Options</h3>
+<ul>
+<li><strong>Start QUILL Transcribe with Windows</strong> (Ctrl+Alt+W) -
+opens it in the tray when you sign in.</li>
+<li><strong>Start minimized to the tray</strong> (Ctrl+Alt+M).</li>
+<li><strong>Close button keeps QUILL Transcribe running</strong>
+(Ctrl+Alt+C) - on by default.</li>
+</ul>
+<h2 id="transcribing-a-recording">Transcribing a recording</h2>
+<p><strong>Transcribe a Recording</strong> (Ctrl+O in the window) turns
+an audio or video file into text with the same models, using the same
+window as QUILL. Choose the file and the model; it is transcribed in the
+background while you carry on.</p>
+<p>When it finishes, you hear how long the recording was and how many
+words came out. Open <strong>Notifications</strong> (Ctrl+Shift+N) and
+press Enter on the transcript to review it. The <strong>Review
+Transcript</strong> window shows it read-only, with:</p>
+<ul>
+<li><strong>Copy All</strong> - puts the whole transcript on the
+clipboard;</li>
+<li><strong>Save As</strong> - saves it as a text file where you
+choose;</li>
+<li><strong>Open in QUILL</strong> - opens it in QUILL to edit.</li>
+</ul>
+<p>Nothing is copied or saved unless you choose it.</p>
+<h2 id="quill-inkwell-and-quill-transcribe">Quill Inkwell and QUILL
+Transcribe</h2>
+<p>Quill Inkwell also has Dictate Anywhere. Only one of the two dictates
+at a time:</p>
+<ul>
+<li>While QUILL Transcribe is running, it owns dictation. Pressing
+Inkwell’s Dictate Anywhere key passes the press to QUILL Transcribe, so
+you get QUILL Transcribe’s dictation, with its pause when the focus
+moves.</li>
+<li>When QUILL Transcribe is not running, Inkwell dictates as it always
+has.</li>
+<li>If Inkwell is in the middle of dictating when you start QUILL
+Transcribe, QUILL Transcribe waits until Inkwell stops.</li>
+</ul>
+<p>The first time QUILL Transcribe runs, it brings over the Dictate
+Anywhere settings and key you chose in Inkwell. Inkwell’s own settings
+are not changed.</p>
+<h2 id="safe-mode">Safe Mode</h2>
+<p>In Safe Mode, QUILL Transcribe does not listen, registers no keys,
+downloads no models and sends nothing over the internet. The window and
+tray menu still open so you can look at your settings.</p>
+<h2 id="privacy">Privacy</h2>
+<ul>
+<li>Nothing is recorded before you start dictation.</li>
+<li>Recordings and transcripts of your dictation are not kept. Held
+words live in memory only until you resume, discard, stop or exit.</li>
+<li>QUILL Transcribe never writes what you said, or what is in other
+programs, to its logs.</li>
+<li>There is no usage tracking of any kind.</li>
+<li>Uninstalling QUILL Transcribe leaves your downloaded models, your
+dictation word list and your settings in place, because QUILL and the
+other apps use them too.</li>
+</ul>
+<h2 id="keyboard-shortcuts">Keyboard shortcuts</h2>
+<p>In the QUILL Transcribe window:</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Key</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Start or stop dictation</td>
+<td>Ctrl+D</td>
+</tr>
+<tr>
+<td>Resume</td>
+<td>Ctrl+R</td>
+</tr>
+<tr>
+<td>Resume in this field</td>
+<td>Ctrl+Shift+R</td>
+</tr>
+<tr>
+<td>Discard held words</td>
+<td>Ctrl+Shift+D</td>
+</tr>
+<tr>
+<td>Use the built-in model this time</td>
+<td>Ctrl+B</td>
+</tr>
+<tr>
+<td>Dictation commands</td>
+<td>Ctrl+Shift+C</td>
+</tr>
+<tr>
+<td>Choose model</td>
+<td>Ctrl+M</td>
+</tr>
+<tr>
+<td>Choose microphone</td>
+<td>Ctrl+Shift+M</td>
+</tr>
+<tr>
+<td>Model library</td>
+<td>Ctrl+L</td>
+</tr>
+<tr>
+<td>Dictation settings</td>
+<td>Ctrl+,</td>
+</tr>
+<tr>
+<td>Transcribe a recording</td>
+<td>Ctrl+O</td>
+</tr>
+<tr>
+<td>Notifications</td>
+<td>Ctrl+Shift+N</td>
+</tr>
+<tr>
+<td>Minimize to tray</td>
+<td>Ctrl+W</td>
+</tr>
+<tr>
+<td>Exit</td>
+<td>Ctrl+Q</td>
+</tr>
+<tr>
+<td>User guide</td>
+<td>Ctrl+F1</td>
+</tr>
+<tr>
+<td>Set up QUILL Transcribe</td>
+<td>Ctrl+Alt+S</td>
+</tr>
+<tr>
+<td>Check for updates</td>
+<td>Ctrl+Alt+U</td>
+</tr>
+<tr>
+<td>About QUILL Transcribe</td>
+<td>Ctrl+Alt+I</td>
+</tr>
+</tbody>
+</table>
+<p>From any program, only the keys you chose: your start and stop key,
+and your show and hide key.</p>
+<p>F1 anywhere in QUILL Transcribe says what the window is for and what
+the control you are on does.</p>
+<h2 id="getting-help">Getting help</h2>
+<p>Choose <strong>Get Help from Support</strong> in the Help menu
+(Ctrl+Alt+F2), or write to <a
+href="mailto:support@community-access.org">support@community-access.org</a>.</p>
+</main>
+</body>
+</html>

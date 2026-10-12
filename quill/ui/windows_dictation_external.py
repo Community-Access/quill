@@ -26,13 +26,17 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
-__all__ = ["ExternalDocument", "foreground_problem"]
+__all__ = ["ExternalDocument", "focus_identity", "foreground_problem"]
 
 _TAIL = 80
 
 
-def foreground_problem() -> str:
-    """Why nothing should be typed into the window in front, or ``""``."""
+def foreground_problem(*, app: str = "Quill Inkwell", key: str = "Dictate Anywhere key") -> str:
+    """Why nothing should be typed into the window in front, or ``""``.
+
+    *app* and *key* name the program doing the typing and the key that starts
+    it, so QUILL Transcribe's refusals name QUILL Transcribe.
+    """
     try:
         from quill.platform.windows.external_target import capture_uia_focus
         from quill.platform.windows.foreground import foreground_window_info
@@ -41,23 +45,19 @@ def foreground_problem() -> str:
             window_handles_own_expansion,
         )
     except Exception:  # noqa: BLE001 - not Windows
-        return "Dictate Anywhere works on Windows only."
+        return f"{app} types into other programs on Windows only."
     import os
 
     window = foreground_window_info()
     if not window.hwnd:
         return "No program is in front to dictate into."
     if window.process_id == os.getpid():
-        return (
-            "Switch to the program you want to dictate into, then press the "
-            "Dictate Anywhere key there."
-        )
+        return f"Switch to the program you want to dictate into, then press the {key} there."
     if window_handles_own_expansion(window.hwnd):
         return "This is a QUILL window: press Ctrl+F11 to dictate here."
     if unreachable_because_elevated(window.hwnd):
         return (
-            "That program is running as administrator, so Windows will not let "
-            "Quill Inkwell type into it."
+            f"That program is running as administrator, so Windows will not let {app} type into it."
         )
     focus = capture_uia_focus()
     if focus is not None and focus.is_password:
@@ -73,6 +73,31 @@ def _where() -> Any:
         return foreground_window_info().hwnd, focused_class_name()
     except Exception:  # noqa: BLE001 - not Windows
         return None
+
+
+def focus_identity() -> Any:
+    """Which field has the focus, as an identity to compare, never its text.
+
+    The foreground window, its process, and the focused control: its UI
+    Automation runtime id where UI Automation can say, else the native class of
+    the focused child window. Used by QUILL Transcribe's target lock
+    (:mod:`quill.core.windows_dictation.target_lock`); ``None`` off Windows.
+    """
+    try:
+        from quill.platform.windows.external_target import capture_uia_focus
+        from quill.platform.windows.foreground import foreground_window_info
+        from quill.platform.windows.text_target import focused_class_name
+    except Exception:  # noqa: BLE001 - not Windows
+        return None
+    window = foreground_window_info()
+    element = capture_uia_focus()
+    if element is not None and element.runtime_id:
+        control: Any = ("uia", tuple(element.runtime_id))
+    elif element is not None and element.native_window_handle:
+        control = ("hwnd", element.native_window_handle)
+    else:
+        control = ("class", focused_class_name())
+    return (window.hwnd, window.process_id, control)
 
 
 def _type(text: str) -> bool:

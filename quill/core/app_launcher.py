@@ -33,6 +33,7 @@ _APPS: dict[str, tuple[str, tuple[str, ...]]] = {
     ),
     "player": ("quill.apps.player", ("QuillMediaPlayer.exe", "Quill Media Player.exe")),
     "inkwell": ("quill.apps.inkwell", ("QuillInkwell.exe", "Quill Inkwell.exe")),
+    "transcribe": ("quill.apps.transcribe", ("QuillTranscribe.exe", "QUILL Transcribe.exe")),
 }
 
 #: app key -> the folder name each app's portable bundle unpacks to. Portable
@@ -49,6 +50,7 @@ _PORTABLE_DIRNAMES: dict[str, str] = {
     "converter": "QuillConverter",
     "player": "QuillMediaPlayer",
     "inkwell": "QuillInkwell",
+    "transcribe": "QuillTranscribe",
 }
 
 
@@ -67,6 +69,7 @@ APP_NAMES: dict[str, str] = {
     "converter": "Quill Converter",
     "player": "Quill Media Player",
     "inkwell": "Quill Inkwell",
+    "transcribe": "QUILL Transcribe",
 }
 
 

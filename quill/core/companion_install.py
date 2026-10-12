@@ -44,6 +44,8 @@ ASSET_PREFIX: dict[str, str] = {
     "converter": "Quill-Converter",
     # Quill Inkwell had the same gap since 1.0.0; found while adding the above.
     "inkwell": "Quill-Inkwell",
+    # QUILL Transcribe 1.0.0 (2026-10-11): its own installer and portable zip.
+    "transcribe": "QUILL-Transcribe",
     # Audio Studio's two artifacts are named inconsistently by its own build
     # scripts -- "QUILL-Audio-Studio-Portable-Lean-*.zip" but
     # "Quill-AudioStudio-Setup-*.exe" (no hyphen inside "AudioStudio") -- so the
