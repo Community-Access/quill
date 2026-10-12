@@ -143,12 +143,13 @@ def http_get(url: str, timeout: int = 15) -> bytes:
     from urllib.error import HTTPError
     from urllib.request import Request, urlopen
 
-    from quill.core.updates import _ssl_context, _validate_remote_url
+    from quill.core.net import verified_ssl_context
+    from quill.core.updates import _validate_remote_url
 
     _validate_remote_url(url)
     request = Request(url, headers={"User-Agent": _USER_AGENT})
     try:
-        with urlopen(request, timeout=timeout, context=_ssl_context()) as response:
+        with urlopen(request, timeout=timeout, context=verified_ssl_context()) as response:
             return bytes(response.read(4 * 1024 * 1024))
     except HTTPError as error:
         if error.code == 404:

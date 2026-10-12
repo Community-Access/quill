@@ -130,6 +130,17 @@ def test_the_question_names_the_host_the_file_and_the_size() -> None:
     assert format_size(1) == "1 byte"
 
 
+def _bad_certificate() -> RemoteTransportError:
+    """What http_transport raises when the certificate does not verify."""
+    import ssl
+    import urllib.error
+
+    reason = urllib.error.URLError(ssl.SSLCertVerificationError(1, "certificate verify failed"))
+    error = RemoteTransportError(f"GET https://example.com/x failed: {reason.reason}")
+    error.__cause__ = reason
+    return error
+
+
 @pytest.mark.parametrize(
     ("error", "start"),
     [
@@ -137,6 +148,7 @@ def test_the_question_names_the_host_the_file_and_the_size() -> None:
         (RemoteAuthError("HTTP 403"), "example.com would not allow"),
         (RemoteTransportError("GET failed: timed out"), "Could not download from example.com."),
         (OSError("boom"), "Could not download from example.com."),
+        (_bad_certificate(), "The site's security certificate could not be verified."),
     ],
 )
 def test_a_failure_is_one_plain_sentence(error: BaseException, start: str) -> None:

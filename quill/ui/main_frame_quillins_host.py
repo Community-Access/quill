@@ -22,6 +22,8 @@ import urllib.request
 from pathlib import Path
 from typing import Any
 
+from quill.core.net import context_for
+
 #: Hard cap on a Quillin fetch response body (mirrors host.FETCH_MAX_BYTES).
 _FETCH_MAX_BYTES = 10 * 1024 * 1024  # 10 MiB
 
@@ -156,7 +158,9 @@ class _EditorHostServices:
         # endpoint cannot stream an unbounded body into memory.
         data = body.encode("utf-8") if body is not None else None
         request = urllib.request.Request(url, data=data, method=method)  # noqa: S310
-        with urllib.request.urlopen(request, timeout=15) as response:  # noqa: S310
+        with urllib.request.urlopen(  # noqa: S310
+            request, timeout=15, context=context_for(url)
+        ) as response:
             raw = response.read(_FETCH_MAX_BYTES + 1)
             if len(raw) > _FETCH_MAX_BYTES:
                 raise ValueError(f"fetch response exceeds the {_FETCH_MAX_BYTES} byte cap")

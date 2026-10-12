@@ -12,6 +12,7 @@ import urllib.request
 from typing import Any
 
 from quill.core import http_client
+from quill.core.net import verified_ssl_context
 
 # NWS asks every client to identify itself; a contact URL is the documented
 # convention, and http_client.user_agent carries the project site. Reused for
@@ -28,7 +29,7 @@ def http_json(url: str, *, accept: str = "application/json") -> Any:
     request = urllib.request.Request(
         url, headers={"User-Agent": http_client.user_agent(), "Accept": accept}
     )
-    context = ssl.create_default_context()
+    context = verified_ssl_context()
     with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:
         payload = resp.read().decode("utf-8", errors="replace")
     return json.loads(payload)

@@ -25,7 +25,6 @@ from __future__ import annotations
 
 import os
 import shutil
-import ssl
 import sys
 import tempfile
 import urllib.request
@@ -34,6 +33,7 @@ from collections.abc import Callable
 from pathlib import Path
 
 from quill.core.error_codes import CodedError
+from quill.core.net import verified_ssl_context
 from quill.core.speech import models
 
 ProgressCallback = Callable[[float, str], None]
@@ -245,7 +245,7 @@ def _download_zip(
     """
     if not url.lower().startswith("https://"):
         raise PiperInstallError("Piper download must use a secure (HTTPS) address.")
-    context = ssl.create_default_context()
+    context = verified_ssl_context()
     request = urllib.request.Request(url, headers={"User-Agent": "QUILL"})
     try:
         with (
@@ -390,7 +390,7 @@ def _download_piper_voice_files(
     that is not on QUILL's mirror). Runs only on an explicit user "download voice"
     action, refuses non-HTTPS URLs, and uses a verified TLS context.
     """
-    context = ssl.create_default_context()
+    context = verified_ssl_context()
     count = len(pairs)
     for index, (url, path) in enumerate(pairs):
         if not url.lower().startswith("https://"):

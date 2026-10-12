@@ -42,6 +42,7 @@ from dataclasses import dataclass
 
 from quill.core import http_client, safe_xml
 from quill.core.error_codes import CodedError
+from quill.core.net import verified_ssl_context
 from quill.core.radio.models import RadioStation
 
 _SITEMAP_INDEX = "https://www.iheart.com/sitemap.xml"
@@ -324,7 +325,7 @@ def _fetch(url: str) -> str:
     import urllib.request
 
     request = urllib.request.Request(url, headers={"User-Agent": _user_agent()})
-    context = ssl.create_default_context()
+    context = verified_ssl_context()
     try:
         with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:
             payload: bytes = resp.read(_MAX_BYTES)

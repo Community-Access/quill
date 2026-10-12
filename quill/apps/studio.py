@@ -56,6 +56,7 @@ from quill.core.audio_studio.sleep_timer import (
     load_sleep_setting,
     save_sleep_setting,
 )
+from quill.core.net import configure_ssl_trust
 from quill.core.paths import app_data_dir
 from quill.core.settings import save_settings
 from quill.ui.app_shell import AppShellFrame
@@ -2758,6 +2759,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
 
 
 def main() -> int:
+    configure_ssl_trust()  # one certificate check, before any network use
     from quill.core.data_location import apply_pending_at_launch
 
     # A queued Data Folder move/import applies before a single data file is

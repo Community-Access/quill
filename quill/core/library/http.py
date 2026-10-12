@@ -10,12 +10,12 @@ reviewable outbound site; it is registered in
 
 from __future__ import annotations
 
-import ssl
 import urllib.error
 import urllib.request
 
 from quill.core import http_client
 from quill.core.library.model import LibraryHTTPError
+from quill.core.net import verified_ssl_context
 
 _TIMEOUT_S = 20.0
 # Books (EPUB/PDF) are larger than feeds; cap generously but bounded.
@@ -52,7 +52,7 @@ def fetch_bytes(
     if content_type:
         headers["Content-Type"] = content_type
     request = urllib.request.Request(url, data=body, headers=headers)
-    context = ssl.create_default_context()
+    context = verified_ssl_context()
     try:
         with urllib.request.urlopen(request, timeout=timeout_s, context=context) as response:
             data = response.read(_MAX_BYTES + 1)

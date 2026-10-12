@@ -36,6 +36,7 @@ from dataclasses import dataclass
 
 from quill.core import http_client
 from quill.core.error_codes import CodedError
+from quill.core.net import verified_ssl_context
 from quill.core.radio import directory_cache
 
 # MusicBrainz asks that the agent identify the application *and* offer a way to
@@ -118,7 +119,7 @@ def _fetch(url: str) -> str:
     request = urllib.request.Request(
         url, headers={"User-Agent": http_client.user_agent(), "Accept": "application/json"}
     )
-    context = ssl.create_default_context()
+    context = verified_ssl_context()
     try:
         with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:
             payload: bytes = resp.read(_MAX_BYTES)

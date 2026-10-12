@@ -58,6 +58,7 @@ from quill.core.lite import keymap as keymap_mod
 from quill.core.lite import recovery as recovery_mod
 from quill.core.lite.open_prepare import prepare_in_background
 from quill.core.lite.paths import data_dir
+from quill.core.net import configure_ssl_trust
 from quill.core.windows_editor import translate_notepad_argv
 from quill.ui.dialog_contract import show_message_box
 from quill.ui.richedit_editing import PLAIN, RICH
@@ -567,6 +568,7 @@ _USAGE = f"""{APP_NAME} {APP_VERSION} -- a notepad-scale editor built for screen
 
 
 def main() -> int:
+    configure_ssl_trust()  # one certificate check, before any network use
     if sys.argv[1:2] in (["--notes"], ["notes"]):  # the same notes CLI as QUILL
         from quill.core.inline_notes_cli import run as run_notes
 

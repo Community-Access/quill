@@ -16,6 +16,7 @@ from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 from quill.core.error_codes import CodedError
+from quill.core.net import verified_ssl_context
 
 TTS_ENDPOINT = "https://api.openai.com/v1/audio/speech"
 TTS_CHUNK_CHARS = 4000  # leave 96-char headroom under the 4096 limit
@@ -120,7 +121,7 @@ def chunk_text(text: str, max_chars: int = TTS_CHUNK_CHARS) -> list[str]:
 
 
 def _tls_context() -> ssl.SSLContext:
-    ctx = ssl.create_default_context()
+    ctx = verified_ssl_context()
     return ctx
 
 

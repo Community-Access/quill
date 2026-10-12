@@ -30,6 +30,7 @@ from dataclasses import dataclass
 
 from quill import __version__
 from quill.core.error_codes import CodedError
+from quill.core.net import verified_ssl_context
 
 #: The app QUILL registers on the user's instance; shown as the post's source.
 CLIENT_NAME = "QUILL"
@@ -123,7 +124,7 @@ def _http_payload(
     if token:
         headers["Authorization"] = f"Bearer {token}"
     request = urllib.request.Request(url, data=body, headers=headers, method=method)
-    context = ssl.create_default_context()
+    context = verified_ssl_context()
     try:
         with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:
             return str(resp.read().decode("utf-8"))

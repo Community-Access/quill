@@ -27,6 +27,7 @@ from quill.apps.beacon import capture, exporters, routing
 from quill.apps.beacon import search as searchmod
 from quill.apps.beacon.db import BeaconStore
 from quill.apps.beacon.paths import data_dir
+from quill.core.net import configure_ssl_trust
 
 EXPORT_FORMATS = ("json", "html", "markdown", "csv", "opml", "m3u", "text")
 
@@ -233,6 +234,7 @@ def _build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: list[str] | None = None) -> int:
+    configure_ssl_trust()  # one certificate check, before any network use
     parser = _build_parser()
     args = parser.parse_args(argv)
     try:

@@ -32,6 +32,7 @@ from quill.core.ai.tts import (
 )
 from quill.core.ai.tts_chunk import chunk_text
 from quill.core.assistant_ai import gemini_model_id
+from quill.core.net import verified_ssl_context
 
 _HOST = "https://generativelanguage.googleapis.com"
 _ENDPOINT = _HOST + "/v1beta/models/{model}:generateContent"
@@ -83,7 +84,7 @@ VOICE_IDS: list[str] = [v for v, _ in VOICES]
 
 
 def _tls_context() -> ssl.SSLContext:
-    return ssl.create_default_context()
+    return verified_ssl_context()
 
 
 def request_speech_pcm(text: str, api_key: str, model: str, voice: str) -> bytes:

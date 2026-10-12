@@ -23,7 +23,6 @@ from __future__ import annotations
 
 import os
 import shutil
-import ssl
 import sys
 import tempfile
 import urllib.request
@@ -32,6 +31,7 @@ from collections.abc import Callable
 from pathlib import Path
 
 from quill.core.error_codes import CodedError
+from quill.core.net import verified_ssl_context
 from quill.core.paths import app_data_dir
 
 ProgressCallback = Callable[[float, str], None]
@@ -161,7 +161,7 @@ def _fetch_node_zip_url(timeout_seconds: float) -> tuple[str, str]:
     GATE-9 / network-egress: fetches a small text file (~5 KB) over verified
     HTTPS. Runs only on an explicit user "download Node" action; no user data sent.
     """
-    context = ssl.create_default_context()
+    context = verified_ssl_context()
     req = urllib.request.Request(_SHASUMS_URL, headers={"User-Agent": "QUILL"})
     try:
         with urllib.request.urlopen(  # noqa: S310 - HTTPS: _SHASUMS_URL is a hardcoded constant

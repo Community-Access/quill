@@ -25,6 +25,7 @@ import urllib.request
 from quill.core import http_client
 from quill.core.display_text import clean_display_text
 from quill.core.error_codes import CodedError
+from quill.core.net import verified_ssl_context
 from quill.core.radio import directory_cache
 from quill.core.radio.models import RadioStation
 
@@ -207,7 +208,7 @@ def _fetch(url: str, *, max_bytes: int = _MAX_BYTES, allow_partial: bool = False
     if not url.startswith("https://"):
         raise XiphError("Only https:// URLs can be fetched.")
     request = urllib.request.Request(url, headers={"User-Agent": _user_agent()})
-    context = ssl.create_default_context()
+    context = verified_ssl_context()
     try:
         with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:
             payload: bytes = resp.read(max_bytes if allow_partial else max_bytes + 1)

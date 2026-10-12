@@ -21,6 +21,7 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 from typing import Any
 
+from quill.core.net import verified_ssl_context
 from quill.core.podcasts.models import PodcastEpisode, PodcastShow
 
 _CRED_PREFIX = "quill-podcast-feed:"
@@ -93,10 +94,12 @@ class _AuthStrippingRedirectHandler(urllib.request.HTTPRedirectHandler):
 def urlopen_auth_safe(request: Any, *, timeout: float, context: Any = None) -> Any:
     """``urlopen`` for authenticated feed requests that strips credentials on
     cross-origin redirects. Use this at every private-feed fetch site
-    instead of the default opener."""
-    handlers: list[Any] = [_AuthStrippingRedirectHandler()]
-    if context is not None:
-        handlers.append(urllib.request.HTTPSHandler(context=context))
+    instead of the default opener. Without a *context* it still verifies
+    certificates through the shared system-store context."""
+    handlers: list[Any] = [
+        _AuthStrippingRedirectHandler(),
+        urllib.request.HTTPSHandler(context=context or verified_ssl_context()),
+    ]
     opener = urllib.request.build_opener(*handlers)
     return opener.open(request, timeout=timeout)
 

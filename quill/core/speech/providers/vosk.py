@@ -27,7 +27,6 @@ import hashlib
 import json
 import os
 import shutil
-import ssl
 import tempfile
 import urllib.request
 import wave
@@ -37,6 +36,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from quill.core.net import verified_ssl_context
 from quill.core.speech import catalog, models
 from quill.core.speech.provider import (
     InstalledSpeechModel,
@@ -52,7 +52,7 @@ from quill.core.speech.provider import (
 
 PROVIDER_ID = "vosk"
 
-_VERIFIED_TLS = ssl.create_default_context()
+_VERIFIED_TLS = verified_ssl_context()
 _DOWNLOAD_TIMEOUT_S = 60.0
 
 

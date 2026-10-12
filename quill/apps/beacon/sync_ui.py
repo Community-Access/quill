@@ -27,6 +27,7 @@ from typing import Any
 
 from quill.apps.beacon import sync_crypto as crypto
 from quill.apps.beacon.sync import FolderTransport, SyncEngine
+from quill.core.net import configure_ssl_trust
 
 CONFIG_NAME = "sync_config.json"
 BACKUP_DIR = "sync_backups"
@@ -506,6 +507,7 @@ def main(argv: list[str] | None = None) -> int:
     environments where OS scheme registration is not available, and for CI. The
     companion app's normal path is the OS-registered scheme handler.
     """
+    configure_ssl_trust()  # one certificate check, before any network use
     import argparse
 
     parser = argparse.ArgumentParser(prog="quill.apps.beacon.sync_ui")

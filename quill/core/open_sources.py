@@ -28,6 +28,8 @@ from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from quill.core.net import certificate_problem
+
 __all__ = [
     "FILES",
     "NONE",
@@ -200,6 +202,9 @@ def failure_sentence(error: BaseException, host: str) -> str:
         return f"Nothing was found at that address on {where}."
     if isinstance(error, RemoteAuthError):
         return f"{where} would not allow the download without signing in."
+    certificate = certificate_problem(error)
+    if certificate:
+        return certificate
     message = str(error)
     if isinstance(error, RemoteTransportError) and "refuses downloads larger" in message:
         return "That file is larger than QUILL downloads from a link."

@@ -22,12 +22,12 @@ import urllib.request
 from dataclasses import dataclass
 
 from quill.core import http_client
+from quill.core.net import context_for
 from quill.core.radio.youtube_channels import ChannelStore
 from quill.core.radio.youtube_oauth import (
     _TIMEOUT_SECONDS,
     Opener,
     YouTubeOAuthError,
-    _context_for,
     get_access_token,
 )
 
@@ -75,7 +75,7 @@ def _authed_get(
             status, raw = opener(request)
         else:
             with urllib.request.urlopen(
-                request, timeout=_TIMEOUT_SECONDS, context=_context_for(url)
+                request, timeout=_TIMEOUT_SECONDS, context=context_for(url)
             ) as resp:
                 status, raw = int(resp.status or 200), resp.read()
     except urllib.error.HTTPError as error:
