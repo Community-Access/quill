@@ -27,6 +27,7 @@ loudness, and everything here is arithmetic on a clock the caller supplies.
 
 from __future__ import annotations
 
+import os
 import threading
 import time
 from collections import deque
@@ -104,12 +105,15 @@ def reader_gate() -> ReaderGate:
     """The process's one gate, with its capture started on first use (Windows).
 
     Never raises: where capture cannot start, the gate stays inactive and
-    dictation hears everything, exactly as before.
+    dictation hears everything, exactly as before. ``QUILL_READER_GATE=0``
+    switches it off the same way, so a listener can compare with and without.
     """
     global _GATE
     with _GATE_LOCK:
         if _GATE is None:
             _GATE = ReaderGate()
+            if os.environ.get("QUILL_READER_GATE", "").strip() == "0":
+                return _GATE  # switched off: hear everything (support and A/B tests)
             try:
                 from quill.platform.windows.process_loopback import start_reader_capture
 
