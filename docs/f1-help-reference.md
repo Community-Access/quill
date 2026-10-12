@@ -1252,7 +1252,7 @@ Control coverage: 28 audited sites (28 helped).
 - `self.test_button`: Records four seconds on the chosen microphone and says how loud it was and what it heard. The recording stays on this computer and is not kept.
 - `self.test_result`: What the last microphone test found.
 - `self.model`: The model that turns your speech into text. Only models already on this computer are listed here; more can be downloaded later from the Model Library. The one you choose is used every time until you change it.
-- `self.key`: Type the key that starts and stops dictation from any program, for example Ctrl+Alt+Shift+F9. Leave it empty to use the tray menu instead. Nothing is registered with Windows until you choose a key here.
+- `self.key`: Type the key that starts and stops dictation from any program, for example Ctrl+Alt+PageDown. Leave it empty to use the tray menu instead. Nothing is registered with Windows until you choose a key here.
 - `self.at_login`: Opens QUILL Transcribe in the tray when you sign in, so your key works straight away. It does not start listening until you start dictation.
 - `finish`: Keep these choices and close setup.
 - `skip`: Close setup without changing anything. Setup is on the Help menu whenever you want it.
