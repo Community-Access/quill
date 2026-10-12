@@ -1,7 +1,7 @@
 {
   "format": "quillville-picks",
   "version": 1,
-  "updated": "2026-09-14T19:55:41Z",
+  "updated": "2026-10-12T02:37:40Z",
   "title": "QuillVille Community Picks",
   "description": "Stations, podcasts and places the community recommends.",
   "collections": [
@@ -516,6 +516,22 @@
           "added": "2026-08-25",
           "language": "en-US",
           "homepage": "https://wcb-newsline-unleashed.pinecast.co"
+        }
+      ]
+    },
+    {
+      "id": "community-suggestions",
+      "title": "Community suggestions",
+      "description": "Suggested by the community and approved.",
+      "items": [
+        {
+          "id": "funk-the-planet",
+          "type": "stream",
+          "title": "Funk the Planet",
+          "added": "2026-10-12",
+          "description": "Independent, commercial-free internet radio from Santa Barbara, California, playing classic and current funk, soul, boogie, jazz-funk, and groove-driven hip-hop. Human-programmed 24/7, with new and independent artists central to the format.",
+          "language": "en-US",
+          "stream_url": "https://streaming.live365.com/a01484"
         }
       ]
     },
