@@ -24,7 +24,7 @@ __all__ = ["build_menu_bar", "build_tray_menu", "start_stop_label"]
 def start_stop_label(host: Any) -> str:
     """The Start/Stop command as it should read now."""
     if host.dictation_armed():
-        return "Cancel &Waiting to Start"
+        return "Cancel Waiting to &Start"
     return "&Stop Dictation" if host.dictation_active() else "&Start Dictation"
 
 
