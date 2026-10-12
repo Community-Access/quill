@@ -551,6 +551,11 @@ find-links = ["vendor/wheels"]
 # refuses pre-releases across resolver splits unless told otherwise, which
 # made every `uv lock` fail outright.
 prerelease = "allow"
+# With pre-releases allowed everywhere, a plain `uv lock --upgrade` reaches for
+# development builds nobody chose: httpx 1.0.dev (which drops httpcore) and
+# pandas 3.1 release candidates (2026-10-11). Fence them until a final release
+# is a deliberate decision; raise each ceiling when it is made.
+constraint-dependencies = ["httpx<1.0.dev0", "pandas<3.1.0a0"]
 
 [tool.pytest.ini_options]
 # Pin pythonpath so the worktree's `quill` package wins over the parent
