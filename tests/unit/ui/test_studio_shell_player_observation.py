@@ -173,10 +173,11 @@ def test_auto_advance_skips_a_missing_next_file(app, tmp_path, monkeypatch) -> N
         # Announcement names C (the next PLAYABLE), not the missing B.
         assert said == ["Finished. Up next in the queue: C"]
         frame._on_book_closed(str(a), position_ms=0, chapter=0)
-        assert len(scheduled) == 1
-        fn, args = scheduled[0]
-        assert fn == frame.open_book
-        assert str(args[0]) == str(c)
+        # Only the advance counts: background work from other tests can
+        # CallAfter in this window too (as in the test above).
+        advances = [args for fn, args in scheduled if fn == frame.open_book]
+        assert len(advances) == 1
+        assert str(advances[0][0]) == str(c)
     finally:
         frame.frame.Destroy()
 
@@ -203,25 +204,14 @@ def test_auto_advance_all_missing_says_end_of_book(app, tmp_path, monkeypatch) -
         frame._play_queue = q
         said: list[str] = []
         monkeypatch.setattr(frame, "_announce", said.append)
-        import threading
-
         scheduled: list[tuple[object, tuple]] = []
-        real_call_after = wx.CallAfter
-
-        def _record(fn, *a2):
-            # Only what the frame schedules on the UI thread. Background work
-            # left over from another test also reaches wx.CallAfter (through
-            # call_ui_safely) and is not this frame opening anything (CI flake).
-            if threading.current_thread() is threading.main_thread():
-                scheduled.append((fn, a2))
-            else:
-                real_call_after(fn, *a2)
-
-        monkeypatch.setattr(wx, "CallAfter", _record)
+        monkeypatch.setattr(wx, "CallAfter", lambda fn, *a2: scheduled.append((fn, a2)))
         frame._on_book_finished(str(a))
         assert said == ["End of book."]  # nothing playable ahead
         frame._on_book_closed(str(a), position_ms=0, chapter=0)
-        assert scheduled == []  # no lie: nothing opens
+        # No lie: nothing opens. Only opens count; background work from other
+        # tests can CallAfter in this window too (as in the tests above).
+        assert [args for fn, args in scheduled if fn == frame.open_book] == []
     finally:
         frame.frame.Destroy()
 
