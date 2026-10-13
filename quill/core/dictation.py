@@ -9,7 +9,7 @@ fields on :class:`DictationSettings` are inert here.
 QUILL **does** now have a fully offline recognizer — see
 ``quill/core/speech/dictation/`` (the Locked Dictation state machine, Ctrl+F9),
 ``quill/core/speech/capture.py`` (microphone capture), and the whisper.cpp /
-Faster-Whisper / Vosk / Nemotron providers. This Win+H shim is retained only as
+Faster-Whisper / Nemotron / Parakeet providers. This Win+H shim is retained only as
 the OS-panel fallback; new work belongs on the ``core/speech`` stack, not here.
 """
 

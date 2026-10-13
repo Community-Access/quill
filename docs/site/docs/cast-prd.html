@@ -1303,6 +1303,12 @@ an engine that never invents text from silence; chapters want cue
 boundaries that fall on pauses. The engine that wins the second is a 40
 MB model that beat one thirty-five times its size on measurement (0.372
 against 0.316) at 4.7 times the speed.</p>
+<p>That engine is Vosk, and since 2026-10-13 chapters are the only thing
+it does. QUILL stopped offering it for dictation and the voice features
+(English only, last release 2022, models checked by MD5 only; the
+bundled Moonshine tiny replaced it there), and this path did not change:
+the wheel, the staged model and
+<code>preferred_chapter_provider_id</code> are as described above.</p>
 <p>Bundling is what makes the feature real: chapters have to answer the
 first time somebody asks, and an engine that must be downloaded first
 means the first answer is always “no chapters could be found”.</p>

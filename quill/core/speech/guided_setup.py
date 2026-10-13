@@ -2,7 +2,7 @@
 Optional Components hub.
 
 The hub walks the user through *choosing* an offline speech engine --
-whisper.cpp, Faster Whisper, or Vosk -- with plain-language explanations of
+whisper.cpp, Faster Whisper, Parakeet or Nemotron -- with plain-language explanations of
 the trade-off, then choosing a model (via :mod:`quill.core.speech.service`,
 which already marks one "recommended for your computer"). This module
 supplies the engine step's data and a friendly default, so the UI is a thin
@@ -10,7 +10,7 @@ renderer. No ``wx`` here.
 
 Meet-people-where-they-are: the recommended engine is the light one that works
 on any machine, and the recommended model defaults small so the user is
-transcribing within a minute. All three engines are reached through this one
+transcribing within a minute. Every engine is reached through this one
 guided flow rather than separate hub rows, so there is exactly one "offline
 speech" download to find.
 """
@@ -47,16 +47,11 @@ _FASTER_WHISPER_SUMMARY = (
     "use your graphics card if you have one. Best when you want top-quality "
     "transcription and have a capable machine."
 )
-_VOSK_TAGLINE = "very low resource; best for old or low-memory machines"
-_VOSK_SUMMARY = (
-    "A tiny offline engine for old or low-memory machines with no GPU. Less "
-    "accurate than the other two, but works on hardware where they may struggle."
-)
 _NEMOTRON_TAGLINE = "top English accuracy on the CPU; no GPU or torch needed"
 _NEMOTRON_SUMMARY = (
     "NVIDIA's Nemotron streaming model (English only) run on the CPU via "
     "sherpa-onnx — very accurate and fast, with no graphics card required. A "
-    "larger download than Vosk; a strong choice for English dictation."
+    "larger download than Whisper.cpp; a strong choice for English dictation."
 )
 _PARAKEET_TAGLINE = "most reliable for dictation; 25 languages, CPU-only"
 
@@ -105,18 +100,6 @@ def _faster_whisper_install_supported() -> bool:
     from quill.core.speech.engine_install import faster_whisper_install_supported
 
     return faster_whisper_install_supported()
-
-
-def _vosk_installed() -> bool:
-    from quill.core.speech.engine_install import is_vosk_available
-
-    return is_vosk_available()
-
-
-def _vosk_install_supported() -> bool:
-    from quill.core.speech.engine_install import vosk_install_supported
-
-    return vosk_install_supported()
 
 
 def _nemotron_installed() -> bool:
@@ -179,15 +162,9 @@ def offline_speech_engine_options() -> list[OfflineSpeechEngineOption]:
             installed=_safe(_faster_whisper_installed),
             install_supported=_safe(_faster_whisper_install_supported),
         ),
-        OfflineSpeechEngineOption(
-            engine_id="vosk",
-            name="Vosk",
-            tagline=_VOSK_TAGLINE,
-            summary=_VOSK_SUMMARY,
-            installed=_safe(_vosk_installed),
-            install_supported=_safe(_vosk_install_supported),
-        ),
     ]
+    # Vosk is not offered here (2026-10-13): it stays only as the bundled podcast
+    # chapter engine (service.CHAPTER_PROVIDER_ID), not a dictation choice.
     # Parakeet 3 and Nemotron appear only once their model assets are
     # hosted+pinned (mirror-gated); until then each is fully inert and
     # unlisted. Both ride the same sherpa-onnx runtime, so Nemotron's
@@ -252,8 +229,6 @@ def _catalog_models(engine_id: str) -> tuple:  # type: ignore[type-arg]
 
     if engine_id == "fasterwhisper":
         return catalog.FASTER_WHISPER_MODELS
-    if engine_id == "vosk":
-        return catalog.VOSK_MODELS
     if engine_id == "nemotron":
         return catalog.NEMOTRON_MODELS
     return catalog.WHISPER_CPP_MODELS

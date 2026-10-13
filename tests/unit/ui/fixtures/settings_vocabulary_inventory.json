@@ -436,6 +436,7 @@
   "quill:voice_recognition_engine": "one_side",
   "quill:voice_wakeword_enabled": "one_side",
   "quill:voice_wakeword_persist": "one_side",
+  "quill:vosk_retirement_notice": "one_side",
   "quill:warm_dictation_model": "one_side",
   "quill:warm_kokoro_model": "one_side",
   "quill:watch_folder_audible_tick": "one_side",

@@ -9,6 +9,8 @@ each carry a single call instead of one per switch.
 
 * "Listen for 'Hey QUILL'" and "Keep listening across restarts":
   :mod:`quill.ui.wakeword_switch`.
+* At startup only: the one-time notice that Vosk left dictation and the voice
+  features, :mod:`quill.ui.vosk_retirement_notice`.
 * The right-click menu ("Show QUILL in the file-manager right-click menu",
   each "Offer ..." verb, and "File types offered to QUILL"): re-registered
   when any of them changed since the last time QUILL applied them. Comparing
@@ -69,7 +71,15 @@ def apply_shell_verbs_if_changed(host: Any) -> bool:
 
 
 def at_startup(host: Any) -> None:
-    """Startup task: resume listening if asked, note the applied verb state."""
+    """Startup task: resume listening if asked, note the applied verb state.
+
+    First, say once that a saved Vosk choice moved to Moonshine tiny or the
+    default dictation engine (:mod:`quill.ui.vosk_retirement_notice`), because
+    the wake word that resumes next is the thing it changed.
+    """
+    from quill.ui.vosk_retirement_notice import surface_vosk_retirement_notice
+
+    surface_vosk_retirement_notice(host)
     remember_shell_verbs(host)
     wakeword_switch.start_wakeword_if_enabled(host)
 

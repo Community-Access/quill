@@ -2010,16 +2010,16 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "choice",
         "Which on-device engine powers the voice features (Voice Command, "
         "Conversation Mode, Hey QUILL). 'Follow main engine' uses your usual "
-        "speech engine; 'whisper.cpp' favors accuracy; 'Vosk' is fast and "
-        "light, best for the always-listening wake word. Requires a model for "
-        "the chosen engine; falls back automatically if one is missing.",
+        "speech engine; 'whisper.cpp' favors accuracy; 'Moonshine tiny' is fast, "
+        "light and built in (English only), best for the always-listening wake "
+        "word. Falls back to your main engine if the chosen one is missing.",
         feature_id="core.voice_commands",
         choices=(
             ("", "Follow main engine"),
             ("whispercpp", "whisper.cpp (accurate)"),
-            ("vosk", "Vosk (fast, light)"),
+            ("moonshine_tiny", "Moonshine tiny (fast, light)"),
         ),
-        keywords=("voice engine", "vosk", "whisper", "recognition"),
+        keywords=("voice engine", "moonshine", "whisper", "recognition", "wake word"),
     ),
     SettingSpec(
         "voice_conversation_user_name",

@@ -664,6 +664,7 @@
             "voice_conversation_user_name": "str",
             "voice_conversation_spoken_cues": "bool",
             "voice_recognition_engine": "str",
+            "vosk_retirement_notice": "str",
             "voice_wakeword_enabled": "bool",
             "voice_wakeword_persist": "bool",
             "watch_folder_enabled": "bool",
@@ -1051,6 +1052,7 @@
           "voice_conversation_user_name": "transcription",
           "voice_conversation_spoken_cues": "transcription",
           "voice_recognition_engine": "transcription",
+          "vosk_retirement_notice": "_ungrouped",
           "voice_wakeword_enabled": "transcription",
           "voice_wakeword_persist": "transcription",
           "watch_folder_enabled": "watch",
@@ -1250,7 +1252,7 @@
         "constant:quill.core.settings_migration:SETTINGS_SCHEMA_VERSION": "2"
       },
       "classification": "additive, compatible",
-      "note": ""
+      "note": "optional fields older builds ignore: windows_dictation_working_tick (the working tick, 2026-10-13, defaults off), vosk_retirement_notice (the once-only notice that Vosk left dictation, 2026-10-13) and windows_dictation_never_type (D-24, 2026-10-15)"
     },
     "radio.favorites": {
       "current": 1,

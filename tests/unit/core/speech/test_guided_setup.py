@@ -13,7 +13,8 @@ def test_offline_speech_engine_options_lists_both_recommended_first() -> None:
     # Nemotron may be appended when its asset is hosted (see the gate tests).
     assert ids[0] == "whispercpp"
     without_mirror_gated = [i for i in ids if i not in ("parakeet", "nemotron")]
-    assert without_mirror_gated == ["whispercpp", "fasterwhisper", "vosk"]
+    # Vosk is not offered: it is the podcast chapter engine only (2026-10-13).
+    assert without_mirror_gated == ["whispercpp", "fasterwhisper"]
     if "parakeet" in ids:
         assert ids[1] == "parakeet"
     # whisper.cpp is the friendly default and always installable (release asset).
@@ -33,7 +34,6 @@ def test_engine_options_never_crash_on_detector_failure(monkeypatch) -> None:
 
     monkeypatch.setattr(gs, "_whispercpp_installed", boom)
     monkeypatch.setattr(gs, "_faster_whisper_installed", boom)
-    monkeypatch.setattr(gs, "_vosk_installed", boom)
     monkeypatch.setattr(gs, "_nemotron_installed", boom)
     opts = gs.offline_speech_engine_options()  # must not raise
     assert all(o.installed is False for o in opts)
@@ -43,7 +43,6 @@ def test_recommended_engine_prefers_an_installed_one_else_whispercpp(monkeypatch
     # Nothing installed -> the friendly default.
     monkeypatch.setattr(gs, "_whispercpp_installed", lambda: False)
     monkeypatch.setattr(gs, "_faster_whisper_installed", lambda: False)
-    monkeypatch.setattr(gs, "_vosk_installed", lambda: False)
     monkeypatch.setattr(gs, "_nemotron_installed", lambda: False)
     assert gs.recommended_engine_id() == "whispercpp"
 
@@ -70,14 +69,12 @@ def test_default_model_is_the_smallest_for_a_fast_start() -> None:
     assert gs.default_model_id("whispercpp") == "tiny"
 
 
-def test_vosk_is_a_third_engine_with_its_own_model_catalog() -> None:
-    # Vosk is reached through this same guided flow, not a separate hub row.
-    vosk = gs.models_for_engine("vosk")
-    assert vosk
-    assert vosk[0].model_id == gs.default_model_id("vosk")
-    assert sum(1 for m in vosk if m.recommended) == 1
+def test_vosk_is_not_a_guided_engine() -> None:
+    # Vosk left dictation on 2026-10-13; its catalog stays for the chapter engine,
+    # but the guided picker neither lists it nor maps its models.
+    assert "vosk" not in [o.engine_id for o in gs.offline_speech_engine_options()]
     cpp_ids = {m.model_id for m in gs.models_for_engine("whispercpp")}
-    assert {m.model_id for m in vosk} != cpp_ids
+    assert {m.model_id for m in gs.models_for_engine("vosk")} == cpp_ids
 
 
 def test_nemotron_hidden_when_model_asset_unavailable(monkeypatch) -> None:

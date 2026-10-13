@@ -25,7 +25,7 @@ class SpeechSetupResult:
     """What the dialog wants to happen after it closes."""
 
     action: str
-    """One of: 'download' | 'remove' | 'test' | 'ffmpeg' | 'engine' | 'vosk'
+    """One of: 'download' | 'remove' | 'test' | 'ffmpeg' | 'engine'
     | 'kokoro_engine' | 'hf_token' | 'set_default'."""
     model_id: str | None = None
     model_row: object | None = None
@@ -37,19 +37,20 @@ def build_engine_descriptors(
     *,
     whispercpp_ok: bool,
     faster_whisper_ok: bool,
-    vosk_ok: bool,
     engine_scope: str = "all",
 ) -> list[dict]:
     """Describe every dictation engine as a radio row (installed or not).
 
-    Whisper.cpp is always present (bundled). Faster Whisper and Vosk appear
-    whether or not they are installed: a not-installed row carries an
-    ``install_action`` so selecting it installs the engine. Any other registered
-    provider (e.g. a cloud Quillin) is appended as an already-installed engine.
+    Whisper.cpp is always present (bundled). Faster Whisper appears whether or
+    not it is installed: a not-installed row carries an ``install_action`` so
+    selecting it installs the engine. Any other registered provider (e.g. a
+    cloud Quillin) is appended as an already-installed engine. Vosk never
+    appears: it is registered only as the podcast chapter engine
+    (``service.CHAPTER_ONLY_PROVIDER_IDS``) and is no dictation choice.
     Pure and wx-free so it is unit-testable.
 
     ``engine_scope`` narrows the list for the Dictation (Offline)/Dictation
-    (Online) tab split: "offline" is just the three local engines above;
+    (Online) tab split: "offline" is just the two local engines above;
     "online" is just the other registered (cloud) providers; "all" (default)
     is both, preserving the original single-tab behavior.
     """
@@ -73,15 +74,11 @@ def build_engine_descriptors(
                 "installed": faster_whisper_ok,
                 "install_action": "engine",
             },
-            {
-                "label": "Vosk (lightweight, low RAM, no GPU)",
-                "provider": by_id.get("vosk"),
-                "installed": vosk_ok,
-                "install_action": "vosk",
-            },
         ]
     if engine_scope in ("all", "online"):
-        known = {"whispercpp", "fasterwhisper", "vosk"}
+        from quill.core.speech.service import CHAPTER_ONLY_PROVIDER_IDS
+
+        known = {"whispercpp", "fasterwhisper", *CHAPTER_ONLY_PROVIDER_IDS}
         for pid, provider in by_id.items():
             if pid not in known:
                 descriptors.append({
@@ -136,8 +133,6 @@ class SpeechSetupDialog:
         whispercpp_ok: bool,
         ffmpeg_ok: bool,
         engine_ok: bool,
-        vosk_ok: bool,
-        vosk_can_install: bool,
         kokoro_ok: bool | None = None,
         kokoro_can_install: bool | None = None,
         all_providers: list,
@@ -163,8 +158,6 @@ class SpeechSetupDialog:
         self._whispercpp_ok = whispercpp_ok
         self._ffmpeg_ok = ffmpeg_ok
         self._engine_ok = engine_ok
-        self._vosk_ok = vosk_ok
-        self._vosk_can_install = vosk_can_install
         # Four crash reports named this pair (#1395, #1417, #1422, #1460), each
         # from somebody pressing Manage Voices to install a Kokoro voice: the
         # dialog grew two REQUIRED keyword-only arguments and a builder that did
@@ -231,7 +224,7 @@ class SpeechSetupDialog:
 
         # Dictation engine: one radio choice covering every engine, installed or
         # not. Selecting an installed engine switches to it; a not-installed engine
-        # (Faster Whisper, Vosk) is installed by the explicit "Install selected
+        # (Faster Whisper) is installed by the explicit "Install selected
         # engine" button below — not on selection, so arrowing through the radio
         # with a screen reader never triggers an install (#700).
         self._engine_descriptors = self._build_engine_descriptors()
@@ -543,7 +536,6 @@ class SpeechSetupDialog:
             self._all_providers,
             whispercpp_ok=self._whispercpp_ok,
             faster_whisper_ok=self._engine_ok,
-            vosk_ok=self._vosk_ok,
             engine_scope=self._engine_scope,
         )
 

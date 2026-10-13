@@ -10585,22 +10585,30 @@ engines. QUILL remembers your choice and uses it for transcription,
 captions and dictation.</p>
 <h4 id="choosing-a-speech-engine-1">Choosing a speech engine</h4>
 <p><strong>Choosing a speech engine.</strong> QUILL uses the
-<strong>whisper.cpp</strong> engine by default. You can add two more
-optional engines, each by installing what it depends on:</p>
+<strong>whisper.cpp</strong> engine by default. You can add an optional
+engine by installing what it depends on:</p>
 <ul>
 <li><strong>Faster Whisper</strong> (<code>fasterwhisper</code>
 dependency): a faster engine for many languages. It runs inside QUILL
 and uses your <strong>GPU</strong> automatically when you have one.</li>
-<li><strong>Vosk</strong> (<code>vosk</code> dependency): a <strong>very
-low-resource, CPU-only English</strong> engine that runs on a ~40 MB
-model with no GPU. It is ideal for older or smaller machines where the
-other engines are impractical. Its models download from alphacephei.com
-(verified HTTPS, integrity-checked) through Manage Speech Models.</li>
 </ul>
 <p>Each engine has its own models, so download a model after switching.
 All of them run <strong>entirely on your computer</strong>. Faster
 Whisper does not label speakers; for speaker attribution, use the
 whisper.cpp speaker-detection model.</p>
+<p><strong>Vosk is no longer a dictation engine.</strong> Since October
+2026, Vosk is used only to work out <strong>podcast chapters</strong>.
+It ships with QUILL for that job, because it scored best at it: 0.372
+against 0.316 for Whisper medium on hand-made chapter lists, from a 40
+MB model, with no download. For dictation and voice commands it was the
+wrong choice: it knows only English, its last release was in 2022, and
+its models are checked by MD5 only, where every other download QUILL
+makes is checked by SHA-256. The built-in <strong>Moonshine
+tiny</strong> is faster and more accurate, and needs no download. If you
+had chosen Vosk for dictation, QUILL now uses your default engine; if
+you had chosen it for voice commands, QUILL now uses Moonshine tiny.
+QUILL tells you this once, the first time it starts after the
+change.</p>
 <h4 id="getting-the-offline-engine">Getting the offline engine</h4>
 <p><strong>Download Offline Speech Engine…</strong> The private,
 on-device speech engine (whisper.cpp) is not bundled in the installer.
@@ -10621,14 +10629,6 @@ Manage Speech Models.</p>
 <p>Offline <strong>dictation</strong> also needs microphone-capture
 support (the optional <code>sounddevice</code> package). If it is
 missing, QUILL tells you, and you can still use Windows dictation.</p>
-<p><strong>Download Vosk…</strong> Vosk is a tiny, very light offline
-dictation and transcription engine for older or low-memory computers
-with no graphics card. It is not bundled. <strong>Tools &gt; Speech &gt;
-Download Vosk</strong> (or the Optional Components list) installs it
-when you ask, checksum-verified and turned off in Safe Mode, from
-QUILL’s own verified download, falling back to the public package index.
-whisper.cpp stays the default engine; Vosk is the lightweight fallback
-when you need it.</p>
 <h4 id="hugging-face-token">Hugging Face Token</h4>
 <p><strong>Hugging Face Token…</strong> on <strong>Tools &gt;
 Speech</strong> is optional. QUILL’s speech models are open source (MIT)
@@ -10689,8 +10689,8 @@ conversation mode</strong> turn on the voice commands described in
 Chapter 8.</li>
 <li><strong>Voice recognition engine</strong> chooses what listens for
 voice commands: <strong>Follow main engine</strong>, <strong>whisper.cpp
-(accurate)</strong> or <strong>Vosk (fast, light)</strong>, which suits
-always-listening best.</li>
+(accurate)</strong> or <strong>Moonshine tiny (fast, light)</strong>,
+which is built in and suits always-listening best.</li>
 <li>Four settings pace conversation mode, all in milliseconds, and 0
 switches each part off: <strong>Conversation: pause before a command
 ends (ms)</strong> (2000 to begin with; 0 uses the engine’s own pause),
@@ -10731,7 +10731,7 @@ OCR</strong> either way.</li>
 BRF profiles for the Translation submenu and for BRF and embossing
 export.</li>
 <li><strong>Dictation (offline speech)</strong>: a guided setup covering
-Whisper.cpp, Faster Whisper and Vosk, described below.</li>
+Whisper.cpp, Faster Whisper and Parakeet 3, described below.</li>
 <li><strong>Kokoro</strong> and <strong>Piper</strong> neural voices,
 and <strong>eSpeak NG</strong> and <strong>DECtalk</strong> voices.</li>
 <li><strong>Audio: export, playback &amp; chapters</strong>: FFmpeg for
@@ -10790,10 +10790,9 @@ a banner at the top always says which step you are on and the one thing
 to do next:</p>
 <ol type="1">
 <li>Pick and install an engine: <strong>Whisper.cpp</strong> (light and
-fast), <strong>Faster Whisper</strong> (most accurate), <strong>Parakeet
-3</strong> (the most reliable for dictation, described earlier in this
-chapter), or <strong>Vosk</strong> (tiny, best for old or low-memory
-machines).</li>
+fast), <strong>Faster Whisper</strong> (most accurate), or
+<strong>Parakeet 3</strong> (the most reliable for dictation, described
+earlier in this chapter).</li>
 <li>Download a model. The best fit for your computer is already
 selected.</li>
 <li>Choose <strong>Test dictation</strong> to make sure it works, then

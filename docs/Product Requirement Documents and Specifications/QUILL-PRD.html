@@ -5796,7 +5796,54 @@ own pinned, SHA-256-verified wheel on the <code>assets-v1</code> release
 and falling back to PyPI. No offline speech engine ships in the
 installer now — the tiny default whisper.cpp (~8 MB) is itself fetched
 on demand — so the base download stays small while capability is a
-one-time verified fetch away.</p>
+one-time verified fetch away. (Superseded on 2026-08-20: Vosk was
+bundled again, as the podcast chapter engine; see the next
+paragraph.)</p>
+<p><strong>Vosk leaves dictation and the voice features; it stays for
+chapters (2026-10-13).</strong> Vosk is bundled
+(<code>build_windows_distribution.DEFAULT_BUNDLED_DEPENDENCY_GROUPS</code>,
+<code>_stage_vosk_model</code>, and Cast’s
+<code>build_release.ps1</code>) for one job: transcribing a podcast
+episode <strong>for chapters</strong>
+(<code>service.CHAPTER_PROVIDER_ID</code>,
+<code>preferred_chapter_provider_id</code>), where it scored 0.372
+against Whisper medium’s 0.316 on hand-built chapter lists, from a 40 MB
+model, with no download. That role is unchanged. It is no longer a
+<strong>dictation or transcription engine choice</strong> anywhere a
+person picks one (the guided picker, the Manage Speech Models engine
+radio, the dictation ladder, the media voice-capture fallback;
+<code>service.CHAPTER_ONLY_PROVIDER_IDS</code> and
+<code>service.dictation_providers</code> do the filtering, and
+<code>download_vosk</code> is gone), and it is no longer a
+<strong>voice-features engine</strong>: the Voice recognition engine
+setting offers <em>Follow main engine</em>, <em>whisper.cpp
+(accurate)</em> and <em>Moonshine tiny (fast, light)</em>. For those
+roles Vosk is English only, its last release (0.3.45) was in December
+2022, its models are checked by MD5 only where every other download is
+SHA-256, and its accuracy was never measured in QUILL; the bundled
+Moonshine tiny is faster and more accurate on the dictation measurements
+(<code>docs/design/2026-10-05-dictation-plan-and-status.md</code>
+section 6). Moonshine tiny reaches the voice paths through
+<code>quill/core/speech/providers/moonshine_tiny.py</code>, an adapter
+resolved in <code>MainFrame._voice_provider</code> (not registered,
+because it is not a dictation choice) that decodes through live
+dictation’s own
+<code>local_recognizer.transcribe("moonshine", ...)</code> and model
+folder, so nothing new downloads; with the bundled model missing, voice
+falls back to the main engine as before. Saved settings migrate on load
+(<code>quill/core/speech/vosk_retirement.py</code>): a voice engine of
+<code>vosk</code> becomes <code>moonshine_tiny</code>, a
+<code>speech_provider</code> of <code>vosk</code> becomes
+<code>""</code>, and <code>vosk_retirement_notice</code> records that
+one sentence is owed. After the main window is up,
+<code>quill/ui/vosk_retirement_notice.py</code> says it once, in the
+status bar and through announce, then stores <code>done</code>: “Vosk is
+no longer used for voice commands or dictation. Voice commands and Hey
+QUILL now use Moonshine tiny, which is already installed. Podcast
+chapters still use Vosk.” (or, when only the dictation engine was Vosk,
+“Vosk is no longer a dictation engine. Dictation now uses your default
+engine.”). No model is offered for deletion, because chapters still use
+it.</p>
 <h3
 id="525d-batch-document-to-speech-pronunciation-and-ssml-shipped">5.25d
 Batch Document-to-Speech, pronunciation, and SSML (shipped)</h3>
@@ -16828,11 +16875,13 @@ QUILL</strong> (Tools &gt; Speech; full reference in the user guide’s
 push-to-talk, <strong>Voice Conversation Mode</strong> (a
 follow-up-window loop with nine retunable audio cues and VAD silence
 detection), and <strong>Listen for “Hey QUILL”</strong> always-listening
-wake word. Every mode runs recognition entirely on-device, is bounded by
-the agent safe-tool allowlist so a misheard phrase cannot do damage, is
-off by default, and is off in Safe Mode; the always-listening mode shows
-a live-mic indicator with a periodic spoken reminder. Always-on
-listening without those explicit opt-ins stays out of scope.</li>
+wake word. The light engine for them is the bundled Moonshine tiny (Vosk
+until 2026-10-13; see 5.25f). Every mode runs recognition entirely
+on-device, is bounded by the agent safe-tool allowlist so a misheard
+phrase cannot do damage, is off by default, and is off in Safe Mode; the
+always-listening mode shows a live-mic indicator with a periodic spoken
+reminder. Always-on listening without those explicit opt-ins stays out
+of scope.</li>
 <li><strong>AI authoring assistant.</strong> The current build exposes a
 local Writing Assistant shell, prompt presets, Prompt Studio reusable
 prompt templates, Agent Center guided profiles, AI Hub launch surface,

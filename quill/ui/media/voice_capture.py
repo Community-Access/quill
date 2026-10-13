@@ -104,8 +104,9 @@ def dispatch_transcript(host: Any, transcript: str) -> VoiceFeedback:
 
 # Offline engines, in the order the player falls back through them when the user
 # has not chosen one. whisper.cpp is the always-present default; Nemotron (the
-# torch-free NVIDIA engine), Vosk, and Faster Whisper follow if installed.
-_PROVIDER_FALLBACK = ("whispercpp", "nemotron", "vosk", "fasterwhisper")
+# torch-free NVIDIA engine) and Faster Whisper follow if installed. Vosk is
+# never tried: it is registered only as the podcast chapter engine.
+_PROVIDER_FALLBACK = ("whispercpp", "nemotron", "fasterwhisper")
 
 
 def preferred_provider_ids(saved_provider: str = "") -> list[str]:
@@ -113,7 +114,9 @@ def preferred_provider_ids(saved_provider: str = "") -> list[str]:
     offline fallback order, deduplicated."""
     order: list[str] = []
     saved = (saved_provider or "").strip()
-    if saved:
+    from quill.core.speech.service import CHAPTER_ONLY_PROVIDER_IDS
+
+    if saved and saved not in CHAPTER_ONLY_PROVIDER_IDS:
         order.append(saved)
     for provider_id in _PROVIDER_FALLBACK:
         if provider_id not in order:
@@ -126,17 +129,17 @@ def resolve_provider_and_model(registry: Any, saved_provider: str = "") -> tuple
     installed model, and the best small model for it. ``(None, "")`` if none.
 
     Engine-agnostic: any registered provider works. For whisper.cpp this favours
-    the small tiers; for Nemotron/Vosk (single-model packs) it takes what's
+    the small tiers; for Nemotron (a single-model pack) it takes what's
     installed.
     """
-    from quill.core.speech.service import preferred_command_model
+    from quill.core.speech.service import CHAPTER_ONLY_PROVIDER_IDS, preferred_command_model
 
     try:
         available = {provider.id: provider for provider in registry.available()}
     except Exception:  # noqa: BLE001
         return None, ""
     order = preferred_provider_ids(saved_provider)
-    order += [pid for pid in available if pid not in order]
+    order += [pid for pid in available if pid not in order and pid not in CHAPTER_ONLY_PROVIDER_IDS]
     for provider_id in order:
         provider = available.get(provider_id)
         if provider is None:
@@ -169,7 +172,7 @@ def build_media_voice_services() -> Any | None:
     Returns ``None`` (never raises) when capture support, a usable provider, or an
     installed model is missing -- the caller treats ``None`` as "unavailable" and
     guides the user to install a speech model. Honours the engine the user chose
-    in QUILL (``settings.speech_provider``), so Nemotron / Vosk / Faster Whisper
+    in QUILL (``settings.speech_provider``), so Nemotron / Faster Whisper
     are used when selected, falling back to whisper.cpp with a small, fast model.
     """
     try:

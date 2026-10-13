@@ -2753,7 +2753,36 @@ via `quill/core/speech/engine_install.install_vosk` (**Tools → Speech → Down
 preferring QUILL's own pinned, SHA-256-verified wheel on the `assets-v1` release and falling
 back to PyPI. No offline speech engine ships in the installer now — the tiny default whisper.cpp
 (~8 MB) is itself fetched on demand — so the base download stays small while capability is a
-one-time verified fetch away.
+one-time verified fetch away. (Superseded on 2026-08-20: Vosk was bundled again, as the podcast
+chapter engine; see the next paragraph.)
+
+**Vosk leaves dictation and the voice features; it stays for chapters (2026-10-13).** Vosk is
+bundled (`build_windows_distribution.DEFAULT_BUNDLED_DEPENDENCY_GROUPS`, `_stage_vosk_model`,
+and Cast's `build_release.ps1`) for one job: transcribing a podcast episode **for chapters**
+(`service.CHAPTER_PROVIDER_ID`, `preferred_chapter_provider_id`), where it scored 0.372 against
+Whisper medium's 0.316 on hand-built chapter lists, from a 40 MB model, with no download. That
+role is unchanged. It is no longer a **dictation or transcription engine choice** anywhere a
+person picks one (the guided picker, the Manage Speech Models engine radio, the dictation ladder,
+the media voice-capture fallback; `service.CHAPTER_ONLY_PROVIDER_IDS` and
+`service.dictation_providers` do the filtering, and `download_vosk` is gone), and it is no longer
+a **voice-features engine**: the Voice recognition engine setting offers *Follow main engine*,
+*whisper.cpp (accurate)* and *Moonshine tiny (fast, light)*. For those roles Vosk is English
+only, its last release (0.3.45) was in December 2022, its models are checked by MD5 only where
+every other download is SHA-256, and its accuracy was never measured in QUILL; the bundled
+Moonshine tiny is faster and more accurate on the dictation measurements
+(`docs/design/2026-10-05-dictation-plan-and-status.md` section 6). Moonshine tiny reaches the
+voice paths through `quill/core/speech/providers/moonshine_tiny.py`, an adapter resolved in
+`MainFrame._voice_provider` (not registered, because it is not a dictation choice) that decodes
+through live dictation's own `local_recognizer.transcribe("moonshine", ...)` and model folder, so
+nothing new downloads; with the bundled model missing, voice falls back to the main engine as
+before. Saved settings migrate on load (`quill/core/speech/vosk_retirement.py`): a voice engine
+of `vosk` becomes `moonshine_tiny`, a `speech_provider` of `vosk` becomes `""`, and
+`vosk_retirement_notice` records that one sentence is owed. After the main window is up,
+`quill/ui/vosk_retirement_notice.py` says it once, in the status bar and through announce, then
+stores `done`: "Vosk is no longer used for voice commands or dictation. Voice commands and Hey
+QUILL now use Moonshine tiny, which is already installed. Podcast chapters still use Vosk." (or,
+when only the dictation engine was Vosk, "Vosk is no longer a dictation engine. Dictation now
+uses your default engine."). No model is offered for deletion, because chapters still use it.
 
 ### 5.25d Batch Document-to-Speech, pronunciation, and SSML (shipped)
 
@@ -9190,7 +9219,7 @@ Quill is opinionated about what it is _not_. The following are intentionally and
 - **Real-time collaborative editing.** Not in v1.x. The architecture does not preclude it; we are not committing to it.
 - **Cloud-sync of documents.** Sync is for keymap and settings only (8.8). Document storage stays on the user's machine and chosen cloud-drive folder.
 - **Mobile, web, macOS, or Linux ports.** Cross-platform is post-v2 at earliest. The `core/` layer has no `wx` so it remains _possible_, not _committed_.
-- **Voice input / dictation.** Dictation is the offline, on-device Whisper stack (Locked Dictation; the Windows/SAPI path was removed). Voice control of QUILL itself shipped in 0.9.0 as **Hey QUILL** (Tools > Speech; full reference in the user guide's "Voice Interaction"): **Voice Command (Offline)** push-to-talk, **Voice Conversation Mode** (a follow-up-window loop with nine retunable audio cues and VAD silence detection), and **Listen for "Hey QUILL"** always-listening wake word. Every mode runs recognition entirely on-device, is bounded by the agent safe-tool allowlist so a misheard phrase cannot do damage, is off by default, and is off in Safe Mode; the always-listening mode shows a live-mic indicator with a periodic spoken reminder. Always-on listening without those explicit opt-ins stays out of scope.
+- **Voice input / dictation.** Dictation is the offline, on-device Whisper stack (Locked Dictation; the Windows/SAPI path was removed). Voice control of QUILL itself shipped in 0.9.0 as **Hey QUILL** (Tools > Speech; full reference in the user guide's "Voice Interaction"): **Voice Command (Offline)** push-to-talk, **Voice Conversation Mode** (a follow-up-window loop with nine retunable audio cues and VAD silence detection), and **Listen for "Hey QUILL"** always-listening wake word. The light engine for them is the bundled Moonshine tiny (Vosk until 2026-10-13; see 5.25f). Every mode runs recognition entirely on-device, is bounded by the agent safe-tool allowlist so a misheard phrase cannot do damage, is off by default, and is off in Safe Mode; the always-listening mode shows a live-mic indicator with a periodic spoken reminder. Always-on listening without those explicit opt-ins stays out of scope.
 - **AI authoring assistant.** The current build exposes a local Writing Assistant shell, prompt presets, Prompt Studio reusable prompt templates, Agent Center guided profiles, AI Hub launch surface, AI connection preferences (Ollama local/cloud, OpenAI, Claude, OpenRouter, Gemini, custom OpenAI-compatible), provider verification/model discovery, searchable model filtering, status-detail accessibility announcements, and a sandboxed Python tool. The quick writing actions (Rewrite Selection, Summarize Selection, Continue Writing, Fix Grammar) each guard on the AI-enabled setting regardless of entry point (menu, command palette, or keybinding) and fall back to a sensible scope when there is no selection (paragraph at cursor for rewrite/grammar, whole document for summarize), announcing the chosen scope and word count. The AI status line also detects a saved key that cannot be decrypted on the current device (for example after a portable install is moved to another Windows account) and prompts the user to re-enter the key rather than reporting a generic authentication error. Longer-horizon autocomplete policy tuning and richer model-catalog management remain future work.
 - **Project workspaces and Find in Folder.** Deferred to v1.2 (see 17.2).
 - **Embedded media playback inside documents.** Out of scope for the editor.

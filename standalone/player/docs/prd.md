@@ -583,8 +583,9 @@ one also exists as a plain key/menu item, so a feature being off never removes a
 
 - **Hands-free voice control.** Drive the player by voice — "play", "next chapter",
   "skip back thirty", "bookmark this", "how much is left", "sleep in twenty", "go to one
-  twenty-three". Reuses QUILL's dictation/speech-recognition stack (Vosk / Whisper / the
-  Nemotron spike), so it runs **offline** with no cloud. Off by default; opt-in with a
+  twenty-three". Reuses QUILL's dictation/speech-recognition stack (Whisper / Nemotron;
+  Vosk until 2026-10-13, now QUILL's podcast chapter engine only), so it runs **offline**
+  with no cloud. Off by default; opt-in with a
   push-to-talk key (and optional wake word). A confirmation earcon marks a recognized
   command; unrecognized input is announced, never guessed. Menu: **Playback > Voice
   Control** (toggle). Voice is purely additive — every command has a key too.
@@ -757,7 +758,7 @@ Defaults in **bold**. Setting keys are `media_*` in `settings_specs.py`.
 
 **Voice control**
 - Enable — **off**; Push-to-talk key; Wake word — **off** / phrase.
-- Recognition engine — **Auto** (offline: Vosk / Whisper); Confirmation earcon — **On**;
+- Recognition engine — **Auto** (offline: Whisper / Nemotron); Confirmation earcon — **On**;
   Command language.
 
 **Sleep timer**

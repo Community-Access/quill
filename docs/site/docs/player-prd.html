@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL Media Player — Product Requirements Document
 (PRD)</title>
@@ -12,7 +12,10 @@
     */
     html {
       color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
       background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
     }
     body {
       margin: 0 auto;
@@ -37,11 +40,16 @@
     }
     @media print {
       html {
-        background-color: white;
+        color-scheme: light only;
       }
-      body {
+      html, body, pre, code {
         background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
         color: black;
+      }
+      pre, code {
+        padding: 0;
       }
       p, h2, h3 {
         orphans: 3;
@@ -54,11 +62,8 @@
     p {
       margin: 1em 0;
     }
-    a {
-      color: #1a1a1a;
-    }
-    a:visited {
-      color: #1a1a1a;
+    a, a:visited {
+      color: inherit;
     }
     img {
       max-width: 100%;
@@ -87,8 +92,11 @@
     blockquote {
       margin: 1em 0 1em 1.7em;
       padding-left: 1em;
-      border-left: 2px solid #e6e6e6;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
       color: #606060;
+      color: light-dark(#606060, #b6b6b6);
     }
     code {
       white-space: pre-wrap;
@@ -112,7 +120,7 @@
     }
     hr {
       border: none;
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       height: 1px;
       margin: 1em 0;
     }
@@ -129,11 +137,11 @@
     }
     tbody {
       margin-top: 0.5em;
-      border-top: 1px solid #1a1a1a;
-      border-bottom: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
     }
     th {
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       padding: 0.25em 0.5em 0.25em 0.5em;
     }
     td {
@@ -172,7 +180,6 @@
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
     /* CSS for syntax highlighting */
     html { -webkit-text-size-adjust: 100%; }
     pre > code.sourceCode { white-space: pre; position: relative; }
@@ -1142,13 +1149,13 @@ so a feature being off never removes a route.</p>
 <li><strong>Hands-free voice control.</strong> Drive the player by voice
 — “play”, “next chapter”, “skip back thirty”, “bookmark this”, “how much
 is left”, “sleep in twenty”, “go to one twenty-three”. Reuses QUILL’s
-dictation/speech-recognition stack (Vosk / Whisper / the Nemotron
-spike), so it runs <strong>offline</strong> with no cloud. Off by
-default; opt-in with a push-to-talk key (and optional wake word). A
-confirmation earcon marks a recognized command; unrecognized input is
-announced, never guessed. Menu: <strong>Playback &gt; Voice
-Control</strong> (toggle). Voice is purely additive — every command has
-a key too.</li>
+dictation/speech-recognition stack (Whisper / Nemotron; Vosk until
+2026-10-13, now QUILL’s podcast chapter engine only), so it runs
+<strong>offline</strong> with no cloud. Off by default; opt-in with a
+push-to-talk key (and optional wake word). A confirmation earcon marks a
+recognized command; unrecognized input is announced, never guessed.
+Menu: <strong>Playback &gt; Voice Control</strong> (toggle). Voice is
+purely additive — every command has a key too.</li>
 <li><strong>Bookmark → your document or Sticky Note.</strong> Send a
 time-stamped bookmark straight into the open QUILL document or a Sticky
 Note as <code>[1:23:45] your note — Title</code>. This is the
@@ -1396,8 +1403,8 @@ present; choose which fields appear.</li>
 <ul>
 <li>Enable — <strong>off</strong>; Push-to-talk key; Wake word —
 <strong>off</strong> / phrase.</li>
-<li>Recognition engine — <strong>Auto</strong> (offline: Vosk /
-Whisper); Confirmation earcon — <strong>On</strong>; Command
+<li>Recognition engine — <strong>Auto</strong> (offline: Whisper /
+Nemotron); Confirmation earcon — <strong>On</strong>; Command
 language.</li>
 </ul>
 <p><strong>Sleep timer</strong></p>

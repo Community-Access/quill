@@ -62,9 +62,10 @@ def test_guided_install_does_engine_then_model_and_returns_to_hub() -> None:
 
 def test_ensure_offline_engine_handles_pip_installed_engines() -> None:
     src = _src("main_frame_speech.py")
-    # Faster Whisper, Vosk and Nemotron share one data-driven pip-install path.
+    # Faster Whisper and Nemotron share one data-driven pip-install path. Vosk
+    # left it on 2026-10-13: it is the podcast chapter engine only.
     assert "pip_engines = {" in src
-    assert "ei.install_vosk" in src
+    assert "ei.install_vosk" not in src
     assert "ei.install_nemotron" in src
     assert "ei.activate_engine_packs()" in src
 
