@@ -193,9 +193,20 @@ Step "Checking tools"
 $pythonArgs = @()
 if (-not $Python) {
     $venv = Join-Path $repo ".venv\Scripts\python.exe"
-    if ((Test-Path -LiteralPath $venv) -and ((& $venv -c "import sys; print(sys.version_info[:2] == (3, 14))") -eq "True")) {
+    # A venv records its base interpreter's absolute path (pyvenv.cfg "home"),
+    # so one made on another machine -- another user profile -- cannot start
+    # here. Probe quietly and say why it was passed over.
+    $venvOk = (Test-Path -LiteralPath $venv) -and
+        ((& $venv -c "import sys; print(sys.version_info[:2] == (3, 14))" 2>$null) -eq "True")
+    if ($venvOk) {
         $Python = $venv
     } else {
+        if (Test-Path -LiteralPath $venv) {
+            $cfg = Join-Path $repo ".venv\pyvenv.cfg"
+            $home_ = (Get-Content -LiteralPath $cfg -ErrorAction SilentlyContinue |
+                Where-Object { $_ -match '^\s*home\s*=' }) -replace '^\s*home\s*=\s*', ''
+            Say "  .venv cannot run here (made for $home_); using py -3.14"
+        }
         $Python = (& py -3.14 -c "import sys; print(sys.executable)").Trim()
     }
 }

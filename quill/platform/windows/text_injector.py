@@ -29,7 +29,20 @@ from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
-_user32 = ctypes.windll.user32
+# A private instance, so the signatures below are ours and no other module's
+# (``ctypes.windll.user32`` is one object shared by the whole process). Without
+# them a 64-bit HWND or HKL goes through ctypes' default 32-bit ``int``.
+_user32 = ctypes.WinDLL("user32")
+_user32.GetForegroundWindow.restype = wintypes.HWND
+_user32.GetForegroundWindow.argtypes = []
+_user32.GetWindowThreadProcessId.restype = wintypes.DWORD
+_user32.GetWindowThreadProcessId.argtypes = [wintypes.HWND, ctypes.POINTER(wintypes.DWORD)]
+_user32.GetKeyboardLayout.restype = wintypes.HKL
+_user32.GetKeyboardLayout.argtypes = [wintypes.DWORD]
+_user32.VkKeyScanExW.restype = ctypes.c_short
+_user32.VkKeyScanExW.argtypes = [ctypes.c_ushort, wintypes.HKL]  # a WCHAR, by code
+_user32.MapVirtualKeyExW.restype = wintypes.UINT
+_user32.MapVirtualKeyExW.argtypes = [wintypes.UINT, wintypes.UINT, wintypes.HKL]
 
 _INPUT_KEYBOARD = 1
 _KEYEVENTF_UNICODE = 0x0004
