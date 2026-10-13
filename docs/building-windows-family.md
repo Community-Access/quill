@@ -4,6 +4,28 @@ Run these commands in PowerShell from the repository root on Windows. They build
 
 QUILL Lite is an editor app in its own right. The **Lite installer edition** and **Companion ZIP edition** of other apps are retired. The Windows release set is a full installer and a portable ZIP for each app.
 
+## The one-command way
+
+`build-quill-apps.ps1` at the repository root runs steps 2 to 5 below for the
+apps you name, in this order, with a log per step and plain-text progress
+("Step 3 of 6: QUILL Cast") that reads well with a screen reader. It rebuilds
+the shared runtime first, runs the joint-release sibling version check once,
+passes each app the build number its source declares, and collects every new
+installer and portable zip into one upload folder with a zip per app, an
+everything zip and `SHA256SUMS.txt`, under `dist/release-builds/<date-time>/`.
+Builds are unsigned unless you pass `-Sign`; nothing is published.
+
+```powershell
+.\build-quill-apps.ps1 lite,cast,radio,transcribe
+.\build-quill-apps.ps1 all -KeepGoing
+.\build-quill-apps.ps1 transcribe -DryRun   # print the commands, build nothing
+Get-Help .\build-quill-apps.ps1 -Detailed    # every option
+```
+
+App names: `quill` (QUILL for All), `lite`, `inkwell`, `weather`, `beacon`,
+`social`, `converter`, `studio`, `cast`, `radio`, `transcribe`, or `all`. Step 1
+below (installing the build environment) is still yours to do once.
+
 ## 1. Prepare the build environment
 
 ```powershell
@@ -55,14 +77,15 @@ Builds are sequential because their installer scripts share `standalone/runtime/
 & .\standalone\studio\scripts\build_release.ps1 -Python $python -Iscc $iscc -SkipSharedRuntime
 & .\standalone\cast\scripts\build_release.ps1 -Python $python -Iscc $iscc -SkipSharedRuntime
 & .\standalone\radio\scripts\build_release.ps1 -Python $python -Iscc $iscc -SkipSharedRuntime
+& .\standalone\transcribe\scripts\build_release.ps1 -Python $python -Iscc $iscc -SkipSharedRuntime
 ```
 
-Each sibling places its installer and portable ZIP in `standalone/<app>/dist/`. Use `-Sign` only for an approved signed release with signing credentials configured. The build scripts derive the app version and Windows build number; do not rename an artifact to imply a different version. For local unpublished Dev builds, Radio, Cast, QUILL Lite, and Converter accept `-SkipPublishedCheck`. Production releases must retain the published-version gate.
+Each sibling places its installer and portable ZIP in `standalone/<app>/dist/`. Use `-Sign` only for an approved signed release with signing credentials configured. The build scripts derive the app version and Windows build number; do not rename an artifact to imply a different version. For local unpublished Dev builds, Radio, Cast, QUILL Lite, Converter, Weather and Transcribe accept `-SkipPublishedCheck`. Production releases must retain the published-version gate.
 
 ## 5. Verify the artifacts
 
 ```powershell
-$apps = 'quilllite','inkwell','weather','beacon','social','converter','studio','cast','radio'
+$apps = 'quilllite','inkwell','weather','beacon','social','converter','studio','cast','radio','transcribe'
 foreach ($app in $apps) {
     $files = Get-ChildItem -LiteralPath "standalone/$app/dist" -File |
         Where-Object { $_.Extension -in '.exe','.zip' -and $_.Name -notmatch '(?i)(-Lite-Setup-|Companion)' }

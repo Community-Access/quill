@@ -198,6 +198,7 @@ class TranscribeCommandsMixin:
                 key=key,
                 at_login=at_login,
                 test_microphone=self._test_microphone,
+                show_modal=self._show_modal_dialog,  # type: ignore[attr-defined]
             )
             try:
                 answer = self._show_modal_dialog(dialog, "Set Up QUILL Transcribe")  # type: ignore[attr-defined]

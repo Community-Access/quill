@@ -300,6 +300,9 @@ class SapiDictationRecognizer:
                 "Windows Dictation needs Windows speech recognition, which is not "
                 "available on this computer."
             )
+        from quill.core.windows_dictation.reader_gate import reader_gate
+
+        reader_gate()  # starts the screen-reader capture the controller checks
         try:
             # DispatchWithEvents needs the type library's generated wrappers.
             client.gencache.EnsureDispatch("SAPI.SpInprocRecognizer")

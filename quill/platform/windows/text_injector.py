@@ -4,9 +4,11 @@ Used by system-wide abbreviation expansion: erase the abbreviation the user
 typed, then type its expansion into the application they are actually working
 in. Two routes:
 
-- **SendInput (default).** Synthesised Unicode keystrokes. Touches nothing but
-  the input queue -- in particular it never disturbs the clipboard, which is
-  the user's, not ours.
+- **SendInput (default).** Synthesised keystrokes. Touches nothing but the
+  input queue -- in particular it never disturbs the clipboard, which is the
+  user's, not ours. A character the keyboard layout has is sent as *its key*
+  (with Shift when it needs it), exactly as a keyboard would; only one the
+  layout lacks goes as a Unicode keystroke (:func:`_layout_key`).
 - **Clipboard paste (opt-in).** Some rich editors and terminals drop or reorder
   fast synthetic keystrokes. For those, the expansion is put on the clipboard,
   pasted with Ctrl+V, and the previous clipboard contents are restored. This is
@@ -36,6 +38,10 @@ _VK_BACK = 0x08
 _VK_LEFT = 0x25
 _VK_CONTROL = 0x11
 _VK_V = 0x56
+_VK_SHIFT = 0x10
+_VK_CAPITAL = 0x14
+_MAPVK_VK_TO_VSC = 0
+_MAPVK_VK_TO_CHAR = 2
 
 #: A pause between batches of synthetic keys. Zero is tempting and wrong: some
 #: targets (Electron apps especially) silently drop keys delivered faster than
@@ -177,12 +183,62 @@ def _send(inputs: list[_INPUT]) -> InjectionResult:
     return InjectionResult(len(inputs), sent)
 
 
-def _text_inputs(text: str) -> list[_INPUT]:
+def _target_layout() -> int:
+    """The keyboard layout of the window the text is going to."""
+    thread = _user32.GetWindowThreadProcessId(_user32.GetForegroundWindow(), None)
+    return int(_user32.GetKeyboardLayout(thread) or 0)
+
+
+def _layout_key(char: str, layout: int, caps_lock: bool) -> list[_INPUT] | None:
+    """*char* as the key that types it on *layout*, or None when it has none.
+
+    Why not always Unicode: JAWS announces a Unicode keystroke (VK_PACKET) as a
+    key of its own -- heard as "c" every time QUILL Transcribe wrote a phrase,
+    in Outlook and the Run box alike, and absent from JAWS's speech history
+    (2026-10-12). A real key is ordinary typing, and the reader treats it so.
+
+    Only a key with no modifier or Shift alone: Ctrl and Alt (AltGr) would be
+    shortcuts in the target, and a dead key would join the next letter.
+    """
+    if len(char) != 1 or not char.isprintable():
+        return None  # line breaks, tabs and surrogates keep the Unicode route
+    scanned = int(_user32.VkKeyScanExW(ord(char), layout))
+    if scanned == -1 or scanned & 0xFFFF == 0xFFFF:
+        return None
+    vk, shift_state = scanned & 0xFF, (scanned >> 8) & 0xFF
+    if shift_state & ~0x01:
+        return None  # needs Ctrl or Alt
+    if int(_user32.MapVirtualKeyExW(vk, _MAPVK_VK_TO_CHAR, layout)) & 0x80000000:
+        return None  # a dead key
+    shifted = bool(shift_state & 0x01)
+    if caps_lock and char.isalpha():
+        shifted = not shifted  # Caps Lock flips the letter keys
+    scan = int(_user32.MapVirtualKeyExW(vk, _MAPVK_VK_TO_VSC, layout)) & 0xFF
+    keys = [_key(vk=vk, scan=scan), _key(vk=vk, scan=scan, flags=_KEYEVENTF_KEYUP)]
+    if shifted:
+        keys = [_key(vk=_VK_SHIFT), *keys, _key(vk=_VK_SHIFT, flags=_KEYEVENTF_KEYUP)]
+    return keys
+
+
+def _unicode_inputs(text: str) -> list[_INPUT]:
     inputs: list[_INPUT] = []
     for unit in utf16_code_units(text):
         inputs.append(_key(scan=unit, flags=_KEYEVENTF_UNICODE))
         inputs.append(_key(scan=unit, flags=_KEYEVENTF_UNICODE | _KEYEVENTF_KEYUP))
     return inputs
+
+
+def _text_inputs(text: str) -> list[_INPUT]:
+    try:
+        layout = _target_layout()
+        caps_lock = bool(int(_user32.GetKeyState(_VK_CAPITAL)) & 0x01)
+        inputs: list[_INPUT] = []
+        for char in text:
+            keys = _layout_key(char, layout, caps_lock)
+            inputs.extend(keys if keys is not None else _unicode_inputs(char))
+        return inputs
+    except Exception:  # noqa: BLE001 - no layout to ask: Unicode always types
+        return _unicode_inputs(text)
 
 
 def _backspace_inputs(count: int) -> list[_INPUT]:
@@ -193,9 +249,35 @@ def _backspace_inputs(count: int) -> list[_INPUT]:
     return inputs
 
 
-def send_text_checked(text: str) -> InjectionResult:
-    """Type *text*, and say how much of it Windows accepted."""
-    return _send(_text_inputs(text))
+def _ctrl_tap() -> list[_INPUT]:
+    return [_key(vk=_VK_CONTROL), _key(vk=_VK_CONTROL, flags=_KEYEVENTF_KEYUP)]
+
+
+def send_text_checked(text: str, *, hush_reader: bool = False) -> InjectionResult:
+    """Type *text*, and say how much of it Windows accepted.
+
+    ``hush_reader`` presses Ctrl on its own straight after the text, in the
+    same batch: the key every screen reader takes as "stop talking". The
+    reader echoes typed keys, and because they come faster than it can speak
+    only the last is heard -- "period" after every dictated phrase
+    (2026-10-12). A timed stop through the reader's API arrived before the
+    echo had begun; a key in the same queue cannot. Ctrl alone does nothing
+    in the program typed into. It is never left down: when Windows takes the
+    press and not the release, the release is sent again by itself.
+    """
+    inputs = _text_inputs(text)
+    if not hush_reader or not inputs:
+        return _send(inputs)
+    result = _send([*inputs, *_ctrl_tap()])
+    if result.sent_events == len(inputs) + 1:  # Ctrl went down and did not come up
+        _release_ctrl()
+    return InjectionResult(len(inputs), min(result.sent_events, len(inputs)))
+
+
+def _release_ctrl() -> None:
+    array = (_INPUT * 1)(_key(vk=_VK_CONTROL, flags=_KEYEVENTF_KEYUP))
+    if int(_user32.SendInput(1, array, ctypes.sizeof(_INPUT))) != 1:
+        logger.warning("Could not release the Ctrl key QUILL pressed after typing")
 
 
 def send_backspaces_checked(count: int) -> InjectionResult:

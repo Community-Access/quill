@@ -7,8 +7,10 @@ the editors and Inkwell use (:mod:`quill.core.windows_dictation.anywhere`).
 What is Transcribe's own is how the app behaves: whether setup has been done,
 the start and stop key, and the tray.
 
-**No key until you choose one.** ``dictation_hotkey`` starts empty, and nothing
-is registered with Windows while it is (spec section 7.1).
+**A key from the start.** ``dictation_hotkey`` is Alt+Shift+\\ until the
+listener chooses another (owner, 2026-10-12: a dictation app with no key to
+start it was one more step before the first word). Emptying it is still a
+choice that is kept: then nothing is registered with Windows.
 
 **From Quill Inkwell, once.** Somebody who used Inkwell's Dictate Anywhere
 already chose an engine, a microphone and a key there. The first time
@@ -38,6 +40,9 @@ _SETTINGS_FILE = "transcribe.json"
 
 #: Bumped when a field changes meaning, never merely when one is added.
 SCHEMA_VERSION = 1
+#: The start and stop key a new install has. Checked against every family
+#: app's keys by family_chords.default_system_wide_keys.
+DEFAULT_DICTATION_HOTKEY = "Alt+Shift+\\"
 
 
 @dataclass(slots=True)
@@ -45,9 +50,9 @@ class TranscribeSettings:
     #: Set when the setup window has been finished or skipped, so it is offered
     #: once and then only from the Help menu.
     setup_done: bool = False
-    #: The key that starts and stops dictation from any program. Empty until
-    #: chosen; never a default.
-    dictation_hotkey: str = ""
+    #: The key that starts and stops dictation from any program. Empty only
+    #: when the listener emptied it.
+    dictation_hotkey: str = DEFAULT_DICTATION_HOTKEY
     #: Open hidden in the tray rather than with the window showing.
     start_in_tray: bool = False
     #: The close button hides to the tray rather than exiting.
@@ -73,7 +78,9 @@ def load_settings(data_dir: Path) -> TranscribeSettings:
     if not isinstance(raw, dict):
         return settings
     settings.setup_done = bool(raw.get("setup_done", False))
-    settings.dictation_hotkey = str(raw.get("dictation_hotkey", "") or "").strip()
+    settings.dictation_hotkey = str(
+        raw.get("dictation_hotkey", DEFAULT_DICTATION_HOTKEY) or ""
+    ).strip()
     settings.start_in_tray = bool(raw.get("start_in_tray", False))
     settings.close_to_tray = bool(raw.get("close_to_tray", True))
     settings.inkwell_checked = bool(raw.get("inkwell_checked", False))
@@ -139,7 +146,7 @@ def take_from_inkwell(settings: TranscribeSettings, data_dir: Path) -> str:
         settings.dictation = dict(inkwell.dictation)
         brought.append("dictation settings")
     key = inkwell.dictate_anywhere_hotkey.strip()
-    if key and not settings.dictation_hotkey:
+    if key and settings.dictation_hotkey in ("", DEFAULT_DICTATION_HOTKEY):
         settings.dictation_hotkey = key
         brought.append(f"start and stop key, {key}")
     if not brought:

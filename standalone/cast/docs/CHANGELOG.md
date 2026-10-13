@@ -20,7 +20,17 @@ All notable changes to QUILL Cast are documented here. QUILL Cast 2.0 is the fir
   the other player keys. This fixes C announcing "Nothing is playing" when
   trying to jump to a podcast.
 
-Testing rebuild: **2.0.0 (build 3)**. Build 3 has not been published. Functional,
+Testing rebuild: **2.0.0 (build 4)**. Builds 3 and 4 have not been published.
+
+- **Runs on Python 3.14, and older runtimes are cleaned up.** The shared QuillVille
+  runtime this build installs is Python 3.14. The installer then removes older
+  runtimes (Python 3.13) that no installed QuillVille app uses any more; one that
+  an app or a shortcut still points to is left alone. Portable copies carry their
+  own Python and change nothing outside their folder.
+- **Record Key in Show and Hide Key.** The key box has a **Record Key...**
+  button (Alt+R): press the combination you want and it is written into the box
+  for you. Typing it still works, and is the way for a key another program has
+  already taken, which never reaches the window. Functional,
 installer/portable and signing checks remain required; the 16 ms diagnostic
 target is not a release-blocking cutoff for an isolated native UI update.
 

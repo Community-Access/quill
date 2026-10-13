@@ -177,13 +177,18 @@ class TranscribeDictationMixin:
                 ExternalDocument,
                 focus_identity,
                 foreground_problem,
+                hush_unless_spoken,
             )
 
             def problem() -> str:
                 return foreground_problem(app="QUILL Transcribe", key="start and stop key")
 
             document = LockedTarget(
-                ExternalDocument(problem=problem), where=focus_identity, advice=PAUSE_ADVICE
+                ExternalDocument(
+                    problem=problem, hush=hush_unless_spoken(self._dictation_preferences)
+                ),
+                where=focus_identity,
+                advice=PAUSE_ADVICE,
             )
             document.write_failure = WRITE_FAILURE  # type: ignore[attr-defined]
             controller = DictationController(

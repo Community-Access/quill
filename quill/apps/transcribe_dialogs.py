@@ -79,6 +79,7 @@ class SetupDialog(wx.Dialog):
         key: str,
         at_login: bool,
         test_microphone: Callable[[str, str, Callable[[str], None]], None],
+        show_modal: Callable[[Any, str], int],
     ) -> None:
         super().__init__(
             parent,
@@ -88,6 +89,7 @@ class SetupDialog(wx.Dialog):
         from quill.core.transcribe.models import model_rows
 
         self._test = test_microphone
+        self._show_modal = show_modal
         root = wx.BoxSizer(wx.VERTICAL)
         about = wx.StaticText(self, label="&About QUILL Transcribe:")
         self.intro = wx.TextCtrl(self, value=INTRO, style=wx.TE_MULTILINE | wx.TE_READONLY)
@@ -143,12 +145,22 @@ class SetupDialog(wx.Dialog):
         key_label = wx.StaticText(self, label="Start and stop &key (leave empty for none):")
         self.key = wx.TextCtrl(self, value=key)
         self.key.SetHelpText(
-            "Type the key that starts and stops dictation from any program, for "
-            "example Ctrl+Alt+PageDown. Leave it empty to use the tray menu instead. "
-            "Nothing is registered with Windows until you choose a key here."
+            "The key that starts and stops dictation from any program: Alt+Shift+\\ "
+            "unless you change it. Type another, for example Ctrl+Alt+PageDown, press "
+            "Record Key to press it instead, or leave the box empty to use the tray "
+            "menu only."
         )
+        self.record_key = wx.Button(self, label="Re&cord Key...")
+        self.record_key.SetHelpText(
+            "Press a key combination and it is written into the start and stop key "
+            "box. A key another program already uses may not arrive: type that one."
+        )
+        self.record_key.Bind(wx.EVT_BUTTON, self._on_record_key)
+        key_row = wx.BoxSizer(wx.HORIZONTAL)
+        key_row.Add(self.key, 1, wx.EXPAND | wx.RIGHT, _PAD)
+        key_row.Add(self.record_key, 0)
         root.Add(key_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
-        root.Add(self.key, 0, wx.EXPAND | wx.ALL, _PAD)
+        root.Add(key_row, 0, wx.EXPAND | wx.ALL, _PAD)
 
         self.at_login = wx.CheckBox(self, label="Start QUILL Transcribe when I sign in to &Windows")
         self.at_login.SetHelpText(
@@ -184,6 +196,18 @@ class SetupDialog(wx.Dialog):
             return
         self.test_button.Enable()
         self.test_result.SetValue(sentence)
+
+    def _on_record_key(self, _event: Any) -> None:
+        """Record Key: the combination pressed goes into the key box."""
+        from quill.ui.key_record import record_key
+
+        chord = record_key(self, wx, self._show_modal)
+        if not chord:
+            self.record_key.SetFocus()  # cancelled: back where the listener was
+            return
+        self.key.SetValue(chord)
+        self.key.SetFocus()  # the reader says the box and what is now in it
+        self.key.SetInsertionPointEnd()
 
     def chosen_microphone(self) -> str:
         row = self.microphone.GetSelection()

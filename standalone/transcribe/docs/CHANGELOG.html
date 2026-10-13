@@ -246,9 +246,35 @@
 <p>All notable changes to QUILL Transcribe are recorded here, newest
 first. The release notes (<code>release-notes-1.0.md</code>) tell the
 same story as a narrative; this file is the itemized list.</p>
+<h2 id="unreleased">Unreleased</h2>
+<h3 id="dictating-into-other-programs">Dictating into other
+programs</h3>
+<ul>
+<li>The start and stop key is <strong>Alt+Shift+Backslash</strong> from
+the start. Change it or empty it in Dictation &gt; Start and Stop
+Key.</li>
+<li>Record Key, beside every key box: press the combination you want and
+it is written out for you. Typing the key still works.</li>
+<li>No more “c” before or after each phrase with JAWS: words are typed
+as the keys of your keyboard layout rather than as Unicode
+keystrokes.</li>
+<li>With phrase feedback set to a tone or to nothing, the screen reader
+no longer says “period” (or the last character) after every phrase:
+QUILL Transcribe presses Ctrl, which every screen reader takes as “stop
+talking”, straight after the words. With the read-back on, you still
+hear everything.</li>
+<li>Saying the same phrase twice writes it twice. It was taken for the
+screen reader’s echo and dropped.</li>
+<li><strong>Runs on Python 3.14, and older runtimes are cleaned
+up.</strong> The shared QuillVille runtime this build installs is Python
+3.14. The installer then removes older runtimes (Python 3.13) that no
+installed QuillVille app uses any more; one that an app or a shortcut
+still points to is left alone. Portable copies carry their own Python
+and change nothing outside their folder.</li>
+</ul>
 <h2 id="100---2026-10-11">1.0.0 - 2026-10-11</h2>
 <p>The first release.</p>
-<h3 id="dictating-into-other-programs">Dictating into other
+<h3 id="dictating-into-other-programs-1">Dictating into other
 programs</h3>
 <ul>
 <li>Start and stop dictation with a key you choose, from the tray menu,

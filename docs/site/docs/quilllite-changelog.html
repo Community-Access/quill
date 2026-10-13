@@ -244,9 +244,28 @@
 <main id="main-content" tabindex="-1">
 <h1 id="quill-lite-changelog">QUILL Lite changelog</h1>
 <h2 id="unreleased">Unreleased</h2>
-<p>Testing rebuild: <strong>1.2.0 (build 3)</strong>, following the
-previously uploaded build 2. The new packages have not been published
-yet.</p>
+<p>Testing rebuild: <strong>1.2.0 (build 4)</strong>, following builds 2
+and 3, which were uploaded for testing. The new packages have not been
+published yet.</p>
+<ul>
+<li><strong>Runs on Python 3.14, and older runtimes are cleaned
+up.</strong> The shared QuillVille runtime this build installs is Python
+3.14. The installer then removes older runtimes (Python 3.13) that no
+installed QuillVille app uses any more; one that an app or a shortcut
+still points to is left alone. Portable copies carry their own Python
+and change nothing outside their folder.</li>
+<li><strong>Dictation does not hear the screen reader.</strong> With a
+headset, JAWS, NVDA or Narrator reading back what you dictated was heard
+by the microphone and written as a new phrase. The built-in speech
+models now hear silence while the screen reader (or QUILL Lite’s own
+sounds) are playing; words spoken over the reader are not heard, so wait
+for it or press Ctrl.</li>
+<li><strong>The same phrase said twice is written twice.</strong> It was
+taken for the screen reader’s echo and dropped.</li>
+<li><strong>The phrase-written sound is a soft tone.</strong> The old
+one started so sharply that it was heard as a spoken “c”.</li>
+</ul>
+<p>Carried over from build 3:</p>
 <ul>
 <li><strong>Routine settings saves run in the background.</strong>
 Preferences, recent files, window/view settings, spelling, page setup,

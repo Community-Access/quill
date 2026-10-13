@@ -46,6 +46,7 @@ from quill.core.windows_dictation.engines import (
 from quill.core.windows_dictation.keep_up import IdleUnloader, KeepUpWatchdog
 from quill.core.windows_dictation.model_catalog import downloadable
 from quill.core.windows_dictation.parser import RecognizedPhrase
+from quill.core.windows_dictation.reader_gate import reader_gate
 from quill.core.windows_dictation.recognizer_worker import WorkerMixin
 from quill.core.windows_dictation.speech_language import coerce_speech_language
 
@@ -376,6 +377,9 @@ class LocalDictationRecognizer(WorkerMixin):
       phrase is tried again, so one bad decode costs nothing anyone hears.
     """
 
+    #: The screen reader's voice is silenced before the detector (reader_gate.py).
+    hears_reader = False
+
     def __init__(
         self,
         listener: _Listener,
@@ -443,6 +447,7 @@ class LocalDictationRecognizer(WorkerMixin):
         self._microphone = microphone
         try:
             self._running.set()
+            self._gate = reader_gate()  # reader_gate.py: not while the reader talks
             self._stream = self._open_stream()
             self._worker = threading.Thread(
                 target=self._work, args=(vad,), name="dictation-recognizer", daemon=True
@@ -565,6 +570,8 @@ class LocalDictationRecognizer(WorkerMixin):
         # Exact zeros only. A muted or unplugged input on some drivers keeps
         # delivering blocks of nothing; a quiet room never produces them.
         self._silent_blocks = self._silent_blocks + 1 if not chunk.any() else 0
+        if getattr(self, "_gate", None) is not None and self._gate.speaking():
+            chunk[:] = 0.0  # the reader's voice, not the person's: heard as silence
         self._audio.put(chunk)
 
 

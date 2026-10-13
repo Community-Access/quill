@@ -206,7 +206,9 @@ def test_inkwells_old_keys_are_refused_because_the_family_uses_them(chord: str) 
     assert said.startswith(f"{chord} is already a shortcut in ")
 
 
-def test_the_inventory_holds_only_the_three_show_hide_keys_by_default() -> None:
+def test_the_inventory_holds_the_show_hide_keys_and_transcribes_key_by_default() -> None:
+    """QUILL Transcribe starts with a key (owner, 2026-10-12): a dictation app
+    with nothing to start it was one more step before the first word."""
     keys = {
         (key.app_id, key.purpose, key.chord) for key in family_chords.default_system_wide_keys()
     }
@@ -214,6 +216,7 @@ def test_the_inventory_holds_only_the_three_show_hide_keys_by_default() -> None:
         ("quill", "show and hide key", "Ctrl+Alt+Shift+Q"),
         ("radio", "show and hide key", "Ctrl+Alt+Shift+R"),
         ("cast", "show and hide key", "Ctrl+Alt+Shift+F12"),
+        ("transcribe", "start and stop key", "Alt+Shift+\\"),
     }
 
 

@@ -105,6 +105,7 @@
   "quill.ui.inline_note_dialog": "reachable",
   "quill.ui.inline_notes_list_dialog": "reachable",
   "quill.ui.insert_image_dialog": "reachable",
+  "quill.ui.key_record": "reachable",
   "quill.ui.keymap_editor": "reachable",
   "quill.ui.library_catalogs_dialog": "reachable",
   "quill.ui.library_dialog": "reachable",

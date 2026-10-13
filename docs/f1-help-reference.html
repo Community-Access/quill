@@ -3054,7 +3054,7 @@ set to expand only manually. Also on Ctrl+K here, and from any program
 on the key you choose with File, Quick Insert Key.</li>
 </ul>
 <h2 id="quill-transcribe">QUILL Transcribe</h2>
-<p>Control coverage: 28 audited sites (28 helped).</p>
+<p>Control coverage: 29 audited sites (29 helped).</p>
 <h3 id="every-window-and-what-it-is-for-5">Every window, and what it is
 for</h3>
 <p><strong>Choose Microphone.</strong> The microphone QUILL Transcribe
@@ -3108,9 +3108,10 @@ remove the optional speech models. Each download shows its size first,
 is checked before it is used, and can be cancelled. A model that did not
 finish is never marked ready.</p>
 <p><strong>Start and Stop Key.</strong> Choose the key that starts and
-stops dictation from any program. There is none until you choose one.
-Type it, or leave the box empty for no key; a key another QuillVille app
-already uses is refused, and you are told whose it is.</p>
+stops dictation from any program. It is Alt+Shift+Backslash unless you
+change it. Type another, press Record Key to press it instead, or leave
+the box empty for no key; a key another QuillVille app already uses is
+refused, and you are told whose it is.</p>
 <p><strong>Transcribe a Recording.</strong> Choose a recording and a
 model; it is transcribed in the background and the transcript waits in
 Notifications for you to review.</p>
@@ -3174,10 +3175,13 @@ found.</li>
 Only models already on this computer are listed here; more can be
 downloaded later from the Model Library. The one you choose is used
 every time until you change it.</li>
-<li><code>self.key</code>: Type the key that starts and stops dictation
-from any program, for example Ctrl+Alt+PageDown. Leave it empty to use
-the tray menu instead. Nothing is registered with Windows until you
-choose a key here.</li>
+<li><code>self.key</code>: The key that starts and stops dictation from
+any program: Alt+Shift+\ unless you change it. Type another, for example
+Ctrl+Alt+PageDown, press Record Key to press it instead, or leave the
+box empty to use the tray menu only.</li>
+<li><code>self.record_key</code>: Press a key combination and it is
+written into the start and stop key box. A key another program already
+uses may not arrive: type that one.</li>
 <li><code>self.at_login</code>: Opens QUILL Transcribe in the tray when
 you sign in, so your key works straight away. It does not start
 listening until you start dictation.</li>

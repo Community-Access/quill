@@ -95,9 +95,9 @@ def test_the_command_list_has_no_way_to_carry_words() -> None:
 # -- settings ------------------------------------------------------------------ #
 
 
-def test_settings_start_with_no_key_and_round_trip(tmp_path: Path) -> None:
+def test_settings_start_with_alt_shift_backslash_and_round_trip(tmp_path: Path) -> None:
     fresh = load_settings(tmp_path)
-    assert fresh.dictation_hotkey == "" and not fresh.setup_done
+    assert fresh.dictation_hotkey == "Alt+Shift+\\" and not fresh.setup_done
     fresh.setup_done = True
     fresh.dictation_hotkey = "Ctrl+Alt+Shift+F9"
     fresh.dictation = {"windows_dictation_engine": "whisper", "stray": 1}
@@ -105,6 +105,14 @@ def test_settings_start_with_no_key_and_round_trip(tmp_path: Path) -> None:
     loaded = load_settings(tmp_path)
     assert loaded.setup_done and loaded.dictation_hotkey == "Ctrl+Alt+Shift+F9"
     assert loaded.dictation == {"windows_dictation_engine": "whisper"}
+
+
+def test_an_emptied_key_stays_empty(tmp_path: Path) -> None:
+    """No key is a choice the listener can make, and it is kept."""
+    settings = load_settings(tmp_path)
+    settings.dictation_hotkey = ""
+    save_settings(tmp_path, settings)
+    assert load_settings(tmp_path).dictation_hotkey == ""
 
 
 def test_a_newer_file_is_read_and_never_written_over(tmp_path: Path) -> None:

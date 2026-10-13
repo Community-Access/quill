@@ -39,6 +39,8 @@ separate moments and people want different things from each:
 
 from __future__ import annotations
 
+import logging
+import os
 from collections import deque
 from collections.abc import Callable
 
@@ -69,12 +71,23 @@ from quill.core.windows_dictation.preferences import (
     DictationPreferences,
 )
 from quill.core.windows_dictation.readback import spoken_marks
+from quill.core.windows_dictation.reader_gate import started_gate
 from quill.core.windows_dictation.resilience import ResilienceMixin, engine_failure_message
 from quill.core.windows_dictation.target_hold import TargetHoldMixin
 from quill.core.windows_dictation.transcript import TranscriptMixin
 from quill.core.windows_dictation.vocabulary import Command
 from quill.core.windows_dictation.voice_commands import VoiceCommandsMixin
 from quill.core.windows_dictation.wake import is_stop_phrase, match_wake, wake_words
+
+logger = logging.getLogger(__name__)
+
+
+def _trace(message: str, *args: object) -> None:
+    """``QUILL_DICTATION_TRACE=1``: what was heard, when, and what became of it,
+    in quill.log. Off by default -- it writes the dictated words to the log."""
+    if os.environ.get("QUILL_DICTATION_TRACE", "").strip() == "1":
+        logger.info("dictation trace: " + message, *args)
+
 
 __all__ = [
     "DEFAULT_PHRASE_FEEDBACK",
@@ -141,6 +154,7 @@ class DictationController(
         self._last_spoken = ""
         self._init_live()  # live.py: preview, anchor, finishing, muting
         self._echo = EchoGuard(self._clock)  # echo_guard.py: the read-back, heard again
+        self._heard_from = 0.0  # when the phrase being heard began
         self._init_voice_commands()  # voice_commands.py: modes, targets, the library
         self._init_transcript()  # transcript.py: live transcripts
         self._init_target_hold()  # target_hold.py: paused while the field cannot be written
@@ -293,7 +307,28 @@ class DictationController(
 
     # -- recogniser events ------------------------------------------------ #
 
+    def _reader_was_talking(self, started: float | None) -> bool:
+        """For an engine that hears the microphone itself (reader_gate.py): was
+        the screen reader talking for most of this phrase? The built-in models
+        never hear it -- their audio is silenced at the source -- and say so."""
+        gate = started_gate()
+        if gate is None or started is None or not getattr(self._recognizer, "hears_reader", True):
+            return False
+        return gate.mostly_reader(started)
+
+    def _reader_silenced(self) -> bool:
+        """True when the screen reader cannot reach this engine at all: the
+        gate is capturing it and the built-in model never hears it then. Its
+        echo cannot be heard, so the same words said again are always meant
+        (echo_guard.py is for every other case)."""
+        gate = started_gate()
+        if gate is None or not gate.readers:
+            return False
+        return not getattr(self._recognizer, "hears_reader", True)
+
     def on_speech_started(self) -> None:
+        self._heard_from = self._clock()
+        _trace("speech started")
         self._ignore_until_speech = False
         if self._state is DictationState.LISTENING:
             self._set_state(DictationState.RECOGNIZING)
@@ -321,9 +356,19 @@ class DictationController(
         if self._state not in _LIVE:
             return
         said = " ".join(word.display for word in phrase.words)
-        if self._echo.is_echo(said):
+        # When it began, if the recogniser said so since the last phrase: an
+        # echo starts as the text goes in (echo_guard.py, ECHO_START_S).
+        started, self._heard_from = (self._heard_from or None), 0.0
+        _trace(
+            "phrase %r, began %s",
+            said,
+            "unknown" if started is None else f"{self._clock() - started:.2f}s ago",
+        )
+        echo = not self._reader_silenced() and self._echo.is_echo(said, started)
+        if echo or self._reader_was_talking(started):
+            _trace("dropped: %s", "echo of what was written" if echo else "screen reader talking")
             self._feedback.show(
-                f"Not written again: {said} (the read-back, heard by the microphone)."
+                f"Not written: {said} (the screen reader, heard by the microphone)."
             )
             return
         heard = wake_words(said)
@@ -487,6 +532,7 @@ class DictationController(
             play = speak = False
         # The tone first, and only now: it means "this went into the
         # document", so it cannot be played before the insert has happened.
+        _trace("wrote %r (tone %s, read-back %s)", text, play, bool(speak and heard))
         if play:
             self._feedback.cue(Moment.PHRASE)
         if speak and heard:

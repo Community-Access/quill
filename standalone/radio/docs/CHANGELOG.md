@@ -8,7 +8,19 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 ## [Unreleased]
 
-Testing rebuild: **3.2.0 (build 2)**. The packages have not been published yet.
+Testing rebuild: **3.2.0 (build 3)**. The packages have not been published yet.
+
+- **Runs on Python 3.14, and older runtimes are cleaned up.** The shared QuillVille
+  runtime this build installs is Python 3.14. The installer then removes older
+  runtimes (Python 3.13) that no installed QuillVille app uses any more; one that
+  an app or a shortcut still points to is left alone. Portable copies carry their
+  own Python and change nothing outside their folder.
+- **Record Key in Show and Hide Key.** The key box has a **Record Key...**
+  button (Alt+R): press the combination you want and it is written into the box
+  for you. Typing it still works, and is the way for a key another program has
+  already taken, which never reaches the window.
+
+Carried over from build 2:
 
 - **Recordings opens or restores its existing window.** This build includes
   the minimized-window fix described under 3.2.0 below: Record > Recordings...

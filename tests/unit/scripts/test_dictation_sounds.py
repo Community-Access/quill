@@ -33,6 +33,18 @@ def test_the_ink_pack_maps_every_dictation_event_to_its_file() -> None:
         assert manifest["events"][str(event)] == f"{event}.wav"
 
 
+def test_the_phrase_cue_has_no_attack_to_hear_as_a_letter() -> None:
+    """A cue at full volume within a few milliseconds is heard as a consonant:
+    the first one was reported as a spoken "c" before every read-back."""
+    generator = _generator()
+    phrase = generator.sounds()["windows_dictation_phrase.wav"]
+    peak = max(map(abs, phrase))
+    ten_ms = generator.SAMPLE_RATE // 100
+    # Ten milliseconds in, it is still well under half of where it is going.
+    assert max(map(abs, phrase[:ten_ms])) < peak * 0.5
+    assert generator.PHRASE_ATTACK_MS >= 20
+
+
 def test_the_phrase_cue_is_the_shortest_and_quietest() -> None:
     """Heard hundreds of times an hour, so it must be the least intrusive."""
     sounds = _generator().sounds()

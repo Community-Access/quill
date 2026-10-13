@@ -492,7 +492,15 @@ def test_dictation_settings_are_the_shared_window_over_our_copy(
 # -- keys ---------------------------------------------------------------------------- #
 
 
-def test_no_key_is_registered_until_one_is_chosen(host: Host) -> None:
+def test_the_default_key_is_registered_at_launch(host: Host) -> None:
+    """Alt+Shift+\\ from the start (owner, 2026-10-12)."""
+    host._settings.dictation_hotkey = TranscribeSettings().dictation_hotkey
+    assert host._start_transcribe_keys() == ""
+    assert host.dictation_key() == "Alt+Shift+\\"
+
+
+def test_an_emptied_key_registers_nothing(host: Host) -> None:
+    host._settings.dictation_hotkey = ""
     assert host._start_transcribe_keys() == ""
     assert host.frame.hotkeys == {}
 

@@ -39,10 +39,14 @@ It has one page:
    it heard. The test stays on your computer and nothing is kept.
 3. **Speech model** - the models already on this computer. Moonshine is a good
    place to start: it is quick and adds punctuation for you.
-4. **Start and stop key** - type the key you want to use from any program, for
-   example Ctrl+Alt+PageDown, or leave it empty. Nothing is registered with
-   Windows until you choose a key, and a key another QuillVille app already uses
-   is refused with the name of the app that uses it.
+4. **Start and stop key** - the key that starts and stops dictation from any
+   program. It is **Alt+Shift+Backslash** (`Alt+Shift+\`) unless you change it.
+   Type another, for example Ctrl+Alt+PageDown, or press **Record Key** (Alt+C)
+   and then press the combination you want: it is written into the box for you.
+   Leave the box empty for no key. A key another QuillVille app already uses is
+   refused with the name of the app that uses it. If a key does something else
+   when you press it in Record Key, another program already uses it: type it, or
+   choose another.
 5. **Start QUILL Transcribe when I sign in to Windows** - off unless you check
    it. When it is on, QUILL Transcribe opens in the tray. It still does not
    listen until you start dictation.
@@ -242,7 +246,9 @@ Transcribe.
 There are two keys you can choose, both in the File menu, and neither is set
 until you choose it:
 
-- **Start and Stop Key** (Ctrl+Alt+Shift+D) - starts and stops dictation from any program.
+- **Start and Stop Key** (Ctrl+Alt+Shift+D) - chooses the key that starts and
+  stops dictation from any program: Alt+Shift+Backslash unless you change it.
+  Type the key, or press **Record Key** and press it.
 - **Show and Hide Key** (Ctrl+Alt+Shift+H) - shows and hides the QUILL
   Transcribe window from any program.
 
@@ -330,8 +336,8 @@ In the QUILL Transcribe window:
 | Check for updates | Ctrl+Alt+U |
 | About QUILL Transcribe | Ctrl+Alt+I |
 
-From any program, only the keys you chose: your start and stop key, and your
-show and hide key.
+From any program, only these: your start and stop key (Alt+Shift+Backslash
+unless you changed it), and your show and hide key if you chose one.
 
 F1 anywhere in QUILL Transcribe says what the window is for and what the
 control you are on does.

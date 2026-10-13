@@ -6,6 +6,9 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
+import pytest
+
+from quill.ui import show_hide_key_picker
 from quill.ui.show_hide_key_picker import (
     choose_show_hide_key,
     run_show_hide_key_command,
@@ -29,7 +32,17 @@ class _Dialog:
         pass
 
 
-_WX = SimpleNamespace(TextEntryDialog=_Dialog, ID_OK=5100, ID_CANCEL=5101, OK=4, ICON_WARNING=256)
+_WX = SimpleNamespace(ID_OK=5100, ID_CANCEL=5101, OK=4, ICON_WARNING=256)
+
+
+@pytest.fixture(autouse=True)
+def _stand_in_key_box(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The key box (prompt, box, Record Key) replaced by the stand-in above."""
+    monkeypatch.setattr(
+        show_hide_key_picker,
+        "_key_dialog",
+        lambda host, wx, prompt, caption, value: _Dialog(host.frame, prompt, caption, value),
+    )
 
 
 class _Host:

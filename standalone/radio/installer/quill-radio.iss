@@ -40,10 +40,10 @@
 ; (docs/release/RELEASE.md, "Build numbers"). build_release.ps1 passes
 ; /dAppBuild= and /dAppFileVersion=; these literals are only the fallback.
 #ifndef AppBuild
-  #define AppBuild "2"
+  #define AppBuild "3"
 #endif
 #ifndef AppFileVersion
-  #define AppFileVersion "3.2.0.2"
+  #define AppFileVersion "3.2.0.3"
 #endif
 #define AppPublisher "Community Access"
 #define AppURL "https://github.com/Community-Access/quill-radio"

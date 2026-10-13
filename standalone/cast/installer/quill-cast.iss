@@ -20,10 +20,10 @@
 ; (docs/release/RELEASE.md, "Build numbers"). build_release.ps1 passes
 ; /dAppBuild= and /dAppFileVersion=; these literals are only the fallback.
 #ifndef AppBuild
-  #define AppBuild "3"
+  #define AppBuild "4"
 #endif
 #ifndef AppFileVersion
-  #define AppFileVersion "2.0.0.3"
+  #define AppFileVersion "2.0.0.4"
 #endif
 #define AppPublisher "Community Access"
 #define AppURL "https://github.com/Community-Access/quill-cast"

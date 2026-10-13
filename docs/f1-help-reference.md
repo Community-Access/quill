@@ -1187,7 +1187,7 @@ Control coverage: 3 audited sites (3 helped).
 
 ## QUILL Transcribe
 
-Control coverage: 28 audited sites (28 helped).
+Control coverage: 29 audited sites (29 helped).
 
 ### Every window, and what it is for
 
@@ -1221,7 +1221,7 @@ Control coverage: 28 audited sites (28 helped).
 
 **Speech Models.** The Model Library: download, check or remove the optional speech models. Each download shows its size first, is checked before it is used, and can be cancelled. A model that did not finish is never marked ready.
 
-**Start and Stop Key.** Choose the key that starts and stops dictation from any program. There is none until you choose one. Type it, or leave the box empty for no key; a key another QuillVille app already uses is refused, and you are told whose it is.
+**Start and Stop Key.** Choose the key that starts and stops dictation from any program. It is Alt+Shift+Backslash unless you change it. Type another, press Record Key to press it instead, or leave the box empty for no key; a key another QuillVille app already uses is refused, and you are told whose it is.
 
 **Transcribe a Recording.** Choose a recording and a model; it is transcribed in the background and the transcript waits in Notifications for you to review.
 
@@ -1252,7 +1252,8 @@ Control coverage: 28 audited sites (28 helped).
 - `self.test_button`: Records four seconds on the chosen microphone and says how loud it was and what it heard. The recording stays on this computer and is not kept.
 - `self.test_result`: What the last microphone test found.
 - `self.model`: The model that turns your speech into text. Only models already on this computer are listed here; more can be downloaded later from the Model Library. The one you choose is used every time until you change it.
-- `self.key`: Type the key that starts and stops dictation from any program, for example Ctrl+Alt+PageDown. Leave it empty to use the tray menu instead. Nothing is registered with Windows until you choose a key here.
+- `self.key`: The key that starts and stops dictation from any program: Alt+Shift+\ unless you change it. Type another, for example Ctrl+Alt+PageDown, press Record Key to press it instead, or leave the box empty to use the tray menu only.
+- `self.record_key`: Press a key combination and it is written into the start and stop key box. A key another program already uses may not arrive: type that one.
 - `self.at_login`: Opens QUILL Transcribe in the tray when you sign in, so your key works straight away. It does not start listening until you start dictation.
 - `finish`: Keep these choices and close setup.
 - `skip`: Close setup without changing anything. Setup is on the Help menu whenever you want it.

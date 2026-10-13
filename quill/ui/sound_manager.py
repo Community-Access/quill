@@ -43,6 +43,7 @@ headless tests or before ``init()`` is called).
 from __future__ import annotations
 
 import logging
+import os
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -90,6 +91,8 @@ def post_sound(event_id: str) -> None:
 
     Safe to call from any thread and before :func:`init` is called.
     """
+    if os.environ.get("QUILL_DICTATION_TRACE", "").strip() == "1":
+        logger.info("dictation trace: sound %s", event_id)  # which earcon, and when
     if _manager is not None:
         _manager.play(event_id)
 
