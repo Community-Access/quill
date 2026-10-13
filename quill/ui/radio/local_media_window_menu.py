@@ -78,6 +78,12 @@ MENUS: tuple[tuple[str, tuple[tuple[str, str, str, str], ...]], ...] = (
             ("select_all", "Select A&ll", "Ctrl+A", "Select every item."),
             ("", "", "", ""),
             ("properties", "Propert&ies...", "Alt+Enter", "Tags, length and path."),
+            (
+                "add_to_lineup",
+                "Add t&o Lineup...",
+                "Ctrl+Shift+U",
+                "Put the items in a QUILL Lineup.",
+            ),
             ("show_in_folder", "Show in File &Explorer", "Ctrl+Shift+E", "Open its folder."),
             ("locate", "Locate Missing &File...", "Ctrl+Shift+L", "Find a moved file."),
         ),
@@ -266,6 +272,7 @@ ITEM_POPUP: tuple[tuple[str, str], ...] = (
     ("locate", "Locate &File..."),
     ("show_in_folder", "Show in Fi&le Explorer"),
     ("properties", "Prop&erties..."),
+    ("add_to_lineup", "Add t&o Lineup..."),
 )
 
 MOVE_POPUP: tuple[tuple[str, str], ...] = (

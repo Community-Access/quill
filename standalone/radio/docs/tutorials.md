@@ -1,6 +1,6 @@
 # Quill Radio Tutorials
 
-Welcome. There are 43 short lessons here, about 256 minutes in all, and you can take them in any order. Each one is a few small steps, and each step tells you what to press and what you should hear.
+Welcome. There are 44 short lessons here, about 265 minutes in all, and you can take them in any order. Each one is a few small steps, and each step tells you what to press and what you should hear.
 
 This page is the lessons written out, so you can read them anywhere. If you would rather be walked through, open **Help > Tutorials...** in Quill Radio. It does a step for you when you ask, and moves on by itself once it hears you have done one.
 
@@ -44,6 +44,7 @@ The keys here are the ones Quill Radio comes with. If you have changed a key, th
   - The ACB Media schedule (7 minutes)
   - NOAA Weather Radio (4 minutes)
   - Play your own files in playlists (8 minutes)
+  - Build a lineup that fills itself (9 minutes)
   - Save a copy, and find it on disk (5 minutes)
   - The picture, captions and described audio (6 minutes)
   - Community Picks, and suggesting one (5 minutes)
@@ -1223,6 +1224,54 @@ Make a playlist from music, audiobooks or video on your computer, play it, shuff
 7. **Find it in Browse Stations too.** Local Media is also the second branch of Browse Stations. Open a playlist there and press Enter on an item to play it; the Applications key offers Play Next, Remove from Playlist and the rest.
    - Keys: Ctrl+B
    - You should hear: Browse Stations.
+
+### Build a lineup that fills itself
+
+Make a QUILL Lineup: a list of stations, episodes, videos and your own files, brought in by rules you choose, kept in the order you choose, and played straight through.
+
+*8 steps, about 9 minutes.*
+
+1. **Open Lineups.** Lineups is a window of its own, like Local Media, so it is on the Window menu and in the Ctrl+Tab order. The first time it is empty, and your cursor is already on the New Lineup button.
+   - Keys: Ctrl+U
+   - You should hear: Lineups, then New Lineup button.
+   - Worth knowing: It is also on every window's Station menu and in the Go To list.
+
+2. **Start from an example.** Start from an Example offers ready-made lineups, each showing a different way rules keep things. Choose Morning: your Morning stations, always, then today's unplayed news, each episode gone once you have heard it.
+   - Keys: Ctrl+Alt+N
+   - You should hear: Made Morning. Its rules are running now.
+   - Worth knowing: A rule naming a folder you do not have finds nothing and says so.
+
+3. **Add something by hand.** Anything you add yourself stays until you remove it, whatever the rules say. In Browse Stations, open the menu on a station with the Applications key and choose Add to Lineup, then choose Morning.
+   - Keys: Shift+F10
+   - You should hear: Added to Morning.
+   - Worth knowing: The same choice is on your favorites, in Search Stations and in Local Media.
+
+4. **Read the rules, and how long things stay.** Back in Lineups, Edit Rules shows each rule as one sentence: what it brings in, how long its items stay, and how many it finds now. Edit a rule to change its Keep choice: while it matches, until finished, for some days, or always.
+   - Keys: Ctrl+Alt+R
+   - You should hear: Rules for Morning, then the first rule's sentence.
+   - Worth knowing: Try It in Edit Rule shows what a rule finds without saving anything.
+
+5. **Keep one item, and ask why another is here.** In the Items list, Keep This Item holds an item whatever its rule says; press it again to give it back to the rule. Why Is This Here names the rule that found an item, or your own hand, and how long it will stay.
+   - Keys: Ctrl+K, Alt+Enter
+   - You should hear: Kept. It stays whatever the rules say.
+   - Worth knowing: Delete puts an item in Removed Items, and no rule brings it back.
+
+6. **Put it in your own order.** Alt+Shift+Up and Alt+Shift+Down move the selected items, and Quill Radio says where they landed. Moving changes the order, never how long an item stays, and a refresh never moves anything you placed.
+   - Keys: Alt+Shift+Up, Alt+Shift+Down
+   - You should hear: Moved to 2 of 9.
+   - Worth knowing: Ctrl+Z takes back the last change.
+
+7. **Play the whole lineup.** Play This Lineup plays from the top, one item after another, any kind. A live station never ends by itself, so the first one tells you how to move on; anything that cannot play is named and skipped.
+   - Keys: Ctrl+Alt+P, Ctrl+Right
+   - You should hear: Playing, and the first item's name.
+   - Worth knowing: From any window, the Next Chapter key moves to the next item too, even on a live station. Enter on a lineup in the Lineups list plays it.
+
+8. **Start Quill Radio in it.** Start Here makes this lineup open in front of the main window each time Quill Radio starts. It is a check item: choose it again to start as usual, or on another lineup to move it.
+   - Keys: Ctrl+Alt+H
+   - You should hear: Morning opens when Quill Radio starts.
+   - Worth knowing: QUILL Cast shares your lineups and keeps its own Start Here.
+
+You have a lineup that brings itself up to date, keeps what you told it to keep, lets go of what you have heard, and plays in your order. QUILL Cast sees the same lineups, so you can edit them in either app.
 
 ### Save a copy, and find it on disk
 

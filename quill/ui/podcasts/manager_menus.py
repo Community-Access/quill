@@ -182,6 +182,17 @@ def episode_actions(
             "Add to Play&list...",
             lambda: dialog._on_add_to_playlist(show, episode),
         ),
+        *(
+            [
+                action(
+                    "add_to_lineup",
+                    "Add to Line&up...",
+                    lambda: _add_to_lineup(dialog, show, episode),
+                )
+            ]
+            if _lineups_on(dialog)
+            else []
+        ),
         action("copy_link", "&Copy Episode Link", lambda: dialog._on_copy_episode_link(episode)),
         action(
             "share_moment",
@@ -249,6 +260,37 @@ def episode_actions(
     ])
 
 
+def _lineups_on(dialog: object) -> bool:
+    """Whether QUILL Lineups is switched on in Customize Features.
+
+    Off, Add to Lineup is left out of the row menus and Quick Actions, as the
+    Episode menu row and Go To entry are.
+    """
+    host = getattr(dialog, "_transport_host", None) or dialog
+    enabled = getattr(host, "_cast_area_enabled", None)
+    if not callable(enabled):
+        return True
+    try:
+        return bool(enabled("lineups"))
+    except Exception:  # noqa: BLE001 - a menu is never lost to a settings read
+        return True
+
+
+def _add_to_lineup(dialog: object, show: PodcastShow, episode: object = None) -> None:
+    """Add to Lineup... from any episode or podcast row: QUILL Lineups."""
+    host = getattr(dialog, "_transport_host", None) or dialog
+    adder = getattr(host, "_add_to_lineup", None)
+    if callable(adder):
+        adder(show, episode)
+        return
+    from quill.core.lineups.sources import episode_facts, show_facts
+    from quill.ui.lineups.add_to import offer
+    from quill.ui.podcasts.lineups_host import CastLineupsHost
+
+    facts = episode_facts(show, episode) if episode is not None else show_facts(show)
+    offer(CastLineupsHost(host), [facts], parent=getattr(host, "frame", None))
+
+
 def show_actions(dialog: object, show: PodcastShow) -> dict[str, ResolvedAction]:
     """Every podcast action, keyed by id, resolved for this show."""
 
@@ -267,6 +309,11 @@ def show_actions(dialog: object, show: PodcastShow) -> dict[str, ResolvedAction]
             "play_next_episode",
             "&Play Next Episode",
             lambda: dialog._play_next_unplayed(show),
+        ),
+        *(
+            [action("add_to_lineup", "Add to Line&up...", lambda: _add_to_lineup(dialog, show))]
+            if _lineups_on(dialog)
+            else []
         ),
         action(
             "refresh",

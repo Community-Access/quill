@@ -266,7 +266,7 @@ separately in <a href="CONTROL_REFERENCE.md">CONTROL_REFERENCE.md</a>,
 generated from <code>topics.json</code> by
 <code>quill/tools/build_docs.py</code>.</p>
 <h2 id="quill-radio">Quill Radio</h2>
-<p>Control coverage: 294 audited sites (180 helped, 114 named-help).</p>
+<p>Control coverage: 330 audited sites (216 helped, 114 named-help).</p>
 <h3 id="every-window-and-what-it-is-for">Every window, and what it is
 for</h3>
 <p><strong>ACB Media Podcasts.</strong> Everything ACB Media publishes,
@@ -297,6 +297,9 @@ any other.</p>
 <p><strong>Add from YouTube Playlist.</strong> Bring the entries of a
 YouTube playlist in as playable items. Pick the ones you want; each
 arrives as its own row in your favorites.</p>
+<p><strong>Add to Lineup.</strong> Choose the lineup to add to, or New
+Lineup to make one. Items you add stay until you remove them, whatever
+the rules say.</p>
 <p><strong>Ask QUILL Radio.</strong> A conversation with ChatGPT, on
 your own plan, that already knows what is playing: the station and the
 title the stream is announcing go with every message, so ‘what is this
@@ -326,6 +329,11 @@ are in.</p>
 <p><strong>Caption Settings.</strong> How captions look when a video
 shows them: size, colors, and placement. Changes apply to the caption
 display, not to the video itself.</p>
+<p><strong>Change What It Looks For.</strong> Looking for a different
+kind of thing clears the rule’s tests and places, because they belong to
+the old kind.</p>
+<p><strong>Change the Rules.</strong> The change lets some items go.
+They will be in Recently Left.</p>
 <p><strong>Chapters.</strong> The chapter list of what is playing. Enter
 jumps straight to the highlighted chapter; the player keeps playing from
 there.</p>
@@ -343,6 +351,9 @@ window says so and shows the copy that came with the app, so it always
 opens. Anything you have already added says so, and an entry the
 curators retire simply stops being offered – nothing you added is ever
 removed for you.</p>
+<p><strong>Delete Lineup.</strong> Deleting a lineup removes its rules
+and its order, never the stations, episodes or files in it. Undo brings
+it back.</p>
 <p><strong>Download Preferences.</strong> Where downloads land, how they
 are filed, and whether the queue keeps going when the window closes.
 These settings govern every download, from any source.</p>
@@ -350,12 +361,18 @@ These settings govern every download, from any source.</p>
 can do to it. Finished rows stay until you clear them so “did that
 actually download?” always has an answer, and Enter on a saved row opens
 the folder it landed in.</p>
+<p><strong>Edit Rule.</strong> One rule, in the order its sentence
+reads: what it looks for, where to look, the tests an item must pass,
+the order and how many, and when its items go. Try It shows what it
+finds right now without saving anything.</p>
 <p><strong>Edit Station Tags.</strong> Your own words for a station, so
 a search finds it by them: a team it carries, a show you like, anything.
 Type them in Your tags, separated by commas, and press Enter. The
 directory’s own tags are listed below, read-only, because they are
 searched too. Empty the box to remove your tags; Escape leaves
 everything as it was.</p>
+<p><strong>Export Rules.</strong> Save this lineup’s rules to a file, to
+share or to use on another computer.</p>
 <p><strong>Find Streams from a Website.</strong> Point Quill Radio at a
 web page you know carries a stream, and it scans the page for playable
 stream links. Useful for the station whose website plays fine in a
@@ -376,11 +393,15 @@ then 1 without reading anything.</p>
 a newer version. When Stable can read everything you have saved, you can
 go back now. When it can’t, you can wait for Stable to catch up, or go
 back to the copy saved when you joined. Close changes nothing.</p>
+<p><strong>Go to a Lineup.</strong> Choose a lineup by name to open it
+in the Lineups window: quicker than arrowing when you have many.</p>
 <p><strong>Going straight back isn’t safe yet.</strong> How to come back
 to Stable from a newer version. When Stable can read everything you have
 saved, you can go back now. When it can’t, you can wait for Stable to
 catch up, or go back to the copy saved when you joined. Close changes
 nothing.</p>
+<p><strong>Import Rules.</strong> Open a lineup rules file; a new lineup
+with those rules is made.</p>
 <p><strong>Import Stations.</strong> Bring stations in from a playlist
 file – M3U, PLS – or another player’s export. What arrives lands in your
 favorites; nothing already there is touched.</p>
@@ -400,6 +421,15 @@ afterwards – the tree on the main window.</p>
 answers to, in one filterable list, built by reading the menus in front
 of you – so it shows the keys you actually have, including anything you
 rebound. Type to filter; Copy All takes the list with you.</p>
+<p><strong>Lineups.</strong> QUILL Lineups: lists of anything to play,
+built by rules you write and arranged by hand. Your lineups are on the
+left and the selected one’s items on the right. Rules add items, and
+each rule says when its items go: when they stop matching, once
+finished, after some days, or never. Moving an item changes the order
+but not how long it stays; Keep (Ctrl+K) holds it whatever the rules
+say; Delete puts it in Removed Items, and no rule brings it back. Enter
+plays; Alt+Enter says why an item is here, or edits a lineup’s
+rules.</p>
 <p><strong>Listening Statistics.</strong> A report of your listening:
 which stations, how long, and when. It reads your own local history and
 nothing leaves this computer.</p>
@@ -422,6 +452,13 @@ come back. Nothing changes unless you check the box and choose Move.</p>
 <p><strong>Move Quill Radio to Dev?.</strong> Says plainly what could go
 wrong on Beta or Dev, how your settings are protected, and how to come
 back. Nothing changes unless you check the box and choose Move.</p>
+<p><strong>Move to Position.</strong> Type the position to move to,
+counting from 1. The new position is said once the item is there.</p>
+<p><strong>New Lineup.</strong> Type a name for the new lineup. Names
+are unique, ignoring capitals.</p>
+<p><strong>New from an Example.</strong> Ready-made lineups, each
+showing a different way rules keep items. The one you choose becomes
+yours; change its rules as you like.</p>
 <p><strong>Player.</strong> The whole transport in one small window:
 what is playing, where you are in it, and buttons for play, stop,
 skipping, speed, chapters and volume. Ctrl+Shift+G opens it from
@@ -467,6 +504,9 @@ recently, in one list that outlives the announcement: feeds that could
 not be read, downloads that died, streams that dropped – each with its
 reason and the time it happened. Retry tries the highlighted row again;
 nothing here is sent anywhere.</p>
+<p><strong>Recently Left.</strong> What the rules let go from this
+lineup, newest first, each with why: finished, its days passed, it no
+longer matched. Bring Back returns an item as kept.</p>
 <p><strong>Record Station.</strong> Record the chosen station, starting
 now, for a length you set – or open-ended with a safety cap. The capture
 runs in the background; the Recordings window and the status bar both
@@ -479,6 +519,13 @@ this app offers you: Stable, the one we recommend; Beta, new features a
 few weeks early; or Dev, work in progress for testers. Arrowing through
 the choices only explains them – nothing changes until you choose
 Switch.</p>
+<p><strong>Removed Items.</strong> What you removed from this lineup. No
+rule brings these back; Bring Back returns them as kept items, which
+stay whatever the rules say.</p>
+<p><strong>Removed Rules.</strong> Rules you removed had brought items
+in. Keep them as kept items, or let them go to Recently Left.</p>
+<p><strong>Rename Lineup.</strong> Type the lineup’s new name. Names are
+unique, ignoring capitals, so Go to a Lineup always means one thing.</p>
 <p><strong>Resume Recording.</strong> Quill Radio closed while this
 recording was still being written – a crash, a shutdown, a log-off.
 Resume picks the capture back up on the same station; Skip keeps what
@@ -487,6 +534,11 @@ Preferences can change it.</p>
 <p><strong>Resume Recordings.</strong> Quill Radio closed while these
 recordings were still being written. Resume All picks the captures back
 up; Skip All keeps what was saved and lets them go.</p>
+<p><strong>Rules.</strong> The rules of one lineup, each as a sentence:
+what it brings in, how long its items stay, and what it finds now.
+Anything any rule finds is in the lineup. Below them, where new items
+go, a play-through budget, and whether live items are skipped when the
+lineup plays through.</p>
 <p><strong>Schedule Recording.</strong> Record a station at a time you
 choose, once or on repeat. Add an entry with a station, a start time and
 a length; Quill Radio wakes for it, captures it, and files the recording
@@ -534,6 +586,9 @@ account and no website. It is checked first, so a missing address or
 something already on the list is caught here. With no mail program, the
 whole suggestion goes on your clipboard to paste into any email. Nothing
 is sent at all in Safe Mode.</p>
+<p><strong>Test.</strong> One test of a rule: a field, a comparison and
+a value. A number test never matches an item that does not say, so a
+podcast with no length is never ‘at most 10 minutes’.</p>
 <p><strong>Undo History.</strong> The last ten things you can take back,
 newest first, each saying what undoing it brings back. Undo This One
 takes back the highlighted step alone and leaves the rest; Ctrl+Z always
@@ -565,6 +620,9 @@ a setup file left out, one row per item, each with the reason – stored
 only in OneDrive, in use by another program, a path too long for
 Windows. Nothing listed here was deleted. What to do about it is under
 the list, and Copy List takes the whole thing with you.</p>
+<p><strong>Why Is This Here.</strong> Why one item is in the lineup –
+the rule that found it, or your own hand – and how long it will
+stay.</p>
 <p><strong>YouTube Comments.</strong> The comments people left on a
 YouTube video, one per row, with replies right after the comment they
 answer. Type in Search comments to narrow the list, change Sort by for
@@ -596,6 +654,11 @@ on. Escape returns you to it.</p>
 about what is playing, as reviewable, copyable text: the station’s own
 details, the current track, and the live playback status. It is a
 snapshot – open it again for fresh facts.</p>
+<p><strong>Windows titled “Rules for …”.</strong> The rules of one
+lineup, each as a sentence: what it brings in, how long its items stay,
+and what it finds now. Anything any rule finds is in the lineup. Below
+them, where new items go, a play-through budget, and whether live items
+are skipped when the lineup plays through.</p>
 <p><strong>Windows titled “Song History…”.</strong> What each station
 has played while you listened: every title the stream reported, newest
 first, with the time it was heard.</p>
@@ -1118,6 +1181,115 @@ jump there, when this video is the one playing.</li>
 <li><code>self._close</code>: Closes this window and goes back to where
 you were.</li>
 </ul>
+<h4 id="module-level-quilluilineupsdialogspy">(module level)
+(<code>quill/ui/lineups/dialogs.py</code>)</h4>
+<ul>
+<li><code>box</code>: Read with the arrow keys. OK or Escape
+closes.</li>
+<li><code>ok</code>: Close.</li>
+</ul>
+<h4 id="module-level-quilluilineupslists_dialogpy">(module level)
+(<code>quill/ui/lineups/lists_dialog.py</code>)</h4>
+<ul>
+<li><code>listing</code>: Newest first. Select one or more and press
+Bring Back; they return as kept items, which stay whatever the rules
+say.</li>
+<li><code>back</code>: Return the selected items to the lineup,
+kept.</li>
+<li><code>clear</code>: Forget every entry here. Removed items could
+then come back through a rule.</li>
+<li><code>close</code>: Close without changing anything.</li>
+</ul>
+<h4 id="module-level-quilluilineupsrule_edit_dialogpy">(module level)
+(<code>quill/ui/lineups/rule_edit_dialog.py</code>)</h4>
+<ul>
+<li><code>field_choice</code>: What this test looks at.</li>
+<li><code>op_choice</code>: How it compares. A number test never matches
+an item that does not say.</li>
+<li><code>value_box</code>: What to look for: words, a wildcard, a
+pattern, or a whole number.</li>
+<li><code>value_yesno</code>: Yes or no.</li>
+<li><code>case</code>: Off: News and news are the same. On: they are
+not.</li>
+</ul>
+<h4 id="ruleeditor-quilluilineupsrule_edit_dialogpy">RuleEditor
+(<code>quill/ui/lineups/rule_edit_dialog.py</code>)</h4>
+<ul>
+<li><code>self._kind</code>: The kind of thing this rule brings in. One
+kind per rule; a lineup can have many rules.</li>
+<li><code>self._scope_by</code>: Look only in some folders, podcasts,
+channels or other groups: choose one here, then select values below.
+With nothing selected, the rule looks everywhere.</li>
+<li><code>self._filter</code>: Type part of a name to shorten the list
+of values below.</li>
+<li><code>self._values</code>: Select every value to look in: Space
+selects or deselects the value under the cursor. Any selected value
+counts.</li>
+<li><code>self._tests</code>: What an item must be. With no tests,
+everything in the places above is found.</li>
+<li><code>self._match</code>: All: an item must pass every test. Any:
+one is enough.</li>
+<li><code>self._sort</code>: The order this rule’s items arrive in. You
+can move them afterwards.</li>
+<li><code>self._limit</code>: At most this many items from this
+rule.</li>
+<li><code>self._per_group</code>: At most this many from each podcast,
+channel, album or folder.</li>
+<li><code>self._budget</code>: Stop adding once this many minutes are
+found.</li>
+<li><code>self._keep</code>: How long this rule’s items stay. While it
+matches: they go when they stop matching. Until finished: they go once
+heard. For days: they go after that many days. Always: never.</li>
+<li><code>self._days</code>: How many days an item stays.</li>
+<li><code>self._percent</code>: Heard past this much counts as finished.
+Played in Cast always counts.</li>
+<li><code>self._max_kept</code>: Keep at most this many from the rule;
+the oldest arrivals go first.</li>
+<li><code>self._enabled</code>: Off: the rule finds nothing new and lets
+nothing go until it is on again.</li>
+<li><code>self._try</code>: Show what this rule finds right now, without
+saving it.</li>
+<li><code>self._matches</code>: What the rule finds now, in its
+order.</li>
+</ul>
+<h4 id="rulesdialog-quilluilineupsrules_dialogpy">RulesDialog
+(<code>quill/ui/lineups/rules_dialog.py</code>)</h4>
+<ul>
+<li><code>self._list</code>: Each rule as one sentence: what it brings
+in, how long its items stay, and what it finds now. Rules add to each
+other; anything any rule finds is in the lineup. Enter edits the
+selected rule.</li>
+<li><code>self._new_items</code>: Where a rule’s new items appear. Items
+already here never move by themselves.</li>
+<li><code>self._budget</code>: Playing the whole lineup stops adding
+rule items once this many minutes are reached. Items you kept, added or
+moved are never left out.</li>
+<li><code>self._skip_live</code>: A live station never ends; off, it
+plays until you press Next.</li>
+</ul>
+<h4 id="lineupswindow-quilluilineupswindowpy">LineupsWindow
+(<code>quill/ui/lineups/window.py</code>)</h4>
+<ul>
+<li><code>self._new_btn</code>: Name a new, empty lineup. Fill it with
+Add to Lineup from any list in the app, or give it rules with Edit
+Rules.</li>
+<li><code>self._example_btn</code>: Choose a ready-made lineup, such as
+Morning or New This Week, and make it your own. Its rules are yours to
+change.</li>
+<li><code>self._lineups</code>: Your lineups, with how many items each
+holds and how long it plays. Enter plays the lineup; Tab moves to the
+Show filter, then its items. Alt+Enter edits its rules, F2 renames,
+Delete deletes it after asking, and Alt+Shift+Up and Down move it.</li>
+<li><code>self._show</code>: Show only some kinds of item. Moving items
+while a kind is hidden moves them among the items you can see.</li>
+<li><code>self._items</code>: Rules add items, and each rule says when
+its items go: when they stop matching, when you have finished them,
+after some days, or never. Moving an item changes the order but not how
+long it stays. Keep (Ctrl+K) holds an item whatever the rules say.
+Delete puts it in Removed Items, and no rule brings it back. Enter plays
+from here; Alt+Enter says why an item is here; Alt+Shift+Up and Down
+move it.</li>
+</ul>
 <h4 id="radioappframe-quillappsradiopy">RadioAppFrame
 (<code>quill/apps/radio.py</code>)</h4>
 <ul>
@@ -1229,7 +1401,7 @@ Read-only.</li>
 <li><code>close</code>: Close Update History.</li>
 </ul>
 <h2 id="quill-cast">QUILL Cast</h2>
-<p>Control coverage: 305 audited sites (209 helped, 96 named-help).</p>
+<p>Control coverage: 341 audited sites (245 helped, 96 named-help).</p>
 <h3 id="every-window-and-what-it-is-for-1">Every window, and what it is
 for</h3>
 <p><strong>About This Episode.</strong> Everything the feed says about
@@ -1240,12 +1412,20 @@ feed, not hidden by Cast.</p>
 directories by name, or paste a feed address you already have. What you
 add lands in your library, and its episodes appear the first time the
 feed is read.</p>
+<p><strong>Add to Lineup.</strong> Choose the lineup to add to, or New
+Lineup to make one. Items you add stay until you remove them, whatever
+the rules say.</p>
 <p><strong>Build Me a Listening Run.</strong> Episodes AI help chose to
 fit the time you have, measured by Cast. Suggestions from AI help, for
 you to decide. Each row starts accepted; Space switches it between
 Accept and Skip, and Accept All and Skip All change every row. Apply
 Selected does only the accepted rows; Cancel or Escape changes
 nothing.</p>
+<p><strong>Change What It Looks For.</strong> Looking for a different
+kind of thing clears the rule’s tests and places, because they belong to
+the old kind.</p>
+<p><strong>Change the Rules.</strong> The change lets some items go.
+They will be in Recently Left.</p>
 <p><strong>Closing QUILL Cast.</strong> What closing the window should
 do: exit, or keep playing with QUILL Cast tucked into the system tray.
 Cancel leaves everything as it was. Don’t ask me again remembers your
@@ -1254,10 +1434,17 @@ answer, and Preferences can set it back to asking.</p>
 subscription, or make a new folder. The podcast remains in its original
 folder and shares one episode list, download set, and listening history
 in every placement.</p>
+<p><strong>Delete Lineup.</strong> Deleting a lineup removes its rules
+and its order, never the stations, episodes or files in it. Undo brings
+it back.</p>
 <p><strong>Downloads.</strong> The download queue, and everything you
 can do to it. Finished rows stay until you clear them so “did that
 actually download?” always has an answer, and Enter on a saved row opens
 the folder it landed in.</p>
+<p><strong>Edit Rule.</strong> One rule, in the order its sentence
+reads: what it looks for, where to look, the tests an item must pass,
+the order and how many, and when its items go. Try It shows what it
+finds right now without saving anything.</p>
 <p><strong>Episode Filter Rule.</strong> One rule inside a podcast’s
 Episode Filters: a title pattern, a minimum length, and any more tests –
 show notes, people, type, age, season or number – with every test or any
@@ -1269,6 +1456,8 @@ Filter rule: what it looks at – the title, the show notes, the people on
 the episode, its type, length, age, season or number – how to compare,
 and the value. Words, wildcards and regular expressions all work on
 text.</p>
+<p><strong>Export Rules.</strong> Save this lineup’s rules to a file, to
+share or to use on another computer.</p>
 <p><strong>Feed Check.</strong> Which of the podcasts you follow need
 something, worst first: failing feeds with the reason, empty feeds, then
 quiet ones, then the healthy rest. Opening it checks nothing; Retry
@@ -1298,6 +1487,8 @@ folder answers for the rest.</p>
 a newer version. When Stable can read everything you have saved, you can
 go back now. When it can’t, you can wait for Stable to catch up, or go
 back to the copy saved when you joined. Close changes nothing.</p>
+<p><strong>Go to a Lineup.</strong> Choose a lineup by name to open it
+in the Lineups window: quicker than arrowing when you have many.</p>
 <p><strong>Going straight back isn’t safe yet.</strong> How to come back
 to Stable from a newer version. When Stable can read everything you have
 saved, you can go back now. When it can’t, you can wait for Stable to
@@ -1306,6 +1497,17 @@ nothing.</p>
 <p><strong>Import OPML.</strong> Bring shows in from another podcast
 app’s OPML export. Choose the file, review what it found, and import;
 anything you already follow is left alone rather than added twice.</p>
+<p><strong>Import Rules.</strong> Open a lineup rules file; a new lineup
+with those rules is made.</p>
+<p><strong>Lineups.</strong> QUILL Lineups: lists of anything to play,
+built by rules you write and arranged by hand. Your lineups are on the
+left and the selected one’s items on the right. Rules add items, and
+each rule says when its items go: when they stop matching, once
+finished, after some days, or never. Moving an item changes the order
+but not how long it stays; Keep (Ctrl+K) holds it whatever the rules
+say; Delete puts it in Removed Items, and no rule brings it back. Enter
+plays; Alt+Enter says why an item is here, or edits a lineup’s
+rules.</p>
 <p><strong>Listening Statistics.</strong> A report of your listening:
 which shows, how many episodes, how long, and when. It reads your own
 local history and nothing leaves this computer.</p>
@@ -1321,11 +1523,18 @@ back. Nothing changes unless you check the box and choose Move.</p>
 <p><strong>Move to Folder.</strong> Choose the folder to file into, or
 make a new one. Folders are yours to invent, and filing changes nothing
 about what is downloaded or played.</p>
+<p><strong>Move to Position.</strong> Type the position to move to,
+counting from 1. The new position is said once the item is there.</p>
 <p><strong>Name These Chapters.</strong> New chapter titles AI help
 wrote from the transcript. Suggestions from AI help, for you to decide.
 Each row starts accepted; Space switches it between Accept and Skip, and
 Accept All and Skip All change every row. Apply Selected does only the
 accepted rows; Cancel or Escape changes nothing.</p>
+<p><strong>New Lineup.</strong> Type a name for the new lineup. Names
+are unique, ignoring capitals.</p>
+<p><strong>New from an Example.</strong> Ready-made lineups, each
+showing a different way rules keep items. The one you choose becomes
+yours; change its rules as you like.</p>
 <p><strong>Notifications.</strong> What QUILL Cast told you while you
 were elsewhere, newest first: new episodes, finished downloads, feeds
 that keep failing and podcasts that have gone quiet. Enter goes to what
@@ -1396,14 +1605,29 @@ recently, in one list that outlives the announcement: feeds that could
 not be read, downloads that died, streams that dropped – each with its
 reason and the time it happened. Retry tries the highlighted row again;
 nothing here is sent anywhere.</p>
+<p><strong>Recently Left.</strong> What the rules let go from this
+lineup, newest first, each with why: finished, its days passed, it no
+longer matched. Bring Back returns an item as kept.</p>
 <p><strong>Release Channel: QUILL Cast.</strong> Choose which versions
 this app offers you: Stable, the one we recommend; Beta, new features a
 few weeks early; or Dev, work in progress for testers. Arrowing through
 the choices only explains them – nothing changes until you choose
 Switch.</p>
+<p><strong>Removed Items.</strong> What you removed from this lineup. No
+rule brings these back; Bring Back returns them as kept items, which
+stay whatever the rules say.</p>
+<p><strong>Removed Rules.</strong> Rules you removed had brought items
+in. Keep them as kept items, or let them go to Recently Left.</p>
+<p><strong>Rename Lineup.</strong> Type the lineup’s new name. Names are
+unique, ignoring capitals, so Go to a Lineup always means one thing.</p>
 <p><strong>Rename Place.</strong> Your own name for a place in the main
 window. Leave it as shipped, or blank, to keep the shipped name; nothing
 in the place changes.</p>
+<p><strong>Rules.</strong> The rules of one lineup, each as a sentence:
+what it brings in, how long its items stay, and what it finds now.
+Anything any rule finds is in the lineup. Below them, where new items
+go, a play-through budget, and whether live items are skipped when the
+lineup plays through.</p>
 <p><strong>Save Lineup.</strong> A name for the Play Queue’s current
 order, so Apply Lineup can put it back later. Saving never changes the
 queue itself.</p>
@@ -1423,6 +1647,9 @@ nothing.</p>
 Out Volume and Smart Speed, for the podcast that is playing or for every
 podcast. Apply puts them into effect and the window stays open, so you
 can listen and adjust again.</p>
+<p><strong>Test.</strong> One test of a rule: a field, a comparison and
+a value. A number test never matches an item that does not say, so a
+podcast with no length is never ‘at most 10 minutes’.</p>
 <p><strong>Tidy the Podcasts I Follow.</strong> Podcasts that look
 finished, doubled up or broken, each with its reason and an action.
 Nothing is sent anywhere for this. Suggestions from AI help, for you to
@@ -1458,6 +1685,9 @@ a setup file left out, one row per item, each with the reason – stored
 only in OneDrive, in use by another program, a path too long for
 Windows. Nothing listed here was deleted. What to do about it is under
 the list, and Copy List takes the whole thing with you.</p>
+<p><strong>Why Is This Here.</strong> Why one item is in the lineup –
+the rule that found it, or your own hand – and how long it will
+stay.</p>
 <p><strong>Year in Review.</strong> Your listening year as a short
 report: the shows you gave the most time to, how many episodes you
 finished, and when you listened. It is built from your own local
@@ -1533,6 +1763,11 @@ an episode or mark it played.</p>
 worked out for this episode, before they are kept: rename one, drop one
 that is wrong, and save. Chapters the feed supplied are never guessed at
 – this window appears only for episodes that arrived without them.</p>
+<p><strong>Windows titled “Rules for …”.</strong> The rules of one
+lineup, each as a sentence: what it brings in, how long its items stay,
+and what it finds now. Anything any rule finds is in the lineup. Below
+them, where new items go, a play-through budget, and whether live items
+are skipped when the lineup plays through.</p>
 <p><strong>Windows titled “Schedule for…”.</strong> When this podcast –
 or every podcast – is looked at for new episodes: manually only, every
 so often, at set times, around when it usually publishes, or on the
@@ -2166,6 +2401,115 @@ thing.</li>
 keep or send.</li>
 <li><code>close_btn</code>: Closes this window and returns to where you
 were.</li>
+</ul>
+<h4 id="module-level-quilluilineupsdialogspy-1">(module level)
+(<code>quill/ui/lineups/dialogs.py</code>)</h4>
+<ul>
+<li><code>box</code>: Read with the arrow keys. OK or Escape
+closes.</li>
+<li><code>ok</code>: Close.</li>
+</ul>
+<h4 id="module-level-quilluilineupslists_dialogpy-1">(module level)
+(<code>quill/ui/lineups/lists_dialog.py</code>)</h4>
+<ul>
+<li><code>listing</code>: Newest first. Select one or more and press
+Bring Back; they return as kept items, which stay whatever the rules
+say.</li>
+<li><code>back</code>: Return the selected items to the lineup,
+kept.</li>
+<li><code>clear</code>: Forget every entry here. Removed items could
+then come back through a rule.</li>
+<li><code>close</code>: Close without changing anything.</li>
+</ul>
+<h4 id="module-level-quilluilineupsrule_edit_dialogpy-1">(module level)
+(<code>quill/ui/lineups/rule_edit_dialog.py</code>)</h4>
+<ul>
+<li><code>field_choice</code>: What this test looks at.</li>
+<li><code>op_choice</code>: How it compares. A number test never matches
+an item that does not say.</li>
+<li><code>value_box</code>: What to look for: words, a wildcard, a
+pattern, or a whole number.</li>
+<li><code>value_yesno</code>: Yes or no.</li>
+<li><code>case</code>: Off: News and news are the same. On: they are
+not.</li>
+</ul>
+<h4 id="ruleeditor-quilluilineupsrule_edit_dialogpy-1">RuleEditor
+(<code>quill/ui/lineups/rule_edit_dialog.py</code>)</h4>
+<ul>
+<li><code>self._kind</code>: The kind of thing this rule brings in. One
+kind per rule; a lineup can have many rules.</li>
+<li><code>self._scope_by</code>: Look only in some folders, podcasts,
+channels or other groups: choose one here, then select values below.
+With nothing selected, the rule looks everywhere.</li>
+<li><code>self._filter</code>: Type part of a name to shorten the list
+of values below.</li>
+<li><code>self._values</code>: Select every value to look in: Space
+selects or deselects the value under the cursor. Any selected value
+counts.</li>
+<li><code>self._tests</code>: What an item must be. With no tests,
+everything in the places above is found.</li>
+<li><code>self._match</code>: All: an item must pass every test. Any:
+one is enough.</li>
+<li><code>self._sort</code>: The order this rule’s items arrive in. You
+can move them afterwards.</li>
+<li><code>self._limit</code>: At most this many items from this
+rule.</li>
+<li><code>self._per_group</code>: At most this many from each podcast,
+channel, album or folder.</li>
+<li><code>self._budget</code>: Stop adding once this many minutes are
+found.</li>
+<li><code>self._keep</code>: How long this rule’s items stay. While it
+matches: they go when they stop matching. Until finished: they go once
+heard. For days: they go after that many days. Always: never.</li>
+<li><code>self._days</code>: How many days an item stays.</li>
+<li><code>self._percent</code>: Heard past this much counts as finished.
+Played in Cast always counts.</li>
+<li><code>self._max_kept</code>: Keep at most this many from the rule;
+the oldest arrivals go first.</li>
+<li><code>self._enabled</code>: Off: the rule finds nothing new and lets
+nothing go until it is on again.</li>
+<li><code>self._try</code>: Show what this rule finds right now, without
+saving it.</li>
+<li><code>self._matches</code>: What the rule finds now, in its
+order.</li>
+</ul>
+<h4 id="rulesdialog-quilluilineupsrules_dialogpy-1">RulesDialog
+(<code>quill/ui/lineups/rules_dialog.py</code>)</h4>
+<ul>
+<li><code>self._list</code>: Each rule as one sentence: what it brings
+in, how long its items stay, and what it finds now. Rules add to each
+other; anything any rule finds is in the lineup. Enter edits the
+selected rule.</li>
+<li><code>self._new_items</code>: Where a rule’s new items appear. Items
+already here never move by themselves.</li>
+<li><code>self._budget</code>: Playing the whole lineup stops adding
+rule items once this many minutes are reached. Items you kept, added or
+moved are never left out.</li>
+<li><code>self._skip_live</code>: A live station never ends; off, it
+plays until you press Next.</li>
+</ul>
+<h4 id="lineupswindow-quilluilineupswindowpy-1">LineupsWindow
+(<code>quill/ui/lineups/window.py</code>)</h4>
+<ul>
+<li><code>self._new_btn</code>: Name a new, empty lineup. Fill it with
+Add to Lineup from any list in the app, or give it rules with Edit
+Rules.</li>
+<li><code>self._example_btn</code>: Choose a ready-made lineup, such as
+Morning or New This Week, and make it your own. Its rules are yours to
+change.</li>
+<li><code>self._lineups</code>: Your lineups, with how many items each
+holds and how long it plays. Enter plays the lineup; Tab moves to the
+Show filter, then its items. Alt+Enter edits its rules, F2 renames,
+Delete deletes it after asking, and Alt+Shift+Up and Down move it.</li>
+<li><code>self._show</code>: Show only some kinds of item. Moving items
+while a kind is hidden moves them among the items you can see.</li>
+<li><code>self._items</code>: Rules add items, and each rule says when
+its items go: when they stop matching, when you have finished them,
+after some days, or never. Moving an item changes the order but not how
+long it stays. Keep (Ctrl+K) holds an item whatever the rules say.
+Delete puts it in Removed Items, and no rule brings it back. Enter plays
+from here; Alt+Enter says why an item is here; Alt+Shift+Up and Down
+move it.</li>
 </ul>
 <h2 id="quill-media-player">QUILL Media Player</h2>
 <p>Control coverage: 36 audited sites (23 helped, 13 named-help).</p>

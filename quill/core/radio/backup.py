@@ -92,6 +92,7 @@ RADIO_DATA: tuple[RadioDataFile, ...] = (
     RadioDataFile("radio-youtube-channels.json", "followed YouTube channels"),
     RadioDataFile("radio-my-servers.json", "own streaming servers"),
     RadioDataFile("radio-local-media.json", "Local Media list"),
+    RadioDataFile("lineups.json", "Lineups (shared with Quill Cast)"),
     RadioDataFile("radio_quick_actions.json", "Quick Actions"),
     RadioDataFile("radio-actions.json", "row-action order"),
     RadioDataFile("radio_downloads.json", "download preferences"),

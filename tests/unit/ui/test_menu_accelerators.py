@@ -70,6 +70,9 @@ def radio_menu_bar(_isolated_profile):
         favorites.add(station, folder="Morning" if index == 12 else "")
     frame._build_menu_bar()
     yield frame.frame.GetMenuBar()
+    # Close the way the app closes: only its shutdown stops its timers, and a
+    # timer whose owner window is deleted fires into freed memory later.
+    frame._radio_shutdown()
     # Building the app installs a process-global dialog-transition policy;
     # leaving it set leaks this app's preference into every later test.
     set_transition_announcement_policy(None)

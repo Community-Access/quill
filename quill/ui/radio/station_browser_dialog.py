@@ -47,7 +47,7 @@ from quill.ui.dialog_contract import (
     readable_min_size,
 )
 from quill.ui.media.list_columns_view import build_columns
-from quill.ui.radio import library_search, transport_keys
+from quill.ui.radio import library_search, lineups_commands, transport_keys
 from quill.ui.radio.results_view import ALL_SOURCES as _ALL_SOURCES
 from quill.ui.radio.results_view import ResultsViewMixin
 from quill.ui.radio.search_fanout import run_search
@@ -1303,6 +1303,7 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
                 lambda url=station.homepage, s=from_spotify: self._open_url(url, spotify=s),
             ))
         entries.append(("Edit Station &Tags...", lambda s=station: self._edit_tags(s)))
+        entries.append(("Add to Li&neup...", lambda: lineups_commands.add_station(self, station)))
         if self._on_report_bad_station is not None:
             entries.append((
                 "Report &Bad Station...",

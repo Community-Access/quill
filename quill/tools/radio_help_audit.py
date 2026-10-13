@@ -65,7 +65,7 @@ SNAPSHOT_PATH = REPO_ROOT / "tests" / "unit" / "ui" / "fixtures" / "radio_help_i
 #: rather than in all four audits: the controls are identical whichever app is
 #: being taught, so four snapshots of the same sites would be four copies of
 #: one review.
-_SCAN_DIRS: tuple[str, ...] = ("quill/ui/radio",)
+_SCAN_DIRS: tuple[str, ...] = ("quill/ui/radio", "quill/ui/lineups")  # Lineups is shared with Cast
 _SCAN_GLOBS: tuple[str, ...] = (
     "quill/apps/radio*.py",
     "quill/ui/tutorials_window.py",

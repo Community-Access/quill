@@ -338,7 +338,8 @@ def register_radio_commands(host: Any) -> None:
     # (2026-08-18). Last on purpose -- register_commands skips any verb this
     # app already listed, so it has to see the table above first.
     # Local Media: the window, adding files, and the playing playlist's steps.
-    from quill.ui.radio import local_media_commands, transport_keys
+    from quill.ui.radio import lineups_commands, local_media_commands, transport_keys
 
     local_media_commands.register(host)
+    lineups_commands.register(host)
     transport_keys.register_commands(host, prefix="radio")

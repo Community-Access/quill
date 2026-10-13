@@ -251,29 +251,58 @@ changes; this file keeps the engineering record. The 1.x release notes
 were retired on 2026-10-03.</p>
 <h2 id="unreleased">Unreleased</h2>
 <ul>
-<li><strong>Show notes read as words.</strong> A feed that encodes its
-text twice (<code>&amp;amp;#8217;</code>, common with WordPress podcast
-plugins) left <code>&amp;#8217;</code> in show notes, titles and the
-feed preview, and a screen reader spelled it out. Notes published as
+<li><p><strong>QUILL Lineups.</strong> Named lists of anything Quill
+Radio and QUILL Cast can play: podcasts you follow and their episodes,
+plus radio stations, saved places, YouTube videos, playlists and
+channels, and Radio’s Local Media files and recordings. Rules you write
+bring items in and say when they go (While it matches, Until finished,
+For a number of days, Until finished or a number of days, Always, and
+Max kept), and your own hands outrank them: Keep This Item, Remove from
+Lineup into Removed Items, Recently Left with reasons, Bring Back, Why
+Is This Here and Undo. One shared file, <code>lineups.json</code>, so
+the same Lineups appear in both apps and both can edit at once. Open it
+with Episode &gt; Lineups… (Ctrl+U, the same key as in Quill Radio), Go
+To or the Command Palette; Add to Lineup… is on every episode and
+podcast menu and is a Quick Action. Playing an episode puts it and the
+Lineup’s later episodes at the front of the Play Queue and plays it, so
+the queue carries on by itself; stations, YouTube and Local Media are
+sent to Quill Radio. Start Here (Ctrl+Alt+H) opens a Lineup when Cast
+starts. A Customize Features area, QUILL Lineups, under Playing;
+<code>lineups.json</code> is in Cast’s backup. User guide Chapter 9, PRD
+section 23.27, and a new tutorial, <strong>Build a lineup that fills
+itself</strong>.</p></li>
+<li><p><strong>Save Lineup and Apply Lineup on the Play Queue are QUILL
+Lineups now.</strong> Save Lineup… saves the queue’s order as a Lineup
+of hand-added episodes (saving over a name replaces it, keeping any
+rules), and says “Saved lineup Tuesday: 5 episodes, in this order.”
+Apply Lineup… offers every Lineup with episodes and puts them at the
+front of the queue by the same rule as before, counting what it applied
+and skipped. Lineups saved the old way, as playlists, are copied into
+Lineups once at launch; the playlists stay where they were. One meaning
+of “lineup” across the family.</p></li>
+<li><p><strong>Show notes read as words.</strong> A feed that encodes
+its text twice (<code>&amp;amp;#8217;</code>, common with WordPress
+podcast plugins) left <code>&amp;#8217;</code> in show notes, titles and
+the feed preview, and a screen reader spelled it out. Notes published as
 escaped HTML (<code>&amp;lt;p&amp;gt;</code>) showed their tags. Both
 are read properly now, through one shared cleaner, and a test fails if a
 new reader of publisher text decodes it by hand
-(<code>quill/core/display_text.py</code>).</li>
-<li><strong>Feeds over http and https, explained.</strong> The user
+(<code>quill/core/display_text.py</code>).</p></li>
+<li><p><strong>Feeds over http and https, explained.</strong> The user
 guide has a new section, “Feeds over http and https” under Feed Check:
 https is tried first, Player Information marks a feed that really is
 plain http, a password is never sent over plain http, and what to do
 when a certificate cannot be verified. Feed Check’s list of reasons now
-quotes the certificate sentence Cast actually says.</li>
-<li><strong>One certificate check for everything.</strong> Podcast
+quotes the certificate sentence Cast actually says.</p></li>
+<li><p><strong>One certificate check for everything.</strong> Podcast
 searches, downloads and Check for Updates now check certificates through
 the same shared check as feeds, and the certificate sentence comes from
 one place for every app (<code>quill/core/net.py</code>), so Feed Check,
-Check for Updates and every other app say it in the same words.</li>
-<li>Playback letters now work only in Now Playing. Main library, Places,
-and episode lists keep their letter typeahead; Shift+Right scanning
-moves with the other player keys. This fixes C announcing “Nothing is
-playing” when trying to jump to a podcast.</li>
+Check for Updates and every other app say it in the same words.</p></li>
+<li><p>Playback letters now work only in Now Playing. Main library,
+Places, and episode lists keep their letter typeahead; Shift+Right
+scanning moves with the other player keys. This fixes C announcing
+“Nothing is playing” when trying to jump to a podcast.</p></li>
 </ul>
 <p>Testing rebuild: <strong>2.0.0 (build 4)</strong>. Builds 3 and 4
 have not been published.</p>

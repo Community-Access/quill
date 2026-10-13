@@ -62,6 +62,7 @@ from quill.core.sound_events import SoundEvent
 from quill.core.support_message import SUPPORT_EMAIL
 from quill.ui.companion_cues import init_app_sound
 from quill.ui.dialog_contract import show_message_box
+from quill.ui.surface_lifetime import stop_timer_on_destroy
 
 _TITLE = "QuillBeacon"
 _VERSION = "0.1.0"
@@ -1762,6 +1763,7 @@ class BeaconFrame(wx.Frame):
         """
         self._sync_timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self._on_auto_sync_tick, self._sync_timer)
+        stop_timer_on_destroy(self, self._sync_timer)  # _on_close is not the only exit
         self._apply_auto_sync_interval()
 
     def _apply_auto_sync_interval(self) -> None:

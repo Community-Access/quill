@@ -23,7 +23,7 @@ pytestmark = pytest.mark.machine_global
 
 
 @pytest.fixture
-def cast(quill_data_dir: Path):
+def cast(quill_data_dir: Path, wx_app, quiet_cast_startup, close_cast):
     from quill.core.podcasts.models import PodcastShow
     from quill.core.podcasts.models_episode import PodcastEpisode
     from quill.core.podcasts.subscriptions import PodcastLibrary, save_library
@@ -41,7 +41,6 @@ def cast(quill_data_dir: Path):
         )
     library.add_show(show)
     save_library(quill_data_dir, library)
-    app = wx.App()
     from quill.apps.podcasts import PodcastsAppFrame
     from quill.ui.dialog_contract import set_transition_announcement_policy
 
@@ -53,11 +52,7 @@ def cast(quill_data_dir: Path):
         yield frame
     finally:
         set_transition_announcement_policy(None)
-        try:
-            frame.frame.Destroy()
-        except Exception:  # noqa: BLE001
-            pass
-        del app
+        close_cast(frame)
 
 
 class _Opener:
@@ -191,11 +186,10 @@ def test_about_this_episode_is_one_window_that_follows_the_episode(cast) -> None
     assert first.frame.IsShown()
 
 
-def test_the_contract_works_for_a_host_with_no_window_menu(quill_data_dir: Path) -> None:
+def test_the_contract_works_for_a_host_with_no_window_menu(quill_data_dir: Path, wx_app) -> None:
     """QUILL's own frame keeps no Window manager; a peer there still closes right."""
     from quill.ui.podcasts.peer_window import open_peer
 
-    app = wx.App()
     owner = wx.Frame(None)
     said: list[str] = []
 
@@ -233,7 +227,6 @@ def test_the_contract_works_for_a_host_with_no_window_menu(quill_data_dir: Path)
         assert opener.focused >= 1
     finally:
         owner.Destroy()
-        del app
 
 
 def test_sound_enhancements_is_a_peer_whose_apply_keeps_it_open(cast) -> None:

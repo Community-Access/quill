@@ -10,8 +10,11 @@ to write to the real ``%APPDATA%\\Quill`` path and fail with stale state.
 from __future__ import annotations
 
 import os
+import sys
+import weakref
 from collections.abc import Callable, Iterator
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -508,11 +511,185 @@ _ENV_LEAK_ALLOWED = frozenset({"PYTEST_CURRENT_TEST", "ENCHANT_CONFIG_DIR", "PAT
 #: Where the pre-test snapshot lives between the two hooks below.
 _ENV_BEFORE: pytest.StashKey[dict[str, str]] = pytest.StashKey()
 
+#: Native handles of every wx top-level window that existed when the test's
+#: fixtures began, recorded by :func:`_reclaim_leaked_wx_windows` and read by
+#: :func:`_stop_timers_outliving_their_window`: the one snapshot that decides
+#: both which windows are reclaimed and which running timers are about to lose
+#: theirs. Handles, not wrappers, so the teardown check never has to touch a
+#: window object that may already be gone.
+_WX_TOPS_BEFORE: pytest.StashKey[set[int]] = pytest.StashKey()
+
+
+class _TimerWatch:
+    """What was known about a timer's owner while the owner was certainly alive.
+
+    **Recorded at ``Start``, never re-read at teardown**, and that is the whole
+    design. The first version asked ``timer.GetOwner()`` at teardown, and for
+    the very timers this gate exists to catch -- ones whose owner is gone -- that
+    handed sip a dangling ``wxEvtHandler*``, which it dereferences (a virtual
+    ``GetClassInfo()``) to pick the Python class. The gate crashed the suite at
+    92% on 2026-10-13 checking for the crash it prevents. So the owner is looked
+    at once, when a timer starts and its owner is alive by definition, and after
+    that only this record, the OS (``IsWindow``) and a destroy event are asked.
+    """
+
+    __slots__ = ("dead", "owner_name", "started_in", "top_hwnd")
+
+    def __init__(self, owner_name: str, top_hwnd: int | None, started_in: str) -> None:
+        self.owner_name = owner_name
+        self.top_hwnd = top_hwnd
+        #: The test that started the timer. Only that test is failed for it: the
+        #: test that merely saw its owner die (a later reclaim, a shared frame)
+        #: did not write the leak. Every test still *stops* a dangerous timer.
+        self.started_in = started_in
+        self.dead = False
+
+
+#: The test whose setup, call or teardown is running now, for :class:`_TimerWatch`.
+_CURRENT_TEST = ""
+
+
+#: Every owner-bound ``wx.Timer`` started since the registry went in. Weak keys
+#: on purpose: a Python wrapper that is freed deletes, and so stops, its C++
+#: timer, which is the healthy end of a timer's life and must not be prevented
+#: by a registry. The values hold no wx object at all.
+_WATCHED_WX_TIMERS: weakref.WeakKeyDictionary[Any, _TimerWatch] = weakref.WeakKeyDictionary()
+_WX_TIMER_REGISTRY_INSTALLED = False
+
+
+def _native_window_exists(hwnd: int) -> bool:
+    """Ask the OS, not wx, whether a window handle is still a window."""
+    if sys.platform != "win32":
+        return True  # no cheap equivalent; the destroy flag still covers it
+    import ctypes
+
+    return bool(ctypes.windll.user32.IsWindow(ctypes.c_void_p(hwnd)))
+
+
+def _real_wx() -> Any:
+    """The real ``wx`` module if it has been imported, else None.
+
+    Deliberately not ``wx.GetApp()``-gated: the Beacon tests build and destroy a
+    ``wx.App`` per test, so between their tests there is no app -- and a timer
+    does not need one to fire.
+    """
+    wx = sys.modules.get("wx")
+    if (
+        wx is None
+        or not callable(getattr(wx, "GetTopLevelWindows", None))
+        or not isinstance(getattr(wx, "Timer", None), type)
+    ):
+        return None
+    return wx
+
+
+def _install_wx_timer_registry() -> None:
+    """Record every ``wx.Timer`` as it starts, so teardown can find the running ones.
+
+    A ``gc.get_objects()`` sweep after each of several thousand tests is not
+    free; a weak map filled by ``Start`` is. ``wx.CallLater`` and ``wx.PyTimer``
+    reach ``Start`` through the same slot; they own themselves, so they are
+    skipped (freeing their wrapper stops them). See :class:`_TimerWatch` for why
+    the owner is examined here and nowhere else.
+    """
+    global _WX_TIMER_REGISTRY_INSTALLED
+    if _WX_TIMER_REGISTRY_INSTALLED:
+        return
+    wx = _real_wx()
+    if wx is None:
+        return
+    original_start = wx.Timer.Start
+    original_start_once = wx.Timer.StartOnce
+
+    def watch(timer: Any) -> None:
+        if timer in _WATCHED_WX_TIMERS:
+            return
+        try:
+            owner = timer.GetOwner()  # alive now: a timer is started by live code
+            if owner is None or owner is timer or not isinstance(owner, wx.Window):
+                return
+            top = owner if owner.IsTopLevel() else owner.GetTopLevelParent()
+            record = _TimerWatch(
+                type(owner).__name__, int(top.GetHandle()) if top else None, _CURRENT_TEST
+            )
+            owner_id = owner.GetId()
+
+            def on_destroy(event: Any) -> None:
+                event.Skip()
+                if event.GetId() == owner_id:  # children send their own; only the owner's counts
+                    record.dead = True
+
+            owner.Bind(wx.EVT_WINDOW_DESTROY, on_destroy)
+            _WATCHED_WX_TIMERS[timer] = record
+        except Exception:  # noqa: BLE001 - a registry must never break Start
+            pass
+
+    def start(self: Any, *args: Any, **kwargs: Any) -> Any:
+        watch(self)
+        return original_start(self, *args, **kwargs)
+
+    def start_once(self: Any, *args: Any, **kwargs: Any) -> Any:
+        watch(self)
+        return original_start_once(self, *args, **kwargs)
+
+    wx.Timer.Start = start
+    wx.Timer.StartOnce = start_once
+    _WX_TIMER_REGISTRY_INSTALLED = True
+
+
+def _orphan_reason(record: _TimerWatch, before: set[int]) -> str | None:
+    """Why a running timer's owner is gone or about to be -- or None. Touches no wx object."""
+    if record.dead:
+        return "its owner has been destroyed"
+    if record.top_hwnd is None:
+        return None
+    if not _native_window_exists(record.top_hwnd):
+        return "its owner's window no longer exists"
+    if record.top_hwnd not in before:
+        return "its owner's window was created by this test and is being reclaimed"
+    return None
+
+
+def _stop_timers_outliving_their_window(item: pytest.Item) -> list[str]:
+    """Stop every running owner-bound ``wx.Timer`` whose window is going away.
+
+    Returns one line per timer stopped *that this test started*, for the gate
+    to report; a timer an earlier test started is stopped silently (its owner
+    died here, but the leak was written there). See
+    :func:`_no_environment_leaks` for why this is a teardown hookwrapper. The
+    timer itself is safe to ask: its wrapper is alive (it is a key here) and a
+    wx.Timer belongs to Python, so nothing in C++ frees it underneath.
+    """
+    if _real_wx() is None:
+        return []
+    before = item.stash.get(_WX_TOPS_BEFORE, set())
+    stopped: list[str] = []
+    for timer, record in list(_WATCHED_WX_TIMERS.items()):
+        try:
+            if not timer.IsRunning():
+                continue
+        except RuntimeError:  # the wrapper's C++ timer is already gone: it cannot fire
+            continue
+        why = _orphan_reason(record, before)
+        if why is None:
+            continue
+        try:
+            detail = f"wx.Timer id={timer.GetId()} every {timer.GetInterval()} ms"
+            timer.Stop()
+        except RuntimeError:
+            continue
+        if record.started_in == item.nodeid:
+            stopped.append(f"{detail} owned by {record.owner_name}: {why}")
+    return stopped
+
 
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_protocol(item: pytest.Item, nextitem: pytest.Item | None):
     """Snapshot ``os.environ`` before a test runs. Paired with the teardown hook."""
+    global _CURRENT_TEST
     item.stash[_ENV_BEFORE] = dict(os.environ)
+    _install_wx_timer_registry()
+    _CURRENT_TEST = item.nodeid
     yield
 
 
@@ -542,36 +719,62 @@ def pytest_runtest_teardown(item: pytest.Item, nextitem: pytest.Item | None):
     fixture, so every ordinary ``monkeypatch.setenv`` was reported as a leak.
     The after-yield half of this hook runs once every finalizer for the item has
     completed, which is the only point where the question can be asked honestly.
+
+    **The same half also fails a test that leaves a ``wx.Timer`` running on a
+    window that is going away** (:func:`_stop_timers_outliving_their_window`).
+    wx does not stop a timer when its owner is deleted; the next time anything
+    pumps messages after the interval has elapsed, ``wxTimerImpl::SendEvent``
+    calls ``ProcessEvent`` on freed memory and the process dies with an access
+    violation in no module at all. That was the full-suite crash of 2026-10-13:
+    a Beacon fixture tore down with ``Destroy()`` instead of the app's close
+    path, leaving its 300-second auto-sync timer armed, and the tick landed five
+    minutes later in the first test to run a real event loop -- a different
+    directory, a different app, and every bisection said "cumulative". Here the
+    timer is stopped (so one leak cannot take the run down) and the test is
+    failed naming it, because the only place the author can see the leak is the
+    test that made it.
     """
     yield
+    problems: list[str] = []
+    orphaned_timers = _stop_timers_outliving_their_window(item)
+    if orphaned_timers:
+        problems.append(
+            "this test left a wx.Timer running on a window that is going away: "
+            + "; ".join(orphaned_timers)
+            + ". Stop the timer in the test's teardown, or close the window through "
+            "its own close path, which is where the app stops it. A timer whose "
+            "owner has been deleted fires into freed memory the next time any test "
+            "pumps the event loop -- minutes later, in another file."
+        )
     before = item.stash.get(_ENV_BEFORE, None)
-    if before is None:  # pragma: no cover - defensive; protocol hook always runs
-        return
-    after = dict(os.environ)
-    names = set(before) ^ set(after)
-    names |= {name for name in set(before) & set(after) if before[name] != after[name]}
-    leaked = sorted(names - _ENV_LEAK_ALLOWED)
-    if not leaked:
-        return
-    detail = ", ".join(
-        f"{name}: {before.get(name, '<unset>')!r} -> {after.get(name, '<unset>')!r}"
-        for name in leaked
-    )
-    # Put it back, so one leak does not cascade into every later test on this
-    # worker and bury its own cause under a screenful of unrelated failures.
-    for name in leaked:
-        if name in before:
-            os.environ[name] = before[name]
-        else:
-            os.environ.pop(name, None)
-    raise AssertionError(
-        f"this test changed os.environ and left it changed: {detail}. "
-        "If the code under test writes the variable itself, note that "
-        "monkeypatch.delenv(name, raising=False) records nothing when the name "
-        "is already absent -- use the absent_env fixture, which guarantees "
-        "removal on teardown. If the change is deliberate process bootstrap, "
-        "add the name to _ENV_LEAK_ALLOWED in tests/conftest.py with the reason."
-    )
+    if before is not None:
+        after = dict(os.environ)
+        names = set(before) ^ set(after)
+        names |= {name for name in set(before) & set(after) if before[name] != after[name]}
+        leaked = sorted(names - _ENV_LEAK_ALLOWED)
+        if leaked:
+            detail = ", ".join(
+                f"{name}: {before.get(name, '<unset>')!r} -> {after.get(name, '<unset>')!r}"
+                for name in leaked
+            )
+            # Put it back, so one leak does not cascade into every later test on
+            # this worker and bury its own cause under a screenful of unrelated
+            # failures.
+            for name in leaked:
+                if name in before:
+                    os.environ[name] = before[name]
+                else:
+                    os.environ.pop(name, None)
+            problems.append(
+                f"this test changed os.environ and left it changed: {detail}. "
+                "If the code under test writes the variable itself, note that "
+                "monkeypatch.delenv(name, raising=False) records nothing when the name "
+                "is already absent -- use the absent_env fixture, which guarantees "
+                "removal on teardown. If the change is deliberate process bootstrap, "
+                "add the name to _ENV_LEAK_ALLOWED in tests/conftest.py with the reason."
+            )
+    if problems:
+        raise AssertionError("\n".join(problems))
 
 
 @pytest.fixture
@@ -682,7 +885,7 @@ def _fresh_output_device_list() -> None:
 
 
 @pytest.fixture(autouse=True)
-def _reclaim_leaked_wx_windows():
+def _reclaim_leaked_wx_windows(request: pytest.FixtureRequest):
     """Destroy wx top-level windows a test created but never destroyed.
 
     Windows caps a process at 10,000 User (window) handles. A wx.Frame or
@@ -705,8 +908,11 @@ def _reclaim_leaked_wx_windows():
 
     Only windows that appeared *during* the test are destroyed, so a module- or
     session-scoped fixture's window survives. Teardown never fails a test.
+
+    The ``before`` snapshot is also stashed on the item for the running-timer
+    gate in :func:`pytest_runtest_teardown`, so "a window this fixture reclaims"
+    and "a window a running timer is about to lose" are the same set.
     """
-    import sys
 
     def _live_wx():
         """The real wx module with a running App, else None.
@@ -733,7 +939,20 @@ def _reclaim_leaked_wx_windows():
             return set()
         return {id(win) for win in wx.GetTopLevelWindows()}
 
+    def _top_level_handles() -> set[int]:
+        wx = _live_wx()
+        if wx is None:
+            return set()
+        handles: set[int] = set()
+        for win in wx.GetTopLevelWindows():  # all alive: wx lists only live windows
+            try:
+                handles.add(int(win.GetHandle()))
+            except Exception:  # noqa: BLE001 - a window with no native handle yet
+                pass
+        return handles
+
     before = _top_level_ids()
+    request.node.stash[_WX_TOPS_BEFORE] = _top_level_handles()
     yield
     wx = _live_wx()
     if wx is None:

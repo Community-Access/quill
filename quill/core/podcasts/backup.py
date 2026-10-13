@@ -69,6 +69,7 @@ CAST_DATA_FILES: tuple[str, ...] = (
     "radio-show-speeds.json",
     "radio-listens.json",
     "media_bookmarks.json",
+    "lineups.json",  # QUILL Lineups, shared with Quill Radio
 )
 
 BACKUP_SUFFIX = ".qcbackup"

@@ -298,14 +298,34 @@ def _playlist_step(host: Any, direction: int) -> bool:
     """
     from quill.ui.radio import local_media_playback
 
+    if _lineup_step(host, direction, unbounded_only=False):
+        return True  # a Lineup playing through: its next or previous item
     try:
         return local_media_playback.step(host, direction)
     except Exception:  # noqa: BLE001 - a playlist that cannot answer leaves the chapter reply
         return False
 
 
+def _lineup_step(host: Any, direction: int, *, unbounded_only: bool = True) -> bool:
+    """A Lineup playing through answers Next and Previous first -- even on a live
+    stream, which has no chapters and which ``_refuse`` would otherwise turn
+    away, leaving a play-through stalled on an item that never ends."""
+    from quill.ui.radio import lineups_playback
+
+    controller = _controller(host)
+    session = lineups_playback.session_of(controller) if controller is not None else None
+    if session is None or not lineups_playback._playing_matches(controller, session):
+        return False  # tuned to something else since: the Lineup is not what plays (R3)
+    if unbounded_only and controller.is_seekable():
+        return False  # an episode or a file: its chapters first, then the Lineup
+    host._announce(lineups_playback.step(host, direction))
+    return True
+
+
 def next_chapter(host: Any) -> None:
     """Jump to the next published chapter, or the next item in a playlist."""
+    if _lineup_step(host, 1):
+        return
     if _refuse(host):
         return
     controller = _controller(host)
@@ -323,6 +343,8 @@ def next_chapter(host: Any) -> None:
 
 def previous_chapter(host: Any) -> None:
     """Jump to the previous chapter, or restart this one, or the previous item."""
+    if _lineup_step(host, -1):
+        return
     if _refuse(host):
         return
     controller = _controller(host)

@@ -2141,4 +2141,148 @@ that trial was reverted. These observations do not establish that JAWS caused
 the delays. The native timing gate and human screen-reader acceptance remain
 open; passing functional regressions do not make either one complete.
 
+### 23.27 QUILL Lineups (2026-10-13)
+
+QUILL Lineups are named lists of anything Quill Radio and QUILL Cast can play,
+built by rules the listener writes and arranged by hand. Cast ships them in
+the same release as Radio, from one engine (`quill/core/lineups/`), one window
+(`quill/ui/lineups/`) and one file. What is Cast's own is the host
+(`quill/ui/podcasts/lineups_host.py`), the frame mixin
+(`quill/apps/podcasts_lineups.py`) and the Play Queue's two verbs
+(`quill/core/lineups/cast_queue.py`, `quill/ui/podcasts/lineups_queue.py`).
+The user guide's Chapter 9 is the listener's account.
+
+#### 23.27.1 What a Lineup holds, and where it lives
+
+- L-1. A Lineup can hold followed podcasts, their episodes, radio stations,
+  saved Browse places, YouTube videos, playlists and channels, and Radio's
+  Local Media files and recordings. Every kind is available in both apps.
+- L-2. One family file, `lineups.json` in the shared data folder. The same
+  Lineups appear in both apps, and both may be open and editing at once: each
+  edit is an operation applied under the store's lock to the file as it is
+  then, never a save of a copy held in memory, so neither app undoes the
+  other's change. Many Lineups; names are unique ignoring capitals.
+- L-3. The engine only ever reads Cast's library. Rules never use the network.
+- L-4. `lineups.json` is in Cast's backup set (`core/podcasts/backup.py`).
+
+Rationale: a store per app would be two lists of the same morning, and a
+load-change-save of one shared file from two apps is how one app silently
+undoes the other.
+
+#### 23.27.2 Rules, and when things go
+
+- L-5. A rule is one kind, where to look (scope, always ANDed), tests (match
+  all or any), an order, a count limit, a per-group limit, a minutes budget,
+  and a Keep choice. Tests generalise Cast's Episode Filter conditions rather
+  than adding another engine; a number test never matches an item that does
+  not state the number (Cast's rule, kept).
+- L-6. Keep is separate from the tests: While it matches, Until finished, For
+  a number of days, Until finished or a number of days, Always, plus Max kept.
+  A new episode rule defaults to Until finished, or 7 days; a kind that cannot
+  be finished (a podcast, a station) reads Until finished as While it matches.
+  An episode marked played counts as finished; otherwise the percentage heard
+  (95 by default) decides.
+- L-7. Rules run when the Lineups window opens, when a store they read changes
+  (either app's), every ten minutes while it is open, and on Refresh Now (F5).
+  They do not run with the window closed; opening it always brings every
+  Lineup up to date first.
+- L-8. Nothing leaves because its owner could not be read (it is marked
+  unavailable); nothing leaves without an entry in Recently Left (the last
+  100, with reasons); the rules never reorder; a refresh that would remove
+  more than half of a Lineup and more than ten items says so plainly.
+- L-9. Seven starters (New from an Example): Morning, New This Week, Latest
+  From Each, Commute, Saved YouTube, Live News and Finish These, each showing a
+  different Keep choice. Four are episodes only.
+
+Rationale: entry and exit are separate questions. An episode should come in
+because it is new and stay until it is heard, even once it is no longer "this
+week"; a smart playlist that only mirrors its tests cannot say that.
+
+#### 23.27.3 Hands outrank rules
+
+- L-10. Added by hand: stays until removed. Keep This Item (Ctrl+K): stays
+  whatever the rules say. Remove from Lineup (Delete): goes to Removed Items,
+  and no rule brings it back. Bring Back returns an item as kept. Why Is This
+  Here (Alt+Enter) names the rule or the hand, and how long the item stays.
+  Every edit leaves its inverse on the app's shared Undo (Ctrl+Z in the
+  window; Undo History in the main window).
+- L-11. Moving changes the order, never how long an item stays.
+
+#### 23.27.4 The window in Cast
+
+- L-12. The same peer window, menus and keys as Radio (`quill/ui/lineups/menus.py`
+  is the one table), with Cast's Window menu beside them: on the Window menu,
+  in the Ctrl+Tab order, and Ctrl+1 returns to the main window.
+- L-13. Reached by Episode > Lineups... (`podcasts.lineups`, Ctrl+U, the same
+  chord as Radio's Lineups, family rule 2), Go To (in the pool, so the default
+  ten, Preferences among them, are unchanged), and the Command Palette ("Podcasts: Lineups...", "Podcasts: Add to
+  Lineup..."). A Customize Features area, "QUILL Lineups" in Playing: switched
+  off, the Episode menu row is not built and the commands report the switch.
+- L-14. Add to Lineup... is on every episode and podcast row menu
+  (`ui/podcasts/manager_menus.py`) and is a Quick Action for both; the chooser
+  lists the Lineups plus "New Lineup...". Added items are held by hand.
+- L-15. F1 for every Lineups surface comes from one shared catalogue
+  (`core/lineups/help_text.py`), so the window cannot say one thing in Cast and
+  another in Radio.
+
+#### 23.27.5 Playing a Lineup in Cast
+
+- L-16. Enter (or Play) on an episode puts that episode and the Lineup's later
+  episodes at the front of the Play Queue, by the rule Apply Lineup always had
+  (available, unplayed episodes to the front in order, the rest of the queue
+  kept), and plays it. The queue then carries on by itself, with or without
+  the window. Play This Lineup does the same from the top.
+- L-17. A podcast plays its next episode. Next Item and Previous Item step the
+  queue; Pause or Resume toggles playback; Play Next and Add to Up Next work on
+  episodes (next in the queue, end of the queue). Stop After This Item answers
+  with the sleep timer's End of Episode, which already does it.
+- L-18. A row Cast cannot play (station, place, YouTube, Local Media,
+  recording) is handed, with the Lineup's items after it, to Quill Radio
+  through the open-request queue (`core/lineups/handoff.py`), launching Radio
+  if needed: "Sent to Quill Radio to play." When playing from an episode, Cast
+  says how many other items play in Radio and that Enter on one sends it.
+
+Rationale: Cast already had a queue that carries on, expires and explains
+itself; a second player loop inside the Lineups window would have been a
+second, weaker queue. Handing Radio's kinds to Radio, rather than hiding them
+in Cast, keeps one Lineup meaning the same thing in both apps.
+
+#### 23.27.6 The Play Queue's Save Lineup and Apply Lineup are QUILL Lineups
+
+Decided by the owner on 2026-10-13: one meaning of "lineup" across the family.
+Before, a Cast lineup was a manual playlist holding a snapshot of the queue
+order (`core/podcasts/queue_lineups.py`). Two different things with one name,
+in two apps that now share a window called Lineups, would have had a listener
+saving to one and looking in the other.
+
+- L-19. Save Lineup... saves the queue's order as a Lineup of hand-added
+  episodes. Saving over a name that exists replaces its rows and keeps its
+  rules. It says "Saved lineup <name>: N episodes, in this order." or
+  "Replaced lineup ...".
+- L-20. Apply Lineup... offers every Lineup with episodes and puts them at the
+  front of the queue through the same `apply_lineup`, counting what it applied
+  and skipped, because a silent half-applied lineup looks like one that
+  worked.
+- L-21. Queue snapshots saved by the old Save Lineup (manual playlists whose
+  id starts `lineup-`) are copied into Lineups once at launch and remembered in
+  `LineupBook.imported`, so deleting the copy never brings it back. The
+  playlists stay where they were.
+
+#### 23.27.7 Start Here
+
+- L-22. Start Here (Ctrl+Alt+H, a check item) pins one Lineup; the Lineups
+  window opens on it, in front of the main window, when Cast starts. Cast and
+  Radio each keep their own pin (`start_lineup_id` in Cast's history). First
+  run wins: the pin applies from the next launch. A deleted pinned Lineup is
+  said once ("Your start lineup no longer exists. Quill Cast opened as
+  usual.") and the pin is cleared.
+
+#### 23.27.8 Known limits
+
+- YouTube rules see saved videos and playlists and followed channels, not
+  every new upload: a channel's feed is fetched while browsing and not kept on
+  disk, so there is deliberately no "every new upload" starter.
+- Rules run only while the window is open, and on each open.
+- Cast plays episodes and podcasts itself; everything else needs Quill Radio.
+
 See `CHANGELOG.md` for the full, versioned history.

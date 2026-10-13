@@ -30,6 +30,21 @@ def data_dir(tmp_path, monkeypatch):
     return tmp_path
 
 
+def _dispose(frame: WeatherAppFrame) -> None:
+    """Tear a test's Weather window down the way the app does.
+
+    ``frame.frame.Destroy()`` alone left the 800 ms IPC poll timer running
+    with its owner window freed (Destroy only schedules a top-level window's
+    deletion), and the next test to run a real event loop delivered that
+    timer's event into freed memory: python.exe died with heap corruption in
+    ``test_cast_list_actions_responsive.py`` (2026-10-12). The class method,
+    because two tests replace the instance's shutdown with a recorder.
+    """
+    WeatherAppFrame._weather_app_shutdown(frame)
+    if frame.frame:
+        frame.frame.Destroy()
+
+
 def _close_event() -> tuple[SimpleNamespace, dict]:
     flags: dict = {"vetoed": False, "skipped": False}
     event = SimpleNamespace(
@@ -66,7 +81,7 @@ def test_weather_app_builds_with_expected_menus(app, data_dir) -> None:
         ]
         assert any("Monitoring" in text for text in labels)
     finally:
-        frame.frame.Destroy()
+        _dispose(frame)
 
 
 def test_close_minimizes_to_tray_by_default(app, data_dir) -> None:
@@ -80,7 +95,7 @@ def test_close_minimizes_to_tray_by_default(app, data_dir) -> None:
         assert hidden == [True]  # ...and the window went to the tray
         assert flags["skipped"] is False  # not a real close
     finally:
-        frame.frame.Destroy()
+        _dispose(frame)
 
 
 def test_failed_tray_setting_save_restores_menu_state(app, data_dir, monkeypatch) -> None:
@@ -100,7 +115,7 @@ def test_failed_tray_setting_save_restores_menu_state(app, data_dir, monkeypatch
         assert item.IsChecked()
         assert "could not save" in said[-1]
     finally:
-        frame.frame.Destroy()
+        _dispose(frame)
 
 
 def test_explicit_exit_really_closes(app, data_dir) -> None:
@@ -117,7 +132,7 @@ def test_explicit_exit_really_closes(app, data_dir) -> None:
         assert flags["skipped"] is True
         assert flags["vetoed"] is False
     finally:
-        frame.frame.Destroy()
+        _dispose(frame)
 
 
 def test_close_to_tray_off_exits(app, data_dir) -> None:
@@ -136,7 +151,7 @@ def test_close_to_tray_off_exits(app, data_dir) -> None:
         assert shut == [True]  # closes for real when the pref is off
         assert flags["skipped"] is True
     finally:
-        frame.frame.Destroy()
+        _dispose(frame)
 
 
 def test_tray_menu_reflects_monitoring_state(app, data_dir) -> None:
@@ -151,7 +166,7 @@ def test_tray_menu_reflects_monitoring_state(app, data_dir) -> None:
         assert any("Open Weather Center" in t for t in labels)
         assert any("Start Monitoring" in t for t in labels)
     finally:
-        frame.frame.Destroy()
+        _dispose(frame)
 
 
 def test_startup_monitoring_first_run_enables_for_primary(app, data_dir, monkeypatch) -> None:
@@ -168,7 +183,7 @@ def test_startup_monitoring_first_run_enables_for_primary(app, data_dir, monkeyp
         frame._weather_app_startup_monitoring()
         assert started == [True]  # first run defaults monitoring on
     finally:
-        frame.frame.Destroy()
+        _dispose(frame)
 
 
 def test_startup_monitoring_respects_user_disabled(app, data_dir) -> None:
@@ -185,7 +200,7 @@ def test_startup_monitoring_respects_user_disabled(app, data_dir) -> None:
         frame._weather_app_startup_monitoring()
         assert started == []  # respects the user's off choice
     finally:
-        frame.frame.Destroy()
+        _dispose(frame)
 
 
 def test_check_once_arg_runs_headless_and_skips_gui(monkeypatch) -> None:
@@ -247,4 +262,4 @@ def test_background_toggle_registers_scheduled_task(app, data_dir, monkeypatch) 
         frame._set_background_check(True)
         assert calls == ["register:12"]  # registered at the monitor cadence
     finally:
-        frame.frame.Destroy()
+        _dispose(frame)

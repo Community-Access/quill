@@ -19,7 +19,17 @@ def frame(monkeypatch):
 
     f = BeaconFrame()
     yield f
-    f.Destroy()
+    # Close the way the app closes, not ``f.Destroy()``: only ``_on_close`` stops
+    # ``_sync_timer``, and a timer whose owner window has been deleted fires into
+    # freed memory the next time anything pumps messages. With the 300 s interval
+    # these tests configure, that was the full-suite crash of 2026-10-13: the
+    # tick landed about five minutes later, in whichever test first ran a real
+    # event loop (tests/unit/ui/podcasts/test_cast_list_actions_responsive.py),
+    # looking like a cumulative native fault in wxPython on Python 3.14.
+    # ``_on_close`` also stops the bridge threads and closes the store.
+    f.Close()
+    if f:
+        f.Destroy()
     try:
         app.Destroy()
     except Exception:

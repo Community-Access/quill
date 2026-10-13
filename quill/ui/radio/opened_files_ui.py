@@ -55,6 +55,21 @@ def drain_requests(app: Any, slot: str, *, drain: Any = None) -> None:
     requests = drain(slot=slot)
     if not requests:
         return
+    # Quill Cast asking Radio to play Lineup rows it cannot (stations, video):
+    # taken out first, so the request file is never mistaken for media to play.
+    from quill.core.lineups.handoff import ACTION as LINEUP_PLAY
+
+    lineup_requests = [
+        r for r in requests if r is not None and getattr(r, "action", "") == LINEUP_PLAY
+    ]
+    if lineup_requests:
+        from quill.ui.radio.lineups_commands import play_handoff
+
+        for request in lineup_requests:
+            play_handoff(app, request.path)
+        requests = [r for r in requests if r not in lineup_requests]
+        if not requests:
+            return
     show, play, add = opened_files.split_requests(requests)
     if play:
         open_paths(app, play)

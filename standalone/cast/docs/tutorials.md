@@ -1,6 +1,6 @@
 # QUILL Cast Tutorials
 
-Welcome. There are 24 short lessons here, about 159 minutes in all, and you can take them in any order. Each one is a few small steps, and each step tells you what to press and what you should hear.
+Welcome. There are 25 short lessons here, about 168 minutes in all, and you can take them in any order. Each one is a few small steps, and each step tells you what to press and what you should hear.
 
 This page is the lessons written out, so you can read them anywhere. If you would rather be walked through, open **Help > Tutorials...** in QUILL Cast. It does a step for you when you ask, and moves on by itself once it hears you have done one.
 
@@ -14,12 +14,13 @@ The keys here are the ones QUILL Cast comes with. If you have changed a key, the
   - Find (4 minutes)
   - Now Playing (7 minutes)
   - When something breaks (7 minutes)
-- **Keeping up**: Playing an episode is easy. Choosing which of the many waiting ones to play is the hard part, and these lessons help: the Inbox, the queue, your own audio, downloads, playlists, filters and schedules.
+- **Keeping up**: Playing an episode is easy. Choosing which of the many waiting ones to play is the hard part, and these lessons help: the Inbox, the queue, your own audio, downloads, playlists, lineups, filters and schedules.
   - The Inbox (8 minutes)
   - The Queue (7 minutes)
   - Your own audio (7 minutes)
   - Downloads, and the disk they live on (6 minutes)
   - Playlists and smart playlists (5 minutes)
+  - Build a lineup that fills itself (9 minutes)
   - Stop the parts of a podcast you did not want (9 minutes)
   - When Cast looks for new episodes (6 minutes)
 - **Listening well**: For the time you spend listening: the keys, speed and the sleep timer, chapters, the sound, bookmarks, show notes, and how much you have listened.
@@ -257,7 +258,7 @@ Next: The Inbox.
 
 ## Keeping up
 
-Playing an episode is easy. Choosing which of the many waiting ones to play is the hard part, and these lessons help: the Inbox, the queue, your own audio, downloads, playlists, filters and schedules.
+Playing an episode is easy. Choosing which of the many waiting ones to play is the hard part, and these lessons help: the Inbox, the queue, your own audio, downloads, playlists, lineups, filters and schedules.
 
 ### The Inbox
 
@@ -429,7 +430,7 @@ Make a playlist you fill by hand, like a mixtape, and a smart playlist that fill
 
 *5 steps, about 5 minutes.*
 
-1. **Go to Playlists.** Playlists is a place. Enter opens a playlist right there in the same list, and Backspace brings you back to the list of playlists. Lineups you saved from the Play Queue live here too.
+1. **Go to Playlists.** Playlists is a place. Enter opens a playlist right there in the same list, and Backspace brings you back to the list of playlists. A lineup the Play Queue saved before QUILL Lineups stays here too.
    - Keys: Ctrl+Shift+Y
    - You should hear: Playlists, then the first playlist.
 
@@ -450,6 +451,56 @@ Make a playlist you fill by hand, like a mixtape, and a smart playlist that fill
    - You should hear: The playlist's menu.
 
 A smart playlist keeps itself up to date, so the one you make today is still right next month, without you touching it.
+
+Next: Build a lineup that fills itself; Stop the parts of a podcast you did not want.
+
+### Build a lineup that fills itself
+
+Make a QUILL Lineup: a list of episodes, and anything else Quill Radio plays, brought in by rules you choose and kept in the order you choose. Play it through the Play Queue, and save the queue's own order as one.
+
+*8 steps, about 9 minutes.*
+
+1. **Open Lineups.** Lineups is a window of its own, so it is on the Window menu and in the Ctrl+Tab order, and Ctrl+1 takes you back to the main window. The first time it is empty, and your cursor is already on the New Lineup button.
+   - Keys: Ctrl+U
+   - You should hear: Lineups, then New Lineup button.
+   - Worth knowing: It is also on the Episode menu, in Go To and in the Command Palette.
+
+2. **Start from an example.** Start from an Example offers ready-made lineups, each showing a different way rules keep things. Choose New This Week: unplayed episodes from the last seven days, newest first, each one gone once you have heard it or after seven days.
+   - Keys: Ctrl+Alt+N
+   - You should hear: Made New This Week. Its rules are running now.
+   - Worth knowing: The examples are yours once made; change their rules as you like.
+
+3. **Add an episode by hand.** Anything you add yourself stays until you remove it, whatever the rules say. In the main window, open the menu on an episode or a podcast with the Applications key, choose Add to Lineup, and then choose New This Week.
+   - Keys: Shift+F10
+   - You should hear: Added to New This Week. Ctrl+Z undoes this.
+   - Worth knowing: The Command Palette has Podcasts: Add to Lineup... for the row you are on.
+
+4. **Read the rules, and how long things stay.** Back in Lineups, Edit Rules shows each rule as one sentence: what it brings in, how long its items stay, and how many it finds now. Edit a rule to change its Keep choice: while it matches, until finished, for some days, or always.
+   - Keys: Ctrl+Alt+R
+   - You should hear: Rules for New This Week, then the rule's sentence.
+   - Worth knowing: Try It in Edit Rule shows what a rule finds without saving anything.
+
+5. **Keep one item, and ask why another is here.** In the Items list, Keep This Item holds an episode whatever its rule says; press it again to give it back to the rule. Why Is This Here names the rule that found an item, or your own hand, and how long it will stay.
+   - Keys: Ctrl+K, Alt+Enter
+   - You should hear: Kept. It stays whatever the rules say.
+   - Worth knowing: Delete puts an item in Removed Items, and no rule brings it back.
+
+6. **Play from an episode.** Enter on an episode plays it, and puts it and the lineup's later episodes at the front of your Play Queue, so Cast carries on through them by itself. The rest of your queue waits behind. Next Item and Previous Item move through the queue.
+   - Keys: Enter, Ctrl+Right
+   - You should hear: The episode's title, then its audio.
+   - Worth knowing: A station, a YouTube item or a file of your own is sent to Quill Radio, which opens if it needs to: Sent to Quill Radio to play.
+
+7. **Save the queue's order as a lineup.** On the Play Queue place, the Applications key offers Save Lineup. Type a name, such as Tuesday, and the queue's order becomes a lineup of episodes you added by hand. Apply Lineup puts its unheard episodes back at the front of the queue later.
+   - Keys: Applications
+   - You should hear: Saved lineup Tuesday, then how many episodes, in this order.
+   - Worth knowing: Saving under a name you already have replaces that lineup's episodes.
+
+8. **Start Quill Cast in it.** Start Here makes this lineup open in front of the main window each time Quill Cast starts. It is a check item: choose it again to start as usual, or on another lineup to move it.
+   - Keys: Ctrl+Alt+H
+   - You should hear: New This Week opens when Quill Cast starts.
+   - Worth knowing: Quill Radio shares your lineups and keeps its own Start Here.
+
+You have a lineup that brings itself up to date, keeps what you told it to keep, lets go of what you have heard, and plays through your Play Queue in your order. Quill Radio sees the same lineups, so you can edit them in either app, even with both open.
 
 Next: Stop the parts of a podcast you did not want.
 

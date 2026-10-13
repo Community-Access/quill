@@ -337,6 +337,10 @@ class RadioHistory:
     #: 2026-08-24 by main_view: opening a *second* window at launch was the
     #: problem, not the solution. Still read once, to migrate.
     startup_window: str = ""
+    #: The QUILL Lineup this app opens in ("" = none): Start Here in the Lineups
+    #: window. An explicit opt-in, unlike the old startup window -- the main
+    #: window is untouched and still shows its main view behind it.
+    start_lineup_id: str = ""
     #: What the main window shows between the now-playing line and the volume
     #: row -- the favorites tree (default), Browse, Search, Recordings or the
     #: Player. See quill.core.radio.main_view. Nothing else opens by itself.

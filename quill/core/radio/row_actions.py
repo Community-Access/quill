@@ -71,6 +71,8 @@ REFRESH_ALL_PODCASTS = "podcast.refresh_all"
 #: opens shows whatever is already there, so writing and clearing are the
 #: same action rather than two menu rows that have to agree with each other.
 EDIT_NOTE = "item.note"
+#: QUILL Lineups: add this row to a Lineup (any kind a Lineup holds).
+LINEUP_ADD = "lineup.add"
 #: Your own searchable tags on a live station (station_tags, 3.2.0).
 EDIT_TAGS = "station.tags"
 #: Turn new-episode alerts on or off for one subscribed podcast, from its
@@ -616,6 +618,7 @@ def actions_for(
         # reminder because they are the same instinct -- one is for a moment,
         # the other is for whenever you next come back to this row.
         actions.append(RowAction(EDIT_NOTE, "&Note to Self..."))
+        actions.append(RowAction(LINEUP_ADD, "Add to Line&up..."))
         if not getattr(station, "is_recording", False):  # "T&ags": De&tails holds T
             actions.append(RowAction(EDIT_TAGS, "Edit Station T&ags..."))
         return actions

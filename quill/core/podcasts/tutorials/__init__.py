@@ -1,6 +1,6 @@
 """QUILL Cast's guided tutorials: its tracks, and its lessons assembled.
 
-Twenty-four lessons in five tracks, written against Cast 2.0: one window, a
+Twenty-five lessons in five tracks, written against Cast 2.0: one window, a
 Places list beside the place you are in, Find, a status bar, and Now Playing
 as a window of its own. The engine -- what a step is, how one renders, where
 progress is kept -- is shared with Quill Radio, Quill Weather and QUILL in
@@ -23,6 +23,7 @@ from __future__ import annotations
 from quill.core.podcasts.tutorials import (
     first_hour,
     keeping_up,
+    lineups,
     listening_well,
     making_it_yours,
     per_podcast,
@@ -42,7 +43,7 @@ TRACKS: tuple[Track, ...] = (
         "Keeping up",
         "Playing an episode is easy. Choosing which of the many waiting ones to "
         "play is the hard part, and these lessons help: the Inbox, the queue, "
-        "your own audio, downloads, playlists, filters and schedules.",
+        "your own audio, downloads, playlists, lineups, filters and schedules.",
     ),
     Track(
         "listening",
@@ -72,6 +73,7 @@ CATALOGUE: TutorialSet = build(
     TRACKS,
     first_hour.TUTORIALS,
     keeping_up.TUTORIALS,
+    lineups.TUTORIALS,
     listening_well.TUTORIALS,
     per_podcast.TUTORIALS,
     making_it_yours.TUTORIALS,

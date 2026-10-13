@@ -300,8 +300,10 @@ class RadioMenuBarMixin:
         playback_menu.Append(wake_id, self._menu_label("Wake-U&p Timer...", "radio.wake_timer"))
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_wake_timer_dialog(), id=wake_id)
         from quill.ui.radio import bookmarks_wiring as bookmarks
+        from quill.ui.radio import lineups_commands
 
         bookmarks.append_menu_item(self, playback_menu, wx)
+        lineups_commands.append_menu_item(self, playback_menu, wx)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_mute_toggle(), id=mute_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_volume_up(), id=vol_up_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_volume_down(), id=vol_down_id)

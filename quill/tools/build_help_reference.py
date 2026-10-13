@@ -49,7 +49,7 @@ APPS: tuple[AppConfig, ...] = (
     AppConfig(
         "Quill Radio",
         "quill.core.radio.surface_help",
-        ("quill/ui/radio",),
+        ("quill/ui/radio", "quill/ui/lineups"),  # Lineups is shared with Cast
         # The shared Tutorials and Release Channel windows are gated once, in
         # Radio's audit, so their sentences are published once, here.
         (
@@ -63,7 +63,7 @@ APPS: tuple[AppConfig, ...] = (
     AppConfig(
         "QUILL Cast",
         "quill.core.podcasts.surface_help",
-        ("quill/ui/podcasts",),
+        ("quill/ui/podcasts", "quill/ui/lineups"),
         ("quill/apps/podcasts*.py",),
         "cast_help_inventory.json",
     ),

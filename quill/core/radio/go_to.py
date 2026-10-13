@@ -74,6 +74,7 @@ DESTINATIONS: tuple[Destination, ...] = (
     Destination("shortcuts", "Keyboard Shortcuts", "open_keymap_editor", "Ctrl+Alt+K"),
     Destination("whats_playing", "What's Playing", "radio_whats_playing_details", "Ctrl+T"),
     Destination("local_media", "Local Media", "open_local_media", "Ctrl+O"),
+    Destination("lineups", "Lineups", "open_lineups", "Ctrl+U"),
 )
 
 #: The first ten, which is what a fresh install gets.

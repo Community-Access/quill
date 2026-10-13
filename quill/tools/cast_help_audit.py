@@ -43,7 +43,7 @@ SNAPSHOT_PATH = REPO_ROOT / "tests" / "unit" / "ui" / "fixtures" / "cast_help_in
 
 #: The podcast UI surface -- the whole of QUILL Cast, and the same windows
 #: QUILL itself opens for podcasts.
-_SCAN_DIRS: tuple[str, ...] = ("quill/ui/podcasts",)
+_SCAN_DIRS: tuple[str, ...] = ("quill/ui/podcasts", "quill/ui/lineups")  # shared with Radio
 _SCAN_GLOBS: tuple[str, ...] = ("quill/apps/podcasts*.py",)
 
 #: Surface constructions whose titles the scan cannot resolve, with the

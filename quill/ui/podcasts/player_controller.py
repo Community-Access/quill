@@ -207,6 +207,9 @@ class PodcastPlayerController(
         self._outro_poll_timer = wx.Timer(parent)
         parent.Bind(wx.EVT_TIMER, self._on_outro_poll, self._outro_poll_timer)
         self._outro_poll_timer.Start(1000)
+        from quill.ui.surface_lifetime import stop_timer_on_destroy
+
+        stop_timer_on_destroy(parent, self._outro_poll_timer)  # a destroy that skips close
 
     @property
     def state(self) -> PodcastPlaybackState:

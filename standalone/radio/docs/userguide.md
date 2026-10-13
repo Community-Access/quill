@@ -23,8 +23,9 @@ By the end of this guide you will be able to find a station from anywhere in
 the world, keep the ones you love, and start any of them with one key. You will
 be able to pause, rewind live radio, record a show tonight or every Tuesday,
 and set the radio to wake you up or send you to sleep. You will know where
-podcasts, audiobooks, YouTube and television fit in, and how to make the keys
-and settings your own. And when something puzzles you, you will know where to
+podcasts, audiobooks, YouTube and television fit in, how to gather any of them
+into a Lineup that keeps itself up to date, and how to make the keys and
+settings your own. And when something puzzles you, you will know where to
 find help.
 
 None of that needs to happen today. Chapter 2 gets you listening in about half
@@ -71,6 +72,9 @@ The chapters follow the order you are likely to want things.
     Problems, Activity, and what Quill Radio connects to.
 16. **Chapter 16: When you need a hand.** Tutorials, F1 help, updates, Audio
     Health, support, and answers to common problems.
+17. **Chapter 17: QUILL Lineups.** Lists of anything Quill Radio and QUILL Cast
+    can play, filled by rules you write and by hand, in your own order, and
+    played straight through.
 
 After the chapters comes the **Keyboard reference**: every key worth knowing,
 in small tables grouped by task.
@@ -108,7 +112,7 @@ and try each step as you read. Alt+Tab moves you between the two.
 
 ### Learning by doing: the tutorials
 
-Quill Radio comes with 41 short guided lessons. Open them with **Help >
+Quill Radio comes with 44 short guided lessons. Open them with **Help >
 Tutorials...** (Ctrl+Alt+F1). A lesson can do a step for you, notice when you
 have done it yourself, and always shows the keys you actually have. Wherever a
 chapter covers something a lesson walks through, this guide names the lesson,
@@ -591,7 +595,8 @@ moved, not gone. Play is **Enter** on a station, or **Ctrl+P**. Record is
 On a **station**, the menu offers **Play** (or **Stop**), **Station
 Details...**, **Rename...** (F2), **Move Up** (Alt+Shift+Up), **Move Down**
 (Alt+Shift+Down), **Move to Folder...**, **Remove...** (Delete), **New
-Folder...** (Ctrl+Shift+E), **Mark for Move**, and **Manage Favorites...**.
+Folder...** (Ctrl+Shift+E), **Mark for Move**, **Add to Lineup...**, and
+**Manage Favorites...**.
 Once you have marked a station, **Move Marked Above** and **Move Marked Below**
 join the list.
 
@@ -700,6 +705,9 @@ they reach the windows you have open, in the order you opened them.
 
 Each row also tells you that place's own shortcut. Use Go To for a month and
 you may find you no longer need it.
+
+More places wait to be added, such as Local Media and Lineups: see "Go To
+Settings, step by step", next.
 
 #### Go To Settings, step by step
 
@@ -963,6 +971,8 @@ rather than something to learn.
 - **Song History...** (Ctrl+Shift+H): what each station played earlier.
 - **Sleep Timer...** (Ctrl+Shift+Z) and **Wake-Up Timer...** (Ctrl+Alt+Z).
 - **Bookmark This Moment** (Ctrl+Alt+A).
+- **Lineups...** (Ctrl+U): QUILL Lineups, lists of anything you can play,
+  filled by rules and by hand. See Chapter 17, QUILL Lineups.
 
 The walkthroughs are in Chapter 4, Playing and moving around, and Chapter 5,
 What's playing, and how it sounds.
@@ -1091,8 +1101,8 @@ moving between them" earlier in this chapter.
 
 Every other big window has a small menu bar of its own: one menu belonging to
 that window, with **Close** (Ctrl+W), then a **Station** menu and a **Window**
-menu. The Station menu has **Browse Stations...** (Ctrl+B), **Search
-Stations...** (Ctrl+F), **Manage Favorites...** (Ctrl+Shift+M),
+menu. The Station menu has **Browse Stations...** (Ctrl+B), **Local Media...**
+(Ctrl+O), **Lineups...** (Ctrl+U), **Search Stations...** (Ctrl+F), **Manage Favorites...** (Ctrl+Shift+M),
 **Recordings...** (Ctrl+Shift+R) and **Preferences...** (Ctrl+,). A window
 never lists itself.
 
@@ -1110,6 +1120,8 @@ Window menu. Each window's own menu has its own key:
 | Song History | Songs (Alt+G) |
 | Now Playing | View (Alt+V) |
 | Tutorials | View (Alt+V) |
+| Local Media | Local Media (Alt+L) |
+| Lineups | Lineup (Alt+U) |
 
 If an Alt key lands on a control instead of a menu, press **Alt** on its own,
 then **Right Arrow** or **Left Arrow** to move along the menu bar.
@@ -2129,7 +2141,9 @@ In this order:
 - **Remove from YouTube** and the three **Add a ...** items, on a saved
   YouTube video.
 - **Set a Reminder...**, or **Remove Reminder** once it has one.
-- **Note to Self...**, always last.
+- **Note to Self...**, then **Add to Lineup...**, which puts the row in one of
+  your QUILL Lineups (Chapter 17), and, on a live station, **Edit Station
+  Tags...**.
 
 #### On a folder
 
@@ -2167,7 +2181,7 @@ own sources, Delete explains that there is nothing to delete.
 
 #### A note to yourself about any station
 
-**Note to Self...** sits at the end of every row's menu. Use it to write
+**Note to Self...** sits near the end of every row's menu. Use it to write
 yourself a reminder about a station or a show, such as "the morning show is
 the good one", "only worth it on Sundays", or "the 6am repeat is the one with
 the interview".
@@ -2842,6 +2856,7 @@ and always before you reset or replace a computer.
 - Your recording settings, including which folder recordings go to.
 - Saved YouTube rows, the YouTube channels you follow, your own streaming
   servers, your Local Media list, quiet hours and download choices.
+- Your QUILL Lineups, shared with QUILL Cast.
 - Your recordings, only if you answer **Yes** when it asks.
 
 It does not hold passwords or sign-ins (private podcast feeds, server
@@ -3834,8 +3849,8 @@ The window has its own menu bar, and every item on it shows its key:
   Playlist, Duplicate Playlist, Delete Playlist, Follow the Folder, Check the
   Folder Now, Choose Columns and Close.
 - **Edit** (Alt+E): Undo, Cut, Copy, Paste Before, Paste After, Remove from
-  Playlist, Remove Missing Items, Select All, Properties, Show in File Explorer
-  and Locate Missing File.
+  Playlist, Remove Missing Items, Select All, Properties, Add to Lineup, Show in
+  File Explorer and Locate Missing File.
 - **Arrange** (Alt+A): Move Up, Move Down, Move to Top, Move to Bottom, Move to
   Position and Sort Playlist.
 - **Play** (Alt+P): Play, Pause or Resume, Next Item, Previous Item, Play This
@@ -4325,6 +4340,7 @@ Applications key opens keeps them under **Show more options**.
 | Ctrl+A | Select All |
 | Ctrl+Z | Undo |
 | Alt+Enter | Properties |
+| Ctrl+Shift+U | Add to Lineup (Chapter 17) |
 | Ctrl+Shift+E | Show in File Explorer |
 | Ctrl+Alt+Shift+C | Choose Columns |
 | Escape, Ctrl+W | Close the window; playing carries on |
@@ -6022,7 +6038,7 @@ walks you through the help you have here.
 
 ### Tutorials
 
-**Help > Tutorials...** (Ctrl+Alt+F1) opens 41 guided lessons, 281 steps in
+**Help > Tutorials...** (Ctrl+Alt+F1) opens 44 guided lessons, 298 steps in
 all, in six tracks: Your first hour, Finding something to listen to, Making it
 yours, Recording, More than radio, and Living with it. They are not a copy of
 this guide:
@@ -6555,9 +6571,632 @@ site.
 You know where to turn when you need help: the tutorials for learning by
 doing, F1 for whatever you are on, Audio Health for the sound, and a real
 person at support@community-access.org for anything else. You can keep Quill
-Radio up to date and sort out the most common problems yourself. That is the
-end of the chapters. The Keyboard reference below is worth keeping handy for
-your first few weeks. Thank you for listening with Quill Radio. Enjoy it.
+Radio up to date and sort out the most common problems yourself. One chapter
+is left: Chapter 17, QUILL Lineups, gathers everything you have met so far into
+lists that keep themselves up to date. The Keyboard reference after it is worth
+keeping handy for your first few weeks. Thank you for listening with Quill
+Radio. Enjoy it.
+
+## Chapter 17: QUILL Lineups
+
+A Lineup is a list of things to listen to or watch, in an order you chose,
+that keeps itself up to date. One Lineup can hold any mix of radio stations,
+saved places from Browse Stations, podcasts and their episodes, YouTube
+videos, playlists and channels, your Local Media files and your recordings.
+
+Things come into a Lineup two ways. You can add them yourself, from almost
+any list in Quill Radio. And you can give a Lineup **rules**: "every unplayed
+episode from my News folder published since yesterday", or "the stations in
+my Morning folder". Each rule also says **when its items go**: once you have
+heard them, after some days, when they stop matching, or never. And whatever
+the rules say, **your hands win**. What you add stays, what you keep stays,
+and what you remove never comes back.
+
+A morning might look like this: arrow to Morning, press Enter, and the two
+news stations you always start with play first, then today's episodes, with
+yesterday's already gone because you heard them.
+
+Your Lineups are shared with QUILL Cast. Make one in Quill Radio and it is
+there when Cast opens, and you can edit it in either app, even with both open.
+
+The tutorial **Build a lineup that fills itself**, in the **More than radio**
+track, walks you through this chapter in about nine minutes.
+
+### Open Lineups
+
+Press **Ctrl+U** (**Playback > Lineups...**). The Lineups window opens. It is
+a window of its own, like Local Media, so it is on the Window menu and in the
+Ctrl+Tab order, and it has its own menu bar.
+
+You can also reach it from:
+
+- **Station > Lineups...** (Ctrl+U) in every other Quill Radio window, such as
+  Browse Stations and Local Media.
+- **Go To** (Ctrl+G). Lineups is one of the places you can add to your Go To
+  list; see "Go To Settings, step by step" in Chapter 3.
+- The **Command Palette** (Ctrl+Shift+P): **Internet Radio: Lineups...** opens
+  the window, and **Lineups: Go to a Lineup...** asks which Lineup and opens
+  the window on it. With many Lineups, typing three letters of a name is
+  quicker than arrowing.
+
+If the window is already open, Ctrl+U brings it to the front rather than
+opening a second one. Close it with **Escape** or **Ctrl+W** (**Lineup >
+Close**). Whatever is playing carries on.
+
+### Finding your way around the window
+
+#### When you have no Lineups yet
+
+The first time, the window says "You have no lineups yet", and your cursor is
+on the **New Lineup...** button. Beside it is **Start from an Example...**,
+which gives you a ready-made Lineup with rules.
+
+#### The two lists
+
+Once you have a Lineup, the window has two lists. Tab moves from the Lineups
+list to the Show filter and then to the Items list.
+
+- **Lineups** (Alt+L): your Lineups, in your own order. Each row says how many
+  items it holds and how long they play, such as "Morning, 14 items, 1 hour 50
+  minutes". A Lineup whose rules brought in new things while you were looking
+  at another one says how many, such as "2 new", until you choose it. The
+  Lineup that opens when Quill Radio starts says "start lineup".
+- **Items** (Alt+T): what is in the Lineup you are on, in the order it plays.
+  The list's name says which Lineup, such as "Items in Morning". Moving
+  through the Lineups list fills it straight away.
+
+Each item reads as one sentence, always in the same order: the **name**, the
+**kind** of thing, the **length**, where it **comes from**, and, only when
+there is something to say, its **state**. For example:
+
+- "BBC Radio 4, station, kept"
+- "Tuesday's Episode, episode, 32 minutes, The Daily"
+- "Lofi Beats, YouTube video, live"
+- "The Archers, episode, 13 minutes, BBC, missing"
+
+The name comes first, so typing the first letter of a name jumps to it. The
+states you may hear are:
+
+| State | What it means |
+| --- | --- |
+| kept | You chose Keep This Item, so it stays whatever the rules say. |
+| played | Its owner says you have heard or watched it to the end. |
+| live | It never ends by itself, like a radio station or a live stream. |
+| missing | It no longer exists, for example a podcast you stopped following. |
+| unavailable | Quill Radio could not check it just now. It stays as it was, and is checked again later. |
+
+Above the Items list, **Show** (Alt+O) narrows the list to one kind: All
+kinds, Episodes and podcasts, Stations and places, YouTube, or Local media and
+recordings. Moving items while some kinds are hidden moves them among the
+items you can see.
+
+#### The status bar
+
+The status bar sums up the Lineup you are on: how many items, how long they
+play, and when the rules last ran, such as "Morning: 14 items, 1 hour 50
+minutes. Updated 06:02." In NVDA press NVDA+End, and in JAWS press
+Insert+Page Down, to read it. **Lineup Summary** (Ctrl+T, **Play > Lineup
+Summary**) says the same thing and then reads you each rule.
+
+#### The menus in the window
+
+Every item on the menu bar shows its key:
+
+- **Lineup** (Alt+U): New Lineup, New from an Example, Duplicate Lineup,
+  Rename Lineup, Delete Lineup, Edit Rules, Start Here, Removed Items,
+  Recently Left, Import Rules, Export Rules and Close.
+- **Edit** (Alt+E): Undo, Cut, Paste Before, Paste After, Keep This Item,
+  Remove from Lineup, Remove Missing Items, Select All, Why Is This Here and
+  Refresh Now.
+- **Arrange** (Alt+A): Move Up, Move Down, Move to Top, Move to Bottom and
+  Move to Position.
+- **Play** (Alt+P): Play, Pause or Resume, Next Item, Previous Item, Play This
+  Lineup, Play Next, Add to Up Next, Stop After This Item, Skip Live Items and
+  Lineup Summary.
+
+The Station and Window menus are there too, as in every Quill Radio window.
+Press **Shift+F10**, or the Applications key, on an item or a Lineup, and
+everything you can do with it is right there.
+
+### Make your first Lineup
+
+#### Start from an example, step by step
+
+The quickest way to see a Lineup working is to start from one of the
+examples. Each one shows a different way of choosing how long things stay.
+
+1. In the Lineups window, press **Ctrl+Alt+N** (**Lineup > New from an
+   Example...**), or choose the **Start from an Example...** button.
+2. Arrow through the examples. Each one says what it does.
+3. Choose **Morning** and press **Enter**.
+4. You hear "Made Morning. Its rules are running now." A moment later, its
+   items arrive.
+
+The examples are:
+
+| Example | What it brings in, and how long it stays |
+| --- | --- |
+| Morning | The stations in your Favorites folder called Morning, always; then unplayed episodes from your News podcast folder published in the last day, newest first, each one gone once finished or after 2 days. |
+| New This Week | Unplayed episodes from the last 7 days, newest first, at most 20, each gone once finished or after 7 days. |
+| Latest From Each | The newest unplayed episode of each podcast you follow, gone as soon as it stops matching. |
+| Commute | Unplayed episodes of 40 minutes or less, oldest first, up to 45 minutes in all, each gone once finished. |
+| Saved YouTube | The YouTube videos you saved, each kept for 14 days. |
+| Live News | Stations with a news tag, yours or the directory's, and saved YouTube streams that are live, while they match. |
+| Finish These | Episodes you started and have not finished, gone once finished. |
+
+The example becomes yours, a copy you can change however you like. If an
+example names a folder you do not have, such as News, its rule finds nothing
+and its sentence says so: 'in folder "News", which does not exist'. Rename the
+folder in the rule to one of yours (see "Write a rule" below).
+
+#### Make an empty Lineup, step by step
+
+1. Press **Ctrl+N** (**Lineup > New Lineup...**), or choose the **New
+   Lineup...** button.
+2. Type a name, such as Sunday, and press **Enter**.
+3. You hear "Made. Add to Lineup in any list fills it; Edit Rules, Ctrl+Alt+R,
+   gives it rules."
+
+Two Lineups never share a name, whatever the capitals: a second Sunday is
+called "Sunday (2)".
+
+#### Rename, duplicate, delete and arrange Lineups
+
+These work on the Lineup selected in the Lineups list:
+
+- **Rename Lineup...** (F2).
+- **Duplicate Lineup** (Ctrl+D) makes "Morning (copy)", with the same rules,
+  settings and order. Its Removed Items and Recently Left start empty.
+- **Delete Lineup...** (Shift+Delete, or Delete in the Lineups list) asks first
+  and names what goes: "Delete Morning, its 2 rules and 14 items? The items
+  themselves are not deleted." Nothing you listen to is ever deleted by
+  this: no station, episode or file. **Ctrl+Z** brings the Lineup back.
+- **Alt+Shift+Up** and **Alt+Shift+Down**, in the Lineups list, move the
+  Lineup you are on, and **Alt+Shift+Home** and **Alt+Shift+End** move it to
+  the top or the bottom.
+
+### Add things by hand
+
+Anything you add yourself stays in the Lineup until you remove it, whatever
+the rules say.
+
+#### Add to Lineup, step by step
+
+1. Go to the thing you want, in any of these places:
+   - a station, episode, YouTube row or saved place in **Browse Stations**;
+   - a favorite in the main window's favorites tree;
+   - a result in **Search Stations**;
+   - one or more items in **Local Media**.
+2. Press **Shift+F10**, or the Applications key, and choose **Add to
+   Lineup...**. In Local Media you can also press **Ctrl+Shift+U** (**Edit >
+   Add to Lineup...**).
+3. A short list of your Lineups opens, with **New Lineup...** at the end.
+   Choose a Lineup and press **Enter**, or choose New Lineup... and type a
+   name.
+4. You hear "Added to Morning", followed by "Ctrl+Z undoes this".
+
+If the Lineups window is open, the new item appears in it straight away.
+Adding something the Lineup already holds makes it stay until you remove it,
+and adding something you removed earlier takes it off Removed Items.
+
+### Arrange the items
+
+Moving an item changes the order, never how long it stays. And the rules
+never move anything: when they run, items they bring in arrive, items they let
+go leave, and everything else stays exactly where you put it.
+
+- **Alt+Shift+Up** and **Alt+Shift+Down** move the selected items one place.
+  Quill Radio says where they landed, such as "Moved to 3 of 14". At the
+  edge you hear "Already at the top".
+- **Alt+Shift+Home** and **Alt+Shift+End** move them to the top or the bottom.
+- **Move to Position...** (Ctrl+J) asks for a number.
+- For a long move, press **Ctrl+X** (**Edit > Cut**), go to where they belong,
+  and press **Ctrl+V** (**Paste Before**) or **Ctrl+Alt+V** (**Paste After**).
+- **Ctrl+A** selects every item, and **Shift** with the arrows selects
+  several.
+
+### Write a rule
+
+A rule says what to look for, where to look, which ones, in what order, how
+many, and how long they stay. A Lineup can have as many rules as you like:
+anything any rule finds is in the Lineup.
+
+#### The Rules window, step by step
+
+1. In the Lineups list, arrow to a Lineup and press **Alt+Enter**, or press
+   **Ctrl+Alt+R** (**Lineup > Edit Rules...**) from anywhere in the window.
+2. The Rules window opens on the list **Rules for Morning**. Each rule is one
+   sentence, including how long its items stay and how many it finds now:
+   'Podcast episodes in folder "News", where Played is no and Age is at most 1
+   days, newest first. They go once finished, or after 2 days. Finds 3 now.'
+3. Use the buttons beside the list: **Add Rule...**, **Edit Rule...**,
+   **Remove Rule**, **Move Up** and **Move Down**. Moving a rule changes where
+   its new items go, not what it finds.
+4. Below the list, in **This lineup**, are three settings for the whole
+   Lineup:
+   - **New items go**: **With the other items from the same rule** (the
+     usual choice, so each rule's items stay together), **At the top**, or
+     **At the bottom**.
+   - **Play-through budget in minutes**: playing the Lineup through stops
+     adding rule items once this many minutes are used. 0 means no budget.
+   - **Skip live items when playing through**, the same as **Play > Skip Live
+     Items** (Ctrl+Alt+K).
+5. Press **Enter** for OK, or **Escape** to change nothing.
+
+Nothing changes until you choose OK. Two questions may come first, so that a
+rule change never takes something away silently:
+
+- If the change would let items go, you hear how many: "This change lets 4
+  items go. They will be in Recently Left. Make the change?"
+- If you removed a rule that had brought items in, you are asked what to do
+  with them: **Keep Them** turns them into items you keep, and **Let Them Go**
+  sends them to Recently Left.
+
+#### Edit Rule, step by step
+
+Edit Rule is laid out in the order the rule's sentence reads, in labelled
+groups.
+
+1. **What it looks for.** **Look for** (Alt+L) chooses one kind: Radio
+   stations, Saved places, Podcasts I follow, Podcast episodes, YouTube
+   videos, YouTube playlists, YouTube channels, Local media, or Recordings.
+   A change applies when you leave the box, or press OK, and asks first if it
+   would clear the rule's tests, because tests for one kind do not fit
+   another.
+2. **Where to look.** **Narrow by** (Alt+N) chooses what to look in, such as
+   Folder, Podcast, Label or Channel. Leave it on "Choose what to narrow by"
+   to look everywhere. Then **Values** (Alt+V) lists every one you have: press
+   **Space** on each one to look in, and any selected one counts. **Filter
+   values** (Alt+F) shortens a long list as you type. Switching Narrow by to
+   another field keeps the values you already chose.
+3. **Tests.** The **Tests** list (Alt+E) holds what an item must be. **Add
+   Test...** (Alt+A) asks for a field, a test and a value, such as "Length",
+   "is at most", "40". **Match** (Alt+M) chooses whether an item must pass
+   **All of the tests** or **Any of the tests**. With no tests, everything in
+   the places you chose is found.
+4. **Order and amount.** **Order** (Alt+O): as the source orders them, newest
+   first, oldest first, shortest first, longest first, by name, or most
+   listened first. Then three limits, each 0 for none: **Count limit**,
+   **Per group limit** (at most this many from each podcast, channel, album or
+   Favorites folder) and **Up to minutes in all**.
+5. **When they go.** **Keep** (Alt+K), and the boxes it needs; see "Choose how
+   long things stay" below. **Rule switched on** (Alt+S) turns the rule off
+   without deleting it: off, it finds nothing new and lets nothing go.
+6. **Try it.** Press **Try It** (Alt+T). Your cursor moves to the **Matches**
+   list, and its label says how many the rule finds, such as "Matches, 7
+   items", so you hear the count as you arrive. Nothing is saved by trying.
+7. Press **Enter** for OK.
+
+#### What a test can ask
+
+A text test can be: contains, does not contain, starts with, ends with, is, is
+not, fits the wildcard, matches the regular expression, or does not match the
+regular expression. **Capitals must match** makes it exact. A number test can
+be: is at least, is at most, is, or is not, and the box says the unit, such
+as "In minutes." A yes-or-no test is yes or no.
+
+**A number test never matches something that does not say.** A podcast that
+publishes no length is never "at most 10 minutes", so a short-episodes rule
+never fills up with episodes of unknown length.
+
+What each kind can be tested on:
+
+| Kind | Fields |
+| --- | --- |
+| Podcast episodes | Title, Podcast, Folder, Label, Age (days), Length (minutes), Played, Started but not finished, Percent heard, Downloaded, Season, Episode number, Episode type, Days since last played |
+| Podcasts I follow | Title, Folder, Label, Favorite, Paused, Language, Category, Unplayed episodes, Newest episode age (days) |
+| Radio stations | Name, Favorites folder, In Favorites, My tag, Directory tag, Country, Language, Codec, Bitrate, Source, Time listened (minutes), In recently played |
+| Saved places | Name, Source, Favorites folder |
+| YouTube videos | Title, Channel, Length, Live, Saved by me |
+| YouTube playlists | Title, Channel, Number of videos |
+| YouTube channels | Name, New-video alerts on |
+| Local media | Title, Artist, Album, Playlist, Length, Days since added, Is a video |
+| Recordings | Name, Length, Age, Status |
+
+Rules only read what is already on your computer. A rule over Radio stations
+sees your favorites, the stations you have tagged and the stations you played
+recently, not every station in the world. Podcast rules see what QUILL Cast
+knows about the podcasts you follow.
+
+### Choose how long things stay
+
+Tests decide what comes **in**. The rule's **Keep** choice decides when it
+**goes**. The same episode can come in because it is new and leave because you
+have heard it, and the rule's sentence always says both.
+
+| Keep | An item goes when | Good for |
+| --- | --- | --- |
+| While it matches | It stops passing the rule's tests. | Things that should mirror a fact exactly, such as stations tagged news. |
+| Until finished | You have heard or watched it to the end, or past the percentage you set (95 percent unless you change it). | Episodes, videos and recordings you mean to hear. |
+| For a number of days | It has been in the Lineup that many days, 1 to 365, whether it still matches or not. | Lists that should roll forward by themselves. |
+| Until finished, or a number of days | Whichever comes first. | The usual podcast case: hear it this week or let it go. |
+| Always | Never, unless you remove it. | The stations you always start with. |
+
+A few things worth knowing:
+
+- **A station is never finished**, and neither is a place, a podcast you
+  follow, a channel or a playlist. Rules over those offer only While it
+  matches, For a number of days, and Always.
+- **What counts as finished.** An episode marked played in QUILL Cast always
+  counts. Otherwise it counts once you have heard past **Percent heard that
+  counts as finished** (Alt+P).
+- **Max kept** (Alt+X) caps a rule: it keeps at most that many, and the oldest
+  arrivals go first. A busy channel cannot fill the Lineup.
+- **Days are real days.** "For 3 days" means 72 hours from when the rule
+  brought the item in, however often the rules run.
+- **The usual choice follows the kind.** A new rule over episodes, videos,
+  Local Media or recordings starts on Until finished, or 7 days. Any other kind
+  starts on While it matches.
+- **Two rules can find the same item.** It appears once, and stays while any
+  of its rules still wants it.
+
+### Your hands outrank the rules
+
+- **Keep This Item** (Ctrl+K, **Edit > Keep This Item**) holds an item
+  whatever its rule says. You hear "Kept. It stays whatever the rules say."
+  The row says "kept", and the menu item is checked. Press it again to give it
+  back to its rule: "No longer kept: its rules decide again."
+- **An item you added by hand** stays until you remove it.
+- **Remove from Lineup** (Delete) takes an item out now, and **no rule ever
+  brings it back**, however well it matches later. You hear "Removed. Removed
+  Items can bring it back.", or how many, when you removed several. It goes to
+  Removed Items, below. Nothing is deleted
+  from your computer or from QUILL Cast.
+- **Remove Missing Items** (Ctrl+Shift+Delete) removes every item that no
+  longer exists.
+- **Undo** (Ctrl+Z, **Edit > Undo**) takes back the last change: a move, a
+  remove, Keep, a rename, a deleted Lineup, a rule change or an add. Press it
+  again for the one before. It is the same Undo as the main window's, so
+  **Undo History** (Ctrl+Alt+Shift+A) lists these too.
+
+> **QUILLBee's tip:** Delete never asks, because it never loses anything.
+> Removed Items keeps the list, and Ctrl+Z puts the item back in the very
+> same place.
+
+### Why Is This Here
+
+Press **Alt+Enter** on an item (**Edit > Why Is This Here...**). A short
+window says why the item is in the Lineup and how long it will stay. Read it
+with the arrow keys, and press **Escape** to close it.
+
+- "In Morning because rule 2 found it: Podcast episodes in folder "News",
+  where Played is no and Age is at most 1 day, newest first. They go once
+  finished, or after 2 days. 1 day left."
+- "In Morning because you kept it. It stays whatever the rules say, until you
+  remove it."
+- "In Morning because you added it. It stays until you remove it."
+- When two rules found it, it names both and says which one keeps it longest.
+
+Alt+Enter means "tell me about this" everywhere in Windows, which is why it is
+the reason on an item and the rules on a Lineup.
+
+### Removed Items and Recently Left
+
+Nothing leaves a Lineup without trace. Two lists, both on the Lineup menu,
+remember what went:
+
+- **Removed Items...** (Ctrl+Alt+Z): what you removed yourself.
+- **Recently Left...** (Ctrl+Alt+L): what the rules let go, newest first, each
+  with its reason and when, such as "finished", "2 days passed" or "it no
+  longer matches rule 1". It remembers the last 100.
+
+In either one, select one or more items and choose **Bring Back** (Alt+B).
+They come back at the end of the Lineup as items you keep, so the rules do not
+let them straight go again. **Clear the List** (Alt+L) empties the list, after
+asking, because it cannot be undone. Clearing Removed Items also means a rule
+could bring those items back.
+
+### When the rules run
+
+The rules run:
+
+- when you open the Lineups window;
+- when something they read changes, in Quill Radio or in QUILL Cast, such as a
+  new episode arriving or a favorite being added;
+- every ten minutes while the window is open, so days pass on time;
+- whenever you press **F5** (**Edit > Refresh Now**).
+
+**The rules run while the Lineups window is open, and each time it opens.**
+They do not run in the background with the window closed. Opening the window
+always brings every Lineup up to date first.
+
+What you hear:
+
+- With the window in front, a change is said once, without moving your
+  cursor: "2 added, 1 left." If the item you were on is the one that left, you
+  hear that first, such as "Your item left: finished.", and your cursor moves
+  to the item that took its place.
+- When nothing changed, the rules say nothing, unless you pressed F5, which
+  always answers: "No changes."
+- Changes to Lineups you are not looking at show on their rows as "2 new".
+
+Some promises the rules keep, whatever happens:
+
+- **Nothing leaves because something could not be checked.** If QUILL Cast's
+  library cannot be read, or a feed fails, the items it would have checked stay
+  exactly as they were and say "unavailable".
+- **Nothing leaves without trace.** Everything the rules let go is in Recently
+  Left, with the reason.
+- **Your order is never changed by the rules.**
+- **A big loss is never silent.** If one refresh would take away more than half
+  of a Lineup, and more than 10 items, for example after a long time away or a
+  clock change, it says so plainly, such as "18 items left Morning: 7 days
+  passed. Recently Left can bring them back."
+
+### Play a Lineup
+
+#### Play it through, step by step
+
+1. In the Lineups list, arrow to a Lineup and press **Enter**, or press
+   **Ctrl+Alt+P** (**Play > Play This Lineup**) from anywhere in the window.
+2. The first item plays, and you hear its name. When it ends, the next one
+   starts by itself, whatever kind it is: a station, an episode, a video, a
+   file of your own.
+3. To start from a particular item, arrow to it in the Items list and press
+   **Enter**, or **Ctrl+Enter** (**Play > Play**). It plays, and then the rest
+   of the Lineup carries on after it.
+4. When the last item ends by itself, you hear "End of Morning."
+
+While a Lineup plays:
+
+- **Ctrl+Right** and **Ctrl+Left** (**Next Item**, **Previous Item**) move
+  through it in the Lineups window. From any Quill Radio window, the Next
+  Chapter and Previous Chapter keys, **Ctrl+Shift+.** and **Ctrl+Shift+,**, do
+  the same, even on a live station. On an episode or a file with chapters, they
+  move through its chapters first, then on to the next item.
+- At the last item, Next says "This is the last item." and the item keeps
+  playing; at the first, Previous says "This is the first item."
+- A YouTube item says "Starting", and its name, rather than "Playing", because
+  YouTube can still refuse it.
+- **Pause or Resume** (**Play > Pause or Resume**) holds and
+  continues what is playing; its key, **Ctrl+Space**, works everywhere in the
+  window except the Items list, where Ctrl+Space selects or deselects the item
+  under the cursor, as in any Windows list.
+- **A live station never ends by itself.** It plays until you move on, and the
+  first live item of each play-through tells you how: "Live. Press
+  Ctrl+Shift+Period for the next item." To leave live items out of play-throughs, turn on
+  **Skip Live Items** (Ctrl+Alt+K).
+- **Anything that cannot play is named and skipped**, such as "Skipped The
+  Archers, missing."
+- **Play Next** (Ctrl+Shift+Enter) puts the selected items right after the one
+  playing, and **Add to Up Next** (Ctrl+Alt+Enter) after anything already
+  queued.
+- **Stop After This Item** (Ctrl+Alt+S) stops when the current item ends, and
+  says so: "Stopped after", and the item's name. Press it again before then to
+  carry on.
+- A **podcast** in a Lineup plays its newest unplayed episode.
+
+A Lineup's play-through budget, and Skip Live Items, apply when the Lineup
+plays through. They never leave out an item you kept, added or moved, and the
+item you chose to start from always plays.
+
+#### Saved places and YouTube channels
+
+A saved place from Browse Stations, such as a genre or a country, and a YouTube
+channel are somewhere to browse rather than something to play. Enter on one
+opens Browse Stations, and if you saved it in Favorites, it is under Favorites
+there. Browse Stations opens at the top of its tree; it cannot yet open on that
+exact place. A play-through skips them.
+
+### Start Here: open Quill Radio in a Lineup
+
+You can choose one Lineup to open every time Quill Radio starts.
+
+1. In the Lineups list, arrow to the Lineup, such as Morning.
+2. Press **Ctrl+Alt+H** (**Lineup > Start Here**).
+3. You hear "Morning opens when Quill Radio starts." The menu item is checked,
+   and the Lineup's row says "start lineup".
+
+Next time Quill Radio starts, the Lineups window opens in front of the main
+window, on that Lineup, and its rules run as it opens. The main window is still
+there behind it, showing what it always shows. Close the Lineups window and
+you are back in it.
+
+- To stop, choose **Start Here** again on the same Lineup. You hear "Quill
+  Radio opens as usual." Choosing it on another Lineup moves it there, because
+  Quill Radio can start in only one place.
+- The very first time Quill Radio runs, its welcome comes first. Start Here
+  applies from the next time.
+- If you open Quill Radio by opening a file with it, the file plays instead,
+  because that is what you asked for this time.
+- If the Lineup was deleted, Quill Radio says once "Your start lineup no longer
+  exists. Quill Radio opened as usual." and forgets the choice.
+
+QUILL Cast has its own Start Here, so each app can start in a different
+Lineup, or neither.
+
+### Sharing Lineups with QUILL Cast
+
+Quill Radio and QUILL Cast keep their Lineups in one file, `lineups.json` in
+the shared data folder. The same Lineups, rules and order appear in both
+apps, and the Lineups window has the same menus and keys in each, Ctrl+U
+included.
+
+- **Both apps can be open at once.** An edit in one appears in the other within
+  a couple of seconds, and neither app ever undoes the other's change. If you
+  move an item the other app removed a moment ago, nothing is guessed: you are
+  told so.
+- **Each app plays what it can, and hands over the rest.** If you play a
+  station, a YouTube item, a Local Media file or a recording from a Lineup in
+  QUILL Cast, Cast hands it to Quill Radio, opening Radio if it is not running,
+  and Radio plays it.
+- **Backups.** A Quill Radio backup (see "Backing up and restoring" in
+  Chapter 7) includes your Lineups.
+
+#### Share a Lineup's rules
+
+**Export Rules...** (Ctrl+Shift+X) saves a Lineup's rules and settings, not its
+items, to a small file you can send to a friend or take to another computer.
+**Import Rules...** (Ctrl+I) makes a new Lineup from such a file, whose rules
+then find the same kinds of thing in your own favorites and podcasts.
+
+### What Lineups cannot do yet
+
+- **Rules never use the internet.** They read what is already on your
+  computer, so they are instant and work offline. A rule over Radio stations
+  sees your favorites, tagged stations and recent stations, not every station
+  in a directory.
+- **YouTube rules see what you saved and follow.** They see your saved videos
+  and playlists and the channels you follow. The newest uploads in a channel
+  you follow are fetched from YouTube as you browse and are not kept on your
+  computer, so a rule cannot see every new upload.
+- **The rules run while the Lineups window is open**, and each time it opens,
+  not in the background.
+- **A saved place opens Browse Stations at the top**, not on that place.
+
+### Keys in the Lineups window
+
+| Key | What it does |
+| --- | --- |
+| Enter | On an item, play from here and carry on; on a Lineup, play the Lineup |
+| Ctrl+Enter | Play the selected item, then carry on |
+| Ctrl+Space | Pause or resume, except in the Items list, where it selects or deselects one item |
+| Ctrl+Right, Ctrl+Left | Next item, previous item |
+| Ctrl+Shift+., Ctrl+Shift+, | Next item, previous item, from any window (chapters first) |
+| Ctrl+Alt+P | Play This Lineup, from the top |
+| Ctrl+Shift+Enter, Ctrl+Alt+Enter | Play Next, Add to Up Next |
+| Ctrl+Alt+S | Stop After This Item |
+| Ctrl+Alt+K | Skip Live Items, on or off |
+| Ctrl+T | Lineup Summary |
+| Ctrl+N | New Lineup |
+| Ctrl+Alt+N | New from an Example |
+| Ctrl+D | Duplicate Lineup |
+| F2 | Rename Lineup |
+| Shift+Delete | Delete Lineup (asks first); Delete does the same in the Lineups list |
+| Ctrl+Alt+R | Edit Rules; Alt+Enter does the same in the Lineups list |
+| Ctrl+Alt+H | Start Here, on or off |
+| Ctrl+Alt+Z | Removed Items |
+| Ctrl+Alt+L | Recently Left |
+| Ctrl+I, Ctrl+Shift+X | Import Rules, Export Rules |
+| Ctrl+K | Keep This Item, on or off |
+| Delete | Remove from Lineup |
+| Ctrl+Shift+Delete | Remove Missing Items |
+| Alt+Enter | Why Is This Here, on an item |
+| F5 | Refresh Now |
+| Alt+Shift+Up, Alt+Shift+Down | Move up or down one place |
+| Alt+Shift+Home, Alt+Shift+End | Move to the top or the bottom |
+| Ctrl+J | Move to Position |
+| Ctrl+X | Cut |
+| Ctrl+V, Ctrl+Alt+V | Paste Before, Paste After |
+| Ctrl+A | Select All |
+| Ctrl+Z | Undo |
+| Escape, Ctrl+W | Close the window; playing carries on |
+
+From any Quill Radio window, **Ctrl+U** opens Lineups, and in Local Media
+**Ctrl+Shift+U** adds the selected items to a Lineup.
+
+### What you learned, and where to go next
+
+You can now make Lineups from examples or from nothing, fill them by hand from
+almost any list, and write rules that bring things in and let them go when
+you choose. You know that your own hands outrank the rules, how to ask why
+something is there, and how to bring back anything that left. You can play a
+Lineup straight through, open Quill Radio in one, and share them with QUILL
+Cast.
+
+The tutorial **Build a lineup that fills itself**, in the **More than radio**
+track, walks through it with you. The Keyboard reference below has the keys
+for the whole of Quill Radio.
 
 ## Keyboard reference
 
@@ -6721,6 +7360,7 @@ In every other window, Alt+S is the Station menu and Alt+W is the Window menu. S
 | --- | --- |
 | Go To (a numbered list of places) | Ctrl+G |
 | Local Media (your own files, in playlists) | Ctrl+O |
+| Lineups (QUILL Lineups, shared with QUILL Cast) | Ctrl+U |
 | Next or previous window | Ctrl+Tab / Ctrl+Shift+Tab |
 | Jump to open window 1 to 9 | Ctrl+1 to Ctrl+9 |
 | Close the window you are in | Escape, Ctrl+W, or Ctrl+F4 |

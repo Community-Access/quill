@@ -290,53 +290,19 @@ class CastPlaceRoutesMixin:
     # -- the queue's lineups, as commands ------------------------------------------------ #
 
     def podcast_save_queue_lineup(self) -> None:
-        from quill.core.podcasts.queue_lineups import find_lineup, save_lineup
-        from quill.ui.podcasts.folder_prompt import name_prompt
+        """Save Lineup...: the queue's order as a QUILL Lineup (ui/podcasts/lineups_queue)."""
+        from quill.ui.podcasts.lineups_queue import save_queue_lineup
 
-        library = self._podcast_library  # type: ignore[attr-defined]
-        if not library.queue:
-            self._announce("The queue is empty, so there is no order to save.")  # type: ignore[attr-defined]
-            return
-        name = name_prompt(
-            self.frame, "Save Lineup", announce=self._announce, message="Lineup name:"
-        )  # type: ignore[attr-defined]
-        if name is None:
-            return
-        replacing = find_lineup(library, name) is not None
-        saved = save_lineup(library, name)
-        if saved is None:
-            self._announce("That lineup could not be saved.")  # type: ignore[attr-defined]
-            return
-        self._save_podcast_library()  # type: ignore[attr-defined]
-        verb = "Replaced" if replacing else "Saved"
-        self._announce(f"{verb} lineup {name}: {len(saved.items)} episode(s), in this order.")  # type: ignore[attr-defined]
+        save_queue_lineup(self, self._podcast_library, self.frame, announce=self._announce)  # type: ignore[attr-defined]
 
     def podcast_apply_queue_lineup(self) -> None:
-        import wx
-
-        from quill.core.podcasts.queue_lineups import apply_lineup, lineup_names
+        """Apply Lineup...: a Lineup's episodes to the front of the queue."""
+        from quill.ui.podcasts.lineups_queue import apply_queue_lineup
 
         library = self._podcast_library  # type: ignore[attr-defined]
-        names = lineup_names(library)
-        if not names:
-            self._announce("No lineups have been saved yet. Use Save Lineup first.")  # type: ignore[attr-defined]
-            return
-        with wx.SingleChoiceDialog(  # dialog_button_contract: exempt
-            self.frame,
-            "Apply which lineup?",
-            "Apply Lineup",
-            names,  # type: ignore[attr-defined]
-        ) as dialog:
-            if dialog.ShowModal() != wx.ID_OK:
-                return
-            chosen = dialog.GetStringSelection()
-        playlist = next((p for p in library.playlists if p.name == chosen), None)
-        if playlist is None:
-            return
-        counted = apply_lineup(library, playlist)
-        self._save_podcast_library()  # type: ignore[attr-defined]
-        self._refresh_place(keep=False)  # type: ignore[attr-defined]
-        self._announce(counted.sentence("Applied", chosen, noun="episode"))  # type: ignore[attr-defined]
+        if apply_queue_lineup(self, library, self.frame, announce=self._announce):  # type: ignore[attr-defined]
+            self._save_podcast_library()  # type: ignore[attr-defined]
+            self._refresh_place(keep=False)  # type: ignore[attr-defined]
 
     # -- feature switches ------------------------------------------------------------- #
 

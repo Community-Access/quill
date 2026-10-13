@@ -32,9 +32,13 @@ def handle(controller: Any) -> None:
         return
     if book_playback.handle_finished(controller):
         return
-    # A Local Media playlist: the next item, by the playlist's own order.
-    from quill.ui.radio import local_media_playback
+    # A Lineup playing through: the next item, any kind. Asked before Local Media,
+    # and starting a Lineup clears any Local Media session, so at most one answers.
+    from quill.ui.radio import lineups_playback, local_media_playback
 
+    if lineups_playback.handle_finished(controller):
+        return
+    # A Local Media playlist: the next item, by the playlist's own order.
     if local_media_playback.handle_finished(controller):
         return
     controller._set_state(RadioPlayerState.STOPPED, message="The stream ended or disconnected.")

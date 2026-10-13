@@ -70,6 +70,7 @@ def _host(**overrides):
     host = SimpleNamespace(
         open_browse_stations=lambda: None,
         open_local_media=lambda: None,
+        open_lineups=lambda: None,
         open_internet_radio=lambda: None,
         open_manage_radio_favorites=lambda: None,
         open_radio_recordings=lambda: None,

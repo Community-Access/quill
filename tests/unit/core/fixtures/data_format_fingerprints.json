@@ -25,6 +25,7 @@
             "recent_searches": "tuple[str, ...]",
             "media_notice_signature": "str",
             "switch_to_now_playing": "bool",
+            "start_lineup_id": "str",
             "notes_copy_format": "str",
             "ai_help_enabled": "bool",
             "ai_privacy_accepted_version": "int",
@@ -62,10 +63,10 @@
             "tips_enabled": "bool"
           }
         },
-        "function:quill.core.podcasts.history:save_history": "sha256:ebaefb0dfc6efa3a"
+        "function:quill.core.podcasts.history:save_history": "sha256:5291c9682ff568cc"
       },
       "classification": "additive, compatible",
-      "note": "fingerprint method moved from ast.dump to ast.unparse (Python 3.12/3.13 stable); shape unchanged"
+      "note": "QUILL Lineups: start_lineup_id, the Lineup Cast opens in (empty by default); additive, older builds ignore it."
     },
     "cast.library": {
       "current": 2,
@@ -1372,6 +1373,7 @@
             "alt_f4_to_tray": "bool",
             "open_browse_at_startup": "bool",
             "startup_window": "str",
+            "start_lineup_id": "str",
             "main_view": "str",
             "debug_mode": "bool",
             "last_seen": "str",
@@ -1416,8 +1418,8 @@
         },
         "function:quill.core.radio.history_store:save_history": "sha256:ab4ddc8289ea7635"
       },
-      "classification": "version bumped",
-      "note": "Radio history version 2 adds website overrides; earlier builds can read the file but discard overrides if saved. RadioStation.notes_html is transient and never written."
+      "classification": "additive, compatible",
+      "note": "QUILL Lineups: start_lineup_id, the Lineup Radio opens in (empty by default); additive, older builds ignore it."
     },
     "shared.listens": {
       "current": 1,

@@ -468,7 +468,8 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 body=(
                     "Playlists is a place. Enter opens a playlist right there in the "
                     "same list, and Backspace brings you back to the list of "
-                    "playlists. Lineups you saved from the Play Queue live here too."
+                    "playlists. A lineup the Play Queue saved before QUILL Lineups "
+                    "stays here too."
                 ),
                 keys=("Ctrl+Shift+Y",),
                 hear="Playlists, then the first playlist.",
@@ -521,6 +522,6 @@ TUTORIALS: tuple[Tutorial, ...] = (
             "A smart playlist keeps itself up to date, so the one you make today is "
             "still right next month, without you touching it."
         ),
-        then=("episode-filters",),
+        then=("lineups", "episode-filters"),
     ),
 )

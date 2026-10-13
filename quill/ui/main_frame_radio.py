@@ -2004,6 +2004,12 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
 
         local_media_commands.open_window(self)
 
+    def open_lineups(self) -> None:
+        """Lineups...: QUILL Lineups (body in ui/radio/lineups_commands)."""
+        from quill.ui.radio import lineups_commands
+
+        lineups_commands.open_window(self)
+
     def open_radio_recordings(self, *, embed_in: object | None = None) -> object | None:
         """Recordings...: made, in-progress (live status), and scheduled."""
         from quill.ui.radio.recordings_manager_dialog import RecordingsManagerDialog

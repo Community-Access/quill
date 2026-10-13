@@ -325,6 +325,9 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # contents. Schema-stamped, loaded through versioned_store (a pre-release
     # shape migrates once, with a backup; a newer file is never downgraded).
     "core/radio/local_media.py::save_library": "versioned",
+    "core/lineups/store.py::update": "versioned",  # lineups.json, shared, locked
+    "core/lineups/handoff.py::write_request": "cache",  # Cast-to-Radio play request
+    "ui/lineups/commands.py::cmd_export_rules": "export",
     # Notify Me About New Videos: which followed channels ring, and the ids of
     # uploads already seen (so nothing is announced twice). Losing it only means
     # the next check is a fresh baseline; the stamp is the last check's time.

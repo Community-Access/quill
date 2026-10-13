@@ -19,6 +19,7 @@ from quill.apps.podcasts_extensions import CastExtensionsMixin
 from quill.apps.podcasts_go_to import CastGoToMixin
 from quill.apps.podcasts_help_surfaces import CastHelpSurfacesMixin
 from quill.apps.podcasts_library_actions import CastLibraryActionsMixin
+from quill.apps.podcasts_lineups import CastLineupsMixin
 from quill.apps.podcasts_menu import APP_BUILD, APP_REPO, APP_TITLE, APP_VERSION, CastMenuBarMixin
 from quill.apps.podcasts_now_playing import CastNowPlayingMixin
 from quill.apps.podcasts_preferences import CastPreferencesMixin
@@ -70,6 +71,7 @@ class PodcastsAppFrame(
     CastLibraryActionsMixin,
     CastCloseMixin,
     CastGoToMixin,
+    CastLineupsMixin,  # QUILL Lineups, shared with Quill Radio
     CastHelpSurfacesMixin,
     CastMenuBarMixin,
     CastMainPanelMixin,
@@ -221,6 +223,7 @@ class PodcastsAppFrame(
         # download, an analysis that finds no chapters -- so without this the
         # loss is invisible (list.md 5.3). Silent on a healthy install.
         self._when_cast_library_ready(self._cast_launch_notices)
+        self._init_cast_lineups()  # commands, old queue snapshots, the start Lineup
         if self._podcast_library_loading:
             wx.CallAfter(self._begin_cast_library_load)
 

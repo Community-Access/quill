@@ -62,6 +62,7 @@ DESTINATIONS: tuple[Destination, ...] = (
     Destination("sleep", "Sleep Timer", "open_sleep_timer_dialog"),
     Destination("preferences", "Preferences", "_open_preferences", "Ctrl+,"),
     # -- the pool: available to add, not in the menu by default ---------------
+    Destination("lineups", "Lineups", "open_lineups", "Ctrl+U"),
     Destination("enhancements", "Sound Enhancements", "open_podcast_sound_enhancements"),
     Destination("skip", "Skip Settings", "open_podcast_skip_settings"),
     Destination("quick_actions", "Quick Actions", "open_podcast_quick_actions"),
@@ -88,6 +89,7 @@ DESTINATION_AREAS: dict[str, str] = {
     "downloads": "downloads",
     "bookmarks": "notes",
     "statistics": "statistics",
+    "lineups": "lineups",
     "notes": "notes",
     "sleep": "sleep_timer",
     "enhancements": "sound",
