@@ -1518,3 +1518,32 @@ def fake_wx_dialog(monkeypatch):
         return cls
 
     return install
+
+
+@pytest.fixture(autouse=True)
+def _dictation_read_back_now(monkeypatch):
+    """Say a dictated phrase's read-back as soon as it is queued.
+
+    ``HostFeedback.read_back`` waits a moment (wx.CallLater) so the sentence
+    arrives after the reader has reacted to the edit. Tests assert the
+    sentence right after the phrase, so they passed only when CallLater
+    happened to raise and the "say it now" fallback ran -- order-dependent,
+    and it failed in CI. The queue and joining still run; only the wait is
+    skipped here.
+    """
+    from quill.ui import windows_dictation_ports as ports
+
+    original = ports.HostFeedback.read_back
+
+    def read_back_now(self, text: str) -> None:
+        original(self, text)
+        timer, self._timer = self._timer, None
+        if timer is not None:
+            try:
+                timer.Stop()
+            except Exception:  # noqa: BLE001 - a timer that never started
+                pass
+        if self._pending:
+            self._speak_pending()
+
+    monkeypatch.setattr(ports.HostFeedback, "read_back", read_back_now)

@@ -203,8 +203,21 @@ def test_auto_advance_all_missing_says_end_of_book(app, tmp_path, monkeypatch) -
         frame._play_queue = q
         said: list[str] = []
         monkeypatch.setattr(frame, "_announce", said.append)
+        import threading
+
         scheduled: list[tuple[object, tuple]] = []
-        monkeypatch.setattr(wx, "CallAfter", lambda fn, *a2: scheduled.append((fn, a2)))
+        real_call_after = wx.CallAfter
+
+        def _record(fn, *a2):
+            # Only what the frame schedules on the UI thread. Background work
+            # left over from another test also reaches wx.CallAfter (through
+            # call_ui_safely) and is not this frame opening anything (CI flake).
+            if threading.current_thread() is threading.main_thread():
+                scheduled.append((fn, a2))
+            else:
+                real_call_after(fn, *a2)
+
+        monkeypatch.setattr(wx, "CallAfter", _record)
         frame._on_book_finished(str(a))
         assert said == ["End of book."]  # nothing playable ahead
         frame._on_book_closed(str(a), position_ms=0, chapter=0)
