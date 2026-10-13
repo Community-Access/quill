@@ -56,6 +56,9 @@ class ReaderGate:
         #: Loud spans, oldest first, as [start, end] (end moves while it lasts).
         self._spans: deque[list[float]] = deque()
         self.active = False  # True once a source is being captured
+        #: The screen readers being captured now, by process name. While one
+        #: is, a built-in model cannot hear it at all (controller.py).
+        self.readers: set[str] = set()
 
     def heard(self, rms: float, at: float | None = None) -> None:
         """One block of the reader's audio, *rms* loud, ending at *at*."""

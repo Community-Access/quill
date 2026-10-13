@@ -11,7 +11,16 @@ yourself a note on any station. Apple's podcast categories are full lists
 now, and Preferences has a box that finds a setting as you type. And updates
 install themselves properly again, after one last update by hand.
 
-## Testing rebuild: 3.2.0 (build 2)
+## Testing rebuild: 3.2.0 (build 3)
+
+Build 3 runs on Python 3.14. Its installer also removes the older Python 3.13
+runtime once no QuillVille app on your computer uses it.
+
+Choosing a show and hide key is easier: **Record Key...** (Alt+R) in the
+Show and Hide Key window writes out the combination you press. You can still
+type it.
+
+Build 3 keeps everything from build 2:
 
 This rebuild adds **Start Quill Radio with Windows** to Preferences, using the
 same setting as the Station menu. Portable copies do not change Windows startup

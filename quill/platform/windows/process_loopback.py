@@ -262,6 +262,8 @@ def _capture(pid: int, name: str, gate: Any, stop: threading.Event) -> None:
         return
     logger.info("Capturing %s (pid %d) so dictation does not hear it", name, pid)
     gate.active = True
+    if name in READER_PROCESSES:
+        gate.readers.add(name)
     try:
         while not stop.is_set():
             frames_waiting = capture.GetNextPacketSize()
@@ -275,6 +277,7 @@ def _capture(pid: int, name: str, gate: Any, stop: threading.Event) -> None:
     except Exception as exc:  # noqa: BLE001 - the source went away
         logger.info("Stopped capturing %s (pid %d): %s", name, pid, exc)
     finally:
+        gate.readers.discard(name)
         try:
             client.Stop()
         except Exception:  # noqa: BLE001

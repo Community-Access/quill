@@ -21,6 +21,15 @@ trying, and QUILLBee tells you what has changed. They're new around here, and
 [Meet QUILLBert and QUILLBee](https://www.quillforall.org/meet-quillbert-and-quillbee.html)
 has the proper introductions.
 
+## This build: 2.0.0 (build 4)
+
+QUILL Cast now runs on Python 3.14. When you install it, older Python 3.13
+runtimes that no QuillVille app uses any more are removed for you.
+
+Choosing a show and hide key is easier: **Record Key...** (Alt+R) in the
+Show and Hide Key window writes out the combination you press. You can still
+type it.
+
 ## Already using Cast? Before you update
 
 > **A note from QUILLBee:** Install 2.0 over the version you have. Your

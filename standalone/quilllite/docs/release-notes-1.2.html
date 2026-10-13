@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.12" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL Lite 1.2</title>
   <style>
@@ -254,8 +254,16 @@ again, and if something goes wrong while you are busy elsewhere, it
 waits for you rather than slipping past.</p>
 <p>Everything works from the keyboard and tells you how it went, the way
 the rest of QUILL Lite does.</p>
-<h2 id="testing-rebuild-120-build-3">Testing rebuild: 1.2.0 (build
-3)</h2>
+<h2 id="testing-rebuild-120-build-4">Testing rebuild: 1.2.0 (build
+4)</h2>
+<p>Build 4 runs on Python 3.14. Its installer also removes the older
+Python 3.13 runtime once no QuillVille app on your computer uses it.</p>
+<p>Dictation is kinder to screen reader users with a headset. QUILL Lite
+no longer writes down your screen reader reading back what you said,
+saying the same phrase twice writes it twice, and the sound for a
+written phrase is a soft tone instead of something that sounded like the
+letter “c”.</p>
+<p>Build 4 keeps everything from build 3:</p>
 <p>Build 3 retains build 2’s local-recording transcription fix and
 Windows audio duration fallback. It prepares downloaded model
 availability in the background, and completed transcripts are saved

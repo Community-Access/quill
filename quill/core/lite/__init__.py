@@ -43,7 +43,7 @@ APP_ID = "QuillLite"
 #: (``quill.__version__``): it ships its own installers and its own release
 #: notes, exactly as Radio, Cast, Weather, Studio and Inkwell do.
 APP_VERSION = "1.2.0"
-APP_BUILD = 3  # this version's build (docs/release/RELEASE.md, "Build numbers")
+APP_BUILD = 4  # this version's build (docs/release/RELEASE.md, "Build numbers")
 
 
 def version_label() -> str:

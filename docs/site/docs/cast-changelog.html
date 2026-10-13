@@ -275,11 +275,22 @@ and episode lists keep their letter typeahead; Shift+Right scanning
 moves with the other player keys. This fixes C announcing “Nothing is
 playing” when trying to jump to a podcast.</li>
 </ul>
-<p>Testing rebuild: <strong>2.0.0 (build 3)</strong>. Build 3 has not
-been published. Functional, installer/portable and signing checks remain
-required; the 16 ms diagnostic target is not a release-blocking cutoff
-for an isolated native UI update.</p>
+<p>Testing rebuild: <strong>2.0.0 (build 4)</strong>. Builds 3 and 4
+have not been published.</p>
 <ul>
+<li><p><strong>Runs on Python 3.14, and older runtimes are cleaned
+up.</strong> The shared QuillVille runtime this build installs is Python
+3.14. The installer then removes older runtimes (Python 3.13) that no
+installed QuillVille app uses any more; one that an app or a shortcut
+still points to is left alone. Portable copies carry their own Python
+and change nothing outside their folder.</p></li>
+<li><p><strong>Record Key in Show and Hide Key.</strong> The key box has
+a <strong>Record Key…</strong> button (Alt+R): press the combination you
+want and it is written into the box for you. Typing it still works, and
+is the way for a key another program has already taken, which never
+reaches the window. Functional, installer/portable and signing checks
+remain required; the 16 ms diagnostic target is not a release-blocking
+cutoff for an isolated native UI update.</p></li>
 <li><p><strong>HTTPS uses the Windows certificate store.</strong> Feed
 checks, downloads, chapters, transcripts, podcast directories and OPML
 reachability checks use the shared native certificate-trust helper.

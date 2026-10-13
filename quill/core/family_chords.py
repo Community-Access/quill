@@ -143,6 +143,7 @@ def default_system_wide_keys() -> list[SystemKey]:
     """
     from quill.core.expansion.settings import InkwellSettings
     from quill.core.settings import Settings
+    from quill.core.transcribe.settings import DEFAULT_DICTATION_HOTKEY
 
     keys = [SystemKey(app, "show and hide key", chord) for app, chord in SHOW_HIDE_DEFAULTS.items()]
     inkwell = InkwellSettings()
@@ -150,6 +151,7 @@ def default_system_wide_keys() -> list[SystemKey]:
         SystemKey("inkwell", "Quick Insert key", inkwell.quick_insert_hotkey),
         SystemKey("inkwell", "Expand Word key", inkwell.expand_now_hotkey),
     ]
+    keys.append(SystemKey("transcribe", "start and stop key", DEFAULT_DICTATION_HOTKEY))
     keys += [
         SystemKey("quill", f"system-wide key for {command}", chord)
         for command, chord in Settings().global_hotkeys.items()

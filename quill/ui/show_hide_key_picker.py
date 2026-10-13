@@ -7,9 +7,10 @@ none. A key the family already uses -- another app's show/hide key, or any
 app's shortcut -- is refused in one sentence that says whose it is, and the box
 comes back with what was typed so it can be corrected rather than retyped.
 
-Typed rather than pressed on purpose: a key some other program has registered
-system-wide never reaches a "press the key now" box at all, so the person
-pressing it would be told nothing.
+Typed first, pressed if you like: a key some other program has registered
+system-wide never reaches a "press the key now" box at all, so typing is always
+there. **Record Key** beside the box (:mod:`quill.ui.key_record`) writes out a
+combination you press, for the keys that do arrive (owner, 2026-10-12).
 
 Inkwell's two other system-wide keys, Quick Insert and Expand Word, are chosen
 through the same loop and refused by the same rules
@@ -49,6 +50,61 @@ def _spelled(chord: str) -> str:
     return "+".join([*order, key])
 
 
+def _key_dialog(host: Any, wx: Any, prompt: str, caption: str, value: str) -> Any:
+    """The key box: the prompt, the box, and Record Key. ``GetValue()`` is what
+    the box holds."""
+    from quill.ui.dialog_contract import apply_modal_ids
+    from quill.ui.key_record import record_key
+
+    dialog = wx.Dialog(host.frame, title=caption)
+    root = wx.BoxSizer(wx.VERTICAL)
+    text = wx.StaticText(dialog, label=prompt)
+    text.Wrap(440)
+    root.Add(text, 0, wx.ALL | wx.EXPAND, 10)
+    row = wx.BoxSizer(wx.HORIZONTAL)
+    label = wx.StaticText(dialog, label="&Key:")
+    box = wx.TextCtrl(dialog, value=value)
+    box.SetHelpText(
+        "Type the key combination, for example Ctrl+Alt+Shift+K, or leave the box "
+        "empty for no key. Record Key writes out a combination you press instead."
+    )
+    record = wx.Button(dialog, label="&Record Key...")
+    record.SetHelpText(
+        "Press a key combination and it is written into the box. A key another "
+        "program already uses may not arrive: type that one instead."
+    )
+    row.Add(label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
+    row.Add(box, 1, wx.EXPAND | wx.RIGHT, 6)
+    row.Add(record, 0)
+    root.Add(row, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 10)
+    buttons = wx.StdDialogButtonSizer()
+    ok = wx.Button(dialog, wx.ID_OK, "OK")
+    ok.SetHelpText("Keep the key in the box.")
+    cancel = wx.Button(dialog, wx.ID_CANCEL, "Cancel")
+    cancel.SetHelpText("Close without changing the key.")
+    buttons.AddButton(ok)
+    buttons.AddButton(cancel)
+    buttons.Realize()
+    root.Add(buttons, 0, wx.ALL | wx.EXPAND, 10)
+    dialog.SetSizerAndFit(root)
+
+    def on_record(_event: Any) -> None:
+        chord = record_key(dialog, wx, host._show_modal_dialog)
+        if not chord:
+            record.SetFocus()  # cancelled: back where the listener was
+            return
+        box.SetValue(chord)
+        box.SetFocus()  # the reader says the box and what is now in it
+        box.SetInsertionPointEnd()
+
+    record.Bind(wx.EVT_BUTTON, on_record)
+    ok.SetDefault()
+    apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
+    box.SetFocus()
+    dialog.GetValue = box.GetValue  # what the caller reads, as with a TextEntryDialog
+    return dialog
+
+
 def choose_show_hide_key(
     host: Any,
     wx: Any,
@@ -72,7 +128,7 @@ def choose_show_hide_key(
     value = current
     prompt = _prompt(app_id, current, purpose, own)
     while True:
-        dialog = wx.TextEntryDialog(host.frame, prompt, caption, value)
+        dialog = _key_dialog(host, wx, prompt, caption, value)
         try:
             answer = host._show_modal_dialog(dialog, caption)
             typed = str(dialog.GetValue()).strip()

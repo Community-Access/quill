@@ -974,6 +974,7 @@
   "quill/ui/setup_wizard_pages.py::_KeyboardSoundPage.__init__::wx.Choice#2": "named",
   "quill/ui/setup_wizard_pages.py::_KeyboardSoundPage.__init__::wx.Choice#3": "named",
   "quill/ui/setup_wizard_pages.py::_WizardPreview._make_readonly_text::wx.TextCtrl": "named",
+  "quill/ui/show_hide_key_picker.py::_key_dialog::wx.TextCtrl": "modal-hook",
   "quill/ui/simple_open_dialog.py::SimpleOpenDialog.__init__::wx.Choice": "named",
   "quill/ui/simple_open_dialog.py::SimpleOpenDialog.__init__::wx.ListBox": "named",
   "quill/ui/simple_open_dialog.py::SimpleOpenDialog.__init__::wx.TextCtrl": "named",

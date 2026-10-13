@@ -26,6 +26,8 @@ Every result still crosses to the UI thread only through ``post``.
 
 from __future__ import annotations
 
+import logging
+import os
 import queue
 import time
 from typing import Any
@@ -33,6 +35,8 @@ from typing import Any
 from quill.core.windows_dictation.parser import RecognizedPhrase, words_from_text
 
 __all__ = ["WorkerMixin"]
+
+logger = logging.getLogger(__name__)
 
 _BLOCK_SECONDS = 512 / 16_000
 
@@ -156,6 +160,13 @@ class WorkerMixin:
             else:
                 mark, text = "", self._transcribe_healing(samples)
             self._note_speed(time.monotonic() - started, len(samples))
+            if os.environ.get("QUILL_DICTATION_TRACE", "").strip() == "1":
+                logger.info(
+                    "dictation trace: segment of %.2fs decoded in %.2fs, %d more waiting",
+                    len(samples) / 16_000,
+                    time.monotonic() - started,
+                    0 if vad.empty() else 1,
+                )
             if generation != self._generation:
                 continue  # Escape was pressed while this was being decoded
             if (text or mark) and self._running.is_set():

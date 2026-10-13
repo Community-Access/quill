@@ -15,7 +15,17 @@ than slipping past.
 Everything works from the keyboard and tells you how it went, the way the rest
 of QUILL Lite does.
 
-## Testing rebuild: 1.2.0 (build 3)
+## Testing rebuild: 1.2.0 (build 4)
+
+Build 4 runs on Python 3.14. Its installer also removes the older Python 3.13
+runtime once no QuillVille app on your computer uses it.
+
+Dictation is kinder to screen reader users with a headset. QUILL Lite no
+longer writes down your screen reader reading back what you said, saying the
+same phrase twice writes it twice, and the sound for a written phrase is a
+soft tone instead of something that sounded like the letter "c".
+
+Build 4 keeps everything from build 3:
 
 Build 3 retains build 2's local-recording transcription fix and Windows audio
 duration fallback. It prepares downloaded model availability in the background,

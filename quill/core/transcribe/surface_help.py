@@ -49,9 +49,10 @@ PURPOSES: dict[str, str] = {
     ),
     "Save Transcript As": ("Choose where to save the transcript as a plain text file."),
     "Start and Stop Key": (
-        "Choose the key that starts and stops dictation from any program. There is "
-        "none until you choose one. Type it, or leave the box empty for no key; a key "
-        "another QuillVille app already uses is refused, and you are told whose it is."
+        "Choose the key that starts and stops dictation from any program. It is "
+        "Alt+Shift+Backslash unless you change it. Type another, press Record Key "
+        "to press it instead, or leave the box empty for no key; a key another "
+        "QuillVille app already uses is refused, and you are told whose it is."
     ),
     "Show and Hide Key": (
         "Choose one key that shows and hides the QUILL Transcribe window from any "

@@ -197,8 +197,9 @@ _REGISTER_HOTKEY_SITES: dict[str, str] = {
     "ui/main_frame_hotkeys.py": "Settings.global_hotkeys",
     # Inkwell's Quick Insert and Expand Word keys: InkwellSettings defaults.
     "apps/inkwell_keys.py": "InkwellSettings quick_insert_hotkey, expand_now_hotkey",
-    # QUILL Transcribe's start and stop key: none until the listener chooses one.
-    "apps/transcribe_keys.py": "TranscribeSettings.dictation_hotkey, empty by default",
+    # QUILL Transcribe's start and stop key: Alt+Shift+\ until the listener
+    # chooses another (DEFAULT_DICTATION_HOTKEY, in default_system_wide_keys).
+    "apps/transcribe_keys.py": "TranscribeSettings.dictation_hotkey, Alt+Shift+\\ by default",
     # A momentary probe of who owns a key the listener asked about; registers
     # nothing that stays.
     "platform/windows/hotkey_owner.py": "probe only",

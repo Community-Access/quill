@@ -11,6 +11,9 @@ moved, and answers from that:
 * "scratch that" sends backspaces for the last phrase -- only while the same
   window still has the focus, because anything else would erase somebody's
   typing;
+* the screen reader's echo of the typing is cut short when phrases are not
+  read back (:func:`hush_unless_spoken`): only the last key survives it, so
+  every phrase ended in "period";
 * nothing else can be read, so ``external`` tells the controller to refuse the
   commands that need to (``anywhere.EXTERNAL_COMMANDS``).
 
@@ -26,7 +29,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
-__all__ = ["ExternalDocument", "focus_identity", "foreground_problem"]
+__all__ = ["ExternalDocument", "focus_identity", "foreground_problem", "hush_unless_spoken"]
 
 _TAIL = 80
 
@@ -100,16 +103,32 @@ def focus_identity() -> Any:
     return (window.hwnd, window.process_id, control)
 
 
-def _type(text: str) -> bool:
+def _type(text: str, hush: bool = False) -> bool:
     from quill.platform.windows.text_injector import send_text_checked
 
-    return send_text_checked(text).complete
+    return send_text_checked(text, hush_reader=hush).complete
 
 
 def _backspace(count: int) -> bool:
     from quill.platform.windows.text_injector import send_backspaces_checked
 
     return send_backspaces_checked(count).complete
+
+
+def hush_unless_spoken(preferences: Callable[[], Any]) -> Callable[[], bool]:
+    """True when phrases are not read back (feedback is a tone or nothing):
+    then the screen reader's echo of the typing is cut short. With the
+    read-back on, the reader saying what went in is wanted, marks and all."""
+
+    def hush() -> bool:
+        from quill.core.action_feedback import resolve
+
+        prefs = preferences()
+        if getattr(prefs, "continuous", False):
+            return True
+        return not resolve(getattr(prefs, "phrase_feedback", "sound"), has_sound=True)[1]
+
+    return hush
 
 
 class ExternalDocument:
@@ -123,13 +142,15 @@ class ExternalDocument:
         *,
         problem: Callable[[], str] = foreground_problem,
         where: Callable[[], Any] = _where,
-        type_text: Callable[[str], bool] = _type,
+        type_text: Callable[..., bool] = _type,
         backspace: Callable[[int], bool] = _backspace,
+        hush: Callable[[], bool] = lambda: False,
     ) -> None:
         self._problem = problem
         self._where = where
         self._type = type_text
         self._backspace = backspace
+        self._hush = hush
         self._place: Any = None
         self._typed = ""
 
@@ -159,7 +180,7 @@ class ExternalDocument:
     def insert(self, text: str) -> tuple[int, int]:
         self._follow_focus()
         start = len(self._typed)
-        if not self._type(text):
+        if not (self._type(text, True) if self._hush() else self._type(text)):
             raise OSError("Windows did not accept all of the typing.")
         self._typed += text
         return start, len(self._typed)

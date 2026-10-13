@@ -24,7 +24,7 @@ from quill.core import http_client
 #: import the other direction would need.
 APP_TITLE = "QUILL Cast"
 APP_VERSION = "2.0.0"
-APP_BUILD = 3  # this version's build (docs/release/RELEASE.md, "Build numbers")
+APP_BUILD = 4  # this version's build (docs/release/RELEASE.md, "Build numbers")
 APP_REPO = "Community-Access/quill"
 # Every feed, episode and directory request names QUILL Cast and its release
 # (check.md bug 1), the way Quill Radio and Quill Weather already do.

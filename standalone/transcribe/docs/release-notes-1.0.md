@@ -17,9 +17,20 @@ Put the cursor where you want to write, press your start and stop key, and
 speak. Each phrase is typed when you pause. Press the key again, or say "stop
 dictation", to stop.
 
-There is no key until you choose one. Until then, the tray menu starts and stops
-dictation: choose Start Dictation, switch to the field you want, and dictation
-starts there.
+The start and stop key is **Alt+Shift+Backslash** unless you change it. To
+change it, choose Dictation > Start and Stop Key (Ctrl+Alt+Shift+D): type the
+key, or press **Record Key...** and press it. If you empty the box, the tray
+menu starts and stops dictation instead: choose Start Dictation, switch to the
+field you want, and dictation starts there.
+
+### Quiet with your screen reader
+
+Your screen reader echoes what is typed, and because a phrase arrives faster
+than it can speak, you would hear only the last character: "period" after
+every sentence. When your phrase feedback is a tone or nothing, QUILL
+Transcribe presses Ctrl on its own straight after the words, which every
+screen reader takes as "stop talking". When you have chosen to hear phrases
+read back, you hear everything, punctuation included.
 
 ### Paused, never misplaced
 

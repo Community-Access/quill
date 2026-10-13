@@ -137,11 +137,11 @@ class InkwellDictationMixin:
         if controller is None:
             from quill.core.windows_dictation.controller import DictationController
             from quill.ui.windows_dictation_commands import _make_recognizer
-            from quill.ui.windows_dictation_external import ExternalDocument
+            from quill.ui.windows_dictation_external import ExternalDocument, hush_unless_spoken
 
             controller = DictationController(
                 recognizer=_make_recognizer,
-                document=ExternalDocument(),
+                document=ExternalDocument(hush=hush_unless_spoken(self._anywhere_preferences)),
                 feedback=_InkwellFeedback(self),
                 preferences=self._anywhere_preferences,
             )
