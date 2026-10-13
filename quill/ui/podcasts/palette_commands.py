@@ -49,6 +49,8 @@ def register_podcast_commands(host: Any) -> None:
             "Podcasts: Listening Statistics...",
             host.open_podcast_statistics,
         ),
+        ("podcasts.lineups", "Podcasts: Lineups...", host.open_lineups),
+        ("podcasts.add_to_lineup", "Podcasts: Add to Lineup...", host.podcast_add_to_lineup),
         ("podcasts.downloads", "Podcasts: Downloads...", host.open_podcast_downloads),
         ("podcasts.free_space", "Podcasts: Free Up Space", host.podcast_free_up_space),
         (

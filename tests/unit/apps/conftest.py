@@ -32,6 +32,7 @@ Two rules for anything added here:
 
 from __future__ import annotations
 
+import time
 from typing import Any
 
 import pytest
@@ -731,6 +732,101 @@ def wx_app():
         except Exception:  # noqa: BLE001 - any failure means "not usable"
             app = None
     return app if app is not None else wx.App()
+
+
+def _close_cast_frame(frame: Any, *, loop: Any = None) -> bool:
+    """Close a real ``PodcastsAppFrame`` the way Cast closes, and wait for it.
+
+    ``frame.frame.Destroy()`` alone is not a teardown: it skips Cast's close
+    path, so the download queue, the pools and the timers keep running against
+    a window whose C++ half is gone.
+
+    The close is driven under an **active** ``wx.GUIEventLoop``, and that is
+    load-bearing. With no active loop, ``wx.YieldIfNeeded`` makes a temporary
+    one that dispatches nothing, so no ``wx.CallLater`` ever fires and Cast's
+    deferred close chain (``close_tasks.advance_close``) never advances: the
+    wait below ran to its deadline, the frame was destroyed by force with its
+    ``wx.Timer`` objects still armed and a top-level window left behind, and
+    the next test to run a real loop delivered those timers into freed
+    windows. That was the 2026-10-12 heap corruption (0xc0000374 inside
+    ``YieldIfNeeded``), seen in ``test_cast_one_window.py``'s teardown and
+    bisected to ``12f2fd4a`` because that is where its fixture started
+    activating a loop of its own -- the first real loop after the fixtures
+    that closed without one. Same close, active loop: 3.6 s, nothing left.
+
+    Returns whether Cast reported its responsive shutdown finished.
+    """
+    app = wx.GetApp()
+    previous_loop = wx.EventLoop.GetActive()
+    own_loop = loop is None and previous_loop is None
+    if own_loop:
+        loop = wx.GUIEventLoop()
+        wx.EventLoop.SetActive(loop)
+    loop = loop or previous_loop
+    try:
+        frame._exit_requested = True
+        frame.frame.Close()
+        deadline = time.monotonic() + 10
+        while not getattr(frame, "_cast_closed", False) and time.monotonic() < deadline:
+            if app is not None:
+                app.ProcessPendingEvents()
+            wx.YieldIfNeeded()
+            loop.ProcessIdle()
+            time.sleep(0.005)
+        closed = bool(getattr(frame, "_cast_closed", False))
+        if not closed and frame.frame:
+            frame.frame.Destroy()
+            wx.YieldIfNeeded()
+        for name in (
+            "_task_manager",
+            "_podcast_feed_tasks",
+            "_podcast_save_pool",
+            "_podcast_record_tasks",
+            "_cast_undo_file_pool",
+            "_cast_close_pool",
+            "_cast_view_retirement_pool",
+        ):
+            pool = getattr(frame, name, None)
+            if pool is not None:
+                pool.shutdown(wait=True, cancel_pending=name != "_cast_view_retirement_pool")
+        wx.YieldIfNeeded()
+        loop.ProcessIdle()
+    finally:
+        if own_loop:
+            wx.EventLoop.SetActive(previous_loop)
+    return closed
+
+
+@pytest.fixture
+def quiet_cast_startup(monkeypatch):
+    """Stop a real ``PodcastsAppFrame`` reaching outside the test as it starts.
+
+    Unpatched, each frame starts an update check, a launch feed check and folder
+    watching on background threads, and registers system-wide hotkeys and media
+    keys. Those outlive the test and call back into windows that are gone,
+    which is how the Cast fixtures that skipped this crashed python.exe with
+    heap corruption in a later file (2026-10-12). Request it before building
+    the frame.
+    """
+    from quill.apps.podcasts import PodcastsAppFrame
+
+    for name in (
+        "_check_at_launch",
+        "_start_folder_watching",
+        "_maybe_resume_last_episode",
+        "_maybe_check_updates_on_startup",
+        "_cast_launch_notices",
+        "_reload_global_hotkeys",
+    ):
+        monkeypatch.setattr(PodcastsAppFrame, name, lambda self: None)
+    monkeypatch.setattr(PodcastsAppFrame, "_register_media_keys", lambda self, *a, **kw: None)
+    monkeypatch.setattr(PodcastsAppFrame, "_register_tray_hotkey", lambda self, _chord: True)
+
+
+@pytest.fixture
+def close_cast():
+    """The one teardown for a real Cast frame; see ``_close_cast_frame``."""
+    return _close_cast_frame
 
 
 @pytest.fixture

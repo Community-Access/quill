@@ -76,6 +76,9 @@ class YouTubeCommentsWindow:
         self._build()
         self._timer = wx.Timer(self.frame)
         self.frame.Bind(wx.EVT_TIMER, lambda _e: self.apply_filter(speak=True), self._timer)
+        from quill.ui.surface_lifetime import stop_timer_on_destroy
+
+        stop_timer_on_destroy(self.frame, self._timer)  # a destroy that skips close
         self.frame.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
         self.frame.Bind(wx.EVT_CLOSE, self._on_close)
 

@@ -65,6 +65,12 @@ def schedule(app: Any, wx: Any, *, safe_mode: bool = False) -> Any:
         wx.CallAfter(open_launch_files, app, launch)
     else:
         wx.CallAfter(open_startup_window, app)
+        # The Lineup pinned with Start Here, in front of the main window (which
+        # is untouched). Files opened with Radio win: they are what this launch
+        # is for. First run wins too; open_start_lineup checks.
+        from quill.ui.radio.lineups_commands import open_start_lineup
+
+        wx.CallAfter(open_start_lineup, app)
     wx.CallAfter(maybe_run_first_run, app)
     # The previous session's closing failure, said once, with its Retry (F-06).
     from quill.apps.radio_shutdown import radio_launch_notice

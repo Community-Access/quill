@@ -35,6 +35,7 @@ EPISODE_ACTIONS: tuple[QuickAction, ...] = (
     QuickAction("episode_notes", "Episode Notes...", "Your timestamped notes on this episode."),
     QuickAction("chapters", "Chapters...", "Browse and jump to this episode's chapters."),
     QuickAction("add_to_playlist", "Add to Playlist...", "File it into a saved playlist."),
+    QuickAction("add_to_lineup", "Add to Lineup...", "Put it in a QUILL Lineup."),
     QuickAction("copy_link", "Copy Episode Link", "Copy the audio URL to the clipboard."),
     QuickAction(
         "share_moment",
@@ -78,6 +79,7 @@ SHOW_ACTIONS: tuple[QuickAction, ...] = (
     QuickAction(
         "play_next_episode", "Play Next Episode", "Play this show's next unplayed episode."
     ),
+    QuickAction("add_to_lineup", "Add to Lineup...", "Put this podcast in a QUILL Lineup."),
     QuickAction("refresh", "Refresh Feed", "Check this show for new episodes now."),
     QuickAction("toggle_favorite", "Add to or Remove from Favorites", "Flip the Favorites star."),
     QuickAction(

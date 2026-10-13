@@ -17,7 +17,7 @@ pytestmark = pytest.mark.machine_global
 
 
 @pytest.fixture
-def cast(quill_data_dir: Path):
+def cast(quill_data_dir: Path, wx_app, quiet_cast_startup, close_cast):
     from quill.core.podcasts.models import PodcastShow
     from quill.core.podcasts.models_episode import PodcastEpisode
     from quill.core.podcasts.subscriptions import PodcastLibrary, save_library
@@ -38,7 +38,6 @@ def cast(quill_data_dir: Path):
             )
         library.add_show(show)
     save_library(quill_data_dir, library)
-    app = wx.App()
     from quill.apps.podcasts import PodcastsAppFrame
     from quill.ui.dialog_contract import set_transition_announcement_policy
 
@@ -50,11 +49,7 @@ def cast(quill_data_dir: Path):
         yield frame
     finally:
         set_transition_announcement_policy(None)
-        try:
-            frame.frame.Destroy()
-        except Exception:  # noqa: BLE001
-            pass
-        del app
+        close_cast(frame)
 
 
 def _playing(frame, show_id: str, guid: str, position: int, length: int, rate: float = 1.0):

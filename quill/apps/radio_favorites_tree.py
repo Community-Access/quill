@@ -199,6 +199,8 @@ class RadioFavoritesTreeMixin:
                 entries.append(("Move Marked A&bove", lambda: self._on_move_marked_favorite(True)))
                 entries.append(("Move Marked Belo&w", lambda: self._on_move_marked_favorite(False)))
             entries.append(("Manage Fa&vorites...", self.open_manage_radio_favorites))
+            # QUILL Lineups. "&Add": Move &Up already answers U in this menu.
+            entries.append(("&Add to Lineup...", self._on_favorite_add_to_lineup))
         else:
             entries = [
                 ("Rena&me Folder...\tF2", self._on_tree_rename),
@@ -255,6 +257,13 @@ class RadioFavoritesTreeMixin:
             transport_host=self,
             windows=getattr(self, "_windows", None),
         ).show()
+
+    def _on_favorite_add_to_lineup(self) -> None:
+        """Add to Lineup... on the selected favorite (a station or a saved place)."""
+        favorite = self._selected_favorite()
+        from quill.ui.radio import lineups_commands
+
+        lineups_commands.add_station(self, favorite.station if favorite is not None else None)
 
     def _on_favorite_tags(self) -> None:
         """Edit Station Tags... on the selected favorite: words a search should

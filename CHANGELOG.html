@@ -245,6 +245,49 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="quill-lineups-in-quill-radio-and-quill-cast-and-saved-places-that-survive-a-restart-2026-10-13">QUILL
+Lineups in Quill Radio and QUILL Cast, and saved places that survive a
+restart (2026-10-13)</h3>
+<p>A Lineup is a named list of anything Quill Radio and QUILL Cast can
+play – stations, saved browse places, podcasts and episodes, YouTube
+videos, playlists and channels, Local Media files and recordings – in
+the order the listener chose. Rules bring items in, and every rule’s
+<strong>Keep</strong> choice says when they go: while they match, until
+finished, for a number of days, until finished or a number of days, or
+always. The listener’s hands outrank the rules: Keep This Item (Ctrl+K)
+holds an item, Delete sends it to Removed Items and no rule brings it
+back, and a refresh never reorders what stays. Why Is This Here
+(Alt+Enter) explains every row, and Recently Left records every
+departure with its reason.</p>
+<ul>
+<li><strong>One engine, one window, one file.</strong>
+<code>quill/core/lineups/</code> (wx-free: rules, conditions generalised
+from Cast’s episode filters, a pure merge with eight tested guarantees,
+read-only sources over Radio’s stores and Cast’s library, and operations
+named by keys), <code>quill/ui/lineups/</code> (the peer window both
+apps open, Ctrl+U in each), and <code>lineups.json</code> in the shared
+data folder, edited under a short lock so the two apps never lose each
+other’s changes.</li>
+<li><strong>Ways in.</strong> Add to Lineup on Browse Stations rows,
+Radio’s favorites tree, Search Stations results and Local Media
+(Ctrl+Shift+U), and on Cast’s episode and podcast rows. Cast’s Play
+Queue Save Lineup and Apply Lineup now save to and apply from QUILL
+Lineups, with the same sentences as before.</li>
+<li><strong>Playing.</strong> Radio plays mixed kinds straight through,
+says what it skips and when it ends, and tells the listener how to move
+on from a live station. Cast plays episodes through its queue and hands
+stations, YouTube, Local Media and recordings to Radio.</li>
+<li><strong>Start Here</strong> (Ctrl+Alt+H) opens an app in a pinned
+Lineup, each app with its own pin, as an explicit opt-in.</li>
+<li><strong>Saved places survive a restart.</strong>
+<code>RadioStation.from_dict</code> refused the empty stream address a
+saved place has, and <code>to_dict</code> dropped its source, so every
+place saved to Radio’s Favorites vanished on the next start. Both are
+fixed, with a regression test.</li>
+</ul>
+<p>Quill Radio user guide Chapter 17 and PRD section 23; the as-built
+design is <code>docs/design/2026-10-13-lineups.md</code>.</p>
+<h3
 id="secure-connections-are-checked-the-way-windows-checks-them-2026-10-11">Secure
 connections are checked the way Windows checks them (2026-10-11)</h3>
 <p>QUILL and every QuillVille app now trust the certificates Windows

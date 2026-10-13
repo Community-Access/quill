@@ -54,6 +54,11 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         # window the same key is Add Media Files, so Ctrl+O twice gets you from
         # anywhere to the file picker.
         "radio.local_media": "Ctrl+O",
+        # QUILL Lineups (2026-10-13): Ctrl+U, "lineUp". Ctrl+Alt+U was the first
+        # choice and is Help > Check for Updates here; Ctrl+U was one of the few
+        # chords free on both this bar and Cast's, where the same command keeps
+        # the same chord (family rule 2). Add to Lineup is Ctrl+Shift+U.
+        "radio.lineups": "Ctrl+U",
         "radio.add_custom_station": "Ctrl+N",
         "radio.add_youtube_playlist": "Ctrl+Shift+Y",
         "radio.add_youtube_link": "Ctrl+Alt+N",
@@ -263,6 +268,8 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         # Now Playing (qc.md 5): window 2, so Ctrl+2 reaches it through the
         # Window menu; this is the Episode menu row's own chord.
         "podcasts.now_playing": "Ctrl+Alt+2",
+        # QUILL Lineups: the same window and the same chord as in Quill Radio.
+        "podcasts.lineups": "Ctrl+U",
         # The Now Playing line's key: what is playing, how far in, the speed.
         "podcasts.say_now_playing": "Ctrl+T",
         # Quill Radio's Skip Silence key, for the same verb (family rule 2).

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
-import numpy as np
+import pytest
 
 from quill.core.windows_dictation import reader_gate as rg
 from quill.core.windows_dictation.reader_gate import LOUD_RMS, TAIL_S, ReaderGate
@@ -84,6 +84,8 @@ def test_the_built_in_models_say_they_never_hear_the_reader() -> None:
 
 
 def test_the_microphone_is_silence_while_the_reader_talks() -> None:
+    # numpy arrives with the live-dictation extra; CI's test environment has none.
+    np = pytest.importorskip("numpy")
     from quill.core.windows_dictation.local_recognizer import LocalDictationRecognizer
 
     recognizer = LocalDictationRecognizer.__new__(LocalDictationRecognizer)

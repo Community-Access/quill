@@ -109,6 +109,13 @@ _GROUPED: tuple[tuple[str, AppArea], ...] = (
     ),
     _area(
         "playing",
+        "lineups",
+        "QUILL Lineups",
+        "Lists of anything to play, built by rules you write and arranged by hand, "
+        "shared with Quill Radio. Off, the queue and playlists still do everything they did.",
+    ),
+    _area(
+        "playing",
         "transcripts",
         "Transcripts and chapters",
         "Reading along, jumping by chapter, and the chapter inference that "
@@ -415,6 +422,8 @@ COMMAND_AREAS: dict[str, str] = {
     "podcasts.mute": "",
     "podcasts.go_to_position": "",
     "podcasts.now_playing": "now_playing",
+    "podcasts.lineups": "lineups",
+    "podcasts.add_to_lineup": "lineups",
     "podcasts.say_now_playing": "",
     "podcasts.speed_up": "speed",
     "podcasts.speed_down": "speed",

@@ -75,6 +75,24 @@ def test_a_top_level_window_queued_for_deletion_already_counts_as_going(app) -> 
     assert window_is_going(frame) is True
 
 
+def test_a_timer_stops_when_its_owner_is_destroyed_and_not_before(app) -> None:
+    """wx leaves a timer armed when its owner dies, and its next tick then runs
+    on freed memory (the 2026-10-13 suite crash). A child's destruction is not
+    the owner's; a bare Destroy() of the owner is."""
+    from quill.ui.surface_lifetime import stop_timer_on_destroy
+
+    frame = wx.Frame(None)
+    timer = wx.Timer(frame)
+    stop_timer_on_destroy(frame, timer)
+    timer.Start(300_000)
+    wx.Button(frame).Destroy()
+    _pump(app, lambda: False, seconds=0.2)
+    assert timer.IsRunning()
+    frame.Destroy()
+    _pump(app, lambda: not timer.IsRunning())
+    assert not timer.IsRunning()
+
+
 def test_none_stays_none_so_existing_checks_keep_their_meaning() -> None:
     assert surface_tasks(None, lambda: None) is None
 

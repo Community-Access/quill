@@ -180,7 +180,7 @@ class RadioStation:
         return "\n".join(lines)
 
     def to_dict(self) -> dict[str, object]:
-        return {
+        data: dict[str, object] = {
             "name": self.name,
             "stream_url": self.stream_url,
             "station_uuid": self.station_uuid,
@@ -194,12 +194,22 @@ class RadioStation:
             "votes": self.votes,
             "is_recording": self.is_recording,
         }
+        if self.source:
+            # Written only when set, so a Radio Browser station's record is
+            # byte-for-byte what it always was. A saved place needs it: without
+            # its source a place came back from disk not knowing what it was.
+            data["source"] = self.source
+        return data
 
     @classmethod
     def from_dict(cls, data: dict[str, object]) -> RadioStation | None:
         name = str(data.get("name", "")).strip()
         stream_url = str(data.get("stream_url", "")).strip()
-        if not name or not stream_url:
+        # A saved browse *place* (``favorites.place_station``) has no stream on
+        # purpose; its identity is the ``browse:`` node id. Refusing an empty
+        # stream URL here is what made every saved place vanish on restart.
+        is_saved_place = str(data.get("station_uuid", "")).startswith("browse:")
+        if not name or (not stream_url and not is_saved_place):
             return None
         tags = data.get("tags")
         bitrate = _coerce_int(data.get("bitrate_kbps"))
@@ -219,4 +229,5 @@ class RadioStation:
             # Absent in favorites saved before 3.0, which is correct: everything
             # saved before then was a live station.
             is_recording=bool(data.get("is_recording", False)),
+            source=str(data.get("source", "") or ""),
         )

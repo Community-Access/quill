@@ -151,10 +151,14 @@ class PlayQueueDialog:
                 self._on_clear,
             ),
             # Lineups: the order you listen in, saved (list.md 2.3).
-            ("&Save Lineup...", "Save this running order under a name.", self._on_save_lineup),
+            (
+                "&Save Lineup...",
+                "Save this running order as a QUILL Lineup, under a name.",
+                self._on_save_lineup,
+            ),
             (
                 "Appl&y Lineup...",
-                "Replace the queue with a saved running order.",
+                "Put a lineup's episodes at the front of the queue, in its order.",
                 self._on_apply_lineup,
             ),
         )
@@ -423,53 +427,20 @@ class PlayQueueDialog:
     # -- lineups ---------------------------------------------------------------
 
     def _on_save_lineup(self) -> None:
-        """Keep this order under a name, so it can be put back next Tuesday."""
-        from quill.core.podcasts.queue_lineups import find_lineup, save_lineup
+        """Keep this order as a QUILL Lineup, so it can be put back next Tuesday."""
+        from quill.ui.podcasts.lineups_queue import save_queue_lineup
 
-        wx = self._wx
-        if not self._library.queue:
-            self._announce("The queue is empty, so there is no order to save.")
-            return
-        with wx.TextEntryDialog(self.dialog, "Lineup name:", "Save Lineup") as dialog:
-            if dialog.ShowModal() != wx.ID_OK:  # dialog_button_contract: exempt
-                return
-            name = dialog.GetValue().strip()
-        if not name:
-            return
-        replacing = find_lineup(self._library, name) is not None
-        saved = save_lineup(self._library, name)
-        if saved is None:
-            self._announce("That lineup could not be saved.")
-            return
-        self._on_library_changed()
-        verb = "Replaced" if replacing else "Saved"
-        # Counted, because "saved" on its own does not say how much of the
-        # queue went in -- and re-saving over a nine-episode lineup with two
-        # episodes queued is exactly the moment somebody wants to know.
-        self._announce(f"{verb} lineup {name}: {len(saved.items)} episode(s), in this order.")
+        host = getattr(self, "_transport_host", None) or getattr(self, "_host", None)
+        save_queue_lineup(host, self._library, self.dialog, announce=self._announce)
 
     def _on_apply_lineup(self) -> None:
-        """Put a saved order back at the front, leaving the rest alone."""
-        from quill.core.podcasts.queue_lineups import apply_lineup, lineup_names
+        """Put a Lineup's episodes back at the front, leaving the rest alone."""
+        from quill.ui.podcasts.lineups_queue import apply_queue_lineup
 
-        wx = self._wx
-        names = lineup_names(self._library)
-        if not names:
-            self._announce("No lineups have been saved yet. Use Save Lineup first.")
-            return
-        with wx.SingleChoiceDialog(
-            self.dialog, "Apply which lineup?", "Apply Lineup", names
-        ) as dialog:
-            if dialog.ShowModal() != wx.ID_OK:  # dialog_button_contract: exempt
-                return
-            chosen = dialog.GetStringSelection()
-        playlist = next((p for p in self._library.playlists if p.name == chosen), None)
-        if playlist is None:
-            return
-        counted = apply_lineup(self._library, playlist)
-        self._on_library_changed()
-        self._reload(select=0)
-        self._announce(counted.sentence("Applied", chosen, noun="episode"))
+        host = getattr(self, "_transport_host", None) or getattr(self, "_host", None)
+        if apply_queue_lineup(host, self._library, self.dialog, announce=self._announce):
+            self._on_library_changed()
+            self._reload(select=0)
 
     def _on_list_key(self, event: object) -> None:
         """Keys on the list, so a group action never needs the button row.

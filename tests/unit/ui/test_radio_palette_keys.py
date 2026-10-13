@@ -31,6 +31,7 @@ def radio_frame(quill_data_dir):
     finally:
         # Building the app installs a process-global dialog-transition policy.
         set_transition_announcement_policy(None)
+        frame._radio_shutdown()  # stops its timers: a deleted owner's timer fires later
         frame.frame.Destroy()
         del app
 

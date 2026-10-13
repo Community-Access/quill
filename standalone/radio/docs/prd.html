@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.12" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Quill Radio -- Product Requirements</title>
   <style>
@@ -1068,6 +1068,19 @@ technically in the URL” is not consent. Add-from-playlist is its own
 explicit command.</p>
 <h2 id="8-since-10">8. Since 1.0</h2>
 <ul>
+<li><p><strong>QUILL Lineups, and saved places that survive a restart
+(unreleased; <code>core/lineups/</code>, <code>ui/lineups/</code>,
+<code>ui/radio/lineups_host.py</code>, <code>lineups_playback.py</code>,
+<code>lineups_commands.py</code>).</strong> Named lists of anything
+Radio and Cast play – stations, saved places, podcasts and episodes,
+YouTube videos, playlists and channels, Local Media and recordings –
+filled by rules whose Keep choice says when each item goes, and by hand,
+where the listener’s hands outrank the rules. One shared
+<code>lineups.json</code> that both apps edit at once without losing
+each other’s changes; a peer window with its own menu bar (Playback &gt;
+Lineups…, Ctrl+U); Add to Lineup on every row that plays; play-through
+of mixed kinds; Start Here per app. Requirements in section 23. Saved
+browse places in Favorites no longer vanish on restart (23.12).</p></li>
 <li><p><strong>Local station website corrections and the Windows startup
 preference (unreleased).</strong> A station’s Website button opens the
 playing station’s website, or the selected favorite’s when nothing is
@@ -6214,6 +6227,384 @@ job shapes against real OS objects, no fakes);
 <code>tests/unit/scripts/test_app_versions_agree.py</code>, which is
 what keeps the five places Quill Radio writes its version from
 disagreeing again.</p>
+<h2
+id="23-quill-lineups-lists-that-fill-themselves-in-an-order-the-listener-chose-unreleased-2026-10-13">23.
+QUILL Lineups: lists that fill themselves, in an order the listener
+chose (unreleased, 2026-10-13)</h2>
+<p><strong>The promise.</strong> Announced publicly on 2026-10-13 for
+the next release of both Quill Radio and QUILL Cast: “QUILL Lineups.
+Fully rule and hands on driven. It is a sophisticated way of bringing
+anything in, including local media, into a list. You will be able to
+order the list, add and remove items yourself or automagically based on
+rules that you personally define.” Every requirement below keeps a part
+of that sentence. The design, with the reasoning and the options
+rejected, is <code>docs/design/2026-10-13-lineups.md</code>; this
+section is the contract as built.</p>
+<p><strong>Why.</strong> The same morning took five windows: Favorites
+for the stations, Cast’s Inbox or a smart playlist for episodes, My
+YouTube for the channels, Local Media for the downloaded talk, and
+memory for the order. Cast’s smart playlists see only episodes, and an
+episode leaves the moment it stops matching; Radio’s Favorites hold
+stations and places but never refill. A Lineup is the one list that sees
+both apps, keeps itself fresh, and lets each rule decide how long its
+items stay.</p>
+<h3 id="231-what-a-lineup-is">23.1 What a Lineup is</h3>
+<ul>
+<li>L-1. <strong>A named, ordered list of references, never
+copies.</strong> An item is an <code>ItemRef</code>
+(<code>quill/core/lineups/refs.py</code>): a kind plus the key that
+already identifies that thing in its owner. Nine kinds: radio station,
+saved browse place, podcast (a follow), podcast episode, YouTube video,
+YouTube playlist, YouTube channel, Local Media item, recording. Row text
+is resolved at display time, so a renamed show reads correctly.</li>
+<li>L-2. <strong>Many Lineups.</strong> Each has its own rules, order,
+settings, Removed Items and Recently Left. The same item can be in
+several, and each Lineup lets it go by its own rules. Names are unique
+ignoring case (<code>ops.unique_name</code> adds “ (2)“).</li>
+<li>L-3. <strong>Resolution has four answers, and the difference is
+load-bearing.</strong> <em>present</em> (the owner knows it),
+<em>missing</em> (the owner says it no longer exists),
+<em>unavailable</em> (the owner could not be read), and
+<em>unlisted</em> (a kind whose source is only part of the world –
+stations, places, YouTube – did not list it). Only the complete kinds
+(episodes, shows, Local Media, recordings;
+<code>sources.COMPLETE_KINDS</code>) can be <em>missing</em>. A row of a
+partly listed kind added by hand stores the owner’s own record
+(<code>Row.payload</code>) so it still plays when no source lists
+it.</li>
+</ul>
+<h3 id="232-rules-what-comes-in">23.2 Rules: what comes in</h3>
+<ul>
+<li>L-4. <strong>A rule is one sentence.</strong> One kind; where to
+look (a scope field and any number of its values, values ORed, fields
+ANDed); tests (field, test, value) with Match all or any; order (as the
+source orders them, newest, oldest, shortest, longest, by name, most
+listened); how many (count limit, per-group limit per podcast, channel,
+album or Favorites folder, and “up to N minutes in all”); and Keep
+(L-7). Rules OR with each other and with what the listener added.
+<code>describe.rule_sentence</code> reads every rule back as one
+sentence, including how long its items stay and what it finds now.</li>
+<li>L-5. <strong>Cast’s condition engine, generalised, not a fourth
+one.</strong> <code>quill/core/lineups/conditions.py</code> reuses
+<code>podcasts.filter_conditions</code>’s operators and phrases over a
+per-kind field registry (<code>fields.py</code>): text (contains, does
+not contain, starts with, ends with, is, is not, wildcard, regular
+expression and its negation), number (at least, at most, is, is not),
+yes/no, and list fields where a text test asks about any one value.
+<strong>A missing number never matches</strong> a number test, so “at
+most 10 minutes” never fills with episodes of unknown length. An unknown
+field or kind from a newer build makes the rule match nothing and say
+“It finds nothing until it is fixed”, never widen.</li>
+<li>L-6. <strong>Rules never use the network and never change
+anything.</strong> They read what is on disk: Radio’s Favorites, station
+tags and recent stations, saved YouTube videos and playlists, followed
+channels, Local Media, the recordings index, and Cast’s library. The
+network egress audit is unchanged. A rule never marks an episode played,
+follows a show or downloads a file; Cast’s library is only read. A scope
+value that does not exist is said in the sentence (‘folder “News”, which
+does not exist’) rather than widening.</li>
+</ul>
+<h3 id="233-keep-when-things-go">23.3 Keep: when things go</h3>
+<ul>
+<li>L-7. <strong>Every rule says when its items go.</strong> Five
+choices, in the listener’s words (<code>rules.KEEP_LABELS</code>): While
+it matches (<code>follow</code>); Until finished
+(<code>until_done</code>; heard to the end or past a percentage, default
+95, and played in Cast always counts); For a number of days
+(<code>for_days</code>, 1 to 365, measured by the wall clock from the
+claim); Until finished, or a number of days
+(<code>until_done_or_days</code>); Always. A cap, Max kept, keeps the
+newest N claims of a rule. Tests decide what comes in; Keep decides when
+it goes; the two are separate because a news station should never leave
+and an episode should stay until heard even after it stops being “this
+week’s”.</li>
+<li>L-8. <strong>Defaults follow the kind.</strong> Episodes, YouTube
+videos, Local Media and recordings default to Until finished, or 7 days;
+every other kind to While it matches. Kinds that cannot be finished
+(stations, places, shows, channels, playlists) are offered only While it
+matches, For a number of days and Always (<code>Keep.effective</code>
+reads a stored “until finished” on them as its nearest meaning, so a
+station is never kept forever by accident).</li>
+<li>L-9. <strong>An item stays while any claim holds it.</strong> Each
+row records which rules claim it and since when
+(<code>Row.claims</code>). A rule that lets an item go while still
+matching it (days ran out, finished, a cap) remembers that in
+<code>Lineup.released</code>, so the next refresh does not bring it
+straight back; the memory clears once the rule stops matching, after
+which a new match is a new arrival. A new claim passes the same exit
+test as an old one, so an episode already heard never arrives only to
+leave on the next refresh.</li>
+</ul>
+<h3 id="234-the-listeners-hands-outrank-the-rules">23.4 The listener’s
+hands outrank the rules</h3>
+<ul>
+<li>L-10. <strong>Added by hand</strong> stays until removed.
+<strong>Keep This Item</strong> (Ctrl+K, a check item) holds any row
+whatever the rules say, and toggling it off gives the row back to its
+rules. <strong>Remove from Lineup</strong> (Delete) moves the row to
+Removed Items, and <strong>no rule ever brings it back</strong>. Moving
+changes order, never how long a row stays. Adding a removed item by hand
+takes it off Removed Items.</li>
+<li>L-11. <strong>Everything is undoable</strong> through the family’s
+ten-step Undo (<code>undo_last_ui</code>, §15.2): moves, removes, Keep,
+rename, delete Lineup, rule changes and adds, each restored by key, so
+an old undo never loses a newer edit.</li>
+<li>L-12. <strong>Why Is This Here</strong> (Alt+Enter on an item)
+answers from the row record: the rule that found it (by number, with its
+sentence) or “you kept it” / “you added it”, and how long it will stay
+(“1 day left”). Alt+Enter on a Lineup edits its rules: properties of the
+thing in focus, the Windows convention.</li>
+<li>L-13. <strong>Removed Items and Recently Left.</strong> Recently
+Left records every departure the rules made, with its reason and time,
+the last 100 per Lineup (<code>model.RECENTLY_LEFT_LIMIT</code>). Both
+lists offer Bring Back (as kept, at the end) and Clear the List, which
+asks first because it cannot be undone (and clearing Removed Items lets
+rules bring those items back).</li>
+<li>L-14. <strong>A rule change never takes anything silently.</strong>
+Deleting a rule that brought items in asks Keep Them / Let Them Go; a
+change that would let items go says how many before OK (“This change
+lets 4 items go. They will be in Recently Left.”); Cancel leaves
+everything as it was.</li>
+</ul>
+<h3 id="235-guarantees-of-a-refresh">23.5 Guarantees of a refresh</h3>
+<p><code>quill/core/lineups/merge.py</code> is pure and deterministic,
+and each of these is a test in
+<code>tests/unit/core/lineups/test_lineup_merge.py</code>:</p>
+<ul>
+<li>G-1. Nothing leaves because something could not be read. A row whose
+owner is unavailable, or whose rule cannot be evaluated (off, unusable,
+its kind unreadable), is left exactly as it was.</li>
+<li>G-2. Nothing leaves without trace (Recently Left, with the
+reason).</li>
+<li>G-3. A removed item never returns. G-4. A kept or hand-added item
+never leaves except by hand.</li>
+<li>G-5. A refresh never reorders the rows that stay. New items go, per
+Lineup, with the other items from the same rule (default), at the top,
+or at the bottom.</li>
+<li>G-6. A refresh is idempotent. G-7. Time is measured, not
+counted.</li>
+<li>G-8. A big loss (more than half the Lineup, and more than 10 items,
+in one refresh) is still applied but reported plainly: “18 items left
+Morning: 7 days passed. Recently Left can bring them back.”</li>
+</ul>
+<h3 id="236-when-rules-run">23.6 When rules run</h3>
+<ul>
+<li>L-15. <strong>While the Lineups window is open, and each time it
+opens.</strong> On open; when a store the rules read changes in either
+app (size and modification time of the watched files, checked every two
+seconds); every ten minutes for the time-based Keep choices
+(<code>refreshing.TIMED_REFRESH_SECONDS</code>); and on Refresh Now
+(F5). The catalogue is gathered off the UI thread. <strong>Not in the
+background with the window closed</strong>: an honest limit, stated in
+the user guide, rather than a monitor that would read Cast’s library on
+a timer for a window nobody has open.</li>
+<li>L-16. <strong>What a refresh says</strong> (GATE-13). With the
+window active, one queued outcome sentence through the listener’s
+feedback setting: “2 added, 1 left.”; if the selected row left, “Your
+item left: finished.” first, then the cursor moves to the row that took
+its place. A timed refresh with nothing to say is silent; F5 always
+answers (“No changes.”). Lineups not selected show “N new” on their row
+until chosen.</li>
+</ul>
+<h3 id="237-the-window">23.7 The window</h3>
+<ul>
+<li>L-17. <strong>A peer window with its own menu bar</strong>, like
+Local Media (§8, Local Media), in the Window menu and the Ctrl+Tab
+order, one per app (<code>quill/ui/lineups/window.py</code>, shared by
+Radio and Cast). Menus Lineup, Edit, Arrange and Play from one table
+(<code>quill/ui/lineups/menus.py</code>) that also labels the context
+menus and answers the keys, then the app’s Station and Window menus. A
+window of its own gets a fresh set of keys, which is why Refresh Now can
+have F5 here when the main window’s F5 is taken.</li>
+<li>L-18. <strong>Layout.</strong> Lineups list (“Morning, 14 items, 1
+hour 50 minutes, 2 new, start lineup”); a Show filter (All kinds;
+Episodes and podcasts; Stations and places; YouTube; Local media and
+recordings); the Items list, whose rows are the sentence in a fixed
+order (§13): <strong>name, kind, length, source, state</strong>, state
+last and only when there is one (kept, missing, unavailable, played,
+live). A real status bar: count, total time, “Updated HH:MM”. Lineup
+Summary (Ctrl+T) speaks it and each rule. Empty: New Lineup and Start
+from an Example buttons, focus on New Lineup, the sentence said
+once.</li>
+<li>L-19. <strong>Nothing moves the cursor but the listener.</strong>
+Rows are reconciled by reference: only rows whose words changed are
+rewritten, and the selection is restored by identity across refreshes,
+the other app’s edits and undo.</li>
+<li>L-20. <strong>Keys as built</strong> (every one checked against
+Radio’s and Cast’s window-level keys by
+<code>tests/unit/ui/lineups</code>; where Local Media has the same verb,
+the key is the same). Lineup: New Lineup Ctrl+N, New from an Example
+Ctrl+Alt+N, Duplicate Lineup Ctrl+D, Rename Lineup F2, Delete Lineup
+Shift+Delete, Edit Rules Ctrl+Alt+R, Start Here Ctrl+Alt+H, Removed
+Items Ctrl+Alt+Z, Recently Left Ctrl+Alt+L, Import Rules Ctrl+I, Export
+Rules Ctrl+Shift+X, Close Ctrl+W. Edit: Undo Ctrl+Z, Cut Ctrl+X, Paste
+Before Ctrl+V, Paste After Ctrl+Alt+V, Keep This Item Ctrl+K, Remove
+from Lineup Delete, Remove Missing Items Ctrl+Shift+Delete, Select All
+Ctrl+A, Why Is This Here Alt+Enter, Refresh Now F5. Arrange:
+Alt+Shift+Up, Down, Home, End, Move to Position Ctrl+J. Play: Play
+Ctrl+Enter (and Enter), Pause or Resume Ctrl+Space (except in the Items
+list, where Ctrl+Space is the list’s own select-one-row key), Next Item
+Ctrl+Right, Previous Item Ctrl+Left, Play This Lineup Ctrl+Alt+P, Play
+Next Ctrl+Shift+Enter, Add to Up Next Ctrl+Alt+Enter, Stop After This
+Item Ctrl+Alt+S, Skip Live Items Ctrl+Alt+K, Lineup Summary Ctrl+T. In
+the Lineups list, Enter plays the Lineup, Delete deletes it after asking
+and Alt+Enter edits its rules. Escape closes.</li>
+<li>L-21. <strong>The rule editor.</strong> Rules (“Rules for <name>”:
+each rule’s sentence with “Finds N now”; Add, Edit, Remove, Move Up,
+Move Down; the Lineup’s New items go, Play-through budget and Skip live
+items). Edit Rule in labelled groups in the order its sentence reads;
+Try It fills a read-only Matches list, moves focus there, and carries
+the count in the list’s label (“Matches, 7 items”), set before focus
+moves so the reader says it on arrival; a count said just before a focus
+move is cut off, and one in a label that changes silently is never
+heard. Changing what a rule looks for applies when focus leaves that
+control (or on OK), and asks before clearing its tests; switching Narrow
+by keeps the values already chosen. Removing several items says how
+many. OK and Cancel carry no access keys (GATE-14); every control has
+inline help (GATE-RADIO-HELP and Cast’s audit; the F1 text for every
+Lineups surface is written once,
+<code>quill/core/lineups/help_text.py</code>).</li>
+</ul>
+<h3 id="238-ways-in">23.8 Ways in</h3>
+<ul>
+<li>L-22. <strong>Opening it.</strong> Playback &gt; Lineups…
+(<code>radio.lineups</code>, Ctrl+U, the same chord as
+<code>podcasts.lineups</code> in Cast, family rule 2); every peer
+window’s Station menu (<code>surface_app_menu.COMMANDS</code>); the Go
+To pool; the Command Palette: “Internet Radio: Lineups…” and “Lineups:
+Go to a Lineup…”. Ctrl+Alt+U, the first choice, is Help &gt; Check for
+Updates in both apps and was caught by the menu-accelerator gate
+(A-11).</li>
+<li>L-23. <strong>Add to Lineup everywhere a row plays.</strong> Browse
+Stations row menus (“Add to Line&amp;up…” on stations, episodes, YouTube
+rows and places; <code>row_actions.LINEUP_ADD</code>), the main window’s
+favorites tree (“&amp;Add to Lineup…”), Search Stations results (“Add to
+Li&amp;neup…”), and Local Media (Edit &gt; Add to Lineup…, Ctrl+Shift+U,
+and the item menu). The chooser lists the Lineups and “New Lineup…”. The
+add is undoable.</li>
+<li>L-24. <strong>Starters</strong> (<code>examples.py</code>), each a
+copy the listener then owns, each showing a different Keep choice:
+Morning, New This Week, Latest From Each, Commute, Saved YouTube, Live
+News, Finish These.</li>
+<li>L-25. <strong>Export and import rules</strong> as a small JSON file
+of rules and settings (<code>quill_lineup_rules: 1</code>), never items:
+importing makes a new Lineup whose rules find the same things on this
+machine.</li>
+</ul>
+<h3 id="239-playing">23.9 Playing</h3>
+<ul>
+<li>L-26. <strong>Play-through of mixed kinds</strong> in Radio’s own
+player (<code>ui/radio/lineups_playback.py</code>): a session on the
+controller advances at each natural end (<code>track_end</code>, after
+the reconnect and book checks), and starting a Lineup ends any Local
+Media session, because two lists cannot both decide what comes next.
+Podcasts play their newest unplayed episode.</li>
+<li>L-27. <strong>Live things never end</strong>, so a live item plays
+until the listener moves on; the first of each run says “Live. Press
+Ctrl+Shift+Period for the next item.” The app-wide Next Chapter and
+Previous Chapter keys (<code>transport_commands</code>, Ctrl+Shift+. and
+Ctrl+Shift+,) step a Lineup playing through from any window, even on a
+live stream; on an episode or file with chapters, chapters come first.
+Next at the last item says “This is the last item.” and keeps playing;
+Previous at the first, “This is the first item.” Skip Live Items (per
+Lineup, off by default) leaves them out of a play-through.</li>
+<li>L-28. <strong>Say what the listener cannot see:</strong> “Skipped
+The Archers, missing.” and, at a natural end, “End of Morning.” A
+YouTube item says “Starting X.” rather than “Playing X.”, because it can
+still be refused; Stop After This Item says “Stopped after X.” when it
+stops.</li>
+<li>L-29. <strong>Budget.</strong> The Lineup’s play-through budget
+leaves rule rows out from the end; kept, hand-added and moved rows are
+never left out, and the item the listener chose to start from always
+plays.</li>
+<li>L-30. <strong>A place is somewhere to browse.</strong> A saved place
+or a YouTube channel is not played: Enter opens Browse Stations, and a
+play-through skips it. Browse Stations opens at its top level; it cannot
+yet open on that exact place (it is under Favorites if saved there).
+Recorded as a gap, not a design.</li>
+<li>L-31. <strong>Cast hands over what it cannot play.</strong> Cast
+plays episodes through its Play Queue; a station, YouTube item, Local
+Media file or recording is handed to Radio as a request naming only the
+Lineup and the rows (<code>core/lineups/handoff.py</code>, action
+<code>lineup_play</code>, through the family open-request queue),
+opening Radio if needed. Radio reads the rows from its own copy of the
+file and plays them; no URL travels in the request.</li>
+</ul>
+<h3 id="2310-one-file-two-apps">23.10 One file, two apps</h3>
+<ul>
+<li>L-32. <strong><code>lineups.json</code> in the shared data
+folder</strong>, versioned (<code>store.SCHEMA_VERSION</code> 1, through
+<code>versioned_store</code>), written with
+<code>write_json_atomic</code>, in Radio’s backup set
+(<code>RADIO_DATA</code>, “Lineups (shared with Quill Cast)”) and
+Cast’s.</li>
+<li>L-33. <strong>No lost edits.</strong> Every change is an operation
+named by keys (<code>ops.py</code>), applied under a short exclusive
+lock file to the file as just re-read (stale after 10 seconds, so a
+crash cannot wedge either app), then written atomically. An operation
+that no longer makes sense is a no-op that says so. The other app
+notices the file’s stamp and reloads by key, so its cursor does not
+move.</li>
+<li>L-34. <strong>Start Here is per app.</strong> Each app keeps its own
+pin (<code>RadioHistory.start_lineup_id</code> here), because each app
+starts on its own. Cast’s Play Queue had “Save Lineup…” and “Apply
+Lineup…” over manual playlists; those are now QUILL Lineups
+(<code>core/lineups/cast_queue.py</code>), with the same sentences, and
+old queue snapshots are copied in once.</li>
+</ul>
+<h3 id="2311-start-here">23.11 Start Here</h3>
+<ul>
+<li>L-35. <strong>An explicit opt-in to a second window at
+launch.</strong> Start Here (Ctrl+Alt+H, a check item) pins one Lineup
+per app. At launch (<code>radio_launch_tasks</code>, deferred with
+<code>wx.CallAfter</code>) the Lineups window opens on it in front of
+the main window. The main window is untouched and still shows its main
+view (§19.1). <strong>This reintroduces a second window at launch, which
+§19 moved away from</strong> (“opening a <em>second</em> window at
+launch was the problem, not the solution”). It is acceptable here only
+because it is never a default and never a migration: nobody gets it
+without choosing Start Here, and the choice is undone the same way.</li>
+<li>L-36. <strong>What can go wrong.</strong> First run wins (the pin
+applies from the next launch). Opening Radio with files wins (they are
+what this launch is for). A pinned Lineup that was deleted is said once
+(“Your start lineup no longer exists. Quill Radio opened as usual.”) and
+the pin is cleared. There is no play-on-start and no Preferences row in
+this release; the menu item is the one route.</li>
+</ul>
+<h3 id="2312-fixed-alongside-saved-places-survive-a-restart">23.12 Fixed
+alongside: saved places survive a restart</h3>
+<p>A saved browse place is stored as a <code>RadioStation</code> with an
+empty <code>stream_url</code>; <code>RadioStation.from_dict</code>
+refused an empty stream URL and <code>to_dict</code> never wrote
+<code>source</code>, so every place saved to Favorites vanished on the
+next start. <code>from_dict</code> now accepts an empty stream URL when
+the <code>station_uuid</code> is a <code>browse:</code> node id, and
+<code>to_dict</code> writes <code>source</code> when it is set (so a
+directory station’s record is byte-for-byte what it was). Regression:
+<code>tests/unit/core/radio/test_saved_places_survive_restart.py</code>.</p>
+<h3 id="2313-limits-stated-rather-than-hidden">23.13 Limits, stated
+rather than hidden</h3>
+<ul>
+<li>YouTube rules see saved videos and playlists and followed channels.
+Uploads in a followed channel’s feed are fetched over the network as the
+listener browses and are not kept on disk, so rules do not see every new
+upload, and there is deliberately no “every new upload” starter.</li>
+<li>Station rules see Favorites, tagged stations and recently played
+stations, not a whole directory.</li>
+<li>Rules run while the window is open (L-15).</li>
+<li>A place opens Browse Stations at its top level (L-30).</li>
+</ul>
+<p><strong>Tests.</strong> <code>tests/unit/core/lineups/</code>
+(<code>test_lineup_merge.py</code>, <code>test_lineup_rules.py</code>,
+<code>test_lineup_sources.py</code>,
+<code>test_lineup_store_and_ops.py</code>),
+<code>tests/unit/ui/lineups/</code>
+(<code>test_lineups_window.py</code>, <code>test_lineups_apps.py</code>)
+and
+<code>tests/unit/core/radio/test_saved_places_survive_restart.py</code>.
+The Radio tutorial <strong>Build a lineup that fills itself</strong>
+(<code>core/radio/tutorials/lineups.py</code>) and Chapter 17 of the
+user guide teach it.</p>
 </main>
 </body>
 </html>

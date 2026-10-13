@@ -2,6 +2,43 @@
 
 ## 1.0.0
 
+### QUILL Lineups in Quill Radio and QUILL Cast, and saved places that survive a restart (2026-10-13)
+
+A Lineup is a named list of anything Quill Radio and QUILL Cast can play --
+stations, saved browse places, podcasts and episodes, YouTube videos,
+playlists and channels, Local Media files and recordings -- in the order the
+listener chose. Rules bring items in, and every rule's **Keep** choice says
+when they go: while they match, until finished, for a number of days, until
+finished or a number of days, or always. The listener's hands outrank the
+rules: Keep This Item (Ctrl+K) holds an item, Delete sends it to Removed Items
+and no rule brings it back, and a refresh never reorders what stays. Why Is
+This Here (Alt+Enter) explains every row, and Recently Left records every
+departure with its reason.
+
+- **One engine, one window, one file.** `quill/core/lineups/` (wx-free: rules,
+  conditions generalised from Cast's episode filters, a pure merge with eight
+  tested guarantees, read-only sources over Radio's stores and Cast's library,
+  and operations named by keys), `quill/ui/lineups/` (the peer window both apps
+  open, Ctrl+U in each), and `lineups.json` in the shared data folder, edited
+  under a short lock so the two apps never lose each other's changes.
+- **Ways in.** Add to Lineup on Browse Stations rows, Radio's favorites tree,
+  Search Stations results and Local Media (Ctrl+Shift+U), and on Cast's episode
+  and podcast rows. Cast's Play Queue Save Lineup and Apply Lineup now save to
+  and apply from QUILL Lineups, with the same sentences as before.
+- **Playing.** Radio plays mixed kinds straight through, says what it skips
+  and when it ends, and tells the listener how to move on from a live
+  station. Cast plays episodes through its queue and hands stations, YouTube,
+  Local Media and recordings to Radio.
+- **Start Here** (Ctrl+Alt+H) opens an app in a pinned Lineup, each app with
+  its own pin, as an explicit opt-in.
+- **Saved places survive a restart.** `RadioStation.from_dict` refused the
+  empty stream address a saved place has, and `to_dict` dropped its source, so
+  every place saved to Radio's Favorites vanished on the next start. Both are
+  fixed, with a regression test.
+
+Quill Radio user guide Chapter 17 and PRD section 23; the as-built design is
+`docs/design/2026-10-13-lineups.md`.
+
 ### Secure connections are checked the way Windows checks them (2026-10-11)
 
 QUILL and every QuillVille app now trust the certificates Windows trusts

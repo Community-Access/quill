@@ -205,6 +205,7 @@ def load_history(data_dir: Path) -> RadioHistory:
             if "startup_window" in raw
             else startup.migrate_from_checkbox(history.open_browse_at_startup)
         )
+        history.start_lineup_id = str(raw.get("start_lineup_id", "") or "")
         from quill.core.radio import main_view as main_views
 
         # The main view if it has been chosen, else the startup-window choice
@@ -312,6 +313,7 @@ def snapshot_history(history: RadioHistory) -> dict[str, object]:
         "alt_f4_to_tray": history.alt_f4_to_tray,
         "open_browse_at_startup": history.open_browse_at_startup,
         "startup_window": history.startup_window,
+        "start_lineup_id": history.start_lineup_id,
         "main_view": history.main_view,
         "debug_mode": history.debug_mode,
         "last_seen": history.last_seen,

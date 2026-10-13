@@ -285,6 +285,12 @@ class CastMenuBarMixin:
             episode_menu, "statistics", stats_id, "Listening Statistics...\tCtrl+Alt+Shift+S"
         )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_podcast_statistics(), id=stats_id)
+        lineups_id = wx.NewIdRef()
+        self._area_row(
+            episode_menu, "lineups", lineups_id, self._menu_label("Line&ups...", "podcasts.lineups")
+        )
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_lineups(), id=lineups_id)
+        self._keep_menu_ids(lineups_id)
         episode_menu.AppendSeparator()
         self._append_podcast_recent_submenu(episode_menu)
         episode_menu.AppendSeparator()

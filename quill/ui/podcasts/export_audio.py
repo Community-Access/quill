@@ -176,6 +176,9 @@ def _wait_for(
 
     parent.Bind(wx.EVT_TIMER, _on_tick, timer)
     timer.Start(audio_export.POLL_SECONDS * 1000)
+    from quill.ui.surface_lifetime import stop_timer_on_destroy
+
+    stop_timer_on_destroy(parent, timer)  # a destroy that skips close
     return timer
 
 

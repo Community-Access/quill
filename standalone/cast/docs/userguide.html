@@ -296,6 +296,10 @@ shares with QUILL and Quill Radio.</li>
 <li><strong>Chapter 8: When you need a hand.</strong> F1 help, finding a
 forgotten command, undo, tutorials, updates, support and answers to
 common snags.</li>
+<li><strong>Chapter 9: QUILL Lineups.</strong> Lists of episodes, and
+anything else Quill Radio plays, that fill themselves by rules you write
+and keep the order you choose. Shared with Quill Radio, and played
+through the Play Queue.</li>
 </ol>
 <p>After the chapters comes the <strong>Keyboard reference</strong>:
 every key Cast comes with, in small tables grouped by where you use
@@ -1059,18 +1063,19 @@ the numbers never move, so your fingers can learn them.</p>
 <ol type="1">
 <li>Press <strong>Ctrl+G</strong>.</li>
 <li>A numbered list opens: Podcasts, Continue Listening, the Play Queue,
-Downloads, Bookmarks, Listening Statistics, Preferences and so on.</li>
+Downloads, Bookmarks, Listening Statistics, Lineups, Add a Podcast and
+so on.</li>
 <li>Press a number to go there, or Escape to stay where you were.</li>
 </ol>
 <p>Press <strong>Settings</strong> inside Go To to choose which ten
 places are on the list and in what order. Put the one you use most at
-number 1. Besides every place in the Places list, you can add Sound
-Enhancements, <strong>Skip Settings</strong> (which opens Preferences at
-the Playing section), Quick Actions, <strong>Episode Extras</strong>
-(About This Episode), Keyboard Shortcuts, the Keyboard Shortcuts Sheet,
-Media Tools and the Places window. Each row also shows the place’s own
-key, so after a few weeks of Go To you will find you have learned those
-too.</p>
+number 1. Besides every place in the Places list, you can add Lineups,
+Sound Enhancements, <strong>Skip Settings</strong> (which opens
+Preferences at the Playing section), Quick Actions, <strong>Episode
+Extras</strong> (About This Episode), Keyboard Shortcuts, the Keyboard
+Shortcuts Sheet, Media Tools and the Places window. Each row also shows
+the place’s own key, so after a few weeks of Go To you will find you
+have learned those too.</p>
 <h3 id="the-menus">The menus</h3>
 <p>The menu bar reads <strong>Podcasts</strong> (Alt+P),
 <strong>Edit</strong> (Alt+I), <strong>View</strong> (Alt+V),
@@ -1088,7 +1093,8 @@ Exit (Ctrl+Q) further down.</li>
 key, and the Show and Sort choices.</li>
 <li><strong>Episode</strong> is everything about listening: play, skip,
 speed, chapters, the sleep timer and sound. Chapter 3, Sit back and
-listen, goes through it.</li>
+listen, goes through it. Lineups… (Ctrl+U) is here too; Chapter 9 is
+about it.</li>
 <li><strong>Downloads</strong> pauses and resumes all your
 downloads.</li>
 <li><strong>Window</strong> lists your open Cast windows. Ctrl+1 always
@@ -1125,8 +1131,8 @@ podcast player. Chapter 6, Making Cast yours, tells you more.</p>
 have to finish with first: Add Podcast, Feed Check, Settings for This
 Podcast, Episode Filters, Smart Playlist rules, Show Notes, the
 Transcript, Listening Statistics, Year in Review, About This Episode,
-Sound Enhancements, Notifications and Watched Folders. They all work the
-same way:</p>
+Sound Enhancements, Notifications, Watched Folders and Lineups. They all
+work the same way:</p>
 <ul>
 <li>Each one has a menu bar, and is listed in the Window menu, so you
 can go back to your library and come back to it.</li>
@@ -2754,15 +2760,15 @@ heard enough of.</li>
 <p>In the queue itself, Delete takes an episode out of the queue. It
 stays in your library. An episode Cast put there for you, rather than
 one you added yourself, says why at the end of its row: “queued by
-Auto-Queue”, “queued by the lineup Morning”, “queued by your listening
-run” or “queued by a watched folder”. So you always know where an
-episode came from.</p>
+Auto-Queue”, “queued by your listening run” or “queued by a watched
+folder”. So you always know where an episode came from.</p>
 <p>The Applications key on the Play Queue place offers:</p>
 <ul>
 <li><strong>Clear Entire Queue…</strong>, which asks first.</li>
 <li><strong>Play Queue Shuffled</strong>, for a change of pace.</li>
 <li><strong>Save Lineup…</strong> and <strong>Apply Lineup…</strong>,
-which the next section explains.</li>
+which save the queue’s order as a QUILL Lineup and put one back at the
+front. Lineups, below, explains them.</li>
 </ul>
 <p>When you just want something to listen to, open the Command Palette
 (Ctrl+Shift+P) and type “unheard”. <strong>Play an Unheard Episode
@@ -2798,15 +2804,21 @@ Arrange it once and have it back whenever you want.</p>
 <li>Arrange the Play Queue the way you like it.</li>
 <li>Press the Applications key on the Play Queue place and choose
 <strong>Save Lineup…</strong>.</li>
-<li>Type a name, such as “Tuesday”, and press Enter.</li>
+<li>Type a name, such as “Tuesday”, and press Enter. Cast says “Saved
+lineup Tuesday: 5 episodes, in this order.”</li>
 </ol>
 <p>Next Tuesday, choose <strong>Apply Lineup…</strong> and pick the
 name. The lineup’s episodes that are still unheard move to the front in
 your order, and the rest of your queue waits behind them. Nothing is
-thrown away. Cast tells you something like “applied 3, skipped 2” for
-the ones you have already heard. Saving under a name you already used
+thrown away. Cast tells you how many it applied and how many it skipped
+because you had already heard them. Saving under a name you already used
 replaces that lineup.</p>
-<p>Lineups are saved as playlists, so you can rename or delete them in
+<p>A lineup you save here is a <strong>QUILL Lineup</strong>, the same
+kind Chapter 9 is about, so you can open it with Ctrl+U, rename it,
+rearrange it, give it rules, and see it in Quill Radio too. Apply Lineup
+offers every Lineup that has episodes, including ones built by rules.
+Lineups saved before this version were playlists; Cast copies each one
+into Lineups once, and leaves the playlist where it was in
 Playlists.</p>
 <h4 id="letting-old-episodes-expire">Letting old episodes expire</h4>
 <p>A daily news podcast goes stale fast. Yesterday’s headlines sitting
@@ -4127,9 +4139,10 @@ what you could turn off. F1 on any box says what goes away with it.</p>
 <ul>
 <li><strong>Places</strong>: Inbox, Play Queue, Downloads, Personal
 Audio, Playlists and Notifications.</li>
-<li><strong>Playing</strong>: Now Playing window, Transcripts and
-chapters, Show notes and your notes, Sleep timer, Speed controls, Sound
-Enhancements, Skipping, Winamp playback keys and Global hotkeys.</li>
+<li><strong>Playing</strong>: Now Playing window, QUILL Lineups,
+Transcripts and chapters, Show notes and your notes, Sleep timer, Speed
+controls, Sound Enhancements, Skipping, Winamp playback keys and Global
+hotkeys.</li>
 <li><strong>Library</strong>: Folders and custom order, Find, Feed
 Check, Episode filters and smart playlists, Quick Actions and Choose
 Columns, Hide caught-up podcasts, and Watched folders.</li>
@@ -4447,10 +4460,10 @@ bread. He isn’t sorry.</p>
 lesson called <strong>How much did I actually listen?</strong>.</p>
 <h3 id="backing-up-your-podcasts">Backing up your podcasts</h3>
 <p>A backup is one file holding your whole library: the podcasts you
-follow, your folders and playlists, your place in each episode, your
-notes, statistics, bookmarks and Go To order. Put it on a memory stick
-or in a cloud folder, and you can always get back to where you are
-today.</p>
+follow, your folders and playlists, your Lineups, your place in each
+episode, your notes, statistics, bookmarks and Go To order. Put it on a
+memory stick or in a cloud folder, and you can always get back to where
+you are today.</p>
 <ol type="1">
 <li>Press <strong>Ctrl+Alt+Shift+B</strong> (Podcasts &gt; Back Up My
 Podcasts).</li>
@@ -4602,6 +4615,12 @@ Pause an episode in Radio, open it in Cast, and it carries on, and Cast
 tells you so: “Picking up where you left off in Quill Radio, at 1 hour 2
 minutes 3 seconds.”</p>
 <p>An episode finished in either app is finished in both.</p>
+<h4 id="lineups-in-both-apps">Lineups in both apps</h4>
+<p>Your QUILL Lineups live in one file that Cast and Quill Radio share.
+A Lineup you make in one app is there in the other, both can be open and
+editing at once, and Cast sends Quill Radio anything in a Lineup that
+only Radio can play, such as a station. Each app keeps its own Start
+Here. Chapter 9 has the whole story.</p>
 <h4 id="sharing-with-quill">Sharing with QUILL</h4>
 <p>QUILL Cast, QUILL and Quill Radio keep your podcasts in one shared
 store on your computer. Follow a podcast here and QUILL’s Podcasts
@@ -4672,8 +4691,9 @@ Cast brings back what you removed, files and all, and says what it did:
 “Undid Unfollow. Brought back The Daily, with 412 episodes and 3
 downloaded files.”</p>
 <p>Undo covers unfollowing, Remove All Episodes, Remove All Downloads,
-Mark All as Played and deleting a recording. Ctrl+Z takes back the most
-recent one. Press it again and it takes back the one before.</p>
+Mark All as Played, deleting a recording, and the changes you make in
+the Lineups window. Ctrl+Z takes back the most recent one. Press it
+again and it takes back the one before.</p>
 <p>Sometimes the mistake was a few steps ago, and you want to keep what
 you did since. Choose <strong>Edit &gt; Undo History</strong>
 (<strong>Ctrl+Shift+Z</strong>). It lists the last ten things you can
@@ -4987,6 +5007,908 @@ of that is enough, a person at support will help.</p>
 <p>If you would like to practise this before you need it, Help &gt;
 Tutorials has a lesson called <strong>When something
 breaks</strong>.</p>
+<p>Chapter 9 is about QUILL Lineups, lists that fill themselves in an
+order you chose. After it, the Keyboard reference lists every key Cast
+comes with.</p>
+<h2 id="chapter-9-quill-lineups">Chapter 9: QUILL Lineups</h2>
+<p>A Lineup is a list of things to listen to, in an order you chose,
+that keeps itself up to date. Most of mine are episodes, but one Lineup
+can hold any mix of podcasts you follow and their episodes, radio
+stations and saved places from Quill Radio, YouTube videos, playlists
+and channels, and Quill Radio’s Local Media files and recordings.</p>
+<p>Things come into a Lineup two ways. You can add them yourself, from
+any episode or podcast in Cast. And you can give a Lineup
+<strong>rules</strong>: “every unplayed episode from my News folder
+published since yesterday”, or “the newest unplayed episode of every
+podcast I follow”. Each rule also says <strong>when its items
+go</strong>: once you have heard them, after some days, when they stop
+matching, or never. And whatever the rules say, <strong>your hands
+win</strong>. What you add stays, what you keep stays, and what you
+remove never comes back.</p>
+<p>A weekday might look like this: open Lineups, arrow to Commute, press
+Enter on the first episode, and Cast plays its short unheard episodes
+one after another through the Play Queue, with yesterday’s already gone
+because you heard them.</p>
+<p>Your Lineups are shared with Quill Radio. Make one in Cast and it is
+there when Radio opens, and you can edit it in either app, even with
+both open.</p>
+<p>If you would rather be walked through it, Help &gt; Tutorials has a
+lesson called <strong>Build a lineup that fills itself</strong>, in the
+<strong>Keeping up</strong> track. It takes about nine minutes.</p>
+<h3 id="open-lineups">Open Lineups</h3>
+<p>Press <strong>Ctrl+U</strong> (<strong>Episode &gt;
+Lineups…</strong>). The Lineups window opens. It is a window of its own,
+like Now Playing, so it is on the Window menu and in the Ctrl+Tab order,
+it has its own menu bar, and <strong>Ctrl+1</strong> takes you back to
+the main window.</p>
+<p>You can also reach it from:</p>
+<ul>
+<li><strong>Go To</strong> (Ctrl+G). Lineups waits in the pool, so
+nobody’s numbering moves: add it to your list with Settings inside Go
+To.</li>
+<li>The <strong>Command Palette</strong> (Ctrl+Shift+P):
+<strong>Podcasts: Lineups…</strong> opens the window, and
+<strong>Podcasts: Add to Lineup…</strong> adds the episode or podcast
+you are on to a Lineup.</li>
+</ul>
+<p>If the window is already open, Ctrl+U brings it to the front rather
+than opening a second one. Close it with <strong>Escape</strong> or
+<strong>Ctrl+W</strong> (<strong>Lineup &gt; Close</strong>). Whatever
+is playing carries on.</p>
+<p>Lineups is one of the switches in Customize Features (Ctrl+Alt+C),
+called <strong>QUILL Lineups</strong>, under Playing. Switch it off and
+the Episode menu row and the Go To entry go away, and the Command
+Palette says the Lineups commands are switched off. The Play Queue and
+your playlists keep doing everything they did, and your Lineups are kept
+for when you switch it on again.</p>
+<h3 id="finding-your-way-around-the-window">Finding your way around the
+window</h3>
+<h4 id="when-you-have-no-lineups-yet">When you have no Lineups yet</h4>
+<p>The first time, the window says “You have no lineups yet”, and your
+cursor is on the <strong>New Lineup…</strong> button. Beside it is
+<strong>Start from an Example…</strong>, which gives you a ready-made
+Lineup with rules.</p>
+<h4 id="the-two-lists">The two lists</h4>
+<p>Once you have a Lineup, the window has two lists. Tab moves from the
+Lineups list to the Show filter and then to the Items list.</p>
+<ul>
+<li><strong>Lineups</strong> (Alt+L): your Lineups, in your own order.
+Each row says how many items it holds and how long they play, such as
+“Commute, 6 items, 44 minutes”. A Lineup whose rules brought in new
+things while you were looking at another one says how many, such as “2
+new”, until you choose it. The Lineup that opens when Cast starts says
+“start lineup”.</li>
+<li><strong>Items</strong> (Alt+T): what is in the Lineup you are on, in
+the order it plays. Moving through the Lineups list fills it straight
+away.</li>
+</ul>
+<p>Each item reads as one sentence, always in the same order: the
+<strong>name</strong>, the <strong>kind</strong> of thing, the
+<strong>length</strong>, where it <strong>comes from</strong>, and, only
+when there is something to say, its <strong>state</strong>. For example,
+“Tuesday’s Episode, episode, 32 minutes, The Daily”. The name comes
+first, so typing the first letter of a name jumps to it. The states you
+may hear are:</p>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>kept</td>
+<td>You chose Keep This Item, so it stays whatever the rules say.</td>
+</tr>
+<tr>
+<td>played</td>
+<td>You have heard it to the end.</td>
+</tr>
+<tr>
+<td>live</td>
+<td>It never ends by itself, like a radio station.</td>
+</tr>
+<tr>
+<td>missing</td>
+<td>It no longer exists, for example an episode of a podcast you stopped
+following.</td>
+</tr>
+<tr>
+<td>unavailable</td>
+<td>Cast could not check it just now. It stays as it was, and is checked
+again later.</td>
+</tr>
+</tbody>
+</table>
+<p>Above the Items list, <strong>Show</strong> (Alt+O) narrows the list
+to one kind: All kinds, Episodes and podcasts, Stations and places,
+YouTube, or Local media and recordings. If you only ever add episodes,
+you will never need it.</p>
+<p>The status bar sums up the Lineup you are on: how many items, how
+long they play, and when the rules last ran. <strong>Lineup
+Summary</strong> (Ctrl+T, <strong>Play &gt; Lineup Summary</strong>)
+says the same thing and then reads you each rule.</p>
+<h4 id="the-menus-in-the-window">The menus in the window</h4>
+<p>Every item on the menu bar shows its key:</p>
+<ul>
+<li><strong>Lineup</strong> (Alt+U): New Lineup, New from an Example,
+Duplicate Lineup, Rename Lineup, Delete Lineup, Edit Rules, Start Here,
+Removed Items, Recently Left, Import Rules, Export Rules and Close.</li>
+<li><strong>Edit</strong> (Alt+E): Undo, Cut, Paste Before, Paste After,
+Keep This Item, Remove from Lineup, Remove Missing Items, Select All,
+Why Is This Here and Refresh Now.</li>
+<li><strong>Arrange</strong> (Alt+A): Move Up, Move Down, Move to Top,
+Move to Bottom and Move to Position.</li>
+<li><strong>Play</strong> (Alt+P): Play, Pause or Resume, Next Item,
+Previous Item, Play This Lineup, Play Next, Add to Up Next, Stop After
+This Item, Skip Live Items and Lineup Summary.</li>
+<li><strong>Window</strong> (Alt+W): your open Cast windows, as
+everywhere in Cast.</li>
+</ul>
+<p>Press <strong>Shift+F10</strong>, or the Applications key, on an item
+or a Lineup, and everything you can do with it is right there.</p>
+<blockquote>
+<p><strong>QUILLBee’s tip:</strong> The Lineups window has the same
+menus and keys in Quill Radio, so learning it once is enough. That also
+means its keys are its own: in the main window Ctrl+Right skips forward
+in an episode, and in Lineups it is Next Item. The full list is in Keys
+in the Lineups window, near the end of this chapter.</p>
+</blockquote>
+<h3 id="make-your-first-lineup">Make your first Lineup</h3>
+<h4 id="start-from-an-example-step-by-step">Start from an example, step
+by step</h4>
+<p>The quickest way to see a Lineup working is to start from one of the
+examples. Each one shows a different way of choosing how long things
+stay.</p>
+<ol type="1">
+<li>In the Lineups window, press <strong>Ctrl+Alt+N</strong>
+(<strong>Lineup &gt; New from an Example…</strong>), or choose the
+<strong>Start from an Example…</strong> button.</li>
+<li>Arrow through the examples. Each one says what it does.</li>
+<li>Choose <strong>New This Week</strong> and press
+<strong>Enter</strong>.</li>
+<li>You hear “Made New This Week. Its rules are running now.” A moment
+later, its episodes arrive.</li>
+</ol>
+<p>The examples are:</p>
+<table>
+<thead>
+<tr>
+<th>Example</th>
+<th>What it brings in, and how long it stays</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Morning</td>
+<td>The stations in your Quill Radio Favorites folder called Morning,
+always; then unplayed episodes from your News podcast folder published
+in the last day, newest first, each one gone once finished or after 2
+days.</td>
+</tr>
+<tr>
+<td>New This Week</td>
+<td>Unplayed episodes from the last 7 days, newest first, at most 20,
+each gone once finished or after 7 days.</td>
+</tr>
+<tr>
+<td>Latest From Each</td>
+<td>The newest unplayed episode of each podcast you follow, gone as soon
+as it stops matching.</td>
+</tr>
+<tr>
+<td>Commute</td>
+<td>Unplayed episodes of 40 minutes or less, oldest first, up to 45
+minutes in all, each gone once finished.</td>
+</tr>
+<tr>
+<td>Saved YouTube</td>
+<td>The YouTube videos you saved in Quill Radio, each kept for 14
+days.</td>
+</tr>
+<tr>
+<td>Live News</td>
+<td>Stations with a news tag, and saved YouTube streams that are live,
+while they match.</td>
+</tr>
+<tr>
+<td>Finish These</td>
+<td>Episodes you started and have not finished, gone once finished.</td>
+</tr>
+</tbody>
+</table>
+<p>The four that are only episodes, New This Week, Latest From Each,
+Commute and Finish These, work with nothing but Cast.</p>
+<p>The example becomes yours, a copy you can change however you like. If
+an example names a folder you do not have, such as News, its rule finds
+nothing and its sentence says so: ‘in folder “News”, which does not
+exist’. Change the folder in the rule to one of yours (see “Write a
+rule” below).</p>
+<h4 id="make-an-empty-lineup-step-by-step">Make an empty Lineup, step by
+step</h4>
+<ol type="1">
+<li>Press <strong>Ctrl+N</strong> (<strong>Lineup &gt; New
+Lineup…</strong>), or choose the <strong>New Lineup…</strong> button. In
+the Lineups window Ctrl+N is New Lineup, not Add Podcast.</li>
+<li>Type a name, such as Sunday, and press <strong>Enter</strong>.</li>
+<li>You hear “Made Sunday. Add to Lineup in any list fills it; Edit
+Rules, Ctrl+Alt+R, gives it rules.”</li>
+</ol>
+<p>Two Lineups never share a name, whatever the capitals: a second
+Sunday is called “Sunday (2)”.</p>
+<h4 id="rename-duplicate-delete-and-arrange-lineups">Rename, duplicate,
+delete and arrange Lineups</h4>
+<p>These work on the Lineup selected in the Lineups list:</p>
+<ul>
+<li><strong>Rename Lineup…</strong> (F2).</li>
+<li><strong>Duplicate Lineup</strong> (Ctrl+D) makes a copy with the
+same rules, settings and order.</li>
+<li><strong>Delete Lineup…</strong> (Shift+Delete, or Delete in the
+Lineups list) asks first and names what goes: “Delete Sunday, its 2
+rules and 14 items? The items themselves are not deleted.” No episode,
+download or podcast is ever deleted by this. <strong>Ctrl+Z</strong>
+brings the Lineup back.</li>
+<li><strong>Alt+Shift+Up</strong> and <strong>Alt+Shift+Down</strong>,
+in the Lineups list, move the Lineup you are on, and
+<strong>Alt+Shift+Home</strong> and <strong>Alt+Shift+End</strong> move
+it to the top or the bottom.</li>
+</ul>
+<h3 id="add-episodes-and-podcasts-by-hand">Add episodes and podcasts by
+hand</h3>
+<p>Anything you add yourself stays in the Lineup until you remove it,
+whatever the rules say.</p>
+<h4 id="add-to-lineup-step-by-step">Add to Lineup, step by step</h4>
+<ol type="1">
+<li>Go to an episode or a podcast anywhere in Cast: the Podcasts place,
+the Inbox, New Episodes, the Play Queue or any other list of
+episodes.</li>
+<li>Press <strong>Shift+F10</strong>, or the Applications key, and
+choose <strong>Add to Lineup…</strong>.</li>
+<li>A short list of your Lineups opens, with <strong>New
+Lineup…</strong> at the end. Choose a Lineup and press
+<strong>Enter</strong>, or choose New Lineup… and type a name.</li>
+<li>You hear “Added to Sunday. Ctrl+Z undoes this.”</li>
+</ol>
+<p>The Command Palette’s <strong>Podcasts: Add to Lineup…</strong> does
+the same for the episode you are on, or the podcast if you are on a
+podcast. Add to Lineup is also one of the Quick Actions for episodes and
+for podcasts, so you can give it a Ctrl+number in Quick Actions
+(Ctrl+Alt+Q); see “Quick Actions: what Enter does” in Chapter 6.</p>
+<p>If the Lineups window is open, the new item appears in it straight
+away. Adding something the Lineup already holds makes it stay until you
+remove it, and adding something you removed earlier takes it off Removed
+Items.</p>
+<p>A <strong>podcast</strong> in a Lineup stands for its next episode:
+playing it plays the podcast’s next unheard episode, so a Lineup of five
+podcasts you follow is always five things worth hearing.</p>
+<h3 id="arrange-the-items">Arrange the items</h3>
+<p>Moving an item changes the order, never how long it stays. And the
+rules never move anything: when they run, items they bring in arrive,
+items they let go leave, and everything else stays exactly where you put
+it.</p>
+<ul>
+<li><strong>Alt+Shift+Up</strong> and <strong>Alt+Shift+Down</strong>
+move the selected items one place. Cast says where they landed, such as
+“Moved to 3 of 14”. At the edge you hear “Already at the top”.</li>
+<li><strong>Alt+Shift+Home</strong> and <strong>Alt+Shift+End</strong>
+move them to the top or the bottom.</li>
+<li><strong>Move to Position…</strong> (Ctrl+J) asks for a number.</li>
+<li>For a long move, press <strong>Ctrl+X</strong> (<strong>Edit &gt;
+Cut</strong>), go to where they belong, and press
+<strong>Ctrl+V</strong> (<strong>Paste Before</strong>) or
+<strong>Ctrl+Alt+V</strong> (<strong>Paste After</strong>).</li>
+<li><strong>Ctrl+A</strong> selects every item, <strong>Shift</strong>
+with the arrows selects a run, and <strong>Ctrl+Space</strong> selects
+or deselects one item at a time, as in any Windows list.</li>
+</ul>
+<h3 id="write-a-rule">Write a rule</h3>
+<p>A rule says what to look for, where to look, which ones, in what
+order, how many, and how long they stay. A Lineup can have as many rules
+as you like: anything any rule finds is in the Lineup.</p>
+<h4 id="the-rules-window-step-by-step">The Rules window, step by
+step</h4>
+<ol type="1">
+<li>In the Lineups list, arrow to a Lineup and press
+<strong>Alt+Enter</strong>, or press <strong>Ctrl+Alt+R</strong>
+(<strong>Lineup &gt; Edit Rules…</strong>) from anywhere in the
+window.</li>
+<li>The Rules window opens on the list <strong>Rules for</strong> and
+the Lineup’s name. Each rule is one sentence, including how long its
+items stay and how many it finds now, for example: ‘Podcast episodes in
+folder “News”, where Played is no and Age is at most 1 day, newest
+first. They go once finished, or after 2 days. Finds 3 now.’</li>
+<li>Use the buttons beside the list: <strong>Add Rule…</strong>,
+<strong>Edit Rule…</strong>, <strong>Remove Rule</strong>, <strong>Move
+Up</strong> and <strong>Move Down</strong>. Moving a rule changes where
+its new items go, not what it finds.</li>
+<li>Below the list, in <strong>This lineup</strong>, are three settings
+for the whole Lineup:
+<ul>
+<li><strong>New items go</strong>: with the other items from the same
+rule (the usual choice, so each rule’s items stay together), at the top,
+or at the bottom.</li>
+<li><strong>Play-through budget in minutes</strong>: playing the Lineup
+through stops adding rule items once this many minutes are used. 0 means
+no budget.</li>
+<li><strong>Skip live items when playing through</strong>, the same as
+<strong>Play &gt; Skip Live Items</strong> (Ctrl+Alt+K).</li>
+</ul></li>
+<li>Press <strong>Enter</strong> for OK, or <strong>Escape</strong> to
+change nothing.</li>
+</ol>
+<p>Nothing changes until you choose OK. Two questions may come first, so
+that a rule change never takes something away silently:</p>
+<ul>
+<li>If the change would let items go, you hear how many: “This change
+lets 4 items go. They will be in Recently Left. Make the change?”</li>
+<li>If you removed a rule that had brought items in, you are asked what
+to do with them: keep them as items you keep, or let them go to Recently
+Left.</li>
+</ul>
+<h4 id="edit-rule-step-by-step">Edit Rule, step by step</h4>
+<p>Edit Rule is laid out in the order the rule’s sentence reads, in
+labelled groups.</p>
+<ol type="1">
+<li><strong>What it looks for.</strong> <strong>Look for</strong>
+(Alt+L) chooses one kind: Radio stations, Saved places, Podcasts I
+follow, Podcast episodes, YouTube videos, YouTube playlists, YouTube
+channels, Local media, or Recordings. The change takes effect when you
+leave the box. If the rule already has tests or places to look in, Cast
+asks first, because those belong to the old kind.</li>
+<li><strong>Where to look.</strong> <strong>Narrow by</strong> (Alt+N)
+chooses what to look in, such as Folder, Podcast or Label. It starts on
+“Choose what to narrow by”, which means everywhere. Then
+<strong>Values</strong> (Alt+V) lists every one you have: press
+<strong>Space</strong> on each one to look in, and any selected one
+counts. <strong>Filter values</strong> (Alt+F) shortens a long list as
+you type.</li>
+<li><strong>Tests.</strong> The <strong>Tests</strong> list (Alt+E)
+holds what an item must be. <strong>Add Test…</strong> (Alt+A) asks for
+a field, a test and a value, such as “Length”, “is at most”, “40”.
+<strong>Match</strong> (Alt+M) chooses whether an item must pass
+<strong>All of the tests</strong> or <strong>Any of the tests</strong>.
+With no tests, everything in the places you chose is found.</li>
+<li><strong>Order and amount.</strong> <strong>Order</strong> (Alt+O):
+as the source orders them, newest first, oldest first, shortest first,
+longest first, by name, or most listened first. Then three limits, each
+0 for none: <strong>Count limit</strong>, <strong>Per group
+limit</strong> (at most this many from each podcast) and <strong>Up to
+minutes in all</strong>.</li>
+<li><strong>When they go.</strong> <strong>Keep</strong> (Alt+K), and
+the boxes it needs; see “Choose how long things stay” below.
+<strong>Rule switched on</strong> (Alt+S) turns the rule off without
+deleting it: off, it finds nothing new and lets nothing go.</li>
+<li><strong>Try it.</strong> Press <strong>Try It</strong> (Alt+T). Your
+cursor moves to the matches list, whose label carries the count, such as
+“Matches, 7 items”. Nothing is saved by trying.</li>
+<li>Press <strong>Enter</strong> for OK.</li>
+</ol>
+<h4 id="what-a-test-can-ask">What a test can ask</h4>
+<p>A text test can be: contains, does not contain, starts with, ends
+with, is, is not, fits the wildcard, matches the regular expression, or
+does not match the regular expression. <strong>Capitals must
+match</strong> makes it exact. A number test can be: is at least, is at
+most, is, or is not, and the box says the unit, such as “In minutes.” A
+yes-or-no test is yes or no.</p>
+<p><strong>A number test never matches something that does not
+say.</strong> A podcast that publishes no length is never “at most 10
+minutes”, so a short-episodes rule never fills up with episodes of
+unknown length. This is the same rule Episode Filters and smart
+playlists follow.</p>
+<p>What episodes and podcasts can be tested on:</p>
+<table>
+<thead>
+<tr>
+<th>Kind</th>
+<th>Fields</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Podcast episodes</td>
+<td>Title, Podcast, Folder, Label, Age (days), Length (minutes), Played,
+Started but not finished, Percent heard, Downloaded, Season, Episode
+number, Episode type, Days since last played</td>
+</tr>
+<tr>
+<td>Podcasts I follow</td>
+<td>Title, Folder, Label, Favorite, Paused, Language, Category, Unplayed
+episodes, Newest episode age (days)</td>
+</tr>
+</tbody>
+</table>
+<p>Rules over Quill Radio’s kinds, such as stations and Local Media,
+have fields of their own. Quill Radio’s user guide lists them.</p>
+<h3 id="choose-how-long-things-stay">Choose how long things stay</h3>
+<p>Tests decide what comes <strong>in</strong>. The rule’s
+<strong>Keep</strong> choice decides when it <strong>goes</strong>. The
+same episode can come in because it is new and leave because you have
+heard it, and the rule’s sentence always says both.</p>
+<table>
+<thead>
+<tr>
+<th>Keep</th>
+<th>An item goes when</th>
+<th>Good for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>While it matches</td>
+<td>It stops passing the rule’s tests.</td>
+<td>Lists that mirror a fact exactly, such as the newest episode of each
+podcast.</td>
+</tr>
+<tr>
+<td>Until finished</td>
+<td>You have heard it to the end, or past the percentage you set (95
+percent unless you change it).</td>
+<td>Episodes you mean to hear.</td>
+</tr>
+<tr>
+<td>For a number of days</td>
+<td>It has been in the Lineup that many days, 1 to 365, whether it still
+matches or not.</td>
+<td>Lists that should roll forward by themselves.</td>
+</tr>
+<tr>
+<td>Until finished, or a number of days</td>
+<td>Whichever comes first.</td>
+<td>The usual podcast case: hear it this week or let it go.</td>
+</tr>
+<tr>
+<td>Always</td>
+<td>Never, unless you remove it.</td>
+<td>The episodes you come back to.</td>
+</tr>
+</tbody>
+</table>
+<p>A few things worth knowing:</p>
+<ul>
+<li><strong>What counts as finished.</strong> An episode you mark as
+played always counts. Otherwise it counts once you have heard past
+<strong>Percent heard that counts as finished</strong> (Alt+P).</li>
+<li><strong>A podcast is never finished</strong>, and neither is a
+station or a channel. Rules over those offer only While it matches, For
+a number of days, and Always.</li>
+<li><strong>Max kept</strong> (Alt+X) caps a rule: it keeps at most that
+many, and the oldest arrivals go first. A busy podcast cannot fill the
+Lineup.</li>
+<li><strong>Days are real days.</strong> “For 3 days” means 72 hours
+from when the rule brought the item in, however often the rules
+run.</li>
+<li><strong>The usual choice follows the kind.</strong> A new rule over
+episodes starts on Until finished, or 7 days. A rule over podcasts
+starts on While it matches.</li>
+<li><strong>Two rules can find the same item.</strong> It appears once,
+and stays while any of its rules still wants it.</li>
+</ul>
+<h3 id="your-hands-outrank-the-rules">Your hands outrank the rules</h3>
+<ul>
+<li><strong>Keep This Item</strong> (Ctrl+K, <strong>Edit &gt; Keep This
+Item</strong>) holds an item whatever its rule says. You hear “Kept. It
+stays whatever the rules say.” The row says “kept”, and the menu item is
+checked. Press it again to give it back to its rule: “No longer kept:
+its rules decide again.”</li>
+<li><strong>An item you added by hand</strong> stays until you remove
+it.</li>
+<li><strong>Remove from Lineup</strong> (Delete) takes an item out now,
+and <strong>no rule ever brings it back</strong>, however well it
+matches later. You hear “Removed. Removed Items can bring it back.” With
+several selected, you hear how many. Nothing is deleted from your
+library: the episode is still in its podcast, and its download is still
+on disk.</li>
+<li><strong>Remove Missing Items</strong> (Ctrl+Shift+Delete) removes
+every item that no longer exists.</li>
+<li><strong>Undo</strong> (Ctrl+Z, <strong>Edit &gt; Undo</strong>)
+takes back the last change: a move, a remove, Keep, a rename, a deleted
+Lineup, a rule change or an add. Press it again for the one before. It
+is the same Undo as the main window’s, so <strong>Undo History</strong>
+(Ctrl+Shift+Z in the main window) lists these too.</li>
+</ul>
+<blockquote>
+<p><strong>QUILLBee’s tip:</strong> Delete never asks, because it never
+loses anything. Removed Items keeps the list, and Ctrl+Z puts the item
+back in the very same place.</p>
+</blockquote>
+<h3 id="why-is-this-here">Why Is This Here</h3>
+<p>Press <strong>Alt+Enter</strong> on an item (<strong>Edit &gt; Why Is
+This Here…</strong>). A short window says why the item is in the Lineup
+and how long it will stay. Read it with the arrow keys, and press
+<strong>Escape</strong> to close it. You might hear:</p>
+<ul>
+<li>‘In Commute because rule 1 found it: Podcast episodes, where Played
+is no and Length is at most 40 minutes, oldest first. They go once
+finished.’ and, for an episode you have started, how much of it you have
+heard.</li>
+<li>“In Commute because you kept it. It stays whatever the rules say,
+until you remove it.”</li>
+<li>“In Commute because you added it. It stays until you remove
+it.”</li>
+<li>When two rules found it, it names both and says which one keeps it
+longest.</li>
+</ul>
+<p>Alt+Enter means “tell me about this” everywhere in Windows, which is
+why it is the reason on an item and the rules on a Lineup.</p>
+<h3 id="removed-items-and-recently-left">Removed Items and Recently
+Left</h3>
+<p>Nothing leaves a Lineup without trace. Two lists, both on the Lineup
+menu, remember what went:</p>
+<ul>
+<li><strong>Removed Items…</strong> (Ctrl+Alt+Z): what you removed
+yourself.</li>
+<li><strong>Recently Left…</strong> (Ctrl+Alt+L): what the rules let go,
+newest first, each with its reason and when, such as “finished”, “2 days
+passed” or “it no longer matches rule 1”. It remembers the last
+100.</li>
+</ul>
+<p>In either one, select one or more items and choose <strong>Bring
+Back</strong> (Alt+B). They come back at the end of the Lineup as items
+you keep, so the rules do not let them straight go again, and you hear
+how many came back. <strong>Clear the List</strong> (Alt+L) empties the
+list after asking first. Clearing Removed Items means a rule could bring
+those items in again.</p>
+<h3 id="when-the-rules-run">When the rules run</h3>
+<p>The rules run:</p>
+<ul>
+<li>when you open the Lineups window;</li>
+<li>when something they read changes, in Cast or in Quill Radio, such as
+a new episode arriving, an episode being played, or a favorite being
+added in Radio;</li>
+<li>every ten minutes while the window is open, so days pass on
+time;</li>
+<li>whenever you press <strong>F5</strong> (<strong>Edit &gt; Refresh
+Now</strong>).</li>
+</ul>
+<p><strong>The rules run while the Lineups window is open, and each time
+it opens.</strong> They do not run in the background with the window
+closed. Opening the window always brings every Lineup up to date
+first.</p>
+<p>What you hear:</p>
+<ul>
+<li>With the window in front, a change is said once, without moving your
+cursor: “2 added, 1 left.” If the item you were on is the one that left,
+you hear that first, such as “Your item left: finished.”, and your
+cursor moves to the item that took its place.</li>
+<li>When nothing changed, the rules say nothing, unless you pressed F5,
+which always answers: “No changes.”</li>
+<li>Changes to Lineups you are not looking at show on their rows as “2
+new”.</li>
+</ul>
+<p>Some promises the rules keep, whatever happens:</p>
+<ul>
+<li><strong>Nothing leaves because something could not be
+checked.</strong> If your library cannot be read for a moment, the items
+it would have checked stay exactly as they were and say
+“unavailable”.</li>
+<li><strong>Nothing leaves without trace.</strong> Everything the rules
+let go is in Recently Left, with the reason.</li>
+<li><strong>Your order is never changed by the rules.</strong></li>
+<li><strong>A big loss is never silent.</strong> If one refresh would
+take away more than half of a Lineup, and more than 10 items, for
+example after a long time away, it says so plainly and tells you
+Recently Left can bring them back.</li>
+</ul>
+<h3 id="play-a-lineup-in-cast">Play a Lineup in Cast</h3>
+<p>Cast plays podcasts, and it plays a Lineup through its own
+<strong>Play Queue</strong>, the same queue Chapter 5 describes. That
+way a Lineup carries on by itself, even with the Lineups window closed,
+and Next in Queue works as it always does.</p>
+<h4 id="play-from-an-episode-step-by-step">Play from an episode, step by
+step</h4>
+<ol type="1">
+<li>In the Items list, arrow to an episode and press
+<strong>Enter</strong>, or <strong>Ctrl+Enter</strong> (<strong>Play
+&gt; Play</strong>).</li>
+<li>Cast puts that episode, and the Lineup’s episodes after it, at the
+front of the Play Queue, in the Lineup’s order, and plays it. Episodes
+you have already heard, and ones no longer in your library, are left
+out. The rest of your queue waits behind them, in its own order.</li>
+<li>When the episode ends, the queue carries on with the next one from
+the Lineup.</li>
+</ol>
+<p>To play from the top, press <strong>Enter</strong> on the Lineup in
+the Lineups list, or <strong>Ctrl+Alt+P</strong> (<strong>Play &gt; Play
+This Lineup</strong>) from anywhere in the window.</p>
+<p>While it plays:</p>
+<ul>
+<li><strong>Ctrl+Right</strong> and <strong>Ctrl+Left</strong>
+(<strong>Next Item</strong>, <strong>Previous Item</strong>) move
+through the Play Queue, the same as Next in Queue and Previous in Queue
+in the main window.</li>
+<li><strong>Pause or Resume</strong> (<strong>Play &gt; Pause or
+Resume</strong>) holds and continues what is playing. Its key,
+<strong>Ctrl+Space</strong>, works everywhere in the window except the
+Items list, where Ctrl+Space selects or deselects the item under the
+cursor.</li>
+<li><strong>Play Next</strong> (Ctrl+Shift+Enter) puts the selected
+episodes right after the one playing, and <strong>Add to Up
+Next</strong> (Ctrl+Alt+Enter) puts them at the end of the Play Queue.
+These two work on episodes.</li>
+<li><strong>Stop After This Item</strong> (Ctrl+Alt+S) answers that in
+Cast the sleep timer does this: choose End of Episode in the Sleep Timer
+(Ctrl+Alt+T), or press <strong>Ctrl+Alt+Shift+T</strong> in the main
+window.</li>
+<li>A <strong>podcast</strong> in a Lineup plays its next unheard
+episode.</li>
+</ul>
+<h4 id="what-cast-sends-to-quill-radio">What Cast sends to Quill
+Radio</h4>
+<p>Stations, saved places, YouTube items, Local Media files and
+recordings are Quill Radio’s to play. When you press Enter on one in
+Cast, Cast sends it, and the Lineup’s items after it, to Quill Radio,
+opening Radio if it is not running, and says “Sent to Quill Radio to
+play.” Radio then plays them through.</p>
+<p>When you play from an episode and the Lineup also holds things only
+Radio can play, Cast plays the episodes through the Play Queue and tells
+you how many other items there are: “The lineup’s episodes are at the
+front of the queue. Its other 3 items play in Quill Radio: Enter on one
+of them sends it there.”</p>
+<h3 id="save-lineup-and-apply-lineup-on-the-play-queue">Save Lineup and
+Apply Lineup on the Play Queue</h3>
+<p>The Play Queue place has had <strong>Save Lineup…</strong> and
+<strong>Apply Lineup…</strong> on its Applications key for a long time.
+They now make and use QUILL Lineups, so there is only one kind of lineup
+in Cast and Quill Radio.</p>
+<h4 id="save-the-queues-order-step-by-step">Save the queue’s order, step
+by step</h4>
+<ol type="1">
+<li>Arrange the Play Queue the way you like it.</li>
+<li>Press the Applications key on the Play Queue place and choose
+<strong>Save Lineup…</strong>.</li>
+<li>Type a name, such as Tuesday, and press <strong>Enter</strong>.</li>
+<li>You hear “Saved lineup Tuesday: 5 episodes, in this order.”</li>
+</ol>
+<p>The new Lineup holds the queue’s episodes as items you added by hand,
+so they stay until you remove them. Saving under a name you already used
+replaces that Lineup’s items, and you hear “Replaced lineup Tuesday”
+instead. If that Lineup has rules, they are kept.</p>
+<h4 id="apply-a-lineup-to-the-queue-step-by-step">Apply a Lineup to the
+queue, step by step</h4>
+<ol type="1">
+<li>Press the Applications key on the Play Queue place and choose
+<strong>Apply Lineup…</strong>.</li>
+<li>Choose a Lineup. Only Lineups with episodes in them are
+offered.</li>
+<li>The Lineup’s episodes that are still unheard move to the front of
+the queue in its order, and the rest of your queue waits behind them.
+Nothing is thrown away.</li>
+<li>Cast tells you how many it applied and how many it skipped because
+you had already heard them or they are no longer in your library.</li>
+</ol>
+<p>Any Lineup with episodes can be applied, not only the ones you saved
+from the queue, so a Lineup built by rules can fill the front of your
+queue too.</p>
+<h4 id="lineups-you-saved-before">Lineups you saved before</h4>
+<p>Lineups saved by Save Lineup before QUILL Lineups were kept as
+playlists. The first time this version of Cast starts, it copies each
+one into Lineups, once, under the same name. The playlists stay in
+Playlists exactly as they were, so you can delete them there when you no
+longer want them.</p>
+<h3 id="start-here-open-cast-in-a-lineup">Start Here: open Cast in a
+Lineup</h3>
+<p>You can choose one Lineup to open every time Cast starts.</p>
+<ol type="1">
+<li>In the Lineups list, arrow to the Lineup, such as Commute.</li>
+<li>Press <strong>Ctrl+Alt+H</strong> (<strong>Lineup &gt; Start
+Here</strong>).</li>
+<li>You hear “Commute opens when Quill Cast starts.” The menu item is
+checked, and the Lineup’s row says “start lineup”.</li>
+</ol>
+<p>Next time Cast starts, the Lineups window opens in front of the main
+window, on that Lineup, and its rules run as it opens. The main window
+is still there behind it. Close the Lineups window, or press Ctrl+1, and
+you are back in it.</p>
+<ul>
+<li>To stop, choose <strong>Start Here</strong> again on the same
+Lineup. You hear “Quill Cast opens as usual.” Choosing it on another
+Lineup moves it there, because Cast can start in only one place.</li>
+<li>The very first time Cast runs, its welcome comes first. Start Here
+applies from the next time.</li>
+<li>If the Lineup was deleted, Cast says once “Your start lineup no
+longer exists. Quill Cast opened as usual.” and forgets the choice.</li>
+</ul>
+<p>Quill Radio has its own Start Here, so each app can start in a
+different Lineup, or neither.</p>
+<h3 id="sharing-lineups-with-quill-radio">Sharing Lineups with Quill
+Radio</h3>
+<p>Cast and Quill Radio keep their Lineups in one file,
+<code>lineups.json</code> in the shared data folder. The same Lineups,
+rules and order appear in both apps, and the Lineups window has the same
+menus and keys in each, Ctrl+U included.</p>
+<ul>
+<li><strong>Both apps can be open at once.</strong> An edit in one
+appears in the other within a couple of seconds, and neither app ever
+undoes the other’s change. If you move an item the other app removed a
+moment ago, nothing is guessed: you are told so.</li>
+<li><strong>Each app plays what it can, and hands over the
+rest.</strong> Cast plays episodes and podcasts and sends everything
+else to Radio. Radio plays every kind.</li>
+<li><strong>Backups.</strong> A Cast backup (see “Backing up your
+podcasts” in Chapter 7) includes your Lineups.</li>
+</ul>
+<h4 id="share-a-lineups-rules">Share a Lineup’s rules</h4>
+<p><strong>Export Rules…</strong> (Ctrl+Shift+X) saves a Lineup’s rules
+and settings, not its items, to a small file you can send to a friend or
+take to another computer. <strong>Import Rules…</strong> (Ctrl+I) makes
+a new Lineup from such a file, whose rules then find the same kinds of
+thing in your own podcasts.</p>
+<h3 id="what-lineups-cannot-do-yet">What Lineups cannot do yet</h3>
+<ul>
+<li><strong>Rules never use the internet.</strong> They read what is
+already on your computer, so they are instant and work offline. An
+episode rule sees the episodes Cast already knows about; it does not
+check feeds itself.</li>
+<li><strong>YouTube rules see what you saved and follow.</strong> They
+see the videos and playlists you saved in Quill Radio and the channels
+you follow. The newest uploads in a channel are fetched from YouTube as
+you browse and are not kept on your computer, so a rule cannot see every
+new upload.</li>
+<li><strong>The rules run while the Lineups window is open</strong>, and
+each time it opens, not in the background.</li>
+<li><strong>Cast does not play stations, YouTube or Local Media
+itself.</strong> It sends them to Quill Radio, so those items need Quill
+Radio installed.</li>
+</ul>
+<h3 id="keys-in-the-lineups-window">Keys in the Lineups window</h3>
+<p>These keys belong to the Lineups window, in Cast and in Quill Radio
+alike.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Enter</td>
+<td>On an item, play from here and carry on; on a Lineup, play the
+Lineup</td>
+</tr>
+<tr>
+<td>Ctrl+Enter</td>
+<td>Play the selected item, then carry on</td>
+</tr>
+<tr>
+<td>Ctrl+Space</td>
+<td>Pause or resume, except in the Items list, where it selects or
+deselects one item</td>
+</tr>
+<tr>
+<td>Ctrl+Right, Ctrl+Left</td>
+<td>Next item, previous item</td>
+</tr>
+<tr>
+<td>Ctrl+Alt+P</td>
+<td>Play This Lineup, from the top</td>
+</tr>
+<tr>
+<td>Ctrl+Shift+Enter, Ctrl+Alt+Enter</td>
+<td>Play Next, Add to Up Next</td>
+</tr>
+<tr>
+<td>Ctrl+Alt+S</td>
+<td>Stop After This Item</td>
+</tr>
+<tr>
+<td>Ctrl+Alt+K</td>
+<td>Skip Live Items, on or off</td>
+</tr>
+<tr>
+<td>Ctrl+T</td>
+<td>Lineup Summary</td>
+</tr>
+<tr>
+<td>Ctrl+N</td>
+<td>New Lineup</td>
+</tr>
+<tr>
+<td>Ctrl+Alt+N</td>
+<td>New from an Example</td>
+</tr>
+<tr>
+<td>Ctrl+D</td>
+<td>Duplicate Lineup</td>
+</tr>
+<tr>
+<td>F2</td>
+<td>Rename Lineup</td>
+</tr>
+<tr>
+<td>Shift+Delete</td>
+<td>Delete Lineup (asks first); Delete does the same in the Lineups
+list</td>
+</tr>
+<tr>
+<td>Ctrl+Alt+R</td>
+<td>Edit Rules; Alt+Enter does the same in the Lineups list</td>
+</tr>
+<tr>
+<td>Ctrl+Alt+H</td>
+<td>Start Here, on or off</td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Z</td>
+<td>Removed Items</td>
+</tr>
+<tr>
+<td>Ctrl+Alt+L</td>
+<td>Recently Left</td>
+</tr>
+<tr>
+<td>Ctrl+I, Ctrl+Shift+X</td>
+<td>Import Rules, Export Rules</td>
+</tr>
+<tr>
+<td>Ctrl+K</td>
+<td>Keep This Item, on or off</td>
+</tr>
+<tr>
+<td>Delete</td>
+<td>Remove from Lineup</td>
+</tr>
+<tr>
+<td>Ctrl+Shift+Delete</td>
+<td>Remove Missing Items</td>
+</tr>
+<tr>
+<td>Alt+Enter</td>
+<td>Why Is This Here, on an item</td>
+</tr>
+<tr>
+<td>F5</td>
+<td>Refresh Now</td>
+</tr>
+<tr>
+<td>Alt+Shift+Up, Alt+Shift+Down</td>
+<td>Move up or down one place</td>
+</tr>
+<tr>
+<td>Alt+Shift+Home, Alt+Shift+End</td>
+<td>Move to the top or the bottom</td>
+</tr>
+<tr>
+<td>Ctrl+J</td>
+<td>Move to Position</td>
+</tr>
+<tr>
+<td>Ctrl+X</td>
+<td>Cut</td>
+</tr>
+<tr>
+<td>Ctrl+V, Ctrl+Alt+V</td>
+<td>Paste Before, Paste After</td>
+</tr>
+<tr>
+<td>Ctrl+A</td>
+<td>Select All</td>
+</tr>
+<tr>
+<td>Ctrl+Z</td>
+<td>Undo</td>
+</tr>
+<tr>
+<td>Escape, Ctrl+W</td>
+<td>Close the window; playing carries on</td>
+</tr>
+<tr>
+<td>Ctrl+1</td>
+<td>Back to the main window</td>
+</tr>
+</tbody>
+</table>
+<p>From the main window, <strong>Ctrl+U</strong> opens Lineups.</p>
+<h3 id="what-you-learned-and-where-to-go-next-8">What you learned, and
+where to go next</h3>
+<p>You can now make Lineups from examples or from nothing, fill them by
+hand from any episode or podcast, and write rules that bring episodes in
+and let them go when you choose. You know that your own hands outrank
+the rules, how to ask why something is there, and how to bring back
+anything that left. You can play a Lineup through the Play Queue, save
+the queue’s order as a Lineup and apply one later, open Cast in a
+Lineup, and share them all with Quill Radio.</p>
 <p>The Keyboard reference that follows lists every key Cast comes with,
 for the days you want them all in one place. Happy listening.</p>
 <h2 id="keyboard-reference">Keyboard reference</h2>
@@ -5489,6 +6411,10 @@ through the focused list, and arrows navigate its rows or tree.</p>
 <td>Ctrl+Alt+K</td>
 </tr>
 <tr>
+<td>Lineups</td>
+<td>Ctrl+U</td>
+</tr>
+<tr>
 <td>Mark All as Played</td>
 <td>Alt+Shift+E</td>
 </tr>
@@ -5502,6 +6428,10 @@ through the focused list, and arrows navigate its rows or tree.</p>
 </tr>
 </tbody>
 </table>
+<h3 id="in-the-lineups-window">In the Lineups window</h3>
+<p>The Lineups window has keys of its own, the same in Cast and in Quill
+Radio. They are listed in full under “Keys in the Lineups window” in
+Chapter 9.</p>
 <h3 id="podcasts-and-your-library">Podcasts and your library</h3>
 <table>
 <thead>

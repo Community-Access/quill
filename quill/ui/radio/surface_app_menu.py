@@ -51,6 +51,7 @@ from typing import Any
 COMMANDS: tuple[tuple[str, str, str, str], ...] = (
     ("&Browse Stations...", "radio.browse", "Ctrl+B", "open_browse_stations"),
     ("&Local Media...", "radio.local_media", "Ctrl+O", "open_local_media"),
+    ("Line&ups...", "radio.lineups", "Ctrl+U", "open_lineups"),
     ("&Search Stations...", "", "Ctrl+F", "open_internet_radio"),
     ("&Manage Favorites...", "radio.manage_favorites", "", "open_manage_radio_favorites"),
     ("Recordin&gs...", "radio.recordings", "", "open_radio_recordings"),

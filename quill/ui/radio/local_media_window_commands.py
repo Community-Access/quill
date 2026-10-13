@@ -256,6 +256,25 @@ class LocalMediaCommandsMixin:
         if playlist is not None and item is not None:
             manage.properties(self._host, playlist.id, item.id)
 
+    def cmd_add_to_lineup(self) -> None:
+        """Add t&o Lineup...: the selected items into a QUILL Lineup, by hand."""
+        import time
+
+        from quill.core.lineups.sources import local_item_facts
+        from quill.ui.radio import lineups_commands
+
+        playlist = self._playlist()
+        if playlist is None:
+            return
+        rows = self._rows() or ([self._focus_row()] if self._focus_row() >= 0 else [])
+        now = time.time()
+        items = [
+            local_item_facts(playlist, playlist.items[row], now=now)
+            for row in rows
+            if 0 <= row < len(playlist.items)
+        ]
+        lineups_commands.add(self._host, items, parent=self._win)
+
     def cmd_show_in_folder(self) -> None:
         item = self._item_at_focus()
         if item is not None:

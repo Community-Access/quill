@@ -25,7 +25,13 @@ from typing import Any
 
 from quill.stability.task_manager import UiLifetimeToken
 
-__all__ = ["SurfaceTasks", "destroy_event_matches", "lifetime_for", "surface_tasks"]
+__all__ = [
+    "SurfaceTasks",
+    "destroy_event_matches",
+    "lifetime_for",
+    "stop_timer_on_destroy",
+    "surface_tasks",
+]
 
 
 def destroy_event_matches(event: Any, window: Any, window_id: int | None) -> bool:
@@ -163,6 +169,37 @@ def surface_tasks(manager: Any, window: Callable[[], Any]) -> Any:
     if manager is None:
         return None
     return SurfaceTasks(manager, window)
+
+
+def stop_timer_on_destroy(window: Any, timer: Any) -> None:
+    """Stop *timer* when *window*, its owner, is destroyed.
+
+    wx never stops a timer for its owner. A close handler usually does, but any
+    path that destroys the window without closing it (a test's ``Destroy()``,
+    ``wx.Exit``) leaves the timer armed, and its next tick calls ``ProcessEvent``
+    on freed memory: an access violation in no module at all, however long
+    after. That was the 2026-10-13 suite crash, five minutes after a Beacon
+    fixture let a 300-second sync timer go. Bind this beside the timer's own
+    ``Bind(EVT_TIMER, ...)`` so the two cannot drift apart.
+    """
+    try:
+        import wx
+
+        get_id = getattr(window, "GetId", None)
+        window_id = get_id() if callable(get_id) else None
+
+        def on_destroy(event: Any) -> None:
+            event.Skip()
+            # Children send their own destroy events up; only the owner's counts.
+            if destroy_event_matches(event, window, window_id):
+                try:
+                    timer.Stop()
+                except RuntimeError:
+                    pass  # the timer's own wrapper went first: it cannot fire
+
+        window.Bind(wx.EVT_WINDOW_DESTROY, on_destroy)
+    except Exception:  # noqa: BLE001 - a fake window in a test has no events
+        pass
 
 
 _ATTR = "_quill_ui_lifetime"

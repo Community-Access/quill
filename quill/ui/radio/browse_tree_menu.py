@@ -150,6 +150,9 @@ def _handlers(dialog: Any, node: Any, data: dict, kind: str, args: list[str]) ->
     from quill.ui.radio import station_tags_dialog as tags_dialog
 
     handlers[row_actions.EDIT_TAGS] = lambda: tags_dialog.edit_row_tags(dialog, data, station)
+    from quill.ui.radio import lineups_commands
+
+    handlers[row_actions.LINEUP_ADD] = lambda: lineups_commands.add_station(host, station)
     handlers[row_actions.ADD_PODCAST_URL] = lambda: podcast_acts.add_podcast_by_url_prompt(dialog)
     handlers[row_actions.DOWNLOAD_ALL_EPISODES] = lambda: podcast_acts.download_all_episodes(
         dialog, args

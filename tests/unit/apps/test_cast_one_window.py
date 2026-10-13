@@ -35,7 +35,9 @@ def _rows(frame) -> list[str]:
 
 
 @pytest.fixture
-def cast_frame(quill_data_dir: Path, monkeypatch: pytest.MonkeyPatch):
+def cast_frame(
+    quill_data_dir: Path, monkeypatch: pytest.MonkeyPatch, wx_app, quiet_cast_startup, close_cast
+):
     from quill.core.podcasts.models import PodcastShow
     from quill.core.podcasts.models_episode import PodcastEpisode
     from quill.core.podcasts.subscriptions import PodcastLibrary, save_library
@@ -61,61 +63,20 @@ def cast_frame(quill_data_dir: Path, monkeypatch: pytest.MonkeyPatch):
             )
         library.add_show(show)
     save_library(quill_data_dir, library)
-    app = wx.GetApp() or wx.App()
     previous_loop = wx.EventLoop.GetActive()
     loop = wx.GUIEventLoop()
     wx.EventLoop.SetActive(loop)
     from quill.apps.podcasts import PodcastsAppFrame
     from quill.ui.dialog_contract import set_transition_announcement_policy
 
-    for name in (
-        "_check_at_launch",
-        "_start_folder_watching",
-        "_maybe_resume_last_episode",
-        "_maybe_check_updates_on_startup",
-        "_cast_launch_notices",
-        "_reload_global_hotkeys",
-    ):
-        monkeypatch.setattr(PodcastsAppFrame, name, lambda self: None)
-    monkeypatch.setattr(PodcastsAppFrame, "_register_media_keys", lambda self, *a, **kw: None)
-    monkeypatch.setattr(
-        PodcastsAppFrame,
-        "_register_tray_hotkey",
-        lambda self, _chord: True,
-    )
     monkeypatch.setattr(PodcastsAppFrame, "_announce", lambda self, *a, **kw: None)
     frame = PodcastsAppFrame()
     try:
         yield frame
     finally:
         set_transition_announcement_policy(None)
-        frame._exit_requested = True
-        frame.frame.Close()
-        deadline = monotonic() + 10
-        while not getattr(frame, "_cast_closed", False) and monotonic() < deadline:
-            app.ProcessPendingEvents()
-            wx.YieldIfNeeded()
-            loop.ProcessIdle()
-            sleep(0.005)
-        closed = getattr(frame, "_cast_closed", False)
         try:
-            if not closed and frame.frame:
-                frame.frame.Destroy()
-                wx.YieldIfNeeded()
-            for name in (
-                "_task_manager",
-                "_podcast_feed_tasks",
-                "_podcast_save_pool",
-                "_podcast_record_tasks",
-                "_cast_undo_file_pool",
-                "_cast_close_pool",
-                "_cast_view_retirement_pool",
-            ):
-                pool = getattr(frame, name, None)
-                if pool is not None:
-                    pool.shutdown(wait=True, cancel_pending=name != "_cast_view_retirement_pool")
-            wx.YieldIfNeeded()
-            loop.ProcessIdle()
+            closed = close_cast(frame, loop=loop)
             assert closed, "Cast did not finish its responsive shutdown"
         finally:
             wx.EventLoop.SetActive(previous_loop)

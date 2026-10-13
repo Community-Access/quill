@@ -24,8 +24,7 @@ pytestmark = pytest.mark.machine_global
 
 
 @pytest.fixture
-def cast(quill_data_dir: Path):
-    app = wx.App()
+def cast(quill_data_dir: Path, wx_app, quiet_cast_startup, close_cast):
     from quill.apps.podcasts import PodcastsAppFrame
     from quill.ui.dialog_contract import set_transition_announcement_policy
 
@@ -37,11 +36,7 @@ def cast(quill_data_dir: Path):
         yield frame
     finally:
         set_transition_announcement_policy(None)
-        try:
-            frame.frame.Destroy()
-        except Exception:  # noqa: BLE001
-            pass
-        del app
+        close_cast(frame)
 
 
 def _audio(path: Path, payload: bytes = b"audio") -> Path:

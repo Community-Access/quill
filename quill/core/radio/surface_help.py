@@ -38,6 +38,7 @@ from quill.core.control_help import (
 from quill.core.control_help import (
     role_usage as role_usage,
 )
+from quill.core.lineups.help_text import LINEUP_PREFIX_PURPOSES, LINEUP_PURPOSES
 
 #: Surface purposes by exact window title.
 PURPOSES: dict[str, str] = {
@@ -435,6 +436,8 @@ PURPOSES: dict[str, str] = {
 from quill.core.updater.wording import window_titles as _channel_windows  # noqa: E402
 
 PURPOSES.update(_channel_windows("Quill Radio"))
+# QUILL Lineups: one window, one help text, in both apps (core/lineups/help_text).
+PURPOSES.update(LINEUP_PURPOSES)
 
 #: Purposes for windows whose titles carry live data, matched by prefix.
 PREFIX_PURPOSES: tuple[tuple[str, str], ...] = (
@@ -465,6 +468,7 @@ PREFIX_PURPOSES: tuple[tuple[str, str], ...] = (
         "The chapter list of what is playing. Enter jumps straight to the highlighted chapter.",
     ),
 )
+PREFIX_PURPOSES = (*PREFIX_PURPOSES, *LINEUP_PREFIX_PURPOSES)
 
 #: The honest fallback for a surface the catalogue does not know. The gate
 #: keeps this from being reachable from any surface in the tree; it exists so

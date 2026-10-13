@@ -649,6 +649,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Shift+Z | Media: Sleep Timer... | `media.sleep_timer` |
 | Ctrl+Space | Pause | `radio.pause` |
 | Ctrl+T | What's Playing - Review and Copy... | `radio.whats_playing_details` |
+| Ctrl+U | Internet Radio: Lineups... | `radio.lineups` |
 | Ctrl+Up | Radio: Volume Up | `radio.volume_up` |
 | Ctrl+Z | Undo Last Action | `app.undo_last` |
 | F5 | Refresh the ACB Media Schedule | `radio.refresh_calendar` |
@@ -697,6 +698,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Shift+Y | Copy to folder | `podcasts.copy_to_folder` |
 | Ctrl+Shift+Z | Undo History... | `app.undo_history` |
 | Ctrl+T | Say now playing | `podcasts.say_now_playing` |
+| Ctrl+U | Podcasts: Lineups... | `podcasts.lineups` |
 | Ctrl+Z | Undo Last Action | `app.undo_last` |
 | F5 | Refresh feed | `podcasts.refresh_feed` |
 | F9 | Repeat Last Result | `app.repeat_last_result` |
