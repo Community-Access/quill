@@ -51,6 +51,7 @@ from quill.core.windows_dictation.echo_guard import EchoGuard
 from quill.core.windows_dictation.editing import EditingMixin
 from quill.core.windows_dictation.history import DictatedPhrase, PhraseHistory
 from quill.core.windows_dictation.live import LiveMixin
+from quill.core.windows_dictation.microphone_owner import MicrophoneGate, MicrophoneOwnerMixin
 from quill.core.windows_dictation.options import clean_phrase, flow_on
 from quill.core.windows_dictation.parser import (
     ParsedPhrase,
@@ -71,13 +72,13 @@ from quill.core.windows_dictation.preferences import (
     DictationPreferences,
 )
 from quill.core.windows_dictation.readback import spoken_marks
-from quill.core.windows_dictation.reader_gate import started_gate
 from quill.core.windows_dictation.resilience import ResilienceMixin, engine_failure_message
 from quill.core.windows_dictation.target_hold import TargetHoldMixin
 from quill.core.windows_dictation.transcript import TranscriptMixin
 from quill.core.windows_dictation.vocabulary import Command
 from quill.core.windows_dictation.voice_commands import VoiceCommandsMixin
 from quill.core.windows_dictation.wake import is_stop_phrase, match_wake, wake_words
+from quill.core.windows_dictation.working_tick import WorkingTickMixin
 
 logger = logging.getLogger(__name__)
 
@@ -128,8 +129,12 @@ class DictationController(
     VoiceCommandsMixin,
     TranscriptMixin,
     TargetHoldMixin,
+    MicrophoneOwnerMixin,
+    WorkingTickMixin,
 ):
-    """One app's dictation session: one microphone, one document at a time."""
+    """One app's dictation session: one microphone, one document at a time.
+
+    *microphone* is the family's microphone lock (microphone_owner.py)."""
 
     def __init__(
         self,
@@ -138,11 +143,13 @@ class DictationController(
         document: DocumentPort,
         feedback: FeedbackPort,
         preferences: Callable[[], DictationPreferences],
+        microphone: MicrophoneGate | None = None,
     ) -> None:
         self._make_recognizer = recognizer
         self._document = document
         self._feedback = feedback
         self._preferences = preferences
+        self._microphone = microphone
         self._recognizer: RecognizerPort | None = None
         self._state = DictationState.OFF
         self.spelling = False
@@ -158,6 +165,7 @@ class DictationController(
         self._init_voice_commands()  # voice_commands.py: modes, targets, the library
         self._init_transcript()  # transcript.py: live transcripts
         self._init_target_hold()  # target_hold.py: paused while the field cannot be written
+        self._init_working()  # working_tick.py: the tick while a phrase is recognised
         #: Called when the wake phrase is heard, before dictation starts: the
         #: host points the controller at whichever document is in front now.
         self.on_wake: Callable[[], None] | None = None
@@ -227,6 +235,7 @@ class DictationController(
         self.history.clear()
         self.spelling = False
         self._restarted = False
+        self._working_new_session()  # working_tick.py: the sentence is said once a session
         self._set_state(DictationState.LISTENING)
         self._announce_edge(Moment.ON, message, preferences)
 
@@ -279,12 +288,14 @@ class DictationController(
     def _open(
         self, preferences: DictationPreferences, *, quiet: bool = False, report: bool = True
     ) -> bool:
+        if self._microphone_refused(preferences, quiet=quiet, report=report):
+            return False  # another program is listening (microphone_owner.py)
         self._set_state(DictationState.STARTING)
         try:
             recognizer = self._make_recognizer(self, preferences)
             recognizer.start(preferences.microphone)
         except DictationStartError as error:
-            self._set_state(DictationState.OFF)
+            self._not_opened()
             if not report:
                 return False
             if not quiet:
@@ -295,7 +306,7 @@ class DictationController(
                 )
             return False
         except Exception as error:  # noqa: BLE001 - never crash the editor
-            self._set_state(DictationState.OFF)
+            self._not_opened()
             self._fail(f"Dictation could not start: {error}", preferences)
             return False
         self._recognizer = recognizer
@@ -306,25 +317,6 @@ class DictationController(
         return True
 
     # -- recogniser events ------------------------------------------------ #
-
-    def _reader_was_talking(self, started: float | None) -> bool:
-        """For an engine that hears the microphone itself (reader_gate.py): was
-        the screen reader talking for most of this phrase? The built-in models
-        never hear it -- their audio is silenced at the source -- and say so."""
-        gate = started_gate()
-        if gate is None or started is None or not getattr(self._recognizer, "hears_reader", True):
-            return False
-        return gate.mostly_reader(started)
-
-    def _reader_silenced(self) -> bool:
-        """True when the screen reader cannot reach this engine at all: the
-        gate is capturing it and the built-in model never hears it then. Its
-        echo cannot be heard, so the same words said again are always meant
-        (echo_guard.py is for every other case)."""
-        gate = started_gate()
-        if gate is None or not gate.readers:
-            return False
-        return not getattr(self._recognizer, "hears_reader", True)
 
     def on_speech_started(self) -> None:
         self._heard_from = self._clock()
@@ -548,12 +540,13 @@ class DictationController(
 
     def _close_recognizer(self) -> None:
         recognizer, self._recognizer = self._recognizer, None
-        if recognizer is None:
-            return
-        try:
-            recognizer.stop()
-        except Exception:  # noqa: BLE001 - it is being thrown away either way
-            pass
+        self._working_done()  # working_tick.py: no tick once nothing is listening
+        if recognizer is not None:
+            try:
+                recognizer.stop()
+            except Exception:  # noqa: BLE001 - it is being thrown away either way
+                pass
+        self._release_microphone()  # every path out of a session (microphone_owner.py)
 
     def _abandon(self, message: str) -> None:
         """End the session because something went wrong, and say what."""

@@ -29,6 +29,7 @@ from typing import Any
 
 __all__ = [
     "SCHEMA_VERSION",
+    "TRANSCRIBE_DICTATION_DEFAULTS",
     "TranscribeSettings",
     "load_settings",
     "save_settings",
@@ -43,6 +44,15 @@ SCHEMA_VERSION = 1
 #: The start and stop key a new install has. Checked against every family
 #: app's keys by family_chords.default_system_wide_keys.
 DEFAULT_DICTATION_HOTKEY = "Alt+Shift+\\"
+#: Where QUILL Transcribe's shared dictation settings start from a different
+#: default than the editors', each with its reason. A value the person saved
+#: always wins (the dictation window writes every field back).
+TRANSCRIBE_DICTATION_DEFAULTS: dict[str, Any] = {
+    # The working tick (D-17): QUILL Transcribe is where large models are used
+    # and where nothing on screen shows the wait, so it ticks by default; the
+    # editors' status bar already says "hearing you".
+    "windows_dictation_working_tick": True,
+}
 
 
 @dataclass(slots=True)

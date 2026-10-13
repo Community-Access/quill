@@ -1,6 +1,10 @@
 """QUILL Transcribe's menu bar and its tray menu.
 
-Every enabled item shows its key (the family's menu rule); the tray menu, which
+Every enabled item shows its key (the family's menu rule). A dictation command
+the editors have too shows the editors' chord -- Ctrl+F11, Alt+Shift+F6,
+Alt+Shift+F10, Ctrl+Shift+F11, Shift+F5 -- read from the keymap, and QUILL
+Transcribe 1.0's own key for it still works (:mod:`quill.core.transcribe.parity`).
+The tray menu, which
 has no keys of its own, gives every row a distinct access letter instead, so a
 screen-reader user can reach any row with one letter. The tray menu's commands
 are bound on the menu itself, not on the frame: a tray popup routes its
@@ -17,6 +21,8 @@ from collections.abc import Callable
 from typing import Any
 
 import wx
+
+from quill.core.transcribe.parity import ALIASES, SHARED_COMMANDS, chord
 
 __all__ = ["build_menu_bar", "build_tray_menu", "start_stop_label"]
 
@@ -49,8 +55,17 @@ def build_menu_bar(host: Any, *, title: str, version: str) -> None:
     """File, Dictation, Model, Options, QuillVille, Help."""
     bar = wx.MenuBar()
 
+    shared: dict[str, Any] = {}  # method -> menu id, for the 1.0 keys (rule 5)
+
+    def _shared(menu: Any, label: str, command_id: str) -> Any:
+        """A command the editors have too, on the editors' chord (rule 2)."""
+        method = SHARED_COMMANDS[command_id]
+        item_id = _add(host, menu, f"{label}\t{chord(command_id)}", getattr(host, method))
+        shared[method] = item_id
+        return item_id
+
     file_menu = wx.Menu()
-    _add(host, file_menu, "Transcribe a &Recording...\tCtrl+O", host.transcribe_a_recording)
+    _shared(file_menu, "Transcribe a &Recording...", "tools.windows_dictation_transcribe_file")
     _add(host, file_menu, "&Notifications...\tCtrl+Shift+N", host.open_dictation_notifications)
     file_menu.AppendSeparator()
     _add(host, file_menu, "Minimize to &Tray\tCtrl+W", host.toggle_window_to_tray)
@@ -60,8 +75,8 @@ def build_menu_bar(host: Any, *, title: str, version: str) -> None:
     bar.Append(file_menu, "&File")
 
     dictation = wx.Menu()
-    host._start_item_id = _add(
-        host, dictation, f"{start_stop_label(host)}\tCtrl+D", host.start_or_stop_from_here
+    host._start_item_id = _shared(
+        dictation, start_stop_label(host), "tools.windows_dictation_toggle"
     )
     host._resume_item_id = _add(host, dictation, "&Resume\tCtrl+R", host.resume_dictation)
     host._here_item_id = _add(
@@ -77,14 +92,19 @@ def build_menu_bar(host: Any, *, title: str, version: str) -> None:
         "Use the &Built-in Model This Time\tCtrl+B",
         host.use_built_in_model_once,
     )
-    _add(host, dictation, "Dictation &Commands...\tCtrl+Shift+C", host.show_dictation_commands)
+    _shared(dictation, "Recent &Phrases...", "tools.windows_dictation_recent")
+    _shared(dictation, "Switch Dictation &Language", "tools.windows_dictation_switch_language")
+    _shared(dictation, "My &Words and Phrases...", "tools.windows_dictation_words")
+    host._commands_item_id = _add(
+        host, dictation, "Dictation &Commands...\tCtrl+Shift+C", host.show_dictation_commands
+    )
     bar.Append(dictation, "&Dictation")
 
     model = wx.Menu()
     _add(host, model, "Choose &Model...\tCtrl+M", host.choose_model)
     _add(host, model, "Choose Micro&phone...\tCtrl+Shift+M", host.choose_microphone)
     _add(host, model, "Model &Library...\tCtrl+L", host.open_model_library)
-    _add(host, model, "Dictation &Settings...\tCtrl+,", host.edit_dictation_settings)
+    _shared(model, "Dictation &Settings...", "tools.windows_dictation_settings")
     bar.Append(model, "&Model")
 
     options = wx.Menu()
@@ -134,7 +154,26 @@ def build_menu_bar(host: Any, *, title: str, version: str) -> None:
     bar.Append(help_menu, "&Help")
 
     host._windows.install(host.frame, bar)
+    _install_aliases(host, shared)
     host.frame.SetMenuBar(bar)
+
+
+def _install_aliases(host: Any, shared: dict[str, Any]) -> None:
+    """QUILL Transcribe 1.0's keys (Ctrl+D, Ctrl+, and Ctrl+O), still answered.
+
+    A menu row shows one key, so the second one goes in the frame's accelerator
+    table, beside the Window menu's own rows (a table replaces the one before
+    it, so those are folded in: ``WindowManager.accelerator_entries``).
+    """
+    entries = list(host._windows.accelerator_entries())
+    for method, key in ALIASES.items():
+        item_id = shared.get(method)
+        if item_id is None:
+            continue
+        entry = wx.AcceleratorEntry(cmd=int(item_id))
+        if entry.FromString(key):
+            entries.append(entry)
+    host.frame.SetAcceleratorTable(wx.AcceleratorTable(entries))
 
 
 def build_tray_menu(host: Any, menu: Any) -> None:

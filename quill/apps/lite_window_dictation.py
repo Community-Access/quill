@@ -1,9 +1,9 @@
-"""QUILL Lite's half of Windows Dictation: the four cues, and nothing else.
+"""QUILL Lite's half of Windows Dictation: the five cues, and nothing else.
 
 Every command, sentence and rule is the shared module's
 (:mod:`quill.ui.windows_dictation_commands`), which QUILL runs too. What is here
 is the one thing that cannot be shared: the sound audit credits an app only
-with the cues its *own* files post, so QUILL Lite names the four it plays --
+with the cues its *own* files post, so QUILL Lite names the five it plays --
 and the Sound Scheme window lists exactly those, so each can be changed or
 switched off.
 """
@@ -20,6 +20,8 @@ _LITE_DICTATION_CUES: frozenset[str] = frozenset({
     SoundEvent.WINDOWS_DICTATION_PHRASE,
     SoundEvent.WINDOWS_DICTATION_OFF,
     SoundEvent.WINDOWS_DICTATION_ERROR,
+    # The working tick (2026-10-13), off unless chosen in More Dictation Settings.
+    SoundEvent.WINDOWS_DICTATION_WORKING,
 })
 
 

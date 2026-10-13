@@ -1,4 +1,4 @@
-"""Generate the four Windows Dictation earcons in the Ink sound pack.
+"""Generate the five Windows Dictation earcons in the Ink sound pack.
 
 Standard library only, and deterministic: the WAV files are output, never
 hand-edited, so every tone can be read, changed and regenerated from the
@@ -8,8 +8,10 @@ this script would write (``tests/unit/scripts/test_dictation_sounds.py``).
 The design is the one in ``docs/design/dictation for windows only`` (PRD
 sections 23 to 27): short sine tones between 300 and 1000 Hz, fades so nothing
 clicks, peaks well below full scale, and the phrase cue -- heard hundreds of
-times an hour -- the shortest and quietest of the four, with edges slow enough
-that it is heard as a tone and never as a letter (:data:`PHRASE_ATTACK_MS`).
+times an hour -- the shortest and quietest of the four session cues, with edges
+slow enough that it is heard as a tone and never as a letter
+(:data:`PHRASE_ATTACK_MS`). The working tick (2026-10-13), which repeats every
+second while a phrase is being recognised, is shorter and quieter still.
 
 Usage::
 
@@ -59,6 +61,11 @@ def tone(freq: float, duration_ms: float, volume: float) -> list[int]:
 PHRASE_ATTACK_MS = 25.0
 PHRASE_RELEASE_MS = 60.0
 
+#: The working tick: as slow to rise as the phrase cue, and over sooner.
+WORKING_MS = 70.0
+WORKING_ATTACK_MS = 25.0
+WORKING_RELEASE_MS = 40.0
+
 
 def soft_tone(
     freq: float, duration_ms: float, volume: float, attack_ms: float, release_ms: float
@@ -98,7 +105,7 @@ def concat(*parts: list[int]) -> list[int]:
 
 
 def sounds() -> dict[str, list[int]]:
-    """File name -> samples, for all four earcons."""
+    """File name -> samples, for all five earcons."""
     return {
         # Two short ascending tones: listening.
         "windows_dictation_on.wav": concat(tone(520, 80, 0.20), silence(18), tone(760, 95, 0.20)),
@@ -112,6 +119,14 @@ def sounds() -> dict[str, list[int]]:
         # A low double pulse: needs attention. Distinct, not loud.
         "windows_dictation_error.wav": concat(
             tone(330, 85, 0.18), silence(45), tone(330, 110, 0.18)
+        ),
+        # The working tick (2026-10-13): once a second while a heard phrase is
+        # still being recognised, so the quietest and shortest of all. Low and
+        # round, with the phrase cue's slow edges, so it is a tone and never a
+        # consonant; and short, because the screen reader's gate does not
+        # listen to the microphone while QUILL itself is making a sound.
+        "windows_dictation_working.wav": soft_tone(
+            520, WORKING_MS, 0.06, WORKING_ATTACK_MS, WORKING_RELEASE_MS
         ),
     }
 

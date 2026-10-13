@@ -87,6 +87,7 @@ def commands_reference(
     stop_phrase: str = "",
     own_phrases: Iterable[tuple[str, str]] = (),
     language: str = "en",
+    external: bool = False,
 ) -> str:
     """Every phrase dictation acts on, grouped, with what each one does.
 
@@ -97,7 +98,18 @@ def commands_reference(
     published copy leaves them out. *language* ``"es"`` adds the Spanish
     punctuation words (and, in a development build that has them switched on,
     the drafted Spanish commands).
+
+    *external* (D-7, 2026-10-13) is the list for dictating into another program
+    -- QUILL Transcribe and Inkwell's Dictate Anywhere: only the commands that
+    work there (:data:`~quill.core.windows_dictation.anywhere.EXTERNAL_COMMANDS`),
+    no wake phrase, and the two limits of inserting into another program. The
+    editors' list, the default, is unchanged.
     """
+    from quill.core.windows_dictation.anywhere import EXTERNAL_COMMANDS
+
+    def works(command: object) -> bool:
+        return not external or command in EXTERNAL_COMMANDS
+
     lines: list[str] = []
 
     def heading(text: str, level: int = 2) -> None:
@@ -126,6 +138,11 @@ def commands_reference(
             "cannot disagree. In either program, say **what can I say** while "
             "dictating to open the same list."
         )
+    elif external:
+        lines.append(
+            "Everything that works while dictating into another program. Read with "
+            "the arrow keys; Escape closes."
+        )
     else:
         lines.append("Everything dictation understands. Read with the arrow keys; Escape closes.")
 
@@ -141,11 +158,28 @@ def commands_reference(
         '"literal comma" writes comma.',
         "Moonshine and Whisper add punctuation by themselves; saying it yourself "
         "always wins. With Windows speech recognition, say all of it.",
-        "Some commands take words after them: select the cat, paste clip three, "
-        "insert snippet sign off. They work only at the start of a phrase.",
+        (
+            "Some commands take words after them: paste clip three, insert snippet "
+            "sign off. They work only at the start of a phrase."
+            if external
+            else "Some commands take words after them: select the cat, paste clip three, "
+            "insert snippet sign off. They work only at the start of a phrase."
+        ),
         'The Markdown line marks -- "bullet", "numbered item", "block quote" and '
         '"heading one" to "heading six" -- count only at the start of a phrase, so '
         '"the heading two lines down" stays words.',
+        *(
+            (
+                "Nothing in the other program is read, so commands that select, find "
+                "or correct words are not listed: they work in QUILL's own documents.",
+                "A snippet's blanks are written as their names in square brackets, "
+                "like [title], and no question is asked. Where a snippet or an "
+                "abbreviation puts the cursor in the middle, the cursor stays at the "
+                "end instead.",
+            )
+            if external
+            else ()
+        ),
     ):
         lines.append(("- " + sentence) if markdown else sentence)
 
@@ -163,6 +197,8 @@ def commands_reference(
 
     groups: dict[str, list[tuple[str, str]]] = {}
     for entry in COMMAND_HELP:
+        if not works(entry.command):
+            continue
         said = " or ".join(f'"{phrase}"' for phrase in entry.phrases)
         groups.setdefault(entry.group, []).append((said, entry.description))
     for group, entries in groups.items():
@@ -173,6 +209,8 @@ def commands_reference(
 
     prefix_groups: dict[str, list[tuple[str, str]]] = {}
     for prefix in PREFIX_HELP:
+        if not works(prefix.command):
+            continue
         said = " or ".join(f'"{opening} ..."' for opening in prefix.prefixes)
         prefix_groups.setdefault(prefix.group, []).append((
             f"{said} ({prefix.argument})",
@@ -192,8 +230,12 @@ def commands_reference(
         'Say "all caps" for capitals until "no caps" or the end of the phrase.',
         'Punctuation works while spelling, with no spaces: "jay dot smith at sign '
         'example dot com". "Dot" is a full stop only here.',
-        'Say "spell" and the letters to spell one word without starting spelling '
-        'mode, and "spell that" to spell the last phrase over again.',
+        (
+            'Say "spell" and the letters to spell one word without starting spelling mode.'
+            if external
+            else 'Say "spell" and the letters to spell one word without starting spelling '
+            'mode, and "spell that" to spell the last phrase over again.'
+        ),
         'Letter names work ("bee", "see"), and the phonetic alphabet is '
         "clearer: alpha, bravo, charlie, delta, echo, foxtrot, golf, hotel, india, "
         "juliet, kilo, lima, mike, november, oscar, papa, quebec, romeo, sierra, "
@@ -207,15 +249,23 @@ def commands_reference(
     heading("Starting and stopping by voice")
     phrase = wake_phrase or DEFAULT_WAKE_PHRASE
     stop = stop_phrase or DEFAULT_STOP_PHRASE
-    for sentence in (
-        f'With the wake phrase switched on in Dictation Settings, say "{phrase}" '
-        "to start dictation without touching the keyboard. Anything you say after "
-        "it in the same breath is written.",
-        f'Say "{stop}" on its own, after a pause, to stop dictation. '
-        '"Stop dictation" always works too. With the wake phrase on, stopping goes '
-        "back to waiting for the wake phrase.",
-        "You choose both phrases in Dictation Settings; each needs at least two words.",
-    ):
+    voice = (
+        (
+            f'Say "{stop}" on its own, after a pause, to stop dictation. '
+            '"Stop dictation" always works too.',
+        )
+        if external
+        else (
+            f'With the wake phrase switched on in Dictation Settings, say "{phrase}" '
+            "to start dictation without touching the keyboard. Anything you say after "
+            "it in the same breath is written.",
+            f'Say "{stop}" on its own, after a pause, to stop dictation. '
+            '"Stop dictation" always works too. With the wake phrase on, stopping goes '
+            "back to waiting for the wake phrase.",
+            "You choose both phrases in Dictation Settings; each needs at least two words.",
+        )
+    )
+    for sentence in voice:
         lines.append(("- " + sentence) if markdown else sentence)
 
     if language == "es":

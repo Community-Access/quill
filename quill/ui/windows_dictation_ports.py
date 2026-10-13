@@ -328,6 +328,12 @@ class HostFeedback:
         """Switch the dictation language, and save it (a choice, not a mode)."""
         self._host._dictation_set_speech_language(language)
 
+    def call_later(self, seconds: float, callback: Any) -> Any:
+        """The working tick's clock (working_tick.py). A one-shot that owns
+        itself; the controller stops it the moment the wait is over, and a late
+        one for a wait already over does nothing."""
+        return wx.CallLater(int(seconds * 1000), callback)
+
     def use_context(self, words: tuple[str, ...]) -> str:
         """Pick a saved dictation context by name; what to say about it."""
         return str(self._host._dictation_use_context_by_name(words))

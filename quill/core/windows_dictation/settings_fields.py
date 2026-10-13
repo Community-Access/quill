@@ -65,6 +65,10 @@ class DictationSettings:
     windows_dictation_readback_marks: bool = True
     windows_dictation_transcript_timestamps: bool = False
     windows_dictation_transcript_told: bool = False
+    # 2026-10-13 (D-17): a soft tick while a heard phrase is still being
+    # recognised. Off in both editors; QUILL Transcribe turns it on
+    # (quill/core/transcribe/settings.py, TRANSCRIBE_DICTATION_DEFAULTS).
+    windows_dictation_working_tick: bool = False
 
 
 def load_fields(data: Mapping[str, Any]) -> dict[str, Any]:
@@ -127,4 +131,5 @@ def load_fields(data: Mapping[str, Any]) -> dict[str, Any]:
         "windows_dictation_transcript_told": bool(
             data.get("windows_dictation_transcript_told", False)
         ),
+        "windows_dictation_working_tick": bool(data.get("windows_dictation_working_tick", False)),
     }

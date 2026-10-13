@@ -19,7 +19,8 @@ from quill.apps import transcribe_dialogs, transcribe_dictation
 from quill.apps.transcribe_commands import TranscribeCommandsMixin
 from quill.apps.transcribe_dictation import TranscribeDictationMixin, _ChosenModelOnly
 from quill.apps.transcribe_keys import TranscribeKeysMixin
-from quill.core.dictation_owner import OwnerLock
+from quill.apps.transcribe_recent import TranscribeRecentMixin
+from quill.core.dictation_owner import MicrophoneLock, OwnerLock
 from quill.core.transcribe import models
 from quill.core.transcribe.settings import TranscribeSettings, load_settings
 from quill.core.windows_dictation import (
@@ -112,7 +113,9 @@ class _Recognizer:
         pass
 
 
-class Host(TranscribeDictationMixin, TranscribeKeysMixin, TranscribeCommandsMixin):
+class Host(
+    TranscribeDictationMixin, TranscribeKeysMixin, TranscribeCommandsMixin, TranscribeRecentMixin
+):
     def __init__(self, data_dir: Path) -> None:
         self.frame = _Frame()
         self._settings = TranscribeSettings(dictation={"windows_dictation_engine": "windows"})
@@ -128,15 +131,27 @@ class Host(TranscribeDictationMixin, TranscribeKeysMixin, TranscribeCommandsMixi
         self.world = _World()
         self.feedback = _Feedback()
         self._owner_lock = OwnerLock("transcribe", folder=data_dir / "ipc")
+        # The family's folder, which the suite gives each test (tests/conftest.py),
+        # so QUILL Lite's real window below meets the same lock.
+        self._microphone = MicrophoneLock(
+            "transcribe", key=lambda: str(self._settings.dictation_hotkey or "")
+        )
         self._arm_timer = _Timer()
         inner = ExternalDocument(
             problem=lambda: "", where=lambda: self.world.field, type_text=self.world.type_text
         )
+        self.recognizers: list[_Recognizer] = []
+
+        def recognizer(_c: Any, _p: Any) -> _Recognizer:
+            self.recognizers.append(_Recognizer())
+            return self.recognizers[-1]
+
         self._dictation = DictationController(
-            recognizer=lambda _c, _p: _Recognizer(),
+            recognizer=recognizer,
             document=LockedTarget(inner, where=lambda: self.world.field),
             feedback=self.feedback,
             preferences=lambda: DictationPreferences(phrase_feedback="silent"),
+            microphone=self._microphone,
         )
 
     def _announce(self, text: str, *, force: bool = False, sound: str = "") -> None:
@@ -746,3 +761,344 @@ def test_inkwell_dictates_itself_when_transcribe_is_not_running(
     assert inkwell.started == 1
     assert not OwnerLock("transcribe").claim()  # Inkwell holds it for its session
     inkwell._anywhere_owner.release()
+
+
+# -- one microphone in the family (D-11) ------------------------------------------ #
+
+
+class _LiteRecognizer:
+    def __init__(self) -> None:
+        self.stopped = 0
+
+    def start(self, _microphone: str) -> None:
+        pass
+
+    def stop(self) -> None:
+        self.stopped += 1
+
+
+@pytest.fixture()
+def lite_dictation(lite_window, monkeypatch: pytest.MonkeyPatch):
+    """A real QUILL Lite window, dictating through the shared commands."""
+    import wx
+
+    from quill.ui import windows_dictation_commands as shared
+
+    made: list[_LiteRecognizer] = []
+
+    def make(_controller: Any, _preferences: Any) -> _LiteRecognizer:
+        made.append(_LiteRecognizer())
+        return made[-1]
+
+    monkeypatch.setattr(shared, "_make_recognizer", make)
+    monkeypatch.setattr(shared, "_controller", None)
+    monkeypatch.setattr(shared, "_host", None)
+    monkeypatch.setattr(shared, "_watched_tops", set())
+    win = lite_window("")
+    monkeypatch.setattr(wx.Window, "FindFocus", staticmethod(lambda: win.control))
+    yield win, made
+    if shared._controller is not None:
+        shared._controller.shut_down()
+
+
+def test_two_programs_starting_give_one_owner_and_one_recognizer(
+    host: Host, lite_dictation: Any
+) -> None:
+    """Transcribe PRD 15.2: QUILL Lite's Ctrl+F11 and QUILL Transcribe's key,
+    one after the other: one microphone, one recogniser, and the second is
+    told who has it."""
+    from quill.core.dictation_owner import microphone_holder
+
+    win, lite_made = lite_dictation
+    win.cmd_toggle_dictation()
+    assert win.dictation_active() and len(lite_made) == 1
+    host.toggle_dictation()
+    assert not host.dictation_active() and host.recognizers == []
+    assert host.said[-1] == (
+        "QUILL Lite is dictating. Press Ctrl+F11 in QUILL Lite to stop it, then try again."
+    )
+    assert microphone_holder() == "lite"
+    win.cmd_toggle_dictation()  # QUILL Lite stops, and lets go
+    host.toggle_dictation()
+    assert host.dictation_active() and len(host.recognizers) == 1
+    assert microphone_holder() == "transcribe"
+
+
+def test_ctrl_f11_while_transcribe_listens_opens_no_second_recognizer(
+    host: Host, lite_dictation: Any
+) -> None:
+    win, lite_made = lite_dictation
+    host.toggle_dictation()
+    assert host.dictation_active()
+    win.cmd_toggle_dictation()
+    assert not win.dictation_active() and lite_made == []
+    assert (
+        "QUILL Transcribe is listening. Press Alt+Shift+Backslash to stop it, then try again."
+    ) in win.announcements
+    host.toggle_dictation()  # stopped: QUILL Lite may dictate now
+    win.cmd_toggle_dictation()
+    assert win.dictation_active() and len(lite_made) == 1
+
+
+def test_arming_from_the_window_is_refused_while_an_editor_dictates(host: Host) -> None:
+    editor = MicrophoneLock("quill", key="Ctrl+F11")
+    assert editor.take() == ""
+    try:
+        host.start_or_stop_from_here()
+        assert not host.dictation_armed()
+        assert host._last_refusal == (
+            "QUILL is dictating. Press Ctrl+F11 in QUILL to stop it, then try again."
+        )
+    finally:
+        editor.release()
+
+
+def test_transcribe_lets_go_of_the_microphone_when_it_stops(host: Host) -> None:
+    host.toggle_dictation()
+    assert host._microphone.held
+    host.toggle_dictation()
+    assert not host._microphone.held
+    assert MicrophoneLock("lite").take() == ""
+
+
+def test_quill_lite_claims_its_window_as_quill_does(monkeypatch: pytest.MonkeyPatch) -> None:
+    """QUILL Transcribe and Inkwell refuse to type into a claimed window, with
+    the sentence that points to Ctrl+F11 (windows_dictation_external.py)."""
+    from quill.apps.lite_shell import QuillLiteShell
+    from quill.platform.windows import text_target
+
+    claimed: list[int] = []
+    monkeypatch.setattr(text_target, "claim_own_expansion", claimed.append)
+
+    class _Shell:
+        def GetHandle(self) -> int:  # noqa: N802
+            return 4242
+
+    QuillLiteShell._claim_own_dictation(_Shell())  # type: ignore[arg-type]
+    assert claimed == [4242]
+
+
+def test_a_claimed_window_is_refused_with_the_ctrl_f11_sentence(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from types import SimpleNamespace
+
+    from quill.platform.windows import foreground, text_target
+    from quill.ui.windows_dictation_external import foreground_problem
+
+    monkeypatch.setattr(
+        foreground,
+        "foreground_window_info",
+        lambda: SimpleNamespace(hwnd=4242, process_id=1, window_class="MDIFrame"),
+    )
+    monkeypatch.setattr(text_target, "window_handles_own_expansion", lambda hwnd: hwnd == 4242)
+    assert (
+        foreground_problem(app="QUILL Transcribe", key="start and stop key")
+        == "This is a QUILL window: press Ctrl+F11 to dictate here."
+    )
+
+
+# -- the editors' keys (D-14) ------------------------------------------------------ #
+
+
+def test_switch_language_is_kept_and_said(host: Host) -> None:
+    host.switch_dictation_language()
+    assert host._settings.dictation["windows_dictation_speech_language"] == "es"
+    assert host.said[-1] == "Español."
+    assert load_settings(host._data_dir).dictation["windows_dictation_speech_language"] == "es"
+    host.switch_dictation_language()
+    assert host._settings.dictation["windows_dictation_speech_language"] == "en"
+    assert host.said[-1] == "English."
+
+
+def test_switch_language_while_dictating_goes_through_the_controller(host: Host) -> None:
+    from quill.apps.transcribe_dictation import _Feedback as RealFeedback
+
+    host._dictation._feedback = RealFeedback(host)  # the real port: it saves the choice
+    host.toggle_dictation()
+    host.switch_dictation_language()
+    assert host._settings.dictation["windows_dictation_speech_language"] == "es"
+    assert host.dictation_active()
+
+
+def test_my_words_is_the_editors_window_over_the_same_list(
+    host: Host, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import quill.ui.dictation_words_dialog as words
+    from quill.core.speech.dictation_profile import default_profile_path
+
+    opened: list[Any] = []
+
+    class _Dialog:
+        def __init__(self, parent: Any, path: Path, *, say: Any) -> None:
+            opened.append(path)
+
+        def Destroy(self) -> None:  # noqa: N802
+            pass
+
+    monkeypatch.setattr(words, "DictationWordsDialog", _Dialog)
+    host.modal = lambda _dialog, label: opened.append(label) or 0
+    host.edit_dictation_words()
+    assert opened == [default_profile_path(), "My Words and Phrases"]
+
+
+def test_the_working_tick_is_on_by_default_here_and_off_in_the_editors(host: Host) -> None:
+    from quill.core.lite.settings import Settings as LiteSettings
+    from quill.core.settings import Settings as QuillSettings
+
+    assert host._dictation_preferences().working_tick is True
+    assert QuillSettings().windows_dictation_working_tick is False
+    assert LiteSettings().windows_dictation_working_tick is False
+    host._settings.dictation = {"windows_dictation_working_tick": False}
+    assert host._dictation_preferences().working_tick is False  # the person's choice wins
+
+
+# -- Recent Phrases (D-5 slice) and What can I say (D-7) ---------------------------- #
+
+
+class _Chosen:
+    """Stands in for RecentPhrasesDialog: answers with a phrase and a verb."""
+
+    verb = "insert"
+
+    def __init__(self, _parent: Any, phrases: list[str]) -> None:
+        self.phrases = phrases
+        self.chosen = phrases[0]
+
+    def Destroy(self) -> None:  # noqa: N802
+        pass
+
+
+@pytest.fixture()
+def recent(host: Host, monkeypatch: pytest.MonkeyPatch) -> list[Any]:
+    import quill.ui.windows_dictation_dialog as dialogs
+
+    shown: list[Any] = []
+
+    class Dialog(_Chosen):
+        def __init__(self, parent: Any, phrases: list[str]) -> None:
+            super().__init__(parent, phrases)
+            shown.append(self)
+
+    monkeypatch.setattr(dialogs, "RecentPhrasesDialog", Dialog)
+    host.modal = lambda _dialog, _label: 5100  # wx.ID_OK
+    host.world.field = ("notepad", 1, "edit-1")
+    inner = ExternalDocument(
+        problem=lambda: "", where=lambda: host.world.field, type_text=host.world.type_text
+    )
+    host._recent_target = lambda: LockedTarget(inner, where=lambda: host.world.field)  # type: ignore[method-assign]
+    return shown
+
+
+def test_recent_phrases_with_nothing_dictated_says_so(host: Host, recent: list[Any]) -> None:
+    host.show_recent_phrases()
+    assert recent == [] and host.said[-1] == "Nothing has been dictated yet this session."
+
+
+def test_recent_phrases_lists_this_runs_phrases_newest_first(host: Host, recent: list[Any]) -> None:
+    host.toggle_dictation()
+    host.hear("first one")
+    host.hear("second one")
+    host.toggle_dictation()
+    host.show_recent_phrases()
+    assert recent[0].phrases[:2] == ["second one", "First one"]  # as written
+
+
+def test_insert_again_types_into_the_program_in_front(host: Host, recent: list[Any]) -> None:
+    host.toggle_dictation()
+    host.hear("kind regards")
+    host.toggle_dictation()
+    host.world.typed.clear()
+    host.show_recent_phrases()
+    assert host.world.typed == ["edit-1:Kind regards"]
+    assert host.status[-1] == "Typed: Kind regards"
+
+
+def test_insert_again_from_the_window_waits_for_the_field(
+    host: Host, recent: list[Any], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    host.toggle_dictation()
+    host.hear("kind regards")
+    host.toggle_dictation()
+    host.world.typed.clear()
+    monkeypatch.setattr(TranscribeDictationMixin, "_front_is_own_window", lambda _s: True)
+    host.show_recent_phrases()
+    assert host.world.typed == []
+    assert host.said[-1] == "Switch to the field you want. The phrase is typed there."
+    assert not host.dictation_armed()  # waiting to type, not to start dictation
+    monkeypatch.setattr("quill.core.transcribe.arming.ready_to_start", lambda **_k: True)
+    from types import SimpleNamespace
+
+    import quill.platform.windows.foreground as foreground
+
+    monkeypatch.setattr(
+        foreground,
+        "foreground_window_info",
+        lambda: SimpleNamespace(hwnd=1, process_id=2, window_class="Notepad"),
+    )
+    host._on_arm_tick(None)
+    assert host.world.typed == ["edit-1:Kind regards"]
+
+
+def test_insert_again_is_refused_where_dictation_would_be(host: Host, recent: list[Any]) -> None:
+    host.toggle_dictation()
+    host.hear("secret")
+    host.toggle_dictation()
+    host.world.typed.clear()
+    inner = ExternalDocument(
+        problem=lambda: "That is a password field, so nothing is typed there.",
+        where=lambda: host.world.field,
+        type_text=host.world.type_text,
+    )
+    host._recent_target = lambda: LockedTarget(inner, where=lambda: host.world.field)  # type: ignore[method-assign]
+    host.show_recent_phrases()
+    assert host.world.typed == []
+    assert host.said[-1] == "That is a password field, so nothing is typed there."
+
+
+def test_copy_puts_the_phrase_on_the_clipboard(
+    host: Host, recent: list[Any], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import quill.ui.windows_dictation_tools as tools
+
+    copied: list[str] = []
+    monkeypatch.setattr(
+        tools, "copy_phrase", lambda text, say: (copied.append(text), say("Copied: " + text))
+    )
+    _Chosen.verb = "copy"
+    try:
+        host.toggle_dictation()
+        host.hear("call me")
+        host.toggle_dictation()
+        host.show_recent_phrases()
+    finally:
+        _Chosen.verb = "insert"
+    assert copied == ["Call me"] and host.said[-1] == "Copied: Call me"
+
+
+def test_what_can_i_say_while_dictating_is_spoken_and_takes_no_focus(host: Host) -> None:
+    from quill.apps.transcribe_dictation import _Feedback as RealFeedback
+
+    opened: list[str] = []
+    host.show_dictation_commands = lambda: opened.append("window")  # type: ignore[method-assign]
+    RealFeedback(host).show_commands()
+    assert opened == []
+    assert host.said[-1].startswith("In another program, you can say scratch that, new line,")
+    assert host.said[-1].endswith(
+        "For the full list, open Dictation Commands from the Dictation menu."
+    )
+
+
+def test_the_full_list_is_what_works_there_with_your_own_phrases(
+    host: Host, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    from types import SimpleNamespace
+
+    import quill.core.windows_dictation.profile as profile
+
+    monkeypatch.setattr(
+        profile, "load", lambda _path: SimpleNamespace(replacements=[("my address", "1 Main St")])
+    )
+    text = host._external_reference()
+    assert "my address: 1 Main St" in text
+    assert '"select that"' not in text and '"insert snippet ..."' in text

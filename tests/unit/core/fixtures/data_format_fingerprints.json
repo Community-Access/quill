@@ -384,6 +384,7 @@
             "windows_dictation_readback_marks": "bool",
             "windows_dictation_transcript_timestamps": "bool",
             "windows_dictation_transcript_told": "bool",
+            "windows_dictation_working_tick": "bool",
             "theme": "str",
             "font_name": "str",
             "font_size": "int",
@@ -456,8 +457,8 @@
         },
         "constant:quill.core.lite.settings:SCHEMA": "1"
       },
-      "classification": "version bumped",
-      "note": "Added optional podcast folder-copy metadata and Lite startup-folder preference; older readers ignore these fields."
+      "classification": "additive, compatible",
+      "note": "one optional dictation field, windows_dictation_working_tick (the working tick, 2026-10-13); older readers ignore it and it defaults off"
     },
     "quill.keymap": {
       "current": 1,
@@ -500,6 +501,7 @@
             "windows_dictation_readback_marks": "bool",
             "windows_dictation_transcript_timestamps": "bool",
             "windows_dictation_transcript_told": "bool",
+            "windows_dictation_working_tick": "bool",
             "theme": "str",
             "keyboard_pack": "str",
             "soft_wrap": "bool",
@@ -885,6 +887,7 @@
           "windows_dictation_readback_marks": "_ungrouped",
           "windows_dictation_transcript_timestamps": "_ungrouped",
           "windows_dictation_transcript_told": "_ungrouped",
+          "windows_dictation_working_tick": "_ungrouped",
           "theme": "general",
           "keyboard_pack": "_ungrouped",
           "soft_wrap": "editing",
@@ -1244,7 +1247,7 @@
         "constant:quill.core.settings_migration:SETTINGS_SCHEMA_VERSION": "2"
       },
       "classification": "additive, compatible",
-      "note": "three optional dictation fields (read-back marks, transcript time stamps, the once-only transcript sentence); older builds ignore them and every one defaults"
+      "note": "one optional dictation field, windows_dictation_working_tick (the working tick, 2026-10-13); older builds ignore it and it defaults off"
     },
     "radio.favorites": {
       "current": 1,

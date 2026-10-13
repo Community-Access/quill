@@ -12,6 +12,15 @@ All side effects — opening the microphone, saving recovery audio, running
 Whisper, inserting text, playing earcons/announcements — are delegated to an
 injected :class:`DictationServices` bundle so the controller is deterministic and
 unit-testable with no microphone, no Whisper, and no ``wx``.
+
+**One microphone in the family** (D-11, 2026-10-13). The optional *microphone*
+is the family's :class:`~quill.core.dictation_owner.MicrophoneLock`, the same
+one QUILL's Ctrl+F11, QUILL Lite, QUILL Transcribe and Inkwell take. It is taken
+before capture starts and let go the moment capture ends -- stopped, discarded,
+failed to start, or the session failed -- so it is held only while the
+microphone is open, never during transcription. A start while another program
+holds it is refused with that program's name, through the services'
+``microphone_busy(sentence)`` when they have one.
 """
 
 from __future__ import annotations
@@ -21,7 +30,7 @@ import threading
 from dataclasses import dataclass
 from enum import Enum, auto
 from pathlib import Path
-from typing import Protocol
+from typing import Any, Protocol
 
 from quill.core.speech.dictation.insertion import normalize_for_insertion
 from quill.core.speech.dictation.refine import (
@@ -127,8 +136,11 @@ class DictationController:
         self,
         services: DictationServices,
         config: DictationConfig | None = None,
+        *,
+        microphone: Any = None,
     ) -> None:
         self._services = services
+        self._microphone = microphone  # dictation_owner.MicrophoneLock, or None
         self._config = config if config is not None else DictationConfig()
         self._state = DictationState.IDLE
         self._session: DictationSession | None = None
@@ -364,6 +376,16 @@ class DictationController:
             self._services.feedback(FeedbackEvent.MIC_UNAVAILABLE, None)
             self._set_state(DictationState.IDLE)
             return
+        refusal = self._take_microphone()
+        if refusal:
+            # Another program is listening: one microphone in the family (D-11).
+            busy = getattr(self._services, "microphone_busy", None)
+            if callable(busy):
+                self._safe(lambda: busy(refusal), "microphone_busy")
+            else:
+                self._services.feedback(FeedbackEvent.MIC_UNAVAILABLE, None)
+            self._set_state(DictationState.IDLE)
+            return
         session = DictationSession(mode=mode, context=context)
         session.started_at = self._services.now()
         self._session = session
@@ -372,6 +394,7 @@ class DictationController:
             self._services.start_capture(session)
         except Exception as exc:  # noqa: BLE001 - any capture failure is non-fatal
             logger.warning("dictation: could not start capture: %s", exc)
+            self.release_microphone()
             self._services.feedback(FeedbackEvent.MIC_UNAVAILABLE, session)
             self._session = None
             self._set_state(DictationState.IDLE)
@@ -398,6 +421,7 @@ class DictationController:
         self._set_state(DictationState.STOPPING)
         session.stopped_at = self._services.now()
         wav = self._safe(lambda: self._services.stop_capture(session), "stop_capture", default=None)
+        self.release_microphone()  # closed: transcription does not need it
         # Stop tone only after capture has ended so it cannot enter the recording.
         self._services.feedback(stop_event, session)
         self._set_state(DictationState.SAVING_AUDIO)
@@ -417,15 +441,33 @@ class DictationController:
         logger.info("dictation: discarding session (%s)", reason)
         if session is not None:
             self._safe(lambda: self._services.discard_capture(session), "discard_capture")
+        self.release_microphone()
         self._set_state(DictationState.CANCELLED)
         if session is not None:
             self._services.feedback(FeedbackEvent.CANCELLED, session)
         self._complete(DictationState.CANCELLED)
 
     def _complete(self, terminal: DictationState) -> None:
+        self.release_microphone()
         self._set_state(terminal)
         self._session = None
         self._set_state(DictationState.IDLE)
+
+    def _take_microphone(self) -> str:
+        """``""`` when this session may open the microphone, else the refusal."""
+        gate = self._microphone
+        if gate is None:
+            return ""
+        try:
+            return str(gate.take())
+        except Exception:  # noqa: BLE001 - a lock that cannot be asked never stops dictation
+            return ""
+
+    def release_microphone(self) -> None:
+        """Let go of the family's microphone lock (also the window closing)."""
+        gate = self._microphone
+        if gate is not None:
+            self._safe(gate.release, "release microphone")
 
     def _idle_after_review(self) -> None:
         # The transcript is held for the user's review UI; the controller itself
@@ -436,6 +478,7 @@ class DictationController:
 
     def _fail(self, error: str) -> None:
         logger.warning("dictation: session failed: %s", error)
+        self.release_microphone()
         self._set_state(DictationState.FAILED)
         # Audio is preserved in recovery; surface for review rather than losing it.
         self._set_state(DictationState.RECOVERING)

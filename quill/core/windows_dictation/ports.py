@@ -10,7 +10,9 @@ feedback channels -- so the whole machine runs in a unit test against fakes.
 Optional extras a port may also offer (looked up with ``getattr``, so a fake
 need not have them): the document's ``anchor`` family (live.py), the
 feedback's ``preview``, ``say_quietly``, ``phrase_written``, ``library``,
-``set_speech_language`` and ``use_context`` (voice_commands.py).
+``set_speech_language`` and ``use_context`` (voice_commands.py), and
+``call_later(seconds, callback)`` (working_tick.py), which runs *callback* on
+the UI thread later and returns something with ``Stop()``.
 
 wx-free.
 """
@@ -35,12 +37,14 @@ class DictationState(StrEnum):
 
 
 class Moment(StrEnum):
-    """The four moments dictation has a sound for."""
+    """The moments dictation has a sound for. WORKING is the soft tick while a
+    heard phrase takes more than a second to recognise (working_tick.py)."""
 
     ON = "on"
     PHRASE = "phrase"
     OFF = "off"
     ERROR = "error"
+    WORKING = "working"
 
 
 class RecognizerPort(Protocol):

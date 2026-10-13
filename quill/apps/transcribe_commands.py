@@ -146,6 +146,69 @@ class TranscribeCommandsMixin:
         else:
             self._set_status("Dictation settings saved.")  # type: ignore[attr-defined]
 
+    def edit_dictation_words(self) -> None:
+        """My Words and Phrases: the editors' window, over the same word list
+        (``dictation.md`` in the family's data folder) that dictation here uses."""
+        from quill.core.speech.dictation_profile import default_profile_path
+        from quill.ui.dictation_words_dialog import DictationWordsDialog
+
+        dialog = DictationWordsDialog(
+            self.frame,
+            default_profile_path(),
+            say=self._announce,  # type: ignore[attr-defined]
+        )
+        try:
+            self._show_modal_dialog(dialog, "My Words and Phrases")  # type: ignore[attr-defined]
+        finally:
+            dialog.Destroy()
+
+    # -- What can I say (D-7) ------------------------------------------------------- #
+
+    def _external_reference(self) -> str:
+        """Exactly what works in another program, with the person's own phrases
+        (D-7): the editors' list leaves out nothing; this one leaves out what
+        QUILL Transcribe refuses."""
+        from quill.core.speech.dictation_profile import default_profile_path
+        from quill.core.windows_dictation.profile import load
+        from quill.core.windows_dictation.reference import commands_reference
+
+        preferences = self._dictation_preferences()  # type: ignore[attr-defined]
+        try:
+            own = tuple(load(default_profile_path()).replacements)
+        except Exception:  # noqa: BLE001 - the built-in list is still worth showing
+            own = ()
+        return commands_reference(
+            external=True,
+            dash=preferences.dash,
+            stop_phrase=preferences.stop_phrase,
+            own_phrases=own,
+            language=preferences.speech_language,
+        )
+
+    def spoken_commands_summary(self) -> str:
+        """Five commands, and where the full list is, by its key as bound now."""
+        from quill.core.windows_dictation.anywhere import spoken_summary
+
+        key = ""
+        item_id = getattr(self, "_commands_item_id", None)
+        menu_bar = self.frame.GetMenuBar() if item_id is not None else None
+        item = menu_bar.FindItemById(int(item_id)) if menu_bar is not None else None
+        if item is not None:
+            key = str(item.GetItemLabel()).partition(chr(9))[2].strip()  # after the tab
+        where = f", {key}" if key else ""
+        return spoken_summary(
+            f"For the full list, open Dictation Commands from the Dictation menu{where}."
+        )
+
+    def show_dictation_commands(self) -> None:
+        from quill.ui.dictation_lists_dialog import DictationCommandsDialog
+
+        dialog = DictationCommandsDialog(self.frame, self._external_reference())
+        try:
+            self._show_modal_dialog(dialog, "Dictation Commands")  # type: ignore[attr-defined]
+        finally:
+            dialog.Destroy()
+
     # -- setup ---------------------------------------------------------------------- #
 
     def _test_microphone(self, microphone: str, engine: str, show: Any) -> None:

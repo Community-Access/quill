@@ -7084,6 +7084,21 @@ the read-back** in **More Dictation Settings**. To choose a tone only, the
 words only, both or neither, use **What you hear after each phrase** in
 Dictation Settings.
 
+**While a phrase is still being worked on.** With a large model, such as one of
+the bigger Whisper models, there can be a few seconds between your pause and
+the text. Turn on **Tick while a phrase is being worked on** in **More
+Dictation Settings** and a soft tick plays once a second while you wait. There
+is no tick for a phrase that arrives within a second. The first time in a
+session that a phrase takes four seconds, you also hear "Still working on that
+phrase." The ticks stop as soon as the text arrives, or if recognition fails.
+While a tick plays, the microphone is not listened to for a moment, as with
+every QUILL sound, so the tick is never written as speech. If your sound scheme
+has no tick sound, you hear the sentence at four seconds instead, each time.
+**What you hear after each phrase** decides it too: set to nothing, there is no
+tick and no sentence; set to words only, there is no tick, and the sentence is
+said each time a phrase takes four seconds. It is off by default in QUILL and
+QUILL Lite, and on in QUILL Transcribe.
+
 ##### Letters, numbers and symbols
 
 Most of the time you just talk and the engine writes words. For the moments
@@ -7380,6 +7395,7 @@ you change here is saved when you press OK in Dictation Settings.
 | OpenAI speech model | The model OpenAI dictation uses, from OpenAI's own list | The newest |
 | My Dictation Instructions (button) | Opens the file Tidy Dictated Text follows | (a button) |
 | Say punctuation marks in the read-back (`Alt+S`) | Reads "comma", "period" and the other marks by name after each phrase; see "What you hear" | On |
+| Tick while a phrase is being worked on (`Alt+R`) | A soft tick once a second while a phrase takes more than a second to turn into text; see "What you hear" | Off (on in QUILL Transcribe) |
 | Time stamps in live transcripts (`Alt+T`) | Starts each paragraph of a live transcript with the time, like [10:42]; see "Live transcripts" | Off |
 | Dictate in Other Programs... (button, `Alt+O`) | Saves your settings, hands them to Quill Inkwell and starts it; see "Dictating into other programs" | (a button) |
 
@@ -7387,8 +7403,8 @@ In settings files these are `windows_dictation_hold_to_talk`,
 `windows_dictation_preview`, `windows_dictation_ai_send`,
 `windows_dictation_ai_pause`, `windows_dictation_ai_remove_fillers`,
 `windows_dictation_ai_auto_punctuation`, `windows_dictation_openai_consent`,
-`windows_dictation_openai_model`, `windows_dictation_readback_marks` and
-`windows_dictation_transcript_timestamps`.
+`windows_dictation_openai_model`, `windows_dictation_readback_marks`,
+`windows_dictation_working_tick` and `windows_dictation_transcript_timestamps`.
 
 A failure is always spoken, whatever these settings say. If the read-back
 plays through speakers, the microphone can hear it, so use headphones or choose
@@ -7882,9 +7898,16 @@ do in QUILL: punctuation, spelling, "spell that", "caps on", "no space on",
 switching to Spanish, and "scratch that". "Scratch that" works by pressing
 Backspace for you, so it only works while the same window still has the focus.
 
+Your snippets, abbreviations and clips work there too, because they only
+insert: "insert snippet" and its name, "insert abbreviation" and its name, and
+"paste clip" and a number. Each is typed as one phrase, so "scratch that" takes
+all of it back. A snippet's blanks are typed as their names in square
+brackets, like [title], with no questions, and the cursor stays at the end.
+
 Anything that needs to read what is already in the other program cannot work
-there: "select", "go to", "correct", clips and snippets. If you say one of
-those, you are told "That works in QUILL's own documents" and nothing happens.
+there: "select", "go to", "correct", "copy all" and "show clips". If you say
+one of those, you are told "That works in QUILL's own documents" and nothing
+happens. "What can I say" there lists only what works in another program.
 
 Out of respect for your privacy and your other programs, Dictate Anywhere
 will not type into a password box, into a program running as administrator
@@ -7898,6 +7921,22 @@ dictation settings: in Inkwell, **Dictation > Dictation Settings...**
 Dictate Anywhere** (`Ctrl+D`) turns it on and off from the menu. Inkwell uses
 the same My Words and Phrases file as QUILL, so the names you taught QUILL come
 out right everywhere. Dictate Anywhere is off in Safe Mode.
+
+**One microphone at a time.** QUILL, QUILL Lite, QUILL Transcribe and Quill
+Inkwell never listen at once, so the same words are never written twice. The
+microphone belongs to whichever started dictating first, until it stops. If
+QUILL Transcribe is listening when you press `Ctrl+F11`, QUILL does not open a
+second microphone and names its key, for example "QUILL Transcribe is
+listening. Press Alt+Shift+Backslash to stop it, then try again." If QUILL Lite
+is dictating, you hear "QUILL Lite is dictating. Press Ctrl+F11 in QUILL Lite
+to stop it, then try again." The other programs say the same about QUILL, with
+the key that stops it. Locked Dictation (`Ctrl+F9`) shares the microphone too:
+it is refused the same way while another program listens, and while it records,
+`Ctrl+F11` says "QUILL is already dictating. Press Ctrl+F9 to stop it, then try
+again." QUILL Transcribe waiting
+in the tray does not hold the microphone, so `Ctrl+F11` works as usual. The
+microphone is let go when dictation stops, when it stops because something went
+wrong, when you close QUILL and if QUILL ever closes unexpectedly.
 
 ##### Dictation Context for This Document
 

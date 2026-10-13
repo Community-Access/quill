@@ -5348,6 +5348,12 @@ its punctuation by name: Hello comma world period. That way you hear
 whether the comma or full stop went in, whatever your screen reader’s
 punctuation level is. The status bar and a braille display always show
 the real marks. On by default.</li>
+<li><code>self.working_tick</code>: When a phrase takes more than a
+second to turn into text after you pause, play a soft tick every second
+until it arrives. The first time a phrase takes four seconds, dictation
+also says Still working on that phrase. While a tick plays the
+microphone is not listened to, as with every QUILL sound. Off by default
+in QUILL and QUILL Lite, on in QUILL Transcribe.</li>
 <li><code>self.timestamps</code>: In a live transcript, start each new
 paragraph with the time, like 10:42 in square brackets, so you can find
 a moment later. A new paragraph starts when the speaker pauses for four

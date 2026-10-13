@@ -49,6 +49,27 @@ def test_the_defaults_and_every_choice_come_back_under_the_settings_names(wx_app
         dialog.Destroy()
 
 
+def test_the_working_tick_is_a_choice_here_off_unless_saved_on(wx_app) -> None:
+    """D-17: the editors default it off; QUILL Transcribe's settings say on."""
+    dialog, _said = _dialog()
+    try:
+        assert dialog.values()["windows_dictation_working_tick"] is False
+        dialog.working_tick.SetValue(True)
+        assert dialog.values()["windows_dictation_working_tick"] is True
+    finally:
+        dialog.Destroy()
+    from quill.core.transcribe.settings import TRANSCRIBE_DICTATION_DEFAULTS
+    from quill.core.windows_dictation.anywhere import settings_from
+    from quill.ui.dictation_more_dialog import MoreDictationDialog
+
+    transcribe = settings_from(dict(TRANSCRIBE_DICTATION_DEFAULTS))
+    dialog = MoreDictationDialog(None, transcribe, None, load_models=False)
+    try:
+        assert dialog.working_tick.GetValue() is True
+    finally:
+        dialog.Destroy()
+
+
 def test_the_newest_model_is_preselected_from_openais_list(wx_app) -> None:
     dialog, said = _dialog()
     try:

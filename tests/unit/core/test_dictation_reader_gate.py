@@ -62,7 +62,7 @@ def test_the_controller_drops_what_the_reader_said(monkeypatch) -> None:
 
     clock = _Clock()
     gate = ReaderGate(clock)
-    monkeypatch.setattr("quill.core.windows_dictation.controller.started_gate", lambda: gate)
+    monkeypatch.setattr("quill.core.windows_dictation.microphone_owner.started_gate", lambda: gate)
     controller, _r, document, _f = _controller()
     controller._clock = clock
     controller.start()

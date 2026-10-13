@@ -138,6 +138,7 @@
     "windows_dictation_off": "windows_dictation_off.wav",
     "windows_dictation_on": "windows_dictation_on.wav",
     "windows_dictation_phrase": "windows_dictation_phrase.wav",
+    "windows_dictation_working": "windows_dictation_working.wav",
     "word_corrected": "word_corrected.wav"
   }
 }

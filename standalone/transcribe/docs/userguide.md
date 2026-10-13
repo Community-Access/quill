@@ -120,6 +120,23 @@ You hear a tone when dictation starts and stops, and after each phrase. Your
 screen reader already reads what is typed, so QUILL Transcribe does not read the
 words back unless you ask it to in **Dictation Settings**.
 
+With a large model there can be a few seconds between your pause and the text.
+So that the wait is not silent, QUILL Transcribe plays a soft tick once a second
+while a phrase is still being worked on. There is no tick for a phrase that
+arrives within a second. The first time in a session that a phrase takes four
+seconds, you also hear "Still working on that phrase." The ticks stop as soon as
+the text arrives, or if recognition fails. While a tick plays, the microphone is
+not listened to for a moment, as with every QUILL sound, so the tick is never
+typed as speech. To turn the tick off, open **Dictation Settings**, choose
+**More Dictation Settings**, and clear **Tick while a phrase is being worked
+on**. It is on by default here and off in QUILL and QUILL Lite.
+
+**What you hear after each phrase** in Dictation Settings decides the tick
+too. Set to nothing, there is no tick and no sentence. Set to words only, there
+is no tick; you hear "Still working on that phrase." when a phrase has taken
+four seconds, each time that happens. If your sound pack has no tick sound, you
+hear the sentence at four seconds instead of the ticks, each time.
+
 It speaks when something happens that your screen reader cannot tell you: that
 dictation paused, that it could not start and why, that a phrase may be
 incomplete.
@@ -156,8 +173,9 @@ QUILL Transcribe refuses, with a sentence saying why, when:
 - the field is a password field;
 - the program is running as administrator and QUILL Transcribe is not, because
   Windows does not allow it;
-- the focus is in QUILL Transcribe itself, or in a QUILL window (in QUILL, press
-  Ctrl+F11 to dictate into the document instead);
+- the focus is in QUILL Transcribe itself, or in a QUILL or QUILL Lite window.
+  You hear "This is a QUILL window: press Ctrl+F11 to dictate here." Both
+  editors dictate into their own documents with Ctrl+F11;
 - the chosen model or microphone is not available.
 
 If Windows does not take all of a phrase, QUILL Transcribe stops and says part
@@ -175,12 +193,33 @@ These work in any program:
 - capitals and spacing: "caps on", "all caps on", "no space on" and their "off" forms
 - "switch to Spanish" and "switch to English"
 - punctuation and layout: "comma", "period", "new line", "new paragraph" and the rest
-- "what can I say" for the list of commands
+- your snippets, abbreviations and clips: "insert snippet" and the snippet's
+  name, "insert abbreviation" and the abbreviation, "paste clip" and a number
+  from one to twelve. They come from the same lists QUILL uses, and are typed
+  as one phrase, so "scratch that" takes all of it back
+- "what can I say" for a short spoken answer
 
-Commands that need to read the text, such as "select that" or "correct that",
-only work in QUILL's own documents. In another program you hear "That works in
-QUILL's own documents" and nothing changes. The full list is in **Dictation
-Commands** (Ctrl+Shift+C).
+Two limits on snippets and abbreviations here. A snippet's blanks are typed as
+their names in square brackets, like [title], and you are not asked to fill
+them in. And where a snippet or an abbreviation would put the cursor in the
+middle, the cursor stays at the end, because QUILL Transcribe cannot move it
+inside another program's text without reading it.
+
+Commands that need to read the text, such as "select that", "correct that" or
+"copy all", only work in QUILL's own documents. In another program you hear
+"That works in QUILL's own documents" and nothing changes.
+
+### What can I say
+
+Saying "what can I say" while you dictate does not open a window, because a
+window would take the focus and pause dictation. Instead you hear: "In another
+program, you can say scratch that, new line, start spelling, insert snippet
+and its name, or stop dictation. For the full list, open Dictation Commands
+from the Dictation menu, Ctrl+Shift+C."
+
+**Dictation Commands** (Ctrl+Shift+C, in the Dictation menu) lists exactly
+what works in other programs, and nothing that does not, followed by your own
+words and phrases from My Words and Phrases.
 
 ## Models
 
@@ -232,10 +271,50 @@ if the default changes.
 
 ### Dictation Settings
 
-**Dictation Settings** (Ctrl+,) is the same window QUILL and QUILL Lite use:
-language, punctuation, filler words, how long a pause ends a phrase, what you
-hear after each phrase, and your dictation word list. QUILL Transcribe keeps its
-own copy of these settings, so changing them here does not change QUILL's.
+**Dictation Settings** (Alt+Shift+F6, the key QUILL and QUILL Lite use; Ctrl+,
+still works) is the same window QUILL and QUILL Lite use: language,
+punctuation, filler words, how long a pause ends a phrase, what you hear after
+each phrase, and your dictation word list. QUILL Transcribe keeps its own copy
+of these settings, so changing them here does not change QUILL's. Two of them
+are always off here: the wake phrase, because it would start typing into
+whatever program is in front, and holding the key to talk, because Windows
+reports when a system-wide key is pressed but not when it is let go.
+
+**More Dictation Settings** in that window has **Tick while a phrase is being
+worked on**, on by default in QUILL Transcribe (see What you hear).
+
+### Your words, the language, and your last phrases
+
+- **Recent Phrases** (Shift+F11, in the Dictation menu) lists the last 20
+  phrases you dictated, newest first, in the same window as QUILL and QUILL
+  Lite. **Insert Again** types the phrase into the program you go back to:
+  QUILL Transcribe says "Switch to the field you want. The phrase is typed
+  there.", and types it, with the same checks as dictation, as soon as you are
+  back in another program. **Copy** puts it on the clipboard and says "Copied"
+  and the phrase. The list is kept in memory only, for as long as QUILL
+  Transcribe runs; nothing is saved to disk, and it is empty again next time.
+- **My Words and Phrases** (Alt+Shift+F10, in the Dictation menu) is the same
+  window as in QUILL and QUILL Lite, over the same word list, so a word you
+  teach one of them is known to all three.
+- **Switch Dictation Language** (Ctrl+Shift+F11, in the Dictation menu) changes
+  between English and Spanish and keeps the choice for next time. You hear
+  "Español." or "English." If dictation is on, the next phrase is heard in the
+  new language. Saying "switch to Spanish" or "switch to English" does the same.
+
+### The same keys as QUILL and QUILL Lite
+
+Where QUILL Transcribe has the same dictation command as the editors, it has the
+same key: Ctrl+F11 starts and stops, Alt+Shift+F6 opens Dictation Settings,
+Alt+Shift+F10 opens My Words and Phrases, Ctrl+Shift+F11 switches the language,
+Shift+F11 opens Recent Phrases, and Shift+F5 transcribes a recording. The keys
+from version 1.0 (Ctrl+D, Ctrl+, and Ctrl+O) still work. These work in the
+QUILL Transcribe window; from other programs, use your start and stop key.
+
+Three of the editors' dictation commands are not in QUILL Transcribe, because
+they work on a document and QUILL Transcribe has none: Live Transcript,
+Dictation Context and Tidy Dictated Text. Dictation
+Status (Alt+F9) is not needed: the State field and the tray icon's name say what
+dictation is doing.
 
 If you choose **Dictate in Other Programs** in QUILL or QUILL Lite while QUILL
 Transcribe is running, your editor's dictation settings are handed to QUILL
@@ -265,7 +344,8 @@ Transcribe.
 
 ## Transcribing a recording
 
-**Transcribe a Recording** (Ctrl+O in the window) turns an audio or video file
+**Transcribe a Recording** (Shift+F5 in the window, as in QUILL and QUILL Lite;
+Ctrl+O still works) turns an audio or video file
 into text with the same models, using the same window as QUILL. Choose the file
 and the model; it is transcribed in the background while you carry on.
 
@@ -293,6 +373,26 @@ Quill Inkwell also has Dictate Anywhere. Only one of the two dictates at a time:
 The first time QUILL Transcribe runs, it brings over the Dictate Anywhere
 settings and key you chose in Inkwell. Inkwell's own settings are not changed.
 
+## One microphone: QUILL, QUILL Lite and QUILL Transcribe
+
+Only one program listens at a time, so the same words are never written twice.
+The microphone belongs to whichever of QUILL, QUILL Lite, QUILL Transcribe and
+Quill Inkwell started dictating first, for as long as it is dictating. QUILL
+Transcribe waiting in the tray does not hold it.
+
+- If QUILL or QUILL Lite is dictating when you press your start and stop key,
+  QUILL Transcribe does not start, and says who is and the key that stops it,
+  for example "QUILL Lite is dictating. Press Ctrl+F11 in QUILL Lite to stop
+  it, then try again." QUILL's Locked Dictation (Ctrl+F9) counts too.
+- If QUILL Transcribe is listening when you press Ctrl+F11 in QUILL or QUILL
+  Lite, the editor does not start a second microphone. It names your start and
+  stop key: "QUILL Transcribe is listening. Press Alt+Shift+Backslash to stop
+  it, then try again." With no key chosen, it says "Stop it from its tray icon"
+  instead.
+
+The microphone is let go when dictation stops, when it stops because something
+went wrong, when the window closes, and when the program exits for any reason.
+
 ## Safe Mode
 
 In Safe Mode, QUILL Transcribe does not listen, registers no keys, downloads no
@@ -317,17 +417,20 @@ In the QUILL Transcribe window:
 
 | Command | Key |
 |---|---|
-| Start or stop dictation | Ctrl+D |
+| Start or stop dictation | Ctrl+F11 (or Ctrl+D) |
 | Resume | Ctrl+R |
 | Resume in this field | Ctrl+Shift+R |
 | Discard held words | Ctrl+Shift+D |
 | Use the built-in model this time | Ctrl+B |
+| Recent phrases | Shift+F11 |
+| Switch dictation language | Ctrl+Shift+F11 |
+| My words and phrases | Alt+Shift+F10 |
 | Dictation commands | Ctrl+Shift+C |
 | Choose model | Ctrl+M |
 | Choose microphone | Ctrl+Shift+M |
 | Model library | Ctrl+L |
-| Dictation settings | Ctrl+, |
-| Transcribe a recording | Ctrl+O |
+| Dictation settings | Alt+Shift+F6 (or Ctrl+,) |
+| Transcribe a recording | Shift+F5 (or Ctrl+O) |
 | Notifications | Ctrl+Shift+N |
 | Minimize to tray | Ctrl+W |
 | Exit | Ctrl+Q |

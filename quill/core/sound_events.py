@@ -90,11 +90,14 @@ class SoundEvent(StrEnum):
     # rising pair when it starts listening, a soft short tone each time a phrase
     # has actually been written, a falling pair when it stops, and a low double
     # pulse when it could not go on. The phrase cue is the one heard hundreds
-    # of times an hour, so it is the quietest of the four.
+    # of times an hour, so it is the quietest of the four. The working tick
+    # (2026-10-13, off unless chosen) is quieter and shorter still: once a
+    # second while a heard phrase is still being recognised.
     WINDOWS_DICTATION_ON = "windows_dictation_on"
     WINDOWS_DICTATION_PHRASE = "windows_dictation_phrase"
     WINDOWS_DICTATION_OFF = "windows_dictation_off"
     WINDOWS_DICTATION_ERROR = "windows_dictation_error"
+    WINDOWS_DICTATION_WORKING = "windows_dictation_working"
 
     # Voice conversation mode (Hey QUILL Phase 2). Warm, consonant bell cues
     # that make every state of a hands-free exchange audible: on/off, the mic

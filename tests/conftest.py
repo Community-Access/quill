@@ -832,6 +832,31 @@ def _no_live_screen_reader_capture(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 @pytest.fixture(autouse=True)
+def _family_locks_of_its_own(
+    monkeypatch: pytest.MonkeyPatch, tmp_path_factory: pytest.TempPathFactory
+) -> None:
+    """Give every test its own folder for the family's dictation locks.
+
+    Both editors' Ctrl+F11 take the family's microphone lock while they listen
+    (``quill/core/dictation_owner.py``, D-11, 2026-10-13), and that lock lives in
+    the shared data folder. Left there, a test would take a real lock in the
+    developer's profile, and two parallel workers -- or a test and the
+    developer's own running QUILL Transcribe -- would refuse each other's
+    dictation by name. The folder is made only when a test asks for a lock.
+    """
+    from quill.core import dictation_owner
+
+    made: list[Path] = []
+
+    def folder() -> Path:
+        if not made:
+            made.append(tmp_path_factory.mktemp("family-ipc"))
+        return made[0]
+
+    monkeypatch.setattr(dictation_owner, "_default_folder", folder)
+
+
+@pytest.fixture(autouse=True)
 def _no_saved_own_ai_key(monkeypatch: pytest.MonkeyPatch) -> None:
     """Hide the developer's saved OpenAI key from AI help.
 

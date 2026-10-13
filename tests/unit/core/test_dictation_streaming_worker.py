@@ -273,3 +273,28 @@ def test_a_new_session_cancels_a_pending_unload() -> None:
     unloader.idle()
     unloader.busy()
     assert not unloaded.wait(0.3)
+
+
+def test_a_phrase_says_it_is_being_decoded_before_its_text_arrives(monkeypatch) -> None:
+    """The working tick's clock starts here (working_tick.py): when a finished
+    phrase goes to the engine, not when the person started talking."""
+    order: list[str] = []
+
+    class _Decoding(_Listener):
+        def on_phrase_decoding(self) -> None:
+            order.append("decoding")
+
+        def on_phrase(self, phrase: Any) -> None:
+            order.append("phrase")
+
+    def slow(*_a: Any, **_k: Any) -> str:
+        order.append("transcribing")
+        return "Words."
+
+    monkeypatch.setattr(local_recognizer, "transcribe", slow)
+    engine = _recogniser(_Decoding())
+    for _ in range(2):
+        engine._audio.put(np.zeros(512, np.float32))
+    engine._audio.put(None)
+    engine._work(_Vad(blocks=2))
+    assert order == ["decoding", "transcribing", "phrase"]

@@ -2,6 +2,61 @@
 
 ## 1.0.0
 
+### Dictation: one microphone in the family, the editors' keys and Recent Phrases in QUILL Transcribe, your library by voice in other programs, and a tick while a phrase is worked on (2026-10-13)
+
+Items from the dictation plan (`docs/design/2026-10-05-dictation-plan-and-status.md`,
+section 14): D-11, D-14, D-17, and slices of D-5, D-7 and D-8.
+
+- **One microphone across QUILL, QUILL Lite, QUILL Transcribe and Quill Inkwell
+  (D-11).** `quill/core/dictation_owner.py` gains `MicrophoneLock`, an
+  operating-system lock separate from the Dictate Anywhere owner lock, held by
+  whichever app has the microphone open and only while it is open. The shared
+  controller takes it before the recogniser starts and lets go of it whenever
+  the recogniser closes (`quill/core/windows_dictation/microphone_owner.py`);
+  the kernel lets go at exit. QUILL's Locked Dictation (Ctrl+F9, Hold to
+  Dictate) takes the same lock while it records. A second start is refused
+  with the name of the program listening and the key that stops it, as that
+  program has it bound (written into the lock's note): Ctrl+F11 while QUILL
+  Transcribe listens says "QUILL Transcribe is listening. Press
+  Alt+Shift+Backslash to stop it, then try again.", and QUILL Transcribe's key
+  while an editor dictates says "QUILL Lite is dictating. Press Ctrl+F11 in
+  QUILL Lite to stop it, then try again." QUILL Lite's window now claims itself as QUILL's does,
+  so QUILL Transcribe and Inkwell refuse to type into it with "This is a QUILL
+  window: press Ctrl+F11 to dictate here." Cast and Radio are not claimed. The
+  test suite gives each test its own lock folder (`tests/conftest.py`).
+- **The editors' dictation keys in QUILL Transcribe (D-14).** Its window answers
+  Ctrl+F11, Alt+Shift+F6, Shift+F5, and two commands new to it, My Words and
+  Phrases (Alt+Shift+F10) and Switch Dictation Language (Ctrl+Shift+F11). Its
+  1.0 keys Ctrl+D, Ctrl+, and Ctrl+O stay as second keys (rule 5). The commands
+  it does not have are rows with reasons in `quill/core/transcribe/parity.py`
+  (rule 11), and `tests/unit/ui/test_transcribe_dictation_parity.py` holds the
+  menu, the settings and the "What can I say" list to the editors'.
+- **Recent Phrases in QUILL Transcribe (D-5 slice).** Shift+F11, the editors'
+  window and code (`windows_dictation_tools.open_recent_phrases`): Insert Again
+  types the phrase into the program you go back to through the checked
+  keystroke path and a one-shot field lock; Copy puts it on the clipboard.
+  Memory only.
+- **Your library by voice in other programs (D-8 slice).** "insert snippet",
+  "insert abbreviation" and "paste clip" join `EXTERNAL_COMMANDS` in QUILL
+  Transcribe and Inkwell, from the family's own files
+  (`quill/ui/windows_dictation_anywhere_library.py`), typed as one phrase.
+  Blanks are typed as [name]; `${cursor}` is dropped.
+- **What can I say lists what works there (D-7).** `commands_reference(external=True)`
+  lists only what works in another program, with the person's own phrases;
+  said while dictating in QUILL Transcribe it is one spoken sentence, so the
+  focus does not move and dictation does not pause.
+- **A tick while a phrase is being worked on (D-17).** A new shared setting,
+  `windows_dictation_working_tick` ("Tick while a phrase is being worked on",
+  More Dictation Settings, Alt+R): a soft tick once a second while a heard
+  phrase takes more than a second to recognise, and "Still working on that
+  phrase." once a session after four seconds. *What you hear after each phrase*
+  caps it: nothing means silence, words only means the sentence at four
+  seconds, once per wait, and no tick. Off in QUILL and QUILL Lite, on in
+  QUILL Transcribe. The new `windows_dictation_working` earcon is generated
+  with the others (`scripts/generate_dictation_sounds.py`) and is the shortest
+  and quietest of them; the screen-reader gate already hears QUILL's own
+  process, so the tick is never taken for speech.
+
 ### QUILL Lineups in Quill Radio and QUILL Cast, and saved places that survive a restart (2026-10-13)
 
 A Lineup is a named list of anything Quill Radio and QUILL Cast can play --

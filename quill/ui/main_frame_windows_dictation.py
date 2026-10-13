@@ -119,6 +119,10 @@ class WindowsDictationCommandsMixin(WindowsDictationMixin):
     def _dictation_top_window(self):  # noqa: ANN201 - QUILL's one top-level frame
         return self.frame
 
+    def _dictation_app(self) -> str:
+        """Who holds the microphone, as another program's refusal names it."""
+        return "quill"
+
     def _dictation_current_host(self) -> Any:
         return self
 

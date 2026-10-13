@@ -92,6 +92,7 @@
   "lite:windows_dictation_transcript_told": "shared",
   "lite:windows_dictation_wake_enabled": "shared",
   "lite:windows_dictation_wake_phrase": "shared",
+  "lite:windows_dictation_working_tick": "shared",
   "lite:word_wrap": "aliased",
   "lite:wrap_find": "shared",
   "quill:abbreviation_backspace_behavior": "one_side",
@@ -474,6 +475,7 @@
   "quill:windows_dictation_transcript_told": "shared",
   "quill:windows_dictation_wake_enabled": "shared",
   "quill:windows_dictation_wake_phrase": "shared",
+  "quill:windows_dictation_working_tick": "shared",
   "quill:word_open_mode": "one_side",
   "quill:wrap_find": "shared"
 }

@@ -245,6 +245,75 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="dictation-one-microphone-in-the-family-the-editors-keys-and-recent-phrases-in-quill-transcribe-your-library-by-voice-in-other-programs-and-a-tick-while-a-phrase-is-worked-on-2026-10-13">Dictation:
+one microphone in the family, the editors’ keys and Recent Phrases in
+QUILL Transcribe, your library by voice in other programs, and a tick
+while a phrase is worked on (2026-10-13)</h3>
+<p>Items from the dictation plan
+(<code>docs/design/2026-10-05-dictation-plan-and-status.md</code>,
+section 14): D-11, D-14, D-17, and slices of D-5, D-7 and D-8.</p>
+<ul>
+<li><strong>One microphone across QUILL, QUILL Lite, QUILL Transcribe
+and Quill Inkwell (D-11).</strong>
+<code>quill/core/dictation_owner.py</code> gains
+<code>MicrophoneLock</code>, an operating-system lock separate from the
+Dictate Anywhere owner lock, held by whichever app has the microphone
+open and only while it is open. The shared controller takes it before
+the recogniser starts and lets go of it whenever the recogniser closes
+(<code>quill/core/windows_dictation/microphone_owner.py</code>); the
+kernel lets go at exit. QUILL’s Locked Dictation (Ctrl+F9, Hold to
+Dictate) takes the same lock while it records. A second start is refused
+with the name of the program listening and the key that stops it, as
+that program has it bound (written into the lock’s note): Ctrl+F11 while
+QUILL Transcribe listens says “QUILL Transcribe is listening. Press
+Alt+Shift+Backslash to stop it, then try again.”, and QUILL Transcribe’s
+key while an editor dictates says “QUILL Lite is dictating. Press
+Ctrl+F11 in QUILL Lite to stop it, then try again.” QUILL Lite’s window
+now claims itself as QUILL’s does, so QUILL Transcribe and Inkwell
+refuse to type into it with “This is a QUILL window: press Ctrl+F11 to
+dictate here.” Cast and Radio are not claimed. The test suite gives each
+test its own lock folder (<code>tests/conftest.py</code>).</li>
+<li><strong>The editors’ dictation keys in QUILL Transcribe
+(D-14).</strong> Its window answers Ctrl+F11, Alt+Shift+F6, Shift+F5,
+and two commands new to it, My Words and Phrases (Alt+Shift+F10) and
+Switch Dictation Language (Ctrl+Shift+F11). Its 1.0 keys Ctrl+D, Ctrl+,
+and Ctrl+O stay as second keys (rule 5). The commands it does not have
+are rows with reasons in <code>quill/core/transcribe/parity.py</code>
+(rule 11), and
+<code>tests/unit/ui/test_transcribe_dictation_parity.py</code> holds the
+menu, the settings and the “What can I say” list to the editors’.</li>
+<li><strong>Recent Phrases in QUILL Transcribe (D-5 slice).</strong>
+Shift+F11, the editors’ window and code
+(<code>windows_dictation_tools.open_recent_phrases</code>): Insert Again
+types the phrase into the program you go back to through the checked
+keystroke path and a one-shot field lock; Copy puts it on the clipboard.
+Memory only.</li>
+<li><strong>Your library by voice in other programs (D-8
+slice).</strong> “insert snippet”, “insert abbreviation” and “paste
+clip” join <code>EXTERNAL_COMMANDS</code> in QUILL Transcribe and
+Inkwell, from the family’s own files
+(<code>quill/ui/windows_dictation_anywhere_library.py</code>), typed as
+one phrase. Blanks are typed as [name]; <code>${cursor}</code> is
+dropped.</li>
+<li><strong>What can I say lists what works there (D-7).</strong>
+<code>commands_reference(external=True)</code> lists only what works in
+another program, with the person’s own phrases; said while dictating in
+QUILL Transcribe it is one spoken sentence, so the focus does not move
+and dictation does not pause.</li>
+<li><strong>A tick while a phrase is being worked on (D-17).</strong> A
+new shared setting, <code>windows_dictation_working_tick</code> (“Tick
+while a phrase is being worked on”, More Dictation Settings, Alt+R): a
+soft tick once a second while a heard phrase takes more than a second to
+recognise, and “Still working on that phrase.” once a session after four
+seconds. <em>What you hear after each phrase</em> caps it: nothing means
+silence, words only means the sentence at four seconds, once per wait,
+and no tick. Off in QUILL and QUILL Lite, on in QUILL Transcribe. The
+new <code>windows_dictation_working</code> earcon is generated with the
+others (<code>scripts/generate_dictation_sounds.py</code>) and is the
+shortest and quietest of them; the screen-reader gate already hears
+QUILL’s own process, so the tick is never taken for speech.</li>
+</ul>
+<h3
 id="quill-lineups-in-quill-radio-and-quill-cast-and-saved-places-that-survive-a-restart-2026-10-13">QUILL
 Lineups in Quill Radio and QUILL Cast, and saved places that survive a
 restart (2026-10-13)</h3>

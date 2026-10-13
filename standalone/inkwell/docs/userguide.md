@@ -463,9 +463,14 @@ everything twice gets tiring. You can change that in the same window.
 caps on" and "no space on", switching between English and Spanish, and "scratch
 that". "Scratch that" erases the phrase that was just typed, but only while you
 are still in the same window, so it can never erase anything you typed yourself.
+Your snippets, abbreviations and clips work too, because they only insert:
+"insert snippet" and its name, "insert abbreviation" and its name, and "paste
+clip" and a number, each typed as one phrase that "scratch that" takes back
+whole. A snippet's blanks are typed as [name], with no questions, and the
+cursor stays at the end. "What can I say" lists only what works here.
 
 **What does not.** Anything that needs to read the other program's text: "select"
-and "go to", "correct", clips and snippets. Inkwell cannot see that text, so it
+and "go to", "correct", "copy all" and "show clips". Inkwell cannot see that text, so it
 tells you: "That works in QUILL's own documents. In another program, say the
 words again, or scratch that."
 

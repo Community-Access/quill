@@ -154,6 +154,12 @@ class WorkerMixin:
             vad.pop()
             any_done = True
             generation = self._generation
+            # The listener starts its working tick's clock here: a heard phrase
+            # has gone to the engine (working_tick.py). A long sentence is not
+            # a slow one, so the clock does not start at on_speech_started.
+            decoding = getattr(self._listener, "on_phrase_decoding", None)
+            if callable(decoding) and self._running.is_set():
+                self._post(decoding)
             started = time.monotonic()
             if self._live is not None:
                 mark, text = self._live_end()

@@ -29,7 +29,13 @@ import wx
 
 from quill.ui.atomic_edit import replace_as_one_undo
 
-__all__ = ["DictationToolsMixin", "bind_field_dictation"]
+__all__ = [
+    "NOTHING_RECENT",
+    "DictationToolsMixin",
+    "bind_field_dictation",
+    "copy_phrase",
+    "open_recent_phrases",
+]
 
 
 def _shared() -> Any:
@@ -56,26 +62,14 @@ class DictationToolsMixin:
 
     def cmd_dictation_recent(self) -> None:
         """The last twenty phrases, newest first: insert one again, or copy it."""
-        from quill.ui.windows_dictation_dialog import RecentPhrasesDialog
-
-        shared = _shared()
-        controller = shared._controller
-        phrases = list(controller.recent) if controller is not None else []
-        if not phrases:
-            self._dictation_say("Nothing has been dictated yet this session.")  # type: ignore[attr-defined]
-            return
-        dialog = RecentPhrasesDialog(self._dictation_parent(), phrases)  # type: ignore[attr-defined]
-        try:
-            answer = self._dictation_run_modal(dialog, "Recent Phrases")  # type: ignore[attr-defined]
-            chosen, verb = dialog.chosen, dialog.verb
-        finally:
-            dialog.Destroy()
-        if answer != wx.ID_OK or chosen is None:
-            return
-        if verb == "copy":
-            self._dictation_copy(chosen)
-            return
-        self._dictation_insert_again(chosen)
+        controller = _shared()._controller
+        open_recent_phrases(
+            self._dictation_parent(),  # type: ignore[attr-defined]
+            list(controller.recent) if controller is not None else [],
+            run_modal=self._dictation_run_modal,  # type: ignore[attr-defined]
+            say=self._dictation_say,  # type: ignore[attr-defined]
+            insert_again=self._dictation_insert_again,
+        )
 
     def cmd_dictation_words(self) -> None:
         """Add, edit and remove your words, phrases and corrections in a window."""
@@ -150,16 +144,58 @@ class DictationToolsMixin:
         self._dictation_say(f"Inserted: {text}")  # type: ignore[attr-defined]
 
     def _dictation_copy(self, text: str) -> None:
-        try:
-            if wx.TheClipboard.Open():
-                try:
-                    wx.TheClipboard.SetData(wx.TextDataObject(text))
-                finally:
-                    wx.TheClipboard.Close()
-        except Exception as error:  # noqa: BLE001 - the clipboard is another app's too
-            self._dictation_say(f"That could not be copied. {error}")  # type: ignore[attr-defined]
-            return
-        self._dictation_say(f"Copied: {text}")  # type: ignore[attr-defined]
+        copy_phrase(text, self._dictation_say)  # type: ignore[attr-defined]
+
+
+#: Said when Recent Phrases has nothing to show.
+NOTHING_RECENT = "Nothing has been dictated yet this session."
+
+
+def open_recent_phrases(
+    parent: Any,
+    phrases: list[str],
+    *,
+    run_modal: Any,
+    say: Any,
+    insert_again: Any,
+) -> None:
+    """Recent Phrases, for every host: both editors and QUILL Transcribe.
+
+    The one implementation of the command; each host passes where Insert Again
+    writes (the editor's document, or the program QUILL Transcribe types into).
+    Memory only: the host's controller keeps the last twenty, newest first.
+    """
+    from quill.ui.windows_dictation_dialog import RecentPhrasesDialog
+
+    if not phrases:
+        say(NOTHING_RECENT)
+        return
+    dialog = RecentPhrasesDialog(parent, phrases)
+    try:
+        answer = run_modal(dialog, "Recent Phrases")
+        chosen, verb = dialog.chosen, dialog.verb
+    finally:
+        dialog.Destroy()
+    if answer != wx.ID_OK or chosen is None:
+        return
+    if verb == "copy":
+        copy_phrase(chosen, say)
+        return
+    insert_again(chosen)
+
+
+def copy_phrase(text: str, say: Any) -> None:
+    """Put *text* on the clipboard, and say the outcome."""
+    try:
+        if wx.TheClipboard.Open():
+            try:
+                wx.TheClipboard.SetData(wx.TextDataObject(text))
+            finally:
+                wx.TheClipboard.Close()
+    except Exception as error:  # noqa: BLE001 - the clipboard is another app's too
+        say(f"That could not be copied. {error}")
+        return
+    say(f"Copied: {text}")
 
 
 def bind_field_dictation(window: Any, fields: list[Any], host: Any) -> None:

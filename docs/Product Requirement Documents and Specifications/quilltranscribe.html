@@ -250,7 +250,8 @@ Transcribe - Product Requirements Document</h1>
 implementation blueprint<br />
 <strong>Status:</strong> Proposed; architecture and scope for product
 review<br />
-<strong>Last updated:</strong> 2026-10-05<br />
+<strong>Last updated:</strong> 2026-10-13 (as-built notes in 7.2, 7.4,
+10.3 and 15.2)<br />
 <strong>Initial platform:</strong> Windows desktop<br />
 <strong>Proposed product identifier:</strong>
 <code>QuillTranscribe</code></p>
@@ -491,6 +492,21 @@ that the screen reader already echoes from the target field.</li>
 </ol>
 <p>Start, stop, and resume actions are idempotent. A repeated start must
 not open a second microphone session or another recognizer.</p>
+<p><strong>As built, 2026-10-13: the wait is not silent.</strong>
+Between step 5’s pause and the inserted text a large model can take
+seconds. With <strong>Tick while a phrase is being worked on</strong> (a
+shared dictation setting, <code>windows_dictation_working_tick</code>,
+on by default in QUILL Transcribe and off in the editors), a soft tick
+plays once a second from the first second until the text arrives or
+recognition fails, and the first wait of four seconds in a session also
+says “Still working on that phrase.” The clock starts when the
+recogniser hands the finished phrase to the model, not when speech
+starts. <em>What you hear after each phrase</em> is the cap: nothing
+means no tick and no sentence; words only means no tick and the sentence
+at four seconds, once per wait. A sound pack without the tick also
+speaks the sentence at four seconds, once per wait. The setting off is
+silence. The sentence is only said while its wait is open, and the
+read-back that follows a phrase interrupts it.</p>
 <h3 id="73-tray-first-operation">7.3 Tray-first operation</h3>
 <p>The Windows notification-area icon is required for version 1.0. Its
 accessible name and tooltip expose the product name and concise current
@@ -535,6 +551,26 @@ not read.</li>
 </ul>
 <p>The window is not raised automatically when a global hotkey starts
 dictation. The user keeps focus in the target application.</p>
+<p><strong>As built, 2026-10-13: the editors’ keys.</strong> Inside the
+window, a dictation command QUILL Transcribe shares with QUILL and QUILL
+Lite answers the editors’ chord (family rule 2): Ctrl+F11 start or stop,
+Alt+Shift+F6 Dictation Settings, Alt+Shift+F10 My Words and Phrases,
+Ctrl+Shift+F11 Switch Dictation Language, Shift+F5 Transcribe a
+Recording, Shift+F11 Recent Phrases. Version 1.0’s Ctrl+D, Ctrl+, and
+Ctrl+O remain as second keys (rule 5). Live Transcript, Dictation
+Context, Dictation Status and Tidy Dictated Text are not offered, each
+with its reason in <code>quill/core/transcribe/parity.py</code> (rule
+11), and <code>tests/unit/ui/test_transcribe_dictation_parity.py</code>
+holds the menu to that table.</p>
+<p><strong>As built, 2026-10-13: Recent Phrases (D-5 slice).</strong>
+The editors’ window and code
+(<code>windows_dictation_tools.open_recent_phrases</code>): the last 20
+phrases of the run, newest first, memory only. Insert Again types the
+phrase into the program the person goes back to, through the shared
+external document’s checked keystrokes and a one-shot field lock, so a
+password field, an elevated program, a QUILL window or a moved focus
+refuses it exactly as it would a dictated phrase. Copy puts it on the
+clipboard. Keeping the list on disk is the rest of D-5.</p>
 <h3 id="75-model-selection-and-lifecycle">7.5 Model selection and
 lifecycle</h3>
 <p>The user can choose a specific model from the shared, approved QUILL
@@ -645,6 +681,16 @@ checks.</li>
 <li>Spoken punctuation and paragraph breaks.</li>
 <li>Help / list dictation commands.</li>
 </ul>
+<p><strong>As built, 2026-10-13.</strong> Also, because they only
+insert: “insert snippet”, “insert abbreviation” and “paste clip” (D-8
+slice), from the family’s own snippet, abbreviation and copy-tray files,
+typed as one phrase that “scratch that” removes whole. Blanks are typed
+as “[name]” with no prompts, and a <code>${cursor}</code> mark is
+dropped; prompted fields are the rest of D-8. “What can I say” while
+dictating answers in one spoken sentence rather than opening a window
+that would take the focus and pause dictation, and the Dictation
+Commands window lists exactly the commands that work in another program,
+with the person’s own phrases (D-7).</p>
 <p>Commands such as “select that”, “correct the last word”, “go to the
 heading”, “replace this paragraph”, or commands that inspect
 selection/document context are refused in external targets. The refusal
@@ -867,6 +913,25 @@ result in two independent controllers.</li>
 <p>The owner has a clear lifecycle, request validation, same-user access
 checks, and an explicit response for unavailable/not-installed/refused
 requests. Do not build an unauthenticated local network endpoint.</p>
+<p><strong>As built (1.0, and 2026-10-13).</strong> Version 1.0 took the
+fallback: an owner lock (<code>quill/core/dictation_owner.py</code>)
+that QUILL Transcribe holds while it runs and Inkwell takes only for its
+own session. That covered insertion into other programs and left the
+microphone unguarded: QUILL’s and QUILL Lite’s Ctrl+F11 could open a
+second capture session while QUILL Transcribe listened. Since 2026-10-13
+a second lock of the same kind, the microphone lock, is taken by
+whichever of QUILL, QUILL Lite, QUILL Transcribe and Inkwell opens the
+microphone, through the shared dictation controller, and let go on stop,
+on an error, when the window closes and, by the kernel, when the program
+exits. A second start is refused with the name of the program listening
+and the key that stops it, as that program has it bound (“QUILL Lite is
+dictating. Press Ctrl+F11 in QUILL Lite to stop it, then try again.”).
+QUILL’s Locked Dictation (Ctrl+F9) takes the same lock while it records.
+It is a separate lock because QUILL Transcribe holds the owner lock for
+as long as it runs, and the editors must still dictate while it waits in
+the tray. QUILL Lite’s window now claims itself as QUILL’s does, so
+QUILL Transcribe refuses to type into either editor and points to
+Ctrl+F11.</p>
 <h3 id="104-threading-and-operations">10.4 Threading and operations</h3>
 <ul>
 <li>UI thread owns every wx widget and does not block on model load,
@@ -1085,7 +1150,12 @@ paths.</li>
 <li>Microphone unplug/replug, permission denial, sleep/resume, user
 switching, logoff, and application forced exit.</li>
 <li>Two clients attempting to start at the same time yield one owner,
-one recognizer, and a clear response to the second request.</li>
+one recognizer, and a clear response to the second request. Automated
+since 2026-10-13 against real operating-system locks: QUILL Lite’s
+window and QUILL Transcribe in one test
+(<code>tests/unit/apps/test_transcribe_app.py</code>), and two
+controllers in
+<code>tests/unit/core/test_dictation_microphone_and_tick.py</code>.</li>
 <li>Cloud consent refusal produces no request; consent acceptance sends
 only the audio required by the chosen provider.</li>
 </ul>

@@ -272,16 +272,49 @@ a key is saved and asks before anything is sent.</li>
 <li><strong>Where it works.</strong> No list of supported programs is
 claimed yet. The list comes from testing with NVDA, JAWS and Narrator in
 Outlook, Word, Notepad and the three browsers.</li>
+<li><strong>One microphone</strong> (after 1.0.0, 2026-10-13). A second
+operating-system lock, separate from the owner lock, is held by
+whichever of QUILL, QUILL Lite, QUILL Transcribe and Inkwell has the
+microphone open, and only for as long as it is open. A second start is
+refused with the name of the program listening. It is separate because
+QUILL Transcribe holds the owner lock for as long as it runs, and the
+editors must still dictate while it waits in the tray. QUILL Lite’s
+window is claimed as QUILL’s is, so QUILL Transcribe does not type into
+it. QUILL’s Locked Dictation (Ctrl+F9) takes the same lock while it
+records.</li>
+<li><strong>The editors’ keys</strong> (after 1.0.0). A dictation
+command QUILL Transcribe shares with the editors answers the editors’
+chord (family rule 2), and the 1.0 key stays as a second key (rule 5).
+The editors’ dictation commands it does not have are listed, each with
+its reason, in <code>quill/core/transcribe/parity.py</code> (rule
+11).</li>
+<li><strong>The working tick</strong> (after 1.0.0). A soft tick once a
+second while a heard phrase takes more than a second to recognise, and
+one sentence after four seconds, once a session. On by default here, off
+in the editors. <em>What you hear after each phrase</em> caps it: words
+only gives the sentence and no tick, nothing gives neither.</li>
+<li><strong>Recent Phrases</strong> (after 1.0.0). The editors’ window
+and code, on Shift+F11. Insert Again types into the program you go back
+to, through the same keystroke path and checks as dictation. Memory only
+for now.</li>
+<li><strong>In other programs</strong> (after 1.0.0). “insert snippet”,
+“insert abbreviation” and “paste clip” work, because they only insert.
+“What can I say” is a spoken sentence while dictating, and Dictation
+Commands lists exactly what works in other programs, with the person’s
+own phrases.</li>
 </ol>
 <h2 id="waiting-for-a-later-version">Waiting for a later version</h2>
 <ul>
 <li>Typing a reviewed transcript into another program’s field.</li>
+<li>Recent Phrases kept on disk between runs (the rest of D-5).</li>
+<li>Snippet blanks filled in by voice, with spoken prompts (the rest of
+D-8).</li>
 <li>Optional transcript history.</li>
 <li>Named dictation profiles for email, notes and forms.</li>
 <li>A multi-page setup with Back on each step.</li>
 <li>Inkwell and the editors using QUILL Transcribe as a service rather
-than through the owner lock; Inkwell’s own Dictate Anywhere pausing when
-the focus moves, as QUILL Transcribe’s does.</li>
+than through the owner and microphone locks; Inkwell’s own Dictate
+Anywhere pausing when the focus moves, as QUILL Transcribe’s does.</li>
 <li>A published list of tested programs.</li>
 </ul>
 </main>
