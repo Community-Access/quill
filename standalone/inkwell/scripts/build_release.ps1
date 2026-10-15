@@ -140,6 +140,8 @@ if ($LASTEXITCODE -ne 0) { throw "Code signing (payload) failed." }
 $zipPath = Join-Path $repoRoot "dist\Quill-Inkwell-Portable-$version.zip"
 if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
 Write-Host "Compressing portable bundle -> $zipPath ..."
+# Every shipped .md leaves with its .html and .epub (scripts\complete_docs_folder.py).
+Complete-QuillDocsFolders -Python $Python -Root (Join-Path (Split-Path -Parent $PSScriptRoot) "dist") -QuillRepo $QuillRepo
 Compress-Archive -Path $appDir -DestinationPath $zipPath
 
 # -- strip staged media tools from the runtime payload -----------------------
@@ -166,6 +168,8 @@ $innoSign = @()
 if ($env:QUILL_SIGN -eq "1") {
     $innoSign = @("/DSign", "/Squilltrusted=`$q$Python`$q `$q$signer`$q sign `$f")
 }
+# Every shipped .md leaves with its .html and .epub (scripts\complete_docs_folder.py).
+Complete-QuillDocsFolders -Python $Python -Root (Join-Path (Split-Path -Parent $PSScriptRoot) "dist") -QuillRepo $QuillRepo
 & $Iscc @innoSign "/dAppVersion=$version" "/dAppBuild=$build" "/dAppFileVersion=$fileVersion" (Join-Path $repoRoot "installer\quill-inkwell.iss") "/O$(Join-Path $repoRoot 'dist')"
 if ($LASTEXITCODE -ne 0) { throw "ISCC failed with exit code $LASTEXITCODE" }
 

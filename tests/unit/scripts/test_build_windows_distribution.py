@@ -168,7 +168,18 @@ version = "2.4.6"
     # BUILD HOST's os.sep -- always backslash in the real shipped product
     # (this script only ever really runs on windows-latest CI), but this test
     # also runs as a plain unit test on macOS CI, where the host is POSIX.
-    assert manifest["docs"] == [str(Path("docs") / "userguide.md")]
+    # Every shipped document, each with its HTML and EPUB beside it (2026-10-15).
+    assert manifest["docs"] == [
+        str(Path("docs") / name)
+        for name in (
+            "userguide.md",
+            "tutorials.md",
+            "keyboard-reference.md",
+            "f1-help-reference.md",
+            "release1.0.0.md",
+            "CHANGELOG.md",
+        )
+    ]
     assert manifest["speechAssets"]["dectalk"]["downloadable"] is True
     assert manifest["speechAssets"]["espeak"]["downloadable"] is True
     assert manifest["speechAssets"]["piper"]["downloadable"] is True

@@ -498,3 +498,32 @@ function Resolve-QuillSigning {
     $env:QUILL_SIGN_REQUIRED = ""
     return $false
 }
+
+function Complete-QuillDocsFolders {
+    <#
+    .SYNOPSIS
+    Give every shipped Markdown file its HTML and EPUB, in every docs folder under -Root.
+
+    .DESCRIPTION
+    Called by each app's build just before it zips the portable copy and before
+    it compiles the installer, so whatever the build staged -- however it staged
+    it -- leaves with both renderings. scripts\complete_docs_folder.py renders
+    only what is missing, with release_readiness.py's own Pandoc invocation.
+    Added 2026-10-15, when Cast was found shipping no EPUB, Social and Beacon
+    shipping bare Markdown, and QUILL its user guide alone. Throws when a
+    document is still missing one afterwards, so no package ships without them.
+    #>
+    param(
+        [Parameter(Mandatory = $true)][string]$Python,
+        [Parameter(Mandatory = $true)][string]$Root,
+        [string]$QuillRepo = (Split-Path -Parent $PSScriptRoot)
+    )
+    if (-not (Test-Path -LiteralPath $Root)) { return }
+    $script = Join-Path $QuillRepo "scripts\complete_docs_folder.py"
+    $folders = Get-ChildItem -LiteralPath $Root -Directory -Recurse -Filter "docs" -ErrorAction SilentlyContinue |
+        Where-Object { $_.FullName -notmatch '\\(_internal|Lib|site-packages)\\' }
+    foreach ($folder in $folders) {
+        & $Python $script $folder.FullName
+        if ($LASTEXITCODE -ne 0) { throw "Docs in $($folder.FullName) are missing HTML or EPUB (see above)." }
+    }
+}

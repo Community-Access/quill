@@ -2772,17 +2772,21 @@ direction. Combined stream-format coverage is effectively complete: MP3,
 AAC and HE-AAC (AAC+), Ogg Vorbis, Opus, FLAC streams, and HLS (m3u8) –
 Ogg Vorbis/Opus/HLS were undecodable by WMP. The engine delivers:
 <strong>Radio output device</strong> (Preferences;
-<code>RadioHistory.output_device</code>; screen reader and app sounds
-stay on the system default; unplugged devices remembered, spoken
-fallback when unusable); <strong>live DVR</strong> (a seekable
-~45-minute demuxer cache: pause/resume live radio, Rewind/Forward 30
-Seconds, Back to Live, each announcing how far behind live);
-<strong>Volume Boost</strong> (up to 150% for quiet stations; the 0-100
-scale, per-station volumes, and mute untouched); <strong>engine-native
-What’s Playing fallback</strong> (mpv <code>media-title</code> when the
-ICY side-tap gets nothing or the stream is HLS); and
-<strong>“Buffering…” announcements</strong> on mid-stream
-stalls.</p></li>
+<code>RadioHistory.output_device</code>; the screen reader is never
+moved; unplugged devices remembered, spoken fallback when unusable.
+Since the 3.2.0 build 3 rebuild the app’s own sounds follow it by
+default – <code>RadioHistory.app_sound_device</code>, “App sounds play
+on”: same as the radio / system default / any card, routed by GUID
+through waveOut in <code>quill/platform/sound_routing.py</code>, falling
+back to the default device rather than going silent); <strong>live
+DVR</strong> (a seekable ~45-minute demuxer cache: pause/resume live
+radio, Rewind/Forward 30 Seconds, Back to Live, each announcing how far
+behind live); <strong>Volume Boost</strong> (up to 150% for quiet
+stations; the 0-100 scale, per-station volumes, and mute untouched);
+<strong>engine-native What’s Playing fallback</strong> (mpv
+<code>media-title</code> when the ICY side-tap gets nothing or the
+stream is HLS); and <strong>“Buffering…” announcements</strong> on
+mid-stream stalls.</p></li>
 <li><p><strong>OptiLab broadcast polish (2.0.2, upstream
 <code>core/audio_enhance.py</code>,
 <code>ui/sound_enhance_dialog.py</code>).</strong> One-touch

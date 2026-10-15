@@ -2510,18 +2510,50 @@ def bundled_runtime_dependencies(pyproject: Path) -> list[str]:
     return unique or ["wxPython>=4.2.2", "pyttsx3>=2.99"]
 
 
+#: What QUILL ships in its docs folder: each Markdown file with the HTML and EPUB
+#: beside it. Until 2026-10-15 this was the user guide's Markdown alone, so the
+#: package had no HTML or EPUB of anything (reported by Jeff).
+_SHIPPED_DOCS = (
+    Path("docs") / "user guide" / "userguide.md",
+    Path("docs") / "user guide" / "tutorials.md",
+    Path("docs") / "keyboard-reference.md",
+    Path("docs") / "f1-help-reference.md",
+    Path("docs") / "release notes" / "release1.0.0.md",
+    Path("CHANGELOG.md"),
+)
+
+
 def _stage_distribution_docs(portable_dir: Path, source_root: Path) -> list[Path]:
     docs_dir = portable_dir / "docs"
     docs_dir.mkdir(parents=True, exist_ok=True)
     staged: list[Path] = []
-    for relative in (Path("docs") / "user guide" / "userguide.md",):
+    for relative in _SHIPPED_DOCS:
         source = source_root / relative
         if not source.exists():
             continue
         target = docs_dir / source.name
         shutil.copy2(source, target)
+        for rendered in (source.with_suffix(".html"), source.with_suffix(".epub")):
+            if rendered.is_file():
+                shutil.copy2(rendered, docs_dir / rendered.name)
         staged.append(target)
+    _complete_docs(docs_dir, source_root)
     return staged
+
+
+def _complete_docs(docs_dir: Path, source_root: Path) -> None:
+    """Render any HTML or EPUB still missing beside a staged Markdown file.
+
+    scripts/complete_docs_folder.py, the step every app's build runs. A failure
+    is reported rather than raised here: the release gate is the check after
+    the build, and a unit test that stages one file has no Pandoc.
+    """
+    script = source_root / "scripts" / "complete_docs_folder.py"
+    if not script.is_file():
+        return
+    result = subprocess.run([sys.executable, str(script), str(docs_dir)], check=False)
+    if result.returncode != 0:
+        print(f"WARNING: some docs in {docs_dir} have no HTML or EPUB (see above).")
 
 
 def _stage_dictation_models(portable_dir: Path, source_root: Path) -> None:
