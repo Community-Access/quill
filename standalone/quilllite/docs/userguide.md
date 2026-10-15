@@ -376,8 +376,9 @@ Choosing **Recommended** puts things back the way they came.
 
 **30. Silence every sound, right now.**
 
-Press **Alt+Shift+M**. Press it again to bring the sounds back. To change one
-sound at a time, press **Ctrl+Alt+Shift+O** (**Sound Scheme**).
+Press **Alt+Shift+M** to turn QUILL Lite's sounds off. Press it again to bring
+them back. To change one sound at a time, or choose which sound card they play
+on, press **Ctrl+Alt+Shift+O** (**Sound Scheme**).
 
 ### What you learned, and where to go next
 
@@ -3141,14 +3142,21 @@ or for what you have selected.
 QUILL Lite plays small sounds to let you know things happened. You can silence
 them all at once, or change them one by one.
 
-#### Quiet mode
+#### Where QUILL Lite's sounds play, and turning them off
 
-**Alt+Shift+M** turns every sound off at once. Press it again to bring them
-back. It is one key so you can reach it in a hurry: on a phone call, in a quiet
-room, or when you have simply heard enough beeps for today.
+QUILL Lite makes short sounds of its own. You choose where they play, and you can turn them off.
 
-**Tools > Quiet Mode** has a check mark that shows whether it is on. QUILL shares the
-same setting, so making one quiet makes both quiet.
+- **Alt+Shift+M** turns QUILL Lite's sounds off. Press it again and they come back, on the same sound card as before. You hear a short sound as they go off, and another where they now play when they come back on, and both are spoken too. **Tools > App Sounds** has a check mark that shows whether they are on.
+- **Tools > Sound Scheme... (Ctrl+Alt+Shift+O) > App Sounds Play On...** lets you pick where they play:
+  - **System default**. This is where it starts. The sounds go where Windows sends sound.
+  - **None (no sounds)**. QUILL Lite makes no sounds at all. Everything it tells you is still spoken.
+  - **Any sound card or headset in the list.** The sounds get a device of their own.
+
+After you choose, one sound plays on the new device, so you know straight away where it went.
+
+If the device you chose is unplugged or asleep, you still hear every sound, on the system default, and QUILL Lite tells you once. When the device comes back, the sounds go back to it by themselves.
+
+This changes QUILL Lite only. Your other QUILL apps keep their own choice, unless you have checked "Share these choices with my other Quill apps", which copies a change here to the others that share. Your screen reader is never moved. Until October 2026, Alt+Shift+M silenced QUILL and QUILL Lite together. Now each app has its own; to silence every QUILL app at once, turn off **Sound notifications** in QUILL's Settings.
 
 If you only want to change one sound, use the Sound Scheme instead.
 
@@ -3237,7 +3245,7 @@ QUILL Lite speaks through NVDA or JAWS and only tells you what your screen
 reader cannot. Every message is kept in the status bar, so **F6** brings back
 anything you missed. A few keys answer quick questions about formatting, a
 character, indent depth and the size of your document. **Alt+Shift+M**
-silences every sound, and Sound Scheme on **Ctrl+Alt+Shift+O** lets you hear,
+turns QUILL Lite's sounds off and on, and Sound Scheme on **Ctrl+Alt+Shift+O** lets you hear,
 change or switch off each one and save your own set. **Shift+F9** opens
 Activity, the list of everything QUILL Lite has told you this session, with
 buttons to retry or look into a problem, and **F9** repeats the last important
@@ -5959,7 +5967,7 @@ working:
 | Word wrap | **View > Word Wrap** (**Alt+Z**) |
 | Announce Headings, Announce Lists | **View** (**Ctrl+Alt+F3**, **Ctrl+Alt+F5**) |
 | Overwrite mode, Tab key behaviour, the status bar | **View** |
-| Quiet mode | **Tools > Quiet Mode** (**Alt+Shift+M**) |
+| App sounds on or off | **Tools > App Sounds** (**Alt+Shift+M**) |
 | Which sound each event makes | **Tools > Sound Scheme** (**Ctrl+Alt+Shift+O**) |
 | Which of the 21 areas exist at all | **Tools > Customize Features** (**Ctrl+Alt+F10**) |
 | What any key does | **Tools > Keyboard Manager** (**Ctrl+Alt+Shift+Space**) |
@@ -7219,7 +7227,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Alt+F12** | Restore Settings... |
 | **Ctrl+Alt+F10** | Customize Features... |
 | **Ctrl+Alt+Shift+Space** | Keyboard Manager... |
-| **Alt+Shift+M** | Quiet Mode |
+| **Alt+Shift+M** | App Sounds (on or off) |
 | **Ctrl+Alt+Shift+O** | Sound Scheme... |
 
 #### Spelling (in Tools)

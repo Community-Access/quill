@@ -74,6 +74,27 @@ def save_device_pref(filename: str, key: str, device: str) -> None:
         pass
 
 
+def own_audio_device(host: Any) -> str | None:
+    """The sound card an app's *own audio* plays on, for its sounds to follow.
+
+    None for an app with no audio of its own -- QUILL, QUILL Lite, Weather and
+    the rest -- which is what keeps "Same as its audio" out of their App
+    Sounds chooser (ui/app_sounds). Asked by app id rather than by a method on
+    the frame, because Radio's and Cast's players are mixins QUILL hosts too,
+    and inside QUILL the editor's sounds must not follow a station.
+    """
+    app = str(getattr(host, "_app_sounds_id", "") or "")
+    if app == "radio":
+        return str(getattr(getattr(host, "_radio_history", None), "output_device", "") or "")
+    if app == "cast":
+        library = getattr(host, "_podcast_library", None)
+        settings = getattr(library, "settings", None)
+        return str(getattr(settings, "output_device", "") or "")
+    if app == "player":
+        return read_device_pref(MEDIA_PLAYER_PREFS, MEDIA_PLAYER_DEVICE_KEY)
+    return None
+
+
 def media_player_binding(app: Any) -> OutputDeviceBinding | None:
     """Quill Media Player: the transport panel holds the engine and the device.
 

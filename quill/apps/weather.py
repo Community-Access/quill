@@ -35,7 +35,7 @@ _TITLE = "Quill Weather"
 #: independently (each resolves its own release asset), so nothing requires the
 #: numbers to agree.
 _VERSION = "2.2.1"
-_BUILD = 1  # this version's build (docs/release/RELEASE.md, "Build numbers")
+_BUILD = 2  # this version's build (docs/release/RELEASE.md, "Build numbers")
 #: Every QuillVille app now updates from the one shared repo, each resolving its
 #: own release asset (Quill-Weather-*), so they update and maintain independently.
 _REPO = "Community-Access/quill"
@@ -181,6 +181,10 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin):
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self._open_app_features(), id=self._features_item_id
         )
+        from quill.ui import app_sounds  # Alt+Shift+M, the same item in every app
+
+        app_sounds.append_menu_item(self, options_menu)
+        self._sounds_chooser_id = app_sounds.append_chooser_item(self, options_menu, "Ctrl+Shift+S")
         menu_bar.Append(options_menu, "&Options")
 
         from quill.ui.quillville_menu import build_quillville_menu

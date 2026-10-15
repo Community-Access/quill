@@ -23,6 +23,7 @@ __all__ = ["open_preferences"]
 
 def open_preferences(host: Any) -> None:
     """Options > Preferences (Ctrl+,)."""
+    from quill.ui import app_sounds
     from quill.ui.app_preferences_dialog import (
         PreferenceAction,
         PreferenceCheckbox,
@@ -84,6 +85,7 @@ def open_preferences(host: Any) -> None:
                 host.edit_exclusions,
                 key="inkwell.excluded_processes",
             ),
+            app_sounds.preference_action(host, key=app_sounds.SETTING_KEY),
         ],
         announce_cb=host._announce,
         declared=list(INKWELL_SETTINGS),

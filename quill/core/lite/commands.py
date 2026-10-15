@@ -908,10 +908,12 @@ COMMANDS: list[CommandRow] = [
     # switchable by Customize Features for the same reason Preferences is not --
     # switching off the menu that holds the switch is a door that locks from
     # the inside, and somebody who has silenced every sound needs a way back.
-    # Quiet mode, on the same chord QUILL uses. A checkable row rather than
-    # two commands: the state is the question ('am I muted?') and a check
-    # mark is the only thing that answers it without pressing anything.
-    ("&Tools", "&Quiet Mode", "Alt+Shift+M", "cmd_toggle_quiet_mode", "check"),
+    # App Sounds, on the same chord as every QUILL app (ui/app_sounds): this
+    # app's own sounds, checked while they are on. A checkable row rather than
+    # two commands: the state is the question ('are my sounds on?') and a
+    # check mark is the only thing that answers it without pressing anything.
+    # N, because S is Spelling and U is Customize Features in this menu.
+    ("&Tools", "App Sou&nds", "Alt+Shift+M", "cmd_toggle_quiet_mode", "check"),
     ("&Tools", "S&ound Scheme...", "Ctrl+Alt+Shift+O", "cmd_sound_scheme", ""),
     # -- Tools > Change Case -------------------------------------------------
     # -- Tools > AI. Five rows, five chords (rule 2 and rule 9 chose them; the

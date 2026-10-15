@@ -165,7 +165,7 @@ class QuillLiteApp(
         from quill.core.sound_events import SoundEvent
         from quill.ui.companion_cues import init_app_sound, post_cue
 
-        init_app_sound()
+        init_app_sound(app_id="quilllite", app_name=APP_NAME)  # and where they play
         # The one cue that says the app is *up*. A launch is the longest silence
         # in the whole product -- a window appears, the reader announces a title,
         # and nothing before that says the double-click worked.

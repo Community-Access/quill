@@ -368,6 +368,22 @@ Two items on the **Studio** menu track your listening across launches:
 
 These preferences are stored in a small app-local file, so the shared settings QUILL wrote stay exactly as QUILL wrote them. Speech settings (engine, voices, rates) deliberately stay in the shared store - configure a voice here and QUILL reads aloud with it too.
 
+## Where the Studio's own sounds play
+
+Audio Studio makes short sounds of its own, such as the ones that mark a narration run starting and finishing. You choose where they play, and you can turn them off.
+
+- **Alt+Shift+M** turns Audio Studio's sounds off. Press it again and they come back, on the same sound card as before. You hear a short sound as they go off, and another where they now play when they come back on, and both are spoken too. **Studio > App Sounds** has a check mark that shows whether they are on.
+- **Studio > Preferences (Ctrl+,) > App Sounds Play On...** lets you pick where they play:
+  - **System default**. This is where it starts. The sounds go where Windows sends sound.
+  - **None (no sounds)**. Audio Studio makes no sounds at all. Everything it tells you is still spoken.
+  - **Any sound card or headset in the list.** The sounds get a device of their own.
+
+After you choose, one sound plays on the new device, so you know straight away where it went.
+
+If the device you chose is unplugged or asleep, you still hear every sound, on the system default, and Audio Studio tells you once. When the device comes back, the sounds go back to it by themselves.
+
+This changes Audio Studio only. Your other QUILL apps keep their own choice, unless you have checked "Share these choices with my other Quill apps", which copies a change here to the others that share. Your screen reader is never moved.
+
 ## The system tray
 
 QUILL Audio Studio's icon is three white-and-gold waveform bars on a dark slate tile. If you have used an earlier build, this is new: the Studio used to share Quill Radio's blue broadcast-wave icon, so on a desktop with more than one QuillVille app installed several of them looked identical. Every app in the family now has its own - the same rounded tile shape and the same gold accent throughout, but its own colour and its own picture each.

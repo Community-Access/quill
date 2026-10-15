@@ -1570,6 +1570,23 @@ home with first.
 Next, Chapter 4, Finding podcasts you will love, helps you fill your library
 with more to listen to.
 
+### Where QUILL Cast's own sounds play
+
+QUILL Cast makes short sounds of its own when downloads start and finish, when new episodes arrive, and when an episode ends. You choose where they play, and you can turn them off.
+
+- **Alt+Shift+M** turns QUILL Cast's sounds off. Press it again and they come back, on the same sound card as before. You hear a short sound as they go off, and another where they now play when they come back on, and both are spoken too. **Episode > App Sounds** has a check mark that shows whether they are on.
+- **Preferences (Ctrl+,) > App Sounds Play On...** lets you pick where they play:
+  - **Same as its audio**. This is where it starts. The sounds go wherever the episode plays, and follow it when you move it to another sound card. The choice names the device it means right now.
+  - **System default**. The sounds go where Windows sends sound.
+  - **None (no sounds)**. QUILL Cast makes no sounds at all. Everything it tells you is still spoken.
+  - **Any sound card or headset in the list.** The sounds get a device of their own.
+
+After you choose, one sound plays on the new device, so you know straight away where it went.
+
+If the device you chose is unplugged or asleep, you still hear every sound, on the system default, and QUILL Cast tells you once. When the device comes back, the sounds go back to it by themselves.
+
+This changes QUILL Cast only. Your other QUILL apps keep their own choice, unless you have checked "Share these choices with my other Quill apps", which copies a change here to the others that share. Your screen reader is never moved.
+
 ## Chapter 4: Finding podcasts you will love
 
 This chapter is about filling your library. Someone mentions a podcast on the

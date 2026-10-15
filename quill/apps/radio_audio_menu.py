@@ -53,4 +53,9 @@ def build_preferences(app: Any, audio_menu: Any, wx: Any) -> Any:
         lambda _e: app.radio_toggle_title_announcements(),
         id=app._announce_titles_item_id,
     )
+    # Alt+Shift+M: this app's own sounds off and on (ui/app_sounds), the same
+    # item and key in every QUILL app.
+    from quill.ui import app_sounds
+
+    app_sounds.append_menu_item(app, audio_menu)
     return forget_volumes_id

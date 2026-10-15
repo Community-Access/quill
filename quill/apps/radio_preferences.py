@@ -16,8 +16,10 @@ from __future__ import annotations
 from typing import Any
 
 from quill.apps import radio_preferences_load
+from quill.apps import radio_preferences_rows as rows
 from quill.apps.radio_preferences_load import PreferencesDataLoad, podcast_schedule_help
 from quill.core.radio import main_view, reminders
+from quill.ui import app_sounds
 
 
 def _open_data_folder(app: Any) -> None:
@@ -46,78 +48,14 @@ _PODCASTS = "Podcasts"
 _REMINDERS = "Reminders"
 
 
-#: What the wake checkbox says in a portable copy, where it is greyed out.
-PORTABLE_WAKE_HELP = (
-    "A portable copy does not change this computer's Task Scheduler, so it "
-    "cannot wake the computer for a scheduled recording. Keeping the computer "
-    "awake before a recording still works."
-)
-
-
-def _startup_checkbox() -> Any:
-    from quill.platform.windows import radio_startup
-    from quill.ui.app_preferences_dialog import PreferenceCheckbox
-
-    enabled = radio_startup.is_windows() and not radio_startup.running_portable()
-    if radio_startup.running_portable():
-        help_text = radio_startup.PORTABLE_REFUSAL
-    elif enabled:
-        help_text = (
-            "Starts Quill Radio when you sign in to this Windows account. "
-            "This uses your per-user startup settings and needs no administrator rights."
-        )
-    else:
-        help_text = "Starting with Windows is only available on Windows."
-    return PreferenceCheckbox(
-        "Start Quill Radio with &Windows",
-        help_text,
-        radio_startup.is_launch_at_startup_enabled(),
-        enabled=enabled,
-    )
-
-
-def _wake_checkbox(value: bool) -> Any:
-    """The one preference that changes the machine, so the one a portable copy
-    cannot offer: registering a wake task on a friend's computer would outlive
-    the stick. The value is kept, so an installed copy sharing the data folder
-    is not quietly switched off."""
-    from quill.core.paths import portable_bundle_root
-    from quill.ui.app_preferences_dialog import PreferenceCheckbox
-
-    label = "Wa&ke the computer for a scheduled recording"
-    if portable_bundle_root() is not None:
-        return PreferenceCheckbox(label, PORTABLE_WAKE_HELP, value, enabled=False)
-    return PreferenceCheckbox(
-        label,
-        "If the computer is already asleep when a recording is due, "
-        "ask Windows to wake it a couple of minutes beforehand. This "
-        "adds a task to Windows Task Scheduler. On by default; turn "
-        "it off to leave your machine's sleep entirely alone.",
-        value,
-    )
-
-
-#: Until 2026-09-25 "Don't ask me again" on the Resume Recording dialog wrote
-#: this with no way back; this row is the way back.
-RESUME_CHOICES: tuple[tuple[str, str], ...] = (
-    ("ask", "Ask each time (default)"),
-    ("always", "Always resume them"),
-    ("never", "Never resume them"),
-)
-
-
-def _resume_index(value: object) -> int:
-    """Which row a stored resume choice is, or Ask when unknown."""
-    values = [stored for stored, _label in RESUME_CHOICES]
-    return values.index(value) if value in values else 0
-
-
-def _lead_index(seconds: object) -> int:
-    """Which lead-time row a stored default is, or the first when unknown."""
-    for index, (offered, _label) in enumerate(reminders.LEAD_CHOICES):
-        if offered == seconds:
-            return index
-    return 1
+# Moved to radio_preferences_rows under GATE-11; the old names stay, because
+# tests and the source-reading gates reach for them here.
+_startup_checkbox = rows.startup_checkbox
+_wake_checkbox = rows.wake_checkbox
+PORTABLE_WAKE_HELP = rows.PORTABLE_WAKE_HELP
+RESUME_CHOICES = rows.RESUME_CHOICES
+_resume_index = rows.resume_index
+_lead_index = rows.lead_index
 
 
 def open_preferences(app: Any) -> None:
@@ -421,6 +359,9 @@ def open_preferences(app: Any) -> None:
             ),
         ],
         actions=[
+            # Where Quill Radio's own sounds play (ui/app_sounds), one window
+            # for the whole family.
+            app_sounds.preference_action(app),
             PreferenceAction(
                 "Reset &All Stations' Sound Enhancements...",
                 "Reset all stations' Sound Enhancements to the shared default",
@@ -542,11 +483,18 @@ def open_preferences(app: Any) -> None:
         # A playing station reconnects through the newly chosen backend.
         app._radio_controller.set_playback_engine(chosen_engine)
     chosen_device = device_names[choice_indices[output_device_choice_index]]
-    if chosen_device != history.output_device:
+    radio_device_changed = chosen_device != history.output_device
+    if radio_device_changed:
         history.output_device = chosen_device
         # Reconnects a playing station through the right engine; a
         # station already on air moves to the new device immediately.
         app._radio_controller.set_output_device(chosen_device)
+    sound_said = ""
+    if radio_device_changed:
+        # Sounds that follow the radio follow it here too; one sound on the
+        # new card says so (ui/app_sounds).
+        if app_sounds.own_device_changed(app):
+            sound_said = "App sounds go with it."
     chosen_sort = _FAVORITES_SORT_VALUES[choice_indices[4]]
     history.catalog_refresh_hours = catalog_interval_values[choice_indices[5]]
     history.subscription_episode_limit = episode_limit_values[choice_indices[6]]
@@ -596,4 +544,5 @@ def open_preferences(app: Any) -> None:
     menu_bar = app.frame.GetMenuBar()
     if menu_bar is not None:
         menu_bar.Check(int(app._resume_menu_item_id), history.resume_on_launch)
-    app._announce(f"Preferences saved. {startup_said} {schedule_said} {youtube_said}".strip())
+    said = (startup_said, sound_said, schedule_said, youtube_said)
+    app._announce(" ".join(["Preferences saved.", *(part for part in said if part)]))

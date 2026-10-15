@@ -37,3 +37,8 @@ class RadioCallbacksMixin:
         """output_device_guard gave a device back: save the setting it went back to."""
         self._radio_history.output_device = device
         self._save_radio_history()
+        # Sounds that follow the radio follow it back, so they never sit on a
+        # card the radio has just given up on.
+        from quill.ui import app_sounds
+
+        app_sounds.apply(self)

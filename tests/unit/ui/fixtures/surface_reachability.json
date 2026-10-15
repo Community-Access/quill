@@ -21,6 +21,7 @@
   "quill.ui.app_quillins": "reachable",
   "quill.ui.app_quillins_host": "reachable",
   "quill.ui.app_shell": "reachable",
+  "quill.ui.app_sounds": "reachable",
   "quill.ui.assistant_panel": "reachable",
   "quill.ui.assistant_tools": "reachable",
   "quill.ui.audio_studio.captions_command": "reachable",

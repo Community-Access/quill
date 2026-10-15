@@ -244,26 +244,41 @@
 <main id="main-content" tabindex="-1">
 <h1 id="quill-lite-changelog">QUILL Lite changelog</h1>
 <h2 id="unreleased">Unreleased</h2>
-<p>Testing rebuild: <strong>1.2.0 (build 4)</strong>, following builds 2
-and 3, which were uploaded for testing. The new packages have not been
-published yet.</p>
+<p>Testing rebuild: <strong>1.2.0 (build 5)</strong>, following builds
+2, 3 and 4; builds 2 and 3 were uploaded for testing. The new packages
+have not been published yet.</p>
 <ul>
-<li><strong>Runs on Python 3.14, and older runtimes are cleaned
+<li><p><strong>Where QUILL Lite’s own sounds play, and Alt+Shift+M to
+turn them off.</strong> <strong>Tools &gt; Sound Scheme &gt; App Sounds
+Play On…</strong> offers System default, None (no sounds), or any sound
+card or headset by name. After a change one sound plays on the new card,
+so you hear where it went. If that card is unplugged the sounds play on
+the system default until it is back, and QUILL Lite says so once.
+<strong>Alt+Shift+M</strong> turns QUILL Lite’s sounds off and back on
+where they were, and <strong>Tools &gt; App Sounds (formerly Quiet
+Mode)</strong> shows a check mark while they are on. Each QUILL app
+keeps its own choice; “Share these choices with my other Quill apps”
+keeps them in step. Your screen reader is never moved. Asked for on
+QUILLVille by Rick Lewis. Until now Alt+Shift+M silenced QUILL and QUILL
+Lite together; it now silences the app you are in. <strong>Sound
+notifications</strong> in QUILL’s Settings still silences every QUILL
+app at once.</p></li>
+<li><p><strong>Runs on Python 3.14, and older runtimes are cleaned
 up.</strong> The shared QuillVille runtime this build installs is Python
 3.14. The installer then removes older runtimes (Python 3.13) that no
 installed QuillVille app uses any more; one that an app or a shortcut
 still points to is left alone. Portable copies carry their own Python
-and change nothing outside their folder.</li>
-<li><strong>Dictation does not hear the screen reader.</strong> With a
-headset, JAWS, NVDA or Narrator reading back what you dictated was heard
-by the microphone and written as a new phrase. The built-in speech
+and change nothing outside their folder.</p></li>
+<li><p><strong>Dictation does not hear the screen reader.</strong> With
+a headset, JAWS, NVDA or Narrator reading back what you dictated was
+heard by the microphone and written as a new phrase. The built-in speech
 models now hear silence while the screen reader (or QUILL Lite’s own
 sounds) are playing; words spoken over the reader are not heard, so wait
-for it or press Ctrl.</li>
-<li><strong>The same phrase said twice is written twice.</strong> It was
-taken for the screen reader’s echo and dropped.</li>
-<li><strong>The phrase-written sound is a soft tone.</strong> The old
-one started so sharply that it was heard as a spoken “c”.</li>
+for it or press Ctrl.</p></li>
+<li><p><strong>The same phrase said twice is written twice.</strong> It
+was taken for the screen reader’s echo and dropped.</p></li>
+<li><p><strong>The phrase-written sound is a soft tone.</strong> The old
+one started so sharply that it was heard as a spoken “c”.</p></li>
 </ul>
 <p>Carried over from build 3:</p>
 <ul>

@@ -1438,6 +1438,10 @@ class MainFrame(
                 from quill.ui import sound_manager
 
                 sound_manager.init(self.settings)
+                from quill.ui import app_sounds
+
+                self._app_sounds_id, self._app_sounds_name = "quill", "QUILL"
+                app_sounds.apply(self)  # QUILL's own choice; never a station's card
             except Exception:
                 self._report_startup_task_failure("sound manager init")
             try:
@@ -7781,10 +7785,15 @@ class MainFrame(
         self._set_status("Announcement trace setting is in Settings > Accessibility")
 
     def toggle_sound(self, enabled: bool | None = None) -> None:
+        """Alt+Shift+M: QUILL's own sounds off and on (ui/app_sounds), as in
+        every app. An explicit *enabled* is the family-wide switch instead."""
         from quill.core.settings import save_settings
         from quill.core.sound_events import SoundEvent
-        from quill.ui import sound_manager
+        from quill.ui import app_sounds, sound_manager
 
+        if enabled is None:
+            app_sounds.toggle(self)
+            return
         current = bool(getattr(self.settings, "sound_enabled", True))
         if enabled is None:
             enabled = not current
@@ -7818,7 +7827,7 @@ class MainFrame(
         from quill.core.settings import save_settings
         from quill.core.sound_pack import available_sound_packs
         from quill.core.sound_scheme import user_schemes
-        from quill.ui import sound_manager
+        from quill.ui import app_sounds, sound_manager
         from quill.ui.sound_scheme_dialog import SoundSchemeDialog, draft_for_pack
 
         disabled_str = str(getattr(self.settings, "sound_events_disabled", ""))
@@ -7843,6 +7852,7 @@ class MainFrame(
             # fire everything, so it is offered everything. An event it declares
             # and never posts is a gap in QUILL to close, not a row to hide.
             app_id="quill",
+            choose_device=lambda: app_sounds.choose(self),
         )
         result = dialog.show()
         if not result.changed:

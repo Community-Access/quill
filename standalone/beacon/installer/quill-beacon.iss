@@ -17,10 +17,10 @@
 ; (docs/release/RELEASE.md, "Build numbers"). build_release.ps1 passes
 ; /dAppBuild= and /dAppFileVersion=; these literals are only the fallback.
 #ifndef AppBuild
-  #define AppBuild "1"
+  #define AppBuild "2"
 #endif
 #ifndef AppFileVersion
-  #define AppFileVersion "0.1.0.1"
+  #define AppFileVersion "0.1.0.2"
 #endif
 #define AppPublisher "Community Access"
 #define AppURL "https://github.com/Community-Access/quill"

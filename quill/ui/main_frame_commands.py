@@ -1119,7 +1119,7 @@ class CommandRegistryMixin:
         )
         self.commands.register(
             "tools.sound_toggle",
-            "Toggle Sound Notifications",
+            "App Sounds On or Off",
             self.toggle_sound,
             self._binding_for("tools.sound_toggle"),
         )

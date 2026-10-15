@@ -57,6 +57,9 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 _manager: _SoundManager | None = None
+#: The card this process's earcons go to and who hears about it, as last given
+#: to :func:`set_output_device` -- re-applied when :func:`init` rebuilds.
+_route: tuple[str, object] = ("", None)
 
 
 # ---------------------------------------------------------------------------
@@ -70,6 +73,10 @@ def init(settings: Settings) -> None:
     if _manager is not None:
         _manager.shutdown()
     _manager = _SoundManager(settings)
+    # A re-init keeps the card the app chose: settings know nothing about it,
+    # so nobody else would put it back.
+    if _route[0]:
+        _manager.player.set_output_device(*_route)
 
 
 def shutdown() -> None:
@@ -138,6 +145,24 @@ def preview_file(path: object) -> bool:
     except Exception:  # noqa: BLE001 - a preview is never worth an exception
         return False
     return True
+
+
+def set_output_device(device: str, on_route: object = None) -> bool:
+    """Route this process's earcons to sound card *device* ("" = system default).
+
+    For a companion app whose sounds belong with its audio -- Quill Radio sends
+    them to the radio's card. QUILL itself never calls this: its earcons are
+    the editor's, and the editor has no card of its own. Returns whether the
+    card is reachable now; False before :func:`init`.
+    """
+    global _route
+    _route = (str(device or "").strip(), on_route)
+    if _manager is None:
+        return False
+    try:
+        return bool(_manager.player.set_output_device(*_route))
+    except Exception:  # noqa: BLE001 - routing must never cost the app its sounds
+        return False
 
 
 def toggle_mute() -> bool:

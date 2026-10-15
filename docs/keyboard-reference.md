@@ -313,7 +313,7 @@ Editor commands with default bindings: 495.
 | Alt+Shift+F6 | Windows dictation settings | `tools.windows_dictation_settings` |
 | Alt+Shift+F7 | Spell Check Word | `tools.spell_check_word_at_cursor` |
 | Alt+Shift+L | Misspelling List... | `tools.misspelling_list` |
-| Alt+Shift+M | Toggle Sound Notifications | `tools.sound_toggle` |
+| Alt+Shift+M | App Sounds On or Off | `tools.sound_toggle` |
 | Alt+Shift+Q | Ask Quill by Voice... | `tools.ask_quill_conversation` |
 | Alt+Shift+R | Misspelling List (Ranked by Frequency)... | `tools.misspelling_list_ranked` |
 | Ctrl+Alt+F10 | Manage Individual Features... | `tools.individual_feature_toggles` |

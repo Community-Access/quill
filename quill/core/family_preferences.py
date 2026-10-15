@@ -23,7 +23,15 @@ from collections.abc import Collection
 from pathlib import Path
 from typing import Any
 
-__all__ = ["SHARED", "adopt", "is_sharing", "publish", "set_sharing", "words_for"]
+__all__ = [
+    "SHARED",
+    "adopt",
+    "is_sharing",
+    "publish",
+    "set_sharing",
+    "sharing_apps",
+    "words_for",
+]
 
 _FILE = "family_preferences.json"
 
@@ -59,6 +67,12 @@ def _write(data_dir: Path, record: dict[str, Any]) -> None:
 
 def is_sharing(data_dir: Path, app: str) -> bool:
     return bool(_read(data_dir)["apps"].get(app, False))
+
+
+def sharing_apps(data_dir: Path) -> list[str]:
+    """Every app that has said "share these choices", for a choice that is
+    stored outside :data:`SHARED` -- App sounds play on keeps its own file."""
+    return sorted(app for app, on in _read(data_dir)["apps"].items() if on)
 
 
 def publish(

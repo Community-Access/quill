@@ -27,7 +27,7 @@ __version__ = "1.0.0"
 # The build of this version (docs/release/RELEASE.md, "Build numbers"): a rebuild
 # of the same version ships as the next build and is offered as an update to
 # everyone on an earlier one. tools/generate_build_info.py reads it.
-__build__ = 1
+__build__ = 2
 
 # Re-export the new modules so callers can `from quill import branding`
 # and `from quill import build_info` without touching the package layout.

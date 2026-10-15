@@ -5600,12 +5600,21 @@ QUILL plays short sounds, called earcons, for things your screen reader does
 not mention, like a misspelling or a paste. Here is how to silence them all at
 once, change one, or build a set of your own.
 
-#### Quiet mode
+#### Where QUILL's sounds play, and turning them off
 
-`Alt+Shift+M` silences every sound at once. Press it again to bring them back.
-It is one key so you can reach it while the noise is happening: on a call, in
-a quiet room, or when you have simply heard enough for today. The setting is
-shared with QUILL Lite, so silencing one editor silences both.
+QUILL makes short sounds of its own. You choose where they play, and you can turn them off.
+
+- **Alt+Shift+M** turns QUILL's sounds off. Press it again and they come back, on the same sound card as before. You hear a short sound as they go off, and another where they now play when they come back on, and both are spoken too. **Tools > Reading and Dictation > App Sounds** has a check mark that shows whether they are on.
+- **Tools > Reading and Dictation > Sound Scheme... (Ctrl+Alt+Shift+O) > App Sounds Play On...** lets you pick where they play:
+  - **System default**. This is where it starts. The sounds go where Windows sends sound.
+  - **None (no sounds)**. QUILL makes no sounds at all. Everything it tells you is still spoken.
+  - **Any sound card or headset in the list.** The sounds get a device of their own.
+
+After you choose, one sound plays on the new device, so you know straight away where it went.
+
+If the device you chose is unplugged or asleep, you still hear every sound, on the system default, and QUILL tells you once. When the device comes back, the sounds go back to it by themselves.
+
+This changes QUILL only. Your other QUILL apps keep their own choice, unless you have checked "Share these choices with my other Quill apps", which copies a change here to the others that share. Your screen reader is never moved. Until October 2026, Alt+Shift+M silenced QUILL and QUILL Lite together. Now every QUILL app has its own, on the same key; to silence all of them at once, turn off **Sound notifications** in Settings.
 
 #### The Sound Scheme window
 
@@ -11032,9 +11041,11 @@ and it never replaces speech.
   Scheme...** to turn single events on or off. Events are grouped into
   Earcons, Compare and (when an indent-tone pack is loaded) Indentation tones,
   so you can keep, say, the save and search cues and silence the rest.
-- **Toggle everything.** **Toggle Sound Notifications** (in Reading &
-  Dictation) turns all earcons on or off at once, and plays a short "on" or
-  "off" cue so you know which way it went.
+- **QUILL's sounds on or off.** **App Sounds** (in Reading & Dictation,
+  Alt+Shift+M) turns QUILL's own sounds off or back on, and plays a short
+  "off" or "on" cue so you know which way it went. **App Sounds Play On...**
+  in the Sound Scheme window chooses the sound card they play on. The
+  **Sound notifications** setting still silences every QUILL app at once.
 - **Indentation tones.** In code and other indented text, QUILL can play a
   tone as the caret crosses indent levels. The tone rises as you go deeper and
   falls as you come back out. Pick a scale (pentatonic, whole-tone, diatonic

@@ -490,8 +490,9 @@ the shared default. Needs **FFmpeg**.
 
 ## RADIO-17 — Output Device (Playback ▸ Output Device…, Ctrl+Shift+D)
 
-*What & why.* Send just the radio to a chosen sound card while your screen reader
-and Quill Radio's own sounds stay on the system default. Needs **mpv**.
+*What & why.* Send the radio to a chosen sound card. Quill Radio's own sounds go
+with it unless **App sounds play on** (Preferences) says otherwise; the screen
+reader is never moved. Needs **mpv**.
 
 **Before you start**
 - A station playing on the **mpv** engine (else a message points you to switch).
@@ -507,6 +508,19 @@ and Quill Radio's own sounds stay on the system default. Needs **mpv**.
   the playing station moves to that device immediately; picking the same one says
   **"Output device unchanged: {label}."** On the classic engine a message
   explains device choice needs libmpv and where to switch.
+- With **App sounds play on** at **Same as the radio** (the default), confirming
+  says **"Output device: {label}. App sounds go with it."** and the playing sound
+  plays once on the new device; every later Quill Radio sound plays there too.
+
+**Then, in Preferences (Ctrl+,)**
+3. Set **App sounds play on** to a different device (or **System default**) and
+   press OK: the playing sound plays once there, and the save says **"App sounds
+   play on {label}."**
+4. Unplug that device and start a station: the sounds play on the system default
+   and Quill Radio says once **"Quill Radio's sounds cannot reach {label}, so they
+   are playing on the system default device until it is back."** Plug it back in:
+   within a few seconds the next sound is on it and you hear **"Quill Radio's
+   sounds are back on {label}."**
 
 **Sign off** — `[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A`
 `[ ] Works` `[ ] Surface-exact` `[ ] Accessible`  · Notes: ____________________

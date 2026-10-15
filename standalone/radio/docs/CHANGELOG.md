@@ -8,8 +8,23 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 ## [Unreleased]
 
-Testing rebuild: **3.2.0 (build 3)**. The packages have not been published yet.
+Testing rebuild: **3.2.0 (build 4)**. The packages have not been published yet.
 
+- **Quill Radio's own sounds play on the radio's sound card.** The sounds for
+  connecting, playing, stopped, stream errors, recording started and stopped,
+  and reminders now go to the same device as the radio, so if you send the
+  station to a broadcast card you can hear on that card that you are on air.
+  They follow every change: Preferences, Audio > Output Device (Ctrl+Shift+D),
+  and Quill Radio putting the radio back on a device that works.
+  **Preferences > App Sounds Play On...** offers Same as its audio (the
+  default, which names that device), System default (the old behavior),
+  None (no sounds), or any sound card or headset. After a change you hear
+  one sound on the new device. An unplugged device never silences
+  anything: the sounds play on the system default, Quill Radio says so
+  once, and they go back by themselves when it returns. **Alt+Shift+M**
+  (**Audio > App Sounds**) turns them off and back on, the same key in
+  every QUILL app. Your screen reader is never moved. Reported on QUILLVille by
+  Rick Lewis. User guide: "Where Quill Radio's own sounds play" in Chapter 5.
 - **QUILL Lineups (Playback > Lineups..., Ctrl+U).** A Lineup is a named list
   of anything Quill Radio and QUILL Cast can play: stations, saved places,
   podcasts and episodes, YouTube videos, playlists and channels, Local Media

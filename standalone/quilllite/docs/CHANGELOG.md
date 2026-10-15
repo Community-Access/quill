@@ -2,8 +2,11 @@
 
 ## Unreleased
 
-Testing rebuild: **1.2.0 (build 4)**, following builds 2 and 3, which were
+Testing rebuild: **1.2.0 (build 5)**, following builds 2, 3 and 4; builds 2 and 3 were
 uploaded for testing. The new packages have not been published yet.
+
+- **Where QUILL Lite's own sounds play, and Alt+Shift+M to turn them off.** **Tools > Sound Scheme > App Sounds Play On...** offers System default, None (no sounds), or any sound card or headset by name. After a change one sound plays on the new card, so you hear where it went. If that card is unplugged the sounds play on the system default until it is back, and QUILL Lite says so once. **Alt+Shift+M** turns QUILL Lite's sounds off and back on where they were, and **Tools > App Sounds (formerly Quiet Mode)** shows a check mark while they are on. Each QUILL app keeps its own choice; "Share these choices with my other Quill apps" keeps them in step. Your screen reader is never moved. Asked for on QUILLVille by Rick Lewis.
+  Until now Alt+Shift+M silenced QUILL and QUILL Lite together; it now silences the app you are in. **Sound notifications** in QUILL's Settings still silences every QUILL app at once.
 
 - **Runs on Python 3.14, and older runtimes are cleaned up.** The shared QuillVille
   runtime this build installs is Python 3.14. The installer then removes older

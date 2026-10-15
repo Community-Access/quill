@@ -312,10 +312,11 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "tools.voice_status": "",
     "tools.table_studio": "",
     "tools.csv_studio": "",
-    # Quiet mode. Alt+Shift+M for mute, and the same chord in QUILL Lite --
-    # one key for one idea, in both editors, because "make it stop" is the
-    # command somebody reaches for without wanting to think about which
-    # app they are in. Free in both keymaps, which is why it is this one.
+    # App Sounds. Alt+Shift+M for mute, and the same chord in every QUILL app
+    # since 2026-10-14 (ui/app_sounds) -- one key for one idea, because "make
+    # it stop" is the command somebody reaches for without wanting to think
+    # about which app they are in. It silences the app you are in; the
+    # family-wide switch is Settings' Sound notifications.
     "tools.sound_toggle": "Alt+Shift+M",
     "tools.word_count": "Ctrl+Shift+G",
     "tools.spell_check_dialog": "F7",

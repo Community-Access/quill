@@ -172,13 +172,19 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 title="Send the radio to a different speaker",
                 body=(
                     "Radio output device, in Preferences, and Output Device on "
-                    "the Audio menu, send just the radio to a second sound card "
-                    "or a USB headset. Your screen reader and Quill Radio's own "
-                    "sounds stay where they are. So you can have the radio in "
-                    "the speakers and your screen reader in your headphones."
+                    "the Audio menu, send the radio to a second sound card or a "
+                    "USB headset. Quill Radio's own sounds go with it, so you "
+                    "hear the playing sound there, and your screen reader stays "
+                    "where it is. So you can have the radio in the speakers and "
+                    "your screen reader in your headphones. App sounds play on, "
+                    "in Preferences, gives the sounds a device of their own."
                 ),
                 keys=("Ctrl+Shift+D",),
-                hear="Output Device, the device list, then Output device and the name you chose.",
+                hear=(
+                    "Output Device, the device list, then Output device, the name "
+                    "you chose and App sounds go with it, and the playing sound "
+                    "on that device."
+                ),
                 note=(
                     "If you unplug the device, Quill Radio remembers it for next "
                     "time. Meanwhile it plays through your usual device and "
