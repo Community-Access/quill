@@ -46,12 +46,13 @@ from quill.core.expansion.settings import (
     save_settings,
 )
 from quill.core.net import configure_ssl_trust
+from quill.ui import app_sounds
 from quill.ui.app_shell import AppShellFrame
 from quill.ui.inkwell_expansion import InkwellExpansionMixin
 
 _TITLE = "Quill Inkwell"
 _VERSION = "1.0.0"
-_BUILD = 1  # this version's build (docs/release/RELEASE.md, "Build numbers")
+_BUILD = 2  # this version's build (docs/release/RELEASE.md, "Build numbers")
 _REPO = "Community-Access/quill"
 _IPC_SLOT = "inkwell"
 
@@ -201,6 +202,7 @@ class QuillInkwellFrame(
         excluded_id = wx.NewIdRef()
         options_menu.Append(excluded_id, "E&xcluded Applications...\tCtrl+Alt+X")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.edit_exclusions(), id=excluded_id)
+        app_sounds.append_menu_item(self, options_menu)  # Alt+Shift+M, family-wide
         menu_bar.Append(options_menu, "&Options")
         self._append_dictation_menu(menu_bar)  # Dictate Anywhere (inkwell_dictation.py)
 

@@ -853,6 +853,22 @@ key that works from any program, choose it in File > Show and Hide Key...
 (Ctrl+Alt+Shift+H). Ctrl+Alt+Shift+S finds any command by name. Chapter 8 is
 for when something goes wrong.
 
+### Where Quill Converter's own sounds play
+
+Quill Converter makes short sounds of its own, such as the ones that mark a conversion finishing or failing. You choose where they play, and you can turn them off.
+
+- **Alt+Shift+M** turns Quill Converter's sounds off. Press it again and they come back, on the same sound card as before. You hear a short sound as they go off, and another where they now play when they come back on, and both are spoken too. **File > App Sounds** has a check mark that shows whether they are on.
+- **File > Preferences (Ctrl+,) > App Sounds Play On...** lets you pick where they play:
+  - **System default**. This is where it starts. The sounds go where Windows sends sound.
+  - **None (no sounds)**. Quill Converter makes no sounds at all. Everything it tells you is still spoken.
+  - **Any sound card or headset in the list.** The sounds get a device of their own.
+
+After you choose, one sound plays on the new device, so you know straight away where it went.
+
+If the device you chose is unplugged or asleep, you still hear every sound, on the system default, and Quill Converter tells you once. When the device comes back, the sounds go back to it by themselves.
+
+This changes Quill Converter only. Your other QUILL apps keep their own choice, unless you have checked "Share these choices with my other Quill apps", which copies a change here to the others that share. Your screen reader is never moved.
+
 ## Chapter 8: When you need a hand
 
 Everybody gets stuck sometimes. This chapter covers the help that is always one

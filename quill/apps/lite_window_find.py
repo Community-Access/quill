@@ -28,6 +28,7 @@ from typing import Any
 
 import wx
 
+from quill.apps.lite_file_search import DocumentFileSearchMixin
 from quill.apps.lite_find_dialogs import (
     FindDialog,
     ReplaceDialog,
@@ -52,7 +53,7 @@ from quill.ui.windows_dictation_tools import bind_field_dictation
 __all__ = ["DocumentFindMixin"]
 
 
-class DocumentFindMixin:
+class DocumentFindMixin(DocumentFileSearchMixin):  # and across a folder of files
     """Composed onto ``DocumentFrame`` through ``DocumentCommandsMixin``.
 
     Reads ``control``, ``_find_options``, ``_find_dialog``, ``app.settings``,
@@ -68,6 +69,9 @@ class DocumentFindMixin:
         return str(self._find_options.get("needle", ""))
 
     def cmd_find(self) -> None:
+        from quill.apps.lite_open_documents import state_for
+
+        state_for(self.app).end()  # an ordinary Find: F3 is this window's again
         if self._find_dialog is not None:
             try:
                 self._find_dialog.Raise()
@@ -96,7 +100,24 @@ class DocumentFindMixin:
     def cmd_find_previous(self) -> None:
         self._repeat_find(reverse=True)
 
+    def cmd_find_open_docs(self) -> None:
+        """Ctrl+Alt+Shift+F8: find and replace across every open window.
+
+        The window QUILL opens too (ui/open_documents_find), over this app's
+        windows; asked for on QUILLVille by Chris Nova, October 2026.
+        """
+        from quill.apps.lite_open_documents import LiteOpenDocuments
+        from quill.ui.open_documents_find import open_find_in_open_documents
+
+        open_find_in_open_documents(LiteOpenDocuments(self))
+
     def _repeat_find(self, *, reverse: bool) -> None:
+        from quill.apps.lite_open_documents import LiteOpenDocuments
+        from quill.ui.open_documents_find import find_again
+
+        # After Find in Open Documents, F3 carries on across every window.
+        if find_again(LiteOpenDocuments(self), backwards=reverse):
+            return
         if not self._find_options.get("needle"):
             self.cmd_find()
             return
@@ -310,6 +331,9 @@ class DocumentFindMixin:
         self._touch_status()
 
     def cmd_replace(self) -> None:
+        from quill.apps.lite_open_documents import state_for
+
+        state_for(self.app).end()
         dialog = ReplaceDialog(
             self,
             self._selected_or_last_needle(),

@@ -21,8 +21,12 @@ a bug at the call site, not something to paper over here.
 from __future__ import annotations
 
 
-def init_app_sound(settings: object | None = None) -> None:
+def init_app_sound(settings: object | None = None, *, app_id: str = "", app_name: str = "") -> None:
     """Load the sound pack so this app's earcons have a player to reach.
+
+    With *app_id*, also route them to wherever that app's App Sounds choice
+    says (ui/app_sounds) -- for an app whose frame is not an AppShellFrame,
+    which does this itself.
 
     Only ``MainFrame`` ever started the sound manager, so every companion app
     installed a ``SoundSink`` that played into an uninitialised manager: the
@@ -34,6 +38,12 @@ def init_app_sound(settings: object | None = None) -> None:
         from quill.ui import sound_manager
 
         sound_manager.init(settings if settings is not None else load_settings())
+        if app_id:
+            from types import SimpleNamespace
+
+            from quill.ui import app_sounds
+
+            app_sounds.apply(SimpleNamespace(_app_sounds_id=app_id, _app_sounds_name=app_name))
     except Exception:  # noqa: BLE001 - no sound is never a startup failure
         return
 

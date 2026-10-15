@@ -393,6 +393,22 @@ Transcribe waiting in the tray does not hold it.
 The microphone is let go when dictation stops, when it stops because something
 went wrong, when the window closes, and when the program exits for any reason.
 
+## Where QUILL Transcribe's own sounds play
+
+QUILL Transcribe makes short sounds of its own, such as the ones that mark dictation starting and stopping. You choose where they play, and you can turn them off.
+
+- **Alt+Shift+M** turns QUILL Transcribe's sounds off. Press it again and they come back, on the same sound card as before. You hear a short sound as they go off, and another where they now play when they come back on, and both are spoken too. **Options > App Sounds** has a check mark that shows whether they are on.
+- **Options > App Sounds Play On... (Ctrl+Shift+S)** lets you pick where they play:
+  - **System default**. This is where it starts. The sounds go where Windows sends sound.
+  - **None (no sounds)**. QUILL Transcribe makes no sounds at all. Everything it tells you is still spoken.
+  - **Any sound card or headset in the list.** The sounds get a device of their own.
+
+After you choose, one sound plays on the new device, so you know straight away where it went.
+
+If the device you chose is unplugged or asleep, you still hear every sound, on the system default, and QUILL Transcribe tells you once. When the device comes back, the sounds go back to it by themselves.
+
+This changes QUILL Transcribe only. Your other QUILL apps keep their own choice, unless you have checked "Share these choices with my other Quill apps", which copies a change here to the others that share. Your screen reader is never moved.
+
 ## Safe Mode
 
 In Safe Mode, QUILL Transcribe does not listen, registers no keys, downloads no

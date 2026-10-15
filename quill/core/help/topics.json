@@ -533,6 +533,17 @@
     "user_guide_section": "writing-and-editing"
   },
   {
+    "id": "edit.find_in_open_documents",
+    "title": "Find in Open Documents...",
+    "body": "Find and replace across every document you have open, not just the one in front of you. It searches the text as it is in each window, so unsaved changes and documents you have never saved are found too. Find Next and Find Previous move from document to document and say each document's name; Find All lists every match, and Enter goes there; Replace All tells you how many first, gives each document its own undo, and saves nothing. After the window closes, F3 and Shift+F3 keep searching across documents until you start an ordinary Find.",
+    "keystrokes": [
+      "Ctrl+Alt+Shift+F8 - Open the window",
+      "F3 - Find next, across documents",
+      "Shift+F3 - Find previous, across documents"
+    ],
+    "user_guide_section": "search-and-replace"
+  },
+  {
     "id": "edit.find_all_matches",
     "title": "Find All Matches",
     "body": "List every match for your search in a navigable panel, so you can review all occurrences at once and jump to any of them.",

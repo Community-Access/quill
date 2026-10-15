@@ -1119,7 +1119,7 @@ class CommandRegistryMixin:
         )
         self.commands.register(
             "tools.sound_toggle",
-            "Toggle Sound Notifications",
+            "App Sounds On or Off",
             self.toggle_sound,
             self._binding_for("tools.sound_toggle"),
         )
@@ -1810,6 +1810,7 @@ class CommandRegistryMixin:
             self.find_all_matches,
             self._binding_for("edit.find_all_matches"),
         )
+        self._register_open_documents_command()  # main_frame_open_documents
         self.commands.register(
             "tools.search_in_files",
             "Search in Files...",

@@ -14,6 +14,7 @@ import sys
 
 from quill.core.app_launcher import is_app_released, is_dev_build
 from quill.core.i18n import _
+from quill.ui import app_sounds
 from quill.ui.menu_routes import apply_menu_routes
 
 
@@ -704,6 +705,7 @@ class MenuBuilderMixin:
             self._id_find_all_matches,
             self._menu_label(_("Find All &Matches"), "edit.find_all_matches"),
         )
+        self._append_open_documents_item(edit_menu)  # main_frame_open_documents
         # Word puts Go To under Edit, beneath Find and Replace, and it is one
         # window with a target kind now (bad.md 5.4, M4, P1.20). It is here
         # rather than in both places because two menu rows on one chord means
@@ -2331,10 +2333,12 @@ class MenuBuilderMixin:
             self._menu_label(_("&Read All"), "edit.read_all"),
         )
         reading_menu.AppendSeparator()
-        reading_menu.Append(
-            self._id_toggle_sound,
-            self._menu_label(_("&Toggle Sound Notifications"), "tools.sound_toggle"),
+        # Alt+Shift+M: QUILL's own sounds, checked while on (ui/app_sounds).
+        reading_menu.AppendCheckItem(
+            self._id_toggle_sound, self._menu_label(_("App So&unds"), "tools.sound_toggle")
         )
+        self._app_sounds_menu_id = self._id_toggle_sound
+        reading_menu.Check(self._id_toggle_sound, app_sounds.sounds_on(self))
         reading_menu.Append(
             self._id_sound_events,
             self._menu_label(_("S&ound Scheme..."), "tools.sound_events"),

@@ -59,6 +59,7 @@ from quill.core.audio_studio.sleep_timer import (
 from quill.core.net import configure_ssl_trust
 from quill.core.paths import app_data_dir
 from quill.core.settings import save_settings
+from quill.ui import app_sounds as _app_sounds
 from quill.ui.app_shell import AppShellFrame
 from quill.ui.audio_studio.library_tree import (
     LibraryTreeActions,
@@ -77,7 +78,7 @@ _TITLE = "QUILL Audio Studio"
 #: Studio's own version, not QUILL's: About and Check for Updates both read it,
 #: and it must match standalone/studio (pyproject, installers) -- GATE-APPVER.
 _VERSION = "2.2.0"
-_BUILD = 1  # this version's build (docs/release/RELEASE.md, "Build numbers")
+_BUILD = 2  # this version's build (docs/release/RELEASE.md, "Build numbers")
 #: Shared components this app requires, for the component-refcount registry
 #: (ffmpeg for audio processing/export; mpv for the player preview).
 #: mpv was declared "opt-in" while the build has always bundled it and
@@ -972,6 +973,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
         studio.Check(self._resume_menu_item_id, self._history.resume_on_launch)
         studio.AppendSeparator()
         studio.Append(prefs_id, "&Preferences...\tCtrl+,")
+        _app_sounds.append_menu_item(self, studio)  # Alt+Shift+M, family-wide
         studio.AppendSeparator()
         studio.Append(exit_id, "E&xit\tCtrl+Q")
         menu_bar.Append(studio, "&Studio")
@@ -2591,61 +2593,9 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
     # -- preferences ----------------------------------------------------------------
 
     def _open_preferences(self) -> None:
-        from quill.ui.app_preferences_dialog import (
-            PreferenceCheckbox,
-            PreferenceChoice,
-            PreferencesDialog,
-        )
+        from quill.apps.studio_preferences import open_preferences
 
-        prefs = self._app_prefs
-        close_index = _CLOSE_ACTION_VALUES.index(str(prefs["close_action"]))
-        dialog = PreferencesDialog(
-            self.frame,
-            app_title=_TITLE,
-            checkboxes=[
-                PreferenceCheckbox(
-                    "&Check for updates automatically on launch",
-                    "Check for updates automatically on launch",
-                    bool(prefs["check_updates_on_startup"]),
-                ),
-                PreferenceCheckbox(
-                    "Alt+F&4 minimizes to the system tray",
-                    "When on, Alt+F4 sends the Studio to the system tray with any "
-                    "narration run still going, instead of closing the window. The "
-                    "titlebar X and Exit keep the 'When closing the window' behavior",
-                    bool(prefs["alt_f4_to_tray"]),
-                ),
-                PreferenceCheckbox(
-                    "&Speak progress milestones during long runs",
-                    "During a narration or build run, announce 25, 50, and 75 "
-                    "percent so you can follow progress without checking the window",
-                    bool(prefs["announce_run_milestones"]),
-                ),
-            ],
-            choices=[
-                PreferenceChoice(
-                    "When &closing the window:",
-                    "What the titlebar X does. 'Ask when work is running' only "
-                    "prompts while an export is still going; an idle window just "
-                    "closes",
-                    list(_CLOSE_ACTION_LABELS),
-                    close_index,
-                ),
-            ],
-            announce_cb=self._announce,
-        )
-        result = dialog.show()
-        if result is None:
-            return
-        checkbox_values, choice_indices, _texts = result
-        (
-            prefs["check_updates_on_startup"],
-            prefs["alt_f4_to_tray"],
-            prefs["announce_run_milestones"],
-        ) = checkbox_values
-        prefs["close_action"] = _CLOSE_ACTION_VALUES[choice_indices[0]]
-        _save_app_prefs(prefs)
-        self._announce("Preferences saved")
+        open_preferences(self)
 
     # -- docs / about / updates ------------------------------------------------------
 

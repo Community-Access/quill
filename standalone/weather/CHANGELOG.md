@@ -9,6 +9,10 @@ update independently. This version history begins with 2.2.0.
 
 ## 2.2.1 - 2026-10-08
 
+Build 2:
+
+- **Where Quill Weather's own sounds play, and Alt+Shift+M to turn them off.** **Options > App Sounds Play On...** (Ctrl+Shift+S) offers System default, None (no sounds), or any sound card or headset by name; a weather alert is still spoken when its sound is off. After a change one sound plays on the new card, so you hear where it went. If that card is unplugged the sounds play on the system default until it is back, and Quill Weather says so once. **Alt+Shift+M** turns Quill Weather's sounds off and back on where they were, and **Options > App Sounds** shows a check mark while they are on. Each QUILL app keeps its own choice; "Share these choices with my other Quill apps" keeps them in step. Your screen reader is never moved. Asked for on QUILLVille by Rick Lewis.
+
 - Current conditions, Quick Weather, and local time now use a saved place's friendly name, such as Home or Summer Home.
 - Builds now offer only the shared installer and self-contained portable zip, with matching update selection and shared-runtime freshness checks.
 - The installer is per-user and records Weather's own version; the portable launcher stays offline and cannot register Windows startup or scheduled background checks.

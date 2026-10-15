@@ -99,8 +99,10 @@ class SoundSchemeDialog:
         announce: Callable[[str], None] | None = None,
         app_title: str = "QUILL",
         app_id: str = "",
+        choose_device: Callable[[], None] | None = None,
     ) -> None:
         self._draft = draft
+        self._choose_device = choose_device  # App Sounds Play On (ui/app_sounds)
         #: The events *this app* can actually fire. Reported by ear: the window
         #: used to list every event the enum declares, most of which the app in
         #: front of you never posts -- so somebody could pick a sound for
@@ -246,28 +248,9 @@ class SoundSchemeDialog:
         return box
 
     def _build_scheme_buttons(self):  # type: ignore[no-untyped-def]
-        row = wx.BoxSizer(wx.HORIZONTAL)
-        save_as = wx.Button(self.dialog, label="Save &As Scheme...")
-        save_as.SetHelpText(
-            "Save every sound in the list as a scheme of your own, under a name you "
-            "choose. Schemes are ordinary folders you can copy or send to somebody."
-        )
-        save_as.Bind(wx.EVT_BUTTON, lambda _e: self._save_as())
-        row.Add(save_as, 0, wx.RIGHT, 6)
+        from quill.ui.sound_scheme_buttons import build_scheme_buttons
 
-        self.delete_button = wx.Button(self.dialog, label="De&lete Scheme")
-        self.delete_button.SetHelpText("Remove one of your own saved schemes. Never a shipped one.")
-        self.delete_button.Bind(wx.EVT_BUTTON, lambda _e: self._delete_scheme())
-        row.Add(self.delete_button, 0, wx.RIGHT, 6)
-
-        restore = wx.Button(self.dialog, label="&Restore All Defaults")
-        restore.SetHelpText(
-            "Put every event back to the sound this scheme ships, and switch them "
-            "all on. Nothing you have saved is deleted."
-        )
-        restore.Bind(wx.EVT_BUTTON, lambda _e: self._restore_all())
-        row.Add(restore, 0)
-        return row
+        return build_scheme_buttons(self)
 
     # ------------------------------------------------------------------ #
     # The list

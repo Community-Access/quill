@@ -111,6 +111,7 @@ COMMAND_AREA: dict[str, str] = {
     "cmd_copy_to_tray_slot": "clipboard",
     "cmd_clear_copy_tray": "clipboard",
     "cmd_collect_selection": "clipboard",
+    "cmd_clipboard_collector": "clipboard",
     "cmd_paste_collected": "clipboard",
     "cmd_clear_collected": "clipboard",
     "cmd_remember_clip": "clipboard",

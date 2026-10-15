@@ -252,9 +252,26 @@ href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <code>quill</code> package, so features and fixes land in both at once;
 this repository carries only the wrapper, installer, icon, and docs.</p>
 <h2 id="unreleased">[Unreleased]</h2>
-<p>Testing rebuild: <strong>3.2.0 (build 3)</strong>. The packages have
+<p>Testing rebuild: <strong>3.2.0 (build 4)</strong>. The packages have
 not been published yet.</p>
 <ul>
+<li><strong>Quill Radio’s own sounds play on the radio’s sound
+card.</strong> The sounds for connecting, playing, stopped, stream
+errors, recording started and stopped, and reminders now go to the same
+device as the radio, so if you send the station to a broadcast card you
+can hear on that card that you are on air. They follow every change:
+Preferences, Audio &gt; Output Device (Ctrl+Shift+D), and Quill Radio
+putting the radio back on a device that works. <strong>Preferences &gt;
+App Sounds Play On…</strong> offers Same as its audio (the default,
+which names that device), System default (the old behavior), None (no
+sounds), or any sound card or headset. After a change you hear one sound
+on the new device. An unplugged device never silences anything: the
+sounds play on the system default, Quill Radio says so once, and they go
+back by themselves when it returns. <strong>Alt+Shift+M</strong>
+(<strong>Audio &gt; App Sounds</strong>) turns them off and back on, the
+same key in every QUILL app. Your screen reader is never moved. Reported
+on QUILLVille by Rick Lewis. User guide: “Where Quill Radio’s own sounds
+play” in Chapter 5.</li>
 <li><strong>QUILL Lineups (Playback &gt; Lineups…, Ctrl+U).</strong> A
 Lineup is a named list of anything Quill Radio and QUILL Cast can play:
 stations, saved places, podcasts and episodes, YouTube videos, playlists

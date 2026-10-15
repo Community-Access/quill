@@ -39,7 +39,7 @@ _TITLE = "Quill Radio"
 from quill.core.app_version import describe_version, installed_version  # noqa: E402
 
 _VERSION = "3.2.0"
-_BUILD = 3  # this version's build (docs/release/RELEASE.md, "Build numbers")
+_BUILD = 4  # this version's build (docs/release/RELEASE.md, "Build numbers")
 _REPO = "Community-Access/quill"
 #: Two downloads since 3.0.0 (installer, portable zip): Check for Updates asks "portable,
 #: or not" and nothing else, as QUILL Lite does (AppShell.check_for_app_updates says why).
@@ -67,14 +67,14 @@ _NOW_PLAYING_HELP = (
 )
 
 #: The Preferences "Radio output device" dropdown (#1076): "" (System
-#: default) plays to the default device; a device name routes just the
-#: radio there (needs the mpv engine). Earcons and your screen reader stay
-#: on the system default device.
+#: default) plays to the default device; a device name routes the radio
+#: there. Quill Radio's own sounds follow it unless "App sounds play on"
+#: says otherwise; the screen reader is never moved.
 _OUTPUT_DEVICE_HELP = (
     "The sound card radio playback comes out of. System default keeps "
-    "everything as it is today; choosing a device sends just the radio "
-    "there -- your screen reader and Quill Radio's own sounds stay on the "
-    "system default device."
+    "everything as it is today; choosing a device sends the radio there. "
+    "Quill Radio's own sounds go with it unless you choose otherwise under "
+    "App sounds play on. Your screen reader stays where Windows puts it."
 )
 
 #: RadioHistory.playback_engine's Preferences combo box. Automatic = mpv
@@ -176,6 +176,9 @@ class RadioAppFrame(
 
         self._app_features = load_app_features(app_data_dir(), "radio")
         self._init_radio()
+        from quill.ui import app_sounds
+
+        app_sounds.apply(self)  # again, now the radio's own card is known
         from quill.ui.dialog_contract import set_transition_announcement_policy
 
         set_transition_announcement_policy(lambda: self._radio_history.announce_dialog_transitions)

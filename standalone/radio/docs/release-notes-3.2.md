@@ -11,10 +11,21 @@ yourself a note on any station. Apple's podcast categories are full lists
 now, and Preferences has a box that finds a setting as you type. And updates
 install themselves properly again, after one last update by hand.
 
-## Testing rebuild: 3.2.0 (build 3)
+## Testing rebuild: 3.2.0 (build 4)
 
 Build 3 runs on Python 3.14. Its installer also removes the older Python 3.13
 runtime once no QuillVille app on your computer uses it.
+
+Quill Radio's own sounds now play on the same sound card as the radio. If
+you send the station to a broadcast card, the playing, stopped and stream
+error sounds are there with it, so you can tell by ear that you are on air.
+They follow the radio wherever you move it. If you would rather keep them
+somewhere else, **App Sounds Play On...** in Preferences can leave them on
+the system default, give them any sound card of their own, or turn them off
+with **None**. **Alt+Shift+M** turns them off and back on, the same key in
+every QUILL app. After a change you hear one sound on the new device. If that
+device is unplugged, the sounds play on the system default until it comes
+back, and Quill Radio tells you. Your screen reader is never moved.
 
 Choosing a show and hide key is easier: **Record Key...** (Alt+R) in the
 Show and Hide Key window writes out the combination you press. You can still

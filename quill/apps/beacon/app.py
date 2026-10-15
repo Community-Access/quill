@@ -60,13 +60,14 @@ from quill.apps.beacon.sync_ui import SyncController
 from quill.apps.beacon.undo import UndoManager, restore_beacons, snapshot_beacons
 from quill.core.sound_events import SoundEvent
 from quill.core.support_message import SUPPORT_EMAIL
+from quill.ui import app_sounds
 from quill.ui.companion_cues import init_app_sound
 from quill.ui.dialog_contract import show_message_box
 from quill.ui.surface_lifetime import stop_timer_on_destroy
 
 _TITLE = "QuillBeacon"
 _VERSION = "0.1.0"
-_BUILD = 1  # this version's build (docs/release/RELEASE.md, "Build numbers")
+_BUILD = 2  # this version's build (docs/release/RELEASE.md, "Build numbers")
 
 # Destinations in the sidebar (PRD 13.1).
 DESTINATIONS = [
@@ -111,6 +112,10 @@ class BeaconFrame(wx.Frame):
         self.a11y = a11y_mod.load(self.data_dir)
         init_app_sound()  # a SoundSink needs a loaded pack behind it (#1302)
         self.announcer = Announcer(self, verbosity=self.a11y.verbosity)
+        # Where Beacon's own sounds play, and Alt+Shift+M (ui/app_sounds).
+        self._app_sounds_id, self._app_sounds_name = "beacon", _TITLE
+        self._announce = self.announcer.say
+        app_sounds.apply(self)
         self.undo = UndoManager(announcer=self.announcer.say)
         self.sync = SyncController(self.store, self.data_dir)
         self.publisher = publish_mod.PublishManager(self.store, self.data_dir)
@@ -336,51 +341,10 @@ class BeaconFrame(wx.Frame):
         self._refresh_sidebar()
 
     def _on_revalidate_health(self, _e) -> None:
-        """On-demand link-health revalidation (PRD 13.4, 17.4).
+        """On-demand link-health revalidation (PRD 13.4, 17.4); see health_command."""
+        from quill.apps.beacon.health_command import revalidate_health
 
-        Local files are checked against the filesystem; web links are checked
-        over the network only if the requests library is installed, and only
-        after the user confirms. Fail-safe: a missing library or a failed check
-        never corrupts the library.
-        """
-        from quill.apps.beacon import health
-
-        will_network = health._has_requests() if hasattr(health, "_has_requests") else True
-        confirm = show_message_box(
-            "Re-check link health now?\n\n"
-            + (
-                "Web links will be checked over the network. "
-                if will_network
-                else "Web links will be skipped (requests not installed); "
-                "only local files will be checked. "
-            )
-            + "Broken links are marked so you can review or repair them.",
-            "Revalidate Health",
-            style=wx.ICON_QUESTION | wx.YES_NO,
-        )
-        if confirm != wx.YES:
-            return
-        fetcher = None
-        if will_network:
-            try:
-                fetcher = health.default_fetcher
-            except Exception:
-                fetcher = None
-        summary = health.revalidate(self.store, fetcher=fetcher)
-        self._refresh_results()
-        self.announcer.say(
-            f"Checked {summary['checked']}, "
-            f"{summary['available']} available, {summary['broken']} broken, "
-            f"{summary['skipped']} skipped"
-        )
-        show_message_box(
-            f"Checked: {summary['checked']}\n"
-            f"Available: {summary['available']}\n"
-            f"Broken: {summary['broken']}\n"
-            f"Skipped (no network check): {summary['skipped']}",
-            "Revalidate Health",
-            wx.OK,
-        )
+        revalidate_health(self)
 
     def _on_repair_review(self, _e) -> None:
         b = self._selected_beacon()
@@ -628,6 +592,8 @@ class BeaconFrame(wx.Frame):
             self._on_status_center,
             "Capture bridge, sync, and library health at a glance",
         )
+        app_sounds.append_menu_item(self, m_tools, label="App So&unds")
+        self._sounds_chooser_id = app_sounds.append_chooser_item(self, m_tools, "Ctrl+Alt+S")
         mb.Append(m_tools, "&Tools")
 
         m_sync = wx.Menu()

@@ -24,7 +24,7 @@ from quill.core import http_client
 #: import the other direction would need.
 APP_TITLE = "QUILL Cast"
 APP_VERSION = "2.0.0"
-APP_BUILD = 4  # this version's build (docs/release/RELEASE.md, "Build numbers")
+APP_BUILD = 5  # this version's build (docs/release/RELEASE.md, "Build numbers")
 APP_REPO = "Community-Access/quill"
 # Every feed, episode and directory request names QUILL Cast and its release
 # (check.md bug 1), the way Quill Radio and Quill Weather already do.
@@ -335,6 +335,12 @@ class CastMenuBarMixin:
         device_id = wx.NewIdRef()
         self._area_row(episode_menu, "sound", device_id, "Audio Output De&vice...\tCtrl+Shift+K")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_choose_output_device(), id=device_id)
+        # Alt+Shift+M: Cast's own sounds off and on, the same item and key in
+        # every QUILL app (ui/app_sounds). No access letter: this menu has
+        # spent every one in the name, and a duplicate is worse than none.
+        from quill.ui import app_sounds
+
+        app_sounds.append_menu_item(self, episode_menu, label="App Sounds")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_toggle_play_pause(), id=play_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_stop(), id=stop_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_mute_toggle(), id=mute_id)

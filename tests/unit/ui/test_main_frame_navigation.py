@@ -1908,18 +1908,22 @@ def test_prompt_file_search_uses_modal_ids() -> None:
         def AddGrowableCol(self, _col: int, _proportion: int) -> None:
             return None
 
+    class _Helped:
+        def SetHelpText(self, _text: str) -> None:
+            return None
+
     class _StaticText:
         def __init__(self, _parent: object, label: str) -> None:
             self.label = label
 
-    class _DirPickerCtrl:
+    class _DirPickerCtrl(_Helped):
         def __init__(self, _parent: object, path: str) -> None:
             self.path = path
 
         def GetPath(self) -> str:
             return self.path
 
-    class _TextCtrl:
+    class _TextCtrl(_Helped):
         def __init__(self, _parent: object, value: str = "", style: int = 0) -> None:
             self.value = value
             self.style = style
@@ -1933,7 +1937,7 @@ def test_prompt_file_search_uses_modal_ids() -> None:
         def Bind(self, _event: object, _handler: object) -> None:
             return None
 
-    class _Choice:
+    class _Choice(_Helped):
         def __init__(self, _parent: object, choices: list[str]) -> None:
             self.choices = choices
             self.selection = 0
@@ -1947,7 +1951,7 @@ def test_prompt_file_search_uses_modal_ids() -> None:
         def GetStringSelection(self) -> str:
             return self.choices[self.selection]
 
-    class _CheckBox:
+    class _CheckBox(_Helped):
         def __init__(self, _parent: object, label: str) -> None:
             self.label = label
             self.value = False

@@ -129,6 +129,12 @@ def build_menu_bar(host: Any, *, title: str, version: str) -> None:
         host._settings.close_to_tray,
         lambda on: host.set_option("close_to_tray", on),
     )
+    # Alt+Shift+M and where the sounds play, as in every QUILL app (ui/app_sounds).
+    from quill.ui import app_sounds
+
+    options.AppendSeparator()
+    app_sounds.append_menu_item(host, options)
+    host._sounds_chooser_id = app_sounds.append_chooser_item(host, options, "Ctrl+Shift+S")
     bar.Append(options, "&Options")
 
     from quill.ui.quillville_menu import build_quillville_menu

@@ -244,43 +244,88 @@
 <main id="main-content" tabindex="-1">
 <h1 id="quill-lite-changelog">QUILL Lite changelog</h1>
 <h2 id="unreleased">Unreleased</h2>
-<p>Testing rebuild: <strong>1.2.0 (build 4)</strong>, following builds 2
-and 3, which were uploaded for testing. The new packages have not been
-published yet.</p>
+<p>Testing rebuild: <strong>1.2.0 (build 5)</strong>, following builds
+2, 3 and 4; builds 2 and 3 were uploaded for testing. The new packages
+have not been published yet.</p>
 <ul>
-<li><strong>Runs on Python 3.14, and older runtimes are cleaned
+<li><p><strong>Clipboard Collector</strong>
+(<strong>Alt+Shift+S</strong>, <strong>Edit &gt; Clipboard</strong>):
+QUILL’s system-wide collector. Turn it on in a window and everything you
+copy, in any program, is added to the end of that window, each distinct
+copy once. It never saves for you, collects into one window at a time,
+and stops when that window closes. <strong>Collect Selection</strong>,
+which gathers text selected inside QUILL Lite, moves to
+<strong>Alt+Shift+C</strong> so the two editors agree on Alt+Shift+S.
+Asked for on QUILLVille by Dean Martineau.</p></li>
+<li><p><strong>Search in Files</strong>
+(<strong>Ctrl+Alt+Shift+F</strong>) and <strong>Replace Across
+Files</strong> (<strong>Ctrl+Shift+R</strong>), on <strong>Edit &gt;
+Matches</strong>: QUILL’s folder search, its window and its keys. Search
+every file in a folder, and the folders inside it, by file pattern, with
+plain text, wildcards or a regular expression; the results open in a new
+window. Replace Across Files shows every change first and asks before
+any file is written. Both run in the background, so a big folder never
+freezes the window. Asked for on QUILLVille by Chris Nova.</p></li>
+<li><p><strong>Find in Open Documents</strong>
+(<strong>Ctrl+Alt+Shift+F8</strong>). Find and replace across every
+document you have open, not just the one in front of you, the same
+window and key as QUILL. It searches the text as it is in each window,
+so unsaved changes and never-saved documents are found too, and nothing
+on disk is touched. Find Next and Find Previous move from document to
+document and say each one’s name; Find All lists every match, and Enter
+goes there; Replace All tells you how many in how many documents and
+asks, gives each document its own undo, and saves nothing. Read-only
+documents are searched but left alone. After the window closes, F3 and
+Shift+F3 keep searching across documents until you start an ordinary
+Find. Asked for on QUILLVille by Chris Nova.</p></li>
+<li><p><strong>Where QUILL Lite’s own sounds play, and Alt+Shift+M to
+turn them off.</strong> <strong>Tools &gt; Sound Scheme &gt; App Sounds
+Play On…</strong> offers System default, None (no sounds), or any sound
+card or headset by name. After a change one sound plays on the new card,
+so you hear where it went. If that card is unplugged the sounds play on
+the system default until it is back, and QUILL Lite says so once.
+<strong>Alt+Shift+M</strong> turns QUILL Lite’s sounds off and back on
+where they were, and <strong>Tools &gt; App Sounds (formerly Quiet
+Mode)</strong> shows a check mark while they are on. Each QUILL app
+keeps its own choice; “Share these choices with my other Quill apps”
+keeps them in step. Your screen reader is never moved. Asked for on
+QUILLVille by Rick Lewis. Until now Alt+Shift+M silenced QUILL and QUILL
+Lite together; it now silences the app you are in. <strong>Sound
+notifications</strong> in QUILL’s Settings still silences every QUILL
+app at once.</p></li>
+<li><p><strong>Runs on Python 3.14, and older runtimes are cleaned
 up.</strong> The shared QuillVille runtime this build installs is Python
 3.14. The installer then removes older runtimes (Python 3.13) that no
 installed QuillVille app uses any more; one that an app or a shortcut
 still points to is left alone. Portable copies carry their own Python
-and change nothing outside their folder.</li>
-<li><strong>Dictation does not hear the screen reader.</strong> With a
-headset, JAWS, NVDA or Narrator reading back what you dictated was heard
-by the microphone and written as a new phrase. The built-in speech
+and change nothing outside their folder.</p></li>
+<li><p><strong>Dictation does not hear the screen reader.</strong> With
+a headset, JAWS, NVDA or Narrator reading back what you dictated was
+heard by the microphone and written as a new phrase. The built-in speech
 models now hear silence while the screen reader (or QUILL Lite’s own
 sounds) are playing; words spoken over the reader are not heard, so wait
-for it or press Ctrl.</li>
-<li><strong>The same phrase said twice is written twice.</strong> It was
-taken for the screen reader’s echo and dropped.</li>
-<li><strong>The phrase-written sound is a soft tone.</strong> The old
-one started so sharply that it was heard as a spoken “c”.</li>
-<li><strong>One microphone at a time.</strong> Ctrl+F11 while QUILL
+for it or press Ctrl.</p></li>
+<li><p><strong>The same phrase said twice is written twice.</strong> It
+was taken for the screen reader’s echo and dropped.</p></li>
+<li><p><strong>The phrase-written sound is a soft tone.</strong> The old
+one started so sharply that it was heard as a spoken “c”.</p></li>
+<li><p><strong>One microphone at a time.</strong> Ctrl+F11 while QUILL
 Transcribe is listening no longer opens a second microphone, so nothing
 is written twice; you hear the program and its key, for example “QUILL
 Transcribe is listening. Press Alt+Shift+Backslash to stop it, then try
 again.” QUILL Transcribe and QUILL say the same about QUILL Lite while
-it dictates, naming your Ctrl+F11.</li>
-<li><strong>QUILL Transcribe and Quill Inkwell keep out of QUILL Lite’s
-window</strong>, as they always did of QUILL’s: their key there says
-“This is a QUILL window: press Ctrl+F11 to dictate here.” Inkwell’s
-abbreviations keep out too, since QUILL Lite expands its own.</li>
-<li><strong>Tick while a phrase is being worked on</strong> (More
+it dictates, naming your Ctrl+F11.</p></li>
+<li><p><strong>QUILL Transcribe and Quill Inkwell keep out of QUILL
+Lite’s window</strong>, as they always did of QUILL’s: their key there
+says “This is a QUILL window: press Ctrl+F11 to dictate here.” Inkwell’s
+abbreviations keep out too, since QUILL Lite expands its own.</p></li>
+<li><p><strong>Tick while a phrase is being worked on</strong> (More
 Dictation Settings, Alt+R, off unless you check it): a soft tick once a
 second while a phrase takes more than a second to turn into text, and
 “Still working on that phrase.” the first time in a session one takes
 four seconds. With “After each phrase is written, give me” set to words
 only there is no tick, just the sentence; set to nothing, there is
-neither. QUILL has it too.</li>
+neither. QUILL has it too.</p></li>
 </ul>
 <p>Carried over from build 3:</p>
 <ul>

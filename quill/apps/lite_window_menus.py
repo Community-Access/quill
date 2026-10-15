@@ -53,7 +53,7 @@ __all__ = ["DocumentMenuMixin"]
 
 
 def _quiet_mark(frame: object) -> bool:
-    """Whether the Quiet Mode item should read as checked.
+    """Whether the App Sounds item should read as checked: sounds on.
 
     A module function rather than a method, and that is the whole point:
     :meth:`DocumentMenuMixin._sync_check_items` is called unbound against stub
@@ -64,7 +64,7 @@ def _quiet_mark(frame: object) -> bool:
     already swallows its own failures; this covers the host not having it at all.
     """
     quiet = getattr(frame, "sound_is_quiet", None)
-    return bool(quiet()) if callable(quiet) else False
+    return not bool(quiet()) if callable(quiet) else True
 
 
 def _dictation_mark(frame: object) -> bool:
@@ -262,6 +262,8 @@ class DocumentMenuMixin:
             # two test frames the day it was added, and a test frame is only the
             # cheap version of that failure.
             "cmd_toggle_quiet_mode": _quiet_mark(self),
+            # This window collecting the clipboard (lite_clipboard_collector).
+            "cmd_clipboard_collector": bool(getattr(self, "collector_is_on", lambda: False)()),
             # Both caret cues. Per app rather than per document, like the rest of
             # View: what you want said as you move is a habit, not a property of
             # the file in front of you.

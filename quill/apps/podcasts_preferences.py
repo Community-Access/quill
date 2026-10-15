@@ -22,6 +22,7 @@ from quill.core.action_feedback import ACTION_FEEDBACK_LABELS
 from quill.core.podcasts import notices
 from quill.core.podcasts.refresh_policy import INTERVAL_CHOICES
 from quill.core.podcasts.watched_folders import ORIGINALS, TELLS
+from quill.ui import app_sounds
 from quill.ui.podcasts.preferences_window import AppRow
 
 __all__ = ["CastPreferencesMixin", "app_rows"]
@@ -74,6 +75,14 @@ def app_rows(host: Any) -> list[AppRow]:
             "Compares your version with the newest release once a day, quietly. "
             "Nothing is installed without you; Help > Check for Updates asks.",
             "opens",
+        ),
+        AppRow(
+            "app_sounds",
+            app_sounds.BUTTON_LABEL,
+            app_sounds.help_text(host),
+            "opens",
+            kind="action",
+            action=lambda: app_sounds.choose(host),
         ),
         AppRow(
             "release_channel",

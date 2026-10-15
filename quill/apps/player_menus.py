@@ -123,6 +123,10 @@ class MediaPlayerMenuMixin:
         playback_menu.Append(device_id, "Audio Output &Device...\tCtrl+Shift+K")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._choose_output_device(), id=device_id)
         self._keep_menu_ids(device_id)
+        # Alt+Shift+M: the player's own sounds, as in every QUILL app.
+        from quill.ui import app_sounds
+
+        self._keep_menu_ids(app_sounds.append_menu_item(self, playback_menu))
         self.frame.Bind(wx.EVT_MENU, self._on_summarize_chapter, id=summarize_id)
         self.frame.Bind(wx.EVT_MENU, self._on_welcome_back_recap, id=recap_id)
         self.frame.Bind(wx.EVT_MENU, self._on_listen_command, id=listen_id)

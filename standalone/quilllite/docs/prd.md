@@ -1462,3 +1462,15 @@ oversight:
   this is **not** required for the change to merge but **is** required for the
   release to publish. It is the only thing on this list a machine cannot do:
   everything else here is automated, and what a person actually *hears* is not.
+
+## Find in Open Documents (2026-10-15)
+
+QUILL's command, on QUILL's key, from the same shared code (QUILL Lite may never be ahead of QUILL, and here it is not behind either): **Edit > Matches > Find in Open Documents...** (**Ctrl+Alt+Shift+F8**) finds and replaces across every open window's live text. The window and the model are QUILL's (`quill/ui/open_documents_find.py`, `quill/core/open_documents_search.py`); QUILL Lite supplies `quill/apps/lite_open_documents.py`, which lists `app.frames`, brings one to the front with `focus_frame`, and keeps the search state on the app so F3 in any window carries on the same search. Find and Replace end it (`cmd_find`, `cmd_replace`). Handler `cmd_find_open_docs`, parity `edit.find_in_open_documents`. Asked for on QUILLVille by Chris Nova.
+
+## Search in Files and Replace Across Files (2026-10-15)
+
+QUILL's two commands, on QUILL's keys -- Ctrl+Alt+Shift+F had been reserved for Search in Files since the keyboard parity work and never filled. The window moved from `quill/ui/main_frame_file_search_prompt.py` into the shared `quill/ui/file_search_prompt.py` (QUILL's mixin now only supplies its folder, parent and modal helpers), and the work is QUILL's `quill/core/file_search.py`. QUILL Lite's `quill/apps/lite_file_search.py` runs it on the app task manager and puts each report in a new untitled window, where QUILL opens a generated tab. Handlers `cmd_search_in_files` and `cmd_replace_in_files`, parity `tools.search_in_files` and `tools.replace_in_files`.
+
+## The clipboard collector (2026-10-15)
+
+QUILL's system-wide collector (#964), on QUILL's key, from QUILL's pieces: `quill/apps/lite_clipboard_collector.py` polls the OS clipboard change counter (`ui/main_frame_clipboard_collector._clipboard_change_counter`), appends with `core/clipboard_collector.append_collected`, collects each distinct payload once, never saves, keeps one collecting window per app, and stops when it closes. Handler `cmd_clipboard_collector` (Alt+Shift+S, a check row on Edit > Clipboard), parity `power.toggle_clipboard_collector`. The parity table had mapped `cmd_collect_selection` to that command, which was never the same verb; Collect Selection is now `LITE_ONLY` with Paste and Clear, on Alt+Shift+C (rule 2: the command both editors have keeps the chord). Asked for on QUILLVille by Dean Martineau.

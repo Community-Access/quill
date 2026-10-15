@@ -1669,9 +1669,10 @@ on the speakers, or the other way round.
 3. Press **Enter**. The station moves to that device straight away, without a
    break in the sound. You should hear "Output device" and its name.
 
-Your screen reader and Quill Radio's own sounds stay on the system default.
-This is the same setting as **Radio output device** in Preferences, and it
-works on either playback engine, mpv or Windows Media.
+Quill Radio's own sounds go with the radio, and you hear the "playing" sound
+on the new device as soon as it moves. Your screen reader stays where Windows
+puts it. This is the same setting as **Radio output device** in Preferences,
+and it works on either playback engine, mpv or Windows Media.
 
 Windows often calls both sound cards on a laptop "Speakers": "Speakers
 (Realtek High Definition Audio)" for the built-in ones, and "Speakers (Logi
@@ -1703,6 +1704,23 @@ choose the device, and Windows remembers it from then on. A copy without the
 mpv engine opens that same page as soon as you press Ctrl+Shift+D. And if a
 device is saved in your settings while the classic player is in use, Quill
 Radio hands the setting back and tells you the same thing.
+
+### Where Quill Radio's own sounds play
+
+Quill Radio makes short sounds of its own when a station connects, starts playing, stops or fails, when a recording starts and stops, and when a reminder comes due. If you broadcast, that means you can listen on your on-air card and hear "playing" and "stream error" right there with the station. You choose where they play, and you can turn them off.
+
+- **Alt+Shift+M** turns Quill Radio's sounds off. Press it again and they come back, on the same sound card as before. You hear a short sound as they go off, and another where they now play when they come back on, and both are spoken too. **Audio > App Sounds** has a check mark that shows whether they are on.
+- **Preferences (Ctrl+,) > App Sounds Play On...** lets you pick where they play:
+  - **Same as its audio**. This is where it starts. The sounds go wherever the radio plays, and follow it when you move it to another sound card. The choice names the device it means right now.
+  - **System default**. The sounds go where Windows sends sound.
+  - **None (no sounds)**. Quill Radio makes no sounds at all. Everything it tells you is still spoken.
+  - **Any sound card or headset in the list.** The sounds get a device of their own.
+
+After you choose, one sound plays on the new device, so you know straight away where it went.
+
+If the device you chose is unplugged or asleep, you still hear every sound, on the system default, and Quill Radio tells you once. When the device comes back, the sounds go back to it by themselves.
+
+This changes Quill Radio only. Your other QUILL apps keep their own choice, unless you have checked "Share these choices with my other Quill apps", which copies a change here to the others that share. Your screen reader is never moved.
 
 ### Sound Enhancements, step by step
 
@@ -5481,14 +5499,19 @@ These come first:
   works on either engine. You only see "Windows Media (classic)" on a computer
   without Windows' modern media player, and that is the older player Quill
   Radio used before version 1.1.
-- **Radio output device**: System default, or a sound card or headset. Only
-  the radio moves; your screen reader and Quill Radio's own sounds stay on the
-  system default. If a device cannot be opened, the setting goes back to what
+- **Radio output device**: System default, or a sound card or headset. The
+  radio moves, and Quill Radio's own sounds go with it unless **App Sounds
+  Play On** says otherwise. Your screen reader stays where Windows puts it.
+  If a device cannot be opened, the setting goes back to what
   it was and Quill Radio tells you. This is the same setting as **Audio >
   Output Device...**. It works with the mpv engine and with Windows Media.
   Only on a computer that has fallen back to the classic player does the
   device come from Windows' Sound settings instead. See "Output Device, step
   by step" in Chapter 5.
+- **App Sounds Play On...**: where Quill Radio's own sounds play: Same as its
+  audio (where it starts), System default, None (no sounds), or any sound card
+  or headset. Alt+Shift+M turns them off and on. See "Where Quill Radio's own
+  sounds play" in Chapter 5.
 - **Favorites sort order**: Ascending (A to Z, where it starts), Descending (Z
   to A), or Unsorted (manual order).
 - **Station catalog update frequency**: Every 6 hours, Every 12 hours, Every 24
@@ -6389,6 +6412,20 @@ works just as well.
 ### Troubleshooting
 
 Here are the problems people run into most often, and what to do about each.
+
+#### Quill Radio's sounds play on the wrong sound card, or not at all
+
+Open **Preferences** (Ctrl+,) and choose **App Sounds Play On...**.
+
+- **Same as its audio** sends the sounds wherever **Radio output device**
+  points. If that is System default, so are the sounds.
+- **System default** keeps them on the device Windows uses for everything
+  else.
+- **None (no sounds)** means Quill Radio is silent. Press **Alt+Shift+M** to
+  bring the sounds back where they were.
+- If Quill Radio said "Quill Radio's sounds cannot reach ...", that device is
+  unplugged, asleep or busy. The sounds are on the system default for now and
+  go back by themselves when it returns.
 
 #### The sound card does not switch
 

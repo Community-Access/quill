@@ -4,6 +4,8 @@ All notable changes to QUILL Cast are documented here. QUILL Cast 2.0 is the fir
 
 ## Unreleased
 
+- **Where QUILL Cast's own sounds play, and Alt+Shift+M to turn them off.** **Preferences > App Sounds Play On...** offers System default, None (no sounds), or any sound card or headset by name, and **Same as its audio**, where it starts: the sounds go wherever the episode plays, and follow it when you move it. After a change one sound plays on the new card, so you hear where it went. If that card is unplugged the sounds play on the system default until it is back, and QUILL Cast says so once. **Alt+Shift+M** turns QUILL Cast's sounds off and back on where they were, and **Episode > App Sounds** shows a check mark while they are on. Each QUILL app keeps its own choice; "Share these choices with my other Quill apps" keeps them in step. Your screen reader is never moved. Asked for on QUILLVille by Rick Lewis.
+
 - **QUILL Lineups.** Named lists of anything Quill Radio and QUILL Cast can play: podcasts you follow and their episodes, plus radio stations, saved places, YouTube videos, playlists and channels, and Radio's Local Media files and recordings. Rules you write bring items in and say when they go (While it matches, Until finished, For a number of days, Until finished or a number of days, Always, and Max kept), and your own hands outrank them: Keep This Item, Remove from Lineup into Removed Items, Recently Left with reasons, Bring Back, Why Is This Here and Undo. One shared file, `lineups.json`, so the same Lineups appear in both apps and both can edit at once. Open it with Episode > Lineups... (Ctrl+U, the same key as in Quill Radio), Go To or the Command Palette; Add to Lineup... is on every episode and podcast menu and is a Quick Action. Playing an episode puts it and the Lineup's later episodes at the front of the Play Queue and plays it, so the queue carries on by itself; stations, YouTube and Local Media are sent to Quill Radio. Start Here (Ctrl+Alt+H) opens a Lineup when Cast starts. A Customize Features area, QUILL Lineups, under Playing; `lineups.json` is in Cast's backup. User guide Chapter 9, PRD section 23.27, and a new tutorial, **Build a lineup that fills itself**.
 - **Save Lineup and Apply Lineup on the Play Queue are QUILL Lineups now.** Save Lineup... saves the queue's order as a Lineup of hand-added episodes (saving over a name replaces it, keeping any rules), and says "Saved lineup Tuesday: 5 episodes, in this order." Apply Lineup... offers every Lineup with episodes and puts them at the front of the queue by the same rule as before, counting what it applied and skipped. Lineups saved the old way, as playlists, are copied into Lineups once at launch; the playlists stay where they were. One meaning of "lineup" across the family.
 
@@ -23,7 +25,7 @@ All notable changes to QUILL Cast are documented here. QUILL Cast 2.0 is the fir
   the other player keys. This fixes C announcing "Nothing is playing" when
   trying to jump to a podcast.
 
-Testing rebuild: **2.0.0 (build 4)**. Builds 3 and 4 have not been published.
+Testing rebuild: **2.0.0 (build 5)**. Builds 3 to 5 have not been published.
 
 - **Runs on Python 3.14, and older runtimes are cleaned up.** The shared QuillVille
   runtime this build installs is Python 3.14. The installer then removes older
