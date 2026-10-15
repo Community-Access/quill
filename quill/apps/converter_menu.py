@@ -71,6 +71,10 @@ def build_menu_bar(host: Any, wx: Any, *, title: str, version: str, repo: str) -
     from quill.apps.converter_preferences import open_preferences
 
     add(file_menu, "Pr&eferences...\tCtrl+,", lambda: open_preferences(host))
+    # Alt+Shift+M: this app's own sounds off and on, as in every QUILL app.
+    from quill.ui import app_sounds
+
+    ids.append(app_sounds.append_menu_item(host, file_menu))
     add(file_menu, "Minimize to &Tray\tCtrl+W", host.toggle_window_to_tray)
     host._append_show_hide_key_item(file_menu, "converter")
     add(file_menu, "E&xit\tCtrl+Q", host._exit_application)

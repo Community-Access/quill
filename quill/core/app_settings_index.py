@@ -28,6 +28,13 @@ _EFFECTS = "the Custom Effects window"
 CONVERTER_SETTINGS: tuple[SettingEntry, ...] = (
     # --- Preferences itself ----------------------------------------------------
     SettingEntry(
+        "app.sounds",
+        "App Sounds Play On",
+        description="Where this app's own sounds play, or None to turn them off. "
+        "Alt+Shift+M turns them off and on.",
+        aliases=("sounds", "earcons", "sound card", "mute sounds", "quiet"),
+    ),
+    SettingEntry(
         "converter.open_folder_when_done",
         "Open the output folder when a conversion finishes",
         description="Also Convert > Open Output Folder When Done, Ctrl+Shift+W.",
@@ -174,6 +181,13 @@ PLAYER_SETTINGS: tuple[SettingEntry, ...] = (
     ),
     # --- Preferences itself: saved -----------------------------------------------
     SettingEntry(
+        "app.sounds",
+        "App Sounds Play On",
+        description="Where this app's own sounds play, or None to turn them off. "
+        "Alt+Shift+M turns them off and on.",
+        aliases=("sounds", "earcons", "sound card", "mute sounds", "quiet"),
+    ),
+    SettingEntry(
         "player.output_device",
         "Audio Output Device",
         description="Which sound card the book plays out of. Also Playback, Ctrl+Shift+K.",
@@ -232,6 +246,13 @@ PLAYER_SETTINGS: tuple[SettingEntry, ...] = (
 )
 
 INKWELL_SETTINGS: tuple[SettingEntry, ...] = (
+    SettingEntry(
+        "app.sounds",
+        "App Sounds Play On",
+        description="Where this app's own sounds play, or None to turn them off. "
+        "Alt+Shift+M turns them off and on.",
+        aliases=("sounds", "earcons", "sound card", "mute sounds", "quiet"),
+    ),
     SettingEntry(
         "inkwell.expansion_enabled",
         "Expand in other applications",

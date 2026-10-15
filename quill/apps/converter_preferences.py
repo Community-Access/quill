@@ -38,6 +38,7 @@ _EFFECTS_WINDOW = frozenset({"converter.custom_effects", "converter.trim"})
 
 def open_preferences(host: Any) -> None:
     """File > Preferences (Ctrl+,)."""
+    from quill.ui import app_sounds
     from quill.ui.app_preferences_dialog import PreferenceCheckbox, PreferencesDialog
 
     settings = host._settings
@@ -60,6 +61,7 @@ def open_preferences(host: Any) -> None:
                 key="converter.show_advanced",
             ),
         ],
+        actions=[app_sounds.preference_action(host, key=app_sounds.SETTING_KEY)],
         announce_cb=host._announce,
         declared=list(CONVERTER_SETTINGS),
         go_elsewhere=lambda entry: go_to_setting(host, entry),

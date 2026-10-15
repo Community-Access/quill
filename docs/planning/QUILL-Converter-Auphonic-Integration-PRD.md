@@ -380,7 +380,7 @@ MVP has been evaluated.
 
 ## 12. References
 
-- [Initial Auphonic integration proposal](../../quill-auphonic-integration-proposal.md)
+- [Initial Auphonic integration proposal](quill-auphonic-integration-proposal.md)
 - [Current Quill Converter product requirements](../../standalone/converter/docs/prd.md)
 - [Existing Auphonic API client](../../quill/core/publish/auphonic.py)
 - [Existing Audio Studio Auphonic workflow](../../quill/ui/audio_studio/publish_dialog.py)

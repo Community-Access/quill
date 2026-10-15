@@ -47,7 +47,7 @@ from quill.ui.app_shell import AppShellFrame
 
 _TITLE = "Quill Converter"
 _VERSION = "1.0.0"
-_BUILD = 1  # this version's build (docs/release/RELEASE.md, "Build numbers")
+_BUILD = 2  # this version's build (docs/release/RELEASE.md, "Build numbers")
 _REPO = "Community-Access/quill"
 _IPC_SLOT = "converter"
 http_client.set_product_identity(_TITLE, _VERSION)  # a shared request names Converter

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.12" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Changelog</title>
   <style>
@@ -249,18 +249,32 @@ href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>, and
 this project adheres to <a
 href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <h2 id="221---2026-10-08">[2.2.1] - 2026-10-08</h2>
+<p>Build 2:</p>
 <ul>
-<li>Current conditions, Quick Weather, and local time use the saved
-friendly name when one is set.</li>
-<li>Distribution uses the shared installer and portable zip; updates
-choose between those two editions.</li>
-<li>The per-user installer records Weather’s version independently of
+<li><p><strong>Where Quill Weather’s own sounds play, and Alt+Shift+M to
+turn them off.</strong> <strong>Options &gt; App Sounds Play
+On…</strong> (Ctrl+Shift+S) offers System default, None (no sounds), or
+any sound card or headset by name; a weather alert is still spoken when
+its sound is off. After a change one sound plays on the new card, so you
+hear where it went. If that card is unplugged the sounds play on the
+system default until it is back, and Quill Weather says so once.
+<strong>Alt+Shift+M</strong> turns Quill Weather’s sounds off and back
+on where they were, and <strong>Options &gt; App Sounds</strong> shows a
+check mark while they are on. Each QUILL app keeps its own choice;
+“Share these choices with my other Quill apps” keeps them in step. Your
+screen reader is never moved. Asked for on QUILLVille by Rick
+Lewis.</p></li>
+<li><p>Current conditions, Quick Weather, and local time use the saved
+friendly name when one is set.</p></li>
+<li><p>Distribution uses the shared installer and portable zip; updates
+choose between those two editions.</p></li>
+<li><p>The per-user installer records Weather’s version independently of
 the shared runtime. Portable Weather keeps its launcher offline and does
-not register host startup entries or background tasks.</li>
-<li>Help exposes Activity and Repeat Last Result, with the same F9 and
-Shift+F9 keys as the other apps.</li>
-<li>Tray preferences and Windows startup/background choices report
-failed changes and keep their menu checks accurate.</li>
+not register host startup entries or background tasks.</p></li>
+<li><p>Help exposes Activity and Repeat Last Result, with the same F9
+and Shift+F9 keys as the other apps.</p></li>
+<li><p>Tray preferences and Windows startup/background choices report
+failed changes and keep their menu checks accurate.</p></li>
 </ul>
 <h3 id="changed">Changed</h3>
 <ul>

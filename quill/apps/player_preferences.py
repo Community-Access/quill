@@ -62,6 +62,7 @@ def _sleep_minutes(host: Any) -> int:
 
 def open_preferences(host: Any) -> None:
     """File > Preferences (Ctrl+,)."""
+    from quill.ui import app_sounds
     from quill.ui.app_preferences_dialog import (
         PreferenceAction,
         PreferenceCheckbox,
@@ -83,6 +84,7 @@ def open_preferences(host: Any) -> None:
                 host._choose_output_device,
                 key="player.output_device",
             ),
+            app_sounds.preference_action(host, key=app_sounds.SETTING_KEY),
         ],
         checkboxes=[
             PreferenceCheckbox(

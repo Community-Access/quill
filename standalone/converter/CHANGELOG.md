@@ -17,6 +17,10 @@ The first public release. The app was first built in July 2026 as an audio
 converter (an entry here once dated it 2026-07-31); that build was never
 published as an installer, and everything in it is part of 1.0.0.
 
+Build 2:
+
+- **Where Quill Converter's own sounds play, and Alt+Shift+M to turn them off.** **File > Preferences > App Sounds Play On...** offers System default, None (no sounds), or any sound card or headset by name. After a change one sound plays on the new card, so you hear where it went. If that card is unplugged the sounds play on the system default until it is back, and Quill Converter says so once. **Alt+Shift+M** turns Quill Converter's sounds off and back on where they were, and **File > App Sounds** shows a check mark while they are on. Each QUILL app keeps its own choice; "Share these choices with my other Quill apps" keeps them in step. Your screen reader is never moved. Asked for on QUILLVille by Rick Lewis.
+
 - **Found before release (2026-10-05):** no show and hide key until you choose
   one in File > Show and Hide Key... (Ctrl+Alt+Shift+H), which refuses a key
   another QuillVille app uses; Find a Setting or Command (Ctrl+Alt+Shift+S);

@@ -295,6 +295,23 @@ so you never lose your spot overnight. (A gentle fade-out is a future refinement
 
 ---
 
+## 10a. Where the player's own sounds play
+
+Quill Media Player makes short sounds of its own, the earcons described above. You choose where they play, and you can turn them off.
+
+- **Alt+Shift+M** turns Quill Media Player's sounds off. Press it again and they come back, on the same sound card as before. You hear a short sound as they go off, and another where they now play when they come back on, and both are spoken too. **Playback > App Sounds** has a check mark that shows whether they are on.
+- **Preferences (Ctrl+,) > App Sounds Play On...** lets you pick where they play:
+  - **Same as its audio**. This is where it starts. The sounds go wherever the book plays, and follow it when you move it to another sound card. The choice names the device it means right now.
+  - **System default**. The sounds go where Windows sends sound.
+  - **None (no sounds)**. Quill Media Player makes no sounds at all. Everything it tells you is still spoken.
+  - **Any sound card or headset in the list.** The sounds get a device of their own.
+
+After you choose, one sound plays on the new device, so you know straight away where it went.
+
+If the device you chose is unplugged or asleep, you still hear every sound, on the system default, and Quill Media Player tells you once. When the device comes back, the sounds go back to it by themselves.
+
+This changes Quill Media Player only. Your other QUILL apps keep their own choice, unless you have checked "Share these choices with my other Quill apps", which copies a change here to the others that share. Your screen reader is never moved.
+
 ## 11. The status bar
 
 The status bar mirrors QUILL's own multi-field status bar, so it reviews the same

@@ -253,7 +253,7 @@ Next: Find, replace, and search across files.
 
 The four levels: find here, find every match, replace with care, and search or replace across a folder of files.
 
-*6 steps, about 6 minutes.*
+*7 steps, about 6 minutes.*
 
 1. **Find, and find again.** Find opens the search; Find Next and Find Previous walk the matches. QUILL keeps your search history, so a search you run often gets shorter every time.
    - Keys: Ctrl+F
@@ -270,11 +270,15 @@ The four levels: find here, find every match, replace with care, and search or r
    - Keys: Ctrl+H
    - You should hear: Each replacement, or the count at the end.
 
-5. **Search a whole folder.** Search in Files answers where did I write that when you cannot remember which document it was in. Replace in Files is its counterpart, and it is worth doing on a copy the first time you use it.
+5. **Search every open document.** Find in Open Documents searches every tab you have open, saved or not. Find Next moves from tab to tab and says each one's name, Find All lists every match, and Replace All tells you how many first and saves nothing. Afterwards F3 keeps searching across tabs until you start an ordinary Find.
+   - Keys: Ctrl+Alt+Shift+F8
+   - You should hear: The Find in Open Documents window, then each match with its document's name.
+
+6. **Search a whole folder.** Search in Files answers where did I write that when you cannot remember which document it was in. Replace in Files is its counterpart, and it is worth doing on a copy the first time you use it.
    - Keys: Ctrl+Alt+Shift+F
    - You should hear: The matches, grouped by file.
 
-6. **Learn the one that is not a search.** Go to Anything reaches files, headings and places rather than text. When you know the *name* of the thing you want, it is faster than any search.
+7. **Learn the one that is not a search.** Go to Anything reaches files, headings and places rather than text. When you know the *name* of the thing you want, it is faster than any search.
    - Keys: Ctrl+Alt+Shift+A
    - You should hear: Matches grouped by what they are.
 

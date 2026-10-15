@@ -4454,6 +4454,8 @@ These are the keys you will use every day:
   list. (It used to be on `Alt+F3`, which now belongs to Reveal Codes.)
 - `Ctrl+H` opens Replace.
 - `Ctrl+Shift+Grave` then `X` replaces all.
+- `Ctrl+Alt+Shift+F8` opens **Find in Open Documents**, which finds and
+  replaces across every document you have open (see below).
 
 **Find Next**, **Find Previous** and **Find All Matches** live on the **Edit**
 menu, beside Find and Replace.
@@ -4473,7 +4475,8 @@ there are now under **Edit > Search Tools**. This is where you go to search
 many files at once, or to work with regular expressions and lines:
 
 - **Search in Files...** (`Ctrl+Alt+Shift+F`) and **Replace Across Files...**
-  (`Ctrl+Shift+R`) search and replace across a folder of documents.
+  (`Ctrl+Shift+R`) search and replace across a folder of documents. QUILL Lite
+  has the same two commands, on the same keys, under **Edit > Matches**.
 - **Count Regex Matches...** and **Extract Regex Matches...** tell you how many
   times a regular expression matches, or pull every match out for you.
 - **Lines in First Block Only** and **Lines Common to Both Blocks** compare two
@@ -4482,7 +4485,66 @@ many files at once, or to work with regular expressions and lines:
 
 Search in Files and Replace Across Files appear only when your feature profile
 includes regular-expression search. In the simpler profiles you still have
-Find and Replace on the Edit menu.
+Find and Replace on the Edit menu, and Find in Open Documents, which every
+profile has.
+
+#### Find and replace in all your open documents
+
+Sometimes the thing you are looking for is in one of a dozen documents you have
+open, or you need to change a name in all of them. **Find in Open Documents...**
+(**Ctrl+Alt+Shift+F8**, on **Edit**) searches every document QUILL has open,
+not just the one in front of you.
+
+It searches the text exactly as it is in each tab, so it finds:
+
+- changes you have not saved yet,
+- new documents you have never saved,
+- formatted documents, such as Word and RTF files, searched as you see them.
+
+Anything that is not open is left alone, and it never writes to a file on disk.
+If you want to search files that are saved in a folder instead, that is
+**Search in Files** (QUILL, on **Edit > Search Tools**).
+
+The window has the same choices as Find and Replace:
+
+- **Find what** and **Replace with**.
+- **Search mode**: Normal, Extended or Regular expression, just as in Find.
+- **Match case**, **Whole word only**, and **Wrap around**, which is checked
+  when it opens. With it checked, the search goes on from the first document
+  after the last one, and comes back to where you started.
+
+Its buttons:
+
+- **Find Next** (**Enter**) and **Find Previous** go to the next or previous
+  match. When one document has no more, they move on to the next document and
+  bring it to the front, and you hear its name and the line: "Chapter 3.txt,
+  line 12: She opened the door." While you stay in one document you only hear
+  the line, the way Find works. If the search goes past the last document and
+  starts again from the first, you hear "Back to the start" first.
+- **Find All** lists every match in every open document, in order, each with
+  the document's name, the line number and the line. Arrow through it and press
+  **Enter** to go straight to that match. It is the quickest way to check what
+  Replace All is about to change.
+- **Replace All** does nothing until you have heard what it found, for example:
+  "312 matches in 87 of 104 open documents. Replace them all?" Press **Yes** to
+  go ahead.
+  - Each document is changed on its own, so **Ctrl+Z** in any one window takes
+    back just that document's replacements. In a formatted document each
+    replacement is its own undo step, which keeps the formatting around it
+    exactly as it was.
+  - Nothing is saved for you. Every changed document is marked as changed, and
+    you save them when you are ready, one at a time or with **Save All**.
+  - Documents that cannot be changed, such as a read-only file or a report
+    QUILL wrote for you, are still searched, but Replace All leaves them alone
+    and tells you how many it skipped.
+- **Close** (**Escape**) puts the window away.
+
+After you close it, **F3** and **Shift+F3** keep searching across all your open
+documents, so you can work through them one match at a time without opening the
+window again. As soon as you start an ordinary Find (**Ctrl+F**) or Replace
+(**Ctrl+H**), F3 goes back to searching just the document you are in.
+
+QUILL and QUILL Lite share this window and work the same way, on the same key.
 
 ### Navigation
 
@@ -5600,12 +5662,21 @@ QUILL plays short sounds, called earcons, for things your screen reader does
 not mention, like a misspelling or a paste. Here is how to silence them all at
 once, change one, or build a set of your own.
 
-#### Quiet mode
+#### Where QUILL's sounds play, and turning them off
 
-`Alt+Shift+M` silences every sound at once. Press it again to bring them back.
-It is one key so you can reach it while the noise is happening: on a call, in
-a quiet room, or when you have simply heard enough for today. The setting is
-shared with QUILL Lite, so silencing one editor silences both.
+QUILL makes short sounds of its own. You choose where they play, and you can turn them off.
+
+- **Alt+Shift+M** turns QUILL's sounds off. Press it again and they come back, on the same sound card as before. You hear a short sound as they go off, and another where they now play when they come back on, and both are spoken too. **Tools > Reading and Dictation > App Sounds** has a check mark that shows whether they are on.
+- **Tools > Reading and Dictation > Sound Scheme... (Ctrl+Alt+Shift+O) > App Sounds Play On...** lets you pick where they play:
+  - **System default**. This is where it starts. The sounds go where Windows sends sound.
+  - **None (no sounds)**. QUILL makes no sounds at all. Everything it tells you is still spoken.
+  - **Any sound card or headset in the list.** The sounds get a device of their own.
+
+After you choose, one sound plays on the new device, so you know straight away where it went.
+
+If the device you chose is unplugged or asleep, you still hear every sound, on the system default, and QUILL tells you once. When the device comes back, the sounds go back to it by themselves.
+
+This changes QUILL only. Your other QUILL apps keep their own choice, unless you have checked "Share these choices with my other Quill apps", which copies a change here to the others that share. Your screen reader is never moved. Until October 2026, Alt+Shift+M silenced QUILL and QUILL Lite together. Now every QUILL app has its own, on the same key; to silence all of them at once, turn off **Sound notifications** in Settings.
 
 #### The Sound Scheme window
 
@@ -11032,9 +11103,11 @@ and it never replaces speech.
   Scheme...** to turn single events on or off. Events are grouped into
   Earcons, Compare and (when an indent-tone pack is loaded) Indentation tones,
   so you can keep, say, the save and search cues and silence the rest.
-- **Toggle everything.** **Toggle Sound Notifications** (in Reading &
-  Dictation) turns all earcons on or off at once, and plays a short "on" or
-  "off" cue so you know which way it went.
+- **QUILL's sounds on or off.** **App Sounds** (in Reading & Dictation,
+  Alt+Shift+M) turns QUILL's own sounds off or back on, and plays a short
+  "off" or "on" cue so you know which way it went. **App Sounds Play On...**
+  in the Sound Scheme window chooses the sound card they play on. The
+  **Sound notifications** setting still silences every QUILL app at once.
 - **Indentation tones.** In code and other indented text, QUILL can play a
   tone as the caret crosses indent levels. The tone rises as you go deeper and
   falls as you come back out. Pick a scale (pentatonic, whole-tone, diatonic
@@ -12047,8 +12120,10 @@ there.
   clipboard entries into a running log in the open document. This works
   system-wide, the way EdSharp did: while the collector is on, anything you
   copy in *any* application, such as your browser, mail or a terminal, is
-  added (each distinct copy once). If the document has been saved before, it
-  autosaves after each collection.
+  added (each distinct copy once). It never saves for you: the document is
+  marked as changed, and you save it when you are ready. **Alt+Shift+S** turns
+  the collector on and off. QUILL Lite has the same collector, on the same key,
+  under **Edit > Clipboard**.
 - **Toggle Key Describer** says the names of keys instead of doing what they
   do. It is handy for writing down keystrokes.
 - **Toggle Indentation Announcements** and **Infer Indentation...** tell you

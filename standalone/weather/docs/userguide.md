@@ -134,6 +134,22 @@ identical repeat is suppressed before it may take the display again, whether
 errors stay on the display, and whether the companion apps play sound cues.
 Change them once in QUILL and Quill Weather follows.
 
+## Where Quill Weather's own sounds play
+
+Quill Weather makes short sounds of its own, such as the one that marks a new weather alert. You choose where they play, and you can turn them off.
+
+- **Alt+Shift+M** turns Quill Weather's sounds off. Press it again and they come back, on the same sound card as before. You hear a short sound as they go off, and another where they now play when they come back on, and both are spoken too. **Options > App Sounds** has a check mark that shows whether they are on.
+- **Options > App Sounds Play On... (Ctrl+Shift+S)** lets you pick where they play:
+  - **System default**. This is where it starts. The sounds go where Windows sends sound.
+  - **None (no sounds)**. Quill Weather makes no sounds at all. Everything it tells you is still spoken.
+  - **Any sound card or headset in the list.** The sounds get a device of their own.
+
+After you choose, one sound plays on the new device, so you know straight away where it went.
+
+If the device you chose is unplugged or asleep, you still hear every sound, on the system default, and Quill Weather tells you once. When the device comes back, the sounds go back to it by themselves.
+
+This changes Quill Weather only. Your other QUILL apps keep their own choice, unless you have checked "Share these choices with my other Quill apps", which copies a change here to the others that share. Your screen reader is never moved. A weather alert is still spoken when its sound is off.
+
 ## Reaching the other apps
 
 Quill Weather, Quill Radio, and QUILL are separate apps that can open each other.

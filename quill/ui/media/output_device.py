@@ -130,6 +130,8 @@ def choose_output_device(host: Any) -> None:
     # saying which engine and which setting are its own.
     binding = _binding(host)
     if binding is not None:
+        from quill.ui import app_sounds
+
         pick_output_device(
             getattr(host, "frame", None) or host,
             app_name=binding.app_name,
@@ -137,6 +139,8 @@ def choose_output_device(host: Any) -> None:
             engine=binding.engine,
             announce=announce,
             save=binding.save,
+            # Sounds that follow this app's audio move with it (ui/app_sounds).
+            after_save=lambda: app_sounds.own_device_changed(host),
         )
         return
 
@@ -177,6 +181,7 @@ def pick_output_device(
     engine: Any,
     announce: Any,
     save: Any,
+    after_save: Any = None,
 ) -> None:
     """Choose the sound card *app_name* plays through. The family's one picker.
 
@@ -196,7 +201,9 @@ def pick_output_device(
     machine has installed, because a machine with libmpv can still be on the
     classic control. *save* persists the choice for the next launch; *announce*
     is the app's own speech. Says only what the screen reader does not: the
-    dialog names itself, so only the outcome is spoken (GATE-13).
+    dialog names itself, so only the outcome is spoken (GATE-13). *after_save*,
+    when given, runs once the choice is saved and answers whether the app's
+    own sounds went with it -- said in the same sentence, not a second one.
     """
     import wx
 
@@ -244,7 +251,9 @@ def pick_output_device(
         announce(f"{chosen_label} could not be opened, so the output device is unchanged.")
         return
     save(chosen)
-    announce(f"Output device: {chosen_label}.")
+    followed = bool(after_save()) if callable(after_save) else False
+    tail = " App sounds go with it." if followed else ""
+    announce(f"Output device: {chosen_label}.{tail}")
 
 
 def _open_windows_route(parent: Any, announce: Any, app_name: str, reason: str) -> None:

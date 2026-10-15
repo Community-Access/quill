@@ -6,6 +6,8 @@ app.
 
 ## Unreleased
 
+- **Where QUILL Transcribe's own sounds play, and Alt+Shift+M to turn them off.** **Options > App Sounds Play On...** (Ctrl+Shift+S) offers System default, None (no sounds), or any sound card or headset by name. After a change one sound plays on the new card, so you hear where it went. If that card is unplugged the sounds play on the system default until it is back, and QUILL Transcribe says so once. **Alt+Shift+M** turns QUILL Transcribe's sounds off and back on where they were, and **Options > App Sounds** shows a check mark while they are on. Each QUILL app keeps its own choice; "Share these choices with my other Quill apps" keeps them in step. Your screen reader is never moved. Asked for on QUILLVille by Rick Lewis.
+
 - The start and stop key is Alt+Shift+Backslash from the start, and every key
   box has Record Key.
 - With JAWS, no "c" with each phrase; with phrase feedback a tone or nothing,

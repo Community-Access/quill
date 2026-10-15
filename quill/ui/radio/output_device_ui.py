@@ -85,6 +85,12 @@ def choose_output_device(frame: Any) -> None:
     save_history_async(frame, history)
     # A station already on air moves to the new device immediately.
     frame._radio_controller.set_output_device(chosen)
+    from quill.ui import app_sounds
+
+    # Sounds that follow the radio go too, and one sound on the new card says so.
+    if app_sounds.own_device_changed(frame):
+        frame._announce(f"Output device: {chosen_label}. App sounds go with it.")
+        return
     frame._announce(f"Output device: {chosen_label}.")
 
 

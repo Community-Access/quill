@@ -158,6 +158,12 @@ class AppShellFrame(
         # Mode stays silent here exactly as it does in QUILL.
         if not safe_mode:
             init_app_sound(self.settings)
+            # Where this app's own sounds play (ui/app_sounds): its own choice,
+            # by its app id, for every companion app at once.
+            self._app_sounds_id, self._app_sounds_name = app_id, title
+            from quill.ui import app_sounds
+
+            app_sounds.apply(self)
         self._tray_icon: wx.adv.TaskBarIcon | None = None
         self._status_message = ""
         # Set by an explicit menu/tray "Exit" so the app's close handler quits for

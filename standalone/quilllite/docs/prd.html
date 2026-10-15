@@ -2000,6 +2000,54 @@ to merge but <strong>is</strong> required for the release to publish. It
 is the only thing on this list a machine cannot do: everything else here
 is automated, and what a person actually <em>hears</em> is not.</li>
 </ul>
+<h2 id="find-in-open-documents-2026-10-15">Find in Open Documents
+(2026-10-15)</h2>
+<p>QUILL’s command, on QUILL’s key, from the same shared code (QUILL
+Lite may never be ahead of QUILL, and here it is not behind either):
+<strong>Edit &gt; Matches &gt; Find in Open Documents…</strong>
+(<strong>Ctrl+Alt+Shift+F8</strong>) finds and replaces across every
+open window’s live text. The window and the model are QUILL’s
+(<code>quill/ui/open_documents_find.py</code>,
+<code>quill/core/open_documents_search.py</code>); QUILL Lite supplies
+<code>quill/apps/lite_open_documents.py</code>, which lists
+<code>app.frames</code>, brings one to the front with
+<code>focus_frame</code>, and keeps the search state on the app so F3 in
+any window carries on the same search. Find and Replace end it
+(<code>cmd_find</code>, <code>cmd_replace</code>). Handler
+<code>cmd_find_open_docs</code>, parity
+<code>edit.find_in_open_documents</code>. Asked for on QUILLVille by
+Chris Nova.</p>
+<h2 id="search-in-files-and-replace-across-files-2026-10-15">Search in
+Files and Replace Across Files (2026-10-15)</h2>
+<p>QUILL’s two commands, on QUILL’s keys – Ctrl+Alt+Shift+F had been
+reserved for Search in Files since the keyboard parity work and never
+filled. The window moved from
+<code>quill/ui/main_frame_file_search_prompt.py</code> into the shared
+<code>quill/ui/file_search_prompt.py</code> (QUILL’s mixin now only
+supplies its folder, parent and modal helpers), and the work is QUILL’s
+<code>quill/core/file_search.py</code>. QUILL Lite’s
+<code>quill/apps/lite_file_search.py</code> runs it on the app task
+manager and puts each report in a new untitled window, where QUILL opens
+a generated tab. Handlers <code>cmd_search_in_files</code> and
+<code>cmd_replace_in_files</code>, parity
+<code>tools.search_in_files</code> and
+<code>tools.replace_in_files</code>.</p>
+<h2 id="the-clipboard-collector-2026-10-15">The clipboard collector
+(2026-10-15)</h2>
+<p>QUILL’s system-wide collector (#964), on QUILL’s key, from QUILL’s
+pieces: <code>quill/apps/lite_clipboard_collector.py</code> polls the OS
+clipboard change counter
+(<code>ui/main_frame_clipboard_collector._clipboard_change_counter</code>),
+appends with <code>core/clipboard_collector.append_collected</code>,
+collects each distinct payload once, never saves, keeps one collecting
+window per app, and stops when it closes. Handler
+<code>cmd_clipboard_collector</code> (Alt+Shift+S, a check row on Edit
+&gt; Clipboard), parity <code>power.toggle_clipboard_collector</code>.
+The parity table had mapped <code>cmd_collect_selection</code> to that
+command, which was never the same verb; Collect Selection is now
+<code>LITE_ONLY</code> with Paste and Clear, on Alt+Shift+C (rule 2: the
+command both editors have keeps the chord). Asked for on QUILLVille by
+Dean Martineau.</p>
 </main>
 </body>
 </html>

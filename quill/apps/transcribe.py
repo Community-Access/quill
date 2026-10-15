@@ -46,7 +46,7 @@ from quill.ui.app_shell import AppShellFrame
 
 _TITLE = "QUILL Transcribe"
 _VERSION = "1.0.0"
-_BUILD = 1  # this version's build (docs/release/RELEASE.md, "Build numbers")
+_BUILD = 2  # this version's build (docs/release/RELEASE.md, "Build numbers")
 _REPO = "Community-Access/quill"
 _IPC_SLOT = "transcribe"
 _PAD = 10

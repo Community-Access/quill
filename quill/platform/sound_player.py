@@ -438,6 +438,9 @@ class SoundPlayer:
 
     def __init__(self, backend: _WavBackend | None = None) -> None:
         self._backend: _WavBackend = backend if backend is not None else _detect_backend()
+        #: The detected backend, kept while a RoutedBackend stands in front of it.
+        self._base: _WavBackend = self._backend
+        self._volume: float = 1.0
         self._lock = threading.Lock()
         self._muted: bool = False
         self._events: dict[str, bytes] = {}
@@ -498,10 +501,32 @@ class SoundPlayer:
             clamped = max(0.0, min(1.0, float(volume)))
         except (TypeError, ValueError):
             return
+        self._volume = clamped
         try:
             self._backend.set_volume(clamped)
         except Exception:  # noqa: BLE001
             pass
+
+    def set_output_device(self, device: str, on_route: object = None) -> bool:
+        """Send earcons to card *device* (``wasapi/{guid}``; "" default; "none" off).
+
+        Unreachable, they play on the default device (sound_routing), and
+        *on_route* hears when that starts and stops. True if reachable now."""
+        from quill.platform.sound_routing import route_for
+
+        name = str(device or "").strip()
+        old = self._backend
+        new = route_for(name, self._base, on_route)
+        new.set_volume(self._volume)
+        self._backend = new
+        if old is not self._base:
+            old.shutdown(timeout=0.5)
+        return new is self._base or bool(new.available())  # type: ignore[attr-defined]
+
+    @property
+    def output_device(self) -> str:
+        """The card earcons are routed to, or "" for the system default."""
+        return str(getattr(self._backend, "device", ""))
 
     def set_disabled(self, disabled: frozenset[str]) -> None:
         with self._lock:
@@ -605,4 +630,6 @@ class SoundPlayer:
 
     def shutdown(self, timeout: float = 2.0) -> None:
         """Shut down the backend.  Blocks up to *timeout* seconds."""
-        self._backend.shutdown(timeout=timeout)
+        if self._backend is not self._base:
+            self._backend.shutdown(timeout=timeout)
+        self._base.shutdown(timeout=timeout)

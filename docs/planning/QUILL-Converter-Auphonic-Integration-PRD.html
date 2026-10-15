@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>QUILL-Converter-Auphonic-Integration-PRD</title>
+  <title>Quill Converter + Auphonic Integration -- MVP Product
+Requirements</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -180,20 +181,80 @@
       vertical-align: middle;
     }
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
 <h1
-id="quill-converter--auphonic-integration----mvp-product-requirements">Quill
-Converter + Auphonic Integration -- MVP Product Requirements</h1>
+id="quill-converter--auphonic-integration--mvp-product-requirements">Quill
+Converter + Auphonic Integration – MVP Product Requirements</h1>
 <p><strong>Status:</strong> Proposed; not implemented<br />
 <strong>Date:</strong> October 5, 2026<br />
 <strong>Scope:</strong> Optional, multi-file audio post-production
-through the user's own Auphonic account</p>
+through the user’s own Auphonic account</p>
 <h2 id="1-product-summary">1. Product summary</h2>
 <p>Add a small, explicit Auphonic workflow to Quill Converter. A user
 selects local audio files and chooses whether to process them as
 separate productions (one per file) or as one multitrack production (one
-file per track, in queue order). The user chooses the account's default
+file per track, in queue order). The user chooses the account’s default
 settings or a saved preset, reviews one confirmation for the whole
 submission, and lets Auphonic process the files. Quill Converter reports
 progress and saves the resulting audio file or files locally without
@@ -203,7 +264,7 @@ Convert workflow. Local conversion remains the default and continues to
 work without an account or network connection. Nothing is uploaded by
 opening the app, checking an account, selecting a preset, or adding a
 file to the queue.</p>
-<p>The first release intentionally exposes the Auphonic service's
+<p>The first release intentionally exposes the Auphonic service’s
 existing account presets rather than inventing a new processing
 interface. Named QUILL recipes, custom signal-processing controls, and
 content-generation features are future work.</p>
@@ -219,7 +280,7 @@ requirements</a>.</li>
 href="../../quill/core/publish/auphonic.py"><code>quill/core/publish/auphonic.py</code></a>.
 It supports account and preset lookup, a single-file upload, production
 status polling, and result downloads.</li>
-<li>The Audio Studio's Publish dialog already provides a user-entered
+<li>The Audio Studio’s Publish dialog already provides a user-entered
 Auphonic API token, account/preset lookup, an upload confirmation,
 background progress, cancellation, and result downloads in <a
 href="../../quill/ui/audio_studio/publish_dialog.py"><code>quill/ui/audio_studio/publish_dialog.py</code></a>.</li>
@@ -233,7 +294,7 @@ inventory. Any new or moved call site must remain covered by that
 audit.</li>
 <li>The existing client currently starts a production with one uploaded
 file. Multitrack mode requires extending that same service client and
-verifying Auphonic's supported multitrack API contract; it must not be
+verifying Auphonic’s supported multitrack API contract; it must not be
 approximated by submitting the tracks as separate jobs.</li>
 <li>The Simple API also exposes a limited set of processing options
 directly, including adaptive filtering, leveling, loudness
@@ -242,7 +303,7 @@ supports explicit output-file configuration and multitrack algorithms.
 The MVP should expose only a small plain-language subset of these
 capabilities.</li>
 </ul>
-<p>This proposal is a scoped exception to the released Converter's
+<p>This proposal is a scoped exception to the released Converter’s
 no-media-upload requirement, not a change to the existing conversion
 behavior. Until this feature is implemented and released, the shipped
 app remains exactly as currently specified: local conversion only.</p>
@@ -258,7 +319,7 @@ each job is progressing, and where results were saved.</p>
 <li>Offer a straightforward, accessible path from selected queued audio
 files to either separate Auphonic productions or one multitrack
 production.</li>
-<li>Reuse the user's own Auphonic account, saved credentials, and saved
+<li>Reuse the user’s own Auphonic account, saved credentials, and saved
 presets.</li>
 <li>Make every media upload an informed, explicit user action.</li>
 <li>Keep processing and downloads off the UI thread, cancellable where
@@ -271,7 +332,7 @@ client.</li>
 <h2 id="5-mvp-scope">5. MVP scope</h2>
 <h3 id="51-entry-point-and-input">5.1 Entry point and input</h3>
 <ul>
-<li>Add a keyboard-reachable <strong>Process with Auphonic...</strong>
+<li>Add a keyboard-reachable <strong>Process with Auphonic…</strong>
 command to the Converter, available from the selected queue items and an
 appropriate menu or command-search surface.</li>
 <li>Accept one or more queued, existing audio files when no other
@@ -294,9 +355,9 @@ the Converter queue. Use one preset for the multitrack production.</li>
 accepted by Auphonic. Validate these constraints before upload and
 explain any ineligible selection.</li>
 <li>In multitrack mode, default the production title and result-folder
-name to the first eligible track's filename; allow the user to edit the
+name to the first eligible track’s filename; allow the user to edit the
 title before submission.</li>
-<li>Finalize the accepted input-format list against Auphonic's current
+<li>Finalize the accepted input-format list against Auphonic’s current
 API behavior during implementation. Unsupported, unreadable, or
 zero-length inputs must fail before upload with a speakable
 explanation.</li>
@@ -311,7 +372,7 @@ available, provide a secure password-style token entry with a link or
 plain-language direction to obtain the token from Auphonic.</li>
 <li>Allow the user to check the account and load its saved presets
 without uploading media.</li>
-<li>Offer the account's default preset and the user's saved presets. A
+<li>Offer the account’s default preset and the user’s saved presets. A
 separate production batch uses one preset for all its jobs; multitrack
 mode has its own single preset choice. Show the account name and
 available credits when returned by the API; do not imply that QUILL can
@@ -337,7 +398,7 @@ on the main surface.</li>
 <li><strong>Use preset settings</strong> (default): use the selected
 Auphonic preset as-is.</li>
 <li><strong>Quick cleanup</strong>: enable Auphonic adaptive filtering,
-adaptive leveling, and loudness normalization using Auphonic's service
+adaptive leveling, and loudness normalization using Auphonic’s service
 defaults.</li>
 </ul></li>
 <li>In Quick cleanup, provide an optional <strong>Reduce background
@@ -350,7 +411,7 @@ are MP3, WAV, FLAC, AAC, and Opus; finalize the list against Auphonic
 and the result downloader. Multiple custom formats, bitrate, sample
 rate, and multitrack stem export are out of scope for the first
 implementation.</li>
-<li>When a format is selected, request it explicitly through Auphonic's
+<li>When a format is selected, request it explicitly through Auphonic’s
 production API. For multitrack, download the final mixdown only.</li>
 <li>For separate-file productions, pass through source title, basic
 available tags, and chapter marks where the input reader and Auphonic
@@ -374,7 +435,7 @@ production;</li>
 <li>the processing mode, optional noise reduction, and output
 format(s);</li>
 <li>for multitrack, track names/order and the production title;</li>
-<li>that the media will be uploaded and processed using the user's
+<li>that the media will be uploaded and processed using the user’s
 Auphonic account and credits;</li>
 <li>the destination folder for downloaded results.</li>
 </ul></li>
@@ -419,9 +480,9 @@ explicit user-facing choice.</li>
 </ul>
 <h3 id="56-results-and-local-files">5.6 Results and local files</h3>
 <ul>
-<li>Save returned audio results under the Converter's selected output
+<li>Save returned audio results under the Converter’s selected output
 directory; when none is set, use its normal default destination. For
-separate jobs, put each file's results in its own source-named
+separate jobs, put each file’s results in its own source-named
 subfolder. For multitrack, use a folder named after the editable
 production title.</li>
 <li>Never overwrite an existing file, the source, or files outside the
@@ -433,14 +494,14 @@ returns other artifact types, leave them out and say how many were not
 downloaded; do not imply that transcripts, captions, or reports were
 saved.</li>
 <li>On success, announce the number and location of files and offer to
-open the output folder using the Converter's existing behavior. The
-final batch summary lists each input's outcome and any skipped
+open the output folder using the Converter’s existing behavior. The
+final batch summary lists each input’s outcome and any skipped
 items.</li>
 <li>Persist only the minimum local state required to resume accepted
 productions after Converter exits. Store the Auphonic production ID,
 mode, input display names/track order, preset label, output location,
 and enough batch state to report outcomes. Do not persist credentials or
-media contents. Use the repository's atomic-write and recovery
+media contents. Use the repository’s atomic-write and recovery
 conventions.</li>
 <li>On the next launch, show pending Auphonic work and offer an explicit
 <strong>Resume</strong> action. Do not contact Auphonic automatically at
@@ -457,10 +518,10 @@ help.</li>
 <li>All functions, including account setup, preset selection,
 confirmation, progress, cancellation, and result review, are usable by
 keyboard.</li>
-<li>Every menu item follows Converter's menu-accelerator policy: show a
+<li>Every menu item follows Converter’s menu-accelerator policy: show a
 working, non-conflicting keyboard route, and make the route discoverable
 in Keyboard Shortcuts and command search.</li>
-<li>Modal surfaces use the Converter host's accessible dialog contract,
+<li>Modal surfaces use the Converter host’s accessible dialog contract,
 with explicit affirmative/cancel actions, Escape behavior, deterministic
 focus, and focus return.</li>
 <li>Announce action outcomes and meaningful background state changes
@@ -476,7 +537,7 @@ network policy</h2>
 network operation initiated by an explicit command and confirmed for
 each batch or multitrack production.</li>
 <li>Disclose that the selected media is sent to Auphonic, is processed
-under the user's Auphonic account, and is subject to Auphonic's own
+under the user’s Auphonic account, and is subject to Auphonic’s own
 handling and retention terms. QUILL must not promise deletion or
 retention behavior it cannot control.</li>
 <li>Do not contact Auphonic automatically at startup, on queue
@@ -554,7 +615,7 @@ results.</li>
 <li>Ineligible selected files are skipped and identified before
 confirmation; no upload proceeds if there are no eligible files or the
 multitrack selection is invalid.</li>
-<li>Users can retain the selected preset's processing or choose Quick
+<li>Users can retain the selected preset’s processing or choose Quick
 cleanup; the optional noise-reduction switch is off by default. A
 verified output format can override the preset outputs, and the
 confirmation describes those choices.</li>
@@ -578,7 +639,7 @@ credentials.</li>
 <ul>
 <li>A first-time user can complete either a separate-file batch or a
 multitrack production, choose basic processing and output options, and
-save results without using Auphonic's web interface or a mouse.</li>
+save results without using Auphonic’s web interface or a mouse.</li>
 <li>A returning user can reuse the saved credential and preset choice
 without re-entering a token.</li>
 <li>In usability testing, participants can tell before upload which
@@ -590,7 +651,7 @@ opening/checking the Auphonic UI.</li>
 <p>Do not add product telemetry to measure these outcomes.</p>
 <h2 id="11-delivery-sequence">11. Delivery sequence</h2>
 <ol type="1">
-<li><strong>Contract and safety:</strong> verify Auphonic's
+<li><strong>Contract and safety:</strong> verify Auphonic’s
 separate-file and multitrack API behavior, basic algorithm overrides,
 supported output formats, metadata and chapter pass-through, track
 limits, result metadata, polling, cancellation, restart behavior, and
@@ -604,7 +665,7 @@ confirmation, basic processing/output choices, sequential separate jobs,
 multitrack submission, continue-on-failure reporting, metadata/chapter
 pass-through, minimal atomic job persistence, explicit resume, result
 downloads, and accessible progress/errors.</li>
-<li><strong>Release readiness:</strong> update the Converter's product
+<li><strong>Release readiness:</strong> update the Converter’s product
 requirements, user guide, help text, Safe Mode, persistence, and network
 tests, plus packaging/release notes; verify manually with NVDA or JAWS
 and a real Auphonic test account.</li>
@@ -613,8 +674,8 @@ and a real Auphonic test account.</li>
 pass and the MVP has been evaluated.</p>
 <h2 id="12-references">12. References</h2>
 <ul>
-<li><a href="../../quill-auphonic-integration-proposal.md">Initial
-Auphonic integration proposal</a></li>
+<li><a href="quill-auphonic-integration-proposal.md">Initial Auphonic
+integration proposal</a></li>
 <li><a href="../../standalone/converter/docs/prd.md">Current Quill
 Converter product requirements</a></li>
 <li><a href="../../quill/core/publish/auphonic.py">Existing Auphonic API
@@ -628,5 +689,6 @@ API production details</a></li>
 <li><a href="https://auphonic.com/help/api/multitrack.html">Auphonic
 multitrack API</a></li>
 </ul>
+</main>
 </body>
 </html>

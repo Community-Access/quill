@@ -149,6 +149,18 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 hear="Each replacement, or the count at the end.",
             ),
             Step(
+                title="Search every open document",
+                body=(
+                    "Find in Open Documents searches every tab you have open, "
+                    "saved or not. Find Next moves from tab to tab and says each "
+                    "one's name, Find All lists every match, and Replace All tells "
+                    "you how many first and saves nothing. Afterwards F3 keeps "
+                    "searching across tabs until you start an ordinary Find."
+                ),
+                command="edit.find_in_open_documents",
+                hear="The Find in Open Documents window, then each match with its document's name.",
+            ),
+            Step(
                 title="Search a whole folder",
                 body=(
                     "Search in Files answers where did I write that when you "

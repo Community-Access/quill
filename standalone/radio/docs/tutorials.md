@@ -693,9 +693,9 @@ A friendly walk through Preferences, stopping only at the settings you will real
    - You should hear: Playback engine, combo box, Automatic (recommended).
    - Worth knowing: If Rewind, Volume Boost or the output device say they need the mpv engine, check this setting. If it is already on Automatic, Audio Health will tell you if the engine is missing.
 
-4. **Send the radio to a different speaker.** Radio output device, in Preferences, and Output Device on the Audio menu, send just the radio to a second sound card or a USB headset. Your screen reader and Quill Radio's own sounds stay where they are. So you can have the radio in the speakers and your screen reader in your headphones.
+4. **Send the radio to a different speaker.** Radio output device, in Preferences, and Output Device on the Audio menu, send the radio to a second sound card or a USB headset. Quill Radio's own sounds go with it, so you hear the playing sound there, and your screen reader stays where it is. So you can have the radio in the speakers and your screen reader in your headphones. App sounds play on, in Preferences, gives the sounds a device of their own.
    - Keys: Ctrl+Shift+D
-   - You should hear: Output Device, the device list, then Output device and the name you chose.
+   - You should hear: Output Device, the device list, then Output device, the name you chose and App sounds go with it, and the playing sound on that device.
    - Worth knowing: If you unplug the device, Quill Radio remembers it for next time. Meanwhile it plays through your usual device and tells you so.
 
 5. **Make the text bigger.** Text Size, on the View menu, offers Normal, Large or Larger. It makes the favorites list, the buttons, the now playing line and the status bar bigger, and it is remembered next time.

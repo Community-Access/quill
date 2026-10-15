@@ -225,8 +225,12 @@ class DocumentViewCommandsMixin:
         if not ai_was_on and self.app.feature_enabled("hosted_ai"):
             self._offer_ai_privacy_on_enable()
 
+    #: Who this window speaks for, to the family's App Sounds (ui/app_sounds).
+    _app_sounds_id = "quilllite"
+    _app_sounds_name = "QUILL Lite"
+
     def cmd_toggle_quiet_mode(self) -> None:
-        """Alt+Shift+M: silence every sound at once, and bring them back.
+        """Alt+Shift+M: QUILL Lite's own sounds off, and back where they were.
 
         One key rather than a visit to a settings window, because "make it
         stop" is a thing somebody needs *while* the noise is happening -- on a
@@ -234,38 +238,27 @@ class DocumentViewCommandsMixin:
         A feature you have to go and find is one that does not help at the
         moment you need it.
 
-        Sound-off rather than event-by-event: this is the blunt instrument on
-        purpose, and the fine-grained answer already exists one menu item away
-        in Sound Scheme. It writes the same shared setting QUILL's own toggle
-        writes, so silencing one editor silences the family -- which is what
-        somebody who wanted quiet meant.
-
-        The confirmation is spoken, never played. A cue saying "sounds are off"
-        would be the one sound that ignores the instruction, and a cue saying
-        "sounds are on" arrives before the user can know it was allowed to.
+        Until 2026-10-14 this wrote the family-wide sound switch, so silencing
+        one editor silenced every app. It is now this app's own choice, the
+        same key and the same behaviour in every QUILL app (ui/app_sounds); the
+        family-wide switch is still Sound notifications in QUILL's Settings.
         """
-        from quill.core.settings import load_settings, save_settings
-        from quill.ui import sound_manager
+        from quill.ui import app_sounds
 
-        settings = load_settings()
-        quiet = bool(getattr(settings, "sound_enabled", True))
-        settings.sound_enabled = not quiet
-        save_settings(settings)
-        sound_manager.on_settings_changed(settings)
-        self._announce("Quiet mode on. All sounds silenced." if quiet else "Sounds on.")
+        app_sounds.toggle(self)
         self._sync_check_items()
 
     def sound_is_quiet(self) -> bool:
-        """Whether sound is off right now, for the menu's check mark.
+        """Whether this app's sounds are off right now, for the menu's mark.
 
-        Read live rather than cached: the setting is shared with QUILL and with
-        every other window here, so a copy held on one frame would be stale the
-        moment somebody used the key in another.
+        Read live rather than cached: every window here shares the one choice,
+        so a copy held on one frame would be stale the moment somebody used
+        the key in another.
         """
         try:
-            from quill.core.settings import load_settings
+            from quill.ui import app_sounds
 
-            return not bool(getattr(load_settings(), "sound_enabled", True))
+            return not app_sounds.sounds_on(self)
         except Exception:  # noqa: BLE001 - a menu mark is never worth an error
             return False
 
@@ -288,7 +281,7 @@ class DocumentViewCommandsMixin:
         from quill.core.settings import load_settings, save_settings
         from quill.core.sound_pack import available_sound_packs
         from quill.core.sound_scheme import user_schemes
-        from quill.ui import sound_manager
+        from quill.ui import app_sounds, sound_manager
         from quill.ui.sound_scheme_dialog import SoundSchemeDialog, draft_for_pack
 
         sound_settings = load_settings()
@@ -313,6 +306,7 @@ class DocumentViewCommandsMixin:
             # the window offered a hundred and forty rows, most of which this
             # app never posts.
             app_id="quilllite",
+            choose_device=lambda: app_sounds.choose(self),
         )
         result = dialog.show()
         self.control.SetFocus()

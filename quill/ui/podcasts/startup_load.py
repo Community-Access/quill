@@ -102,6 +102,11 @@ class CastStartupLoadMixin:
                     self._announce(  # type: ignore[attr-defined]
                         "The saved audio output could not be selected; using the current device."
                     )
+            # Cast's sounds follow its audio by default (ui/app_sounds), and its
+            # card is only known now that the library has loaded.
+            from quill.ui import app_sounds
+
+            app_sounds.apply(self)
             for queue in (self._podcast_download_queue, self._podcast_cache_queue):  # type: ignore[attr-defined]
                 queue.set_reconnect_settings(
                     enabled=settings.reconnect_enabled,
