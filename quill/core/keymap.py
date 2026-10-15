@@ -312,11 +312,10 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "tools.voice_status": "",
     "tools.table_studio": "",
     "tools.csv_studio": "",
-    # App Sounds. Alt+Shift+M for mute, and the same chord in every QUILL app
-    # since 2026-10-14 (ui/app_sounds) -- one key for one idea, because "make
-    # it stop" is the command somebody reaches for without wanting to think
-    # about which app they are in. It silences the app you are in; the
-    # family-wide switch is Settings' Sound notifications.
+    # App Sounds: Alt+Shift+M in every QUILL app since 2026-10-14 (ui/app_sounds),
+    # one key for "make it stop", reached for without thinking about which app is
+    # in front. It silences the app you are in; Settings' Sound notifications is
+    # the family-wide switch.
     "tools.sound_toggle": "Alt+Shift+M",
     "tools.word_count": "Ctrl+Shift+G",
     "tools.spell_check_dialog": "F7",
@@ -631,6 +630,7 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "edit.find_next": "Cmd+G" if sys.platform == "darwin" else "F3",
     "edit.find_previous": "Cmd+Shift+G" if sys.platform == "darwin" else "Shift+F3",
     "edit.find_all_matches": "Ctrl+Shift+F3",  # was Alt+F3 (now Reveal Codes)
+    "edit.find_in_open_documents": "Ctrl+Alt+Shift+F8",  # the one free in both editors
     # Ctrl+H becomes Cmd+H on macOS (system Hide) -- dead by default. The darwin
     # alternate Cmd+Alt+F mirrors the Mac/VS Code Replace convention (#30).
     "edit.replace": "Cmd+Alt+F" if sys.platform == "darwin" else "Ctrl+H",

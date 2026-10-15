@@ -343,7 +343,7 @@ Press **Alt+Shift+L**. Each row tells you its line. Press Enter to go there.
 
 **26. Gather six things and paste them all at once.**
 
-1. Select something and press **Alt+Shift+S**. Do that for each piece. They
+1. Select something and press **Alt+Shift+C**. Do that for each piece. They
    all go onto one growing pile.
 2. **Ctrl+Alt+Shift+G** pastes the whole pile.
 3. **Ctrl+Alt+Shift+C** empties it.
@@ -1336,6 +1336,9 @@ These are the keys you will use most when you are looking for something:
 | **F3** / **Shift+F3** | Find next / previous |
 | **Ctrl+H** | Replace |
 | **Ctrl+G** | Go To: a line, a bookmark or a heading |
+| **Ctrl+Alt+Shift+F8** | Find in Open Documents: every open window at once |
+| **Ctrl+Alt+Shift+F** | Search in Files: a whole folder |
+| **Ctrl+Shift+R** | Replace Across Files |
 
 When a search reaches the end of the document, it goes back to the top and
 keeps looking, and it tells you it has done so. That little message is worth
@@ -1392,6 +1395,105 @@ document.
 each with its line, its column and the words around it. Open it before you
 press Replace All. It lets you see everything you are about to change before
 you change it.
+
+#### Find and replace in all your open documents
+
+Sometimes the thing you are looking for is in one of a dozen documents you have
+open, or you need to change a name in all of them. **Find in Open Documents...**
+(**Ctrl+Alt+Shift+F8**, on **Edit > Matches**) searches every document QUILL Lite has open,
+not just the one in front of you.
+
+It searches the text exactly as it is in each window, so it finds:
+
+- changes you have not saved yet,
+- new documents you have never saved,
+- formatted documents, such as Word and RTF files, searched as you see them.
+
+Anything that is not open is left alone, and it never writes to a file on disk.
+If you want to search files that are saved in a folder instead, that is
+**Search in Files**, described next.
+
+The window has the same choices as Find and Replace:
+
+- **Find what** and **Replace with**.
+- **Search mode**: Normal, Extended or Regular expression, just as in Find.
+- **Match case**, **Whole word only**, and **Wrap around**, which is checked
+  when it opens. With it checked, the search goes on from the first document
+  after the last one, and comes back to where you started.
+
+Its buttons:
+
+- **Find Next** (**Enter**) and **Find Previous** go to the next or previous
+  match. When one document has no more, they move on to the next document and
+  bring it to the front, and you hear its name and the line: "Chapter 3.txt,
+  line 12: She opened the door." While you stay in one document you only hear
+  the line, the way Find works. If the search goes past the last document and
+  starts again from the first, you hear "Back to the start" first.
+- **Find All** lists every match in every open document, in order, each with
+  the document's name, the line number and the line. Arrow through it and press
+  **Enter** to go straight to that match. It is the quickest way to check what
+  Replace All is about to change.
+- **Replace All** does nothing until you have heard what it found, for example:
+  "312 matches in 87 of 104 open documents. Replace them all?" Press **Yes** to
+  go ahead.
+  - Each document is changed on its own, so **Ctrl+Z** in any one window takes
+    back just that document's replacements. In a formatted document each
+    replacement is its own undo step, which keeps the formatting around it
+    exactly as it was.
+  - Nothing is saved for you. Every changed document is marked as changed, and
+    you save them when you are ready, one at a time or with **Save All**.
+  - Documents that cannot be changed, such as a read-only file or a report
+    QUILL wrote for you, are still searched, but Replace All leaves them alone
+    and tells you how many it skipped.
+- **Close** (**Escape**) puts the window away.
+
+After you close it, **F3** and **Shift+F3** keep searching across all your open
+documents, so you can work through them one match at a time without opening the
+window again. As soon as you start an ordinary Find (**Ctrl+F**) or Replace
+(**Ctrl+H**), F3 goes back to searching just the document you are in.
+
+QUILL and QUILL Lite share this window and work the same way, on the same key.
+
+#### Searching a whole folder of files
+
+Find in Open Documents works on what you have open. When the files you want are
+saved in a folder and you would rather not open them all, use the folder search,
+the same one QUILL has:
+
+- **Search in Files...** (**Ctrl+Alt+Shift+F**, on **Edit > Matches**) looks
+  through every file in a folder, and every folder inside it.
+- **Replace Across Files...** (**Ctrl+Shift+R**, beside it) changes every match
+  in those files, on disk.
+
+Both open the same window, which asks for:
+
+- **Starting folder**: where to look. It starts at the folder of the document
+  you are in.
+- **File pattern**: which files, such as `*.txt` or `*.md`. A star on its own
+  means every file.
+- **Search text**, and for Replace Across Files, **Replacement**.
+- **Match mode**: Plain text, Wildcard (`*` and `?`) or Regular expression.
+- **Output format**: how the results are written out, from just the file names
+  to every matching line.
+- **Case sensitive** and **Whole word**.
+
+The search runs in the background, so QUILL Lite stays usable while it works,
+even on a big folder. When it finishes you hear how many matches it found in
+how many files, and the results open in a new untitled window. Read it with
+your usual keys, and save it if you want to keep it.
+
+Replace Across Files changes the files on disk, so it is careful:
+
+- **Preview before replacing** is checked when the window opens. With it
+  checked, every change it would make opens in a new window first, and you are
+  asked "Replace 312 matches in 87 files?" before anything is written. Answer
+  **No** and nothing changes.
+- When it has finished, a report of what it changed opens in a new window.
+- Files you have open in QUILL Lite are changed on disk, not in the window. If
+  one of them is open, QUILL Lite notices the file changed and offers to reload
+  it.
+
+The first time you use Replace Across Files, try it on a copy of the folder.
 
 #### Searching for things you cannot type
 
@@ -1724,7 +1826,7 @@ The copy tray has twelve numbered slots for things you want to keep. The
 **collector** is for something different: you are reading along and want to
 pick up several pieces as you go, without deciding where each one goes.
 
-1. Select a piece of text and press **Alt+Shift+S** (**Edit > Clipboard >
+1. Select a piece of text and press **Alt+Shift+C** (**Edit > Clipboard >
    Collect Selection**). It is added to the pile. Do this as often as you like.
    Each piece goes on the end, and nothing is replaced.
 2. When you are ready, move to where you want it all and use **Paste Everything
@@ -1733,10 +1835,43 @@ pick up several pieces as you go, without deciding where each one goes.
 3. When you are done, press **Ctrl+Alt+Shift+C** (**Clear the Collector**) to
    empty it.
 
-If you used an older version, Collect Selection used to be on Ctrl+Alt+G. It
-moved because Google Drive for desktop takes that key for itself. If you find a
+If you used an older version, Collect Selection used to be on Alt+Shift+S, and
+before that on Ctrl+Alt+G. Alt+Shift+S is now the clipboard collector, below,
+the same key as in QUILL. Ctrl+Alt+G moved because Google Drive for desktop
+takes that key for itself. If you find a
 key that does nothing, the Keyboard Manager can tell you when another program
 has taken it.
+
+#### The clipboard collector: copy anywhere, it lands here
+
+Sometimes the pieces you want are not in QUILL Lite at all. They are in a web
+page, an email, a PDF or a terminal. The **clipboard collector** turns a QUILL
+Lite window into a place where everything you copy ends up, whichever program
+you copy it in. It is the same collector QUILL has, and it works the same way.
+
+1. Open the window you want to collect into. A new, empty one is a good choice.
+2. Press **Alt+Shift+S** (**Edit > Clipboard > Clipboard Collector**). You hear
+   "Clipboard collector on; anything you copy, in any program, appends to this
+   document."
+3. Go and work wherever you like. Each time you copy text, in any program, it
+   is added to the end of that window, with a short line of dashes between
+   pieces, and you hear "Collected clipboard text." Copying the same thing twice
+   in a row adds it only once.
+4. Press **Alt+Shift+S** again in that window to stop. You hear "Clipboard
+   collector off."
+
+A few things worth knowing:
+
+- **It never saves for you.** The window is marked as changed after each new
+  piece, and it reaches the disk when you save it. If you close it without
+  saving, QUILL Lite asks, as it always does.
+- **One window at a time.** Turn the collector on in a second window and it
+  moves there, and tells you so. **Edit > Clipboard > Clipboard Collector** has
+  a check mark in the window that is collecting.
+- **It stops when that window closes.**
+- **It only takes text.** Pictures and files on the clipboard are left alone.
+  A read-only window never collects.
+- **Each piece can be undone.** **Ctrl+Z** takes back the last piece collected.
 
 #### The clip library: things you want to keep
 
@@ -7021,6 +7156,9 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | Key | Command |
 |---|---|
 | **Ctrl+Shift+F3** | All Matches... |
+| **Ctrl+Alt+Shift+F8** | Find in Open Documents... |
+| **Ctrl+Alt+Shift+F** | Search in Files... |
+| **Ctrl+Shift+R** | Replace Across Files... |
 | **Ctrl+Alt+Shift+F3** | Count Occurrences |
 
 #### Lines (in Edit)
@@ -7084,7 +7222,8 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Alt+Shift+Y** | Copy to Tray Slot... |
 | **Ctrl+Alt+V** | Paste from Tray... |
 | **Ctrl+Alt+Shift+Y** | Clear Copy Tray |
-| **Alt+Shift+S** | Collect Selection |
+| **Alt+Shift+S** | Clipboard Collector (on or off) |
+| **Alt+Shift+C** | Collect Selection |
 | **Ctrl+Alt+Shift+G** | Paste Everything Collected |
 | **Ctrl+Alt+Shift+C** | Clear the Collector |
 | **Ctrl+Alt+M** | Keep Clip |

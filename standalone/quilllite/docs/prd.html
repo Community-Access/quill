@@ -2000,6 +2000,23 @@ to merge but <strong>is</strong> required for the release to publish. It
 is the only thing on this list a machine cannot do: everything else here
 is automated, and what a person actually <em>hears</em> is not.</li>
 </ul>
+<h2 id="find-in-open-documents-2026-10-15">Find in Open Documents
+(2026-10-15)</h2>
+<p>QUILL’s command, on QUILL’s key, from the same shared code (QUILL
+Lite may never be ahead of QUILL, and here it is not behind either):
+<strong>Edit &gt; Matches &gt; Find in Open Documents…</strong>
+(<strong>Ctrl+Alt+Shift+F8</strong>) finds and replaces across every
+open window’s live text. The window and the model are QUILL’s
+(<code>quill/ui/open_documents_find.py</code>,
+<code>quill/core/open_documents_search.py</code>); QUILL Lite supplies
+<code>quill/apps/lite_open_documents.py</code>, which lists
+<code>app.frames</code>, brings one to the front with
+<code>focus_frame</code>, and keeps the search state on the app so F3 in
+any window carries on the same search. Find and Replace end it
+(<code>cmd_find</code>, <code>cmd_replace</code>). Handler
+<code>cmd_find_open_docs</code>, parity
+<code>edit.find_in_open_documents</code>. Asked for on QUILLVille by
+Chris Nova.</p>
 </main>
 </body>
 </html>

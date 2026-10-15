@@ -34,6 +34,7 @@ from typing import Any
 
 import wx
 
+from quill.apps.lite_clipboard_collector import DocumentClipboardCollectorMixin
 from quill.apps.lite_dialogs import choose_from_rows
 from quill.core.clipboard_collector import DEFAULT_DIVIDER, append_collected
 from quill.core.fragment import Fragment
@@ -48,7 +49,7 @@ __all__ = ["DocumentClipboardMixin"]
 _PREVIEW_CHARS = 60
 
 
-class DocumentClipboardMixin:
+class DocumentClipboardMixin(DocumentClipboardCollectorMixin):  # and the collector
     """Paste-plain, the Copy Tray, the collector and the clip library."""
 
     # ------------------------------------------------------------------ #

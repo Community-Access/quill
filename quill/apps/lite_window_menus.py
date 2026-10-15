@@ -262,6 +262,8 @@ class DocumentMenuMixin:
             # two test frames the day it was added, and a test frame is only the
             # cheap version of that failure.
             "cmd_toggle_quiet_mode": _quiet_mark(self),
+            # This window collecting the clipboard (lite_clipboard_collector).
+            "cmd_clipboard_collector": bool(getattr(self, "collector_is_on", lambda: False)()),
             # Both caret cues. Per app rather than per document, like the rest of
             # View: what you want said as you move is a habit, not a property of
             # the file in front of you.

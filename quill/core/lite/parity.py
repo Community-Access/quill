@@ -219,7 +219,7 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_clear_bookmarks": "navigate.clear_numbered_bookmarks",
     "cmd_clear_copy_tray": "edit.clear_all_tray_slots",
     "cmd_close": "file.close_document",
-    "cmd_collect_selection": "power.toggle_clipboard_collector",
+    "cmd_clipboard_collector": "power.toggle_clipboard_collector",
     "cmd_command_palette": "app.command_palette",
     "cmd_complete_selection": "edit.complete_selection",
     "cmd_context_help": "help.context_help",
@@ -263,6 +263,7 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_file_format": "file.file_format",
     "cmd_find": "edit.find",
     "cmd_find_all": "edit.find_all_matches",
+    "cmd_find_open_docs": "edit.find_in_open_documents",
     "cmd_find_next": "edit.find_next",
     "cmd_find_previous": "edit.find_previous",
     "cmd_focus_status_bar": "navigate.next_region",
@@ -350,6 +351,8 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_recent_documents": "file.recent_documents",
     "cmd_reopen_last_session": "file.reopen_last_session",
     "cmd_replace": "edit.replace",
+    "cmd_replace_in_files": "tools.replace_in_files",
+    "cmd_search_in_files": "tools.search_in_files",  # beside its twin
     "cmd_reselect": "edit.reselect",
     "cmd_restore_deletion": "edit.restore_deletion",
     "cmd_restore_settings": "tools.share_import",
@@ -440,13 +443,16 @@ NATIVE_IN_BOTH: frozenset[str] = frozenset({
 #: * ``cmd_unfold_all`` -- QUILL folds and lists folds, but cannot unfold all.
 #: * ``cmd_underline`` -- QUILL's Ctrl+U is hard-coded in the char hook and has
 #:   no keymap entry at all, which is why it cannot be compared (bad.md 3.1).
-#: * ``cmd_paste_collected`` / ``cmd_clear_collected`` -- QUILL's collector is
-#:   a mode that writes into the document, so it has neither verb (C4).
+#: * ``cmd_collect_selection`` / ``cmd_paste_collected`` / ``cmd_clear_collected``
+#:   -- QUILL's collector is a mode that writes into the document, so it has
+#:   none of these verbs (C4). QUILL Lite has that mode too since 2026-10-15
+#:   (``cmd_clipboard_collector``); these three are its in-app buffer.
 #:
 #: This set is the P1 backlog, restated as data: every entry is QUILL Lite ahead
 #: of QUILL, which rule 10 does not allow to stand.
 LITE_ONLY: frozenset[str] = frozenset({
     "cmd_clear_collected",
+    "cmd_collect_selection",
     "cmd_close_mdi",
     "cmd_paste_collected",
     "cmd_print_preview",

@@ -214,6 +214,11 @@ COMMANDS: list[CommandRow] = [
     # -- Edit > Matches ------------------------------------------------------
     ("&Edit|&Matches", "&All Matches...", "Ctrl+Shift+F3", "cmd_find_all", ""),
     ("&Edit|&Matches", "&Count Occurrences", "Ctrl+Alt+Shift+F3", "cmd_count_occurrences", ""),
+    # Every open window at once (ui/open_documents_find); QUILL's key and command.
+    ("&Edit|&Matches", "&Find in Open Documents...", "Ctrl+Alt+Shift+F8", "cmd_find_open_docs", ""),
+    # QUILL's folder search, its window and its keys (lite_file_search).
+    ("&Edit|&Matches", "&Search in Files...", "Ctrl+Alt+Shift+F", "cmd_search_in_files", ""),
+    ("&Edit|&Matches", "&Replace Across Files...", "Ctrl+Shift+R", "cmd_replace_in_files", ""),
     # -- Edit > Lines --------------------------------------------------------
     # Everything that happens to whole lines, in one place, in the order the
     # work is actually done: move them, delete them, order them, tidy them.
@@ -403,13 +408,11 @@ COMMANDS: list[CommandRow] = [
     ("&Edit|Clip&board", "&Paste from Tray...", "Ctrl+Alt+V", "cmd_paste_from_tray", ""),
     ("&Edit|Clip&board", "C&lear Copy Tray", "Ctrl+Alt+Shift+Y", "cmd_clear_copy_tray", ""),
     ("&Edit|Clip&board", "", "", "", "sep"),
-    # Alt+Shift+S, not Ctrl+Alt+G: Google Drive for desktop owns Ctrl+Alt+G
-    # system-wide, and Windows hands a system-wide hotkey to its owner before a
-    # focused application sees the key -- so this was unreachable from the
-    # keyboard on any machine with Drive installed, and went silent rather than
-    # saying so. The two Shift variants below keep the G, because only the base
-    # chord is claimed.
-    ("&Edit|Clip&board", "C&ollect Selection", "Alt+Shift+S", "cmd_collect_selection", ""),
+    # Alt+Shift+S is QUILL's clipboard collector (rule 2; never Ctrl+Alt+G, which
+    # Google Drive owns system-wide). Collect Selection, QUILL Lite's own, moved
+    # to Alt+Shift+C on 2026-10-15: C for collect (QUILL: Copy With Source).
+    ("&Edit|Clip&board", "Cl&ipboard Collector", "Alt+Shift+S", "cmd_clipboard_collector", "check"),
+    ("&Edit|Clip&board", "C&ollect Selection", "Alt+Shift+C", "cmd_collect_selection", ""),
     (
         "&Edit|Clip&board",
         "Paste &Everything Collected",
@@ -912,8 +915,8 @@ COMMANDS: list[CommandRow] = [
     # app's own sounds, checked while they are on. A checkable row rather than
     # two commands: the state is the question ('are my sounds on?') and a
     # check mark is the only thing that answers it without pressing anything.
-    # N, because S is Spelling and U is Customize Features in this menu.
-    ("&Tools", "App Sou&nds", "Alt+Shift+M", "cmd_toggle_quiet_mode", "check"),
+    # No access key: Tools has spent every letter in the name (GATE-14).
+    ("&Tools", "App Sounds", "Alt+Shift+M", "cmd_toggle_quiet_mode", "check"),
     ("&Tools", "S&ound Scheme...", "Ctrl+Alt+Shift+O", "cmd_sound_scheme", ""),
     # -- Tools > Change Case -------------------------------------------------
     # -- Tools > AI. Five rows, five chords (rule 2 and rule 9 chose them; the

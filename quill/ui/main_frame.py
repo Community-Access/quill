@@ -416,6 +416,7 @@ from quill.ui.main_frame_native_keys import NativeKeyGuardMixin
 from quill.ui.main_frame_notebook import NotebookUIMixin
 from quill.ui.main_frame_numbered_bookmarks import NumberedBookmarksMixin
 from quill.ui.main_frame_onboarding_flow import OnboardingFlowMixin
+from quill.ui.main_frame_open_documents import OpenDocumentsFindMixin
 from quill.ui.main_frame_open_sources import OpenSourcesMixin
 from quill.ui.main_frame_palette_labels import PaletteToggleLabelsMixin
 from quill.ui.main_frame_podcasts import PodcastsMixin
@@ -733,6 +734,7 @@ _DIGIT_KEY_CODES: dict[int, int] = {ord(str(digit)): digit for digit in range(10
 
 
 class MainFrame(
+    OpenDocumentsFindMixin,  # ahead of SearchCommandsMixin: its F3 wins
     CloseOthersMixin,
     RecentDocumentsMixin,
     SessionRestoreMixin,

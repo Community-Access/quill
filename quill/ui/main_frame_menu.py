@@ -705,6 +705,7 @@ class MenuBuilderMixin:
             self._id_find_all_matches,
             self._menu_label(_("Find All &Matches"), "edit.find_all_matches"),
         )
+        self._append_open_documents_item(edit_menu)  # main_frame_open_documents
         # Word puts Go To under Edit, beneath Find and Replace, and it is one
         # window with a target kind now (bad.md 5.4, M4, P1.20). It is here
         # rather than in both places because two menu rows on one chord means

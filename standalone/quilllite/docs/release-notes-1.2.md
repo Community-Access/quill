@@ -15,6 +15,15 @@ than slipping past.
 Everything works from the keyboard and tells you how it went, the way the rest
 of QUILL Lite does.
 
+
+## New in this build: Find in Open Documents
+
+Press **Ctrl+Alt+Shift+F8** to find and replace across every document you have open, not just the one in front of you. It searches what is in each window right now, including changes you have not saved and documents you have never saved. Find Next moves from document to document and tells you each one's name, Find All lists every match, and Replace All tells you how many it found before it changes anything, lets you undo each document on its own, and saves nothing. Afterwards, F3 keeps searching across your documents until you start an ordinary Find. QUILL and QUILL Lite work the same way. Thanks to Chris Nova for asking.
+
+QUILL Lite also has QUILL's folder search now: **Search in Files** (**Ctrl+Alt+Shift+F**) and **Replace Across Files** (**Ctrl+Shift+R**), on **Edit > Matches**. They search, or change, every file in a folder without opening them, and Replace Across Files shows you every change and asks first.
+
+And QUILL Lite now has QUILL's **clipboard collector**. Press **Alt+Shift+S** in a window and everything you copy, in any program, lands at the end of it, until you press **Alt+Shift+S** again. Collect Selection, which used that key, is now on **Alt+Shift+C**.
+
 ## Testing rebuild: 1.2.0 (build 4)
 
 Build 4 runs on Python 3.14. Its installer also removes the older Python 3.13

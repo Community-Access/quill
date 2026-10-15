@@ -2,6 +2,56 @@
 
 ## 1.0.0
 
+### Find in Open Documents, in QUILL and QUILL Lite (2026-10-15)
+
+Asked for on QUILLVille by Chris Nova: NoteTab could find and replace across a
+hundred open files, and neither editor could. QUILL had Search in Files, which
+reads what is saved on disk; this searches each open document's live text.
+
+- **`quill/core/open_documents_search.py`** (wx-free): `find_across` (next or
+  previous match across documents, with the document it moved to and whether
+  it wrapped), `find_all_across`, `plan_replace` (every replacement worked out
+  before anything changes; read-only documents counted and skipped), over the
+  same `find_model` both editors' Find use.
+- **`quill/ui/open_documents_find.py`**: the one window (Find what, Replace
+  with, Search mode, Match case, Whole word only, Wrap around; Find Next, Find
+  Previous, Find All, Replace All, Close), the Find All list, `find_again` for
+  F3 afterwards, and `replace_text_in` -- one undo step per plain-text
+  document, one per match in a formatted one so formatting between matches is
+  never rewritten.
+- **Adapters only, per editor:** `quill/ui/main_frame_open_documents.py`
+  (QUILL's tabs; its `find_next`/`find_previous` overrides continue across
+  tabs and `find_text`/`replace_text` hand F3 back) and
+  `quill/apps/lite_open_documents.py` (QUILL Lite's windows, state on the app).
+- `edit.find_in_open_documents` / `cmd_find_open_docs` on Ctrl+Alt+Shift+F8,
+  the one chord free in both editors; Edit menu in QUILL, Edit > Matches in
+  QUILL Lite. Help topic, keyboard reference, both user guides, both PRDs, the
+  QUILL tutorial lesson "Find, replace, and search across files".
+
+### The clipboard collector in QUILL Lite (2026-10-15)
+
+Asked for on QUILLVille by Dean Martineau, who had it in EdSharp and in QUILL
+(#964) and not in QUILL Lite. `quill/apps/lite_clipboard_collector.py` is QUILL's
+collector on QUILL's key: the clipboard change-counter poll, `append_collected`,
+each distinct copy once, never saving, one collecting window per app, stopping
+when that window closes. `cmd_clipboard_collector` (Alt+Shift+S, Edit >
+Clipboard, a check row) maps to `power.toggle_clipboard_collector`; the parity
+table had wrongly mapped `cmd_collect_selection` there, which is now `LITE_ONLY`
+and moves to Alt+Shift+C (rule 2). QUILL's guide no longer claims the collector
+autosaves, which it has not done since bad.md C4.
+
+### Search in Files and Replace Across Files in QUILL Lite (2026-10-15)
+
+QUILL Lite had reserved Ctrl+Alt+Shift+F for Search in Files and never filled
+it. The window moved into `quill/ui/file_search_prompt.py`, shared by both
+editors (QUILL's `FileSearchPromptMixin` now passes only its folder, parent and
+modal helpers, and every control gained inline F1 help), and QUILL Lite's
+`quill/apps/lite_file_search.py` runs QUILL's `core/file_search` on the app task
+manager, with each report in a new untitled window. `cmd_search_in_files`
+(Ctrl+Alt+Shift+F) and `cmd_replace_in_files` (Ctrl+Shift+R) on Edit > Matches,
+parity to `tools.search_in_files` / `tools.replace_in_files`. Replace previews
+and asks before writing, as in QUILL.
+
 ### App Sounds in every QUILL app: choose the sound card, or None, and Alt+Shift+M (2026-10-14)
 
 Reported on QUILLVille against Quill Radio 3.2.0 (Rick Lewis): with the radio

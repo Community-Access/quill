@@ -1810,6 +1810,7 @@ class CommandRegistryMixin:
             self.find_all_matches,
             self._binding_for("edit.find_all_matches"),
         )
+        self._register_open_documents_command()  # main_frame_open_documents
         self.commands.register(
             "tools.search_in_files",
             "Search in Files...",

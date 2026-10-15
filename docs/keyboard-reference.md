@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 495.
+Editor commands with default bindings: 496.
 
 ## The QUILL editor
 
@@ -91,6 +91,7 @@ Editor commands with default bindings: 495.
 | Ctrl+Alt+Shift+9 | Paste from tray 9 | `edit.paste_from_tray_9` |
 | Ctrl+Alt+Shift+= | Paste from tray 12 | `edit.paste_from_tray_12` |
 | Ctrl+Alt+Shift+B | Select Block | `edit.select_block` |
+| Ctrl+Alt+Shift+F8 | Find in open documents | `edit.find_in_open_documents` |
 | Ctrl+Alt+Shift+M | Open clip library | `edit.open_clip_library` |
 | Ctrl+Alt+Shift+S | Sort Lines Descending | `edit.sort_lines_descending` |
 | Ctrl+Alt+Shift+T | Normalize Whitespace | `edit.normalize_whitespace` |

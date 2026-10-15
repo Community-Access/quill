@@ -1738,6 +1738,10 @@ something:</p>
 <td><strong>Ctrl+G</strong></td>
 <td>Go To: a line, a bookmark or a heading</td>
 </tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+F8</strong></td>
+<td>Find in Open Documents: every open window at once</td>
+</tr>
 </tbody>
 </table>
 <p>When a search reaches the end of the document, it goes back to the
@@ -1797,6 +1801,76 @@ current search from anywhere in the document.</p>
 every match in one list, in order, each with its line, its column and
 the words around it. Open it before you press Replace All. It lets you
 see everything you are about to change before you change it.</p>
+<h4 id="find-and-replace-in-all-your-open-documents">Find and replace in
+all your open documents</h4>
+<p>Sometimes the thing you are looking for is in one of a dozen
+documents you have open, or you need to change a name in all of them.
+<strong>Find in Open Documents…</strong>
+(<strong>Ctrl+Alt+Shift+F8</strong>, on <strong>Edit &gt;
+Matches</strong>) searches every document QUILL Lite has open, not just
+the one in front of you.</p>
+<p>It searches the text exactly as it is in each window, so it
+finds:</p>
+<ul>
+<li>changes you have not saved yet,</li>
+<li>new documents you have never saved,</li>
+<li>formatted documents, such as Word and RTF files, searched as you see
+them.</li>
+</ul>
+<p>Anything that is not open is left alone, and it never writes to a
+file on disk. If you want to search files that are saved in a folder
+instead, that is <strong>Search in Files</strong> (QUILL, on
+<strong>Edit &gt; Search Tools</strong>).</p>
+<p>The window has the same choices as Find and Replace:</p>
+<ul>
+<li><strong>Find what</strong> and <strong>Replace with</strong>.</li>
+<li><strong>Search mode</strong>: Normal, Extended or Regular
+expression, just as in Find.</li>
+<li><strong>Match case</strong>, <strong>Whole word only</strong>, and
+<strong>Wrap around</strong>, which is checked when it opens. With it
+checked, the search goes on from the first document after the last one,
+and comes back to where you started.</li>
+</ul>
+<p>Its buttons:</p>
+<ul>
+<li><strong>Find Next</strong> (<strong>Enter</strong>) and <strong>Find
+Previous</strong> go to the next or previous match. When one document
+has no more, they move on to the next document and bring it to the
+front, and you hear its name and the line: “Chapter 3.txt, line 12: She
+opened the door.” While you stay in one document you only hear the line,
+the way Find works. If the search goes past the last document and starts
+again from the first, you hear “Back to the start” first.</li>
+<li><strong>Find All</strong> lists every match in every open document,
+in order, each with the document’s name, the line number and the line.
+Arrow through it and press <strong>Enter</strong> to go straight to that
+match. It is the quickest way to check what Replace All is about to
+change.</li>
+<li><strong>Replace All</strong> does nothing until you have heard what
+it found, for example: “312 matches in 87 of 104 open documents. Replace
+them all?” Press <strong>Yes</strong> to go ahead.
+<ul>
+<li>Each document is changed on its own, so <strong>Ctrl+Z</strong> in
+any one window takes back just that document’s replacements. In a
+formatted document each replacement is its own undo step, which keeps
+the formatting around it exactly as it was.</li>
+<li>Nothing is saved for you. Every changed document is marked as
+changed, and you save them when you are ready, one at a time or with
+<strong>Save All</strong>.</li>
+<li>Documents that cannot be changed, such as a read-only file or a
+report QUILL wrote for you, are still searched, but Replace All leaves
+them alone and tells you how many it skipped.</li>
+</ul></li>
+<li><strong>Close</strong> (<strong>Escape</strong>) puts the window
+away.</li>
+</ul>
+<p>After you close it, <strong>F3</strong> and <strong>Shift+F3</strong>
+keep searching across all your open documents, so you can work through
+them one match at a time without opening the window again. As soon as
+you start an ordinary Find (<strong>Ctrl+F</strong>) or Replace
+(<strong>Ctrl+H</strong>), F3 goes back to searching just the document
+you are in.</p>
+<p>QUILL and QUILL Lite share this window and work the same way, on the
+same key.</p>
 <h4 id="searching-for-things-you-cannot-type">Searching for things you
 cannot type</h4>
 <p>The Find and Replace windows have a <strong>Search mode</strong> with
@@ -8972,6 +9046,10 @@ list inside the app.</p>
 <tr>
 <td><strong>Ctrl+Shift+F3</strong></td>
 <td>All Matches…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+F8</strong></td>
+<td>Find in Open Documents…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+Shift+F3</strong></td>
