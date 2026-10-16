@@ -201,6 +201,9 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         # Device. The Alt+Shift row is where this bar still has letters.
         "radio.background_station": "Alt+Shift+B",
         "radio.mirror_output": "Alt+Shift+D",
+        # Station Details (todo P2 #33, the station pack): I for information,
+        # on the Alt+Shift row for the same reason as the two above.
+        "radio.station_details": "Alt+Shift+I",
         # Community > ACB Media Podcasts... (2026-08-25). NOT in the
         # Ctrl+Alt+Shift family the other Community items use, because that
         # space is now completely exhausted -- no letter and no digit is free.

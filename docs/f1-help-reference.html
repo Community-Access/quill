@@ -266,7 +266,7 @@ separately in <a href="CONTROL_REFERENCE.md">CONTROL_REFERENCE.md</a>,
 generated from <code>topics.json</code> by
 <code>quill/tools/build_docs.py</code>.</p>
 <h2 id="quill-radio">Quill Radio</h2>
-<p>Control coverage: 331 audited sites (217 helped, 114 named-help).</p>
+<p>Control coverage: 335 audited sites (221 helped, 114 named-help).</p>
 <h3 id="every-window-and-what-it-is-for">Every window, and what it is
 for</h3>
 <p><strong>ACB Media Podcasts.</strong> Everything ACB Media publishes,
@@ -576,6 +576,10 @@ come from: which sources are stored in the local station catalog, how
 fresh each one is, and which are live-only and why. The catalog is
 derived data – it can be rebuilt from here at any time without touching
 your favorites.</p>
+<p><strong>Station Details.</strong> Search stations by name, call sign,
+frequency, slogan or place, and read what the signed station pack knows
+about each one, with where each fact came from. Each result says why it
+matched. Read only; nothing here changes your favorites.</p>
 <p><strong>Suggest a Station or Podcast.</strong> Tell us about
 something worth adding to the Community Picks list. It goes by email to
 <a
@@ -989,6 +993,25 @@ off in Safe Mode.</li>
 station or for every station; a confirmation asks which.</li>
 <li><code>close_btn</code>: Closes Song History; logging continues while
 stations play.</li>
+</ul>
+<h4 id="module-level-quilluiradiostation_details_dialogpy">(module
+level) (<code>quill/ui/radio/station_details_dialog.py</code>)</h4>
+<ul>
+<li><code>query</code>: Type any part of what you know about a station:
+its name, its call sign such as KUOW, its frequency such as 94.9, a word
+from its slogan or description, or a city. The results below follow as
+you type; press Enter to move to them, or, when nothing matched, to look
+for names spelled close to what you typed.</li>
+<li><code>results</code>: Stations the station pack knows that match
+your search, best first. Each row says what matched, such as the
+frequency or a word from the slogan. The details of the highlighted
+station are below.</li>
+<li><code>details</code>: What the station pack knows about the
+highlighted station, one labelled line per fact, then where those facts
+came from. Read only; arrow through it, or select and copy any
+line.</li>
+<li><code>close_btn</code>: Closes Station Details. Nothing is changed
+by closing.</li>
 </ul>
 <h4 id="module-level-quilluiradiostation_tags_dialogpy">(module level)
 (<code>quill/ui/radio/station_tags_dialog.py</code>)</h4>
@@ -3425,7 +3448,7 @@ set to expand only manually. Also on Ctrl+K here, and from any program
 on the key you choose with File, Quick Insert Key.</li>
 </ul>
 <h2 id="quill-transcribe">QUILL Transcribe</h2>
-<p>Control coverage: 32 audited sites (32 helped).</p>
+<p>Control coverage: 33 audited sites (33 helped).</p>
 <h3 id="every-window-and-what-it-is-for-5">Every window, and what it is
 for</h3>
 <p><strong>Choose Microphone.</strong> The microphone QUILL Transcribe

@@ -24,7 +24,7 @@ from `topics.json` by `quill/tools/build_docs.py`.
 
 ## Quill Radio
 
-Control coverage: 331 audited sites (217 helped, 114 named-help).
+Control coverage: 335 audited sites (221 helped, 114 named-help).
 
 ### Every window, and what it is for
 
@@ -177,6 +177,8 @@ Control coverage: 331 audited sites (217 helped, 114 named-help).
 **Song History.** What each station has played while you listened: every title the stream reported, newest first, with the time it was heard. From a song you can copy it, keep it in the Clip Library, or ask for background on it.
 
 **Station Catalog Status.** Where browsing's answers come from: which sources are stored in the local station catalog, how fresh each one is, and which are live-only and why. The catalog is derived data -- it can be rebuilt from here at any time without touching your favorites.
+
+**Station Details.** Search stations by name, call sign, frequency, slogan or place, and read what the signed station pack knows about each one, with where each fact came from. Each result says why it matched. Read only; nothing here changes your favorites.
 
 **Suggest a Station or Podcast.** Tell us about something worth adding to the Community Picks list. It goes by email to support@community-access.org, where a person at Community Access reads it: press Send Suggestion and your own mail program opens with it written, then press Send there. No account and no website. It is checked first, so a missing address or something already on the list is caught here. With no mail program, the whole suggestion goes on your clipboard to paste into any email. Nothing is sent at all in Safe Mode.
 
@@ -361,6 +363,12 @@ Control coverage: 331 audited sites (217 helped, 114 named-help).
 - `self._lyrics_btn`: Looks the highlighted song's words up on LRCLIB and opens them in the Lyrics window. Only when you press it; off in Safe Mode.
 - `self._clear_btn`: Erases the logged songs -- for this station or for every station; a confirmation asks which.
 - `close_btn`: Closes Song History; logging continues while stations play.
+#### (module level) (`quill/ui/radio/station_details_dialog.py`)
+
+- `query`: Type any part of what you know about a station: its name, its call sign such as KUOW, its frequency such as 94.9, a word from its slogan or description, or a city. The results below follow as you type; press Enter to move to them, or, when nothing matched, to look for names spelled close to what you typed.
+- `results`: Stations the station pack knows that match your search, best first. Each row says what matched, such as the frequency or a word from the slogan. The details of the highlighted station are below.
+- `details`: What the station pack knows about the highlighted station, one labelled line per fact, then where those facts came from. Read only; arrow through it, or select and copy any line.
+- `close_btn`: Closes Station Details. Nothing is changed by closing.
 #### (module level) (`quill/ui/radio/station_tags_dialog.py`)
 
 - `tags_box`: Words you want to find this station by, separated by commas -- for example: Detroit Tigers, MLB, baseball. Search and the Favorites filter match them. Empty the box to remove your tags.
@@ -1376,7 +1384,7 @@ Control coverage: 3 audited sites (3 helped).
 
 ## QUILL Transcribe
 
-Control coverage: 32 audited sites (32 helped).
+Control coverage: 33 audited sites (33 helped).
 
 ### Every window, and what it is for
 

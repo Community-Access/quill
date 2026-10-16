@@ -6944,6 +6944,111 @@ matches the reminder’s own note.</li>
 crossfade (4.11 and 4.12, which xradio2 defers and places in Player or
 Studio first).</li>
 </ul>
+<h2
+id="27-station-details-and-the-signed-station-pack-unreleased-2026-10-16">27.
+Station details and the signed station pack (unreleased,
+2026-10-16)</h2>
+<p>Jeff’s todo P2 #33, the “Radio station data program” planned on
+2026-10-11 from a study of Jamal Mazrui’s RadioTrail (DbDo, MIT
+licence): enrich stations once, on the project’s side, and ship the
+result as a signed pack, rather than probing tens of thousands of
+streams from every listener’s computer. The approach is ported; no data
+of his is used. Design record:
+<code>docs/design/2026-10-16-station-pack-format.md</code>.</p>
+<h3
+id="271-the-data-terms-are-not-settled-so-the-machinery-comes-first">27.1
+The data terms are not settled, so the machinery comes first</h3>
+<ul>
+<li>Which outside sources may feed the pack, and under which licence, is
+Jeff’s decision and has not been made. The build therefore reads only
+<strong>approved sources</strong>, and the only approved ones read data
+the project already ships: the Community Picks catalogue (the project’s
+own) and a station catalog generation as Radio already bundles it (no
+new facts; call sign and frequency are read out of each station’s own
+name).</li>
+<li>Radio Browser redistribution, Wikipedia (CC BY-SA 4.0), ICY
+self-description and home-page meta text are listed as
+<code>PENDING_SOURCES</code> and never read. Adding one is a named,
+documented step in
+<code>quill/core/radio/enrichment/sources.py</code>.</li>
+<li>Nothing in this change fetches anything, on the build side or the
+client.</li>
+</ul>
+<h3 id="272-the-pack">27.2 The pack</h3>
+<ul>
+<li>Three files: <code>station-pack.json.xz</code> (canonical, sorted
+JSON, xz-compressed, byte-identical for identical input), its Ed25519
+sidecar <code>station-pack.json.xz.minisig</code> (written by
+<code>quill.tools.signing.sign_artifact</code>, the project’s one
+signature writer), and <code>station-pack-manifest.json</code> (build
+time, SHA-256, size, station count, sources, signed or not).</li>
+<li>Each station record carries its facts, the day they were last
+confirmed, the credit line its licence requires (if any) and, per field,
+the source it came from.</li>
+<li><code>scripts/build_station_pack.py</code> builds it. The signing
+key is the publisher key’s seed in
+<code>STATION_PACK_SIGNING_KEY</code>, from the environment only.
+Without it the pack is written <strong>unsigned</strong> (and any old
+signature beside it is removed); <code>--require-signature</code> makes
+that a failure instead. A key that is not the one in
+<code>quill-pub.key</code> is refused before anything is signed.</li>
+<li><code>.github/workflows/station-pack.yml</code> runs it weekly
+(Mondays 06:17 UTC) and on demand, verifies the result exactly as the
+app would, and keeps a trusted pack as a workflow artifact for 90 days.
+It publishes nothing.</li>
+</ul>
+<h3 id="273-the-client">27.3 The client</h3>
+<ul>
+<li>The pack is installed into its own SQLite store
+(<code>&lt;machine-local data&gt;/radio-enrichment/stations.db</code>),
+not into the station catalog: the catalog rebuilds on any schema change,
+and the two arrive on different schedules. Migrations run forward
+through <code>PRAGMA user_version</code>; a store from a newer build is
+recreated (it is derived data).</li>
+<li><strong>Trust:</strong> the signature is checked against the
+publisher key bundled with the build before a byte is decompressed or
+parsed; the manifest hash, size ceiling and format version are checked
+next. Anything refused leaves the installed facts untouched, because an
+import replaces everything inside one transaction. A pack no newer than
+the installed one is skipped.</li>
+<li>Where a pack comes from: a build may ship one in
+<code>quill/data/radio-enrichment/</code>, installed the first time
+Station Details opens (on the task manager). <strong>No download exists
+yet</strong>; fetching the weekly pack needs a consent setting, an
+egress-audit entry and a decision on where packs are served.</li>
+</ul>
+<h3 id="274-search-and-the-details-pane">27.4 Search and the details
+pane</h3>
+<ul>
+<li><strong>View &gt; Station Details…</strong>
+(<code>radio.station_details</code>, Alt+Shift+I): a search field, a
+results list and a read-only details box, each labelled and each with F1
+help; Close carries no access key.</li>
+<li>Search is FTS5 with bm25 weights: name and identity (call sign,
+frequency) highest, then slogan, then format and tags, then place, then
+description, owner and summary. “98.5”, “98.5 FM”, “1090 AM”, “KIRO” and
+“KIRO-FM” normalize to the same index terms. The search accepts a home
+state as a tie-break (no setting offers one yet). Only when the index
+finds nothing, and the listener presses Enter, is a close-spelling match
+on names offered (it reads every name, too slow per keystroke).</li>
+<li>Every result says why it matched (“matched slogan: …”), which
+GATE-13 allows because the reader cannot know it. Typing is silent;
+Enter moves to the results, or says “No stations match …” when there are
+none.</li>
+<li>Details are one labelled line per known fact, then “Where these
+facts came from” and any credit line. When the playing station is in the
+pack, the window opens on it.</li>
+</ul>
+<h3 id="275-not-built-and-what-waits-on-jeff">27.5 Not built, and what
+waits on Jeff</h3>
+<ul>
+<li>The data terms (27.1), the production signing secret, the schedule,
+where packs are served and whether release builds bundle one.</li>
+<li>Download and update of the weekly pack, a “Check for Station
+Updates” command and its setting; delta packs; the browse tree’s details
+pane showing pack facts; the “matched:” reason in Search Stations’ own
+results.</li>
+</ul>
 </main>
 </body>
 </html>

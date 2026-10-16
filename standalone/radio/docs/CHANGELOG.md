@@ -10,6 +10,15 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 Testing rebuild: **3.2.0 (build 4)**. The packages have not been published yet.
 
+- **Station Details: find a station by its call sign, frequency or slogan.**
+  **View > Station Details...** (Alt+Shift+I) searches stations by name, call
+  sign (KUOW), frequency (94.9 or 98.5 FM), slogan, format or city, and each
+  result says why it matched. The details box reads what is known about the
+  highlighted station, one labelled line per fact, and where each fact came
+  from. The facts come from a station pack that the project signs; Quill
+  Radio refuses any pack it cannot verify. No pack ships yet, so for now the
+  window says so; the first one arrives with a later update.
+
 - **Remove several favorites with one question.** In the favorites tree or in
   Manage Favorites, press **.** (period) on each station you want to remove.
   It says how many are marked, and the row reads "(marked)". Then **Delete**

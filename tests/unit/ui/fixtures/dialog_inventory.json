@@ -762,6 +762,7 @@
   "quill/ui/radio/source_options_menu.py::show::wx.SingleChoiceDialog": "native",
   "quill/ui/radio/source_options_menu.py::show::wx.TextEntryDialog": "native",
   "quill/ui/radio/station_browser_dialog.py::StationBrowserDialog.__init__::wx.Dialog": "hardened_custom",
+  "quill/ui/radio/station_details_dialog.py::show_station_details::wx.Dialog": "hardened_custom",
   "quill/ui/radio/station_tags_dialog.py::ask_tags::wx.Dialog": "hardened_custom",
   "quill/ui/radio/station_website_button.py::edit_website::wx.TextEntryDialog": "native",
   "quill/ui/radio/stats_dialog.py::RadioStatsDialog.__init__::wx.Dialog": "hardened_custom",

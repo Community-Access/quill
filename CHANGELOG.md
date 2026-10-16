@@ -2,6 +2,53 @@
 
 ## 1.0.0
 
+### Quill Radio station enrichment: the signed station pack, FTS5 search and Station Details (2026-10-16)
+
+Jeff's todo P2 #33, the Radio station data program. The data terms are not
+settled, so this is the machinery against a pluggable source interface, with
+built-in sources that read only data the project already ships. Nothing in it
+fetches anything. Design record: `docs/design/2026-10-16-station-pack-format.md`;
+Radio PRD section 27.
+
+- **`quill/core/radio/enrichment/`** (new, wx-free, strict-typed):
+  `facts.py` (`StationFacts` with per-field provenance, conservative call-sign
+  and frequency reading, query normalization so "98.5", "98.5 FM" and "KIRO-FM"
+  meet the index, and a trust-ordered merge that never joins on URL alone);
+  `sources.py` (the `EnrichmentSource` protocol, `APPROVED_SOURCES` with
+  `community_picks` and `station_catalog`, and `PENDING_SOURCES` naming Radio
+  Browser redistribution, Wikipedia, ICY and home-page meta as awaiting a
+  decision); `pack.py` (canonical xz JSON, Ed25519 sidecar through
+  `quill.tools.signing.sign_artifact`, a manifest, and `open_verified`, which
+  checks the signature before parsing and fails closed); `store.py` (its own
+  SQLite file beside the catalog, `PRAGMA user_version` migrations, an FTS5
+  index with bm25 weights, one-transaction import, "matched:" reasons and a
+  difflib fallback); `client.py` (install bundled or given packs, spoken
+  outcomes, the labelled details text). Two new `CodedError`s:
+  `QUILL-RADIO-ENRICHMENT-FAILED`, `QUILL-RADIO-ENRICHMENT-PACK-REFUSED`.
+- **`scripts/build_station_pack.py`** builds the pack. The key is the publisher
+  seed in `STATION_PACK_SIGNING_KEY` (environment only); without it the pack is
+  unsigned and any stale sidecar is removed, and a non-publisher key is refused
+  before signing. `--verify` checks a pack exactly as the app does.
+- **`.github/workflows/station-pack.yml`** (new, not triggered): weekly cron
+  plus `workflow_dispatch`, `contents: read`, verifies the pack and keeps a
+  trusted one as a 90-day artifact. Publishes nothing. Needs the
+  `STATION_PACK_SIGNING_KEY` secret (not created).
+- **`quill/ui/radio/station_details_dialog.py`**: View > Station Details...
+  (`radio.station_details`, Alt+Shift+I, `app_keymaps`), wired from
+  `radio_settings_menu.build_catalog_status_item` and registered in
+  `radio_launch_tasks`. Labelled search field, results and read-only details,
+  inline F1 help on each, Close via `bind_close_button` with no access key, a
+  `surface_help` purpose. The bundled pack (none ships yet) installs on the
+  task manager the first time the window opens.
+- Not built: downloading the weekly pack (needs consent, an egress entry and a
+  serving decision), delta packs, pack facts in the browse tree's details pane.
+- Tests: `tests/unit/core/radio/test_station_enrichment.py`,
+  `tests/unit/scripts/test_build_station_pack.py`,
+  `tests/unit/ui/test_radio_station_details.py`, all offline with throwaway
+  keys. Regenerated: keyboard reference, F1 help reference, dialog inventory,
+  surface reachability, accessible-name and Radio help inventories; the
+  Transcribe help inventory, which had drifted on the branch, was refreshed.
+
 ### Overnight fixes and gates (2026-10-15/16)
 
 Small fixes made directly on the overnight branch; the larger work has its own

@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>The station pack: format, trust and sources</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="the-station-pack-format-trust-and-sources">The station pack:
+format, trust and sources</h1>
+<p>Status: built 2026-10-16 (Jeff’s todo P2 #33). The machinery is
+complete; the data terms, the production signing secret, the schedule
+and where packs are served wait on Jeff (see “Decisions waiting”).</p>
+<p>This is the design record for the files Quill Radio’s <strong>Station
+Details</strong> window reads, and for the tool that builds them. The
+user-facing description is in the Quill Radio guide (“Station Details:
+find a station by its call sign, frequency or slogan”) and the
+requirements are in the Radio PRD, section 27.</p>
+<h2 id="why-a-pack-at-all">Why a pack at all</h2>
+<p>A station’s name says little. Searches like “Seahawks”, “98.5”,
+“KIRO” or “public radio Spokane” need what a station says about itself
+and its official record: call sign, frequency, slogan, format, city,
+owner. The approach comes from Jamal Mazrui’s RadioTrail (DbDo, MIT
+licence), credited here and in the code: gather those facts once, on the
+project’s side, for everybody. The alternative, probing every stream and
+looking up every station from each listener’s computer, would take hours
+per install, hammer small stations, and give every listener a slightly
+different catalog. We port the approach and use none of his data.</p>
+<h2 id="the-three-files">The three files</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>What it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>station-pack.json.xz</code></td>
+<td>The pack: canonical JSON (sorted keys, no spaces), UTF-8,
+xz-compressed (preset 6).</td>
+</tr>
+<tr>
+<td><code>station-pack.json.xz.minisig</code></td>
+<td>The detached Ed25519 signature over the pack’s bytes, in the
+minisign shape <code>quill.tools.signing</code> reads and writes.</td>
+</tr>
+<tr>
+<td><code>station-pack-manifest.json</code></td>
+<td>A small summary, so a client can tell whether a pack is newer
+without opening it.</td>
+</tr>
+</tbody>
+</table>
+<p>The same input always produces the same bytes: stations are sorted by
+key and the build stamp can be fixed with <code>--built-at</code>. Two
+builds of unchanged data are therefore identical, which keeps a weekly
+run from producing a “new” pack that changes nothing.</p>
+<h3 id="the-pack-document">The pack document</h3>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;format&quot;</span><span class="fu">:</span> <span class="st">&quot;quill-station-pack&quot;</span><span class="fu">,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;version&quot;</span><span class="fu">:</span> <span class="dv">1</span><span class="fu">,</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;kind&quot;</span><span class="fu">:</span> <span class="st">&quot;full&quot;</span><span class="fu">,</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;built_at&quot;</span><span class="fu">:</span> <span class="st">&quot;2026-10-16T06:17:00Z&quot;</span><span class="fu">,</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;sources&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span><span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;community_picks&quot;</span><span class="fu">,</span> <span class="dt">&quot;title&quot;</span><span class="fu">:</span> <span class="st">&quot;QuillVille Community Picks&quot;</span><span class="fu">,</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>     <span class="dt">&quot;terms&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span> <span class="dt">&quot;attribution&quot;</span><span class="fu">:</span> <span class="st">&quot;&quot;</span><span class="fu">}</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;stations&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span><span class="dt">&quot;key&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span> <span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;KUOW 94.9&quot;</span><span class="fu">,</span> <span class="dt">&quot;stream_url&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>     <span class="dt">&quot;call_sign&quot;</span><span class="fu">:</span> <span class="st">&quot;KUOW&quot;</span><span class="fu">,</span> <span class="dt">&quot;frequency&quot;</span><span class="fu">:</span> <span class="st">&quot;94.9 FM&quot;</span><span class="fu">,</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>     <span class="dt">&quot;slogan&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span> <span class="dt">&quot;description&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span> <span class="dt">&quot;genre&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span> <span class="dt">&quot;tags&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>     <span class="dt">&quot;city&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span> <span class="dt">&quot;state&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span> <span class="dt">&quot;country&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span> <span class="dt">&quot;language&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>     <span class="dt">&quot;owner&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span> <span class="dt">&quot;homepage&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span> <span class="dt">&quot;summary&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>     <span class="dt">&quot;attribution&quot;</span><span class="fu">:</span> <span class="st">&quot;&quot;</span><span class="fu">,</span> <span class="dt">&quot;confirmed&quot;</span><span class="fu">:</span> <span class="st">&quot;2026-10-01&quot;</span><span class="fu">,</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>     <span class="dt">&quot;provenance&quot;</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;station_catalog&quot;</span><span class="fu">,</span> <span class="dt">&quot;description&quot;</span><span class="fu">:</span> <span class="st">&quot;community_picks&quot;</span><span class="fu">}}</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<ul>
+<li><code>key</code> is the station catalog’s canonical key: the source
+uuid when there is one, else the normalized stream URL
+(<code>catalog/keys.py</code>). That is what lets the client join a pack
+record to a station Radio already lists.</li>
+<li>Every fact field is plain text; empty fields are left out.</li>
+<li><code>provenance</code> names, per field, the source that supplied
+it, so a fact can be credited and aged out. <code>confirmed</code> is
+the day its source last confirmed it.</li>
+<li><code>attribution</code> is the credit line a licence requires on
+that record’s text (empty for the current sources; required for, say,
+Wikipedia text).</li>
+<li>Unknown keys are ignored when reading, so a pack can grow fields
+without a version bump. A <code>version</code> higher than the build
+reads is refused.</li>
+<li><code>kind</code> is <code>full</code> today. A <code>delta</code>
+kind (changes since the last full pack) is reserved and not yet
+built.</li>
+</ul>
+<h3 id="the-manifest">The manifest</h3>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;format&quot;</span><span class="fu">:</span> <span class="st">&quot;quill-station-pack&quot;</span><span class="fu">,</span> <span class="dt">&quot;version&quot;</span><span class="fu">:</span> <span class="dv">1</span><span class="fu">,</span> <span class="dt">&quot;kind&quot;</span><span class="fu">:</span> <span class="st">&quot;full&quot;</span><span class="fu">,</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;built_at&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span> <span class="dt">&quot;file&quot;</span><span class="fu">:</span> <span class="st">&quot;station-pack.json.xz&quot;</span><span class="fu">,</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;sha256&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span> <span class="dt">&quot;bytes&quot;</span><span class="fu">:</span> <span class="dv">964</span><span class="fu">,</span> <span class="dt">&quot;stations&quot;</span><span class="fu">:</span> <span class="dv">12</span><span class="fu">,</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;sources&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;community_picks&quot;</span><span class="ot">]</span><span class="fu">,</span> <span class="dt">&quot;signed&quot;</span><span class="fu">:</span> <span class="kw">true</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p>The manifest is a convenience, never the trust: the signature covers
+the pack’s own bytes. A manifest that disagrees with the pack’s hash
+makes the client refuse the pack.</p>
+<h2 id="trust">Trust</h2>
+<ul>
+<li><strong>Key.</strong> The pack is signed with the project’s
+publisher key, whose public half is committed as
+<code>quill-pub.key</code> and bundled with every build (the key that
+already signs Quillins and Community Picks). The build tool refuses any
+other key before signing, because a pack signed with a stranger’s key
+would be refused by every listener’s app, silently.</li>
+<li><strong>Secret.</strong> <code>STATION_PACK_SIGNING_KEY</code> holds
+the base64 seed, as a repository secret, read from the environment only.
+It is never written to a file in the repository.</li>
+<li><strong>No key, no signature.</strong> Without the secret the pack
+is written unsigned and any older signature beside it is deleted, so a
+stale signature can never vouch for new bytes. Every build of Quill
+Radio refuses an unsigned pack. <code>--require-signature</code> turns
+the missing key into a build failure instead.</li>
+<li><strong>Client order.</strong> <code>pack.open_verified</code>
+checks the signature over the file’s bytes first, then the manifest
+hash, then decompresses with a 256 MB ceiling, then checks the format
+and version. An untrusted file never reaches the JSON parser.</li>
+<li><strong>All or nothing.</strong> The client replaces its whole fact
+table inside one SQLite transaction, so a refusal or a failure part way
+leaves the previously installed facts exactly as they were.</li>
+</ul>
+<h2 id="sources">Sources</h2>
+<p>The source interface is <code>EnrichmentSource</code> in
+<code>quill/core/radio/enrichment/sources.py</code>: an <code>id</code>,
+a <code>title</code>, the <code>terms</code> it is used under, its
+<code>attribution</code>, and <code>records()</code>, which yields
+<code>StationFacts</code>. Sources are offline: each is handed the files
+it reads. The builder merges them in trust order, field by field: a
+later source only fills what an earlier one left empty, and a record
+joins another by key, or by stream URL <strong>and</strong> name
+together, never by URL alone (7,135 stream URLs are shared by distinct
+stations in Radio Browser).</p>
+<h3 id="approved-sources">Approved sources</h3>
+<table>
+<thead>
+<tr>
+<th>Id</th>
+<th>What it reads</th>
+<th>Terms</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>community_picks</code></td>
+<td><code>quill/core/data/community_picks.json</code> (streams
+only)</td>
+<td>The project’s own curated data.</td>
+</tr>
+<tr>
+<td><code>station_catalog</code></td>
+<td>A station catalog generation, as Radio already bundles it in
+<code>seed.db.xz</code></td>
+<td>Only fields the shipped seed already carries; no new facts.</td>
+</tr>
+</tbody>
+</table>
+<p>Call sign and frequency are read out of each station’s own name, and
+only when certain: a call sign needs a band suffix (“WNYC-FM”) or a
+frequency beside it (“KUOW 94.9”), and words that merely look like one
+(“KISS FM”) are refused. A near miss stays empty rather than filled in
+wrong, which is RadioTrail’s rule.</p>
+<p>The weekly workflow uses <code>community_picks</code> only, because
+building a catalog generation in CI would mean fetching the directory,
+which is exactly the kind of decision that waits on the data terms.</p>
+<h3 id="pending-sources-never-read">Pending sources (never read)</h3>
+<p>Listed in <code>PENDING_SOURCES</code> so the gap is visible:</p>
+<ul>
+<li><strong>Radio Browser, redistributed enriched copy</strong>: its
+data terms need confirming before an enriched copy is
+redistributed.</li>
+<li><strong>Wikipedia station articles</strong>: CC BY-SA 4.0; the
+attribution wording and the share-alike obligation for summary text need
+settling.</li>
+<li><strong>ICY self-description</strong> (what each stream’s headers
+say): whether probing every stream weekly is acceptable, and how
+often.</li>
+<li><strong>Station home-page meta description and keywords</strong>:
+meta tags only, honouring robots.txt, if approved.</li>
+</ul>
+<h3 id="adding-a-source-once-its-terms-are-approved">Adding a source
+once its terms are approved</h3>
+<ol type="1">
+<li>Write a class with the <code>EnrichmentSource</code> shape in its
+own module, with tests against recorded fixtures (no live network in
+tests).</li>
+<li>Record the decision here, under “Approved sources”: who approved it,
+when, under which licence, and the credit line it requires (set
+<code>attribution</code>).</li>
+<li>Add its factory to <code>APPROVED_SOURCES</code> and remove it from
+<code>PENDING_SOURCES</code>.</li>
+<li>A source that fetches needs its entry in
+<code>network_egress_audit</code>, a named User-Agent, rate limits, and
+runs only in the workflow, never on a listener’s computer.</li>
+</ol>
+<h2 id="the-client-store">The client store</h2>
+<p><code>quill/core/radio/enrichment/store.py</code>, a SQLite file at
+<code>&lt;machine-local data&gt;/radio-enrichment/stations.db</code>,
+separate from the station catalog. The catalog treats a schema change as
+“rebuild from seed”, and packs arrive on their own schedule; keeping
+them apart means neither forces the other to start over. It is derived
+data: deleting it loses nothing the listener owns.</p>
+<ul>
+<li><strong>Tables:</strong> <code>station_facts</code> (one row per
+station, indexed by normalized stream URL), <code>pack_sources</code>,
+<code>pack_meta</code> (<code>built_at</code>, <code>kind</code>) and
+the FTS5 table <code>station_facts_fts</code> over name, identity (call
+sign and frequency tokens), slogan, format, tags, place, description,
+owner and summary.</li>
+<li><strong>Migrations:</strong> <code>MIGRATIONS</code> is a list of
+<code>(user_version, script)</code> applied forward once each, inside a
+transaction. A store written by a newer build is refused and
+recreated.</li>
+<li><strong>Search:</strong> bm25 weights 10 (name), 10 (identity), 5
+(slogan), 4 (format), 4 (tags), 3 (place), 2 (description), 2 (owner), 1
+(summary). Frequencies are indexed as joined tokens
+(<code>fm985 freq985</code>, <code>am1090 freq1090</code>) because FTS5
+splits “98.5” at the dot; a query is rewritten the same way, so “98.5”,
+“98.5 FM” and “freq985” meet. A home state is an optional tie-break.
+When the index finds nothing, a close-spelling match on names (difflib)
+runs.</li>
+<li><strong>Why it matched:</strong> every hit names the first field
+that matched and its value (“matched slogan: Official home of the
+Seattle Seahawks”), or “close spelling of the name” for a fuzzy
+hit.</li>
+</ul>
+<h2 id="decisions-waiting">Decisions waiting</h2>
+<ol type="1">
+<li><strong>The data terms</strong>: which pending sources, if any, are
+approved, under what licence and attribution wording.</li>
+<li><strong>The signing secret</strong>: add
+<code>STATION_PACK_SIGNING_KEY</code> (the publisher seed, the same as
+<code>PICKS_SIGNING_KEY</code>) to the repository secrets.</li>
+<li><strong>The schedule</strong>: weekly on Mondays at 06:17 UTC is the
+default in the workflow; change the cron if another day suits.</li>
+<li><strong>Where packs are served</strong> (a release asset, the Pages
+site) and whether release builds bundle one in
+<code>quill/data/radio-enrichment/</code>. Until then the workflow keeps
+each trusted pack as a 90-day workflow artifact only.</li>
+<li><strong>Download in the app</strong>: a consent setting (automatic
+weekly, ask first, or off), a “Check for Station Updates” command and an
+egress-audit entry. Not built.</li>
+</ol>
+</main>
+</body>
+</html>

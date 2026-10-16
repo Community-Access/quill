@@ -125,6 +125,10 @@ def register_surfaces(app: Any) -> None:
     from quill.ui.radio import second_output_ui
 
     second_output_ui.register(app)
+    # Station Details: search and read the signed station pack (todo P2 #33).
+    from quill.ui.radio import station_details_dialog
+
+    station_details_dialog.register(app)
     # Make Quill Radio My Media Player (2026-10-04): standalone only, because
     # it registers *this* program, and embedded QUILL is a different one.
     from quill.ui.radio import media_player_registration

@@ -3400,3 +3400,89 @@ built and said to be one.
 
 - Song-boundary recording (xradio2 4.8) and pitch shift / station crossfade
   (4.11 and 4.12, which xradio2 defers and places in Player or Studio first).
+
+## 27. Station details and the signed station pack (unreleased, 2026-10-16)
+
+Jeff's todo P2 #33, the "Radio station data program" planned on 2026-10-11 from
+a study of Jamal Mazrui's RadioTrail (DbDo, MIT licence): enrich stations once,
+on the project's side, and ship the result as a signed pack, rather than
+probing tens of thousands of streams from every listener's computer. The
+approach is ported; no data of his is used. Design record:
+`docs/design/2026-10-16-station-pack-format.md`.
+
+### 27.1 The data terms are not settled, so the machinery comes first
+
+- Which outside sources may feed the pack, and under which licence, is Jeff's
+  decision and has not been made. The build therefore reads only **approved
+  sources**, and the only approved ones read data the project already ships:
+  the Community Picks catalogue (the project's own) and a station catalog
+  generation as Radio already bundles it (no new facts; call sign and
+  frequency are read out of each station's own name).
+- Radio Browser redistribution, Wikipedia (CC BY-SA 4.0), ICY self-description
+  and home-page meta text are listed as `PENDING_SOURCES` and never read. Adding
+  one is a named, documented step in `quill/core/radio/enrichment/sources.py`.
+- Nothing in this change fetches anything, on the build side or the client.
+
+### 27.2 The pack
+
+- Three files: `station-pack.json.xz` (canonical, sorted JSON, xz-compressed,
+  byte-identical for identical input), its Ed25519 sidecar
+  `station-pack.json.xz.minisig` (written by `quill.tools.signing.sign_artifact`,
+  the project's one signature writer), and `station-pack-manifest.json` (build
+  time, SHA-256, size, station count, sources, signed or not).
+- Each station record carries its facts, the day they were last confirmed, the
+  credit line its licence requires (if any) and, per field, the source it came
+  from.
+- `scripts/build_station_pack.py` builds it. The signing key is the publisher
+  key's seed in `STATION_PACK_SIGNING_KEY`, from the environment only. Without
+  it the pack is written **unsigned** (and any old signature beside it is
+  removed); `--require-signature` makes that a failure instead. A key that is
+  not the one in `quill-pub.key` is refused before anything is signed.
+- `.github/workflows/station-pack.yml` runs it weekly (Mondays 06:17 UTC) and
+  on demand, verifies the result exactly as the app would, and keeps a trusted
+  pack as a workflow artifact for 90 days. It publishes nothing.
+
+### 27.3 The client
+
+- The pack is installed into its own SQLite store
+  (`<machine-local data>/radio-enrichment/stations.db`), not into the station
+  catalog: the catalog rebuilds on any schema change, and the two arrive on
+  different schedules. Migrations run forward through `PRAGMA user_version`; a
+  store from a newer build is recreated (it is derived data).
+- **Trust:** the signature is checked against the publisher key bundled with
+  the build before a byte is decompressed or parsed; the manifest hash, size
+  ceiling and format version are checked next. Anything refused leaves the
+  installed facts untouched, because an import replaces everything inside one
+  transaction. A pack no newer than the installed one is skipped.
+- Where a pack comes from: a build may ship one in
+  `quill/data/radio-enrichment/`, installed the first time Station Details
+  opens (on the task manager). **No download exists yet**; fetching the weekly
+  pack needs a consent setting, an egress-audit entry and a decision on where
+  packs are served.
+
+### 27.4 Search and the details pane
+
+- **View > Station Details...** (`radio.station_details`, Alt+Shift+I): a
+  search field, a results list and a read-only details box, each labelled and
+  each with F1 help; Close carries no access key.
+- Search is FTS5 with bm25 weights: name and identity (call sign, frequency)
+  highest, then slogan, then format and tags, then place, then description,
+  owner and summary. "98.5", "98.5 FM", "1090 AM", "KIRO" and "KIRO-FM"
+  normalize to the same index terms. The search accepts a home state as a
+  tie-break (no setting offers one yet). Only when
+  the index finds nothing, and the listener presses Enter, is a close-spelling
+  match on names offered (it reads every name, too slow per keystroke).
+- Every result says why it matched ("matched slogan: ..."), which GATE-13
+  allows because the reader cannot know it. Typing is silent; Enter moves to
+  the results, or says "No stations match ..." when there are none.
+- Details are one labelled line per known fact, then "Where these facts came
+  from" and any credit line. When the playing station is in the pack, the
+  window opens on it.
+
+### 27.5 Not built, and what waits on Jeff
+
+- The data terms (27.1), the production signing secret, the schedule, where
+  packs are served and whether release builds bundle one.
+- Download and update of the weekly pack, a "Check for Station Updates"
+  command and its setting; delta packs; the browse tree's details pane showing
+  pack facts; the "matched:" reason in Search Stations' own results.

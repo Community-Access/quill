@@ -359,6 +359,7 @@
   "quill.ui.radio.source_options_menu": "reachable",
   "quill.ui.radio.spotify_commands": "reachable",
   "quill.ui.radio.station_browser_dialog": "reachable",
+  "quill.ui.radio.station_details_dialog": "reachable",
   "quill.ui.radio.station_tags_dialog": "reachable",
   "quill.ui.radio.stats_dialog": "reachable",
   "quill.ui.radio.suggest_pick_dialog": "reachable",
