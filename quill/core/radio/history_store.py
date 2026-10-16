@@ -22,7 +22,7 @@ from pathlib import Path
 
 from quill.core.audio_enhance import EQ_PRESETS
 from quill.core.podcasts import transcript_export
-from quill.core.radio import browse_visibility, website_overrides
+from quill.core.radio import browse_visibility, timeshift, website_overrides
 from quill.core.radio import search_sources as search_sources_model
 from quill.core.radio.history import (
     _FILE_NAME,
@@ -140,6 +140,7 @@ def load_history(data_dir: Path) -> RadioHistory:
         engine = str(raw.get("playback_engine", "auto"))
         history.playback_engine = engine if engine in ("auto", "wx", "mpv") else "auto"
         history.volume_boost = bool(raw.get("volume_boost", False))
+        history.timeshift_minutes = timeshift.normalise_minutes(raw.get("timeshift_minutes", 60))
         try:
             vol = int(raw.get("volume_percent", -1))
         except (TypeError, ValueError):
@@ -296,6 +297,7 @@ def snapshot_history(history: RadioHistory) -> dict[str, object]:
         "onboarding": history.onboarding.to_dict(),
         "playback_engine": history.playback_engine,
         "volume_boost": history.volume_boost,
+        "timeshift_minutes": history.timeshift_minutes,
         "volume_percent": history.volume_percent,
         "favorites_sort": history.favorites_sort,
         "folder_sort_orders": history.folder_sort_orders,

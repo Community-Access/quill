@@ -18,8 +18,10 @@ needs to state its contract.
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
+from quill.core.radio.timeshift import TimeshiftSession
 from quill.ui.radio.mpv_radio_engine import MpvRadioEngine
 
 
@@ -28,11 +30,20 @@ class _Client:
         self.props: dict[str, str] = {}
         self.commands: list[tuple[Any, ...]] = []
 
-    def set_str(self, name: str, value: str) -> None:
+        self.doubles: dict[str, float] = {}
+
+    def set_str(self, name: str, value: str) -> int:
         self.props[name] = value
+        return 0
 
     def command(self, *args: Any) -> None:
         self.commands.append(args)
+
+    def get_double(self, name: str) -> float | None:
+        return self.doubles.get(name)
+
+    def close(self) -> None:
+        self.props["closed"] = "yes"
 
 
 class _Timer:
@@ -43,11 +54,16 @@ class _Timer:
         self.started += 1
 
 
-def _engine() -> MpvRadioEngine:
+def _engine(root: Path | None = None) -> MpvRadioEngine:
     engine = MpvRadioEngine.__new__(MpvRadioEngine)
     engine._mpv = _Client()  # type: ignore[attr-defined]
     engine._timer = _Timer()  # type: ignore[attr-defined]
     engine._volume = 70  # type: ignore[attr-defined]
+    engine._loaded = False  # type: ignore[attr-defined]
+    engine._timeshift = TimeshiftSession(  # type: ignore[attr-defined]
+        engine._mpv.set_str,  # type: ignore[attr-defined]
+        root=root or Path("unused-timeshift-root"),
+    )
     return engine
 
 
@@ -86,3 +102,47 @@ def test_a_load_hands_the_url_to_mpv_and_starts_polling() -> None:
     assert engine._mpv.commands == [("loadfile", "https://stream/one", "replace")]  # type: ignore[attr-defined]
     assert engine._timer.started == 1  # type: ignore[attr-defined]
     assert engine._bounded is False  # every load starts live-shaped
+
+
+# -- the time-shift buffer on disk (xradio2.md 4.3) ---------------------------
+
+
+def test_a_load_makes_the_time_shift_folder_before_mpv_writes_into_it(tmp_path: Path) -> None:
+    engine = _engine(tmp_path)
+    engine.configure_timeshift(60)
+    engine.load("https://stream/one")
+
+    folder = Path(engine._mpv.props["cache-dir"])  # type: ignore[attr-defined]
+    assert folder.is_dir() and folder.parent == tmp_path
+    assert engine._mpv.props["cache-on-disk"] == "yes"  # type: ignore[attr-defined]
+
+
+def test_terminate_removes_the_time_shift_folder(tmp_path: Path) -> None:
+    engine = _engine(tmp_path)
+    engine.configure_timeshift(60)
+    engine.load("https://stream/one")
+    folder = Path(engine._mpv.props["cache-dir"])  # type: ignore[attr-defined]
+    (folder / "mpv-cache").write_bytes(b"x" * 64)
+
+    engine.terminate()
+
+    assert not folder.exists(), "the buffer never outlives the app"
+
+
+# -- the recognition sample comes from the playing buffer ----------------------
+
+
+def test_the_sample_is_dumped_from_the_cache_not_a_new_connection() -> None:
+    engine = _engine()
+    engine._loaded = True  # type: ignore[attr-defined]
+    engine._mpv.doubles["time-pos"] = 500.0  # type: ignore[attr-defined]
+
+    assert engine.dump_recent_audio(60, "sample.bin") is True
+
+    assert engine._mpv.commands == [("dump-cache", "440.000", "500.000", "sample.bin")]  # type: ignore[attr-defined]
+
+
+def test_no_sample_when_nothing_is_loaded() -> None:
+    engine = _engine()
+    assert engine.dump_recent_audio(60, "sample.bin") is False
+    assert engine._mpv.commands == []  # type: ignore[attr-defined]

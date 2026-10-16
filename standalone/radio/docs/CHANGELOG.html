@@ -255,7 +255,40 @@ this repository carries only the wrapper, installer, icon, and docs.</p>
 <p>Testing rebuild: <strong>3.2.0 (build 4)</strong>. The packages have
 not been published yet.</p>
 <ul>
-<li><strong>Quill Radio’s own sounds play on the radio’s sound
+<li><p><strong>Rewind live radio by an hour, or five.</strong> The
+time-shift buffer that lets you pause and rewind a live station now
+lives on disk instead of in memory, so it holds an hour by default
+rather than about 45 minutes, and up to five hours if you want. Choose
+its length with <strong>Preferences &gt; Time-shift buffer</strong>; “In
+memory only” keeps the old buffer. It is kept in this computer’s cache
+folder (never a synced data folder), never takes more than half the free
+space on the drive, and is deleted when Quill Radio closes or, after a
+crash, the next time it starts. Needs the mpv engine, as before. User
+guide: “Rewinding live radio, and going back to live” in Chapter
+4.</p></li>
+<li><p><strong>Rewind and Forward go further the more you tap.</strong>
+Ctrl+Shift+Left and Ctrl+Shift+Right now move 12 seconds for one tap, a
+minute for two quick taps and five minutes for three, and 5 seconds a
+repeat while you hold the key. Taps do not add up: Quill Radio waits for
+you to stop, moves once, and says where you landed (“1 minute behind
+live”, or “3 minutes 10 seconds of 18 minutes”), not how far it moved.
+The same keys, on live radio and on recordings, episodes and videos, in
+every window. The menu items are now called <strong>Rewind</strong> and
+<strong>Forward</strong>. An idea borrowed from FreeRadio.</p></li>
+<li><p><strong>Identify This Song (Playback menu, Ctrl+K).</strong> On a
+station that never says what it is playing, Quill Radio can listen to
+the last minute and ask AcoustID, a free music-recognition service, what
+the song is. You hear a best guess and how sure it is, or plainly that
+there was no match. It needs two things set up once: a free AcoustID
+key, pasted into <strong>Preferences &gt; AcoustID key for song
+recognition</strong> (kept in the Windows credential store), and
+Chromaprint’s fpcalc program, which does not come with Quill Radio.
+Until both are there, the command says what is missing and where it
+goes. It listens to what you are already hearing, so it never hears a
+station’s pre-roll advert; it sends a fingerprint, never audio, and only
+when you press the key. User guide: “Identify This Song” in Chapter
+5.</p></li>
+<li><p><strong>Quill Radio’s own sounds play on the radio’s sound
 card.</strong> The sounds for connecting, playing, stopped, stream
 errors, recording started and stopped, and reminders now go to the same
 device as the radio, so if you send the station to a broadcast card you
@@ -271,13 +304,13 @@ back by themselves when it returns. <strong>Alt+Shift+M</strong>
 (<strong>Audio &gt; App Sounds</strong>) turns them off and back on, the
 same key in every QUILL app. Your screen reader is never moved. Reported
 on QUILLVille by Rick Lewis. User guide: “Where Quill Radio’s own sounds
-play” in Chapter 5.</li>
-<li><strong>QUILL Lineups (Playback &gt; Lineups…, Ctrl+U).</strong> A
-Lineup is a named list of anything Quill Radio and QUILL Cast can play:
-stations, saved places, podcasts and episodes, YouTube videos, playlists
-and channels, Local Media files and recordings, in an order you choose.
-Add things by hand with <strong>Add to Lineup…</strong> from Browse
-Stations, your favorites, Search Stations and Local Media
+play” in Chapter 5.</p></li>
+<li><p><strong>QUILL Lineups (Playback &gt; Lineups…, Ctrl+U).</strong>
+A Lineup is a named list of anything Quill Radio and QUILL Cast can
+play: stations, saved places, podcasts and episodes, YouTube videos,
+playlists and channels, Local Media files and recordings, in an order
+you choose. Add things by hand with <strong>Add to Lineup…</strong> from
+Browse Stations, your favorites, Search Stations and Local Media
 (Ctrl+Shift+U), or give a Lineup rules: what to look for, where, which
 ones, in what order and how many, and, for every rule, how long its
 items stay (while they match, until finished, for some days, until
@@ -295,23 +328,23 @@ one file both apps can edit at once, and Cast hands Radio anything it
 cannot play itself. Rules read only what is on your computer and run
 while the Lineups window is open. New user guide chapter (Chapter 17,
 QUILL Lineups), PRD section 23, and the tutorial <strong>Build a lineup
-that fills itself</strong>.</li>
-<li><strong>Saved places in Favorites survive a restart.</strong> A
+that fills itself</strong>.</p></li>
+<li><p><strong>Saved places in Favorites survive a restart.</strong> A
 genre, country or other browse place saved to Favorites disappeared the
 next time Quill Radio started, because a place has no stream address and
 the favorites file refused anything without one. Saved places now come
-back, and remember which source they came from.</li>
-<li><strong>Runs on Python 3.14, and older runtimes are cleaned
+back, and remember which source they came from.</p></li>
+<li><p><strong>Runs on Python 3.14, and older runtimes are cleaned
 up.</strong> The shared QuillVille runtime this build installs is Python
 3.14. The installer then removes older runtimes (Python 3.13) that no
 installed QuillVille app uses any more; one that an app or a shortcut
 still points to is left alone. Portable copies carry their own Python
-and change nothing outside their folder.</li>
-<li><strong>Record Key in Show and Hide Key.</strong> The key box has a
-<strong>Record Key…</strong> button (Alt+R): press the combination you
+and change nothing outside their folder.</p></li>
+<li><p><strong>Record Key in Show and Hide Key.</strong> The key box has
+a <strong>Record Key…</strong> button (Alt+R): press the combination you
 want and it is written into the box for you. Typing it still works, and
 is the way for a key another program has already taken, which never
-reaches the window.</li>
+reaches the window.</p></li>
 </ul>
 <p>Carried over from build 2:</p>
 <ul>

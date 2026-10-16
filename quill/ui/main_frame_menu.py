@@ -2634,12 +2634,8 @@ class MenuBuilderMixin:
             id_radio_rewind = wx.NewIdRef()
             id_radio_forward = wx.NewIdRef()
             id_radio_live = wx.NewIdRef()
-            media_menu.Append(
-                id_radio_rewind, self._menu_label(_("&Rewind 30 Seconds"), "radio.rewind")
-            )
-            media_menu.Append(
-                id_radio_forward, self._menu_label(_("Forw&ard 30 Seconds"), "radio.forward")
-            )
+            media_menu.Append(id_radio_rewind, self._menu_label(_("&Rewind"), "radio.rewind"))
+            media_menu.Append(id_radio_forward, self._menu_label(_("Forw&ard"), "radio.forward"))
             media_menu.Append(
                 id_radio_live, self._menu_label(_("Back &to Live"), "radio.jump_to_live")
             )

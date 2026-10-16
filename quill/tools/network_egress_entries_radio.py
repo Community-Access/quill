@@ -214,6 +214,18 @@ RADIO_EGRESS: dict[str, str] = {
         "required descriptive User-Agent is sent. Results cached for a month. "
         "HTTPS-only over a verified TLS context; disabled in Safe Mode."
     ),
+    "core/radio/acoustid.py::_post": (
+        "Single egress site for Identify This Song (xradio2.md 4.1): one POST "
+        "to AcoustID's lookup endpoint carrying the listener's own AcoustID "
+        "application key, a Chromaprint fingerprint computed locally by fpcalc "
+        "and its length in seconds -- never audio, never anything about the "
+        "listener or the station. Returns candidate recordings (title, "
+        "artists, MusicBrainz id, score). ONLY ON REQUEST: reached solely from "
+        "the explicit Identify This Song command, which is the consent; with no "
+        "key entered (the default) the command says so and nothing is sent. "
+        "HTTPS-only over a verified TLS context with a bounded timeout and "
+        "response size; disabled in Safe Mode via refuse_in_safe_mode."
+    ),
     "core/radio/internet_archive.py::_fetch": (
         "Single egress site for the Internet Archive browse branch: "
         "advancedsearch.php for a collection's sub-collections and recordings, "

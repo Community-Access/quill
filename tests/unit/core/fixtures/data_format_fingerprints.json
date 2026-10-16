@@ -1367,6 +1367,7 @@
             "recording_speed": "float",
             "youtube_speed": "float",
             "volume_boost": "bool",
+            "timeshift_minutes": "int",
             "volume_percent": "int",
             "channel_mode": "str",
             "night_mode_enabled": "bool",
@@ -1427,7 +1428,7 @@
         "function:quill.core.radio.history_store:save_history": "sha256:ab4ddc8289ea7635"
       },
       "classification": "additive, compatible",
-      "note": "QUILL Lineups: start_lineup_id, the Lineup Radio opens in (empty by default); additive, older builds ignore it."
+      "note": ""
     },
     "shared.listens": {
       "current": 1,

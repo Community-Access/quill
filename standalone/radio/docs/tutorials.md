@@ -1541,9 +1541,9 @@ Make every station sound its best: a volume for each station, a boost for quiet 
    - You should hear: Sound Enhancements, then its Quick preset list.
    - Worth knowing: These are not applied to recordings unless you ask, so your recordings stay exactly as the station sent them. To record what you hear, turn on Apply Sound Enhancements to recordings in Recording Settings.
 
-4. **Rewind live radio into what you missed.** With the mpv engine, Quill Radio keeps about the last three-quarters of an hour of a live station. Rewind 30 Seconds, on the Playback menu, takes you back into what you missed. Forward 30 Seconds comes forward again, and Back to Live takes you right back to the live broadcast.
+4. **Rewind live radio into what you missed.** With the mpv engine, Quill Radio keeps the last hour of a live station on disk (Preferences, Time-shift buffer, sets how long). Rewind, on the Playback menu, takes you back into what you missed: one tap 12 seconds, two quick taps a minute, three five minutes. Forward comes forward the same way, and Back to Live takes you right back to the live broadcast.
    - Keys: Ctrl+Shift+Left, Ctrl+Shift+Right, Ctrl+Shift+L
-   - You should hear: 30 seconds behind live, then how far behind you are, then Back to live.
+   - You should hear: 12 seconds behind live, then how far behind you are, then Back to live.
    - Worth knowing: Pause on the Playback menu is dimmed on a live station and tells you why. It is for recordings, episodes and files. On the classic engine, the rewind keys tell you they need mpv.
 
 5. **Choose a speed that stays chosen.** Change the speed while a recording is playing, and every recording plays at that speed. Change it on a YouTube video, and every YouTube video does. So you set it once for each kind of thing, not over and over.

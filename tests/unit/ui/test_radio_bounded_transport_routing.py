@@ -86,7 +86,6 @@ class _Host:
 
     radio_rewind = RadioMixin.radio_rewind
     radio_forward = RadioMixin.radio_forward
-    _radio_seek_bounded = RadioMixin._radio_seek_bounded
     # staticmethod on the real mixin; re-wrap so it does not pick up self here.
     _radio_behind_live_phrase = staticmethod(RadioMixin._radio_behind_live_phrase)
     _radio_dvr_unavailable_message = RadioMixin._radio_dvr_unavailable_message
@@ -94,6 +93,9 @@ class _Host:
     def __init__(self, controller: _Controller) -> None:
         self._radio_controller = controller
         self.announced: list[str] = []
+        # Settle every press at once: one press is one tap (12 seconds).
+        # Bursts of taps are tests/unit/ui/test_radio_tiered_seek_ui.py.
+        self.tiered_seek_scheduler = lambda _ms, callback: callback()
 
     def _announce(self, text: str) -> None:
         self.announced.append(text)
@@ -107,7 +109,7 @@ def test_a_video_seeks_along_its_own_timeline() -> None:
 
     host.radio_forward()
 
-    assert host._radio_controller.skips == [30_000]
+    assert host._radio_controller.skips == [12_000]
     assert host._radio_controller.dvr_calls == [], "the DVR path must not be used"
 
 
@@ -116,7 +118,7 @@ def test_rewinding_a_video_steps_back_along_the_timeline() -> None:
 
     host.radio_rewind()
 
-    assert host._radio_controller.skips == [-30_000]
+    assert host._radio_controller.skips == [-12_000]
     assert host._radio_controller.dvr_calls == []
 
 
@@ -152,7 +154,7 @@ def test_a_live_stream_still_uses_the_dvr_buffer() -> None:
     host.radio_rewind()
     host.radio_forward()
 
-    assert host._radio_controller.dvr_calls == [("rewind", 30), ("forward", 30)]
+    assert host._radio_controller.dvr_calls == [("rewind", 12), ("forward", 12)]
     assert host._radio_controller.skips == [], "a live stream has no timeline to skip along"
 
 

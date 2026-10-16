@@ -117,8 +117,8 @@ SCREEN_BODIES: dict[str, str] = {
 #: a tip nobody can audit.
 TIPS: dict[str, str] = {
     "live_rewind": (
-        "Live radio can be rewound. Rewind goes back 30 seconds at a time, up "
-        "to the buffer's length, and Back to Live catches up again."
+        "Live radio can be rewound. One tap of Rewind goes back 12 seconds, two "
+        "quick taps a minute, three five minutes, and Back to Live catches up again."
     ),
     "per_station_volume": (
         "Radio remembers a volume for each station, so a loud one stays turned "

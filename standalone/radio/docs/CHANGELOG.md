@@ -10,6 +10,35 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 Testing rebuild: **3.2.0 (build 4)**. The packages have not been published yet.
 
+- **Rewind live radio by an hour, or five.** The time-shift buffer that lets
+  you pause and rewind a live station now lives on disk instead of in memory,
+  so it holds an hour by default rather than about 45 minutes, and up to five
+  hours if you want. Choose its length with **Preferences > Time-shift
+  buffer**; "In memory only" keeps the old buffer. It is kept in this
+  computer's cache folder (never a synced data folder), never takes more than
+  half the free space on the drive, and is deleted when Quill Radio closes or,
+  after a crash, the next time it starts. Needs the mpv engine, as before.
+  User guide: "Rewinding live radio, and going back to live" in Chapter 4.
+- **Rewind and Forward go further the more you tap.** Ctrl+Shift+Left and
+  Ctrl+Shift+Right now move 12 seconds for one tap, a minute for two quick
+  taps and five minutes for three, and 5 seconds a repeat while you hold the
+  key. Taps do not add up: Quill Radio waits for you to stop, moves once, and
+  says where you landed ("1 minute behind live", or "3 minutes 10 seconds of
+  18 minutes"), not how far it moved. The same keys, on live radio and on
+  recordings, episodes and videos, in every window. The menu items are now
+  called **Rewind** and **Forward**. An idea borrowed from FreeRadio.
+- **Identify This Song (Playback menu, Ctrl+K).** On a station that never says
+  what it is playing, Quill Radio can listen to the last minute and ask
+  AcoustID, a free music-recognition service, what the song is. You hear a
+  best guess and how sure it is, or plainly that there was no match. It needs
+  two things set up once: a free AcoustID key, pasted into **Preferences >
+  AcoustID key for song recognition** (kept in the Windows credential store),
+  and Chromaprint's fpcalc program, which does not come with Quill Radio.
+  Until both are there, the command says what is missing and where it goes.
+  It listens to what you are already hearing, so it never hears a station's
+  pre-roll advert; it sends a fingerprint, never audio, and only when you
+  press the key. User guide: "Identify This Song" in Chapter 5.
+
 - **Quill Radio's own sounds play on the radio's sound card.** The sounds for
   connecting, playing, stopped, stream errors, recording started and stopped,
   and reminders now go to the same device as the radio, so if you send the
