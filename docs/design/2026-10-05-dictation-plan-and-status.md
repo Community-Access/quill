@@ -1779,6 +1779,132 @@ licence (the scoring uses it when the `whisper_normalizer` package is present,
 and QUILL's basic one otherwise); pin the first hashes; build and publish the
 B-1a subset on assets-v1; record the volunteers (B-1d).
 
+## 31. As built, 2026-10-16: the small items checked, reading back more (D-18), and the streaming contract in use
+
+dict.md section 9 asks what the small items alone would bring. This pass
+checked every one against this record and the code, built what was left that
+no other agent had tonight, and closed Jeff's todo about `StreamAnnouncer`.
+
+### The small items, one by one
+
+| Item | State | Where |
+|---|---|---|
+| D-6 braille preview and the status, resume and discard keys | Already built | Section 24 |
+| D-15 Inkwell pauses when the focus moves | Already built | Section 15 |
+| D-16 Dictate Here in Cast and Radio | Another agent tonight | Not here |
+| D-18 read last sentence, paragraph, selection | **Built here** (no other branch had started it; if one lands too, keep one) | Below |
+| D-22 recommended model and tier labels | Already built | Section 21 |
+| D-24 the never-type list and the cloud line in the tray | Already built | Section 15 |
+| D-3 opt-in fallback for one program | Waits, as planned | It needs a clean D-4 run on an idle computer (section 17), and none has found a program that drops keys |
+| D-4 slice, the tested-programs table | Already built, and more (the harness) | Section 17. The table fills in when someone runs the harness on an idle computer |
+| D-12 slice, Import and Export | Already built, and the shared list | Section 20 |
+| D-19 slice, replace and delete paragraph | Another agent tonight | Not here |
+| D-21 slice, the offer after two corrections | Another agent tonight | Not here |
+| D-25 slice, five Transcribe lessons | Another agent tonight | Not here |
+| B-6 screen-reader rows for Transcribe | Already built (the rows; the checking is a person's) | Section 26 |
+| B-7 privacy tests for the new paths | Already built | Section 26 |
+| D-26 S0 benchmarks for candidate models | The tools are built; the runs need the data | Section 26 |
+
+### D-18. Reading back more than the last phrase
+
+"read last sentence", "read last paragraph" and "read selection" (Spanish: "lee
+la última frase", "lee el último párrafo", "lee la selección") read that part
+of the document aloud, with every mark said by the name dictation teaches
+(`readback.spoken_marks`, the same names as "read that"), so "Can you send it,
+please?" is heard as "Can you send it comma please question mark" whatever the
+screen reader's punctuation level. **Say punctuation marks in the read-back**
+turns the names off for these too.
+
+- **What "last" means.** What is just before the cursor: white space before
+  the cursor is skipped, the unit holding the last character is taken, and it
+  stops at the cursor (`targets.last_unit_bounds`). Said straight after
+  dictating, that is the sentence or paragraph just finished.
+- **Before the writing check.** Reading writes nothing, so it is handled with
+  the modes (`VoiceCommandsMixin._mode_command`), before the controller asks
+  whether the document can be written to: a read-only document can be read.
+  `controller.py`, at its ceiling, did not grow.
+- **Not in other programs.** dict.md: "Externally, only the session's own
+  words can be read", and "read that" already does that. These three need the
+  document's text, so in QUILL Transcribe and Dictate Anywhere they are refused
+  with the usual sentence and are not in Transcribe's "What can I say".
+- **GATE-13.** The reader does not say text the cursor did not move over, so
+  this is an outcome only the app knows; it is spoken once, through the same
+  `_say` as every command's outcome.
+
+### The streaming contract, now in use
+
+`quill/core/speech/streaming.py` (2026-08-17) defined `StreamAnnouncer`
+"ahead of need": a streaming snapshot is an append-only committed prefix and a
+tentative tail, and speech says only newly committed text, exactly once. Then
+the streaming engines landed (section 3, Nemotron; OpenAI live; the WebSocket
+cloud providers, section 23) and none used it. dict.md D-26 ("Streaming
+integration") and D-35 say partial results from any online recogniser go
+through `preview.py` and that contract, and that only committed words are ever
+spoken or written. The spec keeps the class, so it was wired, not removed.
+
+**What was wrong.** With **Show it, and say new words quietly**,
+`PreviewThrottle.to_speak` said again from wherever the engine changed its
+mind: "call doctor" then "call Dr. Okonkwo" spoke "Dr. Okonkwo" after
+"doctor", the same words twice in different forms, which is exactly the
+repainting the contract exists to stop.
+
+**What it does now.** None of the engines hands QUILL a committed and a
+tentative part: each sends the whole phrase so far. So
+`streaming.WordAgreement` derives the split by local agreement: a word is
+committed once two updates in a row agree on it (case and edge punctuation
+ignored) and it is not the last word, which may still be half heard. Its
+committed text only grows, by construction, so a later rewrite of a word
+already said is never said again. `to_speak` feeds each update through
+`WordAgreement` and `StreamAnnouncer`, gathers what is newly committed, and
+still says it no more often than every two seconds. Everything reaches it the
+same way (`recognizer_worker` and the cloud recogniser post `on_partial`;
+`LiveMixin.on_partial` decides), so Nemotron, OpenAI and every streaming cloud
+provider follow the contract with no change in any engine.
+
+**What stays as it was.** The visual preview, "Hearing: ..." in the status bar
+and on a braille display, still shows the whole phrase, tentative tail
+included: it is one line replaced in place, not a stream of announcements,
+and dict.md D-6 asks for it. The words written at the pause are always the
+engine's final ones; the spoken preview never decides what is written.
+
+**The cost.** Speech now lags the engine by one update (a word is said once a
+second update confirms it). That is the trade the contract makes: a word late
+rather than a word twice.
+
+### "paste clip 3"
+
+The first dictbench run (section 26) reported "paste clip three" heard as
+"Paste clip 3" and scored it as a different command. QUILL itself already
+accepts a digit there: `targets.number_from` reads "three", "3" and "number
+three" alike. The miss was the benchmark's: `bench_scoring.command_outcome`
+compared the raw words after the command. It now compares the slot number,
+and a controller test pins "Paste clip 3" pasting slot three in another
+program. ("insert abbreviation addr" heard as "address" is a different case:
+the engine changed the word, and nothing in the parser could know.)
+
+### Documentation
+
+The QUILL and QUILL Lite user guides gained "Checking your work by ear", a
+worked example with what is heard for each command, what "last" means, what is
+said when there is nothing, the Spanish forms and the limit in other programs;
+the spoken-preview paragraphs in all three guides (QUILL, QUILL Lite, QUILL
+Transcribe) now say a word is spoken once it is settled and never twice. The
+dictation-commands page (both copies) is regenerated from `COMMAND_HELP`. The
+PRD has a D-18 requirement block beside the cloud providers and the streaming
+contract note says it is in use. No control was added, so F1 help is
+unchanged.
+
+### Tests
+
+`tests/unit/core/test_dictation_live_controller.py` (the three reading
+commands, nothing selected, the marks setting, the refusal in another
+program, the user guide's worked example with the cursor and selection left
+where they were, the spoken preview through a rewrite),
+`tests/unit/core/test_dictation_hold_and_preview.py` (`to_speak` under the
+contract), `tests/unit/core/speech/test_speech_vad_and_streaming.py`
+(`WordAgreement`), `tests/unit/core/test_dictation_external_list.py` and
+`tests/unit/scripts/test_bench_scoring.py` (the digit).
+
 ## Appendix A: the dict.md section numbers, and where they live now
 
 | dict.md | What it was | Here |

@@ -192,6 +192,24 @@ SPANISH_COMMAND_HELP: tuple[CommandHelp, ...] = (
         "Correcting",
     ),
     CommandHelp(
+        Command.READ_SENTENCE,
+        ("lee la última frase", "leer la última frase"),
+        "Reads aloud the sentence just before the cursor, with its punctuation said.",
+        "Correcting",
+    ),
+    CommandHelp(
+        Command.READ_PARAGRAPH,
+        ("lee el último párrafo", "leer el último párrafo"),
+        "Reads aloud the paragraph just before the cursor, with its punctuation said.",
+        "Correcting",
+    ),
+    CommandHelp(
+        Command.READ_SELECTION,
+        ("lee la selección", "leer la selección"),
+        "Reads aloud the selected text, with its punctuation said.",
+        "Correcting",
+    ),
+    CommandHelp(
         Command.LINE_START,
         ("ir al principio de la línea", "inicio de línea"),
         "Moves the cursor to the start of the line.",

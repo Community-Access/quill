@@ -17,6 +17,10 @@ can be written to (a mode or the language changes nothing in the document), and
   3), so nothing said is lost and "scratch that" removes it.
 * **Units** -- select the sentence, line or paragraph; go to the start or end
   of the paragraph.
+* **Reading back more than the last phrase** (D-18) -- "read last sentence",
+  "read last paragraph" and "read selection", spoken with their punctuation
+  named (:mod:`~quill.core.windows_dictation.readback`), in QUILL's own
+  documents only: in another program nothing can read the text.
 * **"spell that"** -- the last phrase selected, the next phrase spelled over it.
 * **The library** -- Copy All, copy that, the Copy Tray's slots, snippets and
   abbreviations, through the editor's own features: the feedback port's
@@ -48,6 +52,7 @@ from quill.core.windows_dictation.parser import ParsedPhrase, Piece
 from quill.core.windows_dictation.targets import (
     Target,
     find_target,
+    last_unit_bounds,
     line_number,
     match_names,
     number_from,
@@ -82,6 +87,12 @@ _UNITS = {
     Command.SELECT_SENTENCE: "sentence",
     Command.SELECT_LINE: "line",
     Command.SELECT_PARAGRAPH: "paragraph",
+}
+#: D-18: what each reading command reads, and what is said when there is none.
+_READING = {
+    Command.READ_SENTENCE: ("sentence", "There is no sentence before the cursor."),
+    Command.READ_PARAGRAPH: ("paragraph", "There is no paragraph before the cursor."),
+    Command.READ_SELECTION: ("", "Nothing is selected."),
 }
 _LIBRARY = (
     Command.COPY_ALL,
@@ -178,12 +189,37 @@ class VoiceCommandsMixin:
         if command in _LANGUAGES:
             self.switch_language(_LANGUAGES[command])
             return True
+        if command in _READING:
+            self._read_aloud(command, preferences)
+            return True
         if command is Command.USE_CONTEXT:
             use = getattr(self._feedback, "use_context", None)
             self._say(str(use(parsed.argument)) if callable(use) else "Not available here.")
             return True
         del preferences
         return False
+
+    def _read_aloud(self, command: Command, preferences: DictationPreferences) -> None:
+        """D-18: read a unit of the document, its marks named. Before the
+        writing check, because reading writes nothing (a read-only document can
+        still be read); never in another program, whose text cannot be read."""
+        if getattr(self._document, "external", False):
+            self._say(external_refusal())
+            return
+        unit, nothing = _READING[command]
+        text, caret = self._text_and_caret()
+        if unit:
+            start, end = last_unit_bounds(text, caret, unit)
+        else:
+            start, end = sorted(self._document.selection())
+        chosen = text[start:end].strip()
+        if not chosen:
+            self._say(nothing)
+            return
+        from quill.core.windows_dictation.readback import spoken_marks
+
+        language = preferences.speech_language
+        self._say(spoken_marks(chosen, language) if preferences.readback_marks else chosen)
 
     def _in_mode(self, pieces: tuple[Piece, ...]) -> tuple[Piece, ...]:
         """*pieces* with the capitals the modes ask for. Spelled and pasted text

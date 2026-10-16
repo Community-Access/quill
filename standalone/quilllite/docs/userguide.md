@@ -3719,8 +3719,35 @@ sentence, it is just written as words.
 | "delete word" | Deletes the word before the cursor. |
 | "delete sentence" | Deletes the sentence the cursor is at the end of. |
 | "read that" or "repeat that" | Reads the last phrase aloud again. |
+| "read last sentence" | Reads aloud the sentence just before the cursor, with its punctuation said ("Can you send it comma please question mark"). Nothing is changed. |
+| "read last paragraph" | Reads aloud the paragraph just before the cursor, the same way. |
+| "read selection" | Reads aloud the text you have selected, the same way. |
 | "spell that" | Selects the last phrase, and the next thing you say is spelled out letter by letter to replace it. |
 | "copy that" | Copies the last phrase to the clipboard. |
+
+**Checking your work by ear.** Say "read last sentence", "read last
+paragraph" or "read selection" as a phrase on its own, and QUILL Lite reads that
+part of your document aloud with every mark named, whatever your screen
+reader's punctuation level. For example, after you dictate "First idea. Can
+you send it, please?" and pause:
+
+- "read last sentence" says "Can you send it comma please question mark".
+- "read last paragraph" says "First idea period Can you send it comma please
+  question mark".
+- Select "send it" with Shift and the arrow keys, then say "read selection":
+  you hear "send it".
+
+What is read is what is just before the cursor: spaces and line ends right
+before it are skipped, and nothing after the cursor is read. Nothing in your
+document changes, the cursor stays where it was, and a document you can only
+read can still be read back. If there is nothing to read you hear "There is no
+sentence before the cursor." (or paragraph), or "Nothing is selected." To hear
+the words without the mark names, clear **Say punctuation marks in the
+read-back** in More Dictation Settings; it works the same way for "read that".
+In Spanish, say "lee la última frase", "lee el último párrafo" or "lee la
+selección". These commands are for QUILL Lite's own documents only: in another
+program, dictation cannot see the text, so it says so and reads nothing; "read
+that" still repeats your last phrase there.
 
 **Moving the cursor:** "go to beginning of line", "go to end of line", "go to
 top", "go to end of document", "go to start of paragraph" and "go to end of
@@ -4782,8 +4809,12 @@ them to you:
 You do not hear these words spoken, so nothing talks over you while you talk.
 If you would like to hear them, open **More Dictation Settings** and set
 **While you speak, the words heard so far** to **Show it, and say new words
-quietly**. You then hear the new words every couple of seconds, never the same
-ones twice. Choose **Do not show it** to turn the preview off.
+quietly**. You then hear new words every couple of seconds, each one once,
+and only once the engine has settled on it: a word it is still changing its
+mind about is not spoken until it stops changing, and a word you have already
+heard is not said again if the engine corrects it later (the words that go into
+your document are always the final ones). Choose **Do not show it** to turn the
+preview off.
 
 Nemotron also gets its punctuation right at the end of a sentence now. It
 decides whether a sentence was a question once it hears the next one, so a

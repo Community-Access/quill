@@ -169,6 +169,9 @@ Everything QUILL Lite and QUILL's Live Dictation understand, generated from the 
 | "delete word" or "delete last word" | Deletes the word just before the cursor. |
 | "delete sentence" or "delete last sentence" | Deletes from the start of the sentence the cursor is in up to the cursor. |
 | "read that" or "repeat that" | Reads the last phrase aloud again. |
+| "read last sentence" or "read the last sentence" | Reads aloud the sentence just before the cursor, with its punctuation said. In QUILL's own documents only. |
+| "read last paragraph" or "read the last paragraph" | Reads aloud the paragraph just before the cursor, with its punctuation said. In QUILL's own documents only. |
+| "read selection" or "read the selection" | Reads aloud the selected text, with its punctuation said. In QUILL's own documents only. |
 | "correct that" | Reads the other things the speech engine thought you said, numbered, when it offers them (Windows speech recognition does). Then say choose and a number. |
 | "choose one" or "choose 1" | After correct that, puts the first of the other guesses in place of the last phrase. |
 | "choose two" or "choose 2" | The same, with the second guess. |

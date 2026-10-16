@@ -183,10 +183,82 @@ def test_the_preview_can_be_spoken_quietly_or_switched_off() -> None:
     controller, _d, feedback, _r, _c, holder = _controller(preview="speak")
     controller.on_speech_started()
     controller.on_partial("hello there")
-    assert feedback.quiet == ["hello there"]
-    holder["prefs"] = replace(holder["prefs"], preview="off")
+    assert feedback.quiet == []  # nothing is settled yet: nothing is said
     controller.on_partial("hello there friend")
+    assert feedback.quiet == ["hello there"]  # two updates agreed on these
+    holder["prefs"] = replace(holder["prefs"], preview="off")
+    controller.on_partial("hello there friend of mine")
     assert feedback.previews == ["hello there"]
+    assert feedback.quiet == ["hello there"]
+
+
+def test_a_spoken_preview_never_says_a_word_twice_across_a_rewrite() -> None:
+    controller, _d, feedback, _r, clock, _h = _controller(preview="speak")
+    controller.on_speech_started()
+    controller.on_partial("call doctor")
+    controller.on_partial("call doctor about")
+    clock.now += 3
+    controller.on_partial("call Dr. Okonkwo about the")
+    clock.now += 3
+    controller.on_partial("call Dr. Okonkwo about the results")
+    # "call doctor" was said once; the engine's rewrite of a settled word is
+    # not said again (the written phrase is what counts); new words follow.
+    assert feedback.quiet == ["call doctor", "Okonkwo about the"]
+
+
+def test_reading_back_the_last_sentence_paragraph_and_selection() -> None:
+    doc = Doc("First idea. Can you send it, please?\n\nNew start. Done!")
+    controller, _d, feedback, _r, _c, _h = _controller(doc)
+    _hear_command(controller, "read last sentence")
+    assert feedback.said[-1] == "Done exclamation mark"
+    _hear_command(controller, "read last paragraph")
+    assert feedback.said[-1] == "New start period Done exclamation mark"
+    doc.sel = (12, 36)
+    _hear_command(controller, "read selection")
+    assert feedback.said[-1] == "Can you send it comma please question mark"
+    doc.sel = (36, 36)
+    _hear_command(controller, "read last sentence")
+    assert feedback.said[-1] == "Can you send it comma please question mark"
+    assert doc.text.startswith("First idea.")  # reading writes nothing
+
+
+def test_the_user_guide_example_reads_back_and_leaves_the_cursor_alone() -> None:
+    # docs/user guide/userguide.md, "Checking your work by ear".
+    doc = Doc("First idea. Can you send it, please?")
+    controller, _d, feedback, _r, _c, _h = _controller(doc)
+    _hear_command(controller, "read last sentence")
+    assert feedback.said[-1] == "Can you send it comma please question mark"
+    _hear_command(controller, "read last paragraph")
+    assert feedback.said[-1] == "First idea period Can you send it comma please question mark"
+    doc.sel = (20, 27)
+    _hear_command(controller, "read selection")
+    assert feedback.said[-1] == "send it"
+    assert doc.sel == (20, 27)  # the reading position is never moved
+    assert doc.text == "First idea. Can you send it, please?"
+
+
+def test_reading_back_says_when_there_is_nothing_and_can_skip_the_marks() -> None:
+    controller, doc, feedback, _r, _c, holder = _controller(Doc(""))
+    _hear_command(controller, "read last paragraph")
+    assert feedback.said[-1] == "There is no paragraph before the cursor."
+    _hear_command(controller, "read selection")
+    assert feedback.said[-1] == "Nothing is selected."
+    doc.text, doc.sel = "Hi, you.", (8, 8)
+    holder["prefs"] = replace(holder["prefs"], readback_marks=False)
+    _hear_command(controller, "read last sentence")
+    assert feedback.said[-1] == "Hi, you."
+
+
+def test_reading_back_is_refused_in_another_program() -> None:
+    doc = Doc("Secret words.")
+    doc.external = True  # type: ignore[attr-defined]
+    controller, _d, feedback, _r, _c, _h = _controller(doc)
+    _hear_command(controller, "read last sentence")
+    assert "QUILL's own documents" in feedback.said[-1]
+
+
+def _hear_command(controller: DictationController, text: str) -> None:
+    controller.on_phrase(RecognizedPhrase(words_from_text(text)))
 
 
 def test_a_late_question_mark_corrects_the_last_phrase() -> None:

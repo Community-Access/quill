@@ -86,6 +86,10 @@ class Command(StrEnum):
     SELECT_PARAGRAPH = "select_paragraph"
     SELECT_SENTENCE = "select_sentence"
     SELECT_LINE = "select_line"
+    # 2026-10-16, D-18: read back more than the last phrase (editors only).
+    READ_SENTENCE = "read_sentence"
+    READ_PARAGRAPH = "read_paragraph"
+    READ_SELECTION = "read_selection"
     SWITCH_SPANISH = "switch_spanish"
     SWITCH_ENGLISH = "switch_english"
     # Commands that take words after them (PrefixHelp).

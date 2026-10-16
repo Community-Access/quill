@@ -8660,9 +8660,12 @@ into the document, and the preview goes away.</li>
 you talk. If you would like to hear them, open <strong>More Dictation
 Settings</strong> and set <strong>While you speak, the words heard so
 far</strong> to <strong>Show it, and say new words quietly</strong>. You
-then hear the new words every couple of seconds, never the same ones
-twice. Choose <strong>Do not show it</strong> to turn the preview
-off.</p>
+then hear new words every couple of seconds, each one once, and only
+once the engine has settled on it: a word it is still changing its mind
+about is not spoken until it stops changing, and a word you have already
+heard is not said again if the engine corrects it later (the words that
+go into your document are always the final ones). Choose <strong>Do not
+show it</strong> to turn the preview off.</p>
 <p>Nemotron also gets its punctuation right at the end of a sentence
 now. It decides whether a sentence was a question once it hears the next
 one, so a full stop it wrote at your pause can turn into a question mark
@@ -8828,6 +8831,14 @@ the middle of a sentence is written as words, just as you meant it.</p>
 <li>“capitalize that”, “all caps that”, “no caps that”</li>
 <li>“delete word”, “delete sentence”</li>
 <li>“read that”</li>
+<li>“read last sentence”, “read last paragraph” and “read selection”
+read that part of your document aloud with its punctuation said (“Can
+you send it comma please question mark”), so you can check your work by
+ear. They read what is just before the cursor, and nothing is changed.
+They work in QUILL’s own documents only; in another program, dictation
+cannot read the text. “Say punctuation marks in the read-back” in More
+Dictation Settings decides whether the marks are said, as it does for
+“read that”.</li>
 <li>“go to beginning of line”, “go to end of line”, “go to top”, “go to
 end of document”</li>
 <li>“select sentence”, “select line”, “select paragraph”</li>
@@ -8856,6 +8867,31 @@ commands that change it leave it alone, and tell you so.</p>
 and Spanish, is on the <strong><a
 href="dictation-commands.html">Dictation commands</a></strong> page, and
 “what can I say” opens the same list while you dictate.</p>
+<p><strong>Checking your work by ear.</strong> Say “read last sentence”,
+“read last paragraph” or “read selection” as a phrase on its own, and
+QUILL reads that part of your document aloud with every mark named,
+whatever your screen reader’s punctuation level. For example, after you
+dictate “First idea. Can you send it, please?” and pause:</p>
+<ul>
+<li>“read last sentence” says “Can you send it comma please question
+mark”.</li>
+<li>“read last paragraph” says “First idea period Can you send it comma
+please question mark”.</li>
+<li>Select “send it” with Shift and the arrow keys, then say “read
+selection”: you hear “send it”.</li>
+</ul>
+<p>What is read is what is just before the cursor: spaces and line ends
+right before it are skipped, and nothing after the cursor is read.
+Nothing in your document changes, the cursor stays where it was, and a
+document you can only read can still be read back. If there is nothing
+to read you hear “There is no sentence before the cursor.” (or
+paragraph), or “Nothing is selected.” To hear the words without the mark
+names, clear <strong>Say punctuation marks in the read-back</strong> in
+More Dictation Settings; it works the same way for “read that”. In
+Spanish, say “lee la última frase”, “lee el último párrafo” or “lee la
+selección”. These commands are for QUILL’s own documents only: in
+another program, dictation cannot see the text, so it says so and reads
+nothing; “read that” still repeats your last phrase there.</p>
 <h5 id="moving-and-selecting-by-voice">Moving and selecting by
 voice</h5>
 <p>You can move around and pick out words by saying them, without

@@ -2,6 +2,42 @@
 
 ## 1.0.0
 
+### Dictation: read back more than the last phrase, the spoken preview keeps the streaming contract, digits for clips (2026-10-16)
+
+dict.md section 9 (the small items) and Jeff's todo "StreamAnnouncer is
+defined but never used"; dictation design record, section 31.
+
+- **D-18.** Three new commands in both editors' dictation, `READ_SENTENCE`,
+  `READ_PARAGRAPH` and `READ_SELECTION` ("read last sentence", "read last
+  paragraph", "read selection"; Spanish "lee la última frase", "lee el último
+  párrafo", "lee la selección"). Handled in `voice_commands.py`
+  (`_read_aloud`, called from `_mode_command`, before the writing check:
+  reading writes nothing, so a read-only document can be read), through the
+  new `targets.last_unit_bounds` and `readback.spoken_marks`, following
+  `readback_marks`. Not in `EXTERNAL_COMMANDS`: in Transcribe and Dictate
+  Anywhere they are refused with `external_refusal()`, so QUILL Transcribe's
+  "What can I say" does not list them. `controller.py` did not grow.
+  `docs/user guide/dictation-commands.md` and QUILL Lite's copy regenerated.
+- **`StreamAnnouncer` is used.** The spoken live preview (`preview =
+  "speak"`) re-spoke words from wherever a streaming engine changed its mind,
+  which broke the committed-and-tentative contract dict.md D-26 asks of every
+  online recogniser. `PreviewThrottle.to_speak` now feeds each update through
+  the new `speech.streaming.WordAgreement` (a word is committed once two
+  updates agree on it and it is not the last word; committed text only ever
+  grows) and `StreamAnnouncer`, so only settled words are spoken, each once.
+  The visual preview (status bar, braille) is unchanged. Covers Nemotron,
+  OpenAI live and every streaming cloud provider, which all reach
+  `LiveMixin.on_partial`.
+- **"paste clip 3".** QUILL already took digits there (`targets.number_from`);
+  the benchmark's `bench_scoring.command_outcome` compared the raw words and
+  scored Moonshine's "Paste clip 3" as another command. It now compares the
+  slot number. A controller test pins the digit form end to end.
+- **Docs.** QUILL and QUILL Lite user guides: "Checking your work by ear", a
+  worked example (pinned by a controller test that also checks the cursor and
+  selection do not move); all three guides' spoken-preview paragraphs; the PRD
+  gains a D-18 requirement block; `docs/site/dictation.html` regenerated with
+  `scripts/build_dictation_page.py`. No control was added, so F1 help is unchanged.
+
 ### Quill Radio station enrichment: the signed station pack, FTS5 search and Station Details (2026-10-16)
 
 Jeff's todo P2 #33, the Radio station data program. The data terms are not

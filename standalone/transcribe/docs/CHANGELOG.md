@@ -6,6 +6,11 @@ file is the itemized list.
 
 ## Unreleased
 
+- **A calmer spoken preview** (2026-10-16). With **Show it, and say new words
+  quietly** chosen for the words heard so far, each word is said once, when
+  the model has settled on it: never a word it is still changing its mind
+  about, and never the same word twice.
+
 - **Hold the key to talk** (2026-10-15). With **Hold the dictation key to
   talk** checked in More Dictation Settings (Alt+H, off until you turn it on),
   hold your start and stop key while you speak; letting go stops dictation and

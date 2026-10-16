@@ -75,6 +75,26 @@ COMMAND_HELP: tuple[CommandHelp, ...] = (
         "Correcting",
     ),
     CommandHelp(
+        Command.READ_SENTENCE,
+        ("read last sentence", "read the last sentence"),
+        "Reads aloud the sentence just before the cursor, with its punctuation "
+        "said. In QUILL's own documents only.",
+        "Correcting",
+    ),
+    CommandHelp(
+        Command.READ_PARAGRAPH,
+        ("read last paragraph", "read the last paragraph"),
+        "Reads aloud the paragraph just before the cursor, with its punctuation "
+        "said. In QUILL's own documents only.",
+        "Correcting",
+    ),
+    CommandHelp(
+        Command.READ_SELECTION,
+        ("read selection", "read the selection"),
+        "Reads aloud the selected text, with its punctuation said. In QUILL's own documents only.",
+        "Correcting",
+    ),
+    CommandHelp(
         Command.CORRECT,
         ("correct that",),
         "Reads the other things the speech engine thought you said, numbered, "

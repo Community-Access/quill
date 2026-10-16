@@ -245,6 +245,54 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="dictation-read-back-more-than-the-last-phrase-the-spoken-preview-keeps-the-streaming-contract-digits-for-clips-2026-10-16">Dictation:
+read back more than the last phrase, the spoken preview keeps the
+streaming contract, digits for clips (2026-10-16)</h3>
+<p>dict.md section 9 (the small items) and Jeff’s todo “StreamAnnouncer
+is defined but never used”; dictation design record, section 31.</p>
+<ul>
+<li><strong>D-18.</strong> Three new commands in both editors’
+dictation, <code>READ_SENTENCE</code>, <code>READ_PARAGRAPH</code> and
+<code>READ_SELECTION</code> (“read last sentence”, “read last
+paragraph”, “read selection”; Spanish “lee la última frase”, “lee el
+último párrafo”, “lee la selección”). Handled in
+<code>voice_commands.py</code> (<code>_read_aloud</code>, called from
+<code>_mode_command</code>, before the writing check: reading writes
+nothing, so a read-only document can be read), through the new
+<code>targets.last_unit_bounds</code> and
+<code>readback.spoken_marks</code>, following
+<code>readback_marks</code>. Not in <code>EXTERNAL_COMMANDS</code>: in
+Transcribe and Dictate Anywhere they are refused with
+<code>external_refusal()</code>, so QUILL Transcribe’s “What can I say”
+does not list them. <code>controller.py</code> did not grow.
+<code>docs/user guide/dictation-commands.md</code> and QUILL Lite’s copy
+regenerated.</li>
+<li><strong><code>StreamAnnouncer</code> is used.</strong> The spoken
+live preview (<code>preview = "speak"</code>) re-spoke words from
+wherever a streaming engine changed its mind, which broke the
+committed-and-tentative contract dict.md D-26 asks of every online
+recogniser. <code>PreviewThrottle.to_speak</code> now feeds each update
+through the new <code>speech.streaming.WordAgreement</code> (a word is
+committed once two updates agree on it and it is not the last word;
+committed text only ever grows) and <code>StreamAnnouncer</code>, so
+only settled words are spoken, each once. The visual preview (status
+bar, braille) is unchanged. Covers Nemotron, OpenAI live and every
+streaming cloud provider, which all reach
+<code>LiveMixin.on_partial</code>.</li>
+<li><strong>“paste clip 3”.</strong> QUILL already took digits there
+(<code>targets.number_from</code>); the benchmark’s
+<code>bench_scoring.command_outcome</code> compared the raw words and
+scored Moonshine’s “Paste clip 3” as another command. It now compares
+the slot number. A controller test pins the digit form end to end.</li>
+<li><strong>Docs.</strong> QUILL and QUILL Lite user guides: “Checking
+your work by ear”, a worked example (pinned by a controller test that
+also checks the cursor and selection do not move); all three guides’
+spoken-preview paragraphs; the PRD gains a D-18 requirement block;
+<code>docs/site/dictation.html</code> regenerated with
+<code>scripts/build_dictation_page.py</code>. No control was added, so
+F1 help is unchanged.</li>
+</ul>
+<h3
 id="quill-radio-station-enrichment-the-signed-station-pack-fts5-search-and-station-details-2026-10-16">Quill
 Radio station enrichment: the signed station pack, FTS5 search and
 Station Details (2026-10-16)</h3>
