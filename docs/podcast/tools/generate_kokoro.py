@@ -29,7 +29,7 @@ Voice Picker download or the kokoro-models.zip asset provide them).
 Usage::
 
     python docs/podcast/tools/generate_kokoro.py                # all episodes
-    python docs/podcast/tools/generate_kokoro.py --slug ep01-meet-quill
+    python docs/podcast/tools/generate_kokoro.py --slug ep01-welcome-to-quill
 """
 
 from __future__ import annotations

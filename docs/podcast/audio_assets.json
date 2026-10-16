@@ -1,0 +1,468 @@
+{
+  "_about": "Audio that really exists on the podcast-v1 release, and which episode each file serves. Written by docs/podcast/tools/refresh_audio_manifest.py; do not edit by hand. build_feed.py links only 'published' episodes.",
+  "release": "podcast-v1",
+  "repository": "Community-Access/quill",
+  "read_on": "2026-10-15",
+  "assets": [
+    {
+      "name": "ep01-welcome-to-quill.mp3",
+      "size": 1885149,
+      "uploaded_at": "2026-07-02T16:10:53Z"
+    },
+    {
+      "name": "ep02-install-and-first-launch.mp3",
+      "size": 1872069,
+      "uploaded_at": "2026-07-02T16:10:53Z"
+    },
+    {
+      "name": "ep03-your-first-document.mp3",
+      "size": 1863645,
+      "uploaded_at": "2026-07-02T16:10:53Z"
+    },
+    {
+      "name": "ep04-the-main-window.mp3",
+      "size": 1889757,
+      "uploaded_at": "2026-07-02T16:10:54Z"
+    },
+    {
+      "name": "ep05-the-command-palette.mp3",
+      "size": 1634829,
+      "uploaded_at": "2026-07-02T16:10:53Z"
+    },
+    {
+      "name": "ep06-what-quill-says.mp3",
+      "size": 1842645,
+      "uploaded_at": "2026-07-02T16:10:54Z"
+    },
+    {
+      "name": "ep07-moving-through-text.mp3",
+      "size": 1711917,
+      "uploaded_at": "2026-07-02T16:10:54Z"
+    },
+    {
+      "name": "ep08-the-quill-key.mp3",
+      "size": 1810029,
+      "uploaded_at": "2026-07-02T16:10:54Z"
+    },
+    {
+      "name": "ep09-make-the-keyboard-yours.mp3",
+      "size": 1822917,
+      "uploaded_at": "2026-07-02T16:10:54Z"
+    },
+    {
+      "name": "ep10-editing-power-tools.mp3",
+      "size": 1972317,
+      "uploaded_at": "2026-07-02T16:10:55Z"
+    },
+    {
+      "name": "ep11-find-replace-navigate.mp3",
+      "size": 1755789,
+      "uploaded_at": "2026-07-02T16:10:55Z"
+    },
+    {
+      "name": "ep12-spelling-and-word-tools.mp3",
+      "size": 1780821,
+      "uploaded_at": "2026-07-02T16:10:55Z"
+    },
+    {
+      "name": "ep13-never-lose-work.mp3",
+      "size": 1913253,
+      "uploaded_at": "2026-07-02T16:10:55Z"
+    },
+    {
+      "name": "ep14-markdown-and-structure.mp3",
+      "size": 1892037,
+      "uploaded_at": "2026-07-02T16:10:56Z"
+    },
+    {
+      "name": "ep15-clipboard-snippets-macros.mp3",
+      "size": 1820829,
+      "uploaded_at": "2026-07-02T16:10:56Z"
+    },
+    {
+      "name": "ep16-rich-formatting-hidden-codes.mp3",
+      "size": 1845261,
+      "uploaded_at": "2026-07-02T16:10:56Z"
+    },
+    {
+      "name": "ep17-word-epub-pdf-and-friends.mp3",
+      "size": 1954629,
+      "uploaded_at": "2026-07-02T16:10:57Z"
+    },
+    {
+      "name": "ep18-document-rescue-ocr.mp3",
+      "size": 2091405,
+      "uploaded_at": "2026-07-02T16:10:57Z"
+    },
+    {
+      "name": "ep19-files-everywhere.mp3",
+      "size": 1852389,
+      "uploaded_at": "2026-07-02T16:10:57Z"
+    },
+    {
+      "name": "ep20-watch-folders-automation.mp3",
+      "size": 1669413,
+      "uploaded_at": "2026-07-02T16:10:57Z"
+    },
+    {
+      "name": "ep21-read-aloud-and-voices.mp3",
+      "size": 1855869,
+      "uploaded_at": "2026-07-02T16:10:57Z"
+    },
+    {
+      "name": "ep22-dictation.mp3",
+      "size": 2439213,
+      "uploaded_at": "2026-07-02T16:10:58Z"
+    },
+    {
+      "name": "ep23-transcription-listening-companion.mp3",
+      "size": 1909893,
+      "uploaded_at": "2026-07-02T16:10:58Z"
+    },
+    {
+      "name": "ep24-the-audio-studio.mp3",
+      "size": 2770269,
+      "uploaded_at": "2026-07-05T17:18:01Z"
+    },
+    {
+      "name": "ep25-setting-up-ai.mp3",
+      "size": 1934133,
+      "uploaded_at": "2026-07-02T16:10:58Z"
+    },
+    {
+      "name": "ep26-ask-quill-everyday-ai.mp3",
+      "size": 1842573,
+      "uploaded_at": "2026-07-02T16:10:58Z"
+    },
+    {
+      "name": "ep27-ai-library-prompts-skills.mp3",
+      "size": 1824717,
+      "uploaded_at": "2026-07-02T16:10:59Z"
+    },
+    {
+      "name": "ep28-agents-reviewable-autonomy.mp3",
+      "size": 1959261,
+      "uploaded_at": "2026-07-02T16:10:59Z"
+    },
+    {
+      "name": "ep29-accessible-vault-basics.mp3",
+      "size": 1756941,
+      "uploaded_at": "2026-07-02T16:10:59Z"
+    },
+    {
+      "name": "ep30-vault-power.mp3",
+      "size": 1879053,
+      "uploaded_at": "2026-07-02T16:10:59Z"
+    },
+    {
+      "name": "ep31-story-studio.mp3",
+      "size": 1900773,
+      "uploaded_at": "2026-07-02T16:10:59Z"
+    },
+    {
+      "name": "ep32-glow-audit-and-fix.mp3",
+      "size": 2275221,
+      "uploaded_at": "2026-07-02T17:13:45Z"
+    },
+    {
+      "name": "ep33-glow-for-files.mp3",
+      "size": 1850397,
+      "uploaded_at": "2026-07-02T16:11:00Z"
+    },
+    {
+      "name": "ep34-braille-production.mp3",
+      "size": 1935525,
+      "uploaded_at": "2026-07-02T17:13:45Z"
+    },
+    {
+      "name": "ep35-quillins-and-the-console.mp3",
+      "size": 1951125,
+      "uploaded_at": "2026-07-02T16:11:00Z"
+    },
+    {
+      "name": "ep36-trust-community-finale.mp3",
+      "size": 2115933,
+      "uploaded_at": "2026-07-02T18:30:18Z"
+    }
+  ],
+  "episodes": [
+    {
+      "slug": "ep01-welcome-to-quill",
+      "file": "ep01-welcome-to-quill.mp3",
+      "status": "stale",
+      "uploaded_at": "2026-07-02T16:10:53Z",
+      "script_changed_at": "2026-07-10T10:48:04-07:00"
+    },
+    {
+      "slug": "ep02-install-and-first-launch",
+      "file": "ep02-install-and-first-launch.mp3",
+      "status": "stale",
+      "uploaded_at": "2026-07-02T16:10:53Z",
+      "script_changed_at": "2026-07-10T10:48:04-07:00"
+    },
+    {
+      "slug": "ep03-your-first-document",
+      "file": "ep03-your-first-document.mp3",
+      "status": "stale",
+      "uploaded_at": "2026-07-02T16:10:53Z",
+      "script_changed_at": "2026-07-10T10:48:04-07:00"
+    },
+    {
+      "slug": "ep04-the-main-window",
+      "file": "ep04-the-main-window.mp3",
+      "status": "stale",
+      "uploaded_at": "2026-07-02T16:10:54Z",
+      "script_changed_at": "2026-07-10T10:48:04-07:00"
+    },
+    {
+      "slug": "ep05-notebooks-and-versions",
+      "file": "ep05-notebooks-and-versions.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep06-the-command-palette",
+      "file": "ep06-the-command-palette.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep07-what-quill-says",
+      "file": "ep07-what-quill-says.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep08-moving-through-text",
+      "file": "ep08-moving-through-text.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep09-the-quill-key",
+      "file": "ep09-the-quill-key.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep10-make-the-keyboard-yours",
+      "file": "ep10-make-the-keyboard-yours.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep11-editing-power-tools",
+      "file": "ep11-editing-power-tools.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep12-power-tools-deep-dive",
+      "file": "ep12-power-tools-deep-dive.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep13-find-replace-navigate",
+      "file": "ep13-find-replace-navigate.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep14-compare-and-differences",
+      "file": "ep14-compare-and-differences.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep15-spelling-and-word-tools",
+      "file": "ep15-spelling-and-word-tools.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep16-languages-and-thesaurus",
+      "file": "ep16-languages-and-thesaurus.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep17-never-lose-work",
+      "file": "ep17-never-lose-work.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep18-markdown-and-structure",
+      "file": "ep18-markdown-and-structure.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep19-the-text-supply-toolkit",
+      "file": "ep19-the-text-supply-toolkit.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep20-snippet-gallery-and-prompts",
+      "file": "ep20-snippet-gallery-and-prompts.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep21-rich-formatting-hidden-codes",
+      "file": "ep21-rich-formatting-hidden-codes.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep22-word-epub-pdf-and-friends",
+      "file": "ep22-word-epub-pdf-and-friends.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep23-document-rescue-ocr",
+      "file": "ep23-document-rescue-ocr.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep24-ocr-and-image-describe",
+      "file": "ep24-ocr-and-image-describe.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep25-files-everywhere",
+      "file": "ep25-files-everywhere.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep26-watch-folders-automation",
+      "file": "ep26-watch-folders-automation.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep27-publishing-and-share",
+      "file": "ep27-publishing-and-share.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep28-read-aloud-and-voices",
+      "file": "ep28-read-aloud-and-voices.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep29-voice-catalog-walkthrough",
+      "file": "ep29-voice-catalog-walkthrough.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep30-dictation",
+      "file": "ep30-dictation.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep31-voice-and-conversation",
+      "file": "ep31-voice-and-conversation.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep32-transcription-listening-companion",
+      "file": "ep32-transcription-listening-companion.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep33-the-audio-studio",
+      "file": "ep33-the-audio-studio.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep34-setting-up-ai",
+      "file": "ep34-setting-up-ai.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep35-ask-quill-everyday-ai",
+      "file": "ep35-ask-quill-everyday-ai.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep36-ai-library-prompts-and-skills",
+      "file": "ep36-ai-library-prompts-and-skills.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep37-the-ai-toolkit",
+      "file": "ep37-the-ai-toolkit.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep38-every-day-writing-style",
+      "file": "ep38-every-day-writing-style.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep39-agents-reviewable-autonomy",
+      "file": "ep39-agents-reviewable-autonomy.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep40-accessible-vault-basics",
+      "file": "ep40-accessible-vault-basics.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep41-vault-power",
+      "file": "ep41-vault-power.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep42-story-studio",
+      "file": "ep42-story-studio.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep43-story-studio-practice",
+      "file": "ep43-story-studio-practice.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep44-story-studio-vault-ai",
+      "file": "ep44-story-studio-vault-ai.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep45-glow-audit-and-fix",
+      "file": "ep45-glow-audit-and-fix.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep46-glow-for-files",
+      "file": "ep46-glow-for-files.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep47-author-tools-mega",
+      "file": "ep47-author-tools-mega.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep48-the-bundled-quillins",
+      "file": "ep48-the-bundled-quillins.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep49-braille-production",
+      "file": "ep49-braille-production.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep50-quillins-and-the-console",
+      "file": "ep50-quillins-and-the-console.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep51-build-your-own-quillin",
+      "file": "ep51-build-your-own-quillin.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep52-trust-community-finale",
+      "file": "ep52-trust-community-finale.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep53-accessibility-power-user",
+      "file": "ep53-accessibility-power-user.mp3",
+      "status": "missing"
+    },
+    {
+      "slug": "ep54-power-user-stability",
+      "file": "ep54-power-user-stability.mp3",
+      "status": "missing"
+    }
+  ]
+}

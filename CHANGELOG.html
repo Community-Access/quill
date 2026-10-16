@@ -417,6 +417,40 @@ test recorder reaches the network.</li>
 including a recorder that drops (exit 0) mid-recording and must
 reconnect and trim both parts before the join.</li>
 </ul>
+<h3 id="quill-cast-site-no-more-dead-audio-links-2026-10-15">QUILL Cast
+site: no more dead audio links (2026-10-15)</h3>
+<p>Every one of the 54 episodes linked an MP3 on the
+<code>podcast-v1</code> release, which holds only the 36 files of the
+retired 36-episode series. Four names still matched (episodes 1 to 4),
+but those are recordings of scripts rewritten since.</p>
+<ul>
+<li><strong><code>docs/podcast/audio_assets.json</code></strong>: what
+the release really holds (name, size, upload time, the date it was read)
+and each episode’s file and status (<code>published</code>,
+<code>stale</code> or <code>missing</code>). Written by the new
+read-only
+<strong><code>docs/podcast/tools/refresh_audio_manifest.py</code></strong>
+(<code>gh release view</code>; <code>--check</code> exits 1 on drift).
+Today: 0 published, 4 stale, 50 missing.</li>
+<li><strong><code>build_feed.py</code></strong> links audio and writes a
+feed <code>&lt;item&gt;</code> only for <code>published</code> episodes;
+every other transcript page and index row says “The audio for this
+episode is not published yet” and keeps its transcript link. Unpublished
+episodes are omitted from the feed rather than listed without an
+enclosure, which podcast apps drop or show as unplayable. The enclosure
+length comes from the manifest; an unknown <code>itunes:duration</code>
+is left out. The index’s part headings were still the 36-episode ranges
+(episodes 37 to 54 sat under “More episodes”); they now follow the eight
+parts in the README.</li>
+<li><strong>GATE-SITE-LINKS</strong>
+(<code>tests/unit/docs/test_site_links.py</code>) now fails on any
+podcast audio link the manifest does not mark published, on a manifest
+out of step with <code>episodes.json</code>, and on a feed whose items
+differ from the published set.</li>
+<li><code>docs/podcast/README.md</code>: how the manifest works, and the
+steps to record, upload and publish the missing audio. No audio was
+generated or uploaded.</li>
+</ul>
 <h3
 id="dictation-the-never-type-list-and-inkwell-keeps-its-field-2026-10-15">Dictation:
 the never-type list, and Inkwell keeps its field (2026-10-15)</h3>

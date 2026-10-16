@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>The QUILL Cast — podcast pipeline</title>
   <style>
@@ -11,7 +11,10 @@
     */
     html {
       color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
       background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
     }
     body {
       margin: 0 auto;
@@ -36,11 +39,16 @@
     }
     @media print {
       html {
-        background-color: white;
+        color-scheme: light only;
       }
-      body {
+      html, body, pre, code {
         background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
         color: black;
+      }
+      pre, code {
+        padding: 0;
       }
       p, h2, h3 {
         orphans: 3;
@@ -53,11 +61,8 @@
     p {
       margin: 1em 0;
     }
-    a {
-      color: #1a1a1a;
-    }
-    a:visited {
-      color: #1a1a1a;
+    a, a:visited {
+      color: inherit;
     }
     img {
       max-width: 100%;
@@ -86,8 +91,11 @@
     blockquote {
       margin: 1em 0 1em 1.7em;
       padding-left: 1em;
-      border-left: 2px solid #e6e6e6;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
       color: #606060;
+      color: light-dark(#606060, #b6b6b6);
     }
     code {
       white-space: pre-wrap;
@@ -111,7 +119,7 @@
     }
     hr {
       border: none;
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       height: 1px;
       margin: 1em 0;
     }
@@ -128,11 +136,11 @@
     }
     tbody {
       margin-top: 0.5em;
-      border-top: 1px solid #1a1a1a;
-      border-bottom: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
     }
     th {
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       padding: 0.25em 0.5em 0.25em 0.5em;
     }
     td {
@@ -171,7 +179,6 @@
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
     /* CSS for syntax highlighting */
     html { -webkit-text-size-adjust: 100%; }
     pre > code.sourceCode { white-space: pre; position: relative; }
@@ -314,24 +321,28 @@ the QUILL key, the keymap editor, editing power tools, the power tools
 deep dive, find and replace, compare, spelling and word tools, languages
 and thesaurus, never lose work.</li>
 <li><strong>Documents and formats</strong> (18–24): Markdown, the
-text-supply toolkit, the snippet gallery and prompts, read aloud and
-voices, Word/EPUB/PDF, document rescue and OCR, OCR and image
+text-supply toolkit, the snippet gallery and prompts, rich formatting
+and hidden codes, Word/EPUB/PDF, document rescue and OCR, OCR and image
 describe.</li>
 <li><strong>Files and automation</strong> (25–27): files everywhere,
 watch folders, publishing and share.</li>
-<li><strong>AI</strong> (28–39): agents, the voice catalog walkthrough,
-voice and conversation, transcription and the Listening Companion, the
-audio studio, setting up AI, Ask Quill, the AI library, the AI toolkit,
-and every-day writing style.</li>
+<li><strong>Speech and audio</strong> (28–33): read aloud and voices,
+the voice catalog walkthrough, dictation, voice and conversation,
+transcription and the Listening Companion, the audio studio.</li>
+<li><strong>AI</strong> (34–39): setting up AI, Ask Quill, the AI
+library, the AI toolkit, every-day writing style, and agents.</li>
 <li><strong>Organization and production</strong> (40–51): the Accessible
 Vault, vault power, Story Studio, the practice build-along, Story Studio
 plus Vault plus AIs, GLOW audit, GLOW for files, the author tools mega,
 the bundled Quillins, braille production, the developer console, and
 build your own Quillin.</li>
-<li><strong>Trust, community, and the road ahead</strong> (52).</li>
-<li><strong>The power-user finish</strong> (53–54): accessibility power
-user, and the final stability and redaction deep-dive.</li>
+<li><strong>Trust, community, and the power-user finish</strong>
+(52–54): trust and the road ahead, accessibility power user, and the
+final stability and redaction deep-dive.</li>
 </ol>
+<p>These part ranges are also <code>PARTS</code> in
+<code>tools/build_feed.py</code>, which files the episode index under
+them; change both together.</p>
 <p>The hosts, Liam and Jessica, are QUILL’s own on-device
 <strong>Kokoro</strong> neural voices (<code>am_liam</code> and
 <code>af_jessica</code>) — the podcast is produced with the same speech
@@ -350,8 +361,93 @@ engine the product ships. Total series length is roughly 4 hours.</p>
   tools/build_feed.py   Builds the RSS feed, the accessible episode index
                         page, and per-episode transcript pages under
                         docs/site/podcast/ (served by GitHub Pages).
+  tools/refresh_audio_manifest.py
+                        Reads the podcast-v1 release (read-only) and rewrites
+                        audio_assets.json.
+  audio_assets.json     The audio that really exists on the release: every
+                        asset&#39;s name, size and upload time, the date it was
+                        read, and each episode&#39;s file and status.
   audio/                Generated audio (not committed; distributed via the
                         podcast-v1 GitHub release).</code></pre>
+<h2 id="which-episodes-have-audio">Which episodes have audio</h2>
+<p>The site links an episode’s MP3, and the feed lists the episode, only
+when <code>audio_assets.json</code> marks it <code>published</code>: its
+file (<code>&lt;slug&gt;.mp3</code>, the name <code>build_feed.py</code>
+derives) is on the <code>podcast-v1</code> release <strong>and</strong>
+was uploaded after the episode’s script last changed in git. Otherwise
+the status is <code>missing</code> (no such file) or <code>stale</code>
+(a file of that name exists but was recorded from an older script), the
+transcript page says “The audio for this episode is not published yet”,
+and the episode is left out of the feed.</p>
+<p>Leaving it out of the feed is deliberate. Podcast apps treat the
+<code>&lt;enclosure&gt;</code> as the episode: Apple Podcasts and most
+others silently drop an item that has none, and some show it as a row
+that cannot play. A feed that lists only playable episodes reads
+correctly in every app, and readers still have every transcript on the
+site.</p>
+<p>The site links gate (<code>tests/unit/docs/test_site_links.py</code>)
+fails on any page that links podcast audio the manifest does not mark
+published, and on a manifest that is out of step with
+<code>episodes.json</code>.</p>
+<p>As of 2026-10-15 no episode is published. The release still holds the
+36 MP3s of the retired 36-episode series (uploaded 2026-07-02). Four of
+them, episodes 1 to 4, share a name with today’s episodes, but they are
+recordings of the old scripts of about 600 words each, rewritten to
+about 4,000 words on 2026-07-10, so the manifest marks them
+<code>stale</code>. The other 32 old files match no current episode name
+and are linked from nowhere.</p>
+<h2 id="recording-and-publishing-the-missing-audio">Recording and
+publishing the missing audio</h2>
+<p>Run these from the repository root on the machine with the Kokoro
+models. Steps 5 and 6 are the only ones that change anything on
+GitHub.</p>
+<ol type="1">
+<li>Make sure every script change is committed. An upload older than its
+script’s last commit reads as <code>stale</code>.</li>
+<li>Move any old audio out of the way, so nothing is skipped and the
+durations are fresh. <code>audio/</code> is not committed; an
+<code>ep01-welcome-to-quill.mp3</code> from 2026-07-10 and a
+<code>durations.json</code> from 2026-07-05 were in the main
+checkout:</li>
+</ol>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Rename-Item</span> docs<span class="op">/</span>podcast<span class="op">/</span>audio docs<span class="op">/</span>podcast<span class="op">/</span>audio-old</span></code></pre></div>
+<ol start="3" type="1">
+<li>Record all 54 episodes (about 4 hours of audio; expect a long run).
+To do a few at a time, repeat <code>--slug</code>:</li>
+</ol>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>python docs<span class="op">/</span>podcast<span class="op">/</span>tools<span class="op">/</span>generate_kokoro<span class="op">.</span><span class="fu">py</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>python docs<span class="op">/</span>podcast<span class="op">/</span>tools<span class="op">/</span>generate_kokoro<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>slug ep05-notebooks-and-versions <span class="op">--</span>slug ep06-the-command-palette</span></code></pre></div>
+<ol start="4" type="1">
+<li>Listen to the start of a couple of files, and check there are 54
+MP3s:</li>
+</ol>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="op">(</span><span class="fu">Get-ChildItem</span> docs<span class="op">/</span>podcast<span class="op">/</span>audio<span class="op">/*.</span><span class="fu">mp3</span><span class="op">).</span><span class="fu">Count</span></span></code></pre></div>
+<ol start="5" type="1">
+<li>Upload them. <code>--clobber</code> is needed because episodes 1 to
+4 replace the stale files of the same name:</li>
+</ol>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>gh release upload podcast-v1 <span class="op">(</span><span class="fu">Get-ChildItem</span> docs<span class="op">/</span>podcast<span class="op">/</span>audio<span class="op">/*.</span><span class="fu">mp3</span><span class="op">).</span><span class="fu">FullName</span> <span class="op">--</span>repo Community-Access<span class="op">/</span>quill <span class="op">--</span>clobber</span></code></pre></div>
+<ol start="6" type="1">
+<li>Optional: the 32 old-numbering files that match no episode can be
+deleted from the release one at a time with
+<code>gh release delete-asset podcast-v1 &lt;name&gt; --repo Community-Access/quill</code>.
+Nothing links them, so leaving them is harmless.</li>
+<li>Refresh the manifest, rebuild the site, and run the gate:</li>
+</ol>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>python docs<span class="op">/</span>podcast<span class="op">/</span>tools<span class="op">/</span>refresh_audio_manifest<span class="op">.</span><span class="fu">py</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>python docs<span class="op">/</span>podcast<span class="op">/</span>tools<span class="op">/</span>build_feed<span class="op">.</span><span class="fu">py</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>python <span class="op">-</span>m pytest tests<span class="op">/</span>unit<span class="op">/</span>docs<span class="op">/</span>test_site_links<span class="op">.</span><span class="fu">py</span> <span class="op">-</span>q</span></code></pre></div>
+<p>The refresh prints how many episodes are published, stale and
+missing; expect 54 published.
+<code>refresh_audio_manifest.py --check</code> exits 1 when the
+committed manifest no longer matches the release. 8. Commit
+<code>docs/podcast/audio_assets.json</code> and
+<code>docs/site/podcast/</code>.</p>
 <h2 id="producing-the-audio">Producing the audio</h2>
 <ol type="1">
 <li>Kokoro model files (<code>kokoro-v1.0.onnx</code>,
@@ -363,9 +459,11 @@ download (Voice Picker, or <code>kokoro-models.zip</code> on the
 for MP3.</li>
 <li>Run:</li>
 </ol>
-<div class="sourceCode" id="cb2"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>python docs<span class="op">/</span>podcast<span class="op">/</span>tools<span class="op">/</span>generate_kokoro<span class="op">.</span><span class="fu">py</span>            <span class="co"># all episodes</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>python docs<span class="op">/</span>podcast<span class="op">/</span>tools<span class="op">/</span>generate_kokoro<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>slug ep04-document-rescue</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>python docs<span class="op">/</span>podcast<span class="op">/</span>tools<span class="op">/</span>generate_kokoro<span class="op">.</span><span class="fu">py</span>            <span class="co"># all episodes</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>python docs<span class="op">/</span>podcast<span class="op">/</span>tools<span class="op">/</span>generate_kokoro<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>slug ep23-document-rescue-ocr</span></code></pre></div>
+<p>The generator skips any episode whose MP3 is already in
+<code>audio/</code>; add <code>--force</code> to record it again.</p>
 <p>Pacing (speed 1.06, short same-speaker gaps, longer speaker-change
 gaps, a 0.9 s beat at every <code>[PAUSE]</code>) is tuned for a
 conversational two-host cadence; override with the CLI flags if a
@@ -377,32 +475,35 @@ release on Community-Access/quill (a non-<code>v*</code> tag, so it
 never touches the product release or autoupdate feed — the same model as
 <code>assets-v1</code>):</li>
 </ol>
-<div class="sourceCode" id="cb3"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>gh release upload podcast-v1 docs<span class="op">/</span>podcast<span class="op">/</span>audio<span class="op">/*.</span><span class="fu">mp3</span> <span class="op">--</span>repo Community-Access<span class="op">/</span>quill</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>gh release upload podcast-v1 <span class="op">(</span><span class="fu">Get-ChildItem</span> docs<span class="op">/</span>podcast<span class="op">/</span>audio<span class="op">/*.</span><span class="fu">mp3</span><span class="op">).</span><span class="fu">FullName</span> <span class="op">--</span>repo Community-Access<span class="op">/</span>quill <span class="op">--</span>clobber</span></code></pre></div>
 <ol start="2" type="1">
-<li>Rebuild the cover art, feed, and site pages, then commit
+<li>Refresh the audio manifest, rebuild the cover art, feed, and site
+pages, then commit <code>docs/podcast/audio_assets.json</code> and
 <code>docs/site/podcast/</code>:</li>
 </ol>
-<div class="sourceCode" id="cb4"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>python docs<span class="op">/</span>podcast<span class="op">/</span>tools<span class="op">/</span>make_cover<span class="op">.</span><span class="fu">py</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>python docs<span class="op">/</span>podcast<span class="op">/</span>tools<span class="op">/</span>build_feed<span class="op">.</span><span class="fu">py</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>python docs<span class="op">/</span>podcast<span class="op">/</span>tools<span class="op">/</span>refresh_audio_manifest<span class="op">.</span><span class="fu">py</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>python docs<span class="op">/</span>podcast<span class="op">/</span>tools<span class="op">/</span>make_cover<span class="op">.</span><span class="fu">py</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>python docs<span class="op">/</span>podcast<span class="op">/</span>tools<span class="op">/</span>build_feed<span class="op">.</span><span class="fu">py</span></span></code></pre></div>
 <p>The feed lands at
 <code>https://community-access.github.io/quill/podcast/feed.xml</code>
-with enclosures pointing at the release assets and the 3000x3000 cover
-attached through RSS <code>&lt;image&gt;</code> and iTunes
-<code>&lt;itunes:image&gt;</code> tags. The episode index and full
-transcripts are plain accessible HTML alongside it, including the cover
-alt text and long description from <code>episodes.json</code>.</p>
+with enclosures pointing at the release assets (published episodes only)
+and the 3000x3000 cover attached through RSS <code>&lt;image&gt;</code>
+and iTunes <code>&lt;itunes:image&gt;</code> tags. The episode index and
+full transcripts are plain accessible HTML alongside it, including the
+cover alt text and long description from <code>episodes.json</code>.</p>
 <h2 id="writing-more-episodes">Writing more episodes</h2>
 <p>Add <code>scripts/epNN-slug.txt</code> in the marker format, add the
-matching entry to <code>episodes.json</code>, generate, upload, rebuild
-the feed. Keep turns short (a few sentences), alternate hosts naturally,
-use <code>[PAUSE]</code> as a section break, and write for the ear: no
-markdown, no symbols the TTS would read literally, keystrokes spelled
-the way they should be spoken. Each script is 3,500–4,500 words with
-seven to nine <code>[PAUSE]</code> markers, a “do this now” interactive
-beat before any hands-on segment, code-verified claims against the
-running code, and a four-step homework block.</p>
+matching entry to <code>episodes.json</code>, commit, generate, upload,
+refresh the manifest, rebuild the feed. Keep turns short (a few
+sentences), alternate hosts naturally, use <code>[PAUSE]</code> as a
+section break, and write for the ear: no markdown, no symbols the TTS
+would read literally, keystrokes spelled the way they should be spoken.
+Each script is 3,500–4,500 words with seven to nine <code>[PAUSE]</code>
+markers, a “do this now” interactive beat before any hands-on segment,
+code-verified claims against the running code, and a four-step homework
+block.</p>
 </main>
 </body>
 </html>
