@@ -9,6 +9,8 @@ semantic versioning once it reaches a stable release.
 QUILL Social became a feed reader as well as a social client, and grew an
 installer of its own.
 
+- **Every release build checks its version against what is published** (2026-10-15). The shared QuillVille runtime carries every app's version number, so a build of one app could make another report a version nobody can download yet, and Check for Updates would then never offer the real one. QUILL Social's release builds now run the same check Quill Radio, QUILL Lite, QUILL Cast and Quill Weather already did, and a build of every app at once checks them all again instead of stopping at an app it did not know.
+
 - **Two downloads, nothing else** (2026-10-11). QUILL Social now comes as the
   installer and the portable zip. The small Lite installer and the Companion
   zip are gone. If you used the Lite installer, take the installer; if you

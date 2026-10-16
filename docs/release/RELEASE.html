@@ -502,6 +502,21 @@ against GitHub, so check that by hand first:
 <code>python scripts/release_build_number.py --app radio --version 3.2.0 --build 1</code>
 for each app. Outside a joint release, <code>-SkipPublishedCheck</code>
 is for Dev builds only.</p>
+<p><code>build-quill-apps.ps1</code> runs that joint check for you (its
+“Sibling version check” step names every app it is building) and then
+builds each app with <code>-SkipPublishedCheck</code>. Every installer’s
+<code>build_release.ps1</code> runs the check for its own app when built
+on its own. The check refuses, with a sentence, an app it has no row for
+in <code>SITES</code> rather than skipping it: until 2026-10-15 the
+table lacked Beacon, Social and Audio Studio, so
+<code>build-quill-apps.ps1 all</code> stopped at “unknown app(s)” and
+checked nothing.
+<code>tests/unit/scripts/test_check_sibling_versions.py</code> now holds
+<code>SITES</code> against
+<code>release_build_number.BUILD_CONSTANTS</code>, the
+<code>build-quill-apps.ps1</code> catalogue and every
+<code>standalone/*/scripts/build_release.ps1</code>, so a new app fails
+there by name.</p>
 <h3
 id="code-signing-beta-and-dev-never-stable-always-decided-2026-10-04">Code
 signing: Beta and Dev never, Stable always (decided 2026-10-04)</h3>

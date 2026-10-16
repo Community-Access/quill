@@ -245,6 +245,44 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="gate-sibver-knows-every-app-that-ships-and-every-installer-runs-it-2026-10-15">GATE-SIBVER
+knows every app that ships, and every installer runs it
+(2026-10-15)</h3>
+<p><code>scripts/check_sibling_versions.py</code> stopped with “unknown
+app(s) beacon, social, studio” whenever
+<code>build-quill-apps.ps1</code> built every app, so no joint build had
+checked any version.</p>
+<ul>
+<li><code>SITES</code> gains Audio Studio
+(<code>quill/apps/studio.py</code>), Beacon
+(<code>quill/apps/beacon/app.py</code>) and Social
+(<code>standalone/social/quill_social/__init__.py</code>,
+<code>__version__</code>/<code>__build__</code>). Nothing the check
+compares changed.</li>
+<li>An app with no row is still refused (exit 2), now with a sentence
+naming it, saying no version was checked, and saying how to add the row
+(<code>unknown_apps_problem</code>).</li>
+<li>Converter, Inkwell, Audio Studio, Beacon and Social’s
+<code>build_release.ps1</code> now call
+<code>Assert-QuillSiblingVersions</code> for their own app, as Radio,
+Lite, Cast, Transcribe and Weather already did; the four that lacked it
+gain <code>-SkipPublishedCheck</code>, which
+<code>build-quill-apps.ps1</code> passes after its joint check.</li>
+<li>Tests
+(<code>tests/unit/scripts/test_check_sibling_versions.py</code>):
+<code>SITES</code> must match
+<code>release_build_number.BUILD_CONSTANTS</code> (file and build
+constant), cover the <code>build-quill-apps.ps1</code> catalogue, and
+match <code>release_tags.release_tag</code>’s prefixes; every
+<code>standalone/*/scripts/build_release.ps1</code> must run the gate
+for its own app; an unknown app fails before any release is read.</li>
+<li>Run against the published releases on 2026-10-15: a joint build of
+every app, or of Radio and Lite, passes (Radio 3.2.0+4 against 3.0.4,
+Lite 1.2.0+5 against 1.1.2); a build of any one other app fails on both,
+as it should. The gate asked for no version bump, so Radio and Lite stay
+at 3.2.0 and 1.2.0.</li>
+</ul>
+<h3
 id="dictation-the-never-type-list-and-inkwell-keeps-its-field-2026-10-15">Dictation:
 the never-type list, and Inkwell keeps its field (2026-10-15)</h3>
 <p>D-24 and D-15 from the dictation plan, rescued from an uncommitted

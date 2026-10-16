@@ -12,6 +12,10 @@ engine under `quill/core/audio/` -- so a fix to the engine lands in QUILL's
 Audio Studio at the same time. The `standalone/converter` folder carries only
 the launcher, installer, icon and these documents.
 
+## Unreleased
+
+- **Every release build checks its version against what is published** (2026-10-15). The shared QuillVille runtime carries every app's version number, so a build of one app could make another report a version nobody can download yet, and Check for Updates would then never offer the real one. Quill Converter's release builds now run the same check Quill Radio, QUILL Lite, QUILL Cast and Quill Weather already did, and a build of every app at once checks them all again instead of stopping at an app it did not know.
+
 ## 1.0.0 -- 2026-09-28
 
 The first public release. The app was first built in July 2026 as an audio

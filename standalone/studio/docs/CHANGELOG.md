@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [2.2.0] - built, not yet released
 
+- **Every release build checks its version against what is published** (2026-10-15). The shared QuillVille runtime carries every app's version number, so a build of one app could make another report a version nobody can download yet, and Check for Updates would then never offer the real one. QUILL Audio Studio's release builds now run the same check Quill Radio, QUILL Lite, QUILL Cast and Quill Weather already did, and a build of every app at once checks them all again instead of stopping at an app it did not know.
+
 - **Where Audio Studio's own sounds play, and Alt+Shift+M to turn them off.** **Studio > Preferences > App Sounds Play On...** offers System default, None (no sounds), or any sound card or headset by name. After a change one sound plays on the new card, so you hear where it went. If that card is unplugged the sounds play on the system default until it is back, and Audio Studio says so once. **Alt+Shift+M** turns Audio Studio's sounds off and back on where they were, and **Studio > App Sounds** shows a check mark while they are on. Each QUILL app keeps its own choice; "Share these choices with my other Quill apps" keeps them in step. Your screen reader is never moved. Asked for on QUILLVille by Rick Lewis.
 
 - **Two downloads, nothing else** (2026-10-11). QUILL Audio Studio now comes as the

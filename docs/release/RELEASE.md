@@ -171,6 +171,18 @@ unchecked against GitHub, so check that by hand first:
 for each app. Outside a joint release, `-SkipPublishedCheck` is for Dev builds
 only.
 
+`build-quill-apps.ps1` runs that joint check for you (its "Sibling version
+check" step names every app it is building) and then builds each app with
+`-SkipPublishedCheck`. Every installer's `build_release.ps1` runs the check for
+its own app when built on its own. The check refuses, with a sentence, an app
+it has no row for in `SITES` rather than skipping it: until 2026-10-15 the
+table lacked Beacon, Social and Audio Studio, so `build-quill-apps.ps1 all`
+stopped at "unknown app(s)" and checked nothing.
+`tests/unit/scripts/test_check_sibling_versions.py` now holds `SITES` against
+`release_build_number.BUILD_CONSTANTS`, the `build-quill-apps.ps1` catalogue
+and every `standalone/*/scripts/build_release.ps1`, so a new app fails there
+by name.
+
 ### Code signing: Beta and Dev never, Stable always (decided 2026-10-04)
 
 Beta and Dev builds are not code-signed, and Stable always is. The version
