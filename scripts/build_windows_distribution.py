@@ -2740,9 +2740,16 @@ def _stage_offline_extras(
 
     # FFmpeg -> tools/ffmpeg (resolver: speech.ffmpeg.ffmpeg_search_dirs).
     def _do_ffmpeg() -> None:
-        from quill.core.speech.ffmpeg_install import install_ffmpeg
+        from quill.core.speech.ffmpeg_install import FFMPEG_NOTICE_FILES, install_ffmpeg
 
-        install_ffmpeg(dest_dir=tools / "ffmpeg")
+        dest = tools / "ffmpeg"
+        install_ffmpeg(dest_dir=dest)
+        # GPLv3 build: it ships with its licence or not at all. _try logs and
+        # moves on, so remove the binaries rather than leave them unlicensed.
+        missing = [name for name in FFMPEG_NOTICE_FILES if not (dest / name).is_file()]
+        if missing:
+            shutil.rmtree(dest, ignore_errors=True)
+            raise RuntimeError(f"FFmpeg staged without {', '.join(missing)}; not shipping it.")
 
     _try("ffmpeg", _do_ffmpeg)
 

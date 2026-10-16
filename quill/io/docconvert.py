@@ -3,10 +3,12 @@
 The supported QUILL import tool routes every document through free, local
 tiers before anything else, per the OCR/document-conversion PRD:
 
-* **Tier 1 — MarkItDown** (:mod:`quill.io.markitdown_bridge`): pure-Python
-  extraction of the existing text layer from *born-digital* files (DOCX, PPTX,
-  XLSX, HTML, EPUB, and PDFs that already carry text). Free, offline, no
-  upload. Not an OCR engine — a scanned PDF comes back empty here.
+* **Tier 1 — the existing text layer**: MarkItDown
+  (:mod:`quill.io.markitdown_bridge`) for *born-digital* Office, HTML and EPUB
+  files, and QUILL's own PDF reader (:mod:`quill.io.pdf`, pdfplumber then
+  pypdf) for PDFs that already carry text -- never MarkItDown for a PDF, which
+  cannot import in a shipped build (:func:`convert_pdf_text_layer`). Free,
+  offline, no upload. Not OCR: a scanned PDF comes back empty here.
 * **Tier 2 — local Tesseract OCR** (:mod:`quill.io.tesseract_ocr`): real OCR
   for images and image-based PDFs, run entirely on-device, CPU-only. Free,
   offline, no upload. PDF pages are rasterized with ``pypdfium2`` and
@@ -99,6 +101,8 @@ WEAK_OCR_CONFIDENCE = 60.0
 
 #: Conversion tiers, as recorded on the outcome.
 TIER_MARKITDOWN = "markitdown"
+#: A PDF's own text layer, read by QUILL's PDF reader (pdfplumber, then pypdf).
+TIER_PDF_TEXT = "pdf-text"
 TIER_LOCAL_OCR = "local-ocr"
 TIER_CLOUD_OCR = "cloud-ocr"
 
@@ -137,6 +141,8 @@ class _Deps:
     """Injectable seams so the router is fully unit-testable offline."""
 
     markitdown: Callable[[Path], str] | None = None
+    #: Reads a PDF's text layer; returns a ``quill.io.pdf.PdfExtractionResult``.
+    pdf_text: Callable[[Path], Any] | None = None
     ocr_image: Callable[[Path, str], OcrResult] | None = None
     pdf_page_count: Callable[[Path], int] | None = None
     pdf_page_images: Callable[[Path, Path], list[Path]] | None = None
@@ -206,21 +212,20 @@ def convert_born_digital(
     deps: _Deps | None = None,
     on_progress: ProgressCallback | None = None,
 ) -> ConversionOutcome:
-    """Tier 1: extract the existing text layer with MarkItDown.
+    """Tier 1: extract the existing text layer.
 
-    Raises :class:`DocConvertError` with a friendly message when MarkItDown is
-    not installed or cannot read the file. An empty-but-successful extraction
-    of a PDF is *not* an error — it returns an outcome flagged
-    ``offer_local_ocr`` so the caller can show the escalation prompt.
+    Office, HTML and EPUB files go through MarkItDown. **PDFs never do**: they
+    go through :func:`convert_pdf_text_layer` (QUILL's own PDF reader), because
+    MarkItDown cannot import in a shipped build (see that function). Raises
+    :class:`DocConvertError` with a friendly message when the converter is not
+    available or cannot read the file.
     """
     resolved = deps or _Deps()
+    if path.suffix.lower() == PDF_EXTENSION:
+        return convert_pdf_text_layer(path, deps=resolved, on_progress=on_progress)
     run = resolved.markitdown or _default_markitdown
     if on_progress is not None:
         on_progress(0.1, f"Reading {path.name} with the free local converter...")
-    page_count = 0
-    if path.suffix.lower() == PDF_EXTENSION:
-        count = resolved.pdf_page_count or _default_pdf_page_count
-        page_count = count(path)
     try:
         text = run(path)
     except ImportError as exc:
@@ -230,34 +235,96 @@ def convert_born_digital(
             'Office text extraction" to enable born-digital conversion.'
         ) from exc
     except ValueError:
-        # MarkItDown raises on empty output; for PDFs that usually means a
-        # scanned document — surface the escalation rather than an error.
-        if path.suffix.lower() == PDF_EXTENSION:
-            return ConversionOutcome(
-                text="",
-                tier=TIER_MARKITDOWN,
-                source=path,
-                page_count=page_count,
-                offer_local_ocr=True,
-                warnings=(
-                    "No readable text layer was found; the document looks scanned or image-based.",
-                ),
-            )
         raise DocConvertError(
             f"The free local converter produced no text for {path.name}."
         ) from None
     if on_progress is not None:
         on_progress(0.9, "Checking the recovered text...")
+    return ConversionOutcome(text=text, tier=TIER_MARKITDOWN, source=path)
+
+
+def _default_pdf_text(path: Path) -> Any:
+    from quill.io.pdf import extract_pdf_text
+
+    return extract_pdf_text(path)
+
+
+def convert_pdf_text_layer(
+    path: Path,
+    *,
+    deps: _Deps | None = None,
+    on_progress: ProgressCallback | None = None,
+) -> ConversionOutcome:
+    """Tier 1 for a PDF: read its own text layer with QUILL's PDF reader.
+
+    This is the reader File > Open uses (:func:`quill.io.pdf.extract_pdf_text`:
+    pdfplumber, then pypdf, with page breaks, ligature and hyphen repair). It
+    used to be MarkItDown, which in a shipped build cannot import at all: the
+    shared runtime freezes markitdown in but excludes ``onnxruntime``, which
+    markitdown's file sniffer (magika) imports at module top. Every PDF then
+    failed with "MarkItDown is not installed" before the scanned-file OCR offer
+    could happen. pdfplumber, pypdf and pypdfium2 are in the runtime and are
+    gated by ``scripts/check_runtime_imports.py``.
+
+    Outcomes: text -> opened; no text layer (or too little) -> flagged
+    ``offer_local_ocr``; password-protected, damaged, or no reader available ->
+    :class:`DocConvertError` whose message says what to do instead.
+    """
+    resolved = deps or _Deps()
+    if on_progress is not None:
+        on_progress(0.1, f"Reading the text in {path.name}...")
+    result = (resolved.pdf_text or _default_pdf_text)(path)
+    engine = str(getattr(result, "engine", ""))
+    page_count = int(getattr(result, "page_count", 0) or 0)
+    if not page_count:
+        page_count = (resolved.pdf_page_count or _default_pdf_page_count)(path)
+    if engine == "unavailable":
+        raise DocConvertError(
+            "QUILL has no PDF text reader available, so it could not read "
+            f"{path.name}. Open Help > Download Optional Components and download "
+            '"PDF and Office text extraction", then try again.'
+        )
+    if engine == "encrypted":
+        raise DocConvertError(
+            f"{path.name} is password-protected. Open it with File > Open instead, "
+            "which asks for the password and never stores it."
+        )
+    if engine == "damaged":
+        raise DocConvertError(
+            f"{path.name} could not be read; it looks damaged. OCR will not help a "
+            "damaged file. Try downloading it again or exporting it again from the "
+            "program that made it."
+        )
+    if engine == "empty":
+        return ConversionOutcome(
+            text="",
+            tier=TIER_PDF_TEXT,
+            source=path,
+            page_count=page_count,
+            offer_local_ocr=True,
+            warnings=(
+                "No readable text layer was found; the document looks scanned or image-based.",
+            ),
+        )
+    text = str(getattr(result, "text", ""))
+    if on_progress is not None:
+        on_progress(0.9, "Checking the recovered text...")
     outcome = ConversionOutcome(
-        text=text,
-        tier=TIER_MARKITDOWN,
+        text=text.rstrip() + "\n",
+        tier=TIER_PDF_TEXT,
         source=path,
         page_count=page_count,
     )
-    if path.suffix.lower() == PDF_EXTENSION and text_layer_looks_empty(text, page_count):
+    if text_layer_looks_empty(text, page_count):
         outcome.offer_local_ocr = True
         outcome.warnings = (
             "Very little readable text was found; the document looks scanned or image-based.",
+        )
+    read_pages = len(getattr(result, "page_scores", []) or [])
+    if 0 < read_pages < page_count:
+        outcome.warnings = (
+            *outcome.warnings,
+            f"Only the first {read_pages} of {page_count} pages were read.",
         )
     return outcome
 
@@ -391,9 +458,10 @@ def convert_document(
     """Route one import through the free-first tiers (PRD §11.4).
 
     Born-digital types go to Tier 1; images go straight to Tier 2; PDFs try
-    Tier 1 and come back flagged ``offer_local_ocr`` when the text layer looks
-    empty — the caller owns the accessible escalation prompt, because QUILL
-    never runs OCR (or, later, a paid upload) without asking.
+    their own text layer (QUILL's PDF reader, not MarkItDown) and come back
+    flagged ``offer_local_ocr`` when the text layer looks empty — the caller
+    owns the accessible escalation prompt, because QUILL never runs OCR (or,
+    later, a paid upload) without asking.
 
     ``prefer_free_local=False`` currently changes nothing — there is no paid
     tier to prefer — but is honored so the setting's contract is stable.
@@ -451,12 +519,14 @@ __all__ = [
     "TIER_CLOUD_OCR",
     "TIER_LOCAL_OCR",
     "TIER_MARKITDOWN",
+    "TIER_PDF_TEXT",
     "WEAK_OCR_CONFIDENCE",
     "ConversionOutcome",
     "DocConvertCancelled",
     "DocConvertError",
     "convert_born_digital",
     "convert_document",
+    "convert_pdf_text_layer",
     "convert_with_cloud_ocr",
     "convert_with_local_ocr",
     "supported_import_extensions",

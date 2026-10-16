@@ -1663,6 +1663,8 @@ Here is how a conversion goes:
 1. **The free local converter runs first.** Word, PowerPoint, Excel, HTML, EPUB,
    and PDFs that already contain text convert straight away on your computer and
    open as clean, editable text. No account, no key, no upload and no cost.
+   A PDF is read by the same PDF reader **File > Open** uses, so its pages come
+   through with their page breaks, and QUILL tells you how many pages it read.
 2. **A scanned document is noticed, not dumped on you.** If a PDF comes back
    nearly empty, QUILL says "It looks scanned or image-based" and *asks* whether
    to run free OCR on your computer. Yes runs it. No opens the empty result
@@ -1682,7 +1684,8 @@ computer with no text extractor points you to
 **Help > Download Optional Components > "PDF and Office text extraction"**
 instead of claiming it is scanned. The installed apps come with a PDF reader, so
 this only happens with a pip or source install. A *password-protected* PDF is
-handled separately, as described next.
+handled separately, as described next: Import / Convert Document tells you to
+open it with **File > Open**, which asks for the password.
 
 #### Opening a password-protected PDF
 

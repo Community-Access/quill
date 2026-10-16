@@ -10,6 +10,11 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 Testing rebuild: **3.2.0 (build 4)**. The packages have not been published yet.
 
+- **FFmpeg's licence, checked on every build.** FFmpeg's licence (the GNU
+  General Public License, version 3) and the note on where to get its source
+  were already in the `tools\ffmpeg` folder beside FFmpeg. The build and the
+  installer now stop if either is ever missing, so a release cannot ship FFmpeg
+  without them.
 - **Quill Radio's own sounds play on the radio's sound card.** The sounds for
   connecting, playing, stopped, stream errors, recording started and stopped,
   and reminders now go to the same device as the radio, so if you send the

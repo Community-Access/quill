@@ -15,6 +15,7 @@ from types import SimpleNamespace
 from quill.io.docconvert import (
     TIER_LOCAL_OCR,
     TIER_MARKITDOWN,
+    TIER_PDF_TEXT,
     ConversionOutcome,
     DocConvertCancelled,
 )
@@ -124,6 +125,22 @@ def test_tier1_result_opens_tab_and_announces_no_upload(monkeypatch) -> None:
     assert host.docs == ["# Converted\n"]
     assert host.tabs[0][1] == "report (converted)"
     assert any("Nothing was uploaded" in item for item in host.announcements)
+
+
+def test_a_pdf_read_from_its_own_text_says_so_with_its_pages(monkeypatch) -> None:
+    host = _Host()
+    import quill.io.docconvert as docconvert
+
+    outcome = _outcome(text="Page one", tier=TIER_PDF_TEXT, source=Path("manual.pdf"), page_count=3)
+    monkeypatch.setattr(docconvert, "convert_document", lambda path, **kw: outcome)
+    host._docconvert_start(Path("manual.pdf"))
+    assert host.docs == ["Page one"]
+    assert host.announcements == [
+        "Opened manual.pdf as editable text from the PDF's own text. 3 pages. Nothing was uploaded."
+    ]
+    assert not any("MarkItDown" in item for item in host.announcements)
+    host.review_last_ocr_result()
+    assert "The PDF's own text" in host.tabs[-1][1]
 
 
 def test_scanned_pdf_prompts_before_ocr_and_yes_runs_it(monkeypatch) -> None:

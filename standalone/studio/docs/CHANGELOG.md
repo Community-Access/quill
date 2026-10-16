@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [2.2.0] - built, not yet released
 
+- **FFmpeg's licence, checked on every build.** FFmpeg's licence (the GNU General Public License, version 3) and the note on where to get its source were already in the `tools\ffmpeg` folder beside FFmpeg. The build and the installer now stop if either is ever missing, so a release cannot ship FFmpeg without them.
+
 - **Where Audio Studio's own sounds play, and Alt+Shift+M to turn them off.** **Studio > Preferences > App Sounds Play On...** offers System default, None (no sounds), or any sound card or headset by name. After a change one sound plays on the new card, so you hear where it went. If that card is unplugged the sounds play on the system default until it is back, and Audio Studio says so once. **Alt+Shift+M** turns Audio Studio's sounds off and back on where they were, and **Studio > App Sounds** shows a check mark while they are on. Each QUILL app keeps its own choice; "Share these choices with my other Quill apps" keeps them in step. Your screen reader is never moved. Asked for on QUILLVille by Rick Lewis.
 
 - **Two downloads, nothing else** (2026-10-11). QUILL Audio Studio now comes as the

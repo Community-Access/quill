@@ -94,7 +94,12 @@ Name: "docs"; Description: "Documentation (User Guide)"; Types: full custom
 Type: filesandordirs; Name: "{app}\_internal"
 
 [Files]
-Source: "..\dist\QUILLCast\*"; DestDir: "{app}"; Components: main; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "data\*,docs\*"
+Source: "..\dist\QUILLCast\*"; DestDir: "{app}"; Components: main; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "data\*,docs\*,\tools\ffmpeg\LICENSE.GPLv3.txt,\tools\ffmpeg\README-SOURCE.txt"
+; FFmpeg's GPLv3 licence and source offer, named one by one (no wildcard, no
+; skipifsourcedoesntexist) so ISCC refuses to build a setup that ships
+; tools\ffmpeg\ffmpeg.exe without them. build_release.ps1 stages both.
+Source: "..\dist\QUILLCast\tools\ffmpeg\LICENSE.GPLv3.txt"; DestDir: "{app}\tools\ffmpeg"; Components: main; Flags: ignoreversion
+Source: "..\dist\QUILLCast\tools\ffmpeg\README-SOURCE.txt"; DestDir: "{app}\tools\ffmpeg"; Components: main; Flags: ignoreversion
 Source: "..\dist\QUILLCast\docs\*"; DestDir: "{app}\docs"; Components: docs; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]

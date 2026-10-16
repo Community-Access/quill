@@ -49,6 +49,24 @@ def test_the_engine_pack_list_covers_the_engines_that_shipped_broken() -> None:
         assert name in gate.ENGINE_PACK_OWNED
 
 
+def test_the_pdf_path_import_and_convert_relies_on_is_gated() -> None:
+    """Import / Convert reads PDFs through quill.io.pdf, so those must import.
+
+    2026-10-15: every PDF went to MarkItDown, which the runtime freezes in but
+    cannot import (onnxruntime is a spec exclude and magika needs it). The
+    route now avoids MarkItDown for PDFs; the gate holds the route it uses.
+    """
+    for name in ("pdfplumber", "pypdf", "pypdfium2", "quill.io.pdf", "quill.io.docconvert"):
+        assert name in gate.MUST_IMPORT, name
+    # Listing markitdown would fail every build: it cannot import in a runtime
+    # that excludes onnxruntime, and nothing on the PDF route needs it.
+    assert "markitdown" not in gate.MUST_IMPORT
+    spec_text = _SPEC_FILE.read_text(encoding="utf-8")
+    assert '"onnxruntime"' in spec_text
+    for name in ("pdfplumber", "pypdf", "pypdfium2"):
+        assert f'"{name}",' not in spec_text, f"{name} is excluded from the runtime spec"
+
+
 def test_clean_report_succeeds() -> None:
     result = {"absent_violations": [], "import_failures": [], "checked": 12}
     assert gate.report(result) == 0
