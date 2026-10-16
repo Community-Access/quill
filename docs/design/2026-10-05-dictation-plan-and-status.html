@@ -1620,6 +1620,63 @@ Transcribe’s state line says so while it does.</p>
 <p>D-21 was planned beside these but was not built; it stays in section
 10.</p>
 <h2
+id="16-as-built-2026-10-13-vosk-leaves-dictation-and-the-voice-features">16.
+As built 2026-10-13: Vosk leaves dictation and the voice features</h2>
+<p>Vosk had three roles. One stays and two end.</p>
+<p><strong>Chapters stay.</strong> Vosk is bundled in QUILL and Cast to
+transcribe a podcast episode for chapters
+(<code>service.CHAPTER_PROVIDER_ID</code>). On hand-built chapter lists
+it scored 0.372 against Whisper medium’s 0.316, from a 40 MB model, with
+no download, because its cues break at natural pauses. Nothing in that
+path changed: the provider, the bundled wheel and model,
+<code>_stage_vosk_model</code>, <code>scripts/stage_vosk_model.py</code>
+and Cast’s build all stay.</p>
+<p><strong>Dictation and the voice features end.</strong> For them Vosk
+is English only, its last release (0.3.45) was in December 2022, its
+models are checked by MD5 only where every other download uses SHA-256,
+and its accuracy was never measured here. Moonshine tiny, already
+bundled, measured 3.4 percent word errors at 0.05 seconds of computing
+per second of speech (section 6).</p>
+<ul>
+<li><strong>Voice Command, Conversation Mode and Hey QUILL.</strong> The
+Voice recognition engine choices are now Follow main engine, whisper.cpp
+(accurate) and Moonshine tiny (fast, light).
+<code>quill/core/speech/providers/moonshine_tiny.py</code> adapts the
+bundled model to the provider shape the voice paths use; it calls
+<code>local_recognizer.transcribe("moonshine", ...)</code>, so it shares
+this stack’s recogniser cache, idle unloader and model folder, and
+nothing downloads. <code>MainFrame._voice_provider</code> builds it
+directly, because it is not a dictation choice and so is not in the
+registry. With the bundled model or sherpa-onnx missing it reports
+unavailable, and voice falls back to the main engine as before. A
+recording longer than 20 seconds is decoded in 20-second pieces, the
+same cut live dictation makes.</li>
+<li><strong>Dictation pickers.</strong> The guided picker, the Manage
+Speech Models engine radio, the dictation ladder and the media
+voice-capture fallback no longer offer Vosk
+(<code>service.CHAPTER_ONLY_PROVIDER_IDS</code>,
+<code>dictation_providers</code>). <code>download_vosk</code> is gone;
+<code>engine_install.install_vosk</code> and its pinned wheel remain
+beside the Offline Edition wheelhouse, with no menu path to them.</li>
+<li><strong>Saved settings.</strong>
+<code>quill/core/speech/vosk_retirement.py</code> migrates on load: a
+voice engine of <code>vosk</code> becomes <code>moonshine_tiny</code>, a
+dictation engine of <code>vosk</code> becomes the default ladder.
+<code>vosk_retirement_notice</code> holds the sentence that is owed, and
+<code>quill/ui/vosk_retirement_notice.py</code> says it once after the
+main window is up, in the status bar and through announce: “Vosk is no
+longer used for voice commands or dictation. Voice commands and Hey
+QUILL now use Moonshine tiny, which is already installed. Podcast
+chapters still use Vosk.” When only the dictation engine was Vosk: “Vosk
+is no longer a dictation engine. Dictation now uses your default
+engine.” No model is offered for deletion, because chapters still use
+it.</li>
+</ul>
+<p>Still to check: the wake word’s false-start rate on Moonshine tiny
+against the old Vosk numbers was not measured, because Vosk’s never
+were; the NVDA and JAWS check of the new sentence joins
+<code>docs/qa/screen-reader-checks-2026-10.md</code>.</p>
+<h2
 id="appendix-a-the-dictmd-section-numbers-and-where-they-live-now">Appendix
 A: the dict.md section numbers, and where they live now</h2>
 <table>

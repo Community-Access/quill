@@ -208,6 +208,35 @@ section 14): D-11, D-14, D-17, and slices of D-5, D-7 and D-8.
   and quietest of them; the screen-reader gate already hears QUILL's own
   process, so the tick is never taken for speech.
 
+### Vosk leaves dictation and the voice features; Moonshine tiny takes over (2026-10-13)
+
+Vosk stays in QUILL and QUILL Cast for one job: working out **podcast
+chapters**, where it scored best (0.372 against Whisper medium's 0.316 on
+hand-built chapter lists) from a bundled 40 MB model. It is no longer a
+dictation engine or a voice-features engine. For those it is English only, its
+last release was in December 2022, its models are checked by MD5 only where
+every other download is SHA-256, and its accuracy was never measured in QUILL.
+The bundled Moonshine tiny is faster and more accurate, and needs no download.
+
+- **Voice Command, Conversation Mode and Hey QUILL** can now run on Moonshine
+  tiny. Settings, Voice recognition engine offers Follow main engine,
+  whisper.cpp (accurate) and Moonshine tiny (fast, light). A small adapter
+  (`quill/core/speech/providers/moonshine_tiny.py`) runs the model live
+  dictation already ships, through the same recogniser, so nothing new
+  downloads; without it, voice falls back to the main engine as before.
+- **Dictation pickers no longer offer Vosk**: the guided setup, the Manage
+  Speech Models engine list, the dictation ladder and media voice capture.
+  Download Vosk is gone with them.
+- **Saved choices move, and QUILL says so once.** A voice engine of Vosk
+  becomes Moonshine tiny; a dictation engine of Vosk becomes the default. After
+  the main window is up and a moment has passed (longer while a dialog is
+  open, so the reader's own startup speech does not cut it off), the status
+  bar and the screen reader hear, once, which engine took over, that Moonshine
+  tiny understands English only, and where to choose another: Ctrl+Comma for
+  the voice engine, Speech and Dictation for dictation. One sentence covers
+  both when both used Vosk. It is recorded as said only after it is said. No
+  model is offered for deletion, because chapters still use it.
+
 ### QUILL Lineups in Quill Radio and QUILL Cast, and saved places that survive a restart (2026-10-13)
 
 A Lineup is a named list of anything Quill Radio and QUILL Cast can play --

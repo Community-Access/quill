@@ -434,6 +434,7 @@
   "quill.ui.vision_prompt_manager_dialog": "reachable",
   "quill.ui.voice_browser_dialog": "reachable",
   "quill.ui.voice_reply_dialog": "reachable",
+  "quill.ui.vosk_retirement_notice": "reachable",
   "quill.ui.weather.add_location_dialog": "reachable",
   "quill.ui.weather.settings_dialog": "reachable",
   "quill.ui.weather.weather_center_dialog": "reachable",

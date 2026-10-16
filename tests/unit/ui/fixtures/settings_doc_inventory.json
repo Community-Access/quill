@@ -338,6 +338,7 @@
   "voice_conversation_user_name": "grandfathered",
   "voice_preview_announce_generating": "documented",
   "voice_recognition_engine": "documented",
+  "vosk_retirement_notice": "documented",
   "voice_wakeword_enabled": "grandfathered",
   "voice_wakeword_persist": "grandfathered",
   "warm_dictation_model": "grandfathered",

@@ -10374,9 +10374,7 @@ class MainFrame(
         from quill.core.speech.engine_install import (
             is_faster_whisper_available,
             is_kokoro_onnx_available,
-            is_vosk_available,
             kokoro_onnx_install_supported,
-            vosk_install_supported,
         )
         from quill.core.speech.ffmpeg import ffmpeg_available
         from quill.core.speech.providers.whispercpp import resolve_whisper_executable
@@ -10384,6 +10382,7 @@ class MainFrame(
             describe_models,
             detect_has_gpu,
             detect_total_ram_gb,
+            dictation_providers,
             machine_summary,
         )
         from quill.ui.speech_hub_dialog import SpeechHubDialog
@@ -10456,7 +10455,8 @@ class MainFrame(
         # — notably whisper.cpp when its binary is missing — must still appear in
         # the chooser, labelled "(not installed)", so the user can discover it and
         # reach its guided install path instead of having it silently disappear.
-        all_providers = list(registry.all())  # type: ignore[attr-defined]
+        # Chapter-only engines (Vosk) are never a dictation choice.
+        all_providers = dictation_providers(registry.all())  # type: ignore[attr-defined]
         provider = self._configured_speech_provider(registry)  # saved engine, not avail-fallback
         total_ram = detect_total_ram_gb()
         has_gpu = detect_has_gpu()
@@ -10466,8 +10466,6 @@ class MainFrame(
             "whispercpp_ok": resolve_whisper_executable() is not None,
             "ffmpeg_ok": ffmpeg_available(),
             "engine_ok": is_faster_whisper_available(),
-            "vosk_ok": is_vosk_available(),
-            "vosk_can_install": vosk_install_supported(),
             "kokoro_ok": is_kokoro_onnx_available(),
             "kokoro_can_install": kokoro_onnx_install_supported(),
             "all_providers": all_providers,
@@ -10482,7 +10480,7 @@ class MainFrame(
             "engine_scope": "offline",
             **common_dict_kwargs,
         }
-        known_offline_ids = {"whispercpp", "fasterwhisper", "vosk"}
+        known_offline_ids = {"whispercpp", "fasterwhisper"}
         cloud_providers = [
             p for p in all_providers if str(getattr(p, "id", "")) not in known_offline_ids
         ]
@@ -10602,8 +10600,6 @@ class MainFrame(
                 self.download_ffmpeg()
             elif dict_result.action == "engine":
                 self.download_faster_whisper()
-            elif dict_result.action == "vosk":
-                self.download_vosk()
             elif dict_result.action == "hf_token":
                 self.set_huggingface_token()
             elif dict_result.action == "test":

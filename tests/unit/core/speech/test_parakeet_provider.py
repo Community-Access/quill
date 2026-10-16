@@ -74,7 +74,9 @@ def test_explicit_choice_always_wins() -> None:
         _FakeProvider("parakeet", True),
         _FakeProvider("vosk", True),
     )
-    assert preferred_dictation_provider_id(registry, "vosk") == "vosk"
+    assert preferred_dictation_provider_id(registry, "whispercpp") == "whispercpp"
+    # Except a chapter-only engine: Vosk is no dictation choice (2026-10-13).
+    assert preferred_dictation_provider_id(registry, "vosk") == "parakeet"
 
 
 def test_installed_parakeet_outranks_the_default() -> None:

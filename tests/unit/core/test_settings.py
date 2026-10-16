@@ -357,15 +357,17 @@ def test_settings_clamps_indent_size(monkeypatch: pytest.MonkeyPatch, tmp_path: 
     assert loaded.indent_with_tabs is True
 
 
-def test_settings_speech_provider_accepts_vosk(
+def test_settings_speech_provider_vosk_migrates_to_the_default_with_a_notice(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    # Vosk is a valid offline-speech engine choice from the guided picker; it
-    # must not be silently rejected back to "" like an unknown value would be.
+    # Vosk is no dictation engine since 2026-10-13 (it stays as the podcast
+    # chapter engine). A saved choice follows the default ladder, and is never
+    # dropped silently: the one-time dictation notice is left pending.
     monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
     (tmp_path / "settings.json").write_text('{"speech_provider":"vosk"}', encoding="utf-8")
     loaded = load_settings()
-    assert loaded.speech_provider == "vosk"
+    assert loaded.speech_provider == ""
+    assert loaded.vosk_retirement_notice == "dictation"
 
 
 def test_settings_speech_provider_rejects_unknown_value(

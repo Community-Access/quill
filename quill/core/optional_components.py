@@ -164,7 +164,7 @@ def voice_pick_label(voice: object) -> str:
 
 
 # Offline STT engines whose downloadable *models* live in Manage Speech Models.
-_STT_ENGINES = frozenset({"whispercpp", "vosk"})
+_STT_ENGINES = frozenset({"whispercpp"})
 
 
 def manage_target(component_id: str) -> str | None:
@@ -660,8 +660,8 @@ def _dictation_ready() -> bool:
     the whisper.cpp binary, so it goes True the moment the engine is fetched
     even with no model yet -- Download/Test must not treat that as "done"
     (the Test button offered no way to tell it wasn't actually usable).
-    Checks all three guided-picker engines, not just whisper.cpp, so a user
-    who set up Faster Whisper or Vosk instead still reads as ready.
+    Checks every guided-picker engine, not just whisper.cpp, so a user who
+    set up Faster Whisper or Parakeet instead still reads as ready.
     """
     from quill.core.speech import guided_setup
     from quill.core.speech.transcribe import provider_has_installed_model
@@ -670,12 +670,6 @@ def _dictation_ready() -> bool:
         if opt.installed and _safe(lambda pid=opt.engine_id: provider_has_installed_model(pid)):
             return True
     return False
-
-
-def _vosk_installed() -> bool:
-    from quill.core.speech.engine_install import is_vosk_available
-
-    return is_vosk_available()
 
 
 def _kokoro_installed() -> bool:
@@ -839,7 +833,7 @@ def gather_optional_components() -> list[OptionalComponent]:
             "whispercpp",
             "Dictation (offline speech)",
             "Private, on-device dictation and transcription. Opens a guided setup "
-            "where you choose an engine (Whisper, Faster Whisper, or Vosk) and a "
+            "where you choose an engine (Whisper or Faster Whisper) and a "
             "model to match your computer, then test it. "
             + (
                 "SAPI 5 dictation works without any of this."

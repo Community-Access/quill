@@ -93,7 +93,7 @@ def test_feedback_is_frozen() -> None:
     raise AssertionError("VoiceFeedback should be immutable")
 
 
-# -- engine selection (Whisper + Nemotron + Vosk, honouring the saved choice) --
+# -- engine selection (Whisper + Nemotron, honouring the saved choice) --
 
 
 class FakeModel:
@@ -125,7 +125,9 @@ def test_preferred_provider_ids_puts_saved_first_and_dedupes() -> None:
     order = preferred_provider_ids("nemotron")
     assert order[0] == "nemotron"
     assert order.count("nemotron") == 1
-    assert "whispercpp" in order and "vosk" in order
+    assert "whispercpp" in order
+    # Vosk is the podcast chapter engine only (2026-10-13), never tried here.
+    assert "vosk" not in order
 
 
 def test_preferred_provider_ids_default_order() -> None:
@@ -155,11 +157,20 @@ def test_resolve_honours_saved_nemotron() -> None:
 def test_resolve_skips_providers_without_installed_models() -> None:
     registry = FakeRegistry([
         FakeProvider("whispercpp", []),  # nothing installed
-        FakeProvider("vosk", ["vosk-small-en"]),
+        FakeProvider("nemotron", ["nemotron-en"]),
     ])
     provider, model = resolve_provider_and_model(registry, "")
-    assert provider.id == "vosk"
-    assert model == "vosk-small-en"
+    assert provider.id == "nemotron"
+    assert model == "nemotron-en"
+
+
+def test_resolve_never_uses_the_chapter_only_vosk() -> None:
+    registry = FakeRegistry([
+        FakeProvider("whispercpp", []),
+        FakeProvider("vosk", ["vosk-small-en"]),
+    ])
+    provider, model = resolve_provider_and_model(registry, "vosk")
+    assert provider is None and model == ""
 
 
 def test_resolve_returns_none_when_no_models() -> None:

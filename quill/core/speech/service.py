@@ -8,8 +8,10 @@ in the wx dialog) means the model-manager content is unit-testable.
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
 from json import JSONDecodeError
+from typing import Any
 
 from quill.core.paths import app_data_dir
 from quill.core.speech.provider import SpeechModelInfo, SpeechToTextProvider
@@ -63,6 +65,9 @@ def default_registry(executable_path: str | None = None) -> SpeechProviderRegist
     except Exception:  # noqa: BLE001 - an optional engine must never break the registry
         pass
 
+    # Vosk registers for **podcast chapters only** (CHAPTER_PROVIDER_ID below);
+    # it is not a dictation choice since 2026-10-13, and every dictation picker
+    # filters it out through dictation_providers().
     try:
         from quill.core.speech.providers.vosk import VoskProvider
 
@@ -123,7 +128,7 @@ def preferred_dictation_provider_id(registry: SpeechProviderRegistry, chosen: st
     — an explicit, reversible act — so a fresh install still dictates with
     whisper.cpp immediately, and nobody is surprised by a 650 MB download.
     """
-    if chosen and registry.get(chosen) is not None:
+    if chosen and chosen not in CHAPTER_ONLY_PROVIDER_IDS and registry.get(chosen) is not None:
         return chosen
     try:
         parakeet = registry.get("parakeet")
@@ -140,6 +145,21 @@ def preferred_dictation_provider_id(registry: SpeechProviderRegistry, chosen: st
 #: 0.316 because **its cues break at natural pauses**, so its edges are already
 #: plausible section starts. Whisper's 1.5 GB bought a worse answer 4.7x slower.
 CHAPTER_PROVIDER_ID = "vosk"
+
+#: Engines registered only so chapter work can reach them. They are never a
+#: dictation or transcription choice: Vosk left that role on 2026-10-13 (English
+#: only, last release 2022, models checked by MD5 only), and stays here because
+#: it is bundled and scored best at chapters.
+CHAPTER_ONLY_PROVIDER_IDS = frozenset({CHAPTER_PROVIDER_ID})
+
+
+def dictation_providers(providers: Iterable[Any]) -> list[Any]:
+    """*providers* without the chapter-only engines, for every engine picker."""
+    return [
+        provider
+        for provider in providers
+        if str(getattr(provider, "id", "") or "") not in CHAPTER_ONLY_PROVIDER_IDS
+    ]
 
 
 def preferred_chapter_provider_id(registry: SpeechProviderRegistry, chosen: str = "") -> str:

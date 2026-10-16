@@ -81,14 +81,20 @@ class SpeechCommandsMixin:
         """The speech engine that powers the voice-interaction features.
 
         Honors ``settings.voice_recognition_engine`` — whisper.cpp for accuracy,
-        Vosk for fast, low-overhead streaming (ideal for the always-listening
-        wake word) — and falls back to the main speech provider when the chosen
-        engine is unavailable or has no installed model, so voice always works.
+        the bundled Moonshine tiny for fast, light recognition (ideal for the
+        always-listening wake word) — and falls back to the main speech provider
+        when the chosen engine is unavailable or has no installed model, so voice
+        always works. Moonshine tiny is not a registry engine (it is not a
+        dictation choice), so it is built here from the bundled model.
         """
         chosen = str(getattr(self.settings, "voice_recognition_engine", "") or "").strip()
         if chosen:
-            registry = self._speech_registry()
-            provider = registry.get(chosen)  # type: ignore[attr-defined]
+            from quill.core.speech.providers import moonshine_tiny
+
+            if chosen == moonshine_tiny.PROVIDER_ID:
+                provider: object = moonshine_tiny.MoonshineTinyProvider()
+            else:
+                provider = self._speech_registry().get(chosen)  # type: ignore[attr-defined]
             try:
                 if provider is not None and provider.is_available():
                     return provider

@@ -38,17 +38,17 @@ class _IdProvider:
         self.display_name = display_name
 
 
-def test_engine_descriptors_always_lists_three_dictation_engines() -> None:
+def test_engine_descriptors_always_lists_the_two_offline_dictation_engines() -> None:
     rows = build_engine_descriptors(
         [_IdProvider("whispercpp", "Whisper.cpp")],
         whispercpp_ok=True,
         faster_whisper_ok=False,
-        vosk_ok=False,
     )
     labels = [r["label"] for r in rows]
     assert any("Whisper (built in)" in label for label in labels)
     assert any("Faster Whisper" in label for label in labels)
-    assert any("Vosk" in label for label in labels)
+    # Vosk is the podcast chapter engine only (2026-10-13), never a dictation row.
+    assert not any("Vosk" in label for label in labels)
 
 
 def test_engine_descriptors_mark_not_installed_with_install_action() -> None:
@@ -56,14 +56,13 @@ def test_engine_descriptors_mark_not_installed_with_install_action() -> None:
         [_IdProvider("whispercpp", "Whisper.cpp")],
         whispercpp_ok=True,
         faster_whisper_ok=False,
-        vosk_ok=False,
     )
     by_action = {r["install_action"]: r for r in rows}
-    # Faster Whisper / Vosk are not installed here, so they carry an install action
-    # and no provider yet — selecting them installs the engine.
+    # Faster Whisper is not installed here, so it carries an install action
+    # and no provider yet — selecting it installs the engine.
     assert by_action["engine"]["installed"] is False
     assert by_action["engine"]["provider"] is None
-    assert by_action["vosk"]["installed"] is False
+    assert "vosk" not in by_action
 
 
 def test_engine_descriptors_append_other_registered_providers() -> None:
@@ -72,7 +71,6 @@ def test_engine_descriptors_append_other_registered_providers() -> None:
         [_IdProvider("whispercpp", "Whisper.cpp"), cloud],
         whispercpp_ok=True,
         faster_whisper_ok=False,
-        vosk_ok=False,
     )
     cloud_rows = [r for r in rows if r["provider"] is cloud]
     assert len(cloud_rows) == 1
@@ -86,7 +84,6 @@ def test_engine_scope_offline_excludes_cloud_providers() -> None:
         [_IdProvider("whispercpp", "Whisper.cpp"), cloud],
         whispercpp_ok=True,
         faster_whisper_ok=False,
-        vosk_ok=False,
         engine_scope="offline",
     )
     labels = [r["label"] for r in rows]
@@ -100,7 +97,6 @@ def test_engine_scope_online_is_only_cloud_providers() -> None:
         [_IdProvider("whispercpp", "Whisper.cpp"), cloud],
         whispercpp_ok=True,
         faster_whisper_ok=False,
-        vosk_ok=False,
         engine_scope="online",
     )
     assert len(rows) == 1
@@ -112,7 +108,6 @@ def test_engine_scope_online_is_empty_with_no_cloud_providers_registered() -> No
         [_IdProvider("whispercpp", "Whisper.cpp")],
         whispercpp_ok=True,
         faster_whisper_ok=False,
-        vosk_ok=False,
         engine_scope="online",
     )
     assert rows == []

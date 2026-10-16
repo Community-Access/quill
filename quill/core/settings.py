@@ -26,6 +26,7 @@ from quill.core.settings_normalizers import (
     _normalize_status_bar_hidden,
     _normalize_status_bar_order,
 )
+from quill.core.speech.vosk_retirement import migrate_vosk_choices
 from quill.core.storage import write_json_atomic
 from quill.core.structure_announce import HEADING_POSITIONS as _HEADING_POSITIONS
 from quill.core.versioned_store import load_with_migration
@@ -404,8 +405,8 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
     # plus the serialized TextNormalizationOptions (empty = recommended defaults).
     tts_normalization_enabled: bool = True
     tts_normalization: dict[str, Any] = field(default_factory=dict)
-    # Offline speech engine: "" = bundled whisper.cpp; "fasterwhisper" or "vosk"
-    # opt into those engines on machines that have them installed.
+    # Offline speech engine: "" = bundled whisper.cpp; "fasterwhisper" or "nemotron"
+    # opt in on machines that have them. A saved "vosk" loads as "" (2026-10-13).
     speech_provider: str = ""
     # The model id to prefer for speech_provider (e.g. "small", "base.en"); ""
     # falls back to the first installed model of whichever engine is active.
@@ -436,10 +437,10 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
     voice_conversation_spoken_cues: bool = False
     # Which on-device speech engine powers the voice-interaction features
     # (Voice Command, Conversation Mode, Hey QUILL). "" = follow the main speech
-    # engine; "whispercpp" for accuracy, "vosk" for fast, low-overhead streaming
-    # (recommended for the always-listening wake word). Falls back gracefully
-    # when the chosen engine or a model for it is unavailable.
+    # engine; "whispercpp" for accuracy, "moonshine_tiny" (bundled) for fast, light
+    # recognition (best for the wake word). Falls back when one is unavailable.
     voice_recognition_engine: str = ""
+    vosk_retirement_notice: str = ""  # "voice"/"dictation" pending, "done" (vosk_retirement)
     # Wake word (Hey QUILL Phase 3). Always-listening for "Hey QUILL" on-device;
     # off by default and never persisted-on across a restart unless the user
     # opts in. See quill/core/speech/wakeword.py.
@@ -1150,7 +1151,7 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
             dict(tts_normalization_raw) if isinstance(tts_normalization_raw, dict) else {}
         )
         speech_provider = str(data.get("speech_provider", "")).strip().lower()
-        if speech_provider not in {"", "whispercpp", "fasterwhisper", "vosk", "nemotron"}:
+        if speech_provider not in {"", "whispercpp", "fasterwhisper", "nemotron"}:
             speech_provider = ""
         speech_default_model_id = str(data.get("speech_default_model_id", "")).strip()
         bw_speech_selection_mode = (
@@ -1269,9 +1270,7 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
         voice_conversation_thinking_ms = _voice_ms("voice_conversation_thinking_ms", 2000)
         voice_conversation_user_name = str(data.get("voice_conversation_user_name", "")).strip()
         voice_conversation_spoken_cues = bool(data.get("voice_conversation_spoken_cues", False))
-        voice_recognition_engine = str(data.get("voice_recognition_engine", "")).strip().lower()
-        if voice_recognition_engine not in {"", "whispercpp", "vosk"}:
-            voice_recognition_engine = ""
+        voice_recognition_engine, vosk_retirement_notice = migrate_vosk_choices(data)
         voice_wakeword_persist = bool(data.get("voice_wakeword_persist", False))
         # Always-listening never survives a restart unless the user opted into
         # persistence; otherwise it always loads off, no matter what was saved.
@@ -1808,6 +1807,7 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
             voice_conversation_user_name=voice_conversation_user_name,
             voice_conversation_spoken_cues=voice_conversation_spoken_cues,
             voice_recognition_engine=voice_recognition_engine,
+            vosk_retirement_notice=vosk_retirement_notice,
             voice_wakeword_enabled=voice_wakeword_enabled,
             voice_wakeword_persist=voice_wakeword_persist,
             watch_folder_enabled=watch_folder_enabled,

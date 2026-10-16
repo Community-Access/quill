@@ -76,7 +76,13 @@ def test_voice_engine_choice_round_trips_and_validates() -> None:
     from quill.core.settings import Settings
 
     assert (
-        Settings.from_dict({"voice_recognition_engine": "vosk"}).voice_recognition_engine == "vosk"
+        Settings.from_dict({"voice_recognition_engine": "moonshine_tiny"}).voice_recognition_engine
+        == "moonshine_tiny"
+    )
+    # A saved Vosk choice (retired 2026-10-13) migrates to Moonshine tiny.
+    assert (
+        Settings.from_dict({"voice_recognition_engine": "vosk"}).voice_recognition_engine
+        == "moonshine_tiny"
     )
     assert (
         Settings.from_dict({"voice_recognition_engine": "whispercpp"}).voice_recognition_engine

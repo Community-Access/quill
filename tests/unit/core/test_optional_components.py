@@ -615,7 +615,8 @@ def test_piper_is_self_hosted_and_pinned() -> None:
 
 def test_manage_target_routes_stt_to_models_and_voices_to_voices() -> None:
     assert oc.manage_target("whispercpp") == "models"
-    assert oc.manage_target("vosk") == "models"
+    # Vosk is the podcast chapter engine only (2026-10-13): no models to manage.
+    assert oc.manage_target("vosk") is None
     assert oc.manage_target("kokoro") == "voices"
     assert oc.manage_target("piper") == "voices"
     # Tools and dictionaries have no per-item manage dialog.

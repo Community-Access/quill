@@ -1721,9 +1721,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
         from quill.core.speech.engine_install import (
             is_faster_whisper_available,
             is_kokoro_onnx_available,
-            is_vosk_available,
             kokoro_onnx_install_supported,
-            vosk_install_supported,
         )
         from quill.core.speech.ffmpeg import ffmpeg_available
         from quill.core.speech.providers.whispercpp import resolve_whisper_executable
@@ -1791,7 +1789,10 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
         }
 
         registry = self._speech_registry()
-        all_providers = list(registry.all())  # type: ignore[attr-defined]
+        # Chapter-only engines (Vosk) are never a dictation choice.
+        from quill.core.speech.service import dictation_providers
+
+        all_providers = dictation_providers(registry.all())  # type: ignore[attr-defined]
         provider = self._configured_speech_provider(registry)
         total_ram = detect_total_ram_gb()
         has_gpu = detect_has_gpu()
@@ -1801,8 +1802,6 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
             "whispercpp_ok": resolve_whisper_executable() is not None,
             "ffmpeg_ok": ffmpeg_available(),
             "engine_ok": is_faster_whisper_available(),
-            "vosk_ok": is_vosk_available(),
-            "vosk_can_install": vosk_install_supported(),
             "kokoro_ok": is_kokoro_onnx_available(),
             "kokoro_can_install": kokoro_onnx_install_supported(),
             "all_providers": all_providers,
@@ -1817,7 +1816,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
             "engine_scope": "offline",
             **common_dict_kwargs,
         }
-        known_offline_ids = {"whispercpp", "fasterwhisper", "vosk"}
+        known_offline_ids = {"whispercpp", "fasterwhisper"}
         cloud_providers = [
             p for p in all_providers if str(getattr(p, "id", "")) not in known_offline_ids
         ]

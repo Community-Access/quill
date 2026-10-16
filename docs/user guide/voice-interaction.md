@@ -37,14 +37,22 @@ one under **Settings → Voice recognition engine**:
   dictation.
 - **whisper.cpp** — favors accuracy. A good choice for Voice Command and
   Conversation Mode when you want the most reliable recognition.
-- **Vosk** — fast and light, with low idle cost. **Recommended for the
+- **Moonshine tiny** — fast and light, with low idle cost, and built into
+  QUILL, so there is nothing to download. English only. **Recommended for the
   always-listening "Hey QUILL" wake word**, where a small, quick engine matters
   more than transcription polish.
 
-Whichever you pick, you need a model installed for that engine (download one
-from **Tools → Speech → Manage Speech Models**). If the chosen engine or its
-model isn't available, QUILL automatically falls back to your main engine, so
-voice always works.
+For whisper.cpp you need a model installed (download one from **Tools →
+Speech → Manage Speech Models**); Moonshine tiny is already there. If the
+chosen engine or its model isn't available, QUILL automatically falls back to
+your main engine, so voice always works.
+
+Until October 2026 the light choice was **Vosk**. It is gone from this list
+because it knows only English, its last release was in 2022 and its models
+are checked by MD5 only, while Moonshine tiny ships with QUILL and is faster
+and more accurate. If you had chosen Vosk, QUILL switched you to Moonshine
+tiny and said so once. Vosk itself stays in QUILL, but only to work out
+podcast chapters.
 
 ## The four ways to use voice
 
@@ -232,7 +240,7 @@ can install and choose:
   become a phantom "thank you" in your document.
 - **Nemotron** (NVIDIA, via sherpa-onnx) — a strong offline English engine that
   runs without heavy dependencies.
-- **Vosk** and **Faster Whisper** — additional offline options.
+- **Faster Whisper** — an additional offline option.
 
 ## Privacy and control at a glance
 

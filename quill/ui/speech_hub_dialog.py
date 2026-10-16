@@ -198,8 +198,8 @@ def _build_no_cloud_dictation_panel(wx: object, panel: object) -> None:
         label=(
             "No cloud dictation provider is installed yet.\n\n"
             "Install a cloud transcription Quillin (OpenAI Whisper, Groq, or "
-            "ElevenLabs Scribe) to add one here. Offline dictation (Whisper.cpp, "
-            "Faster Whisper, or Vosk) needs no API key or account and works "
+            "ElevenLabs Scribe) to add one here. Offline dictation (Whisper.cpp "
+            "or Faster Whisper) needs no API key or account and works "
             "without an internet connection -- see the Dictation (Offline) tab."
         ),
     )
