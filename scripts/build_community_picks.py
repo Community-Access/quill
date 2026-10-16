@@ -153,6 +153,24 @@ def build(issues: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def keep_unchanged_timestamp(document: dict[str, Any], previous: Path) -> dict[str, Any]:
+    """Keep the published ``updated`` stamp when nothing else changed.
+
+    Every run stamps the time, so a rebuild with no new pick still differed
+    from what was published, and the workflow opened a pull request that
+    changed only that line (#1659). The stamp now moves only with the picks.
+    """
+    try:
+        published = json.loads(previous.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return document
+    if not isinstance(published, dict) or "updated" not in published:
+        return document
+    if {**published, "updated": None} == {**document, "updated": None}:
+        return {**document, "updated": published["updated"]}
+    return document
+
+
 def validate(document: dict[str, Any]) -> None:
     """Refuse to publish anything the schema does not accept."""
     try:
@@ -184,6 +202,7 @@ def main() -> int:
     if args.check:
         print("--check: nothing written")
         return 0
+    document = keep_unchanged_timestamp(document, SITE)
     text = json.dumps(document, indent=2, ensure_ascii=False) + "\n"
     for target in (SITE, BUNDLED):
         target.parent.mkdir(parents=True, exist_ok=True)
