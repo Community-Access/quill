@@ -2805,8 +2805,8 @@ on”: same as the radio / system default / any card, routed by GUID
 through waveOut in <code>quill/platform/sound_routing.py</code>, falling
 back to the default device rather than going silent); <strong>live
 DVR</strong> (a seekable demuxer cache, ~45 minutes in memory until
-2026-10-15 and on disk for a chosen length since – section 24.1:
-pause/resume live radio, Rewind/Forward by tap count (section 24.2),
+2026-10-15 and on disk for a chosen length since – section 25.1:
+pause/resume live radio, Rewind/Forward by tap count (section 25.2),
 Back to Live, each announcing how far behind live); <strong>Volume
 Boost</strong> (up to 150% for quiet stations; the 0-100 scale,
 per-station volumes, and mute untouched); <strong>engine-native What’s
@@ -6735,7 +6735,7 @@ offered).</p>
 is <code>tests/unit/ui/test_radio_add_station_page.py</code>. Nothing
 touches the network.</p>
 <h2
-id="24-freeradio-ideas-a-time-shift-buffer-on-disk-tiered-seek-and-identify-this-song-unreleased-2026-10-15">24.
+id="25-freeradio-ideas-a-time-shift-buffer-on-disk-tiered-seek-and-identify-this-song-unreleased-2026-10-15">25.
 FreeRadio ideas: a time-shift buffer on disk, tiered seek, and Identify
 This Song (unreleased, 2026-10-15)</h2>
 <p>Three of the deltas from the FreeRadio study
@@ -6743,7 +6743,7 @@ This Song (unreleased, 2026-10-15)</h2>
 recordings must not open a fresh connection and capture a station’s
 pre-roll advert – landed the same night as a recording fix, and Identify
 This Song follows the same rule.</p>
-<h3 id="241-the-time-shift-buffer-lives-on-disk">24.1 The time-shift
+<h3 id="251-the-time-shift-buffer-lives-on-disk">25.1 The time-shift
 buffer lives on disk</h3>
 <ul>
 <li><strong>R-TS-1.</strong> The live DVR buffer (mpv’s demuxer
@@ -6776,7 +6776,7 @@ Code: <code>quill/core/radio/timeshift.py</code> (pure, strict-typed),
 <code>tests/unit/core/radio/test_timeshift.py</code>,
 <code>tests/unit/ui/test_radio_mpv_load_contract.py</code>.</li>
 </ul>
-<h3 id="242-tiered-seek-by-tap-count">24.2 Tiered seek by tap count</h3>
+<h3 id="252-tiered-seek-by-tap-count">25.2 Tiered seek by tap count</h3>
 <ul>
 <li><strong>R-SEEK-1.</strong> Rewind and Forward
 (Ctrl+Shift+Left/Right, the same keys as before, in the main window and
@@ -6802,7 +6802,7 @@ the first press.</li>
 <code>tests/unit/core/radio/test_tiered_seek.py</code>,
 <code>tests/unit/ui/test_radio_tiered_seek_ui.py</code>.</li>
 </ul>
-<h3 id="243-identify-this-song-acoustid--chromaprint">24.3 Identify This
+<h3 id="253-identify-this-song-acoustid--chromaprint">25.3 Identify This
 Song (AcoustID + Chromaprint)</h3>
 <ul>
 <li><strong>R-ID-1.</strong> Playback &gt; <strong>Identify This
@@ -6845,12 +6845,12 @@ application key if one is ever to be bundled the way the Podcast Index
 key is; until then each listener registers their own.</li>
 </ul>
 <h2
-id="25-radio-extras-from-the-freeradio-study-unreleased-2026-10-16">25.
+id="26-radio-extras-from-the-freeradio-study-unreleased-2026-10-16">26.
 Radio extras from the FreeRadio study (unreleased, 2026-10-16)</h2>
 <p>Jeff’s todo P3 “Radio extras”. Where xradio2 (the 2026-09-24
 FreeRadio study) specifies an item, it is followed; where it does not,
 the sensible minimum is built and said to be one.</p>
-<h3 id="251-mark-many-delete-once-xradio2-410">25.1 Mark many, delete
+<h3 id="261-mark-many-delete-once-xradio2-410">26.1 Mark many, delete
 once (xradio2 4.10)</h3>
 <ul>
 <li>In both favourites trees (main window and Manage Favorites),
@@ -6875,7 +6875,7 @@ is.</li>
 <li>Not yet in the Recordings Manager, Browse Stations or the schedule
 list, which still delete one row at a time.</li>
 </ul>
-<h3 id="252-resume-earcon-xradio2-45">25.2 Resume earcon (xradio2
+<h3 id="262-resume-earcon-xradio2-45">26.2 Resume earcon (xradio2
 4.5)</h3>
 <ul>
 <li>Paused to playing posts <code>radio_resumed</code> (a short
@@ -6884,7 +6884,7 @@ tape-spool sweep) instead of <code>radio_playing</code>, through
 disable list apply. Pausing still has no earcon.</li>
 </ul>
 <h3
-id="253-a-second-device-background-station-and-mirror-xradio2-46-47">25.3
+id="263-a-second-device-background-station-and-mirror-xradio2-46-47">26.3
 A second device: background station and mirror (xradio2 4.6, 4.7)</h3>
 <ul>
 <li><strong>Audio &gt; Background Station on Another Device…</strong>
@@ -6903,7 +6903,7 @@ to turn it off. Off by default and never remembered across a restart.
 Needs the mpv engine; without it the command says so. Drift between the
 two players is stated in the guide rather than engineered away.</li>
 </ul>
-<h3 id="254-a-system-wide-key-per-favourite-xradio2-49">25.4 A
+<h3 id="264-a-system-wide-key-per-favourite-xradio2-49">26.4 A
 system-wide key per favourite (xradio2 4.9)</h3>
 <ul>
 <li><strong>System-Wide Key…</strong> on a station’s context menu in
@@ -6920,7 +6920,7 @@ not raised.</li>
 favourites file, so a backup or import never carries a key into a
 keyboard where it collides.</li>
 </ul>
-<h3 id="255-whats-new-in-one-key-no-spec-the-minimum">25.5 What’s New in
+<h3 id="265-whats-new-in-one-key-no-spec-the-minimum">26.5 What’s New in
 one key (no spec; the minimum)</h3>
 <ul>
 <li><strong>Community &gt; What’s New</strong>
@@ -6930,7 +6930,7 @@ show names), new videos (with channel names), reminders that went off,
 and other notices, each with its number; “Nothing new since you last
 looked.” otherwise. What it said is marked read; the entries stay.</li>
 </ul>
-<h3 id="256-reminders-read-the-stations-note-no-spec-the-minimum">25.6
+<h3 id="266-reminders-read-the-stations-note-no-spec-the-minimum">26.6
 Reminders read the station’s note (no spec; the minimum)</h3>
 <ul>
 <li>A station reminder’s announcement (and so its toast and
@@ -6938,7 +6938,7 @@ notification-centre entry) ends with “Your note: …” when the listener
 keeps a Note to Self on that station’s stream. Not repeated when it
 matches the reminder’s own note.</li>
 </ul>
-<h3 id="257-not-built">25.7 Not built</h3>
+<h3 id="267-not-built">26.7 Not built</h3>
 <ul>
 <li>Song-boundary recording (xradio2 4.8) and pitch shift / station
 crossfade (4.11 and 4.12, which xradio2 defers and places in Player or
