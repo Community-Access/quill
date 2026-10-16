@@ -7043,6 +7043,8 @@ The same submenu has more windows:
   Document".
 - **Speak a Command** (`F11`) makes the next thing you say a command, as if you
   had said QUILL first. Press it twice for command mode. See "The command word".
+- **Review Dictation...** (`Shift+F4`) holds the last phrase in a window to
+  read, change and insert once. See "Review before inserting".
 
 Here are the dictation keys in one place:
 
@@ -7058,6 +7060,7 @@ Here are the dictation keys in one place:
 | Dictation Settings | `Alt+Shift+F6` |
 | Tidy Dictated Text | `Ctrl+F3` |
 | Speak a Command | `F11` |
+| Review Dictation | `Shift+F4` |
 
 A few things that are good to know while you talk:
 
@@ -7108,6 +7111,68 @@ on, "scratch that" on its own is written as words; the stop phrase always
 works. Strict mode is off in QUILL and QUILL Lite, so the commands you know keep
 working, and on in QUILL Transcribe. A common word, or a word from your own My
 Words and Phrases, is refused as the command word, with the reason.
+
+##### Review before inserting
+
+When you want to check what you said before it goes into the document, review
+it first. Your words wait in the **Review Dictation** window, and nothing goes
+into the document until you insert them.
+
+- **Say "QUILL review that"**, or press **Review Dictation** (`Shift+F4`),
+  while dictating. The last phrase is taken back out of the document and opened
+  in the window. If dictation was paused with words held, those are what you
+  get. Press `Shift+F4` with dictation off and the window opens empty.
+- **Read the words** with the arrow keys. They are in an ordinary text box, so
+  your screen reader reads them by line, word and character, and a braille
+  display shows them. Type to change them, or keep talking: while the window is
+  open, what you dictate is written into it, not into the document.
+- **Ask the AI to change them.** Type an instruction such as "make it shorter"
+  in **Ask the AI to change it** (`Alt+K`) and press Enter, or say it after the
+  command word: **"QUILL make it shorter"**, **"QUILL more formal"**, **"QUILL
+  fix the grammar only"**. You hear "Working", then what changed, in two
+  sentences at most, such as "Changed next Thursday to Friday. Removed um, so."
+  QUILL works out what changed by comparing the words itself; it never repeats
+  the AI's own account. When more than half the words change you hear "Large
+  change" and a reminder to read it. While that is said, the microphone does
+  not listen, so your screen reader is never taken for your next instruction.
+  **Talk about it** (`Alt+A`) makes everything you say an instruction, without
+  the command word.
+- **Insert** (`Ctrl+Enter`, or say **"QUILL insert it"**) puts the words where
+  they came from, as one step that `Ctrl+Z` takes back. The words as you said
+  them and as they went in both go into Recent Phrases.
+
+The window's keys, and what to say instead:
+
+| Key | What it does | Say, after the command word |
+|---|---|---|
+| `Ctrl+Enter` | Insert the words | "insert it" |
+| `Ctrl+R` | Read all the words aloud | "read it back" |
+| `Ctrl+D` | Say again what the last change did | "what changed" |
+| `Ctrl+Z` | Undo the AI's last change; with none, undo your typing | "undo that change" |
+| `Ctrl+Shift+Z` | Back to the words exactly as you said them | "back to what I said" |
+| `Escape` | Stop a request on its way; otherwise discard the words, asking first if the AI changed them | "discard it" |
+
+The AI, and what is sent:
+
+- Changing words with AI needs AI help switched on and your ChatGPT
+  subscription or your own AI key, as Tidy Dictated Text does; it never uses
+  the free service's allowance. Each change you ask for is one request, and the
+  window's Status line says so.
+- The first time, QUILL asks before anything is sent, and names who receives
+  it. No is the default, and No sends nothing. Only the words in the window and
+  your instruction are sent, with My Dictation Instructions if you wrote any.
+  This document's dictation context goes too only if you check **Include this
+  document's dictation context with requests** (`Alt+O`).
+- With AI off, or in Safe Mode, "QUILL review that" says "AI is off. Your
+  words were written as you said them." and leaves them where they were. The
+  window still opens from `Shift+F4`, to edit and insert by hand.
+- If you close the window with Close, or QUILL closes or stops unexpectedly,
+  your words are kept. The next time QUILL starts it says so, and Review
+  Dictation brings them back. Discard throws them away.
+
+To send everything you dictate to the window first, turn on **Send dictation
+to review first** (`Alt+V`) in More Dictation Settings. The first thing you say
+opens the window, and nothing reaches the document until you insert it.
 
 ##### Holding Ctrl+F11 to talk
 
@@ -7513,6 +7578,7 @@ you change here is saved when you press OK in Dictation Settings.
 | Command word (`Alt+C`) | The word you say before a command, like QUILL scratch that; empty for none; see "The command word" | QUILL |
 | Commands only after the command word (strict mode) (`Alt+E`) | A command said on its own is written as words; the stop phrase always works | Off (on in QUILL Transcribe) |
 | Seconds command mode waits for a command (`Alt+D`) | How long command mode lasts with no command, from 5 to 30 | 8 |
+| Send dictation to review first (`Alt+V`) | What you dictate goes into Review Dictation instead, to insert once; see "Review before inserting" | Off |
 
 In settings files these are `windows_dictation_hold_to_talk`,
 `windows_dictation_preview`, `windows_dictation_ai_send`,
@@ -7521,8 +7587,10 @@ In settings files these are `windows_dictation_hold_to_talk`,
 `windows_dictation_openai_model`, `windows_dictation_readback_marks`,
 `windows_dictation_working_tick`, `windows_dictation_transcript_timestamps`,
 `windows_dictation_never_type`, `windows_dictation_command_prefix`,
-`windows_dictation_command_prefix_required` and
-`windows_dictation_command_timeout`.
+`windows_dictation_command_prefix_required`,
+`windows_dictation_command_timeout` and `windows_dictation_review_first`. The
+review window also keeps `windows_dictation_review_context` (its context check
+box) and `windows_dictation_review_consent` (your answer to its question).
 
 A failure is always spoken, whatever these settings say. If the read-back
 plays through speakers, the microphone can hear it, so use headphones or choose

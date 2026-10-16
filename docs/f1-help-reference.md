@@ -1377,6 +1377,8 @@ Control coverage: 31 audited sites (31 helped).
 
 **Dictation Settings.** The dictation settings QUILL Transcribe uses: the model, microphone, language, punctuation, and what you hear after each phrase. They are the same settings as dictation in QUILL and QUILL Lite, kept for this app.
 
+**Discard These Words.** The AI has changed these words. Yes throws them away and writes nothing; No keeps the review open.
+
 **Exit QUILL Transcribe.** Dictation is paused with words that were never written. Exit throws them away and closes QUILL Transcribe; Cancel keeps it running so you can resume.
 
 **Find a Setting or Command.** Every menu command in this app, searchable by name. Type part of a name; Down moves into the matches; Enter does the highlighted one.
@@ -1387,7 +1389,11 @@ Control coverage: 31 audited sites (31 helped).
 
 **QUILL Transcribe.** QUILL Transcribe types what you say into the program you are using. This window shows whether dictation is on, which model and microphone it uses, and what happened last. Start dictation from your start and stop key or the tray menu; it writes only into the field you started in, and pauses if you move. Closing this window keeps QUILL Transcribe in the tray.
 
+**Review Dictation.** Dictated words wait here before they are inserted. Read them, type or keep dictating to change them, ask the AI to change them if AI is on, and hear what changed. Control Enter inserts them where they were going; nothing is written before that.
+
 **Review Transcript.** A finished transcript of a recording, read-only. Copy it, save it as a text file, or open it in QUILL; nothing is copied or typed anywhere unless you choose it.
+
+**Review with AI.** Before the first change is asked for, this says who receives the words being reviewed and what is sent. No is the default and sends nothing.
 
 **Save Transcript As.** Choose where to save the transcript as a plain text file.
 
@@ -1816,7 +1822,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## QUILL Lite
 
-Control coverage: 159 audited sites (159 helped).
+Control coverage: 164 audited sites (164 helped).
 
 ### Every window, and what it is for
 
@@ -1857,6 +1863,8 @@ Control coverage: 159 audited sites (159 helped).
 **Dictation Settings.** How dictation works for you: the speech engine, the microphone, the language you speak, and what you hear as it goes. Test Microphone checks the microphone before you rely on it. Nothing changes until you choose OK.
 
 **Dictionary Status.** How many words each of your spelling dictionaries holds, where each file is kept, and whether the thesaurus data is present. A reading, not a setting: nothing here changes anything. Add words from the Spelling Actions submenu on a word, or with Ctrl+Alt+F9; Preferences chooses whether QUILL Lite shares QUILL's dictionary.
+
+**Discard These Words.** The AI has changed these words. Yes throws them away and writes nothing; No keeps the review open.
 
 **Document language.** Which markup this document is written in. It decides what Bold writes, what the heading keys write, which of the two tag pickers the Insert menu offers, and whether the cursor can tell you what list you are in. QUILL Lite reads it from the file name; this is where you say otherwise. Nothing in your document changes -- only what the keys write from now on. The choice lasts as long as this window is open.
 
@@ -1935,6 +1943,10 @@ Control coverage: 159 audited sites (159 helped).
 **Release Channel: QUILL Lite.** Choose which versions this app offers you: Stable, the one we recommend; Beta, new features a few weeks early; or Dev, work in progress for testers. Arrowing through the choices only explains them -- nothing changes until you choose Switch.
 
 **Replace.** Find text and put something else in its place. Replace changes the match you are on and moves to the next; Replace All changes every one and tells you how many. In a rich text document Replace All asks first, because replaced text takes the formatting of the run it lands in.
+
+**Review Dictation.** Dictated words wait here before they are inserted. Read them, type or keep dictating to change them, ask the AI to change them if AI is on, and hear what changed. Control Enter inserts them where they were going; nothing is written before that.
+
+**Review with AI.** Before the first change is asked for, this says who receives the words being reviewed and what is sent. No is the default and sends nothing.
 
 **Rewrite.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
 
@@ -2176,6 +2188,7 @@ Control coverage: 159 audited sites (159 helped).
 - `self.readback_marks`: When each phrase is read back, say its punctuation by name: Hello comma world period. That way you hear whether the comma or full stop went in, whatever your screen reader's punctuation level is. The status bar and a braille display always show the real marks. On by default.
 - `self.working_tick`: When a phrase takes more than a second to turn into text after you pause, play a soft tick every second until it arrives. The first time a phrase takes four seconds, dictation also says Still working on that phrase. While a tick plays the microphone is not listened to, as with every QUILL sound. Off by default in QUILL and QUILL Lite, on in QUILL Transcribe.
 - `self.timestamps`: In a live transcript, start each new paragraph with the time, like 10:42 in square brackets, so you can find a moment later. A new paragraph starts when the speaker pauses for four seconds or more. Off by default.
+- `self.review_first`: When this is on, what you dictate goes into the Review Dictation window instead of the document or the other program. Read it, change it, and press Control Enter to insert it once. Off by default: then say QUILL review that, or press Review Dictation, when you want a phrase reviewed.
 - `self.send`: In the AI Conversation window, Ctrl+F11 dictates your message. When I pause sends it as soon as you stop talking, the reply is read aloud, and the microphone waits until it has been read before it listens again; Escape listens at once. When I press Enter lets you check the message first.
 - `self.ai_pause`: How long you can stop to think while talking to the AI before what you said is written -- and, with When I pause, sent. Long is the default, so a breath does not send half a question.
 - `self.ai_fillers`: Leave out um, uh and their kin from what you say to the AI. On by default, because the AI does not need them.
@@ -2213,6 +2226,14 @@ Control coverage: 159 audited sites (159 helped).
 - `self.obey`: Off by default: in a recording, somebody who says new paragraph or comma usually means the words. Turn it on for a recording you dictated on purpose, and comma, period, new line, new paragraph and scratch that work as they do in dictation. Commands that move the cursor are ignored.
 - `self.running`: What is being transcribed at the moment, how far it has got, and how many recordings are waiting after it.
 - `stop`: Stops the transcription that is running and cancels any recordings waiting after it. The outcomes remain in Notifications; nothing is written into a document.
+#### DictationReviewFrame (`quill/ui/dictation_review_frame.py`)
+
+- `self.text`: The words waiting to be inserted. Read them with the arrow keys, type to change them, or keep dictating: what you say is written here, not into the document. Nothing is inserted until you press Control Enter.
+- `self.instruction`: Type what to change and press Enter: make it shorter, more formal, fix the grammar only. Only these words and your instruction are sent. Each one is one request.
+- `self.send`: Sends the instruction you typed, with the words above.
+- `self.talk`: On: everything you say is an instruction for the AI, with no command word, and nothing you say is written into the text. Off: what you say is written into the text, and instructions start with the command word.
+- `close`: Closes the window without inserting. The words are kept, and Review Dictation brings them back.
+- `self.context`: Sends the dictation context you chose for this document, such as a formal letter, with each request. Off by default: then only the words above and your instruction are sent.
 #### RecentDocumentsWindow (`quill/ui/recent_documents_dialog.py`)
 
 - `self.listbox`: Every document you opened recently, pinned ones first. Enter opens the one you are on. Delete takes it off this list without touching the file. A row that says not found is a file that has moved or been deleted.

@@ -102,6 +102,16 @@ class Command(StrEnum):
     TYPE_THAT = "type_that"
     COMMAND_MODE = "command_mode"
     DICTATION_MODE = "dictation_mode"
+    # 2026-10-15 (D-2): reviewing before inserting, after the command word
+    # (review_session.py, REVIEW_HELP).
+    REVIEW_THAT = "review_that"
+    REVIEW_REVISE = "review_revise"
+    REVIEW_READ = "review_read"
+    REVIEW_WHAT_CHANGED = "review_what_changed"
+    REVIEW_UNDO = "review_undo"
+    REVIEW_RESTORE = "review_restore"
+    REVIEW_INSERT = "review_insert"
+    REVIEW_DISCARD = "review_discard"
 
 
 @dataclass(frozen=True, slots=True)

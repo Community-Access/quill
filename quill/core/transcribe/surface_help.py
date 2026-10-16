@@ -86,6 +86,20 @@ PURPOSES: dict[str, str] = {
         "Everything dictation understands, to read with the arrow keys. In another "
         "program only the commands that do not need to read its text work."
     ),
+    "Review Dictation": (
+        "Dictated words wait here before they are inserted. Read them, type or keep "
+        "dictating to change them, ask the AI to change them if AI is on, and hear "
+        "what changed. Control Enter inserts them where they were going; nothing is "
+        "written before that."
+    ),
+    "Review with AI": (
+        "Before the first change is asked for, this says who receives the words "
+        "being reviewed and what is sent. No is the default and sends nothing."
+    ),
+    "Discard These Words": (
+        "The AI has changed these words. Yes throws them away and writes nothing; "
+        "No keeps the review open."
+    ),
     "Transcribe a Recording": (
         "Choose a recording and a model; it is transcribed in the background and "
         "the transcript waits in Notifications for you to review."

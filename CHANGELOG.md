@@ -2,6 +2,62 @@
 
 ## 1.0.0
 
+### Dictation: review before inserting, with AI on request (D-2) (2026-10-15)
+
+Dictated words can wait in a **Review Dictation** window before they reach the
+document or the other program: read, edit, keep dictating into it, ask the AI to
+change them, hear what changed, insert once. QUILL, QUILL Lite and QUILL
+Transcribe run the same code; Quill Inkwell says "Review is not available here."
+
+- **Core, wx-free.** `quill/core/windows_dictation/review_session.py`
+  (`ReviewSession`: `original`, `revisions` as `(instruction, before, after)`,
+  `current`, `target`; `revise`, `undo_revision`, `restore_original`, `diff`;
+  the request builder that marks the words as data; the rescue file
+  `dictation-review.json`, written atomically while a review is open and
+  deleted on Insert or Discard; `REVIEW_HELP`), `review_conversation.py`
+  (`ReviewConversation`: every sentence, consent, one request per instruction,
+  cancel, mute while the summary is read) and `review_mixin.py` (the
+  controller's voice half, under `CommandModeMixin`; `controller.py` did not
+  grow). `quill/core/diffing.py` gains `spoken_changes` and `change_fraction`:
+  a word-level `SequenceMatcher` summary of two sentences at most, "Large
+  change" over 50 percent, computed locally and never taken from the model.
+- **D-1's AI slots are wired.** After the command word: "review that" (the held
+  words, else the last phrase taken back out the way "scratch that" does, so in
+  another program it is backspaced), and while reviewing "insert it", "what
+  changed", "read it back", "undo that change", "back to what I said",
+  "discard it", and anything else that is not a dictation command is an AI
+  instruction ("make it shorter"). Talk About It makes every utterance one.
+  "review that" while paused for the field takes the held words. With AI off it
+  says "AI is off. Your words were written as you said them." and leaves them.
+- **Nothing reaches the target before Insert.** While a review is open the host
+  points the controller at the review's text (`review_retarget`, a document
+  port over the `wx.TextCtrl`), never SendInput. Insert in the editors is one
+  `replace_as_one_undo` at the place the words came from; in QUILL Transcribe
+  the locked field's window is brought back and the words go through
+  `insert_reviewed` (the same `LockedTarget` checks and `send_text_checked` as
+  a phrase; refusal said, words left in Recent Phrases). New setting
+  `windows_dictation_review_first` (More Dictation Settings, Alt+V) sends every
+  phrase to the review; `windows_dictation_review_consent` (a version, asked
+  once, No default) and `windows_dictation_review_context` (off: no document
+  context is sent) are the window's.
+- **AI routes.** A new direct-only `revise_dictation` template in
+  `own_key.INSTRUCTIONS`, through the existing `AiService.ask` (ChatGPT
+  subscription or own key, as Tidy Dictated Text; never the free gateway). QUILL
+  Transcribe reads the family's ChatGPT sign-in and own key from the shared data
+  folder and credential store; no new network call site, so no egress entry.
+- **UI.** `quill/ui/dictation_review_frame.py` (the window, `ReviewDesk`, the
+  box document port), `quill/ui/windows_dictation_review.py` (Review Dictation,
+  `tools.windows_dictation_review`, **Shift+F4** in both editors: every F11
+  chord is taken, Ctrl+Alt+Shift+F11 is a QuillVille launcher and Ctrl+Alt+F4 is
+  one missed Control from Alt+F4), `quill/apps/transcribe_review.py`. F1 purposes
+  in the Lite and Transcribe catalogues; the window is in the Lite help audit's
+  glob. The editors no longer stop dictation when the review window takes the
+  focus. Startup says once when an unfinished review was kept.
+- **Tests** (fakes only): `tests/unit/core/test_dictation_review.py`,
+  `tests/unit/ui/test_dictation_review_frame.py`,
+  `tests/unit/apps/test_lite_dictation_review.py`,
+  `tests/unit/apps/test_transcribe_review.py`. Design record section 19.
+
 ### Import / Convert reads PDFs without MarkItDown; FFmpeg ships with its licence everywhere (2026-10-15)
 
 Two P1 items from the todo.

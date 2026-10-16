@@ -87,6 +87,13 @@ class DictationSettings:
     windows_dictation_command_prefix: str = DEFAULT_COMMAND_PREFIX
     windows_dictation_command_prefix_required: bool = False
     windows_dictation_command_timeout: int = DEFAULT_COMMAND_TIMEOUT
+    # 2026-10-15 (D-2): review before inserting (review_session.py). Sending
+    # every phrase to the review first is off; the consent to send reviewed
+    # words to an AI provider is a version number, 0 for never asked; the
+    # document's dictation context goes with a request only when this is on.
+    windows_dictation_review_first: bool = False
+    windows_dictation_review_consent: int = 0
+    windows_dictation_review_context: bool = False
 
 
 def load_fields(data: Mapping[str, Any]) -> dict[str, Any]:
@@ -160,4 +167,19 @@ def load_fields(data: Mapping[str, Any]) -> dict[str, Any]:
         "windows_dictation_command_timeout": coerce_timeout(
             data.get("windows_dictation_command_timeout", DEFAULT_COMMAND_TIMEOUT)
         ),
+        "windows_dictation_review_first": bool(data.get("windows_dictation_review_first", False)),
+        "windows_dictation_review_consent": _consent_version(
+            data.get("windows_dictation_review_consent", 0)
+        ),
+        "windows_dictation_review_context": bool(
+            data.get("windows_dictation_review_context", False)
+        ),
     }
+
+
+def _consent_version(value: object) -> int:
+    """A saved consent version; anything unreadable is "never asked"."""
+    try:
+        return max(0, int(str(value)))
+    except (TypeError, ValueError):
+        return 0

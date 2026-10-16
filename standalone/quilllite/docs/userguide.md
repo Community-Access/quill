@@ -3566,6 +3566,7 @@ walking the menu too.
 | **Ctrl+Alt+Shift+PageUp** | Dictation Context for This Document... |
 | **Alt+F9** | Dictation Status |
 | **F11** | Speak a Command (the next thing you say is a command; twice, command mode) |
+| **Shift+F4** | Review Dictation... (read, change and insert the last phrase once) |
 | **Ctrl+F3** | Tidy Dictated Text... (in Tools > AI) |
 
 ### Saying things
@@ -3895,6 +3896,60 @@ word. Strict mode is off in QUILL Lite, so the commands you know keep working.
 A common word, or one of your own words in My Words and Phrases, cannot be the
 command word; you are told why.
 
+#### Review before inserting
+
+When you want to check what you said before it goes into the document, review
+it first. Your words wait in the **Review Dictation** window, and nothing goes
+into the document until you insert them.
+
+- **Say "QUILL review that"**, or press **Review Dictation** (**Shift+F4**, in
+  **Tools > Dictation**), while dictating. The last phrase is taken back out of
+  the document and opened in the window. Press Shift+F4 with dictation off and
+  the window opens empty.
+- **Read the words** with the arrow keys. They are in an ordinary text box, so
+  your screen reader reads them by line, word and character, and a braille
+  display shows them. Type to change them, or keep talking: while the window is
+  open, what you dictate is written into it, not into the document.
+- **Ask the AI to change them.** Type an instruction such as "make it shorter"
+  in **Ask the AI to change it** (**Alt+K**) and press Enter, or say it after
+  the command word: **"QUILL make it shorter"**, **"QUILL more formal"**,
+  **"QUILL fix the grammar only"**. You hear "Working", then what changed, in
+  two sentences at most, such as "Changed next Thursday to Friday. Removed um,
+  so." QUILL Lite works that out by comparing the words itself, never from the
+  AI's own account, and says "Large change" when more than half the words
+  changed. **Talk about it** (**Alt+A**) makes everything you say an
+  instruction, without the command word.
+- **Insert** (**Ctrl+Enter**, or say **"QUILL insert it"**) puts the words
+  where they came from, as one step that Ctrl+Z takes back. The words as you
+  said them and as they went in both go into Recent Phrases.
+
+| Key | What it does | Say, after the command word |
+|---|---|---|
+| **Ctrl+Enter** | Insert the words | "insert it" |
+| **Ctrl+R** | Read all the words aloud | "read it back" |
+| **Ctrl+D** | Say again what the last change did | "what changed" |
+| **Ctrl+Z** | Undo the AI's last change; with none, undo your typing | "undo that change" |
+| **Ctrl+Shift+Z** | Back to the words exactly as you said them | "back to what I said" |
+| **Escape** | Stop a request on its way; otherwise discard the words, asking first if the AI changed them | "discard it" |
+
+Changing words with AI needs AI help switched on in Customize Features and your
+ChatGPT subscription or your own AI key, as Tidy Dictated Text does; it never
+uses the free service's allowance, and each change you ask for is one request.
+The first time, QUILL Lite asks before anything is sent and names who receives
+it; No is the default and sends nothing. Only the words in the window and your
+instruction are sent, with My Dictation Instructions if you wrote any; this
+document's dictation context goes too only if you check **Include this
+document's dictation context with requests** (**Alt+O**). With AI off, "QUILL
+review that" says "AI is off. Your words were written as you said them." and
+leaves them where they were, and Shift+F4 still opens the window to edit and
+insert by hand.
+
+If you close the window with Close, or QUILL Lite closes or stops unexpectedly,
+your words are kept: the next time it starts it says so, and Review Dictation
+brings them back. Discard throws them away. To send everything you dictate to
+the window first, turn on **Send dictation to review first** (**Alt+V**) in More
+Dictation Settings.
+
 ### Starting and stopping with your voice
 
 #### The wake phrase
@@ -4152,6 +4207,7 @@ you change here is saved when you press OK in Dictation Settings.
 | Command word (Alt+C) | The word you say before a command, like QUILL scratch that; empty for none; see "The command word" | QUILL |
 | Commands only after the command word (strict mode) (Alt+E) | A command said on its own is written as words; the stop phrase always works | Unchecked (checked in QUILL Transcribe) |
 | Seconds command mode waits for a command (Alt+D) | How long command mode lasts with no command, from 5 to 30 | 8 |
+| Send dictation to review first (Alt+V) | What you dictate goes into Review Dictation instead, to insert once; see "Review before inserting" | Unchecked |
 
 #### Dictating in Spanish
 

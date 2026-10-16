@@ -39,6 +39,10 @@ fails on any difference.
   as if the command word came first; pressed twice, command mode. Free in both
   editors and in the F11 family with the dictation keys; Word's F11 is Next
   Field, which neither editor has (``quill/ui/windows_dictation_command_key.py``).
+* **Shift+F4**, Review Dictation (2026-10-15, D-2): the last phrase, or the
+  held words, in a window to read, change with AI and insert once. Free in both
+  editors; the F11 family is full, and F4 alone is unbound in both, so a missed
+  Shift does nothing (``quill/ui/windows_dictation_review.py``).
 """
 
 from __future__ import annotations
@@ -78,4 +82,11 @@ DICTATION_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
     ),
     ("&Tools|&Dictation", "Dictation St&atus", "Alt+F9", "cmd_dictation_status", ""),
     ("&Tools|&Dictation", "Speak a Co&mmand", "F11", "cmd_dictation_command", ""),
+    (
+        "&Tools|&Dictation",
+        "Re&view Dictation...",
+        "Shift+F4",
+        "cmd_dictation_review",
+        "",
+    ),
 )

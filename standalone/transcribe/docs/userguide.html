@@ -640,6 +640,59 @@ QUILL.</p>
 menu) lists exactly what works in other programs, and nothing that does
 not, followed by your own words and phrases from My Words and
 Phrases.</p>
+<h2 id="review-before-it-is-typed">Review before it is typed</h2>
+<p>Sometimes you want to hear and check what you said before it goes
+into the email. Say <strong>“QUILL review that”</strong>: the last
+phrase is backspaced away again (or, if dictation was paused, the words
+it was holding are taken) and opened in the <strong>Review
+Dictation</strong> window. Nothing more is typed into the other program
+until you insert it.</p>
+<ul>
+<li><strong>Read the words</strong> with the arrow keys. They are in an
+ordinary text box, so your screen reader reads them by line, word and
+character, and a braille display shows them. Type to change them, or
+keep talking: while the window is open, what you say is written into it,
+and the program you were in is left alone. This is an expected pause, so
+you do not hear “Dictation paused”.</li>
+<li><strong>Ask the AI to change them</strong>: say <strong>“QUILL make
+it shorter”</strong>, <strong>“QUILL more formal”</strong> or
+<strong>“QUILL fix the grammar only”</strong>, or type the instruction
+in <strong>Ask the AI to change it</strong> (Alt+K) and press Enter. You
+hear “Working”, then what changed, in two sentences at most, such as
+“Changed next Thursday to Friday. Removed um, so.” QUILL Transcribe
+works that out by comparing the words itself, never from the AI’s own
+account. <strong>Talk about it</strong> (Alt+A) makes everything you say
+an instruction, without the command word.</li>
+<li><strong>Insert</strong> (Ctrl+Enter, or say <strong>“QUILL insert
+it”</strong>) goes back to the field you were dictating into and types
+the words there once, with the same checks as every phrase: the same
+field, no password field, nothing on the list of programs it never types
+into. If the field cannot be typed into, nothing is typed, you are told
+why, and the words are in Recent Phrases (Shift+F11) for Insert Again.
+“QUILL scratch that” takes the inserted words back out.</li>
+</ul>
+<p>The window’s other keys: Ctrl+R reads all the words (“QUILL read it
+back”), Ctrl+D says again what changed (“QUILL what changed”), Ctrl+Z
+undoes the AI’s last change (“QUILL undo that change”), Ctrl+Shift+Z
+goes back to exactly what you said (“QUILL back to what I said”), and
+Escape stops a request on its way or discards the words (“QUILL discard
+it”). From the QUILL Transcribe window, <strong>Review
+Dictation</strong> (Shift+F4, in the Dictation menu, the key QUILL and
+QUILL Lite use) opens it too, empty if there is nothing to take.</p>
+<p><strong>The AI.</strong> QUILL Transcribe has no AI menu of its own.
+It uses what you set up in QUILL: your ChatGPT subscription (Use My
+ChatGPT Subscription) or your own key (Use My Own AI Key). Without
+either, or in Safe Mode, AI is off: “QUILL review that” says “AI is off.
+Your words were written as you said them.” and leaves the phrase typed,
+and the window still opens from Shift+F4 to edit and insert by hand. The
+first time, QUILL Transcribe asks before anything is sent and names who
+receives it; No is the default and sends nothing. Only the words in the
+window and your instruction are sent, with My Dictation Instructions if
+you wrote any; nothing is ever read from the other program. Each change
+you ask for is one request.</p>
+<p>To send everything you say to the review window first, turn on
+<strong>Send dictation to review first</strong> (Alt+V) in More
+Dictation Settings.</p>
 <h2 id="models">Models</h2>
 <h3 id="choosing-a-model">Choosing a model</h3>
 <p>Open <strong>Choose Model</strong> (Ctrl+M). Every model is listed
@@ -728,10 +781,10 @@ and QUILL Lite</h3>
 it has the same key: Ctrl+F11 starts and stops, Alt+Shift+F6 opens
 Dictation Settings, Alt+Shift+F10 opens My Words and Phrases,
 Ctrl+Shift+F11 switches the language, Shift+F11 opens Recent Phrases,
-F11 is Speak a Command, and Shift+F5 transcribes a recording. The keys
-from version 1.0 (Ctrl+D, Ctrl+, and Ctrl+O) still work. These work in
-the QUILL Transcribe window; from other programs, use your start and
-stop key.</p>
+F11 is Speak a Command, Shift+F4 is Review Dictation, and Shift+F5
+transcribes a recording. The keys from version 1.0 (Ctrl+D, Ctrl+, and
+Ctrl+O) still work. These work in the QUILL Transcribe window; from
+other programs, use your start and stop key.</p>
 <p>Three of the editors’ dictation commands are not in QUILL Transcribe,
 because they work on a document and QUILL Transcribe has none: Live
 Transcript, Dictation Context and Tidy Dictated Text. Dictation Status
@@ -864,6 +917,10 @@ tray menu still open so you can look at your settings.</p>
 <li>Nothing is recorded before you start dictation.</li>
 <li>Recordings and transcripts of your dictation are not kept. Held
 words live in memory only until you resume, discard, stop or exit.</li>
+<li>Words waiting in Review Dictation are kept in a file in QUILL’s data
+folder while the window is open, so a crash does not lose them, and the
+file is deleted when you insert or discard them. Close keeps them for
+next time.</li>
 <li>QUILL Transcribe never writes what you said, or what is in other
 programs, to its logs.</li>
 <li>There is no usage tracking of any kind.</li>
@@ -904,6 +961,10 @@ other apps use them too.</li>
 <tr>
 <td>Speak a command</td>
 <td>F11</td>
+</tr>
+<tr>
+<td>Review dictation</td>
+<td>Shift+F4</td>
 </tr>
 <tr>
 <td>Recent phrases</td>

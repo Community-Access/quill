@@ -110,6 +110,14 @@ class LockedTarget:
         self._locked = place
         return ""
 
+    def locked_window(self) -> int:
+        """The locked field's window handle, or 0: where Review Dictation's
+        Insert brings the focus back to before it types (D-2)."""
+        place = self._locked
+        if isinstance(place, tuple) and place and isinstance(place[0], int):
+            return place[0]
+        return 0
+
     def release(self) -> None:
         """The session is over: the next one locks afresh."""
         self._locked = None

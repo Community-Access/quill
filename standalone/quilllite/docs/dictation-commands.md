@@ -26,6 +26,23 @@ Everything QUILL Lite and QUILL's Live Dictation understand, generated from the 
 | "command mode" | Everything you say is a command, with no command word, until you say dictation mode or stop giving commands for a few seconds. You hear a falling tone when it ends. |
 | "dictation mode" | Leaves command mode at once: what you say is written again. |
 
+## Review before inserting
+
+- Say "QUILL review that" to take the last phrase back out and hold it in Review Dictation (Shift+F4), where you can read it, edit it, ask the AI to change it and insert it once. Nothing is written until you insert it.
+- While the review is open, what you say is written into it. Say the command word first to give an instruction instead, or turn on Talk About It in the window.
+- Changing words with AI needs AI help switched on and your ChatGPT subscription or your own AI key. With AI off, the review still lets you edit and insert.
+
+| Say, after the command word | What happens |
+|---|---|
+| "review that" or "review it" | Takes the last phrase back out, or the words held while paused, and opens it in Review Dictation to read, change and insert. With AI off, the words stay where they were written. |
+| "make it shorter" or "more formal" or "fix the grammar only" | While reviewing: asks the AI to change the words. Anything else said after the command word while reviewing is an instruction too. You hear what changed. |
+| "what changed" | While reviewing: says again what the last change did. |
+| "read it back" or "read it" | While reviewing: reads the whole text. |
+| "undo that change" or "undo the change" | While reviewing: takes back the last change. |
+| "back to what i said" | While reviewing: puts back the words exactly as you said them. |
+| "insert it" | While reviewing: writes the text where it was going, once. |
+| "discard it" | While reviewing: throws the text away; nothing is written. |
+
 ## Punctuation
 
 | Say | Writes |

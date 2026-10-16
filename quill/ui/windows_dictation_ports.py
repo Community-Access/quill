@@ -324,6 +324,12 @@ class HostFeedback:
 
         return DictationLibrary(self._host)
 
+    def review(self) -> Any:
+        """Review Dictation (D-2): the window held words wait in before Insert."""
+        from quill.ui.windows_dictation_review import review_desk
+
+        return review_desk(self._host)
+
     def set_speech_language(self, language: str) -> None:
         """Switch the dictation language, and save it (a choice, not a mode)."""
         self._host._dictation_set_speech_language(language)

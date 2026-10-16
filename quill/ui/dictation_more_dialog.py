@@ -151,6 +151,16 @@ class MoreDictationDialog(wx.Dialog):
         )
         root.Add(self.timestamps, 0, wx.ALL, _PAD)
 
+        self.review_first = wx.CheckBox(self, label="Send dictation to re&view first")
+        self.review_first.SetValue(bool(value("windows_dictation_review_first", False)))
+        self.review_first.SetHelpText(
+            "When this is on, what you dictate goes into the Review Dictation window "
+            "instead of the document or the other program. Read it, change it, and "
+            "press Control Enter to insert it once. Off by default: then say QUILL "
+            "review that, or press Review Dictation, when you want a phrase reviewed."
+        )
+        root.Add(self.review_first, 0, wx.ALL, _PAD)
+
         self._my_words = my_words
         self._add_command_word(root, value)
 
@@ -460,4 +470,5 @@ class MoreDictationDialog(wx.Dialog):
             "windows_dictation_command_prefix": " ".join(self.command_prefix.GetValue().split()),
             "windows_dictation_command_prefix_required": self.command_required.GetValue(),
             "windows_dictation_command_timeout": int(self.command_timeout.GetValue()),
+            "windows_dictation_review_first": self.review_first.GetValue(),
         }
