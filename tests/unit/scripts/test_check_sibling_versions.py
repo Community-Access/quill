@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib.util
+import re
 from pathlib import Path
 
 import pytest
@@ -86,3 +87,93 @@ def test_every_site_names_a_real_constant(gate) -> None:
     for site in gate.SITES:
         version = gate.source_version(site)
         assert gate.parse_version(version), (site.app, version)
+
+
+# -- the table knows every app that ships (2026-10-15) ---------------------------
+#
+# SITES lacked Beacon, Social and Audio Studio, so ``build-quill-apps.ps1 all``
+# -- which names every app it builds -- stopped at "unknown app(s)" and no app's
+# version was checked by any joint build. These hold the table against every
+# other list of the apps that ship, so the next app added to one of them fails
+# here with its name rather than turning the gate off.
+
+
+def _site_apps(gate) -> set[str]:
+    return {site.app for site in gate.SITES}
+
+
+def _build_scripts() -> dict[str, Path]:
+    """Every standalone installer build script, keyed by its folder (= app key)."""
+    return {
+        path.parents[1].name: path
+        for path in sorted((_REPO / "standalone").glob("*/scripts/build_release.ps1"))
+    }
+
+
+def test_every_app_with_a_build_constant_has_a_row(gate) -> None:
+    spec = importlib.util.spec_from_file_location(
+        "release_build_number", _REPO / "scripts" / "release_build_number.py"
+    )
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    constants = {app: where for app, where in module.BUILD_CONSTANTS.items() if app != "quill"}
+    missing = sorted(set(constants) - _site_apps(gate))
+    assert not missing, (
+        f"GATE-SIBVER has no row for {missing}: add an AppVersionSite to SITES in "
+        "scripts/check_sibling_versions.py, or every build that releases it stops the check."
+    )
+    assert _site_apps(gate) == set(constants), "SITES names an app release_build_number does not"
+    for site in gate.SITES:
+        assert (site.source, site.build_constant) == constants[site.app], site.app
+
+
+def test_every_app_build_quill_apps_can_build_has_a_row(gate) -> None:
+    script = (_REPO / "build-quill-apps.ps1").read_text(encoding="utf-8-sig")
+    ids = set(re.findall(r'Id = "([a-z]+)"', script)) - {"quill"}
+    assert ids, "the build-quill-apps.ps1 catalogue was not found"
+    missing = sorted(ids - _site_apps(gate))
+    assert not missing, (
+        f"build-quill-apps.ps1 can release {missing}, which GATE-SIBVER has no row for; "
+        "a joint build naming it would stop before checking any version."
+    )
+    assert gate.unknown_apps_problem(sorted(ids)) == ""
+
+
+def test_every_installer_build_runs_the_gate_for_its_own_app(gate) -> None:
+    scripts = _build_scripts()
+    assert scripts, "no standalone build scripts found"
+    for app, path in scripts.items():
+        assert app in _site_apps(gate), f"{path} builds {app}, which GATE-SIBVER has no row for"
+        text = path.read_text(encoding="utf-8-sig")
+        assert re.search(
+            rf'Assert-QuillSiblingVersions\b[^\n]*-Releasing @\("{app}"\)'
+            r"[^\n]*-Skip:\$SkipPublishedCheck",
+            text,
+        ), f"{path} never runs GATE-SIBVER for {app}"
+        assert "[switch]$SkipPublishedCheck" in text, path
+
+
+def test_tag_prefixes_are_the_ones_releases_are_tagged_with(gate) -> None:
+    from quill.core.release_tags import release_tag
+
+    for site in gate.SITES:
+        assert release_tag(site.app, "1.0.0") == f"{site.tag_prefix}1.0.0", site.app
+
+
+def test_an_app_missing_from_the_table_fails_loudly_and_says_so(gate, monkeypatch, capsys) -> None:
+    def no_network(**_kwargs):
+        raise AssertionError("an unknown app must be refused before releases are read")
+
+    monkeypatch.setattr(gate, "_published_tags", no_network)
+    assert gate.main(["--releasing", "radio", "--releasing", "nosuchapp"]) == 2
+    err = capsys.readouterr().err
+    assert "GATE-SIBVER cannot run" in err
+    assert "releases nosuchapp, which" in err
+    assert "AppVersionSite" in err
+    assert "no app's version was checked" in err
+
+
+def test_beacon_social_and_studio_are_in_the_gate(gate) -> None:
+    assert {"beacon", "social", "studio"} <= _site_apps(gate)
+    assert gate.unknown_apps_problem(["beacon", "social", "studio"]) == ""

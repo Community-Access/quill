@@ -76,9 +76,19 @@ class AppVersionSite:
     build_constant: str = ""
 
 
-#: Every app whose version travels in the shared runtime. An app with no
+#: Every app whose version travels in the shared runtime -- which is every app
+#: with a Windows installer except QUILL itself (``quill``), whose tags carry
+#: no prefix and whose installer does not ship the runtime. An app with no
 #: published release under its prefix yet is skipped: there is nothing to be
 #: ahead of, and the first release is the one that sets the mark.
+#:
+#: An app missing here is not skipped quietly: naming it in ``--releasing``
+#: exits 2 with a sentence saying so, and a build of every app
+#: (``build-quill-apps.ps1 all``) names every app. That is how this table
+#: lacking Beacon, Social and Audio Studio stopped every joint check from
+#: running at all until 2026-10-15. ``test_check_sibling_versions.py`` holds
+#: the table against ``release_build_number.BUILD_CONSTANTS``, the
+#: ``build-quill-apps.ps1`` catalogue and the installers in ``standalone/``.
 SITES: tuple[AppVersionSite, ...] = (
     AppVersionSite("radio", "quill/apps/radio.py", "_VERSION", "quill-radio-v", "_BUILD"),
     AppVersionSite(
@@ -95,6 +105,18 @@ SITES: tuple[AppVersionSite, ...] = (
     AppVersionSite("player", "quill/apps/player.py", "_VERSION", "quill-player-v", "_BUILD"),
     AppVersionSite(
         "cast", "quill/apps/podcasts_menu.py", "APP_VERSION", "quill-cast-v", "APP_BUILD"
+    ),
+    AppVersionSite("studio", "quill/apps/studio.py", "_VERSION", "quill-studio-v", "_BUILD"),
+    AppVersionSite("beacon", "quill/apps/beacon/app.py", "_VERSION", "quill-beacon-v", "_BUILD"),
+    # Quill Social's code is still its own package under standalone/ (it predates
+    # the rule that feature code lives in quill/apps); its runtime wheel carries
+    # this constant all the same.
+    AppVersionSite(
+        "social",
+        "standalone/social/quill_social/__init__.py",
+        "__version__",
+        "quill-social-v",
+        "__build__",
     ),
 )
 
@@ -195,6 +217,27 @@ def disagreements(
     return problems
 
 
+def unknown_apps_problem(releasing: list[str]) -> str:
+    """A sentence naming every app in *releasing* this gate has no row for, or "".
+
+    The gate refuses rather than skipping an app it cannot check: a joint build
+    names every app it ships, so one missing row would otherwise mean no app's
+    version was checked at all.
+    """
+    known = {site.app for site in SITES}
+    unknown = sorted(set(releasing) - known)
+    if not unknown:
+        return ""
+    return (
+        f"GATE-SIBVER cannot run: this build releases {', '.join(unknown)}, which "
+        f"scripts/check_sibling_versions.py has no row for in SITES. Add an "
+        f"AppVersionSite for each (the source file and constant that hold its "
+        f"version, its build constant, and its tag prefix) so its version is "
+        f"checked; no app's version was checked by this run. Known apps: "
+        f"{', '.join(sorted(known))}."
+    )
+
+
 def _published_tags(*, stable_only: bool = False) -> list[str]:
     """Every release tag in the release repo, read through the gh CLI.
 
@@ -245,9 +288,9 @@ def main(argv: list[str] | None = None) -> int:
         help="pass when the published releases cannot be read (dev builds only)",
     )
     args = parser.parse_args(argv)
-    unknown = set(args.releasing) - {site.app for site in SITES}
-    if unknown:
-        print(f"check_sibling_versions: unknown app(s) {sorted(unknown)}", file=sys.stderr)
+    problem = unknown_apps_problem(args.releasing)
+    if problem:
+        print(problem, file=sys.stderr)
         return 2
     try:
         tags = _published_tags(stable_only=args.channel == "stable")

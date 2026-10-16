@@ -67,6 +67,7 @@ $build, $fileVersion = Resolve-QuillReleaseBuild -QuillRepo $QuillRepo -Python $
 # final-numbered build (a Stable candidate) signs as before. The rule is
 # scripts\code_signing.py build-decision; see docs\code-signing.md.
 $null = Resolve-QuillSigning -QuillRepo $QuillRepo -Python $Python -Version $version
+Assert-QuillSiblingVersions -QuillRepo $QuillRepo -Python $Python -Releasing @("converter") -Skip:$SkipPublishedCheck
 
 # -- the version is one number ---------------------------------------------
 # The app's _VERSION, this script's $version and the .iss fallback must agree,

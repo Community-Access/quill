@@ -258,6 +258,14 @@ note on where to get its source were already in the
 <code>tools\ffmpeg</code> folder beside FFmpeg. The build and the
 installer now stop if either is ever missing, so a release cannot ship
 FFmpeg without them.</p></li>
+<li><p><strong>Every release build checks its version against what is
+published</strong> (2026-10-15). The shared QuillVille runtime carries
+every app’s version number, so a build of one app could make another
+report a version nobody can download yet, and Check for Updates would
+then never offer the real one. QUILL Audio Studio’s release builds now
+run the same check Quill Radio, QUILL Lite, QUILL Cast and Quill Weather
+already did, and a build of every app at once checks them all again
+instead of stopping at an app it did not know.</p></li>
 <li><p><strong>Where Audio Studio’s own sounds play, and Alt+Shift+M to
 turn them off.</strong> <strong>Studio &gt; Preferences &gt; App Sounds
 Play On…</strong> offers System default, None (no sounds), or any sound

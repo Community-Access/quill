@@ -33,6 +33,9 @@ param(
     # named -Offline-, then ALWAYS unstages -- a later app build packs the same
     # runtime dist and must not inherit hundreds of MB of speech models.
     [switch]$Offline,
+    # A Dev build, or one app of a joint release whose sibling check
+    # build-quill-apps.ps1 already ran once for every app (GATE-SIBVER).
+    [switch]$SkipPublishedCheck,
     [int]$Build = 0,
     [switch]$Sign
 )
@@ -67,6 +70,7 @@ $build, $fileVersion = Resolve-QuillReleaseBuild -QuillRepo $QuillRepo -Python $
 # final-numbered build (a Stable candidate) signs as before. The rule is
 # scripts\code_signing.py build-decision; see docs\code-signing.md.
 $null = Resolve-QuillSigning -QuillRepo $QuillRepo -Python $Python -Version $version
+Assert-QuillSiblingVersions -QuillRepo $QuillRepo -Python $Python -Releasing @("studio") -Skip:$SkipPublishedCheck
 Assert-QuillBuildEnv -Python $Python -QuillRepo $QuillRepo
 
 # -- render docs (html + epub from the markdown source) -----------------------

@@ -6,7 +6,7 @@
 #
 # Usage:
 #   .\scripts\build_release.ps1 [-Python <python.exe>] [-Iscc <path>]
-#                               [-SkipSharedRuntime]
+#                               [-SkipSharedRuntime] [-SkipPublishedCheck]
 #                               [-FfmpegDir <dir>] [-LibmpvDir <dir>]
 #
 # Quill Inkwell is a small app: no ffmpeg, no mpv, no media/AI stacks -- so,
@@ -33,6 +33,9 @@ param(
     [string]$Iscc = "",
     [string]$QuillRepo = "",
     [switch]$SkipSharedRuntime,
+    # A Dev build, or one app of a joint release whose sibling check
+    # build-quill-apps.ps1 already ran once for every app (GATE-SIBVER).
+    [switch]$SkipPublishedCheck,
     [int]$Build = 0,
     [switch]$Sign
 )
@@ -70,6 +73,7 @@ $build, $fileVersion = Resolve-QuillReleaseBuild -QuillRepo $QuillRepo -Python $
 # final-numbered build (a Stable candidate) signs as before. The rule is
 # scripts\code_signing.py build-decision; see docs\code-signing.md.
 $null = Resolve-QuillSigning -QuillRepo $QuillRepo -Python $Python -Version $version
+Assert-QuillSiblingVersions -QuillRepo $QuillRepo -Python $Python -Releasing @("inkwell") -Skip:$SkipPublishedCheck
 
 # -- render docs (html + epub from the markdown source) -----------------------
 & (Join-Path $PSScriptRoot "render_docs.ps1")

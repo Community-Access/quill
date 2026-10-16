@@ -40,6 +40,35 @@ Two P1 items from the todo.
   PDF with markitdown unimportable), `test_main_frame_docconvert.py`,
   `test_check_runtime_imports.py`.
 
+### GATE-SIBVER knows every app that ships, and every installer runs it (2026-10-15)
+
+`scripts/check_sibling_versions.py` stopped with "unknown app(s) beacon,
+social, studio" whenever `build-quill-apps.ps1` built every app, so no joint
+build had checked any version.
+
+- `SITES` gains Audio Studio (`quill/apps/studio.py`), Beacon
+  (`quill/apps/beacon/app.py`) and Social
+  (`standalone/social/quill_social/__init__.py`, `__version__`/`__build__`).
+  Nothing the check compares changed.
+- An app with no row is still refused (exit 2), now with a sentence naming it,
+  saying no version was checked, and saying how to add the row
+  (`unknown_apps_problem`).
+- Converter, Inkwell, Audio Studio, Beacon and Social's `build_release.ps1`
+  now call `Assert-QuillSiblingVersions` for their own app, as Radio, Lite,
+  Cast, Transcribe and Weather already did; the four that lacked it gain
+  `-SkipPublishedCheck`, which `build-quill-apps.ps1` passes after its joint
+  check.
+- Tests (`tests/unit/scripts/test_check_sibling_versions.py`): `SITES` must
+  match `release_build_number.BUILD_CONSTANTS` (file and build constant), cover
+  the `build-quill-apps.ps1` catalogue, and match `release_tags.release_tag`'s
+  prefixes; every `standalone/*/scripts/build_release.ps1` must run the gate
+  for its own app; an unknown app fails before any release is read.
+- Run against the published releases on 2026-10-15: a joint build of every
+  app, or of Radio and Lite, passes (Radio 3.2.0+4 against 3.0.4, Lite
+  1.2.0+5 against 1.1.2); a build of any one other app fails on both, as it
+  should. The gate asked for no version bump, so Radio and Lite stay at 3.2.0
+  and 1.2.0.
+
 ### Dictation: the never-type list, and Inkwell keeps its field (2026-10-15)
 
 D-24 and D-15 from the dictation plan, rescued from an uncommitted worktree.

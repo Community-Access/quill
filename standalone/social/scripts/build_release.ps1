@@ -21,6 +21,9 @@ param(
     [string]$Python = "",
     [string]$Iscc = "",
     [string]$QuillRepo = "",
+    # A Dev build, or one app of a joint release whose sibling check
+    # build-quill-apps.ps1 already ran once for every app (GATE-SIBVER).
+    [switch]$SkipPublishedCheck,
     [int]$Build = 0,
     [switch]$Sign
 )
@@ -50,6 +53,7 @@ $build, $fileVersion = Resolve-QuillReleaseBuild -QuillRepo $QuillRepo -Python $
 # final-numbered build (a Stable candidate) signs as before. The rule is
 # scripts\code_signing.py build-decision; see docs\code-signing.md.
 $null = Resolve-QuillSigning -QuillRepo $QuillRepo -Python $Python -Version $version
+Assert-QuillSiblingVersions -QuillRepo $QuillRepo -Python $Python -Releasing @("social") -Skip:$SkipPublishedCheck
 Assert-QuillBuildEnv -Python $Python -QuillRepo $QuillRepo
 
 # Authenticode code signing is opt-in (docs/code-signing.md). -Sign turns it on

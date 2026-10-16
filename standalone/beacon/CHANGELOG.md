@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- **Every release build checks its version against what is published** (2026-10-15). The shared QuillVille runtime carries every app's version number, so a build of one app could make another report a version nobody can download yet, and Check for Updates would then never offer the real one. Quill Beacon's release builds now run the same check Quill Radio, QUILL Lite, QUILL Cast and Quill Weather already did, and a build of every app at once checks them all again instead of stopping at an app it did not know.
+
 - **Where Quill Beacon's own sounds play, and Alt+Shift+M to turn them off.** **Tools > App Sounds Play On...** (Ctrl+Alt+S) offers System default, None (no sounds), or any sound card or headset by name. After a change one sound plays on the new card, so you hear where it went. If that card is unplugged the sounds play on the system default until it is back, and Quill Beacon says so once. **Alt+Shift+M** turns Quill Beacon's sounds off and back on where they were, and **Tools > App Sounds** shows a check mark while they are on. Each QUILL app keeps its own choice; "Share these choices with my other Quill apps" keeps them in step. Your screen reader is never moved. Asked for on QUILLVille by Rick Lewis.
 
 - **Two downloads, nothing else** (2026-10-11). QuillBeacon now comes as the

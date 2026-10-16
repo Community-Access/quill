@@ -258,11 +258,20 @@ folder carries only the launcher, installer, icon and these
 documents.</p>
 <h2 id="unreleased">Unreleased</h2>
 <ul>
-<li><strong>FFmpeg’s licence, checked on every build.</strong> FFmpeg’s
-licence (the GNU General Public License, version 3) and the note on
-where to get its source were already in the <code>tools\ffmpeg</code>
-folder beside FFmpeg. The build and the installer now stop if either is
-ever missing, so a release cannot ship FFmpeg without them.</li>
+<li><p><strong>FFmpeg’s licence, checked on every build.</strong>
+FFmpeg’s licence (the GNU General Public License, version 3) and the
+note on where to get its source were already in the
+<code>tools\ffmpeg</code> folder beside FFmpeg. The build and the
+installer now stop if either is ever missing, so a release cannot ship
+FFmpeg without them.</p></li>
+<li><p><strong>Every release build checks its version against what is
+published</strong> (2026-10-15). The shared QuillVille runtime carries
+every app’s version number, so a build of one app could make another
+report a version nobody can download yet, and Check for Updates would
+then never offer the real one. Quill Converter’s release builds now run
+the same check Quill Radio, QUILL Lite, QUILL Cast and Quill Weather
+already did, and a build of every app at once checks them all again
+instead of stopping at an app it did not know.</p></li>
 </ul>
 <h2 id="100--2026-09-28">1.0.0 – 2026-09-28</h2>
 <p>The first public release. The app was first built in July 2026 as an
