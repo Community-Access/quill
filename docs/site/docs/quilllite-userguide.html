@@ -2410,16 +2410,26 @@ Clipboard Collector</strong>). You hear “Clipboard collector on;
 anything you copy, in any program, appends to this document.”</li>
 <li>Go and work wherever you like. Each time you copy text, in any
 program, it is added to the end of that window, with a short line of
-dashes between pieces, and you hear “Collected clipboard text.” Copying
-the same thing twice in a row adds it only once.</li>
+dashes between pieces. If the window already has a file name, it is
+saved straight away and you hear “Collected and saved.” If it has never
+been saved, you hear “Collected clipboard text.” Copying the same thing
+twice in a row adds it only once.</li>
 <li>Press <strong>Alt+Shift+S</strong> again in that window to stop. You
 hear “Clipboard collector off.”</li>
 </ol>
 <p>A few things worth knowing:</p>
 <ul>
-<li><strong>It never saves for you.</strong> The window is marked as
-changed after each new piece, and it reaches the disk when you save it.
-If you close it without saving, QUILL Lite asks, as it always does.</li>
+<li><strong>It saves a named window for you.</strong> After each new
+piece, a window that already has a file name is saved quietly. An
+untitled window is never saved and no Save As window ever opens: it is
+marked as changed, and it reaches the disk when you save it. If a save
+cannot happen, for example the disk is full, another program has changed
+the file, or the file’s encoding cannot hold a character you copied, you
+hear “Collected, but not saved” and the reason, and collecting carries
+on; save it yourself to decide. To have collected text wait for you to
+save, clear <strong>Save after every clip the clipboard collector
+adds</strong> (<strong>Alt+Y</strong>) in <strong>Preferences</strong>.
+QUILL has the same setting.</li>
 <li><strong>One window at a time.</strong> Turn the collector on in a
 second window and it moves there, and tells you so. <strong>Edit &gt;
 Clipboard &gt; Clipboard Collector</strong> has a check mark in the

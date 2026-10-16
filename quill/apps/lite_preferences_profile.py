@@ -89,7 +89,7 @@ class ProfileRow:
         if not self._live:
             return
 
-        label = wx.StaticText(dialog, label="Feature pro&file:")
+        label = wx.StaticText(dialog, label="Feature profile:")
         self.choice = wx.Choice(dialog, choices=[p.name for p in self._profiles] + [CUSTOM_PROFILE])
         set_accessible_name(self.choice, "Feature profile")
         # Inline at the construction site, which is the only place the help

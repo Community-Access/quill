@@ -239,7 +239,7 @@ def edit_preferences(
     # &U, because every other letter in "Look for updates" is spoken for in
     # this window and Windows cycles focus between two controls with the same
     # access key rather than pressing either (GATE-14).
-    updates = wx.CheckBox(dialog, label="Look for &updates when QUILL Lite starts")
+    updates = wx.CheckBox(dialog, label="L&ook for updates when QUILL Lite starts")
     updates.SetHelpText(
         "Once a day, when the app opens, ask GitHub whether a newer QUILL Lite "
         "has been published. Nothing is said unless there is one, and nothing "
@@ -301,7 +301,7 @@ def edit_preferences(
     quotes.SetValue(bool(getattr(settings, "autoformat_smart_quotes", False)))
     root.Add(quotes, 0, wx.LEFT | wx.RIGHT, _PAD)
 
-    dashes = wx.CheckBox(dialog, label="Turn two hyphens into an em &dash")
+    dashes = wx.CheckBox(dialog, label="Turn two hyphens into an em dash")
     dashes.SetHelpText(
         "Typing a second hyphen replaces both with a single long dash. Same "
         "two conditions as curly quotes: Autocorrect switched on, and not in a "
@@ -420,7 +420,7 @@ def edit_preferences(
     # label above it is not read with it -- so "Choose button" was a button that
     # named no noun, and the only way to find out what it chose was to press it
     # and listen to the dialog that opened.
-    choose_btn = wx.Button(dialog, label="C&hange Font...")
+    choose_btn = wx.Button(dialog, label="Change Font...")
     choose_btn.SetHelpText("Open the font chooser and pick a face and size for the editor.")
     font_row.Add(font_field, 1, wx.RIGHT | wx.ALIGN_CENTRE_VERTICAL, _PAD)
     font_row.Add(choose_btn, 0)

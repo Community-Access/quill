@@ -279,6 +279,20 @@ note on where to get its source were already in the
 <code>tools\ffmpeg</code> folder beside FFmpeg. The build and the
 installer now stop if either is ever missing, so a release cannot ship
 FFmpeg without them.</p></li>
+<li><p><strong>Recordings no longer start with the station’s
+advert.</strong> Many stations play an advert, or a “you are listening
+to” message, to every new listener. A recording is a new listener, so it
+could begin with that advert instead of the programme you were hearing,
+and a recording that lost its connection could pick up a second advert
+in the middle of the show. Quill Radio now listens to the station once
+more, briefly, when a recording starts, and when the recording ends it
+cuts whatever the two connections (and any reconnected parts) began with
+in common, before joining the parts. You hear how much was removed. When
+the advert differs each time, or there is none, nothing is cut. There is
+nothing to set. A dropped connection now always continues in a new part,
+rather than quietly reconnecting inside the same file where an advert
+could not be found again. User guide: “Station adverts at the start of a
+recording” in Chapter 8.</p></li>
 <li><p><strong>Quill Radio’s own sounds play on the radio’s sound
 card.</strong> The sounds for connecting, playing, stopped, stream
 errors, recording started and stopped, and reminders now go to the same

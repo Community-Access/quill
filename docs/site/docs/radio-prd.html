@@ -468,9 +468,30 @@ an in-place diff keyed by file path (no-op when unchanged;
 selection/focus/scroll preserved), not a rebuild; the active row shows a
 live elapsed time and scheduled rows show their zone-labeled times; the
 tray tooltip carries “(recording)”.</li>
-<li>Auto-reconnect: ffmpeg HTTP reconnect flags plus process-level retry
-into numbered part files; enabled/attempts/spacing configurable; user
-stops and duration-cap finishes never retry.</li>
+<li>Auto-reconnect: process-level retry into numbered part files;
+enabled/attempts/spacing configurable; user stops and duration-cap
+finishes never retry. ffmpeg is not allowed to re-request a live stream
+inside one file (no <code>-reconnect_streamed</code>, 2026-10-15): a
+drop ends the part, and ffmpeg’s exit 0 on a dead input is read from its
+last stderr lines (or the growth watch’s stall verdict) as the drop it
+is.</li>
+<li>Pre-roll guard (2026-10-15; upstream
+<code>core/radio/recording_preroll.py</code>,
+<code>recording_preroll_guard.py</code>; xradio2 section 6.1): many
+stations play an advert to every new connection, so a recording could
+open with it, and a reconnect could splice a second one mid-show. On a
+recording’s first connection to a live http(s) stream (not HLS, not
+YouTube) one reference connection opens 20 seconds later and its first
+75 seconds are decoded to a loudness outline in memory. At finalize
+every part’s opening is compared with the reference and the other parts;
+what two connections share from their first moment (4 to 70 seconds,
+audible and varying) is cut from the front of each part by stream copy
+before the join, and a continuation part that was only the insert is
+removed. The listener hears how much was removed. When unsure it cuts
+nothing, so a rotating advert or no advert leaves the file as captured.
+No setting. Recording from the player’s own connection (FreeRadio’s
+approach) was not built: scheduled recordings and reconnects have no
+live connection to reuse.</li>
 <li>Settings: format (mp3/ogg/flac/wav, plus a raw stream-copy mode),
 bitrate, destination, filename pattern with tokens, max-duration safety
 cap.</li>
@@ -882,7 +903,11 @@ endpoint; and the QUILL repository’s GitHub releases (tags
 the metadata/status requests send a “Quill Radio” User-Agent. No
 telemetry of any kind. (Sound Enhancements’ local relay, §8, is
 loopback-only and never reaches the network itself – it filters the same
-stream this section already covers.)</li>
+stream this section already covers.) A recording of a live http(s)
+station also opens one short reference connection to that same station,
+20 seconds after it starts, so the pre-roll guard can hear what the
+station plays to every new listener (documented in the audit beside the
+recording’s own ffmpeg).</li>
 <li>N-2. Safe Mode disables the radio’s network surfaces along with the
 feature, <strong>per branch</strong> rather than as one app-wide switch:
 <code>browse_sources.LOCAL_SOURCES</code> names the branches that need
