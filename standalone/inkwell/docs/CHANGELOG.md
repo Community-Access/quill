@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- **Fixing it when you correct yourself** (2026-10-16). With **Fix it when I
+  correct myself** (Alt+X) checked in Dictation Settings, "Thursday, no,
+  Friday" types Friday: a "no", "I mean", "sorry" or "scratch that word"
+  between two days, months, numbers or names from My Words keeps the second.
+  Anything else is typed as said, and it is off until you turn it on.
+  **Dictation style** (Alt+Y) sets it and filler removal together, as
+  Verbatim or Clean. The same as in QUILL, QUILL Lite and QUILL Transcribe.
+
 - **Speech providers in Dictate Anywhere** (2026-10-16). Dictation Settings has the editors' **Speech Providers...** button (Alt+V), so Dictate Anywhere can use a speech company you already have an account with. Keys go to Windows Credential Manager, and you are asked before anything is sent.
 
 - **Every release build checks its version against what is published** (2026-10-15). The shared QuillVille runtime carries every app's version number, so a build of one app could make another report a version nobody can download yet, and Check for Updates would then never offer the real one. Quill Inkwell's release builds now run the same check Quill Radio, QUILL Lite, QUILL Cast and Quill Weather already did, and a build of every app at once checks them all again instead of stopping at an app it did not know.

@@ -330,6 +330,18 @@ class HostFeedback:
 
         return review_desk(self._host)
 
+    # -- learning from corrections (D-21, correction_learning.py) --------------- #
+
+    def words_path(self) -> Any:
+        """Where a learned correction is saved: this editor's ``dictation.md``."""
+        return self._host._dictation_profile_path()
+
+    def confirm_correction(self, question: str, on_yes: Any) -> None:
+        """ "Add a correction: A becomes B?" in a yes/no window, No the default."""
+        from quill.ui.windows_dictation_learn import confirm_correction
+
+        confirm_correction(self._host._dictation_parent(), question, on_yes)
+
     def set_speech_language(self, language: str) -> None:
         """Switch the dictation language, and save it (a choice, not a mode)."""
         self._host._dictation_set_speech_language(language)

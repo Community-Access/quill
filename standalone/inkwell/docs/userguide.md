@@ -476,6 +476,19 @@ difference: the read-back after each phrase starts as a tone rather than the
 words, because your screen reader can already read out what is typed, and hearing
 everything twice gets tiring. You can change that in the same window.
 
+**Correcting yourself as you talk.** Check **Fix it when I correct myself,
+like Thursday, no, Friday** (Alt+X) in Dictation Settings, and when you say
+"no", "I mean", "sorry" or "scratch that word" between two days, two months,
+two numbers or two names from My Words and Phrases, only the second is typed:
+"meet on Thursday, no, Friday" types "meet on Friday", and "call me at 5,
+sorry, 6" types "call me at 6". Anything else, such as "no, I don't think so",
+is typed as you said it. It happens on this computer, before anything is typed,
+and it is off until you turn it on. **Dictation style** (Alt+Y) sets it and
+**Remove filler words** together: **Verbatim** turns both off and **Clean**
+turns both on. The editors also offer **Polished**, which needs their Review
+Dictation window; Inkwell does not have that window, so the **Allow polishing
+my dictation with AI** box in More Dictation Settings does nothing here.
+
 **What works in another program.** Spoken punctuation, spelling, "caps on", "all
 caps on" and "no space on", switching between English and Spanish, and "scratch
 that". "Scratch that" erases the phrase that was just typed, but only while you

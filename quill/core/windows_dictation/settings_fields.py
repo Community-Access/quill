@@ -100,6 +100,10 @@ class DictationSettings:
     # store, never here. The consent is a version per provider, 0 for never.
     windows_dictation_speech_providers: dict[str, dict[str, str]] = field(default_factory=dict)
     windows_dictation_speech_provider_consent: dict[str, int] = field(default_factory=dict)
+    # 2026-10-16 (D-20): keep the second of "Thursday, no, Friday" (self_repair.py),
+    # and (P3) allow "polish that", one AI request in Review Dictation. Both off.
+    windows_dictation_self_repair: bool = False
+    windows_dictation_polish: bool = False
 
 
 def load_fields(data: Mapping[str, Any]) -> dict[str, Any]:
@@ -186,6 +190,8 @@ def load_fields(data: Mapping[str, Any]) -> dict[str, Any]:
         "windows_dictation_speech_provider_consent": _provider_consent(
             data.get("windows_dictation_speech_provider_consent")
         ),
+        "windows_dictation_self_repair": bool(data.get("windows_dictation_self_repair", False)),
+        "windows_dictation_polish": bool(data.get("windows_dictation_polish", False)),
     }
 
 

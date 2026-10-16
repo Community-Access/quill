@@ -31,6 +31,7 @@ Everything QUILL Lite and QUILL's Live Dictation understand, generated from the 
 - Say "QUILL review that" to take the last phrase back out and hold it in Review Dictation (Shift+F4), where you can read it, edit it, ask the AI to change it and insert it once. Nothing is written until you insert it.
 - While the review is open, what you say is written into it. Say the command word first to give an instruction instead, or turn on Talk About It in the window.
 - Changing words with AI needs AI help switched on and your ChatGPT subscription or your own AI key. With AI off, the review still lets you edit and insert.
+- "QUILL polish that" asks the AI to fix punctuation, capitals and small slips and keep your words. It works only after you turn on Allow polishing my dictation with AI in More Dictation Settings, and nothing is sent until you agree.
 
 | Say, after the command word | What happens |
 |---|---|
@@ -40,8 +41,14 @@ Everything QUILL Lite and QUILL's Live Dictation understand, generated from the 
 | "read it back" or "read it" | While reviewing: reads the whole text. |
 | "undo that change" or "undo the change" | While reviewing: takes back the last change. |
 | "back to what i said" | While reviewing: puts back the words exactly as you said them. |
+| "polish that" or "polish it" | Asks the AI to fix punctuation, capitals and small slips in the words, keeping your words; opens the last phrase in Review Dictation first. Only when Allow polishing my dictation with AI is on, and only after you agree to send. You hear what changed; nothing is inserted until you insert it. |
 | "insert it" | While reviewing: writes the text where it was going, once. |
 | "discard it" | While reviewing: throws the text away; nothing is written. |
+
+## Correcting yourself as you talk
+
+- With Fix it when I correct myself turned on in Dictation Settings, saying "no", "I mean", "no I mean", "sorry" or "scratch that word" between two days, months, numbers or names from My Words writes only the second: "Thursday, no, Friday" writes Friday. Anything else is written as said.
+- When you correct the same word the same way twice, with "correct that" and "choose", or with "correct" and the word, dictation offers to remember it: "Add a correction: Ann becomes Anne?" In QUILL and QUILL Lite a window asks. Where no window can be shown the question is spoken: say "QUILL yes" to add it or "QUILL no" within 30 seconds. Nothing is added without a yes.
 
 ## Punctuation
 

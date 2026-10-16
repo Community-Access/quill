@@ -5565,6 +5565,38 @@ and version; nothing in Safe Mode; one reviewed egress entry per call
 site; failures as one sentence naming the field. The design record’s
 section 23 has the details and what remains.</p>
 </blockquote>
+<blockquote>
+<p><strong>Self-repair, named styles, learning corrections and opt-in
+polish (D-20, D-21, 2026-10-16).</strong> Requirements, shared by QUILL,
+QUILL Lite, QUILL Transcribe and Quill Inkwell:</p>
+<ul>
+<li><em>Self-repair</em> is local, deterministic and conservative: a
+repair marker (“no”, “I mean”, “no I mean”, “sorry”, “scratch that
+word”) between two words of one kind (day, month, number, a name in My
+Words) keeps the second; anything else is written as said, and a
+false-positive table is tested. Off by default
+(<code>windows_dictation_self_repair</code>); never in a live
+transcript.</li>
+<li><em>Dictation style</em> names existing choices – Verbatim, Clean,
+and Polished only when AI is on – and stores nothing of its own; a
+hand-made mix shows as “Your own mix”.</li>
+<li><em>Polish my dictation</em> is opt-in
+(<code>windows_dictation_polish</code>, off), one fixed request per ask
+(“QUILL polish that”, or Polish, Ctrl+P, in Review Dictation), never
+automatic. It reuses Review Dictation’s consent and account routes
+(ChatGPT subscription or own key; never the free allowance) and adds no
+network call site. Automatic AI clean-up of every phrase stays
+declined.</li>
+<li><em>Learning corrections</em> offers “Add a correction: A becomes
+B?” after the second identical voice correction, once per run, and never
+adds without a yes: a Yes/No window (No default) in the editors, “QUILL
+yes” in Transcribe. Counts live in memory only.</li>
+<li><em>Per-context lists</em> (<code>## Context: email</code> in
+<code>dictation.md</code>) are parsed and kept; they take effect with
+named profiles (D-23), not yet built. The design record’s section 28 has
+the details.</li>
+</ul>
+</blockquote>
 <h3 id="525f-ai-footprint-on-demand-acquisition-and-optimization">5.25f
 AI footprint, on-demand acquisition, and optimization</h3>
 <p>QUILL’s guiding aim is to be <strong>as capable as possible on

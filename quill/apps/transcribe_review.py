@@ -129,6 +129,15 @@ class TranscribeReviewMixin:
             ),
         )
 
+    def _review_ai_on(self) -> bool:
+        """Whether a review could ask the AI now: Dictation Settings offers
+        the Polished style only then (D-20)."""
+        try:
+            ai = self._review_ai()
+            return bool(ai is not None and not ai.reason())
+        except Exception:  # noqa: BLE001 - unknown is off
+            return False
+
     def _review_rescue_path(self) -> Path:
         return Path(self._data_dir) / RESCUE_FILE
 
@@ -146,6 +155,10 @@ class TranscribeReviewMixin:
 
     def _review_context_setting(self) -> bool:
         return False
+
+    def _review_polish_on(self) -> bool:
+        """Allow polishing my dictation with AI (P3, opt-in, off by default)."""
+        return bool(self._settings.dictation.get("windows_dictation_polish", False))
 
     def _review_set_context(self, on: bool) -> None:
         del on

@@ -421,6 +421,69 @@ for is one request.
 To send everything you say to the review window first, turn on **Send
 dictation to review first** (Alt+V) in More Dictation Settings.
 
+### Polishing what you said, only when you ask
+
+**Polish** tidies punctuation, capital letters and small slips without
+rewording anything, before the words are typed into the other program. It is
+one request you ask for each time, it is off until you turn it on, and it never
+runs by itself.
+
+1. Open **Dictation Settings** (Alt+Shift+F6), press **More Dictation
+   Settings**, and check **Allow polishing my dictation with AI when I ask**
+   (Alt+G). Press OK in both windows.
+2. Dictate into your email as usual. When you want the last phrase polished,
+   say **"QUILL polish that"** (or "QUILL polish it"). The phrase is backspaced
+   away and opened in Review Dictation, then the polish request is made there.
+   If Review Dictation is already open, the words in it are polished.
+3. In the Review Dictation window you can also press **Polish** (Ctrl+P). The
+   button is there only while polishing is allowed.
+4. You hear "Polishing", then what changed. Read the words, then **Insert**
+   (Ctrl+Enter, or "QUILL insert it") types them into the field once, or Undo
+   Change (Ctrl+Z) takes the polish back.
+
+The AI is asked to fix punctuation, capital letters, spelling and obvious
+grammar slips only, and to keep your words, meaning, order and tone. It uses
+the same AI and the same first-time question as the rest of the review: nothing
+is sent until you say yes, and only the words in the window go. With AI off the
+Polish button is greyed out, and with polishing not allowed "QUILL polish that"
+says "Polish my dictation is off" and sends nothing.
+
+### Correcting yourself as you talk
+
+With **Fix it when I correct myself, like Thursday, no, Friday** (Alt+X)
+checked in Dictation Settings, QUILL Transcribe types only what you meant when
+you correct yourself in the middle of a sentence:
+
+| You say | QUILL Transcribe types |
+|---|---|
+| meet on Thursday, no, Friday at noon | meet on Friday at noon |
+| in June, no I mean July | in July |
+| I have two no three cats | I have three cats |
+| call me at 5, sorry, 6 | call me at 6 |
+| send it to Ana, sorry, Maria (both names in My Words) | send it to Maria |
+
+The marking words are "no", "I mean", "no I mean", "sorry" and "scratch that
+word", and a correction is made only between two days, two months, two numbers
+or two names from the Vocabulary list in My Words and Phrases. Everything else
+is typed as you said it: "no, I don't think so" and "Is it Thursday? No,
+Friday." stay as they are. The fix happens on this computer before anything is
+typed, with no AI. It is off until you turn it on.
+
+**Dictation style** (Alt+Y), in the same window, sets these choices together:
+**Verbatim** (every word as you say it), **Clean** (no filler words, and your
+corrections fixed) or, only when AI is set up in QUILL, **Polished** (Clean,
+plus Send dictation to review first and Allow polishing my dictation with AI).
+Choosing Polished sends nothing by itself. Change a check box yourself and the
+style shows **Your own mix of the settings below**.
+
+**Remembering a correction.** In QUILL and QUILL Lite, correcting the same word
+the same way twice offers to add it to My Words and Phrases. That needs
+"correct that" or "correct" and a word, which only work in QUILL's own
+documents, so it does not come up while you dictate into another program. If it
+ever does here, the question is spoken, never shown in a window that would take
+the focus: "Add a correction: Ann becomes Anne? Say QUILL yes to add it, or
+QUILL no." Answer within 30 seconds; nothing is added without a yes.
+
 ## Models
 
 ### Choosing a model
@@ -507,8 +570,9 @@ if the default changes.
 
 **Dictation Settings** (Alt+Shift+F6, the key QUILL and QUILL Lite use; Ctrl+,
 still works) is the same window QUILL and QUILL Lite use: language,
-punctuation, filler words, how long a pause ends a phrase, what you hear after
-each phrase, and your dictation word list. QUILL Transcribe keeps its own copy
+punctuation, filler words, the dictation style and fixing it when you correct
+yourself (see Correcting yourself as you talk), how long a pause ends a phrase,
+what you hear after each phrase, and your dictation word list. QUILL Transcribe keeps its own copy
 of these settings, so changing them here does not change QUILL's. The wake
 phrase and holding the key to talk work here too, both off until you turn them
 on (see Holding the key to talk, and Starting with your voice).

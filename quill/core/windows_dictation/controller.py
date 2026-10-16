@@ -74,6 +74,7 @@ from quill.core.windows_dictation.preferences import (
 )
 from quill.core.windows_dictation.readback import spoken_marks
 from quill.core.windows_dictation.resilience import ResilienceMixin, engine_failure_message
+from quill.core.windows_dictation.self_repair import self_repair
 from quill.core.windows_dictation.target_hold import TargetHoldMixin
 from quill.core.windows_dictation.transcript import TranscriptMixin
 from quill.core.windows_dictation.vocabulary import Command
@@ -339,6 +340,8 @@ class DictationController(
             language=preferences.filler_language,
         )
         phrase = self._rewrite(phrase, preferences)
+        if preferences.self_repair:  # D-20: "Thursday, no, Friday" is Friday
+            phrase = self_repair(phrase, preferences.repair_names)
         if self._ignore_until_speech:
             return  # the phrase Escape threw away, arriving late
         if self._state is DictationState.STANDBY:

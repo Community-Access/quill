@@ -10,7 +10,8 @@ Nothing reaches the document, or the other program, until Insert.
   Ctrl+R; What Changed, Ctrl+D; Undo Change, Ctrl+Z (with no AI change to
   undo, it undoes typing in the text, as it would anywhere); Back to What I
   Said, Ctrl+Shift+Z; Discard, Escape, which asks first when the AI has
-  changed the words, and cancels a request that is still on its way instead.
+  changed the words, and cancels a request that is still on its way instead;
+  Polish, Ctrl+P, only when "Allow polishing my dictation with AI" is on.
   Close keeps the words for next time (the rescue file) and carries no access
   key (GATE-14).
 * **Asking the AI**: type an instruction and press Enter, or say it after the
@@ -124,7 +125,9 @@ class ReviewBoxDocument:
 class DictationReviewFrame(wx.Frame):
     """The review window: the words, what changed, the AI, and the six keys."""
 
-    def __init__(self, parent: wx.Window | None, desk: ReviewDesk, *, context: bool) -> None:
+    def __init__(
+        self, parent: wx.Window | None, desk: ReviewDesk, *, context: bool, polish: bool = False
+    ) -> None:
         super().__init__(parent, title=TITLE)
         self._desk = desk
         self.conversation: ReviewConversation | None = None
@@ -237,6 +240,18 @@ class DictationReviewFrame(wx.Frame):
             "Puts back the words exactly as you said them.",
             lambda: self._run("restore"),
         )
+        #: Polish (P3): only when the person allowed it; off by default.
+        self.polish: wx.Button | None = None
+        if polish:
+            self.polish = self._button(
+                panel,
+                buttons,
+                "&Polish (Ctrl+P)",
+                "Asks the AI to fix punctuation, capital letters and small slips in "
+                "the words, keeping your words and their order. One request; you hear "
+                "what changed, and Undo Change takes it back.",
+                lambda: self._run("polish"),
+            )
         self.discard = self._button(
             panel,
             buttons,
@@ -284,6 +299,8 @@ class DictationReviewFrame(wx.Frame):
             (wx.ACCEL_CTRL | wx.ACCEL_SHIFT, ord("Z"), lambda: self._run("restore")),
             (wx.ACCEL_NORMAL, wx.WXK_ESCAPE, self._escape),
         ]
+        if self.polish is not None:
+            table.append((wx.ACCEL_CTRL, ord("P"), lambda: self._run("polish")))
         entries = []
         for flags, key, run in table:
             ident = wx.NewIdRef()
@@ -301,7 +318,7 @@ class DictationReviewFrame(wx.Frame):
         self.changes.ChangeValue(conversation.session.last_summary)
         self.status.ChangeValue(conversation.opening_status())
         if conversation.ai_reason():
-            for control in (self.instruction, self.send, self.talk, self.context):
+            for control in (self.instruction, self.send, self.talk, self.context, self.polish):
                 if control is not None:
                     control.Enable(False)
 
@@ -446,6 +463,7 @@ class ReviewDesk:
             Command.REVIEW_RESTORE: "restore",
             Command.REVIEW_INSERT: "insert",
             Command.REVIEW_DISCARD: "discard",
+            Command.REVIEW_POLISH: "polish",
         }
         name = names.get(command)
         if name is not None:
@@ -471,7 +489,10 @@ class ReviewDesk:
         if session is None:
             session = ReviewSession(text)
         frame = DictationReviewFrame(
-            self.host._review_parent(), self, context=bool(self.host._review_context_offered())
+            self.host._review_parent(),
+            self,
+            context=bool(self.host._review_context_offered()),
+            polish=self._polish_on(),
         )
         if frame.context is not None:
             frame.context.SetValue(bool(self.host._review_context_setting()))
@@ -482,6 +503,7 @@ class ReviewDesk:
             rescue=rescue,
             my_instructions=self.host._review_my_instructions,
             context=lambda: self.host._review_context() if frame._context_on() else "",
+            polish_on=self._polish_on,
         )
         frame.start(conversation)
         self.frame = frame
@@ -497,6 +519,14 @@ class ReviewDesk:
 
     def set_context(self, on: bool) -> None:
         self.host._review_set_context(on)
+
+    def _polish_on(self) -> bool:
+        """Allow polishing my dictation with AI (P3): the host's setting, off."""
+        hook = getattr(self.host, "_review_polish_on", None)
+        try:
+            return bool(hook()) if callable(hook) else False
+        except Exception:  # noqa: BLE001 - unknown is off
+            return False
 
     def finish(self, frame: DictationReviewFrame) -> None:
         """Inserted or discarded: close quietly, dictation back where it was."""

@@ -6,6 +6,24 @@ file is the itemized list.
 
 ## Unreleased
 
+- **Fix it when I correct myself** (2026-10-16). Check it in Dictation
+  Settings (Alt+X, off until you turn it on) and "meet on Thursday, no,
+  Friday" types "meet on Friday": a "no", "I mean", "sorry" or "scratch that
+  word" between two days, months, numbers or names from My Words keeps the
+  second. Anything else is typed as you said it. It happens before anything is
+  typed, on this computer, with no AI.
+- **Dictation style** (2026-10-16). Verbatim, Clean or, when AI is set up in
+  QUILL, Polished (Alt+Y in Dictation Settings): one choice that sets filler
+  removal, fixing your corrections and, for Polished, review first and
+  polishing.
+- **Polish what you said, when you ask** (2026-10-16). Check **Allow polishing
+  my dictation with AI when I ask** (Alt+G in More Dictation Settings, off by
+  default). Then "QUILL polish that" backspaces the last phrase away, opens it
+  in Review Dictation and asks the AI once to fix punctuation, capitals and
+  small slips, keeping your words; **Polish** (Ctrl+P) in the window does the
+  same. Nothing is sent until you agree, and nothing is typed until you insert
+  it. It never runs by itself.
+
 - **Hold the key to talk** (2026-10-15). With **Hold the dictation key to
   talk** checked in More Dictation Settings (Alt+H, off until you turn it on),
   hold your start and stop key while you speak; letting go stops dictation and

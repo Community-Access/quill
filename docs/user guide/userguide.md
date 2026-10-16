@@ -7228,6 +7228,106 @@ To send everything you dictate to the window first, turn on **Send dictation
 to review first** (`Alt+V`) in More Dictation Settings. The first thing you say
 opens the window, and nothing reaches the document until you insert it.
 
+##### Polishing your dictation with AI, only when you ask
+
+Sometimes you want the punctuation and capitals tidied without rewording
+anything. **Polish** does exactly that, as one request you ask for each time.
+It is off until you turn it on, and it never runs by itself.
+
+1. Open Dictation Settings (`Alt+Shift+F6`), press **More Dictation
+   Settings...** (`Alt+A`), and check **Allow polishing my dictation with AI
+   when I ask** (`Alt+G`). Press OK in both windows.
+2. Dictate as usual. When you want a phrase polished, say **"QUILL polish
+   that"** (or "QUILL polish it"). The last phrase is taken back out of the
+   document and opened in Review Dictation, then the polish request is made
+   there. If Review Dictation is already open, the words in it are polished.
+3. In the Review Dictation window you can also press **Polish** (`Ctrl+P`).
+   That button is there only while polishing is allowed.
+4. You hear "Polishing", then what changed, in two sentences at most, worked
+   out by QUILL comparing the words itself. Read the words, then **Insert** (`Ctrl+Enter`)
+   or take the change back with **Undo Change** (`Ctrl+Z`).
+
+What the AI is asked: to fix punctuation, capital letters, spelling and obvious
+grammar slips only, and to keep your words, your meaning, your order and your
+tone. It is the same request every time.
+
+What is sent, and when: polish uses the same AI, the same account and the same
+question as the rest of Review Dictation. The first time, QUILL asks before
+anything is sent and names who receives it; No is the default and sends
+nothing. Only the words in the window are sent. With AI off or in Safe Mode
+the Polish button is greyed out. With polishing not allowed, "QUILL polish
+that" says "Polish my dictation is off" and sends nothing.
+
+##### Correcting yourself as you talk, and dictation styles
+
+People correct themselves mid-sentence: "meet on Thursday, no, Friday". With
+**Fix it when I correct myself, like Thursday, no, Friday** (`Alt+X`) checked
+in Dictation Settings, QUILL writes only what you meant:
+
+| You say | QUILL writes |
+|---|---|
+| meet on Thursday, no, Friday at noon | meet on Friday at noon |
+| in June, no I mean July | in July |
+| I have two no three cats | I have three cats |
+| call me at 5, sorry, 6 | call me at 6 |
+| send it to Ana, I mean Maria (with Maria and Ana in My Words) | send it to Maria |
+| Monday scratch that word Tuesday | Tuesday |
+
+The words that mark a correction are "no", "I mean", "no I mean", "sorry" and
+"scratch that word". A correction is made only between two things of the same
+kind: two days (including today, tomorrow, tonight and yesterday), two months,
+two numbers, or two names from the Vocabulary list in My Words and Phrases.
+Everything else is written exactly as you said it, so these are left alone:
+
+- "no, I don't think so" (nothing before the "no");
+- "Is it Thursday? No, Friday." (a question and its answer);
+- "I said no, Friday" (a word that is not a day before the "no");
+- "I may, no, March" ("may" is a verb unless you say it as the month May).
+
+It all happens on this computer, with no AI and no internet. It is off until
+you turn it on, and a live transcript never uses it, because a transcript
+keeps what the speaker said.
+
+**Dictation style** (`Alt+Y`), just above, is a quick way to set these choices
+together:
+
+- **Verbatim: every word as I say it.** No filler removal, no correction.
+- **Clean: no filler words, and my corrections fixed.** Turns on **Remove
+  filler words** and **Fix it when I correct myself**.
+- **Polished: Clean, then review, and polish with AI when I ask.** Clean,
+  plus **Send dictation to review first** and **Allow polishing my dictation
+  with AI when I ask**. It is offered only when AI help is on. Choosing it
+  sends nothing: you still say "QUILL polish that" or press Polish each time.
+
+If you change a check box yourself, the style shows **Your own mix of the
+settings below**, and choosing that changes nothing.
+
+##### Learning from your corrections
+
+When you correct the same word the same way twice, QUILL offers to remember it,
+so you do not have to correct it a third time. A correction counts when you say
+"QUILL correct that" and then "choose 2", or when you say "QUILL correct Ann"
+and then say the new words.
+
+The second time, a window called **Add a Correction** asks, for example,
+"Add a correction: Ann becomes Anne? It goes into My Words and Phrases, under
+Corrections." **No** is the default. Press **Yes** to add it, or No
+or Escape to leave it. Dictation keeps going while you answer.
+
+On Yes the correction goes into the Corrections list of My Words and Phrases
+(`Alt+Shift+F10`), the same list you can edit by hand, and the next phrase uses
+it. You hear "Added: Ann becomes Anne. It is in My Words and Phrases."
+
+Limits: each pair is offered once each time QUILL runs, whatever you answer.
+Only a single word or a short phrase of up to four words is offered, never a
+sentence. Nothing about your corrections is saved anywhere until you say yes.
+
+**Words for one kind of writing.** My Words and Phrases' file can hold a
+section headed, for example, `## Context: email`, with words (one a line) and
+corrections (`heard => write`) meant only for that kind of writing. QUILL keeps
+these sections when it saves the file. They are ready for named dictation
+profiles, which are not in this version, so for now they are not used.
+
 ##### Holding Ctrl+F11 to talk
 
 Press `Ctrl+F11` to start dictating and press it again to stop. That is
@@ -7577,7 +7677,7 @@ brackets:
   dictation" until you choose your own words, said on their own after a pause.
   "stop dictation" always works too.
 
-Five finer choices sit beside them:
+Six finer choices, and a style that sets two of them, sit beside them:
 
 - **Automatic punctuation** for Moonshine and Whisper
   (`windows_dictation_auto_punctuation`). Turn it off and you say every mark.
@@ -7588,6 +7688,11 @@ Five finer choices sit beside them:
   that long before it is written.
 - **Remove filler words** such as um and uh
   (`windows_dictation_remove_fillers`).
+- **Dictation style** (`Alt+Y`): Verbatim, Clean or, with AI on, Polished;
+  see "Correcting yourself as you talk, and dictation styles". It is a name
+  for the settings it changes and is not saved by itself.
+- **Fix it when I correct myself** (`windows_dictation_self_repair`, `Alt+X`):
+  "Thursday, no, Friday" writes Friday. Off at first.
 - **Stop dictation after silence** (`windows_dictation_silence_minutes`):
   never, 1, 5 or 10 minutes.
 - **Just write what I say** (`windows_dictation_continuous`), for talking in
@@ -7635,6 +7740,7 @@ you change here is saved when you press OK in Dictation Settings.
 | Commands only after the command word (strict mode) (`Alt+E`) | A command said on its own is written as words; the stop phrase always works | Off (on in QUILL Transcribe) |
 | Seconds command mode waits for a command (`Alt+D`) | How long command mode lasts with no command, from 5 to 30 | 8 |
 | Send dictation to review first (`Alt+V`) | What you dictate goes into Review Dictation instead, to insert once; see "Review before inserting" | Off |
+| Allow polishing my dictation with AI when I ask (`Alt+G`) | "QUILL polish that" and the Polish button in Review Dictation ask the AI to fix punctuation and small slips, keeping your words; see "Polishing your dictation with AI, only when you ask" | Off |
 
 In settings files these are `windows_dictation_hold_to_talk`,
 `windows_dictation_preview`, `windows_dictation_ai_send`,
@@ -7644,7 +7750,8 @@ In settings files these are `windows_dictation_hold_to_talk`,
 `windows_dictation_working_tick`, `windows_dictation_transcript_timestamps`,
 `windows_dictation_never_type`, `windows_dictation_command_prefix`,
 `windows_dictation_command_prefix_required`,
-`windows_dictation_command_timeout` and `windows_dictation_review_first`. The
+`windows_dictation_command_timeout`, `windows_dictation_review_first` and
+`windows_dictation_polish`. The
 review window also keeps `windows_dictation_review_context` (its context check
 box) and `windows_dictation_review_consent` (your answer to its question).
 

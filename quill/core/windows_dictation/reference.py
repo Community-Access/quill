@@ -144,6 +144,10 @@ def _review_section(
         "first to give an instruction instead, or turn on Talk About It in the window.",
         "Changing words with AI needs AI help switched on and your ChatGPT subscription "
         "or your own AI key. With AI off, the review still lets you edit and insert.",
+        f'"{word} polish that" asks the AI to fix punctuation, capitals and small slips '
+        "and keep your words. It works only after you turn on Allow polishing my "
+        "dictation with AI in More Dictation Settings, and nothing is sent until you "
+        "agree.",
     ):
         lines.append(("- " + sentence) if md else sentence)
     if md:
@@ -151,6 +155,27 @@ def _review_section(
     table_head("Say, after the command word", "What happens")
     for entry in REVIEW_HELP:
         row(" or ".join(f'"{phrase}"' for phrase in entry.phrases), entry.description)
+
+
+def _repair_section(
+    heading: Any, lines: list[str], md: bool, prefix: str, *, external: bool = False
+) -> None:
+    """Correcting yourself (D-20) and remembering corrections (D-21). In
+    another program only the first: "correct that" needs QUILL's own text."""
+    heading("Correcting yourself as you talk")
+    word = prefix or "the command word"
+    for sentence in (
+        "With Fix it when I correct myself turned on in Dictation Settings, saying "
+        '"no", "I mean", "no I mean", "sorry" or "scratch that word" between two days, '
+        "months, numbers or names from My Words writes only the second: "
+        '"Thursday, no, Friday" writes Friday. Anything else is written as said.',
+        'When you correct the same word the same way twice, with "correct that" and '
+        '"choose", or with "correct" and the word, dictation offers to remember it: '
+        '"Add a correction: Ann becomes Anne?" In QUILL and QUILL Lite a window asks. '
+        f'Where no window can be shown the question is spoken: say "{word} yes" to add '
+        f'it or "{word} no" within 30 seconds. Nothing is added without a yes.',
+    )[: 1 if external else 2]:
+        lines.append(("- " + sentence) if md else sentence)
 
 
 def commands_reference(
@@ -266,6 +291,7 @@ def commands_reference(
     )
     if review:
         _review_section(heading, row, table_head, lines, markdown, command_prefix)
+    _repair_section(heading, lines, markdown, command_prefix, external=external)
 
     for group, marks in _grouped(MARKS).items():
         heading(group)

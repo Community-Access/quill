@@ -18,6 +18,11 @@ What the controller decides, before anything is composed
   ("insert it", "what changed") or, when it is not a dictation command at all,
   an instruction for the AI ("make it shorter"). With **Talk About It** on,
   every utterance is one of those, with or without the word.
+* **"QUILL polish that"** (P3, "Polish my dictation"): with the opt-in
+  setting on, the last phrase is opened in the review the same way and one
+  fixed request -- punctuation, capitals and small slips, the words kept -- is
+  made there, after the review's consent. Never automatic, never inserted
+  until Insert, and Undo Change takes it back.
 * **Send dictation to review first** (``windows_dictation_review_first``):
   the first phrase of dictation opens an empty review, and that phrase and the
   rest are written into it. The host points the controller at the review's text
@@ -99,6 +104,9 @@ class ReviewMixin(VoiceCommandsMixin):
         if command is Command.REVIEW_THAT:
             self.review_last(voice=True)
             return True
+        if command is Command.REVIEW_POLISH and desk is not None and not desk.is_open():
+            self._polish_last(preferences)
+            return True
         if desk is None:
             self._say(NOT_HERE)
         elif not desk.is_open():
@@ -170,6 +178,22 @@ class ReviewMixin(VoiceCommandsMixin):
         except Exception as error:  # noqa: BLE001 - said, never raised
             return str(error) or "The words could not be written."
         return ""
+
+    # -- "polish that" (P3) ---------------------------------------------------------- #
+
+    def _polish_last(self, preferences: Any) -> None:
+        """ "QUILL polish that" with no review open: the last phrase goes into
+        the review, then the one polish request is made there -- after the
+        review's own consent question. Off unless the person allowed it."""
+        from quill.core.windows_dictation.review_session import POLISH_OFF
+
+        if not getattr(preferences, "polish", False):
+            self._say(POLISH_OFF)
+            return
+        self.review_last(voice=True)
+        desk = self._review_desk()
+        if desk is not None and desk.is_open():
+            desk.command(Command.REVIEW_POLISH)
 
     # -- "review that" ------------------------------------------------------------ #
 

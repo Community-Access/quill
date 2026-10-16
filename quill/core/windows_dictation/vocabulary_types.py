@@ -112,6 +112,8 @@ class Command(StrEnum):
     REVIEW_RESTORE = "review_restore"
     REVIEW_INSERT = "review_insert"
     REVIEW_DISCARD = "review_discard"
+    # 2026-10-16 (P3, "Polish my dictation"): one fixed AI request in the review.
+    REVIEW_POLISH = "review_polish"
 
 
 @dataclass(frozen=True, slots=True)

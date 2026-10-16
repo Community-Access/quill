@@ -209,5 +209,6 @@
   "quill/ui/windows_dictation_dialog.py::WindowsDictationDialog.__init__::wx.TextCtrl": "helped",
   "quill/ui/windows_dictation_dialog.py::WindowsDictationDialog.__init__::wx.TextCtrl#2": "helped",
   "quill/ui/windows_dictation_dialog.py::WindowsDictationDialog.__init__::wx.TextCtrl#3": "helped",
-  "quill/ui/windows_dictation_dialog.py::WindowsDictationDialog.__init__::wx.TextCtrl#4": "helped"
+  "quill/ui/windows_dictation_dialog.py::WindowsDictationDialog.__init__::wx.TextCtrl#4": "helped",
+  "quill/ui/windows_dictation_style.py::DictationStyleMixin._add_style_controls::wx.Choice": "helped"
 }

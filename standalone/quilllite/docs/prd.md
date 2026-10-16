@@ -1069,6 +1069,20 @@ a dictation command, key or setting.
   once (`settings_fields.DictationSettings`), inherited by both editors'
   `Settings`.
 
+### 5.9a Dictation: correcting yourself, styles, polish and learning (2026-10-16)
+
+The same as QUILL (QUILL PRD, the D-20/D-21 addendum; dictation design record
+section 28), through the shared dictation package, so QUILL Lite is never
+ahead. **Fix it when I correct myself** (Alt+X, off) keeps the second of
+"Thursday, no, Friday" between two days, months, numbers or names in My Words,
+locally and conservatively. **Dictation style** (Alt+Y) names Verbatim, Clean
+and, only with AI on, Polished, and stores nothing itself. **Allow polishing my
+dictation with AI when I ask** (Alt+G in More Dictation Settings, off) lets
+"QUILL polish that" and **Polish** (Ctrl+P) in Review Dictation send one fixed
+request through the review's own consent and AI routes; it is never automatic.
+A second identical voice correction offers to add it to Corrections, in a
+Yes/No window with No the default; nothing is stored without a yes.
+
 ### 5.10 Transcribing a recording (2026-10-06)
 
 QUILL Lite's **Transcribe a Recording** command (Shift+F5) transcribes supported

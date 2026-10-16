@@ -2,6 +2,71 @@
 
 ## 1.0.0
 
+### Dictation: self-repair, named styles, learning from corrections, and opt-in polish (D-20, D-21, 2026-10-16)
+
+dict.md section 4, "Polish", "Learn" and "Modes". Design record section 28.
+QUILL, QUILL Lite, QUILL Transcribe and Quill Inkwell, through the shared
+dictation package.
+
+- **Self-repair (D-20)**, `quill/core/windows_dictation/self_repair.py` (new,
+  wx-free). A repair marker ("no", "I mean", "no I mean", "sorry", "scratch
+  that word") between two words of one kind (a day, a month, a number, or a
+  name from My Words' Vocabulary) keeps the second. Only the words either side
+  of the marker are looked at; a full stop or question mark before it, a
+  different kind, or a lower-case "may"/"march" leaves the phrase alone. Run
+  in `DictationController.on_phrase` after the rewrite, behind
+  `DictationPreferences.self_repair` (`windows_dictation_self_repair`, off).
+  The transcript profile forces it off. `profile.with_repair_names` gives the
+  controller the names, in QUILL, QUILL Lite, QUILL Transcribe and Inkwell.
+- **Named styles (D-20).** `self_repair.STYLE_CHOICES` / `STYLE_FIELDS` /
+  `style_of`: Verbatim, Clean, Polished (only with `ai_on`) and "Your own mix",
+  mapped onto existing fields; nothing new is stored for the style itself.
+  The chooser and the self-repair box live in the new
+  `quill/ui/windows_dictation_style.py` (`DictationStyleMixin`), so
+  `windows_dictation_dialog.py` stays under the 600-line cap. The dialog takes
+  `ai_on=`; the editors and Transcribe pass `_review_ai_on()`. The "After each
+  phrase" chooser moved to the right column to keep the window under 700
+  pixels (`test_the_window_fits_a_small_screen`).
+- **Polish my dictation (P3).** `Command.REVIEW_POLISH` ("polish that",
+  "polish it"); `ReviewConversation.polish` sends the fixed
+  `review_session.POLISH_INSTRUCTION` through the ordinary `instruct` path, so
+  the D-2 consent, the account routes (ChatGPT subscription or own key; never
+  the free allowance), the diff summary and Undo Change all apply unchanged.
+  `windows_dictation_polish` (off) gates it; with no review open,
+  `ReviewMixin._polish_last` opens the last phrase first. The review frame
+  shows **Polish** (Ctrl+P) only when allowed, greyed with AI off. More
+  Dictation Settings has the check box (Alt+G). No new network call site: the
+  request is the review's own (`network_egress_audit` unchanged).
+- **Learning from corrections (D-21)**,
+  `quill/core/windows_dictation/correction_learning.py` (new, wx-free). The
+  second identical "choose N" replacement, or "correct X" followed by the new
+  words landing where X was (`voice_commands._land` records it,
+  `LiveMixin._after_insert` checks it), offers "Add a correction: A becomes
+  B?" once per run. Editors: `HostFeedback.confirm_correction`, a Yes/No box
+  (No default) from the new `quill/ui/windows_dictation_learn.py`, deferred
+  out of the recogniser callback; the focus-loss check stands aside while it
+  is up. Transcribe: spoken, answered by "QUILL yes"/"QUILL no" within 30
+  seconds (`CommandModeMixin` asks `_learn_answer` first). Yes writes through
+  `words_file`'s model into Corrections.
+- **Per-context lists (D-21).** `words_file` parses and round-trips
+  `## Context: <name>` sections (`ContextList`, `context_list`);
+  `profile.context_profile` and `rewriter(path, context=...)` apply one on
+  top of the main lists. No caller passes a context yet: D-23 profiles are not
+  built.
+- **Whisper initial prompt (D-21 investigation).** sherpa-onnx 1.13.8's
+  `OfflineWhisperModelConfig` has no prompt field and
+  `OfflineRecognizer.from_whisper` takes none, so local Whisper biasing through
+  a prompt is not possible on the pinned version. Recorded in the design
+  record.
+- Settings: `windows_dictation_self_repair`, `windows_dictation_polish` in
+  `settings_fields.DictationSettings` (both editors and Transcribe);
+  `data_format_audit` recorded as additive for `quill.settings` and
+  `lite.settings`. Generated: `docs/f1-help-reference.md`, both
+  `dictation-commands.md` (new "Correcting yourself as you talk" section).
+- Tests: `tests/unit/core/test_dictation_self_repair_and_learning.py` (new),
+  plus `test_dictation_review_frame.py`, `test_dictation_settings_dialog.py`
+  and `test_transcribe_app.py`.
+
 ### Quill Radio station enrichment: the signed station pack, FTS5 search and Station Details (2026-10-16)
 
 Jeff's todo P2 #33, the Radio station data program. The data terms are not

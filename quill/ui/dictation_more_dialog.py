@@ -164,6 +164,18 @@ class MoreDictationDialog(wx.Dialog):
         )
         root.Add(self.review_first, 0, wx.ALL, _PAD)
 
+        # P3, "Polish my dictation": opt-in, off by default, never automatic.
+        self.polish = wx.CheckBox(self, label="Allow polishin&g my dictation with AI when I ask")
+        self.polish.SetValue(bool(value("windows_dictation_polish", False)))
+        self.polish.SetHelpText(
+            "When this is on, saying QUILL polish that, or pressing Polish in Review "
+            "Dictation, asks the AI to fix punctuation, capital letters and small slips "
+            "in your words, keeping your words. The words open in Review Dictation "
+            "first, you are asked once before anything is sent, you hear what changed, "
+            "and nothing is inserted until you insert it. Off by default; it needs AI."
+        )
+        root.Add(self.polish, 0, wx.ALL, _PAD)
+
         self._my_words = my_words
         self._add_command_word(root, value)
 
@@ -486,4 +498,5 @@ class MoreDictationDialog(wx.Dialog):
             "windows_dictation_command_prefix_required": self.command_required.GetValue(),
             "windows_dictation_command_timeout": int(self.command_timeout.GetValue()),
             "windows_dictation_review_first": self.review_first.GetValue(),
+            "windows_dictation_polish": self.polish.GetValue(),
         }

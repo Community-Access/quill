@@ -96,6 +96,9 @@ class CommandModeMixin(ReviewMixin):  # and VoiceCommandsMixin under it (review_
     #: The last utterance refused as not a command, for "type that".
     _command_refused: RecognizedPhrase | None = None
 
+    def _learn_answer(self, words: tuple[str, ...] | list[str]) -> bool:
+        return False  # correction_learning.py, earlier in the controller's bases
+
     @property
     def active(self) -> bool:  # provided by the controller
         raise NotImplementedError
@@ -243,6 +246,9 @@ class CommandModeMixin(ReviewMixin):  # and VoiceCommandsMixin under it (review_
             else:
                 self._say(DICTATION_MODE_SAID)
             return
+        if self._learn_answer(words):
+            self._command_cue_once(preferences)
+            return  # "QUILL yes" to "Add a correction?" (correction_learning.py, D-21)
         if self._review_command(words, preferences):
             self._command_cue_once(preferences)
             return  # "review that", "insert it" (review_mixin.py)

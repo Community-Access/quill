@@ -66,6 +66,16 @@ open, and what waits for a later version.
    Status is the editors' Alt+F9. Dictation Status, Resume and Discard Held
    Words each have an optional system-wide key, empty until chosen, picked and
    checked like the others.
+13. **Correcting yourself, styles and polish** (after 1.0.0, 2026-10-16).
+   The editors' settings and code (dictation design record section 28):
+   **Fix it when I correct myself** (off) fixes "Thursday, no, Friday" before
+   anything is typed; **Dictation style** offers Polished only when the review
+   could reach an AI; **Allow polishing my dictation with AI when I ask** (off)
+   makes "QUILL polish that" backspace the last phrase into Review Dictation and
+   send one fixed request there, after the review's consent, never by itself.
+   Learning a correction asks by voice ("QUILL yes"), never in a window, because
+   a window would take the focus from the field; in practice it needs "correct
+   that", which works only in QUILL's own documents.
 
 ## Waiting for a later version
 

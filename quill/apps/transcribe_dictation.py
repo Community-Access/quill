@@ -114,6 +114,14 @@ class _Feedback:
         """Review Dictation (D-2): the window held words wait in before Insert."""
         return self._host._review_desk()
 
+    def words_path(self) -> Any:
+        """Where a learned correction is saved (D-21): the family's ``dictation.md``.
+        No ``confirm_correction`` here: a window would take the focus from the
+        field, so the offer is spoken and answered with "QUILL yes"."""
+        from quill.core.speech.dictation_profile import default_profile_path
+
+        return default_profile_path()
+
     def call_later(self, seconds: float, callback: Any) -> Any:
         """The working tick's clock (working_tick.py): stopped when the wait ends."""
         return wx.CallLater(int(seconds * 1000), callback)
@@ -189,6 +197,9 @@ class TranscribeDictationMixin(TranscribeTalkMixin, FieldHoldMixin):
 
         # The documented subset (parity.py), empty since D-9: all the editors'.
         preferences = replace(preferences, **dict.fromkeys(PREFERENCES_OFF, False))
+        from quill.core.windows_dictation.profile import with_repair_names
+
+        preferences = with_repair_names(preferences, default_profile_path())  # D-20
         override = getattr(self, "_engine_override", "")
         return replace(preferences, engine=override) if override else preferences
 
