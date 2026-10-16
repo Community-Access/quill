@@ -266,7 +266,7 @@ separately in <a href="CONTROL_REFERENCE.md">CONTROL_REFERENCE.md</a>,
 generated from <code>topics.json</code> by
 <code>quill/tools/build_docs.py</code>.</p>
 <h2 id="quill-radio">Quill Radio</h2>
-<p>Control coverage: 331 audited sites (217 helped, 114 named-help).</p>
+<p>Control coverage: 335 audited sites (221 helped, 114 named-help).</p>
 <h3 id="every-window-and-what-it-is-for">Every window, and what it is
 for</h3>
 <p><strong>ACB Media Podcasts.</strong> Everything ACB Media publishes,
@@ -576,6 +576,10 @@ come from: which sources are stored in the local station catalog, how
 fresh each one is, and which are live-only and why. The catalog is
 derived data – it can be rebuilt from here at any time without touching
 your favorites.</p>
+<p><strong>Station Details.</strong> Search stations by name, call sign,
+frequency, slogan or place, and read what the signed station pack knows
+about each one, with where each fact came from. Each result says why it
+matched. Read only; nothing here changes your favorites.</p>
 <p><strong>Suggest a Station or Podcast.</strong> Tell us about
 something worth adding to the Community Picks list. It goes by email to
 <a
@@ -989,6 +993,25 @@ off in Safe Mode.</li>
 station or for every station; a confirmation asks which.</li>
 <li><code>close_btn</code>: Closes Song History; logging continues while
 stations play.</li>
+</ul>
+<h4 id="module-level-quilluiradiostation_details_dialogpy">(module
+level) (<code>quill/ui/radio/station_details_dialog.py</code>)</h4>
+<ul>
+<li><code>query</code>: Type any part of what you know about a station:
+its name, its call sign such as KUOW, its frequency such as 94.9, a word
+from its slogan or description, or a city. The results below follow as
+you type; press Enter to move to them, or, when nothing matched, to look
+for names spelled close to what you typed.</li>
+<li><code>results</code>: Stations the station pack knows that match
+your search, best first. Each row says what matched, such as the
+frequency or a word from the slogan. The details of the highlighted
+station are below.</li>
+<li><code>details</code>: What the station pack knows about the
+highlighted station, one labelled line per fact, then where those facts
+came from. Read only; arrow through it, or select and copy any
+line.</li>
+<li><code>close_btn</code>: Closes Station Details. Nothing is changed
+by closing.</li>
 </ul>
 <h4 id="module-level-quilluiradiostation_tags_dialogpy">(module level)
 (<code>quill/ui/radio/station_tags_dialog.py</code>)</h4>
@@ -3495,6 +3518,11 @@ and you are told whose it is.</p>
 remove the optional speech models. Each download shows its size first,
 is checked before it is used, and can be cancelled. A model that did not
 finish is never marked ready.</p>
+<p><strong>Speech Providers.</strong> Use a speech service you already
+have an account with – Azure, Google, Amazon, Deepgram and others – for
+dictation. Choose one to see what it can do and what it needs, enter
+that, test it, and save it; keys go to Windows Credential Manager. Then
+choose it as the speech engine in Dictation Settings.</p>
 <p><strong>Start and Stop Key.</strong> Choose the key that starts and
 stops dictation from any program. It is Alt+Shift+Backslash unless you
 change it. Type another, press Record Key to press it instead, or leave
@@ -3518,8 +3546,10 @@ help sentence</h3>
 (<code>quill/apps/transcribe.py</code>)</h4>
 <ul>
 <li><code>self._state_text</code>: What dictation is doing now: Ready,
-Listening, Hearing you, Paused with words held, or Waiting for you to
-switch to a field. The tray icon’s name says the same.</li>
+Listening, Hearing you, Paused with words held, Waiting for you to
+switch to a field, or Listening for your wake phrase. The tray icon’s
+name says the same, and Alt+F9 says it with the program, the model and
+what is held.</li>
 <li><code>self._start_button</code>: Starts dictation in the next field
 you switch to, or stops it. From another program, your start and stop
 key does the same without coming here.</li>
@@ -4594,7 +4624,7 @@ playback to its start.</li>
 text, when one is available. Empty otherwise.</li>
 </ul>
 <h2 id="quill-lite">QUILL Lite</h2>
-<p>Control coverage: 202 audited sites (202 helped).</p>
+<p>Control coverage: 214 audited sites (214 helped).</p>
 <h3 id="every-window-and-what-it-is-for-9">Every window, and what it is
 for</h3>
 <p><strong>AI Assistant.</strong> Ask QUILL’s free AI to summarize,
@@ -4915,6 +4945,11 @@ Control Z takes back.</p>
 download for better accuracy, with each one’s size, languages and what
 it suits. Your voice never leaves the computer with these models;
 Download asks first, and Remove frees the space again.</p>
+<p><strong>Speech Providers.</strong> Use a speech service you already
+have an account with – Azure, Google, Amazon, Deepgram and others – for
+dictation. Choose one to see what it can do and what it needs, enter
+that, test it, and save it; keys go to Windows Credential Manager. Then
+choose it as the speech engine in Dictation Settings.</p>
 <p><strong>Spelling Announcements.</strong> How a misspelled word is
 reported to you. A misspelling is the one thing an editor cannot convey
 by speech alone – receive and recieve sound identical – so the letters
@@ -5433,6 +5468,17 @@ computer, after asking. It cannot be brought back.</li>
 you had open.</li>
 </ul>
 <h4
+id="cloudprovidersmixin-quilluiwindows_dictation_cloudpy">CloudProvidersMixin
+(<code>quill/ui/windows_dictation_cloud.py</code>)</h4>
+<ul>
+<li><code>button</code>: Use a speech service you already have an
+account with: Microsoft Azure, Google Cloud, Amazon, Deepgram,
+AssemblyAI, Speechmatics, ElevenLabs, Gladia, Rev.ai, Groq, Mistral or
+IBM Watson. Enter what it needs and test it there, then choose it as the
+speech engine. Optional: the built-in engines need no account and never
+send anything anywhere.</li>
+</ul>
+<h4
 id="windowsdictationdialog-quilluiwindows_dictation_dialogpy">WindowsDictationDialog
 (<code>quill/ui/windows_dictation_dialog.py</code>)</h4>
 <ul>
@@ -5701,6 +5747,35 @@ it.</li>
 stopped and kept.</li>
 </ul>
 <h4
+id="speechprovidersdialog-quilluispeech_providers_dialogpy">SpeechProvidersDialog
+(<code>quill/ui/speech_providers_dialog.py</code>)</h4>
+<ul>
+<li><code>self.providers</code>: Speech services you can use for
+dictation with your own account. Choose one to see what it can do and
+what it needs. The built-in engines stay the default: they never send
+anything anywhere. A provider bills you, not QUILL, and is used only
+after you choose it as the speech engine in Dictation Settings and agree
+to send your speech there.</li>
+<li><code>self.about</code>: What the chosen provider is, whether it
+gives words while you speak, whether it learns your words, where your
+speech goes, and its usage page.</li>
+<li><code>self.fields_panel</code>: The details the chosen provider
+needs.</li>
+<li><code>self.result</code>: What the last Test Connection, Save or
+Remove said.</li>
+<li><code>self.test_button</code>: Asks the provider whether these
+details work, using a check of the account, never your speech. Says what
+it answered, or which field to fix.</li>
+<li><code>self.save_button</code>: Keeps these details. Keys go to
+Windows Credential Manager now and are never written in QUILL’s
+settings; the other details are kept when you choose OK in Dictation
+Settings.</li>
+<li><code>self.remove_button</code>: Forgets everything saved for this
+provider, keys included.</li>
+<li><code>close</code>: Close Speech Providers. Asks first if you
+changed details and did not save them.</li>
+</ul>
+<h4
 id="transcribefiledialog-quilluidictation_transcribe_dialogpy">TranscribeFileDialog
 (<code>quill/ui/dictation_transcribe_dialog.py</code>)</h4>
 <ul>
@@ -5735,6 +5810,11 @@ says new paragraph or comma usually means the words. Turn it on for a
 recording you dictated on purpose, and comma, period, new line, new
 paragraph and scratch that work as they do in dictation. Commands that
 move the cursor are ignored.</li>
+<li><code>self.translate</code>: Off unless you check it. Writes the
+recording in English instead of the language spoken. It needs a
+recording in a language other than English and a model that translates:
+the built-in Whisper, or a multilingual Whisper you downloaded. With any
+other model this box is unavailable.</li>
 <li><code>self.running</code>: What is being transcribed at the moment,
 how far it has got, and how many recordings are waiting after it.</li>
 <li><code>stop</code>: Stops the transcription that is running and

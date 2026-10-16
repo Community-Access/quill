@@ -538,7 +538,7 @@ def _get_cached_kokoro_onnx(model_dir: Path) -> Any:
     """Return a shared, lazily-built ``kokoro_onnx.Kokoro`` for *model_dir*."""
     from kokoro_onnx import Kokoro as _KokoroOnnx  # type: ignore[import-not-found,import-untyped]
 
-    from quill.core import lifecycle_service
+    from quill.core import lifecycle_service, onnx_threads
 
     model_path = str(model_dir / KOKORO_ONNX_MODEL_FILENAME)
     voices_path = str(model_dir / KOKORO_ONNX_VOICES_FILENAME)
@@ -548,7 +548,7 @@ def _get_cached_kokoro_onnx(model_dir: Path) -> Any:
         if instance is None:
             # Low-resource mode may evict another engine before we build this one.
             lifecycle_service.reserve("tts:kokoro")
-            instance = _KokoroOnnx(model_path, voices_path)
+            instance = onnx_threads.kokoro_with_threads(_KokoroOnnx, model_path, voices_path)
             _KOKORO_ONNX_CACHE[key] = instance
             lifecycle_service.note_loaded("tts:kokoro", clear_kokoro_cache)
     lifecycle_service.touch("tts:kokoro")

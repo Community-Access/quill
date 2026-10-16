@@ -202,13 +202,19 @@ def _silero_span(
 
 
 def silero_model_path() -> Path | None:
-    """The installed ``silero_vad.onnx``, if any Parakeet/Nemotron bundle has one.
+    """The ``silero_vad.onnx`` to use: the one live dictation ships beside the
+    launcher (one copy for every speech feature, dict.md D-26), else one an
+    older Parakeet/Nemotron download carried.
 
     The Parakeet 3 mirror zip ships it; resolution is by inspection rather than
     registration so a hand-installed bundle counts too.
     """
     from quill.core.speech import models
+    from quill.core.windows_dictation.engines import vad_model_path
 
+    bundled = vad_model_path()
+    if bundled is not None:
+        return bundled
     root = models.models_root()
     for provider_dir in ("parakeet", "nemotron"):
         base = root / provider_dir

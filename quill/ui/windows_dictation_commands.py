@@ -386,7 +386,7 @@ class WindowsDictationMixin(
         preferences = DictationPreferences.from_settings(
             self._dictation_settings(), rewrite=rewrite, profile=profile
         )
-        if preferences.engine != "openai":
+        if preferences.engine != "openai" and not preferences.engine.startswith("cloud-"):
             return preferences
         from dataclasses import replace
 
@@ -555,12 +555,41 @@ def _make_recognizer(controller: DictationController, preferences: DictationPref
             language=preferences.speech_language,
             prompt=preferences.context,
         )
+    if preferences.engine.startswith("cloud-"):
+        return _cloud_recognizer(controller, preferences)
+    from quill.core.windows_dictation.kws_keywords import keyword_gate_for
     from quill.core.windows_dictation.local_recognizer import LocalDictationRecognizer
 
-    return LocalDictationRecognizer(
+    recognizer = LocalDictationRecognizer(
         controller,
         preferences.engine,
         post=wx.CallAfter,
+        pause_seconds=preferences.pause_seconds,
+        language=preferences.speech_language,
+    )
+    # The command word's keyword spotter (D-27): None until it is adopted.
+    recognizer.keyword_gate = keyword_gate_for(preferences)
+    return recognizer
+
+
+def _cloud_recognizer(controller: DictationController, preferences: DictationPreferences) -> Any:
+    """A cloud provider with the person's own account (D-31): its secrets read
+    from the credential store now, in memory only."""
+    from quill.core.windows_dictation.cloud.credentials import values_for
+    from quill.core.windows_dictation.cloud.recognizer import CloudDictationRecognizer
+    from quill.core.windows_dictation.cloud.registry import provider_for_engine
+    from quill.core.windows_dictation.controller import DictationStartError
+
+    provider = provider_for_engine(preferences.engine)
+    if provider is None:
+        raise DictationStartError("That speech provider is not part of this copy of QUILL.")
+    return CloudDictationRecognizer(
+        controller,
+        post=wx.CallAfter,
+        provider=provider,
+        values=values_for(provider, preferences.cloud_fields.get(provider.id, {})),
+        consents=preferences.cloud_consent,
+        keywords=preferences.keywords,
         pause_seconds=preferences.pause_seconds,
         language=preferences.speech_language,
     )

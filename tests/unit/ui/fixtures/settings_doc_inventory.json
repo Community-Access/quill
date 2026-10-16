@@ -385,6 +385,8 @@
   "windows_dictation_review_first": "documented",
   "windows_dictation_silence_minutes": "documented",
   "windows_dictation_speech_language": "documented",
+  "windows_dictation_speech_provider_consent": "documented",
+  "windows_dictation_speech_providers": "documented",
   "windows_dictation_stop_phrase": "documented",
   "windows_dictation_transcript_timestamps": "documented",
   "windows_dictation_transcript_told": "internal",

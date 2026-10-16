@@ -194,10 +194,11 @@ def _import_sherpa() -> Any:
     return sherpa_onnx
 
 
-def _load(engine_id: str, language: str = "en") -> Any:
-    """The sherpa-onnx recogniser for *engine_id* in *language*, loaded once per session."""
+def _load(engine_id: str, language: str = "en", task: str = "transcribe") -> Any:
+    """The sherpa-onnx recogniser for *engine_id* in *language*, loaded once per
+    session; *task* ``translate`` asks multilingual Whisper for English (D-26)."""
     language = coerce_speech_language(language)
-    key = (engine_id, language)
+    key = (engine_id, language if task == "transcribe" else f"{language}:{task}")
     with _cache_lock:
         cached = _recognizers.get(key)
         if cached is not None:
@@ -214,7 +215,11 @@ def _load(engine_id: str, language: str = "en") -> Any:
         if (downloaded := downloadable(model.id)) is not None:
             from quill.core.windows_dictation.model_loader import build
 
-            recognizer = build(downloaded, folder, sherpa_onnx, language=language)
+            recognizer = build(downloaded, folder, sherpa_onnx, language=language, task=task)
+        elif task != "transcribe" and model.id != "whisper_multilingual":
+            from quill.core.windows_dictation.model_loader import SherpaUnsupportedError
+
+            raise SherpaUnsupportedError("Only multilingual Whisper translates into English.")
         elif model.id == "moonshine":
             recognizer = sherpa_onnx.OfflineRecognizer.from_moonshine(
                 preprocessor=str(folder / "preprocess.onnx"),
@@ -231,6 +236,7 @@ def _load(engine_id: str, language: str = "en") -> Any:
                 decoder=str(folder / "decoder.int8.onnx"),
                 tokens=str(folder / "tokens.txt"),
                 language=language,
+                task=task,
                 num_threads=2,
                 provider="cpu",
             )
@@ -257,11 +263,11 @@ def _vad(pause_seconds: float = _MIN_SILENCE_SECONDS) -> Any:
     return sherpa_onnx.VoiceActivityDetector(config, buffer_size_in_seconds=60)
 
 
-def transcribe(engine_id: str, samples: Any, language: str = "en") -> str:
+def transcribe(engine_id: str, samples: Any, language: str = "en", task: str = "transcribe") -> str:
     """One phrase of 16 kHz float samples as text, noise answers removed."""
     import numpy as np
 
-    recognizer = _load(engine_id, language)
+    recognizer = _load(engine_id, language, task)
     stream = recognizer.create_stream()
     # Quiet on either side. Voice detection trims a phrase tight to the speech,
     # and Moonshine sizes its answer from the audio's length: without the tail,
@@ -447,7 +453,7 @@ class LocalDictationRecognizer(WorkerMixin):
         self._microphone = microphone
         try:
             self._running.set()
-            self._gate = reader_gate()  # reader_gate.py: not while the reader talks
+            self._gate = self._reader_gate()  # reader_gate.py: not while the reader talks
             self._stream = self._open_stream()
             self._worker = threading.Thread(
                 target=self._work, args=(vad,), name="dictation-recognizer", daemon=True
@@ -463,6 +469,12 @@ class LocalDictationRecognizer(WorkerMixin):
                 "that Windows Settings, Privacy and security, Microphone lets desktop "
                 "apps use it."
             ) from error
+
+    def _reader_gate(self) -> Any:
+        """The process's reader gate, its capture started on first use. A method
+        so the recorded-audio benchmark (scripts/bench_live.py) can use one that
+        captures nothing."""
+        return reader_gate()
 
     def stop(self) -> None:
         """Close the microphone and let the worker finish. Never raises."""

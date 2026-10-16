@@ -76,6 +76,9 @@ class RecognizedPhrase:
     previous_mark: str = ""
     #: Other things the engine thought was said, best first, for "correct that".
     alternatives: tuple[str, ...] = ()
+    #: Whether the keyword spotter heard the command word in this phrase (D-27);
+    #: ``None`` when no spotter ran, and the text alone decides.
+    keyword_heard: bool | None = None
 
 
 @dataclass(frozen=True, slots=True)

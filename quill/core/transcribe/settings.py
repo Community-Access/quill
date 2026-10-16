@@ -28,6 +28,7 @@ from pathlib import Path
 from typing import Any
 
 __all__ = [
+    "OPTIONAL_KEY_FIELDS",
     "SCHEMA_VERSION",
     "TRANSCRIBE_DICTATION_DEFAULTS",
     "TranscribeSettings",
@@ -44,6 +45,8 @@ SCHEMA_VERSION = 1
 #: The start and stop key a new install has. Checked against every family
 #: app's keys by family_chords.default_system_wide_keys.
 DEFAULT_DICTATION_HOTKEY = "Alt+Shift+\\"
+#: The system-wide keys added for D-6, each empty by default.
+OPTIONAL_KEY_FIELDS = ("status_hotkey", "resume_hotkey", "discard_hotkey")
 #: Where QUILL Transcribe's shared dictation settings start from a different
 #: default than the editors', each with its reason. A value the person saved
 #: always wins (the dictation window writes every field back).
@@ -71,6 +74,11 @@ class TranscribeSettings:
     #: command mode. Empty until the listener chooses one (dict.md section 5:
     #: every global key but the start and stop key starts empty).
     command_hotkey: str = ""
+    #: Dictation Status, Resume and Discard Held Words from any program (D-6):
+    #: empty until the listener chooses them, like the Command Key.
+    status_hotkey: str = ""
+    resume_hotkey: str = ""
+    discard_hotkey: str = ""
     #: Open hidden in the tray rather than with the window showing.
     start_in_tray: bool = False
     #: The close button hides to the tray rather than exiting.
@@ -100,6 +108,8 @@ def load_settings(data_dir: Path) -> TranscribeSettings:
         raw.get("dictation_hotkey", DEFAULT_DICTATION_HOTKEY) or ""
     ).strip()
     settings.command_hotkey = str(raw.get("command_hotkey", "") or "").strip()
+    for name in OPTIONAL_KEY_FIELDS:
+        setattr(settings, name, str(raw.get(name, "") or "").strip())
     settings.start_in_tray = bool(raw.get("start_in_tray", False))
     settings.close_to_tray = bool(raw.get("close_to_tray", True))
     settings.inkwell_checked = bool(raw.get("inkwell_checked", False))
@@ -132,6 +142,7 @@ def save_settings(data_dir: Path, settings: TranscribeSettings) -> None:
             "setup_done": settings.setup_done,
             "dictation_hotkey": settings.dictation_hotkey,
             "command_hotkey": settings.command_hotkey,
+            **{name: getattr(settings, name) for name in OPTIONAL_KEY_FIELDS},
             "start_in_tray": settings.start_in_tray,
             "close_to_tray": settings.close_to_tray,
             "inkwell_checked": settings.inkwell_checked,

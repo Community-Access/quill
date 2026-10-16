@@ -907,9 +907,12 @@ window, so it can never erase anything you typed yourself. Your
 snippets, abbreviations and clips work too, because they only insert:
 “insert snippet” and its name, “insert abbreviation” and its name, and
 “paste clip” and a number, each typed as one phrase that “scratch that”
-takes back whole. A snippet’s blanks are typed as [name], with no
-questions, and the cursor stays at the end. “What can I say” lists only
-what works here.</p>
+takes back whole. A snippet’s blanks are asked for first: you hear each
+blank’s name, like “Title?”, and say the answer; for a choice, say one
+of the options or “choose two”; say skip, scratch that to go back one,
+or cancel to type nothing. The cursor stays at the end, and “read that”
+reads back all of what was typed. “What can I say” lists only what works
+here.</p>
 <p><strong>What does not.</strong> Anything that needs to read the other
 program’s text: “select” and “go to”, “correct”, “copy all” and “show
 clips”. Inkwell cannot see that text, so it tells you: “That works in
@@ -970,6 +973,12 @@ off.</p>
 the editors: on this computer with the built-in engines, and sent to
 OpenAI only if you chose OpenAI dictation with your own key. Nothing you
 say is kept.</p>
+<p><strong>Speech providers.</strong> Inkwell’s Dictation Settings has
+the same <strong>Speech Providers…</strong> button (Alt+V) as the
+editors, so Dictate Anywhere can use a speech company you already have
+an account with, such as Azure, Deepgram or Amazon. Keys go to Windows
+Credential Manager; you are asked before anything is sent, and No is the
+default.</p>
 <h2 id="finding-a-setting-or-a-command">Finding a setting or a
 command</h2>
 <p>Quill Inkwell keeps its options in its menus, so there is no settings

@@ -213,3 +213,18 @@ def test_kept_words_history_and_snippet_prompts_are_one_thing_in_all_three() -> 
     name = "windows_dictation_history_days"
     assert getattr(QuillSettings(), name) == getattr(LiteSettings(), name) == 0
     assert name not in TRANSCRIBE_DICTATION_DEFAULTS
+
+
+def test_transcribe_a_recording_has_what_quills_offline_transcription_has() -> None:
+    """dict.md D-26, part 7: on the shared layer, QUILL Lite's and Transcribe's
+    Transcribe a Recording translate and timestamp on the same models QUILL's
+    offline transcription does (one provider, one pipeline)."""
+    from quill.core.speech.providers.sherpa_shared import can_translate
+    from quill.core.windows_dictation.file_transcribe import FileJob
+    from quill.ui.dictation_transcribe_dialog import TranscribeChoice
+
+    fields = {field.name for field in dataclasses.fields(TranscribeChoice)}
+    assert {"timestamps", "translate"} <= fields
+    job_fields = {field.name for field in dataclasses.fields(FileJob)}
+    assert {"timestamps", "translate"} <= job_fields
+    assert can_translate("whisper_small", "es") and can_translate("whisper", "es")

@@ -25,6 +25,8 @@ adds is QUILL Transcribe's promise:
   (:mod:`quill.core.dictation_owner`) while it runs; Inkwell passes its key on.
 * **Starting from the tray** arms dictation: it begins in the next program you
   return to (:mod:`quill.core.transcribe.arming`).
+* **Holding the key, the wake phrase, braille and Dictation Status** (D-9,
+  D-6) are :mod:`quill.apps.transcribe_talk`'s.
 
 Refused in Safe Mode, which exists to touch nothing.
 """
@@ -36,6 +38,7 @@ from typing import Any
 
 import wx
 
+from quill.apps.transcribe_talk import TranscribeTalkMixin
 from quill.core.sound_events import SoundEvent
 from quill.ui.dictation_field_hold import FieldHoldMixin
 from quill.ui.windows_dictation_external import PAUSE_ADVICE, WRITE_FAILURE
@@ -83,10 +86,18 @@ class _Feedback:
         self._host._show_dictation_message(text)
 
     def preview(self, text: str) -> None:
+        """The words heard so far: the status bar, and a braille display (D-6)."""
         self._host._set_status(f"Hearing: {text}" if text else "")
+        if text:
+            self._host._braille_dictation(f"Hearing: {text}")
+
+    def say_quietly(self, text: str) -> None:
+        """New preview words, only when the preview setting is "speak"."""
+        self._host._announce(text)
 
     def state_changed(self, state: Any) -> None:
         self._host._dictation_state_changed()
+        self._host._braille_state_change()
 
     def show_commands(self) -> None:
         """Said "what can I say" while dictating: a short spoken answer (D-7).
@@ -148,7 +159,7 @@ class _ChosenModelOnly:
         return getattr(self._inner, name)
 
 
-class TranscribeDictationMixin(FieldHoldMixin):
+class TranscribeDictationMixin(TranscribeTalkMixin, FieldHoldMixin):
     """On ``QuillTranscribeFrame``: start, stop, pause and resume."""
 
     _settings: Any
@@ -180,7 +191,7 @@ class TranscribeDictationMixin(FieldHoldMixin):
         )
         from quill.core.transcribe.parity import PREFERENCES_OFF
 
-        # The documented subset (parity.py): everything else is the editors'.
+        # The documented subset (parity.py), empty since D-9: all the editors'.
         preferences = replace(preferences, **dict.fromkeys(PREFERENCES_OFF, False))
         override = getattr(self, "_engine_override", "")
         return replace(preferences, engine=override) if override else preferences
@@ -206,6 +217,7 @@ class TranscribeDictationMixin(FieldHoldMixin):
                 app="QUILL Transcribe",
                 key="start and stop key",
             )
+            self._dictation_document = document  # its locked program (Dictation Status)
             controller = DictationController(
                 recognizer=self._make_chosen_recognizer,
                 document=document,
@@ -216,11 +228,13 @@ class TranscribeDictationMixin(FieldHoldMixin):
             self._dictation = controller
         return controller
 
-    @staticmethod
-    def _make_chosen_recognizer(controller: Any, preferences: Any) -> Any:
+    def _make_chosen_recognizer(self, controller: Any, preferences: Any) -> Any:
+        """It reports through the key gate: phrases said while the start and
+        stop key is held wait until it comes up (transcribe_talk.py)."""
         from quill.ui.windows_dictation_commands import _make_recognizer
 
-        return _ChosenModelOnly(_make_recognizer(controller, preferences), preferences.engine)
+        gate = self._talk_gate(controller)
+        return _ChosenModelOnly(_make_recognizer(gate, preferences), preferences.engine)
 
     def never_type_list(self) -> list[str]:
         """The programs dictation never types into (D-24), as saved."""
@@ -266,18 +280,19 @@ class TranscribeDictationMixin(FieldHoldMixin):
             preferences.engine,
             preferences.speech_language,
             openai_consent=preferences.openai_consent,
+            cloud_fields=preferences.cloud_fields,
+            cloud_consent=preferences.cloud_consent,
         )
 
     def toggle_dictation(self) -> None:
-        """The start and stop key, pressed in the field to dictate into."""
+        """The start and stop key, pressed in the field to dictate into. Held,
+        it is followed until it comes up (hold-to-talk, transcribe_talk.py)."""
+        if self._key_repeat():
+            return  # Windows repeating a key that is being held
         self._command_after_start = False  # a plain start: no command armed
         if self._cancel_arming():
             return
-        controller = self._controller()
-        if controller.active:
-            controller.finish()  # keeps the phrase being spoken
-            return
-        self.start_dictation()
+        self._press_start_key(self._controller())  # finish() keeps the phrase being spoken
 
     def start_dictation(self) -> None:
         refusal = self._refusal()
@@ -422,6 +437,10 @@ class TranscribeDictationMixin(FieldHoldMixin):
         controller = getattr(self, "_dictation", None)
         if controller is not None:
             controller.shut_down()  # closes the recogniser, and lets go of the microphone
+        gate = getattr(self, "_key_gate", None)
+        if gate is not None:
+            gate.drop()  # words said while the key was held, never written
+        self._talk_hold().reset()
         self._cancel_arming(say=False)
         for name in ("_microphone", "_owner_lock"):
             lock = getattr(self, name, None)
@@ -479,6 +498,8 @@ class TranscribeDictationMixin(FieldHoldMixin):
         controller = getattr(self, "_dictation", None)
         if controller is None:
             return "Ready"
+        if controller.standing_by:
+            return "Listening for your wake phrase"  # D-9: the microphone is open
         state = controller.state
         if controller.paused_for_target:
             held = controller.held_count

@@ -328,8 +328,8 @@ next word like an opening bracket.
 | **The real-voice test** for every engine and model (the 2026-10-05 numbers are on a synthetic voice, which flatters every engine) | Recordings of real voices, ideally several |
 | **Measurements on the baseline machine** with NVDA and JAWS running: speed, memory high-water mark, screen-reader lag, battery draw over ten minutes, for every offered model; then tightening each model's `cost_factor` (the Distil-Whisper and large-v3 factors are estimates) | A 4 GB dual-core Windows 10 computer and a person to listen |
 | **A CI-runnable benchmark gate** (`dictbench.py` baseline mode): every engine offered must meet the speed budget on one thread on recorded speech | Recorded speech checked into a test-asset location, and a CI runner whose speed is stable enough to gate on |
-| **Word biasing for the local models** (section 5 B) | A sherpa-onnx that encodes hotwords for mixed-case SentencePiece vocabularies, or a hotword-capable Nemotron decoder |
-| **One folder for Parakeet** shared by QUILL's Locked Dictation (`quill/core/speech/providers/parakeet_onnx.py`) and live dictation, so it is not downloaded twice | A small migration; deferred |
+| **Word biasing for the local models** (section 5 B; the plumbing is built and off, section 22, D-28) | A sherpa-onnx that encodes hotwords for mixed-case SentencePiece vocabularies, a hotword-capable Nemotron decoder, or an English Zipformer transducer measured on B-1 |
+| **The shared layer's measurements** (section 22): keyword spotting (a false-trigger soak, the detection rate, CPU), hotwords on an English Zipformer, the punctuation and speaker models, and sherpa-onnx TTS against kokoro-onnx (D-30) | B-1, B-3 and the 8 GB machine (B-8) |
 | **Interface translation** (menus and spoken replies in Spanish) | Its own decision (dict.md 9.6) |
 | Held for Jeff, untouched: removing the bundled models from the installers, and Nemotron as the first-run default | Jeff |
 
@@ -623,6 +623,7 @@ same `dictation.md`), Ctrl+Shift+F11 (Switch Dictation Language, which also make
 Dictation Status and Tidy Dictated Text are divergences. Recent Phrases was one,
 until the D-5 slice below put it on Shift+F11. `PREFERENCES_OFF` names the two shared settings QUILL
 Transcribe always runs off (the wake phrase, hold to talk), with reasons.
+(Since 2026-10-15 it is empty and Dictation Status is shared: section 24.)
 
 Tests: `tests/unit/ui/test_transcribe_dictation_parity.py` builds the real menu:
 every editor dictation command is shared or a divergence; the menu shows the
@@ -1248,8 +1249,535 @@ timed". Changing What matters most is the only spoken outcome
 advice is news (GATE-13); the check finishing rewrites the text silently.
 
 Not built here: the "Switch to the Recommended Model" button of dict.md
-section 10 (it belongs to retiring legacy models), and D-26's `ram_tier`
-catalogue field.
+section 10 (it belongs to retiring legacy models). D-26's `ram_tier`
+catalogue field followed in section 22.
+
+## 22. As built, 2026-10-16: one sherpa-onnx layer for every local model (D-26 to D-30)
+
+dict.md's "Smart engine, part 2" asked what it would take to put every local
+model on sherpa-onnx. Live dictation, QUILL Lite and QUILL Transcribe were
+already there. This pass brought QUILL's Locked Dictation and offline Transcribe
+Audio or Video onto the same layer, built the plumbing for keyword spotting,
+hotwords, punctuation and speaker labels, and settled the two-runtime question.
+What needs a measurement is built but switched off, and says so.
+
+### D-26. One catalogue, one store, one provider
+
+**One catalogue.** `model_types.DownloadableModel` gained the fields dict.md
+named, derived rather than typed per model so a new entry gets them for free:
+`streaming` (Nemotron), `ram_tier` (4, 8 or 16 GB: the smallest computer whose
+memory budget holds the model's measured peak, or an estimate from its download
+when it was not measured), `tasks` (every model transcribes and gets phrase
+timestamps; multilingual Whisper also translates into English; hotwords only
+for a measured model, of which there are none yet), and `source_url` (the
+pinned repository page), beside the `licence` it already had. The memory
+budgets (600 MB on a 4 GB computer, 1 GB on 8 GB, 2.5 GB above) now live once,
+in `model_types.RAM_TIERS`, and D-22's recommendation reads them from there.
+`core/speech/catalog.py` keeps only its whisper.cpp, Faster Whisper and Vosk
+rows; its Nemotron and Parakeet rows are gone.
+
+**One provider.** `quill/core/speech/providers/sherpa_shared.py`,
+`SherpaSharedProvider`, id `sherpa`, replaced the two QUILL-only engines
+(`providers/nemotron_onnx.py` and `providers/parakeet_onnx.py`, deleted with
+their tests). It lists the built-in Moonshine and Whisper and every model in the
+family store, most accurate first, and transcribes through Transcribe a
+Recording's own pipeline (`file_transcribe.FileTranscriber`): decoding, Silero
+voice detection, the engine a phrase at a time, and dictation's tidying. So
+Locked Dictation and Transcribe a Recording give identical text for the same
+file and model by construction (a test runs both paths on one fake engine).
+`translate_to_english` goes to multilingual Whisper with `task="translate"`
+(threaded through `model_loader.build`, `local_recognizer._load` and
+`FileJob.translate`); any other model refuses in one sentence. An
+`initial_prompt` is reported as one warning sentence, never dropped silently.
+Speaker labels are a warning until D-29's model is adopted.
+
+**Errors.** `model_loader.SherpaLoadError` (`QUILL-SPEECH-SHERPA-LOAD`),
+`SherpaUnsupportedError` (`QUILL-SPEECH-SHERPA-UNSUPPORTED`) and
+`SherpaRuntimeError` (`QUILL-SPEECH-SHERPA-RUNTIME`), all `SpeechError`s, so
+every caller that catches speech failures catches them.
+
+**One store, and the migration.** `quill/core/speech/sherpa_migration.py`:
+
+* A saved `speech_provider` of `nemotron` or `parakeet` loads as `sherpa`, and
+  the old model ids load as the catalogue's (`parakeet-tdt-0.6b-v3` is
+  `parakeet`). Only `nemotron` was ever saved: the settings validation never
+  accepted `parakeet`, which the ladder chose instead.
+* A Parakeet downloaded the old way (`<app data>/speech-models/parakeet/...`) is
+  hard-linked into the store, or moved when the folders are on different
+  drives, the first time the shared provider lists its models. All files at
+  their pinned sizes or nothing; never downloaded twice. This closes section
+  10's "One folder for Parakeet".
+* The older Nemotron (80 mel features) is a different model from the
+  catalogue's Nemotron 3.5 (128), so it is not adopted. Somebody who had chosen
+  it now dictates with the most accurate model they have until they download
+  Nemotron 3.5; its old folder is no longer used.
+
+**The ladder** (`service.preferred_dictation_provider_id`): an explicit choice
+wins; an installed Parakeet promotes the shared provider (as it promoted the
+old Parakeet engine); whisper.cpp stays the default when it has a model; and
+when whisper.cpp has none, the shared provider's built-in Moonshine tiny is
+used. So removing whisper.cpp's models leaves offline dictation working, and a
+fresh install dictates at once. whisper.cpp and Faster Whisper are otherwise
+untouched and selectable: the switch of defaults waits for B-1, as dict.md
+says.
+
+**Where it shows in QUILL.** The guided offline-speech setup offers "QUILL
+speech models (Parakeet, Nemotron and more)" second, after Whisper.cpp, in
+place of the two separate engines, with the family catalogue as its models,
+D-22's recommendation and reason, and each model's tier. Manage Speech Models
+shows the same tiers and capability sentences. The voice features (Voice
+Command, the Media Player's Listen for a Command) fall back to the shared
+provider and prefer Moonshine tiny there. The Silero voice detector of Locked
+Dictation's silence pre-pass is now the bundled one
+(`speech_vad.silero_model_path` asks `engines.vad_model_path` first): one copy,
+not two.
+
+**Parity.** Transcribe a Recording in QUILL, QUILL Lite and QUILL Transcribe has
+**Translate into English** (Alt+E): available for a recording in another
+language with a model that translates (the built-in Whisper, or a downloaded
+multilingual Whisper), and unavailable otherwise. `test_dictation_parity.py`
+asserts translation and timestamps on the shared dialog and job.
+
+**Packaging.** `sherpa-onnx==1.13.8` is pinned exactly in `pyproject.toml`
+(both extras), `uv.lock`'s requirement metadata, and the engine pack's
+requirements (`engine_install`), because a hotword or decoder change breaks
+behaviour, not just the API. The Offline Edition build stages a `nemotron`
+wheelhouse (`sherpa-onnx` and `sherpa-onnx-core`), the name `install_nemotron`
+already asked `_bundled_wheelhouse_dir` for.
+
+**Not done, and why:**
+
+* Defaults are unchanged: Locked Dictation and offline transcription move to
+  the shared layer by default only once B-1 shows parity, and whisper.cpp and
+  Faster Whisper become optional packs a release after that (dict.md S5).
+* "Word errors on B-1 no worse than whisper.cpp" needs B-1, and "removing
+  whisper.cpp leaves every shipped feature working" needs an end-to-end run.
+  The ladder change above covers dictation; podcast chapters stay on Vosk.
+* Mirroring catalogue models to assets-v1 (`model_mirrors.py`) is a release
+  task, done as each model is adopted.
+* Downloads report progress through each window's own progress dialog, as
+  before; the 25, 50 and 75 percent announcements through
+  `activity.ProgressAnnouncer` were not added to the guided setup.
+
+### D-27. Keyword spotting for the command word: built, off
+
+`quill/core/windows_dictation/kws_keywords.py`. The keywords are written from
+the command word (with "hey quill" beside a one-word one), the wake phrase and
+the stop phrase, tokenised with sherpa-onnx's `text2token`, each with a
+boosting score and a trigger threshold. `KeywordGate` runs a `KeywordSpotter`
+on the same 16 kHz blocks the voice detector gets, after the reader gate
+(`recognizer_worker._spot`), and marks each phrase with
+`RecognizedPhrase.keyword_heard`. **Both must agree**: in
+`command_mode_mixin._command_split` a phrase whose text opens with the command
+word is still dictated when the spotter ran and did not hear it. With no
+spotter the field is `None` and the text matcher decides alone, as before.
+`_make_recognizer` gives every local recogniser `keyword_gate_for(preferences)`.
+
+It is off (`KWS_ADOPTED = False`, so `keyword_gate_for` returns `None`) until
+dict.md's acceptance criteria are measured: under one false trigger an hour on
+a 60-minute B-3 soak that mentions "Quill" in sentences, 95 percent detection
+after a pause, and under 0.02 of one thread. The gigaspeech 3.3M model's size
+and licence are unverified, so it is not in the catalogue. Standby without the
+full model (D-9) waits for it.
+
+### D-28. Hotwords for My Words: plumbing behind a flag, off
+
+dict.md says to evaluate first, so `quill/core/windows_dictation/hotwords.py` is
+the plumbing behind `HOTWORDS_ENABLED = False`: the hotwords file in the
+model's case, the transducer's `modified_beam_search` options and `bpe.vocab`
+(`decoder_options`, which `model_loader.build` and `online` accept), and
+putting My Words' own spelling back afterwards with the corrector every engine
+already uses. `model_types.HOTWORD_MODELS` is empty: a model joins when 20
+names are recognised 50 percent better than without hotwords and B-1's word
+errors are no worse. **A measurement is needed**, on an English Zipformer
+transducer, which is not in the catalogue yet; Nemotron (greedy only) and
+Parakeet (garbled NeMo hotwords, section 5 B) were measured not to work.
+Passing My Words to the loader at load time is the last wiring step, done with
+the first qualifying model.
+
+### D-29. Punctuation and speaker labels: built, off
+
+`quill/core/windows_dictation/post_passes.py` builds sherpa-onnx's
+`OfflinePunctuation` (a post-pass that never loses words when it fails) and
+`OfflineSpeakerDiarization` (pyannote segmentation, a speaker embedding, fast
+clustering), and matches voices to a transcript's paragraphs by overlap,
+numbered "Speaker 1", "Speaker 2" in the order they are first heard. Both are
+off (`PUNCTUATION_ADOPTED`, `SPEAKERS_ADOPTED`) and no model is catalogued:
+the punctuation model's English quality is unverified (gate on B-1), and the
+speaker models' sizes, licences and memory on the 8 GB machine are unmeasured.
+Every model dictation offers today punctuates by itself, so nothing waits on
+the first. The shared provider says a speaker-label request cannot be met yet.
+
+### D-30. Text to speech through sherpa-onnx: not built
+
+dict.md says to decide after measuring: prototype `OfflineTts` Kokoro and VITS
+voices, compare audio, language coverage, load time and memory against
+kokoro-onnx, and adopt only if every shipped Kokoro voice and language is
+covered. None of that measurement has been made, so nothing was built.
+
+### The two runtimes, resolved
+
+* **They coexist, and a test says so.**
+  `tests/unit/core/test_onnxruntime_coexistence.py` starts a fresh interpreter
+  for each import order, runs a sherpa-onnx voice detector and a Python
+  onnxruntime session on the bundled `silero_vad.onnx`, and asserts exactly one
+  `onnxruntime.dll` is mapped, sherpa-onnx's. Both orders passed here on
+  2026-10-16 (sherpa-onnx 1.13.8, onnxruntime 1.31.0). It skips where the
+  bundled model or either runtime is absent, and downloads nothing.
+* **Threads are explicit on both sides.** sherpa-onnx recognisers already take
+  `num_threads`. Kokoro's onnxruntime session is now built with
+  `intra_op_num_threads` set to half the cores, between one and four, and one
+  inter-op thread (`quill/core/onnx_threads.py`, used by
+  `read_aloud._get_cached_kokoro_onnx` through `Kokoro.from_session`), so
+  Kokoro speaking while dictation listens no longer takes every core of a
+  two-core computer.
+
+## 24. As built, 2026-10-15: the wake phrase and holding the key in QUILL Transcribe (D-9), and feedback where you work (D-6)
+
+(Sections 22 and 23 belong to other items built the same night.)
+
+**What was true.** QUILL Transcribe ran the editors' controller with two
+shared settings forced off (`transcribe/parity.py` `PREFERENCES_OFF`: the wake
+phrase and hold to talk), because its start and stop key is a `RegisterHotKey`
+key, which reports the press and never the release, and because a wake phrase
+heard while another program is in front could type into anything. Its preview
+went to its own window's status bar, which nobody sees while working in
+Outlook; Dictation Status was a parity divergence ("the window is its status");
+and Resume, Resume in This Field and Discard Held Words (D-15,
+`quill/ui/dictation_field_hold.py`) were window, menu and tray commands only.
+
+**D-9, holding the key** (`quill/apps/transcribe_talk.py`, the wx-free half in
+`quill/core/transcribe/talk.py`). The plan offered an optional low-level hook
+for the one chosen key; it was not needed, and it was not built. The decision
+is the editors' `HoldToTalk`; the host asks `GetAsyncKeyState` about that one
+key (`quill/platform/windows/key_state.py`, with the virtual key from
+`tray_hotkey.virtual_key`) every 40 ms, only while a press is followed, which
+is how the editors already follow Ctrl+F11 with `wx.GetKeyState`. (wx's call
+reads the thread's own key state, which does not change while another program
+is in front, so it could not be reused.) No hook means nothing sees any other
+key the person types, nothing can be timed out by `LowLevelHooksTimeout`, and
+the key keeps going through the family picker and its conflict checks, which
+require Ctrl or Alt (`show_hide_key_problem`). That requirement is the D-1
+note on modifiers made concrete: a held Ctrl or Alt turns typed letters into
+shortcuts, and `text_injector` waits two seconds for them and then refuses. So
+the recogniser reports through `KeyHeldGate`: a phrase finished while the key
+is down waits, and the waiting phrases are typed in order the moment the poll
+sees the key up (or before `on_finished`, so a stop never loses one). The press
+that stops dictation lets the last phrase through at once. Key repeats are
+ignored while a press is followed, with the setting on or off, as in the
+editors. Holding a Ctrl chord also silences most screen readers for as long
+as it is held, so the guide recommends an Alt chord such as the default
+Alt+Shift+Backslash; Insert and Caps Lock, the readers' own keys, cannot be
+chosen at all because the picker needs Ctrl or Alt.
+
+**D-9, the wake phrase.** The controller's STANDBY, unchanged. QUILL
+Transcribe's window timer (every 800 ms) asks `_keep_wake_standby`: wanted only
+when the setting is on, dictation could start at all (`_refusal`: Safe Mode,
+the owner lock, the family microphone, the model), and the program in front is
+another program that is neither a QUILL window (`window_handles_own_expansion`)
+nor on the never-type list. QUILL Transcribe's own window and the editors are
+excluded because the editors have their own dictation and wake phrase, and
+standing down there lets go of the family microphone (D-11) so Ctrl+F11 works;
+a password manager is excluded because a microphone open there is the worry
+the plan names. The state line and tray name say "Listening for your wake
+phrase", the setting being switched on is said once ("Listening for your wake
+phrase whenever another program is in front. Nothing is written until it hears
+it."), and a recogniser that will not open is reported once by the controller
+and not retried until Dictation Settings is saved again. The shared Dictation
+Settings window takes `help_for`, so F1 on the two check boxes describes QUILL
+Transcribe's behaviour there (`transcribe_talk.HELP_FOR`). `PREFERENCES_OFF`
+is now empty, and the parity test asserts both settings are honoured and both
+default off in all three products.
+
+**D-6.** The preview and the unspoken state changes (Command mode, Waiting for
+a command, Listening for your wake phrase, and the change back from one of
+them) go to braille only, through the announcement engine's braille-only call
+(`prism_bridge.braille`), following `announcement_braille`. States that are
+always spoken (on, off, paused) are not brailled a second time, so the display
+is not overwritten by what the reader has just brailled from speech; the
+preview is throttled by `PreviewThrottle` and `braille_output`'s two-second
+duplicate rule. "Speak" preview now reaches Transcribe too (`say_quietly`).
+Dictation Status moved from `DIVERGENCES` to `SHARED_COMMANDS` on the editors'
+Alt+F9 (rule 2), and says one sentence (`talk.status_sentence`): the state, the
+program the session is locked to (`foreground.window_process_name` on
+`LockedTarget.locked_window()`, never the window title), the model and the
+held count. Three optional system-wide keys, `status_hotkey`, `resume_hotkey`
+and `discard_hotkey` (hotkey ids 0x51B3 to 0x51B5), are empty by default,
+registered only once chosen, chosen in File > Dictation Status Key...
+(Ctrl+Alt+Shift+A), Resume Key... (Ctrl+Alt+Shift+U) and Discard Held Words
+Key... (Ctrl+Alt+Shift+Y) through `run_system_key_command` with every other
+Transcribe key passed as `own`, and they run the window's own commands. What
+D-15 already gave (the three commands, arming from the window) was not
+rebuilt.
+
+**Tests** (fakes only; no microphone, no key registered, the key's state a
+flag): `tests/unit/apps/test_transcribe_talk.py` (holding, a quick press, the
+setting off, repeats, the stopping press, words dropped on close, the gate in
+front of the recogniser, the wake phrase off by default, standby and its state
+line, nothing written before the phrase, back to standby on stop, where it
+stands down, braille, Dictation Status, the three keys),
+`tests/unit/core/test_transcribe_talk_core.py`, and the parity test.
+
+**Still to check, with a microphone and a braille display.** Holding
+Alt+Shift+Backslash in Notepad, Word and Outlook (that the release is seen and
+nothing arrives as an Alt shortcut); the wake phrase with each engine in a
+noisy room; JAWS and NVDA braille showing "Hearing: ..." in Outlook without
+fighting the reader's own flash messages. They join
+`docs/qa/screen-reader-checks-2026-10.md`.
+
+## 23. As built, 2026-10-16: cloud dictation providers, your own account (D-31 to D-37)
+
+The owner asked for "all dictation platforms, Microsoft, Google, Azure, etc",
+each with the person entering only what that provider needs. Local dictation
+stays the default and the recommendation.
+
+**One layer (D-31).** A wx-free package, `quill/core/windows_dictation/cloud/`:
+
+| Module | What it does |
+|---|---|
+| `types.py` | `CloudProvider` (id, name, company, console and privacy links, hosts, `last_checked`, `consent_version`), `ProviderField` (key, label, kind secret/text/choice/file, required, help, choices, validate), `Capabilities` (streaming, biasing limit and name, punctuation, languages, diarization, timestamps), the `LiveSession` shape |
+| `errors.py` | `CloudSpeechError(CodedError)` and `-AUTH`, `-FIELD`, `-NETWORK`, `-QUOTA`, `-UNSUPPORTED`, `-CONSENT`, each carrying the field to check; network errors are not fatal (a phrase is lost, dictation keeps listening) |
+| `transport.py` | the two certificate-checked openers (`urlopen`, `create_connection`) and `failure`, which turns any HTTP or socket failure into one sentence naming the field ("The key was refused. Check Key."), never the key or the body; `require_host` for an address that is the person's own resource |
+| `ws_base.py` | one streaming session for every WebSocket provider: buffering to the provider's smallest block, keep-alive between phrases, provisional words to the preview, the phrase's final words at QUILL's pause |
+| `credentials.py` | secrets in the credential store under `provider_credential_target("speech-<id>-<field>")`, a file field (Google's service account) DPAPI-protected in `speech-providers\` with only its path in settings, every loaded secret handed to `redaction.remember_secret` |
+| `consent.py` | the consent question generated from the facts, `consented`, `start_problem` (Safe Mode, a missing part, a missing field, no consent), the "Speech goes to Azure, westeurope." line, `biasing_terms` (newest first, with a count left out) |
+| `registry.py` | the list, in the page's order, and the `cloud-<id>` engine ids |
+| `recognizer.py` | `CloudDictationRecognizer`, the same shape as `OpenAIDictationRecognizer`: the built-in engines' listening loop, only the recognising sent |
+
+Settings: `windows_dictation_speech_providers` (provider id to its plain
+fields; a field whose name looks secret is dropped on load) and
+`windows_dictation_speech_provider_consent` (provider id to version), both in
+`DictationSettings`, so QUILL, QUILL Lite, QUILL Transcribe and Quill Inkwell
+share them. The one registration point outside the package is
+`engines._cloud_engine`, which lets `coerce_engine`, `engine_info`,
+`cloud_line` and `writes_punctuation` know a `cloud-` engine.
+
+**The page.** `quill/ui/speech_providers_dialog.py`, reached from Dictation
+Settings' **Speech Pro&viders...** (`quill/ui/windows_dictation_cloud.py`, a
+mixin so the settings dialog stays under its cap) in all four apps: the
+provider list (focused on open), About this provider, the fields built from
+`fields()` with inline F1, Last result, and Test Connection, Save, Remove and
+Close (no access key). A saved secret is never shown; Save stores secrets at
+once and the plain fields with Dictation Settings' OK. Choosing a provider in
+the engine list asks the generated consent; No is the default and restores the
+engine. Test Connection is refused in Safe Mode.
+
+**The providers, and what each takes.** All direct HTTPS or WebSocket; no SDK.
+
+| Gap | Provider | Live | My Words | Test Connection |
+|---|---|---|---|---|
+| D-32 | Azure AI Speech (`azure.py`) | WebSocket (the Speech SDK's protocol); phrase mode through fast transcription | phrase list, 500 | `sts/v1.0/issueToken` |
+| D-33 | Google Speech-to-Text v2, Chirp 3 (`google.py`) | No: REST `recognize` a phrase at a time; gRPC streaming is an optional pack, not built, and `streaming_pack_problem()` says so | adaptation phrases, 1,000 (verify) | list one recognizer |
+| D-34 | Amazon Transcribe (`amazon.py`, `amazon_sigv4.py`, `amazon_eventstream.py`) | WebSocket, SigV4-presigned, event-stream frames | a vocabulary named in the person's account | signed `ListVocabularies` |
+| D-35 | Deepgram, AssemblyAI, Speechmatics (`streaming_providers.py`); ElevenLabs Scribe, Gladia, Rev.ai (`streaming_more.py`) | WebSocket | keyterm 100; keyterms_prompt 100; additional_vocab; keyterms 50; custom vocabulary 100; Rev.ai a vocabulary ID | an account or list call each |
+| D-36 | Groq, Mistral Voxtral (`rest_providers.py`) | No: one WAV per phrase | Whisper prompt; context_bias 100 | list models |
+| D-37 | IBM Watson (`ibm.py`) | WebSocket, IAM token | a custom language model ID | list models |
+
+OpenAI is described on the same interface (`openai_provider.py`, for the
+list and Test Connection), but `OpenAIDictationRecognizer` still drives OpenAI
+dictation and its consent stays `windows_dictation_openai_consent`: no change
+in behaviour, which was the condition.
+
+**Egress.** One reviewed entry per provider call site, in
+`quill/tools/network_egress_entries_speech.py` (split out under GATE-11), 28 in
+all. Every call site is a uniquely named function (`_probe_<id>`,
+`_connect_<id>`, `_send_<id>`, `_token_<id>`, `_init_gladia`).
+
+**Acceptance, as tested** (`tests/unit/core/test_dictation_cloud_*.py`,
+`tests/unit/ui/test_speech_providers_dialog.py`, all against recorded fakes in
+`tests/unit/core/cloud_speech_fakes.py`; nothing touches the network or the
+real credential store):
+
+- No secret in settings, logs or crash bundles: planted values, `save` and
+  `values_for`, `redact_text_for_bundle`, and `load_fields` dropping
+  secret-shaped names. Met.
+- Test Connection never sends speech: every provider's test is a GET or an
+  account call with no audio. Met.
+- With consent declined, or in Safe Mode, no request is made. Met.
+- A provider without streaming shows no live preview. Met.
+- Losing the network never switches engines. Met.
+- The page passes the dialog inventory, access key, F1 and reachability gates;
+  it has no menu items, so no menu accelerators. Met.
+
+**Not done, and why.**
+
+- OpenAI's recogniser is not yet rebuilt on `CloudDictationRecognizer`; it is
+  listed and tested through the interface only.
+- Azure batch transcription for long recordings, and moving `azure_mai` from
+  QUILL's file stack into the shared layer, are not built (D-32's file half).
+- Google gRPC streaming (the optional pack) is not built.
+- The "Speech goes to ..." line names the provider, not yet its region, in the
+  tray and status key: `engines.cloud_line` has only the engine id.
+  `consent.speech_line` has the region and is ready for that.
+- The engine list in QUILL Transcribe's Choose Model window does not list cloud
+  providers yet; Dictation Settings does.
+- Nothing has been tried against a live account. Every protocol detail marked
+  "verify" in the module docstrings needs a real key: Azure's WebSocket message
+  shapes and request ids, ElevenLabs' realtime message names, Gladia's
+  vocabulary intensity, Speechmatics' `additional_vocab`, Chirp 3's adaptation,
+  Amazon's 8443 host signing and silence timeout, IBM's token lifetime on an
+  open socket.
+
+## 26. As built, 2026-10-16: the benchmark and test infrastructure (B-1 to B-8)
+
+dict.md section 8 asked for the measurements every model decision waits on,
+above all the retirements in its section 10. This builds the tools. It runs
+no benchmark that needs a download, and it changes nothing a person using
+QUILL sees. Everything is dev-only: in `scripts/` and `tests/`, never shipped,
+never run by the app. Section 6's table still stands, and still flatters
+every engine.
+
+### B-1: the benchmark set
+
+**B-1b, public datasets on demand.** `scripts/bench_datasets.json` names
+every dataset in dict.md's table with its licence (and whether the licence
+was verified), attribution, source, size, access, contamination and archive
+URLs. `scripts/fetch_bench_audio.py` downloads only when a person runs it and
+answers yes, never with `CI` set, and only from the hosts in its docstring (a
+test holds the two to each other). Every archive is checked against a pinned
+SHA-256 before it is unpacked, with tarfile's `data` filter so nothing lands
+outside its folder. No hash is pinned yet: the first person to fetch a set
+runs `--pin`, which records the hash for review and commit. Sets behind an
+account or an agreement (Common Voice, CHiME, TORGO, the Speech Accessibility
+Project and others) are never fetched: the script says where to ask, and
+`--local PATH` registers a copy you have. UASpeech is marked not usable.
+
+The cache is **outside the repository** (`QUILL_BENCH_AUDIO`, otherwise
+`%LOCALAPPDATA%\QUILL-bench\bench-audio`), not dict.md's `build/bench-audio/`:
+a path inside the repository is refused, so no audio can be committed by
+accident. Fixed subsets live in `scripts/bench_subsets.json` (a seed, a count,
+and a per-speaker cap); `--pin-subset` stores the chosen names once the data
+is here.
+
+**dictbench** (`scripts/dictbench.py`) gained `--dataset`, `--subset`,
+`--group-by` (speaker, accent, gender, language, group, or `heldout`),
+`--parse`, `--latency` and fuller JSON: the contamination flag
+(`may_be_in_training_data`) for that model and set, the normalizer used, the
+date, the limits sentence, and every group. The scoring is
+`scripts/bench_scoring.py`: punctuation is aligned against the reference's own
+marks, with precision, recall and F1 for the full stop, comma, question mark
+and new paragraph, and the share of sentences starting with a capital. Quote
+marks are not scored, and mostly-quoted segments are reported apart.
+
+**B-1a, LibriVox held out.** `scripts/bench_librivox.py` reads the catalogue,
+makes a seeded selection balanced across readers from books whose text is on
+Project Gutenberg, downloads the chosen audio and texts (by a person), strips
+the Gutenberg header, footer and every mention, finds LibriVox's spoken
+preamble and closing by their words, and cuts each chapter into 5 to 20 second
+utterances whose reference is the book's own text. It uses dict.md's fallback
+aligner: an engine not under evaluation transcribes each voice-detected
+stretch, and difflib matches its words to the book. Utterances under 0.9 word
+match are dropped (words the book does not have count against them too), and
+the kept share is reported per book and per reader. The aligner is recorded
+in `aligner.txt`, and dictbench refuses to score that engine on the set. The
+held-out dates are in `bench_datasets.json`: Whisper 2024-10-01 (an
+assumption) and Moonshine 2024-10-21 (the paper); Parakeet, Nemotron, Vosk and
+Canary have none yet, so nothing counts as held out for them until someone
+fills in the dates dict.md names.
+
+**B-1c, the command script.** `scripts/bench_commands.py` writes a script
+from the command table (every whole-phrase command, the layout words, the D-8
+inserts, commands after the command word, sentences with spoken punctuation,
+and Spanish), reads it to files with Windows' voice, Kokoro or Piper (nothing
+is played), and mixes it with MUSAN noise or recorded screen-reader speech at
+chosen levels. `dictbench --parse` then reports how many commands parsed and
+how many would have been typed. Its word errors are never accuracy.
+
+**B-1d, volunteers.** Not recorded: it needs people, consent and payment.
+`bench_datasets.json` has its row, and a recorded folder plugs in with
+`--local` and a `speakers.tsv` whose `group` column carries the speech
+difference, so `--group-by group` keeps each group apart.
+
+### B-2 to B-8
+
+- **B-2.** The tested-programs harness (section 17) now reads every phrase
+  back even when QUILL said Windows did not take all of it, and counts whether
+  QUILL's report agreed with what arrived: agreed, a false alarm, or a silent
+  miss. A unit test drives that scoring against a fake field.
+- **B-3.** `tests/stability/test_dictation_soak.py`, marked `slow`: recorded
+  audio at live pace through the real recogniser and controller into the
+  shared `ExternalDocument`, whose typing is a fake that never sends a key. It
+  runs only with `QUILL_DICTATION_SOAK=1` and a folder of recordings, and is
+  skipped whenever `CI` is set. It checks no lost or doubled phrase, no
+  command typed, flat memory and a closed microphone. Its machinery
+  (`scripts/bench_live.py`) has fast unit tests with a fake engine.
+- **B-4.** `dictbench --latency` plays the recordings at live pace through the
+  same recogniser and reports, per file and at p95, the time from the first
+  speech to the state change and from the last speech to the text (the pause
+  included), against the Transcribe targets of 0.5 and 2 seconds.
+- **B-5.** `bench_live.correction_efficiency`: utterances spent per error
+  corrected. A soak folder with a `corrections.json` reports it; run the same
+  session once per correction method to compare before and after D-1, D-10
+  and D-19.
+- **B-6.** Six moments for QUILL Transcribe (start, stop, pause, refusal,
+  command mode, review) on NVDA, JAWS and Narrator, in
+  `docs/qa/screen-reader-checks-2026-10.md`.
+- **B-7.** `tests/unit/core/test_dictation_privacy_paths.py`: a whole session
+  with AI off makes no connection; held words are never on disk as plain text,
+  and nothing is left in `recovery/live-dictation` once delivered (ready for
+  D-5's Rescue); dictated words are not logged; and only the two download
+  scripts of the benchmark import anything that could reach the network.
+- **B-8.** `scripts/bench_machine_run.py` runs every model on this computer, each
+  in its own process, on the chosen sets, and writes one JSON and one table
+  with proposed cost factors and RAM tiers. It never edits the catalogue, and
+  screen-reader lag stays a person's note.
+
+**One hook in engine code.** `LocalDictationRecognizer._reader_gate()` is now a
+method. The first live run here opened the process's real reader gate, which
+captures the running screen reader's audio, and a phrase spoken while JAWS was
+talking was silenced, exactly as the gate is meant to do. The benchmark's
+recogniser now overrides the method with a gate that captures nothing, and a
+test makes sure it never opens the real one.
+
+### First run, 2026-10-16
+
+Moonshine tiny, CPU only, on ten sentences and on the 54-line B-1c script,
+read to files by Windows' default voice. Synthetic speech: these numbers check
+the tools, not the engine (`docs/qa/dictbench-moonshine-tiny-2026-10-16.json`).
+
+| Run | Result |
+|---|---|
+| Ten sentences, from files | 0% word errors, full stop, comma and question mark F1 1.0, 0.017 seconds of computing per second of speech, 208 MB, 1.2 s to load |
+| The same at live pace | state change p95 0.27 s, text p95 0.92 s (the 0.8 s pause included), all ten phrases heard |
+| B-1c command script | 44 of 49 commands parsed; "undo that" heard as "I'll do that." and "show clips" as "Shoe clips." would have been typed; "paste clip three" came back as "paste clip 3" and "insert abbreviation addr" as "address" |
+
+The "paste clip 3" result is worth a look: the engine writes the number as a
+digit, so a clip spoken by number may need the parser to accept digits.
+
+### What section 10 can now measure, and what has to be run
+
+Each retirement in dict.md section 10 is gated on B-1a, the relevant B-1b
+sets, B-1c and B-8. The tools for all four exist now; the data does not. What
+each one needs:
+
+- **Vosk out of dictation** (merged in #1663, before these tools existed): its
+  condition, Moonshine tiny measured on B-1a English (a held-out set built
+  with Whisper as the aligner), B-1c and the B-8 run with a screen reader, is
+  all measurable now, so it can be confirmed after the fact.
+- **Duplicate Parakeet and Nemotron providers:** not a benchmark question
+  (the same model files); measurable as before.
+- **whisper.cpp as the default:** B-1 parity for sherpa-onnx Whisper or
+  Parakeet. dictbench measures sherpa-onnx models only; whisper.cpp needs its
+  own run through QUILL's Locked Dictation, so this one stays partly manual.
+- **English-only Whisper and Distil-Whisper sizes:** measurable on B-1a
+  (Whisper's date is set), LibriSpeech and FLEURS (flagged as contaminated
+  where they are), B-1c and B-8, once each model is downloaded.
+- **Vosk as the chapter engine:** not measured by these tools; it needs the
+  reference chapter lists, as before.
+- **Parakeet and Nemotron** have no training cutoff in the table, so nothing
+  is held out for them until the dates are filled in.
+
+To decide them, someone with the models downloaded runs, in order:
+`fetch_bench_audio.py librispeech-test-clean --pin` and `fleurs-en --pin`
+(then commits the hashes); `bench_librivox.py catalogue`, `select`, `fetch`
+and `build` for English and Spanish; `bench_commands.py script`, `render` and
+`mix`; and `bench_machine_run.py` on the 8 GB computer with NVDA or JAWS
+running, then writes the results here.
+
+**Still to do:** vendor Whisper's English normalizer under `scripts/` with its
+licence (the scoring uses it when the `whisper_normalizer` package is present,
+and QUILL's basic one otherwise); pin the first hashes; build and publish the
+B-1a subset on assets-v1; record the volunteers (B-1d).
 
 ## 25. As built, 2026-10-16: never lose what was said (D-5), snippet blanks by voice (D-8), reading back more (D-18)
 

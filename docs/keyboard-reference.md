@@ -587,6 +587,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Alt+Shift+B | Background station | `radio.background_station` |
 | Alt+Shift+D | Mirror output | `radio.mirror_output` |
 | Alt+Shift+F | Play Favorite Station... | `radio.play_favorite` |
+| Alt+Shift+I | Station details | `radio.station_details` |
 | Alt+Shift+N | Whats new | `radio.whats_new` |
 | Ctrl+. | Radio: Stop | `radio.stop` |
 | Ctrl+Alt+0 | Community Picks... | `radio.community_picks` |

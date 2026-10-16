@@ -2,7 +2,7 @@
 
 These are the hands-on checks for everything built in late September and early
 October 2026 across QUILL Cast, Quill Radio, QUILL Lite and QUILL. There are
-254 of them. Each one says where to go, what to press and what you should
+272 of them. Each one says where to go, what to press and what you should
 hear. Check a box only after you have tried it yourself with a screen reader;
 passing automated tests do not count.
 
@@ -1095,3 +1095,62 @@ Edge through QUILL Transcribe. Check on NVDA, JAWS and Narrator:
   want." and types the selection, or all of it, in the field.
 - [ ] JAWS: the same.
 - [ ] Narrator: the same.
+
+### QUILL Transcribe: holding the key, the wake phrase and braille (D-9, D-6, 2026-10-15)
+
+With a microphone, in Notepad, Word and Outlook through QUILL Transcribe, and a
+braille display where one is available. Check on NVDA, JAWS and Narrator:
+
+- [ ] NVDA: with Hold the dictation key to talk on, hold Alt+Shift+Backslash,
+  say two phrases, let go: both are typed after you let go, none arrives as an
+  Alt shortcut, and dictation stops. A quick press still turns it on and off.
+- [ ] NVDA: with the wake phrase on, the tray says Listening for your wake
+  phrase while Notepad is in front; ordinary speech types nothing; "Quill
+  dictate dear Sam" starts dictation and types "Dear Sam". With QUILL Lite in
+  front, Ctrl+F11 in QUILL Lite starts its own dictation rather than being
+  refused.
+- [ ] NVDA with a braille display: "Hearing: ..." appears while you speak in
+  Outlook, is not spoken, and does not fight the reader's own messages; Command
+  mode appears on the display when the Command Key is pressed twice.
+- [ ] NVDA: Alt+F9 in the window, and a Dictation Status Key chosen in the File
+  menu pressed in Outlook, say one sentence with the state, the program, the
+  model and the held count.
+- [ ] NVDA: with dictation paused, a Resume Key pressed back in the first field
+  types the held words; a Discard Held Words Key throws them away.
+- [ ] JAWS: the same.
+- [ ] Narrator: the same (Narrator brailles what is spoken, so the braille-only
+  lines may not appear).
+
+### QUILL Transcribe: the six moments, on every reader (B-6, 2026-10-16)
+
+The dictation benchmark (the design record's section 26) measures the words
+and how fast they arrive. It cannot hear your screen reader, so these are the
+checks it leaves to you. Use a microphone, QUILL Transcribe's defaults, and a
+new, empty Notepad document. Each moment must be announced once, in plain
+words, and the reader must not repeat what QUILL Transcribe already said.
+
+1. **Start.** Press Alt+Shift+Backslash: the start tone plays and you hear
+   "Dictation on." once. The reader says no stray letter.
+2. **Stop.** Press Alt+Shift+Backslash again while you are still speaking: the
+   phrase you were saying is still typed, then you hear "Dictation off." once.
+3. **Pause.** While dictating, press Alt+Tab to another program and say a
+   phrase: you hear "Dictation paused." and the reason, once; nothing is typed
+   in the other program; Resume in the tray menu types the held words in
+   Notepad and says how many phrases it wrote.
+4. **Refusal.** Start dictation in a password field (a browser sign-in page you
+   do not submit), then in QUILL Lite: you hear "That is a password field, so
+   nothing is typed there." and "This is a QUILL window: press Ctrl+F11 to
+   dictate here." Each is said once, and nothing is typed.
+5. **Command mode.** Say "QUILL command mode": you hear "Command mode" once;
+   the next phrase is a command, not typed; after eight seconds of quiet a
+   falling tone plays and nothing is said.
+6. **Review surface.** Say "QUILL review that" (with an AI engine set up): the
+   Review Dictation window opens; the reader says its title and the text, and
+   QUILL Transcribe says nothing over it; closing it puts you back in
+   Notepad.
+
+Check a box once all six held, and write the reader's version beside it:
+
+- [ ] All six with NVDA.
+- [ ] All six with JAWS.
+- [ ] All six with Narrator.

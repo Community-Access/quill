@@ -544,6 +544,8 @@ running, it hands your settings to QUILL Transcribe instead of Inkwell.
 computer with the built-in engines, and sent to OpenAI only if you chose OpenAI
 dictation with your own key. Nothing you say is kept.
 
+**Speech providers.** Inkwell's Dictation Settings has the same **Speech Providers...** button (Alt+V) as the editors, so Dictate Anywhere can use a speech company you already have an account with, such as Azure, Deepgram or Amazon. Keys go to Windows Credential Manager; you are asked before anything is sent, and No is the default.
+
 ## Finding a setting or a command
 
 Quill Inkwell keeps its options in its menus, so there is no settings window to search.

@@ -7440,6 +7440,19 @@ middle of a sentence is written as words, just as you meant it.
 - "copy that", "copy all", "show clips", "show snippets"
 - "stop dictation"
 
+**Reading back, a worked example.** You have dictated "Thanks for the notes
+comma I will send the draft on Friday period" and want to check it by ear.
+Say "read last sentence": you hear "Thanks for the notes comma I will send the
+draft on Friday period", with the marks named when **Say punctuation marks in
+the read-back** (More Dictation Settings) is
+on, so a missing comma is easy to catch. "read last paragraph" (or "read this
+paragraph") reads the whole paragraph the cursor is in, and "read selection"
+reads what you selected ("Nothing is selected." when nothing is). "read that"
+reads all of what last went in, so after "insert snippet sign off" it reads the
+whole snippet, not only its name. Reading never moves the cursor or changes
+the text. In another program only "read that" works, because QUILL reads only
+the words it typed there.
+
 **Commands with words after them**, said at the start of a phrase:
 
 - "select" and some words, "go to", "go before" or "go after" and some words,
@@ -8089,6 +8102,62 @@ keeps no count; your OpenAI account's usage page has the real figures.
 - "The OpenAI model ... is no longer available to your key." Choose another in
   More Dictation Settings.
 
+##### Speech providers: dictation with your own account at another company
+
+If you already have an account with a speech company, dictation can use it.
+QUILL knows twelve: Microsoft Azure AI Speech, Google Cloud Speech-to-Text, Amazon Transcribe, Deepgram, AssemblyAI, Speechmatics, ElevenLabs Scribe, Gladia, Rev.ai, Groq, Mistral Voxtral and IBM Watson Speech to Text. Your computer's own engines stay the default
+and the recommendation; none of this is needed, and none of it is on until you
+choose it.
+
+**What is sent.** With one of these chosen as the speech engine, each phrase
+dictation hears is sent over an encrypted connection to that company, with
+your account, and the words come back. Nothing is sent while nobody is
+speaking. The company bills you, not QUILL; QUILL shows no prices and counts
+nothing, so look at your provider's own usage page. Nothing goes through
+QUILL's servers and QUILL keeps no copy of your voice. None of it works in Safe
+Mode.
+
+**Setting one up:**
+
+1. Open **Dictation Settings** (**Alt+Shift+F6**) and choose **Speech
+   Providers...** (**Alt+V**).
+2. In **Providers**, arrow to the company. **About this provider** says
+   whether it shows your words while you speak, whether it learns your words
+   from My Words and Phrases (and how many), where your speech goes and its
+   usage page.
+3. Tab to its fields and fill them in: usually a key, sometimes a region, a
+   project or an address. Each field's F1 says where to find it in that
+   company's console. A key is never shown again once saved; leaving a key
+   field empty keeps the one already saved.
+4. Press **Test Connection** (**Alt+T**). QUILL asks the company about your
+   account, never with your speech, and says what it answered, such as "Azure
+   answered: ready, region westeurope." If something is wrong it says which
+   field, such as "The key was refused. Check Key.", and puts you there.
+5. Press the Save button (Alt+S). Keys go to Windows Credential Manager at once
+   and are never written in QUILL's settings or logs. The other details are
+   kept when you choose OK in Dictation Settings.
+6. Close the page. The company is now in the **Speech engine** list. Choose
+   it, and a question says exactly what will be sent and to whom. **No** is
+   the default; nothing is sent unless you choose Yes.
+
+**Remove** (**Alt+M**) forgets everything saved for that company, keys
+included.
+
+**Which ones show words while you speak.** Azure, Amazon, Deepgram,
+AssemblyAI, Speechmatics, ElevenLabs, Gladia, Rev.ai and IBM Watson do. Google,
+Groq and Mistral send each phrase when you pause, so there is no live preview
+with them.
+
+**If the connection goes.** A lost phrase is said in one sentence ("Groq could
+not be reached. Check the internet connection.") and dictation keeps
+listening; a refused key or an empty account stops dictation and says so.
+QUILL never switches to another engine by itself.
+
+In settings files, each company's other details are kept in
+`windows_dictation_speech_providers` and your answers to the consent
+questions in `windows_dictation_speech_provider_consent`. Keys are never
+there.
+
 ##### Talking to the AI
 
 You can have a spoken conversation with AI help. Open the **AI Conversation**
@@ -8606,11 +8675,26 @@ text, most famously a phantom "thank you". Parakeet 3 only writes words when it
 actually hears them, so silence produces nothing.
 
 Parakeet 3 is an NVIDIA model. It knows 25 languages, detects the language by
-itself, runs on the CPU only, and is about a 650 MB download from **Manage
-Speech Models**. Once its model is installed, dictation switches to it
+itself, runs on the CPU only, and is about a 670 MB download, listed as
+**NVIDIA Parakeet TDT 0.6B v3** among **QUILL speech models** in **Manage
+Speech Models** and in Dictation Settings, Speech Models. It is the same
+download live dictation, QUILL Lite and QUILL Transcribe use, so a model you
+already downloaded in any of them is used here too, and nothing is downloaded
+twice. If you downloaded Parakeet 3 in an earlier version of QUILL, it is moved
+across by itself when its files are the same as today's download; if they are
+not, it is listed as not downloaded, and downloading it once more fixes that.
+Once its model is installed, dictation switches to it
 automatically. If you have chosen an engine yourself, that choice is always
 respected, and removing the model simply returns you to Whisper. Nothing else
 changes: same keys, same review, same recovery.
+
+**Dictation works before you download anything.** If Whisper.cpp has no model
+yet, Locked Dictation uses the Moonshine tiny model that comes with QUILL, the
+same one live dictation starts with. If you had chosen the older Nemotron
+engine, QUILL now uses the most accurate model you have; download **NVIDIA
+Nemotron 3.5 ASR Streaming 0.6B** from the same list to have Nemotron again.
+None of these models takes an initial prompt; your words in `dictation.md` and
+My Words and Phrases still correct the text afterwards.
 
 **Silence is trimmed before transcription.** QUILL removes the quiet lead-in
 and tail from each dictation take before the engine hears it. A recording with
@@ -8743,6 +8827,12 @@ between sentences. A few more things happen on the way:
   commands** (Alt+O): then "comma", "period", "new line", "new paragraph" and
   "scratch that" work just as they do when you dictate. Commands that move the
   cursor are ignored, because there is no cursor in a recording.
+- **Translation into English.** For a recording in Spanish, check **Translate
+  into English** (Alt+E) and the transcript is written in English instead of
+  Spanish. It needs a model that translates: the built-in Whisper, or a
+  multilingual Whisper you downloaded (not the ones marked English). With any
+  other model, or for an English recording, the box is unavailable. Off
+  unless you check it.
 
 ##### Which model for which recording
 
@@ -9253,7 +9343,8 @@ The list puts the most important first:
 - The **braille translation pack**: liblouis tables and BRF profiles for the
   Translation submenu and for BRF and embossing export.
 - **Dictation (offline speech)**: a guided setup covering Whisper.cpp, Faster
-  Whisper and Parakeet 3, described below.
+  Whisper and QUILL speech models (Parakeet, Nemotron and more), described
+  below.
 - **Kokoro** and **Piper** neural voices, and **eSpeak NG** and **DECtalk**
   voices.
 - **Audio: export, playback & chapters**: FFmpeg for exporting compressed
@@ -9306,9 +9397,11 @@ The **Dictation (offline speech)** row opens a guided setup instead of a plain
 download. It takes you one step at a time, and a banner at the top always says
 which step you are on and the one thing to do next:
 
-1. Pick and install an engine: **Whisper.cpp** (light and fast), **Faster
-   Whisper** (most accurate), or **Parakeet 3** (the most reliable for
-   dictation, described earlier in this chapter).
+1. Pick and install an engine: **Whisper.cpp** (light and fast), **QUILL
+   speech models** (the models QUILL Lite and QUILL Transcribe use: Parakeet 3,
+   the most reliable for dictation and described earlier in this chapter,
+   Nemotron, Whisper and Moonshine), or **Faster Whisper** (can use a graphics
+   card).
 2. Download a model. The best fit for your computer is already selected.
 3. Choose **Test dictation** to make sure it works, then set it as your
    default.

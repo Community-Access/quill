@@ -5490,6 +5490,25 @@ now speaks its <strong>capabilities</strong> (“detects the spoken
 language; never invents text from silence”) <em>before</em> download —
 the catalog is the manifest of truth and the picker promises only what
 it lists.</li>
+<li><strong>One sherpa-onnx layer (2026-10-16, dict.md D-26).</strong>
+The Parakeet and Nemotron providers and their second model folder are
+gone. One provider, <code>providers/sherpa_shared.py</code> (id
+<code>sherpa</code>), runs every local sherpa-onnx model from the
+family’s one store, the one live dictation, QUILL Lite and QUILL
+Transcribe use, through Transcribe a Recording’s own pipeline, so Locked
+Dictation and Transcribe a Recording give the same text for the same
+file and model, and a model downloaded in any app serves all of them. A
+saved <code>nemotron</code> or <code>parakeet</code> choice loads as
+<code>sherpa</code>, and an old-style Parakeet download is hard-linked
+into the store rather than downloaded again. The ladder keeps an
+installed Parakeet first and whisper.cpp the default when it has a
+model; with no whisper.cpp model, Locked Dictation uses the bundled
+Moonshine tiny. Translation into English goes to multilingual Whisper;
+an initial prompt is reported as unsupported in one sentence. Keyword
+spotting, hotwords, punctuation and speaker labels are built on the same
+layer and off until measured. Kokoro’s onnxruntime session has an
+explicit thread count, and a test proves the two ONNX runtimes coexist
+(the dictation design record, section 22).</li>
 <li><strong>A silence pre-pass</strong> (<code>speech_vad.py</code>)
 between recorder and engine: a pure stdlib RMS tier trims quiet
 lead-in/out from every captured WAV (calibrated identically to the
@@ -5529,6 +5548,22 @@ provider without double-speaking. Landed now, with tests, so the future
 streaming provider is built into the contract rather than
 retrofitted.</li>
 </ul>
+</blockquote>
+<blockquote>
+<p><strong>Cloud dictation providers, your own account (D-31 to D-37,
+2026-10-16).</strong> Dictation can use a speech company the person
+already has an account with – Azure AI Speech, Google Speech-to-Text v2,
+Amazon Transcribe, Deepgram, AssemblyAI, Speechmatics, ElevenLabs
+Scribe, Gladia, Rev.ai, Groq, Mistral Voxtral and IBM Watson – through
+one wx-free layer (<code>quill/core/windows_dictation/cloud/</code>) and
+one shared page, Speech Providers, reached from Dictation Settings in
+QUILL, QUILL Lite, QUILL Transcribe and Quill Inkwell. Requirements:
+local engines stay the default and are never left automatically; secrets
+only in the credential store; Test Connection never sends speech; a
+consent generated from the provider’s facts, No by default, per provider
+and version; nothing in Safe Mode; one reviewed egress entry per call
+site; failures as one sentence naming the field. The design record’s
+section 23 has the details and what remains.</p>
 </blockquote>
 <h3 id="525f-ai-footprint-on-demand-acquisition-and-optimization">5.25f
 AI footprint, on-demand acquisition, and optimization</h3>

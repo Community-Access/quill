@@ -86,6 +86,7 @@ class MoreDictationDialog(wx.Dialog):
         pending: dict[str, Any] | None = None,
         load_models: bool = True,
         my_words: Iterable[str] | None = None,
+        help_for: dict[str, str] | None = None,
     ) -> None:
         super().__init__(parent, title="More Dictation Settings")
         self._announce = announce or (lambda _text: None)
@@ -105,6 +106,8 @@ class MoreDictationDialog(wx.Dialog):
             "Turned on, you can also hold Ctrl+F11 while you talk, and dictation stops when "
             "you let go, keeping your last phrase. A quick press still turns it on and off."
         )
+        if (help_for or {}).get("hold"):  # QUILL Transcribe's key is its own (D-9)
+            self.hold.SetHelpText(str((help_for or {})["hold"]))
         root.Add(self.hold, 0, wx.ALL, _PAD)
 
         preview_label = wx.StaticText(self, label="While you speak, the &words heard so far:")

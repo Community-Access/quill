@@ -133,6 +133,9 @@ def test_settings_never_hold_transcript_text_or_keys(tmp_path: Path) -> None:
         "setup_done",
         "dictation_hotkey",
         "command_hotkey",  # D-1: the key's name, empty until chosen
+        "status_hotkey",  # D-6: Dictation Status, Resume and Discard, empty until chosen
+        "resume_hotkey",
+        "discard_hotkey",
         "start_in_tray",
         "close_to_tray",
         "inkwell_checked",

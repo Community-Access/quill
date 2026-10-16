@@ -1361,6 +1361,9 @@ downloads.</li>
 stored on your computer.</li>
 <li><strong>Audio Health…</strong> (Ctrl+Alt+Shift+M): can this copy
 play and record?</li>
+<li><strong>Station Details…</strong> (Alt+Shift+I): search stations by
+call sign, frequency, slogan or place, and read what is known about each
+one.</li>
 <li><strong>Choose Columns…</strong> (Ctrl+Alt+Shift+C): what each row
 says in Find Stations and Recordings.</li>
 <li><strong>Customize Features…</strong> (Ctrl+Alt+C): turn the Record
@@ -3428,6 +3431,53 @@ ever reads or changes them. If you turn the catalog off in Preferences,
 browsing goes back to live only, with nothing stored and nothing fetched
 in the background. Safe Mode never updates the catalog, though it may
 read it.</p>
+<h3
+id="station-details-find-a-station-by-its-call-sign-frequency-or-slogan">Station
+Details: find a station by its call sign, frequency or slogan</h3>
+<p>Sometimes you know a station by something other than its name: its
+call sign (KUOW), its frequency (94.9), its slogan (“home of the
+Seahawks”), or the city it broadcasts from. <strong>Station
+Details</strong> searches all of those at once, and tells you everything
+it knows about each station.</p>
+<p>What it knows comes from a <strong>station pack</strong>: one file of
+station facts that the Quill Radio project builds and signs. Quill Radio
+checks the signature before it reads a single fact, and refuses a pack
+that is not signed by the project, so nobody can slip wrong details in.
+Today the pack is built only from information Quill Radio already ships:
+the Community Picks list and the station directory in your catalog.
+Richer facts from other sources will come once the project has agreed
+how it may use them.</p>
+<h4 id="station-details-step-by-step">Station Details, step by step</h4>
+<ol type="1">
+<li>Press <strong>Alt+Shift+I</strong> (<strong>View &gt; Station
+Details…</strong>). The first line says how many stations the installed
+pack covers and when it was built, or that no pack is installed yet.
+Your cursor is in the <strong>Find stations</strong> box (Alt+F).</li>
+<li>Type what you know, such as <strong>94.9</strong>, <strong>98.5
+FM</strong>, <strong>KIRO</strong>, <strong>Seahawks</strong> or
+<strong>jazz Seattle</strong>. The <strong>Results</strong> list (Alt+R)
+fills as you type.</li>
+<li>Press <strong>Enter</strong> to move to the results. Each row says
+why it matched, for example “KIRO-FM, matched slogan: Official home of
+the Seattle Seahawks”. If nothing matched as you typed, Enter also looks
+for stations whose name is spelled close to what you typed, such as
+Jazz24 for “Jaz24”; if there are none, Quill Radio says that nothing
+matches.</li>
+<li>Arrow through the results. The <strong>Details</strong> box (Alt+I)
+shows the highlighted station, one labelled line per fact, such as “Call
+sign: KUOW” and “Frequency: 94.9 FM”, then where those facts came from.
+You can read it line by line, or select and copy any of it.</li>
+<li>Press <strong>Escape</strong> to close.</li>
+</ol>
+<p>If a station is playing when you open Station Details and the pack
+knows it, that station is already in the list with “playing now”, and
+its details are showing.</p>
+<p>The details are read only. Nothing in this window changes your
+favorites or your own stations. The pack’s facts are kept on this
+computer beside the station catalog, and are replaced as a whole when a
+newer signed pack arrives with a Quill Radio update. If a pack is
+refused, Quill Radio says so once and keeps the details you already
+had.</p>
 <h3 id="adding-your-own-stations">Adding your own stations</h3>
 <p>Found a stream address on a station’s website, or been sent one by a
 friend? You can add any station yourself, even one no directory knows
@@ -9362,6 +9412,10 @@ minutes)</td>
 <tr>
 <td>Station Catalog Status</td>
 <td>Ctrl+Alt+Shift+S</td>
+</tr>
+<tr>
+<td>Station Details</td>
+<td>Alt+Shift+I</td>
 </tr>
 </tbody>
 </table>

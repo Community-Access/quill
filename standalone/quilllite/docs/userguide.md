@@ -3632,6 +3632,25 @@ Lite. Larger models you download for better accuracy are listed there too; see
 | **Windows voice typing (Windows+H)** | Hands you over to Windows' own voice typing panel. Windows does the listening and the typing, so the commands, tones, read-back and wake phrase in this chapter do not apply. |
 | **OpenAI** (only with your own key) | OpenAI recognises your speech, so it is sent over the internet. Off unless you choose it; see "OpenAI dictation, with your own key". |
 
+#### Speech providers: dictation with your own account
+
+If you already have an account with a speech company, QUILL Lite's dictation
+can use it: Microsoft Azure AI Speech, Google Cloud Speech-to-Text, Amazon Transcribe, Deepgram, AssemblyAI, Speechmatics, ElevenLabs Scribe, Gladia, Rev.ai, Groq, Mistral Voxtral and IBM Watson Speech to Text. The built-in engines stay the default and never send
+anything anywhere; these are only for people who want them.
+
+Open **Dictation Settings** (**Alt+Shift+F6**) and choose **Speech
+Providers...** (**Alt+V**). Arrow to the company, read **About this provider**,
+Tab to its fields and fill them in; F1 on each field says where that company
+shows it. **Test Connection** (**Alt+T**) asks the company about your account,
+never with your speech, and says what it answered or which field to fix.
+Saving them (the Save button, Alt+S) puts keys in Windows Credential Manager straight away; they
+are never written in QUILL Lite's settings. **Remove** (**Alt+M**) forgets them.
+
+Then choose the company in **Speech engine**. A question says exactly what is
+sent and to whom; No is the default, and nothing is sent unless you agree. Your
+provider bills you, so check its usage page. Safe Mode turns all of this off,
+and QUILL Lite never switches engines by itself if the connection goes.
+
 #### The dictation keys
 
 Everything here is also on **Tools > Dictation**, so you can find it by
@@ -4844,6 +4863,19 @@ After them come words kept from before, so nothing you said is lost:
 unless you choose Yes. Kept words and the history are sealed for your Windows
 account, never kept as sound, and never written to the log.
 
+For example: you are dictating into a document, step away, and dictation
+pauses with two phrases held because the window lost focus. Then the
+computer restarts for an update. The next time QUILL Lite starts it says "2
+dictated phrases were not written last time and are kept. Recent Phrases,
+Shift+F11, brings them back." Press **Shift+F11**, arrow past this session's
+phrases to the first "Not written" entry, and press **Enter**: it is written at
+the cursor and deleted from the computer. Do the same for the second, or press
+**Alt+D** to discard it.
+
+Limits: only text is kept, never sound; the history keeps at most 2000
+phrases; and a kept entry is deleted only when it is written, discarded or
+cleared, never by copying it.
+
 ### Talking to the AI
 
 You can have a spoken conversation with AI help. Open the **AI Conversation**
@@ -5152,6 +5184,12 @@ between sentences. A few more things happen on the way:
   commands** (Alt+O): then "comma", "period", "new line", "new paragraph" and
   "scratch that" work just as they do when you dictate. Commands that move the
   cursor are ignored, because there is no cursor in a recording.
+- **Translation into English.** For a recording in Spanish, check **Translate
+  into English** (Alt+E) and the transcript is written in English instead of
+  Spanish. It needs a model that translates: the built-in Whisper, or a
+  multilingual Whisper you downloaded (not the ones marked English). With any
+  other model, or for an English recording, the box is unavailable. Off
+  unless you check it.
 
 #### Which model for which recording
 

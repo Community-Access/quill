@@ -63,6 +63,21 @@ open, and what waits for a later version.
    asks for each blank and choice, then types the filled snippet as one
    phrase. "read that" reads the whole of the last insertion (D-18).
 
+11. **The wake phrase and holding the key** (after 1.0.0, 2026-10-15). Both are
+   the editors' settings, off by default. The wake phrase listens only while
+   another program is in front, and never while QUILL Transcribe, QUILL, QUILL
+   Lite or a program on the never-type list is; nothing heard is kept until the
+   phrase is heard, and the state line and tray say "Listening for your wake
+   phrase". Holding follows the start and stop key itself, by asking Windows
+   whether that one key is still down while a press is followed, with no
+   keyboard hook. Because a system-wide key needs Ctrl or Alt, what is said
+   while it is held is typed when it comes up.
+12. **Feedback where you work** (after 1.0.0, 2026-10-15). The words heard so far
+   and the unspoken state changes go to a braille display only. Dictation
+   Status is the editors' Alt+F9. Dictation Status, Resume and Discard Held
+   Words each have an optional system-wide key, empty until chosen, picked and
+   checked like the others.
+
 ## Waiting for a later version
 
 - Keeping audio for replay, which stays a separate opt-in that text history

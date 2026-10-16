@@ -4589,6 +4589,30 @@ unless you choose it; see “OpenAI dictation, with your own key”.</td>
 </tr>
 </tbody>
 </table>
+<h4 id="speech-providers-dictation-with-your-own-account">Speech
+providers: dictation with your own account</h4>
+<p>If you already have an account with a speech company, QUILL Lite’s
+dictation can use it: Microsoft Azure AI Speech, Google Cloud
+Speech-to-Text, Amazon Transcribe, Deepgram, AssemblyAI, Speechmatics,
+ElevenLabs Scribe, Gladia, Rev.ai, Groq, Mistral Voxtral and IBM Watson
+Speech to Text. The built-in engines stay the default and never send
+anything anywhere; these are only for people who want them.</p>
+<p>Open <strong>Dictation Settings</strong>
+(<strong>Alt+Shift+F6</strong>) and choose <strong>Speech
+Providers…</strong> (<strong>Alt+V</strong>). Arrow to the company, read
+<strong>About this provider</strong>, Tab to its fields and fill them
+in; F1 on each field says where that company shows it. <strong>Test
+Connection</strong> (<strong>Alt+T</strong>) asks the company about your
+account, never with your speech, and says what it answered or which
+field to fix. Saving them (the Save button, Alt+S) puts keys in Windows
+Credential Manager straight away; they are never written in QUILL Lite’s
+settings. <strong>Remove</strong> (<strong>Alt+M</strong>) forgets
+them.</p>
+<p>Then choose the company in <strong>Speech engine</strong>. A question
+says exactly what is sent and to whom; No is the default, and nothing is
+sent unless you agree. Your provider bills you, so check its usage page.
+Safe Mode turns all of this off, and QUILL Lite never switches engines
+by itself if the connection goes.</p>
 <h4 id="the-dictation-keys">The dictation keys</h4>
 <p>Everything here is also on <strong>Tools &gt; Dictation</strong>, so
 you can find it by walking the menu too.</p>
@@ -4731,7 +4755,21 @@ next phrase you say replaces it.</td>
 </tr>
 <tr>
 <td>“read that” or “repeat that”</td>
-<td>Reads the last phrase aloud again.</td>
+<td>Reads aloud again all of what last went in: a phrase, a whole
+snippet or clip, or reviewed words.</td>
+</tr>
+<tr>
+<td>“read last sentence”</td>
+<td>Reads the sentence just before the cursor, with its punctuation
+said.</td>
+</tr>
+<tr>
+<td>“read last paragraph” or “read this paragraph”</td>
+<td>Reads the paragraph the cursor is in.</td>
+</tr>
+<tr>
+<td>“read selection”</td>
+<td>Reads what is selected.</td>
 </tr>
 <tr>
 <td>“spell that”</td>
@@ -5715,6 +5753,13 @@ always works</td>
 see “Review before inserting”</td>
 <td>Unchecked</td>
 </tr>
+<tr>
+<td>Keep a dictation history (Alt+Y)</td>
+<td>Off, One day, Seven days or Thirty days of the text you dictate,
+never the sound, listed in Recent Phrases; turning it off deletes it;
+see “Recent phrases”</td>
+<td>Off</td>
+</tr>
 </tbody>
 </table>
 <h4 id="dictating-in-spanish">Dictating in Spanish</h4>
@@ -6412,8 +6457,40 @@ Recent Phrases…</strong>) to see the last twenty phrases you dictated,
 newest first. Arrow to one and press <strong>Enter</strong> (Insert
 Again) to write it at the cursor as one undo step, or press
 <strong>Copy</strong> to put it on the clipboard. This is your rescue if
-“scratch that” took away one phrase too many. The list lasts only until
-you close QUILL Lite.</p>
+“scratch that” took away one phrase too many. This session’s phrases
+last only until you close QUILL Lite.</p>
+<p>After them come words kept from before, so nothing you said is
+lost:</p>
+<ul>
+<li><strong>Not written</strong>: a phrase that could not be written, or
+words held while dictation was paused. They stay on this computer, even
+through a crash, until you write or discard them, and QUILL Lite says
+once at start how many are waiting.</li>
+<li><strong>Review not finished</strong>: the words of a review you
+closed without inserting.</li>
+<li><strong>Earlier</strong>: with <strong>Keep a dictation
+history</strong> on in More Dictation Settings, the phrases from earlier
+days, newest first.</li>
+</ul>
+<p><strong>Insert Again</strong> writes one at the cursor and deletes it
+from the computer; <strong>Discard</strong> (<strong>Alt+D</strong>)
+deletes it without writing it; <strong>Clear History</strong>
+(<strong>Alt+H</strong>) deletes the whole history after asking, with No
+as the answer unless you choose Yes. Kept words and the history are
+sealed for your Windows account, never kept as sound, and never written
+to the log.</p>
+<p>For example: you are dictating into a document, step away, and
+dictation pauses with two phrases held because the window lost focus.
+Then the computer restarts for an update. The next time QUILL Lite
+starts it says “2 dictated phrases were not written last time and are
+kept. Recent Phrases, Shift+F11, brings them back.” Press
+<strong>Shift+F11</strong>, arrow past this session’s phrases to the
+first “Not written” entry, and press <strong>Enter</strong>: it is
+written at the cursor and deleted from the computer. Do the same for the
+second, or press <strong>Alt+D</strong> to discard it.</p>
+<p>Limits: only text is kept, never sound; the history keeps at most
+2000 phrases; and a kept entry is deleted only when it is written,
+discarded or cleared, never by copying it.</p>
 <h3 id="talking-to-the-ai">Talking to the AI</h3>
 <p>You can have a spoken conversation with AI help. Open the <strong>AI
 Conversation</strong> window (see “Having a conversation” in the AI help
@@ -6569,8 +6646,11 @@ as long as you are still in the same window.</p></li>
 Inkwell share (QUILL’s snippets, the shared abbreviation library, and
 QUILL’s clips): “insert snippet” and its name, “insert abbreviation” and
 its name, and “paste clip” and a number. They are typed as one phrase,
-so “scratch that” takes all of it back. A snippet’s blanks are typed as
-[name], with no questions, and the cursor stays at the end.</p></li>
+so “scratch that” takes all of it back. A snippet’s blanks are asked for
+by voice first: you hear each blank’s name, like “Title?”, and say the
+answer; for a choice, say an option or “choose two”. Say skip, scratch
+that to go back one, or cancel to type nothing. The cursor stays at the
+end.</p></li>
 </ul>
 <p>Some commands need to read the text of the document, and Inkwell
 cannot read another program’s text. So “select”, “go to”, “correct”,
@@ -6730,6 +6810,13 @@ written as words. If you recorded yourself dictating on purpose, check
 “comma”, “period”, “new line”, “new paragraph” and “scratch that” work
 just as they do when you dictate. Commands that move the cursor are
 ignored, because there is no cursor in a recording.</p></li>
+<li><p><strong>Translation into English.</strong> For a recording in
+Spanish, check <strong>Translate into English</strong> (Alt+E) and the
+transcript is written in English instead of Spanish. It needs a model
+that translates: the built-in Whisper, or a multilingual Whisper you
+downloaded (not the ones marked English). With any other model, or for
+an English recording, the box is unavailable. Off unless you check
+it.</p></li>
 </ul>
 <h4 id="which-model-for-which-recording">Which model for which
 recording</h4>

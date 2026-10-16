@@ -58,6 +58,235 @@ the same. Design record section 25.
   `test_dictation_snippet_fill.py`, `tests/unit/ui/test_dictation_kept_words.py`,
   and a parity test in `test_dictation_parity.py`.
 
+### Quill Radio station enrichment: the signed station pack, FTS5 search and Station Details (2026-10-16)
+
+Jeff's todo P2 #33, the Radio station data program. The data terms are not
+settled, so this is the machinery against a pluggable source interface, with
+built-in sources that read only data the project already ships. Nothing in it
+fetches anything. Design record: `docs/design/2026-10-16-station-pack-format.md`;
+Radio PRD section 27.
+
+- **`quill/core/radio/enrichment/`** (new, wx-free, strict-typed):
+  `facts.py` (`StationFacts` with per-field provenance, conservative call-sign
+  and frequency reading, query normalization so "98.5", "98.5 FM" and "KIRO-FM"
+  meet the index, and a trust-ordered merge that never joins on URL alone);
+  `sources.py` (the `EnrichmentSource` protocol, `APPROVED_SOURCES` with
+  `community_picks` and `station_catalog`, and `PENDING_SOURCES` naming Radio
+  Browser redistribution, Wikipedia, ICY and home-page meta as awaiting a
+  decision); `pack.py` (canonical xz JSON, Ed25519 sidecar through
+  `quill.tools.signing.sign_artifact`, a manifest, and `open_verified`, which
+  checks the signature before parsing and fails closed); `store.py` (its own
+  SQLite file beside the catalog, `PRAGMA user_version` migrations, an FTS5
+  index with bm25 weights, one-transaction import, "matched:" reasons and a
+  difflib fallback); `client.py` (install bundled or given packs, spoken
+  outcomes, the labelled details text). Two new `CodedError`s:
+  `QUILL-RADIO-ENRICHMENT-FAILED`, `QUILL-RADIO-ENRICHMENT-PACK-REFUSED`.
+- **`scripts/build_station_pack.py`** builds the pack. The key is the publisher
+  seed in `STATION_PACK_SIGNING_KEY` (environment only); without it the pack is
+  unsigned and any stale sidecar is removed, and a non-publisher key is refused
+  before signing. `--verify` checks a pack exactly as the app does.
+- **`.github/workflows/station-pack.yml`** (new, not triggered): weekly cron
+  plus `workflow_dispatch`, `contents: read`, verifies the pack and keeps a
+  trusted one as a 90-day artifact. Publishes nothing. Needs the
+  `STATION_PACK_SIGNING_KEY` secret (not created).
+- **`quill/ui/radio/station_details_dialog.py`**: View > Station Details...
+  (`radio.station_details`, Alt+Shift+I, `app_keymaps`), wired from
+  `radio_settings_menu.build_catalog_status_item` and registered in
+  `radio_launch_tasks`. Labelled search field, results and read-only details,
+  inline F1 help on each, Close via `bind_close_button` with no access key, a
+  `surface_help` purpose. The bundled pack (none ships yet) installs on the
+  task manager the first time the window opens.
+- Not built: downloading the weekly pack (needs consent, an egress entry and a
+  serving decision), delta packs, pack facts in the browse tree's details pane.
+- Tests: `tests/unit/core/radio/test_station_enrichment.py`,
+  `tests/unit/scripts/test_build_station_pack.py`,
+  `tests/unit/ui/test_radio_station_details.py`, all offline with throwaway
+  keys. Regenerated: keyboard reference, F1 help reference, dialog inventory,
+  surface reachability, accessible-name and Radio help inventories; the
+  Transcribe help inventory, which had drifted on the branch, was refreshed.
+
+### Overnight fixes and gates (2026-10-15/16)
+
+Small fixes made directly on the overnight branch; the larger work has its own
+sections below.
+
+- **Picks:** a rebuild with nothing new keeps the published `updated` stamp
+  (`scripts/build_community_picks.py`, `keep_unchanged_timestamp`), so the
+  picks workflow no longer opens a pull request that changes one line (#1659).
+- **Quill Social uses the family's one certificate check.** `rss.py` built its
+  own SSL context; it now uses `quill.core.net.verified_ssl_context()` and
+  `certificate_problem`, Social's `main` configures the shared trust first, and
+  `tests/unit/core/test_tls_one_check.py` reads every `standalone/*/quill_*`
+  package (Quill Radio for Mac exempt: it ships neither quill nor truststore).
+- **Radio:** Suggest a Station or Podcast starts What is it on Choose one (an
+  untouched form filed a podcast as a station) and its Address help says
+  `https://` or `http://`; tune-in reminders reach the notification centre
+  (`reminder_monitor._notice`), a station reminder carrying its stream; the
+  status bar gains a Notifications cell and the shared Help > Notifications
+  item says the unread count (Radio and Cast), with `CellSpec` moved to
+  `quill/ui/radio/status_cells.py` under GATE-11.
+- **Auphonic client:** uploads and downloads stream, a download never
+  overwrites a file (`name (2).ext`), a cancelled one leaves nothing, and the
+  server's file name is reduced to a bare name.
+- **QUILL Lite Preferences:** four access keys were each claimed twice in one
+  window, which `check_access_keys` cannot see because the window is built by
+  a function across modules; `tests/unit/apps/test_lite_preferences_access_keys.py`
+  now reads it as one window.
+- **New gate:** the Alt menu paths Quill Radio's guide teaches ("Alt+Q, then
+  W") are checked against the real menu bar (`test_menu_accelerators.py`).
+- **D-1 review fixes:** every way out of More Dictation Settings checks the
+  command word, and Dictation Status says command mode.
+- **Find in Open Documents** has its own key in QUILL (Ctrl+Shift+F10) and the
+  modal contract; `apply_modal_ids` relabels only its own dialog's buttons
+  (#1661, already on main).
+
+### QUILL Transcribe: the wake phrase, holding the key, braille and Dictation Status (D-9, D-6, 2026-10-15)
+
+D-9 and D-6 from the dictation plan; design record section 24.
+
+- **`transcribe/parity.py` `PREFERENCES_OFF` is empty.** The wake phrase and
+  hold to talk are the editors' shared settings in QUILL Transcribe too, both
+  off by default; `test_transcribe_dictation_parity.py` asserts they are
+  honoured and default off in all three products. `tools.dictation_status`
+  moved from `DIVERGENCES` to `SHARED_COMMANDS` on the editors' Alt+F9.
+- **`quill/apps/transcribe_talk.py`** (new mixin under
+  `TranscribeDictationMixin`) and **`quill/core/transcribe/talk.py`**
+  (wx-free): hold to talk follows the start and stop key with the editors'
+  `HoldToTalk`, polling `GetAsyncKeyState` on that one key
+  (`quill/platform/windows/key_state.py`, `tray_hotkey.virtual_key`) only while
+  a press is followed; no keyboard hook. `KeyHeldGate` sits between the
+  recogniser and the controller and holds finished phrases while the key (with
+  its Ctrl or Alt) is down, typing them on release. The wake phrase uses the
+  controller's STANDBY, kept by the window timer only while another program
+  that is not a QUILL window or on the never-type list is in front.
+- **Braille** for the preview and the unspoken state changes, through the
+  announcement engine's braille-only call; `say_quietly` for the "speak"
+  preview. `status_sentence` for Dictation Status, naming the locked program by
+  file (`foreground.window_process_name`).
+- **Three optional system-wide keys** in `transcribe_keys.py`
+  (`OPTIONAL_KEYS`: `status_hotkey`, `resume_hotkey`, `discard_hotkey`, ids
+  0x51B3 to 0x51B5), empty by default, chosen through `run_system_key_command`
+  in File (Ctrl+Alt+Shift+A, U, Y). New `TranscribeSettings` fields.
+- **Shared dialogs:** `WindowsDictationDialog` and `MoreDictationDialog` take
+  `help_for`, so a host can word the wake and hold check boxes' F1 help; the
+  editors pass nothing and are unchanged.
+- Regenerated: `family_menu_chords.json`, `f1-help-reference.md`,
+  `transcribe_help_inventory.json` (which also picks up a setup dialog field
+  that was already in the tree). Tests: `test_transcribe_talk.py`,
+  `test_transcribe_talk_core.py`, and additions to the parity and settings
+  tests.
+
+### One sherpa-onnx layer for every local speech model (dict.md D-26 to D-30) (2026-10-16)
+
+The dictation design record, section 22, is the full account; in brief:
+
+- **D-26, one provider.** New `quill/core/speech/providers/sherpa_shared.py`
+  (`SherpaSharedProvider`, id `sherpa`) runs every local sherpa-onnx model from
+  the family store through `file_transcribe.FileTranscriber`, so Locked
+  Dictation and Transcribe a Recording give the same text for the same file and
+  model. `providers/nemotron_onnx.py` and `providers/parakeet_onnx.py` and their
+  tests are deleted, and `core/speech/catalog.py` lost its Nemotron and Parakeet
+  rows. `translate_to_english` goes to multilingual Whisper (`task="translate"`
+  through `model_loader.build`, `local_recognizer._load` and the new
+  `FileJob.translate`); an `initial_prompt` is one warning sentence.
+- **D-26, catalogue fields.** `DownloadableModel.streaming`, `ram_tier`,
+  `tasks` and `source_url`, derived (`model_types.RAM_TIERS`, `tasks_for`,
+  `HOTWORD_MODELS`); `model_advice` reads its memory budgets from the tiers.
+- **D-26, errors.** `SherpaLoadError`, `SherpaUnsupportedError`,
+  `SherpaRuntimeError` in `model_loader.py` (`QUILL-SPEECH-SHERPA-*`).
+- **D-26, migration.** New `quill/core/speech/sherpa_migration.py`: a saved
+  `speech_provider` of `nemotron` or `parakeet` loads as `sherpa` (with the
+  catalogue's model ids), and an old-style Parakeet download is hard-linked (or
+  moved) into the shared store, never downloaded twice. The older Nemotron is a
+  different model and is not adopted.
+- **D-26, the ladder.** `preferred_dictation_provider_id`: an installed
+  Parakeet promotes `sherpa`; whisper.cpp with no model gives way to the
+  shared provider's built-in Moonshine tiny. The guided offline-speech setup
+  offers the shared engine in place of the two old ones (`guided_setup.py`),
+  with D-22's recommendation; `speech_vad.silero_model_path` prefers the
+  bundled Silero; the voice features fall back to `sherpa` and prefer Moonshine
+  (`voice_capture.py`, `service.preferred_command_model`).
+- **D-26, parity.** Transcribe a Recording (QUILL, QUILL Lite, QUILL
+  Transcribe) has Translate into English, enabled only for another language and
+  a model that translates (`FileModel.translates`, `TranscribeChoice.translate`).
+- **D-26, packaging.** `sherpa-onnx==1.13.8` exactly in `pyproject.toml`,
+  `uv.lock` and `engine_install`; the Offline Edition stages a `nemotron`
+  wheelhouse (`SHERPA_WHEELHOUSE_REQUIREMENTS`).
+- **D-27, keyword spotting, off.** New `kws_keywords.py` (keyword lines,
+  `KeywordGate`, `keyword_gate_for`), fed by `recognizer_worker._spot`;
+  `RecognizedPhrase.keyword_heard`, and `command_mode_mixin` requires both the
+  spotter and the text to agree when a spotter ran. `KWS_ADOPTED = False` until
+  the false-trigger soak, detection and CPU measurements pass.
+- **D-28, hotwords, off.** New `hotwords.py` behind `HOTWORDS_ENABLED = False`;
+  `model_loader.build` and `online` take `decoder_options`. A measurement on an
+  English Zipformer is needed first.
+- **D-29, punctuation and speaker labels, off.** New `post_passes.py`
+  (`OfflinePunctuation`, `OfflineSpeakerDiarization`, `label_spans`); no model
+  is adopted yet.
+- **D-30, TTS through sherpa-onnx.** Not built: dict.md decides after measuring.
+- **Two runtimes.** New `tests/unit/core/test_onnxruntime_coexistence.py`
+  (both import orders, one `onnxruntime.dll` mapped; passed here). New
+  `quill/core/onnx_threads.py`: Kokoro's session gets `intra_op_num_threads`
+  of half the cores, one to four (`read_aloud._get_cached_kokoro_onnx`).
+
+### Dictation: cloud speech providers with your own account (D-31 to D-37) (2026-10-16)
+
+- New wx-free layer `quill/core/windows_dictation/cloud/`: `CloudProvider`,
+  `ProviderField`, `Capabilities`, `CloudSpeechError` and five coded
+  subclasses, certificate-checked openers with one-sentence failures naming
+  the field, a shared WebSocket session, secrets in the credential store
+  (`provider_credential_target("speech-<id>-<field>")`, DPAPI file for Google's
+  service account), a consent generated from each provider's facts, and
+  `CloudDictationRecognizer` behind the built-in engines' listening loop.
+- Twelve providers, direct HTTPS or WebSocket, no SDK: Azure AI Speech (D-32),
+  Google Speech-to-Text v2 a phrase at a time (D-33), Amazon Transcribe with
+  stdlib SigV4 and event-stream framing (D-34), Deepgram, AssemblyAI,
+  Speechmatics, ElevenLabs Scribe, Gladia and Rev.ai (D-35), Groq and Mistral
+  Voxtral (D-36), IBM Watson (D-37). OpenAI is described on the same interface
+  for the page; its recogniser is unchanged.
+- `quill/ui/speech_providers_dialog.py` (Speech Providers) from Dictation
+  Settings' new **Speech Pro&viders...** button (`windows_dictation_cloud.py`
+  mixin), in QUILL, QUILL Lite, QUILL Transcribe and Quill Inkwell.
+- Settings `windows_dictation_speech_providers` and
+  `windows_dictation_speech_provider_consent` in `DictationSettings` (additive;
+  data formats recorded). Engines `cloud-<id>` through one registration point,
+  `engines._cloud_engine`. `transcribe.models.start_problem` checks a cloud
+  provider's fields and consent.
+- `redaction.remember_secret` scrubs the literal value of every loaded secret;
+  `gsk_`, `sk_` and `ASIA` key shapes added.
+- 28 egress entries in `quill/tools/network_egress_entries_speech.py`.
+- Design record section 23.
+
+### Dictation benchmark and test infrastructure, B-1 to B-8 (2026-10-16)
+
+dict.md section 8; design record section 26. Dev-only tools in `scripts/` and
+tests in `tests/`: nothing ships, nothing a person using QUILL sees changes.
+
+- **Datasets on demand (B-1b).** `scripts/bench_datasets.json` (every
+  dataset's licence, attribution, size, source, access, contamination and
+  archive URLs; SHA-256 slots, unpinned until a first `--pin`) and
+  `scripts/fetch_bench_audio.py` (downloads only when a person says yes, never
+  with `CI` set, from two named hosts; verifies SHA-256; unpacks with the
+  `data` filter; caches outside the repository; licensed sets only by
+  `--local`). Seeded subsets in `scripts/bench_subsets.json`.
+- **dictbench.** `--dataset`, `--subset`, `--group-by`, `--parse`, `--latency`,
+  and JSON with the contamination flag, the normalizer, the date and every
+  group. Punctuation F1 and capitals from `scripts/bench_scoring.py`.
+- **LibriVox held out (B-1a)** `scripts/bench_librivox.py`; **command script
+  (B-1c)** `scripts/bench_commands.py`; **live pace and latency (B-4)**
+  `scripts/bench_live.py`; **machine run (B-8)** `scripts/bench_machine_run.py`.
+- **Soak (B-3)** `tests/stability/test_dictation_soak.py`, a new `slow` marker,
+  opt-in with `QUILL_DICTATION_SOAK=1`, skipped in CI, typing only into a fake.
+  **Correction efficiency (B-5)** in the soak. **Report agreement (B-2)** in
+  the tested-programs harness. **Privacy (B-7)**
+  `tests/unit/core/test_dictation_privacy_paths.py`. **Screen-reader rows
+  (B-6)** in `docs/qa/screen-reader-checks-2026-10.md`.
+- **One engine hook.** `LocalDictationRecognizer._reader_gate()` is a method,
+  so the benchmark's recorded-audio recogniser never starts the screen-reader
+  capture.
+- **First run** with Moonshine tiny on synthetic audio:
+  `docs/qa/dictbench-moonshine-tiny-2026-10-16.json`.
+
 ### Quill Radio extras: marked delete, resume earcon, a second device, per-favourite keys, What's New, notes in reminders (2026-10-16)
 
 Jeff's todo P3 "Radio extras", from the FreeRadio study (xradio2 sections 4.5,

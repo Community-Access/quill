@@ -419,6 +419,12 @@ PURPOSES.update({
         "to the AI, and My Dictation Instructions. Nothing changes until you "
         "choose OK."
     ),
+    "Speech Providers": (
+        "Use a speech service you already have an account with -- Azure, Google, "
+        "Amazon, Deepgram and others -- for dictation. Choose one to see what it can "
+        "do and what it needs, enter that, test it, and save it; keys go to Windows "
+        "Credential Manager. Then choose it as the speech engine in Dictation Settings."
+    ),
     "Speech Models": (
         "Optional speech models you can download for better accuracy, with "
         "each one's size, languages and what it suits. Your voice never "
@@ -472,6 +478,7 @@ SHARED_WITH_QUILL: frozenset[str] = frozenset({
     "Import Words",
     "More Dictation Settings",
     "Speech Models",
+    "Speech Providers",
     "Transcribe a Recording",
     "Review Dictation",
     "Review with AI",

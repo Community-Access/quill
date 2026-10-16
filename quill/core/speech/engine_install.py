@@ -93,7 +93,7 @@ _NEMOTRON_MODULE = "sherpa_onnx"
 # sherpa-onnx bundles its own native onnxruntime; numpy handles the audio array.
 # Keep in sync with the pyproject ``nemotron`` extra. Wheel-only, no torch/CUDA.
 _NEMOTRON_REQUIREMENTS: tuple[str, ...] = (
-    "sherpa-onnx>=1.10.0",
+    "sherpa-onnx==1.13.8",  # pinned exactly, as pyproject.toml is (dict.md D-26)
     "numpy>=1.24.0",
 )
 

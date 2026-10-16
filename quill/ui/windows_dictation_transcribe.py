@@ -165,6 +165,7 @@ class DictationTranscribeMixin:
                 language=choice.language,
                 timestamps=choice.timestamps,
                 obey_commands=choice.obey_commands,
+                translate=choice.translate,
                 remove_fillers=preferences.remove_fillers,
                 dash=preferences.dash,
                 keywords=keywords,

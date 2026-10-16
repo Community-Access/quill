@@ -239,7 +239,7 @@ def edit_preferences(
     # &U, because every other letter in "Look for updates" is spoken for in
     # this window and Windows cycles focus between two controls with the same
     # access key rather than pressing either (GATE-14).
-    updates = wx.CheckBox(dialog, label="L&ook for updates when QUILL Lite starts")
+    updates = wx.CheckBox(dialog, label="Look for updates when QUILL Lite starts")
     updates.SetHelpText(
         "Once a day, when the app opens, ask GitHub whether a newer QUILL Lite "
         "has been published. Nothing is said unless there is one, and nothing "

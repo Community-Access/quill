@@ -18,6 +18,9 @@ Dictation has to work well without anybody opening this window. It holds:
   holding the key, the live preview, talking to the AI, and OpenAI. Choosing
   OpenAI as the engine asks first, in plain words, whether your speech may be
   sent (:data:`~quill.core.windows_dictation.openai_models.CONSENT_TEXT`).
+* **Speech Providers...** (D-31, :mod:`quill.ui.windows_dictation_cloud`):
+  a speech service the person already has an account with; once set up it is
+  listed as an engine, and choosing it asks first, from its own facts.
 
 Nothing is applied until OK, and :meth:`WindowsDictationDialog.apply` writes
 only the fields this window owns.
@@ -62,6 +65,7 @@ from quill.core.windows_dictation.wake import (
 )
 from quill.ui.dialog_contract import apply_modal_ids, show_message_box
 from quill.ui.dictation_lists_dialog import DictationCommandsDialog, RecentPhrasesDialog
+from quill.ui.windows_dictation_cloud import CloudProvidersMixin
 from quill.ui.windows_dictation_devices import (
     default_microphone_name,
     microphone_names,
@@ -92,7 +96,7 @@ DICTATE_ANYWHERE = 5805  # quill.ui.dictation_more_dialog's, passed on
 _PAD = 8
 
 
-class WindowsDictationDialog(MicrophoneTestMixin, wx.Dialog):
+class WindowsDictationDialog(CloudProvidersMixin, MicrophoneTestMixin, wx.Dialog):
     """The dictation settings. Read with :meth:`apply` after OK."""
 
     def __init__(
@@ -102,10 +106,14 @@ class WindowsDictationDialog(MicrophoneTestMixin, wx.Dialog):
         announce: Callable[[str], None] | None = None,
         *,
         my_words: list[str] | None = None,
+        help_for: dict[str, str] | None = None,
     ) -> None:
         super().__init__(parent, title="Dictation Settings")
         self._announce = announce or (lambda _text: None)
         self._settings = settings
+        #: F1 help a host words its own way: QUILL Transcribe's wake phrase and
+        #: held key ("wake", "hold") behave as the editors' do, in other programs.
+        self._help_for = dict(help_for or {})
         #: My Words, which the command word may not be (More Dictation Settings).
         self._my_words = my_words
         #: More Dictation Settings' choices, applied with this window's OK.
@@ -118,7 +126,7 @@ class WindowsDictationDialog(MicrophoneTestMixin, wx.Dialog):
 
         engine_label = wx.StaticText(self, label="Speech &engine:")
         saved_engine = coerce_engine(getattr(settings, "windows_dictation_engine", ""))
-        rows = engine_choices(saved_engine)
+        rows = self._with_cloud_rows(engine_choices(saved_engine), saved_engine)
         self._engine_ids = [engine_id for engine_id, _label in rows]
         self.engine = wx.Choice(self, choices=[label for _id, label in rows])
         self.engine.SetHelpText(
@@ -138,7 +146,10 @@ class WindowsDictationDialog(MicrophoneTestMixin, wx.Dialog):
             "Dictation works without them."
         )
         self.speech_models.Bind(wx.EVT_BUTTON, self._on_speech_models)
-        root.Add(self.speech_models, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, _PAD)
+        engine_buttons = wx.BoxSizer(wx.HORIZONTAL)
+        engine_buttons.Add(self.speech_models, 0, wx.RIGHT, _PAD)
+        engine_buttons.Add(self._make_speech_providers_button(self), 0)
+        root.Add(engine_buttons, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, _PAD)
 
         speech_label = wx.StaticText(self, label="Dictation lan&guage:")
         self._speech_languages = [value for value, _label in SPEECH_LANGUAGES]
@@ -343,6 +354,8 @@ class WindowsDictationDialog(MicrophoneTestMixin, wx.Dialog):
             "anywhere until it hears the wake phrase -- and it closes whenever "
             "another program comes to the front. Off unless you turn it on."
         )
+        if self._help_for.get("wake"):
+            self.wake.SetHelpText(self._help_for["wake"])
         root.Add(self.wake, 0, wx.ALL, _PAD)
 
         wake_label = wx.StaticText(self, label="&Wake phrase:")
@@ -464,6 +477,12 @@ class WindowsDictationDialog(MicrophoneTestMixin, wx.Dialog):
 
         row = self.engine.GetSelection()
         engine = self._engine_ids[row] if 0 <= row < len(self._engine_ids) else ""
+        if engine.startswith("cloud-"):
+            if self._agree_to_cloud(engine):
+                self._engine_row = row
+            else:
+                self.engine.SetSelection(self._engine_row)
+            return
         agreed = self._more.get(
             "windows_dictation_openai_consent",
             getattr(self._settings, "windows_dictation_openai_consent", False),
@@ -491,7 +510,12 @@ class WindowsDictationDialog(MicrophoneTestMixin, wx.Dialog):
         from quill.ui.dictation_more_dialog import MoreDictationDialog
 
         dialog = MoreDictationDialog(
-            self, self._settings, self._announce, pending=self._more, my_words=self._my_words
+            self,
+            self._settings,
+            self._announce,
+            pending=self._more,
+            my_words=self._my_words,
+            help_for=self._help_for,
         )
         if focus_model:
             dialog.focus_model()
@@ -516,7 +540,7 @@ class WindowsDictationDialog(MicrophoneTestMixin, wx.Dialog):
         language = self._speech_languages[max(0, self.speech_language.GetSelection())]
         chosen = open_speech_models(self, self._announce, language=language) or current
         self._show_advice()  # the timed check may have run there
-        rows = engine_choices(chosen)
+        rows = self._with_cloud_rows(engine_choices(chosen), chosen)
         self._engine_ids = [engine_id for engine_id, _label in rows]
         self.engine.Set([label for _id, label in rows])
         self.engine.SetSelection(self._engine_ids.index(chosen))

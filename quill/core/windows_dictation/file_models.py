@@ -123,6 +123,8 @@ class FileModel:
     languages: tuple[str, ...]
     #: Cost relative to Moonshine tiny; ``None`` for OpenAI, whose speed is the network's.
     cost_factor: float | None
+    #: Can translate into English (multilingual Whisper; D-26's dialog parity).
+    translates: bool = False
 
     @property
     def cloud(self) -> bool:
@@ -162,6 +164,7 @@ _BUILT_IN = (
         "forgiving of accents; for Spanish it is the multilingual Whisper tiny.",
         ("en", "es"),
         _BUILT_IN_COST["whisper"],
+        translates=True,  # for Spanish it is the multilingual Whisper tiny
     ),
 )
 
@@ -202,6 +205,7 @@ def file_models(
                     f"{model.good_for} {model.works_best_on}",
                     model.languages,
                     model.cost_factor,
+                    translates="translate" in model.tasks,
                 )
             )
     rows.sort(key=lambda row: row.rank)

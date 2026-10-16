@@ -110,6 +110,12 @@ class FileJob:
     destination: str = "new"
     #: My Words and Phrases, for OpenAI's ``keywords``.
     keywords: tuple[str, ...] = ()
+    #: Into English instead of the words said: multilingual Whisper only (D-26).
+    translate: bool = False
+
+    @property
+    def task(self) -> str:
+        return "translate" if self.translate else "transcribe"
 
 
 @dataclass(frozen=True, slots=True)
@@ -239,7 +245,7 @@ def silero_segmenter() -> Segmenter:
 Recognize = Callable[[Any], str]
 
 
-def local_engine(engine_id: str, language: str) -> tuple[Recognize, str]:
+def local_engine(engine_id: str, language: str, task: str = "transcribe") -> tuple[Recognize, str]:
     """``(recognise, notice)`` for a model on this computer.
 
     A downloaded model that will not load gives way to the built-in engine,
@@ -251,9 +257,9 @@ def local_engine(engine_id: str, language: str) -> tuple[Recognize, str]:
 
     notice = ""
     try:
-        _load(engine_id, language)
+        _load(engine_id, language, task)
     except Exception as error:
-        if downloadable(engine_id) is None:
+        if downloadable(engine_id) is None or task != "transcribe":
             raise FileTranscribeError(
                 plain(error) or "The speech model could not be loaded."
             ) from error
@@ -266,7 +272,7 @@ def local_engine(engine_id: str, language: str) -> tuple[Recognize, str]:
         except Exception as again:
             raise FileTranscribeError(plain(again)) from again
     chosen = engine_id
-    return (lambda samples: transcribe(chosen, samples, language)), notice
+    return (lambda samples: transcribe(chosen, samples, language, task)), notice
 
 
 def openai_engine(model: str, language: str, keywords: Sequence[str]) -> Recognize:
@@ -518,5 +524,10 @@ def _joined(unit: list[Segment]) -> Any:
 
 def _real_engine(job: FileJob) -> tuple[Recognize, str]:
     if job.model.startswith("openai:"):
+        if job.translate:
+            raise FileTranscribeError(
+                "OpenAI writes the words said here; to translate into English, choose a "
+                "multilingual Whisper model."
+            )
         return openai_engine(job.model.split(":", 1)[1], job.language, job.keywords), ""
-    return local_engine(job.model, job.language)
+    return local_engine(job.model, job.language, job.task)

@@ -130,12 +130,19 @@ class TranscribeCommandsMixin:
 
     def edit_dictation_settings(self) -> None:
         """The same Dictation Settings window both editors show, over our copy."""
+        from quill.apps.transcribe_talk import HELP_FOR
         from quill.core.windows_dictation.anywhere import stored_from
         from quill.ui.windows_dictation_dialog import WindowsDictationDialog
 
         settings = self._dictation_settings_object()  # type: ignore[attr-defined]
         before = settings.windows_dictation_engine
-        dialog = WindowsDictationDialog(self.frame, settings, self._announce)  # type: ignore[attr-defined]
+        wake_before = bool(settings.windows_dictation_wake_enabled)
+        dialog = WindowsDictationDialog(
+            self.frame,
+            settings,
+            self._announce,  # type: ignore[attr-defined]
+            help_for=HELP_FOR,
+        )
         try:
             answer = self._show_modal_dialog(dialog, "Dictation Settings")  # type: ignore[attr-defined]
             if answer == wx.ID_OK:
@@ -152,6 +159,7 @@ class TranscribeCommandsMixin:
             self._announce(f"Saved. Model: {model_name(settings.windows_dictation_engine)}.")  # type: ignore[attr-defined]
         else:
             self._set_status("Dictation settings saved.")  # type: ignore[attr-defined]
+        self._wake_settings_changed(wake_before)  # type: ignore[attr-defined]
 
     def edit_dictation_words(self) -> None:
         """My Words and Phrases: the editors' window, over the same word list

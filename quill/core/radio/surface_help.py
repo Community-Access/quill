@@ -383,6 +383,12 @@ PURPOSES: dict[str, str] = {
         "live-only and why. The catalog is derived data -- it can be rebuilt "
         "from here at any time without touching your favorites."
     ),
+    "Station Details": (
+        "Search stations by name, call sign, frequency, slogan or place, and "
+        "read what the signed station pack knows about each one, with where "
+        "each fact came from. Each result says why it matched. Read only; "
+        "nothing here changes your favorites."
+    ),
     "Wake-Up Timer": (
         "Start a station playing at a time you choose -- an alarm clock that "
         "wakes you to radio. Quill Radio must be running (or in the tray) at "

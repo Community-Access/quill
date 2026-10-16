@@ -120,6 +120,35 @@ def test_spanish_keeps_only_spanish_models(wx_app, models) -> None:
         dialog.Destroy()
 
 
+def test_translation_is_offered_only_for_another_language_with_whisper(
+    wx_app, models, tmp_path
+) -> None:
+    """D-26's dialog parity: QUILL Lite and Transcribe translate on the same models."""
+    wx.HelpProvider.Set(wx.SimpleHelpProvider())
+    have, _key = models
+    have.extend(["parakeet", "whisper_small"])
+    recording = tmp_path / "habla.wav"
+    _write_wav(recording, seconds=1)
+    dialog, _warned = _dialog(paths=[recording])
+    try:
+        _wait_for_installed_models(dialog)
+        assert dialog.translate.GetLabel() == "Translate into &English"
+        assert dialog.translate.GetHelpText().startswith("Off unless you check it.")
+        assert not dialog.translate.IsEnabled()  # English: nothing to translate
+        dialog.language.SetSelection(1)
+        dialog._fill_models()
+        assert dialog.selected_model().id == "parakeet"  # Spanish, but it cannot translate
+        assert not dialog.translate.IsEnabled()
+        dialog.model.SetSelection([m.id for m in dialog._models].index("whisper_small"))
+        dialog._on_model_choice(None)
+        assert dialog.translate.IsEnabled()
+        dialog.translate.SetValue(True)
+        assert _ok(dialog)
+        assert dialog.choice().translate is True
+    finally:
+        dialog.Destroy()
+
+
 def test_openai_joins_when_its_list_arrives_and_is_never_preselected(wx_app, models) -> None:
     _have, key = models
     key["problem"] = ""

@@ -1,0 +1,74 @@
+name: Build Station Pack
+
+# Weekly: build the signed station pack that Quill Radio's station details and
+# station search read (Jeff's todo P2 #33). Design record:
+# docs/design/2026-10-16-station-pack-format.md
+#
+# What it reads: only the approved sources in
+# quill/core/radio/enrichment/sources.py -- today the Community Picks
+# catalogue, which is the project's own data. It fetches nothing from any
+# station, directory or encyclopaedia; sources awaiting a decision on their
+# data terms are listed in PENDING_SOURCES and never read.
+#
+# What it produces: a workflow artifact (the pack, its .minisig signature and
+# its manifest). It does NOT publish anywhere -- where a pack is served from
+# (a release asset, the Pages site) is a decision still to be made, and so is
+# shipping it inside the app build.
+#
+# Secret (named here, created by a maintainer, never committed):
+#   STATION_PACK_SIGNING_KEY  base64 Ed25519 seed of the publisher key already
+#                             committed as quill-pub.key (the same key as
+#                             PICKS_SIGNING_KEY). Without it the pack is built
+#                             unsigned, which every build of Quill Radio
+#                             refuses, and nothing is uploaded.
+
+on:
+  schedule:
+    # Mondays 06:17 UTC: off the hour, so it does not queue behind every other
+    # scheduled workflow on GitHub's runners.
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: station-pack
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+
+      - name: Install the signer
+        run: python -m pip install --quiet pynacl
+
+      - name: Build the pack
+        env:
+          STATION_PACK_SIGNING_KEY: ${{ secrets.STATION_PACK_SIGNING_KEY }}
+        run: python scripts/build_station_pack.py --out build/station-pack
+
+      - name: Verify it exactly as the app would
+        id: verify
+        run: |
+          if python scripts/build_station_pack.py --verify build/station-pack; then
+            echo "trusted=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "trusted=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::The pack is unsigned or untrusted; nothing is uploaded."
+          fi
+
+      - name: Keep the signed pack as an artifact
+        if: steps.verify.outputs.trusted == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: station-pack
+          path: build/station-pack/
+          retention-days: 90

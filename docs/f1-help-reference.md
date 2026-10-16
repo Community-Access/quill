@@ -24,7 +24,7 @@ from `topics.json` by `quill/tools/build_docs.py`.
 
 ## Quill Radio
 
-Control coverage: 331 audited sites (217 helped, 114 named-help).
+Control coverage: 335 audited sites (221 helped, 114 named-help).
 
 ### Every window, and what it is for
 
@@ -177,6 +177,8 @@ Control coverage: 331 audited sites (217 helped, 114 named-help).
 **Song History.** What each station has played while you listened: every title the stream reported, newest first, with the time it was heard. From a song you can copy it, keep it in the Clip Library, or ask for background on it.
 
 **Station Catalog Status.** Where browsing's answers come from: which sources are stored in the local station catalog, how fresh each one is, and which are live-only and why. The catalog is derived data -- it can be rebuilt from here at any time without touching your favorites.
+
+**Station Details.** Search stations by name, call sign, frequency, slogan or place, and read what the signed station pack knows about each one, with where each fact came from. Each result says why it matched. Read only; nothing here changes your favorites.
 
 **Suggest a Station or Podcast.** Tell us about something worth adding to the Community Picks list. It goes by email to support@community-access.org, where a person at Community Access reads it: press Send Suggestion and your own mail program opens with it written, then press Send there. No account and no website. It is checked first, so a missing address or something already on the list is caught here. With no mail program, the whole suggestion goes on your clipboard to paste into any email. Nothing is sent at all in Safe Mode.
 
@@ -361,6 +363,12 @@ Control coverage: 331 audited sites (217 helped, 114 named-help).
 - `self._lyrics_btn`: Looks the highlighted song's words up on LRCLIB and opens them in the Lyrics window. Only when you press it; off in Safe Mode.
 - `self._clear_btn`: Erases the logged songs -- for this station or for every station; a confirmation asks which.
 - `close_btn`: Closes Song History; logging continues while stations play.
+#### (module level) (`quill/ui/radio/station_details_dialog.py`)
+
+- `query`: Type any part of what you know about a station: its name, its call sign such as KUOW, its frequency such as 94.9, a word from its slogan or description, or a city. The results below follow as you type; press Enter to move to them, or, when nothing matched, to look for names spelled close to what you typed.
+- `results`: Stations the station pack knows that match your search, best first. Each row says what matched, such as the frequency or a word from the slogan. The details of the highlighted station are below.
+- `details`: What the station pack knows about the highlighted station, one labelled line per fact, then where those facts came from. Read only; arrow through it, or select and copy any line.
+- `close_btn`: Closes Station Details. Nothing is changed by closing.
 #### (module level) (`quill/ui/radio/station_tags_dialog.py`)
 
 - `tags_box`: Words you want to find this station by, separated by commas -- for example: Detroit Tigers, MLB, baseball. Search and the Favorites filter match them. Empty the box to remove your tags.
@@ -1420,6 +1428,8 @@ Control coverage: 34 audited sites (34 helped).
 
 **Speech Models.** The Model Library: download, check or remove the optional speech models. Each download shows its size first, is checked before it is used, and can be cancelled. A model that did not finish is never marked ready.
 
+**Speech Providers.** Use a speech service you already have an account with -- Azure, Google, Amazon, Deepgram and others -- for dictation. Choose one to see what it can do and what it needs, enter that, test it, and save it; keys go to Windows Credential Manager. Then choose it as the speech engine in Dictation Settings.
+
 **Start and Stop Key.** Choose the key that starts and stops dictation from any program. It is Alt+Shift+Backslash unless you change it. Type another, press Record Key to press it instead, or leave the box empty for no key; a key another QuillVille app already uses is refused, and you are told whose it is.
 
 **Transcribe a Recording.** Choose a recording and a model; it is transcribed in the background and the transcript waits in Notifications for you to review.
@@ -1434,7 +1444,7 @@ Control coverage: 34 audited sites (34 helped).
 
 #### QuillTranscribeFrame (`quill/apps/transcribe.py`)
 
-- `self._state_text`: What dictation is doing now: Ready, Listening, Hearing you, Paused with words held, or Waiting for you to switch to a field. The tray icon's name says the same.
+- `self._state_text`: What dictation is doing now: Ready, Listening, Hearing you, Paused with words held, Waiting for you to switch to a field, or Listening for your wake phrase. The tray icon's name says the same, and Alt+F9 says it with the program, the model and what is held.
 - `self._start_button`: Starts dictation in the next field you switch to, or stops it. From another program, your start and stop key does the same without coming here.
 - `self._resume_button`: When dictation is paused: writes the held words into the field you started in, once you are back there, and carries on.
 - `self._here_button`: When dictation is paused: makes the field you switch to next the one dictation writes into, after the same safety checks as a new start.
@@ -1870,7 +1880,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## QUILL Lite
 
-Control coverage: 202 audited sites (202 helped).
+Control coverage: 214 audited sites (214 helped).
 
 ### Every window, and what it is for
 
@@ -2017,6 +2027,8 @@ Control coverage: 202 audited sites (202 helped).
 **Shorter.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
 
 **Speech Models.** Optional speech models you can download for better accuracy, with each one's size, languages and what it suits. Your voice never leaves the computer with these models; Download asks first, and Remove frees the space again.
+
+**Speech Providers.** Use a speech service you already have an account with -- Azure, Google, Amazon, Deepgram and others -- for dictation. Choose one to see what it can do and what it needs, enter that, test it, and save it; keys go to Windows Credential Manager. Then choose it as the speech engine in Dictation Settings.
 
 **Spelling Announcements.** How a misspelled word is reported to you. A misspelling is the one thing an editor cannot convey by speech alone -- receive and recieve sound identical -- so the letters are the answer, and this window decides when you get them and how they are said. Three groups: what happens while you type, how letters are spoken, and how long each pause is before the spelling follows.
 
@@ -2219,6 +2231,9 @@ Control coverage: 202 audited sites (202 helped).
 - `self._open`: Opens the chosen conversation in the conversation window, so you can read it and carry on where it left off.
 - `self._delete`: Deletes the chosen conversation from this computer, after asking. It cannot be brought back.
 - `close`: Closes this window and leaves the conversation you had open.
+#### CloudProvidersMixin (`quill/ui/windows_dictation_cloud.py`)
+
+- `button`: Use a speech service you already have an account with: Microsoft Azure, Google Cloud, Amazon, Deepgram, AssemblyAI, Speechmatics, ElevenLabs, Gladia, Rev.ai, Groq, Mistral or IBM Watson. Enter what it needs and test it there, then choose it as the speech engine. Optional: the built-in engines need no account and never send anything anywhere.
 #### WindowsDictationDialog (`quill/ui/windows_dictation_dialog.py`)
 
 - `self.speech_models`: Optional, larger speech models for better accuracy -- the ones VS Code offers and the rest of the Whisper family -- to download, remove or choose. Dictation works without them.
@@ -2292,6 +2307,16 @@ Control coverage: 202 audited sites (202 helped).
 - `self.remove`: Delete the chosen model from this computer to free the space.
 - `self.use`: Choose this downloaded model as the speech engine. Dictation Settings shows it chosen; press OK there to keep it.
 - `close`: Close this window. A download in progress is stopped and kept.
+#### SpeechProvidersDialog (`quill/ui/speech_providers_dialog.py`)
+
+- `self.providers`: Speech services you can use for dictation with your own account. Choose one to see what it can do and what it needs. The built-in engines stay the default: they never send anything anywhere. A provider bills you, not QUILL, and is used only after you choose it as the speech engine in Dictation Settings and agree to send your speech there.
+- `self.about`: What the chosen provider is, whether it gives words while you speak, whether it learns your words, where your speech goes, and its usage page.
+- `self.fields_panel`: The details the chosen provider needs.
+- `self.result`: What the last Test Connection, Save or Remove said.
+- `self.test_button`: Asks the provider whether these details work, using a check of the account, never your speech. Says what it answered, or which field to fix.
+- `self.save_button`: Keeps these details. Keys go to Windows Credential Manager now and are never written in QUILL's settings; the other details are kept when you choose OK in Dictation Settings.
+- `self.remove_button`: Forgets everything saved for this provider, keys included.
+- `close`: Close Speech Providers. Asks first if you changed details and did not save them.
 #### TranscribeFileDialog (`quill/ui/dictation_transcribe_dialog.py`)
 
 - `self.file`: The recording to turn into text: MP3, M4A, AAC, WAV, Ogg, Opus, FLAC or WMA. Type its full path, choose it with Browse, or drop the file on this window. Choosing several with Browse transcribes them one after another.
@@ -2302,6 +2327,7 @@ Control coverage: 202 audited sites (202 helped).
 - `self.output`: The editor stays where it is while transcription runs. Open Notifications and activate the completed result when you are ready to read it.
 - `self.timestamps`: Off unless you check it. A new paragraph starts wherever the recording pauses for two seconds or more; with timestamps checked, each paragraph begins with the hours, minutes and seconds into the recording where it was said, like [00:01:23], so you can find it again.
 - `self.obey`: Off by default: in a recording, somebody who says new paragraph or comma usually means the words. Turn it on for a recording you dictated on purpose, and comma, period, new line, new paragraph and scratch that work as they do in dictation. Commands that move the cursor are ignored.
+- `self.translate`: Off unless you check it. Writes the recording in English instead of the language spoken. It needs a recording in a language other than English and a model that translates: the built-in Whisper, or a multilingual Whisper you downloaded. With any other model this box is unavailable.
 - `self.running`: What is being transcribed at the moment, how far it has got, and how many recordings are waiting after it.
 - `stop`: Stops the transcription that is running and cancels any recordings waiting after it. The outcomes remain in Notifications; nothing is written into a document.
 #### DictationReviewFrame (`quill/ui/dictation_review_frame.py`)

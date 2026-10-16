@@ -932,6 +932,8 @@ rather than something to learn.
 - **Station Catalog Status...** (Ctrl+Alt+Shift+S): what is stored on your
   computer.
 - **Audio Health...** (Ctrl+Alt+Shift+M): can this copy play and record?
+- **Station Details...** (Alt+Shift+I): search stations by call sign,
+  frequency, slogan or place, and read what is known about each one.
 - **Choose Columns...** (Ctrl+Alt+Shift+C): what each row says in Find
   Stations and Recordings.
 - **Customize Features...** (Ctrl+Alt+C): turn the Record menu off if you never
@@ -2729,6 +2731,50 @@ kept in their own files, and nothing to do with the catalog ever reads or
 changes them. If you turn the catalog off in Preferences, browsing goes back
 to live only, with nothing stored and nothing fetched in the background. Safe
 Mode never updates the catalog, though it may read it.
+
+### Station Details: find a station by its call sign, frequency or slogan
+
+Sometimes you know a station by something other than its name: its call sign
+(KUOW), its frequency (94.9), its slogan ("home of the Seahawks"), or the
+city it broadcasts from. **Station Details** searches all of those at once,
+and tells you everything it knows about each station.
+
+What it knows comes from a **station pack**: one file of station facts that
+the Quill Radio project builds and signs. Quill Radio checks the signature
+before it reads a single fact, and refuses a pack that is not signed by the
+project, so nobody can slip wrong details in. Today the pack is built only from
+information Quill Radio already ships: the Community Picks list and the
+station directory in your catalog. Richer facts from other sources will come
+once the project has agreed how it may use them.
+
+#### Station Details, step by step
+
+1. Press **Alt+Shift+I** (**View > Station Details...**). The first line says
+   how many stations the installed pack covers and when it was built, or that
+   no pack is installed yet. Your cursor is in the **Find stations** box
+   (Alt+F).
+2. Type what you know, such as **94.9**, **98.5 FM**, **KIRO**, **Seahawks**
+   or **jazz Seattle**. The **Results** list (Alt+R) fills as you type.
+3. Press **Enter** to move to the results. Each row says why it matched, for
+   example "KIRO-FM, matched slogan: Official home of the Seattle Seahawks".
+   If nothing matched as you typed, Enter also looks for stations whose name
+   is spelled close to what you typed, such as Jazz24 for "Jaz24"; if there
+   are none, Quill Radio says that nothing matches.
+4. Arrow through the results. The **Details** box (Alt+I) shows the
+   highlighted station, one labelled line per fact, such as "Call sign: KUOW"
+   and "Frequency: 94.9 FM", then where those facts came from. You can read it
+   line by line, or select and copy any of it.
+5. Press **Escape** to close.
+
+If a station is playing when you open Station Details and the pack knows it,
+that station is already in the list with "playing now", and its details are
+showing.
+
+The details are read only. Nothing in this window changes your favorites or
+your own stations. The pack's facts are kept on this computer beside the
+station catalog, and are replaced as a whole when a newer signed pack arrives
+with a Quill Radio update. If a pack is refused, Quill Radio says so once and
+keeps the details you already had.
 
 ### Adding your own stations
 
@@ -7607,6 +7653,7 @@ In every other window, Alt+S is the Station menu and Alt+W is the Window menu. S
 | Update Station Catalog | Ctrl+Alt+Shift+G |
 | Update Radio Reading Services | Ctrl+Alt+F10 |
 | Station Catalog Status | Ctrl+Alt+Shift+S |
+| Station Details | Alt+Shift+I |
 
 ### YouTube
 

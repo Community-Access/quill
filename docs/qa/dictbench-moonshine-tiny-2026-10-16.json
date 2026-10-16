@@ -1,0 +1,577 @@
+{
+  "date": "2026-10-16",
+  "what": "One small run of the dict.md section 8 benchmark tools with the bundled Moonshine tiny model, CPU only, on synthetic audio rendered to files by Windows' own SAPI voice (nothing played or recorded). Synthetic speech flatters every engine: these numbers check the tools, they are not accuracy, and they decide no retirement (dict.md section 10).",
+  "machine": "Jeff's development computer, JAWS running; the benchmark's reader gate was inactive (bench_live never captures the screen reader).",
+  "limits": "An author's punctuation is one reference, not the only correct one: commas, semicolons and dashes vary legitimately. Quote marks are not scored, and segments that are mostly dialogue are reported apart. Synthetic speech (B-1c) measures parsing and robustness only; its word errors are never accuracy.",
+  "runs": {
+    "files": {
+      "command": "python scripts/dictbench.py synthetic-en",
+      "recordings": "10 sentences, SAPI default voice, resampled to 16 kHz",
+      "summary": {
+        "files": 10,
+        "word_error_rate": 0.0,
+        "word_error_rate_ignoring_accents": 0.0,
+        "punctuation_found": {
+          ".": "8/8",
+          "?": "2/2",
+          ",": "2/2"
+        },
+        "speed_per_thread": 0.017,
+        "first_word_seconds_average": 0.052,
+        "final_seconds_average": 0.052,
+        "commands_recognised": "0/0",
+        "failures": 0,
+        "punctuation": {
+          "marks": {
+            "period": {
+              "hits": 8,
+              "extra": 0,
+              "missed": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "comma": {
+              "hits": 2,
+              "extra": 0,
+              "missed": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "question": {
+              "hits": 2,
+              "extra": 0,
+              "missed": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "paragraph": {
+              "hits": 0,
+              "extra": 0,
+              "missed": 0,
+              "precision": null,
+              "recall": null,
+              "f1": null
+            }
+          },
+          "sentences_starting_with_a_capital": 1.0
+        },
+        "average_cpu_percent": 52,
+        "startup_seconds": 1.15,
+        "peak_memory_mb": 207.5,
+        "model_size": "built in",
+        "execution_provider": "cpu",
+        "engine": "moonshine",
+        "language": "en",
+        "normalizer": "basic",
+        "date": "2026-10-16"
+      }
+    },
+    "live_latency": {
+      "command": "python scripts/dictbench.py synthetic-en --latency (pace 1.0, pause 0.8 s)",
+      "summary": {
+        "files": 10,
+        "word_error_rate": 0.0,
+        "word_error_rate_ignoring_accents": 0.0,
+        "punctuation_found": {
+          ".": "8/8",
+          "?": "2/2",
+          ",": "2/2"
+        },
+        "speed_per_thread": null,
+        "first_word_seconds_average": 0.261,
+        "final_seconds_average": 0.887,
+        "commands_recognised": "0/0",
+        "failures": 0,
+        "punctuation": {
+          "marks": {
+            "period": {
+              "hits": 8,
+              "extra": 0,
+              "missed": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "comma": {
+              "hits": 2,
+              "extra": 0,
+              "missed": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "question": {
+              "hits": 2,
+              "extra": 0,
+              "missed": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "paragraph": {
+              "hits": 0,
+              "extra": 0,
+              "missed": 0,
+              "precision": null,
+              "recall": null,
+              "f1": null
+            }
+          },
+          "sentences_starting_with_a_capital": 1.0
+        },
+        "average_cpu_percent": 28,
+        "startup_seconds": 1.4,
+        "peak_memory_mb": 225.6,
+        "model_size": "built in",
+        "execution_provider": "cpu",
+        "engine": "moonshine",
+        "language": "en",
+        "normalizer": "basic",
+        "date": "2026-10-16",
+        "state_change_p95_seconds": 0.273,
+        "text_p95_seconds": 0.919,
+        "state_change_target_seconds": 0.5,
+        "text_target_seconds": 2.0,
+        "phrases_heard": 10,
+        "clips_with_no_text": 0,
+        "microphone_lost": 0,
+        "recogniser_failures": []
+      },
+      "files": [
+        {
+          "name": "01.wav",
+          "errors": 0,
+          "words": 7,
+          "first_word_seconds": 0.265,
+          "final_seconds": 0.855
+        },
+        {
+          "name": "02.wav",
+          "errors": 0,
+          "words": 7,
+          "first_word_seconds": 0.273,
+          "final_seconds": 0.853
+        },
+        {
+          "name": "03.wav",
+          "errors": 0,
+          "words": 7,
+          "first_word_seconds": 0.265,
+          "final_seconds": 0.876
+        },
+        {
+          "name": "04.wav",
+          "errors": 0,
+          "words": 9,
+          "first_word_seconds": 0.265,
+          "final_seconds": 0.919
+        },
+        {
+          "name": "05.wav",
+          "errors": 0,
+          "words": 9,
+          "first_word_seconds": 0.265,
+          "final_seconds": 0.862
+        },
+        {
+          "name": "06.wav",
+          "errors": 0,
+          "words": 8,
+          "first_word_seconds": 0.233,
+          "final_seconds": 0.912
+        },
+        {
+          "name": "07.wav",
+          "errors": 0,
+          "words": 9,
+          "first_word_seconds": 0.265,
+          "final_seconds": 0.886
+        },
+        {
+          "name": "08.wav",
+          "errors": 0,
+          "words": 7,
+          "first_word_seconds": 0.265,
+          "final_seconds": 0.901
+        },
+        {
+          "name": "09.wav",
+          "errors": 0,
+          "words": 8,
+          "first_word_seconds": 0.257,
+          "final_seconds": 0.89
+        },
+        {
+          "name": "10.wav",
+          "errors": 0,
+          "words": 7,
+          "first_word_seconds": 0.253,
+          "final_seconds": 0.913
+        }
+      ]
+    },
+    "b1c_commands": {
+      "command": "bench_commands.py script --language en; render --voice sapi; dictbench.py --parse --group-by group",
+      "summary": {
+        "files": 54,
+        "word_error_rate": 0.063,
+        "word_error_rate_ignoring_accents": 0.063,
+        "punctuation_found": {
+          ".": "5/5",
+          ",": "1/3",
+          "?": "1/1"
+        },
+        "speed_per_thread": 0.032,
+        "first_word_seconds_average": 0.062,
+        "final_seconds_average": 0.062,
+        "commands_recognised": "44/49",
+        "failures": 0,
+        "punctuation": {
+          "marks": {
+            "period": {
+              "hits": 5,
+              "extra": 0,
+              "missed": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "comma": {
+              "hits": 1,
+              "extra": 0,
+              "missed": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "question": {
+              "hits": 1,
+              "extra": 0,
+              "missed": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "paragraph": {
+              "hits": 0,
+              "extra": 0,
+              "missed": 0,
+              "precision": null,
+              "recall": null,
+              "f1": null
+            }
+          },
+          "sentences_starting_with_a_capital": 1.0
+        },
+        "commands_parsed": 44,
+        "commands_typed": 2,
+        "commands_other": 3,
+        "average_cpu_percent": 57,
+        "startup_seconds": 1.44,
+        "peak_memory_mb": 209.7,
+        "model_size": "built in",
+        "execution_provider": "cpu",
+        "engine": "moonshine",
+        "language": "en",
+        "normalizer": "basic",
+        "date": "2026-10-16"
+      },
+      "groups": {
+        "by": "group",
+        "results": {
+          "clean after-word": {
+            "files": 3,
+            "word_error_rate": 0.0,
+            "word_error_rate_ignoring_accents": 0.0,
+            "punctuation_found": {},
+            "speed_per_thread": 0.036,
+            "first_word_seconds_average": 0.075,
+            "final_seconds_average": 0.075,
+            "commands_recognised": "3/3",
+            "failures": 0,
+            "punctuation": {
+              "marks": {
+                "period": {
+                  "hits": 0,
+                  "extra": 0,
+                  "missed": 0,
+                  "precision": null,
+                  "recall": null,
+                  "f1": null
+                },
+                "comma": {
+                  "hits": 0,
+                  "extra": 0,
+                  "missed": 0,
+                  "precision": null,
+                  "recall": null,
+                  "f1": null
+                },
+                "question": {
+                  "hits": 0,
+                  "extra": 0,
+                  "missed": 0,
+                  "precision": null,
+                  "recall": null,
+                  "f1": null
+                },
+                "paragraph": {
+                  "hits": 0,
+                  "extra": 0,
+                  "missed": 0,
+                  "precision": null,
+                  "recall": null,
+                  "f1": null
+                }
+              },
+              "sentences_starting_with_a_capital": null
+            },
+            "commands_parsed": 3,
+            "commands_typed": 0,
+            "commands_other": 0
+          },
+          "clean command": {
+            "files": 41,
+            "word_error_rate": 0.038,
+            "word_error_rate_ignoring_accents": 0.038,
+            "punctuation_found": {},
+            "speed_per_thread": 0.032,
+            "first_word_seconds_average": 0.057,
+            "final_seconds_average": 0.057,
+            "commands_recognised": "38/41",
+            "failures": 0,
+            "punctuation": {
+              "marks": {
+                "period": {
+                  "hits": 0,
+                  "extra": 0,
+                  "missed": 0,
+                  "precision": null,
+                  "recall": null,
+                  "f1": null
+                },
+                "comma": {
+                  "hits": 0,
+                  "extra": 0,
+                  "missed": 0,
+                  "precision": null,
+                  "recall": null,
+                  "f1": null
+                },
+                "question": {
+                  "hits": 0,
+                  "extra": 0,
+                  "missed": 0,
+                  "precision": null,
+                  "recall": null,
+                  "f1": null
+                },
+                "paragraph": {
+                  "hits": 0,
+                  "extra": 0,
+                  "missed": 0,
+                  "precision": null,
+                  "recall": null,
+                  "f1": null
+                }
+              },
+              "sentences_starting_with_a_capital": null
+            },
+            "commands_parsed": 38,
+            "commands_typed": 2,
+            "commands_other": 1
+          },
+          "clean layout": {
+            "files": 2,
+            "word_error_rate": 0.0,
+            "word_error_rate_ignoring_accents": 0.0,
+            "punctuation_found": {},
+            "speed_per_thread": 0.027,
+            "first_word_seconds_average": 0.044,
+            "final_seconds_average": 0.044,
+            "commands_recognised": "2/2",
+            "failures": 0,
+            "punctuation": {
+              "marks": {
+                "period": {
+                  "hits": 0,
+                  "extra": 0,
+                  "missed": 0,
+                  "precision": null,
+                  "recall": null,
+                  "f1": null
+                },
+                "comma": {
+                  "hits": 0,
+                  "extra": 0,
+                  "missed": 0,
+                  "precision": null,
+                  "recall": null,
+                  "f1": null
+                },
+                "question": {
+                  "hits": 0,
+                  "extra": 0,
+                  "missed": 0,
+                  "precision": null,
+                  "recall": null,
+                  "f1": null
+                },
+                "paragraph": {
+                  "hits": 0,
+                  "extra": 0,
+                  "missed": 0,
+                  "precision": null,
+                  "recall": null,
+                  "f1": null
+                }
+              },
+              "sentences_starting_with_a_capital": null
+            },
+            "commands_parsed": 2,
+            "commands_typed": 0,
+            "commands_other": 0
+          },
+          "clean prefixed": {
+            "files": 3,
+            "word_error_rate": 0.2,
+            "word_error_rate_ignoring_accents": 0.2,
+            "punctuation_found": {},
+            "speed_per_thread": 0.028,
+            "first_word_seconds_average": 0.065,
+            "final_seconds_average": 0.065,
+            "commands_recognised": "1/3",
+            "failures": 0,
+            "punctuation": {
+              "marks": {
+                "period": {
+                  "hits": 0,
+                  "extra": 0,
+                  "missed": 0,
+                  "precision": null,
+                  "recall": null,
+                  "f1": null
+                },
+                "comma": {
+                  "hits": 0,
+                  "extra": 0,
+                  "missed": 0,
+                  "precision": null,
+                  "recall": null,
+                  "f1": null
+                },
+                "question": {
+                  "hits": 0,
+                  "extra": 0,
+                  "missed": 0,
+                  "precision": null,
+                  "recall": null,
+                  "f1": null
+                },
+                "paragraph": {
+                  "hits": 0,
+                  "extra": 0,
+                  "missed": 0,
+                  "precision": null,
+                  "recall": null,
+                  "f1": null
+                }
+              },
+              "sentences_starting_with_a_capital": null
+            },
+            "commands_parsed": 1,
+            "commands_typed": 0,
+            "commands_other": 2
+          },
+          "clean sentence": {
+            "files": 5,
+            "word_error_rate": 0.138,
+            "word_error_rate_ignoring_accents": 0.138,
+            "punctuation_found": {
+              ".": "5/5",
+              ",": "1/3",
+              "?": "1/1"
+            },
+            "speed_per_thread": 0.03,
+            "first_word_seconds_average": 0.103,
+            "final_seconds_average": 0.103,
+            "commands_recognised": "0/0",
+            "failures": 0,
+            "punctuation": {
+              "marks": {
+                "period": {
+                  "hits": 5,
+                  "extra": 0,
+                  "missed": 0,
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0
+                },
+                "comma": {
+                  "hits": 1,
+                  "extra": 0,
+                  "missed": 0,
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0
+                },
+                "question": {
+                  "hits": 1,
+                  "extra": 0,
+                  "missed": 0,
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0
+                },
+                "paragraph": {
+                  "hits": 0,
+                  "extra": 0,
+                  "missed": 0,
+                  "precision": null,
+                  "recall": null,
+                  "f1": null
+                }
+              },
+              "sentences_starting_with_a_capital": 1.0
+            }
+          }
+        }
+      },
+      "not_parsed": [
+        {
+          "name": "en-002.wav",
+          "reference": "undo that",
+          "heard": "I'll do that.",
+          "outcome": "typed"
+        },
+        {
+          "name": "en-023.wav",
+          "reference": "go to start of paragraph",
+          "heard": "Go to start a paragraph",
+          "outcome": "other command"
+        },
+        {
+          "name": "en-038.wav",
+          "reference": "show clips",
+          "heard": "Shoe clips.",
+          "outcome": "typed"
+        },
+        {
+          "name": "en-045.wav",
+          "reference": "insert abbreviation addr",
+          "heard": "Insert abbreviation address.",
+          "outcome": "other command"
+        },
+        {
+          "name": "en-046.wav",
+          "reference": "paste clip three",
+          "heard": "Paste clip 3",
+          "outcome": "other command"
+        }
+      ]
+    }
+  }
+}

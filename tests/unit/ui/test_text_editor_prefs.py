@@ -340,3 +340,9 @@ def test_quill_lites_preferences_carry_the_same_group(app, monkeypatch, boxes) -
     # GATE-14: neither new access key is claimed by anything else in the window.
     assert seen["keys"].count("x") == 1
     assert seen["keys"].count("o") == 1
+    # GATE-14 for the whole window, read from the real controls: the window is
+    # built by a function across modules, and the shared group's keys are
+    # passed in at run time, so no source scan can see every claim. U, D, H
+    # and F were each claimed twice until 2026-10-15.
+    twice = sorted({key for key in seen["keys"] if seen["keys"].count(key) > 1})
+    assert twice == [], f"access keys claimed twice in QUILL Lite's Preferences: {twice}"

@@ -160,7 +160,10 @@ vosk = ["vosk>=0.3.45"]
 # Floor raised 1.10 -> 1.13 (2026-08-17): the Parakeet 3 provider's
 # OfflineRecognizer(model_type="nemo_transducer") and the Silero
 # VoiceActivityDetector tier (speech_vad.py) rely on API fixes newer than 1.10.
-nemotron = ["sherpa-onnx>=1.13.8", "numpy>=2.5.3"]
+# Pinned EXACTLY since 2026-10-16 (dict.md D-26): every local speech model runs
+# on this one runtime, and a hotword or decoder change breaks behaviour, not just
+# the API -- an upgrade is a decision, re-measured, never a lock refresh.
+nemotron = ["sherpa-onnx==1.13.8", "numpy>=2.5.3"]
 # Dictation's built-in engines (quill/core/windows_dictation/local_recognizer.py):
 # Moonshine and Whisper through sherpa-onnx, which bundles its own ONNX runtime
 # (no torch), with the microphone read through sounddevice. Shipped, never
@@ -169,7 +172,7 @@ nemotron = ["sherpa-onnx>=1.13.8", "numpy>=2.5.3"]
 # websockets: OpenAI dictation's live (Realtime) transcription, own key only. It
 # was already in the shared runtime; declared so it cannot quietly leave it.
 live-dictation = [
-  "sherpa-onnx>=1.13.8",
+  "sherpa-onnx==1.13.8",  # pinned exactly: see the nemotron extra
   "numpy>=2.5.1",
   "sounddevice>=0.5.6",
   "websockets>=15.0.1",
@@ -594,6 +597,7 @@ markers = [
     "smoke: fast, high-signal core checks; run the quick subset with -m smoke",
     "uia: Windows UI-automation regression tests (launch the real app via UIA); opt-in with QUILL_UIA_TESTS=1 and -m uia on a Windows desktop session",
     "machine_global: touches a resource the machine owns rather than the process (the Windows clipboard, the system-wide RegisterHotKey table, the screen-reader COM bridges). Serialized onto one worker under -n --dist loadgroup; see tests/conftest.py.",
+    "slow: runs for many minutes and only when asked by its own environment variable (the dictation soak, tests/stability/test_dictation_soak.py); never in CI",
 ]
 
 [tool.ruff]
@@ -702,8 +706,8 @@ module = [
     "torch",
     # Optional Vosk engine (quill[vosk]); imported lazily in providers/vosk.py.
     "vosk",
-    # Optional Nemotron engine (quill[nemotron]); sherpa-onnx imported lazily in
-    # providers/nemotron_onnx.py. Ships no type stubs.
+    # sherpa-onnx (quill[nemotron], quill[live-dictation]); imported lazily in
+    # windows_dictation/local_recognizer.py. Ships no type stubs.
     "sherpa_onnx",
     # numpy arrives with the live-dictation extra (windows_dictation/
     # local_recognizer.py imports it lazily); the typing job installs only [dev].

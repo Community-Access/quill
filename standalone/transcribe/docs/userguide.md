@@ -113,6 +113,47 @@ Closing the window keeps QUILL Transcribe running in the tray. To quit, choose
 4. Press the key again, or say "stop dictation", to stop. Anything you were
    still saying is written first.
 
+### Holding the key to talk
+
+If you would rather hold a key while you speak, as with a walkie-talkie, open
+**Dictation Settings**, choose **More Dictation Settings**, and check **Hold
+the dictation key to talk** (Alt+H). It is off until you turn it on, and it is
+the same setting QUILL and QUILL Lite have for Ctrl+F11. Then:
+
+- Hold your start and stop key and talk. When you let go, dictation stops,
+  keeping your last phrase.
+- What you say while the key is down is typed the moment you let go, not
+  before. Your start and stop key has Alt or Ctrl in it, and letters typed
+  while one of those is held would reach the other program as shortcuts.
+- A quick press still turns dictation on, and the next press turns it off.
+
+Keys with Ctrl in them make most screen readers stop talking while they are
+held, so a key with Alt, such as the default Alt+Shift+Backslash, works best
+for holding.
+
+### Starting with your voice: the wake phrase
+
+You can start dictation by saying the wake phrase, "Quill dictate" unless you
+change it, instead of pressing a key. Open **Dictation Settings** and check
+**Listen for the wake phrase while dictation is off** (Alt+H in that window);
+the **Wake phrase** box (Alt+W) is where you change the words. It is off until
+you turn it on, and when you turn it on you hear "Listening for your wake
+phrase whenever another program is in front."
+
+While it is on:
+
+- The microphone stays open whenever another program is in front, and the
+  State field and the tray say **Listening for your wake phrase**. Nothing it
+  hears is written, kept or sent anywhere until it hears the wake phrase at the
+  start of what you say.
+- Say "Quill dictate" in the field you want, and dictation starts there.
+  Anything you say after the wake phrase in the same breath is typed: "Quill
+  dictate dear Sam comma" writes "Dear Sam,".
+- When you stop, it goes back to listening for the wake phrase, and says so.
+- It does not listen while QUILL Transcribe's own window, QUILL or QUILL Lite
+  is in front (they have their own dictation), or while a program on your
+  never-type list is in front, such as a password manager.
+
 ### From the tray or the window
 
 When you start from the tray or the window, QUILL Transcribe has the focus, and
@@ -149,6 +190,20 @@ It speaks when something happens that your screen reader cannot tell you: that
 dictation paused, that it could not start and why, that a phrase may be
 incomplete.
 
+**On a braille display**, while you are working in the other program, you see
+the words heard so far ("Hearing: dear Sam") with a model that shows them
+while you speak, and the changes dictation shows without saying them: Command
+mode, Waiting for a command, and Listening for your wake phrase. These go to
+the display only and are not spoken. To hear the words so far as well, choose
+**Show it, and say new words quietly** for **While you speak, the words heard
+so far** in More Dictation Settings.
+
+**Dictation Status** (Alt+F9 in the window, as in QUILL and QUILL Lite) says in
+one sentence what dictation is doing, the program it is writing into, the model,
+and how many phrases are held, for example "Dictation is paused in OUTLOOK,
+using Moonshine Tiny, with 2 phrases held." To ask from another program, choose
+a Dictation Status Key (see Keys).
+
 ## When the focus moves: paused, not lost
 
 If you move to another field, another program or another window while
@@ -178,6 +233,11 @@ and Discard Held Words delete them. If you stop or exit while words are held,
 they stay for next time: stopping says "They are kept in Recent Phrases", and
 the next start says how many are waiting. A phrase Windows stopped typing
 part-way through is kept the same way.
+
+To resume or discard without coming back to QUILL Transcribe's window, choose a
+**Resume Key** and a **Discard Held Words Key** in the File menu (see Keys).
+Pressed in the field you started in, the Resume Key types the held words there
+and carries on; the Discard Held Words Key throws them away.
 
 ## Where it will not type
 
@@ -435,6 +495,21 @@ the list. It is never chosen for you. The first time you choose it, QUILL
 Transcribe tells you exactly what is sent and where, and nothing is sent unless
 you agree. No is the default.
 
+### Speech providers: your own account
+
+QUILL Transcribe can also use a speech company you already have an account
+with: Azure, Google, Amazon, Deepgram, AssemblyAI, Speechmatics, ElevenLabs,
+Gladia, Rev.ai, Groq, Mistral or IBM Watson. Open **Dictation Settings**
+(Alt+Shift+F6) and choose **Speech Providers...** (Alt+V): pick the company,
+fill in what it needs, **Test Connection** (Alt+T), then the Save button (Alt+S).
+Keys go to Windows Credential Manager, never into settings; the region and
+other details are kept in QUILL Transcribe's own settings. Then choose the company as the model in
+Dictation Settings. As with OpenAI, you are told exactly what is sent and
+where, nothing is sent unless you agree, and No is the default. If the company
+cannot be reached, dictation stops with one sentence and your model stays
+your choice; **Use the Built-in Model This Time** (Ctrl+B) is there if you need
+to keep going.
+
 ## Settings
 
 ### Microphone
@@ -449,10 +524,9 @@ if the default changes.
 still works) is the same window QUILL and QUILL Lite use: language,
 punctuation, filler words, how long a pause ends a phrase, what you hear after
 each phrase, and your dictation word list. QUILL Transcribe keeps its own copy
-of these settings, so changing them here does not change QUILL's. Two of them
-are always off here: the wake phrase, because it would start typing into
-whatever program is in front, and holding the key to talk, because Windows
-reports when a system-wide key is pressed but not when it is let go.
+of these settings, so changing them here does not change QUILL's. The wake
+phrase and holding the key to talk work here too, both off until you turn them
+on (see Holding the key to talk, and Starting with your voice).
 
 **More Dictation Settings** in that window has **Tick while a phrase is being
 worked on**, on by default in QUILL Transcribe (see What you hear). Its
@@ -500,15 +574,13 @@ Where QUILL Transcribe has the same dictation command as the editors, it has the
 same key: Ctrl+F11 starts and stops, Alt+Shift+F6 opens Dictation Settings,
 Alt+Shift+F10 opens My Words and Phrases, Ctrl+Shift+F11 switches the language,
 Shift+F11 opens Recent Phrases, F11 is Speak a Command, Shift+F4 is Review
-Dictation, and Shift+F5 transcribes a recording. The keys
+Dictation, Alt+F9 is Dictation Status, and Shift+F5 transcribes a recording. The keys
 from version 1.0 (Ctrl+D, Ctrl+, and Ctrl+O) still work. These work in the
 QUILL Transcribe window; from other programs, use your start and stop key.
 
 Three of the editors' dictation commands are not in QUILL Transcribe, because
 they work on a document and QUILL Transcribe has none: Live Transcript,
-Dictation Context and Tidy Dictated Text. Dictation
-Status (Alt+F9) is not needed: the State field and the tray icon's name say what
-dictation is doing.
+Dictation Context and Tidy Dictated Text.
 
 If you choose **Dictate in Other Programs** in QUILL or QUILL Lite while QUILL
 Transcribe is running, your editor's dictation settings are handed to QUILL
@@ -516,8 +588,9 @@ Transcribe.
 
 ### Keys
 
-There are three keys you can choose, all in the File menu. Only the start and
-stop key has one to begin with; the others are not set until you choose them:
+There are six keys you can choose, all in the File menu. Only the start and
+stop key has one to begin with; the others are not set, and nothing is taken
+from other programs, until you choose them:
 
 - **Start and Stop Key** (Ctrl+Alt+Shift+D) - chooses the key that starts and
   stops dictation from any program: Alt+Shift+Backslash unless you change it.
@@ -526,6 +599,12 @@ stop key has one to begin with; the others are not set until you choose them:
   thing you say a command, from any program (see "The command word").
 - **Show and Hide Key** (Ctrl+Alt+Shift+H) - shows and hides the QUILL
   Transcribe window from any program.
+- **Dictation Status Key** (Ctrl+Alt+Shift+A) - says Dictation Status's one
+  sentence from any program.
+- **Resume Key** (Ctrl+Alt+Shift+U) - when dictation is paused, types the held
+  words into the field you started in and carries on.
+- **Discard Held Words Key** (Ctrl+Alt+Shift+Y) - when dictation is paused,
+  throws the held words away.
 
 Type the key, or leave the box empty for none. If the family already uses the
 key, you are told which app uses it. If another program has already taken it,
@@ -544,6 +623,12 @@ Transcribe.
 Ctrl+O still works) turns an audio or video file
 into text with the same models, using the same window as QUILL. Choose the file
 and the model; it is transcribed in the background while you carry on.
+
+For a recording in Spanish, check **Translate into English** (Alt+E) and the
+transcript is written in English instead. It needs a model that translates: the
+built-in Whisper, or a multilingual Whisper you downloaded (not the ones marked
+English). With any other model, or for an English recording, the box is
+unavailable.
 
 When it finishes, you hear how long the recording was and how many words came
 out. Open **Notifications** (Ctrl+Shift+N) and press Enter on the transcript to
@@ -578,7 +663,9 @@ settings and key you chose in Inkwell. Inkwell's own settings are not changed.
 Only one program listens at a time, so the same words are never written twice.
 The microphone belongs to whichever of QUILL, QUILL Lite, QUILL Transcribe and
 Quill Inkwell started dictating first, for as long as it is dictating. QUILL
-Transcribe waiting in the tray does not hold it.
+Transcribe waiting in the tray does not hold it, unless the wake phrase is on:
+then it holds the microphone while it listens for the wake phrase, and lets go
+whenever QUILL or QUILL Lite comes to the front.
 
 - If QUILL or QUILL Lite is dictating when you press your start and stop key,
   QUILL Transcribe does not start, and says who is and the key that stops it,
@@ -646,6 +733,7 @@ In the QUILL Transcribe window:
 | Resume in this field | Ctrl+Shift+R |
 | Discard held words | Ctrl+Shift+D |
 | Use the built-in model this time | Ctrl+B |
+| Dictation status | Alt+F9 |
 | Speak a command | F11 |
 | Review dictation | Shift+F4 |
 | Recent phrases | Shift+F11 |
@@ -666,8 +754,8 @@ In the QUILL Transcribe window:
 | About QUILL Transcribe | Ctrl+Alt+I |
 
 From any program, only these: your start and stop key (Alt+Shift+Backslash
-unless you changed it), and your Command Key and show and hide key if you chose
-them.
+unless you changed it), and your Command Key, show and hide key, Dictation
+Status Key, Resume Key and Discard Held Words Key if you chose them.
 
 F1 anywhere in QUILL Transcribe says what the window is for and what the
 control you are on does.

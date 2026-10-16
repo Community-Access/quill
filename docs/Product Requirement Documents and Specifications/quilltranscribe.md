@@ -4,7 +4,7 @@
 **Product family:** QuillVille / QUILL  
 **Document type:** Product Requirements Document and implementation blueprint  
 **Status:** Proposed; architecture and scope for product review  
-**Last updated:** 2026-10-13 (as-built notes in 7.2, 7.4, 10.3 and 15.2)  
+**Last updated:** 2026-10-16 (as-built notes in 7.2, 7.4, 7.9, 10.3 and 15.2)  
 **Initial platform:** Windows desktop  
 **Proposed product identifier:** `QuillTranscribe`
 
@@ -246,6 +246,34 @@ system-wide key, empty until chosen, offered in setup beside Record Key and in
 File > Command Key... (Ctrl+Alt+Shift+K); the window's Dictation menu has the
 editors' Speak a Command on F11.
 
+**As built, 2026-10-15: the wake phrase and holding the key (dictation plan
+D-9).** Step 2 has two more ways in, both the editors' shared settings and both
+off by default. *Listen for the wake phrase while dictation is off*
+(`windows_dictation_wake_enabled`) keeps the microphone open in the shared
+controller's STANDBY state while another program is in front, never while
+QUILL Transcribe's own window, a QUILL or QUILL Lite window, or a program on the
+never-type list is; nothing heard there is written, kept or sent until the wake
+phrase is heard at the start of an utterance, and what follows it is dictated.
+The state line and tray name say "Listening for your wake phrase"; stopping
+goes back to it. *Hold the dictation key to talk*
+(`windows_dictation_hold_to_talk`) follows the start and stop key while it is
+down: a quick press toggles, a long press talks until release and stops,
+keeping the last phrase. The release is read with `GetAsyncKeyState` on that one
+key, polled every 40 ms only while a press is followed; no low-level keyboard
+hook is installed. Because a system-wide key must have Ctrl or Alt
+(`family_chords.show_hide_key_problem`) and nothing can be typed while one is
+held, phrases finished while the key is down wait and are typed, in order, when
+it comes up (`quill/core/transcribe/talk.py` `KeyHeldGate`).
+
+**As built, 2026-10-15: feedback where the person works (D-6).** The live
+preview ("Hearing: ...") and the state changes that are shown but not spoken
+(Command mode, Waiting for a command, Listening for your wake phrase, and the
+change back from one of them) go to a braille display only, through the
+announcement engine's braille-only call, following `announcement_braille`; the
+preview is throttled as in the editors (`preview.SHOW_SECONDS`) and an
+identical message within two seconds is not sent again. The preview is spoken
+only when the preview setting is "speak".
+
 ### 7.3 Tray-first operation
 
 The Windows notification-area icon is required for version 1.0. Its accessible
@@ -295,9 +323,12 @@ The user keeps focus in the target application.
 command QUILL Transcribe shares with QUILL and QUILL Lite answers the editors'
 chord (family rule 2): Ctrl+F11 start or stop, Alt+Shift+F6 Dictation Settings,
 Alt+Shift+F10 My Words and Phrases, Ctrl+Shift+F11 Switch Dictation Language,
-Shift+F5 Transcribe a Recording, Shift+F11 Recent Phrases. Version 1.0's Ctrl+D,
-Ctrl+, and Ctrl+O remain as second keys (rule 5). Live Transcript, Dictation
-Context, Dictation Status and Tidy Dictated Text are not offered, each with its reason in
+Shift+F5 Transcribe a Recording, Shift+F11 Recent Phrases, and (since
+2026-10-15, D-6) Alt+F9 Dictation Status, which says one sentence: the state,
+the program the session is locked to, the model and the held count. Version
+1.0's Ctrl+D, Ctrl+, and Ctrl+O remain as second keys (rule 5). Live
+Transcript, Dictation Context and Tidy Dictated Text are not offered, each with
+its reason in
 `quill/core/transcribe/parity.py` (rule 11), and `tests/unit/ui/test_transcribe_dictation_parity.py`
 holds the menu to that table.
 
@@ -363,7 +394,12 @@ loader. Version 1.0 should expose, at minimum:
 
 - Model and speech language.
 - Microphone/device.
-- Start/stop hotkey and optional hold-to-talk behavior.
+- Start/stop hotkey and optional hold-to-talk behavior (built 2026-10-15, D-9;
+  see 7.2).
+- Optional system-wide Dictation Status, Resume and Discard Held Words keys
+  (`status_hotkey`, `resume_hotkey`, `discard_hotkey`; built 2026-10-15, D-6),
+  each empty until chosen in the File menu through the family key picker and
+  its conflict checks, and not registered until then.
 - Pause sensitivity and phrase preview mode.
 - Automatic punctuation, capitalization, and spoken punctuation.
 - Filler removal.
@@ -474,6 +510,21 @@ confirmation and must revalidate the target immediately before writing.
 If that integration cannot meet the same safety and accessibility contract,
 ship it in 1.1. Do not duplicate `FileTranscriber`, audio decoding, duration
 handling, or worker orchestration inside the new app.
+
+**As built 2026-10-16 (dict.md D-26).** Every local model in QUILL, QUILL Lite
+and QUILL Transcribe now runs on one sherpa-onnx layer: QUILL's Locked
+Dictation and offline transcription reach the same models, from the same store,
+through the same `FileTranscriber` (`quill/core/speech/providers/sherpa_shared.py`),
+so a model downloaded in any of the three is used by all of them. Transcribe a
+Recording here gains **Translate into English** (Alt+E), on the same models as
+QUILL: enabled for a recording in another language with a model whose
+catalogue `tasks` include translation (multilingual Whisper, built in or
+downloaded), unavailable otherwise, off unless checked. Timestamps were
+already there. Each catalogue model now also carries its memory tier (4, 8 or
+16 GB), whether it streams, its tasks and its pinned source page. Keyword
+spotting for the command word, hotwords for My Words, punctuation and speaker
+labels are built on the same layer and switched off until measured (the
+dictation design record, section 22).
 
 ### 7.10 Transcript retention and actions
 

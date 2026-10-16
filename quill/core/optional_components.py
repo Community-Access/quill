@@ -468,7 +468,7 @@ def verify_component(component_id: str) -> VerifyResult:
     check. Never raises -- any failure becomes ``ok=False``.
     """
     try:
-        if component_id in ("whispercpp", "fasterwhisper", "vosk", "nemotron"):
+        if component_id in ("whispercpp", "fasterwhisper", "vosk", "sherpa"):
             result = _verify_stt(component_id)
         elif component_id in ("pandoc", "ffmpeg", "node"):
             result = _verify_tool(component_id)
