@@ -623,6 +623,7 @@ same `dictation.md`), Ctrl+Shift+F11 (Switch Dictation Language, which also make
 Dictation Status and Tidy Dictated Text are divergences. Recent Phrases was one,
 until the D-5 slice below put it on Shift+F11. `PREFERENCES_OFF` names the two shared settings QUILL
 Transcribe always runs off (the wake phrase, hold to talk), with reasons.
+(Since 2026-10-15 it is empty and Dictation Status is shared: section 24.)
 
 Tests: `tests/unit/ui/test_transcribe_dictation_parity.py` builds the real menu:
 every editor dictation command is shared or a divergence; the menu shows the
@@ -1250,6 +1251,99 @@ advice is news (GATE-13); the check finishing rewrites the text silently.
 Not built here: the "Switch to the Recommended Model" button of dict.md
 section 10 (it belongs to retiring legacy models), and D-26's `ram_tier`
 catalogue field.
+
+## 24. As built, 2026-10-15: the wake phrase and holding the key in QUILL Transcribe (D-9), and feedback where you work (D-6)
+
+(Sections 22 and 23 belong to other items built the same night.)
+
+**What was true.** QUILL Transcribe ran the editors' controller with two
+shared settings forced off (`transcribe/parity.py` `PREFERENCES_OFF`: the wake
+phrase and hold to talk), because its start and stop key is a `RegisterHotKey`
+key, which reports the press and never the release, and because a wake phrase
+heard while another program is in front could type into anything. Its preview
+went to its own window's status bar, which nobody sees while working in
+Outlook; Dictation Status was a parity divergence ("the window is its status");
+and Resume, Resume in This Field and Discard Held Words (D-15,
+`quill/ui/dictation_field_hold.py`) were window, menu and tray commands only.
+
+**D-9, holding the key** (`quill/apps/transcribe_talk.py`, the wx-free half in
+`quill/core/transcribe/talk.py`). The plan offered an optional low-level hook
+for the one chosen key; it was not needed, and it was not built. The decision
+is the editors' `HoldToTalk`; the host asks `GetAsyncKeyState` about that one
+key (`quill/platform/windows/key_state.py`, with the virtual key from
+`tray_hotkey.virtual_key`) every 40 ms, only while a press is followed, which
+is how the editors already follow Ctrl+F11 with `wx.GetKeyState`. (wx's call
+reads the thread's own key state, which does not change while another program
+is in front, so it could not be reused.) No hook means nothing sees any other
+key the person types, nothing can be timed out by `LowLevelHooksTimeout`, and
+the key keeps going through the family picker and its conflict checks, which
+require Ctrl or Alt (`show_hide_key_problem`). That requirement is the D-1
+note on modifiers made concrete: a held Ctrl or Alt turns typed letters into
+shortcuts, and `text_injector` waits two seconds for them and then refuses. So
+the recogniser reports through `KeyHeldGate`: a phrase finished while the key
+is down waits, and the waiting phrases are typed in order the moment the poll
+sees the key up (or before `on_finished`, so a stop never loses one). The press
+that stops dictation lets the last phrase through at once. Key repeats are
+ignored while a press is followed, with the setting on or off, as in the
+editors. Holding a Ctrl chord also silences most screen readers for as long
+as it is held, so the guide recommends an Alt chord such as the default
+Alt+Shift+Backslash; Insert and Caps Lock, the readers' own keys, cannot be
+chosen at all because the picker needs Ctrl or Alt.
+
+**D-9, the wake phrase.** The controller's STANDBY, unchanged. QUILL
+Transcribe's window timer (every 800 ms) asks `_keep_wake_standby`: wanted only
+when the setting is on, dictation could start at all (`_refusal`: Safe Mode,
+the owner lock, the family microphone, the model), and the program in front is
+another program that is neither a QUILL window (`window_handles_own_expansion`)
+nor on the never-type list. QUILL Transcribe's own window and the editors are
+excluded because the editors have their own dictation and wake phrase, and
+standing down there lets go of the family microphone (D-11) so Ctrl+F11 works;
+a password manager is excluded because a microphone open there is the worry
+the plan names. The state line and tray name say "Listening for your wake
+phrase", the setting being switched on is said once ("Listening for your wake
+phrase whenever another program is in front. Nothing is written until it hears
+it."), and a recogniser that will not open is reported once by the controller
+and not retried until Dictation Settings is saved again. The shared Dictation
+Settings window takes `help_for`, so F1 on the two check boxes describes QUILL
+Transcribe's behaviour there (`transcribe_talk.HELP_FOR`). `PREFERENCES_OFF`
+is now empty, and the parity test asserts both settings are honoured and both
+default off in all three products.
+
+**D-6.** The preview and the unspoken state changes (Command mode, Waiting for
+a command, Listening for your wake phrase, and the change back from one of
+them) go to braille only, through the announcement engine's braille-only call
+(`prism_bridge.braille`), following `announcement_braille`. States that are
+always spoken (on, off, paused) are not brailled a second time, so the display
+is not overwritten by what the reader has just brailled from speech; the
+preview is throttled by `PreviewThrottle` and `braille_output`'s two-second
+duplicate rule. "Speak" preview now reaches Transcribe too (`say_quietly`).
+Dictation Status moved from `DIVERGENCES` to `SHARED_COMMANDS` on the editors'
+Alt+F9 (rule 2), and says one sentence (`talk.status_sentence`): the state, the
+program the session is locked to (`foreground.window_process_name` on
+`LockedTarget.locked_window()`, never the window title), the model and the
+held count. Three optional system-wide keys, `status_hotkey`, `resume_hotkey`
+and `discard_hotkey` (hotkey ids 0x51B3 to 0x51B5), are empty by default,
+registered only once chosen, chosen in File > Dictation Status Key...
+(Ctrl+Alt+Shift+A), Resume Key... (Ctrl+Alt+Shift+U) and Discard Held Words
+Key... (Ctrl+Alt+Shift+Y) through `run_system_key_command` with every other
+Transcribe key passed as `own`, and they run the window's own commands. What
+D-15 already gave (the three commands, arming from the window) was not
+rebuilt.
+
+**Tests** (fakes only; no microphone, no key registered, the key's state a
+flag): `tests/unit/apps/test_transcribe_talk.py` (holding, a quick press, the
+setting off, repeats, the stopping press, words dropped on close, the gate in
+front of the recogniser, the wake phrase off by default, standby and its state
+line, nothing written before the phrase, back to standby on stop, where it
+stands down, braille, Dictation Status, the three keys),
+`tests/unit/core/test_transcribe_talk_core.py`, and the parity test.
+
+**Still to check, with a microphone and a braille display.** Holding
+Alt+Shift+Backslash in Notepad, Word and Outlook (that the release is seen and
+nothing arrives as an Alt shortcut); the wake phrase with each engine in a
+noisy room; JAWS and NVDA braille showing "Hearing: ..." in Outlook without
+fighting the reader's own flash messages. They join
+`docs/qa/screen-reader-checks-2026-10.md`.
 
 ## Appendix A: the dict.md section numbers, and where they live now
 

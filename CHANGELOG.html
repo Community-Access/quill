@@ -245,6 +245,56 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="quill-transcribe-the-wake-phrase-holding-the-key-braille-and-dictation-status-d-9-d-6-2026-10-15">QUILL
+Transcribe: the wake phrase, holding the key, braille and Dictation
+Status (D-9, D-6, 2026-10-15)</h3>
+<p>D-9 and D-6 from the dictation plan; design record section 24.</p>
+<ul>
+<li><strong><code>transcribe/parity.py</code>
+<code>PREFERENCES_OFF</code> is empty.</strong> The wake phrase and hold
+to talk are the editors’ shared settings in QUILL Transcribe too, both
+off by default; <code>test_transcribe_dictation_parity.py</code> asserts
+they are honoured and default off in all three products.
+<code>tools.dictation_status</code> moved from <code>DIVERGENCES</code>
+to <code>SHARED_COMMANDS</code> on the editors’ Alt+F9.</li>
+<li><strong><code>quill/apps/transcribe_talk.py</code></strong> (new
+mixin under <code>TranscribeDictationMixin</code>) and
+<strong><code>quill/core/transcribe/talk.py</code></strong> (wx-free):
+hold to talk follows the start and stop key with the editors’
+<code>HoldToTalk</code>, polling <code>GetAsyncKeyState</code> on that
+one key (<code>quill/platform/windows/key_state.py</code>,
+<code>tray_hotkey.virtual_key</code>) only while a press is followed; no
+keyboard hook. <code>KeyHeldGate</code> sits between the recogniser and
+the controller and holds finished phrases while the key (with its Ctrl
+or Alt) is down, typing them on release. The wake phrase uses the
+controller’s STANDBY, kept by the window timer only while another
+program that is not a QUILL window or on the never-type list is in
+front.</li>
+<li><strong>Braille</strong> for the preview and the unspoken state
+changes, through the announcement engine’s braille-only call;
+<code>say_quietly</code> for the “speak” preview.
+<code>status_sentence</code> for Dictation Status, naming the locked
+program by file (<code>foreground.window_process_name</code>).</li>
+<li><strong>Three optional system-wide keys</strong> in
+<code>transcribe_keys.py</code> (<code>OPTIONAL_KEYS</code>:
+<code>status_hotkey</code>, <code>resume_hotkey</code>,
+<code>discard_hotkey</code>, ids 0x51B3 to 0x51B5), empty by default,
+chosen through <code>run_system_key_command</code> in File
+(Ctrl+Alt+Shift+A, U, Y). New <code>TranscribeSettings</code>
+fields.</li>
+<li><strong>Shared dialogs:</strong> <code>WindowsDictationDialog</code>
+and <code>MoreDictationDialog</code> take <code>help_for</code>, so a
+host can word the wake and hold check boxes’ F1 help; the editors pass
+nothing and are unchanged.</li>
+<li>Regenerated: <code>family_menu_chords.json</code>,
+<code>f1-help-reference.md</code>,
+<code>transcribe_help_inventory.json</code> (which also picks up a setup
+dialog field that was already in the tree). Tests:
+<code>test_transcribe_talk.py</code>,
+<code>test_transcribe_talk_core.py</code>, and additions to the parity
+and settings tests.</li>
+</ul>
+<h3
 id="quill-radio-extras-marked-delete-resume-earcon-a-second-device-per-favourite-keys-whats-new-notes-in-reminders-2026-10-16">Quill
 Radio extras: marked delete, resume earcon, a second device,
 per-favourite keys, What’s New, notes in reminders (2026-10-16)</h3>

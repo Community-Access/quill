@@ -1,4 +1,5 @@
-"""QUILL Transcribe's system-wide keys: start and stop, command, and show and hide.
+"""QUILL Transcribe's system-wide keys: start and stop, command, show and hide,
+and Dictation Status, Resume and Discard Held Words.
 
 Only the start and stop key has a default (Alt+Shift+\\, owner 2026-10-12); the
 others are not registered until the person chooses them (spec section 7.1): a
@@ -15,6 +16,12 @@ command; pressed again before you say it, command mode; pressed in command
 mode, back to dictation. Empty by default, offered in setup beside Record Key,
 and chosen from the File menu (Command Key..., Ctrl+Alt+Shift+K).
 
+**Dictation Status, Resume and Discard Held Words** (D-6, 2026-10-15) are the
+window's commands from wherever the person is working: one sentence of status,
+the held words written back into their field, or thrown away. Each is empty by
+default and chosen from the File menu through the same picker
+(:data:`OPTIONAL_KEYS`); none is registered until it is chosen.
+
 The tray menu and the window do everything the keys do, so no key is needed to
 use the app.
 """
@@ -26,7 +33,7 @@ from typing import Any
 
 import wx
 
-__all__ = ["TranscribeKeysMixin"]
+__all__ = ["OPTIONAL_KEYS", "TranscribeKeysMixin"]
 
 #: The start and stop key's hotkey id (the tray toggle's belongs to AppShellFrame).
 _DICTATION_HOTKEY_ID = 0x51B1
@@ -37,6 +44,35 @@ _CAPTION = "Start and Stop Key"
 _PURPOSE = "starts and stops dictation in the field you are in"
 _COMMAND_CAPTION = "Command Key"
 _COMMAND_PURPOSE = "makes the next thing you say a command; pressed twice, command mode"
+
+#: The D-6 keys: settings field -> (hotkey id, caption, what it does, its name
+#: when said back, the method it runs, the File menu row).
+OPTIONAL_KEYS: dict[str, tuple[int, str, str, str, str, str]] = {
+    "status_hotkey": (
+        0x51B3,
+        "Dictation Status Key",
+        "says what dictation is doing, where, and with which model",
+        "Dictation Status",
+        "speak_dictation_status",
+        "Dictation St&atus Key...\tCtrl+Alt+Shift+A",
+    ),
+    "resume_hotkey": (
+        0x51B4,
+        "Resume Key",
+        "writes held words into their field and carries on dictating",
+        "Resume",
+        "resume_dictation",
+        "Res&ume Key...\tCtrl+Alt+Shift+U",
+    ),
+    "discard_hotkey": (
+        0x51B5,
+        "Discard Held Words Key",
+        "throws away the words held while dictation is paused",
+        "Discard Held Words",
+        "discard_held_words",
+        "Discard Held Words Ke&y...\tCtrl+Alt+Shift+Y",
+    ),
+}
 
 
 class TranscribeKeysMixin:
@@ -49,9 +85,11 @@ class TranscribeKeysMixin:
 
     def _start_transcribe_keys(self) -> str:
         """At launch: the show/hide key, then the start and stop key, then the
-        Command Key. Returns a sentence to say once when a saved key is not usable."""
+        Command Key, then the D-6 keys. Returns a sentence to say once when a
+        saved key is not usable."""
         self._dictation_key_registered = ""
         self._command_key_registered = ""
+        self._optional_registered: dict[str, str] = {}
         if self._safe_mode:
             return ""  # Safe Mode registers nothing system-wide (spec 9.3)
         self._start_show_hide_key("transcribe")  # type: ignore[attr-defined]
@@ -80,7 +118,32 @@ class TranscribeKeysMixin:
                 f"Your Command Key, {command}, is not working: Windows says another program "
                 "is using it. To choose another, open the File menu and choose Command Key."
             )
+        for field, (hotkey_id, caption, _does, _name, method, _row) in OPTIONAL_KEYS.items():
+            self.frame.Bind(
+                wx.EVT_HOTKEY, lambda _e, run=method: getattr(self, run)(), id=hotkey_id
+            )
+            chosen = str(getattr(self._settings, field, "") or "")
+            if chosen and not self._register_optional_key(field, chosen):
+                notices.append(
+                    f"Your {caption}, {chosen}, is not working: Windows says another program "
+                    f"is using it. To choose another, open the File menu and choose {caption}."
+                )
         return " ".join(notices)
+
+    def optional_key(self, field: str) -> str:
+        """The D-6 key registered now for *field* ("" when there is none)."""
+        return str(getattr(self, "_optional_registered", {}).get(field, "") or "")
+
+    def _register_optional_key(self, field: str, chord: str) -> bool:
+        """Swap the registered key for *field* (``status_hotkey`` ...)."""
+        registered = getattr(self, "_optional_registered", None)
+        if registered is None:
+            registered = self._optional_registered = {}
+        attribute = f"_optional_{field}"
+        setattr(self, attribute, registered.get(field, ""))
+        done = self._swap_key(OPTIONAL_KEYS[field][0], attribute, chord)
+        registered[field] = str(getattr(self, attribute, "") or "")
+        return done
 
     def dictation_key(self) -> str:
         """The key registered now ("" when there is none)."""
@@ -134,6 +197,8 @@ class TranscribeKeysMixin:
             "dictation": ("start and stop key", self._settings.dictation_hotkey),
             "command": ("Command Key", str(getattr(self._settings, "command_hotkey", "") or "")),
         }
+        for name, row in OPTIONAL_KEYS.items():
+            keys[name] = (row[1], str(getattr(self._settings, name, "") or ""))
         return {name: chord for key, (name, chord) in keys.items() if key != field}
 
     def choose_dictation_key(self) -> None:
@@ -168,6 +233,24 @@ class TranscribeKeysMixin:
             field="command",
         )
 
+    def choose_optional_key(self, field: str) -> None:
+        """File > Dictation Status Key..., Resume Key... or Discard Held Words
+        Key...: the shared picker, for one of the D-6 keys."""
+        _hotkey_id, caption, does, name, _method, _row = OPTIONAL_KEYS[field]
+
+        def save(chord: str) -> None:
+            setattr(self._settings, field, chord)
+
+        self._choose_key(
+            current=str(getattr(self._settings, field, "") or ""),
+            caption=caption,
+            purpose=does,
+            name=name,
+            replace=lambda chord: self._register_optional_key(field, chord),
+            save=save,
+            field=field,
+        )
+
     def _choose_key(self, *, save: Any, field: str, **picker: Any) -> None:
         from quill.core.transcribe.settings import save_settings
         from quill.ui.show_hide_key_picker import run_system_key_command
@@ -188,14 +271,18 @@ class TranscribeKeysMixin:
         )
 
     def _append_key_items(self, menu: Any) -> None:
-        """Show and Hide Key..., Start and Stop Key... and Command Key..., in one menu."""
+        """Show and Hide Key..., Start and Stop Key..., Command Key... and the
+        D-6 keys, in one menu."""
         self._append_show_hide_key_item(  # type: ignore[attr-defined]
             menu, "transcribe", None, lambda: self._own_keys("show_hide")
         )
-        for label, handler in (
+        rows: list[tuple[str, Any]] = [
             ("Start and Stop &Key...\tCtrl+Alt+Shift+D", self.choose_dictation_key),
             ("Co&mmand Key...\tCtrl+Alt+Shift+K", self.choose_command_key),
-        ):
+        ]
+        for field, row in OPTIONAL_KEYS.items():
+            rows.append((row[5], lambda chosen=field: self.choose_optional_key(chosen)))
+        for label, handler in rows:
             item_id = wx.NewIdRef()
             menu.Append(item_id, label)
             self.frame.Bind(wx.EVT_MENU, lambda _e, run=handler: run(), id=item_id)
@@ -208,4 +295,7 @@ class TranscribeKeysMixin:
         if self.command_key():
             self._hotkey(self.command_key(), register=False, hotkey_id=_COMMAND_HOTKEY_ID)
             self._command_key_registered = ""
+        for field in OPTIONAL_KEYS:
+            if self.optional_key(field):
+                self._register_optional_key(field, "")
         self._release_tray_hotkey()  # type: ignore[attr-defined]

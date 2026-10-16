@@ -236,6 +236,27 @@ def test_the_settings_are_the_editors_with_a_documented_subset_off() -> None:
     }
     assert differ == set(PREFERENCES_OFF)
     assert all(getattr(transcribe, name) is False for name in PREFERENCES_OFF)
+    # D-9: the wake phrase and holding the key to talk are the editors' again.
+    assert PREFERENCES_OFF == {}
+    assert transcribe.wake_enabled is True and transcribe.hold_to_talk is True
+
+
+def test_wake_and_hold_default_off_in_all_three() -> None:
+    """D-9's acceptance: both off until the person turns them on, everywhere."""
+    from quill.apps.transcribe_dictation import TranscribeDictationMixin
+    from quill.core.lite.settings import Settings as LiteSettings
+    from quill.core.settings import Settings
+    from quill.core.transcribe.settings import TranscribeSettings
+
+    class _Host(TranscribeDictationMixin):
+        _settings = TranscribeSettings()
+        _engine_override = ""
+
+    transcribe = _Host()._dictation_preferences()
+    assert transcribe.wake_enabled is False and transcribe.hold_to_talk is False
+    for editor in (Settings(), LiteSettings()):
+        assert editor.windows_dictation_wake_enabled is False
+        assert editor.windows_dictation_hold_to_talk is False
 
 
 def test_every_command_that_works_in_other_programs_is_in_what_can_i_say() -> None:

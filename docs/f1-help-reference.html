@@ -3425,7 +3425,7 @@ set to expand only manually. Also on Ctrl+K here, and from any program
 on the key you choose with File, Quick Insert Key.</li>
 </ul>
 <h2 id="quill-transcribe">QUILL Transcribe</h2>
-<p>Control coverage: 32 audited sites (32 helped).</p>
+<p>Control coverage: 33 audited sites (33 helped).</p>
 <h3 id="every-window-and-what-it-is-for-5">Every window, and what it is
 for</h3>
 <p><strong>Choose Microphone.</strong> The microphone QUILL Transcribe
@@ -3517,8 +3517,10 @@ help sentence</h3>
 (<code>quill/apps/transcribe.py</code>)</h4>
 <ul>
 <li><code>self._state_text</code>: What dictation is doing now: Ready,
-Listening, Hearing you, Paused with words held, or Waiting for you to
-switch to a field. The tray icon’s name says the same.</li>
+Listening, Hearing you, Paused with words held, Waiting for you to
+switch to a field, or Listening for your wake phrase. The tray icon’s
+name says the same, and Alt+F9 says it with the program, the model and
+what is held.</li>
 <li><code>self._start_button</code>: Starts dictation in the next field
 you switch to, or stops it. From another program, your start and stop
 key does the same without coming here.</li>

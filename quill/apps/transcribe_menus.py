@@ -2,7 +2,7 @@
 
 Every enabled item shows its key (the family's menu rule). A dictation command
 the editors have too shows the editors' chord -- Ctrl+F11, Alt+Shift+F6,
-Alt+Shift+F10, Ctrl+Shift+F11, Shift+F5 -- read from the keymap, and QUILL
+Alt+Shift+F10, Ctrl+Shift+F11, Shift+F5, Alt+F9 -- read from the keymap, and QUILL
 Transcribe 1.0's own key for it still works (:mod:`quill.core.transcribe.parity`).
 The tray menu, which
 has no keys of its own, gives every row a distinct access letter instead, so a
@@ -69,7 +69,7 @@ def build_menu_bar(host: Any, *, title: str, version: str) -> None:
     _add(host, file_menu, "&Notifications...\tCtrl+Shift+N", host.open_dictation_notifications)
     file_menu.AppendSeparator()
     _add(host, file_menu, "Minimize to &Tray\tCtrl+W", host.toggle_window_to_tray)
-    host._append_key_items(file_menu)  # Show and Hide Key..., Start and Stop Key...
+    host._append_key_items(file_menu)  # Show and Hide, Start and Stop, Command, ... Keys
     file_menu.AppendSeparator()
     _add(host, file_menu, "E&xit\tCtrl+Q", host._exit_application)
     bar.Append(file_menu, "&File")
@@ -92,6 +92,7 @@ def build_menu_bar(host: Any, *, title: str, version: str) -> None:
         "Use the &Built-in Model This Time\tCtrl+B",
         host.use_built_in_model_once,
     )
+    _shared(dictation, "Dictation St&atus", "tools.dictation_status")
     _shared(dictation, "Speak a Co&mmand", "tools.windows_dictation_command")
     _shared(dictation, "Re&view Dictation...", "tools.windows_dictation_review")
     _shared(dictation, "Recent &Phrases...", "tools.windows_dictation_recent")
