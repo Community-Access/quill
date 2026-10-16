@@ -623,6 +623,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Down | Radio: Volume Down | `radio.volume_down` |
 | Ctrl+E | Internet Radio: Sound Enhancements... | `radio.sound_enhancements` |
 | Ctrl+G | Go to | `radio.go_to` |
+| Ctrl+K | Identify This Song | `radio.identify_song` |
 | Ctrl+L | Play Last Station | `radio.play_last` |
 | Ctrl+M | Radio: Mute/Unmute | `radio.mute_toggle` |
 | Ctrl+N | Add Custom Station... | `radio.add_custom_station` |
@@ -643,12 +644,12 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Shift+G | Transport.go to player | `radio.transport.go_to_player` |
 | Ctrl+Shift+H | Song History... | `radio.song_history` |
 | Ctrl+Shift+L | Back to Live | `radio.jump_to_live` |
-| Ctrl+Shift+Left | Rewind 30 Seconds | `radio.rewind` |
+| Ctrl+Shift+Left | Rewind | `radio.rewind` |
 | Ctrl+Shift+M | Manage Favorites... | `radio.manage_favorites` |
 | Ctrl+Shift+N | ACB Media Schedule... | `radio.acb_calendar` |
 | Ctrl+Shift+Q | Internet Radio: Listening Statistics... | `radio.statistics` |
 | Ctrl+Shift+R | Recordings... | `radio.recordings` |
-| Ctrl+Shift+Right | Forward 30 Seconds | `radio.forward` |
+| Ctrl+Shift+Right | Forward | `radio.forward` |
 | Ctrl+Shift+S | Schedule Recording... | `radio.schedule_recording` |
 | Ctrl+Shift+Up | Transport.speed up | `radio.transport.speed_up` |
 | Ctrl+Shift+W | Transport.announce position | `radio.transport.announce_position` |

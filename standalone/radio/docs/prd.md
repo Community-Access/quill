@@ -291,7 +291,7 @@ Reopening any of this needs a new reason, not a new email.
 - **Schedule management (2.0.0, upstream `ui/radio/schedule_recording_dialog.py`, #1106).** Edit, Duplicate, and Enable/disable for schedule entries; 12-or-24-hour time entry; per-entry time zones with zone-labeled list times. Detailed in §3 (Recording).
 - **What's Playing server status-endpoint fallback (2.0.0, upstream `core/radio/station_status.py`, #1111, #1112).** A same-host last resort reading the stream server's own Icecast/SHOUTcast now-playing status page when ICY and the engine title channel are both empty. Detailed in §3 (Listening).
 - **Diagnostics (2.0.0, upstream `core/radio/radio_logging.py`; #1130, #1124, #1122).** A live Verbose logging (debug-mode) checkbox and a settable Log folder in Preferences, with recording stderr captured to the log. Detailed in §3 (Shell).
-- **The mpv playback engine (1.1.0, upstream `quill/ui/radio/mpv_radio_engine.py` + `player_controller.py`, #1076).** A second, preferred audio backend: libmpv, live-stream-aware (readiness from `core-idle`, not the duration a live stream never reports), bundled at `{app}\tools\mpv`. `RadioHistory.playback_engine` = auto (mpv when present) / wx ("Windows Media (classic)", the byte-for-byte pre-1.1 escape hatch) / mpv; one silent cross-engine rescue per play attempt in either direction. Combined stream-format coverage is effectively complete: MP3, AAC and HE-AAC (AAC+), Ogg Vorbis, Opus, FLAC streams, and HLS (m3u8) -- Ogg Vorbis/Opus/HLS were undecodable by WMP. The engine delivers: **Radio output device** (Preferences; `RadioHistory.output_device`; the screen reader is never moved; unplugged devices remembered, spoken fallback when unusable. Since the 3.2.0 build 3 rebuild the app's own sounds follow it by default -- `RadioHistory.app_sound_device`, "App sounds play on": same as the radio / system default / any card, routed by GUID through waveOut in `quill/platform/sound_routing.py`, falling back to the default device rather than going silent); **live DVR** (a seekable ~45-minute demuxer cache: pause/resume live radio, Rewind/Forward 30 Seconds, Back to Live, each announcing how far behind live); **Volume Boost** (up to 150% for quiet stations; the 0-100 scale, per-station volumes, and mute untouched); **engine-native What's Playing fallback** (mpv `media-title` when the ICY side-tap gets nothing or the stream is HLS); and **"Buffering..." announcements** on mid-stream stalls.
+- **The mpv playback engine (1.1.0, upstream `quill/ui/radio/mpv_radio_engine.py` + `player_controller.py`, #1076).** A second, preferred audio backend: libmpv, live-stream-aware (readiness from `core-idle`, not the duration a live stream never reports), bundled at `{app}\tools\mpv`. `RadioHistory.playback_engine` = auto (mpv when present) / wx ("Windows Media (classic)", the byte-for-byte pre-1.1 escape hatch) / mpv; one silent cross-engine rescue per play attempt in either direction. Combined stream-format coverage is effectively complete: MP3, AAC and HE-AAC (AAC+), Ogg Vorbis, Opus, FLAC streams, and HLS (m3u8) -- Ogg Vorbis/Opus/HLS were undecodable by WMP. The engine delivers: **Radio output device** (Preferences; `RadioHistory.output_device`; the screen reader is never moved; unplugged devices remembered, spoken fallback when unusable. Since the 3.2.0 build 3 rebuild the app's own sounds follow it by default -- `RadioHistory.app_sound_device`, "App sounds play on": same as the radio / system default / any card, routed by GUID through waveOut in `quill/platform/sound_routing.py`, falling back to the default device rather than going silent); **live DVR** (a seekable demuxer cache, ~45 minutes in memory until 2026-10-15 and on disk for a chosen length since -- section 24.1: pause/resume live radio, Rewind/Forward by tap count (section 24.2), Back to Live, each announcing how far behind live); **Volume Boost** (up to 150% for quiet stations; the 0-100 scale, per-station volumes, and mute untouched); **engine-native What's Playing fallback** (mpv `media-title` when the ICY side-tap gets nothing or the stream is HLS); and **"Buffering..." announcements** on mid-stream stalls.
 - **OptiLab broadcast polish (2.0.2, upstream `core/audio_enhance.py`, `ui/sound_enhance_dialog.py`).** One-touch broadcast-processing modes in Sound Enhancements, adapted from OptiLab Core by Lanes Audio / dgl1984 (github.com/dgl1984/optilab; Apache-2.0 with the Commons Clause from upstream v1.3.0). **Correction (2026-08-13):** this entry originally justified the adaptation by calling OptiLab "a GUI-only plugin with no library API and a Windows-64-only binary". All three claims were false -- upstream's native/API.md documents `optilab-core`, a framework-independent C++17 static library shipped since v1.2.0, and only the CLAP and Winamp *wrapper* targets are platform-gated. The adaptation below is still what ships for the built-in chain, and it is a reasonable design (it needs no native component and previews live), but it was never the only option available. See the exact-processing entry that follows. The modes reproduce the *shape* of its three chains -- Podcast Leveler (HPF -> speechnorm -> acompressor -> 65 Hz tame -> alimiter), Stream Polish (dynaudnorm -> acompressor -> presence -> alimiter), Smooth Limiter (acompressor -> alimiter) -- as ffmpeg filter chains appended last in `build_filter_graph` (their lookahead limiter guards the output), so they ride the same three delivery paths (mpv-native live, relay, recordings) and work cross-platform. Controls map OptiLab's onto ffmpeg: Mode picks the chain, Input is a front-end `volume` trim (0 dB default, per product choice), Auto-Adapt (0-100%) leans the leveling/density more assertive. A bypass checkbox (`optilab_enabled`) keeps the chosen mode remembered while off. Stored on `RadioHistory` and, as of 2.0.2, also per-station on `FavoriteStation`, carried by `RadioPlayerController.set_sound_options`/`preview_enhancements` and resolved per stream by `ResolvedEnhancement`. A faithful adaptation, not a bit-for-bit port; credited in release notes, the About box, and the third-party notices.
 - **Exact OptiLab processing (2026-08-13; `quill/native/optilab/`, `quill/core/audio/exact_optilab.py`, `quill/core/optilab_adapter.py`, `scripts/build_native_optilab.py`).** The three broadcast-polish modes above are a faithful *adaptation* of **OptiLab Core by Lanes Audio / dgl1984**, rebuilt as ffmpeg filter chains. The engine itself is now vendored unmodified at v1.4.0 under `quill/native/optilab/upstream/` (with its LICENSE and NOTICE) and linked into an adapter QUILL owns -- upstream is explicit that its C++ API is "not a stable C ABI" and that consumers should "wrap this C++ class in a small adapter owned by your project", so QUILL does, and that adapter contains no DSP. It is a **process**, not a Python extension, for the same reason ffmpeg is: the offline audio paths already drive an external program through `safe_subprocess` with an argv list and never a shell. **One setting, three states** (`RadioHistory.optilab_exact` / `optilab_exact_live`, per-station overridable, both off by default): off, saved files, or saved files and live. **Saved files** (`RadioRecorder` post-pass and `core/audio/convert.py`) are the recommended state -- a finished recording is processed *after* it finishes and after any dropped-and-resumed parts are joined, writing a temp file that replaces the original only on success, so no failure mode can cost somebody a recording; a raw capture is never post-processed, because re-encoding it is precisely what raw capture exists to avoid. **Live** routes the stream through `EnhanceRelay`'s three-process form (decode | engine | encode | loopback URL) on *both* engines, mpv included, and clears mpv's native filter graph so the audio is never processed twice. It is opt-in because it costs what the mpv-native path exists to provide: a slower start, an MP3 re-encode generation, more CPU, and a reconnect on every settings change (the engine is prepared with a mode and a sample rate at start-up and cannot be re-parameterised mid-stream). The rejected alternatives are recorded in `quill/native/optilab/README.md`: a custom libavfilter, an in-process extension over an ABI upstream does not offer, and an mpv CLAP host (mpv has none). Whichever state is chosen, the OptiLab *filters* leave the graph whenever the real engine will run. Honest differences, stated rather than implied: the chain has none of upstream's gated AGC, six-band density, adaptive bass and top control, stereo processing or hybrid final stage; its Podcast and Limiter ceilings are -1.5 and -2.0 dBFS where upstream delivers to -0.1; its Input default is 0 dB where upstream's `inputDriveDb` is 3.5; and the limiter feedback loop (easing the lift while final limiting runs heavy) cannot be expressed in a feed-forward graph at all -- which is the one difference that can be claimed with confidence. Entirely optional: with no adapter built `available()` is False, every surface says why in words, and every caller stays on the chain. Licence **Apache-2.0 with the Commons Clause v1.0**; upstream's NOTICE separately grants royalty-free commercial use of OptiLab Core as a tool for processing or broadcasting audio, and both LICENSE and NOTICE ship beside the executable in the installer and the portable bundle.
 - **Live Sound Enhancements preview + fully per-station (2.0.2, upstream `ui/sound_enhance_dialog.py`, `ui/radio/player_controller.py`).** Every control in the Sound Enhancements dialog previews live on the playing stream via an `on_live_change` callback (debounced ~180 ms) into `RadioPlayerController.preview_enhancements` (one apply for the whole set, so a wx drag reconnects once, not per field; mpv applies natively). OK keeps; Cancel/Escape reverts to the snapshot captured on open (the Reset button's own restore is exempted). And all listener-level settings -- previously EQ/compressor/channel per-station but night mode + OptiLab global-only -- are now per-station as well as global: `FavoriteStation` gained `night_mode_enabled`/`optilab_*`, `set_enhancement` and the `ResolvedEnhancement` NamedTuple carry the full set, `play_station` applies all of it per stream, and `open_sound_enhancements` saves the whole dialog to the favorite override (when a favorite plays) or the shared `RadioHistory` default (otherwise). Reset to Default and Reset All Stations both restore the shared default including night mode and OptiLab.
@@ -3231,3 +3231,92 @@ focused. Not in Safe Mode (no resolver is offered).
 `tests/unit/core/radio/fixtures/altitude/` drive
 `tests/unit/core/radio/test_altitude_stream.py`; the dialog is
 `tests/unit/ui/test_radio_add_station_page.py`. Nothing touches the network.
+
+## 24. FreeRadio ideas: a time-shift buffer on disk, tiered seek, and Identify This Song (unreleased, 2026-10-15)
+
+Three of the deltas from the FreeRadio study (`xradio2.md`, sections 4.1, 4.3
+and 4.4). Its section 6.1 -- recordings must not open a fresh connection and
+capture a station's pre-roll advert -- landed the same night as a recording
+fix, and Identify This Song follows the same rule.
+
+### 24.1 The time-shift buffer lives on disk
+
+- **R-TS-1.** The live DVR buffer (mpv's demuxer back-cache) is kept on disk
+  (`cache-on-disk`) for a listener-chosen length: `RadioHistory.timeshift_minutes`,
+  one of 0, 30, 60 (default), 120, 180 or 300. 0 is the pre-2026-10-15
+  in-memory buffer (50 MiB, about 45 minutes), writing nothing to disk.
+  Preferences > **Time-shift buffer**; applied to the running engine at once,
+  in effect from the next load.
+- **R-TS-2. Bounded.** The length becomes a byte cap sized for 320 kbps (so
+  the chosen length is a floor for ordinary streams), and the cap never
+  exceeds half of the drive's free space after a 1 GiB reserve. A drive too
+  full for even the old 50 MiB goes back to memory. mpv enforces the cap.
+- **R-TS-3. Machine-local.** The buffer lives under
+  `paths.machine_local_dir()/radio-timeshift`, never a synced custom data
+  folder.
+- **R-TS-4. Nothing outlives the session.** Each engine writes into its own
+  `session-<pid>-<token>` folder; mpv deletes its file on close
+  (`cache-unlink-files=whendone`), `terminate()` removes the folder, and the
+  first configure of the next session sweeps every other folder. A file still
+  held open by another running copy cannot be deleted on Windows, so that
+  folder survives the sweep. If the folder cannot be made, that load buffers
+  in memory instead of failing.
+- Pause, rewind, forward and Back to Live are unchanged in behaviour.
+  Code: `quill/core/radio/timeshift.py` (pure, strict-typed),
+  `MpvRadioEngine.configure_timeshift`; tests
+  `tests/unit/core/radio/test_timeshift.py`,
+  `tests/unit/ui/test_radio_mpv_load_contract.py`.
+
+### 24.2 Tiered seek by tap count
+
+- **R-SEEK-1.** Rewind and Forward (Ctrl+Shift+Left/Right, the same keys as
+  before, in the main window and through the transport table in every other
+  window) move by the size of the burst: one tap 12 seconds, two taps a
+  minute, three or more five minutes; a held key 5 seconds per auto-repeat
+  (presses closer than 90 ms are auto-repeat).
+- **R-SEEK-2. One seek per burst, sized for the final count.** Taps do not
+  accumulate. The burst ends after 0.45 s of quiet; a press in the other
+  direction settles the burst in progress first.
+- **R-SEEK-3. Say where you landed.** The one announcement is the resulting
+  position -- "N behind live" on a live stream, "position of length" on a
+  bounded source -- never the distance moved, which the listener already
+  knows (GATE-13).
+- **R-SEEK-4. Refusals are immediate.** Nothing playing, or a live stream with
+  no buffer (the Windows Media engine), is said at the first press.
+- Menu items renamed **Rewind** and **Forward** (were "... 30 Seconds").
+  Code: `quill/core/radio/tiered_seek.py`, `quill/ui/radio/tiered_seek_ui.py`;
+  tests `tests/unit/core/radio/test_tiered_seek.py`,
+  `tests/unit/ui/test_radio_tiered_seek_ui.py`.
+
+### 24.3 Identify This Song (AcoustID + Chromaprint)
+
+- **R-ID-1.** Playback > **Identify This Song** (Ctrl+K; palette
+  `radio.identify_song`) fingerprints the last 60 seconds of what is playing
+  and asks AcoustID which recording it is. The sample is dumped from the
+  playing buffer (`dump-cache`), never a new connection, so a pre-roll advert
+  is never what gets recognised (`xradio2.md` 6.1).
+- **R-ID-2. A key, empty by default.** AcoustID requires an application key.
+  It is stored in the Windows credential store (`quill:radio:acoustid:key`),
+  entered in Preferences > **AcoustID key for song recognition**. With no key
+  the command says so, names acoustid.org/new-application and where the key
+  goes, and touches nothing else.
+- **R-ID-3. fpcalc is not bundled.** Chromaprint's `fpcalc` is looked for in
+  `{QUILL_APP_ROOT}\tools\chromaprint`, the runtime's `tools\chromaprint`,
+  `<data>\tools\chromaprint`, then the PATH, and only a file named
+  `fpcalc[.exe]` is ever run, through `run_subprocess_safely` with a fixed
+  argument list. Missing, the command says where to get it and where to put it.
+- **R-ID-4. Only on request.** One reviewed egress site
+  (`core/radio/acoustid.py::_post`): the key, the fingerprint and its length,
+  never audio. Refused in Safe Mode. The keypress is the consent.
+- **R-ID-5. A guess is called a guess.** "Best guess: X by Y, N percent sure",
+  plus up to two other strong candidates; below 50 percent it is an honest
+  "no match" with the reason recognition can miss on radio. Errors (a rejected
+  key, no connection) are their own sentences, never a support code.
+- Needs the mpv engine; on Windows Media the command says so.
+  Code: `quill/core/radio/acoustid.py`, `chromaprint.py`, `song_recognition.py`,
+  `quill/ui/radio/song_identify_commands.py`; tests
+  `tests/unit/core/radio/test_song_recognition.py`,
+  `tests/unit/ui/test_radio_song_identify.py`.
+- **Open:** the project needs a registered AcoustID application key if one is
+  ever to be bundled the way the Podcast Index key is; until then each
+  listener registers their own.

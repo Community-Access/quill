@@ -1062,6 +1062,63 @@ additions to the Speech Models, guided setup, service and Transcribe
 model tests.</li>
 </ul>
 <h3
+id="radio-a-time-shift-buffer-on-disk-tiered-seek-and-identify-this-song-2026-10-15">Radio:
+a time-shift buffer on disk, tiered seek, and Identify This Song
+(2026-10-15)</h3>
+<p>Three FreeRadio deltas from <code>xradio2.md</code> (4.3, 4.4, 4.1),
+Jeff’s todo P2 #32. The shared <code>RadioMixin</code>/controller
+carries the first two into QUILL’s editor-embedded radio as well.</p>
+<ul>
+<li><strong><code>quill/core/radio/timeshift.py</code></strong>
+(wx-free, strict): the DVR back-cache moves to disk
+(<code>cache-on-disk</code>, <code>cache-dir</code>,
+<code>cache-unlink-files=whendone</code>) for
+<code>RadioHistory.timeshift_minutes</code> (0/30/60/120/180/300,
+default 60; 0 = the old 50 MiB in memory). Byte cap sized at 320 kbps
+and clamped to half the drive’s free space after a 1 GiB reserve; lives
+in
+<code>machine_local_dir()/radio-timeshift/session-&lt;pid&gt;-&lt;token&gt;</code>;
+swept at the first configure, removed in
+<code>MpvRadioEngine.terminate()</code>, memory fallback if the folder
+cannot be made. Radio Preferences gains <strong>Time-shift
+buffer</strong>
+(<code>quill/apps/radio_preferences_listening.py</code>).
+<code>radio.history</code> fingerprint accepted as additive.</li>
+<li><strong><code>quill/core/radio/tiered_seek.py</code></strong> +
+<strong><code>quill/ui/radio/tiered_seek_ui.py</code></strong>:
+Rewind/Forward (<code>radio.rewind</code>/<code>radio.forward</code>,
+and the transport table’s skip verbs) count a burst of presses – one tap
+12 s, two 60 s, three+ 300 s, auto-repeat (&lt; 90 ms apart) 5 s each –
+and seek once after 0.45 s of quiet, announcing the landing position
+only. Refusals stay immediate. Menu labels “Rewind”/“Forward” (were “…
+30 Seconds”); <code>_radio_seek_bounded</code> folded in.</li>
+<li><strong>Identify This Song</strong>
+(<code>radio.identify_song</code>, Radio Ctrl+K; palette in both apps):
+<code>quill/core/radio/acoustid.py</code> (client; the one egress site
+<code>_post</code>, reviewed in
+<code>network_egress_entries_radio.py</code>; key in the credential
+store <code>quill:radio:acoustid:key</code>, empty by default),
+<code>chromaprint.py</code> (locates <code>fpcalc</code>, which is
+<strong>not bundled</strong>; fixed argv through
+<code>run_subprocess_safely</code>), <code>song_recognition.py</code>
+(pipeline and wording),
+<code>quill/ui/radio/song_identify_commands.py</code>. The sample comes
+from <code>MpvRadioEngine.dump_recent_audio</code> (mpv
+<code>dump-cache</code>), never a new connection (6.1). New
+<code>CodedError</code>s: <code>QUILL-RADIO-ACOUSTID-LOOKUP</code>,
+<code>QUILL-RADIO-CHROMAPRINT-FINGERPRINT</code>.</li>
+<li>GATE-11: <code>mpv_radio_engine.py</code>’s pure device-list helpers
+moved to <code>quill/core/radio/mpv_devices.py</code> (re-exported) to
+stay under the cap.</li>
+<li>Tests: <code>test_timeshift.py</code>,
+<code>test_tiered_seek.py</code>, <code>test_song_recognition.py</code>,
+<code>test_radio_tiered_seek_ui.py</code>,
+<code>test_radio_song_identify.py</code>, plus the engine contract and
+the existing seek-routing tests at the new step.</li>
+<li>Needs Jeff: an AcoustID application key, if one is ever to be
+bundled.</li>
+</ul>
+<h3
 id="dictation-the-never-type-list-and-inkwell-keeps-its-field-2026-10-15">Dictation:
 the never-type list, and Inkwell keeps its field (2026-10-15)</h3>
 <p>D-24 and D-15 from the dictation plan, rescued from an uncommitted

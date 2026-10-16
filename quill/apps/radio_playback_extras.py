@@ -6,7 +6,8 @@ own and the frame keeps one call site. This one holds two groups:
 
 * the **video** items -- scrub, speed, chapters, transcript -- which a finished
   YouTube video has and a live broadcast does not (``radio_video_menu``);
-* **Listening Statistics**, which is new.
+* **Listening Statistics**, which is new;
+* and **Identify This Song** (``ui/radio/song_identify_commands``).
 
 Both return their menu ids so the frame can pin them: a wx id that is garbage
 collected while its menu can still fire gets reused, and the observable symptom
@@ -62,7 +63,12 @@ def build_playback_extras(
         open_for_host(app)
 
     app.frame.Bind(wx.EVT_MENU, _open, id=stats_id)
-    return (*ids, stats_id)
+    # Identify This Song (AcoustID): a question about what is playing, so it
+    # sits on Playback with What's Playing rather than with the reports.
+    from quill.ui.radio import song_identify_commands
+
+    identify_id = song_identify_commands.append_menu_item(app, menu, wx)
+    return (*ids, stats_id, identify_id)
 
 
 def append_song_items(app: Any, menu: Any, wx: Any) -> tuple[Any, ...]:

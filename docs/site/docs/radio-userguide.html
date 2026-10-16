@@ -583,10 +583,11 @@ finished, so the welcome will not come back.</li>
 <p>The welcome has one checkbox, <strong>Show me a tip now and
 then</strong> (Alt+T). Leave it checked. The first time you reach a
 place where one fact would help, Quill Radio says a single sentence
-about it, for example: “Live radio can be rewound. Rewind goes back 30
-seconds at a time, up to the buffer’s length, and Back to Live catches
-up again.” Each tip is said once, ever. Tips never take your keyboard
-away. If you would rather not hear them, uncheck the box.</p>
+about it, for example: “Live radio can be rewound. One tap of Rewind
+goes back 12 seconds, two quick taps a minute, three five minutes, and
+Back to Live catches up again.” Each tip is said once, ever. Tips never
+take your keyboard away. If you would rather not hear them, uncheck the
+box.</p>
 <h3 id="every-time-after-that">Every time after that</h3>
 <p>Open Quill Radio from the Start menu, or run
 <code>QuillRadio.exe</code> in the portable folder. The window opens
@@ -1388,9 +1389,12 @@ while paused. It holds a podcast, a recording, a downloaded or local
 file, or a finished video, and picks it up where you left off. On a live
 station it is dimmed and tells you why: live radio is going out now, so
 there is nothing to hold.</li>
-<li><strong>Rewind 30 Seconds</strong> (Ctrl+Shift+Left),
-<strong>Forward 30 Seconds</strong> (Ctrl+Shift+Right) and <strong>Back
-to Live</strong> (Ctrl+Shift+L).</li>
+<li><strong>Rewind</strong> (Ctrl+Shift+Left), <strong>Forward</strong>
+(Ctrl+Shift+Right) and <strong>Back to Live</strong> (Ctrl+Shift+L). Tap
+once for a little, twice or three times for more; see “Rewinding live
+radio” in Chapter 4.</li>
+<li><strong>Identify This Song</strong> (Ctrl+K): asks AcoustID what
+song is playing. See “Identify This Song” in Chapter 5.</li>
 <li><strong>Continue Listening…</strong> (Ctrl+Alt+Shift+L): everything
 you started and did not finish.</li>
 <li><strong>Chapters…</strong> (Ctrl+Shift+C), <strong>Next
@@ -1761,7 +1765,8 @@ plays or stops.</li>
 <li><strong>Ctrl+M</strong> mutes, and so does
 <strong>Ctrl+Shift+O</strong>.</li>
 <li><strong>Ctrl+Shift+Left</strong> and
-<strong>Ctrl+Shift+Right</strong> go back and forward 30 seconds, and
+<strong>Ctrl+Shift+Right</strong> go back and forward: 12 seconds for
+one tap, a minute for two, five minutes for three.
 <strong>Ctrl+Shift+L</strong> goes back to live.</li>
 </ul>
 <p>You can count on three things:</p>
@@ -1831,20 +1836,40 @@ pauses and resumes anything that is not live.</p>
 <h3 id="rewinding-live-radio-and-going-back-to-live">Rewinding live
 radio, and going back to live</h3>
 <p>Missed what the newsreader just said? With the standard mpv playback
-engine, Quill Radio keeps the last stretch of a live station, roughly 45
-minutes at typical quality, so you can go back and hear it.</p>
+engine, Quill Radio keeps the last hour of a live station, so you can go
+back and hear it, or pause the whole programme and come back to it.
+Choose how long it keeps with <strong>Time-shift buffer</strong> in
+Preferences: half an hour up to five hours, or “In memory only” for the
+old buffer of about 45 minutes.</p>
+<p>How far one press goes depends on how you press:</p>
+<ul>
+<li><strong>One tap</strong>: 12 seconds.</li>
+<li><strong>Two quick taps</strong>: one minute.</li>
+<li><strong>Three or more quick taps</strong>: five minutes.</li>
+<li><strong>Holding the key down</strong>: 5 seconds for every repeat,
+for as long as you hold it.</li>
+</ul>
+<p>Taps do not add up: three taps take you back five minutes, not five
+minutes and a bit. Quill Radio waits for you to stop pressing, moves
+once, and then says where you landed.</p>
 <ol type="1">
 <li>While a live station plays, press <strong>Ctrl+Shift+Left</strong>
-(<strong>Playback &gt; Rewind 30 Seconds</strong>). You should hear
-“Rewound 30 seconds”, and how far behind live you are.</li>
-<li>Press it again to go back further, as far as Quill Radio has kept
-since you started listening.</li>
-<li>Press <strong>Ctrl+Shift+Right</strong> (<strong>Forward 30
-Seconds</strong>) to move forward again.</li>
+(<strong>Playback &gt; Rewind</strong>). Half a second later you should
+hear how far behind live you are, such as “12 seconds behind live.”</li>
+<li>Press it two or three times quickly to go back a minute or five
+minutes at once, as far as Quill Radio has kept since you started
+listening.</li>
+<li>Press <strong>Ctrl+Shift+Right</strong> (<strong>Forward</strong>)
+to move forward again, the same way.</li>
 <li>Press <strong>Ctrl+Shift+L</strong> (<strong>Back to Live</strong>)
 to jump straight back to what is on now. You should hear “Back to
 live.”</li>
 </ol>
+<p>The buffer is kept in a file in this computer’s cache folder, never
+in a data folder you sync to another computer. It is capped in size, it
+never takes more than half of the free space on the drive, and it is
+deleted when Quill Radio closes. Anything a crash leaves behind is
+cleared the next time Quill Radio starts.</p>
 <p>The Windows Media engine keeps nothing to go back to, so on that
 engine these keys tell you that rewinding live radio needs the mpv
 playback engine. To get it back, set <strong>Playback engine</strong> to
@@ -1862,9 +1887,11 @@ choose on a YouTube row applies to YouTube rows. While a <strong>podcast
 episode</strong> plays, the speed is remembered for that show, and you
 hear “Remembered for this show”. Normal Speed forgets it and tells you
 so.</li>
-<li><strong>Rewind 30 Seconds</strong> and <strong>Forward 30
-Seconds</strong> move you along and say where you landed, such as “3
-minutes 10 seconds of 18 minutes 40 seconds”.</li>
+<li><strong>Rewind</strong> and <strong>Forward</strong> move you along,
+the same way as on live radio: 12 seconds for one tap, a minute for two
+quick taps, five minutes for three, 5 seconds a repeat while you hold
+the key. They say where you landed, such as “3 minutes 10 seconds of 18
+minutes 40 seconds”.</li>
 <li><strong>Where Am I?</strong> (Ctrl+Shift+W) tells you your position,
 the length and the chapter you are in.</li>
 <li><strong>Next Chapter</strong> (Ctrl+Shift+.) and <strong>Previous
@@ -2165,6 +2192,48 @@ follow along.</li>
 only the artist and title are sent. Nothing is written to your computer:
 the words are kept in memory until you close Quill Radio, so asking
 again is instant. Not available in Safe Mode.</li>
+</ul>
+<h3 id="identify-this-song">Identify This Song</h3>
+<p>Some stations never say what they are playing. <strong>Playback &gt;
+Identify This Song</strong> (Ctrl+K) listens to the last minute of what
+you are hearing and asks AcoustID, a free music-recognition service,
+what song it is.</p>
+<p>Before the first time, it needs two things you set up once:</p>
+<ol type="1">
+<li><strong>An AcoustID key.</strong> AcoustID asks every app to
+register for a free key. Register one at acoustid.org/new-application,
+then open Preferences (Ctrl+,), find <strong>AcoustID key for song
+recognition</strong> and paste it in. Until there is a key, Identify
+This Song tells you exactly this and does nothing else.</li>
+<li><strong>Chromaprint’s fpcalc program.</strong> It turns the sound
+into a fingerprint and does not come with Quill Radio. Download it from
+acoustid.org/chromaprint and put fpcalc.exe in a folder named
+chromaprint inside the tools folder of your Quill data folder, or
+anywhere on your PATH. Until it is there, Identify This Song tells you
+so.</li>
+</ol>
+<p>Then:</p>
+<ol type="1">
+<li>While a song plays, press <strong>Ctrl+K</strong>. You hear
+“Identifying the song…”</li>
+<li>A few seconds later you hear the answer, such as “Best guess: Blue
+Monday by New Order, 91 percent sure.” When AcoustID has two strong
+candidates, you hear the other one too.</li>
+<li>If it cannot tell, you hear that it found no match. Recognition
+works best on recorded music; talk, a live performance or a station’s
+jingle will not match. Try again a minute into the song.</li>
+</ol>
+<p>Good to know:</p>
+<ul>
+<li>It listens to what you are already hearing, from Quill Radio’s own
+buffer, so it never hears the advert some stations play to every new
+listener.</li>
+<li>It needs the mpv playback engine and a minute of the station in the
+buffer. Just after you tune in, it asks you to try again in half a
+minute.</li>
+<li>What is sent is your key and a fingerprint, a summary of the sound
+that cannot be played back. No audio leaves your computer. Nothing is
+sent until you press Ctrl+K, and nothing at all in Safe Mode.</li>
 </ul>
 <h3 id="listening-statistics">Listening statistics</h3>
 <p><strong>View &gt; Listening Statistics…</strong> (Ctrl+Shift+Q)
@@ -5800,15 +5869,15 @@ and an end. So everything in “Speed, position and chapters” in Chapter 4
 works on it. Play Faster (Ctrl+Shift+Up), Play Slower (Ctrl+Shift+Down)
 and Normal Speed (Ctrl+Shift+0) change the speed, and the speed you
 choose on a YouTube video is kept for YouTube videos. Rewind and Forward
-30 Seconds (Ctrl+Shift+Left and Right) move you along, <strong>Where Am
-I?</strong> (Ctrl+Shift+W) tells you how far in you are, and <strong>Go
-to Position…</strong> (Ctrl+Alt+J) jumps to a time you type. When the
-video’s maker published chapters, <strong>Chapters…</strong>
-(Ctrl+Shift+C), <strong>Next Chapter</strong> (Ctrl+Shift+.) and
-<strong>Previous Chapter</strong> (Ctrl+Shift+,) step through them.
-Quill Radio remembers where you stopped, so a long video carries on from
-there next time. A live broadcast has none of this, and each of these
-keys tells you so.</p>
+(Ctrl+Shift+Left and Right) move you along, further for each quick tap,
+<strong>Where Am I?</strong> (Ctrl+Shift+W) tells you how far in you
+are, and <strong>Go to Position…</strong> (Ctrl+Alt+J) jumps to a time
+you type. When the video’s maker published chapters,
+<strong>Chapters…</strong> (Ctrl+Shift+C), <strong>Next Chapter</strong>
+(Ctrl+Shift+.) and <strong>Previous Chapter</strong> (Ctrl+Shift+,) step
+through them. Quill Radio remembers where you stopped, so a long video
+carries on from there next time. A live broadcast has none of this, and
+each of these keys tells you so.</p>
 <h4 id="captions-the-picture-and-described-audio">Captions, the picture
 and described audio</h4>
 <p>YouTube plays as sound only to begin with. <strong>Captions</strong>
@@ -6780,6 +6849,11 @@ Manually only.</li>
 <li><strong>Interrupted recordings at launch</strong>: Ask each time
 (where it starts), Always resume them, or Never resume them. See “If a
 recording was in progress when Quill Radio quit” in Chapter 8.</li>
+<li><strong>Time-shift buffer</strong>: how far back you can rewind or
+pause live radio. In memory only (about 45 minutes, nothing written to
+disk), 30 minutes, 1 hour (where it starts), 2 hours, 3 hours or 5 hours
+on disk. A change takes effect at the next station you play. See
+“Rewinding live radio, and going back to live” in Chapter 4.</li>
 </ul>
 <h4 id="the-checkboxes">The checkboxes</h4>
 <p>Each one is listed with how it starts:</p>
@@ -6832,7 +6906,7 @@ player</strong>: on. See “Winamp keys in Radio Recordings” in Chapter
 </ul>
 <h4 id="text-boxes-buttons-and-groups">Text boxes, buttons and
 groups</h4>
-<p>Two text boxes:</p>
+<p>Three text boxes:</p>
 <ul>
 <li><strong>What’s Playing announcement</strong>: the pattern for what
 What’s Playing says. <code>{title}</code> and <code>{artist}</code> are
@@ -6842,6 +6916,10 @@ what the stream sent. It starts as <code>{title}[ by {artist}]</code>.
 Leave it blank to go back to that.</li>
 <li><strong>Log folder</strong>: where the log is written. Leave it
 blank for the usual place. Changing it moves the log straight away.</li>
+<li><strong>AcoustID key for song recognition</strong>: the free key
+Identify This Song needs. It starts empty. It is kept in the Windows
+credential store, not in a settings file; clear the box to remove it.
+See “Identify This Song” in Chapter 5.</li>
 </ul>
 <p>Two buttons:</p>
 <ul>
@@ -7303,6 +7381,10 @@ storefront and Podcast Index. Xiph and Wikidata start switched off.
 whether it is on. A branch that is off is never contacted while you
 browse, and not to refresh the catalog either. <strong>Search All
 Sources</strong> asks every directory.</li>
+<li><strong>Identify This Song</strong> sends your AcoustID key and a
+fingerprint of the last minute of sound to AcoustID, only when you press
+Ctrl+K. No audio is sent, and with no key entered (where it starts)
+nothing is sent at all.</li>
 <li><strong>Podcast Index</strong> is on to begin with. It is the one
 directory here that needs a key, and Quill Radio comes with its own. The
 key identifies the app, not you.</li>
@@ -8963,8 +9045,13 @@ Window menu. See “The menus in other windows” in Chapter 3.</p>
 <td>Ctrl+Shift+F</td>
 </tr>
 <tr>
-<td>Rewind or forward 30 seconds</td>
+<td>Rewind or forward (one tap 12 seconds, two a minute, three five
+minutes)</td>
 <td>Ctrl+Shift+Left / Ctrl+Shift+Right</td>
+</tr>
+<tr>
+<td>Identify This Song</td>
+<td>Ctrl+K</td>
 </tr>
 <tr>
 <td>Back to Live</td>

@@ -113,6 +113,11 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         "radio.rewind": "Ctrl+Shift+Left",
         "radio.forward": "Ctrl+Shift+Right",
         "radio.jump_to_live": "Ctrl+Shift+L",
+        # Identify This Song (AcoustID, 2026-10-15). Not Ctrl+Alt+Shift+R,
+        # which looks free on this bar only because it is Radio's own
+        # system-wide show/hide key. Ctrl+K is one of the few plain Ctrl
+        # letters left that no clipboard or undo habit owns.
+        "radio.identify_song": "Ctrl+K",
         "radio.whats_playing_details": "Ctrl+T",
         "radio.song_history": "Ctrl+Shift+H",
         # Lyrics of the song on the air (LRCLIB, on request only). The plan
@@ -132,7 +137,7 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         # The transport verbs the palette lists as "Radio: ...": the keys the
         # transport table gives every window, which the main window's Playback
         # menu also carries. (Skip Back / Skip Forward are left out: on the
-        # main window those keys are Rewind / Forward 30 Seconds, above.)
+        # main window those keys are Rewind / Forward, above.)
         "radio.transport.speed_up": "Ctrl+Shift+Up",
         "radio.transport.speed_down": "Ctrl+Shift+Down",
         "radio.transport.speed_reset": "Ctrl+Shift+0",

@@ -2804,14 +2804,15 @@ default – <code>RadioHistory.app_sound_device</code>, “App sounds play
 on”: same as the radio / system default / any card, routed by GUID
 through waveOut in <code>quill/platform/sound_routing.py</code>, falling
 back to the default device rather than going silent); <strong>live
-DVR</strong> (a seekable ~45-minute demuxer cache: pause/resume live
-radio, Rewind/Forward 30 Seconds, Back to Live, each announcing how far
-behind live); <strong>Volume Boost</strong> (up to 150% for quiet
-stations; the 0-100 scale, per-station volumes, and mute untouched);
-<strong>engine-native What’s Playing fallback</strong> (mpv
-<code>media-title</code> when the ICY side-tap gets nothing or the
-stream is HLS); and <strong>“Buffering…” announcements</strong> on
-mid-stream stalls.</p></li>
+DVR</strong> (a seekable demuxer cache, ~45 minutes in memory until
+2026-10-15 and on disk for a chosen length since – section 24.1:
+pause/resume live radio, Rewind/Forward by tap count (section 24.2),
+Back to Live, each announcing how far behind live); <strong>Volume
+Boost</strong> (up to 150% for quiet stations; the 0-100 scale,
+per-station volumes, and mute untouched); <strong>engine-native What’s
+Playing fallback</strong> (mpv <code>media-title</code> when the ICY
+side-tap gets nothing or the stream is HLS); and <strong>“Buffering…”
+announcements</strong> on mid-stream stalls.</p></li>
 <li><p><strong>OptiLab broadcast polish (2.0.2, upstream
 <code>core/audio_enhance.py</code>,
 <code>ui/sound_enhance_dialog.py</code>).</strong> One-touch
@@ -6733,6 +6734,116 @@ offered).</p>
 <code>tests/unit/core/radio/test_altitude_stream.py</code>; the dialog
 is <code>tests/unit/ui/test_radio_add_station_page.py</code>. Nothing
 touches the network.</p>
+<h2
+id="24-freeradio-ideas-a-time-shift-buffer-on-disk-tiered-seek-and-identify-this-song-unreleased-2026-10-15">24.
+FreeRadio ideas: a time-shift buffer on disk, tiered seek, and Identify
+This Song (unreleased, 2026-10-15)</h2>
+<p>Three of the deltas from the FreeRadio study
+(<code>xradio2.md</code>, sections 4.1, 4.3 and 4.4). Its section 6.1 –
+recordings must not open a fresh connection and capture a station’s
+pre-roll advert – landed the same night as a recording fix, and Identify
+This Song follows the same rule.</p>
+<h3 id="241-the-time-shift-buffer-lives-on-disk">24.1 The time-shift
+buffer lives on disk</h3>
+<ul>
+<li><strong>R-TS-1.</strong> The live DVR buffer (mpv’s demuxer
+back-cache) is kept on disk (<code>cache-on-disk</code>) for a
+listener-chosen length: <code>RadioHistory.timeshift_minutes</code>, one
+of 0, 30, 60 (default), 120, 180 or 300. 0 is the pre-2026-10-15
+in-memory buffer (50 MiB, about 45 minutes), writing nothing to disk.
+Preferences &gt; <strong>Time-shift buffer</strong>; applied to the
+running engine at once, in effect from the next load.</li>
+<li><strong>R-TS-2. Bounded.</strong> The length becomes a byte cap
+sized for 320 kbps (so the chosen length is a floor for ordinary
+streams), and the cap never exceeds half of the drive’s free space after
+a 1 GiB reserve. A drive too full for even the old 50 MiB goes back to
+memory. mpv enforces the cap.</li>
+<li><strong>R-TS-3. Machine-local.</strong> The buffer lives under
+<code>paths.machine_local_dir()/radio-timeshift</code>, never a synced
+custom data folder.</li>
+<li><strong>R-TS-4. Nothing outlives the session.</strong> Each engine
+writes into its own <code>session-&lt;pid&gt;-&lt;token&gt;</code>
+folder; mpv deletes its file on close
+(<code>cache-unlink-files=whendone</code>), <code>terminate()</code>
+removes the folder, and the first configure of the next session sweeps
+every other folder. A file still held open by another running copy
+cannot be deleted on Windows, so that folder survives the sweep. If the
+folder cannot be made, that load buffers in memory instead of
+failing.</li>
+<li>Pause, rewind, forward and Back to Live are unchanged in behaviour.
+Code: <code>quill/core/radio/timeshift.py</code> (pure, strict-typed),
+<code>MpvRadioEngine.configure_timeshift</code>; tests
+<code>tests/unit/core/radio/test_timeshift.py</code>,
+<code>tests/unit/ui/test_radio_mpv_load_contract.py</code>.</li>
+</ul>
+<h3 id="242-tiered-seek-by-tap-count">24.2 Tiered seek by tap count</h3>
+<ul>
+<li><strong>R-SEEK-1.</strong> Rewind and Forward
+(Ctrl+Shift+Left/Right, the same keys as before, in the main window and
+through the transport table in every other window) move by the size of
+the burst: one tap 12 seconds, two taps a minute, three or more five
+minutes; a held key 5 seconds per auto-repeat (presses closer than 90 ms
+are auto-repeat).</li>
+<li><strong>R-SEEK-2. One seek per burst, sized for the final
+count.</strong> Taps do not accumulate. The burst ends after 0.45 s of
+quiet; a press in the other direction settles the burst in progress
+first.</li>
+<li><strong>R-SEEK-3. Say where you landed.</strong> The one
+announcement is the resulting position – “N behind live” on a live
+stream, “position of length” on a bounded source – never the distance
+moved, which the listener already knows (GATE-13).</li>
+<li><strong>R-SEEK-4. Refusals are immediate.</strong> Nothing playing,
+or a live stream with no buffer (the Windows Media engine), is said at
+the first press.</li>
+<li>Menu items renamed <strong>Rewind</strong> and
+<strong>Forward</strong> (were “… 30 Seconds”). Code:
+<code>quill/core/radio/tiered_seek.py</code>,
+<code>quill/ui/radio/tiered_seek_ui.py</code>; tests
+<code>tests/unit/core/radio/test_tiered_seek.py</code>,
+<code>tests/unit/ui/test_radio_tiered_seek_ui.py</code>.</li>
+</ul>
+<h3 id="243-identify-this-song-acoustid--chromaprint">24.3 Identify This
+Song (AcoustID + Chromaprint)</h3>
+<ul>
+<li><strong>R-ID-1.</strong> Playback &gt; <strong>Identify This
+Song</strong> (Ctrl+K; palette <code>radio.identify_song</code>)
+fingerprints the last 60 seconds of what is playing and asks AcoustID
+which recording it is. The sample is dumped from the playing buffer
+(<code>dump-cache</code>), never a new connection, so a pre-roll advert
+is never what gets recognised (<code>xradio2.md</code> 6.1).</li>
+<li><strong>R-ID-2. A key, empty by default.</strong> AcoustID requires
+an application key. It is stored in the Windows credential store
+(<code>quill:radio:acoustid:key</code>), entered in Preferences &gt;
+<strong>AcoustID key for song recognition</strong>. With no key the
+command says so, names acoustid.org/new-application and where the key
+goes, and touches nothing else.</li>
+<li><strong>R-ID-3. fpcalc is not bundled.</strong> Chromaprint’s
+<code>fpcalc</code> is looked for in
+<code>{QUILL_APP_ROOT}\tools\chromaprint</code>, the runtime’s
+<code>tools\chromaprint</code>,
+<code>&lt;data&gt;\tools\chromaprint</code>, then the PATH, and only a
+file named <code>fpcalc[.exe]</code> is ever run, through
+<code>run_subprocess_safely</code> with a fixed argument list. Missing,
+the command says where to get it and where to put it.</li>
+<li><strong>R-ID-4. Only on request.</strong> One reviewed egress site
+(<code>core/radio/acoustid.py::_post</code>): the key, the fingerprint
+and its length, never audio. Refused in Safe Mode. The keypress is the
+consent.</li>
+<li><strong>R-ID-5. A guess is called a guess.</strong> “Best guess: X
+by Y, N percent sure”, plus up to two other strong candidates; below 50
+percent it is an honest “no match” with the reason recognition can miss
+on radio. Errors (a rejected key, no connection) are their own
+sentences, never a support code.</li>
+<li>Needs the mpv engine; on Windows Media the command says so. Code:
+<code>quill/core/radio/acoustid.py</code>, <code>chromaprint.py</code>,
+<code>song_recognition.py</code>,
+<code>quill/ui/radio/song_identify_commands.py</code>; tests
+<code>tests/unit/core/radio/test_song_recognition.py</code>,
+<code>tests/unit/ui/test_radio_song_identify.py</code>.</li>
+<li><strong>Open:</strong> the project needs a registered AcoustID
+application key if one is ever to be bundled the way the Podcast Index
+key is; until then each listener registers their own.</li>
+</ul>
 </main>
 </body>
 </html>

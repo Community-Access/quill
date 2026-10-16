@@ -5799,10 +5799,19 @@ routing** (`audio-device`; enumerated via `audio-device-list` read as JSON
 through a short-lived handle, pseudo-entries filtered; the Preferences
 "Radio output device" dropdown keeps an unplugged saved device rather than
 silently resetting it; `RadioHistory.output_device`); **live DVR** — a
-seekable 50 MiB demuxer cache (~45 min at 128 kbps) makes pausing live
-radio and Rewind/Forward 30 Seconds/Back to Live real commands
-(`radio.rewind`/`radio.forward`/`radio.jump_to_live`, with a spoken
-"N behind live" phrase); **Volume Boost** (`radio.volume_boost`,
+seekable demuxer cache makes pausing live radio and Rewind/Forward/Back to
+Live real commands (`radio.rewind`/`radio.forward`/`radio.jump_to_live`, with
+a spoken "N behind live" phrase). Since 2026-10-15 the cache is on disk for a
+chosen length (`RadioHistory.timeshift_minutes`, default an hour, byte-capped
+and never more than half the drive's free space, in the machine-local cache,
+removed on exit and swept at start; 0 keeps the old 50 MiB in memory), and
+Rewind/Forward are tiered by tap count (one tap 12 s, two 60 s, three 300 s,
+a held key 5 s a repeat; one seek per burst, announcing where it landed) --
+`quill/core/radio/timeshift.py`, `tiered_seek.py`; the same controller serves
+the editor-embedded radio, so QUILL's Media > radio items behave the same.
+Identify This Song (`radio.identify_song`, AcoustID + Chromaprint, keyless
+until the listener enters an AcoustID key) is reachable in QUILL through the
+Command Palette; **Volume Boost** (`radio.volume_boost`,
 `volume-max=150` — up to 50% past unity for quiet streams; the 0-100 user
 scale is untouched, the boost is applied on the way to the engine, and the
 wx engine clamps at 100 so it is safe everywhere); **wider station support**

@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from quill.ui.radio import browse_door, volume_commands
+from quill.ui.radio import browse_door, song_identify_commands, volume_commands
 
 
 def _open_statistics(host: Any) -> None:
@@ -240,18 +240,23 @@ def register_radio_commands(host: Any) -> None:
         ),
         (
             "radio.rewind",
-            "Internet Radio: Rewind 30 Seconds",
+            "Internet Radio: Rewind",
             host.radio_rewind,
         ),
         (
             "radio.forward",
-            "Internet Radio: Forward 30 Seconds",
+            "Internet Radio: Forward",
             host.radio_forward,
         ),
         (
             "radio.jump_to_live",
             "Internet Radio: Back to Live",
             host.radio_jump_to_live,
+        ),
+        (
+            song_identify_commands.COMMAND_ID,
+            song_identify_commands.PALETTE_TITLE,
+            lambda: song_identify_commands.identify_song(host),
         ),
         (
             "radio.volume_boost",

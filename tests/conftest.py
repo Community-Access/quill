@@ -872,6 +872,20 @@ def _no_saved_own_ai_key(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 @pytest.fixture(autouse=True)
+def _no_saved_acoustid_key(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Keep the developer's AcoustID key, and the credential store, out of tests.
+
+    Radio's Preferences reads the key from Windows' credential store to fill
+    its box, and saves it back when the box changed; neither may reach the real
+    store from a test. Tests of the key patch these back themselves.
+    """
+    from quill.core.radio import acoustid
+
+    monkeypatch.setattr(acoustid, "stored_key", lambda: "")
+    monkeypatch.setattr(acoustid, "save_key", lambda _value: True)
+
+
+@pytest.fixture(autouse=True)
 def _no_live_release_feed(monkeypatch: pytest.MonkeyPatch) -> None:
     """Every update check sees "no v2 list published yet" unless a test says otherwise.
 

@@ -258,8 +258,8 @@ class RadioMenuBarMixin:
         # Live DVR (mpv engine): pause is the Play/Stop item; these move
         # within the buffered live window.
         rewind_id, forward_id, live_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
-        playback_menu.Append(rewind_id, self._menu_label("Re&wind 30 Seconds", "radio.rewind"))
-        playback_menu.Append(forward_id, self._menu_label("&Forward 30 Seconds", "radio.forward"))
+        playback_menu.Append(rewind_id, self._menu_label("Re&wind", "radio.rewind"))
+        playback_menu.Append(forward_id, self._menu_label("&Forward", "radio.forward"))
         playback_menu.Append(live_id, self._menu_label("Back to &Live", "radio.jump_to_live"))
         # Video: a finished YouTube video has a timeline, so it can be
         # scrubbed, sped up, navigated by chapter and read as a transcript --
