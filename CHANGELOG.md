@@ -204,6 +204,36 @@ command and is never typed, in QUILL, QUILL Lite, QUILL Transcribe and Inkwell.
   and `test_dictation_more_dialog.py`. Live checks with a microphone in
   Notepad, Word and Edge, and the 30-minute soak, are still to do.
 
+### Hosted AI: the gateway sends a feature catalogue in /v1/config (2026-10-15)
+
+Jeff's todo P2 #30: a new hosted-AI text tool should need no client release.
+
+- **Gateway** (`quill-ai-gateway/`): `GET /v1/config` gains `features`, one
+  entry per shipped feature whose flag is on (`id`, `label`, `help`, `input`,
+  `max_input_tokens`), in `SHIPPED_FEATURES` order, empty while the service is
+  paused. The wording is `app/prompts.py::CATALOGUE`; input kinds are
+  `INPUT_KINDS` (`selection`, `prompt`, `document`, `conversation`).
+  `build_prompt` fills a `{context}` slot in any template, so a new
+  `document` tool needs only its template. Every older key is unchanged and
+  older clients ignore the new one. Tests: `tests/test_feature_catalogue.py`.
+- **Client** (shared, so QUILL and QUILL Lite together):
+  `quill/core/ai/gateway_catalogue.py` (wx-free) validates the list as remote
+  input -- id shape, plain printable text with control characters removed,
+  length caps, known input kinds only, duplicates and built-in ids or labels
+  dropped, at most 40 entries -- and never raises. `GatewayLimits.features`
+  carries it from the existing `/v1/config` fetch, cached with the rest of the
+  limits; no new egress site (the GATE-9 entry for `gateway_client` says so).
+  `quill/ui/hosted_ai_pad_catalogue.py` holds the pad's rows: the built-in
+  seventeen, then any catalogue extras, appended when the limits arrive and
+  offered only on the free route. Each extra row's `help` is its F1 text, Send
+  runs it through the ordinary `ask` path, a `document` row sends excerpts as
+  `chunks`, and a per-feature `max_input_tokens` can only lower the ceiling.
+  The answer opens in the ordinary AI Result window. `hosted_ai_commands.py`
+  hands the limits fetch's answer to the pad (626 -> 624 lines).
+- Tests: `tests/unit/core/ai/test_gateway_catalogue.py`,
+  `tests/unit/ui/test_hosted_ai_pad_catalogue.py`, and one in
+  `tests/unit/apps/test_lite_ai.py`.
+
 ### Dictation: the never-type list, and Inkwell keeps its field (2026-10-15)
 
 D-24 and D-15 from the dictation plan, rescued from an uncommitted worktree.

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL free hosted AI: Luna 6, the two editors, and the gateway
 that already exists</title>
@@ -12,7 +12,10 @@ that already exists</title>
     */
     html {
       color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
       background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
     }
     body {
       margin: 0 auto;
@@ -37,11 +40,16 @@ that already exists</title>
     }
     @media print {
       html {
-        background-color: white;
+        color-scheme: light only;
       }
-      body {
+      html, body, pre, code {
         background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
         color: black;
+      }
+      pre, code {
+        padding: 0;
       }
       p, h2, h3 {
         orphans: 3;
@@ -54,11 +62,8 @@ that already exists</title>
     p {
       margin: 1em 0;
     }
-    a {
-      color: #1a1a1a;
-    }
-    a:visited {
-      color: #1a1a1a;
+    a, a:visited {
+      color: inherit;
     }
     img {
       max-width: 100%;
@@ -87,8 +92,11 @@ that already exists</title>
     blockquote {
       margin: 1em 0 1em 1.7em;
       padding-left: 1em;
-      border-left: 2px solid #e6e6e6;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
       color: #606060;
+      color: light-dark(#606060, #b6b6b6);
     }
     code {
       white-space: pre-wrap;
@@ -112,7 +120,7 @@ that already exists</title>
     }
     hr {
       border: none;
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       height: 1px;
       margin: 1em 0;
     }
@@ -129,11 +137,11 @@ that already exists</title>
     }
     tbody {
       margin-top: 0.5em;
-      border-top: 1px solid #1a1a1a;
-      border-bottom: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
     }
     th {
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       padding: 0.25em 0.5em 0.25em 0.5em;
     }
     td {
@@ -172,7 +180,6 @@ that already exists</title>
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
     /* CSS for syntax highlighting */
     html { -webkit-text-size-adjust: 100%; }
     pre > code.sourceCode { white-space: pre; position: relative; }
@@ -757,6 +764,22 @@ once.</li>
 <p>The client reads its thresholds from <code>GET /v1/config</code> once
 per session, so an admin raising a limit takes effect without a client
 release.</p>
+<p>The same answer carries the <strong>feature catalogue</strong>
+(<code>features</code>, 2026-10): one entry per shipped feature whose
+flag is on, with its <code>id</code>, <code>label</code>, one-sentence
+<code>help</code>, <code>input</code> kind (<code>selection</code>,
+<code>prompt</code>, <code>document</code> or <code>conversation</code>)
+and <code>max_input_tokens</code>. The client
+(<code>quill/core/ai/gateway_catalogue.py</code>) validates every field
+as remote input, skips an input kind it does not know, and offers each
+entry it does not already have built in as a row at the end of the AI
+Assistant pad’s list (<code>quill/ui/hosted_ai_pad_catalogue.py</code>),
+with the <code>help</code> as the row’s F1 text and the ordinary Send
+path. So a new text tool is a template and a catalogue entry in
+<code>app/prompts.py</code> and needs no client release. It is offered
+on the free service only, because its instructions live there. No new
+call: the catalogue rides on the existing <code>/v1/config</code>
+fetch.</p>
 <h3
 id="53-reasoning-effort-is-a-code-constant-per-feature-at-the-floor">5.3
 Reasoning effort is a code constant, per feature, at the floor</h3>

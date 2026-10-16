@@ -1350,9 +1350,33 @@ Response `200`:
   "max_image_bytes": 3145728,
   "max_image_edge_px": 1600,
   "hosted_ai_enabled": true,
-  "feature_flags": {"document_qna": true, "summarize": true, "rewrite": true, "alt_text": true, "chat": true}
+  "feature_flags": {"document_qna": true, "summarize": true, "rewrite": true, "alt_text": true, "chat": true},
+  "features": [
+    {"id": "summarize", "label": "Summarize", "help": "A few plain sentences saying what this passage says.", "input": "selection", "max_input_tokens": 1500},
+    {"id": "ask", "label": "Ask a general question", "help": "Type any question. Only your question is sent -- nothing from your document.", "input": "prompt", "max_input_tokens": 1500}
+  ]
 }
 ```
+
+`features` (added 2026-10) is the **feature catalogue**: one entry per shipped
+feature whose flag is on, in the order the client should list them, and an
+empty list while `hosted_ai_enabled` is false. Each entry has:
+
+| Key | Meaning |
+|---|---|
+| `id` | The value to send as `feature` to `POST /v1/chat`. It names a fixed server-side template (§8); the client never supplies one. |
+| `label` | The words a person hears on the row. Plain text. |
+| `help` | One plain sentence saying what the tool does; the client's F1 text for the row. |
+| `input` | What the tool works on: `selection` (a passage, sent as `prompt`), `prompt` (only what the person types), `document` (a typed question as `prompt` plus excerpts as `chunks`, filled into the template's `{context}`), or `conversation` (`chat` only). |
+| `max_input_tokens` | This feature's input ceiling. The global one today; a client may only use it to lower its own pre-check, never to raise it. |
+
+The catalogue exists so a new text tool -- a template, a `SHIPPED_FEATURES`
+entry and a `CATALOGUE` entry in `app/prompts.py`, plus its feature flag and
+cap -- reaches QUILL and QUILL Lite with **no client release**: the client
+offers any entry it does not already have built in as one more row of the AI
+Assistant pad, on the free service only. Clients validate every field as
+remote input and skip an entry whose `input` they do not know, so a new kind
+never breaks an older client, and clients that predate the key ignore it.
 
 ### `GET /v1/quota`
 

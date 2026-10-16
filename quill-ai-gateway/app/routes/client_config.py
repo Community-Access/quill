@@ -13,7 +13,7 @@ from flask import Blueprint, current_app, g, jsonify
 from app.auth import require_auth
 from app.limits import remaining_quota, resolve_limit, starter_allowance_ends_at
 from app.models import FeatureFlag, db
-from app.prompts import DEFERRED_FEATURES, SHIPPED_FEATURES
+from app.prompts import CATALOGUE, DEFERRED_FEATURES, SHIPPED_FEATURES
 
 bp = Blueprint("client_config", __name__)
 
@@ -40,15 +40,51 @@ def get_config():
         default = feature in SHIPPED_FEATURES
         feature_flags[feature] = flag.enabled if flag is not None else default
 
+    max_input_tokens = int(resolve_limit(current_app, "max_input_tokens"))
     return jsonify({
-        "max_input_tokens": int(resolve_limit(current_app, "max_input_tokens")),
+        "max_input_tokens": max_input_tokens,
         "max_output_tokens": int(resolve_limit(current_app, "max_output_tokens")),
         "max_chunks_per_request": int(resolve_limit(current_app, "max_chunks_per_request")),
         "max_image_bytes": int(resolve_limit(current_app, "max_image_bytes")),
         "max_image_edge_px": int(resolve_limit(current_app, "max_image_edge_px")),
         "hosted_ai_enabled": hosted_enabled,
         "feature_flags": feature_flags,
+        # Added 2026-10. Older clients read only the keys above and ignore
+        # this one; newer ones offer whatever entry they do not already have
+        # built in, so a new text tool needs no client release.
+        "features": _catalogue(feature_flags, hosted_enabled, max_input_tokens),
     })
+
+
+def _catalogue(
+    feature_flags: dict[str, bool], hosted_enabled: bool, max_input_tokens: int
+) -> list[dict]:
+    """The feature catalogue: one entry per shipped feature that is on now.
+
+    A feature switched off in the console leaves the catalogue as well as
+    turning its flag false, so a client never builds a row for something that
+    would only answer with a refusal; with the whole service paused the list
+    is empty. ``id`` is the value to send as ``feature`` to ``/v1/chat`` and
+    names the fixed template here; the client never supplies one.
+    ``max_input_tokens`` is this feature's input ceiling -- the global one
+    today, carried per entry so a future feature can have a smaller one
+    without a new key.
+    """
+    if not hosted_enabled:
+        return []
+    entries = []
+    for feature in SHIPPED_FEATURES:
+        meta = CATALOGUE.get(feature)
+        if meta is None or not feature_flags.get(feature, False):
+            continue
+        entries.append({
+            "id": feature,
+            "label": meta["label"],
+            "help": meta["help"],
+            "input": meta["input"],
+            "max_input_tokens": max_input_tokens,
+        })
+    return entries
 
 
 @bp.get("/v1/quota")

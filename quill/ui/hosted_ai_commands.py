@@ -508,11 +508,6 @@ class HostedAiMixin(ChatGptAiMixin):
             self.cmd_ai_sign_in()
             return
 
-        # One lazy fetch of what the service currently allows, so the size
-        # check and the excerpt count match the server rather than a constant
-        # compiled in months ago.
-        service.refresh_limits()
-
         from quill.ui.hosted_ai_pad import AiPadFrame
         from quill.ui.windows_dictation_tools import bind_field_dictation
 
@@ -534,6 +529,9 @@ class HostedAiMixin(ChatGptAiMixin):
             on_chat=lambda first: self._open_ai_chat(first_message=first),
         )
         bind_field_dictation(pad, [getattr(pad, "_question", None)], self)
+        # One lazy fetch of the service's limits, so sizes match the server; any
+        # tools its catalogue adds become rows at the end of the pad's list.
+        service.refresh_limits(on_done=getattr(pad, "add_catalogue_rows", None))
         # Built now, shown once the agreement (if one was just asked for) has
         # finished handing focus back: the pad reads the selection as it is at
         # the moment the command ran, not at the next idle cycle.

@@ -48,9 +48,11 @@ be one of :data:`LANGUAGES`.
 from __future__ import annotations
 
 __all__ = [
+    "CATALOGUE",
     "DEFERRED_FEATURES",
     "FEATURES",
     "FEATURE_LABELS",
+    "INPUT_KINDS",
     "LANGUAGES",
     "LONG_ANSWER_FEATURES",
     "REASONING_EFFORT",
@@ -285,6 +287,135 @@ FEATURE_LABELS: dict[str, str] = {
     "translate": "Translate",
 }
 
+#: The kinds of input a catalogue entry may ask the client for (``GET
+#: /v1/config``'s ``features``). A client offers a feature only when it knows
+#: the kind and skips the rest, so a new kind never breaks an older client:
+#:
+#: - ``selection``: a passage from the document -- the selection, else the
+#:   paragraph, else the section -- sent as ``prompt``. The shape of Summarize.
+#: - ``prompt``: only what the person types; nothing from the document.
+#: - ``document``: a typed question sent as ``prompt``, with excerpts from the
+#:   document picked to answer it sent as ``chunks`` (the template's
+#:   ``{context}``). The shape of document Q&A.
+#: - ``conversation``: a conversation window of its own. Only ``chat``.
+INPUT_KINDS: tuple[str, ...] = ("selection", "prompt", "document", "conversation")
+
+#: What the client is told about each shipped feature (``GET /v1/config``,
+#: ``features``), so a new text tool -- a template here, an id in
+#: :data:`SHIPPED_FEATURES` and an entry here -- reaches every installed copy
+#: with no client release. ``label`` is the row a person arrives on, ``help``
+#: is the one sentence F1 reads for it, ``input`` is what it works on
+#: (:data:`INPUT_KINDS`). Written for the person using QUILL, not for an operator; the
+#: console's words are :data:`FEATURE_LABELS`.
+#:
+#: The client shows only entries it does not already have built in, and it
+#: validates every field (it is remote input), so wording here is the only
+#: thing that reaches a screen -- never markup, never an instruction to a model.
+CATALOGUE: dict[str, dict[str, str]] = {
+    "summarize": {
+        "label": "Summarize",
+        "help": "A few plain sentences saying what this passage says.",
+        "input": "selection",
+    },
+    "rewrite": {
+        "label": "Rewrite",
+        "help": "The same meaning, clearer and shorter.",
+        "input": "selection",
+    },
+    "proofread": {
+        "label": "Proofread",
+        "help": "Spelling, grammar and punctuation corrected, wording left alone.",
+        "input": "selection",
+    },
+    "explain": {
+        "label": "Explain",
+        "help": "What this passage means, in plain language.",
+        "input": "selection",
+    },
+    "shorten": {
+        "label": "Shorten",
+        "help": "The same passage at about half the length, every important fact kept.",
+        "input": "selection",
+    },
+    "simplify": {
+        "label": "Simplify",
+        "help": (
+            "Plain language that is easy to read: short sentences, everyday words, "
+            "and any technical term explained."
+        ),
+        "input": "selection",
+    },
+    "formal": {
+        "label": "Make more formal",
+        "help": "The same meaning in a professional tone, for work or official letters.",
+        "input": "selection",
+    },
+    "friendly": {
+        "label": "Make friendlier",
+        "help": "The same meaning in a warmer tone, as if to someone you know.",
+        "input": "selection",
+    },
+    "make_list": {
+        "label": "Turn into a list",
+        "help": "A bulleted list, or numbered steps when the passage describes a process.",
+        "input": "selection",
+    },
+    "action_items": {
+        "label": "Find action items",
+        "help": (
+            "Every task, who does it, and every date or deadline the passage "
+            "mentions, one per line."
+        ),
+        "input": "selection",
+    },
+    "headings": {
+        "label": "Suggest headings",
+        "help": (
+            "Headings that would divide the passage into sections a screen reader "
+            "can jump between, and where each one goes."
+        ),
+        "input": "selection",
+    },
+    "continue": {
+        "label": "Continue writing",
+        "help": "A next paragraph in the same voice, to keep, change or throw away.",
+        "input": "selection",
+    },
+    "email_reply": {
+        "label": "Write an email reply",
+        "help": (
+            "Paste or select an email you received; you get a polite reply to edit, "
+            "with anything you must decide left in square brackets."
+        ),
+        "input": "selection",
+    },
+    "translate": {
+        "label": "Translate",
+        "help": "The passage in the language you choose, meaning and formatting kept.",
+        "input": "selection",
+    },
+    "document_qna": {
+        "label": "Ask a question about the document",
+        "help": (
+            "Type a question; QUILL finds the parts of the document that answer it "
+            "and sends only those."
+        ),
+        "input": "document",
+    },
+    "ask": {
+        "label": "Ask a general question",
+        "help": "Type any question. Only your question is sent -- nothing from your document.",
+        "input": "prompt",
+    },
+    "chat": {
+        "label": "Have a conversation",
+        "help": (
+            "Talk back and forth in a window of its own; each reply remembers what was said before."
+        ),
+        "input": "conversation",
+    },
+}
+
 #: How hard the model may think, per feature. Code, not config — see the module
 #: docstring. ``none`` is the floor and the default; ``document_qna`` is the one
 #: feature with genuine synthesis to do, and even it should be measured against
@@ -361,7 +492,10 @@ def build_prompt(
     (``app/routes/chat.py``) validates ``feature`` against :data:`FEATURES`
     before ever reaching here, and validates *history* as well."""
     template = TEMPLATES[feature]
-    if feature == "document_qna":
+    # Any template with a {context} slot takes the excerpts there -- document
+    # Q&A today, and any catalogue feature whose input is "document" tomorrow,
+    # with no change to this function.
+    if "{context}" in template:
         context = "\n\n---\n\n".join(chunks or [])
         return template.format(context=context, prompt=prompt)
     if feature == "chat":

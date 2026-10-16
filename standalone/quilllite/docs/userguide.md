@@ -5429,6 +5429,13 @@ A few things worth knowing about the choices:
 - Any of the seventeen can be switched off on QUILL's service from time to
   time. If the one you chose is off, the pad tells you when you press Send,
   and nothing is used.
+- QUILL's free service can add a tool without a new version of QUILL Lite. A
+  tool it offers that your copy does not have built in appears at the end of
+  the list, after **Have a conversation**. Press `F1` on it to hear what it
+  does; **Send** runs it like any other choice, and it uses one request. The
+  first time you open the pad, a new tool can take a moment to appear. These
+  tools are offered only on QUILL's free service, not with your own API key or
+  your ChatGPT plan.
 
 #### What comes back, and what you can do with it
 
