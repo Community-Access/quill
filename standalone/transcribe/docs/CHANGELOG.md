@@ -22,6 +22,45 @@ file is the itemized list.
   after the words. With the read-back on, you still hear everything.
 - Saying the same phrase twice writes it twice. It was taken for the screen
   reader's echo and dropped.
+- **One microphone across the family.** QUILL, QUILL Lite, QUILL Transcribe and
+  Quill Inkwell share one microphone lock, held only while one of them is
+  dictating, QUILL's Locked Dictation (Ctrl+F9) included. Your start and stop
+  key while an editor dictates names it and the key that stops it: "QUILL Lite
+  is dictating. Press Ctrl+F11 in QUILL Lite to stop it, then try again."
+  Ctrl+F11 in an editor while QUILL Transcribe listens opens no second
+  microphone and names your key: "QUILL Transcribe is listening. Press
+  Alt+Shift+Backslash to stop it, then try again." Waiting in the tray holds
+  nothing, so the editors dictate as usual.
+- **QUILL Lite's window is refused like QUILL's.** QUILL Transcribe no longer
+  types into QUILL Lite; it says "This is a QUILL window: press Ctrl+F11 to
+  dictate here."
+- **The editors' dictation keys.** In the QUILL Transcribe window, Ctrl+F11
+  starts and stops, Alt+Shift+F6 opens Dictation Settings and Shift+F5
+  transcribes a recording, as in QUILL and QUILL Lite. Ctrl+D, Ctrl+, and
+  Ctrl+O still work. Two commands are new here, on the editors' keys: **My
+  Words and Phrases** (Alt+Shift+F10) and **Switch Dictation Language**
+  (Ctrl+Shift+F11), both in the Dictation menu.
+- **Recent Phrases** (Shift+F11, as in the editors): the last 20 phrases of this
+  run, newest first. Insert Again types one into the program you go back to,
+  with the same checks as dictation; Copy puts it on the clipboard. Memory
+  only: nothing is saved to disk yet.
+- **Snippets, abbreviations and clips by voice, in any program.** "insert
+  snippet" and its name, "insert abbreviation" and its name, and "paste clip"
+  and a number are typed as one phrase, and "scratch that" takes all of it
+  back. A snippet's blanks are typed as [name], with no questions, and the
+  cursor stays at the end.
+- **What can I say lists what works here.** Said while dictating, it answers
+  in a sentence instead of opening a window, so dictation is not paused. The
+  Dictation Commands window lists only what works in other programs, and your
+  own words and phrases.
+- **A tick while a phrase is worked on.** With a large model there can be
+  seconds between your pause and the text. When a phrase takes more than a
+  second, a soft tick plays once a second until it arrives; the first time in a
+  session that one takes four seconds, you hear "Still working on that phrase."
+  On by default in QUILL Transcribe; turn it off in More Dictation Settings,
+  **Tick while a phrase is being worked on**. With **What you hear after each
+  phrase** set to words only there is no tick, only the sentence; set to
+  nothing, there is neither.
 - **Runs on Python 3.14, and older runtimes are cleaned up.** The shared QuillVille
   runtime this build installs is Python 3.14. The installer then removes older
   runtimes (Python 3.13) that no installed QuillVille app uses any more; one that

@@ -110,6 +110,26 @@ class QuillLiteShell(wx.MDIParentFrame):
         # so the bug cures itself for the rest of the session once a listener
         # switches documents once. QUILL learned the same thing at #170.
         self.Bind(wx.EVT_ACTIVATE, self._on_activate)
+        self._claim_own_dictation()
+
+    def _claim_own_dictation(self) -> None:
+        """Mark this window as one that dictates and expands for itself.
+
+        The same window property QUILL's main frame sets
+        (``main_frame_abbreviations._claim_own_expansion``). QUILL Transcribe and
+        Quill Inkwell read it before typing, and refuse here with "This is a
+        QUILL window: press Ctrl+F11 to dictate here." -- because Ctrl+F11
+        already dictates into this document, and two programs typing the same
+        words is the thing to prevent. Inkwell's abbreviations keep out too,
+        since QUILL Lite expands its own (lite_window_typing.py). Only the
+        shell: it is the one top-level window, and every document is inside it.
+        """
+        try:
+            from quill.platform.windows.text_target import claim_own_expansion
+
+            claim_own_expansion(int(self.GetHandle()))
+        except Exception:  # noqa: BLE001 - not Windows, or no native handle yet
+            pass
 
     def _on_activate(self, event: wx.ActivateEvent) -> None:
         """Coming back to QUILL Lite puts focus in the document.

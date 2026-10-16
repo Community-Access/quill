@@ -4,6 +4,15 @@
 
 - **Where Quill Inkwell's own sounds play, and Alt+Shift+M to turn them off.** **Options > Preferences > App Sounds Play On...** offers System default, None (no sounds), or any sound card or headset by name. After a change one sound plays on the new card, so you hear where it went. If that card is unplugged the sounds play on the system default until it is back, and Quill Inkwell says so once. **Alt+Shift+M** turns Quill Inkwell's sounds off and back on where they were, and **Options > App Sounds** shows a check mark while they are on. Each QUILL app keeps its own choice; "Share these choices with my other Quill apps" keeps them in step. Your screen reader is never moved. Asked for on QUILLVille by Rick Lewis.
 
+- **Dictate Anywhere: one microphone, and your library by voice** (2026-10-13).
+  Inkwell takes the family's one microphone lock while it listens, so it never
+  dictates at the same time as QUILL, QUILL Lite or QUILL Transcribe, and it
+  says which one is when it cannot start. "insert snippet", "insert
+  abbreviation" and "paste clip" now work in other programs, typed as one
+  phrase that "scratch that" takes back whole (blanks are typed as [name], and
+  the cursor stays at the end). Its Dictation Commands list shows only what
+  works in other programs.
+
 - **Two downloads, nothing else** (2026-10-11). Quill Inkwell now comes as the
   installer and the portable zip. The small Lite installer and the Companion
   zip are gone. If you used the Lite installer, take the installer; if you

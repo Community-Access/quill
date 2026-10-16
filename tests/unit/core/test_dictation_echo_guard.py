@@ -127,7 +127,7 @@ def test_with_the_reader_captured_the_same_words_are_always_written(monkeypatch)
     clock = _Clock()
     gate = ReaderGate(clock)
     gate.readers.add("nvda.exe")
-    monkeypatch.setattr("quill.core.windows_dictation.controller.started_gate", lambda: gate)
+    monkeypatch.setattr("quill.core.windows_dictation.microphone_owner.started_gate", lambda: gate)
     controller, recognizer, document, _feedback = _controller()
     recognizer.hears_reader = False  # a built-in model: its audio is gated
     controller._clock = clock

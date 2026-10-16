@@ -14,6 +14,12 @@ commands *do* is here once, so a fix to one editor's dictation is a fix to both
 -- and if the QUILL adapter ever grows a command of its own, the capability has
 forked.
 
+**One microphone in the whole family** (D-11): the controller holds
+:class:`~quill.core.dictation_owner.MicrophoneLock` while it listens, so Ctrl+F11
+is refused, with the name of the program listening, while QUILL Transcribe, the
+other editor or Quill Inkwell has the microphone; and they are refused while
+this editor has it.
+
 **One controller in the whole app**, because there is one microphone. It writes
 into the document it was last pointed at (where the key was pressed, or the one
 in front when the wake phrase was heard), and the key that starts dictation
@@ -63,6 +69,7 @@ DICTATION_CUES: dict[Moment, str] = {
     Moment.PHRASE: SoundEvent.WINDOWS_DICTATION_PHRASE,
     Moment.OFF: SoundEvent.WINDOWS_DICTATION_OFF,
     Moment.ERROR: SoundEvent.WINDOWS_DICTATION_ERROR,
+    Moment.WORKING: SoundEvent.WINDOWS_DICTATION_WORKING,
 }
 
 #: The one controller, the host window it writes into, and the top-level
@@ -114,6 +121,11 @@ class WindowsDictationMixin(
 
     def _dictation_settings(self) -> Any:
         return self.app.settings
+
+    def _dictation_app(self) -> str:
+        """Who holds the microphone while this editor dictates, as another
+        program's refusal names it (quill.core.dictation_owner.APP_NAMES)."""
+        return "lite"
 
     def _dictation_enabled(self) -> bool:
         """Whether dictation exists in this copy -- QUILL Lite's Customize
@@ -378,11 +390,19 @@ class WindowsDictationMixin(
     def _dictation_controller(self) -> DictationController:
         global _controller
         if _controller is None:
+            from quill.core.dictation_owner import MicrophoneLock
+
             _controller = DictationController(
                 recognizer=_make_recognizer,
                 document=_EditorDocument(self, self._dictation_control()),
                 feedback=_HostFeedback(self),
                 preferences=lambda: (_host or self)._dictation_preferences(),
+                # One microphone in the family (D-11): refused, by name, while
+                # QUILL Transcribe or the other editor is listening.
+                microphone=MicrophoneLock(
+                    self._dictation_app(),
+                    key=lambda: (_host or self)._dictation_toggle_chord(),
+                ),
             )
             _controller.on_wake = lambda: self._dictation_target(
                 (_host or self)._dictation_current_host()

@@ -12,6 +12,9 @@ the choices nobody needs on the first day:
 * **While you speak, the words heard so far**: the live preview of a streaming
   engine (Nemotron, OpenAI) in the status bar and on a braille display, said
   quietly as well, or not at all.
+* **Tick while a phrase is being worked on** (off in the editors, on in QUILL
+  Transcribe): a soft tick while a heard phrase is still being recognised
+  (``quill/core/windows_dictation/working_tick.py``).
 * **Talking to the AI**: the AI Conversation window's own profile -- send at
   the pause or wait for Enter, its own pause length, fillers and punctuation.
 * **OpenAI**: whether your speech may be sent (the agreement, which can be
@@ -119,6 +122,17 @@ class MoreDictationDialog(wx.Dialog):
             "braille display always show the real marks. On by default."
         )
         root.Add(self.readback_marks, 0, wx.ALL, _PAD)
+
+        self.working_tick = wx.CheckBox(self, label="Tick while a phrase is being wo&rked on")
+        self.working_tick.SetValue(bool(value("windows_dictation_working_tick", False)))
+        self.working_tick.SetHelpText(
+            "When a phrase takes more than a second to turn into text after you pause, "
+            "play a soft tick every second until it arrives. The first time a phrase "
+            "takes four seconds, dictation also says Still working on that phrase. "
+            "While a tick plays the microphone is not listened to, as with every QUILL "
+            "sound. Off by default in QUILL and QUILL Lite, on in QUILL Transcribe."
+        )
+        root.Add(self.working_tick, 0, wx.ALL, _PAD)
 
         self.timestamps = wx.CheckBox(self, label="&Time stamps in live transcripts")
         self.timestamps.SetValue(bool(value("windows_dictation_transcript_timestamps", False)))
@@ -315,4 +329,5 @@ class MoreDictationDialog(wx.Dialog):
             "windows_dictation_openai_model": model,
             "windows_dictation_readback_marks": self.readback_marks.GetValue(),
             "windows_dictation_transcript_timestamps": self.timestamps.GetValue(),
+            "windows_dictation_working_tick": self.working_tick.GetValue(),
         }

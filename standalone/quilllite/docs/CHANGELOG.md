@@ -26,6 +26,21 @@ uploaded for testing. The new packages have not been published yet.
   reader's echo and dropped.
 - **The phrase-written sound is a soft tone.** The old one started so sharply
   that it was heard as a spoken "c".
+- **One microphone at a time.** Ctrl+F11 while QUILL Transcribe is listening no
+  longer opens a second microphone, so nothing is written twice; you hear the
+  program and its key, for example "QUILL Transcribe is listening. Press
+  Alt+Shift+Backslash to stop it, then try again." QUILL Transcribe and QUILL
+  say the same about QUILL Lite while it dictates, naming your Ctrl+F11.
+- **QUILL Transcribe and Quill Inkwell keep out of QUILL Lite's window**, as
+  they always did of QUILL's: their key there says "This is a QUILL window:
+  press Ctrl+F11 to dictate here." Inkwell's abbreviations keep out too, since
+  QUILL Lite expands its own.
+- **Tick while a phrase is being worked on** (More Dictation Settings, Alt+R,
+  off unless you check it): a soft tick once a second while a phrase takes more
+  than a second to turn into text, and "Still working on that phrase." the
+  first time in a session one takes four seconds. With "After each phrase is
+  written, give me" set to words only there is no tick, just the sentence; set
+  to nothing, there is neither. QUILL has it too.
 
 Carried over from build 3:
 

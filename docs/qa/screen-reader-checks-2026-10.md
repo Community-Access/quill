@@ -935,3 +935,16 @@ from that date or later.
 - [ ] In the own-key dialog, the provider choice offers Google Gemini beside
   OpenAI, and the help under it says a Gemini key also works with Ask About
   an Image.
+
+### Dictation: a slow phrase, then its read-back (2026-10-13)
+
+With a large model and **Tick while a phrase is being worked on** checked, say
+a long phrase and wait. Check on NVDA, JAWS and Narrator:
+
+- [ ] NVDA: after four seconds you hear "Still working on that phrase."; when the
+  text arrives, its read-back cuts that sentence short rather than waiting
+  behind it, and nothing the screen reader was saying of its own is cancelled.
+- [ ] JAWS: the same.
+- [ ] Narrator: the same.
+- [ ] With **What you hear after each phrase** set to words only: no tick, and
+  the sentence at four seconds, on each slow phrase.

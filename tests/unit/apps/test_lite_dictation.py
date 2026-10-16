@@ -545,3 +545,36 @@ def test_the_status_cell_says_paused_while_the_microphone_is_gone(
     assert win.dictation_active()  # the menu mark stays on
     made[0].controller.on_microphone_back()
     assert win.dictation_state_text() == "Dictation: listening"
+
+
+def test_the_working_tick_plays_in_quill_lite_when_switched_on(
+    lite_window, recognizers, focused, monkeypatch
+) -> None:
+    """D-17 through the shared code: off by default, and when chosen, the
+    window's own cue after a second of waiting for a phrase."""
+    from quill.ui.windows_dictation_ports import HostFeedback
+
+    later: list[Any] = []
+
+    class _Handle:
+        def Stop(self) -> None:  # noqa: N802
+            pass
+
+    def call_later(_self: Any, seconds: float, callback: Any) -> _Handle:
+        later.append(callback)
+        return _Handle()
+
+    monkeypatch.setattr(HostFeedback, "call_later", call_later)
+    made, _ = recognizers
+    win = _window(lite_window, focused)
+    assert win.app.settings.windows_dictation_working_tick is False
+    win.app.settings.windows_dictation_working_tick = True
+    win.cmd_toggle_dictation()
+    controller = made[0].controller
+    controller.on_speech_started()
+    controller.on_phrase_decoding()
+    assert later, "the tick's first wait was not scheduled"
+    later.pop(0)()
+    assert SoundEvent.WINDOWS_DICTATION_WORKING in win.cues
+    made[0].hear("there it is")
+    assert win.control.GetValue() == "There it is"

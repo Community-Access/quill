@@ -38,6 +38,7 @@ from quill.apps.transcribe_dictation import TranscribeDictationMixin
 from quill.apps.transcribe_files import TranscribeFilesMixin
 from quill.apps.transcribe_keys import TranscribeKeysMixin
 from quill.apps.transcribe_menus import build_menu_bar, build_tray_menu, start_stop_label
+from quill.apps.transcribe_recent import TranscribeRecentMixin
 from quill.core.app_version import describe_version, installed_version
 from quill.core.net import configure_ssl_trust
 from quill.core.support_message import SUPPORT_EMAIL
@@ -64,6 +65,7 @@ class QuillTranscribeFrame(
     TranscribeKeysMixin,
     TranscribeCommandsMixin,
     TranscribeFilesMixin,
+    TranscribeRecentMixin,
 ):
     """The status window for a dictation service that lives in the tray."""
 
@@ -306,7 +308,9 @@ class QuillTranscribeFrame(
             return
         item = menu_bar.FindItemById(int(self._start_item_id))
         if item is not None:
-            item.SetItemLabel(f"{label}\tCtrl+D")
+            from quill.core.transcribe.parity import chord
+
+            item.SetItemLabel(f"{label}\t{chord('tools.windows_dictation_toggle')}")
         for item_id in (self._resume_item_id, self._here_item_id, self._discard_item_id):
             found = menu_bar.FindItemById(int(item_id))
             if found is not None:

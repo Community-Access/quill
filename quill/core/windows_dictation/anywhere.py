@@ -40,9 +40,11 @@ from quill.core.windows_dictation.vocabulary import Command
 __all__ = [
     "EXTERNAL_COMMANDS",
     "HANDOFF_FILE",
+    "SPOKEN_SUMMARY_COMMANDS",
     "dictation_fields",
     "external_refusal",
     "settings_from",
+    "spoken_summary",
     "stored_from",
     "take_handoff",
     "write_handoff",
@@ -68,10 +70,36 @@ EXTERNAL_COMMANDS = frozenset({
     Command.NO_SPACE_OFF,
     Command.SWITCH_SPANISH,
     Command.SWITCH_ENGLISH,
+    # D-8 slice (2026-10-13): they only insert, and never read the target.
+    # The text is typed as one phrase; "scratch that" takes all of it back
+    # (quill/ui/windows_dictation_anywhere_library.py).
+    Command.INSERT_SNIPPET,
+    Command.EXPAND,
+    Command.PASTE_SLOT,
 })
 
 #: A read-back of a tone, for a mode where the screen reader echoes the typing.
 _ANYWHERE_DEFAULTS: dict[str, Any] = {"windows_dictation_phrase_feedback": "sound"}
+
+
+#: "what can I say" while dictating into another program (D-7): the five most
+#: useful things, said, rather than a window that takes the focus and so
+#: pauses dictation. Each is a phrase that works there (EXTERNAL_COMMANDS).
+SPOKEN_SUMMARY_COMMANDS: tuple[str, ...] = (
+    "scratch that",
+    "new line",
+    "start spelling",
+    "insert snippet and its name",
+    "stop dictation",
+)
+
+
+def spoken_summary(full_list: str) -> str:
+    """The short answer to "what can I say" in another program. *full_list*
+    says where the whole list is, as the host can open it now."""
+    first, last = SPOKEN_SUMMARY_COMMANDS[:-1], SPOKEN_SUMMARY_COMMANDS[-1]
+    said = f"In another program, you can say {', '.join(first)}, or {last}."
+    return f"{said} {full_list}".strip()
 
 
 def external_refusal() -> str:

@@ -77,6 +77,10 @@ class LiveMixin:
     def _abandon(self, message: str) -> None:  # provided by the controller
         raise NotImplementedError
 
+    if TYPE_CHECKING:  # working_tick.py, later in the MRO: no stub to shadow it
+
+        def _working_done(self) -> None: ...
+
     def _init_live(self, clock: Callable[[], float] = time.monotonic) -> None:
         self._clock = clock
         self._throttle = PreviewThrottle()
@@ -121,6 +125,7 @@ class LiveMixin:
 
     def _receive(self, phrase: RecognizedPhrase) -> bool:
         """``False`` when the phrase is to be dropped (the microphone is muted)."""
+        self._working_done()  # working_tick.py: the text arrived, so no more ticks
         self._clear_preview()
         if self._muted():
             return False

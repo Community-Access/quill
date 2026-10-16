@@ -93,6 +93,9 @@ class DictationPreferences:
     readback_marks: bool = True
     #: Live transcripts start each paragraph with the time, "[10:42]".
     transcript_timestamps: bool = False
+    #: A soft tick while a heard phrase takes more than a second to recognise
+    #: (working_tick.py). Off in the editors, on in QUILL Transcribe.
+    working_tick: bool = False
     #: What this document is -- "a formal letter", "notes to a friend" -- for
     #: OpenAI's prompt (contexts.py, dict.md 3.8). Empty for none.
     context: str = field(default="", compare=False)
@@ -231,5 +234,6 @@ class DictationPreferences:
             transcript_timestamps=bool(
                 getattr(settings, "windows_dictation_transcript_timestamps", False)
             ),
+            working_tick=bool(getattr(settings, "windows_dictation_working_tick", False)),
             rewrite=rewrite,
         )

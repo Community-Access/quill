@@ -4399,12 +4399,33 @@ writes it, and then stops.</p>
 <td>a low double tone</td>
 <td>what happened, and what to do</td>
 </tr>
+<tr>
+<td>A phrase takes more than a second (only if you turn it on)</td>
+<td>a soft tick once a second</td>
+<td>“Still working on that phrase”, once a session, after four
+seconds</td>
+</tr>
 </tbody>
 </table>
 <p>You can change any of these in <strong>Dictation Settings</strong>,
 and you can change or silence any tone in <strong>Tools &gt; Sound
 Scheme</strong>. Two things always speak, though: a problem, and the
 answer to a command you gave.</p>
+<p><strong>The tick while a phrase is worked on.</strong> With a large
+model there can be a few seconds between your pause and the text. Check
+<strong>Tick while a phrase is being worked on</strong>
+(<strong>Alt+R</strong>) in <strong>More Dictation Settings</strong> and
+a soft tick plays once a second while you wait, from the first second
+until the text arrives or recognition fails. The first time in a session
+that a phrase takes four seconds, you also hear “Still working on that
+phrase.” While a tick plays, the microphone is not listened to for a
+moment, as with every QUILL Lite sound, so the tick is never written as
+speech. If your sound scheme has no tick sound, you hear the sentence at
+four seconds instead, each time. “After each phrase is written, give me”
+decides it too: set to nothing, there is no tick and no sentence; set to
+words only, there is no tick, and the sentence is said each time a
+phrase takes four seconds. It starts unchecked in QUILL Lite and QUILL,
+and checked in QUILL Transcribe.</p>
 <p>The soft tone plays only once your words are really in the document,
 so when you hear it, you know they arrived. If you have the words read
 back, they come a quarter of a second after they are written, so your
@@ -5337,6 +5358,12 @@ hear what went in</td>
 <td>Checked</td>
 </tr>
 <tr>
+<td>Tick while a phrase is being worked on (Alt+R)</td>
+<td>A soft tick once a second while a phrase takes more than a second to
+turn into text</td>
+<td>Unchecked (checked in QUILL Transcribe)</td>
+</tr>
+<tr>
 <td>Time stamps in live transcripts (Alt+T)</td>
 <td>Each new paragraph of a live transcript starts with the time, like
 [10:42]</td>
@@ -6198,16 +6225,24 @@ does not</h4>
 <p>The engines, your own words and phrases, and most of what you can say
 all work the same way they do in QUILL Lite:</p>
 <ul>
-<li>Punctuation and layout, like “comma” and “new paragraph”.</li>
-<li>Spelling, “spell” and a word, capitals and no-space.</li>
-<li>Switching between English and Spanish.</li>
-<li>“Scratch that”, which takes your last phrase back with Backspace, as
-long as you are still in the same window.</li>
+<li><p>Punctuation and layout, like “comma” and “new
+paragraph”.</p></li>
+<li><p>Spelling, “spell” and a word, capitals and no-space.</p></li>
+<li><p>Switching between English and Spanish.</p></li>
+<li><p>“Scratch that”, which takes your last phrase back with Backspace,
+as long as you are still in the same window.</p></li>
+<li><p>Snippets, abbreviations and clips, from the lists QUILL and
+Inkwell share (QUILL’s snippets, the shared abbreviation library, and
+QUILL’s clips): “insert snippet” and its name, “insert abbreviation” and
+its name, and “paste clip” and a number. They are typed as one phrase,
+so “scratch that” takes all of it back. A snippet’s blanks are typed as
+[name], with no questions, and the cursor stays at the end.</p></li>
 </ul>
 <p>Some commands need to read the text of the document, and Inkwell
 cannot read another program’s text. So “select”, “go to”, “correct”,
-“select sentence”, clips and snippets are answered with a sentence that
-starts “That works in QUILL’s own documents”, and nothing is typed.</p>
+“select sentence”, “copy all” and “show clips” are answered with a
+sentence that starts “That works in QUILL’s own documents”, and nothing
+is typed.</p>
 <p>For your safety, Dictate Anywhere will not type into a password box.
 It also will not type into a program running as administrator when
 Inkwell is not, into QUILL Lite’s or QUILL’s own windows (use
@@ -6228,6 +6263,28 @@ more.</p>
 full QUILL editor keeps, so if you also use QUILL, a name you taught it
 there comes out right in your email too. Dictate Anywhere is off in Safe
 Mode.</p>
+<h4 id="one-microphone-at-a-time">One microphone at a time</h4>
+<p>QUILL Lite, QUILL, QUILL Transcribe and Quill Inkwell never listen at
+once, so the same words are never written twice. The microphone belongs
+to whichever started dictating first, until it stops.</p>
+<ul>
+<li>If QUILL Transcribe is listening when you press
+<strong>Ctrl+F11</strong>, QUILL Lite does not open a second microphone.
+You hear its key, for example “QUILL Transcribe is listening. Press
+Alt+Shift+Backslash to stop it, then try again.”</li>
+<li>If QUILL is dictating, you hear “QUILL is dictating. Press Ctrl+F11
+in QUILL to stop it, then try again.”</li>
+<li>If you press QUILL Transcribe’s key while QUILL Lite is dictating,
+QUILL Transcribe says “QUILL Lite is dictating. Press Ctrl+F11 in QUILL
+Lite to stop it, then try again.”</li>
+</ul>
+<p>QUILL Transcribe waiting in the tray does not hold the microphone, so
+<strong>Ctrl+F11</strong> works as usual. The microphone is let go when
+dictation stops, when it stops because something went wrong, when you
+close QUILL Lite, and if QUILL Lite ever closes unexpectedly.</p>
+<p>QUILL Transcribe and Quill Inkwell do not type into QUILL Lite’s
+window. If you press their key there, you hear “This is a QUILL window:
+press Ctrl+F11 to dictate here.”</p>
 <h3 id="transcribing-an-audio-file">Transcribing an audio file</h3>
 <p>Sometimes the words you want are already in a recording: a voice note
 from your phone, an interview, a lecture, a meeting somebody recorded

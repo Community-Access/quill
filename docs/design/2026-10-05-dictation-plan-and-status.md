@@ -536,6 +536,211 @@ in for them.
 | Dictate Anywhere reads only what it typed itself, so select and correct stay inside QUILL; reading another program's text would need UI Automation text patterns per program | A decision whether it is worth it |
 | Inkwell keeps its own copy of the dictation settings, refreshed only when an editor hands them over | A shared settings store across the family, if one is ever wanted |
 
+## 14. As built, 2026-10-13: one microphone, the same keys, the working tick, and three slices
+
+Items of the October follow-up plan Jeff approved, numbered there D-11, D-14
+and D-17, then slices of D-5, D-7 and D-8, and an accessibility review's changes
+to the sentences and the tick. Each is in shared code; QUILL and QUILL Lite get the same thing
+through the one implementation they both run.
+
+### D-11. One microphone owner across QUILL, QUILL Lite and QUILL Transcribe
+
+**What the plan assumed, and what was true.** The plan said `dictation_owner.py`
+arbitrated between QUILL Transcribe and Inkwell only, that the editors' Ctrl+F11
+never consulted it, and that only QUILL's main frame claimed its window. All
+three were true. The plan's remedy, that the editors take the same owner lock
+while they dictate, would not have worked: QUILL Transcribe holds the owner lock
+for as long as it runs, so the editors could never have dictated while it sat
+in the tray.
+
+**What was built.** A second lock of the same kind, `MicrophoneLock`, in
+`quill/core/dictation_owner.py`: an operating-system file lock in the family's
+data folder, held by whichever of QUILL, QUILL Lite, QUILL Transcribe and Inkwell
+has the microphone open, for exactly as long as it is open. The controller takes
+it in `_open`, before the recogniser starts, and lets go in `_close_recognizer`,
+which every path out of a session goes through (stop, an error, the one silent
+restart, a language switch, the window closing, `shut_down`); the kernel lets go
+when the program exits. The gate is a constructor argument, so a controller in a
+test has none (`quill/core/windows_dictation/microphone_owner.py`). Opening for
+the wake phrase is refused silently, because nobody asked for anything.
+
+The sentences (`busy_sentence`) name the program and the key that stops it, as
+that program has it bound: each holder writes its live key into the lock's note
+when it takes the lock (the editors' Ctrl+F11 binding, QUILL Transcribe's saved
+start and stop key, Locked Dictation's Ctrl+F9), spelled as the guides spell
+keys (`spoken_key`: the backslash key is "Backslash"). Every sentence ends
+"then try again":
+
+- "QUILL Lite is dictating. Press Ctrl+F11 in QUILL Lite to stop it, then try
+  again." (and "QUILL is dictating. Press Ctrl+F11 in QUILL ...")
+- "QUILL Lite is dictating in another window. Press Ctrl+F11 there to stop it,
+  then try again." (a second copy of the same app)
+- "QUILL is already dictating. Press Ctrl+F9 to stop it, then try again." (the
+  same process: Locked Dictation and Ctrl+F11)
+- "QUILL Transcribe is listening. Press Alt+Shift+Backslash to stop it, then try
+  again.", or with no key chosen, "QUILL Transcribe is listening. Stop it from its
+  tray icon, then try again."
+- "Quill Inkwell is dictating. Stop it there, then try again." and "Another
+  program is dictating. Stop it there, then try again." (no key to name). QUILL
+  Transcribe's own refusal while Inkwell dictates is the same sentence.
+
+QUILL Lite's MDI shell now calls `claim_own_expansion`, so QUILL Transcribe
+and Inkwell refuse it with "This is a QUILL window: press Ctrl+F11 to dictate
+here." (and Inkwell's abbreviations keep out of a window that expands its own).
+Cast and Radio are not claimed. The suite gives every test its own lock folder
+(`tests/conftest.py`, `_family_locks_of_its_own`), or parallel workers would
+refuse each other.
+
+Tests: `tests/unit/core/test_dictation_microphone_and_tick.py` (two controllers,
+one recogniser; every sentence; release on stop, error, failed start and shut
+down) and `tests/unit/apps/test_transcribe_app.py` (a real QUILL Lite window and
+QUILL Transcribe meeting the one lock, both ways round).
+
+**Locked Dictation too.** QUILL's Locked Dictation and Hold to Dictate
+(`quill/core/speech/dictation/controller.py`, F9 and Ctrl+F9) record first and
+transcribe afterwards. They take the same `MicrophoneLock("quill")` before
+capture starts and let go the moment capture ends (stopped, discarded, failed
+to start, a failed session), so the lock is never held through transcription;
+the frame's destroy event lets go too (`main_frame_dictation_hotkeys.py`). A
+refusal goes through the services' `microphone_busy`, which plays the error tone
+and says the sentence. Tests: `tests/unit/core/test_locked_dictation_microphone.py`.
+
+### D-14. The same dictation keys in QUILL Transcribe, and a parity gate
+
+**What was true.** As the plan said: Ctrl+D and Ctrl+, against Ctrl+F11 and
+Alt+Shift+F6, no Recent Phrases, My Words or language switch, and no row for any
+of it. The plan missed one: Transcribe a Recording is Shift+F5 in the editors and
+was Ctrl+O here.
+
+**What was built.** `quill/core/transcribe/parity.py`: `SHARED_COMMANDS` (the
+editor command and the method its chord runs here), `ALIASES` (the 1.0 keys,
+kept as second keys in the frame's accelerator table, rule 5) and `DIVERGENCES`
+(each editor dictation command QUILL Transcribe does not have, with its reason,
+rule 11). The menu reads the chords from `DEFAULT_KEYMAP`: Ctrl+F11,
+Alt+Shift+F6, Alt+Shift+F10 (My Words and Phrases, the editors' window over the
+same `dictation.md`), Ctrl+Shift+F11 (Switch Dictation Language, which also makes
+"switch to Spanish" work here) and Shift+F5. Live Transcript, Dictation Context,
+Dictation Status and Tidy Dictated Text are divergences. Recent Phrases was one,
+until the D-5 slice below put it on Shift+F11. `PREFERENCES_OFF` names the two shared settings QUILL
+Transcribe always runs off (the wake phrase, hold to talk), with reasons.
+
+Tests: `tests/unit/ui/test_transcribe_dictation_parity.py` builds the real menu:
+every editor dictation command is shared or a divergence; the menu shows the
+editors' chord; no key is claimed twice, the 1.0 keys included; the settings are
+the editors' fields with only `PREFERENCES_OFF` differing; every command in
+`EXTERNAL_COMMANDS` is in "What can I say" (now the external list, D-7).
+
+### D-17. A soft tick while a phrase is still being worked on
+
+**What was true.** The cues were on, phrase, off and error. There was no
+end-of-speech event to time from: the worker posts `on_speech_started` and then
+`on_phrase`, and RECOGNIZING spans the whole time somebody talks, so timing from
+it would tick through a long sentence.
+
+**What was built.** The worker posts `on_phrase_decoding` when it hands a
+finished segment to the engine (`recognizer_worker.py`), and
+`quill/core/windows_dictation/working_tick.py` times from there: nothing for a
+second, a tick every second after that, and "Still working on that phrase."
+when a wait reaches four seconds (how often: see the review below). The text arriving
+(`_receive`), a failure, stopping or closing ends the wait and stops the pending
+callback. Timing is the host's `call_later` (`wx.CallLater`, one-shot, stopped
+when the wait ends; a late one for a finished wait does nothing). The setting is `windows_dictation_working_tick` in the shared
+`DictationSettings`, off in both editors, on in QUILL Transcribe through
+`TRANSCRIBE_DICTATION_DEFAULTS`; More Dictation Settings shows it as "Tick while
+a phrase is being worked on" (Alt+R). The clip, `windows_dictation_working.wav`,
+is generated with the other four and is the shortest (70 ms) and quietest of
+them. The screen-reader gate already captures QUILL's own process, so the tick
+is never heard as speech; the cost, said in the guides, is a moment each tick in
+which the microphone is not listened to.
+
+Tests: `tests/unit/core/test_dictation_microphone_and_tick.py` (no tick under a
+second, ticks after, the sentence once a session, stopped by the text, by a stop
+and by a failure, silence when off, speech when the pack has no clip),
+`test_dictation_streaming_worker.py` (decoding is posted before the text), and
+QUILL Lite's window ticking through the shared code (`test_lite_dictation.py`).
+
+**The accessibility review (same day).** *What you hear after each phrase*
+(`phrase_feedback`) is now the cap on the tick, because somebody who chose words
+only, or nothing, did not choose a sound once a second: `silent` (or the setting
+off) is no tick and no sentence; `speech` is no tick and the sentence at four
+seconds, once per wait; `sound` and `both` tick, with the sentence once a
+session. A pack without the clip falls through to words (`resolve`): the
+sentence at four seconds, once per wait, never a word a second. The sentence is
+only said from the timer callback while its wait is still open, so a phrase
+that arrives first means it is never said; and the read-back is spoken with
+interrupt in every host (QUILL's and Transcribe's `force=True`, QUILL Lite's
+`interrupt=True`), so it cuts a sentence said a moment before short rather than
+queuing behind it. The screen reader's own speech is never cancelled. A manual
+check is in `docs/qa/screen-reader-checks-2026-10.md`.
+
+### D-5 slice. Recent Phrases in QUILL Transcribe
+
+**What was built.** Shift+F11, the editors' chord, opens the editors' window
+through the editors' code, now one function both use
+(`quill/ui/windows_dictation_tools.open_recent_phrases`, with `copy_phrase` and
+`NOTHING_RECENT`). The list is the shared controller's `recent`: the last 20
+phrases of this run, newest first, in memory only. **Insert Again** types the
+phrase into the program the person goes back to (`quill/apps/transcribe_recent.py`):
+from QUILL Transcribe's own window it waits for another program to come forward,
+as starting dictation from the window does ("Switch to the field you want. The
+phrase is typed there."; "Cancelled; nothing was typed."; "No other program came
+forward, so nothing was typed."), then types through the shared external
+document's checked keystrokes inside a one-shot `LockedTarget`, so the target
+checks a dictated phrase gets apply. Success says nothing (the reader echoes the
+typing; the status line says "Typed: ..."); a refusal is spoken with the error
+tone; Windows taking only part of it says "Windows did not take all of that
+phrase, so part of it may be missing. Check the field." **Copy** says "Copied:"
+and the phrase. Not built: keeping the list on disk, the rest of D-5.
+
+Tests: `tests/unit/apps/test_transcribe_app.py` (empty list, newest first, typed
+into the program in front, waits from the window, refused in a password field,
+Copy) and the parity gate, which no longer has a Recent Phrases row.
+
+### D-8 slice. Snippets, abbreviations and clips by voice in any program
+
+**What was built.** `INSERT_SNIPPET`, `EXPAND` ("insert abbreviation") and
+`PASTE_SLOT` ("paste clip") joined `anywhere.EXTERNAL_COMMANDS`: they only
+insert and never read the target. QUILL Transcribe's and Inkwell's feedback
+ports now answer `library()` with `AnywhereLibrary`
+(`quill/ui/windows_dictation_anywhere_library.py`), which reads the family's
+own files: QUILL's snippet library, the shared abbreviation library and QUILL's
+copy-tray slots. The controller types the text through the external document as
+one phrase (`voice_commands._insert_text`), so "scratch that" takes all of it
+back. Blanks are written "[name]" with no prompts, and `${cursor}` is dropped
+(the cursor cannot be moved inside another program's text without reading it);
+both are said in the guides. "copy that", "copy all", "show clips" and "show
+snippets" stay refused. Not built: prompted fields, the rest of D-8.
+
+Tests: `tests/unit/core/test_dictation_external_list.py` (each command typed in
+a fake Notepad, "scratch that" erasing a whole snippet, reading commands still
+refused, the family library dropping the cursor and keeping blanks).
+
+### D-7. "What can I say" in QUILL Transcribe lists exactly what works there
+
+**What was true.** As the plan said: `show_dictation_commands` called
+`commands_reference()` with no arguments, so the list included commands refused
+in other programs and left out the person's own phrases, and the spoken "what
+can I say" opened a modal window, which took the focus and so paused dictation.
+
+**What was built.** `commands_reference(external=True)` lists only
+`EXTERNAL_COMMANDS` (now with the D-8 commands), drops the wake phrase and
+"spell that", and adds the two inserting limits; the editors' default list is
+unchanged. QUILL Transcribe's Dictation Commands window (Ctrl+Shift+C) passes
+`external=True`, the person's own phrases from `dictation.md`, the dash, the stop
+phrase and the language; Inkwell's window passes `external=True` too. Said while
+dictating, "what can I say" no longer opens anything: QUILL Transcribe says
+"In another program, you can say scratch that, new line, start spelling, insert
+snippet and its name, or stop dictation. For the full list, open Dictation
+Commands from the Dictation menu, Ctrl+Shift+C." The key is read from the menu
+item as it is now (`spoken_commands_summary`). No command word (D-1) is listed:
+it is not built.
+
+Tests: `tests/unit/core/test_dictation_external_list.py` (every listed phrase
+parses to a command allowed in another program; no refused command is listed;
+own phrases appear; the editors' list is still complete; the summary's five
+work there), and `test_transcribe_app.py` (the spoken answer opens nothing; the
+window's list carries the person's phrases).
+
 ## Appendix A: the dict.md section numbers, and where they live now
 
 | dict.md | What it was | Here |

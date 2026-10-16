@@ -321,6 +321,8 @@ def append_menu_item(host: Any, menu: Any, *, label: str = MENU_LABEL) -> Any:
 
     binder = getattr(host, "_menu_label", None)
     text = binder(label, COMMAND_ID) if callable(binder) else label
+    if not isinstance(text, str):  # a binder that knows no label for it
+        text = label
     if "\t" not in text:  # no key in this app's keymap: the family default
         text = f"{label}\t{_DEFAULT_KEY}"
     item_id = wx.NewIdRef()

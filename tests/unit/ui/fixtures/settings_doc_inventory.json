@@ -379,6 +379,7 @@
   "windows_dictation_transcript_told": "internal",
   "windows_dictation_wake_enabled": "documented",
   "windows_dictation_wake_phrase": "documented",
+  "windows_dictation_working_tick": "documented",
   "word_open_mode": "grandfathered",
   "wrap_find": "documented"
 }

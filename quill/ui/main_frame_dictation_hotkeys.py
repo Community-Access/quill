@@ -139,6 +139,12 @@ class _LiveDictationServices:
     def feedback(self, event: Any, session: Any) -> None:
         self._frame._dictation_feedback(event, session)
 
+    def microphone_busy(self, sentence: str) -> None:
+        """Another program has the family's microphone (D-11): say who."""
+        self._frame._play_speech_sound("windows_dictation_error")
+        self._frame._set_status(sentence)
+        self._frame._announce(sentence, force=True)
+
     def now(self) -> float:
         return time.time()
 
@@ -160,18 +166,39 @@ class DictationHotkeysMixin(WindowsDictationCommandsMixin):
 
     def _ensure_dictation_controller(self) -> Any:
         if self._live_dictation is None:
+            from quill.core.dictation_owner import MicrophoneLock
             from quill.core.speech.dictation import DictationController
 
             self._dictation_services = _LiveDictationServices(self)
             self._live_dictation = DictationController(
-                self._dictation_services, self._dictation_config()
+                self._dictation_services,
+                self._dictation_config(),
+                microphone=MicrophoneLock(  # one microphone in the family (D-11)
+                    "quill", key=lambda: self._binding_for("tools.dictation_lock_toggle") or ""
+                ),
             )
+            self._release_microphone_on_close(self._live_dictation)
         else:
             # Config is a cheap snapshot; rebuilding it on every access means a
             # Preferences change (spacing, fillers, vocabulary, language) takes
             # effect on the *next* dictation rather than the next restart.
             self._live_dictation.config = self._dictation_config()
         return self._live_dictation
+
+    def _release_microphone_on_close(self, controller: Any) -> None:
+        """The frame going away lets go of the microphone at once."""
+        frame = getattr(self, "frame", None)
+        try:
+            import wx
+
+            def on_destroy(event: Any) -> None:
+                event.Skip()
+                if event.GetEventObject() is frame:
+                    controller.release_microphone()
+
+            frame.Bind(wx.EVT_WINDOW_DESTROY, on_destroy)
+        except Exception:  # noqa: BLE001 - no frame (tests): the kernel lets go at exit
+            pass
 
     def _dictation_config(self) -> Any:
         """Build the controller policy from user Settings (PRD §10, §20)."""

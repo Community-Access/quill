@@ -32,7 +32,7 @@ __all__ = ["APP_ROSTERS", "QUILLLITE_EVENTS", "events_for", "is_editor_app"]
 
 #: Everything QUILL Lite posts. Small on purpose: it is a text editor, so it has
 #: no conversation mode and no radio, and rows for those would be rows that
-#: cannot fire. It does have Windows Dictation since 1.1 -- the four cues at the
+#: cannot fire. It does have Windows Dictation since 1.1 -- the five cues at the
 #: end of the set.
 QUILLLITE_EVENTS: frozenset[str] = frozenset({
     SoundEvent.APP_STARTED,
@@ -68,6 +68,7 @@ QUILLLITE_EVENTS: frozenset[str] = frozenset({
     SoundEvent.WINDOWS_DICTATION_PHRASE,
     SoundEvent.WINDOWS_DICTATION_OFF,
     SoundEvent.WINDOWS_DICTATION_ERROR,
+    SoundEvent.WINDOWS_DICTATION_WORKING,
 })
 
 # Not here, and each absence is a decision rather than an oversight: QUILL Lite

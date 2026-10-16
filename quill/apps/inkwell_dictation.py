@@ -41,6 +41,7 @@ _CUES = {
     "phrase": SoundEvent.WINDOWS_DICTATION_PHRASE,
     "off": SoundEvent.WINDOWS_DICTATION_OFF,
     "error": SoundEvent.WINDOWS_DICTATION_ERROR,
+    "working": SoundEvent.WINDOWS_DICTATION_WORKING,
 }
 _READ_BACK_DELAY_MS = 250
 
@@ -78,6 +79,16 @@ class _InkwellFeedback:
 
     def show_commands(self) -> None:
         wx.CallAfter(self._frame.show_dictation_commands)
+
+    def library(self) -> Any:
+        """Snippets, abbreviations and clips by voice: insert only (D-8 slice)."""
+        from quill.ui.windows_dictation_anywhere_library import AnywhereLibrary
+
+        return AnywhereLibrary()
+
+    def call_later(self, seconds: float, callback: Any) -> Any:
+        """The working tick's clock (working_tick.py), if it is switched on."""
+        return wx.CallLater(int(seconds * 1000), callback)
 
 
 class InkwellDictationMixin:
@@ -135,6 +146,7 @@ class InkwellDictationMixin:
     def _anywhere_controller(self) -> Any:
         controller = getattr(self, "_anywhere", None)
         if controller is None:
+            from quill.core.dictation_owner import MicrophoneLock
             from quill.core.windows_dictation.controller import DictationController
             from quill.ui.windows_dictation_commands import _make_recognizer
             from quill.ui.windows_dictation_external import ExternalDocument, hush_unless_spoken
@@ -144,6 +156,7 @@ class InkwellDictationMixin:
                 document=ExternalDocument(hush=hush_unless_spoken(self._anywhere_preferences)),
                 feedback=_InkwellFeedback(self),
                 preferences=self._anywhere_preferences,
+                microphone=MicrophoneLock("inkwell"),  # one microphone in the family (D-11)
             )
             self._anywhere = controller
         return controller
@@ -228,7 +241,8 @@ class InkwellDictationMixin:
         from quill.core.windows_dictation.reference import commands_reference
         from quill.ui.dictation_lists_dialog import DictationCommandsDialog
 
-        dialog = DictationCommandsDialog(self.frame, commands_reference())
+        # Only what works in another program (D-7), as in QUILL Transcribe.
+        dialog = DictationCommandsDialog(self.frame, commands_reference(external=True))
         try:
             self._show_modal_dialog(dialog, "Dictation Commands")  # type: ignore[attr-defined]
         finally:
