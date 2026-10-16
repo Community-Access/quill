@@ -2040,8 +2040,19 @@ pieces: <code>quill/apps/lite_clipboard_collector.py</code> polls the OS
 clipboard change counter
 (<code>ui/main_frame_clipboard_collector._clipboard_change_counter</code>),
 appends with <code>core/clipboard_collector.append_collected</code>,
-collects each distinct payload once, never saves, keeps one collecting
-window per app, and stops when it closes. Handler
+collects each distinct payload once, keeps one collecting window per
+app, and stops when it closes. With QUILL’s shared setting
+<code>clipboard_collector_saves</code> (2026-10-15, on by default,
+Preferences “Save after every clip the clipboard collector adds”, Alt+Y)
+a window with a file name is saved quietly after each clip through
+<code>DocumentFileMixin.save_quietly</code>, which shares the write and
+the settling with Save, and the one announcement is “Collected and
+saved”; an untitled window is never saved and no window ever opens.
+Anything Save would ask about in a window (characters the encoding
+cannot hold, a file changed on disk) and a failed write are spoken
+instead (“Collected, but not saved.” and the reason), and collecting
+carries on. The rule and the words are
+<code>core/clipboard_collector</code>, the same as QUILL’s. Handler
 <code>cmd_clipboard_collector</code> (Alt+Shift+S, a check row on Edit
 &gt; Clipboard), parity <code>power.toggle_clipboard_collector</code>.
 The parity table had mapped <code>cmd_collect_selection</code> to that

@@ -25334,12 +25334,30 @@ toggled on, a 750 ms timer polls the OS clipboard <strong>change
 counter</strong> (<code>GetClipboardSequenceNumber</code> on Windows,
 <code>NSPasteboard.changeCount</code> on macOS — one cheap call, no
 clipboard open unless it changed) and appends each <em>distinct</em> new
-clipboard text to the open document, autosaving as before. The in-app
-bind stays for instant response; a last-collected guard deduplicates the
-two paths and QUILL’s own writes. See
-<code>_clipboard_change_counter</code> /
+clipboard text to the open document. The in-app bind stays for instant
+response; a last-collected guard deduplicates the two paths and QUILL’s
+own writes. See <code>_clipboard_change_counter</code> /
 <code>_start_collector_watch</code> in
-<code>quill/ui/main_frame_power_tools.py</code>.</p>
+<code>quill/ui/main_frame_clipboard_collector.py</code>.</p>
+<p><strong>Saving as it collects (2026-10-15).</strong> The collector’s
+old autosave called <code>save_file()</code> per clip, which spoke twice
+per copy and could open Save As, so bad.md C4 removed it. It is back as
+the shared setting <code>clipboard_collector_saves</code> (on by
+default; Settings &gt; Editing, and QUILL Lite’s Preferences): after
+each collected clip a document <strong>with a file name</strong> is
+saved quietly through Save’s own write step
+(<code>_write_named_document</code>) and the one announcement is
+“Collected and saved”. An untitled document is never saved and no window
+ever opens: no Save As, no disk-conflict question, no pre-save
+proofread, no error box. A document Save would route to Save As (an
+export-only file, a pending format change), a read-only remote copy, or
+an SSH-bound file collects as if the setting were off. A file another
+program changed is not overwritten, and a failed write is spoken
+(“Collected, but not saved.” and the reason, which as a failure is
+always spoken); the collector stays on. No per-clip backup copy is made.
+The rule and the words are
+<code>quill/core/clipboard_collector.py</code>, shared with QUILL
+Lite.</p>
 <hr />
 <h2 id="part-two-competitive-study-ulysses">Part Two: Competitive Study,
 Ulysses</h2>

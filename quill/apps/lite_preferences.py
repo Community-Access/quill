@@ -36,16 +36,13 @@ from typing import Any, NamedTuple
 import wx
 
 from quill.apps.lite_dialogs import _stack
+from quill.apps.lite_preferences_collector import CollectorSavePrefs
 from quill.apps.lite_preferences_files import FileChangePrefs
 from quill.apps.lite_preferences_profile import ProfileRow
 from quill.apps.lite_preferences_save_folder import DocumentFolderPrefs
 from quill.core.action_feedback import ACTION_FEEDBACK_LABELS
 from quill.core.action_feedback import coerce as coerce_feedback
-from quill.core.app_features import (
-    AppArea,
-    AppFeatureSettings,
-    AppProfile,
-)
+from quill.core.app_features import AppArea, AppFeatureSettings, AppProfile
 from quill.core.structure_announce import HEADING_POSITION_LABELS, HEADING_POSITIONS
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name, show_modal_dialog
 from quill.ui.text_editor_prefs import TextEditorPrefs
@@ -237,6 +234,7 @@ def edit_preferences(
     )
     keep_clips.SetValue(bool(getattr(settings, "clip_library_autocapture", False)))
     root.Add(keep_clips, 0, wx.LEFT | wx.RIGHT, _PAD)
+    collector_prefs = CollectorSavePrefs(dialog, root, settings, pad=_PAD)  # Alt+Y
 
     # &U, because every other letter in "Look for updates" is spoken for in
     # this window and Windows cycles focus between two controls with the same
@@ -516,7 +514,7 @@ def edit_preferences(
             return PreferencesResult(False, False)
         features_changed = profile_row.apply()
         folder_changed = document_folder.apply()
-        files_changed = file_prefs.apply()
+        files_changed = file_prefs.apply() | collector_prefs.apply()
         before = (
             settings.default_mode,
             settings.theme,

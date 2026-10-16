@@ -69,6 +69,34 @@ build had checked any version.
   should. The gate asked for no version bump, so Radio and Lite stay at 3.2.0
   and 1.2.0.
 
+### The clipboard collector saves as it collects, in QUILL and QUILL Lite (2026-10-15)
+
+From Jeff's list, 2026-10-15: the EdSharp habit, back as a setting.
+
+- New shared setting **`clipboard_collector_saves`** (bool, on by default) in
+  both `Settings` classes; `settings_vocabulary` `shared`, `data_format_audit`
+  recorded additive for `quill.settings` and `lite.settings`.
+- **`quill/core/clipboard_collector.py`** holds the rule and the words for both
+  editors: `saves_after_collect` (only a named document), `COLLECTED_AND_SAVED`
+  ("Collected and saved", one sentence instead of collect-then-"Saved <name>",
+  the double announcement bad.md C4 removed), `collected_but_not_saved` plus
+  `disk_changed_reason` / `encoding_reason`.
+- QUILL: `ClipboardCollectorMixin._collector_save` saves through
+  `WriteSafetyMixin._write_named_document`, Save's own write-and-settle step,
+  extracted from `MainFrame.save_file` so the two cannot drift (`main_frame.py`
+  shrank 16012 -> 15998). Never Save As, never a box: an export-only file, a
+  pending format change, a read-only remote copy or an SSH-bound file just
+  collects; a file changed on disk is not overwritten; a failed write speaks
+  `_save_failure_sentence` (extracted from `_report_save_failure`). No backup
+  copy per clip.
+- QUILL Lite: `DocumentFileMixin.save_quietly` (shares `_write_to` and
+  `_settle_saved` with `save`), called from `lite_clipboard_collector`.
+- Settings > Editing row (SettingSpec, description is the F1 help); QUILL Lite
+  Preferences check box "Save after ever&y clip the clipboard collector adds"
+  in the new `quill/apps/lite_preferences_collector.py` (GATE-11).
+- Tests: `tests/unit/ui/test_clipboard_collector_saves.py`, new cases in
+  `tests/unit/apps/test_lite_clipboard_collector.py`.
+
 ### Dictation: the never-type list, and Inkwell keeps its field (2026-10-15)
 
 D-24 and D-15 from the dictation plan, rescued from an uncommitted worktree.

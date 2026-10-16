@@ -86,7 +86,6 @@ from quill.core.dictation import (
 from quill.core.document import Document
 from quill.core.external_change import (
     ExternalChangeWatcher,
-    FileSnapshot,
 )
 from quill.core.external_tools import (
     copyable_install_command,
@@ -6963,25 +6962,12 @@ class MainFrame(
             return
         if self.document.modified:
             self._backup_before_save(self.document)
-        try:
-            self._write_document_to_disk(self.document)
-        except (OSError, UnicodeEncodeError) as error:
-            # UnicodeEncodeError since 2026-09-17 (bad.md P0.9): a cp1252
-            # document that gains an em dash used to fail with "Command failed:
-            # file.save" and leave the writer to guess which character did it.
+        # The write and everything a save settles (main_frame_write_safety),
+        # shared with the clipboard collector's quiet save.
+        error = self._write_named_document()
+        if error is not None:
             self._report_save_failure(self.document.name, error, "Save")
             return
-        # Persist this document's bookmarks + cursor position under its path now that
-        # it is saved (also migrates an untitled document's in-memory bookmarks).
-        self._save_active_bookmarks()
-        self._save_inline_notes()
-        self._remember_active_caret()
-        # FEAT-19: prime the watcher so our own save is not reported as an external change.
-        if self._external_change_watcher is not None and self.document.path is not None:
-            self._external_change_watcher.prime(FileSnapshot.of(self.document.path))
-        self._record_persistent_undo_state(self.document.text)
-        self.flush_persistent_undo()
-        self._refresh_title()
         self._set_status(f"Saved {self.document.name}")
         from quill.core.sound_events import SoundEvent
         from quill.ui.sound_manager import post_sound

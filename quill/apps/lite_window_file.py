@@ -284,13 +284,7 @@ class DocumentFileMixin:
         if not self._confirm_unseen_disk_change(destination):
             return False
         try:
-            if as_rich:
-                self._write_rtf(destination)
-            else:
-                write_bytes_atomic(
-                    destination,
-                    encode_text(body, encoding=self.encoding, newline=self.newline),
-                )
+            self._write_to(destination, body, as_rich=as_rich)
         except (OSError, RichEditRtfError) as exc:
             self._report_failure("Save failed", f"Could not save {destination.name}.\n\n{exc}")
             return False
@@ -300,6 +294,53 @@ class DocumentFileMixin:
             from quill.core.lite.backups import write_backup
 
             write_backup(destination, self.control.GetValue())
+        self._settle_saved(destination)
+        self._cue(SoundEvent.DOCUMENT_SAVED)
+        self._announce(f"Saved {destination.name}")
+        return True
+
+    def save_quietly(self) -> str | None:
+        """The clipboard collector's save: no window, and no sentence of its own.
+
+        ``None`` when the named document was written; otherwise the plain
+        reason it was not, for the collector to say. Everything Save would ask
+        about in a window -- characters the file's encoding cannot hold, a file
+        another program changed -- is a reason here instead, and the person
+        settles it with an ordinary Save. No backup copy either: a dated copy
+        per collected clip would bury the ones Save keeps. A document with no
+        name, or one waiting to be renamed, is not this method's to save.
+        """
+        from quill.core.clipboard_collector import disk_changed_reason, encoding_reason
+        from quill.core.external_change import changed_since
+
+        if self.path is None or self._pending_suffix:
+            return None
+        destination = Path(self.path)
+        as_rich = self.editor.mode == RICH
+        body = self.control.GetValue()
+        if not as_rich and unencodable_characters(body, self.encoding):
+            return encoding_reason(destination.name, self.encoding)
+        if changed_since(getattr(self, "_disk_baseline", None), destination) is not None:
+            return disk_changed_reason(destination.name)
+        try:
+            self._write_to(destination, body, as_rich=as_rich)
+        except (OSError, RichEditRtfError) as exc:
+            return f"Could not save {destination.name}: {exc}"
+        self._settle_saved(destination)
+        return None
+
+    def _write_to(self, destination: Path, body: str, *, as_rich: bool) -> None:
+        """The write itself, shared by Save and the collector's quiet save."""
+        if as_rich:
+            self._write_rtf(destination)
+        else:
+            write_bytes_atomic(
+                destination,
+                encode_text(body, encoding=self.encoding, newline=self.newline),
+            )
+
+    def _settle_saved(self, destination: Path) -> None:
+        """Everything a successful write settles, for Save and the quiet save alike."""
         self.path = destination
         self._remember_disk_baseline()
         self._discard_slot()
@@ -315,15 +356,12 @@ class DocumentFileMixin:
         # the document's own sidecar dictionary moved with the name.
         self._forget_spell_dictionary()
         self._remember(destination)
-        self._cue(SoundEvent.DOCUMENT_SAVED)
         # Whatever the name was wrong about, it is not wrong now.
         self._pending_suffix = ""
         # Save As can change the language as well as the spell check: an
         # untitled document saved as notes.md is a Markdown document from here
         # on, and its Format rows have to say so without waiting for a restart.
         self._sync_menu_rows()
-        self._announce(f"Saved {destination.name}")
-        return True
 
     def _encoding_allows(self, body: str) -> bool:
         """True when the save may go ahead; asks about characters that will not fit.

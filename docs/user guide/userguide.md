@@ -12194,10 +12194,16 @@ there.
   clipboard entries into a running log in the open document. This works
   system-wide, the way EdSharp did: while the collector is on, anything you
   copy in *any* application, such as your browser, mail or a terminal, is
-  added (each distinct copy once). It never saves for you: the document is
-  marked as changed, and you save it when you are ready. **Alt+Shift+S** turns
-  the collector on and off. QUILL Lite has the same collector, on the same key,
-  under **Edit > Clipboard**.
+  added (each distinct copy once). If the document already has a file name,
+  QUILL saves it quietly after each piece and you hear one sentence,
+  "Collected and saved." An untitled document is never saved and no Save As
+  window opens; it is marked as changed, and you save it when you are ready.
+  If a save cannot happen (a full disk, a read-only folder, a file another
+  program has changed), QUILL says so and keeps collecting. To have collected
+  text wait for you to save instead, clear **Save the document after every
+  clip the clipboard collector adds** in **Settings > Editing**. **Alt+Shift+S**
+  turns the collector on and off. QUILL Lite has the same collector and the
+  same setting, on the same key, under **Edit > Clipboard**.
 - **Toggle Key Describer** says the names of keys instead of doing what they
   do. It is handy for writing down keystrokes.
 - **Toggle Indentation Announcements** and **Infer Indentation...** tell you

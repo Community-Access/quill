@@ -730,6 +730,22 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         keywords=("clip library", "copy", "history", "automatic", "clipboard", "privacy"),
     ),
     SettingSpec(
+        "clipboard_collector_saves",
+        "Save the document after every clip the clipboard collector adds",
+        "editing",
+        "bool",
+        (
+            "On by default. While the clipboard collector is on, each piece of "
+            "text it adds is followed by a quiet save, and you hear one "
+            "sentence: Collected and saved. Only a document that already has a "
+            "file name is saved; an untitled one just collects, and no Save As "
+            "window ever opens. If the save cannot happen, QUILL says why and "
+            "keeps collecting. Off: collected text waits for you to save. QUILL "
+            "Lite has the same setting."
+        ),
+        keywords=("clipboard collector", "collect", "save", "autosave", "clipboard"),
+    ),
+    SettingSpec(
         "autosave_interval_seconds",
         "Autosave interval (seconds)",
         "editing",

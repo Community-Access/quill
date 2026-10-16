@@ -281,6 +281,8 @@ class Settings(DictationSettings):
     #: and never implemented it -- the capture method was written and called
     #: from nowhere (bad.md C1).
     clip_library_autocapture: bool = False
+    #: QUILL's setting and default; the rule is quill/core/clipboard_collector.py.
+    clipboard_collector_saves: bool = True
     #: Shortest gap between two spoken announcements, in milliseconds.
     #:
     #: Zero -- no throttle -- which is what QUILL Lite has always done and what
