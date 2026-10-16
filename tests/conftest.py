@@ -889,6 +889,23 @@ def _no_live_release_feed(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 @pytest.fixture(autouse=True)
+def _no_live_preroll_reference(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Radio recordings in tests never open a pre-roll reference connection.
+
+    Every recording starts a second, late connection to the station so the
+    pre-roll guard can hear what the station plays to each new listener
+    (``quill/core/radio/recording_preroll_guard.py``). A test recorder is
+    handed a made-up stream URL and a fake ffmpeg; without this, the reference
+    thread would wake twenty seconds later and run the real ffmpeg against that
+    URL. Tests of the guard pass their own decoder and trimmer.
+    """
+    from quill.core.radio import recording_preroll_guard
+
+    monkeypatch.setattr(recording_preroll_guard, "decode_opening", lambda _source: None)
+    monkeypatch.setattr(recording_preroll_guard, "trim_start", lambda _path, _seconds: False)
+
+
+@pytest.fixture(autouse=True)
 def _fresh_output_device_list() -> None:
     """Forget the cached sound-card list between tests.
 

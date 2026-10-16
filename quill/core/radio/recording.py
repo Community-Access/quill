@@ -54,7 +54,10 @@ from quill.core.radio.recording_commands import (
     uniquify,
 )
 from quill.core.radio.recording_join import describe_join, join_recording_parts
+from quill.core.radio.recording_liveness import await_stop as _await_stop
 from quill.core.radio.recording_liveness import wait_for_exit
+from quill.core.radio.recording_preroll import input_dropped
+from quill.core.radio.recording_preroll_guard import OpeningGuard
 from quill.core.radio.recording_winjob import assign_kill_on_close_job, close_job_handle
 from quill.core.speech.ffmpeg import INSTALL_HINT, find_ffmpeg
 from quill.stability.redaction import format_args_for_log, redact_source_tokens
@@ -93,7 +96,6 @@ _PROBE_TIMEOUT_SECONDS = 10.0
 _DEFAULT_BITRATE_KBPS = 192
 _DEFAULT_MAX_DURATION_MINUTES = 180
 _DEFAULT_FILENAME_PATTERN = "{station} - {date} {time}"
-_STOP_GRACE_SECONDS = 5.0
 
 
 class RecordingError(CodedError):
@@ -131,10 +133,10 @@ class RecordingSettings:
     temp_dir: str = ""
     filename_pattern: str = _DEFAULT_FILENAME_PATTERN  # tokens: {station} {date} {time}
     max_duration_minutes: int = _DEFAULT_MAX_DURATION_MINUTES  # safety cap on every recording
-    # Auto-reconnect: when the internet hiccups mid-recording, ffmpeg first
-    # rides out short gaps itself (reconnect flags below); if the process
-    # still dies, the recorder waits and starts a continuation file, up to
-    # this many attempts. All three knobs live in Recording Settings.
+    # Auto-reconnect: when the stream drops mid-recording, ffmpeg's part ends
+    # (it never re-requests a live stream in one file: recording_preroll) and
+    # the recorder waits and starts a continuation file, up to this many
+    # attempts. All three knobs live in Recording Settings.
     reconnect_enabled: bool = True
     reconnect_max_attempts: int = 5
     reconnect_wait_seconds: int = 10
@@ -291,6 +293,9 @@ class RecordingJob:
     #: Windows kill-on-close job handle (R4/13.5); one per recording.
     win_job: object | None = None
     reconnect_attempt: int = 0
+    #: The stderr drain thread; _monitor lets it finish so ffmpeg's last words
+    #: (which say whether the stream dropped) are in the tail before it is read.
+    drain: threading.Thread | None = None
     user_stopped: bool = False
 
     def snapshot(self) -> JobSnapshot:
@@ -376,6 +381,8 @@ class RadioRecorder:
         #: each part finishes and consumed once, at finalize, to join them back
         #: into a single recording (recording_join).
         self._parts: dict[str, list[Path]] = {}
+        #: Keeps the station's pre-roll advert out of the file (xradio2 6.1).
+        self._openings = OpeningGuard()
 
     # -- read API ---------------------------------------------------------------
 
@@ -685,15 +692,15 @@ class RadioRecorder:
                 close_job_handle(win_job)
             self._release_reserved(reserved_here)
             raise RecordingLimitError(cap_message)
+        if not is_continuation:
+            self._openings.begin(job_id, stream_url, capture_url)
         self._on_state_changed(True, destination, job_id)
+        job.drain = threading.Thread(
+            target=self._drain_stderr, args=(job,), daemon=True, name="quill-radio-record-stderr"
+        )
+        job.drain.start()
         threading.Thread(
             target=self._monitor, args=(job,), daemon=True, name="quill-radio-record-monitor"
-        ).start()
-        threading.Thread(
-            target=self._drain_stderr,
-            args=(job,),
-            daemon=True,
-            name="quill-radio-record-stderr",
         ).start()
         return destination
 
@@ -752,12 +759,14 @@ class RadioRecorder:
         # though ffmpeg is still alive. wait_for_exit then stops it, so the
         # ordinary drop handling below (reconnect, or finalize the partial)
         # runs exactly as it does for a stream that dropped outright.
-        wait_for_exit(
+        stalled = wait_for_exit(
             job.process,
             job.destination,
             is_stopped=lambda: job.user_stopped,
             label=job.station_name,
         )
+        if job.drain is not None:
+            job.drain.join(timeout=2.0)
         with self._lock:
             # Drop this job from the active set (only if it is still the one
             # registered under its id -- a reconnect that already replaced it
@@ -769,7 +778,6 @@ class RadioRecorder:
             # needed to keep a concurrent start from picking the same name.
             self._reserved.discard(job.destination)
             self._reserved.discard(job.final_destination)
-            failed = bool(job.process.returncode) and not job.user_stopped
             # R4/13.3: classify a drop as fatal (disk full / HTTP 4xx) so it is
             # not retried -- reconnecting a stream the server took down with a 404
             # would only waste the attempt budget and spam continuation files. The
@@ -778,6 +786,10 @@ class RadioRecorder:
             # process.wait()); iterating it directly races into a RuntimeError.
             with job.stderr_lock:
                 tail_snapshot = list(job.stderr_tail)
+            # ffmpeg exits 0 when its input dies, and a stall is stopped with "q":
+            # both are drops, now that ffmpeg no longer reconnects inside a file.
+            dropped = stalled or input_dropped(tail_snapshot)
+            failed = (bool(job.process.returncode) or dropped) and not job.user_stopped
             fatal = failed and recording_outcome.is_fatal(tail_snapshot)
             # R4/13.5: close this job's kill-on-close handle now the child has
             # exited (wait() returned), so a long session does not leak a handle
@@ -815,6 +827,7 @@ class RadioRecorder:
             )
             self._on_state_changed(False, None, job.job_id)
             self._on_capture_failed(job.station_name, reason)
+            self._openings.discard(job.job_id)
             with self._lock:
                 self._parts.pop(job.job_id, None)
             return
@@ -880,6 +893,10 @@ class RadioRecorder:
         """
         with self._lock:
             parts = self._parts.pop(job.job_id, [])
+        # Cut what every connection opens with (the pre-roll) before joining.
+        parts, trimmed = self._openings.strip(job.job_id, parts)
+        if trimmed:
+            self._on_parts_joined(trimmed)
         if len(parts) < 2:
             return parts[0] if parts else None
         outcome = join_recording_parts(parts)
@@ -1041,25 +1058,7 @@ class RadioRecorder:
     def shutdown(self) -> None:
         """Called once, from the frame's close path: stop every recording."""
         self.stop(None)
-
-
-def _await_stop(process: subprocess.Popen[bytes]) -> None:
-    """Wait for *process* to exit after 'q' was written; terminate it if it
-    does not land within the grace period (R4/13.5).
-
-    Runs on a daemon thread so the caller (the UI thread / close path) is
-    never blocked by a slow ffmpeg shutdown. The graceful 'q' was already
-    sent synchronously by :meth:`RadioRecorder.stop`; this only owns the
-    wait-and-terminate fallback."""
-    try:
-        process.wait(timeout=_STOP_GRACE_SECONDS)
-    except Exception:  # noqa: BLE001 - wait timed out or pipe closed
-        logger.warning("Graceful stop of radio recording did not land in time; terminating.")
-    if process.poll() is None:
-        try:
-            process.terminate()
-        except OSError:
-            pass
+        self._openings.cancel_all()
 
 
 def _finalize_move(src: Path, dst: Path) -> Path:

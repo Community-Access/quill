@@ -182,9 +182,13 @@ def build_record_command(
     Pure and unit-tested. ``-t`` caps every recording at ``duration_seconds``
     even if :meth:`RadioRecorder.stop` is never called, so a forgotten
     recording cannot grow unbounded. A positive ``reconnect_delay_max`` turns
-    on ffmpeg's own HTTP reconnect handling (first line of defense against a
-    dropped connection; the recorder's process-level retry is the second),
-    valid only for http(s) inputs. A non-empty ``filter_graph`` (built by
+    on ffmpeg's own HTTP reconnect handling for http(s) inputs -- but *not*
+    ``-reconnect_streamed``, so ffmpeg never re-requests a live stream inside
+    one file. Every new connection can open with the station's pre-roll
+    advert, and a re-request spliced one into the middle of the recording with
+    nothing to mark where (xradio2 section 6.1; ``recording_preroll``). A live
+    drop now ends the part and the recorder's own reconnect starts the next
+    one, so each connection begins at a known place. A non-empty ``filter_graph`` (built by
     ``core.audio_enhance.build_filter_graph``, this module stays decoupled
     from that one) records the *filtered* audio -- Sound Enhancements applied
     to the archival copy, not just live playback.
@@ -234,8 +238,6 @@ def build_record_command(
     if reconnect_delay_max > 0 and stream_url.lower().startswith(("http://", "https://")):
         args.extend([
             "-reconnect",
-            "1",
-            "-reconnect_streamed",
             "1",
             "-reconnect_delay_max",
             str(reconnect_delay_max),

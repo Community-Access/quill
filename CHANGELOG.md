@@ -2,6 +2,40 @@
 
 ## 1.0.0
 
+### Radio recording keeps the station's pre-roll advert out of the file (2026-10-15)
+
+xradio2 section 6.1: many stations play a pre-roll to every new connection,
+and every recording path (Record Now, Record Station, scheduled, resumed)
+opened its own ffmpeg connection, and ffmpeg's `-reconnect_streamed` opened
+another, silently, mid-file. Verified against a local fake station: a drop
+spliced a second pre-roll into the file 20 seconds in.
+
+- **`recording_commands.build_record_command`** no longer passes
+  `-reconnect_streamed`, so a live drop ends the part and the recorder's own
+  continuation (a known boundary) takes over. ffmpeg exits 0 when its input
+  dies, so **`RadioRecorder._monitor`** now also counts a stall
+  (`wait_for_exit`'s return, previously ignored) and ffmpeg's demux-error last
+  words (`recording_preroll.input_dropped`) as a drop; it joins the stderr
+  drain thread (2 s) before reading the tail, so those words are there.
+- **`quill/core/radio/recording_preroll.py`** (pure, wx-free): 50 ms loudness
+  outlines of each connection's first 75 s, and `shared_opening`, which finds
+  what two openings share from their first moment (lag search of half a
+  second; shape and level checks; silence, under 4 s, or over 70 s never
+  count; boundary refined to where the outlines part).
+- **`quill/core/radio/recording_preroll_guard.py`**: `OpeningGuard` opens one
+  reference connection 20 s after a recording's first connection (never for
+  HLS or YouTube), then at finalize cuts the shared opening from every part
+  (stream copy, replaced only on success) before `_join_parts`, and removes a
+  continuation part that was nothing but the insert. The sentence goes out
+  through `on_parts_joined`. No setting: it only ever cuts audio heard opening
+  two connections. Documented in `network_egress_entries_radio.py`.
+- `_await_stop` moved to `recording_liveness.await_stop` (GATE-11);
+  `recording.py` budget 1159 to 1156. `tests/conftest.py` gives every test an
+  inert decoder so no test recorder reaches the network.
+- Tests: `tests/unit/core/test_radio_recording_preroll.py`, including a
+  recorder that drops (exit 0) mid-recording and must reconnect and trim both
+  parts before the join.
+
 ### Dictation: the never-type list, and Inkwell keeps its field (2026-10-15)
 
 D-24 and D-15 from the dictation plan, rescued from an uncommitted worktree.

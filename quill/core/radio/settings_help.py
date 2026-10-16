@@ -80,9 +80,9 @@ HELP: dict[str, str] = {
         "it never throws away what was captured before the drop."
     ),
     "reconnect_wait": (
-        "How long to wait before each reconnect attempt; also how long ffmpeg "
-        "itself rides out short gaps. It never delays a recording that is "
-        "running normally."
+        "How long to wait before each reconnect attempt. Each attempt starts a "
+        "new part, so an advert the station plays to new listeners can be cut "
+        "from its start. It never delays a recording that is running normally."
     ),
     "filters": (
         "Record the EQ and compressor from Playback > Sound Enhancements, "

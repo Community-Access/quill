@@ -42,6 +42,7 @@ __all__ = [
     "STALL_CHECK_COUNT",
     "STALL_CHECK_INTERVAL_SECONDS",
     "GrowthTracker",
+    "await_stop",
     "is_stalled",
     "wait_for_exit",
 ]
@@ -77,6 +78,10 @@ _MIN_SAMPLE_FRACTION = 0.5
 #: is terminated. Short: it is already not producing audio, and the graceful
 #: path is only worth a moment for the chance of a properly closed container.
 _STALL_STOP_GRACE_SECONDS = 5.0
+
+#: Seconds a recording asked to stop (Stop, Stop All, shutdown) is given to
+#: honour "q" before it is terminated.
+_STOP_GRACE_SECONDS = 5.0
 
 
 @dataclass(slots=True)
@@ -237,6 +242,26 @@ def stop_stalled(process: subprocess.Popen[bytes]) -> None:
         process.wait(timeout=_STALL_STOP_GRACE_SECONDS)
     except subprocess.TimeoutExpired:
         pass
+    if process.poll() is None:
+        try:
+            process.terminate()
+        except OSError:
+            pass
+
+
+def await_stop(process: subprocess.Popen[bytes]) -> None:
+    """Wait for *process* to exit after 'q' was written; terminate it if it
+    does not land within the grace period (R4/13.5).
+
+    Runs on a daemon thread so the caller (the UI thread / close path) is
+    never blocked by a slow ffmpeg shutdown. The graceful 'q' was already
+    sent synchronously by ``RadioRecorder.stop``; this only owns the
+    wait-and-terminate fallback. (Moved here from ``recording.py`` under
+    GATE-11: it is the user-asked twin of :func:`stop_stalled`.)"""
+    try:
+        process.wait(timeout=_STOP_GRACE_SECONDS)
+    except Exception:  # noqa: BLE001 - wait timed out or pipe closed
+        logger.warning("Graceful stop of radio recording did not land in time; terminating.")
     if process.poll() is None:
         try:
             process.terminate()
