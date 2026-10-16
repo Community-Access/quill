@@ -45,6 +45,7 @@ from quill.core.windows_dictation.model_types import (
     MEASURED,
     TIER_MEANINGS,
     megabytes,
+    ram_tier_budget_mb,
     tier_for,
 )
 from quill.core.windows_dictation.speech_language import coerce_speech_language
@@ -186,13 +187,9 @@ def _tiny_here(check: SpeedCheck) -> float:
 def _memory_cap_mb(check: SpeedCheck) -> int:
     """How much memory dictation may take beside the screen reader here."""
     memory = check.memory_gb
-    if memory is None:
-        return 600 if check.weak else 1000
-    if memory < 7.0:  # a 4 GB computer: dictation design, section 1's budget
-        return 600
-    if memory < 15.0:
-        return 1000
-    return 2500
+    if memory is None:  # unmeasured: a modest computer is treated as 4 GB, else 8
+        return ram_tier_budget_mb(4.0 if check.weak else 8.0)
+    return ram_tier_budget_mb(memory)  # the catalogue's memory tiers (D-26)
 
 
 def _machine(check: SpeedCheck) -> str:

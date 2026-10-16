@@ -328,8 +328,8 @@ next word like an opening bracket.
 | **The real-voice test** for every engine and model (the 2026-10-05 numbers are on a synthetic voice, which flatters every engine) | Recordings of real voices, ideally several |
 | **Measurements on the baseline machine** with NVDA and JAWS running: speed, memory high-water mark, screen-reader lag, battery draw over ten minutes, for every offered model; then tightening each model's `cost_factor` (the Distil-Whisper and large-v3 factors are estimates) | A 4 GB dual-core Windows 10 computer and a person to listen |
 | **A CI-runnable benchmark gate** (`dictbench.py` baseline mode): every engine offered must meet the speed budget on one thread on recorded speech | Recorded speech checked into a test-asset location, and a CI runner whose speed is stable enough to gate on |
-| **Word biasing for the local models** (section 5 B) | A sherpa-onnx that encodes hotwords for mixed-case SentencePiece vocabularies, or a hotword-capable Nemotron decoder |
-| **One folder for Parakeet** shared by QUILL's Locked Dictation (`quill/core/speech/providers/parakeet_onnx.py`) and live dictation, so it is not downloaded twice | A small migration; deferred |
+| **Word biasing for the local models** (section 5 B; the plumbing is built and off, section 22, D-28) | A sherpa-onnx that encodes hotwords for mixed-case SentencePiece vocabularies, a hotword-capable Nemotron decoder, or an English Zipformer transducer measured on B-1 |
+| **The shared layer's measurements** (section 22): keyword spotting (a false-trigger soak, the detection rate, CPU), hotwords on an English Zipformer, the punctuation and speaker models, and sherpa-onnx TTS against kokoro-onnx (D-30) | B-1, B-3 and the 8 GB machine (B-8) |
 | **Interface translation** (menus and spoken replies in Spanish) | Its own decision (dict.md 9.6) |
 | Held for Jeff, untouched: removing the bundled models from the installers, and Nemotron as the first-run default | Jeff |
 
@@ -1249,8 +1249,188 @@ timed". Changing What matters most is the only spoken outcome
 advice is news (GATE-13); the check finishing rewrites the text silently.
 
 Not built here: the "Switch to the Recommended Model" button of dict.md
-section 10 (it belongs to retiring legacy models), and D-26's `ram_tier`
-catalogue field.
+section 10 (it belongs to retiring legacy models). D-26's `ram_tier`
+catalogue field followed in section 22.
+
+## 22. As built, 2026-10-16: one sherpa-onnx layer for every local model (D-26 to D-30)
+
+dict.md's "Smart engine, part 2" asked what it would take to put every local
+model on sherpa-onnx. Live dictation, QUILL Lite and QUILL Transcribe were
+already there. This pass brought QUILL's Locked Dictation and offline Transcribe
+Audio or Video onto the same layer, built the plumbing for keyword spotting,
+hotwords, punctuation and speaker labels, and settled the two-runtime question.
+What needs a measurement is built but switched off, and says so.
+
+### D-26. One catalogue, one store, one provider
+
+**One catalogue.** `model_types.DownloadableModel` gained the fields dict.md
+named, derived rather than typed per model so a new entry gets them for free:
+`streaming` (Nemotron), `ram_tier` (4, 8 or 16 GB: the smallest computer whose
+memory budget holds the model's measured peak, or an estimate from its download
+when it was not measured), `tasks` (every model transcribes and gets phrase
+timestamps; multilingual Whisper also translates into English; hotwords only
+for a measured model, of which there are none yet), and `source_url` (the
+pinned repository page), beside the `licence` it already had. The memory
+budgets (600 MB on a 4 GB computer, 1 GB on 8 GB, 2.5 GB above) now live once,
+in `model_types.RAM_TIERS`, and D-22's recommendation reads them from there.
+`core/speech/catalog.py` keeps only its whisper.cpp, Faster Whisper and Vosk
+rows; its Nemotron and Parakeet rows are gone.
+
+**One provider.** `quill/core/speech/providers/sherpa_shared.py`,
+`SherpaSharedProvider`, id `sherpa`, replaced the two QUILL-only engines
+(`providers/nemotron_onnx.py` and `providers/parakeet_onnx.py`, deleted with
+their tests). It lists the built-in Moonshine and Whisper and every model in the
+family store, most accurate first, and transcribes through Transcribe a
+Recording's own pipeline (`file_transcribe.FileTranscriber`): decoding, Silero
+voice detection, the engine a phrase at a time, and dictation's tidying. So
+Locked Dictation and Transcribe a Recording give identical text for the same
+file and model by construction (a test runs both paths on one fake engine).
+`translate_to_english` goes to multilingual Whisper with `task="translate"`
+(threaded through `model_loader.build`, `local_recognizer._load` and
+`FileJob.translate`); any other model refuses in one sentence. An
+`initial_prompt` is reported as one warning sentence, never dropped silently.
+Speaker labels are a warning until D-29's model is adopted.
+
+**Errors.** `model_loader.SherpaLoadError` (`QUILL-SPEECH-SHERPA-LOAD`),
+`SherpaUnsupportedError` (`QUILL-SPEECH-SHERPA-UNSUPPORTED`) and
+`SherpaRuntimeError` (`QUILL-SPEECH-SHERPA-RUNTIME`), all `SpeechError`s, so
+every caller that catches speech failures catches them.
+
+**One store, and the migration.** `quill/core/speech/sherpa_migration.py`:
+
+* A saved `speech_provider` of `nemotron` or `parakeet` loads as `sherpa`, and
+  the old model ids load as the catalogue's (`parakeet-tdt-0.6b-v3` is
+  `parakeet`). Only `nemotron` was ever saved: the settings validation never
+  accepted `parakeet`, which the ladder chose instead.
+* A Parakeet downloaded the old way (`<app data>/speech-models/parakeet/...`) is
+  hard-linked into the store, or moved when the folders are on different
+  drives, the first time the shared provider lists its models. All files at
+  their pinned sizes or nothing; never downloaded twice. This closes section
+  10's "One folder for Parakeet".
+* The older Nemotron (80 mel features) is a different model from the
+  catalogue's Nemotron 3.5 (128), so it is not adopted. Somebody who had chosen
+  it now dictates with the most accurate model they have until they download
+  Nemotron 3.5; its old folder is no longer used.
+
+**The ladder** (`service.preferred_dictation_provider_id`): an explicit choice
+wins; an installed Parakeet promotes the shared provider (as it promoted the
+old Parakeet engine); whisper.cpp stays the default when it has a model; and
+when whisper.cpp has none, the shared provider's built-in Moonshine tiny is
+used. So removing whisper.cpp's models leaves offline dictation working, and a
+fresh install dictates at once. whisper.cpp and Faster Whisper are otherwise
+untouched and selectable: the switch of defaults waits for B-1, as dict.md
+says.
+
+**Where it shows in QUILL.** The guided offline-speech setup offers "QUILL
+speech models (Parakeet, Nemotron and more)" second, after Whisper.cpp, in
+place of the two separate engines, with the family catalogue as its models,
+D-22's recommendation and reason, and each model's tier. Manage Speech Models
+shows the same tiers and capability sentences. The voice features (Voice
+Command, the Media Player's Listen for a Command) fall back to the shared
+provider and prefer Moonshine tiny there. The Silero voice detector of Locked
+Dictation's silence pre-pass is now the bundled one
+(`speech_vad.silero_model_path` asks `engines.vad_model_path` first): one copy,
+not two.
+
+**Parity.** Transcribe a Recording in QUILL, QUILL Lite and QUILL Transcribe has
+**Translate into English** (Alt+E): available for a recording in another
+language with a model that translates (the built-in Whisper, or a downloaded
+multilingual Whisper), and unavailable otherwise. `test_dictation_parity.py`
+asserts translation and timestamps on the shared dialog and job.
+
+**Packaging.** `sherpa-onnx==1.13.8` is pinned exactly in `pyproject.toml`
+(both extras), `uv.lock`'s requirement metadata, and the engine pack's
+requirements (`engine_install`), because a hotword or decoder change breaks
+behaviour, not just the API. The Offline Edition build stages a `nemotron`
+wheelhouse (`sherpa-onnx` and `sherpa-onnx-core`), the name `install_nemotron`
+already asked `_bundled_wheelhouse_dir` for.
+
+**Not done, and why:**
+
+* Defaults are unchanged: Locked Dictation and offline transcription move to
+  the shared layer by default only once B-1 shows parity, and whisper.cpp and
+  Faster Whisper become optional packs a release after that (dict.md S5).
+* "Word errors on B-1 no worse than whisper.cpp" needs B-1, and "removing
+  whisper.cpp leaves every shipped feature working" needs an end-to-end run.
+  The ladder change above covers dictation; podcast chapters stay on Vosk.
+* Mirroring catalogue models to assets-v1 (`model_mirrors.py`) is a release
+  task, done as each model is adopted.
+* Downloads report progress through each window's own progress dialog, as
+  before; the 25, 50 and 75 percent announcements through
+  `activity.ProgressAnnouncer` were not added to the guided setup.
+
+### D-27. Keyword spotting for the command word: built, off
+
+`quill/core/windows_dictation/kws_keywords.py`. The keywords are written from
+the command word (with "hey quill" beside a one-word one), the wake phrase and
+the stop phrase, tokenised with sherpa-onnx's `text2token`, each with a
+boosting score and a trigger threshold. `KeywordGate` runs a `KeywordSpotter`
+on the same 16 kHz blocks the voice detector gets, after the reader gate
+(`recognizer_worker._spot`), and marks each phrase with
+`RecognizedPhrase.keyword_heard`. **Both must agree**: in
+`command_mode_mixin._command_split` a phrase whose text opens with the command
+word is still dictated when the spotter ran and did not hear it. With no
+spotter the field is `None` and the text matcher decides alone, as before.
+`_make_recognizer` gives every local recogniser `keyword_gate_for(preferences)`.
+
+It is off (`KWS_ADOPTED = False`, so `keyword_gate_for` returns `None`) until
+dict.md's acceptance criteria are measured: under one false trigger an hour on
+a 60-minute B-3 soak that mentions "Quill" in sentences, 95 percent detection
+after a pause, and under 0.02 of one thread. The gigaspeech 3.3M model's size
+and licence are unverified, so it is not in the catalogue. Standby without the
+full model (D-9) waits for it.
+
+### D-28. Hotwords for My Words: plumbing behind a flag, off
+
+dict.md says to evaluate first, so `quill/core/windows_dictation/hotwords.py` is
+the plumbing behind `HOTWORDS_ENABLED = False`: the hotwords file in the
+model's case, the transducer's `modified_beam_search` options and `bpe.vocab`
+(`decoder_options`, which `model_loader.build` and `online` accept), and
+putting My Words' own spelling back afterwards with the corrector every engine
+already uses. `model_types.HOTWORD_MODELS` is empty: a model joins when 20
+names are recognised 50 percent better than without hotwords and B-1's word
+errors are no worse. **A measurement is needed**, on an English Zipformer
+transducer, which is not in the catalogue yet; Nemotron (greedy only) and
+Parakeet (garbled NeMo hotwords, section 5 B) were measured not to work.
+Passing My Words to the loader at load time is the last wiring step, done with
+the first qualifying model.
+
+### D-29. Punctuation and speaker labels: built, off
+
+`quill/core/windows_dictation/post_passes.py` builds sherpa-onnx's
+`OfflinePunctuation` (a post-pass that never loses words when it fails) and
+`OfflineSpeakerDiarization` (pyannote segmentation, a speaker embedding, fast
+clustering), and matches voices to a transcript's paragraphs by overlap,
+numbered "Speaker 1", "Speaker 2" in the order they are first heard. Both are
+off (`PUNCTUATION_ADOPTED`, `SPEAKERS_ADOPTED`) and no model is catalogued:
+the punctuation model's English quality is unverified (gate on B-1), and the
+speaker models' sizes, licences and memory on the 8 GB machine are unmeasured.
+Every model dictation offers today punctuates by itself, so nothing waits on
+the first. The shared provider says a speaker-label request cannot be met yet.
+
+### D-30. Text to speech through sherpa-onnx: not built
+
+dict.md says to decide after measuring: prototype `OfflineTts` Kokoro and VITS
+voices, compare audio, language coverage, load time and memory against
+kokoro-onnx, and adopt only if every shipped Kokoro voice and language is
+covered. None of that measurement has been made, so nothing was built.
+
+### The two runtimes, resolved
+
+* **They coexist, and a test says so.**
+  `tests/unit/core/test_onnxruntime_coexistence.py` starts a fresh interpreter
+  for each import order, runs a sherpa-onnx voice detector and a Python
+  onnxruntime session on the bundled `silero_vad.onnx`, and asserts exactly one
+  `onnxruntime.dll` is mapped, sherpa-onnx's. Both orders passed here on
+  2026-10-16 (sherpa-onnx 1.13.8, onnxruntime 1.31.0). It skips where the
+  bundled model or either runtime is absent, and downloads nothing.
+* **Threads are explicit on both sides.** sherpa-onnx recognisers already take
+  `num_threads`. Kokoro's onnxruntime session is now built with
+  `intra_op_num_threads` set to half the cores, between one and four, and one
+  inter-op thread (`quill/core/onnx_threads.py`, used by
+  `read_aloud._get_cached_kokoro_onnx` through `Kokoro.from_session`), so
+  Kokoro speaking while dictation listens no longer takes every core of a
+  two-core computer.
 
 ## 24. As built, 2026-10-15: the wake phrase and holding the key in QUILL Transcribe (D-9), and feedback where you work (D-6)
 

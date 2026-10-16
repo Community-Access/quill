@@ -8558,11 +8558,26 @@ text, most famously a phantom "thank you". Parakeet 3 only writes words when it
 actually hears them, so silence produces nothing.
 
 Parakeet 3 is an NVIDIA model. It knows 25 languages, detects the language by
-itself, runs on the CPU only, and is about a 650 MB download from **Manage
-Speech Models**. Once its model is installed, dictation switches to it
+itself, runs on the CPU only, and is about a 670 MB download, listed as
+**NVIDIA Parakeet TDT 0.6B v3** among **QUILL speech models** in **Manage
+Speech Models** and in Dictation Settings, Speech Models. It is the same
+download live dictation, QUILL Lite and QUILL Transcribe use, so a model you
+already downloaded in any of them is used here too, and nothing is downloaded
+twice. If you downloaded Parakeet 3 in an earlier version of QUILL, it is moved
+across by itself when its files are the same as today's download; if they are
+not, it is listed as not downloaded, and downloading it once more fixes that.
+Once its model is installed, dictation switches to it
 automatically. If you have chosen an engine yourself, that choice is always
 respected, and removing the model simply returns you to Whisper. Nothing else
 changes: same keys, same review, same recovery.
+
+**Dictation works before you download anything.** If Whisper.cpp has no model
+yet, Locked Dictation uses the Moonshine tiny model that comes with QUILL, the
+same one live dictation starts with. If you had chosen the older Nemotron
+engine, QUILL now uses the most accurate model you have; download **NVIDIA
+Nemotron 3.5 ASR Streaming 0.6B** from the same list to have Nemotron again.
+None of these models takes an initial prompt; your words in `dictation.md` and
+My Words and Phrases still correct the text afterwards.
 
 **Silence is trimmed before transcription.** QUILL removes the quiet lead-in
 and tail from each dictation take before the engine hears it. A recording with
@@ -8695,6 +8710,12 @@ between sentences. A few more things happen on the way:
   commands** (Alt+O): then "comma", "period", "new line", "new paragraph" and
   "scratch that" work just as they do when you dictate. Commands that move the
   cursor are ignored, because there is no cursor in a recording.
+- **Translation into English.** For a recording in Spanish, check **Translate
+  into English** (Alt+E) and the transcript is written in English instead of
+  Spanish. It needs a model that translates: the built-in Whisper, or a
+  multilingual Whisper you downloaded (not the ones marked English). With any
+  other model, or for an English recording, the box is unavailable. Off
+  unless you check it.
 
 ##### Which model for which recording
 
@@ -9205,7 +9226,8 @@ The list puts the most important first:
 - The **braille translation pack**: liblouis tables and BRF profiles for the
   Translation submenu and for BRF and embossing export.
 - **Dictation (offline speech)**: a guided setup covering Whisper.cpp, Faster
-  Whisper and Parakeet 3, described below.
+  Whisper and QUILL speech models (Parakeet, Nemotron and more), described
+  below.
 - **Kokoro** and **Piper** neural voices, and **eSpeak NG** and **DECtalk**
   voices.
 - **Audio: export, playback & chapters**: FFmpeg for exporting compressed
@@ -9258,9 +9280,11 @@ The **Dictation (offline speech)** row opens a guided setup instead of a plain
 download. It takes you one step at a time, and a banner at the top always says
 which step you are on and the one thing to do next:
 
-1. Pick and install an engine: **Whisper.cpp** (light and fast), **Faster
-   Whisper** (most accurate), or **Parakeet 3** (the most reliable for
-   dictation, described earlier in this chapter).
+1. Pick and install an engine: **Whisper.cpp** (light and fast), **QUILL
+   speech models** (the models QUILL Lite and QUILL Transcribe use: Parakeet 3,
+   the most reliable for dictation and described earlier in this chapter,
+   Nemotron, Whisper and Moonshine), or **Faster Whisper** (can use a graphics
+   card).
 2. Download a model. The best fit for your computer is already selected.
 3. Choose **Test dictation** to make sure it works, then set it as your
    default.

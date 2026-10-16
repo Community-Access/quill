@@ -33,6 +33,12 @@ file is the itemized list.
   (Ctrl+Alt+Shift+Y), so you can ask, resume or discard from the program you
   are working in.
 
+- **Transcribe a Recording translates into English** (2026-10-16). For a
+  recording in Spanish, check **Translate into English** (Alt+E) and the
+  transcript comes out in English. It works with the built-in Whisper or a
+  multilingual Whisper you downloaded; with any other model the box is
+  unavailable. The same in QUILL and QUILL Lite, on the same models.
+
 - **Review before it is typed** (2026-10-15). Say "QUILL review that" and the
   last phrase is backspaced away and held in the **Review Dictation** window
   (Shift+F4 in the Dictation menu, as in QUILL and QUILL Lite). Read it, change

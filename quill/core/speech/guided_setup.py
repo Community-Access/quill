@@ -2,7 +2,8 @@
 Optional Components hub.
 
 The hub walks the user through *choosing* an offline speech engine --
-whisper.cpp, Faster Whisper, Parakeet or Nemotron -- with plain-language explanations of
+whisper.cpp, Faster Whisper or QUILL's shared speech models (Parakeet, Nemotron,
+Whisper and Moonshine on sherpa-onnx) -- with plain-language explanations of
 the trade-off, then choosing a model (via :mod:`quill.core.speech.service`,
 which already marks one "recommended for your computer"). This module
 supplies the engine step's data and a friendly default, so the UI is a thin
@@ -47,33 +48,14 @@ _FASTER_WHISPER_SUMMARY = (
     "use your graphics card if you have one. Best when you want top-quality "
     "transcription and have a capable machine."
 )
-_NEMOTRON_TAGLINE = "top English accuracy on the CPU; no GPU or torch needed"
-_NEMOTRON_SUMMARY = (
-    "NVIDIA's Nemotron streaming model (English only) run on the CPU via "
-    "sherpa-onnx — very accurate and fast, with no graphics card required. A "
-    "larger download than Whisper.cpp; a strong choice for English dictation."
+_SHARED_TAGLINE = "the models QUILL Lite and Transcribe use; Parakeet, Nemotron and more"
+_SHARED_SUMMARY = (
+    "The speech models every QUILL app shares, on the CPU via sherpa-onnx: the "
+    "built-in Moonshine and Whisper, and downloads such as Parakeet (25 languages, "
+    "never invents text from silence) and Nemotron. A model downloaded here is "
+    "also used by live dictation, QUILL Lite and QUILL Transcribe, so it is never "
+    "downloaded twice."
 )
-_PARAKEET_TAGLINE = "most reliable for dictation; 25 languages, CPU-only"
-
-
-def _parakeet_summary() -> str:
-    """Parakeet's summary, with its capability sentence drawn from the catalog.
-
-    The catalog is the manifest of truth for what a model can do; composing the
-    sentence from it (the same ``capability_sentence`` the model-manager rows
-    speak) means this picker can never promise something the catalog does not.
-    """
-    from quill.core.speech import catalog
-    from quill.core.speech.service import capability_sentence
-
-    info = catalog.parakeet_model_by_id(catalog.PARAKEET_RECOMMENDED_MODEL_ID)
-    extra = capability_sentence(info) if info is not None else ""
-    return (
-        "NVIDIA's Parakeet 3 run on the CPU via sherpa-onnx — 25 languages, no "
-        "graphics card or torch, and once its model is installed dictation "
-        "prefers it automatically. Unlike Whisper it cannot type a phantom "
-        "phrase over a silent pause." + extra
-    )
 
 
 def _safe(predicate) -> bool:  # type: ignore[no-untyped-def]
@@ -102,38 +84,17 @@ def _faster_whisper_install_supported() -> bool:
     return faster_whisper_install_supported()
 
 
-def _nemotron_installed() -> bool:
-    from quill.core.speech.engine_install import is_nemotron_available
+def _shared_installed() -> bool:
+    from quill.core.speech.providers.sherpa_shared import SherpaSharedProvider
 
-    return is_nemotron_available()
+    return SherpaSharedProvider().is_available()
 
 
-def _nemotron_install_supported() -> bool:
+def _shared_install_supported() -> bool:
+    """The runtime (sherpa-onnx) installs through the same pack Nemotron used."""
     from quill.core.speech.engine_install import nemotron_install_supported
 
     return nemotron_install_supported()
-
-
-def _parakeet_model_available() -> bool:
-    """True only when the Parakeet 3 model is hosted+pinned on assets-v1
-    (same offer-nothing-you-cannot-finish rule as Nemotron below)."""
-    from quill.core.speech import catalog, model_mirrors
-
-    return model_mirrors.mirror_for("parakeet", catalog.PARAKEET_RECOMMENDED_MODEL_ID) is not None
-
-
-def _nemotron_model_available() -> bool:
-    """True only when the Nemotron model is hosted+pinned on the assets-v1 release.
-
-    Until the verified ONNX zip is uploaded and its SHA pinned in
-    :mod:`quill.core.speech.model_mirrors`, the engine cannot finish setup (its
-    ``download_model`` would fail), so it is not offered in the guided picker at
-    all — no half-install of the runtime followed by a dead end. It appears
-    automatically once the asset is live.
-    """
-    from quill.core.speech import catalog, model_mirrors
-
-    return model_mirrors.mirror_for("nemotron", catalog.NEMOTRON_RECOMMENDED_MODEL_ID) is not None
 
 
 def offline_speech_engine_options() -> list[OfflineSpeechEngineOption]:
@@ -141,8 +102,9 @@ def offline_speech_engine_options() -> list[OfflineSpeechEngineOption]:
 
     whisper.cpp downloads from QUILL's own verified release asset (always
     installable); Faster Whisper installs via pip and is only offered when that
-    is supported in this build. Nemotron is appended only when its model asset is
-    hosted+pinned (otherwise it cannot complete setup, so it is not shown).
+    is supported in this build. The shared speech models (dict.md D-26) come
+    second: their downloads are pinned to a Hugging Face commit and SHA-256, so
+    setup can always finish.
     """
     options = [
         OfflineSpeechEngineOption(
@@ -165,35 +127,20 @@ def offline_speech_engine_options() -> list[OfflineSpeechEngineOption]:
     ]
     # Vosk is not offered here (2026-10-13): it stays only as the bundled podcast
     # chapter engine (service.CHAPTER_PROVIDER_ID), not a dictation choice.
-    # Parakeet 3 and Nemotron appear only once their model assets are
-    # hosted+pinned (mirror-gated); until then each is fully inert and
-    # unlisted. Both ride the same sherpa-onnx runtime, so Nemotron's
-    # installed/installable detectors answer for Parakeet too. Parakeet sits
-    # right after the recommended default because it is the engine dictation
-    # itself prefers once installed.
-    if _safe(_parakeet_model_available):
-        options.insert(
-            1,
-            OfflineSpeechEngineOption(
-                engine_id="parakeet",
-                name="Parakeet 3 (NVIDIA)",
-                tagline=_PARAKEET_TAGLINE,
-                summary=_parakeet_summary(),
-                installed=_safe(_nemotron_installed),
-                install_supported=_safe(_nemotron_install_supported),
-            ),
-        )
-    if _safe(_nemotron_model_available):
-        options.append(
-            OfflineSpeechEngineOption(
-                engine_id="nemotron",
-                name="Nemotron (NVIDIA)",
-                tagline=_NEMOTRON_TAGLINE,
-                summary=_NEMOTRON_SUMMARY,
-                installed=_safe(_nemotron_installed),
-                install_supported=_safe(_nemotron_install_supported),
-            )
-        )
+    # The shared models replaced the separate Parakeet and Nemotron engines
+    # (2026-10-16); they sit right after the recommended default because
+    # dictation itself prefers Parakeet once it is installed.
+    options.insert(
+        1,
+        OfflineSpeechEngineOption(
+            engine_id="sherpa",
+            name="QUILL speech models (Parakeet, Nemotron and more)",
+            tagline=_SHARED_TAGLINE,
+            summary=_SHARED_SUMMARY,
+            installed=_safe(_shared_installed),
+            install_supported=_safe(_shared_install_supported),
+        ),
+    )
     return options
 
 
@@ -233,8 +180,10 @@ def _catalog_models(engine_id: str) -> tuple:  # type: ignore[type-arg]
 
     if engine_id == "fasterwhisper":
         return catalog.FASTER_WHISPER_MODELS
-    if engine_id == "nemotron":
-        return catalog.NEMOTRON_MODELS
+    if engine_id == "sherpa":
+        from quill.core.speech.providers.sherpa_shared import SherpaSharedProvider
+
+        return tuple(SherpaSharedProvider().list_supported_models())
     return catalog.WHISPER_CPP_MODELS
 
 
@@ -251,16 +200,18 @@ def models_for_engine(engine_id: str) -> list[ModelChoice]:
         recommend_model_id,
         recommendation_reason,
     )
-    from quill.core.windows_dictation.model_types import legacy_tier
 
     models = _catalog_models(engine_id)
     ids = [m.id for m in models]
     if not ids:
         return []
     try:
-        ram, gpu = detect_total_ram_gb(), detect_has_gpu()
-        best_fit = recommend_model_id(ids, ram, gpu)
-        reason = recommendation_reason(ram, gpu)
+        if engine_id == "sherpa":  # D-22's advice, the same Choose Model gives
+            best_fit, reason = _shared_advice(ids)
+        else:
+            ram, gpu = detect_total_ram_gb(), detect_has_gpu()
+            best_fit = recommend_model_id(ids, ram, gpu)
+            reason = recommendation_reason(ram, gpu)
     except Exception:  # noqa: BLE001 - detection must never break the picker
         best_fit, reason = ids[0], ""
     return [
@@ -270,11 +221,30 @@ def models_for_engine(engine_id: str) -> list[ModelChoice]:
             size_text=_size_text(m.approximate_size_mb),
             summary=m.recommended_use,
             recommended=m.id == best_fit,
-            tier=legacy_tier(m.id, m.approximate_size_mb, m.accuracy_tier),
+            tier=_tier(engine_id, m),
             reason=reason if m.id == best_fit else "",
         )
         for m in models
     ]
+
+
+def _shared_advice(ids: list[str]) -> tuple[str, str]:
+    from quill.core.windows_dictation.model_advice import for_this_computer
+
+    advice = for_this_computer()
+    if advice.model_id in ids:
+        return advice.model_id, advice.sentence
+    return ids[0], ""
+
+
+def _tier(engine_id: str, model) -> str:  # type: ignore[no-untyped-def]
+    from quill.core.windows_dictation.model_types import legacy_tier
+
+    if engine_id == "sherpa":
+        from quill.core.windows_dictation.model_advice import engine_tier
+
+        return engine_tier(model.id) or ""
+    return legacy_tier(model.id, model.approximate_size_mb, model.accuracy_tier)
 
 
 def default_model_id(engine_id: str) -> str:

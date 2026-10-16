@@ -586,6 +586,12 @@ Ctrl+O still works) turns an audio or video file
 into text with the same models, using the same window as QUILL. Choose the file
 and the model; it is transcribed in the background while you carry on.
 
+For a recording in Spanish, check **Translate into English** (Alt+E) and the
+transcript is written in English instead. It needs a model that translates: the
+built-in Whisper, or a multilingual Whisper you downloaded (not the ones marked
+English). With any other model, or for an English recording, the box is
+unavailable.
+
 When it finishes, you hear how long the recording was and how many words came
 out. Open **Notifications** (Ctrl+Shift+N) and press Enter on the transcript to
 review it. The **Review Transcript** window shows it read-only, with:

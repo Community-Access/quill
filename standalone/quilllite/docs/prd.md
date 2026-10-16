@@ -1082,6 +1082,13 @@ user was editing. A completion notice in Notifications opens the saved
 transcript when activated; Activity retains the outcome and failure reason.
 There is no destination picker.
 
+**Translate into English** (2026-10-16, dict.md D-26): for a recording in a
+language other than English, with a model that translates (the built-in
+Whisper, or a downloaded multilingual Whisper), the transcript can be written
+in English instead. The check box is unavailable otherwise and off unless
+checked. QUILL's offline transcription translates on the same models, because
+all three apps now run every local model through one shared sherpa-onnx layer.
+
 ## 6. Release packaging
 
 **Two** artifacts: the portable build and the system installer. That is the

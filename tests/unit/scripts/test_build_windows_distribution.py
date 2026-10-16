@@ -12,6 +12,7 @@ from scripts.build_windows_distribution import (
     FASTER_WHISPER_WHEELHOUSE_REQUIREMENTS,
     KOKORO_WHEELHOUSE_REQUIREMENTS,
     MP3_WHEELHOUSE_REQUIREMENTS,
+    SHERPA_WHEELHOUSE_REQUIREMENTS,
     VOSK_WHEELHOUSE_REQUIREMENTS,
     _assert_no_retired_credential,
     _prune_embedded_runtime,
@@ -1131,6 +1132,7 @@ def test_kokoro_is_not_bundled_and_installs_on_demand() -> None:
         ("faster-whisper", FASTER_WHISPER_WHEELHOUSE_REQUIREMENTS),
         ("vosk", VOSK_WHEELHOUSE_REQUIREMENTS),
         ("mp3", MP3_WHEELHOUSE_REQUIREMENTS),
+        ("nemotron", SHERPA_WHEELHOUSE_REQUIREMENTS),
     ],
 )
 def test_stage_pip_wheelhouse_runs_pip_download(

@@ -5735,6 +5735,11 @@ says new paragraph or comma usually means the words. Turn it on for a
 recording you dictated on purpose, and comma, period, new line, new
 paragraph and scratch that work as they do in dictation. Commands that
 move the cursor are ignored.</li>
+<li><code>self.translate</code>: Off unless you check it. Writes the
+recording in English instead of the language spoken. It needs a
+recording in a language other than English and a model that translates:
+the built-in Whisper, or a multilingual Whisper you downloaded. With any
+other model this box is unavailable.</li>
 <li><code>self.running</code>: What is being transcribed at the moment,
 how far it has got, and how many recordings are waiting after it.</li>
 <li><code>stop</code>: Stops the transcription that is running and

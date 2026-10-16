@@ -15,20 +15,33 @@ __all__ = [
     "CPU_ONLY",
     "GROUPS",
     "HIGH_ACCURACY",
+    "HOTWORDS",
+    "HOTWORD_MODELS",
     "LIGHTWEIGHT",
     "MEASURED",
     "MODEST",
+    "RAM_TIERS",
     "SHERPA_SOURCE",
+    "STREAMING_KINDS",
     "STRONG",
+    "TASKS",
     "TIERS",
     "TIER_MEANINGS",
+    "TIMESTAMPS",
     "TOO_BIG",
+    "TRANSCRIBE",
+    "TRANSLATE",
     "DownloadFile",
     "DownloadableModel",
     "Measured",
+    "estimated_peak_mb",
     "file",
     "legacy_tier",
     "megabytes",
+    "ram_tier_budget_mb",
+    "ram_tier_for",
+    "ram_tier_sentence",
+    "tasks_for",
     "tier_for",
 ]
 
@@ -117,6 +130,34 @@ class DownloadableModel:
     @property
     def language_names(self) -> str:
         return " and ".join({"en": "English", "es": "Spanish"}[code] for code in self.languages)
+
+    # -- the shared layer's catalogue fields (dict.md D-26) ------------------- #
+    #
+    # Derived, never typed per model, for the same reason the tier is: a new
+    # entry gets them by having a kind, languages and a measurement.
+
+    @property
+    def streaming(self) -> bool:
+        """Recognises while you speak (sherpa-onnx's online recogniser)."""
+        return self.kind in STREAMING_KINDS
+
+    @property
+    def ram_tier(self) -> int:
+        """4, 8 or 16: the smallest computer, in GB of memory, this model fits on
+        beside a screen reader (:func:`ram_tier_for`)."""
+        measured = MEASURED.get(self.id)
+        peak = measured.peak_mb if measured else estimated_peak_mb(self.download_bytes)
+        return ram_tier_for(peak)
+
+    @property
+    def tasks(self) -> frozenset[str]:
+        """What it can do: :data:`TASKS` (:func:`tasks_for`)."""
+        return tasks_for(self.id, self.kind, self.languages)
+
+    @property
+    def source_url(self) -> str:
+        """The pinned repository page, for the licence and the details box."""
+        return f"{_HF}{self.repo}/tree/{self.commit}"
 
     def url(self, item: DownloadFile) -> str:
         return f"{_HF}{self.repo}/resolve/{self.commit}/{item.name}"
@@ -231,6 +272,76 @@ _LEGACY_SAME_AS: dict[str, tuple[str, float]] = {
     "nemotron-streaming-en-0.6b": ("nemotron", 8.0),
     "parakeet-tdt-0.6b-v3": ("parakeet", 6.3),
 }
+
+
+# -- memory tiers, tasks and streaming (D-26) --------------------------------- #
+
+#: ``(tier in GB, megabytes dictation may take beside a screen reader there)``.
+#: The same budgets model_advice holds a recommendation to: 600 MB on a 4 GB
+#: computer (dictation design, section 1), 1 GB on an 8 GB one, 2.5 GB above.
+RAM_TIERS: tuple[tuple[int, int], ...] = ((4, 600), (8, 1000), (16, 2500))
+
+#: sherpa-onnx loader kinds that stream (online recognisers).
+STREAMING_KINDS = frozenset({"nemotron"})
+
+TRANSCRIBE = "transcribe"
+TRANSLATE = "translate"
+TIMESTAMPS = "timestamps"
+HOTWORDS = "hotwords"
+TASKS: tuple[str, ...] = (TRANSCRIBE, TRANSLATE, TIMESTAMPS, HOTWORDS)
+
+#: Models measured to learn My Words while listening (D-28). A model joins only
+#: once the real-voice benchmark (B-1) shows hotwords help it with no regression
+#: elsewhere. None has yet: Nemotron's streaming decoder is greedy-only and
+#: Parakeet's NeMo hotwords came out upper-cased and garbled (measured
+#: 2026-10-05, dictation design, section 5 B); English Zipformer transducers,
+#: the realistic route, are not in the catalogue yet.
+HOTWORD_MODELS: frozenset[str] = frozenset()
+
+
+def ram_tier_for(peak_mb: int) -> int:
+    """The smallest memory tier whose budget holds a model peaking at *peak_mb*."""
+    for tier, budget in RAM_TIERS:
+        if peak_mb <= budget:
+            return tier
+    return RAM_TIERS[-1][0]
+
+
+def ram_tier_budget_mb(memory_gb: float) -> int:
+    """What dictation may take beside the screen reader on a computer with
+    *memory_gb* of memory: the budget of the largest tier it reaches. A 4 GB
+    computer reports a little under 4, so the bands are 7 and 15."""
+    if memory_gb < 7.0:
+        return RAM_TIERS[0][1]
+    if memory_gb < 15.0:
+        return RAM_TIERS[1][1]
+    return RAM_TIERS[2][1]
+
+
+def estimated_peak_mb(download_bytes: int) -> int:
+    """Peak memory for a model nobody measured, from its download: the int8
+    weights plus working memory (the measured models ran 1.2 to 2.6 times
+    their download, the small ones highest)."""
+    download_mb = download_bytes / 1_000_000
+    return int(max(download_mb * 1.3, download_mb + 200))
+
+
+def ram_tier_sentence(tier: int) -> str:
+    """``"Fits a computer with 8 GB of memory or more."``"""
+    return f"Fits a computer with {tier} GB of memory or more."
+
+
+def tasks_for(model_id: str, kind: str, languages: tuple[str, ...]) -> frozenset[str]:
+    """Every model transcribes, and every model gives phrase timestamps (the
+    voice detector cuts the phrases, so the times are the same for all).
+    Multilingual Whisper translates into English (``task="translate"``);
+    hotwords only for :data:`HOTWORD_MODELS`."""
+    found = {TRANSCRIBE, TIMESTAMPS}
+    if kind == "whisper" and set(languages) - {"en"}:
+        found.add(TRANSLATE)
+    if model_id in HOTWORD_MODELS:
+        found.add(HOTWORDS)
+    return frozenset(found)
 
 
 def legacy_tier(model_id: str, size_mb: int, accuracy_tier: str) -> str:

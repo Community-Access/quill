@@ -36,19 +36,26 @@ fake.
 from __future__ import annotations
 
 import threading
+from collections.abc import Mapping
 from pathlib import Path
 from typing import Any, Protocol
 
+from quill.core.speech.provider import SpeechError
 from quill.core.windows_dictation.model_catalog import DownloadableModel, downloadable
+from quill.core.windows_dictation.model_types import TRANSCRIBE
 
 __all__ = [
     "DictationEngine",
     "PhraseModeOnline",
+    "SherpaLoadError",
+    "SherpaRuntimeError",
+    "SherpaUnsupportedError",
     "StreamingSession",
     "build",
     "close_sentence",
     "fallback_sentence",
     "online",
+    "unsupported_translation",
 ]
 
 _PROVIDER = "cpu"
@@ -211,6 +218,36 @@ def _files(model: DownloadableModel, folder: Path) -> dict[str, str]:
     return {item.role: str(folder / item.name) for item in model.files}
 
 
+# -- the shared layer's errors (dict.md D-26, GATE-EC) ---------------------------- #
+
+
+class SherpaLoadError(SpeechError):
+    """A speech model would not load. The message is a sentence."""
+
+    code = "QUILL-SPEECH-SHERPA-LOAD"
+
+
+class SherpaUnsupportedError(SpeechError):
+    """Something was asked of a model that it cannot do (translation from a model
+    that only transcribes, for instance). The message names the model and what
+    would work instead."""
+
+    code = "QUILL-SPEECH-SHERPA-UNSUPPORTED"
+
+
+class SherpaRuntimeError(SpeechError):
+    """sherpa-onnx itself is missing from this copy. The message is a sentence."""
+
+    code = "QUILL-SPEECH-SHERPA-RUNTIME"
+
+
+def unsupported_translation(model: DownloadableModel) -> SherpaUnsupportedError:
+    return SherpaUnsupportedError(
+        f"{model.name} cannot translate; it only writes what was said. Choose a "
+        "multilingual Whisper model to translate into English."
+    )
+
+
 def build(
     model: DownloadableModel,
     folder: Path,
@@ -218,19 +255,30 @@ def build(
     *,
     language: str = "en",
     threads: int = 2,
+    task: str = TRANSCRIBE,
+    decoder_options: Mapping[str, Any] | None = None,
 ) -> Any:
     """The recogniser for downloaded *model* in *folder*, in the offline shape.
 
-    Raises whatever sherpa-onnx raises for a model it cannot load; the
-    recogniser turns that into one plain sentence and the bundled engine.
+    *task* is ``transcribe`` or ``translate`` (into English; only a model whose
+    :attr:`~DownloadableModel.tasks` include it). *decoder_options* are extra
+    sherpa-onnx arguments for a transducer -- the hotwords plumbing
+    (:mod:`~quill.core.windows_dictation.hotwords`), empty unless a model is
+    measured to benefit. Raises :class:`SherpaUnsupportedError` for a task the
+    model lacks, and otherwise whatever sherpa-onnx raises for a model it cannot
+    load; the recogniser turns that into one plain sentence and the bundled engine.
     """
+    if task not in model.tasks:
+        raise unsupported_translation(model)
     files = _files(model, folder)
+    extra = dict(decoder_options or {})
     if model.kind == "whisper":
         return sherpa_onnx.OfflineRecognizer.from_whisper(
             encoder=files["encoder"],
             decoder=files["decoder"],
             tokens=files["tokens"],
             language=language if language in model.languages else "en",
+            task=task,
             num_threads=threads,
             provider=_PROVIDER,
         )
@@ -251,15 +299,25 @@ def build(
             num_threads=threads,
             model_type="nemo_transducer",
             provider=_PROVIDER,
+            **extra,
         )
     if model.kind == "nemotron":
-        return PhraseModeOnline(online(model, folder, sherpa_onnx, threads=threads), language)
+        recognizer = online(model, folder, sherpa_onnx, threads=threads, decoder_options=extra)
+        return PhraseModeOnline(recognizer, language)
     raise ValueError(f"Unknown model kind: {model.kind}")
 
 
-def online(model: DownloadableModel, folder: Path, sherpa_onnx: Any, *, threads: int = 2) -> Any:
+def online(
+    model: DownloadableModel,
+    folder: Path,
+    sherpa_onnx: Any,
+    *,
+    threads: int = 2,
+    decoder_options: Mapping[str, Any] | None = None,
+) -> Any:
     """Nemotron as sherpa-onnx's streaming recogniser (for :class:`StreamingSession`)."""
     files = _files(model, folder)
+    options: dict[str, Any] = {"decoding_method": "greedy_search", **(decoder_options or {})}
     return sherpa_onnx.OnlineRecognizer.from_transducer(
         tokens=files["tokens"],
         encoder=files["encoder"],
@@ -268,6 +326,6 @@ def online(model: DownloadableModel, folder: Path, sherpa_onnx: Any, *, threads:
         num_threads=threads,
         sample_rate=16_000,
         feature_dim=_NEMOTRON_FEATURES,
-        decoding_method="greedy_search",
         provider=_PROVIDER,
+        **options,
     )
