@@ -244,6 +244,52 @@
 <main id="main-content" tabindex="-1">
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
+<h3 id="overnight-fixes-and-gates-2026-10-1516">Overnight fixes and
+gates (2026-10-15/16)</h3>
+<p>Small fixes made directly on the overnight branch; the larger work
+has its own sections below.</p>
+<ul>
+<li><strong>Picks:</strong> a rebuild with nothing new keeps the
+published <code>updated</code> stamp
+(<code>scripts/build_community_picks.py</code>,
+<code>keep_unchanged_timestamp</code>), so the picks workflow no longer
+opens a pull request that changes one line (#1659).</li>
+<li><strong>Quill Social uses the family’s one certificate
+check.</strong> <code>rss.py</code> built its own SSL context; it now
+uses <code>quill.core.net.verified_ssl_context()</code> and
+<code>certificate_problem</code>, Social’s <code>main</code> configures
+the shared trust first, and
+<code>tests/unit/core/test_tls_one_check.py</code> reads every
+<code>standalone/*/quill_*</code> package (Quill Radio for Mac exempt:
+it ships neither quill nor truststore).</li>
+<li><strong>Radio:</strong> Suggest a Station or Podcast starts What is
+it on Choose one (an untouched form filed a podcast as a station) and
+its Address help says <code>https://</code> or <code>http://</code>;
+tune-in reminders reach the notification centre
+(<code>reminder_monitor._notice</code>), a station reminder carrying its
+stream; the status bar gains a Notifications cell and the shared Help
+&gt; Notifications item says the unread count (Radio and Cast), with
+<code>CellSpec</code> moved to
+<code>quill/ui/radio/status_cells.py</code> under GATE-11.</li>
+<li><strong>Auphonic client:</strong> uploads and downloads stream, a
+download never overwrites a file (<code>name (2).ext</code>), a
+cancelled one leaves nothing, and the server’s file name is reduced to a
+bare name.</li>
+<li><strong>QUILL Lite Preferences:</strong> four access keys were each
+claimed twice in one window, which <code>check_access_keys</code> cannot
+see because the window is built by a function across modules;
+<code>tests/unit/apps/test_lite_preferences_access_keys.py</code> now
+reads it as one window.</li>
+<li><strong>New gate:</strong> the Alt menu paths Quill Radio’s guide
+teaches (“Alt+Q, then W”) are checked against the real menu bar
+(<code>test_menu_accelerators.py</code>).</li>
+<li><strong>D-1 review fixes:</strong> every way out of More Dictation
+Settings checks the command word, and Dictation Status says command
+mode.</li>
+<li><strong>Find in Open Documents</strong> has its own key in QUILL
+(Ctrl+Shift+F10) and the modal contract; <code>apply_modal_ids</code>
+relabels only its own dialog’s buttons (#1661, already on main).</li>
+</ul>
 <h3
 id="quill-radio-extras-marked-delete-resume-earcon-a-second-device-per-favourite-keys-whats-new-notes-in-reminders-2026-10-16">Quill
 Radio extras: marked delete, resume earcon, a second device,

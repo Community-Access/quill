@@ -2,6 +2,41 @@
 
 ## 1.0.0
 
+### Overnight fixes and gates (2026-10-15/16)
+
+Small fixes made directly on the overnight branch; the larger work has its own
+sections below.
+
+- **Picks:** a rebuild with nothing new keeps the published `updated` stamp
+  (`scripts/build_community_picks.py`, `keep_unchanged_timestamp`), so the
+  picks workflow no longer opens a pull request that changes one line (#1659).
+- **Quill Social uses the family's one certificate check.** `rss.py` built its
+  own SSL context; it now uses `quill.core.net.verified_ssl_context()` and
+  `certificate_problem`, Social's `main` configures the shared trust first, and
+  `tests/unit/core/test_tls_one_check.py` reads every `standalone/*/quill_*`
+  package (Quill Radio for Mac exempt: it ships neither quill nor truststore).
+- **Radio:** Suggest a Station or Podcast starts What is it on Choose one (an
+  untouched form filed a podcast as a station) and its Address help says
+  `https://` or `http://`; tune-in reminders reach the notification centre
+  (`reminder_monitor._notice`), a station reminder carrying its stream; the
+  status bar gains a Notifications cell and the shared Help > Notifications
+  item says the unread count (Radio and Cast), with `CellSpec` moved to
+  `quill/ui/radio/status_cells.py` under GATE-11.
+- **Auphonic client:** uploads and downloads stream, a download never
+  overwrites a file (`name (2).ext`), a cancelled one leaves nothing, and the
+  server's file name is reduced to a bare name.
+- **QUILL Lite Preferences:** four access keys were each claimed twice in one
+  window, which `check_access_keys` cannot see because the window is built by
+  a function across modules; `tests/unit/apps/test_lite_preferences_access_keys.py`
+  now reads it as one window.
+- **New gate:** the Alt menu paths Quill Radio's guide teaches ("Alt+Q, then
+  W") are checked against the real menu bar (`test_menu_accelerators.py`).
+- **D-1 review fixes:** every way out of More Dictation Settings checks the
+  command word, and Dictation Status says command mode.
+- **Find in Open Documents** has its own key in QUILL (Ctrl+Shift+F10) and the
+  modal contract; `apply_modal_ids` relabels only its own dialog's buttons
+  (#1661, already on main).
+
 ### Quill Radio extras: marked delete, resume earcon, a second device, per-favourite keys, What's New, notes in reminders (2026-10-16)
 
 Jeff's todo P3 "Radio extras", from the FreeRadio study (xradio2 sections 4.5,
