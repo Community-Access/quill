@@ -38,6 +38,16 @@ except ImportError:
 from quill.io.ocr import OcrLine
 
 
+def winrt_ocr_importable() -> bool:
+    """Whether the ``winrt`` OCR packages imported, so recognition can be tried.
+
+    This module always imports now (the packages are imported inside a
+    ``try``), so "the module imported" stopped meaning "OCR is here". Callers
+    that decide whether to offer OCR ask this instead.
+    """
+    return _WINRT_AVAILABLE
+
+
 def recognize_with_windows_ocr(
     path: Path, language: str | None
 ) -> tuple[str, list[OcrLine]]:  # pragma: no cover - requires Windows + winrt
@@ -82,4 +92,4 @@ def recognize_with_windows_ocr(
     return asyncio.run(_run())
 
 
-__all__ = ["recognize_with_windows_ocr"]
+__all__ = ["recognize_with_windows_ocr", "winrt_ocr_importable"]

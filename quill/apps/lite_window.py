@@ -58,6 +58,7 @@ from quill.apps.lite_window_markup import DocumentMarkupMixin
 from quill.apps.lite_window_menus import DocumentMenuMixin
 from quill.apps.lite_window_mode import DocumentModeMixin
 from quill.apps.lite_window_open import DocumentBackgroundOpenMixin
+from quill.apps.lite_window_pdf import DocumentPdfMixin
 from quill.apps.lite_window_recent import DocumentRecentMixin
 from quill.apps.lite_window_sections import DocumentSectionCommandsMixin
 from quill.apps.lite_window_selection import DocumentSelectionMixin
@@ -134,6 +135,8 @@ class DocumentFrame(
     DocumentRecentMixin,
     # Large and networked files open off the UI thread (F-05).
     DocumentBackgroundOpenMixin,
+    # PDFs open as text through QUILL's reader, never written back (2026-10-15).
+    DocumentPdfMixin,
     DocumentContextMenuMixin,
     DocumentMenuMixin,
     DocumentAppearanceMixin,

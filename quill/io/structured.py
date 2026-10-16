@@ -19,12 +19,13 @@ from xml.etree.ElementTree import Element
 from quill.core.document import Document
 from quill.core.epub import load_epub_book, render_epub_book
 from quill.core.pdf_ocr_install import PACK_ASSISTED_SUFFIXES, extraction_pack_missing
+from quill.core.pdf_open import read_pdf_for_open
 from quill.core.safe_archive import check_zip_safety, open_zip
 from quill.core.safe_xml import fromstring as safe_xml_fromstring
 from quill.io.docx_text import read_docx_text, read_docx_xml_text
 from quill.io.markitdown_bridge import convert_with_markitdown
 from quill.io.pages import read_pages_document
-from quill.io.pdf import extract_pdf_outline, extract_pdf_text, format_pdf_document
+from quill.io.pdf import extract_pdf_outline, extract_pdf_text
 from quill.io.rtf import read_rtf_document
 from quill.io.text import read_text_document
 
@@ -440,41 +441,32 @@ def _missing_legacy_office_text(path: Path, source_kind: str) -> tuple[str, dict
 
 
 def _format_pdf(path: Path, *, password: str | None = None) -> tuple[str, dict[str, object]]:
-    result = extract_pdf_text(path, password=password)
-    text = format_pdf_document(result)
-    metadata: dict[str, object] = {
-        "source_kind": "pdf",
-        "engine": result.engine,
-        "quality_score": result.quality_score,
-        "page_count": result.page_count,
-        "extracted_pages": result.extracted_pages,
-        "page_scores": result.page_scores,
-    }
-    # Import the PDF's embedded outline (Adobe bookmarks) as (title, page) pairs so
-    # the open flow can turn them into QUILL bookmarks. Only when a reader actually
-    # saw pages (page_count > 0) -- a locked/absent PDF has none. Best-effort.
-    if result.page_count > 0:
-        outline = extract_pdf_outline(path, password=password)
-        if outline:
-            metadata["pdf_outline"] = outline
-    if result.quality_score >= 50 and result.text.strip():
+    # The one PDF read both editors share (quill.core.pdf_open): text with form
+    # feeds between pages, and the embedded outline as (title, page) pairs when
+    # a reader saw pages. The module's own names are passed as the reader so a
+    # test that patches them here still reaches them.
+    found = read_pdf_for_open(
+        path, password=password, extract=extract_pdf_text, read_outline=extract_pdf_outline
+    )
+    text, metadata = found.text, found.metadata()
+    if found.quality_score >= 50 and found.text.strip():
         return text, metadata
 
     # A locked PDF has no text for MarkItDown to read either (it cannot supply the
     # password), and running it would only bury the "encrypted" signal the open
     # flow needs to prompt for a password. Return the encrypted result unchanged.
-    if result.engine == "encrypted":
+    if found.engine == "encrypted":
         return text, metadata
 
     markitdown_document = _read_via_markitdown(
-        path, "pdf", fallback_engine=result.engine, quality_score=85
+        path, "pdf", fallback_engine=found.engine, quality_score=85
     )
     if markitdown_document is None:
         return text, metadata
 
     metadata.update({
-        "engine": f"{result.engine} + markitdown",
-        "quality_score": max(result.quality_score, 85),
+        "engine": f"{found.engine} + markitdown",
+        "quality_score": max(found.quality_score, 85),
         "markitdown_used": True,
     })
     return markitdown_document.text, metadata

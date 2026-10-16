@@ -187,6 +187,13 @@ class DocumentDiskWatchMixin:
         from quill.ui.richedit_rtf_surface import RichEditRtfError
 
         path = Path(self.path)
+        from quill.core.pdf_open import is_pdf_path
+
+        if is_pdf_path(path):
+            # The whole open again, off the UI thread: a changed PDF may now
+            # want a password or look scanned. It says its own outcome.
+            self.begin_background_load(path)
+            return False
         mode = RICH if is_rich_path(path.name) else PLAIN
         line = self._caret_line()
         try:

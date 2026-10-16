@@ -245,6 +245,72 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="pdfs-in-quill-lite-one-open-path-for-both-editors-and-windows-ocr-for-scanned-pdfs-2026-10-15">PDFs
+in QUILL Lite, one open path for both editors, and Windows OCR for
+scanned PDFs (2026-10-15)</h3>
+<p>Jeff’s todo P2 #28, phases 1 and 2 of the PDF plan. QUILL Lite may
+never be ahead of QUILL, so every piece is shared and QUILL reaches each
+one.</p>
+<ul>
+<li><strong>One PDF open, shared.</strong> New wx-free
+<code>quill/core/pdf_open.py</code>: <code>read_pdf_for_open</code> (the
+<code>quill.io.pdf</code> reader, form feeds between pages, the outline;
+the password is passed to the reader and never kept),
+<code>PdfOpen</code> (<code>needs_password</code>, <code>refused</code>,
+<code>looks_scanned</code> via docconvert’s chars-per-page heuristic),
+<code>ocr_pdf_for_open</code>, <code>outline_places</code> /
+<code>outline_bookmark_offsets</code> / <code>page_places</code>, and
+the sentences (password prompt, scanned question, open summary, Save’s
+refusal). <code>quill.io.structured._format_pdf</code> now reads through
+it, so File &gt; Open in QUILL and in QUILL Lite cannot read the same
+PDF two ways.</li>
+<li><strong>QUILL Lite opens PDFs</strong>
+(<code>quill/apps/lite_window_pdf.py</code>): in the Open filter; always
+on the worker (<code>open_prepare</code>); locked asks in the shared
+password box (<code>quill/ui/pdf_password.py</code>, now also QUILL’s
+<code>_ask_pdf_password</code>) and re-reads; damaged says why; scanned
+asks to OCR (Yes runs OCR as a background open, the result marked
+modified); text opens with one sentence. The window keeps the PDF’s
+path, Save refuses with the shared sentence
+(<code>EXPORT_ONLY_SUFFIXES</code>) and goes to Save As with
+<code>.txt</code>, Save As refuses <code>.pdf</code>, Reopen with
+Encoding is off for a PDF, and a reload after an outside change runs the
+whole open again.</li>
+<li><strong>Pages and outline.</strong>
+<code>navigation.page_position</code> is the one “page N of M” (QUILL’s
+Page cell now reads it). QUILL Lite’s status bar gains a
+<strong>Page</strong> cell shown only while the text has form feeds
+(arrow keys skip it when hidden; Enter opens Go To on Page). Go To in
+both editors gains an <strong>Outline</strong> kind; QUILL Lite’s offers
+<strong>Page</strong> only for a document with real pages.
+<code>ask_go_to</code> takes <code>initial_kind</code>.</li>
+<li><strong>Windows OCR tier</strong>
+(<code>quill/io/docconvert_windows.py</code>):
+<code>convert_with_windows_ocr</code> (Windows.Media.Ocr via the
+frozen-in <code>winrt</code> packages; a build without them answers a
+sentence) and <code>convert_with_on_device_ocr</code> (Tesseract first
+for its confidence, then Windows OCR, then
+<code>NO_ON_DEVICE_OCR</code>). The page loop is shared
+(<code>docconvert._ocr_pdf_pages</code>),
+<code>ConversionOutcome.pages</code> keeps each page, and the rasterizer
+moved to <code>quill/io/pdf_raster.py</code> (GATE-11). QUILL’s Import /
+Convert uses Windows OCR with no install offer when Tesseract is absent
+(<code>TIER_WINDOWS_OCR</code>, its own announcement and review
+label).</li>
+<li><strong>Scanned PDF on QUILL’s File &gt; Open</strong>
+(<code>quill/ui/main_frame_pdf_open.py</code>): the same question QUILL
+Lite asks; Yes puts the OCR text, with form feeds, into the PDF’s tab (a
+new tab if it was edited meanwhile).</li>
+<li><strong>Fixed on the way:</strong>
+<code>WindowsOcrBackend.is_available</code> was always true, because the
+platform module imports even without winrt; it now asks
+<code>windows_ocr.winrt_ocr_importable()</code>.</li>
+<li>Not done: QUILL Lite’s File &gt; Import / Convert Document row, the
+portable build’s <code>office-text</code> and <code>ocr</code> groups
+(needs a release-machine build to rebaseline
+<code>portable-inventory.json</code>), phase 3 (headings, tables).</li>
+</ul>
+<h3
 id="import--convert-reads-pdfs-without-markitdown-ffmpeg-ships-with-its-licence-everywhere-2026-10-15">Import
 / Convert reads PDFs without MarkItDown; FFmpeg ships with its licence
 everywhere (2026-10-15)</h3>

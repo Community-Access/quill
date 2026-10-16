@@ -92,6 +92,7 @@ __all__ = [
 # The cells themselves, their labels and their sizing rule live next door: a
 # catalogue and a controller grow for different reasons.
 from quill.apps.lite_status_cells import (
+    _CELL_ACTIONS,
     _CELL_GAP,
     _COALESCE_MS,
     _MESSAGE,
@@ -99,6 +100,7 @@ from quill.apps.lite_status_cells import (
     CELLS,
     RICH_ENCODING_CELL,
     RICH_LINE_ENDINGS_CELL,
+    SHOWN_ONLY_WITH_TEXT,
     StatusCell,
     _clip_message,
     _widen_to_label,
@@ -106,6 +108,7 @@ from quill.apps.lite_status_cells import (
     live_status_message,
     native_cell_labels,
     newline_name,
+    page_cell_text,
 )
 from quill.apps.lite_window_dictation import dictation_cell
 
@@ -190,6 +193,7 @@ class DocumentStatusMixin:
             button.Bind(wx.EVT_SET_FOCUS, lambda e, key=cell.key: self._on_status_focus(e, key))
             _widen_to_label(button)
             sizer.Add(button, 0, wx.ALL, _CELL_GAP)
+            button.Show(cell.key not in SHOWN_ONLY_WITH_TEXT)  # Page: a PDF's, later
             self._status_buttons[cell.key] = button
         self.status_panel.SetSizer(sizer)
         self.status_panel.Bind(wx.EVT_SIZE, self._on_status_panel_size)
@@ -308,7 +312,10 @@ class DocumentStatusMixin:
             self._sync_native_status_bar(values)
             for key, text in values.items():
                 button = self._status_buttons[key]
-                if button.GetLabel() == text:
+                if key in SHOWN_ONLY_WITH_TEXT and button.IsShown() != bool(text):
+                    button.Show(bool(text))
+                    widened = True  # a cell came or went: the row moved
+                if button.GetLabel() == text or not text and key in SHOWN_ONLY_WITH_TEXT:
                     continue
                 button.SetLabel(text)
                 widened = _widen_to_label(button) or widened
@@ -347,6 +354,7 @@ class DocumentStatusMixin:
         return {
             _MESSAGE: _clip_message(self._live_status_message()),
             "position": f"Line {line:,}, column {column:,} of {max(1, stats.lines):,}",
+            "page": page_cell_text(text, self.control.GetInsertionPoint()),
             "words": f"{stats.words:,} words",
             "characters": f"{stats.characters:,} characters",
             "selection": selection,
@@ -490,8 +498,10 @@ class DocumentStatusMixin:
         self._status_entry_pending = True
         self._focus_cell(self._active_cell_index)
 
-    def _focus_cell(self, index: int) -> None:
+    def _focus_cell(self, index: int, step: int = 1) -> None:
         index = max(0, min(index, len(CELLS) - 1))
+        if not self._status_buttons[CELLS[index].key].IsShown():  # a hidden Page cell
+            index = max(0, min(index + step, len(CELLS) - 1))
         self._active_cell_index = index
         self._status_buttons[CELLS[index].key].SetFocus()
 
@@ -535,7 +545,7 @@ class DocumentStatusMixin:
         code = event.GetKeyCode()
         index = self._cell_index(key)
         if code == wx.WXK_LEFT:
-            self._focus_cell(index - 1)
+            self._focus_cell(index - 1, -1)
         elif code == wx.WXK_RIGHT:
             self._focus_cell(index + 1)
         elif code == wx.WXK_HOME:
@@ -543,7 +553,8 @@ class DocumentStatusMixin:
         elif code == wx.WXK_END:
             self._focus_cell(len(CELLS) - 1)
         elif code == wx.WXK_TAB:
-            self._focus_cell(index + (-1 if event.ShiftDown() else 1))
+            step = -1 if event.ShiftDown() else 1
+            self._focus_cell(index + step, step)
         elif code in {wx.WXK_ESCAPE, wx.WXK_F6}:
             # F6 as well as Escape, and for the reason F6 got you here: a key
             # that takes you somewhere should take you back. Shift+F6 is the
@@ -596,23 +607,3 @@ class DocumentStatusMixin:
                 timer.Stop()
             except RuntimeError:
                 pass
-
-
-#: What Enter does on each cell. Absent means "say it again".
-_CELL_ACTIONS: dict[str, str] = {
-    "position": "cmd_goto_line",
-    "typing_mode": "cmd_toggle_overwrite",
-    "tab_mode": "cmd_toggle_tab_mode",
-    "format": "cmd_switch_document_kind",
-    "heading": "cmd_list_headings",
-    # Enter on List toggles the cue rather than opening anything, because there
-    # is nothing to open: the cell has already said where you are, and the only
-    # thing left to decide about a list is whether you want to keep hearing
-    # about it.
-    "list": "cmd_toggle_list_announcements",
-    "dictation": "cmd_toggle_dictation",
-    "notifications": "open_dictation_notifications",
-    "encoding": "cmd_file_format",
-    "line_endings": "cmd_file_format",
-    "saved": "cmd_save",
-}

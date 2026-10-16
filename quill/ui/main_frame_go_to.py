@@ -4,8 +4,11 @@ Word's shape, and now the family's. QUILL had **Go To Line** on ``Ctrl+G`` and
 **Go To Page** on ``Ctrl+Shift+G`` as two separate commands with two separate
 prompts, and its bookmarks under a third surface entirely -- three places to
 look and three things to learn for one verb (bad.md 5.4, P1.6). QUILL Lite moved
-onto the shared :mod:`quill.ui.go_to_dialog` first; this is QUILL's half, and
-QUILL brings the **Page** kind QUILL Lite has no model for.
+onto the shared :mod:`quill.ui.go_to_dialog` first; this is QUILL's half. QUILL
+offers **Page** always (estimated where the text has no real pages); QUILL Lite
+offers it when a PDF brought real ones, from the same
+:func:`quill.core.pdf_open.page_places`. A PDF's outline is an **Outline** kind
+in both (2026-10-15).
 
 Both old keys still work. ``Ctrl+Shift+G`` is now **Document Statistics**, which
 is Word's key for it and QUILL Lite's, and Go To Page is the Page row of this
@@ -17,11 +20,8 @@ moving is ``_move_point`` and the location ring next door.
 
 from __future__ import annotations
 
-from quill.core.navigation import (
-    estimate_page_count,
-    estimate_page_start_for_number,
-    page_starts,
-)
+from quill.core.navigation import estimate_page_count, estimate_page_start_for_number
+from quill.core.pdf_open import outline_places, page_places
 from quill.ui.go_to_dialog import GoToTarget, ask_go_to
 
 __all__ = ["GoToMixin"]
@@ -41,16 +41,15 @@ class GoToMixin:
         cursor = self.editor.GetInsertionPoint()
         line = text.count("\n", 0, cursor) + 1
         last_line = text.count("\n") + 1
-        answer = ask_go_to(
-            self.frame,
-            line=line,
-            last_line=last_line,
-            kinds={
-                "Page": self._go_to_page_targets(text),
-                "Bookmark": self._go_to_bookmark_targets(),
-                "Heading": self._go_to_heading_targets(text),
-            },
-        )
+        kinds = {
+            "Page": self._go_to_page_targets(text),
+            "Bookmark": self._go_to_bookmark_targets(),
+            "Heading": self._go_to_heading_targets(text),
+        }
+        outline = self._go_to_outline_targets(text)
+        if outline:  # a PDF that brought one; the same kind QUILL Lite offers
+            kinds["Outline"] = outline
+        answer = ask_go_to(self.frame, line=line, last_line=last_line, kinds=kinds)
         self.editor.SetFocus()
         if answer is None:
             return
@@ -111,12 +110,9 @@ class GoToMixin:
         and the word together, the same promise the status bar's Page cell makes
         -- a page number without them is a real one.
         """
-        starts = page_starts(text)
-        if len(starts) > 1:
-            return [
-                GoToTarget(label=str(number), position=start)
-                for number, start in enumerate(starts[:_MAX_LISTED_PAGES], start=1)
-            ]
+        real = page_places(text)  # the rows QUILL Lite's Page kind shows too
+        if real:
+            return [GoToTarget(label=label, position=start) for label, start in real]
         words_per_page = int(getattr(self.settings, "page_estimate_words_per_page", 300) or 300)
         total = estimate_page_count(text, words_per_page)
         targets: list[GoToTarget] = []
@@ -126,6 +122,17 @@ class GoToMixin:
                 break
             targets.append(GoToTarget(label=f"~{number} (estimated)", position=position))
         return targets
+
+    def _go_to_outline_targets(self, text: str) -> list[GoToTarget]:
+        """A PDF's own outline, each row its title and page (quill.core.pdf_open).
+
+        Resolved from the form feeds in the text as it is now, so an entry still
+        lands on its page after an edit above it. Empty for anything but a PDF
+        that carried an outline, which is when the kind is not offered at all.
+        """
+        metadata = getattr(getattr(self, "document", None), "source_metadata", None) or {}
+        outline = metadata.get("pdf_outline") or ()
+        return [GoToTarget(label=label, position=at) for label, at in outline_places(text, outline)]
 
     def _go_to_bookmark_targets(self) -> list[GoToTarget]:
         """The numbered bookmarks, each row led by its digit (bad.md 5.2).

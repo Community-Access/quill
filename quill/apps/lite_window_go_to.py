@@ -1,4 +1,4 @@
-"""Ctrl+G: one window that goes to a line, a bookmark or a heading.
+"""Ctrl+G: one window that goes to a line, page, bookmark, heading or outline entry.
 
 Split out of :mod:`quill.apps.lite_window_commands` under GATE-11, and it earns
 its own module for the same reason the dialog earns its own window: going
@@ -13,6 +13,7 @@ QUILL Lite's half, which is answering "what places does this document have?".
 
 from __future__ import annotations
 
+from quill.core.pdf_open import outline_places, page_places
 from quill.ui.go_to_dialog import GoToTarget, ask_go_to
 
 __all__ = ["DocumentGoToMixin"]
@@ -31,20 +32,35 @@ class DocumentGoToMixin:
         and go straight to their own list, which is the faster route when you
         know which kind you want; this is the one to press when you do not.
 
-        No Page kind here. QUILL Lite has no pagination model, and a greyed row
-        for a thing the product does not do is a row to walk past forever --
-        the dialog shows the kinds it is given.
+        **Page and Outline only when the document has them** (2026-10-15). A
+        PDF arrives with real page breaks and often an outline, and those are
+        two more kinds; a text file has neither, and a greyed row for a thing
+        the document does not have is a row to walk past forever -- the dialog
+        shows the kinds it is given. The rows are QUILL's, from the shared
+        :mod:`quill.core.pdf_open`.
         """
+        self.open_go_to()
+
+    def go_to_a_page(self) -> None:
+        """Enter on the Page cell: the same window, opened on its Page kind."""
+        self.open_go_to(initial_kind="Page")
+
+    def open_go_to(self, initial_kind: str | None = None) -> None:
+        """The Go To window itself, opened on *initial_kind* when it is offered."""
         total = max(1, self.control.GetNumberOfLines())
         _ok, _column, line = self.control.PositionToXY(self.control.GetInsertionPoint())
+        text = self.doc_text.text
+        kinds: dict[str, list[GoToTarget]] = {}
+        pages = page_places(text)
+        if pages:
+            kinds["Page"] = [GoToTarget(label=label, position=at) for label, at in pages]
+        kinds["Bookmark"] = self._go_to_bookmark_targets()
+        kinds["Heading"] = self._go_to_heading_targets()
+        outline = outline_places(text, getattr(self, "pdf_outline", ()))
+        if outline:
+            kinds["Outline"] = [GoToTarget(label=label, position=at) for label, at in outline]
         answer = ask_go_to(
-            self,
-            line=line + 1,
-            last_line=total,
-            kinds={
-                "Bookmark": self._go_to_bookmark_targets(),
-                "Heading": self._go_to_heading_targets(),
-            },
+            self, line=line + 1, last_line=total, kinds=kinds, initial_kind=initial_kind
         )
         self.control.SetFocus()
         if answer is None:

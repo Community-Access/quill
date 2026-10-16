@@ -18,7 +18,7 @@ from quill.core.braille_statusbar import page_break_mode, short_form_from_resolv
 from quill.core.document_text import DocumentText
 from quill.core.links import infer_markup_kind
 from quill.core.markdown_sections import current_section_at, parse_heading_blocks
-from quill.core.navigation import estimate_page_count, estimate_page_for_position, page_starts
+from quill.core.navigation import estimate_page_count, estimate_page_for_position, page_position
 from quill.core.palette import load_palette_usage, top_suggestion
 from quill.core.settings import STATUS_BAR_ITEMS, Settings, save_settings
 from quill.core.status_cell_width import ratchet_width
@@ -511,11 +511,9 @@ class StatusBarMixin:
             position = editor.GetInsertionPoint()
         except RuntimeError:
             return ""
-        starts = page_starts(text)
-        if len(starts) > 1:
-            current = sum(1 for start in starts if start <= position)
-            current = max(1, min(current, len(starts)))
-            return f"{current} of {len(starts)}"
+        where = page_position(text, position)  # shared with QUILL Lite's Page cell
+        if where is not None:
+            return f"{where[0]} of {where[1]}"
         words_per_page = getattr(self.settings, "page_estimate_words_per_page", 300)
         total = estimate_page_count(text, words_per_page)
         current = estimate_page_for_position(text, position, words_per_page)

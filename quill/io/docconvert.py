@@ -11,8 +11,18 @@ tiers before anything else, per the OCR/document-conversion PRD:
   offline, no upload. Not OCR: a scanned PDF comes back empty here.
 * **Tier 2 — local Tesseract OCR** (:mod:`quill.io.tesseract_ocr`): real OCR
   for images and image-based PDFs, run entirely on-device, CPU-only. Free,
-  offline, no upload. PDF pages are rasterized with ``pypdfium2`` and
-  recognized page by page with ``<!-- Page N -->`` delimiters.
+  offline, no upload. PDF pages are rasterized with ``pypdfium2``
+  (:mod:`quill.io.pdf_raster`) and recognized page by page with
+  ``<!-- Page N -->`` delimiters.
+* **Tier 2, the other engine — Windows OCR** (``Windows.Media.Ocr``, through
+  the ``winrt`` packages the shared runtime already freezes in): the same pages,
+  read by the engine every Windows 10 and 11 machine has, with no download.
+  :func:`quill.io.docconvert_windows.convert_with_on_device_ocr` prefers
+  Tesseract when it is installed, because Tesseract reports a confidence per
+  line and Windows OCR does not, and uses Windows OCR otherwise -- which is
+  what gives QUILL Lite, which never downloads an engine, a way to read a
+  scanned PDF at all. A build without the ``winrt`` packages says so in a
+  sentence rather than failing on an import.
 
 A paid cloud tier (Datalab Chandra) is deliberately **not** implemented here;
 when it arrives it plugs in behind the same outcome model, reached only when
@@ -36,6 +46,7 @@ from typing import Any
 
 from quill.core.error_codes import CodedError
 from quill.io.ocr import OcrResult
+from quill.io.pdf_raster import PdfRasterError, pdf_page_count, render_pdf_pages
 from quill.io.tesseract_ocr import (
     DEFAULT_LANGUAGE,
     ocr_image_with_tesseract,
@@ -104,6 +115,8 @@ TIER_MARKITDOWN = "markitdown"
 #: A PDF's own text layer, read by QUILL's PDF reader (pdfplumber, then pypdf).
 TIER_PDF_TEXT = "pdf-text"
 TIER_LOCAL_OCR = "local-ocr"
+#: The same on-device tier, read by Windows OCR rather than Tesseract.
+TIER_WINDOWS_OCR = "windows-ocr"
 TIER_CLOUD_OCR = "cloud-ocr"
 
 
@@ -129,6 +142,10 @@ class ConversionOutcome:
     #: Low-confidence lines flagged for OCR Review Mode, pre-formatted as
     #: "Page N: [NN%] text" so the review surface is a spoken checklist.
     low_confidence: tuple[str, ...] = ()
+    #: Each page's recognized text, in order, for a caller that wants real page
+    #: breaks (form feeds) rather than ``<!-- Page N -->`` markers -- the open
+    #: flow, where Go To Page and the Page cell read them. Empty for Tier 1.
+    pages: tuple[str, ...] = ()
 
     @property
     def looks_weak(self) -> bool:
@@ -147,6 +164,9 @@ class _Deps:
     pdf_page_count: Callable[[Path], int] | None = None
     pdf_page_images: Callable[[Path, Path], list[Path]] | None = None
     tesseract_ready: Callable[[], bool] = field(default=tesseract_available)
+    #: Windows OCR: whether it can run here, and the recognizer for one image.
+    windows_ocr_ready: Callable[[], bool] | None = None
+    windows_ocr_image: Callable[[Path, str | None], OcrResult] | None = None
 
 
 def text_layer_looks_empty(text: str, page_count: int) -> bool:
@@ -171,39 +191,15 @@ def _default_markitdown(path: Path) -> str:
 
 
 def _default_pdf_page_count(path: Path) -> int:
-    try:
-        import pypdfium2 as pdfium  # type: ignore[import-untyped,import-not-found]
-    except ImportError:
-        return 0
-    document = pdfium.PdfDocument(str(path))
-    try:
-        return len(document)
-    finally:
-        document.close()
+    return pdf_page_count(path)
 
 
 def _default_pdf_page_images(path: Path, work_dir: Path) -> list[Path]:
     """Rasterize each PDF page to a PNG for OCR (about 150 dpi)."""
     try:
-        import pypdfium2 as pdfium  # type: ignore[import-untyped,import-not-found]
-    except ImportError as exc:
-        raise DocConvertError(
-            "Reading PDF pages requires the pypdfium2 package, which is not installed."
-        ) from exc
-    images: list[Path] = []
-    document = pdfium.PdfDocument(str(path))
-    try:
-        for index in range(len(document)):
-            page = document[index]
-            bitmap = page.render(scale=150 / 72)
-            image = bitmap.to_pil()
-            target = work_dir / f"page-{index + 1:04d}.png"
-            image.save(target)
-            images.append(target)
-            page.close()
-    finally:
-        document.close()
-    return images
+        return render_pdf_pages(path, work_dir)
+    except PdfRasterError as exc:
+        raise DocConvertError(str(exc)) from exc
 
 
 def convert_born_digital(
@@ -369,7 +365,32 @@ def convert_with_local_ocr(
         raise DocConvertError(
             f"Local OCR supports images and PDFs; {path.suffix or 'this file'} is neither."
         )
-    render = resolved.pdf_page_images or _default_pdf_page_images
+    return _ocr_pdf_pages(
+        path,
+        lambda image: ocr(image, language),
+        tier=TIER_LOCAL_OCR,
+        deps=resolved,
+        on_progress=on_progress,
+        cancel_requested=cancel_requested,
+    )
+
+
+def _ocr_pdf_pages(
+    path: Path,
+    recognize: Callable[[Path], OcrResult],
+    *,
+    tier: str,
+    deps: _Deps,
+    on_progress: ProgressCallback | None,
+    cancel_requested: CancelFn | None,
+) -> ConversionOutcome:
+    """Draw each page and read it with *recognize*: one loop for both engines.
+
+    Cancel is checked between pages. Page boundaries are kept twice: as
+    ``<!-- Page N -->`` markers in ``text`` (screen-reader-searchable,
+    Markdown-clean) and as ``pages``, for a caller that wants form feeds.
+    """
+    render = deps.pdf_page_images or _default_pdf_page_images
     results: list[OcrResult] = []
     parts: list[str] = []
     with tempfile.TemporaryDirectory(prefix="quill-ocr-") as raw_dir:
@@ -386,19 +407,20 @@ def convert_with_local_ocr(
                     0.05 + 0.9 * (number - 1) / max(total, 1),
                     f"Recognizing page {number} of {total}...",
                 )
-            result = ocr(image, language)
+            result = recognize(image)
             results.append(result)
             parts.append(f"<!-- Page {number} -->\n\n{result.text.rstrip()}\n")
     text = "\n".join(parts).rstrip() + "\n" if parts else ""
     mean = _mean_confidence(results)
     return ConversionOutcome(
         text=text,
-        tier=TIER_LOCAL_OCR,
+        tier=tier,
         source=path,
         page_count=len(results),
         mean_confidence=mean,
         warnings=_weak_warning(mean),
         low_confidence=_flag_low_confidence(results),
+        pages=tuple(result.text.strip() for result in results),
     )
 
 
@@ -520,6 +542,7 @@ __all__ = [
     "TIER_LOCAL_OCR",
     "TIER_MARKITDOWN",
     "TIER_PDF_TEXT",
+    "TIER_WINDOWS_OCR",
     "WEAK_OCR_CONFIDENCE",
     "ConversionOutcome",
     "DocConvertCancelled",

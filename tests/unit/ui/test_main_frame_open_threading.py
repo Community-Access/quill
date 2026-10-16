@@ -70,13 +70,16 @@ def test_pdf_open_needs_password_detects_encrypted_pdf_only() -> None:
 
 
 def test_unique_outline_bookmark_name_dedupes_and_collapses_whitespace() -> None:
-    frame = MainFrame.__new__(MainFrame)
+    # Moved to the shared quill.core.pdf_open on 2026-10-15, where QUILL Lite's
+    # Go To reads the same outline.
+    from quill.core.pdf_open import unique_outline_name
+
     used: set[str] = set()
-    a = frame._unique_outline_bookmark_name("Chapter 1", used)
+    a = unique_outline_name("Chapter 1", used)
     used.add(a)
-    b = frame._unique_outline_bookmark_name("Chapter 1", used)
+    b = unique_outline_name("Chapter 1", used)
     used.add(b)
-    c = frame._unique_outline_bookmark_name("Chapter\n  1", used)  # collapses to "Chapter 1"
+    c = unique_outline_name("Chapter\n  1", used)  # collapses to "Chapter 1"
     assert a == "Chapter 1"
     assert b == "Chapter 1 (2)"
     assert c == "Chapter 1 (3)"
@@ -90,8 +93,13 @@ def test_pdf_outline_import_is_wired_into_open_and_guards_correctly() -> None:
     assert 'outline = metadata.get("pdf_outline")' in SOURCE
     # Idempotent: skip when the document already has bookmarks.
     assert 'if getattr(tab, "bookmarks", None):' in SOURCE
-    # Page number -> character offset via the shared page-marker helper.
-    assert "page_start_for_number(text, int(page))" in SOURCE
+    # Page number -> character offset via the shared page-marker helper, which
+    # QUILL Lite's Go To Outline kind uses too.
+    assert "outline_bookmark_offsets(text, outline)" in SOURCE
+    shared = (Path(__file__).resolve().parents[3] / "quill" / "core" / "pdf_open.py").read_text(
+        encoding="utf-8"
+    )
+    assert "page_start_for_number(text, page)" in shared
 
 
 def test_encrypted_pdf_open_prompts_and_rereads_with_password() -> None:
@@ -104,6 +112,11 @@ def test_encrypted_pdf_open_prompts_and_rereads_with_password() -> None:
     # A wrong password re-enters the finish path flagged as a retry so the prompt
     # can say "that password did not open ...".
     assert "encrypted_retry=True" in SOURCE
-    # The password is collected on the UI thread through the modal-dialog helper.
-    assert "wx.PasswordEntryDialog(" in SOURCE
-    assert 'self._show_modal_dialog(dialog, "Open Password-Protected PDF")' in SOURCE
+    # The password is collected on the UI thread through the modal-dialog helper,
+    # in the one password box QUILL Lite uses too (quill/ui/pdf_password.py).
+    assert "show_modal=self._show_modal_dialog" in SOURCE
+    shared = (Path(__file__).resolve().parents[3] / "quill" / "ui" / "pdf_password.py").read_text(
+        encoding="utf-8"
+    )
+    assert "wx.PasswordEntryDialog(" in shared
+    assert "runner(dialog, PASSWORD_DIALOG_TITLE)" in shared

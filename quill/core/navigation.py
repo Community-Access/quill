@@ -18,6 +18,20 @@ def page_start_for_number(text: str, page_number: int) -> int | None:
     return starts[page_number - 1]
 
 
+def page_position(text: str, position: int) -> tuple[int, int] | None:
+    """``(page, of)`` for *position*, or ``None`` when the text has no real pages.
+
+    Real pages are form feeds, which is how a PDF's page breaks arrive (#872).
+    Both editors' status bars ask this one question, so "page 3 of 12" cannot
+    mean two different things in the two products.
+    """
+    starts = page_starts(text)
+    if len(starts) < 2:
+        return None
+    current = sum(1 for start in starts if start <= position)
+    return max(1, min(current, len(starts))), len(starts)
+
+
 def _word_starts(text: str) -> list[int]:
     """Character offset of each word (maximal run of non-whitespace).
 
