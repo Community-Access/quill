@@ -66,14 +66,16 @@ def apply_modal_ids(
         dialog.SetEscapeId(escape_id)
     if escape_id is None and cancel_id is not None and hasattr(dialog, "SetEscapeId"):
         dialog.SetEscapeId(cancel_id)
-    if affirmative_label is not None and hasattr(dialog, "FindWindowById"):
-        button = dialog.FindWindowById(affirmative_id)
+    for button_id, label in ((affirmative_id, affirmative_label), (cancel_id, cancel_label)):
+        if label is None or button_id is None:
+            continue
+        # FindWindow searches this dialog's children; wx's FindWindowById
+        # without a parent searches every window in the app, and relabelled
+        # another window's OK button whenever one was created first.
+        find = getattr(dialog, "FindWindow", None) or getattr(dialog, "FindWindowById", None)
+        button = find(button_id) if find is not None else None
         if button is not None and hasattr(button, "SetLabel"):
-            button.SetLabel(affirmative_label)
-    if cancel_label is not None and hasattr(dialog, "FindWindowById"):
-        button = dialog.FindWindowById(cancel_id) if cancel_id is not None else None
-        if button is not None and hasattr(button, "SetLabel"):
-            button.SetLabel(cancel_label)
+            button.SetLabel(label)
 
 
 def ok_cancel_platform_order(ok_btn: object, cancel_btn: object) -> tuple[object, object]:

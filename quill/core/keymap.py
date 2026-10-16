@@ -630,7 +630,7 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "edit.find_next": "Cmd+G" if sys.platform == "darwin" else "F3",
     "edit.find_previous": "Cmd+Shift+G" if sys.platform == "darwin" else "Shift+F3",
     "edit.find_all_matches": "Ctrl+Shift+F3",  # was Alt+F3 (now Reveal Codes)
-    "edit.find_in_open_documents": "Ctrl+Alt+Shift+F8",  # the one free in both editors
+    "edit.find_in_open_documents": "Ctrl+Shift+F10",  # not Lite's: parity.DIVERGENCES
     # Ctrl+H becomes Cmd+H on macOS (system Hide) -- dead by default. The darwin
     # alternate Cmd+Alt+F mirrors the Mac/VS Code Replace convention (#30).
     "edit.replace": "Cmd+Alt+F" if sys.platform == "darwin" else "Ctrl+H",

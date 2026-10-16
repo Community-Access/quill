@@ -194,13 +194,22 @@ def isolated_quill_settings(tmp_path, monkeypatch):
     return tmp_path
 
 
-def test_toggle_quiet_mode_flips_the_shared_sound_setting(lite_window, isolated_quill_settings):
+def test_toggle_quiet_mode_flips_this_apps_sounds_and_not_the_family_switch(
+    lite_window, isolated_quill_settings
+):
+    """Since 2026-10-14 the key is QUILL Lite's own (ui/app_sounds): silencing
+    one editor no longer silences every app."""
     from quill.core.settings import load_settings
+    from quill.ui import app_sounds
 
     win = lite_window("hello")
-    before = bool(getattr(load_settings(), "sound_enabled", True))
+    family_before = bool(getattr(load_settings(), "sound_enabled", True))
+    before = app_sounds.sounds_on(win)
     win.cmd_toggle_quiet_mode()
-    assert bool(getattr(load_settings(), "sound_enabled", True)) is not before
+    assert app_sounds.sounds_on(win) is not before
+    assert bool(getattr(load_settings(), "sound_enabled", True)) is family_before
+    win.cmd_toggle_quiet_mode()
+    assert app_sounds.sounds_on(win) is before
 
 
 def test_toggle_quiet_mode_confirms_in_words_never_a_tone(lite_window, isolated_quill_settings):

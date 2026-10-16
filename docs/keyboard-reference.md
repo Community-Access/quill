@@ -91,7 +91,6 @@ Editor commands with default bindings: 496.
 | Ctrl+Alt+Shift+9 | Paste from tray 9 | `edit.paste_from_tray_9` |
 | Ctrl+Alt+Shift+= | Paste from tray 12 | `edit.paste_from_tray_12` |
 | Ctrl+Alt+Shift+B | Select Block | `edit.select_block` |
-| Ctrl+Alt+Shift+F8 | Find in open documents | `edit.find_in_open_documents` |
 | Ctrl+Alt+Shift+M | Open clip library | `edit.open_clip_library` |
 | Ctrl+Alt+Shift+S | Sort Lines Descending | `edit.sort_lines_descending` |
 | Ctrl+Alt+Shift+T | Normalize Whitespace | `edit.normalize_whitespace` |
@@ -111,6 +110,7 @@ Editor commands with default bindings: 496.
 | Ctrl+Shift+A | Unselect All | `edit.unselect_all` |
 | Ctrl+Shift+E | Select Line | `edit.select_line` |
 | Ctrl+Shift+End | Select to End of Document | `edit.select_to_end_of_document` |
+| Ctrl+Shift+F10 | Find in open documents | `edit.find_in_open_documents` |
 | Ctrl+Shift+F3 | Find All Matches | `edit.find_all_matches` |
 | Ctrl+Shift+F8 | Reselect | `edit.reselect` |
 | Ctrl+Shift+H | Select Paragraph | `edit.select_paragraph` |

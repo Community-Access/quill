@@ -4454,7 +4454,7 @@ These are the keys you will use every day:
   list. (It used to be on `Alt+F3`, which now belongs to Reveal Codes.)
 - `Ctrl+H` opens Replace.
 - `Ctrl+Shift+Grave` then `X` replaces all.
-- `Ctrl+Alt+Shift+F8` opens **Find in Open Documents**, which finds and
+- `Ctrl+Shift+F10` opens **Find in Open Documents**, which finds and
   replaces across every document you have open (see below).
 
 **Find Next**, **Find Previous** and **Find All Matches** live on the **Edit**
@@ -4492,7 +4492,7 @@ profile has.
 
 Sometimes the thing you are looking for is in one of a dozen documents you have
 open, or you need to change a name in all of them. **Find in Open Documents...**
-(**Ctrl+Alt+Shift+F8**, on **Edit**) searches every document QUILL has open,
+(**Ctrl+Shift+F10**, on **Edit**) searches every document QUILL has open,
 not just the one in front of you.
 
 It searches the text exactly as it is in each tab, so it finds:

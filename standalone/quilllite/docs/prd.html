@@ -2002,12 +2002,13 @@ is automated, and what a person actually <em>hears</em> is not.</li>
 </ul>
 <h2 id="find-in-open-documents-2026-10-15">Find in Open Documents
 (2026-10-15)</h2>
-<p>QUILL’s command, on QUILL’s key, from the same shared code (QUILL
-Lite may never be ahead of QUILL, and here it is not behind either):
-<strong>Edit &gt; Matches &gt; Find in Open Documents…</strong>
-(<strong>Ctrl+Alt+Shift+F8</strong>) finds and replaces across every
-open window’s live text. The window and the model are QUILL’s
-(<code>quill/ui/open_documents_find.py</code>,
+<p>QUILL’s command from the same shared code (QUILL has it on
+Ctrl+Shift+F10, because its Ctrl+Alt+Shift+F8 is a QuillVille launcher;
+<code>parity.DIVERGENCES</code>) (QUILL Lite may never be ahead of
+QUILL, and here it is not behind either): <strong>Edit &gt; Matches &gt;
+Find in Open Documents…</strong> (<strong>Ctrl+Alt+Shift+F8</strong>)
+finds and replaces across every open window’s live text. The window and
+the model are QUILL’s (<code>quill/ui/open_documents_find.py</code>,
 <code>quill/core/open_documents_search.py</code>); QUILL Lite supplies
 <code>quill/apps/lite_open_documents.py</code>, which lists
 <code>app.frames</code>, brings one to the front with
