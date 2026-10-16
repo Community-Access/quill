@@ -822,16 +822,18 @@ def _dictate(session: Session) -> dict[str, Any]:
     sent = 0
     mismatches: list[dict[str, str]] = []
     incomplete = ""
+    # dict.md B-2: does QUILL's own "Windows did not take all of that" report
+    # agree with what arrived? Counted per phrase (report_agreement).
+    agreement = {"agreed": 0, "false_alarm": 0, "silent_miss": 0}
     for phrase in PHRASES:
         try:
             before = normalize(_read_field(session)[0])
+            reported = False
             try:
                 document.insert(phrase)
-                session.own_tick = _tick() + 250  # our own keys may land this late
             except OSError:
-                sent += 1
-                mismatches.append({"sent": phrase, "arrived": "(Windows did not take all of it)"})
-                continue
+                reported = True  # still read back: was the report right?
+            session.own_tick = _tick() + 250  # our own keys may land this late
             sent += 1
             tripped = session.guard()
             if tripped:
@@ -850,10 +852,13 @@ def _dictate(session: Session) -> dict[str, Any]:
         except _GuardTripped as stop:
             incomplete = str(stop)
             break
+        agreement[report_agreement(reported, now == wanted)] += 1
         if now == wanted:
             exact += 1
         else:
             arrived = now[len(before) :] if now.startswith(before) else now
+            if reported:
+                arrived = f"(QUILL reported it incomplete) {arrived}"
             mismatches.append({"sent": phrase, "arrived": arrived[-200:]})
     return {
         "phrases_sent": sent,
@@ -861,7 +866,22 @@ def _dictate(session: Session) -> dict[str, Any]:
         "verified_by": verified_by,
         "mismatches": mismatches,
         "incomplete": incomplete,
+        "report_agreement": agreement,
     }
+
+
+def report_agreement(reported: bool, exact: bool) -> str:
+    """B-2's incomplete-report correctness, for one phrase:
+
+    * ``agreed`` -- QUILL said it was incomplete and it was, or said nothing
+      and it arrived exactly;
+    * ``false_alarm`` -- QUILL said it was incomplete, but it arrived exactly;
+    * ``silent_miss`` -- QUILL said nothing, and it did not arrive exactly
+      (the one that matters: the person was not told).
+    """
+    if reported == (not exact):
+        return "agreed"
+    return "false_alarm" if reported else "silent_miss"
 
 
 # --------------------------------------------------------------------------- #

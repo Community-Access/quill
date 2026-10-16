@@ -201,6 +201,36 @@ The dictation design record, section 22, is the full account; in brief:
 - 28 egress entries in `quill/tools/network_egress_entries_speech.py`.
 - Design record section 23.
 
+### Dictation benchmark and test infrastructure, B-1 to B-8 (2026-10-16)
+
+dict.md section 8; design record section 26. Dev-only tools in `scripts/` and
+tests in `tests/`: nothing ships, nothing a person using QUILL sees changes.
+
+- **Datasets on demand (B-1b).** `scripts/bench_datasets.json` (every
+  dataset's licence, attribution, size, source, access, contamination and
+  archive URLs; SHA-256 slots, unpinned until a first `--pin`) and
+  `scripts/fetch_bench_audio.py` (downloads only when a person says yes, never
+  with `CI` set, from two named hosts; verifies SHA-256; unpacks with the
+  `data` filter; caches outside the repository; licensed sets only by
+  `--local`). Seeded subsets in `scripts/bench_subsets.json`.
+- **dictbench.** `--dataset`, `--subset`, `--group-by`, `--parse`, `--latency`,
+  and JSON with the contamination flag, the normalizer, the date and every
+  group. Punctuation F1 and capitals from `scripts/bench_scoring.py`.
+- **LibriVox held out (B-1a)** `scripts/bench_librivox.py`; **command script
+  (B-1c)** `scripts/bench_commands.py`; **live pace and latency (B-4)**
+  `scripts/bench_live.py`; **machine run (B-8)** `scripts/bench_machine_run.py`.
+- **Soak (B-3)** `tests/stability/test_dictation_soak.py`, a new `slow` marker,
+  opt-in with `QUILL_DICTATION_SOAK=1`, skipped in CI, typing only into a fake.
+  **Correction efficiency (B-5)** in the soak. **Report agreement (B-2)** in
+  the tested-programs harness. **Privacy (B-7)**
+  `tests/unit/core/test_dictation_privacy_paths.py`. **Screen-reader rows
+  (B-6)** in `docs/qa/screen-reader-checks-2026-10.md`.
+- **One engine hook.** `LocalDictationRecognizer._reader_gate()` is a method,
+  so the benchmark's recorded-audio recogniser never starts the screen-reader
+  capture.
+- **First run** with Moonshine tiny on synthetic audio:
+  `docs/qa/dictbench-moonshine-tiny-2026-10-16.json`.
+
 ### Quill Radio extras: marked delete, resume earcon, a second device, per-favourite keys, What's New, notes in reminders (2026-10-16)
 
 Jeff's todo P3 "Radio extras", from the FreeRadio study (xradio2 sections 4.5,

@@ -1,0 +1,8 @@
+{
+  "_about": "Fixed, seeded subsets of each benchmark dataset (dict.md B-1b), so every run compares like with like. A subset with no names is chosen from its seed; scripts/fetch_bench_audio.py --pin-subset ID stores the names once a person has the data, and that list is what is committed. per_speaker caps how many recordings one speaker may give.",
+  "defaults": {
+    "default": {"seed": 20261015, "count": 200, "per_speaker": 10},
+    "quick": {"seed": 20261015, "count": 20, "per_speaker": 2}
+  },
+  "subsets": {}
+}
