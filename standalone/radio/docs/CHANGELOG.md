@@ -10,6 +10,11 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 Testing rebuild: **3.2.0 (build 4)**. The packages have not been published yet.
 
+- **How many notifications are unread, without opening the list.** The status
+  bar has a **Notifications** cell ("3 new", or "None new"); Enter on it opens
+  the list. **Help > Notifications...** says the count too, such as
+  "Notifications (3 new)...", whenever some are unread.
+
 - **Reminders now wait in Notifications.** When a tune-in reminder goes off it
   is spoken and shown as before, and now it also stays in **Help >
   Notifications...** (Ctrl+Alt+Shift+F3), so you can find it if you were away.

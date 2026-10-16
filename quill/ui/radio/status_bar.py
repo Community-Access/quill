@@ -37,7 +37,6 @@ the text functions with a fake host.
 
 from __future__ import annotations
 
-from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
@@ -47,51 +46,13 @@ from quill.core.radio.recording_progress import (
     recording_cell_help,
     recording_cell_text,
 )
-
-
-@dataclass(frozen=True)
-class CellSpec:
-    """One status-bar cell: its stable key, spoken name, and behaviour.
-
-    ``text`` returns the live value (``""`` for "nothing to say"), ``activate``
-    is what Enter/Space does, ``help`` is the one-line hint, and ``build_menu``
-    (if set) populates a right-click context menu with extra actions.
-    """
-
-    key: str
-    name: str
-    text: Callable[[], str]
-    activate: Callable[[], None]
-    help: str
-    build_menu: Callable[[Any], None] | None = None
-    #: An *action* cell supplies its live button label here -- "Play"/"Stop",
-    #: "Mute"/"Unmute" -- and leaves ``text`` returning "". The label is the
-    #: action because the control is a button, and a button whose label is a
-    #: readout promises an action it does not perform.
-    action_label: Callable[[], str] | None = None
-    #: The keyboard shortcut an action cell teaches ("Ctrl+P"), folded into
-    #: its accessible name so the bar quietly teaches the key.
-    key_hint: str = ""
-    #: A cell whose hint depends on live state supplies it here, and ``refresh``
-    #: keeps it current. The Recording cell needs this because "12 min left" and
-    #: "18 min so far" are two different measurements sharing one cell, and
-    #: which one is on screen depends on how the capture was started -- a
-    #: distinction the number alone cannot carry. A cell with a fixed hint
-    #: leaves this ``None`` and ``help`` stands.
-    live_help: Callable[[], str] | None = None
+from quill.ui.radio.status_cells import CellSpec, clamp_index
 
 
 @dataclass
 class _Cell:
     spec: CellSpec
     button: Any
-
-
-def clamp_index(index: int, count: int) -> int:
-    """Clamp *index* into ``[0, count - 1]`` (or 0 when the bar is empty)."""
-    if count <= 0:
-        return 0
-    return max(0, min(index, count - 1))
 
 
 class RadioStatusBar:
@@ -256,6 +217,16 @@ class RadioStatusBar:
                 build_menu=self._menu_sleep_timer,
             ),
             CellSpec(
+                key="notifications",
+                name="Notifications",
+                text=self._text_notifications,
+                activate=lambda: _call(host, "open_notifications"),
+                help=(
+                    "How many notifications you have not read. Press Enter to open "
+                    "the Notifications list."
+                ),
+            ),
+            CellSpec(
                 key="clock",
                 name="Time",
                 text=self._text_clock,
@@ -339,6 +310,13 @@ class RadioStatusBar:
         seconds = int(getattr(timer, "remaining_seconds", 0) or 0)
         minutes = (seconds + 59) // 60
         return f"{minutes} min left" if minutes != 1 else "1 min left"
+
+    def _text_notifications(self) -> str:
+        """The unread count, so news waiting is visible without opening the list."""
+        from quill.ui.support_menu import unread_notices
+
+        count = unread_notices()
+        return f"{count} new" if count else "None new"
 
     def _text_clock(self) -> str:
         try:

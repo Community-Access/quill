@@ -68,6 +68,37 @@ def append_get_help_item(
     return item_id
 
 
+def unread_notices() -> int:
+    """How many notifications are unread. Never raises: an unreadable list is 0."""
+    try:
+        from quill.core.notifications import load_notifications, unread_count
+
+        return int(unread_count(load_notifications()))
+    except Exception:  # noqa: BLE001 - a count must never break a menu
+        return 0
+
+
+def notifications_label(host: Any, count: int | None = None) -> str:
+    """Help > Notifications, with the unread count when there is one."""
+    count = unread_notices() if count is None else count
+    title = f"&Notifications ({count} new)..." if count else "&Notifications..."
+    return str(host._menu_label(title, "app.notifications"))
+
+
+def _on_menu_open(host: Any, help_menu: Any, event: Any) -> None:
+    """Refresh the Notifications label when the Help menu opens."""
+    event.Skip()
+    if event.GetMenu() is not help_menu:
+        return
+    item_id = getattr(host, "_notices_menu_id", None)
+    if item_id is None:
+        return
+    try:
+        help_menu.SetLabel(int(item_id), notifications_label(host))
+    except Exception:  # noqa: BLE001 - a stale label is better than a crash
+        pass
+
+
 def append_support_items(host: Any, help_menu: Any, wx: Any) -> tuple[Any, ...]:
     """Append the shared items to *help_menu*, bound to *host*.
 
@@ -91,8 +122,12 @@ def append_support_items(host: Any, help_menu: Any, wx: Any) -> tuple[Any, ...]:
     # that one is what went wrong, this is what you were told. Both are lists
     # over a shared file, so either app can show you the other's news.
     notices_id = wx.NewIdRef()
-    help_menu.Append(notices_id, host._menu_label("&Notifications...", "app.notifications"))
+    help_menu.Append(notices_id, notifications_label(host))
     host.frame.Bind(wx.EVT_MENU, lambda _e: host.open_notifications(), id=notices_id)
+    # The label carries the unread count, read again each time the Help menu
+    # opens, so news waiting is visible from the menu without opening the list.
+    host._notices_menu_id = notices_id
+    host.frame.Bind(wx.EVT_MENU_OPEN, lambda event: _on_menu_open(host, help_menu, event))
 
     quiet_id = wx.NewIdRef()
     help_menu.Append(quiet_id, host._menu_label("&Quiet Hours...", "app.quiet_hours"))

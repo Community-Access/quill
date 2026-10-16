@@ -621,7 +621,9 @@ and each one is something you can press:
 4. **Record Now**, which reads **Stop Recording**, with the time, while a
    recording runs.
 5. **Sleep timer**, with the time left, or "Off".
-6. **Time**, the time of day.
+6. **Notifications**, with how many you have not read, such as "3 new", or
+   "None new".
+7. **Time**, the time of day.
 
 To use it:
 
@@ -631,7 +633,8 @@ To use it:
    and **End** jump to the first and last cells.
 3. Press **Enter** or **Space** to press the cell you are on. On **Volume**,
    Enter mutes or unmutes. On **Sleep timer**, Enter opens the Sleep Timer. On
-   **Time**, Enter tells you the full date and time.
+   **Notifications**, Enter opens the Notifications list. On **Time**, Enter
+   tells you the full date and time.
 4. Press the **Applications key** or **Shift+F10** for the cell's own menu.
    Every cell's menu starts with **Activate** and ends with **Hide Status
    Bar**. In between:
@@ -1067,7 +1070,8 @@ chords" in Chapter 14.
 - **Activity...** (Shift+F9) and **Repeat Last Result** (F9). See "Activity and
   Repeat Last Result" in Chapter 15.
 - **Notifications...** (Ctrl+Alt+Shift+F3): everything you have been told
-  about. See "Notifications" in Chapter 12.
+  about. When some are unread, the item says how many, such as
+  "Notifications (3 new)...". See "Notifications" in Chapter 12.
 - **Quiet Hours...** (Ctrl+Alt+Shift+Z).
 - **Bookmarks...** (Ctrl+Alt+Shift+J).
 - **Export My Setup...** (Ctrl+Alt+Shift+X) and **Import My Setup...**

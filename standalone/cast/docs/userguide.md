@@ -651,7 +651,8 @@ your own.
 
 **Notifications** keeps what Cast has told you, newest first, so a message you
 missed is still there. Enter takes you to whatever the notice was about.
-Chapter 5 has more on it.
+When some are unread, **Help > Notifications...** says how many, such as
+"Notifications (3 new)...". Chapter 5 has more on it.
 
 **Podcasts** is your whole library as a tree, with folders at the top and
 podcasts inside them. Try it now: press **Ctrl+Shift+S** and arrow down
