@@ -30,6 +30,14 @@ file is the itemized list.
   mode. **Dictation > Speak a Command** (F11, as in QUILL and QUILL Lite) does
   the same from the window. Two new sounds play when QUILL hears the command
   word and when command mode ends.
+
+- **Import and Export in My Words and Phrases** (2026-10-15). Export saves
+  your list to a Markdown file or a CSV file with say, write and kind columns.
+  Import adds what is new from either, after showing how many it will add;
+  nothing you have is replaced, and your list as it was is kept as
+  dictation-before-import.md. You hear the counts, such as "Imported 12 words,
+  3 already there." QUILL Lite can now use this same list too (Use the shared
+  word list, in its own My Words and Phrases).
 - **Programs dictation never types into** (2026-10-15). A list you keep, in
   More Dictation Settings (Alt+N), that starts with the common password
   managers and the Windows sign-in prompts. Dictation and Insert Again refuse a

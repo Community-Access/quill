@@ -8352,7 +8352,10 @@ afterwards, Live Dictation writes as you go.</p>
 last twenty phrases of the session, with Insert Again and Copy.</li>
 <li><strong>My Words and Phrases…</strong> (<code>Alt+Shift+F10</code>)
 is a window with Add Word, Add Phrase, Add Correction, Edit and Remove.
-It edits your <code>dictation.md</code> file for you.</li>
+It edits your <code>dictation.md</code> file for you.
+<strong>Import…</strong> and <strong>Export…</strong> move the list to
+another computer or another copy. See “Importing and exporting your
+words”.</li>
 <li><strong>Switch Dictation Language</strong>
 (<code>Ctrl+Shift+F11</code>) swaps between English and Spanish. See
 “Switching between English and Spanish”.</li>
@@ -8475,6 +8478,34 @@ stop phrase always works. Strict mode is off in QUILL and QUILL Lite, so
 the commands you know keep working, and on in QUILL Transcribe. A common
 word, or a word from your own My Words and Phrases, is refused as the
 command word, with the reason.</p>
+<h5 id="importing-and-exporting-your-words">Importing and exporting your
+words</h5>
+<p><strong>Export…</strong> saves your whole list to a file you name.
+Choose <strong>Word list in Markdown</strong> for the same kind of file
+as <code>dictation.md</code>, or <strong>Spreadsheet, say and write
+columns</strong> for a CSV file with three columns: <code>say</code>,
+<code>write</code> and <code>kind</code> (word, phrase or correction).
+QUILL then says how many it saved, such as “Exported 15 entries to
+my-dictation-words.md.”</p>
+<p><strong>Import…</strong> reads a Markdown word list or a CSV file and
+adds what is new. A CSV file needs a <code>say</code> column;
+<code>write</code> and <code>kind</code> are optional. A row with
+nothing to write is a word, and any other row is a phrase unless
+<code>kind</code> says correction. Before anything changes, a window
+shows how many entries will be added and how many are already in your
+list, with the new ones listed. Press <strong>Add Them</strong> to add
+them, or <strong>Cancel</strong> to change nothing. Then you hear, for
+example, “Imported 12 words, 3 already there.”</p>
+<p>Import never replaces anything. If the file has a word or phrase you
+already have, but spelled or written differently, yours is kept, and
+QUILL tells you how many differed. Your list as it was is saved first,
+as <code>dictation-before-import.md</code> beside
+<code>dictation.md</code>. To undo an import, copy that file over
+<code>dictation.md</code>. Export a list and import it into an empty
+list on another computer, and you get the same file back.</p>
+<p>QUILL, QUILL Transcribe and Quill Inkwell all use this one list.
+QUILL Lite keeps its own unless you choose <strong>Use the shared word
+list</strong> in its My Words and Phrases window.</p>
 <h5 id="holding-ctrlf11-to-talk">Holding Ctrl+F11 to talk</h5>
 <p>Press <code>Ctrl+F11</code> to start dictating and press it again to
 stop. That is all most people ever need, and it is how dictation starts

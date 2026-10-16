@@ -7059,7 +7059,8 @@ The same submenu has more windows:
   session, with Insert Again and Copy.
 - **My Words and Phrases...** (`Alt+Shift+F10`) is a window with Add Word, Add
   Phrase, Add Correction, Edit and Remove. It edits your `dictation.md` file for
-  you.
+  you. **Import...** and **Export...** move the list to another computer or
+  another copy. See "Importing and exporting your words".
 - **Switch Dictation Language** (`Ctrl+Shift+F11`) swaps between English and
   Spanish. See "Switching between English and Spanish".
 - **Start or Stop Live Transcript** (`Ctrl+Alt+Shift+PageDown`) writes
@@ -7134,6 +7135,33 @@ on, "scratch that" on its own is written as words; the stop phrase always
 works. Strict mode is off in QUILL and QUILL Lite, so the commands you know keep
 working, and on in QUILL Transcribe. A common word, or a word from your own My
 Words and Phrases, is refused as the command word, with the reason.
+
+##### Importing and exporting your words
+
+**Export...** saves your whole list to a file you name. Choose **Word list in
+Markdown** for the same kind of file as `dictation.md`, or **Spreadsheet, say
+and write columns** for a CSV file with three columns: `say`, `write` and
+`kind` (word, phrase or correction). QUILL then says how many it saved, such as
+"Exported 15 entries to my-dictation-words.md."
+
+**Import...** reads a Markdown word list or a CSV file and adds what is new.
+A CSV file needs a `say` column; `write` and `kind` are optional. A row with
+nothing to write is a word, and any other row is a phrase unless `kind` says
+correction. Before anything changes, a window shows how many entries will be
+added and how many are already in your list, with the new ones listed. Press
+**Add Them** to add them, or **Cancel** to change nothing. Then you hear, for
+example, "Imported 12 words, 3 already there."
+
+Import never replaces anything. If the file has a word or phrase you already
+have, but spelled or written differently, yours is kept, and QUILL tells you
+how many differed. Your list as it was is saved first, as
+`dictation-before-import.md` beside `dictation.md`. To undo an import, copy
+that file over `dictation.md`. Export a list and import it into an empty list on another
+computer, and you get the same file back.
+
+QUILL, QUILL Transcribe and Quill Inkwell all use this one list. QUILL Lite
+keeps its own unless you choose **Use the shared word list** in its My Words and
+Phrases window.
 
 ##### Holding Ctrl+F11 to talk
 

@@ -441,8 +441,9 @@ to Never; Quick Insert can still reach it.
 
 Dictate Anywhere lets you talk instead of type in any program: your email, a web
 page, a chat window, a form. It uses the same speech engines as QUILL and QUILL
-Lite, the same words you have taught them in My Words and Phrases, and the same
-voice commands. Inkwell is its home because Inkwell is already running quietly in
+Lite, the same words you have taught QUILL in My Words and Phrases (and QUILL
+Lite's, once it is set to use the shared word list), and the same voice
+commands. Inkwell is its home because Inkwell is already running quietly in
 the background, typing into other programs for you.
 
 **Choosing your key.** Nothing listens until you choose a key.

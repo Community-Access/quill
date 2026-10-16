@@ -114,6 +114,7 @@ def test_every_quilllite_field_is_either_shared_mapped_or_its_own() -> None:
         "ai_privacy_accepted_version",
         "share_quill_abbreviations",
         "share_quill_dictionary",
+        "share_quill_dictation_words",  # dict.md D-12: QUILL's own list is the shared one
         # The MDI shell remembers its own frame; QUILL's is the app shell's.
         "window_height",
         "window_maximized",

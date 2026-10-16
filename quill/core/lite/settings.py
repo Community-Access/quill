@@ -261,11 +261,10 @@ class Settings(DictationSettings):
     #: alternative to QUILL -- and a machine that has never had QUILL installed
     #: must not grow a Quill data folder because somebody opened a text file.
     share_quill_abbreviations: bool = False
-    #: Read and write taught words in QUILL's shared dictionary instead of
-    #: QUILL Lite's own. Off by default for the same reason the abbreviation
-    #: switch is: a machine that has never had QUILL installed must not grow a
-    #: Quill data folder because somebody taught a text editor a word.
+    #: Taught words (spelling) and My Words (dictation, dict.md D-12) from QUILL's
+    #: files, not QUILL Lite's own. Off for the reason the abbreviation switch is.
     share_quill_dictionary: bool = False
+    share_quill_dictation_words: bool = False
     dictionary_online_lookups: bool = False
     #: Keep every copy and cut in the clip library automatically.
     #:

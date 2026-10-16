@@ -985,6 +985,14 @@ audio block.
   with no new runtime code. `DictationWordsDialog` is the window; the Dictation
   Settings button opens it. Found on the way: the starter file's explanatory
   sentences were being parsed as vocabulary, now excluded (`looks_like_prose`).
+- **Import, Export and the shared list** (dict.md D-12, 2026-10-15). My Words
+  and Phrases exports to Markdown or CSV (`say,write,kind`) and imports either,
+  merging only: new entries are added after a preview, entries already there or
+  different keep the person's own, and the list is copied to
+  `dictation-before-import.md` first (`words_exchange.py`). "Use the shared word
+  list" (`share_quill_dictation_words`, off) points QUILL Lite at QUILL's
+  `dictation.md`, the one QUILL Transcribe and Quill Inkwell read, after merging
+  QUILL Lite's own entries into it; never offered in a portable copy.
 
 **Tests.** The core behaviours against a fake recogniser and a fake document
 (`tests/unit/core/test_windows_dictation.py`), the words model round-trip and

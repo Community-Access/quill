@@ -772,6 +772,41 @@ Test/OK.</li>
 <code>test_radio_add_station_page.py</code>.</li>
 </ul>
 <h3
+id="my-words-and-phrases-import-export-and-quill-lite-on-the-shared-list-d-12-2026-10-15">My
+Words and Phrases: Import, Export, and QUILL Lite on the shared list
+(D-12, 2026-10-15)</h3>
+<p>dict.md D-12, design record section 20.</p>
+<ul>
+<li><strong><code>quill/core/windows_dictation/words_exchange.py</code></strong>
+(wx-free): export as the same Markdown <code>dictation.md</code> is, or
+CSV <code>say,write,kind</code> (UTF-8 with BOM); import
+<code>.md</code> or <code>.csv</code> (a <code>say</code> column at
+least; no header means by position; cp1252 fallback).
+<code>plan_merge</code> sorts every entry into new, already there, or
+different from yours (kept); <code>apply_merge</code> only adds;
+<code>back_up</code> copies the list to
+<code>dictation-before-import.md</code> first.
+<code>WordsImportError</code>
+(<code>QUILL-DICTATION-WORDS-IMPORT</code>). Export then import into an
+empty list is byte-identical.</li>
+<li><strong><code>quill/ui/dictation_words_exchange.py</code></strong>:
+Import… (Alt+I) and Export… (Alt+X) in My Words and Phrases, so in
+QUILL, QUILL Lite and QUILL Transcribe; a preview
+(<code>ImportPreviewDialog</code>, counts as the list’s label) before
+anything is written; spoken counts (“Imported 12 words, 3 already
+there.”).</li>
+<li><strong>QUILL Lite</strong>:
+<code>share_quill_dictation_words</code> (off), set by “Use the shared
+word list” (Alt+U) at the top of its My Words and Phrases; turning it on
+merges QUILL Lite’s words into QUILL’s <code>dictation.md</code> after
+the same preview. Not offered in a portable copy.
+<code>lite_window_dictation.py</code> owns the path.</li>
+<li>Tests: <code>test_dictation_words_exchange.py</code> (core),
+<code>test_dictation_words_exchange_ui.py</code>, and two in
+<code>test_lite_dictation.py</code> (a word added in QUILL Lite reaches
+Transcribe’s rewriter; portable keeps its own).</li>
+</ul>
+<h3
 id="dictation-the-never-type-list-and-inkwell-keeps-its-field-2026-10-15">Dictation:
 the never-type list, and Inkwell keeps its field (2026-10-15)</h3>
 <p>D-24 and D-15 from the dictation plan, rescued from an uncommitted

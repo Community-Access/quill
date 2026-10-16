@@ -41,6 +41,7 @@
   "lite:session_files": "shared",
   "lite:session_restore_ask": "shared",
   "lite:share_quill_abbreviations": "one_side",
+  "lite:share_quill_dictation_words": "one_side",
   "lite:share_quill_dictionary": "one_side",
   "lite:show_status_bar": "shared",
   "lite:spell_aloud_capitals": "shared",

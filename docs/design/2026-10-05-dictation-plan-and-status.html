@@ -1854,6 +1854,75 @@ measured, and no engine-specific vocabulary entry was added); the B-3
 mode” are heard once and the state line is not re-read. They join
 <code>docs/qa/screen-reader-checks-2026-10.md</code>.</p>
 <h2
+id="20-as-built-2026-10-15-one-word-list-for-the-family-with-import-and-export-d-12">20.
+As built, 2026-10-15: one word list for the family, with Import and
+Export (D-12)</h2>
+<p><strong>Import and Export.</strong> My Words and Phrases has
+<strong>Import…</strong> (Alt+I) and <strong>Export…</strong> (Alt+X) in
+every host that opens it: QUILL, QUILL Lite and QUILL Transcribe. Quill
+Inkwell has no My Words window; it reads QUILL’s list, so an import done
+anywhere reaches it. Two formats, chosen by extension: the same Markdown
+<code>dictation.md</code> is, and CSV with <code>say,write,kind</code>
+columns (<code>kind</code> is optional on import; without it an empty
+<code>write</code> is a word and anything else a phrase). The model is
+<code>quill/core/windows_dictation/words_exchange.py</code>; the flows
+and the preview are
+<code>quill/ui/dictation_words_exchange.py</code>.</p>
+<p><strong>Merge rules.</strong> Import never replaces. Each entry is
+new (added at the end of its list), already there (same kind, same
+text), or different from yours (the same word or spoken phrase, other
+spelling or other text), and yours is kept. A file that repeats itself
+counts the repeat once. Words compare without case for the key but with
+case for “same”, so <code>nvda</code> against <code>NVDA</code> is a
+difference, reported, not a silent second spelling. A
+<code>## Commands</code> section is adopted only when the list has
+none.</p>
+<p><strong>Nothing changes before a yes.</strong> A preview window lists
+the new entries, with the counts as the list’s label so the reader says
+them as the list takes focus (GATE-13: no announcement). <strong>Add
+Them</strong> first copies the list to
+<code>dictation-before-import.md</code> beside it, the undo for one
+import, and then says the outcome: “Imported 12 words, 3 already there.”
+A file with nothing new opens no preview and says so. A file that is not
+a word list is refused in a sentence (<code>WordsImportError</code>,
+<code>QUILL-DICTATION-WORDS-IMPORT</code>).</p>
+<p><strong>Round trip.</strong> Export then import into an empty list
+writes the same bytes, in both formats (CSV carries the three lists, not
+Commands). That is the D-12 acceptance test,
+<code>test_export_then_import_round_trips_the_file_exactly</code>.</p>
+<p><strong>One list for the family, as far as this goes.</strong> QUILL,
+QUILL Transcribe and Quill Inkwell already read one file, QUILL’s
+<code>app_data_dir()/dictation.md</code>
+(<code>default_profile_path</code>). QUILL Lite was the odd one out. It
+now has “Use the shared word list” (Alt+U) at the top of its My Words
+and Phrases, stored as <code>share_quill_dictation_words</code> (off,
+beside <code>share_quill_dictionary</code>, for the same reason: a
+machine without QUILL should not grow a Quill folder unasked). Checking
+it shows the same preview of which of QUILL Lite’s words will be added
+to the shared list, merges them, and from then on
+<code>DocumentDictationMixin._dictation_profile_path</code> returns the
+shared file, so a word added in QUILL Lite is used by Transcribe on its
+next phrase (its <code>rewriter(default_profile_path())</code> re-reads
+the file when its time changes). Unchecking goes back to QUILL Lite’s
+own file, untouched. A portable QUILL Lite is never offered the box. The
+instructions and contexts files live beside the list and follow it.</p>
+<p><strong>Not done, and where D-13 picks up.</strong> dict.md D-12
+places the family list in the shared family folder
+(<code>%LOCALAPPDATA%\QuillVille\Dictation</code>, the model store’s),
+with a read-through on each app’s old path until it migrates. That move
+was not made: QUILL’s Locked Dictation, the instructions file and the
+contexts file all key off <code>default_profile_path()</code>, and
+moving them is a migration of three files across installed,
+custom-folder and portable copies. D-13 creates
+<code>family_dictation.json</code> in that same folder; it should move
+<code>dictation.md</code> (and its two neighbours) there in the same
+change, with <code>default_profile_path()</code> reading the old path
+until the first write, and retire
+<code>share_quill_dictation_words</code> by pointing QUILL Lite’s
+“shared” at the new file. The box is first in the window’s tab order but
+focus still opens on the list, so the choice is offered on every open
+rather than asked once.</p>
+<h2
 id="appendix-a-the-dictmd-section-numbers-and-where-they-live-now">Appendix
 A: the dict.md section numbers, and where they live now</h2>
 <table>

@@ -388,8 +388,13 @@ command word, and you are told why.
   and the phrase. The list is kept in memory only, for as long as QUILL
   Transcribe runs; nothing is saved to disk, and it is empty again next time.
 - **My Words and Phrases** (Alt+Shift+F10, in the Dictation menu) is the same
-  window as in QUILL and QUILL Lite, over the same word list, so a word you
-  teach one of them is known to all three.
+  window as in QUILL and QUILL Lite, over the same word list as QUILL, so a
+  word you teach one is known to the other. QUILL Lite shares it once you
+  check **Use the shared word list** in its own My Words and Phrases window.
+  **Export...** saves the list to a Markdown or CSV file, and **Import...**
+  adds the new entries from one after showing you what it will add; nothing
+  you have is replaced. You hear the counts, such as "Imported 12 words, 3
+  already there."
 - **Switch Dictation Language** (Ctrl+Shift+F11, in the Dictation menu) changes
   between English and Spanish and keeps the choice for next time. You hear
   "Español." or "English." If dictation is on, the next phrase is heard in the

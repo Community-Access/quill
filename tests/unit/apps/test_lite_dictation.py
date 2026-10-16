@@ -234,8 +234,16 @@ class _WordsWindow:
 
     opened: list[dict[str, Any]] = []
 
-    def __init__(self, parent: Any, path: Path, *, say: Any, open_file: Any = None) -> None:
-        _WordsWindow.opened.append({"parent": parent, "path": path, "say": say, "open": open_file})
+    def __init__(
+        self, parent: Any, path: Path, *, say: Any, open_file: Any = None, shared: Any = None
+    ) -> None:
+        _WordsWindow.opened.append({
+            "parent": parent,
+            "path": path,
+            "say": say,
+            "open": open_file,
+            "shared": shared,
+        })
 
     def ShowModal(self) -> int:  # noqa: N802 - wx API shape
         return wx.ID_CANCEL
@@ -289,6 +297,51 @@ def test_a_correction_added_through_the_model_is_heard(lite_window, recognizers,
     win.cmd_toggle_dictation()
     made[0].hear("I write in quill light")
     assert win.control.GetValue() == "I write in QUILL Lite"
+
+
+def test_my_words_offers_the_shared_list_and_a_word_added_here_reaches_transcribe(
+    lite_window, recognizers, focused, words_window, quill_data_dir
+):
+    """dict.md D-12: with "Use the shared word list" checked, QUILL Lite edits and
+    dictates with the one ``dictation.md`` QUILL Transcribe reads per phrase."""
+    from quill.core.speech.dictation_profile import default_profile_path
+    from quill.core.windows_dictation.profile import rewriter
+    from quill.core.windows_dictation.words_file import Entry, load_words, save_words
+
+    made, _ = recognizers
+    win = _window(lite_window, focused)
+    win.cmd_dictation_words()
+    shared = words_window[-1]["shared"]
+    assert shared is not None and not shared.is_on()
+    assert win._dictation_profile_path() == win.app.data_dir / "dictation.md"
+
+    before = win.app.saved_settings
+    shared.set_on(True)
+    assert win.app.settings.share_quill_dictation_words is True
+    assert win.app.saved_settings == before + 1
+    assert win._dictation_profile_path() == default_profile_path()
+
+    words = load_words(win._dictation_profile_path())
+    words.add(Entry("correction", "doctor oh conk woe", "Dr Okonkwo"))
+    save_words(win._dictation_profile_path(), words)
+    # What QUILL Transcribe runs on its next phrase (transcribe_dictation.py).
+    assert rewriter(default_profile_path())("ask doctor oh conk woe") == "ask Dr Okonkwo"
+    win.cmd_toggle_dictation()
+    made[0].hear("ask doctor oh conk woe")
+    assert win.control.GetValue() == "Ask Dr Okonkwo"  # the composer capitalizes
+
+
+def test_a_portable_quill_lite_keeps_its_own_word_list(
+    lite_window, focused, words_window, monkeypatch
+):
+    import quill.core.lite.paths as lite_paths
+
+    monkeypatch.setattr(lite_paths, "_portable_root", lambda: win.app.data_dir)
+    win = _window(lite_window, focused)
+    win.app.settings.share_quill_dictation_words = True  # carried over from elsewhere
+    win.cmd_dictation_words()
+    assert words_window[-1]["shared"] is None
+    assert win._dictation_profile_path() == win.app.data_dir / "dictation.md"
 
 
 def test_windows_voice_typing_hands_over_and_opens_no_microphone(

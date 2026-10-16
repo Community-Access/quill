@@ -75,11 +75,16 @@ class DictationToolsMixin:
         """Add, edit and remove your words, phrases and corrections in a window."""
         from quill.ui.dictation_words_dialog import DictationWordsDialog
 
+        # QUILL Lite alone offers "Use the shared word list" (dict.md D-12).
+        offer = getattr(self, "_dictation_shared_words", None)
+        shared = offer() if callable(offer) else None
+        extra = {"shared": shared} if shared is not None else {}
         dialog = DictationWordsDialog(
             self._dictation_parent(),  # type: ignore[attr-defined]
             self._dictation_profile_path(),  # type: ignore[attr-defined]
             say=self._dictation_say,  # type: ignore[attr-defined]
             open_file=self._dictation_open_file,  # type: ignore[attr-defined]
+            **extra,
         )
         try:
             self._dictation_run_modal(dialog, "My Words and Phrases")  # type: ignore[attr-defined]
