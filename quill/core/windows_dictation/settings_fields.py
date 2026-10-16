@@ -94,6 +94,12 @@ class DictationSettings:
     windows_dictation_review_first: bool = False
     windows_dictation_review_consent: int = 0
     windows_dictation_review_context: bool = False
+    # 2026-10-16 (D-31): cloud speech providers with the person's own account
+    # (quill/core/windows_dictation/cloud/). Only the plain fields -- region,
+    # project, endpoint ID -- by provider id; secrets live in the credential
+    # store, never here. The consent is a version per provider, 0 for never.
+    windows_dictation_speech_providers: dict[str, dict[str, str]] = field(default_factory=dict)
+    windows_dictation_speech_provider_consent: dict[str, int] = field(default_factory=dict)
 
 
 def load_fields(data: Mapping[str, Any]) -> dict[str, Any]:
@@ -174,6 +180,46 @@ def load_fields(data: Mapping[str, Any]) -> dict[str, Any]:
         "windows_dictation_review_context": bool(
             data.get("windows_dictation_review_context", False)
         ),
+        "windows_dictation_speech_providers": _provider_fields(
+            data.get("windows_dictation_speech_providers")
+        ),
+        "windows_dictation_speech_provider_consent": _provider_consent(
+            data.get("windows_dictation_speech_provider_consent")
+        ),
+    }
+
+
+#: Field names a secret might hide under. A settings file edited by hand, or
+#: written by a build with a bug, never carries one of these back in (D-31).
+_SECRET_WORDS = ("key", "secret", "token", "password")
+
+
+def _provider_fields(value: object) -> dict[str, dict[str, str]]:
+    """The plain fields per provider, as text; anything secret-shaped dropped."""
+    if not isinstance(value, Mapping):
+        return {}
+    out: dict[str, dict[str, str]] = {}
+    for provider, fields in value.items():
+        if not isinstance(fields, Mapping):
+            continue
+        kept = {
+            str(name): str(text)
+            for name, text in fields.items()
+            if isinstance(text, (str, int, float))
+            and not any(word in str(name).lower() for word in _SECRET_WORDS)
+        }
+        if kept:
+            out[str(provider)] = kept
+    return out
+
+
+def _provider_consent(value: object) -> dict[str, int]:
+    if not isinstance(value, Mapping):
+        return {}
+    return {
+        str(provider): version
+        for provider, raw in value.items()
+        if (version := _consent_version(raw)) > 0
     }
 
 

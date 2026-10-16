@@ -10,7 +10,7 @@ Pure and wx-free.
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
 
 from quill.core.action_feedback import ActionFeedback
@@ -94,6 +94,10 @@ class DictationPreferences:
     openai_model: str = ""
     #: The person agreed that their speech goes to OpenAI with their own key.
     openai_consent: bool = False
+    #: A cloud provider's plain fields, by provider id (D-31; no secrets ever).
+    cloud_fields: Mapping[str, Mapping[str, str]] = field(default_factory=dict, compare=False)
+    #: The consent version agreed to, by cloud provider id (D-31).
+    cloud_consent: Mapping[str, int] = field(default_factory=dict, compare=False)
     #: Say the marks by name in the read-back: "Hello comma world period"
     #: (dict.md 3.1, question 1: on by default). The status bar keeps the marks.
     readback_marks: bool = True
@@ -247,6 +251,10 @@ class DictationPreferences:
             preview=coerce_preview(getattr(settings, "windows_dictation_preview", "show")),
             openai_model=str(getattr(settings, "windows_dictation_openai_model", "") or ""),
             openai_consent=bool(getattr(settings, "windows_dictation_openai_consent", False)),
+            cloud_fields=dict(getattr(settings, "windows_dictation_speech_providers", {}) or {}),
+            cloud_consent=dict(
+                getattr(settings, "windows_dictation_speech_provider_consent", {}) or {}
+            ),
             readback_marks=bool(getattr(settings, "windows_dictation_readback_marks", True)),
             transcript_timestamps=bool(
                 getattr(settings, "windows_dictation_transcript_timestamps", False)

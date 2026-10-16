@@ -6,6 +6,13 @@ file is the itemized list.
 
 ## Unreleased
 
+- **Speech providers, your own account** (2026-10-16). Dictation Settings has
+  **Speech Providers...** (Alt+V): twelve speech companies, from Azure and
+  Google to Deepgram and Groq, each with only the fields it needs, a Test
+  Connection that sends no speech, and keys in Windows Credential Manager.
+  Choose one as the model; you are told what is sent and No is the default.
+  If it cannot be reached, your model stays your choice.
+
 - **Review before it is typed** (2026-10-15). Say "QUILL review that" and the
   last phrase is backspaced away and held in the **Review Dictation** window
   (Shift+F4 in the Dictation menu, as in QUILL and QUILL Lite). Read it, change

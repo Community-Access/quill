@@ -398,6 +398,7 @@
   "quill.ui.special_character_dialog": "reachable",
   "quill.ui.speech_hub_dialog": "reachable",
   "quill.ui.speech_player_dialog": "reachable",
+  "quill.ui.speech_providers_dialog": "reachable",
   "quill.ui.speech_setup_dialog": "reachable",
   "quill.ui.spell_language": "reachable",
   "quill.ui.spelling_review_dialog": "reachable",

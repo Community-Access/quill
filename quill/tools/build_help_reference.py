@@ -144,6 +144,7 @@ APPS: tuple[AppConfig, ...] = (
             "quill/ui/dictation_lists_dialog.py",
             "quill/ui/dictation_more_dialog.py",
             "quill/ui/dictation_models_dialog.py",
+            "quill/ui/speech_providers_dialog.py",
             "quill/ui/dictation_transcribe_dialog.py",
             "quill/ui/dictation_review_frame.py",
             "quill/ui/recent_documents_dialog.py",

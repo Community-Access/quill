@@ -13,10 +13,13 @@ what is sent, what comes back, what triggers it, and how it behaves in Safe Mode
 from __future__ import annotations
 
 from quill.tools.network_egress_entries_radio import RADIO_EGRESS
+from quill.tools.network_egress_entries_speech import SPEECH_EGRESS
 
 _REVIEWED_EGRESS: dict[str, str] = {
     # Quill Radio's, split out under GATE-11 -- see the module beside this one.
     **RADIO_EGRESS,
+    # The cloud dictation providers (D-31 to D-37), split out the same way.
+    **SPEECH_EGRESS,
     "core/audio/url_import.py::_default_download": (
         "The Universal Audio Converter's optional URL import (#1255 §4.6): "
         "downloads the best-audio stream of a user-pasted http(s) link via yt-dlp "

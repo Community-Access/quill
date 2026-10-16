@@ -262,6 +262,8 @@ class TranscribeDictationMixin(FieldHoldMixin):
             preferences.engine,
             preferences.speech_language,
             openai_consent=preferences.openai_consent,
+            cloud_fields=preferences.cloud_fields,
+            cloud_consent=preferences.cloud_consent,
         )
 
     def toggle_dictation(self) -> None:

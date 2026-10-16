@@ -2207,6 +2207,224 @@ rewrites the text silently.</p>
 dict.md section 10 (it belongs to retiring legacy models), and D-26’s
 <code>ram_tier</code> catalogue field.</p>
 <h2
+id="23-as-built-2026-10-16-cloud-dictation-providers-your-own-account-d-31-to-d-37">23.
+As built, 2026-10-16: cloud dictation providers, your own account (D-31
+to D-37)</h2>
+<p>The owner asked for “all dictation platforms, Microsoft, Google,
+Azure, etc”, each with the person entering only what that provider
+needs. Local dictation stays the default and the recommendation.</p>
+<p><strong>One layer (D-31).</strong> A wx-free package,
+<code>quill/core/windows_dictation/cloud/</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>types.py</code></td>
+<td><code>CloudProvider</code> (id, name, company, console and privacy
+links, hosts, <code>last_checked</code>, <code>consent_version</code>),
+<code>ProviderField</code> (key, label, kind secret/text/choice/file,
+required, help, choices, validate), <code>Capabilities</code>
+(streaming, biasing limit and name, punctuation, languages, diarization,
+timestamps), the <code>LiveSession</code> shape</td>
+</tr>
+<tr>
+<td><code>errors.py</code></td>
+<td><code>CloudSpeechError(CodedError)</code> and <code>-AUTH</code>,
+<code>-FIELD</code>, <code>-NETWORK</code>, <code>-QUOTA</code>,
+<code>-UNSUPPORTED</code>, <code>-CONSENT</code>, each carrying the
+field to check; network errors are not fatal (a phrase is lost,
+dictation keeps listening)</td>
+</tr>
+<tr>
+<td><code>transport.py</code></td>
+<td>the two certificate-checked openers (<code>urlopen</code>,
+<code>create_connection</code>) and <code>failure</code>, which turns
+any HTTP or socket failure into one sentence naming the field (“The key
+was refused. Check Key.”), never the key or the body;
+<code>require_host</code> for an address that is the person’s own
+resource</td>
+</tr>
+<tr>
+<td><code>ws_base.py</code></td>
+<td>one streaming session for every WebSocket provider: buffering to the
+provider’s smallest block, keep-alive between phrases, provisional words
+to the preview, the phrase’s final words at QUILL’s pause</td>
+</tr>
+<tr>
+<td><code>credentials.py</code></td>
+<td>secrets in the credential store under
+<code>provider_credential_target("speech-&lt;id&gt;-&lt;field&gt;")</code>,
+a file field (Google’s service account) DPAPI-protected in
+<code>speech-providers\</code> with only its path in settings, every
+loaded secret handed to <code>redaction.remember_secret</code></td>
+</tr>
+<tr>
+<td><code>consent.py</code></td>
+<td>the consent question generated from the facts,
+<code>consented</code>, <code>start_problem</code> (Safe Mode, a missing
+part, a missing field, no consent), the “Speech goes to Azure,
+westeurope.” line, <code>biasing_terms</code> (newest first, with a
+count left out)</td>
+</tr>
+<tr>
+<td><code>registry.py</code></td>
+<td>the list, in the page’s order, and the <code>cloud-&lt;id&gt;</code>
+engine ids</td>
+</tr>
+<tr>
+<td><code>recognizer.py</code></td>
+<td><code>CloudDictationRecognizer</code>, the same shape as
+<code>OpenAIDictationRecognizer</code>: the built-in engines’ listening
+loop, only the recognising sent</td>
+</tr>
+</tbody>
+</table>
+<p>Settings: <code>windows_dictation_speech_providers</code> (provider
+id to its plain fields; a field whose name looks secret is dropped on
+load) and <code>windows_dictation_speech_provider_consent</code>
+(provider id to version), both in <code>DictationSettings</code>, so
+QUILL, QUILL Lite, QUILL Transcribe and Quill Inkwell share them. The
+one registration point outside the package is
+<code>engines._cloud_engine</code>, which lets
+<code>coerce_engine</code>, <code>engine_info</code>,
+<code>cloud_line</code> and <code>writes_punctuation</code> know a
+<code>cloud-</code> engine.</p>
+<p><strong>The page.</strong>
+<code>quill/ui/speech_providers_dialog.py</code>, reached from Dictation
+Settings’ <strong>Speech Pro&amp;viders…</strong>
+(<code>quill/ui/windows_dictation_cloud.py</code>, a mixin so the
+settings dialog stays under its cap) in all four apps: the provider list
+(focused on open), About this provider, the fields built from
+<code>fields()</code> with inline F1, Last result, and Test Connection,
+Save, Remove and Close (no access key). A saved secret is never shown;
+Save stores secrets at once and the plain fields with Dictation
+Settings’ OK. Choosing a provider in the engine list asks the generated
+consent; No is the default and restores the engine. Test Connection is
+refused in Safe Mode.</p>
+<p><strong>The providers, and what each takes.</strong> All direct HTTPS
+or WebSocket; no SDK.</p>
+<table>
+<thead>
+<tr>
+<th>Gap</th>
+<th>Provider</th>
+<th>Live</th>
+<th>My Words</th>
+<th>Test Connection</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D-32</td>
+<td>Azure AI Speech (<code>azure.py</code>)</td>
+<td>WebSocket (the Speech SDK’s protocol); phrase mode through fast
+transcription</td>
+<td>phrase list, 500</td>
+<td><code>sts/v1.0/issueToken</code></td>
+</tr>
+<tr>
+<td>D-33</td>
+<td>Google Speech-to-Text v2, Chirp 3 (<code>google.py</code>)</td>
+<td>No: REST <code>recognize</code> a phrase at a time; gRPC streaming
+is an optional pack, not built, and
+<code>streaming_pack_problem()</code> says so</td>
+<td>adaptation phrases, 1,000 (verify)</td>
+<td>list one recognizer</td>
+</tr>
+<tr>
+<td>D-34</td>
+<td>Amazon Transcribe (<code>amazon.py</code>,
+<code>amazon_sigv4.py</code>, <code>amazon_eventstream.py</code>)</td>
+<td>WebSocket, SigV4-presigned, event-stream frames</td>
+<td>a vocabulary named in the person’s account</td>
+<td>signed <code>ListVocabularies</code></td>
+</tr>
+<tr>
+<td>D-35</td>
+<td>Deepgram, AssemblyAI, Speechmatics
+(<code>streaming_providers.py</code>); ElevenLabs Scribe, Gladia, Rev.ai
+(<code>streaming_more.py</code>)</td>
+<td>WebSocket</td>
+<td>keyterm 100; keyterms_prompt 100; additional_vocab; keyterms 50;
+custom vocabulary 100; Rev.ai a vocabulary ID</td>
+<td>an account or list call each</td>
+</tr>
+<tr>
+<td>D-36</td>
+<td>Groq, Mistral Voxtral (<code>rest_providers.py</code>)</td>
+<td>No: one WAV per phrase</td>
+<td>Whisper prompt; context_bias 100</td>
+<td>list models</td>
+</tr>
+<tr>
+<td>D-37</td>
+<td>IBM Watson (<code>ibm.py</code>)</td>
+<td>WebSocket, IAM token</td>
+<td>a custom language model ID</td>
+<td>list models</td>
+</tr>
+</tbody>
+</table>
+<p>OpenAI is described on the same interface
+(<code>openai_provider.py</code>, for the list and Test Connection), but
+<code>OpenAIDictationRecognizer</code> still drives OpenAI dictation and
+its consent stays <code>windows_dictation_openai_consent</code>: no
+change in behaviour, which was the condition.</p>
+<p><strong>Egress.</strong> One reviewed entry per provider call site,
+in <code>quill/tools/network_egress_entries_speech.py</code> (split out
+under GATE-11), 28 in all. Every call site is a uniquely named function
+(<code>_probe_&lt;id&gt;</code>, <code>_connect_&lt;id&gt;</code>,
+<code>_send_&lt;id&gt;</code>, <code>_token_&lt;id&gt;</code>,
+<code>_init_gladia</code>).</p>
+<p><strong>Acceptance, as tested</strong>
+(<code>tests/unit/core/test_dictation_cloud_*.py</code>,
+<code>tests/unit/ui/test_speech_providers_dialog.py</code>, all against
+recorded fakes in <code>tests/unit/core/cloud_speech_fakes.py</code>;
+nothing touches the network or the real credential store):</p>
+<ul>
+<li>No secret in settings, logs or crash bundles: planted values,
+<code>save</code> and <code>values_for</code>,
+<code>redact_text_for_bundle</code>, and <code>load_fields</code>
+dropping secret-shaped names. Met.</li>
+<li>Test Connection never sends speech: every provider’s test is a GET
+or an account call with no audio. Met.</li>
+<li>With consent declined, or in Safe Mode, no request is made.
+Met.</li>
+<li>A provider without streaming shows no live preview. Met.</li>
+<li>Losing the network never switches engines. Met.</li>
+<li>The page passes the dialog inventory, access key, F1 and
+reachability gates; it has no menu items, so no menu accelerators.
+Met.</li>
+</ul>
+<p><strong>Not done, and why.</strong></p>
+<ul>
+<li>OpenAI’s recogniser is not yet rebuilt on
+<code>CloudDictationRecognizer</code>; it is listed and tested through
+the interface only.</li>
+<li>Azure batch transcription for long recordings, and moving
+<code>azure_mai</code> from QUILL’s file stack into the shared layer,
+are not built (D-32’s file half).</li>
+<li>Google gRPC streaming (the optional pack) is not built.</li>
+<li>The “Speech goes to …” line names the provider, not yet its region,
+in the tray and status key: <code>engines.cloud_line</code> has only the
+engine id. <code>consent.speech_line</code> has the region and is ready
+for that.</li>
+<li>The engine list in QUILL Transcribe’s Choose Model window does not
+list cloud providers yet; Dictation Settings does.</li>
+<li>Nothing has been tried against a live account. Every protocol detail
+marked “verify” in the module docstrings needs a real key: Azure’s
+WebSocket message shapes and request ids, ElevenLabs’ realtime message
+names, Gladia’s vocabulary intensity, Speechmatics’
+<code>additional_vocab</code>, Chirp 3’s adaptation, Amazon’s 8443 host
+signing and silence timeout, IBM’s token lifetime on an open
+socket.</li>
+</ul>
+<h2
 id="appendix-a-the-dictmd-section-numbers-and-where-they-live-now">Appendix
 A: the dict.md section numbers, and where they live now</h2>
 <table>

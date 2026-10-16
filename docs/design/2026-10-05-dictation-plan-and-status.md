@@ -1251,6 +1251,99 @@ Not built here: the "Switch to the Recommended Model" button of dict.md
 section 10 (it belongs to retiring legacy models), and D-26's `ram_tier`
 catalogue field.
 
+## 23. As built, 2026-10-16: cloud dictation providers, your own account (D-31 to D-37)
+
+The owner asked for "all dictation platforms, Microsoft, Google, Azure, etc",
+each with the person entering only what that provider needs. Local dictation
+stays the default and the recommendation.
+
+**One layer (D-31).** A wx-free package, `quill/core/windows_dictation/cloud/`:
+
+| Module | What it does |
+|---|---|
+| `types.py` | `CloudProvider` (id, name, company, console and privacy links, hosts, `last_checked`, `consent_version`), `ProviderField` (key, label, kind secret/text/choice/file, required, help, choices, validate), `Capabilities` (streaming, biasing limit and name, punctuation, languages, diarization, timestamps), the `LiveSession` shape |
+| `errors.py` | `CloudSpeechError(CodedError)` and `-AUTH`, `-FIELD`, `-NETWORK`, `-QUOTA`, `-UNSUPPORTED`, `-CONSENT`, each carrying the field to check; network errors are not fatal (a phrase is lost, dictation keeps listening) |
+| `transport.py` | the two certificate-checked openers (`urlopen`, `create_connection`) and `failure`, which turns any HTTP or socket failure into one sentence naming the field ("The key was refused. Check Key."), never the key or the body; `require_host` for an address that is the person's own resource |
+| `ws_base.py` | one streaming session for every WebSocket provider: buffering to the provider's smallest block, keep-alive between phrases, provisional words to the preview, the phrase's final words at QUILL's pause |
+| `credentials.py` | secrets in the credential store under `provider_credential_target("speech-<id>-<field>")`, a file field (Google's service account) DPAPI-protected in `speech-providers\` with only its path in settings, every loaded secret handed to `redaction.remember_secret` |
+| `consent.py` | the consent question generated from the facts, `consented`, `start_problem` (Safe Mode, a missing part, a missing field, no consent), the "Speech goes to Azure, westeurope." line, `biasing_terms` (newest first, with a count left out) |
+| `registry.py` | the list, in the page's order, and the `cloud-<id>` engine ids |
+| `recognizer.py` | `CloudDictationRecognizer`, the same shape as `OpenAIDictationRecognizer`: the built-in engines' listening loop, only the recognising sent |
+
+Settings: `windows_dictation_speech_providers` (provider id to its plain
+fields; a field whose name looks secret is dropped on load) and
+`windows_dictation_speech_provider_consent` (provider id to version), both in
+`DictationSettings`, so QUILL, QUILL Lite, QUILL Transcribe and Quill Inkwell
+share them. The one registration point outside the package is
+`engines._cloud_engine`, which lets `coerce_engine`, `engine_info`,
+`cloud_line` and `writes_punctuation` know a `cloud-` engine.
+
+**The page.** `quill/ui/speech_providers_dialog.py`, reached from Dictation
+Settings' **Speech Pro&viders...** (`quill/ui/windows_dictation_cloud.py`, a
+mixin so the settings dialog stays under its cap) in all four apps: the
+provider list (focused on open), About this provider, the fields built from
+`fields()` with inline F1, Last result, and Test Connection, Save, Remove and
+Close (no access key). A saved secret is never shown; Save stores secrets at
+once and the plain fields with Dictation Settings' OK. Choosing a provider in
+the engine list asks the generated consent; No is the default and restores the
+engine. Test Connection is refused in Safe Mode.
+
+**The providers, and what each takes.** All direct HTTPS or WebSocket; no SDK.
+
+| Gap | Provider | Live | My Words | Test Connection |
+|---|---|---|---|---|
+| D-32 | Azure AI Speech (`azure.py`) | WebSocket (the Speech SDK's protocol); phrase mode through fast transcription | phrase list, 500 | `sts/v1.0/issueToken` |
+| D-33 | Google Speech-to-Text v2, Chirp 3 (`google.py`) | No: REST `recognize` a phrase at a time; gRPC streaming is an optional pack, not built, and `streaming_pack_problem()` says so | adaptation phrases, 1,000 (verify) | list one recognizer |
+| D-34 | Amazon Transcribe (`amazon.py`, `amazon_sigv4.py`, `amazon_eventstream.py`) | WebSocket, SigV4-presigned, event-stream frames | a vocabulary named in the person's account | signed `ListVocabularies` |
+| D-35 | Deepgram, AssemblyAI, Speechmatics (`streaming_providers.py`); ElevenLabs Scribe, Gladia, Rev.ai (`streaming_more.py`) | WebSocket | keyterm 100; keyterms_prompt 100; additional_vocab; keyterms 50; custom vocabulary 100; Rev.ai a vocabulary ID | an account or list call each |
+| D-36 | Groq, Mistral Voxtral (`rest_providers.py`) | No: one WAV per phrase | Whisper prompt; context_bias 100 | list models |
+| D-37 | IBM Watson (`ibm.py`) | WebSocket, IAM token | a custom language model ID | list models |
+
+OpenAI is described on the same interface (`openai_provider.py`, for the
+list and Test Connection), but `OpenAIDictationRecognizer` still drives OpenAI
+dictation and its consent stays `windows_dictation_openai_consent`: no change
+in behaviour, which was the condition.
+
+**Egress.** One reviewed entry per provider call site, in
+`quill/tools/network_egress_entries_speech.py` (split out under GATE-11), 28 in
+all. Every call site is a uniquely named function (`_probe_<id>`,
+`_connect_<id>`, `_send_<id>`, `_token_<id>`, `_init_gladia`).
+
+**Acceptance, as tested** (`tests/unit/core/test_dictation_cloud_*.py`,
+`tests/unit/ui/test_speech_providers_dialog.py`, all against recorded fakes in
+`tests/unit/core/cloud_speech_fakes.py`; nothing touches the network or the
+real credential store):
+
+- No secret in settings, logs or crash bundles: planted values, `save` and
+  `values_for`, `redact_text_for_bundle`, and `load_fields` dropping
+  secret-shaped names. Met.
+- Test Connection never sends speech: every provider's test is a GET or an
+  account call with no audio. Met.
+- With consent declined, or in Safe Mode, no request is made. Met.
+- A provider without streaming shows no live preview. Met.
+- Losing the network never switches engines. Met.
+- The page passes the dialog inventory, access key, F1 and reachability gates;
+  it has no menu items, so no menu accelerators. Met.
+
+**Not done, and why.**
+
+- OpenAI's recogniser is not yet rebuilt on `CloudDictationRecognizer`; it is
+  listed and tested through the interface only.
+- Azure batch transcription for long recordings, and moving `azure_mai` from
+  QUILL's file stack into the shared layer, are not built (D-32's file half).
+- Google gRPC streaming (the optional pack) is not built.
+- The "Speech goes to ..." line names the provider, not yet its region, in the
+  tray and status key: `engines.cloud_line` has only the engine id.
+  `consent.speech_line` has the region and is ready for that.
+- The engine list in QUILL Transcribe's Choose Model window does not list cloud
+  providers yet; Dictation Settings does.
+- Nothing has been tried against a live account. Every protocol detail marked
+  "verify" in the module docstrings needs a real key: Azure's WebSocket message
+  shapes and request ids, ElevenLabs' realtime message names, Gladia's
+  vocabulary intensity, Speechmatics' `additional_vocab`, Chirp 3's adaptation,
+  Amazon's 8443 host signing and silence timeout, IBM's token lifetime on an
+  open socket.
+
 ## Appendix A: the dict.md section numbers, and where they live now
 
 | dict.md | What it was | Here |

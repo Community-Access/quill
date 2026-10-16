@@ -8046,6 +8046,62 @@ keeps no count; your OpenAI account's usage page has the real figures.
 - "The OpenAI model ... is no longer available to your key." Choose another in
   More Dictation Settings.
 
+##### Speech providers: dictation with your own account at another company
+
+If you already have an account with a speech company, dictation can use it.
+QUILL knows twelve: Microsoft Azure AI Speech, Google Cloud Speech-to-Text, Amazon Transcribe, Deepgram, AssemblyAI, Speechmatics, ElevenLabs Scribe, Gladia, Rev.ai, Groq, Mistral Voxtral and IBM Watson Speech to Text. Your computer's own engines stay the default
+and the recommendation; none of this is needed, and none of it is on until you
+choose it.
+
+**What is sent.** With one of these chosen as the speech engine, each phrase
+dictation hears is sent over an encrypted connection to that company, with
+your account, and the words come back. Nothing is sent while nobody is
+speaking. The company bills you, not QUILL; QUILL shows no prices and counts
+nothing, so look at your provider's own usage page. Nothing goes through
+QUILL's servers and QUILL keeps no copy of your voice. None of it works in Safe
+Mode.
+
+**Setting one up:**
+
+1. Open **Dictation Settings** (**Alt+Shift+F6**) and choose **Speech
+   Providers...** (**Alt+V**).
+2. In **Providers**, arrow to the company. **About this provider** says
+   whether it shows your words while you speak, whether it learns your words
+   from My Words and Phrases (and how many), where your speech goes and its
+   usage page.
+3. Tab to its fields and fill them in: usually a key, sometimes a region, a
+   project or an address. Each field's F1 says where to find it in that
+   company's console. A key is never shown again once saved; leaving a key
+   field empty keeps the one already saved.
+4. Press **Test Connection** (**Alt+T**). QUILL asks the company about your
+   account, never with your speech, and says what it answered, such as "Azure
+   answered: ready, region westeurope." If something is wrong it says which
+   field, such as "The key was refused. Check Key.", and puts you there.
+5. Press the Save button (Alt+S). Keys go to Windows Credential Manager at once
+   and are never written in QUILL's settings or logs. The other details are
+   kept when you choose OK in Dictation Settings.
+6. Close the page. The company is now in the **Speech engine** list. Choose
+   it, and a question says exactly what will be sent and to whom. **No** is
+   the default; nothing is sent unless you choose Yes.
+
+**Remove** (**Alt+M**) forgets everything saved for that company, keys
+included.
+
+**Which ones show words while you speak.** Azure, Amazon, Deepgram,
+AssemblyAI, Speechmatics, ElevenLabs, Gladia, Rev.ai and IBM Watson do. Google,
+Groq and Mistral send each phrase when you pause, so there is no live preview
+with them.
+
+**If the connection goes.** A lost phrase is said in one sentence ("Groq could
+not be reached. Check the internet connection.") and dictation keeps
+listening; a refused key or an empty account stops dictation and says so.
+QUILL never switches to another engine by itself.
+
+In settings files, each company's other details are kept in
+`windows_dictation_speech_providers` and your answers to the consent
+questions in `windows_dictation_speech_provider_consent`. Keys are never
+there.
+
 ##### Talking to the AI
 
 You can have a spoken conversation with AI help. Open the **AI Conversation**

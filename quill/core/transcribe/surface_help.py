@@ -77,6 +77,12 @@ PURPOSES: dict[str, str] = {
         "The rest of dictation's settings: pauses, fillers, dashes, wake phrase and "
         "the OpenAI model. Some only matter inside QUILL's own documents."
     ),
+    "Speech Providers": (
+        "Use a speech service you already have an account with -- Azure, Google, "
+        "Amazon, Deepgram and others -- for dictation. Choose one to see what it can "
+        "do and what it needs, enter that, test it, and save it; keys go to Windows "
+        "Credential Manager. Then choose it as the speech engine in Dictation Settings."
+    ),
     "Speech Models": (
         "The Model Library: download, check or remove the optional speech models. "
         "Each download shows its size first, is checked before it is used, and can "
