@@ -55,10 +55,13 @@
   "quill/ui/dictation_models_dialog.py::SpeechModelsDialog.__init__::wx.Button#3": "helped",
   "quill/ui/dictation_models_dialog.py::SpeechModelsDialog.__init__::wx.Button#4": "helped",
   "quill/ui/dictation_models_dialog.py::SpeechModelsDialog.__init__::wx.Button#5": "helped",
+  "quill/ui/dictation_models_dialog.py::SpeechModelsDialog.__init__::wx.Button#6": "helped",
+  "quill/ui/dictation_models_dialog.py::SpeechModelsDialog.__init__::wx.Choice": "helped",
   "quill/ui/dictation_models_dialog.py::SpeechModelsDialog.__init__::wx.Gauge": "helped",
   "quill/ui/dictation_models_dialog.py::SpeechModelsDialog.__init__::wx.ListBox": "helped",
   "quill/ui/dictation_models_dialog.py::SpeechModelsDialog.__init__::wx.TextCtrl": "helped",
   "quill/ui/dictation_models_dialog.py::SpeechModelsDialog.__init__::wx.TextCtrl#2": "helped",
+  "quill/ui/dictation_models_dialog.py::SpeechModelsDialog.__init__::wx.TextCtrl#3": "helped",
   "quill/ui/dictation_more_dialog.py::MoreDictationDialog.__init__::wx.Button": "helped",
   "quill/ui/dictation_more_dialog.py::MoreDictationDialog.__init__::wx.Button#2": "helped",
   "quill/ui/dictation_more_dialog.py::MoreDictationDialog.__init__::wx.Button#3": "helped",
@@ -155,5 +158,6 @@
   "quill/ui/windows_dictation_dialog.py::WindowsDictationDialog.__init__::wx.Choice#8": "helped",
   "quill/ui/windows_dictation_dialog.py::WindowsDictationDialog.__init__::wx.TextCtrl": "helped",
   "quill/ui/windows_dictation_dialog.py::WindowsDictationDialog.__init__::wx.TextCtrl#2": "helped",
-  "quill/ui/windows_dictation_dialog.py::WindowsDictationDialog.__init__::wx.TextCtrl#3": "helped"
+  "quill/ui/windows_dictation_dialog.py::WindowsDictationDialog.__init__::wx.TextCtrl#3": "helped",
+  "quill/ui/windows_dictation_dialog.py::WindowsDictationDialog.__init__::wx.TextCtrl#4": "helped"
 }

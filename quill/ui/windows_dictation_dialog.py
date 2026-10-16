@@ -39,6 +39,7 @@ from quill.core.windows_dictation.engines import (
     engine_choices,
     language_model_problem,
 )
+from quill.core.windows_dictation.model_advice import for_this_computer
 from quill.core.windows_dictation.options import (
     PAUSE_CHOICES,
     SILENCE_CHOICES,
@@ -131,6 +132,11 @@ class WindowsDictationDialog(wx.Dialog):
         )
         self.speech_models.Bind(wx.EVT_BUTTON, self._on_speech_models)
         root.Add(self.speech_models, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, _PAD)
+        advice_label = wx.StaticText(self, label="Recommended for this computer:")
+        self.advice = wx.TextCtrl(self, style=wx.TE_READONLY)
+        self.advice.SetHelpText("The model that suits this computer, and why. Only advice.")
+        root.Add(advice_label, 0, wx.LEFT | wx.RIGHT, _PAD)
+        root.Add(self.advice, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, _PAD)
 
         speech_label = wx.StaticText(self, label="Dictation lan&guage:")
         self._speech_languages = [value for value, _label in SPEECH_LANGUAGES]
@@ -147,6 +153,7 @@ class WindowsDictationDialog(wx.Dialog):
             self._speech_languages.index(coerce_speech_language(saved))
         )
         self.speech_language.Bind(wx.EVT_CHOICE, self._on_speech_language)
+        self._show_advice()
         root.Add(speech_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
         root.Add(self.speech_language, 0, wx.EXPAND | wx.ALL, _PAD)
 
@@ -433,6 +440,12 @@ class WindowsDictationDialog(wx.Dialog):
         problem = language_model_problem(engine, language)
         if problem:
             self._show_test(problem)
+        self._show_advice()
+
+    def _show_advice(self) -> None:
+        """D-22: the recommendation for the chosen language, as text to read."""
+        language = self._speech_languages[max(0, self.speech_language.GetSelection())]
+        self.advice.SetValue(for_this_computer(language).sentence)
 
     def _on_engine(self, _event: Any) -> None:
         """Choosing OpenAI asks first whether speech may leave the computer."""
@@ -488,7 +501,9 @@ class WindowsDictationDialog(wx.Dialog):
         from quill.ui.dictation_models_dialog import open_speech_models
 
         current = self._engine_ids[max(0, self.engine.GetSelection())]
-        chosen = open_speech_models(self, self._announce) or current
+        language = self._speech_languages[max(0, self.speech_language.GetSelection())]
+        chosen = open_speech_models(self, self._announce, language=language) or current
+        self._show_advice()  # the timed check may have run there
         rows = engine_choices(chosen)
         self._engine_ids = [engine_id for engine_id, _label in rows]
         self.engine.Set([label for _id, label in rows])

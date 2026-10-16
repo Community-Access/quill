@@ -586,7 +586,19 @@ evidence.</li>
 <li>Model source, license, and any relevant restrictions.</li>
 <li>Whether it supports streaming preview or returns a phrase after a
 pause.</li>
+<li>Its tier: Lightweight, Balanced or High accuracy, derived from the
+model’s measured cost and word errors
+(<code>model_types.tier_for</code>), the same three words in every QUILL
+app that chooses a model.</li>
 </ul>
+<p>Choose Model and Set Up show a read-only <strong>Recommended for this
+computer</strong> line (dict.md D-22,
+<code>model_advice.recommend</code>): one local model for this
+computer’s cores, memory and measured speed, the dictation language and,
+in the Model Library, what matters most (balance, quickest response,
+fewest mistakes), with its reasons in plain words and labelled an
+estimate until the real-voice benchmark exists. It is advice only: there
+is no automatic mode.</p>
 <p>The selected model is sticky. QUILL Transcribe does not switch
 engines because another engine is faster, a model download completes, or
 a request fails. Fallback is a separate, visible action and announces

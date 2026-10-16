@@ -306,6 +306,16 @@ catalogue. Each entry presents:
 - A concise latency/quality description grounded in available evidence.
 - Model source, license, and any relevant restrictions.
 - Whether it supports streaming preview or returns a phrase after a pause.
+- Its tier: Lightweight, Balanced or High accuracy, derived from the model's
+  measured cost and word errors (`model_types.tier_for`), the same three words
+  in every QUILL app that chooses a model.
+
+Choose Model and Set Up show a read-only **Recommended for this computer**
+line (dict.md D-22, `model_advice.recommend`): one local model for this
+computer's cores, memory and measured speed, the dictation language and, in
+the Model Library, what matters most (balance, quickest response, fewest
+mistakes), with its reasons in plain words and labelled an estimate until the
+real-voice benchmark exists. It is advice only: there is no automatic mode.
 
 The selected model is sticky. QUILL Transcribe does not switch engines because
 another engine is faster, a model download completes, or a request fails.

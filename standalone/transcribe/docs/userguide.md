@@ -37,8 +37,11 @@ It has one page:
 2. **Microphone** - the Windows default, or a microphone you name. Press
    **Test Microphone** to record four seconds and hear how loud it was and what
    it heard. The test stays on your computer and nothing is kept.
-3. **Speech model** - the models already on this computer. Moonshine is a good
-   place to start: it is quick and adds punctuation for you.
+3. **Speech model** - the models already on this computer, each with its tier
+   (see "Choosing a model"). Moonshine is a good place to start: it is quick
+   and adds punctuation for you. Below it, **Recommended for this computer**
+   (Alt+P) is one line naming the model that suits your computer and why. It
+   is only advice: the model in the box above is the one you get.
 4. **Start and stop key** - the key that starts and stops dictation from any
    program. It is **Alt+Shift+Backslash** (`Alt+Shift+\`) unless you change it.
    Type another, for example Ctrl+Alt+PageDown, or press **Record Key** (Alt+C)
@@ -239,12 +242,31 @@ words and phrases from My Words and Phrases.
 Open **Choose Model** (Ctrl+M). Every model is listed with:
 
 - whether it runs **on this computer** or **sends your speech over the internet**;
+- its tier: **Lightweight**, **Balanced** or **High accuracy**;
 - the languages it knows;
 - whether it is downloaded yet.
 
-The box below the list says more about the one you are on: its size, who
-publishes it and its licence. Press **Use This Model** to choose it. It stays
-your model until you choose another.
+The box below the list says more about the one you are on: its size, what
+its tier means, who publishes it and its licence. Press **Use This Model** to
+choose it. It stays your model until you choose another.
+
+The tiers say how much work a model is for your computer:
+
+- **Lightweight**: keeps up comfortably even on a modest computer. The
+  built-in Moonshine and Whisper, and Moonshine base.
+- **Balanced**: more work than the built-in models; keeps up on a computer
+  with four or more cores. Parakeet and Whisper base.
+- **High accuracy**: the fewest mistakes, for the most work; needs a capable
+  computer, or patience. Nemotron, and Whisper small and larger.
+
+**Recommended for this computer** (Alt+C) is a read-only box below that. It
+names the model that suits your computer and your dictation language, and
+says why: whether it keeps up, about how soon your words appear after you
+pause, and how big the download is, or that it is already installed. The
+figures are estimates, measured with a synthetic voice. It is only advice:
+QUILL Transcribe never changes your model by itself. The Model Library has
+the same advice, with a **What matters most** choice (the quickest response,
+or the fewest mistakes) and a **Show Recommended Model** button.
 
 A model that is not downloaded is listed so you know it exists, but you cannot
 use it until it is downloaded. Choose **Model Library** to download it.

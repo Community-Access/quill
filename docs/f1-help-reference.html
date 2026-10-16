@@ -3398,7 +3398,7 @@ set to expand only manually. Also on Ctrl+K here, and from any program
 on the key you choose with File, Quick Insert Key.</li>
 </ul>
 <h2 id="quill-transcribe">QUILL Transcribe</h2>
-<p>Control coverage: 29 audited sites (29 helped).</p>
+<p>Control coverage: 31 audited sites (31 helped).</p>
 <h3 id="every-window-and-what-it-is-for-5">Every window, and what it is
 for</h3>
 <p><strong>Choose Microphone.</strong> The microphone QUILL Transcribe
@@ -3519,6 +3519,9 @@ found.</li>
 Only models already on this computer are listed here; more can be
 downloaded later from the Model Library. The one you choose is used
 every time until you change it.</li>
+<li><code>self.advice</code>: The model that suits this computer and
+why, as an estimate. It is only advice: the model you choose above is
+the one used.</li>
 <li><code>self.key</code>: The key that starts and stops dictation from
 any program: Alt+Shift+\ unless you change it. Type another, for example
 Ctrl+Alt+PageDown, press Record Key to press it instead, or leave the
@@ -3539,10 +3542,15 @@ id="choosemodeldialog-quillappstranscribe_dialogspy">ChooseModelDialog
 <ul>
 <li><code>self.list</code>: Every speech model QUILL knows. Each says
 whether it runs on this computer or sends your speech over the internet,
-which languages it knows, and whether it is downloaded. Enter uses the
-one you are on.</li>
+its tier (Lightweight, Balanced or High accuracy), which languages it
+knows, and whether it is downloaded. Enter uses the one you are on.</li>
 <li><code>self.details</code>: The model you are on: where it runs, its
-languages and size, who publishes it and under which licence.</li>
+tier, its languages and size, who publishes it and under which
+licence.</li>
+<li><code>self.advice</code>: The model that suits this computer and
+why: whether it keeps up, about how soon your words appear after you
+pause, its tier and its size. The figures are estimates, and it is only
+advice: nothing changes until you choose.</li>
 <li><code>use</code>: Make this your model. It is used every time you
 dictate until you choose another; QUILL Transcribe never switches on its
 own.</li>
@@ -4443,7 +4451,7 @@ playback to its start.</li>
 text, when one is available. Empty otherwise.</li>
 </ul>
 <h2 id="quill-lite">QUILL Lite</h2>
-<p>Control coverage: 157 audited sites (157 helped).</p>
+<p>Control coverage: 161 audited sites (161 helped).</p>
 <h3 id="every-window-and-what-it-is-for-9">Every window, and what it is
 for</h3>
 <p><strong>AI Assistant.</strong> Ask QUILL’s free AI to summarize,
@@ -5225,6 +5233,8 @@ id="windowsdictationdialog-quilluiwindows_dictation_dialogpy">WindowsDictationDi
 better accuracy – the ones VS Code offers and the rest of the Whisper
 family – to download, remove or choose. Dictation works without
 them.</li>
+<li><code>self.advice</code>: The model that suits this computer, and
+why. Only advice.</li>
 <li><code>self.speech_language</code>: The language you dictate in:
 English, or Spanish, which is new. In Spanish, Moonshine and Whisper
 both use Whisper’s multilingual model; Windows speech recognition needs
@@ -5407,10 +5417,22 @@ one. Matched by file name, never by a window title.</li>
 id="speechmodelsdialog-quilluidictation_models_dialogpy">SpeechModelsDialog
 (<code>quill/ui/dictation_models_dialog.py</code>)</h4>
 <ul>
+<li><code>self.priority</code>: What the recommendation below aims for:
+a balance of speed and accuracy, the quickest response after you pause,
+or the fewest mistakes this computer can keep up with. It only changes
+the advice, never your model.</li>
+<li><code>self.advice</code>: The model that suits this computer and
+why: whether it keeps up, about how soon your words appear after you
+pause, its tier and its download size. The figures are estimates.
+Nothing changes until you choose a model.</li>
+<li><code>self.show_recommended</code>: Move to the recommended model in
+the list below, to read its details and download or use it. It does not
+download or choose anything.</li>
 <li><code>self.models</code>: The optional speech models, the ones VS
 Code offers first and then the rest of the Whisper family. Each row says
-what the model is good for, its size and whether it is on this computer.
-Details below say more.</li>
+its tier (Lightweight, Balanced or High accuracy), what the model is
+good for, its size and whether it is on this computer. Details below say
+more.</li>
 <li><code>self.details</code>: About the chosen model: what it is better
 at, its languages, download and disk size, what computer suits it and
 whether this one should keep up, its published accuracy, its licence and

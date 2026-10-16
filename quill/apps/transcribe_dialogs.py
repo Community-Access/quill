@@ -53,6 +53,13 @@ def _microphones() -> tuple[list[str], str]:
     return names, label
 
 
+def _advice(language: str) -> Any:
+    """D-22's recommendation for this computer, without waiting for a timed check."""
+    from quill.core.windows_dictation.model_advice import for_this_computer
+
+    return for_this_computer(language)
+
+
 def _details(row: Any) -> str:
     where = (
         "Runs on this computer; your speech never leaves it."
@@ -60,6 +67,10 @@ def _details(row: Any) -> str:
         else "Sends your speech over the internet to the provider named below."
     )
     state = "Ready to use." if row.ready else "Not downloaded yet: use the Model Library."
+    if row.tier:
+        from quill.core.windows_dictation.model_types import TIER_MEANINGS
+
+        state += f"\nTier: {TIER_MEANINGS[row.tier]}"
     return (
         f"{row.name}. {where} {state}\n"
         f"Languages: {row.languages}. Size: {row.size}.\n"
@@ -80,6 +91,7 @@ class SetupDialog(wx.Dialog):
         at_login: bool,
         test_microphone: Callable[[str, str, Callable[[str], None]], None],
         show_modal: Callable[[Any, str], int],
+        language: str = "en",
     ) -> None:
         super().__init__(
             parent,
@@ -141,6 +153,14 @@ class SetupDialog(wx.Dialog):
         self.model.SetSelection(ids.index(engine) if engine in ids else 0)
         root.Add(model_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
         root.Add(self.model, 0, wx.EXPAND | wx.ALL, _PAD)
+        advice_label = wx.StaticText(self, label="Recommended for this com&puter:")
+        self.advice = wx.TextCtrl(self, value=_advice(language).sentence, style=wx.TE_READONLY)
+        self.advice.SetHelpText(
+            "The model that suits this computer and why, as an estimate. It is only "
+            "advice: the model you choose above is the one used."
+        )
+        root.Add(advice_label, 0, wx.LEFT | wx.RIGHT, _PAD)
+        root.Add(self.advice, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, _PAD)
 
         key_label = wx.StaticText(self, label="Start and stop &key (leave empty for none):")
         self.key = wx.TextCtrl(self, value=key)
@@ -224,25 +244,41 @@ class SetupDialog(wx.Dialog):
 class ChooseModelDialog(wx.Dialog):
     """Every model, marked local or internet, ready or not; one is chosen."""
 
-    def __init__(self, parent: Any, *, current: str, open_library: Callable[[], None]) -> None:
+    def __init__(
+        self,
+        parent: Any,
+        *,
+        current: str,
+        open_library: Callable[[], None],
+        language: str = "en",
+    ) -> None:
         super().__init__(
             parent, title="Choose Model", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
         self.chosen = ""
         self._open_library = open_library
+        self._language = language
         root = wx.BoxSizer(wx.VERTICAL)
         label = wx.StaticText(self, label="&Models:")
         self.list = wx.ListBox(self)
         self.list.SetHelpText(
             "Every speech model QUILL knows. Each says whether it runs on this "
-            "computer or sends your speech over the internet, which languages it "
-            "knows, and whether it is downloaded. Enter uses the one you are on."
+            "computer or sends your speech over the internet, its tier (Lightweight, "
+            "Balanced or High accuracy), which languages it knows, and whether it is "
+            "downloaded. Enter uses the one you are on."
         )
         details_label = wx.StaticText(self, label="&About this model:")
         self.details = wx.TextCtrl(self, style=wx.TE_MULTILINE | wx.TE_READONLY)
         self.details.SetHelpText(
-            "The model you are on: where it runs, its languages and size, who "
-            "publishes it and under which licence."
+            "The model you are on: where it runs, its tier, its languages and size, "
+            "who publishes it and under which licence."
+        )
+        advice_label = wx.StaticText(self, label="Recommended for this &computer:")
+        self.advice = wx.TextCtrl(self, style=wx.TE_MULTILINE | wx.TE_READONLY)
+        self.advice.SetHelpText(
+            "The model that suits this computer and why: whether it keeps up, about how "
+            "soon your words appear after you pause, its tier and its size. The figures "
+            "are estimates, and it is only advice: nothing changes until you choose."
         )
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         use = wx.Button(self, wx.ID_OK, "Use This Model")
@@ -263,9 +299,11 @@ class ChooseModelDialog(wx.Dialog):
         root.Add(self.list, 1, wx.EXPAND | wx.ALL, _PAD)
         root.Add(details_label, 0, wx.LEFT | wx.RIGHT, _PAD)
         root.Add(self.details, 1, wx.EXPAND | wx.ALL, _PAD)
+        root.Add(advice_label, 0, wx.LEFT | wx.RIGHT, _PAD)
+        root.Add(self.advice, 1, wx.EXPAND | wx.ALL, _PAD)
         root.Add(buttons, 0, wx.ALL, _PAD)
         self.SetSizer(root)
-        self.SetSize((640, 560))
+        self.SetSize((640, 680))
         apply_modal_ids(self, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
         bind_close_button(self, cancel, modeless=False)
         self.Bind(wx.EVT_BUTTON, self._on_use, id=wx.ID_OK)
@@ -280,6 +318,8 @@ class ChooseModelDialog(wx.Dialog):
 
         self._rows = model_rows()
         self.list.Set([row.label for row in self._rows])
+        # Rewritten after the Model Library too, whose timed check may have run.
+        self.advice.SetValue(_advice(self._language).details)
         ids = [row.id for row in self._rows]
         self.list.SetSelection(ids.index(current) if current in ids else 0)
         self._describe()

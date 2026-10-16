@@ -809,6 +809,87 @@ Still to check: the wake word's false-start rate on Moonshine tiny against the
 old Vosk numbers was not measured, because Vosk's never were; the NVDA and
 JAWS check of the new sentence joins `docs/qa/screen-reader-checks-2026-10.md`.
 
+## 21. As built 2026-10-15: a recommended model, with reasons, and tier labels (D-22)
+
+Until now only Transcribe a Recording suggested a model (`file_models.py`,
+for files). Live dictation had the two-second check (section 1) and a verdict
+per model, but nothing said which one to pick.
+
+**The recommendation** is `quill/core/windows_dictation/model_advice.py`,
+wx-free, and `speed_check.recommend(check, language, privacy="local")` calls
+it, as dict.md placed it. It returns one model and a sentence, for example
+"Moonshine base, Lightweight: keeps up on this computer's 8 GB and 4 cores,
+about 0.3 seconds after you pause; stays on this computer; a 141 MB
+download.", and the reasons behind it. The rule:
+
+* **Candidates** are the built-in Moonshine and Whisper and every catalogue
+  model with a measurement in section 6, that knows the dictation language.
+  An unmeasured model is never recommended, because a reason needs a number.
+* **It must keep up.** Moonshine tiny's timed speed here (or the cores and
+  memory fallback) times the model's cost factor must be inside the 0.25
+  budget. Two threads (up to 0.5) are allowed when the person chooses "The
+  fewest mistakes", or on a computer with 16 GB and four cores, which matches
+  D-26's tier table (Nemotron the default at 16 GB).
+* **It must fit beside the screen reader**: 600 MB of peak memory under 7 GB
+  (section 1's budget), 1 GB under 15 GB, 2.5 GB above.
+* **Then the fewest word errors win.** Ties go to the bigger model of the
+  pair (Moonshine base over tiny), except on a modest computer (under four
+  cores or 7 GB), where the built-in model wins a tie: a download measured no
+  better is not worth having there. "The quickest response" takes the
+  lightest.
+* **When nothing keeps up**, the lightest built-in model for the language is
+  named, saying it may lag.
+* **A graphics card changes nothing**: every dictation model runs on the
+  processor, and the reasons say so when one is found. The timed check now
+  asks `service.detect_has_gpu`; its memory comes from
+  `service.detect_total_ram_gb`, the detector Manage Speech Models uses.
+* **Privacy**: every candidate keeps the speech on this computer. OpenAI is
+  never recommended; it needs the person's own key and consent.
+
+Every answer ends "These figures are estimates from a synthetic voice" and
+"QUILL never changes your model by itself", until B-1 measures real voices.
+There is no automatic mode: the sticky-model rule holds.
+
+| Computer | Balance | Quickest | Fewest mistakes |
+|---|---|---|---|
+| 4 GB, two cores (the baseline) | Moonshine (built in) | Moonshine | Moonshine base |
+| 8 GB, four cores | Moonshine base | Moonshine | Nemotron (two threads) |
+| 16 GB, eight cores | Nemotron (two threads) | Moonshine | Nemotron |
+| Spanish, 8 GB, four cores | Whisper (built in) | Whisper | Nemotron |
+
+`tests/unit/core/test_dictation_model_advice.py` pins these and more as a
+table of machine profiles.
+
+**Tiers** (`model_types.tier_for`): a cost factor up to 5 (inside the budget
+on the measuring machine) is **Lightweight**; up to 10 (two threads) is
+**Balanced**, unless its measured word errors are 2.5 percent or fewer, which
+makes it **High accuracy**; above 10 is **High accuracy**. So Moonshine tiny,
+Whisper tiny and Moonshine base are Lightweight; both Parakeets and Whisper
+base are Balanced; Nemotron and Whisper small and up are High accuracy.
+`legacy_tier` gives QUILL's whisper.cpp and Faster Whisper catalogue the same
+words (200 MB or less Lightweight, "high" or "highest" accuracy High
+accuracy, the rest Balanced), and its Nemotron and Parakeet take the live
+models' tiers, so one model never has two.
+
+**Where it shows.** Speech Models (shared by QUILL, QUILL Lite and
+Transcribe's Model Library): What matters most (Alt+W), the read-only
+Recommendation (Alt+C), Show Recommended Model (Alt+S), and the tier on every
+row and in Details. Dictation Settings, in all hosts: a read-only Recommended
+for this computer line, and the tier in the Speech engine list. Transcribe's
+Choose Model and Set Up: the same line, and the tier in each row. Transcribe a
+Recording: the tier in each row. QUILL's Manage Speech Models and guided
+offline-speech setup: the tier, and the reason after "Recommended for your
+computer" (`service.recommendation_reason`). Windows that open without a
+timed check use `speed_check.latest()`: this session's timed check if Speech
+Models has run one, otherwise cores and memory, and the reasons say "not
+timed". Changing What matters most is the only spoken outcome
+("Recommended: Moonshine base."): the focus stays on the choice, so the new
+advice is news (GATE-13); the check finishing rewrites the text silently.
+
+Not built here: the "Switch to the Recommended Model" button of dict.md
+section 10 (it belongs to retiring legacy models), and D-26's `ram_tier`
+catalogue field.
+
 ## Appendix A: the dict.md section numbers, and where they live now
 
 | dict.md | What it was | Here |

@@ -216,6 +216,10 @@ class ModelChoice:
     size_text: str
     summary: str  # what it's good for (recommended_use), for the picker
     recommended: bool  # best fit for this computer (recommend_model_id)
+    #: Lightweight, Balanced or High accuracy (D-22, model_types.legacy_tier).
+    tier: str = ""
+    #: Why it is recommended, on the recommended row only (D-22).
+    reason: str = ""
 
 
 def _size_text(megabytes: int) -> str:
@@ -241,16 +245,24 @@ def models_for_engine(engine_id: str) -> list[ModelChoice]:
     Built from the static catalog so the picker works *before* the engine is
     installed (the guided flow installs the engine and the chosen model together).
     """
-    from quill.core.speech.service import detect_has_gpu, detect_total_ram_gb, recommend_model_id
+    from quill.core.speech.service import (
+        detect_has_gpu,
+        detect_total_ram_gb,
+        recommend_model_id,
+        recommendation_reason,
+    )
+    from quill.core.windows_dictation.model_types import legacy_tier
 
     models = _catalog_models(engine_id)
     ids = [m.id for m in models]
     if not ids:
         return []
     try:
-        best_fit = recommend_model_id(ids, detect_total_ram_gb(), detect_has_gpu())
+        ram, gpu = detect_total_ram_gb(), detect_has_gpu()
+        best_fit = recommend_model_id(ids, ram, gpu)
+        reason = recommendation_reason(ram, gpu)
     except Exception:  # noqa: BLE001 - detection must never break the picker
-        best_fit = ids[0]
+        best_fit, reason = ids[0], ""
     return [
         ModelChoice(
             model_id=m.id,
@@ -258,6 +270,8 @@ def models_for_engine(engine_id: str) -> list[ModelChoice]:
             size_text=_size_text(m.approximate_size_mb),
             summary=m.recommended_use,
             recommended=m.id == best_fit,
+            tier=legacy_tier(m.id, m.approximate_size_mb, m.accuracy_tier),
+            reason=reason if m.id == best_fit else "",
         )
         for m in models
     ]

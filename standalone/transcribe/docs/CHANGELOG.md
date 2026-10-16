@@ -6,6 +6,14 @@ file is the itemized list.
 
 ## Unreleased
 
+- **Which model suits this computer, and why** (2026-10-15). Choose Model
+  (Ctrl+M) and Set Up show a read-only **Recommended for this computer** box:
+  the model that suits your computer and dictation language, whether it keeps
+  up, about how soon your words appear after you pause, and the download size.
+  The Model Library adds **What matters most** and **Show Recommended Model**.
+  It is only advice, labelled an estimate; your model never changes by itself.
+  Every model is now labelled **Lightweight**, **Balanced** or **High
+  accuracy**.
 - **Programs dictation never types into** (2026-10-15). A list you keep, in
   More Dictation Settings (Alt+N), that starts with the common password
   managers and the Windows sign-in prompts. Dictation and Insert Again refuse a

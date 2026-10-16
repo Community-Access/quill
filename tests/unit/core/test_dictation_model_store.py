@@ -183,7 +183,7 @@ def test_the_engine_list_shows_downloaded_models_and_a_missing_saved_one(monkeyp
     whisper_small = next(m for m in CATALOGUE if m.id == "whisper_small")
     monkeypatch.setattr(model_store, "installed_models", lambda: [whisper_small])
     rows = dict(engines.engine_choices("nemotron"))
-    assert rows["whisper_small"] == "Whisper small (downloaded)"
+    assert rows["whisper_small"] == "Whisper small (downloaded), High accuracy"
     assert "not downloaded" in rows["nemotron"]
     assert list(rows)[:4] == ["moonshine", "whisper", "windows", "voice_typing"]
 

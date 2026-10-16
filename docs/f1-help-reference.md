@@ -1365,7 +1365,7 @@ Control coverage: 3 audited sites (3 helped).
 
 ## QUILL Transcribe
 
-Control coverage: 29 audited sites (29 helped).
+Control coverage: 31 audited sites (31 helped).
 
 ### Every window, and what it is for
 
@@ -1430,6 +1430,7 @@ Control coverage: 29 audited sites (29 helped).
 - `self.test_button`: Records four seconds on the chosen microphone and says how loud it was and what it heard. The recording stays on this computer and is not kept.
 - `self.test_result`: What the last microphone test found.
 - `self.model`: The model that turns your speech into text. Only models already on this computer are listed here; more can be downloaded later from the Model Library. The one you choose is used every time until you change it.
+- `self.advice`: The model that suits this computer and why, as an estimate. It is only advice: the model you choose above is the one used.
 - `self.key`: The key that starts and stops dictation from any program: Alt+Shift+\ unless you change it. Type another, for example Ctrl+Alt+PageDown, press Record Key to press it instead, or leave the box empty to use the tray menu only.
 - `self.record_key`: Press a key combination and it is written into the start and stop key box. A key another program already uses may not arrive: type that one.
 - `self.at_login`: Opens QUILL Transcribe in the tray when you sign in, so your key works straight away. It does not start listening until you start dictation.
@@ -1437,8 +1438,9 @@ Control coverage: 29 audited sites (29 helped).
 - `skip`: Close setup without changing anything. Setup is on the Help menu whenever you want it.
 #### ChooseModelDialog (`quill/apps/transcribe_dialogs.py`)
 
-- `self.list`: Every speech model QUILL knows. Each says whether it runs on this computer or sends your speech over the internet, which languages it knows, and whether it is downloaded. Enter uses the one you are on.
-- `self.details`: The model you are on: where it runs, its languages and size, who publishes it and under which licence.
+- `self.list`: Every speech model QUILL knows. Each says whether it runs on this computer or sends your speech over the internet, its tier (Lightweight, Balanced or High accuracy), which languages it knows, and whether it is downloaded. Enter uses the one you are on.
+- `self.details`: The model you are on: where it runs, its tier, its languages and size, who publishes it and under which licence.
+- `self.advice`: The model that suits this computer and why: whether it keeps up, about how soon your words appear after you pause, its tier and its size. The figures are estimates, and it is only advice: nothing changes until you choose.
 - `use`: Make this your model. It is used every time you dictate until you choose another; QUILL Transcribe never switches on its own.
 - `library`: Download, check or remove the optional models. Downloads are your choice, show their size first, and are checked before they are used.
 - `cancel`: Keep the model you have.
@@ -1814,7 +1816,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## QUILL Lite
 
-Control coverage: 157 audited sites (157 helped).
+Control coverage: 161 audited sites (161 helped).
 
 ### Every window, and what it is for
 
@@ -2137,6 +2139,7 @@ Control coverage: 157 audited sites (157 helped).
 #### WindowsDictationDialog (`quill/ui/windows_dictation_dialog.py`)
 
 - `self.speech_models`: Optional, larger speech models for better accuracy -- the ones VS Code offers and the rest of the Whisper family -- to download, remove or choose. Dictation works without them.
+- `self.advice`: The model that suits this computer, and why. Only advice.
 - `self.speech_language`: The language you dictate in: English, or Spanish, which is new. In Spanish, Moonshine and Whisper both use Whisper's multilingual model; Windows speech recognition needs Spanish installed in Windows. Commands stay in English for now, and Spanish punctuation words such as coma and punto work while automatic punctuation is off.
 - `self.auto_punctuation`: On: Moonshine and Whisper put in full stops, commas and question marks by themselves, and any mark you say still wins. Off: nothing is added for you, and a sentence runs on until you say a mark, as with Windows speech recognition, which never punctuates by itself.
 - `self.language`: Which of the speech languages installed in Windows the Windows speech recognition engine listens for. Moonshine and Whisper ignore this and follow the dictation language. Add languages in Windows Settings, Time and language, Speech.
@@ -2187,7 +2190,10 @@ Control coverage: 157 audited sites (157 helped).
 - `never_type`: The programs dictation never types into from QUILL Transcribe or Quill Inkwell, such as your password manager: add the program you were just in, add one by its file name, or remove one. Matched by file name, never by a window title.
 #### SpeechModelsDialog (`quill/ui/dictation_models_dialog.py`)
 
-- `self.models`: The optional speech models, the ones VS Code offers first and then the rest of the Whisper family. Each row says what the model is good for, its size and whether it is on this computer. Details below say more.
+- `self.priority`: What the recommendation below aims for: a balance of speed and accuracy, the quickest response after you pause, or the fewest mistakes this computer can keep up with. It only changes the advice, never your model.
+- `self.advice`: The model that suits this computer and why: whether it keeps up, about how soon your words appear after you pause, its tier and its download size. The figures are estimates. Nothing changes until you choose a model.
+- `self.show_recommended`: Move to the recommended model in the list below, to read its details and download or use it. It does not download or choose anything.
+- `self.models`: The optional speech models, the ones VS Code offers first and then the rest of the Whisper family. Each row says its tier (Lightweight, Balanced or High accuracy), what the model is good for, its size and whether it is on this computer. Details below say more.
 - `self.details`: About the chosen model: what it is better at, its languages, download and disk size, what computer suits it and whether this one should keep up, its published accuracy, its licence and where it is saved.
 - `self.progress`: How far the current download has got, or how it ended.
 - `self.gauge`: How far the current download has got.

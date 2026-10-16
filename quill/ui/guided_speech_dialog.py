@@ -38,7 +38,18 @@ class GuidedSpeechData(Protocol):
 
 def _model_label(model: ModelChoice) -> str:
     tag = "  (Recommended for your computer)" if model.recommended else ""
-    return f"{model.display_name} — {model.size_text}{tag}"
+    tier = f", {model.tier}" if model.tier else ""
+    return f"{model.display_name}{tier} — {model.size_text}{tag}"
+
+
+def _details(summary: str, models: list[ModelChoice]) -> str:
+    """The engine's summary, then which model suits this computer and why (D-22),
+    as text to read rather than only a tag on a row."""
+    best = next((m for m in models if m.recommended), None)
+    if best is None:
+        return summary
+    tier = f", {best.tier}" if best.tier else ""
+    return f"{summary}\nRecommended model: {best.display_name}{tier}. {best.reason}".rstrip()
 
 
 def _engine_label(option: OfflineSpeechEngineOption) -> str:
@@ -119,8 +130,8 @@ def show_guided_speech_setup(
 
     def _refresh() -> None:
         opt = options[engine_box.GetSelection()]
-        engine_detail.SetValue(opt.summary)
         models = _models(opt.engine_id)
+        engine_detail.SetValue(_details(opt.summary, models))
         model_list.Set([_model_label(m) for m in models])
         if models:
             default_id = data.default_model(opt.engine_id)

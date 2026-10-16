@@ -2,6 +2,38 @@
 
 ## 1.0.0
 
+### Dictation: a recommended model with reasons, and tier labels (D-22, 2026-10-15)
+
+dict.md D-22. The person still chooses; there is no automatic mode.
+
+- **`quill/core/windows_dictation/model_advice.py`** (new, wx-free):
+  `recommend(check, language, privacy="local", *, priority, has_gpu)` returns
+  one `Recommendation` (model id, name, tier, one sentence, reasons, `may_lag`).
+  Only measured models are candidates; a model must keep up (0.25 on one
+  thread, or two threads for "fewest mistakes" and on 16 GB/4-core machines)
+  and fit the memory share beside the screen reader; fewest word errors win,
+  ties to the bigger model except on a modest computer, where the built-in one
+  wins. `speed_check.recommend` is the spec's entry point; `for_this_computer`
+  is the instant form on `speed_check.latest()`. Every answer says "estimate".
+- **`model_types.py`**: `LIGHTWEIGHT` / `BALANCED` / `HIGH_ACCURACY`,
+  `TIER_MEANINGS`, `MEASURED` (the 2026-10-05 dictbench table),
+  `tier_for(cost_factor, word_errors)`, `DownloadableModel.tier`, and
+  `legacy_tier` for `core/speech/catalog.py` so one model is one tier.
+- **`speed_check.py`**: memory now through `service.detect_total_ram_gb`; the
+  timed check also records `has_gpu` (`service.detect_has_gpu`); `latest()` and
+  `hardware_only()` answer at once.
+- **Where models are chosen**: Speech Models (What matters most, Alt+W; the
+  read-only Recommendation, Alt+C; Show Recommended Model, Alt+S; tiers on
+  every row and in Details), Dictation Settings (a read-only Recommended for
+  this computer line; tiers in the Speech engine list), Transcribe's Choose
+  Model and Set Up (the same line; tiers in `transcribe.models.ModelRow`),
+  Transcribe a Recording's list, and QUILL's Manage Speech Models and guided
+  offline-speech setup (`service.recommendation_reason`, built on
+  `machine_summary`; `ModelChoice.tier` and `.reason`).
+- Tests: `test_dictation_model_advice.py` (a table of machine profiles),
+  `test_transcribe_model_advice.py`, and additions to the Speech Models,
+  guided setup, service and Transcribe model tests.
+
 ### Dictation: the never-type list, and Inkwell keeps its field (2026-10-15)
 
 D-24 and D-15 from the dictation plan, rescued from an uncommitted worktree.
