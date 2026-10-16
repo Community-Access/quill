@@ -66,7 +66,28 @@ PURPOSES: dict[str, str] = {
         "format, a preset and any effects -- Preview lets you hear fifteen "
         "seconds of the result first -- and Convert. Everything runs on this "
         "computer, your originals are never touched, and a file already in "
-        "the output folder is numbered around, never overwritten."
+        "the output folder is numbered around, never overwritten. The one "
+        "exception is Process with Auphonic, which uploads only after you "
+        "confirm."
+    ),
+    "Process with Auphonic": (
+        "Send the queue's sound files to your own Auphonic account to be "
+        "post-produced online, then save the results here. Choose separate "
+        "productions or one multitrack production, check your account to load "
+        "your presets, and pick the processing and the output format. Nothing "
+        "is uploaded until you confirm on the next page."
+    ),
+    "Send to Auphonic?": (
+        "The last look before anything leaves this computer: every file to be "
+        "uploaded and every file left out, the preset and processing, and where "
+        "the results will be saved. Upload and Process sends them using your "
+        "Auphonic credits; Cancel sends nothing."
+    ),
+    "Auphonic Work Waiting": (
+        "Productions Auphonic accepted whose results have not been saved yet, "
+        "remembered on this computer without contacting Auphonic. Resume waits "
+        "for them and saves the results; Dismiss forgets one here, and it stays "
+        "in your Auphonic account."
     ),
     "Convert Audio": (
         "The full conversion dialog, seeded with your queue: every format the "

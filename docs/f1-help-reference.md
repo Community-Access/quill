@@ -1550,9 +1550,11 @@ Control coverage: 40 audited sites (40 helped).
 
 ## Quill Converter
 
-Control coverage: 26 audited sites (26 helped).
+Control coverage: 38 audited sites (38 helped).
 
 ### Every window, and what it is for
+
+**Auphonic Work Waiting.** Productions Auphonic accepted whose results have not been saved yet, remembered on this computer without contacting Auphonic. Resume waits for them and saves the results; Dismiss forgets one here, and it stays in your Auphonic account.
 
 **Chapter Workbench.** Edit the chapters of an MP3, M4B or M4A: hear it, then add, rename, move, split and merge chapters at the playhead, find them at the pauses, or import and export a chapter list. Save writes them into the file itself, and every later conversion carries them.
 
@@ -1572,7 +1574,11 @@ Control coverage: 26 audited sites (26 helped).
 
 **Keyboard Shortcuts.** Every key in Quill Converter, grouped by menu, in one read-only list you can arrow through or copy. It is a reference; nothing here changes a key.
 
-**Quill Converter.** Convert audio and video between formats: sound to sound, video to sound, or video to video. Queue your files or folders, choose a format, a preset and any effects -- Preview lets you hear fifteen seconds of the result first -- and Convert. Everything runs on this computer, your originals are never touched, and a file already in the output folder is numbered around, never overwritten.
+**Process with Auphonic.** Send the queue's sound files to your own Auphonic account to be post-produced online, then save the results here. Choose separate productions or one multitrack production, check your account to load your presets, and pick the processing and the output format. Nothing is uploaded until you confirm on the next page.
+
+**Quill Converter.** Convert audio and video between formats: sound to sound, video to sound, or video to video. Queue your files or folders, choose a format, a preset and any effects -- Preview lets you hear fifteen seconds of the result first -- and Convert. Everything runs on this computer, your originals are never touched, and a file already in the output folder is numbered around, never overwritten. The one exception is Process with Auphonic, which uploads only after you confirm.
+
+**Send to Auphonic?.** The last look before anything leaves this computer: every file to be uploaded and every file left out, the preset and processing, and where the results will be saved. Upload and Process sends them using your Auphonic credits; Cancel sends nothing.
 
 **Show and Hide Key.** Choose one key that shows and hides Quill Converter from any program. Type it, for example with Ctrl, Alt and Shift held, or leave the box empty for no key. A key another QuillVille app already uses is refused, and you are told whose it is.
 
@@ -1619,6 +1625,30 @@ Control coverage: 26 audited sites (26 helped).
 - `self._scope`: The link points at one video inside a playlist. Choose the video alone, or every video in the playlist.
 - `self._section`: Which part of the channel: its videos, its Shorts, or its past live streams. Only the sections this channel has are listed.
 - `self._since`: Only videos published in this window of time. Together with How many, whichever limit is reached first ends the download.
+#### AuphonicDialog (`quill/ui/converter_auphonic_dialog.py`)
+
+- `self._mode`: Separate productions process each file on its own with the same preset, one after another. A multitrack production mixes the files together as tracks -- several microphones of one conversation, say -- into one result.
+- `self._title`: The multitrack production's title, which also names the folder its result is saved in. It starts as the first file's name. Separate productions use each file's own title instead.
+- `self._token`: Your Auphonic API token, from the account settings page on auphonic.com. It is the same token the Audio Studio uses, kept in Windows Credential Manager and never in Quill Converter's settings.
+- `self._remember`: When checked, sending stores the token in Windows Credential Manager, where the Audio Studio and QUILL find it too. Clear it to use the token for this time only; a token already stored stays stored.
+- `self._check_btn`: Asks Auphonic who the token belongs to, how many credits are left, and which presets you have saved. Nothing is uploaded.
+- `self._status`: What the last account check found: the account name and its credits, or what went wrong. Read-only.
+- `self._preset`: Which of your saved Auphonic presets every production uses, or your account's default. Check Account and Load Presets fills the list; the preset you used last time is offered until then.
+- `self._processing`: Keep whatever the preset does, or use Quick cleanup instead: Auphonic's filtering, leveling and loudness normalization at its usual settings.
+- `self._denoise`: Quick cleanup only. Lets Auphonic take out steady background noise. It can also change quiet background sounds you wanted to keep, so it is off unless you turn it on.
+- `self._format`: The format the results come back in: whatever the preset says, or one format for every production. A multitrack production saves only the final mix.
+#### AuphonicConfirmDialog (`quill/ui/converter_auphonic_dialog.py`)
+
+- `self._body`: Everything this submission does, read-only: the service, every file sent and every file left out, the preset and processing, and where the results are saved. Nothing has been uploaded yet.
+#### AuphonicWaitingDialog (`quill/ui/converter_auphonic_dialog.py`)
+
+- `self._list`: Productions Auphonic accepted whose results have not been saved yet, remembered on this computer. Nothing has contacted Auphonic to make this list.
+- `resume`: Contacts Auphonic for every production listed, waits for any still processing, and saves the results where each one was going.
+- `self._dismiss_btn`: Forgets the highlighted production on this computer. It stays in your Auphonic account, and nothing is deleted there.
+- `close`: Closes this window; the list is kept for next time.
+#### AuphonicDialog (`quill/ui/converter_auphonic_dialog.py`)
+
+- `ok`: Shows everything that will be sent, and where the results go, before anything is uploaded.
 
 ## Quill Beacon
 

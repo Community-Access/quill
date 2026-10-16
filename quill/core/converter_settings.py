@@ -50,6 +50,15 @@ class ConverterSettings:
     adv_depth: str = ""
     adv_polish: str = ""
     recurse: bool = True
+    # Process with Auphonic (quill/apps/converter_auphonic.py): the last choices,
+    # so a returning user is not asked again. Never the token -- that is in the
+    # system's credential store, shared with the Audio Studio.
+    auphonic_mode: str = "separate"
+    auphonic_preset: str = ""  # a preset's uuid; "" is the account's default
+    auphonic_preset_name: str = ""
+    auphonic_processing: str = "preset"
+    auphonic_denoise: bool = False
+    auphonic_format: str = ""  # "" keeps the preset's outputs
 
     def to_json(self) -> dict[str, Any]:
         data = asdict(self)

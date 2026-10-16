@@ -60,6 +60,7 @@
   "quill.ui.continue_listening_command": "reachable",
   "quill.ui.continue_listening_dialog": "reachable",
   "quill.ui.convert_file_dialog": "reachable",
+  "quill.ui.converter_auphonic_dialog": "reachable",
   "quill.ui.converter_dialogs": "reachable",
   "quill.ui.copilot_onboarding_dialog": "reachable",
   "quill.ui.copy_tray_dialog": "reachable",

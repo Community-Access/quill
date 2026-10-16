@@ -164,6 +164,50 @@ QUILL and QUILL Lite get it together and neither has a copy.
   `tests/unit/ui/test_hosted_ai_answers_windows.py`,
   `quill-ai-gateway/tests/test_web_search.py`.
 
+### Quill Converter: Process with Auphonic, the MVP (2026-10-15)
+
+Jeff's todo P2 #29: the four delivery steps of
+`docs/planning/QUILL-Converter-Auphonic-Integration-PRD.md` (as-built note
+there; user-facing story in `standalone/converter/docs/`).
+
+- **Shared client** (`quill/core/publish/auphonic.py`, not forked): the JSON
+  API alongside the simple API the Audio Studio keeps using --
+  `create_production` (POST `/productions.json`, nothing charged yet),
+  `upload_input` (streamed multipart to `/production/{uuid}/upload.json`;
+  field `input_file`, or the track id for a multitrack track),
+  `start_created`, `audio_results` (keeps only sound formats served from
+  `https://auphonic.com` or a subdomain, and counts what it left out),
+  `is_result_url`, `OUTPUT_FORMATS` (mp3, aac, opus, flac, wav). A production
+  id is checked before it goes into a URL. Every call still goes through
+  `_request`, the one reviewed egress site; its `network_egress_entries`
+  rationale now names the Converter.
+- **wx-free plan and run**: `quill/core/publish/auphonic_plan.py` (eligibility
+  with reasons, `AuphonicChoices`, the JSON body for separate and multitrack
+  productions with metadata/chapter pass-through for separate ones only, the
+  confirmation text, and the pending-work store
+  `<data>/converter/auphonic_pending.json`, schema 1, classified `versioned`
+  in `persistence_audit`) and `quill/core/publish/auphonic_run.py` (`Runner`:
+  sequential separate productions with continue-on-failure, one multitrack
+  production, per-phase cancel, pending record written after start and
+  removed only on a saved or service-failed result, 3 consecutive poll
+  failures or a 4-hour timeout leave it resumable, no retry of an ambiguous
+  start, throttled progress).
+- **Converter UI**: `quill/apps/converter_auphonic.py` (mixin; Convert >
+  Process with Auphonic, Ctrl+Shift+A, and Auphonic Work Waiting, Ctrl+Alt+A;
+  file inspection via ffprobe off the UI thread; token through
+  `credential_manager` under `CREDENTIAL_TARGET`, the Audio Studio's entry;
+  launch notice from the local file only) and
+  `quill/ui/converter_auphonic_dialog.py` (three windows, every control
+  helped inline; the help audit now scans it). `converter_settings` gains six
+  additive `auphonic_*` choice fields (never the token).
+  `quill/apps/converter.py` 602 -> 589 (budget ratcheted): Custom Effects'
+  handler moved to `converter_actions.py` and the `_on_convert_url` shim went.
+- Tests: `tests/unit/core/test_auphonic_converter_core.py` (fake `urlopen`
+  and a fake client: no network) and `tests/unit/apps/test_converter_auphonic.py`
+  (the commands on a stand-in host, the windows built in memory; not
+  `machine_global`). Regenerated: converter help, dialog, accessible-name and
+  reachability inventories, family chords, the F1 help reference.
+
 ### Import / Convert reads PDFs without MarkItDown; FFmpeg ships with its licence everywhere (2026-10-15)
 
 Two P1 items from the todo.

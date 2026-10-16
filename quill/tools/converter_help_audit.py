@@ -46,7 +46,11 @@ SNAPSHOT_PATH = REPO_ROOT / "tests" / "unit" / "ui" / "fixtures" / "converter_he
 #: since 1.0.0) and its own two dialogs. The Advanced dialog it opens belongs
 #: to the Audio Studio surface and is audited there.
 _SCAN_DIRS: tuple[str, ...] = ()
-_SCAN_GLOBS: tuple[str, ...] = ("quill/apps/converter*.py", "quill/ui/converter_dialogs.py")
+_SCAN_GLOBS: tuple[str, ...] = (
+    "quill/apps/converter*.py",
+    "quill/ui/converter_dialogs.py",
+    "quill/ui/converter_auphonic_dialog.py",  # Process with Auphonic (2026-10-15)
+)
 
 #: Surface constructions whose titles the scan cannot resolve, with the
 #: reason they are fine. Keyed ``<module>::<qualname>``.

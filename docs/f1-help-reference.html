@@ -3831,9 +3831,14 @@ code, city, county, or address. The first location you add becomes the
 primary one the alert watch follows.</li>
 </ul>
 <h2 id="quill-converter">Quill Converter</h2>
-<p>Control coverage: 26 audited sites (26 helped).</p>
+<p>Control coverage: 38 audited sites (38 helped).</p>
 <h3 id="every-window-and-what-it-is-for-7">Every window, and what it is
 for</h3>
+<p><strong>Auphonic Work Waiting.</strong> Productions Auphonic accepted
+whose results have not been saved yet, remembered on this computer
+without contacting Auphonic. Resume waits for them and saves the
+results; Dismiss forgets one here, and it stays in your Auphonic
+account.</p>
 <p><strong>Chapter Workbench.</strong> Edit the chapters of an MP3, M4B
 or M4A: hear it, then add, rename, move, split and merge chapters at the
 playhead, find them at the pauses, or import and export a chapter list.
@@ -3878,13 +3883,25 @@ and says the new state.</p>
 <p><strong>Keyboard Shortcuts.</strong> Every key in Quill Converter,
 grouped by menu, in one read-only list you can arrow through or copy. It
 is a reference; nothing here changes a key.</p>
+<p><strong>Process with Auphonic.</strong> Send the queue’s sound files
+to your own Auphonic account to be post-produced online, then save the
+results here. Choose separate productions or one multitrack production,
+check your account to load your presets, and pick the processing and the
+output format. Nothing is uploaded until you confirm on the next
+page.</p>
 <p><strong>Quill Converter.</strong> Convert audio and video between
 formats: sound to sound, video to sound, or video to video. Queue your
 files or folders, choose a format, a preset and any effects – Preview
 lets you hear fifteen seconds of the result first – and Convert.
 Everything runs on this computer, your originals are never touched, and
 a file already in the output folder is numbered around, never
-overwritten.</p>
+overwritten. The one exception is Process with Auphonic, which uploads
+only after you confirm.</p>
+<p><strong>Send to Auphonic?.</strong> The last look before anything
+leaves this computer: every file to be uploaded and every file left out,
+the preset and processing, and where the results will be saved. Upload
+and Process sends them using your Auphonic credits; Cancel sends
+nothing.</p>
 <p><strong>Show and Hide Key.</strong> Choose one key that shows and
 hides Quill Converter from any program. Type it, for example with Ctrl,
 Alt and Shift held, or leave the box empty for no key. A key another
@@ -4020,6 +4037,77 @@ are listed.</li>
 <li><code>self._since</code>: Only videos published in this window of
 time. Together with How many, whichever limit is reached first ends the
 download.</li>
+</ul>
+<h4
+id="auphonicdialog-quilluiconverter_auphonic_dialogpy">AuphonicDialog
+(<code>quill/ui/converter_auphonic_dialog.py</code>)</h4>
+<ul>
+<li><code>self._mode</code>: Separate productions process each file on
+its own with the same preset, one after another. A multitrack production
+mixes the files together as tracks – several microphones of one
+conversation, say – into one result.</li>
+<li><code>self._title</code>: The multitrack production’s title, which
+also names the folder its result is saved in. It starts as the first
+file’s name. Separate productions use each file’s own title
+instead.</li>
+<li><code>self._token</code>: Your Auphonic API token, from the account
+settings page on auphonic.com. It is the same token the Audio Studio
+uses, kept in Windows Credential Manager and never in Quill Converter’s
+settings.</li>
+<li><code>self._remember</code>: When checked, sending stores the token
+in Windows Credential Manager, where the Audio Studio and QUILL find it
+too. Clear it to use the token for this time only; a token already
+stored stays stored.</li>
+<li><code>self._check_btn</code>: Asks Auphonic who the token belongs
+to, how many credits are left, and which presets you have saved. Nothing
+is uploaded.</li>
+<li><code>self._status</code>: What the last account check found: the
+account name and its credits, or what went wrong. Read-only.</li>
+<li><code>self._preset</code>: Which of your saved Auphonic presets
+every production uses, or your account’s default. Check Account and Load
+Presets fills the list; the preset you used last time is offered until
+then.</li>
+<li><code>self._processing</code>: Keep whatever the preset does, or use
+Quick cleanup instead: Auphonic’s filtering, leveling and loudness
+normalization at its usual settings.</li>
+<li><code>self._denoise</code>: Quick cleanup only. Lets Auphonic take
+out steady background noise. It can also change quiet background sounds
+you wanted to keep, so it is off unless you turn it on.</li>
+<li><code>self._format</code>: The format the results come back in:
+whatever the preset says, or one format for every production. A
+multitrack production saves only the final mix.</li>
+</ul>
+<h4
+id="auphonicconfirmdialog-quilluiconverter_auphonic_dialogpy">AuphonicConfirmDialog
+(<code>quill/ui/converter_auphonic_dialog.py</code>)</h4>
+<ul>
+<li><code>self._body</code>: Everything this submission does, read-only:
+the service, every file sent and every file left out, the preset and
+processing, and where the results are saved. Nothing has been uploaded
+yet.</li>
+</ul>
+<h4
+id="auphonicwaitingdialog-quilluiconverter_auphonic_dialogpy">AuphonicWaitingDialog
+(<code>quill/ui/converter_auphonic_dialog.py</code>)</h4>
+<ul>
+<li><code>self._list</code>: Productions Auphonic accepted whose results
+have not been saved yet, remembered on this computer. Nothing has
+contacted Auphonic to make this list.</li>
+<li><code>resume</code>: Contacts Auphonic for every production listed,
+waits for any still processing, and saves the results where each one was
+going.</li>
+<li><code>self._dismiss_btn</code>: Forgets the highlighted production
+on this computer. It stays in your Auphonic account, and nothing is
+deleted there.</li>
+<li><code>close</code>: Closes this window; the list is kept for next
+time.</li>
+</ul>
+<h4
+id="auphonicdialog-quilluiconverter_auphonic_dialogpy-1">AuphonicDialog
+(<code>quill/ui/converter_auphonic_dialog.py</code>)</h4>
+<ul>
+<li><code>ok</code>: Shows everything that will be sent, and where the
+results go, before anything is uploaded.</li>
 </ul>
 <h2 id="quill-beacon">Quill Beacon</h2>
 <p>Control coverage: 127 audited sites (127 helped).</p>

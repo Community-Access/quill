@@ -14,6 +14,8 @@ the launcher, installer, icon and these documents.
 
 ## Unreleased
 
+- **Process with Auphonic** (2026-10-15). If you have an Auphonic account, Convert > Process with Auphonic... (Ctrl+Shift+A) sends the queue's sound files to it for post-production and saves the results back under your output folder, without Auphonic's website. Send them as separate productions, one after another, or as one multitrack production with a track per file in queue order. Check your account and load your presets without uploading anything, then keep the preset's processing or choose Quick cleanup (leveling, loudness and filtering, with background-noise reduction only if you turn it on), and keep the preset's outputs or choose MP3, AAC, Opus, FLAC or WAV. One confirmation lists every file that will be sent and every one that will not, and why, before anything is uploaded; Cancel sends nothing. Progress, Stop (Ctrl+Enter) and the report (Ctrl+R) work as they do for a conversion, a failed file does not stop the rest, only sound files are downloaded, and nothing is ever overwritten. A production Auphonic has started is remembered on this computer, so Stop, a lost connection or closing the app never loses it: Convert > Auphonic Work Waiting... (Ctrl+Alt+A) fetches it later. The API token is the one the Audio Studio uses, kept in Windows Credential Manager. Nothing contacts Auphonic until you ask, and Safe Mode turns this off. Converting itself is still entirely on your computer.
+
 - **FFmpeg's licence, checked on every build.** FFmpeg's licence (the GNU
   General Public License, version 3) and the note on where to get its source
   were already in the `tools\ffmpeg` folder beside FFmpeg. The build and the
