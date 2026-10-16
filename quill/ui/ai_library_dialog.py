@@ -41,7 +41,7 @@ from quill.ui.dialog_contract import (
     apply_modal_ids,
     show_message_box,
 )
-from quill.ui.prompt_library_dialog import _PromptEditDialog
+from quill.ui.prompt_edit_dialog import PromptEditDialog
 from quill.ui.skill_library_dialog import (
     _SkillCancelled,
     _SkillParameterDialog,
@@ -403,7 +403,7 @@ class AILibraryDialog:
     # -- prompt verbs ---------------------------------------------------------
 
     def prompt_new(self) -> None:
-        dlg = _PromptEditDialog(self.dialog)
+        dlg = PromptEditDialog(self.dialog)
         if dlg.show() == wx.ID_OK:
             name, text, category = dlg.get_values()
             if name and text:
@@ -416,7 +416,7 @@ class AILibraryDialog:
         prompt = self._prompt_by_id(item.id)
         if prompt is None:
             return
-        dlg = _PromptEditDialog(self.dialog, prompt)
+        dlg = PromptEditDialog(self.dialog, prompt)
         if dlg.show() == wx.ID_OK:
             name, text, category = dlg.get_values()
             if name and text:

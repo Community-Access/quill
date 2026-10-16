@@ -1816,7 +1816,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## QUILL Lite
 
-Control coverage: 159 audited sites (159 helped).
+Control coverage: 190 audited sites (190 helped).
 
 ### Every window, and what it is for
 
@@ -1852,6 +1852,8 @@ Control coverage: 159 audited sites (159 helped).
 
 **Customize QUILL Lite Features.** Turn whole parts of QUILL Lite on or off. Unchecking an area removes its menu and its keys entirely, which is how this stays a small editor without being a poor one. Type in the search box to narrow the list, or choose a profile -- Notepad, WordPad, Recommended, Everything -- to set them all at once. Three areas start switched off and are found here rather than hidden: autocorrect, timestamped backups, and Go To Anything.
 
+**Delete Conversation.** Asks whether to delete the saved conversation. Yes deletes it from this computer for good; No keeps it.
+
 **Dictation Commands.** Every phrase dictation acts on, and what each one does, as text you can read line by line. The same list is in the user guide.
 
 **Dictation Settings.** How dictation works for you: the speech engine, the microphone, the language you speak, and what you hear as it goes. Test Microphone checks the microphone before you rely on it. Nothing changes until you choose OK.
@@ -1861,6 +1863,8 @@ Control coverage: 159 audited sites (159 helped).
 **Document language.** Which markup this document is written in. It decides what Bold writes, what the heading keys write, which of the two tag pickers the Insert menu offers, and whether the cursor can tell you what list you are in. QUILL Lite reads it from the file name; this is where you say otherwise. Nothing in your document changes -- only what the keys write from now on. The choice lasts as long as this window is open.
 
 **Edit Inline Note.** Change what this note says, or delete it. The text the note is about is never changed. A note written into the file is changed in the file, so Undo takes the change back.
+
+**Edit Prompt.** Change a prompt's name, category or instruction. Save keeps the change; Cancel leaves the prompt as it was.
 
 **Email Reply.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
 
@@ -1914,11 +1918,15 @@ Control coverage: 159 audited sites (159 helped).
 
 **Move QUILL Lite to Dev?.** Says plainly what could go wrong on Beta or Dev, how your settings are protected, and how to come back. Nothing changes unless you check the box and choose Move.
 
+**New Prompt.** Write a prompt to keep: its name, its category and the instruction itself. Type {selection} where the text you run it on should go.
+
 **Next Paragraph.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
 
 **Plain Language.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
 
 **Preferences.** Every setting QUILL Lite has, in one window. Two of them live only here: what Control N creates, and how often unsaved work is copied aside. The rest -- theme, word wrap, and the editor font -- are also on the View menu, where you will reach them faster.
+
+**Prompt Library.** Prompts you keep for the AI: QUILL's own and the ones you write. Choose one and Run with AI to send it with your selection filled in where it says {selection}. New, Edit, Disable and Delete manage the list; Import and Export share prompts as a prompt pack file.
 
 **Proofread.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
 
@@ -1936,7 +1944,11 @@ Control coverage: 159 audited sites (159 helped).
 
 **Replace.** Find text and put something else in its place. Replace changes the match you are on and moves to the next; Replace All changes every one and tells you how many. In a rich text document Replace All asks first, because replaced text takes the formatting of the run it lands in.
 
+**Review AI Changes.** The AI's answer compared with the text it would replace, one change per line, with the words that differ and the sentence they are in. Uncheck a change to keep the original there, then apply; it goes in as one edit Control Z takes back. Nothing changes until you apply.
+
 **Rewrite.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
+
+**Saved AI Conversations.** Your saved AI conversations, newest first. Every conversation with the AI is saved on this computer as it goes. Press Enter on one to open it and carry on where it left off; Delete removes one after asking.
 
 **Shorter.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
 
@@ -2073,6 +2085,7 @@ Control coverage: 159 audited sites (159 helped).
 - `self._send_button`: Sends your message, with as much of the conversation so far as fits.
 - `fresh`: Forgets this conversation and starts again. Nothing is sent.
 - `copy`: Puts the most recent reply on the clipboard.
+- `saved`: Lists the conversations saved on this computer, newest first, so you can open one and carry on, or delete one.
 - `insert`: Puts the most recent reply into your document underneath the current paragraph. Control Z takes it back.
 #### ChatGptFrame (`quill/ui/hosted_ai_chatgpt.py`)
 
@@ -2118,24 +2131,28 @@ Control coverage: 159 audited sites (159 helped).
 - `self.status`: What the last test said, or whether a key is saved.
 - `test`: Checks the key with the chosen provider, lists every model it can use, then sends one tiny request to the chosen model and says whether it answered. The request costs a fraction of a cent on your account.
 - `self.remove`: Forgets the saved key for the chosen provider now, and puts AI help back on QUILL's free service with its free allowance.
-#### AiResultFrame (`quill/ui/hosted_ai_pad.py`)
-
-- `copy`: Puts the answer on the clipboard.
 #### AiPadFrame (`quill/ui/hosted_ai_pad.py`)
 
 - `self._actions`: Choose what the AI should do with the text above. Each choice has its own description -- press F1 on one to hear it.
 - `self._question`: What you want to know. For a question about the document, QUILL finds the parts that answer it and sends only those; for a general question, only the question is sent.
 - `self._language`: The language Translate writes in. Only these languages are offered.
 - `self._send`: Sends the text above and uses one of your free requests. While a request is on its way this button is Stop, and pressing it stops the request.
-#### AiResultFrame (`quill/ui/hosted_ai_pad.py`)
+- `choice`: Which part of your document to send: what you selected, the paragraph you are in, or the whole section.
+- `self._delivery`: Where the answer goes when it arrives: the AI Result window, where you can read it and choose what to do; your document at the cursor, as one edit Control Z takes back; or the clipboard. Remembered until you change it.
+#### AiResultFrame (`quill/ui/hosted_ai_result.py`)
 
+- `copy`: Puts the answer on the clipboard.
 - `replace`: Puts this in place of the text you had selected. Control Z takes it back.
+- `review`: Compares this with the text you had selected, change by change and word by word, so you can keep some changes and leave the rest. Nothing changes until you apply.
 - `insert`: Puts this into your document underneath the current paragraph. Control Z takes it back.
 - `again`: Sends the same text again. This uses one more of your free requests.
 - `follow`: Carries on from this answer in a conversation: ask for it shorter, ask about one part of it, or ask something new. Each message uses one request.
-#### AiPadFrame (`quill/ui/hosted_ai_pad.py`)
+#### SavedConversationsDialog (`quill/ui/hosted_ai_saved_chats.py`)
 
-- `choice`: Which part of your document to send: what you selected, the paragraph you are in, or the whole section.
+- `self._list`: Your saved AI conversations, newest first: how each one began, how many messages it holds and when it was last used. Press Enter to open one.
+- `self._open`: Opens the chosen conversation in the conversation window, so you can read it and carry on where it left off.
+- `self._delete`: Deletes the chosen conversation from this computer, after asking. It cannot be brought back.
+- `close`: Closes this window and leaves the conversation you had open.
 #### WindowsDictationDialog (`quill/ui/windows_dictation_dialog.py`)
 
 - `self.speech_models`: Optional, larger speech models for better accuracy -- the ones VS Code offers and the rest of the Whisper family -- to download, remove or choose. Dictation works without them.
@@ -2225,3 +2242,32 @@ Control coverage: 159 audited sites (159 helped).
 - `self.auto_clear`: When checked, a document that has been deleted from this computer's own drives leaves the list at the next start. Files on a USB drive or a network share are kept, because they are usually just unplugged.
 - `self.status`: What the last button you pressed did.
 - `close`: Close this window. Changes to the list are kept.
+#### DiffReviewDialog (`quill/ui/ai_diff_review_dialog.py`)
+
+- `self.hunk_list`: Every change the AI proposes, one per line. A checked change will be applied; press Space to uncheck one you want to keep as it was. The details below say exactly what changed, word by word.
+- `self.details`: The change you are on, line by line: what was there, what would replace it, and for a small change the words that differ and the sentence they are in. Read-only.
+- `self.apply_button`: Applies the change as one edit; Control Z takes it back.
+- `reject_button`: Closes this window and leaves your document unchanged.
+- `self.apply_button`: Applies only the checked changes, as one edit; Control Z takes it back.
+- `accept_all_button`: Applies every change, checked or not, as one edit; Control Z takes it back.
+- `reject_all_button`: Closes this window and leaves your document unchanged.
+#### PromptLibraryDialog (`quill/ui/prompt_library_dialog.py`)
+
+- `self._search`: Type part of a prompt's name or category to narrow the list below.
+- `self._listbox`: Your saved prompts and the ones QUILL comes with, each after its category. Press Enter on one to run it on the input text.
+- `self._preview`: The instruction the chosen prompt gives the AI. Read-only; Edit changes it.
+- `self._input`: The text the prompt works on: what you had selected, which you can change here. It goes where the prompt says {selection}.
+- `self._btn_new`: Writes a new prompt of your own.
+- `self._btn_edit`: Changes the chosen prompt's name, category or text.
+- `self._btn_toggle`: Switches the chosen prompt off or back on. A switched-off prompt stays in the list, marked disabled.
+- `self._btn_delete`: Deletes the chosen prompt after asking. Prompts QUILL comes with cannot be deleted.
+- `self._btn_import`: Adds the prompts from a QUILL prompt pack file.
+- `self._btn_export`: Saves the prompts in this list to a prompt pack file.
+- `btn_close`: Closes the Prompt Library. Your prompts are already saved.
+#### PromptEditDialog (`quill/ui/prompt_edit_dialog.py`)
+
+- `self._name`: What the prompt is called in the list. Type a short name you will recognise, such as Make It Friendlier.
+- `self._category`: Which group the prompt is listed under. The list shows the category before each prompt's name.
+- `self._text`: The instruction the AI is given. Type {selection} where the text you run it on should go, {document} for the whole document, and {title} for the document's title.
+- `ok_btn`: Saves the prompt in the library and closes this window.
+- `cancel_btn`: Closes this window without saving anything.

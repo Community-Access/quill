@@ -43,6 +43,13 @@ Translate. Each is the shape of Summarize -- one passage in, one result out,
 under the same input ceiling -- so none of them moves a worst case. Translate's
 target language is the one value a client fills into a template, and it must
 be one of :data:`LANGUAGES`.
+
+The last, ``web_search`` (2026-10-15), is built and **switched off**: it is in
+:data:`OPT_IN_FEATURES`, seeded with its flag off, and only an operator turns
+it on. It is the one feature that costs per request on top of its tokens (the
+provider charges for every search), so it has a monthly share of its own --
+``app/limits.py::WEB_SEARCH_MONTHLY_CAP``, ten -- and its own call
+(``app/openai_client.py::search``), which no other feature can reach.
 """
 
 from __future__ import annotations
@@ -55,6 +62,7 @@ __all__ = [
     "INPUT_KINDS",
     "LANGUAGES",
     "LONG_ANSWER_FEATURES",
+    "OPT_IN_FEATURES",
     "REASONING_EFFORT",
     "SHIPPED_FEATURES",
     "TEMPLATES",
@@ -176,6 +184,15 @@ TEMPLATES: dict[str, str] = {
         "something, say so rather than guessing. Do not use tables, and keep "
         "any formatting simple.\n\n{prompt}"
     ),
+    # --- Built, switched off until an operator turns it on (OPT_IN_FEATURES).
+    "web_search": (
+        "Search the web to answer the user's question, in plain language "
+        "suitable for a screen reader to read aloud. Give the answer first, "
+        "briefly. Then list the sources you used, one per line, each as the "
+        "site's name followed by its address. If the search does not answer "
+        "the question, say so plainly rather than guessing. Do not use "
+        "tables.\n\nQuestion: {prompt}"
+    ),
     # --- Not shipped. See DEFERRED_FEATURES. --------------------------------
     "alt_text": (
         "Describe this image in one concise sentence suitable as alt text "
@@ -219,6 +236,7 @@ LONG_ANSWER_FEATURES: frozenset[str] = frozenset({
     "headings",
     "make_list",
     "simplify",
+    "web_search",
 })
 
 #: The languages Translate offers. The client shows the same list
@@ -260,6 +278,19 @@ DEFERRED_FEATURES: dict[str, str] = {
     ),
 }
 
+#: Features that are built, tested and shipped **switched off**, and the sentence
+#: anyone who reaches one while it is off is shown. Different from a deferred
+#: feature: nothing is missing, the flag is a cost decision an operator makes on
+#: the Features page. Seeded off (``flask seed-config``, migration 009), and a
+#: missing flag row reads as off (``app/routes/client_config.py``).
+OPT_IN_FEATURES: dict[str, str] = {
+    "web_search": (
+        "Web search is switched off on this service. Each search is charged by "
+        "the provider on top of its words, so it is turned on deliberately. "
+        "Everything else still works."
+    ),
+}
+
 #: Every id the ``/v1/chat`` route will recognise. A deferred feature is
 #: recognised and then refused by its flag, which produces a clear sentence;
 #: an unrecognised one is a 400, which does not.
@@ -285,6 +316,7 @@ FEATURE_LABELS: dict[str, str] = {
     "continue": "Continue writing",
     "email_reply": "Write an email reply",
     "translate": "Translate",
+    "web_search": "Web search",
 }
 
 #: The kinds of input a catalogue entry may ask the client for (``GET
@@ -407,6 +439,14 @@ CATALOGUE: dict[str, dict[str, str]] = {
         "help": "Type any question. Only your question is sent -- nothing from your document.",
         "input": "prompt",
     },
+    "web_search": {
+        "label": "Search the web",
+        "help": (
+            "Type a question; QUILL's free AI searches the web and answers with its "
+            "sources. Only your question is sent. Searches are limited each month."
+        ),
+        "input": "prompt",
+    },
     "chat": {
         "label": "Have a conversation",
         "help": (
@@ -439,6 +479,9 @@ REASONING_EFFORT: dict[str, str] = {
     "continue": "none",
     "email_reply": "none",
     "translate": "none",
+    # Not sent: the search models refuse reasoning_effort, and
+    # app/openai_client.py::build_search_body leaves the key out.
+    "web_search": "none",
 }
 
 #: The only values :data:`REASONING_EFFORT` may take, cheapest first. Anything

@@ -438,6 +438,22 @@ class AiService(OwnKeyRouteMixin, RouteWords):
 
         _submit("quill-ai-quota", work, on_success=done, on_failure=failed)
 
+    def fetch_web_searches(self, *, on_done: Callable[[bool, Any], None], on_error: Any) -> None:
+        """Whether web search is on (``/v1/config``) and this account's count
+        (``/v1/quota``, only asked when it is on), as ``on_done(enabled, quota)``."""
+        client = self.client()
+
+        def work(**_kwargs: Any) -> tuple[bool, GatewayQuota | None]:
+            enabled = client.fetch_limits().web_search_enabled
+            return enabled, (client.fetch_quota() if enabled else None)
+
+        _submit(
+            "quill-ai-web-searches",
+            work,
+            on_success=lambda _name, result: _call_after(on_done, *result),
+            on_failure=lambda _name, error: _call_after(on_error, _sentence(error)),
+        )
+
     # -- connecting and disconnecting -------------------------------------- #
 
     def start_sign_in(

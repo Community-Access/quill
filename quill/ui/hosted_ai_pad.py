@@ -23,6 +23,7 @@ from typing import Any
 import wx
 
 from quill.core.ai import gateway_context as ctx
+from quill.core.ai.answer_delivery import DELIVERY_LABELS, DELIVERY_MODES, normalise
 from quill.core.ai.gateway_catalogue import INPUT_DOCUMENT, INPUT_PROMPT
 from quill.core.ai.writing_tools import (
     ACTION_TITLES,
@@ -35,136 +36,15 @@ from quill.ui.accessible_names import set_accessible_name
 from quill.ui.hosted_ai_dialogs import _PAD, _close_row, _read_only, focus_on, show_problem
 from quill.ui.hosted_ai_pad_catalogue import PadRowsMixin
 
+# The result window lives in its own module (GATE-11); exported from here
+# because this is where the shared commands and the tests look it up.
+from quill.ui.hosted_ai_result import AiResultFrame
+
 __all__ = ["ACTIONS", "AiPadFrame", "AiResultFrame"]
 
 #: What each result window is called. The rows themselves -- seventeen built
 #: in, then the service catalogue's extras -- are :mod:`hosted_ai_pad_catalogue`.
 _ACTION_TITLES = ACTION_TITLES
-
-
-# --------------------------------------------------------------------------- #
-# The result
-# --------------------------------------------------------------------------- #
-
-
-class AiResultFrame(wx.Frame):
-    """What came back, and the four things you can do with it.
-
-    Read-only, because an AI answer is a proposal. Editing happens in the
-    document, through the ordinary undo stack, and nothing here changes a
-    document without a keystroke saying so -- not on a timer, not on close.
-    """
-
-    def __init__(
-        self,
-        parent: wx.Window,
-        *,
-        action: str,
-        text: str,
-        used: str,
-        on_replace: Callable[[str], None] | None,
-        on_insert: Callable[[str], None] | None,
-        on_again: Callable[[], None] | None,
-        announce: Callable[[str], None],
-        on_follow_up: Callable[[], None] | None = None,
-    ) -> None:
-        super().__init__(parent, title=_ACTION_TITLES.get(action, "AI Result"))
-        self._text = text
-        self._announce = announce
-
-        panel = wx.Panel(self)
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        panel.SetSizer(sizer)
-
-        body = _read_only(
-            panel,
-            sizer,
-            "The answer",
-            text,
-            "What the AI sent back. Read-only -- use Replace My Selection or "
-            "Insert Below to put it into your document.",
-        )
-
-        extra: list[wx.Button] = []
-        if on_replace is not None:
-            replace = wx.Button(panel, label="&Replace My Selection")
-            replace.SetHelpText(
-                "Puts this in place of the text you had selected. Control Z takes it back."
-            )
-            replace.Bind(wx.EVT_BUTTON, lambda _e: self._apply(on_replace, "Replaced."))
-            extra.append(replace)
-        if on_insert is not None:
-            insert = wx.Button(panel, label="Insert &Below")
-            insert.SetHelpText(
-                "Puts this into your document underneath the current paragraph. "
-                "Control Z takes it back."
-            )
-            insert.Bind(wx.EVT_BUTTON, lambda _e: self._apply(on_insert, "Inserted."))
-            extra.append(insert)
-
-        copy = wx.Button(panel, label="&Copy")
-        copy.SetHelpText("Puts the answer on the clipboard.")
-        copy.Bind(wx.EVT_BUTTON, self._on_copy)
-        extra.append(copy)
-
-        if on_again is not None:
-            again = wx.Button(panel, label="Try &Again")
-            again.SetHelpText(
-                "Sends the same text again. This uses one more of your free requests."
-            )
-
-            def _retry(_event: wx.CommandEvent) -> None:
-                self.Close()
-                on_again()
-
-            again.Bind(wx.EVT_BUTTON, _retry)
-            extra.append(again)
-
-        if on_follow_up is not None:
-            follow = wx.Button(panel, label="Follow &Up")
-            follow.SetHelpText(
-                "Carries on from this answer in a conversation: ask for it shorter, "
-                "ask about one part of it, or ask something new. Each message uses "
-                "one request."
-            )
-
-            def _follow(_event: wx.CommandEvent) -> None:
-                self.Close()
-                on_follow_up()
-
-            follow.Bind(wx.EVT_BUTTON, _follow)
-            extra.append(follow)
-
-        _close_row(self, sizer, *extra)
-
-        if used:
-            _read_only(
-                panel,
-                sizer,
-                "Requests",
-                used,
-                "How much of your free allowance this answer used, and what is left.",
-                grow=False,
-            )
-
-        self.SetInitialSize((620, 460))
-        self.Centre()
-        # Focus lands on the answer, so the reader reads it. Nothing is
-        # announced on top of that (GATE-13): the window title and the focused
-        # field are both things it already says.
-        focus_on(self, body)
-
-    def _apply(self, action: Callable[[str], None], said: str) -> None:
-        action(self._text)
-        self._announce(f"{said} Press Control Z to undo.")
-
-    def _on_copy(self, _event: wx.CommandEvent) -> None:
-        if wx.TheClipboard.Open():
-            try:
-                wx.TheClipboard.SetData(wx.TextDataObject(self._text))
-            finally:
-                wx.TheClipboard.Close()
-            self._announce("Copied.")
 
 
 # --------------------------------------------------------------------------- #
@@ -194,6 +74,9 @@ class AiPadFrame(PadRowsMixin, wx.Frame):
         on_result: Callable[[str, str, str], None],
         initial_action: str = "",
         on_chat: Callable[[str], None] | None = None,
+        delivery: str = "",
+        on_delivery: Callable[[str], None] | None = None,
+        focus_prompt: bool = False,
     ) -> None:
         super().__init__(parent, title="AI Assistant")
         self._service = service
@@ -278,6 +161,29 @@ class AiPadFrame(PadRowsMixin, wx.Frame):
         sizer.Add(self._language_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
         sizer.Add(self._language, 0, wx.EXPAND | wx.ALL, _PAD)
 
+        # Where the answer goes (quill/core/ai/answer_delivery.py). Only when
+        # the editor can remember the choice; a host with nowhere to keep it
+        # always uses the AI Result window.
+        self._delivery: wx.Choice | None = None
+        if on_delivery is not None:
+            label = wx.StaticText(panel, label="Put the &answer in")
+            self._delivery = wx.Choice(
+                panel, choices=[DELIVERY_LABELS[mode] for mode in DELIVERY_MODES]
+            )
+            set_accessible_name(self._delivery, "Put the answer in")
+            self._delivery.SetHelpText(
+                "Where the answer goes when it arrives: the AI Result window, where you "
+                "can read it and choose what to do; your document at the cursor, as one "
+                "edit Control Z takes back; or the clipboard. Remembered until you change it."
+            )
+            self._delivery.SetSelection(DELIVERY_MODES.index(normalise(delivery)))
+            self._delivery.Bind(
+                wx.EVT_CHOICE,
+                lambda _e: on_delivery(DELIVERY_MODES[max(0, self._delivery.GetSelection())]),
+            )
+            sizer.Add(label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
+            sizer.Add(self._delivery, 0, wx.EXPAND | wx.ALL, _PAD)
+
         self._send = wx.Button(panel, label="&Send")
         self._send.SetHelpText(
             "Sends the text above and uses one of your free requests. While a request "
@@ -304,8 +210,10 @@ class AiPadFrame(PadRowsMixin, wx.Frame):
         self.SetInitialSize((640, 620))
         self.Centre()
         # Focus on the preview: the reader reads it, which is what somebody
-        # wants to hear first, and nothing is announced on top (GATE-13).
-        focus_on(self, self._preview)
+        # wants to hear first, and nothing is announced on top (GATE-13). The
+        # Chat Key opens on a typed row with the question box focused instead,
+        # so the first thing is typing.
+        focus_on(self, self._question if focus_prompt and self._asking() else self._preview)
 
     # -- state ------------------------------------------------------------ #
 

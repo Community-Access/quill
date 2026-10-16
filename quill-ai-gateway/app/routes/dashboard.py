@@ -398,15 +398,17 @@ def feature_flags():
     switch is broken.
     """
     from app.limits import _month_key, resolve_limit
-    from app.prompts import DEFERRED_FEATURES, FEATURE_LABELS, SHIPPED_FEATURES
+    from app.prompts import DEFERRED_FEATURES, FEATURE_LABELS, OPT_IN_FEATURES, SHIPPED_FEATURES
 
     shipped = []
-    for feature in SHIPPED_FEATURES:
+    # The opt-in features (web search) are switches like the shipped ones,
+    # listed after them and off until somebody turns them on.
+    for feature in (*SHIPPED_FEATURES, *OPT_IN_FEATURES):
         flag = db.session.get(FeatureFlag, feature)
         shipped.append({
             "feature": feature,
             "label": FEATURE_LABELS.get(feature, feature),
-            "enabled": flag.enabled if flag is not None else True,
+            "enabled": flag.enabled if flag is not None else feature in SHIPPED_FEATURES,
             "disabled_reason": flag.disabled_reason if flag is not None else "",
         })
 

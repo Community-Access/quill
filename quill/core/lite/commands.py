@@ -24,6 +24,7 @@ this without a display.
 from __future__ import annotations
 
 from quill.core.lite import APP_NAME, APP_VERSION
+from quill.core.lite.commands_ai import AI_ASK_ROWS, AI_SEARCH_ROWS
 from quill.core.lite.commands_dictation import DICTATION_ROWS
 from quill.core.lite.commands_review import EXPORT_ROWS, NOTE_ROWS, NOTE_SUBMENU_ROWS, TASK_ROWS
 from quill.core.lite.commands_words import DICTIONARY_ROWS, DICTIONARY_STATUS_ROWS, WORD_ROWS
@@ -925,8 +926,10 @@ COMMANDS: list[CommandRow] = [
     # module -- see quill/ui/main_frame_hosted_ai.py.
     ("&Tools|&AI", "AI &Assistant...", "Ctrl+Alt+G", "cmd_ai_assistant", ""),
     ("&Tools|&AI", "As&k About This Document...", "Ctrl+Alt+Z", "cmd_ai_ask_document", ""),
+    *AI_ASK_ROWS,  # the Chat Key and the Prompt Library (commands_ai.py)
     ("&Tools|&AI", "", "", "", "sep"),
     ("&Tools|&AI", "&Usage...", "Ctrl+Alt+Shift+F9", "cmd_ai_usage", ""),
+    *AI_SEARCH_ROWS,  # Web Searches Left (commands_ai.py)
     # "Connect or Sign Out" rather than "Sign In or Out": the window this opens
     # talks about connecting *this computer*, and the word had to be settled
     # anyway -- QUILL shows the same five rows now, and every sentence that

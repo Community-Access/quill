@@ -260,6 +260,50 @@ class HostedAiCommandsMixin(HostedAiMixin):
                 self._binding_for("tools.hosted_ai_image"),
             )
 
+    #: The Chat Key, the Prompt Library on the free AI and Web Searches Left
+    #: (2026-10-15): QUILL Lite's three rows on QUILL Lite's three chords, from
+    #: the shared module (quill/ui/hosted_ai_answers.py). No access keys: every
+    #: letter their names start with is claimed in this menu once the advanced
+    #: rows show, and a duplicate is a key Windows may refuse to press (GATE-14).
+    _ANSWER_ROWS: tuple[tuple[str, str, str], ...] = (
+        ("tools.hosted_ai_chat_key", "Ask AI a Question...", "cmd_ai_chat_key"),
+        ("tools.hosted_ai_prompt_library", "Free AI Prompt Library...", "cmd_ai_prompt_library"),
+        ("tools.hosted_ai_web_searches", "Web Searches Left", "cmd_ai_web_searches"),
+    )
+
+    def _answer_menu_ids(self) -> dict[str, Any]:
+        ids = getattr(self, "_hosted_ai_answer_ids", None)
+        if ids is None:
+            import wx
+
+            ids = {cid: wx.NewIdRef() for cid, _label, _h in self._ANSWER_ROWS}
+            self._hosted_ai_answer_ids = ids
+        return ids
+
+    def _append_answer_rows(self, ai_menu: Any) -> None:
+        """The three rows, registered and bound here once, like the own key's."""
+        import wx
+
+        from quill.core.i18n import _
+
+        ids = self._answer_menu_ids()
+        for command_id, label, _handler in self._ANSWER_ROWS:
+            ai_menu.Append(ids[command_id], self._menu_label(_(label), command_id))
+        if getattr(self, "_hosted_ai_answers_wired", False):
+            return
+        self._hosted_ai_answers_wired = True
+        for command_id, label, handler_name in self._ANSWER_ROWS:
+            handler = getattr(self, handler_name)
+            self.frame.Bind(wx.EVT_MENU, lambda _e, run=handler: run(), id=ids[command_id])
+            self.commands.try_register(
+                command_id, label.rstrip("."), handler, self._binding_for(command_id)
+            )
+
+    def _ai_prompt_library(self) -> Any:
+        """QUILL's one cached library, Quillin prompts included, so the free AI's
+        Prompt Library and Tools, AI, Prompt Library show the same list."""
+        return self._get_prompt_library()
+
     #: The Dictionary submenu's rows: command id, label, handler name. QUILL
     #: Lite's rows, QUILL Lite's two chords (quill/core/lite/commands.py).
     _DICTIONARY_ROWS: tuple[tuple[str, str, str], ...] = (
@@ -361,6 +405,7 @@ class HostedAiCommandsMixin(HostedAiMixin):
         mapping: dict[str, int] = super()._command_to_menu_id_map()  # type: ignore[misc]
         mapping["tools.hosted_ai_own_key"] = self._own_key_menu_id()
         mapping.update(self._dictionary_menu_ids())
+        mapping.update(self._answer_menu_ids())
         if getattr(self, "_look_up_menu_id", None) is not None:
             mapping["tools.look_up"] = self._look_up_menu_id
         chatgpt_id, image_id, tidy_id = self._chatgpt_menu_ids()

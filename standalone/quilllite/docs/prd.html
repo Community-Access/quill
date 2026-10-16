@@ -1281,6 +1281,42 @@ instructions live there. Shared code
 (<code>quill/core/ai/gateway_catalogue.py</code>,
 <code>quill/ui/hosted_ai_pad_catalogue.py</code>), so QUILL has it in
 the same release (family rule 10).</p>
+<p><strong>QUILL’s saved conversations, Prompt Library and word-level
+review (2026-10-15).</strong> Brought from QUILL through shared code,
+never copied, with QUILL moved onto the extracted pieces in the same
+change. Requirements: every AI conversation is saved as it goes in
+QUILL’s session format (<code>quill/core/ai/sessions.py</code>,
+<code>record_exchange</code>) in QUILL Lite’s own
+<code>ai-sessions</code> folder, and <strong>Saved
+Conversations</strong> (Alt+V in the conversation window) opens one to
+continue or deletes one after asking; <strong>Prompt Library</strong>
+(Ctrl+7) is QUILL’s <code>PromptLibraryDialog</code> over QUILL’s
+library format (<code>prompts.json</code>, <code>.pqp</code> packs) in
+QUILL Lite’s data folder, and Run fills the prompt, closes, and sends it
+as a general question, refusing before sending if it is over the input
+ceiling; <strong>Review Changes</strong> in the result window opens
+QUILL’s Review AI Changes
+(<code>quill/ui/ai_diff_review_dialog.py</code>), offered only when
+Replace is and the answer differs, and applies only accepted changes as
+one undo step. Every control in the three windows has F1 help.</p>
+<p><strong>Answer delivery and the Chat Key (2026-10-15).</strong> No
+spec existed, so the minimum: the pad’s <strong>Put the answer
+in</strong> list chooses the AI Result window (default), the document at
+the caret (one undo step, read aloud), or the clipboard (read aloud;
+falls back to the window if the clipboard is busy), kept as
+<code>ai_answer_delivery</code> (QUILL’s field name too) and applied to
+every answer. <strong>Ask AI a Question</strong> (Ctrl+6), the Chat Key,
+opens the pad on Ask a General Question with the caret in the question
+box.</p>
+<p><strong>Web search on the free AI (2026-10-15).</strong> The
+service’s <code>web_search</code> feature ships off behind a feature
+flag, ten searches per account per month; while on, the catalogue offers
+<strong>Search the web</strong> in the pad. <strong>Web Searches
+Left</strong> (Ctrl+9) reads <code>/v1/config</code>’s
+<code>web_search</code> entry and <code>/v1/quota</code>’s count and
+says how many are left, or that search is not offered; on an own key or
+plan it says search is the free service’s. QUILL has the same three
+commands on the same three chords (rule 2).</p>
 <h3
 id="56c-your-own-api-key-a-provider-chosen-never-inferred-12-qcmd-x-07">5.6c
 Your own API key: a provider chosen, never inferred (1.2, qc.md

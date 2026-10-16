@@ -12152,7 +12152,7 @@ class MainFrame(
     ) -> None:
         """AI-7: present a navigable added/removed/changed diff and apply the
         accepted hunks as a single undo step via ``on_apply``."""
-        from quill.ui.assistant_tools import DiffReviewDialog
+        from quill.ui.ai_diff_review_dialog import DiffReviewDialog
 
         dialog = DiffReviewDialog(
             self.frame,

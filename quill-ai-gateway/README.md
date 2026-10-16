@@ -31,7 +31,7 @@ QUILL desktop client
       │  HTTPS, Bearer <gateway-token>
       ▼
 This Flask app  ──────────────────────────►  OpenAI (GPT-6 Luna)
-      │                                       no tools, no web search, ever
+      │                                       no tools; web search only behind its flag
       ├── PostgreSQL   (users, devices, usage history, admin config)
       └── Redis        (rate-limit counters, config cache, pending sign-ins)
 ```
@@ -87,7 +87,11 @@ section 14.3.
   file search, no attachments. `tests/test_openai_request_shape.py` fails the
   build if anything else appears — web search alone bills at $10 per thousand
   calls, which on this traffic would be roughly sixteen times the entire rest
-  of the bill.
+  of the bill. The one exception is the `web_search` feature (2026-10-15),
+  which ships switched off: it goes through its own function, `search()`, with
+  its own allowlist (`SEARCH_BODY_KEYS`, which adds `web_search_options` and
+  nothing else), capped at ten searches per account per month. See *Web search*
+  below.
 - **`app/routes/`** — the four blueprints: `device` (auth), `chat` (the one
   inference endpoint), `client_config` (read-only config/quota for the
   client's status display), `admin` (everything an operator needs).
@@ -184,7 +188,7 @@ pytest
 ```
 
 The suite uses an in-memory SQLite database and `fakeredis` — no external
-services required (see `tests/conftest.py`). **314 tests** cover the quota
+services required (see `tests/conftest.py`). **326 tests** cover the quota
 engine, the large-document safeguards, the device-code auth flow, the model
 registry, the admin API, the admin dashboard, and four things worth naming
 because each one was a live bug:
@@ -202,6 +206,37 @@ because each one was a live bug:
 - `test_feature_catalogue.py` — every shipped feature is in `/v1/config`'s
   `features` catalogue, a switched-off one is not, and the keys older clients
   read are unchanged.
+- `test_web_search.py` — web search is off until switched on (a missing flag
+  row refuses), goes through its own call and allowlist, stops at ten a month,
+  refunds a failed search, and charges its fee to the budget but not the
+  person's cost ceiling.
+
+## Web search (off until you turn it on)
+
+The `web_search` feature is built and ships **switched off**
+(`app/prompts.py::OPT_IN_FEATURES`; migration 009 seeds its flag off). Each
+search is charged by the provider on top of its tokens, so turning it on is a
+budget decision:
+
+1. Raise `global_monthly_budget_usd` on the Limits page first. At the shipped
+   cap the search charge adds at most about $0.30 per active person a month.
+2. Set `GATEWAY_OPENAI_SEARCH_MODEL` if the default
+   (`gpt-4o-mini-search-preview`) is not the search model you want. A
+   search's tokens are costed at the default model's prices from the Models
+   page, plus the per-search charge below; if the search model's token
+   prices are much higher, raise `WEB_SEARCH_CALL_COST_USD` to cover the
+   difference.
+3. Switch **Web search** on on the Features page.
+
+While on, `/v1/config` reports `web_search: {"enabled": true, "monthly_cap":
+10}` and lists **Search the web** in the catalogue, so QUILL and QUILL Lite
+offer it with no release; `/v1/quota` reports each account's
+`web_searches_used`. The monthly number is the server constant
+`app/limits.py::WEB_SEARCH_MONTHLY_CAP` (10), movable per service as
+`feature_cap.web_search` on the Limits page or per person with a feature-cap
+override. The per-search charge is reckoned at `WEB_SEARCH_CALL_COST_USD`
+($0.03): it reaches each usage event and the global budget, but not the
+person's own monthly cost ceiling, which the search cap bounds instead.
 
 ## Deployment
 

@@ -520,5 +520,9 @@ def test_the_chatgpt_rows_join_the_accelerator_map() -> None:
         "tools.word_define",
         "tools.word_explorer",
         "tools.find_word",
+        # The Chat Key, the Prompt Library and Web Searches Left (2026-10-15).
+        "tools.hosted_ai_chat_key",
+        "tools.hosted_ai_prompt_library",
+        "tools.hosted_ai_web_searches",
     }
-    assert len({int(v) for v in mapping.values()}) == 4 + 13
+    assert len({int(v) for v in mapping.values()}) == 4 + 13 + 3

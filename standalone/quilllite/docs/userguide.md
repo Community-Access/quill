@@ -5375,6 +5375,12 @@ seventeen things, and two keys open it:
 - **Ask About This Document** (**Ctrl+Alt+Z**) opens the same pad with **Ask a
   question about the document** already chosen, so you can go straight to
   typing your question.
+- **Ask AI a Question**, the Chat Key (**Ctrl+6**), opens the pad with **Ask a
+  general question** chosen and the caret already in **Your question**. Type,
+  press **Enter**, and the answer arrives wherever you chose to put answers
+  (see *Where the answer goes*, below).
+- **Prompt Library** (**Ctrl+7**) runs one of your saved prompts on the
+  selection. See *Your saved prompts*, below.
 
 There are also twelve questions you can ask about the word you are on, under
 **Tools > Dictionary**. They are explained in *Dictionary*, in Chapter 7.
@@ -5417,7 +5423,9 @@ There are also twelve questions you can ask about the word you are on, under
    you can leave it empty: the conversation window then opens ready for you.
    For **Translate**, you get a **Translate into** list instead, with twenty
    languages. Spanish is chosen until you pick another.
-5. **Send.** Nothing leaves your computer until you press it.
+5. **Put the answer in.** Where the answer goes when it arrives. See *Where
+   the answer goes*, below.
+6. **Send.** Nothing leaves your computer until you press it.
 
 A few things worth knowing about the choices:
 
@@ -5442,17 +5450,55 @@ A few things worth knowing about the choices:
 The answer arrives in a read-only box of its own. Under it are these buttons:
 
 - **Replace My Selection**
+- **Review Changes**, which compares the answer with your selection change by
+  change (see below).
 - **Insert Below**
 - **Copy**
 - **Try Again**
 - **Follow Up**, which carries on from this answer as a conversation.
 
-The first two only appear when they make sense. For example, if you did not
-select anything, there is nothing to replace.
+The first three only appear when they make sense. For example, if you did not
+select anything, there is nothing to replace or review.
 
 Nothing is changed in your document for you. Proofread, for instance, tells
 you what it found and leaves every character alone until you press Replace My
 Selection. You always get to read it first.
+
+#### Reviewing the changes word by word
+
+**Review Changes** opens **Review AI Changes**, the review window QUILL uses
+for its AI edits. It lists every change the answer would make to your
+selection, one per line. Arrow to one and press Tab to read it in **Change
+details**: what was there, what would replace it, and for a small change the
+exact words that differ and the sentence they are in. Every change starts
+checked. Press Space to uncheck one you want to keep as it was, then choose
+**Apply Checked**, or **Accept All** for every change. It goes in as one edit,
+so **Ctrl+Z** takes it all back. **Reject All**, or Escape, changes nothing.
+
+#### Where the answer goes
+
+The pad's **Put the answer in** list has three choices:
+
+- **The AI Result window.** The starting choice: you read the answer first,
+  then choose what to do with it, as above.
+- **My document, at the cursor.** The answer goes straight in where the cursor
+  is, as one edit **Ctrl+Z** takes back, and QUILL Lite reads it aloud.
+- **The clipboard.** The answer goes on the clipboard and is read aloud. Your
+  document does not change.
+
+QUILL Lite remembers your choice until you change it. It applies to every
+answer: from the pad, the Chat Key and the Prompt Library.
+
+#### Your saved prompts
+
+**Prompt Library** (**Ctrl+7**) is QUILL's library of prompts: the ones QUILL
+comes with, such as Make Concise and Formal Tone, and any you write with **New
+Prompt**. Choose one and press **Run with AI**, or **Enter**. The window
+closes, your selection goes where the prompt says `{selection}`, and the
+prompt is sent to the AI as a general question, using one request. If the
+prompt with your text in it is bigger than the free limit allows, you are told
+and nothing is sent. **Import** and **Export** share prompts with QUILL and with
+other people as a prompt pack file.
 
 #### What is sent, and when
 
@@ -5494,6 +5540,15 @@ in the message box, so you can answer straight away.
 
 Nothing goes into your document unless you press **Insert Last Reply Below**,
 and **Ctrl+Z** takes that back like any other edit.
+
+#### Saved conversations
+
+Every conversation is saved on this computer as it goes. Press **Saved
+Conversations** (**Alt+V**) in the conversation window to see them, newest
+first, each with how it began, how many messages it holds and when it was last
+used. Press **Enter** on one to open it and carry on where it left off, or
+**Delete** to remove it; QUILL Lite asks first. **New Conversation** starts a
+new saved conversation and keeps the old one.
 
 #### Long conversations on the free AI
 
@@ -5571,6 +5626,8 @@ you which passages it chose before anything is sent.
 - **Usage** (**Ctrl+Alt+Shift+F9**) shows what you have used and what is left.
   Look here before you run out, rather than finding out when a request is
   turned down.
+- **Web Searches Left** (**Ctrl+9**) says how many of this month's web searches
+  are left. See *Searching the web on the free AI*, below.
 - **Help > About QUILL Lite** shows the same allowance, and this computer's
   **support ID**, under **QUILL's free AI**. The numbers are fetched fresh each
   time, so give it a moment after About opens.
@@ -6002,6 +6059,19 @@ To turn it on:
    away.
 
 Press Space on the same checkbox to turn it off again.
+
+#### Searching the web on the free AI
+
+QUILL's free service can search the web too, ten times a month for each
+computer's account. When the service has search switched on, the pad's list
+ends with **Search the web**: type a question, press **Send**, and the answer
+comes back with the sites it used, one per line. Each search also uses one
+ordinary request.
+
+Press **Ctrl+9** (**Tools > AI > Web Searches Left**) to hear how many searches
+are left this month and when they start again. If the service is not offering
+web search at the moment, Ctrl+9 says that instead. With your own key or your
+ChatGPT plan, use **Allow web search** above instead.
 
 ### What you learned, and where to go next
 
@@ -7529,7 +7599,10 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 |---|---|
 | **Ctrl+Alt+G** | AI Assistant... |
 | **Ctrl+Alt+Z** | Ask About This Document... |
+| **Ctrl+6** | Ask AI a Question... |
+| **Ctrl+7** | Prompt Library... |
 | **Ctrl+Alt+Shift+F9** | Usage... |
+| **Ctrl+9** | Web Searches Left |
 | **Ctrl+Alt+Shift+F10** | Connect or Sign Out... |
 | **Ctrl+Alt+Shift+K** | Privacy Agreement... |
 | **Alt+F2** | Use My Own AI Key... |

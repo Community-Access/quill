@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 497.
+Editor commands with default bindings: 500.
 
 ## The QUILL editor
 
@@ -317,6 +317,9 @@ Editor commands with default bindings: 497.
 | Alt+Shift+M | App Sounds On or Off | `tools.sound_toggle` |
 | Alt+Shift+Q | Ask Quill by Voice... | `tools.ask_quill_conversation` |
 | Alt+Shift+R | Misspelling List (Ranked by Frequency)... | `tools.misspelling_list_ranked` |
+| Ctrl+6 | Ask AI a Question... | `tools.hosted_ai_chat_key` |
+| Ctrl+7 | Free AI Prompt Library... | `tools.hosted_ai_prompt_library` |
+| Ctrl+9 | Web Searches Left | `tools.hosted_ai_web_searches` |
 | Ctrl+Alt+F10 | Manage Individual Features... | `tools.individual_feature_toggles` |
 | Ctrl+Alt+F11 | Export and Back Up... | `tools.share_export` |
 | Ctrl+Alt+F12 | Import or Restore... | `tools.share_import` |

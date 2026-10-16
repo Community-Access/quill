@@ -1354,9 +1354,19 @@ Response `200`:
   "features": [
     {"id": "summarize", "label": "Summarize", "help": "A few plain sentences saying what this passage says.", "input": "selection", "max_input_tokens": 1500},
     {"id": "ask", "label": "Ask a general question", "help": "Type any question. Only your question is sent -- nothing from your document.", "input": "prompt", "max_input_tokens": 1500}
-  ]
+  ],
+  "web_search": {"enabled": false, "monthly_cap": 10}
 }
 ```
+
+`web_search` (added 2026-10-15) says whether the `web_search` feature is
+offered and how many searches a month each account gets. The feature is built
+and ships **off** behind its feature flag (it is the one feature the provider
+charges per request for, on top of its tokens); while an operator has it on, it
+also appears in `features` as **Search the web** with input `prompt`, so the
+client offers it with no release. The quota answer below carries the account's
+count; the client's **Web Searches Left** command reads both. The cap is
+`app/limits.py::WEB_SEARCH_MONTHLY_CAP` (10), movable as `feature_cap.web_search`.
 
 `features` (added 2026-10) is the **feature catalogue**: one entry per shipped
 feature whose flag is on, in the order the client should list them, and an
@@ -1393,9 +1403,15 @@ Response `200`:
   "daily_request_cap": 20,
   "daily_requests_used": 3,
   "reset_at": "2026-08-01T00:00:00Z",
-  "status": "active"
+  "status": "active",
+  "web_search_monthly_cap": 10,
+  "web_searches_used": 3
 }
 ```
+
+`web_search_monthly_cap` and `web_searches_used` (added 2026-10-15) are this
+account's web searches this month: its own cap (after any per-account override)
+and how many it has made. Display only, like the rest.
 
 ### `POST /v1/chat`
 

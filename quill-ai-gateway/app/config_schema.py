@@ -251,6 +251,29 @@ KEYS: dict[str, ConfigKey] = {
         _feature_cap("explain", "Explain"),
         _feature_cap("document_qna", "Questions about documents"),
         _feature_cap("ask", "General questions"),
+        # Web search (2026-10-15): unlike every other feature cap, this one
+        # does move the bill -- each search is charged by the provider on top
+        # of its words -- so its consequence says so.
+        ConfigKey(
+            key="feature_cap.web_search",
+            name="Web searches — per person per month",
+            group="allowance",
+            unit="requests",
+            minimum=0,
+            maximum=100,
+            step=1,
+            sentence=(
+                "How many web searches one person may make in a month, inside the "
+                "overall monthly total. Only matters while Web search is switched on "
+                "on the Features page; it ships switched off."
+            ),
+            consequence=(
+                "Each search costs about three cents on top of its words, and that "
+                "charge does not count against a person's own cost ceiling, so this "
+                "number is what bounds it: raising it by one adds about three cents "
+                "per active person per month to the worst case."
+            ),
+        ),
         # --- How big one request can be -----------------------------------
         ConfigKey(
             key="max_input_tokens",

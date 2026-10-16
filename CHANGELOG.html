@@ -245,6 +245,85 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="free-ai-saved-conversations-the-prompt-library-word-level-review-answer-delivery-the-chat-key-and-web-search-2026-10-15">Free
+AI: saved conversations, the Prompt Library, word-level review, answer
+delivery, the Chat Key and web search (2026-10-15)</h3>
+<p>Todo P3, “QUILL Lite AI”. Everything is in the shared hosted-AI
+package, so QUILL and QUILL Lite get it together and neither has a
+copy.</p>
+<ul>
+<li><strong>Shared cores extracted, QUILL moved onto them.</strong>
+<code>DiffReviewDialog</code> left
+<code>quill/ui/assistant_tools.py</code> for
+<code>quill/ui/ai_diff_review_dialog.py</code> (re-exported;
+<code>MainFrame.open_ai_diff_review</code> imports the new module), with
+F1 sentences on every control. <code>_PromptEditDialog</code> left
+<code>prompt_library_dialog.py</code> for
+<code>quill/ui/prompt_edit_dialog.py</code>
+(<code>PromptEditDialog</code>, titled “New Prompt” or “Edit Prompt”);
+the AI Library uses it too. Ask Quill’s session recorder became
+<code>quill.core.ai.sessions.record_exchange</code>, and the store
+functions take an optional <code>directory</code>.
+<code>quill/core/prompt_fill.py::fill_prompt</code> is the one
+placeholder fill for both ways a prompt runs.</li>
+<li><strong>Saved conversations.</strong> The shared AI Conversation
+window saves every exchange through <code>record_exchange</code> into
+the host’s <code>ai-sessions</code> folder (QUILL’s is the one Ask Quill
+writes, so AI Session Branches sees them), and <strong>Saved
+Conversations…</strong> (<code>quill/ui/hosted_ai_saved_chats.py</code>)
+opens or deletes one. A Follow Up’s seed exchange is saved with it.</li>
+<li><strong>Prompt Library on the free AI.</strong>
+<code>PromptLibraryDialog(hosted=True)</code> fills the prompt, keeps it
+in <code>chosen</code> and closes; <code>cmd_ai_prompt_library</code>
+sends it as <code>ask</code> and delivers the answer. QUILL’s hook
+returns its cached library (Quillin prompts included). Every control in
+the library has F1 help now.</li>
+<li><strong>Review Changes</strong> in the AI Result window
+(<code>quill/ui/hosted_ai_result.py</code>, split from
+<code>hosted_ai_pad.py</code>, which still exports
+<code>AiResultFrame</code>) whenever Replace is offered and the answer
+differs.</li>
+<li><strong>Answer delivery</strong>
+(<code>quill/core/ai/answer_delivery.py</code>): <code>window</code>
+(default), <code>cursor</code> (one undo step, spoken) or
+<code>clipboard</code> (spoken; a busy clipboard falls back to the
+window). New setting <code>ai_answer_delivery</code> in both editors’
+settings, chosen in the pad’s <strong>Put the answer in</strong> list.
+No planning document specified delivery modes or a Chat Key; this is the
+minimum, written down in that module.</li>
+<li><strong>Chat Key, Prompt Library, Web Searches Left</strong>:
+<code>tools.hosted_ai_chat_key</code> (<code>Ctrl+6</code>),
+<code>tools.hosted_ai_prompt_library</code> (<code>Ctrl+7</code>),
+<code>tools.hosted_ai_web_searches</code> (<code>Ctrl+9</code>), free in
+both editors (<code>quill/core/lite/commands_ai.py</code> has the
+measurement); rows in QUILL’s AI menu
+(<code>main_frame_hosted_ai._append_answer_rows</code>) and QUILL Lite’s
+Tools &gt; AI; parity rows in <code>COMMAND_EQUIVALENTS</code>. Handlers
+live in the new shared mixin
+<code>quill/ui/hosted_ai_answers.py</code>.</li>
+<li><strong>Web search on the gateway, behind a flag.</strong>
+<code>web_search</code> is a new <code>OPT_IN_FEATURES</code> feature:
+seeded off (migration 009, <code>seed-config</code>), a missing flag row
+refuses, its own call <code>openai_client.search</code> with its own
+body allowlist (<code>SEARCH_BODY_KEYS</code> adds only
+<code>web_search_options</code>; the ordinary allowlist is untouched),
+<code>GATEWAY_OPENAI_SEARCH_MODEL</code>, a monthly feature cap
+<code>WEB_SEARCH_MONTHLY_CAP = 10</code>, and a per-search cost
+(<code>WEB_SEARCH_CALL_COST_USD</code>) charged to the global budget but
+not the person’s cost ceiling. <code>/v1/config</code> gains
+<code>web_search: {enabled, monthly_cap}</code> and, while on, a
+catalogue row (so the pad offers <strong>Search the web</strong> with no
+release); <code>/v1/quota</code> gains
+<code>web_search_monthly_cap</code> and <code>web_searches_used</code>.
+The client reads both (<code>GatewayLimits</code>,
+<code>GatewayQuota</code>, <code>AiService.fetch_web_searches</code>,
+<code>describe_web_searches</code>); no new egress site.</li>
+<li>Tests: <code>tests/unit/apps/test_lite_ai_answers.py</code>,
+<code>tests/unit/core/ai/test_hosted_ai_answers_core.py</code>,
+<code>tests/unit/ui/test_hosted_ai_answers_windows.py</code>,
+<code>quill-ai-gateway/tests/test_web_search.py</code>.</li>
+</ul>
+<h3
 id="import--convert-reads-pdfs-without-markitdown-ffmpeg-ships-with-its-licence-everywhere-2026-10-15">Import
 / Convert reads PDFs without MarkItDown; FFmpeg ships with its licence
 everywhere (2026-10-15)</h3>

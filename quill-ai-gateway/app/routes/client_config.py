@@ -4,6 +4,12 @@ bar indicator, the AI Hub panel, and the About dialog's usage line all
 read from ``/v1/quota``, and the client's own large-document pre-check
 (PRD §14.1 layer 1) reads its thresholds from ``/v1/config`` once per
 session so it always reflects whatever an admin has most recently set.
+
+**Web search** (2026-10-15) appears in both. ``/v1/config`` carries a
+``web_search`` entry -- whether it is on and the monthly number of searches --
+and, while it is on, a catalogue row so the client's pad offers it with no
+release; ``/v1/quota`` carries how many of this month's searches are used.
+Older clients ignore every key they do not know.
 """
 
 from __future__ import annotations
@@ -11,9 +17,16 @@ from __future__ import annotations
 from flask import Blueprint, current_app, g, jsonify
 
 from app.auth import require_auth
-from app.limits import remaining_quota, resolve_limit, starter_allowance_ends_at
+from app.limits import (
+    _effective_feature_cap,
+    remaining_quota,
+    resolve_feature_cap,
+    resolve_limit,
+    starter_allowance_ends_at,
+    web_searches_used,
+)
 from app.models import FeatureFlag, db
-from app.prompts import CATALOGUE, DEFERRED_FEATURES, SHIPPED_FEATURES
+from app.prompts import CATALOGUE, DEFERRED_FEATURES, OPT_IN_FEATURES, SHIPPED_FEATURES
 
 bp = Blueprint("client_config", __name__)
 
@@ -32,7 +45,7 @@ def get_config():
     # two of them were ones it could no longer reach while two it *could* reach
     # went unmentioned.
     feature_flags = {}
-    for feature in (*SHIPPED_FEATURES, *DEFERRED_FEATURES):
+    for feature in (*SHIPPED_FEATURES, *DEFERRED_FEATURES, *OPT_IN_FEATURES):
         flag = db.session.get(FeatureFlag, feature)
         # A deferred feature defaults to off when no row exists; a shipped one
         # defaults to on. Erring the other way would have the client offering a
@@ -53,6 +66,13 @@ def get_config():
         # this one; newer ones offer whatever entry they do not already have
         # built in, so a new text tool needs no client release.
         "features": _catalogue(feature_flags, hosted_enabled, max_input_tokens),
+        # Added 2026-10-15: whether web search is offered, and how many
+        # searches a month each account gets. Off unless an operator turned
+        # the flag on (app/prompts.py::OPT_IN_FEATURES).
+        "web_search": {
+            "enabled": bool(hosted_enabled and feature_flags.get("web_search", False)),
+            "monthly_cap": int(resolve_feature_cap(current_app, "web_search")),
+        },
     })
 
 
@@ -73,7 +93,7 @@ def _catalogue(
     if not hosted_enabled:
         return []
     entries = []
-    for feature in SHIPPED_FEATURES:
+    for feature in (*SHIPPED_FEATURES, *OPT_IN_FEATURES):
         meta = CATALOGUE.get(feature)
         if meta is None or not feature_flags.get(feature, False):
             continue
@@ -109,4 +129,8 @@ def get_quota():
         "daily_requests_used": quota.daily_used,
         "reset_at": quota.reset_at.isoformat(),
         "status": g.user.status,
+        # Added 2026-10-15, display only like the rest: this account's web
+        # searches this month (its own cap, which an admin may have set).
+        "web_search_monthly_cap": _effective_feature_cap(current_app, g.user.id, "web_search"),
+        "web_searches_used": web_searches_used(current_app, g.user),
     })

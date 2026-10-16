@@ -2385,8 +2385,20 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb9-1"><a href="
 <span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;features&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
 <span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span><span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;summarize&quot;</span><span class="fu">,</span> <span class="dt">&quot;label&quot;</span><span class="fu">:</span> <span class="st">&quot;Summarize&quot;</span><span class="fu">,</span> <span class="dt">&quot;help&quot;</span><span class="fu">:</span> <span class="st">&quot;A few plain sentences saying what this passage says.&quot;</span><span class="fu">,</span> <span class="dt">&quot;input&quot;</span><span class="fu">:</span> <span class="st">&quot;selection&quot;</span><span class="fu">,</span> <span class="dt">&quot;max_input_tokens&quot;</span><span class="fu">:</span> <span class="dv">1500</span><span class="fu">}</span><span class="ot">,</span></span>
 <span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span><span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;ask&quot;</span><span class="fu">,</span> <span class="dt">&quot;label&quot;</span><span class="fu">:</span> <span class="st">&quot;Ask a general question&quot;</span><span class="fu">,</span> <span class="dt">&quot;help&quot;</span><span class="fu">:</span> <span class="st">&quot;Type any question. Only your question is sent -- nothing from your document.&quot;</span><span class="fu">,</span> <span class="dt">&quot;input&quot;</span><span class="fu">:</span> <span class="st">&quot;prompt&quot;</span><span class="fu">,</span> <span class="dt">&quot;max_input_tokens&quot;</span><span class="fu">:</span> <span class="dv">1500</span><span class="fu">}</span></span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;web_search&quot;</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">&quot;enabled&quot;</span><span class="fu">:</span> <span class="kw">false</span><span class="fu">,</span> <span class="dt">&quot;monthly_cap&quot;</span><span class="fu">:</span> <span class="dv">10</span><span class="fu">}</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p><code>web_search</code> (added 2026-10-15) says whether the
+<code>web_search</code> feature is offered and how many searches a month
+each account gets. The feature is built and ships <strong>off</strong>
+behind its feature flag (it is the one feature the provider charges per
+request for, on top of its tokens); while an operator has it on, it also
+appears in <code>features</code> as <strong>Search the web</strong> with
+input <code>prompt</code>, so the client offers it with no release. The
+quota answer below carries the account’s count; the client’s <strong>Web
+Searches Left</strong> command reads both. The cap is
+<code>app/limits.py::WEB_SEARCH_MONTHLY_CAP</code> (10), movable as
+<code>feature_cap.web_search</code>.</p>
 <p><code>features</code> (added 2026-10) is the <strong>feature
 catalogue</strong>: one entry per shipped feature whose flag is on, in
 the order the client should list them, and an empty list while
@@ -2452,8 +2464,14 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb10-1"><a href=
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;daily_request_cap&quot;</span><span class="fu">:</span> <span class="dv">20</span><span class="fu">,</span></span>
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;daily_requests_used&quot;</span><span class="fu">:</span> <span class="dv">3</span><span class="fu">,</span></span>
 <span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;reset_at&quot;</span><span class="fu">:</span> <span class="st">&quot;2026-08-01T00:00:00Z&quot;</span><span class="fu">,</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;status&quot;</span><span class="fu">:</span> <span class="st">&quot;active&quot;</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;status&quot;</span><span class="fu">:</span> <span class="st">&quot;active&quot;</span><span class="fu">,</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;web_search_monthly_cap&quot;</span><span class="fu">:</span> <span class="dv">10</span><span class="fu">,</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;web_searches_used&quot;</span><span class="fu">:</span> <span class="dv">3</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p><code>web_search_monthly_cap</code> and
+<code>web_searches_used</code> (added 2026-10-15) are this account’s web
+searches this month: its own cap (after any per-account override) and
+how many it has made. Display only, like the rest.</p>
 <h3 id="post-v1chat"><code>POST /v1/chat</code></h3>
 <p>The one real inference endpoint. Every feature (document Q&amp;A,
 summarize, rewrite, chat) uses this same route with a different

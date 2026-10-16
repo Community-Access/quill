@@ -6974,6 +6974,15 @@ the pad where you are.</li>
 (<strong>Ctrl+Alt+Z</strong>) opens the same pad with <strong>Ask a
 question about the document</strong> already chosen, so you can go
 straight to typing your question.</li>
+<li><strong>Ask AI a Question</strong>, the Chat Key
+(<strong>Ctrl+6</strong>), opens the pad with <strong>Ask a general
+question</strong> chosen and the caret already in <strong>Your
+question</strong>. Type, press <strong>Enter</strong>, and the answer
+arrives wherever you chose to put answers (see <em>Where the answer
+goes</em>, below).</li>
+<li><strong>Prompt Library</strong> (<strong>Ctrl+7</strong>) runs one
+of your saved prompts on the selection. See <em>Your saved prompts</em>,
+below.</li>
 </ul>
 <p>There are also twelve questions you can ask about the word you are
 on, under <strong>Tools &gt; Dictionary</strong>. They are explained in
@@ -7090,6 +7099,8 @@ empty: the conversation window then opens ready for you. For
 <strong>Translate</strong>, you get a <strong>Translate into</strong>
 list instead, with twenty languages. Spanish is chosen until you pick
 another.</li>
+<li><strong>Put the answer in.</strong> Where the answer goes when it
+arrives. See <em>Where the answer goes</em>, below.</li>
 <li><strong>Send.</strong> Nothing leaves your computer until you press
 it.</li>
 </ol>
@@ -7119,17 +7130,57 @@ and what you can do with it</h4>
 buttons:</p>
 <ul>
 <li><strong>Replace My Selection</strong></li>
+<li><strong>Review Changes</strong>, which compares the answer with your
+selection change by change (see below).</li>
 <li><strong>Insert Below</strong></li>
 <li><strong>Copy</strong></li>
 <li><strong>Try Again</strong></li>
 <li><strong>Follow Up</strong>, which carries on from this answer as a
 conversation.</li>
 </ul>
-<p>The first two only appear when they make sense. For example, if you
-did not select anything, there is nothing to replace.</p>
+<p>The first three only appear when they make sense. For example, if you
+did not select anything, there is nothing to replace or review.</p>
 <p>Nothing is changed in your document for you. Proofread, for instance,
 tells you what it found and leaves every character alone until you press
 Replace My Selection. You always get to read it first.</p>
+<h4 id="reviewing-the-changes-word-by-word">Reviewing the changes word
+by word</h4>
+<p><strong>Review Changes</strong> opens <strong>Review AI
+Changes</strong>, the review window QUILL uses for its AI edits. It
+lists every change the answer would make to your selection, one per
+line. Arrow to one and press Tab to read it in <strong>Change
+details</strong>: what was there, what would replace it, and for a small
+change the exact words that differ and the sentence they are in. Every
+change starts checked. Press Space to uncheck one you want to keep as it
+was, then choose <strong>Apply Checked</strong>, or <strong>Accept
+All</strong> for every change. It goes in as one edit, so
+<strong>Ctrl+Z</strong> takes it all back. <strong>Reject All</strong>,
+or Escape, changes nothing.</p>
+<h4 id="where-the-answer-goes">Where the answer goes</h4>
+<p>The pad’s <strong>Put the answer in</strong> list has three
+choices:</p>
+<ul>
+<li><strong>The AI Result window.</strong> The starting choice: you read
+the answer first, then choose what to do with it, as above.</li>
+<li><strong>My document, at the cursor.</strong> The answer goes
+straight in where the cursor is, as one edit <strong>Ctrl+Z</strong>
+takes back, and QUILL Lite reads it aloud.</li>
+<li><strong>The clipboard.</strong> The answer goes on the clipboard and
+is read aloud. Your document does not change.</li>
+</ul>
+<p>QUILL Lite remembers your choice until you change it. It applies to
+every answer: from the pad, the Chat Key and the Prompt Library.</p>
+<h4 id="your-saved-prompts">Your saved prompts</h4>
+<p><strong>Prompt Library</strong> (<strong>Ctrl+7</strong>) is QUILL’s
+library of prompts: the ones QUILL comes with, such as Make Concise and
+Formal Tone, and any you write with <strong>New Prompt</strong>. Choose
+one and press <strong>Run with AI</strong>, or <strong>Enter</strong>.
+The window closes, your selection goes where the prompt says
+<code>{selection}</code>, and the prompt is sent to the AI as a general
+question, using one request. If the prompt with your text in it is
+bigger than the free limit allows, you are told and nothing is sent.
+<strong>Import</strong> and <strong>Export</strong> share prompts with
+QUILL and with other people as a prompt pack file.</p>
 <h4 id="what-is-sent-and-when">What is sent, and when</h4>
 <p>Text is only sent when you press Send in the pad, or send a message
 in a conversation. Then the text you asked about, either the selection
@@ -7169,6 +7220,15 @@ You stay in the message box, so you can answer straight away.</p>
 <p>Nothing goes into your document unless you press <strong>Insert Last
 Reply Below</strong>, and <strong>Ctrl+Z</strong> takes that back like
 any other edit.</p>
+<h4 id="saved-conversations">Saved conversations</h4>
+<p>Every conversation is saved on this computer as it goes. Press
+<strong>Saved Conversations</strong> (<strong>Alt+V</strong>) in the
+conversation window to see them, newest first, each with how it began,
+how many messages it holds and when it was last used. Press
+<strong>Enter</strong> on one to open it and carry on where it left off,
+or <strong>Delete</strong> to remove it; QUILL Lite asks first.
+<strong>New Conversation</strong> starts a new saved conversation and
+keeps the old one.</p>
 <h4 id="long-conversations-on-the-free-ai">Long conversations on the
 free AI</h4>
 <p>Each message you send is one request, and conversations have their
@@ -7241,6 +7301,9 @@ passages it chose before anything is sent.</p>
 <li><strong>Usage</strong> (<strong>Ctrl+Alt+Shift+F9</strong>) shows
 what you have used and what is left. Look here before you run out,
 rather than finding out when a request is turned down.</li>
+<li><strong>Web Searches Left</strong> (<strong>Ctrl+9</strong>) says
+how many of this month’s web searches are left. See <em>Searching the
+web on the free AI</em>, below.</li>
 <li><strong>Help &gt; About QUILL Lite</strong> shows the same
 allowance, and this computer’s <strong>support ID</strong>, under
 <strong>QUILL’s free AI</strong>. The numbers are fetched fresh each
@@ -7714,6 +7777,18 @@ search</strong>.</li>
 is saved straight away.</li>
 </ol>
 <p>Press Space on the same checkbox to turn it off again.</p>
+<h4 id="searching-the-web-on-the-free-ai">Searching the web on the free
+AI</h4>
+<p>QUILL’s free service can search the web too, ten times a month for
+each computer’s account. When the service has search switched on, the
+pad’s list ends with <strong>Search the web</strong>: type a question,
+press <strong>Send</strong>, and the answer comes back with the sites it
+used, one per line. Each search also uses one ordinary request.</p>
+<p>Press <strong>Ctrl+9</strong> (<strong>Tools &gt; AI &gt; Web
+Searches Left</strong>) to hear how many searches are left this month
+and when they start again. If the service is not offering web search at
+the moment, Ctrl+9 says that instead. With your own key or your ChatGPT
+plan, use <strong>Allow web search</strong> above instead.</p>
 <h3 id="what-you-learned-and-where-to-go-next-9">What you learned, and
 where to go next</h3>
 <p>You now know how to open the AI pad, pick one of its seventeen
@@ -10132,8 +10207,20 @@ list inside the app.</p>
 <td>Ask About This Document…</td>
 </tr>
 <tr>
+<td><strong>Ctrl+6</strong></td>
+<td>Ask AI a Question…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+7</strong></td>
+<td>Prompt Library…</td>
+</tr>
+<tr>
 <td><strong>Ctrl+Alt+Shift+F9</strong></td>
 <td>Usage…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+9</strong></td>
+<td>Web Searches Left</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+Shift+F10</strong></td>

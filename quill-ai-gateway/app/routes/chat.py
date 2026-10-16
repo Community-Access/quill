@@ -21,6 +21,12 @@ model is resolved and before anything is sent -- that ordering is deliberate
 already taken one of the user's hundred requests. So every one of them refunds
 it, and only then says so. The user cannot see the counter, so the claim and the
 refund have to be the same commit.
+
+**Web search** (``feature == "web_search"``, 2026-10-15) is the same route and
+the same gate -- its flag ships off, and its monthly share is the feature cap
+``app/limits.py::WEB_SEARCH_MONTHLY_CAP`` -- with two differences, both in step
+4: the call goes to :func:`app.openai_client.search` with the search model, and
+its per-search charge is added to the cost the global budget sees.
 """
 
 from __future__ import annotations
@@ -29,6 +35,7 @@ from flask import Blueprint, current_app, g, jsonify, request
 
 from app.auth import client_ip, require_auth
 from app.limits import (
+    WEB_SEARCH_CALL_COST_USD,
     FeatureUnavailable,
     QuotaExceeded,
     RequestTooLarge,
@@ -44,7 +51,7 @@ from app.limits import (
     resolve_limit,
 )
 from app.model_registry import NoDefaultModel, resolve_default_model
-from app.openai_client import OpenAICallError, complete
+from app.openai_client import OpenAICallError, complete, search
 from app.prompts import (
     FEATURES,
     LANGUAGES,
@@ -189,14 +196,24 @@ def chat():
     output_key = "max_ask_output_tokens" if feature in LONG_ANSWER_FEATURES else "max_output_tokens"
     max_output_tokens = int(resolve_limit(current_app, output_key))
 
+    # A web search goes to the search model through its own call, and carries
+    # the provider's per-search charge on top of its tokens. Everything below
+    # treats it like any other request.
+    searching = feature == "web_search"
+    used_model = current_app.config["OPENAI_SEARCH_MODEL"] if searching else model.model_id
+    search_fee = WEB_SEARCH_CALL_COST_USD if searching else 0.0
+
     try:
-        completion = complete(
-            current_app,
-            model.model_id,
-            full_prompt,
-            max_output_tokens,
-            reasoning_effort_for(feature),
-        )
+        if searching:
+            completion = search(current_app, used_model, full_prompt, max_output_tokens)
+        else:
+            completion = complete(
+                current_app,
+                model.model_id,
+                full_prompt,
+                max_output_tokens,
+                reasoning_effort_for(feature),
+            )
     except OpenAICallError:
         refund_request(current_app, g.user, g.device, feature)
         refund_network_request(current_app, client_ip())
@@ -229,13 +246,18 @@ def chat():
             g.user,
             g.device,
             feature,
-            model.model_id,
+            used_model,
             completion.tokens_in,
             completion.tokens_out,
-            model.estimate_cost_usd(completion.tokens_in, completion.tokens_out),
+            model.estimate_cost_usd(completion.tokens_in, completion.tokens_out) + search_fee,
             status="throttled",
             abuse_flag=None,
             reasoning_tokens=completion.reasoning_tokens,
+            user_cost_usd=(
+                model.estimate_cost_usd(completion.tokens_in, completion.tokens_out)
+                if searching
+                else None
+            ),
         )
         if completion.spent_everything_thinking:
             current_app.logger.error(
@@ -258,19 +280,22 @@ def chat():
     # 5. Record usage (this is what makes the quota checks above mean anything
     #    on the *next* request) and return the result plus a fresh quota
     #    snapshot for the client's status display.
-    cost = model.estimate_cost_usd(completion.tokens_in, completion.tokens_out)
+    token_cost = model.estimate_cost_usd(completion.tokens_in, completion.tokens_out)
     record_usage(
         current_app,
         g.user,
         g.device,
         feature,
-        model.model_id,
+        used_model,
         completion.tokens_in,
         completion.tokens_out,
-        cost,
+        token_cost + search_fee,
         status="allowed",
         abuse_flag=None,
         reasoning_tokens=completion.reasoning_tokens,
+        # The search charge is bounded by the search cap, not the person's
+        # monthly cost ceiling (app/limits.py::WEB_SEARCH_CALL_COST_USD).
+        user_cost_usd=token_cost if searching else None,
     )
     quota = remaining_quota(current_app, g.user)
 
