@@ -10,6 +10,12 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 Testing rebuild: **3.2.0 (build 4)**. The packages have not been published yet.
 
+- **Reminders now wait in Notifications.** When a tune-in reminder goes off it
+  is spoken and shown as before, and now it also stays in **Help >
+  Notifications...** (Ctrl+Alt+Shift+F3), so you can find it if you were away.
+  For a station reminder, Enter on the row plays the station. The guide always
+  said reminders were kept there; until now they were not.
+
 - **Suggest a Station or Podcast no longer guesses what it is.** **What is it**
   starts on **Choose one**, and nothing is sent until you choose a radio station
   or a podcast. Before, it started on A radio station, so a podcast sent without
