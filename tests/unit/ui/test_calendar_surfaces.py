@@ -284,6 +284,32 @@ def test_a_fired_reminder_waits_in_the_notification_centre(frame, tmp_path, monk
     monitor.stop()
 
 
+def test_a_station_reminder_reads_the_note_kept_on_the_station(
+    frame, tmp_path, monkeypatch
+) -> None:
+    """Radio extras 9: the note written in Favorites is said when it goes off."""
+    from types import SimpleNamespace
+
+    from quill.core.radio import reminders
+    from quill.core.radio.item_notes import set_note
+
+    monkeypatch.setattr("quill.ui.quiet_hours_ui.held_back", lambda _kind, **_k: False)
+    monkeypatch.setattr(
+        "quill.core.notifications.notifications_path", lambda: tmp_path / "notices.json"
+    )
+    url = "https://stream.example.org/nowhere"
+    set_note(tmp_path, SimpleNamespace(stream_url=url), "The quiz is in the second hour.")
+    reminders.add_reminder(
+        tmp_path, "Radio Nowhere", SHOWTIME, kind=reminders.KIND_STATION, target=url
+    )
+    said: list[str] = []
+    monitor = _monitor(frame, said)
+
+    assert monitor.check_now(now=SHOWTIME) == 1
+    assert said[0].endswith("Your note: The quiz is in the second hour.")
+    monitor.stop()
+
+
 def test_nothing_due_is_silent(frame, tmp_path, monkeypatch) -> None:
     from quill.core.radio import reminders
 

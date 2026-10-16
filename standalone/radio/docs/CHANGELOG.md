@@ -10,6 +10,42 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 Testing rebuild: **3.2.0 (build 4)**. The packages have not been published yet.
 
+- **Remove several favorites with one question.** In the favorites tree or in
+  Manage Favorites, press **.** (period) on each station you want to remove.
+  It says how many are marked, and the row reads "(marked)". Then **Delete**
+  asks once, for example "Delete 5 stations?", and says how many went.
+  **Ctrl+Shift+Delete** clears the marks. The same three are on the station's
+  **Shift+F10** menu.
+
+- **A sound for resuming.** Resuming after a pause now plays a short
+  tape-spooling sound of its own, so you can tell carrying on from starting a
+  new station. **Alt+Shift+M** turns it off with Quill Radio's other sounds.
+
+- **A background station on another device.** **Audio > Background Station on
+  Another Device...** (Alt+Shift+B) plays one of your favorites quietly on a
+  second sound card or headset, underneath whatever else is playing. It pauses
+  when you pause and follows your volume; Stop and changing station leave it
+  playing. Press Alt+Shift+B again to turn it off.
+
+- **Mirror to another device.** **Audio > Mirror to Another Device...**
+  (Alt+Shift+D) plays the same station on a second device as well, following
+  the main player in everything. Both need the mpv playback engine.
+
+- **A key that plays a favorite from anywhere.** **System-Wide Key...** on a
+  favorite's **Shift+F10** menu gives that station its own key, such as
+  Ctrl+Alt+PageUp, that works even with another program in front. No favorite
+  has one until you choose it. A key another QUILL app, another favorite or
+  another program already uses is refused, with the reason.
+
+- **What's New, in one key.** **Community > What's New** (Alt+Shift+N) tells
+  you in one sentence what arrived since you last looked: new episodes, new
+  videos from channels you follow, and reminders that went off. Press it again
+  and it says "Nothing new". The details stay in Notifications.
+
+- **Reminders read your note on the station.** When a reminder for a station
+  goes off, it now also reads the note you keep on that station (**Note to
+  Self...**), such as "Your note: Only the first hour is worth it."
+
 - **How many notifications are unread, without opening the list.** The status
   bar has a **Notifications** cell ("3 new", or "None new"); Enter on it opens
   the list. **Help > Notifications...** says the count too, such as

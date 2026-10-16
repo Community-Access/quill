@@ -580,7 +580,10 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Alt+8 | Play favorite 8 | `radio.play_favorite_8` |
 | Alt+9 | Play favorite 9 | `radio.play_favorite_9` |
 | Alt+F5 | Use My ChatGPT Subscription... | `radio.chatgpt_account` |
+| Alt+Shift+B | Background station | `radio.background_station` |
+| Alt+Shift+D | Mirror output | `radio.mirror_output` |
 | Alt+Shift+F | Play Favorite Station... | `radio.play_favorite` |
+| Alt+Shift+N | Whats new | `radio.whats_new` |
 | Ctrl+. | Radio: Stop | `radio.stop` |
 | Ctrl+Alt+0 | Community Picks... | `radio.community_picks` |
 | Ctrl+Alt+9 | Suggest a Station or Podcast... | `radio.suggest_pick` |

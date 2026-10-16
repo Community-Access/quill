@@ -245,6 +245,78 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="quill-radio-extras-marked-delete-resume-earcon-a-second-device-per-favourite-keys-whats-new-notes-in-reminders-2026-10-16">Quill
+Radio extras: marked delete, resume earcon, a second device,
+per-favourite keys, What’s New, notes in reminders (2026-10-16)</h3>
+<p>Jeff’s todo P3 “Radio extras”, from the FreeRadio study (xradio2
+sections 4.5, 4.6, 4.7, 4.9 and 4.10). All of it is in the shared
+package; the wx-free rules are new strict-typed modules in
+<code>quill/core/radio/</code>.</p>
+<ul>
+<li><strong>Mark many, delete once (4.10).</strong>
+<code>core/radio/row_marks.py</code> (<code>RowMarks</code>,
+<code>delete_question</code>, <code>deleted_sentence</code>,
+<code>landing_after</code>) and
+<code>ui/radio/favorites_marks.py</code>, shared by the main window’s
+favorites tree (<code>apps/radio_favorites_tree.py</code>) and Manage
+Favorites (<code>favorites_manager_dialog.py</code> +5, rebaselined;
+<code>favorites_menu.py</code>). <code>.</code> toggles a mark and says
+the count, the row text gains “(marked)”, Delete with marks asks one
+No-default question with the count, Ctrl+Shift+Delete clears. The cursor
+lands on the next survivor. Folders are not markable. The Recordings
+Manager, Browse and the schedule list still delete one row.</li>
+<li><strong>Resume earcon (4.5).</strong> New
+<code>SoundEvent.RADIO_RESUMED</code>, <code>radio_resumed.wav</code> in
+the Ink pack (<code>scripts/gen_ink_sounds.py --radio-resumed</code>), a
+label in <code>sound_event_labels.py</code>.
+<code>RadioPlayerController.toggle_play_pause</code> posts it for PAUSED
+to PLAYING through <code>post_cue</code> (so the per-event disable list
+and App Sounds apply) in place of the “playing” cue.</li>
+<li><strong>Second device (4.6 background station, 4.7 mirror).</strong>
+<code>core/radio/second_output.py</code> decides what the second player
+does when the main one changes (background: volume scales with the main
+volume, pause follows, stop and station changes do not; mirror: follows
+everything). <code>ui/radio/second_output_ui.py</code> owns a second
+<code>MpvRadioEngine</code>, the two Audio menu rows
+(<code>radio.background_station</code> Alt+Shift+B,
+<code>radio.mirror_output</code> Alt+Shift+D) and the device question;
+<code>main_frame_radio.py</code> calls <code>follow</code> from
+<code>_on_radio_state_changed</code> (+3, under budget). Off by default,
+not persisted, needs mpv. Drift between the two players is stated in the
+guide.</li>
+<li><strong>Per-favourite system-wide keys (4.9).</strong>
+<code>core/radio/favorite_hotkeys.py</code> keeps
+<code>{favourite key: chord}</code> in its own
+<code>radio_favorite_hotkeys.json</code> (not in the favourites file, so
+an import never brings a key that collides here); conflicts are
+<code>family_chords.show_hide_key_problem</code> with the other
+favourites’ keys and Radio’s show/hide key as <code>own</code>, plus
+<code>hotkey_conflict.claimed_by_another_application</code>.
+<code>ui/radio/favorite_hotkeys_ui.py</code> registers ids from 0x7C00
+at launch (<code>radio_launch_tasks</code>) and releases them at
+shutdown (<code>radio_shutdown</code>); a new
+<code>RegisterHotKey</code> site in
+<code>test_global_hotkeys._REGISTER_HOTKEY_SITES</code>. Empty by
+default. <strong>System-Wide Key…</strong> on both trees’ station menus
+(standalone only).</li>
+<li><strong>What’s New (todo item 8).</strong>
+<code>core/radio/whats_new.py</code> sorts Quill Radio’s unread
+notification-centre entries into episodes, videos, reminders and other,
+and says one sentence; <code>ui/radio/whats_new_wiring.py</code>
+registers <code>radio.whats_new</code> (Alt+Shift+N, Community menu
+beside What Is On Now) and marks what it said as read. No spec existed;
+this is the sensible minimum.</li>
+<li><strong>Reminders read the station’s note (todo item 9).</strong>
+<code>reminders.announcement(..., station_note=)</code> and
+<code>reminders.station_note()</code> (keyed by stream URL through
+<code>item_notes</code>), called by <code>ReminderMonitor</code>.</li>
+<li>Not built: song-boundary recording (4.8) and pitch shift / crossfade
+(4.11, 4.12, which xradio2 defers).</li>
+<li>Gates: <code>bulk_count_inventory.json</code> (+2
+<code>no-announce</code>), keyboard reference, family menu chords,
+dialog inventory regenerated.</li>
+</ul>
+<h3
 id="pdfs-in-quill-lite-one-open-path-for-both-editors-and-windows-ocr-for-scanned-pdfs-2026-10-15">PDFs
 in QUILL Lite, one open path for both editors, and Windows OCR for
 scanned PDFs (2026-10-15)</h3>

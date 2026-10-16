@@ -50,6 +50,8 @@
   "quill/ui/radio/catalogue_picker_dialog.py::_CataloguePicker._add_all": "counted",
   "quill/ui/radio/download_runner.py::clear_all": "no-announce",
   "quill/ui/radio/favorite_actions.py::remove_all_favorites": "counted",
+  "quill/ui/radio/favorite_hotkeys_ui.py::register_all": "no-announce",
+  "quill/ui/radio/favorite_hotkeys_ui.py::unregister_all": "no-announce",
   "quill/ui/radio/favorites_manager_dialog.py::FavoritesManagerDialog._on_remove_all": "counts-elsewhere",
   "quill/ui/radio/local_media_window_commands.py::LocalMediaCommandsMixin.cmd_select_all": "counted",
   "quill/ui/radio/opened_files_ui.py::_batch": "no-announce",

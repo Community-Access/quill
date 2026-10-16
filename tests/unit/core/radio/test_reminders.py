@@ -315,3 +315,43 @@ def test_every_lead_choice_has_a_label() -> None:
 
 def test_an_unoffered_lead_time_still_reads() -> None:
     assert rem.lead_label(420) == "7 minutes before"
+
+
+# -- the station's own note (todo P3 "Radio extras" 9) ------------------------------
+
+
+def test_a_station_reminder_says_the_note_kept_on_that_station(data_dir: Path) -> None:
+    """The note written on a favourite is read when its reminder goes off."""
+    from types import SimpleNamespace
+
+    from quill.core.radio.item_notes import set_note
+
+    url = "https://example.test/stream"
+    set_note(data_dir, SimpleNamespace(stream_url=url), "Only the first hour is worth it.")
+    reminder = _one(kind=rem.KIND_STATION, target=url)
+
+    note = rem.station_note(data_dir, reminder)
+    said = rem.announcement(reminder, SHOWTIME, station_note=note)
+
+    assert (
+        said == "Reminder: Main Menu is starting now. Your note: Only the first hour is worth it."
+    )
+
+
+def test_only_a_station_reminder_reads_a_station_note(data_dir: Path) -> None:
+    from types import SimpleNamespace
+
+    from quill.core.radio.item_notes import set_note
+
+    url = "https://example.test/stream"
+    set_note(data_dir, SimpleNamespace(stream_url=url), "Kept note.")
+
+    assert rem.station_note(data_dir, _one(kind=rem.KIND_EVENT, target=url)) == ""
+    assert rem.station_note(data_dir, _one(kind=rem.KIND_STATION, target="")) == ""
+    assert rem.station_note(data_dir, _one(kind=rem.KIND_STATION, target="https://other")) == ""
+
+
+def test_a_station_note_that_repeats_the_reminder_note_is_said_once() -> None:
+    said = rem.announcement(_one(note="Bring tea."), SHOWTIME, station_note="bring tea.")
+    assert said.count("ring tea") == 1
+    assert "Your note" not in said

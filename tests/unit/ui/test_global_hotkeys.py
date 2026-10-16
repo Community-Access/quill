@@ -200,6 +200,10 @@ _REGISTER_HOTKEY_SITES: dict[str, str] = {
     # QUILL Transcribe's start and stop key: Alt+Shift+\ until the listener
     # chooses another (DEFAULT_DICTATION_HOTKEY, in default_system_wide_keys).
     "apps/transcribe_keys.py": "TranscribeSettings.dictation_hotkey, Alt+Shift+\\ by default",
+    # Quill Radio's per-favourite keys (xradio2 4.9): empty by default, so
+    # nothing to add to default_system_wide_keys(); each one the listener
+    # chooses passes family_chords.show_hide_key_problem first.
+    "ui/radio/favorite_hotkeys_ui.py": "per-favourite keys, none by default",
     # A momentary probe of who owns a key the listener asked about; registers
     # nothing that stays.
     "platform/windows/hotkey_owner.py": "probe only",
