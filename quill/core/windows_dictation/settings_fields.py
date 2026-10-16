@@ -14,11 +14,12 @@ wx-free.
 from __future__ import annotations
 
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 from quill.core.action_feedback import coerce as coerce_feedback
 from quill.core.windows_dictation.engines import coerce_engine
+from quill.core.windows_dictation.never_type import DEFAULT_NEVER_TYPE, coerce_never_type
 from quill.core.windows_dictation.options import coerce_pause, coerce_silence
 from quill.core.windows_dictation.preview import coerce_preview
 from quill.core.windows_dictation.speech_language import coerce_speech_language
@@ -69,6 +70,11 @@ class DictationSettings:
     # recognised. Off in both editors; QUILL Transcribe turns it on
     # (quill/core/transcribe/settings.py, TRANSCRIBE_DICTATION_DEFAULTS).
     windows_dictation_working_tick: bool = False
+    # 2026-10-13 (D-24): programs dictation never types into, by file name
+    # (never_type.py). Starts as the password managers; the person can change it.
+    windows_dictation_never_type: list[str] = field(
+        default_factory=lambda: list(DEFAULT_NEVER_TYPE)
+    )
 
 
 def load_fields(data: Mapping[str, Any]) -> dict[str, Any]:
@@ -132,4 +138,5 @@ def load_fields(data: Mapping[str, Any]) -> dict[str, Any]:
             data.get("windows_dictation_transcript_told", False)
         ),
         "windows_dictation_working_tick": bool(data.get("windows_dictation_working_tick", False)),
+        "windows_dictation_never_type": coerce_never_type(data.get("windows_dictation_never_type")),
     }

@@ -21,6 +21,8 @@ the choices nobody needs on the first day:
   taken back here), and which of the transcription models your key can use,
   read live from OpenAI when this window opens -- never a list kept in QUILL.
 * **My Dictation Instructions...**: the file Tidy Dictated Text follows.
+* **Programs Dictation Never Types Into...** (D-24): the never-type list
+  (:mod:`quill.ui.dictation_never_type_dialog`), kept until this window's OK.
 
 Nothing is applied until OK (:meth:`MoreDictationDialog.values`); Dictation
 Settings applies it with its own OK, so Cancel there cancels this too.
@@ -33,6 +35,7 @@ from typing import Any
 
 import wx
 
+from quill.core.windows_dictation.never_type import coerce_never_type
 from quill.core.windows_dictation.options import PAUSE_CHOICES, coerce_pause
 from quill.core.windows_dictation.preview import PREVIEW_CHOICES, coerce_preview
 from quill.ui.dialog_contract import apply_modal_ids
@@ -248,6 +251,16 @@ class MoreDictationDialog(wx.Dialog):
         row.Add(instructions, 0, wx.RIGHT, _PAD)
         row.Add(anywhere, 0)
         root.Add(row, 0, wx.ALL, _PAD)
+        self._never_type = coerce_never_type(value("windows_dictation_never_type", None))
+        never_type = wx.Button(self, label="Programs Dictation &Never Types Into...")
+        never_type.SetHelpText(
+            "The programs dictation never types into from QUILL Transcribe or Quill "
+            "Inkwell, such as your password manager: add the program you were just "
+            "in, add one by its file name, or remove one. Matched by file name, "
+            "never by a window title."
+        )
+        never_type.Bind(wx.EVT_BUTTON, lambda _e: self.edit_never_type())
+        root.Add(never_type, 0, wx.ALL, _PAD)
 
         buttons = self.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL)
         root.Add(buttons, 0, wx.EXPAND | wx.ALL, _PAD)
@@ -307,6 +320,18 @@ class MoreDictationDialog(wx.Dialog):
             self._announce(problem)  # said once, here: never a silent switch
         self.model_status.SetValue(sentence)
 
+    def edit_never_type(self) -> None:
+        """The never-type list, in its own window; kept here until OK."""
+        from quill.ui.dialog_contract import show_modal_dialog
+        from quill.ui.dictation_never_type_dialog import NeverTypeDialog
+
+        dialog = NeverTypeDialog(self, self._never_type, self._announce)
+        try:
+            if show_modal_dialog(dialog, "Programs Dictation Never Types Into") == wx.ID_OK:
+                self._never_type = dialog.names()
+        finally:
+            dialog.Destroy()
+
     def focus_model(self) -> None:
         self.model.SetFocus()
 
@@ -330,4 +355,5 @@ class MoreDictationDialog(wx.Dialog):
             "windows_dictation_readback_marks": self.readback_marks.GetValue(),
             "windows_dictation_transcript_timestamps": self.timestamps.GetValue(),
             "windows_dictation_working_tick": self.working_tick.GetValue(),
+            "windows_dictation_never_type": list(self._never_type),
         }

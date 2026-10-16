@@ -498,6 +498,22 @@ words again, or scratch that."
 - QUILL's and QUILL Lite's own windows. Press Ctrl+F11 there instead; the editors
   dictate into their own documents directly.
 - Inkwell's own window. Switch to the program you want to dictate into first.
+- A program on your list of programs dictation never types into: "Dictation
+  does not type into KeePass. Move to another program." The list starts with
+  the common password managers and the Windows sign-in, lock and administrator
+  prompts. Change it with **Programs Dictation Never Types Into...** (Alt+N) in
+  More Dictation Settings. Programs are matched by file name, never by a
+  window title.
+
+**It stays in the field you started in.** If the focus moves to another field
+or program while you dictate, Inkwell says "Dictation paused" and holds what
+you say instead of typing it somewhere else. The **Dictation** menu then has
+**Resume** (Ctrl+R) to go back to the first field, **Resume in This Field**
+(Ctrl+Shift+R) to write where you are now, and **Discard Held Words**
+(Ctrl+Shift+D). They are greyed out until something is held, and the tray menu
+has the same three while dictation is paused. Chosen from Inkwell's own window
+or tray, Resume in This Field waits for you to switch to another program;
+choose it again to cancel, and your words stay held.
 
 **With QUILL Transcribe.** QUILL Transcribe is the QuillVille app made just for
 dictating into other programs. Only one of the two dictates at a time. While

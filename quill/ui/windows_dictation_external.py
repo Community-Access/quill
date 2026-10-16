@@ -17,28 +17,62 @@ moved, and answers from that:
 * nothing else can be read, so ``external`` tells the controller to refuse the
   commands that need to (``anywhere.EXTERNAL_COMMANDS``).
 
-It refuses, with a sentence, three places: a password field, a program running
-as administrator when Inkwell is not (Windows blocks the typing), and QUILL's
-own windows, where Ctrl+F11 already dictates.
+It refuses, with a sentence, four places: a password field, a program running
+as administrator when Inkwell is not (Windows blocks the typing), QUILL's own
+windows, where Ctrl+F11 already dictates, and a program on the person's own
+"never type here" list, matched by its file name
+(:mod:`quill.core.windows_dictation.never_type`).
+
+**One field, in every host** (D-15, 2026-10-13): :func:`locked_external_document`
+wraps this port in :class:`~quill.core.windows_dictation.target_lock.LockedTarget`
+with the sentences QUILL Transcribe and Quill Inkwell both say, so a focus move
+pauses and holds the words in both, from one copy of the code.
 
 The platform calls are passed in, so a test runs it against fakes.
 """
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from typing import Any
 
-__all__ = ["ExternalDocument", "focus_identity", "foreground_problem", "hush_unless_spoken"]
+__all__ = [
+    "PAUSE_ADVICE",
+    "WRITE_FAILURE",
+    "ExternalDocument",
+    "focus_identity",
+    "foreground_problem",
+    "hush_unless_spoken",
+    "locked_external_document",
+]
 
 _TAIL = 80
 
+#: What the person is told to do when dictation pauses for its field. QUILL
+#: Transcribe and Quill Inkwell both have these three commands in their tray
+#: menu (while paused) and their Dictation menu.
+PAUSE_ADVICE = (
+    "Go back and choose Resume, choose Resume in This Field to write here, or "
+    "Discard Held Words. All three are in the tray menu and the Dictation menu."
+)
+#: Said when typing failed part-way: never "done".
+WRITE_FAILURE = (
+    "Dictation stopped: Windows did not take all of that phrase, so part of it "
+    "may be missing. Check the field before you carry on."
+)
 
-def foreground_problem(*, app: str = "Quill Inkwell", key: str = "Dictate Anywhere key") -> str:
+
+def foreground_problem(
+    *,
+    app: str = "Quill Inkwell",
+    key: str = "Dictate Anywhere key",
+    never_type: Iterable[str] = (),
+) -> str:
     """Why nothing should be typed into the window in front, or ``""``.
 
     *app* and *key* name the program doing the typing and the key that starts
-    it, so QUILL Transcribe's refusals name QUILL Transcribe.
+    it, so QUILL Transcribe's refusals name QUILL Transcribe. *never_type* is
+    the person's list of program file names (``windows_dictation_never_type``).
     """
     try:
         from quill.platform.windows.external_target import capture_uia_focus
@@ -56,6 +90,11 @@ def foreground_problem(*, app: str = "Quill Inkwell", key: str = "Dictate Anywhe
         return "No program is in front to dictate into."
     if window.process_id == os.getpid():
         return f"Switch to the program you want to dictate into, then press the {key} there."
+    from quill.core.windows_dictation.never_type import refusal
+
+    listed = refusal(window.process_name, never_type)
+    if listed:
+        return listed
     if window_handles_own_expansion(window.hwnd):
         return "This is a QUILL window: press Ctrl+F11 to dictate here."
     if unreachable_because_elevated(window.hwnd):
@@ -129,6 +168,36 @@ def hush_unless_spoken(preferences: Callable[[], Any]) -> Callable[[], bool]:
         return not resolve(getattr(prefs, "phrase_feedback", "sound"), has_sound=True)[1]
 
     return hush
+
+
+def locked_external_document(
+    *,
+    preferences: Callable[[], Any],
+    never_type: Callable[[], Iterable[str]],
+    app: str = "Quill Inkwell",
+    key: str = "Dictate Anywhere key",
+    hush: bool = True,
+) -> Any:
+    """The external document, locked to the field a session starts in.
+
+    What QUILL Transcribe and Quill Inkwell's Dictate Anywhere both dictate
+    into: a focus move pauses and holds the words (target_hold.py), and the
+    same checks -- the never-type list among them -- run at every start and
+    every Resume in This Field. *never_type* is read each time, so a list
+    changed in the settings applies to the next phrase. *hush* off is the
+    one-shot Insert Again, which reads nothing back.
+    """
+    from quill.core.windows_dictation.target_lock import LockedTarget
+
+    def problem() -> str:
+        return foreground_problem(app=app, key=key, never_type=tuple(never_type()))
+
+    inner = ExternalDocument(
+        problem=problem, hush=hush_unless_spoken(preferences) if hush else (lambda: False)
+    )
+    return LockedTarget(
+        inner, where=focus_identity, advice=PAUSE_ADVICE, write_failure=WRITE_FAILURE
+    )
 
 
 class ExternalDocument:

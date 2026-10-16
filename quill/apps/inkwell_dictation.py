@@ -10,7 +10,16 @@ Press the key in any program, speak, pause: each phrase is typed where the
 cursor is. Press it again, or say "stop dictation", to stop. It is the shared
 controller with the same engines, words, punctuation, spelling and modes as
 both editors' dictation (``quill/core/windows_dictation``); the port is
-:class:`quill.ui.windows_dictation_external.ExternalDocument`.
+:func:`quill.ui.windows_dictation_external.locked_external_document`, the one
+QUILL Transcribe uses.
+
+**The field you started in** (D-15, 2026-10-13). Until then Inkwell followed
+the focus and typed into whatever field you landed in. Now, as in QUILL
+Transcribe, a focus move pauses dictation and holds the words; **Resume**,
+**Resume in This Field** and **Discard Held Words** are in the Dictation menu
+and, while paused, the tray menu (:mod:`quill.ui.dictation_field_hold`, shared
+with QUILL Transcribe). Stopping while paused says how many phrases were not
+written. The never-type list (D-24) is checked at every start.
 
 Its dictation settings are Inkwell's own copy of the editors' (the same names,
 cleaned by the same loader), set in **Dictation Settings...** here -- the same
@@ -33,6 +42,7 @@ from typing import Any
 import wx
 
 from quill.core.sound_events import SoundEvent
+from quill.ui.dictation_field_hold import FieldHoldMixin
 
 __all__ = ["InkwellDictationMixin"]
 
@@ -91,7 +101,7 @@ class _InkwellFeedback:
         return wx.CallLater(int(seconds * 1000), callback)
 
 
-class InkwellDictationMixin:
+class InkwellDictationMixin(FieldHoldMixin):
     """On ``QuillInkwellFrame``: the Dictate Anywhere toggle, its settings window."""
 
     _settings: Any
@@ -149,11 +159,13 @@ class InkwellDictationMixin:
             from quill.core.dictation_owner import MicrophoneLock
             from quill.core.windows_dictation.controller import DictationController
             from quill.ui.windows_dictation_commands import _make_recognizer
-            from quill.ui.windows_dictation_external import ExternalDocument, hush_unless_spoken
+            from quill.ui.windows_dictation_external import locked_external_document
 
             controller = DictationController(
                 recognizer=_make_recognizer,
-                document=ExternalDocument(hush=hush_unless_spoken(self._anywhere_preferences)),
+                document=locked_external_document(
+                    preferences=self._anywhere_preferences, never_type=self.never_type_list
+                ),
                 feedback=_InkwellFeedback(self),
                 preferences=self._anywhere_preferences,
                 microphone=MicrophoneLock("inkwell"),  # one microphone in the family (D-11)
@@ -203,19 +215,59 @@ class InkwellDictationMixin:
         if lock is not None:
             lock.release()
 
+    def never_type_list(self) -> list[str]:
+        """The programs dictation never types into (D-24), as saved."""
+        return list(self._anywhere_settings().windows_dictation_never_type)
+
     def dictate_anywhere_active(self) -> bool:
         controller = getattr(self, "_anywhere", None)
         return bool(controller is not None and controller.active)
 
+    # -- FieldHoldMixin's hooks (quill/ui/dictation_field_hold.py) ------------- #
+
+    def _held_controller(self) -> Any:
+        return getattr(self, "_anywhere", None)
+
+    def _hold_refresh(self) -> None:
+        self._dictation_anywhere_changed()
+
     def _dictation_anywhere_changed(self) -> None:
-        if not self.dictate_anywhere_active():
+        active = self.dictate_anywhere_active()
+        if not active:
             self._release_anywhere_owner()  # the session is over: QUILL Transcribe may own it
-        item = getattr(self, "_anywhere_item_id", None)
-        menu_bar = self.frame.GetMenuBar() if item is not None else None
+        menu_bar = self.frame.GetMenuBar()
         if menu_bar is not None:
-            found = menu_bar.FindItemById(int(item))
+            item = getattr(self, "_anywhere_item_id", None)
+            found = menu_bar.FindItemById(int(item)) if item is not None else None
             if found is not None:
-                found.Check(self.dictate_anywhere_active())
+                found.Check(active)
+            for item_id in getattr(self, "_held_item_ids", ()):
+                held = menu_bar.FindItemById(int(item_id))
+                if held is not None:
+                    held.Enable(self.dictation_paused())
+        self._refresh_tray_name(active)
+
+    def _refresh_tray_name(self, active: bool) -> None:
+        """The tray icon's name: what Dictate Anywhere is doing, and, with a
+        cloud engine, where the speech goes (D-24)."""
+        icon = getattr(self, "_tray_icon", None)
+        if icon is None:
+            return
+        name = "Quill Inkwell"
+        if active:
+            from quill.core.windows_dictation.engines import cloud_line
+
+            name += " - Dictate Anywhere paused" if self.dictation_paused() else " - Dictating"
+            line = cloud_line(self._anywhere_preferences().engine)
+            if line:
+                name += f". {line}"
+        art = getattr(self, "_app_icon", None) or wx.ArtProvider.GetIcon(
+            wx.ART_INFORMATION, wx.ART_OTHER, (16, 16)
+        )
+        try:
+            icon.SetIcon(art, name)
+        except Exception:  # noqa: BLE001 - a tooltip is never worth a failure
+            pass
 
     def edit_anywhere_settings(self) -> None:
         """Dictation Settings: the window both editors show, over Inkwell's copy."""
@@ -249,20 +301,55 @@ class InkwellDictationMixin:
             dialog.Destroy()
 
     def _append_dictation_menu(self, menu_bar: Any) -> None:
-        """The Dictation menu: the toggle and the settings window."""
+        """The Dictation menu: the toggle, the three paused commands on QUILL
+        Transcribe's keys for them (rule 2), and the settings window."""
         menu = wx.Menu()
         self._anywhere_item_id = wx.NewIdRef()
         settings_id = wx.NewIdRef()
         menu.AppendCheckItem(self._anywhere_item_id, "&Dictate Anywhere\tCtrl+D")
+        held = (
+            ("&Resume\tCtrl+R", self.resume_dictation),
+            ("Resume in &This Field\tCtrl+Shift+R", self.resume_in_this_field),
+            ("Discard &Held Words\tCtrl+Shift+D", self.discard_held_words),
+        )
+        self._held_item_ids: list[Any] = []
+        for label, handler in held:
+            item_id = wx.NewIdRef()
+            menu.Append(item_id, label)
+            menu.Enable(item_id, False)  # nothing is held until dictation pauses
+            self.frame.Bind(wx.EVT_MENU, lambda _e, run=handler: run(), id=item_id)
+            self._held_item_ids.append(item_id)
+        menu.AppendSeparator()
         menu.Append(settings_id, "Dictation &Settings...\tCtrl+Alt+D")
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.toggle_dictate_anywhere(), id=self._anywhere_item_id
         )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.edit_anywhere_settings(), id=settings_id)
-        self._keep_menu_ids(self._anywhere_item_id, settings_id)  # type: ignore[attr-defined]
+        self._keep_menu_ids(self._anywhere_item_id, settings_id, *self._held_item_ids)  # type: ignore[attr-defined]
         menu_bar.Append(menu, "&Dictation")
 
+    def _append_held_tray_rows(self, menu: Any) -> None:
+        """While Dictate Anywhere is paused for its field: the three commands,
+        bound on the tray menu itself (#1465)."""
+        if not self.dictation_paused():
+            return
+        # QUILL Transcribe's words. Only Resume's letter differs: R is Quill
+        # Radio's in the sibling rows this tray also carries (GATE-14).
+        rows = (
+            ("Res&ume", self.resume_dictation),
+            ("Resume in This &Field", self.resume_in_this_field),
+            ("&Discard Held Words", self.discard_held_words),
+        )
+        menu.AppendSeparator()
+        for label, handler in rows:
+            item_id = wx.NewIdRef()
+            menu.Append(item_id, label)
+            menu.Bind(wx.EVT_MENU, lambda _e, run=handler: wx.CallAfter(run), id=item_id)
+            self._keep_menu_ids(item_id)  # type: ignore[attr-defined]
+
     def _stop_dictate_anywhere(self) -> None:
+        # A pending Resume in This Field must not fire on a stopped session.
+        self._cancel_arming(say=False)
         controller = getattr(self, "_anywhere", None)
         if controller is not None:
             controller.shut_down()

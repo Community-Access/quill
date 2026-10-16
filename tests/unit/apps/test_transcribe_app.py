@@ -889,7 +889,9 @@ def test_a_claimed_window_is_refused_with_the_ctrl_f11_sentence(
     monkeypatch.setattr(
         foreground,
         "foreground_window_info",
-        lambda: SimpleNamespace(hwnd=4242, process_id=1, window_class="MDIFrame"),
+        lambda: SimpleNamespace(
+            hwnd=4242, process_id=1, process_name="quill.exe", window_class="MDIFrame"
+        ),
     )
     monkeypatch.setattr(text_target, "window_handles_own_expansion", lambda hwnd: hwnd == 4242)
     assert (
@@ -1034,7 +1036,9 @@ def test_insert_again_from_the_window_waits_for_the_field(
     monkeypatch.setattr(
         foreground,
         "foreground_window_info",
-        lambda: SimpleNamespace(hwnd=1, process_id=2, window_class="Notepad"),
+        lambda: SimpleNamespace(
+            hwnd=1, process_id=2, process_name="notepad.exe", window_class="Notepad"
+        ),
     )
     host._on_arm_tick(None)
     assert host.world.typed == ["edit-1:Kind regards"]

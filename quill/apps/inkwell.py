@@ -284,6 +284,7 @@ class QuillInkwellFrame(
             lambda _e: self.set_expansion_enabled(not self._settings.expansion_enabled),
             id=toggle_id,
         )
+        self._append_held_tray_rows(menu)  # only while dictation is paused (D-15)
         self._append_sibling_app_tray_items(menu, exclude="inkwell")
         self._keep_menu_ids(quick_id, toggle_id)
 

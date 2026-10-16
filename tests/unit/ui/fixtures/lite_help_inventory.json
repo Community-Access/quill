@@ -62,6 +62,7 @@
   "quill/ui/dictation_more_dialog.py::MoreDictationDialog.__init__::wx.Button": "helped",
   "quill/ui/dictation_more_dialog.py::MoreDictationDialog.__init__::wx.Button#2": "helped",
   "quill/ui/dictation_more_dialog.py::MoreDictationDialog.__init__::wx.Button#3": "helped",
+  "quill/ui/dictation_more_dialog.py::MoreDictationDialog.__init__::wx.Button#4": "helped",
   "quill/ui/dictation_more_dialog.py::MoreDictationDialog.__init__::wx.Choice": "helped",
   "quill/ui/dictation_more_dialog.py::MoreDictationDialog.__init__::wx.Choice#2": "helped",
   "quill/ui/dictation_more_dialog.py::MoreDictationDialog.__init__::wx.Choice#3": "helped",

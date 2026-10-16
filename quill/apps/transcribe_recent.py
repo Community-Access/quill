@@ -14,8 +14,8 @@ Transcribe supplies is where **Insert Again** writes:
   shared external document), wrapped in a one-shot
   :class:`~quill.core.windows_dictation.target_lock.LockedTarget`, so the same
   checks as a dictated phrase apply: no password field, no program running as
-  administrator, no QUILL window, and the focus must still be in the field
-  that was checked when the phrase is typed.
+  administrator, no QUILL window, no program on the never-type list, and the
+  focus must still be in the field that was checked when the phrase is typed.
 
 Nothing is kept on disk: that is the rest of D-5, not this slice.
 """
@@ -61,18 +61,17 @@ class TranscribeRecentMixin:
         self._type_recent_phrase(text)
 
     def _recent_target(self) -> Any:
-        """A one-shot field lock over the shared external document."""
-        from quill.core.windows_dictation.target_lock import LockedTarget
-        from quill.ui.windows_dictation_external import (
-            ExternalDocument,
-            focus_identity,
-            foreground_problem,
+        """A one-shot field lock over the shared external document, with the
+        never-type list (D-24) checked as for a dictated phrase."""
+        from quill.ui.windows_dictation_external import locked_external_document
+
+        return locked_external_document(
+            preferences=self._dictation_preferences,  # type: ignore[attr-defined]
+            never_type=self.never_type_list,  # type: ignore[attr-defined]
+            app="QUILL Transcribe",
+            key="start and stop key",
+            hush=False,
         )
-
-        def problem() -> str:
-            return foreground_problem(app="QUILL Transcribe", key="start and stop key")
-
-        return LockedTarget(ExternalDocument(problem=problem), where=focus_identity)
 
     def _type_recent_phrase(self, text: str) -> None:
         from quill.core.sound_events import SoundEvent

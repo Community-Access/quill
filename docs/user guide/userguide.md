@@ -7469,13 +7469,15 @@ you change here is saved when you press OK in Dictation Settings.
 | Tick while a phrase is being worked on (`Alt+R`) | A soft tick once a second while a phrase takes more than a second to turn into text; see "What you hear" | Off (on in QUILL Transcribe) |
 | Time stamps in live transcripts (`Alt+T`) | Starts each paragraph of a live transcript with the time, like [10:42]; see "Live transcripts" | Off |
 | Dictate in Other Programs... (button, `Alt+O`) | Saves your settings, hands them to Quill Inkwell and starts it; see "Dictating into other programs" | (a button) |
+| Programs Dictation Never Types Into... (button, `Alt+N`) | The programs dictation never types into from QUILL Transcribe or Quill Inkwell, such as your password manager; see "Programs dictation never types into" | The common password managers and the Windows sign-in prompts |
 
 In settings files these are `windows_dictation_hold_to_talk`,
 `windows_dictation_preview`, `windows_dictation_ai_send`,
 `windows_dictation_ai_pause`, `windows_dictation_ai_remove_fillers`,
 `windows_dictation_ai_auto_punctuation`, `windows_dictation_openai_consent`,
 `windows_dictation_openai_model`, `windows_dictation_readback_marks`,
-`windows_dictation_working_tick` and `windows_dictation_transcript_timestamps`.
+`windows_dictation_working_tick`, `windows_dictation_transcript_timestamps`
+and `windows_dictation_never_type`.
 
 A failure is always spoken, whatever these settings say. If the read-back
 plays through speakers, the microphone can hear it, so use headphones or choose
@@ -7984,6 +7986,38 @@ Out of respect for your privacy and your other programs, Dictate Anywhere
 will not type into a password box, into a program running as administrator
 (unless Inkwell is too), into Inkwell's own window, or into QUILL itself. In
 QUILL, just use `Ctrl+F11`. Each time, you are told why in a sentence.
+
+**It stays in the field you started in.** If the focus moves to another field
+or another program while you dictate, Inkwell pauses and holds what you said
+instead of typing it in the wrong place. Inkwell's **Dictation** menu then has
+**Resume** (`Ctrl+R`) to go back to the first field, **Resume in This Field**
+(`Ctrl+Shift+R`) to write the held words where you are now, and **Discard Held
+Words** (`Ctrl+Shift+D`). They are greyed out until something is held. While
+dictation is paused, Inkwell's tray menu has the same three. Chosen from
+Inkwell's own window or tray, Resume in This Field waits for you to switch to
+another program and resumes there; choose it again to cancel.
+
+**Programs dictation never types into.** Some programs should never receive
+dictation, whatever field is in front: your password manager, for one.
+**Programs Dictation Never Types Into...** (`Alt+N`) in More Dictation
+Settings keeps that list. It starts with the common password managers and the
+Windows sign-in, lock and administrator prompts. If you dictate into a listed
+program from Quill Inkwell, QUILL Transcribe or Insert Again, you hear, for
+example, "Dictation does not type into KeePass. Move to another program.", and
+nothing is typed; words already held stay held. Programs are matched by their
+file name, like keepass.exe, never by a window title. In the window:
+
+- The list shows each program; `Delete` removes the chosen one, as does
+  **Remove**.
+- **Add Front Program** adds the program you were using just before you opened
+  dictation's settings, and its button names it, for example "Add Front
+  Program: KeePass (keepass.exe)". Switch to that program, come back, open the
+  settings, then press it.
+- Type a file name in **Program file name** and press `Enter` or **Add by
+  Name**. A name without .exe gets it, so "KeePass" adds keepass.exe. A name
+  you typed but did not add is kept when you press OK.
+
+The list is saved when you press OK in Dictation Settings.
 
 Inside other programs the read-back starts as a tone only, because your
 screen reader already echoes what is typed. Inkwell keeps its own copy of the

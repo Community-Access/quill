@@ -741,6 +741,26 @@ own phrases appear; the editors' list is still complete; the summary's five
 work there), and `test_transcribe_app.py` (the spoken answer opens nothing; the
 window's list carries the person's phrases).
 
+## 15. As built, 2026-10-15: the never-type list (D-24) and Inkwell's field lock (D-15)
+
+**The never-type list.** A fourth refusal beside the password field, the
+elevated program and QUILL's own windows, and the only one the person
+chooses: `windows_dictation_never_type`, program file names, checked in
+`foreground_problem`. It starts as the list Inkwell's expansion already
+refuses, so the two features agree about which programs hold secrets. Matched
+by file name only, because a window title is whatever a program says it is.
+Edited in its own window from More Dictation Settings (Alt+N).
+
+**One field, in both hosts.** Inkwell's Dictate Anywhere now dictates through
+the same `LockedTarget` as QUILL Transcribe (`locked_external_document`), and
+the three paused commands and arming live once, in
+`quill/ui/dictation_field_hold.py`.
+
+**Speech goes to OpenAI.** A cloud engine names who receives the speech
+(`EngineInfo.cloud_provider`); Transcribe's state line says so while it does.
+
+D-21 was planned beside these but was not built; it stays in section 10.
+
 ## Appendix A: the dict.md section numbers, and where they live now
 
 | dict.md | What it was | Here |

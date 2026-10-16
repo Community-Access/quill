@@ -385,6 +385,7 @@
             "windows_dictation_transcript_timestamps": "bool",
             "windows_dictation_transcript_told": "bool",
             "windows_dictation_working_tick": "bool",
+            "windows_dictation_never_type": "list[str]",
             "theme": "str",
             "font_name": "str",
             "font_size": "int",
@@ -458,7 +459,7 @@
         "constant:quill.core.lite.settings:SCHEMA": "1"
       },
       "classification": "additive, compatible",
-      "note": "one optional dictation field, windows_dictation_working_tick (the working tick, 2026-10-13); older readers ignore it and it defaults off"
+      "note": ""
     },
     "quill.keymap": {
       "current": 1,
@@ -502,6 +503,7 @@
             "windows_dictation_transcript_timestamps": "bool",
             "windows_dictation_transcript_told": "bool",
             "windows_dictation_working_tick": "bool",
+            "windows_dictation_never_type": "list[str]",
             "theme": "str",
             "keyboard_pack": "str",
             "soft_wrap": "bool",
@@ -888,6 +890,7 @@
           "windows_dictation_transcript_timestamps": "_ungrouped",
           "windows_dictation_transcript_told": "_ungrouped",
           "windows_dictation_working_tick": "_ungrouped",
+          "windows_dictation_never_type": "_ungrouped",
           "theme": "general",
           "keyboard_pack": "_ungrouped",
           "soft_wrap": "editing",
@@ -1247,7 +1250,7 @@
         "constant:quill.core.settings_migration:SETTINGS_SCHEMA_VERSION": "2"
       },
       "classification": "additive, compatible",
-      "note": "one optional dictation field, windows_dictation_working_tick (the working tick, 2026-10-13); older builds ignore it and it defaults off"
+      "note": ""
     },
     "radio.favorites": {
       "current": 1,

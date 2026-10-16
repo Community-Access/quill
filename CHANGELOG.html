@@ -245,6 +245,35 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="dictation-the-never-type-list-and-inkwell-keeps-its-field-2026-10-15">Dictation:
+the never-type list, and Inkwell keeps its field (2026-10-15)</h3>
+<p>D-24 and D-15 from the dictation plan, rescued from an uncommitted
+worktree. D-21 (the “Add a correction” offer) was not in that work and
+is still open.</p>
+<ul>
+<li><strong><code>quill/core/windows_dictation/never_type.py</code></strong>
+(wx-free): the <code>windows_dictation_never_type</code> setting,
+defaulting to <code>expansion.targets.DENIED_PROCESSES</code>; file-name
+matching only; <code>refusal()</code> is checked in
+<code>foreground_problem</code>, so every start, Resume in This Field
+and Insert Again refuses a listed program and held words stay held.</li>
+<li><strong><code>quill/ui/dictation_never_type_dialog.py</code></strong>,
+from More Dictation Settings (Alt+N) in all four hosts. “Add Front
+Program” uses <code>platform.windows.foreground.program_behind</code>,
+found when the window opens. Enter in the name field adds; a typed,
+unadded name is kept on OK; Delete removes from the list.</li>
+<li><strong><code>quill/ui/dictation_field_hold.py</code></strong>:
+Resume, Resume in This Field, Discard Held Words and arming, moved out
+of Transcribe and shared with Inkwell, whose Dictate Anywhere now
+dictates through <code>locked_external_document</code> (D-15). The same
+command again cancels arming; stopping cancels it too.</li>
+<li><code>engines.cloud_line</code>: Transcribe’s state line says
+“Speech goes to OpenAI.”</li>
+<li>Tests: <code>test_dictation_never_type.py</code>,
+<code>test_dictation_never_type_dialog.py</code>,
+<code>test_dictation_field_hold.py</code>.</li>
+</ul>
+<h3
 id="find-in-open-documents-gets-its-own-key-in-quill-main-is-green-again-2026-10-15">Find
 in Open Documents gets its own key in QUILL; main is green again
 (2026-10-15)</h3>

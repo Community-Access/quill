@@ -8924,6 +8924,14 @@ turn into text; see “What you hear”</td>
 “Dictating into other programs”</td>
 <td>(a button)</td>
 </tr>
+<tr>
+<td>Programs Dictation Never Types Into… (button,
+<code>Alt+N</code>)</td>
+<td>The programs dictation never types into from QUILL Transcribe or
+Quill Inkwell, such as your password manager; see “Programs dictation
+never types into”</td>
+<td>The common password managers and the Windows sign-in prompts</td>
+</tr>
 </tbody>
 </table>
 <p>In settings files these are
@@ -8936,8 +8944,9 @@ turn into text; see “What you hear”</td>
 <code>windows_dictation_openai_consent</code>,
 <code>windows_dictation_openai_model</code>,
 <code>windows_dictation_readback_marks</code>,
-<code>windows_dictation_working_tick</code> and
-<code>windows_dictation_transcript_timestamps</code>.</p>
+<code>windows_dictation_working_tick</code>,
+<code>windows_dictation_transcript_timestamps</code> and
+<code>windows_dictation_never_type</code>.</p>
 <p>A failure is always spoken, whatever these settings say. If the
 read-back plays through speakers, the microphone can hear it, so use
 headphones or choose a sound only.</p>
@@ -9636,6 +9645,42 @@ Anywhere will not type into a password box, into a program running as
 administrator (unless Inkwell is too), into Inkwell’s own window, or
 into QUILL itself. In QUILL, just use <code>Ctrl+F11</code>. Each time,
 you are told why in a sentence.</p>
+<p><strong>It stays in the field you started in.</strong> If the focus
+moves to another field or another program while you dictate, Inkwell
+pauses and holds what you said instead of typing it in the wrong place.
+Inkwell’s <strong>Dictation</strong> menu then has
+<strong>Resume</strong> (<code>Ctrl+R</code>) to go back to the first
+field, <strong>Resume in This Field</strong> (<code>Ctrl+Shift+R</code>)
+to write the held words where you are now, and <strong>Discard Held
+Words</strong> (<code>Ctrl+Shift+D</code>). They are greyed out until
+something is held. While dictation is paused, Inkwell’s tray menu has
+the same three. Chosen from Inkwell’s own window or tray, Resume in This
+Field waits for you to switch to another program and resumes there;
+choose it again to cancel.</p>
+<p><strong>Programs dictation never types into.</strong> Some programs
+should never receive dictation, whatever field is in front: your
+password manager, for one. <strong>Programs Dictation Never Types
+Into…</strong> (<code>Alt+N</code>) in More Dictation Settings keeps
+that list. It starts with the common password managers and the Windows
+sign-in, lock and administrator prompts. If you dictate into a listed
+program from Quill Inkwell, QUILL Transcribe or Insert Again, you hear,
+for example, “Dictation does not type into KeePass. Move to another
+program.”, and nothing is typed; words already held stay held. Programs
+are matched by their file name, like keepass.exe, never by a window
+title. In the window:</p>
+<ul>
+<li>The list shows each program; <code>Delete</code> removes the chosen
+one, as does <strong>Remove</strong>.</li>
+<li><strong>Add Front Program</strong> adds the program you were using
+just before you opened dictation’s settings, and its button names it,
+for example “Add Front Program: KeePass (keepass.exe)”. Switch to that
+program, come back, open the settings, then press it.</li>
+<li>Type a file name in <strong>Program file name</strong> and press
+<code>Enter</code> or <strong>Add by Name</strong>. A name without .exe
+gets it, so “KeePass” adds keepass.exe. A name you typed but did not add
+is kept when you press OK.</li>
+</ul>
+<p>The list is saved when you press OK in Dictation Settings.</p>
 <p>Inside other programs the read-back starts as a tone only, because
 your screen reader already echoes what is typed. Inkwell keeps its own
 copy of the dictation settings: in Inkwell, <strong>Dictation &gt;
