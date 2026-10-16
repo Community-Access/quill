@@ -15,6 +15,21 @@ from quill.core.podcasts.models import PodcastEpisode, PodcastShow
 from quill.ui.podcasts.show_actions import download_all_episodes, remove_all_episodes_prompt
 
 
+@pytest.fixture(autouse=True)
+def _no_undo_owner(monkeypatch: pytest.MonkeyPatch) -> None:
+    """These tests call the prompts outside an app, where a delete is a delete.
+
+    A Cast window built by an earlier test on the same worker can leave its
+    undo slot and background file jobs installed; then "delete" becomes a
+    background move, and the file is still there when the test looks (CI,
+    PR #1657, twice).
+    """
+    from quill.ui import undo_file_jobs, undo_last_ui
+
+    monkeypatch.setattr(undo_file_jobs, "_jobs", None)
+    monkeypatch.setattr(undo_last_ui, "_slot", None)
+
+
 def _episode(guid: str, *, downloaded: bool = False) -> PodcastEpisode:
     return PodcastEpisode(
         guid=guid,
