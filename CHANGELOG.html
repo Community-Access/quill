@@ -245,6 +245,78 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="lyrics-from-lrclib-in-quill-radio-and-quill-media-player-add-custom-station-looks-behind-a-web-page-2026-10-15">Lyrics
+from LRCLIB in Quill Radio and Quill Media Player; Add Custom Station
+looks behind a web page (2026-10-15)</h3>
+<p>P2 #31 and P2 #36 from Jeff’s list.</p>
+<ul>
+<li><strong><code>quill/core/lyrics/lrclib.py</code></strong> (new
+package, wx-free, mypy scope): the shared LRCLIB client.
+<code>search()</code> (Radio: artist + title) and
+<code>get_exact()</code> (Player: artist, title, album, length; falls
+back to the ranked search, preferring timed words); pure
+<code>parse_lrc()</code> / <code>line_at()</code> /
+<code>parse_response()</code>. One egress site <code>_fetch</code> (new
+<code>network_egress_entries</code> entry with the consent story: only
+on request, never in the background), verified TLS,
+<code>http_client.user_agent()</code>, a 250 ms global throttle, one
+honoured <code>Retry-After</code> on 429, 404 is empty.
+<code>LyricsError(CodedError)</code>,
+<code>QUILL-LYRICS-LRCLIB-LOOKUP</code>, only for Safe Mode and an
+unreachable network.
+<strong><code>CACHE_ON_DISK = False</code></strong>: a session-memory
+cache, the conservative default awaiting Jeff (xradio1 section 9); True
+would cache through <code>directory_cache</code> like MusicBrainz.</li>
+<li><strong><code>quill/ui/media/lyrics_window.py</code></strong>: one
+Lyrics window for both apps, Captions-window style. Radio: plain words
+only. Player: <strong>Current line</strong> (read-only, updated by a 250
+ms tick, never announced), <strong>Follow playback</strong> (caret rides
+<code>line_at()</code>; off holds still; on catches up; disabled with no
+timings) and <strong>Say Current Line</strong>. Title
+<code>Lyrics: &lt;song&gt;</code>, F1 by prefix in both
+<code>surface_help</code> catalogues.</li>
+<li>Radio: <code>quill/ui/radio/lyrics_commands.py</code>;
+<strong>Playback &gt; Lyrics…</strong> (<code>radio.lyrics</code>,
+<strong>Ctrl+Alt+B</strong> – Ctrl+Alt+L is Resume Last Station on
+Launch) via <code>radio_playback_extras.append_song_items</code>
+(radio_menu_bar.py 645 -&gt; 640, budget lowered); the palette row
+“Internet Radio: Lyrics…”, which is also how full QUILL reaches it; Song
+History’s <strong>L&amp;yrics</strong> button. The key is the parsed
+now-playing title; no artist, no lookup.</li>
+<li>Player: <code>quill/apps/player_lyrics.py</code> (player.py is at
+its ceiling), <strong>Playback &gt; Lyrics…</strong>
+(<strong>Ctrl+Alt+L</strong>) in <code>player_menus.py</code>; tags via
+<code>core/podcasts/local_tags.read_tags</code>, else an “Artist -
+Title” file name.</li>
+<li><strong>#36, Altitude Sports Radio “stream isn’t
+supported”.</strong> The site plays two Triton players,
+<code>player.listenlive.co/20551</code> (92.5 FM, <code>KKSEFM</code>)
+and <code>/48751</code> (950 AM, <code>KKSEAM</code>): plain
+StreamTheWorld MP3/HE-AAC, no token, no DRM.
+<code>triton.callsign_from_page</code> now also reads
+<code>"mount"</code>/<code>"callsign"</code> from the player’s inline
+config (the FM player has no logo); new
+<code>triton.is_player_page_url</code>; new
+<code>core/radio/address_kind.py</code> (extracted from
+<code>link_finder</code>: portal/player/help-page predicates,
+<code>is_web_page_address</code>, <code>same_page</code>) so the scan
+drops Triton’s <code>force.com</code> help article and does not re-fetch
+a player page’s self link; new <code>core/radio/stream_pick.py</code>
+(<code>pick_stream</code> groups MP3/AAC mounts as one station, prefers
+MP3; <code>durable_url</code> gives the <code>livestream-redirect</code>
+address), which <code>recovery._confident_candidate</code> now uses.
+<code>AddStationDialog</code> takes a <code>resolve_page_cb</code>
+(<code>add_custom_station.page_resolver</code>, the scan on the task
+manager; None in Safe Mode): a pasted web page is resolved on
+Test/OK.</li>
+<li>Tests (recorded fixtures, no network): <code>test_lrclib.py</code>,
+<code>test_radio_lyrics.py</code>, <code>test_player_lyrics.py</code>,
+<code>test_radio_lyrics_wiring.py</code>,
+<code>core/radio/test_altitude_stream.py</code> (+
+<code>fixtures/altitude/</code>),
+<code>test_radio_add_station_page.py</code>.</li>
+</ul>
+<h3
 id="dictation-the-never-type-list-and-inkwell-keeps-its-field-2026-10-15">Dictation:
 the never-type list, and Inkwell keeps its field (2026-10-15)</h3>
 <p>D-24 and D-15 from the dictation plan, rescued from an uncommitted

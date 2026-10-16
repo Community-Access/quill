@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import wx
 
-from quill.apps import radio_audio_menu, radio_go_to
+from quill.apps import radio_audio_menu, radio_go_to, radio_playback_extras
 
 
 class RadioMenuBarMixin:
@@ -286,13 +286,8 @@ class RadioMenuBarMixin:
         playback_menu.Append(go_to_player_id, "&Go to Player	Ctrl+Shift+G")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._radio_go_to_player(), id=go_to_player_id)
         playback_menu.Append(whats_playing_id, "W&hat's Playing?\tCtrl+T")
-        # Ctrl+Shift+H is free in the standalone app; inside full QUILL the same
-        # command ships unbound because there Ctrl+Shift+H is Replace All.
-        song_history_id = wx.NewIdRef()
-        playback_menu.Append(
-            song_history_id, self._menu_label("&Song History...", "radio.song_history")
-        )
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_song_history(), id=song_history_id)
+        # Song History, then Lyrics (radio_playback_extras.append_song_items).
+        song_ids = radio_playback_extras.append_song_items(self, playback_menu, wx)
         forget_volumes_id = radio_audio_menu.build_preferences(self, audio_menu, wx)
         sleep_id = wx.NewIdRef()
         playback_menu.Append(sleep_id, "Sleep &Timer...\tCtrl+Shift+Z")
@@ -615,7 +610,7 @@ class RadioMenuBarMixin:
             forward_id,
             live_id,
             whats_playing_id,
-            song_history_id,
+            *song_ids,
             self._global_volume_item_id,
             forget_volumes_id,
             self._announce_titles_item_id,

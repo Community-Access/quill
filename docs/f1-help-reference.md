@@ -24,7 +24,7 @@ from `topics.json` by `quill/tools/build_docs.py`.
 
 ## Quill Radio
 
-Control coverage: 330 audited sites (216 helped, 114 named-help).
+Control coverage: 331 audited sites (217 helped, 114 named-help).
 
 ### Every window, and what it is for
 
@@ -210,6 +210,8 @@ Control coverage: 330 audited sites (216 helped, 114 named-help).
 
 **Windows titled "Help:...".** This is the help window itself: the purpose of the window you were in, then the control you were on. Escape returns you to it.
 
+**Windows titled "Lyrics:...".** The words of a song the station played, from LRCLIB (lrclib.net), as plain text to arrow through and copy. A radio stream does not say where in the song it is, so the words do not follow along. Escape closes it.
+
 **Windows titled "Now Playing...".** Everything known about what is playing, as reviewable, copyable text: the station's own details, the current track, and the live playback status. It is a snapshot -- open it again for fresh facts.
 
 **Windows titled "Rules for ...".** The rules of one lineup, each as a sentence: what it brings in, how long its items stay, and what it finds now. Anything any rule finds is in the lineup. Below them, where new items go, a play-through budget, and whether live items are skipped when the lineup plays through.
@@ -356,6 +358,7 @@ Control coverage: 330 audited sites (216 helped, 114 named-help).
 - `self._clip_btn`: Keeps the highlighted song in the Clip Library, the shared scrapbook every Quill app can read.
 - `self._background_btn`: Asks your configured AI provider for background on the song. The answer is model-written and says so -- it is not the station's own information.
 - `self._facts_btn`: Looks the song up on MusicBrainz -- which release, what year, how long. Keyless and off in Safe Mode.
+- `self._lyrics_btn`: Looks the highlighted song's words up on LRCLIB and opens them in the Lyrics window. Only when you press it; off in Safe Mode.
 - `self._clear_btn`: Erases the logged songs -- for this station or for every station; a confirmation asks which.
 - `close_btn`: Closes Song History; logging continues while stations play.
 #### (module level) (`quill/ui/radio/station_tags_dialog.py`)
@@ -1024,7 +1027,7 @@ Control coverage: 341 audited sites (245 helped, 96 named-help).
 
 ## QUILL Media Player
 
-Control coverage: 36 audited sites (23 helped, 13 named-help).
+Control coverage: 39 audited sites (26 helped, 13 named-help).
 
 ### Every window, and what it is for
 
@@ -1056,6 +1059,8 @@ Control coverage: 36 audited sites (23 helped, 13 named-help).
 
 **Windows titled "Help:...".** This is the help window itself: the purpose of the window you were in, then the control you were on. Escape returns you to it.
 
+**Windows titled "Lyrics:...".** The words of the song that is playing, from LRCLIB (lrclib.net), as text to arrow through and copy. When the words are timed, Current line shows the line being sung and Follow playback keeps the cursor on it; nothing is spoken unless you press Say Current Line. Escape closes it.
+
 ### Every authored control help sentence
 
 #### AudioDspPanel (`quill/ui/media/audio_dsp_panel.py`)
@@ -1071,6 +1076,12 @@ Control coverage: 36 audited sites (23 helped, 13 named-help).
 
 - `ok_btn`: Keep the column changes for every list edited here. They are saved and apply to those lists from now on.
 - `cancel_btn`: Close without keeping anything. Every list's columns stay as they were before this dialog opened.
+#### LyricsWindow (`quill/ui/media/lyrics_window.py`)
+
+- `self._text`: The words of the song, one line per line, from LRCLIB (lrclib.net). Arrow through them, or copy them with Ctrl+C. Nothing here is spoken by itself. Escape closes the window.
+- `self._current`: The line being sung now, kept up to date as the song plays. It is never read out by itself: come here to review it, or press Say Current Line to hear it.
+- `self._follow`: On, the cursor in the lyrics moves to the line being sung. Off, the lyrics hold still so you can read back without the song moving you; turning it on again catches up. Unavailable when the song has words but no timings.
+- `say`: Speaks the line being sung now, once.
 #### PlayerInfoDialog (`quill/ui/media/player_info_dialog.py`)
 
 - `copy_btn`: Put the whole report on the clipboard as plain text, ready to paste into a document or a support message.

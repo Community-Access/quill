@@ -20,6 +20,13 @@ def _open_statistics(host: Any) -> None:
     open_for_host(host)
 
 
+def _lyrics(host: Any) -> None:
+    """Lyrics for the song on the air -- see ui/radio/lyrics_commands."""
+    from quill.ui.radio import lyrics_commands
+
+    lyrics_commands.lyrics_for_playing(host)
+
+
 def _folder_step(host: Any, *, forward: bool) -> None:
     """Walk the folder queue Play All in Folder left behind."""
     from quill.ui.radio import favorite_folder_actions
@@ -203,6 +210,12 @@ def register_radio_commands(host: Any) -> None:
             "radio.song_history",
             "Internet Radio: Song History...",
             host.radio_song_history,
+        ),
+        (
+            # The words of the song on the air, from LRCLIB, on request only.
+            "radio.lyrics",
+            "Internet Radio: Lyrics...",
+            lambda: _lyrics(host),
         ),
         (
             # Your own searchable tags on what is on air (station_tags_dialog).

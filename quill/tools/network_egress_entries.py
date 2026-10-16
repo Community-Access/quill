@@ -94,6 +94,21 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "that names the service; absent in Safe Mode. HTTPS-only, verified TLS, "
         "bounded timeout."
     ),
+    "core/lyrics/lrclib.py::_fetch": (
+        "Single egress site for song lyrics (LRCLIB, lrclib.net, a free keyless "
+        "community catalogue), shared by Quill Radio and Quill Media Player. "
+        "CONSENT: a lookup happens only when the listener opens the Lyrics "
+        "window or asks for lyrics -- never in the background, never as titles "
+        "change -- and sends only the artist and title (plus, from the Player, "
+        "the file's album tag and length). LRCLIB's etiquette is kept inside the "
+        "module: a descriptive User-Agent naming the app, version and homepage; "
+        "requests at least 250 ms apart; one honoured Retry-After on HTTP 429, "
+        "then nothing; an identical lookup never asked twice. Results are cached "
+        "in memory for the session only (lrclib.CACHE_ON_DISK is False), so "
+        "nothing about what somebody listened to is written to disk. HTTPS-only "
+        "over a verified TLS context with a bounded timeout and size; refused "
+        "in Safe Mode via refuse_in_safe_mode."
+    ),
     "core/metadata_lookup.py::_http_json": (
         "Single egress site for the Audio Studio's 'Look up book details' button "
         "(Open Library + MusicBrainz, both free and keyless). Reached only by that "

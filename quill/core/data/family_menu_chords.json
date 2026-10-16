@@ -558,6 +558,7 @@
   ["Quill Media Player", "apps/player_menus.py Go to Position...", "Ctrl+G"],
   ["Quill Media Player", "apps/player_menus.py Import Sync Bundle...", "Ctrl+Alt+I"],
   ["Quill Media Player", "apps/player_menus.py Listen for a Command", "Ctrl+Shift+L"],
+  ["Quill Media Player", "apps/player_menus.py Lyrics...", "Ctrl+Alt+L"],
   ["Quill Media Player", "apps/player_menus.py Magical Mode", "Ctrl+Shift+G"],
   ["Quill Media Player", "apps/player_menus.py Mini Player", "Ctrl+Shift+M"],
   ["Quill Media Player", "apps/player_menus.py Minimize to Tray", "Ctrl+W"],
