@@ -246,7 +246,7 @@
 Try With Your Screen Reader, October 2026</h1>
 <p>These are the hands-on checks for everything built in late September
 and early October 2026 across QUILL Cast, Quill Radio, QUILL Lite and
-QUILL. There are 226 of them. Each one says where to go, what to press
+QUILL. There are 254 of them. Each one says where to go, what to press
 and what you should hear. Check a box only after you have tried it
 yourself with a screen reader; passing automated tests do not count.</p>
 <p>Try them with NVDA, JAWS and Narrator where you can. When something
@@ -1431,6 +1431,92 @@ screen reader was saying of its own is cancelled.</label></li>
 <li><label><input type="checkbox" />With <strong>What you hear after
 each phrase</strong> set to words only: no tick, and the sentence at
 four seconds, on each slow phrase.</label></li>
+</ul>
+<h2 id="quill-transcribe-into-other-programs-d-4-2026-10-15">QUILL
+Transcribe Into Other Programs (D-4, 2026-10-15)</h2>
+<p>An automated test
+(<code>tests/integration/test_transcribe_targets.py</code>) types the
+same phrases into each program below and reads the text back, and its
+results are the table in QUILL Transcribe’s user guide, “Programs it has
+been tested with”. It can tell whether the keys arrived. It cannot tell
+what your screen reader said, so these checks are for that, and for the
+programs the test has not reached yet.</p>
+<p>Before you start:</p>
+<ul>
+<li>Dictate only into a new, empty document, or a new message addressed
+to nobody. Never into anything you would mind losing or sending.</li>
+<li>Use QUILL Transcribe’s defaults: the start and stop key is
+Alt+Shift+Backslash, and <strong>What you hear after each
+phrase</strong> is a tone.</li>
+<li>Say the same thing each time: “Hello everyone period this is a test
+comma of dictation period new line numbers like forty two arrive intact
+period”.</li>
+<li>Write down the program’s version (Help &gt; About) beside anything
+that goes wrong, and whether letters went missing, came out of order, or
+turned into the program’s own shortcuts. A program that drops keys is
+what decides the per-program fallback (D-3).</li>
+</ul>
+<p>In each program, with each screen reader, all of these must hold:</p>
+<ol type="1">
+<li>Pressing Alt+Shift+Backslash plays the start tone, and the reader
+says nothing extra: no “c”, no stray letter.</li>
+<li>The text arrives exactly as said, with its capitals, commas, full
+stops, the line break and “42”.</li>
+<li>After each phrase you hear the tone and nothing else: the reader
+does not say “period” or the last letter typed.</li>
+<li>Switch <strong>What you hear after each phrase</strong> to words:
+the reader, or QUILL Transcribe, reads the phrase once, not twice.</li>
+<li>Press Alt+Tab to another program while dictating and say a phrase:
+you hear “Dictation paused”, nothing is typed in the other program, and
+choosing Resume from the tray menu types the held words back in the
+first field.</li>
+<li>“scratch that” takes back the last phrase and nothing before
+it.</li>
+</ol>
+<p>Then check a box for each program and reader once all six held:</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />Notepad with NVDA.</label></li>
+<li><label><input type="checkbox" />Notepad with JAWS.</label></li>
+<li><label><input type="checkbox" />Notepad with Narrator.</label></li>
+<li><label><input type="checkbox" />WordPad with NVDA (Windows 10, or
+Windows 11 before version 24H2, which removed it).</label></li>
+<li><label><input type="checkbox" />WordPad with JAWS.</label></li>
+<li><label><input type="checkbox" />WordPad with Narrator.</label></li>
+<li><label><input type="checkbox" />Word with NVDA. Word’s own curly
+quotes and capitals are fine; a doubled capital or a lost space is
+not.</label></li>
+<li><label><input type="checkbox" />Word with JAWS.</label></li>
+<li><label><input type="checkbox" />Word with Narrator.</label></li>
+<li><label><input type="checkbox" />Outlook with NVDA, in the body of a
+new message addressed to nobody. No letter may act as a shortcut: the
+message must never send, and the To line must stay empty.</label></li>
+<li><label><input type="checkbox" />Outlook with JAWS.</label></li>
+<li><label><input type="checkbox" />Outlook with Narrator.</label></li>
+<li><label><input type="checkbox" />Edge with NVDA, in a multi-line text
+box with the reader in focus mode. Then start dictation once with the
+reader in browse mode instead, and write down what happened: whether the
+words arrived, or the letters moved you around the page as
+quick-navigation keys. That decides what the user guide tells people to
+do.</label></li>
+<li><label><input type="checkbox" />Edge with JAWS (forms mode in place
+of focus mode).</label></li>
+<li><label><input type="checkbox" />Edge with Narrator (scan mode
+off).</label></li>
+<li><label><input type="checkbox" />Chrome with NVDA, the same as
+Edge.</label></li>
+<li><label><input type="checkbox" />Chrome with JAWS.</label></li>
+<li><label><input type="checkbox" />Chrome with Narrator.</label></li>
+<li><label><input type="checkbox" />Firefox with NVDA, the same as
+Edge.</label></li>
+<li><label><input type="checkbox" />Firefox with JAWS.</label></li>
+<li><label><input type="checkbox" />Firefox with Narrator.</label></li>
+<li><label><input type="checkbox" />Visual Studio Code with NVDA, in a
+new untitled file. A bracket or quote typed by dictation must not be
+doubled by the editor’s automatic closing.</label></li>
+<li><label><input type="checkbox" />Visual Studio Code with
+JAWS.</label></li>
+<li><label><input type="checkbox" />Visual Studio Code with
+Narrator.</label></li>
 </ul>
 </main>
 </body>

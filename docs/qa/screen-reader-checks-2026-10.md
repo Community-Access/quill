@@ -2,7 +2,7 @@
 
 These are the hands-on checks for everything built in late September and early
 October 2026 across QUILL Cast, Quill Radio, QUILL Lite and QUILL. There are
-226 of them. Each one says where to go, what to press and what you should
+254 of them. Each one says where to go, what to press and what you should
 hear. Check a box only after you have tried it yourself with a screen reader;
 passing automated tests do not count.
 
@@ -948,3 +948,76 @@ a long phrase and wait. Check on NVDA, JAWS and Narrator:
 - [ ] Narrator: the same.
 - [ ] With **What you hear after each phrase** set to words only: no tick, and
   the sentence at four seconds, on each slow phrase.
+
+## QUILL Transcribe Into Other Programs (D-4, 2026-10-15)
+
+An automated test (`tests/integration/test_transcribe_targets.py`) types the
+same phrases into each program below and reads the text back, and its results
+are the table in QUILL Transcribe's user guide, "Programs it has been tested
+with". It can tell whether the keys arrived. It cannot tell what your screen
+reader said, so these checks are for that, and for the programs the test has
+not reached yet.
+
+Before you start:
+
+- Dictate only into a new, empty document, or a new message addressed to
+  nobody. Never into anything you would mind losing or sending.
+- Use QUILL Transcribe's defaults: the start and stop key is
+  Alt+Shift+Backslash, and **What you hear after each phrase** is a tone.
+- Say the same thing each time: "Hello everyone period this is a test comma
+  of dictation period new line numbers like forty two arrive intact period".
+- Write down the program's version (Help > About) beside anything that goes
+  wrong, and whether letters went missing, came out of order, or turned into
+  the program's own shortcuts. A program that drops keys is what decides the
+  per-program fallback (D-3).
+
+In each program, with each screen reader, all of these must hold:
+
+1. Pressing Alt+Shift+Backslash plays the start tone, and the reader says
+   nothing extra: no "c", no stray letter.
+2. The text arrives exactly as said, with its capitals, commas, full stops,
+   the line break and "42".
+3. After each phrase you hear the tone and nothing else: the reader does not
+   say "period" or the last letter typed.
+4. Switch **What you hear after each phrase** to words: the reader, or QUILL
+   Transcribe, reads the phrase once, not twice.
+5. Press Alt+Tab to another program while dictating and say a phrase: you hear
+   "Dictation paused", nothing is typed in the other program, and choosing
+   Resume from the tray menu types the held words back in the first field.
+6. "scratch that" takes back the last phrase and nothing before it.
+
+Then check a box for each program and reader once all six held:
+
+- [ ] Notepad with NVDA.
+- [ ] Notepad with JAWS.
+- [ ] Notepad with Narrator.
+- [ ] WordPad with NVDA (Windows 10, or Windows 11 before version 24H2, which
+  removed it).
+- [ ] WordPad with JAWS.
+- [ ] WordPad with Narrator.
+- [ ] Word with NVDA. Word's own curly quotes and capitals are fine; a doubled
+  capital or a lost space is not.
+- [ ] Word with JAWS.
+- [ ] Word with Narrator.
+- [ ] Outlook with NVDA, in the body of a new message addressed to nobody. No
+  letter may act as a shortcut: the message must never send, and the To line
+  must stay empty.
+- [ ] Outlook with JAWS.
+- [ ] Outlook with Narrator.
+- [ ] Edge with NVDA, in a multi-line text box with the reader in focus mode.
+  Then start dictation once with the reader in browse mode instead, and write
+  down what happened: whether the words arrived, or the letters moved you
+  around the page as quick-navigation keys. That decides what the user guide
+  tells people to do.
+- [ ] Edge with JAWS (forms mode in place of focus mode).
+- [ ] Edge with Narrator (scan mode off).
+- [ ] Chrome with NVDA, the same as Edge.
+- [ ] Chrome with JAWS.
+- [ ] Chrome with Narrator.
+- [ ] Firefox with NVDA, the same as Edge.
+- [ ] Firefox with JAWS.
+- [ ] Firefox with Narrator.
+- [ ] Visual Studio Code with NVDA, in a new untitled file. A bracket or quote
+  typed by dictation must not be doubled by the editor's automatic closing.
+- [ ] Visual Studio Code with JAWS.
+- [ ] Visual Studio Code with Narrator.

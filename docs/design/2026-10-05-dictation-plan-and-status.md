@@ -809,6 +809,50 @@ Still to check: the wake word's false-start rate on Moonshine tiny against the
 old Vosk numbers was not measured, because Vosk's never were; the NVDA and
 JAWS check of the new sentence joins `docs/qa/screen-reader-checks-2026-10.md`.
 
+## 17. As built 2026-10-15: the tested-programs harness (D-4)
+
+**The harness.** `tests/integration/test_transcribe_targets.py` types twelve
+recorded phrases (no microphone, no recogniser) through the shared
+`ExternalDocument` -- the real `send_text_checked` keystroke path, hush tap
+included -- into Notepad, WordPad, Word, Outlook, Edge, Chrome, Firefox and
+VS Code, and reads each phrase back through UI Automation (TextPattern, with
+ValuePattern and LegacyIAccessible as fallbacks the result names). A phrase is
+exact when the field grew by exactly that phrase; line ends and Word's curly
+quotes are not counted. Results go to `docs/qa/transcribe-targets.json`, and
+`scripts/build_transcribe_compatibility.py` renders them into the Transcribe
+user guide between `compatibility:start` and `compatibility:end`
+(drift-gated by `tests/unit/scripts/test_transcribe_compatibility.py`).
+Supported is the D-4 bar, 95 percent exact; best effort is half; a program
+not installed, skipped for safety or interrupted is untested, never
+unsupported. Each row has a review-by date 90 days after its check.
+
+**Why it is fenced so tightly.** It types into real programs on a real
+desktop, so it is opt-in (`QUILL_TRANSCRIBE_TARGETS=1`), never runs in CI, and
+types only into a window it launched: a new process, a title carrying a random
+marker, an empty focused field, and before every phrase the same window in
+front, the UI Automation focus inside its process, and no keyboard or mouse
+input from anyone else since its own last key (`GetLastInputInfo`). Browsers
+and VS Code get throwaway profiles; Notepad is skipped when already open,
+Outlook when already running (and needs a second opt-in). It closes without
+saving and ends only processes whose command line names its own profile.
+
+**The first run, and what it taught.** Run on 2026-10-15 against Notepad
+11.2607.14.0, twice, before the idle check existed. Both runs were spoiled by
+input that was not the test's: Ctrl held for about 130 ms every few seconds,
+most likely by a person at the keyboard (JAWS was running), which turned typed letters
+into Notepad shortcuts (a Ctrl+D became a control character, whole words
+vanished) and once brought an Edge window to the front, at which point the
+guard stopped typing. Nothing about Notepad can be concluded from them, so
+the committed results mark Notepad untested and the other programs installed
+but not run. That run is why the harness now refuses to start unless the
+computer has been idle for 30 seconds, and stops the moment anyone else
+touches a key. One more thing it showed: Windows 11 Notepad keeps a closed
+window's tabs in its session, so an interrupted run's tab can reappear; the
+harness now closes its own tab (Ctrl+W, Don't save) before the window and
+records `tab_kept_by_notepad` when it could not.
+
+D-3 still waits: it needs a clean run on an idle computer.
+
 ## Appendix A: the dict.md section numbers, and where they live now
 
 | dict.md | What it was | Here |

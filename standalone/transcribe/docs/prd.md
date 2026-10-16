@@ -64,4 +64,6 @@ open, and what waits for a later version.
 - Inkwell and the editors using QUILL Transcribe as a service rather than
   through the owner and microphone locks; Inkwell's own Dictate Anywhere pausing when the
   focus moves, as QUILL Transcribe's does.
-- A published list of tested programs.
+- A published list of tested programs with results in it. The list, the test
+  that fills it and the screen reader checks exist since 2026-10-15 (the user
+  guide's "Programs it has been tested with"); every row is still untested.
