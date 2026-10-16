@@ -1263,6 +1263,24 @@ because a list is far quicker to review by ear than a paragraph;
 reader navigates by, so it turns a flat passage into one you can move
 through. The list of seventeen is a list box, so a first letter jumps to
 a tool.</p>
+<p><strong>New tools without a release (2026-10).</strong> The service’s
+<code>GET /v1/config</code> now carries a feature catalogue: each
+shipped tool’s id, label, one-sentence help and input kind
+(<code>selection</code>, <code>prompt</code> or <code>document</code>).
+Any entry this build does not have built in becomes a row at the end of
+the pad’s list, after Have a conversation: its help is the row’s F1 text
+and Send runs it through the same path as the built-in rows.
+Requirements: every field is validated as remote input (id shape, plain
+text with control characters removed, length caps, at most 40 entries);
+an unknown input kind is skipped, never guessed; an entry duplicating a
+built-in id or label is dropped; rows arriving while the pad is open are
+appended at the end and not announced (GATE-13); a per-tool input
+ceiling may only lower the pad’s pre-check; the answer opens in the
+ordinary AI Result window. Only on the free service, since the tool’s
+instructions live there. Shared code
+(<code>quill/core/ai/gateway_catalogue.py</code>,
+<code>quill/ui/hosted_ai_pad_catalogue.py</code>), so QUILL has it in
+the same release (family rule 10).</p>
 <h3
 id="56c-your-own-api-key-a-provider-chosen-never-inferred-12-qcmd-x-07">5.6c
 Your own API key: a provider chosen, never inferred (1.2, qc.md

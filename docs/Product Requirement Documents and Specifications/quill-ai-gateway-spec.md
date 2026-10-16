@@ -321,6 +321,18 @@ re-checked server-side:
 The client reads its thresholds from `GET /v1/config` once per session, so an
 admin raising a limit takes effect without a client release.
 
+The same answer carries the **feature catalogue** (`features`, 2026-10): one
+entry per shipped feature whose flag is on, with its `id`, `label`, one-sentence
+`help`, `input` kind (`selection`, `prompt`, `document` or `conversation`) and
+`max_input_tokens`. The client (`quill/core/ai/gateway_catalogue.py`) validates
+every field as remote input, skips an input kind it does not know, and offers
+each entry it does not already have built in as a row at the end of the AI
+Assistant pad's list (`quill/ui/hosted_ai_pad_catalogue.py`), with the `help`
+as the row's F1 text and the ordinary Send path. So a new text tool is a
+template and a catalogue entry in `app/prompts.py` and needs no client release.
+It is offered on the free service only, because its instructions live there.
+No new call: the catalogue rides on the existing `/v1/config` fetch.
+
 ### 5.3 Reasoning effort is a code constant, per feature, at the floor
 
 Same rationale as `app/prompts.py`: a dial that changes what a billed API call

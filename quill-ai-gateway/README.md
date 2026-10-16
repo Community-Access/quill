@@ -184,7 +184,7 @@ pytest
 ```
 
 The suite uses an in-memory SQLite database and `fakeredis` — no external
-services required (see `tests/conftest.py`). **141 tests** cover the quota
+services required (see `tests/conftest.py`). **314 tests** cover the quota
 engine, the large-document safeguards, the device-code auth flow, the model
 registry, the admin API, the admin dashboard, and four things worth naming
 because each one was a live bug:
@@ -199,6 +199,9 @@ because each one was a live bug:
 - `test_config_guardrails.py` — `0.15` typed as `15` is refused with a
   sentence, and a change that more than doubles the bill needs explicit
   confirmation.
+- `test_feature_catalogue.py` — every shipped feature is in `/v1/config`'s
+  `features` catalogue, a switched-off one is not, and the keys older clients
+  read are unchanged.
 
 ## Deployment
 
@@ -313,6 +316,27 @@ point does not.
 Every one of these writes an `admin_actions` audit row — "who did what and
 when" is always answerable later (`SELECT * FROM admin_actions ORDER BY
 created_at DESC`).
+
+## Adding a text tool (no client release)
+
+`GET /v1/config` carries a `features` list -- the feature catalogue -- and
+QUILL and QUILL Lite offer any entry they do not already have built in as one
+more row of the AI Assistant pad. So a new text tool is a server change only:
+
+1. In `app/prompts.py`: a template in `TEMPLATES` (with `{prompt}`, and a
+   `{context}` slot if it reads document excerpts), its id in
+   `SHIPPED_FEATURES`, its `REASONING_EFFORT`, a `FEATURE_LABELS` entry for the
+   console, and a `CATALOGUE` entry with the `label`, the one-sentence `help`
+   the client reads on F1, and the `input` kind (`selection`, `prompt` or
+   `document`; see `INPUT_KINDS`).
+2. A `feature_flags` row and a `feature_cap.<id>` config row, as migration 008
+   did for the writing tools.
+
+The client validates every field as remote input, skips an `input` kind it
+does not know, and runs the tool only on the free service (an own key or a
+ChatGPT plan has no template for it). Switching the flag off removes the entry
+from the catalogue as well. `tests/test_feature_catalogue.py` fails if a
+shipped feature has no catalogue entry. The full contract is in PRD §24.
 
 ## The "start small and learn" philosophy
 

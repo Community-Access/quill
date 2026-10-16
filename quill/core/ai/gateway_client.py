@@ -38,6 +38,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any, Protocol
 
+from quill.core.ai.gateway_catalogue import CatalogueFeature, parse_catalogue
 from quill.core.ai.gateway_errors import (
     GatewayAuthError,
     GatewayCertificateError,
@@ -107,6 +108,10 @@ class GatewayLimits:
     max_chunks_per_request: int = 3
     hosted_ai_enabled: bool = True
     feature_flags: dict[str, bool] = field(default_factory=dict)
+    #: The service's feature catalogue (``features``), validated entry by entry
+    #: in :mod:`quill.core.ai.gateway_catalogue`. Empty from a server that
+    #: predates it, and from one that sent something unreadable.
+    features: tuple[CatalogueFeature, ...] = ()
 
     def feature_available(self, feature: str) -> bool:
         """Whether *feature* is on. Unknown features are treated as **off**.
@@ -128,6 +133,7 @@ class GatewayLimits:
             max_chunks_per_request=int(data.get("max_chunks_per_request", 3)),
             hosted_ai_enabled=bool(data.get("hosted_ai_enabled", True)),
             feature_flags={str(k): bool(v) for k, v in (flags or {}).items()},
+            features=parse_catalogue(data.get("features")),
         )
 
 

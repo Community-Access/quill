@@ -9207,6 +9207,19 @@ Press a letter in the list to jump.
 Every one of them is a single request of the same size, so the writing tools
 cost no more of your allowance than Summarize.
 
+#### New tools from QUILL's free service
+
+QUILL's free service can add a tool without a new version of QUILL. A tool it
+offers that your copy does not have built in appears at the end of the **What
+do you want done?** list, after **Have a conversation**. Press `F1` on it to
+hear what it does. **Send** runs it like any other choice, and it uses one
+request.
+
+The first time you open the pad, a new tool can take a moment to appear at the
+end of the list. These tools are offered only on QUILL's free service: with
+your own API key or your ChatGPT plan, the list has the seventeen built-in
+choices.
+
 #### Having a conversation
 
 Choose **Have a conversation** in the pad, or press **Follow Up** in any answer

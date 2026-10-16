@@ -826,6 +826,22 @@ paragraph; **Suggest headings** because headings are what a screen reader
 navigates by, so it turns a flat passage into one you can move through. The
 list of seventeen is a list box, so a first letter jumps to a tool.
 
+**New tools without a release (2026-10).** The service's `GET /v1/config` now
+carries a feature catalogue: each shipped tool's id, label, one-sentence help
+and input kind (`selection`, `prompt` or `document`). Any entry this build does
+not have built in becomes a row at the end of the pad's list, after Have a
+conversation: its help is the row's F1 text and Send runs it through the same
+path as the built-in rows. Requirements: every field is validated as remote
+input (id shape, plain text with control characters removed, length caps, at
+most 40 entries); an unknown input kind is skipped, never guessed; an entry
+duplicating a built-in id or label is dropped; rows arriving while the pad is
+open are appended at the end and not announced (GATE-13); a per-tool input
+ceiling may only lower the pad's pre-check; the answer opens in the ordinary
+AI Result window. Only on the free service, since the tool's instructions live
+there. Shared code (`quill/core/ai/gateway_catalogue.py`,
+`quill/ui/hosted_ai_pad_catalogue.py`), so QUILL has it in the same release
+(family rule 10).
+
 ### 5.6c Your own API key: a provider chosen, never inferred (1.2, qc.md X-07)
 
 **Use My Own API Key** (`Alt+F2`, formerly Use My Own OpenAI Key) sends AI help

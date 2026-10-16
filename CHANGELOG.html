@@ -245,6 +245,46 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="hosted-ai-the-gateway-sends-a-feature-catalogue-in-v1config-2026-10-15">Hosted
+AI: the gateway sends a feature catalogue in /v1/config
+(2026-10-15)</h3>
+<p>Jeff’s todo P2 #30: a new hosted-AI text tool should need no client
+release.</p>
+<ul>
+<li><strong>Gateway</strong> (<code>quill-ai-gateway/</code>):
+<code>GET /v1/config</code> gains <code>features</code>, one entry per
+shipped feature whose flag is on (<code>id</code>, <code>label</code>,
+<code>help</code>, <code>input</code>, <code>max_input_tokens</code>),
+in <code>SHIPPED_FEATURES</code> order, empty while the service is
+paused. The wording is <code>app/prompts.py::CATALOGUE</code>; input
+kinds are <code>INPUT_KINDS</code> (<code>selection</code>,
+<code>prompt</code>, <code>document</code>, <code>conversation</code>).
+<code>build_prompt</code> fills a <code>{context}</code> slot in any
+template, so a new <code>document</code> tool needs only its template.
+Every older key is unchanged and older clients ignore the new one.
+Tests: <code>tests/test_feature_catalogue.py</code>.</li>
+<li><strong>Client</strong> (shared, so QUILL and QUILL Lite together):
+<code>quill/core/ai/gateway_catalogue.py</code> (wx-free) validates the
+list as remote input – id shape, plain printable text with control
+characters removed, length caps, known input kinds only, duplicates and
+built-in ids or labels dropped, at most 40 entries – and never raises.
+<code>GatewayLimits.features</code> carries it from the existing
+<code>/v1/config</code> fetch, cached with the rest of the limits; no
+new egress site (the GATE-9 entry for <code>gateway_client</code> says
+so). <code>quill/ui/hosted_ai_pad_catalogue.py</code> holds the pad’s
+rows: the built-in seventeen, then any catalogue extras, appended when
+the limits arrive and offered only on the free route. Each extra row’s
+<code>help</code> is its F1 text, Send runs it through the ordinary
+<code>ask</code> path, a <code>document</code> row sends excerpts as
+<code>chunks</code>, and a per-feature <code>max_input_tokens</code> can
+only lower the ceiling. The answer opens in the ordinary AI Result
+window. <code>hosted_ai_commands.py</code> hands the limits fetch’s
+answer to the pad (626 -&gt; 624 lines).</li>
+<li>Tests: <code>tests/unit/core/ai/test_gateway_catalogue.py</code>,
+<code>tests/unit/ui/test_hosted_ai_pad_catalogue.py</code>, and one in
+<code>tests/unit/apps/test_lite_ai.py</code>.</li>
+</ul>
+<h3
 id="dictation-the-never-type-list-and-inkwell-keeps-its-field-2026-10-15">Dictation:
 the never-type list, and Inkwell keeps its field (2026-10-15)</h3>
 <p>D-24 and D-15 from the dictation plan, rescued from an uncommitted

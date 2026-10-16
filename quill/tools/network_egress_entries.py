@@ -59,7 +59,11 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "verified (quill.core.net's system-store context, never relaxed) because what "
         "travels is that token and the user's own writing. What is sent is "
         "shown to the user in the AI Assistant window before Send, and the "
-        "consent notice is the feature area's own description."
+        "consent notice is the feature area's own description. The limits "
+        "answer (/v1/config) also carries the service's feature catalogue -- "
+        "labels and help sentences for tools this build does not have built "
+        "in, validated as remote input in core/ai/gateway_catalogue.py -- read "
+        "from that same fetch, so the catalogue adds no call and sends nothing."
     ),
     "core/library/http.py::fetch_bytes": (
         "Single egress site for the accessible book libraries (Part 4): keyword "

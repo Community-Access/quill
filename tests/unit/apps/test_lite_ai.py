@@ -92,10 +92,12 @@ def signed_in(monkeypatch):
 
         def __init__(self):
             self.refreshed = False
+            self.refreshed_into = None
             self.asked = None
 
         def refresh_limits(self, on_done=None):
             self.refreshed = True
+            self.refreshed_into = on_done
 
         def unavailable_reason(self, feature=""):
             return ""
@@ -248,6 +250,27 @@ def test_opening_the_pad_refreshes_what_the_service_allows(
     (lambda w: w.cmd_ai_assistant())(win)
 
     assert signed_in.refreshed is True
+
+
+def test_the_limits_answer_reaches_the_pad_for_its_catalogue_rows(
+    lite_window, ai_frames, monkeypatch, signed_in
+):
+    """The one /v1/config fetch hands its answer to the pad that asked, which
+    adds any tools the service's catalogue describes as rows of its own."""
+    win = lite_window("text")
+    monkeypatch.setattr(win, "_ai_service", lambda: signed_in)
+    added = []
+    monkeypatch.setattr(
+        ai_frames["AiPadFrame"],
+        "add_catalogue_rows",
+        lambda _self, limits: added.append(limits),
+        raising=False,
+    )
+
+    (lambda w: w.cmd_ai_assistant())(win)
+    signed_in.refreshed_into("the limits")
+
+    assert added == ["the limits"]
 
 
 def test_the_usage_window_is_handed_the_service(lite_window, ai_frames, monkeypatch, signed_in):

@@ -4582,6 +4582,15 @@ language comes from `LANGUAGES`, checked on the server and mirrored in
 `quill/core/ai/writing_tools.py`. The pad's action table moved to that wx-free
 module so tests and docs read the same seventeen rows the pad shows.
 
+**The feature catalogue (2026-10).** `GET /v1/config` carries `features`: id,
+label, help, input kind and input ceiling for each shipped tool that is on. The
+pad (shared with QUILL Lite) appends any entry this build does not have built
+in as a row after Have a conversation, with its help as the row's F1 text and
+the ordinary Send path, on the free service only. Every field is validated as
+remote input in `quill/core/ai/gateway_catalogue.py` and unknown input kinds
+are skipped, so a new text tool on the server needs no QUILL release. It rides
+on the existing `/v1/config` fetch: no new egress site.
+
 **Conversations.**
 
 **Goal.** Let somebody say "shorter" or "and the second point?" without starting

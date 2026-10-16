@@ -23,23 +23,22 @@ from typing import Any
 import wx
 
 from quill.core.ai import gateway_context as ctx
+from quill.core.ai.gateway_catalogue import INPUT_DOCUMENT, INPUT_PROMPT
 from quill.core.ai.writing_tools import (
     ACTION_TITLES,
     ACTIONS,
     CONVERSATION,
     DEFAULT_LANGUAGE,
     LANGUAGES,
-    QUESTION_ACTIONS,
 )
 from quill.ui.accessible_names import set_accessible_name
 from quill.ui.hosted_ai_dialogs import _PAD, _close_row, _read_only, focus_on, show_problem
+from quill.ui.hosted_ai_pad_catalogue import PadRowsMixin
 
 __all__ = ["ACTIONS", "AiPadFrame", "AiResultFrame"]
 
-#: What AI help can do, in the order the list offers it, and what each result
-#: window is called. Seventeen since 1.1; the table and its reasons live in
-#: :mod:`quill.core.ai.writing_tools`, wx-free, so tests and docs can read it.
-_QUESTION_ACTIONS = QUESTION_ACTIONS
+#: What each result window is called. The rows themselves -- seventeen built
+#: in, then the service catalogue's extras -- are :mod:`hosted_ai_pad_catalogue`.
 _ACTION_TITLES = ACTION_TITLES
 
 
@@ -173,7 +172,7 @@ class AiResultFrame(wx.Frame):
 # --------------------------------------------------------------------------- #
 
 
-class AiPadFrame(wx.Frame):
+class AiPadFrame(PadRowsMixin, wx.Frame):
     """The one surface every AI feature is reached through.
 
     One window rather than five commands, and the keymap settled that: measured
@@ -248,7 +247,7 @@ class AiPadFrame(wx.Frame):
             self._scope_choice = choice
 
         action_label = wx.StaticText(panel, label="What do you want &done?")
-        self._actions = wx.ListBox(panel, choices=[label for _id, label, _help in ACTIONS])
+        self._actions = wx.ListBox(panel, choices=self._init_rows())
         set_accessible_name(self._actions, "What do you want done?")
         self._actions.SetHelpText(
             "Choose what the AI should do with the text above. Each choice has "
@@ -298,8 +297,7 @@ class AiPadFrame(wx.Frame):
             grow=False,
         )
 
-        index = next((i for i, (aid, _l, _h) in enumerate(ACTIONS) if aid == initial_action), 0)
-        self._actions.SetSelection(index)
+        self._actions.SetSelection(self._row_index(initial_action))
         self._on_action_changed()
         self._refresh_preview()
 
@@ -310,14 +308,6 @@ class AiPadFrame(wx.Frame):
         focus_on(self, self._preview)
 
     # -- state ------------------------------------------------------------ #
-
-    @property
-    def _action_id(self) -> str:
-        index = max(0, self._actions.GetSelection())
-        return ACTIONS[index][0]
-
-    def _asking(self) -> bool:
-        return self._action_id in _QUESTION_ACTIONS
 
     def _direct(self) -> bool:
         """Whether requests skip QUILL's service: an own key, or a ChatGPT plan.
@@ -341,7 +331,7 @@ class AiPadFrame(wx.Frame):
         """
         # F1 on the list answers for the row you are on: that row's own
         # sentence first, then what the list is for.
-        _aid, label, help_text = ACTIONS[max(0, self._actions.GetSelection())]
+        _aid, label, help_text = self._row()
         self._actions.SetHelpText(
             f"{label}: {help_text} Choose what the AI should do with the text above; "
             "each choice has its own description."
@@ -369,7 +359,7 @@ class AiPadFrame(wx.Frame):
                 )
             )
             return
-        if self._action_id == "ask":
+        if self._input_kind() == INPUT_PROMPT:
             # Nothing from the document: the question is typed below, and it
             # is the whole of what is sent.
             self._preview.SetValue("")
@@ -446,7 +436,7 @@ class AiPadFrame(wx.Frame):
         """
         if self._direct():
             return self._direct_note(text)
-        oversized, words, allowed = ctx.too_large(text, self._service.limits.max_input_tokens)
+        oversized, words, allowed = ctx.too_large(text, self._input_limit())
         if not oversized:
             return ""
         return (
@@ -505,7 +495,7 @@ class AiPadFrame(wx.Frame):
                 self._question.SetFocus()
                 return
             prompt = question
-            if feature == "document_qna":
+            if self._input_kind() == INPUT_DOCUMENT:
                 if self._direct():
                     # No excerpt limit on a direct route: the whole document.
                     chunks = [self._document] if self._document.strip() else []
@@ -529,7 +519,7 @@ class AiPadFrame(wx.Frame):
 
         combined = prompt + "".join(chunks or [])
         # Never refused on size on a direct route: the summary already warned.
-        oversized, words, allowed = ctx.too_large(combined, self._service.limits.max_input_tokens)
+        oversized, words, allowed = ctx.too_large(combined, self._input_limit())
         if oversized and not self._direct():
             self._say(
                 f"That is about {words} words, and the free limit is about "
