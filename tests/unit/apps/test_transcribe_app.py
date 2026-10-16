@@ -1084,8 +1084,9 @@ class _Chosen:
     """Stands in for RecentPhrasesDialog: answers with a phrase and a verb."""
 
     verb = "insert"
+    chosen_row = None
 
-    def __init__(self, _parent: Any, phrases: list[str]) -> None:
+    def __init__(self, _parent: Any, phrases: list[str], **_kept: Any) -> None:
         self.phrases = phrases
         self.chosen = phrases[0]
 
@@ -1100,8 +1101,8 @@ def recent(host: Host, monkeypatch: pytest.MonkeyPatch) -> list[Any]:
     shown: list[Any] = []
 
     class Dialog(_Chosen):
-        def __init__(self, parent: Any, phrases: list[str]) -> None:
-            super().__init__(parent, phrases)
+        def __init__(self, parent: Any, phrases: list[str], **kept: Any) -> None:
+            super().__init__(parent, phrases, **kept)
             shown.append(self)
 
     monkeypatch.setattr(dialogs, "RecentPhrasesDialog", Dialog)

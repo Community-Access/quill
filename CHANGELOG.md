@@ -34,6 +34,62 @@ Lite, QUILL Transcribe and Inkwell's Dictate Anywhere get the same commands.
   bases) and `external_edits.py`; the controller grew by two lines. Tests:
   `tests/unit/core/test_dictation_corrections.py` (32, fakes only).
 
+### Dictation: never lose what was said, snippet blanks by voice, reading back more (D-5, D-8, D-18) (2026-10-16)
+
+The rest of D-5, D-8 and D-18 of the dictation gap plan, in shared code, so
+QUILL, QUILL Lite, QUILL Transcribe and (for D-8 and D-18) Quill Inkwell behave
+the same. Design record section 25.
+
+- **Rescue (D-5).** New wx-free `core/windows_dictation/rescue.py`
+  (`DictationKeep`, `keep_for`, `Kept`, `kept_notice`, `HISTORY_CHOICES`) keeps
+  only uncommitted words, held while paused or a phrase whose writing failed,
+  in `recovery/live-dictation/<app>-<id>.json`, atomic, sealed with DPAPI
+  (entropy `quill-dictation-rescue`); unsealable words are not written. New
+  `rescue_mixin.py` (`RescueMixin` under `TargetHoldMixin`, `RecentPhrases`,
+  `held_text`): every change to the held list rewrites one entry per pause;
+  Resume and Discard Held Words delete it; stop, failure and shut-down keep it
+  (stop adds "They are kept in Recent Phrases."). `command_mode_mixin._dictate`
+  keeps a phrase whose `_apply` raised. The feedback ports gain the optional
+  `rescue()` (editors: `HostFeedback`, through `DictationToolsMixin._dictation_keep`;
+  QUILL Transcribe: `_Feedback`). Quill Inkwell has no store and keeps held
+  words in memory, as before.
+- **Recent Phrases lists kept words** (`ui/dictation_kept.py`, `KeptWords`,
+  `kept_at_start`): this session's phrases, then "Not written", D-2's
+  unfinished review read from `dictation-review.json` where it is, and the
+  history. `RecentPhrasesDialog` gains Discard (Alt+D) and Clear History (Alt+H,
+  No-default question); Insert Again deletes a kept entry once
+  `insert_again` returns `True`. One start-up sentence replaces the review's
+  when kept words wait. QUILL Transcribe's exit no longer asks about held words
+  already on disk.
+- **Opt-in history.** `windows_dictation_history_days` (0, 1, 7 or 30; 0
+  default) in the shared `DictationSettings`, `DictationPreferences.history_days`,
+  More Dictation Settings' Keep a dictation history (Alt+Y). Text only, sealed,
+  pruned on every read and write, capped at 2000, deleted when off (at the next
+  phrase, at start, and when Recent Phrases opens). `quill.settings` and
+  `lite.settings` fingerprints accepted as additive.
+- **Type a reviewed transcript into a field.** QUILL Transcribe's Review
+  Transcript gains Type into a Field (Alt+F), the selection or all of it,
+  through Recent Phrases' Insert Again path and checks.
+- **Snippet blanks by voice (D-8).** New `core/windows_dictation/snippet_fill.py`
+  (`SnippetFill`, `SnippetFillMixin` between `ReviewMixin` and
+  `VoiceCommandsMixin`): `${input:x}` and `${choice:a|b}` are asked for in
+  order ("Title?", "Choose a or b."; a name, or "choose two"), with skip,
+  scratch that (back one) and cancel; the answers are never typed; the filled
+  snippet goes through `_insert_text` as one phrase (or is held while paused).
+  `${date}`/`${time}` resolve locally; `${cursor}` is dropped externally. The
+  libraries gain `snippet_body` (`AnywhereLibrary`, `DictationLibrary` over
+  QUILL's `_dictation_snippet_body`); QUILL Lite's abbreviation snippets have
+  no blanks and keep the old path. Works after the command word (D-1).
+- **Read back more (D-18).** `_insert_text` sets `_last_spoken` to the whole
+  insertion (marks named), so "read that" reads a whole snippet, clip or review
+  insert (editors: `note_inserted`). New commands "read last sentence", "read
+  last paragraph", "read selection" (`Command.READ_*`, English and Spanish),
+  editors only; refused in other programs. Command references and
+  `docs/site/dictation.html` regenerated.
+- Tests: `tests/unit/core/test_dictation_rescue.py`,
+  `test_dictation_snippet_fill.py`, `tests/unit/ui/test_dictation_kept_words.py`,
+  and a parity test in `test_dictation_parity.py`.
+
 ### Quill Radio station enrichment: the signed station pack, FTS5 search and Station Details (2026-10-16)
 
 Jeff's todo P2 #33, the Radio station data program. The data terms are not

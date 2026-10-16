@@ -290,6 +290,81 @@ The other program is never read.</li>
 only).</li>
 </ul>
 <h3
+id="dictation-never-lose-what-was-said-snippet-blanks-by-voice-reading-back-more-d-5-d-8-d-18-2026-10-16">Dictation:
+never lose what was said, snippet blanks by voice, reading back more
+(D-5, D-8, D-18) (2026-10-16)</h3>
+<p>The rest of D-5, D-8 and D-18 of the dictation gap plan, in shared
+code, so QUILL, QUILL Lite, QUILL Transcribe and (for D-8 and D-18)
+Quill Inkwell behave the same. Design record section 25.</p>
+<ul>
+<li><strong>Rescue (D-5).</strong> New wx-free
+<code>core/windows_dictation/rescue.py</code>
+(<code>DictationKeep</code>, <code>keep_for</code>, <code>Kept</code>,
+<code>kept_notice</code>, <code>HISTORY_CHOICES</code>) keeps only
+uncommitted words, held while paused or a phrase whose writing failed,
+in <code>recovery/live-dictation/&lt;app&gt;-&lt;id&gt;.json</code>,
+atomic, sealed with DPAPI (entropy <code>quill-dictation-rescue</code>);
+unsealable words are not written. New <code>rescue_mixin.py</code>
+(<code>RescueMixin</code> under <code>TargetHoldMixin</code>,
+<code>RecentPhrases</code>, <code>held_text</code>): every change to the
+held list rewrites one entry per pause; Resume and Discard Held Words
+delete it; stop, failure and shut-down keep it (stop adds “They are kept
+in Recent Phrases.”). <code>command_mode_mixin._dictate</code> keeps a
+phrase whose <code>_apply</code> raised. The feedback ports gain the
+optional <code>rescue()</code> (editors: <code>HostFeedback</code>,
+through <code>DictationToolsMixin._dictation_keep</code>; QUILL
+Transcribe: <code>_Feedback</code>). Quill Inkwell has no store and
+keeps held words in memory, as before.</li>
+<li><strong>Recent Phrases lists kept words</strong>
+(<code>ui/dictation_kept.py</code>, <code>KeptWords</code>,
+<code>kept_at_start</code>): this session’s phrases, then “Not written”,
+D-2’s unfinished review read from <code>dictation-review.json</code>
+where it is, and the history. <code>RecentPhrasesDialog</code> gains
+Discard (Alt+D) and Clear History (Alt+H, No-default question); Insert
+Again deletes a kept entry once <code>insert_again</code> returns
+<code>True</code>. One start-up sentence replaces the review’s when kept
+words wait. QUILL Transcribe’s exit no longer asks about held words
+already on disk.</li>
+<li><strong>Opt-in history.</strong>
+<code>windows_dictation_history_days</code> (0, 1, 7 or 30; 0 default)
+in the shared <code>DictationSettings</code>,
+<code>DictationPreferences.history_days</code>, More Dictation Settings’
+Keep a dictation history (Alt+Y). Text only, sealed, pruned on every
+read and write, capped at 2000, deleted when off (at the next phrase, at
+start, and when Recent Phrases opens). <code>quill.settings</code> and
+<code>lite.settings</code> fingerprints accepted as additive.</li>
+<li><strong>Type a reviewed transcript into a field.</strong> QUILL
+Transcribe’s Review Transcript gains Type into a Field (Alt+F), the
+selection or all of it, through Recent Phrases’ Insert Again path and
+checks.</li>
+<li><strong>Snippet blanks by voice (D-8).</strong> New
+<code>core/windows_dictation/snippet_fill.py</code>
+(<code>SnippetFill</code>, <code>SnippetFillMixin</code> between
+<code>ReviewMixin</code> and <code>VoiceCommandsMixin</code>):
+<code>${input:x}</code> and <code>${choice:a|b}</code> are asked for in
+order (“Title?”, “Choose a or b.”; a name, or “choose two”), with skip,
+scratch that (back one) and cancel; the answers are never typed; the
+filled snippet goes through <code>_insert_text</code> as one phrase (or
+is held while paused). <code>${date}</code>/<code>${time}</code> resolve
+locally; <code>${cursor}</code> is dropped externally. The libraries
+gain <code>snippet_body</code> (<code>AnywhereLibrary</code>,
+<code>DictationLibrary</code> over QUILL’s
+<code>_dictation_snippet_body</code>); QUILL Lite’s abbreviation
+snippets have no blanks and keep the old path. Works after the command
+word (D-1).</li>
+<li><strong>Read back more (D-18).</strong> <code>_insert_text</code>
+sets <code>_last_spoken</code> to the whole insertion (marks named), so
+“read that” reads a whole snippet, clip or review insert (editors:
+<code>note_inserted</code>). New commands “read last sentence”, “read
+last paragraph”, “read selection” (<code>Command.READ_*</code>, English
+and Spanish), editors only; refused in other programs. Command
+references and <code>docs/site/dictation.html</code> regenerated.</li>
+<li>Tests: <code>tests/unit/core/test_dictation_rescue.py</code>,
+<code>test_dictation_snippet_fill.py</code>,
+<code>tests/unit/ui/test_dictation_kept_words.py</code>, and a parity
+test in <code>test_dictation_parity.py</code>.</li>
+</ul>
+<h3
 id="quill-radio-station-enrichment-the-signed-station-pack-fts5-search-and-station-details-2026-10-16">Quill
 Radio station enrichment: the signed station pack, FTS5 search and
 Station Details (2026-10-16)</h3>

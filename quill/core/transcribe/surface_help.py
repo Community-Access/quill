@@ -43,9 +43,10 @@ PURPOSES: dict[str, str] = {
         "whatever Windows is set to; a named microphone stays chosen."
     ),
     "Review Transcript": (
-        "A finished transcript of a recording, read-only. Copy it, save it as a "
-        "text file, or open it in QUILL; nothing is copied or typed anywhere unless "
-        "you choose it."
+        "A finished transcript of a recording, read-only. Type it, or the part you "
+        "selected, into a field in another program; copy it, save it as a text "
+        "file, or open it in QUILL. Nothing is copied or typed anywhere unless you "
+        "choose it."
     ),
     "Save Transcript As": ("Choose where to save the transcript as a plain text file."),
     "Start and Stop Key": (

@@ -1067,6 +1067,35 @@ JAWS and Narrator:
 - [ ] End QUILL Transcribe from Task Manager with a review open; on the next
   start it says the review was kept, and Review Dictation brings the words back.
 
+### Dictation: rescue, history, snippet blanks and reading back (D-5, D-8, D-18, 2026-10-16)
+
+With a microphone, in a QUILL document, a QUILL Lite document, and Notepad and
+Edge through QUILL Transcribe. Check on NVDA, JAWS and Narrator:
+
+- [ ] NVDA: pause QUILL Transcribe by moving the focus, say two phrases, then
+  end it from Task Manager. On the next start it says "2 dictated phrases were
+  not written last time and are kept. Recent Phrases, Shift+F11, brings them
+  back." once, and Recent Phrases lists them after this run's phrases.
+- [ ] NVDA: in Recent Phrases, each kept row is read with its label ("Not
+  written, held while paused", the time, the words); Discard says
+  "Discarded." once and the list reads the next row; Insert Again types it and
+  the row is gone next time.
+- [ ] NVDA: with Keep a dictation history on Seven days, close and reopen, and
+  the earlier phrases are listed as "Earlier"; Clear History asks with No as
+  the default, and Yes says "Dictation history cleared."
+- [ ] NVDA: in Edge, "QUILL insert snippet bug report" says the snippet's name,
+  its count and "Summary?"; each answer is not typed; after the last blank the
+  whole snippet is typed once and the reader echoes it; "QUILL scratch that"
+  takes all of it back.
+- [ ] NVDA: a choice reads its options; "choose two" picks the second.
+- [ ] NVDA: in a QUILL document, "read last sentence", "read last paragraph" and
+  "read selection" each say the text once, punctuation by name; "read that"
+  after a snippet reads all of it.
+- [ ] NVDA: Review Transcript's Type into a Field says "Switch to the field you
+  want." and types the selection, or all of it, in the field.
+- [ ] JAWS: the same.
+- [ ] Narrator: the same.
+
 ### QUILL Transcribe: holding the key, the wake phrase and braille (D-9, D-6, 2026-10-15)
 
 With a microphone, in Notepad, Word and Outlook through QUILL Transcribe, and a

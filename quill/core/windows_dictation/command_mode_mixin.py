@@ -54,6 +54,7 @@ from quill.core.windows_dictation.command_mode import (
     not_a_command,
     split_phrase,
 )
+from quill.core.windows_dictation.composer import compose
 from quill.core.windows_dictation.parser import ParsedPhrase, Piece, RecognizedPhrase, parse
 from quill.core.windows_dictation.ports import Moment
 from quill.core.windows_dictation.review_mixin import ReviewMixin
@@ -106,6 +107,10 @@ class CommandModeMixin(ReviewMixin):  # and VoiceCommandsMixin under it (review_
     def _fail(self, message: str, preferences: DictationPreferences) -> None:
         raise NotImplementedError  # provided by the controller
 
+    if TYPE_CHECKING:  # rescue_mixin.py, later in the controller's bases than this
+
+        def _rescue_unwritten(self, text: str) -> None: ...
+
     # -- what the host shows -------------------------------------------------- #
 
     @property
@@ -153,6 +158,8 @@ class CommandModeMixin(ReviewMixin):  # and VoiceCommandsMixin under it (review_
     def _dictate(self, phrase: RecognizedPhrase, preferences: DictationPreferences) -> None:
         """One phrase, before anything is composed: a command, or dictation."""
         if preferences.profile != "transcript":
+            if self._fill_utterance(phrase, preferences):
+                return  # the answer to a snippet's blank, never typed (snippet_fill.py)
             rest = self._command_split(phrase, preferences)
             if rest is not None:
                 self._command_utterance(rest, preferences)
@@ -160,9 +167,13 @@ class CommandModeMixin(ReviewMixin):  # and VoiceCommandsMixin under it (review_
             if self._review_dictation(phrase, preferences):
                 return  # Talk About It: an instruction for the review (review_mixin.py)
             phrase = escape_literal_prefix(phrase, preferences.command_prefix)
-        self._apply(
-            self._strict(self._parse(phrase, preferences), phrase, preferences), preferences
-        )
+        parsed = self._strict(self._parse(phrase, preferences), phrase, preferences)
+        try:
+            self._apply(parsed, preferences)
+        except Exception:
+            if parsed.command is None and parsed.pieces:  # kept on disk (rescue_mixin.py, D-5)
+                self._rescue_unwritten(compose(parsed.pieces, before="", after=""))
+            raise
 
     def _paused_parse(
         self, phrase: RecognizedPhrase, preferences: DictationPreferences

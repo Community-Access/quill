@@ -3119,6 +3119,205 @@ late enough to trip the 300 ms guard; how often Whisper’s second opinion
 is the better one; and, when D-4’s harness has a clean run, whether Word
 and Outlook can come off the autocorrecting list.</p>
 <h2
+id="25-as-built-2026-10-16-never-lose-what-was-said-d-5-snippet-blanks-by-voice-d-8-reading-back-more-d-18">25.
+As built, 2026-10-16: never lose what was said (D-5), snippet blanks by
+voice (D-8), reading back more (D-18)</h2>
+<p>The rest of three items, in shared code. QUILL, QUILL Lite and QUILL
+Transcribe have all of it; Quill Inkwell has D-8 and D-18, which are the
+controller’s, and not D-5’s store (see “Not done”).</p>
+<h3
+id="d-5-rescue-a-reviewed-transcript-into-a-field-opt-in-history">D-5:
+rescue, a reviewed transcript into a field, opt-in history</h3>
+<p><strong>What was true.</strong> Held words were memory only
+(<code>target_hold.py</code>, 50 at most); Recent Phrases was memory
+only (section 14); D-2 kept an open review in
+<code>dictation-review.json</code> (section 19); QUILL Transcribe’s
+Review Transcript could copy, save or open a transcript but not type it;
+there was no history.</p>
+<p><strong>The store</strong>
+(<code>quill/core/windows_dictation/rescue.py</code>, wx-free).
+<code>DictationKeep(data_dir, app)</code> writes <strong>uncommitted
+text only</strong> to
+<code>recovery/live-dictation/&lt;app&gt;-&lt;id&gt;.json</code> under
+the host’s data folder (the editors: the folder of
+<code>dictation.md</code>, as D-2’s review file; QUILL Transcribe: its
+data folder, which is QUILL’s), one file per entry,
+<code>write_json_atomic</code>, schema 1, the words sealed with DPAPI
+(<code>protect_secret</code>, entropy
+<code>quill-dictation-rescue</code>, so a blob from the credential store
+cannot be replayed here or the other way). The app’s slug is in the file
+name, so QUILL and QUILL Transcribe sharing a folder never offer each
+other’s words. Words that cannot be sealed are not written: they stay in
+memory, exactly as before. Nothing in either module logs the words.
+<code>keep_for</code> gives one store per folder and app for the
+run.</p>
+<p><strong>What is kept, and when it goes</strong>
+(<code>rescue_mixin.py</code>, <code>RescueMixin</code> under
+<code>TargetHoldMixin</code>, so the controller’s base list did not
+change; the controller grew by two lines, the <code>RecentPhrases</code>
+import and comment). Two kinds. <em>Held</em>: every change to the held
+list (<code>_keep</code>, scratch while paused, a resume that pauses
+again) rewrites one entry for that pause, the text composed as it would
+have been written (<code>held_text</code>, which D-2’s “review that” now
+uses too). Resume and Discard Held Words delete it; “review that”
+deletes it because the review’s own file takes over. Stop, a failure and
+shut-down keep it and start a new entry for the next pause; stopping
+says the plan’s sentence plus “They are kept in Recent Phrases.”
+<em>Unwritten</em>: when the controller’s <code>_apply</code> raises for
+a dictated phrase (<code>command_mode_mixin._dictate</code>), its text
+is kept before the session ends as it always did; QUILL Transcribe’s
+Insert Again keeps a phrase Windows only partly took. The host hands the
+store over through the feedback port’s optional <code>rescue()</code>,
+as <code>library()</code> and <code>review()</code>.</p>
+<p><strong>The start and the window</strong>
+(<code>quill/ui/dictation_kept.py</code>). The plan named the History
+and Review window (<code>dictation_history_dialog.py</code>) as the
+pattern. What was built reuses <strong>Recent Phrases</strong> itself
+instead: it already had Insert Again (into the document, or typed into
+the field in QUILL Transcribe after the usual <code>LockedTarget</code>
+checks, waiting for a field from QUILL Transcribe’s own window, as
+<code>arming.py</code> does) and Copy, on Shift+F11 in all three hosts,
+so no new command, chord or window was needed, and every F-key chord
+free in both editors had a cost (Alt+Shift+F4 and Ctrl+Alt+F4 sit one
+missed key from Alt+F4; Shift+F12 is Word’s Save). The list is this
+session’s phrases, then “Not written” entries oldest first, then D-2’s
+unfinished review read from its own file (not copied: Insert and Discard
+clear it), then the history newest first.
+<code>RecentPhrasesDialog</code> gained <strong>Discard</strong> (Alt+D;
+says “Discarded.”, because the reader announces the next row and not the
+deletion) and <strong>Clear History</strong> (Alt+H, only while the
+history is on, a No-default question). Insert Again deletes a kept entry
+only when the host’s <code>insert_again</code> returns
+<code>True</code>; QUILL Transcribe returns <code>None</code> while
+waiting for a field, so a cancelled wait keeps the words. At start, one
+sentence (<code>kept_at_start</code>): “N dictated phrases were not
+written last time and are kept. Recent Phrases, Shift+F11, brings them
+back.”, replacing D-2’s notice when both apply. QUILL Transcribe’s exit
+question about held words is asked only when they could not be kept
+(<code>held_on_disk</code>).</p>
+<p><strong>A reviewed transcript into a field.</strong> D-2 covers
+dictated words (Insert in Review Dictation). For a recording, QUILL
+Transcribe’s Review Transcript has <strong>Type into a Field</strong>
+(Alt+F, first in the row): the selection, or all of it, through
+<code>insert_recent_phrase</code>, so the wait, the field lock, the
+never-type list and <code>send_text_checked</code> are the dictated
+phrase’s. The editors open a transcript as a document, where it needs no
+such button.</p>
+<p><strong>History</strong>
+(<code>windows_dictation_history_days</code>: 0, 1, 7 or 30; 0 by
+default; <code>coerce_history_days</code>). More Dictation Settings,
+<strong>Keep a dictation history</strong> (Alt+Y), in all four hosts’
+copy of the window. <code>RecentPhrases</code> (the controller’s
+<code>recent</code>, a <code>deque</code> subclass) tells
+<code>_remember</code> about every phrase that reaches Recent Phrases,
+so editor review inserts count too. One file per app,
+<code>dictation-history-&lt;app&gt;.json</code>, each phrase sealed,
+pruned to its days on every write and read, capped at 2000. Off deletes
+it: at the next phrase, at start and when Recent Phrases opens, so it
+also goes when another copy of the settings turned it off. Text only;
+audio for replay stays deferred (plan section 6). QUILL Transcribe’s
+defaults leave it off, as the editors’.</p>
+<p><strong>Acceptance criteria.</strong> <em>Killing the process while
+words are held loses nothing</em>:
+<code>test_killing_the_process_while_words_are_held_loses_nothing</code>
+holds two phrases and reads them back through a second store on the same
+folder with no stop or shut-down. <em>With history off, nothing remains
+on disk after delivery</em>:
+<code>test_with_history_off_nothing_remains_on_disk_after_delivery</code>
+(a phrase written, words held and resumed, dictation stopped, and the
+folder empty). <em>No transcript text in logs or crash bundles</em>:
+<code>test_no_transcript_text_reaches_the_log_or_a_crash_bundle</code>
+captures every log record at DEBUG through a session that writes, holds
+and fails, builds a real diagnostic bundle from that log, and finds the
+words in neither; the files themselves hold only sealed text
+(<code>test_the_words_on_disk_are_sealed</code>, and once with DPAPI
+itself). Crash bundles carry logs and dumps only, never the data folder
+(<code>crash_report.build_diagnostic_bundle</code>).</p>
+<h3 id="d-8-spoken-prompts-for-snippet-blanks">D-8: spoken prompts for
+snippet blanks</h3>
+<p><strong>What was true.</strong> Section 14’s slice: snippets typed as
+one phrase with each blank “[name]” and <code>${cursor}</code> dropped
+in other programs.</p>
+<p><strong>What was built</strong>
+(<code>quill/core/windows_dictation/snippet_fill.py</code>). The
+libraries gain <code>snippet_body(name)</code>: QUILL Transcribe’s and
+Quill Inkwell’s <code>AnywhereLibrary</code> (QUILL’s
+<code>snippets.json</code>) and the editors’
+<code>DictationLibrary</code> over the host’s
+<code>_dictation_snippet_body</code> (QUILL’s own library). QUILL Lite’s
+snippets are its abbreviations, which have no blanks, so it keeps the
+old path, which QUILL also has: QUILL Lite is not ahead.
+<code>SnippetFillMixin</code> sits between <code>ReviewMixin</code> and
+<code>VoiceCommandsMixin</code> and overrides
+<code>_insert_named</code>: one match with a readable body and at least
+one <code>${input:x}</code> or <code>${choice:a|b}</code> starts a fill.
+“Snippet Bug Report Template, 3 blanks. Say cancel to stop. Summary?”; a
+choice is “Choose NVDA, JAWS or Narrator.”, answered by an option (the
+same name matching as snippets, <code>match_names</code>) or “choose
+two” / “number two”; “Say one of NVDA, JAWS or Narrator, or choose and a
+number.” otherwise. “skip”, “scratch that” (or “go back”) and “cancel”
+(“Snippet cancelled. Nothing was typed.”).
+<code>CommandModeMixin._dictate</code> hands every utterance to the fill
+first, before the command word is looked for, so an answer is never
+typed and never taken for a command; the command word is allowed before
+an answer and is not part of it. An input answer is the phrase parsed
+and composed, so spoken punctuation works in it. The last answer renders
+the body (<code>render_snippet</code>, so <code>${date}</code> and
+<code>${time}</code> come from the local clock in the built path) and
+goes through <code>_insert_text</code> as one phrase, one undo step and
+one “scratch that”; when the field cannot be written it is held like any
+phrase, so D-5 keeps it. <code>${cursor}</code> moves the caret in the
+editors and is dropped externally. The D-1 form “QUILL insert snippet X”
+is the command table’s existing argument form; nothing in the matcher
+changed. Stopping dictation ends a fill. The published references say
+how blanks are asked for.</p>
+<p><strong>Acceptance criteria.</strong> <em>“QUILL insert snippet bug
+report” in Edge asks for each field and types the filled text as one
+phrase</em>:
+<code>test_quill_insert_snippet_asks_for_each_blank_and_types_once</code>,
+strict mode on, through <code>ExternalDocument</code> whose injector
+records every keystroke: nothing typed until the last answer, then one
+string. <em>Scratch that removes all of it</em>:
+<code>test_scratch_that_removes_all_of_the_filled_snippet</code> (one
+backspace run of the whole length).</p>
+<h3 id="d-18-read-back-more-than-the-last-phrase">D-18: read back more
+than the last phrase</h3>
+<p><strong>What was true.</strong> “read that” spoke
+<code>_last_spoken</code>, set only by a dictated phrase, so after a
+snippet, clip or review insert it said the phrase before.</p>
+<p><strong>What was built.</strong> <code>_insert_text</code> sets
+<code>_last_spoken</code> to the whole insertion, marks named when Say
+Punctuation Marks is on (<code>VoiceCommandsMixin._heard</code>); the
+editors’ review Insert calls <code>note_inserted</code>. The per-phrase
+read-back still says “Snippet sign off”, not three paragraphs. Three
+commands, editors only (<code>Command.READ_SENTENCE</code>,
+<code>READ_PARAGRAPH</code>, <code>READ_SELECTION</code>, in the command
+table and its Spanish twin): “read last sentence” (the sentence before
+the cursor, back over spaces and line breaks,
+<code>targets.unit_bounds</code>), “read last paragraph” / “read this
+paragraph”, and “read selection” (“Nothing is selected.”). They are not
+<code>EXTERNAL_COMMANDS</code>, so another program answers with the
+usual refusal; “read that” is, and reads only the session’s own
+words.</p>
+<p><strong>Tests</strong> (fakes; no microphone, no real window):
+<code>tests/unit/core/test_dictation_rescue.py</code>,
+<code>tests/unit/core/test_dictation_snippet_fill.py</code>,
+<code>tests/unit/ui/test_dictation_kept_words.py</code> (the window,
+Discard, Clear History, the start sentence, the setting, Type into a
+Field), and
+<code>test_kept_words_history_and_snippet_prompts_are_one_thing_in_all_three</code>
+in <code>tests/unit/ui/test_dictation_parity.py</code>.</p>
+<p><strong>Not done, and why.</strong> Quill Inkwell’s held words stay
+in memory: it has no Recent Phrases to offer them in, and writing words
+nobody can reach is worse for privacy than not writing them; giving its
+feedback port a <code>rescue()</code> and a window is the step. QUILL
+Transcribe’s Type into a Field from a review that waits for a field and
+is then cancelled does not count as delivered, so a kept entry stays (by
+design). Audio retention is deferred. Still to check with a microphone
+and a screen reader: the lines under “Dictation: rescue, history,
+snippet blanks and reading back” in
+<code>docs/qa/screen-reader-checks-2026-10.md</code>.</p>
+<h2
 id="appendix-a-the-dictmd-section-numbers-and-where-they-live-now">Appendix
 A: the dict.md section numbers, and where they live now</h2>
 <table>

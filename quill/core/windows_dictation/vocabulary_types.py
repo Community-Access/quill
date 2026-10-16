@@ -117,6 +117,10 @@ class Command(StrEnum):
     REPLACE_WORDS = "replace_words"
     CHANGE_THAT = "change_that"
     DELETE_PARAGRAPH = "delete_paragraph"
+    # 2026-10-16 (D-18): reading back more than the last phrase, in the editors.
+    READ_SENTENCE = "read_sentence"
+    READ_PARAGRAPH = "read_paragraph"
+    READ_SELECTION = "read_selection"
 
 
 @dataclass(frozen=True, slots=True)

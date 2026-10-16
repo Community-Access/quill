@@ -549,9 +549,21 @@ clearable. If enabled, the user chooses whether to save transcript text; audio
 recording is a separate opt-in and is never implied by enabling text history.
 History is never synchronized or uploaded in version 1.0.
 
+As built after 1.0.0 (D-5, 2026-10-16): the history is **Keep a dictation
+history** in More Dictation Settings, Off (the default), one, seven or thirty
+days of text, sealed with Windows DPAPI for the person's account, listed in
+Recent Phrases after the session's phrases, cleared there with a No-default
+question, and deleted when turned off. Separately from it, the words that were
+never written (held while paused, or typing that stopped part-way) are kept on
+disk, sealed the same way, until they are typed or discarded, so a crash or an
+exit loses nothing. Neither is ever written to the log or a diagnostic bundle.
+
 User-directed output actions include:
 
 - Continue typing into the authorized field.
+- Type a reviewed transcript, or the part selected, into the field the
+  person goes back to, with the same field checks as dictation (Review
+  Transcript's Type into a Field, after 1.0.0).
 - Copy a reviewed transcript, with an explicit action and no background
   clipboard monitoring.
 - Save a transcript to a user-selected file.

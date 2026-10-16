@@ -21,6 +21,11 @@ file is the itemized list.
   again, and you can choose its answer. The sound stays in memory only.
 - **Recent Phrases keeps what a correction replaced** (2026-10-16), marked
   "(before correction)".
+- **Nothing you said is lost** (2026-10-16). Words held while dictation is paused, and a phrase Windows stopped typing part-way, are now kept on this computer, sealed for your Windows account, until you type or discard them, so a crash, a sleep or exiting loses nothing. **Recent Phrases** (Shift+F11) lists them after this run's phrases, with a review you did not finish, and has **Discard** (Alt+D). Stopping says they are kept; the next start says how many are waiting, and exiting no longer asks about words that are kept.
+- **Type a transcript into a field** (2026-10-16). **Review Transcript** has **Type into a Field** (Alt+F): the transcript, or the part you selected, is typed into the program you go back to, with the same checks as dictation.
+- **Dictation history, off unless you want it** (2026-10-16). **Keep a dictation history** (Alt+Y in More Dictation Settings) keeps the text of what you dictate for one, seven or thirty days, never the sound. **Clear History** (Alt+H) in Recent Phrases deletes it after asking; turning it off deletes it too.
+- **Snippet blanks by voice** (2026-10-16). "QUILL insert snippet bug report" asks for each blank by name and each choice by its options, then types the whole snippet once; say skip, scratch that to go back, or cancel. "QUILL scratch that" takes all of it back.
+- **"QUILL read that" reads all of it** (2026-10-16): a whole snippet or clip, not just its name.
 
 - **Hold the key to talk** (2026-10-15). With **Hold the dictation key to
   talk** checked in More Dictation Settings (Alt+H, off until you turn it on),

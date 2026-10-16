@@ -114,6 +114,10 @@ class _Feedback:
         """Review Dictation (D-2): the window held words wait in before Insert."""
         return self._host._review_desk()
 
+    def rescue(self) -> Any:
+        """Where words not written are kept until delivered (D-5, rescue.py)."""
+        return self._host._dictation_keep()
+
     def call_later(self, seconds: float, callback: Any) -> Any:
         """The working tick's clock (working_tick.py): stopped when the wait ends."""
         return wx.CallLater(int(seconds * 1000), callback)

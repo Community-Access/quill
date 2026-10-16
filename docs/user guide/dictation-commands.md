@@ -11,6 +11,7 @@ Everything QUILL Lite and QUILL's Live Dictation understand, generated from the 
 - Moonshine and Whisper add punctuation by themselves; saying it yourself always wins. With Windows speech recognition, say all of it.
 - Some commands take words after them: select the cat, paste clip three, insert snippet sign off. They work only at the start of a phrase.
 - The Markdown line marks -- "bullet", "numbered item", "block quote" and "heading one" to "heading six" -- count only at the start of a phrase, so "the heading two lines down" stays words.
+- A snippet with blanks asks for each one by name: say the answer, or for a choice say one of the options or choose and its number. Say skip to leave one empty, scratch that to go back one, or cancel to type nothing. Then the whole snippet goes in as one phrase, and scratch that takes all of it back.
 
 ## The command word
 
@@ -169,7 +170,10 @@ Everything QUILL Lite and QUILL's Live Dictation understand, generated from the 
 | "delete word" or "delete last word" | Deletes the word just before the cursor. |
 | "delete sentence" or "delete last sentence" | Deletes from the start of the sentence the cursor is in up to the cursor. |
 | "delete previous paragraph" or "delete last paragraph" | Deletes the paragraph just before the cursor, from its start up to the cursor. In another program, only words dictation typed there. |
-| "read that" or "repeat that" | Reads the last phrase aloud again. |
+| "read that" or "repeat that" | Reads aloud again everything the last phrase, snippet, clip or review put in. In another program, only what dictation itself typed can be read. |
+| "read last sentence" or "read the last sentence" | Reads the sentence just before the cursor, with its punctuation said. |
+| "read last paragraph" or "read the last paragraph" or "read this paragraph" | Reads the paragraph the cursor is in. |
+| "read selection" or "read the selection" | Reads what is selected. |
 | "correct that" | Reads the other things the speech engine thought you said, numbered. Windows speech recognition offers its own; with Moonshine, Whisper or a downloaded model, the other built-in engine listens to the last phrase again and its answer is choice 2. Then say choose and a number. |
 | "choose one" or "choose 1" | After correct that, puts the first of the other guesses in place of the last phrase. |
 | "choose two" or "choose 2" | The same, with the second guess. |
