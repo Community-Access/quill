@@ -486,6 +486,45 @@ New <code>quill/core/onnx_threads.py</code>: Kokoro’s session gets
 (<code>read_aloud._get_cached_kokoro_onnx</code>).</li>
 </ul>
 <h3
+id="dictation-cloud-speech-providers-with-your-own-account-d-31-to-d-37-2026-10-16">Dictation:
+cloud speech providers with your own account (D-31 to D-37)
+(2026-10-16)</h3>
+<ul>
+<li>New wx-free layer <code>quill/core/windows_dictation/cloud/</code>:
+<code>CloudProvider</code>, <code>ProviderField</code>,
+<code>Capabilities</code>, <code>CloudSpeechError</code> and five coded
+subclasses, certificate-checked openers with one-sentence failures
+naming the field, a shared WebSocket session, secrets in the credential
+store
+(<code>provider_credential_target("speech-&lt;id&gt;-&lt;field&gt;")</code>,
+DPAPI file for Google’s service account), a consent generated from each
+provider’s facts, and <code>CloudDictationRecognizer</code> behind the
+built-in engines’ listening loop.</li>
+<li>Twelve providers, direct HTTPS or WebSocket, no SDK: Azure AI Speech
+(D-32), Google Speech-to-Text v2 a phrase at a time (D-33), Amazon
+Transcribe with stdlib SigV4 and event-stream framing (D-34), Deepgram,
+AssemblyAI, Speechmatics, ElevenLabs Scribe, Gladia and Rev.ai (D-35),
+Groq and Mistral Voxtral (D-36), IBM Watson (D-37). OpenAI is described
+on the same interface for the page; its recogniser is unchanged.</li>
+<li><code>quill/ui/speech_providers_dialog.py</code> (Speech Providers)
+from Dictation Settings’ new <strong>Speech Pro&amp;viders…</strong>
+button (<code>windows_dictation_cloud.py</code> mixin), in QUILL, QUILL
+Lite, QUILL Transcribe and Quill Inkwell.</li>
+<li>Settings <code>windows_dictation_speech_providers</code> and
+<code>windows_dictation_speech_provider_consent</code> in
+<code>DictationSettings</code> (additive; data formats recorded).
+Engines <code>cloud-&lt;id&gt;</code> through one registration point,
+<code>engines._cloud_engine</code>.
+<code>transcribe.models.start_problem</code> checks a cloud provider’s
+fields and consent.</li>
+<li><code>redaction.remember_secret</code> scrubs the literal value of
+every loaded secret; <code>gsk_</code>, <code>sk_</code> and
+<code>ASIA</code> key shapes added.</li>
+<li>28 egress entries in
+<code>quill/tools/network_egress_entries_speech.py</code>.</li>
+<li>Design record section 23.</li>
+</ul>
+<h3
 id="quill-radio-extras-marked-delete-resume-earcon-a-second-device-per-favourite-keys-whats-new-notes-in-reminders-2026-10-16">Quill
 Radio extras: marked delete, resume earcon, a second device,
 per-favourite keys, What’s New, notes in reminders (2026-10-16)</h3>

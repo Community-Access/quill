@@ -814,6 +814,8 @@
   "quill/ui/speech_hub_dialog.py::SpeechHubDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/speech_player_dialog.py::show_speech_player.on_save::wx.FileDialog": "native",
   "quill/ui/speech_player_dialog.py::show_speech_player::wx.Dialog": "hardened_custom",
+  "quill/ui/speech_providers_dialog.py::SpeechProvidersDialog._browse::wx.FileDialog": "native",
+  "quill/ui/speech_providers_dialog.py::SpeechProvidersDialog::subclass:wx.Dialog": "hardened_custom",
   "quill/ui/speech_setup_dialog.py::SpeechSetupDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/spell_language.py::open_spell_language_chooser::wx.SingleChoiceDialog": "native",
   "quill/ui/spelling_review_dialog.py::SpellingReviewDialog.__init__::wx.Dialog": "hardened_custom",

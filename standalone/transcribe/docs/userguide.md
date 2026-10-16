@@ -480,6 +480,21 @@ the list. It is never chosen for you. The first time you choose it, QUILL
 Transcribe tells you exactly what is sent and where, and nothing is sent unless
 you agree. No is the default.
 
+### Speech providers: your own account
+
+QUILL Transcribe can also use a speech company you already have an account
+with: Azure, Google, Amazon, Deepgram, AssemblyAI, Speechmatics, ElevenLabs,
+Gladia, Rev.ai, Groq, Mistral or IBM Watson. Open **Dictation Settings**
+(Alt+Shift+F6) and choose **Speech Providers...** (Alt+V): pick the company,
+fill in what it needs, **Test Connection** (Alt+T), then the Save button (Alt+S).
+Keys go to Windows Credential Manager, never into settings; the region and
+other details are kept in QUILL Transcribe's own settings. Then choose the company as the model in
+Dictation Settings. As with OpenAI, you are told exactly what is sent and
+where, nothing is sent unless you agree, and No is the default. If the company
+cannot be reached, dictation stops with one sentence and your model stays
+your choice; **Use the Built-in Model This Time** (Ctrl+B) is there if you need
+to keep going.
+
 ## Settings
 
 ### Microphone

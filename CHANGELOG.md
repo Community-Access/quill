@@ -173,6 +173,34 @@ The dictation design record, section 22, is the full account; in brief:
   `quill/core/onnx_threads.py`: Kokoro's session gets `intra_op_num_threads`
   of half the cores, one to four (`read_aloud._get_cached_kokoro_onnx`).
 
+### Dictation: cloud speech providers with your own account (D-31 to D-37) (2026-10-16)
+
+- New wx-free layer `quill/core/windows_dictation/cloud/`: `CloudProvider`,
+  `ProviderField`, `Capabilities`, `CloudSpeechError` and five coded
+  subclasses, certificate-checked openers with one-sentence failures naming
+  the field, a shared WebSocket session, secrets in the credential store
+  (`provider_credential_target("speech-<id>-<field>")`, DPAPI file for Google's
+  service account), a consent generated from each provider's facts, and
+  `CloudDictationRecognizer` behind the built-in engines' listening loop.
+- Twelve providers, direct HTTPS or WebSocket, no SDK: Azure AI Speech (D-32),
+  Google Speech-to-Text v2 a phrase at a time (D-33), Amazon Transcribe with
+  stdlib SigV4 and event-stream framing (D-34), Deepgram, AssemblyAI,
+  Speechmatics, ElevenLabs Scribe, Gladia and Rev.ai (D-35), Groq and Mistral
+  Voxtral (D-36), IBM Watson (D-37). OpenAI is described on the same interface
+  for the page; its recogniser is unchanged.
+- `quill/ui/speech_providers_dialog.py` (Speech Providers) from Dictation
+  Settings' new **Speech Pro&viders...** button (`windows_dictation_cloud.py`
+  mixin), in QUILL, QUILL Lite, QUILL Transcribe and Quill Inkwell.
+- Settings `windows_dictation_speech_providers` and
+  `windows_dictation_speech_provider_consent` in `DictationSettings` (additive;
+  data formats recorded). Engines `cloud-<id>` through one registration point,
+  `engines._cloud_engine`. `transcribe.models.start_problem` checks a cloud
+  provider's fields and consent.
+- `redaction.remember_secret` scrubs the literal value of every loaded secret;
+  `gsk_`, `sk_` and `ASIA` key shapes added.
+- 28 egress entries in `quill/tools/network_egress_entries_speech.py`.
+- Design record section 23.
+
 ### Quill Radio extras: marked delete, resume earcon, a second device, per-favourite keys, What's New, notes in reminders (2026-10-16)
 
 Jeff's todo P3 "Radio extras", from the FreeRadio study (xradio2 sections 4.5,

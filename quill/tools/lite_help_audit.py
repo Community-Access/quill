@@ -74,6 +74,8 @@ _SCAN_GLOBS: tuple[str, ...] = (
     "quill/ui/dictation_lists_dialog.py",
     "quill/ui/dictation_more_dialog.py",
     "quill/ui/dictation_models_dialog.py",
+    # Speech Providers (D-31), opened from Dictation Settings in every editor.
+    "quill/ui/speech_providers_dialog.py",
     # Transcribe a Recording, the same window in both editors (2026-10-05).
     "quill/ui/dictation_transcribe_dialog.py",
     # Review Dictation, the same window in both editors and QUILL Transcribe (D-2).

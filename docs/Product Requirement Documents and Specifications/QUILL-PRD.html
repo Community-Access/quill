@@ -5549,6 +5549,22 @@ streaming provider is built into the contract rather than
 retrofitted.</li>
 </ul>
 </blockquote>
+<blockquote>
+<p><strong>Cloud dictation providers, your own account (D-31 to D-37,
+2026-10-16).</strong> Dictation can use a speech company the person
+already has an account with – Azure AI Speech, Google Speech-to-Text v2,
+Amazon Transcribe, Deepgram, AssemblyAI, Speechmatics, ElevenLabs
+Scribe, Gladia, Rev.ai, Groq, Mistral Voxtral and IBM Watson – through
+one wx-free layer (<code>quill/core/windows_dictation/cloud/</code>) and
+one shared page, Speech Providers, reached from Dictation Settings in
+QUILL, QUILL Lite, QUILL Transcribe and Quill Inkwell. Requirements:
+local engines stay the default and are never left automatically; secrets
+only in the credential store; Test Connection never sends speech; a
+consent generated from the provider’s facts, No by default, per provider
+and version; nothing in Safe Mode; one reviewed egress entry per call
+site; failures as one sentence naming the field. The design record’s
+section 23 has the details and what remains.</p>
+</blockquote>
 <h3 id="525f-ai-footprint-on-demand-acquisition-and-optimization">5.25f
 AI footprint, on-demand acquisition, and optimization</h3>
 <p>QUILL’s guiding aim is to be <strong>as capable as possible on
