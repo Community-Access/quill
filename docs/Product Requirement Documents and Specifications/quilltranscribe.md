@@ -408,12 +408,23 @@ loader. Version 1.0 should expose, at minimum:
 - Number, date, and dash formatting where supported.
 - Phrase feedback: speech, sound, both, or silent, following shared
   `action_feedback` guarantees.
-- Optional named profiles for common contexts such as email, notes, and forms.
+- Named profiles (built 2026-10-16, dict.md D-23): Standard, Email, Document,
+  Markdown, Chat, Coding and Verbatim. Each overlays the pause, fillers and
+  punctuation and sets how headings, bold and italic are written. Chosen in
+  Dictation > Dictation Profile (Ctrl+Shift+F), the tray, More Dictation
+  Settings, or by voice ("QUILL email mode"); Lock Profile stops voice
+  switching. Standard, the default, changes nothing.
 
 Profiles may change correction and formatting choices, but cannot bypass target
 safety or cloud consent. Profiles are explicit user choices; automatic
 application-sensitive profiles are out of scope until a privacy review proves
 they can be implemented without reading document content.
+
+Learning (built 2026-10-16, dict.md D-25): Practice Dictation (Ctrl+Shift+P)
+is the one window of QUILL Transcribe's own that dictation writes into, after
+the same refusals as any start; its recognition test scores a read sentence
+with the benchmark's word-error count. Help > Tutorials (Ctrl+Alt+F1) has five
+lessons.
 
 ### 7.7 Safe external text delivery
 

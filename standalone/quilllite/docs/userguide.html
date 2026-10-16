@@ -5165,6 +5165,91 @@ only the stop phrase works without the word. Strict mode is off in QUILL
 Lite, so the commands you know keep working. A common word, or one of
 your own words in My Words and Phrases, cannot be the command word; you
 are told why.</p>
+<h4 id="dictation-profiles-the-kind-of-writing-you-are-doing">Dictation
+profiles: the kind of writing you are doing</h4>
+<p>A dictation profile changes dictation for one kind of writing in one
+step, instead of changing several settings each time. There are
+seven:</p>
+<table>
+<thead>
+<tr>
+<th>Profile</th>
+<th>What it changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Standard</td>
+<td>Nothing: your Dictation Settings as they are. Headings are written
+as Markdown marks, as before. Everybody starts here.</td>
+</tr>
+<tr>
+<td>Email</td>
+<td>Removes filler words and adds punctuation. Headings, bold and italic
+use QUILL Lite’s own formatting.</td>
+</tr>
+<tr>
+<td>Document</td>
+<td>Headings, bold and italic use QUILL Lite’s own formatting.</td>
+</tr>
+<tr>
+<td>Markdown</td>
+<td>Headings, bold and italic are written as Markdown marks.</td>
+</tr>
+<tr>
+<td>Chat</td>
+<td>Removes filler words; plain text, with no heading marks.</td>
+</tr>
+<tr>
+<td>Coding</td>
+<td>Removes filler words, adds no punctuation of its own (you say every
+mark), and waits longer for a pause. Markdown marks.</td>
+</tr>
+<tr>
+<td>Verbatim</td>
+<td>Keeps every word you say, fillers too; plain text.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Choosing one.</strong> Open Dictation Settings
+(<strong>Alt+Shift+F6</strong>), press <strong>More Dictation
+Settings…</strong>, and choose in <strong>Dictation profile, for the
+kind of writing</strong> (<strong>Alt+G</strong>). Or, while dictating,
+say the profile’s name after the command word: “QUILL email mode”,
+“QUILL markdown mode”, “QUILL standard mode” (“email profile” works
+too). You hear “Email profile.” and the choice is kept for next time.
+The status bar shows a profile other than Standard beside the dictation
+modes, so a braille display shows it too.</p>
+<p><strong>Lock the profile so it cannot be switched by voice</strong>
+(<strong>Alt+Y</strong>, in More Dictation Settings) stops a spoken
+profile name from switching: you hear “Lock Profile is on, so the
+profile stays Email.” Nothing ever switches profiles on its own.</p>
+<p><strong>Headings, bold and italic by voice.</strong> “heading one” to
+“heading six” at the start of a phrase, and “QUILL bold that” and “QUILL
+italic that” (or “italicize that”), act on the selection, or on the
+phrase you dictated last. What happens depends on the profile:</p>
+<ul>
+<li><strong>Markdown</strong> and <strong>Coding</strong>, and
+<strong>Standard</strong> for headings: the marks are written. “bold
+that” puts two asterisks either side, “italic that” one; one Ctrl+Z
+takes it back.</li>
+<li><strong>Document</strong> and <strong>Email</strong>: In a rich text
+document, QUILL Lite’s own Heading, Bold and Italic commands apply the
+style, as if you had pressed their keys. In a plain text document
+nothing is typed for the heading, and you hear “Headings work in QUILL
+documents or the Markdown profile.” Bold and italic say the same about
+themselves.</li>
+<li><strong>Chat</strong> and <strong>Verbatim</strong>: “heading two”
+starts a new line with your words and nothing else, and bold and italic
+say “This profile writes plain text, so nothing was formatted.”</li>
+</ul>
+<p><strong>Example.</strong> In a letter written as a rich text
+document, choose the Document profile, then say “heading two dear Sam”
+and pause. “Dear Sam” goes on a line of its own with the Heading 2
+style. Select a word, say “QUILL bold that”, and it is bold.</p>
+<p>The settings are <code>windows_dictation_profile</code> and
+<code>windows_dictation_profile_locked</code>, under the same names in
+QUILL, QUILL Lite and QUILL Transcribe.</p>
 <h4 id="review-before-inserting">Review before inserting</h4>
 <p>When you want to check what you said before it goes into the
 document, review it first. Your words wait in the <strong>Review
@@ -5737,6 +5822,17 @@ always works</td>
 <td>Send dictation to review first (Alt+V)</td>
 <td>What you dictate goes into Review Dictation instead, to insert once;
 see “Review before inserting”</td>
+<td>Unchecked</td>
+</tr>
+<tr>
+<td>Dictation profile, for the kind of writing (Alt+G)</td>
+<td>Standard, Email, Document, Markdown, Chat, Coding or Verbatim; see
+“Dictation profiles”</td>
+<td>Standard</td>
+</tr>
+<tr>
+<td>Lock the profile so it cannot be switched by voice (Alt+Y)</td>
+<td>A spoken profile name does not switch profiles</td>
 <td>Unchecked</td>
 </tr>
 </tbody>

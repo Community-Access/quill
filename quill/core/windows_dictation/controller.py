@@ -72,6 +72,7 @@ from quill.core.windows_dictation.preferences import (
     DEFAULT_PHRASE_FEEDBACK,
     DictationPreferences,
 )
+from quill.core.windows_dictation.profile_mixin import ProfileMixin
 from quill.core.windows_dictation.readback import spoken_marks
 from quill.core.windows_dictation.resilience import ResilienceMixin, engine_failure_message
 from quill.core.windows_dictation.target_hold import TargetHoldMixin
@@ -123,6 +124,7 @@ _LIVE = frozenset({
 
 
 class DictationController(
+    ProfileMixin,  # D-23: headings by structure, bold and italic, profiles
     ResilienceMixin,
     EditingMixin,
     LiveMixin,

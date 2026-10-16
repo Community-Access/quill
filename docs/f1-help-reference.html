@@ -3448,7 +3448,7 @@ set to expand only manually. Also on Ctrl+K here, and from any program
 on the key you choose with File, Quick Insert Key.</li>
 </ul>
 <h2 id="quill-transcribe">QUILL Transcribe</h2>
-<p>Control coverage: 33 audited sites (33 helped).</p>
+<p>Control coverage: 42 audited sites (42 helped).</p>
 <h3 id="every-window-and-what-it-is-for-5">Every window, and what it is
 for</h3>
 <p><strong>Choose Microphone.</strong> The microphone QUILL Transcribe
@@ -3461,6 +3461,10 @@ choose is used every time until you choose another.</p>
 <p><strong>Dictation Commands.</strong> Everything dictation
 understands, to read with the arrow keys. In another program only the
 commands that do not need to read its text work.</p>
+<p><strong>Dictation Profile.</strong> Choose the kind of writing
+dictation is for: Standard, Email, Document, Markdown, Chat, Coding or
+Verbatim. A profile sets the pause, fillers and punctuation, and how
+headings, bold and italic are written.</p>
 <p><strong>Dictation Settings.</strong> The dictation settings QUILL
 Transcribe uses: the model, microphone, language, punctuation, and what
 you hear after each phrase. They are the same settings as dictation in
@@ -3485,12 +3489,21 @@ entries from a Markdown or CSV file after showing them; Export saves the
 list to one.</p>
 <p><strong>Notifications.</strong> Finished, failed and cancelled
 transcriptions. Open one to review its transcript.</p>
+<p><strong>Practice Dictation.</strong> A field of QUILL Transcribe’s
+own that dictation types into, so you can learn and test dictation
+without writing into another program. Start Dictation Here starts it in
+the field; Read This Sentence reads a sentence aloud and says how many
+words were heard as you said them.</p>
 <p><strong>QUILL Transcribe.</strong> QUILL Transcribe types what you
 say into the program you are using. This window shows whether dictation
 is on, which model and microphone it uses, and what happened last. Start
 dictation from your start and stop key or the tray menu; it writes only
 into the field you started in, and pauses if you move. Closing this
 window keeps QUILL Transcribe in the tray.</p>
+<p><strong>QUILL Transcribe Tutorials.</strong> Five short lessons: a
+first dictation in the Practice window, pausing and resuming, commands
+with the command word, snippets by voice, and review. Try It runs a
+step’s command for you.</p>
 <p><strong>Review Dictation.</strong> Dictated words wait here before
 they are inserted. Read them, type or keep dictating to change them, ask
 the AI to change them if AI is on, and hear what changed. Control Enter
@@ -3561,9 +3574,9 @@ safety checks as a new start.</li>
 <li><code>self._discard_button</code>: When dictation is paused: throws
 away the words held while paused. Dictation stays paused until you
 resume or stop.</li>
-<li><code>self._setup_text</code>: The speech model, microphone and
-start and stop key dictation uses now. The model you chose is the one
-that runs; it never changes on its own.</li>
+<li><code>self._setup_text</code>: The speech model, microphone,
+dictation profile and start and stop key dictation uses now. The model
+you chose is the one that runs; it never changes on its own.</li>
 <li><code>self._next_text</code>: What starting dictation will do, why
 it paused or could not start, and the last thing it said.</li>
 <li><code>model_button</code>: Choose the speech model: each is marked
@@ -3574,6 +3587,22 @@ on.</li>
 <li><code>settings_button</code>: Language, punctuation, fillers, pauses
 and what you hear after each phrase: the same settings as dictation in
 QUILL.</li>
+</ul>
+<h4 id="profiledialog-quillappstranscribe_coachpy">ProfileDialog
+(<code>quill/apps/transcribe_coach.py</code>)</h4>
+<ul>
+<li><code>self.list</code>: The kind of writing dictation is for.
+Standard is your Dictation Settings as they are. A profile changes the
+pause, the filler words and the punctuation, and how headings, bold and
+italic are written.</li>
+<li><code>self.about</code>: What the profile you are on changes, in one
+sentence.</li>
+<li><code>self.lock</code>: When this is on, saying QUILL chat mode or
+another profile’s name does not switch profiles. You can still choose
+one here.</li>
+<li><code>ok</code>: Use the chosen profile from the next phrase
+on.</li>
+<li><code>cancel</code>: Keep the profile you have.</li>
 </ul>
 <h4 id="setupdialog-quillappstranscribe_dialogspy">SetupDialog
 (<code>quill/apps/transcribe_dialogs.py</code>)</h4>
@@ -3652,6 +3681,23 @@ choose.</li>
 <li><code>quill</code>: Open the transcript in QUILL to edit it.</li>
 <li><code>close</code>: Close the transcript. It stays in
 Notifications.</li>
+</ul>
+<h4
+id="practicedictationframe-quillappstranscribe_practicepy">PracticeDictationFrame
+(<code>quill/apps/transcribe_practice.py</code>)</h4>
+<ul>
+<li><code>self.sentence</code>: The sentence for the recognition test.
+Press Read This Sentence, then read it aloud at your usual pace. Next
+Sentence gives you another.</li>
+<li><code>self.field</code>: QUILL Transcribe’s own field. While
+dictation is on here, what you say is written into this field and
+nowhere else. You can type and edit in it too; Control F11 starts and
+stops dictation here.</li>
+<li><code>self.result</code>: The last recognition test: how many words
+were right, and any that were heard differently. It is said once when
+the test finishes.</li>
+<li><code>close</code>: Closes the window. Dictation in the practice
+field stops; nothing is kept.</li>
 </ul>
 <h2 id="quill-weather">Quill Weather</h2>
 <p>Control coverage: 40 audited sites (40 helped).</p>
@@ -4619,7 +4665,7 @@ playback to its start.</li>
 text, when one is available. Empty otherwise.</li>
 </ul>
 <h2 id="quill-lite">QUILL Lite</h2>
-<p>Control coverage: 211 audited sites (211 helped).</p>
+<p>Control coverage: 212 audited sites (212 helped).</p>
 <h3 id="every-window-and-what-it-is-for-9">Every window, and what it is
 for</h3>
 <p><strong>AI Assistant.</strong> Ask QUILL’s free AI to summarize,
@@ -5662,6 +5708,16 @@ correcting words work only in QUILL’s own documents.</li>
 from QUILL Transcribe or Quill Inkwell, such as your password manager:
 add the program you were just in, add one by its file name, or remove
 one. Matched by file name, never by a window title.</li>
+<li><code>self.profile</code>: A profile changes the pause, the filler
+words and the punctuation for one kind of writing, and how headings,
+bold and italic are written. Standard is your settings as they are.
+Markdown writes the marks; Document and Email use QUILL’s own formatting
+and type nothing for a heading elsewhere; Chat and Verbatim write plain
+text. You can also switch by voice: QUILL email mode.</li>
+<li><code>self.profile_locked</code>: When this is on, saying QUILL chat
+mode or another profile’s name does not switch profiles, and dictation
+says the profile stays as it is. You can still choose a profile
+here.</li>
 <li><code>self.command_prefix</code>: Say this word first to give a
 command instead of dictating: QUILL scratch that, QUILL select the cat.
 It counts only as the first word after a pause, so I told Quill about it

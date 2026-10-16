@@ -311,16 +311,17 @@ time from the Help menu (Ctrl+Alt+S).</p>
 reach it from the keyboard, press Windows+B, find QUILL Transcribe with
 the arrow keys, and press the Applications key or Shift+F10 for its
 menu.</p>
-<p>The menu starts with two lines you can read but not press: what
-dictation is doing, and which model it uses. Then:</p>
+<p>The menu starts with three lines you can read but not press: what
+dictation is doing, which model it uses, and which dictation profile is
+in use. Then:</p>
 <ul>
 <li><strong>Start Dictation</strong> or <strong>Stop
 Dictation</strong></li>
 <li><strong>Resume</strong>, <strong>Resume in This Field</strong> and
 <strong>Discard Held Words</strong>, when dictation is paused</li>
 <li><strong>Choose Model</strong>, <strong>Choose Microphone</strong>,
-<strong>Dictation Settings</strong> and <strong>Model
-Library</strong></li>
+<strong>Dictation Settings</strong>, <strong>Dictation Profile</strong>
+and <strong>Model Library</strong></li>
 <li><strong>Transcribe a Recording</strong></li>
 <li><strong>User Guide</strong> and <strong>Check for
 Updates</strong></li>
@@ -328,7 +329,8 @@ Updates</strong></li>
 Transcribe</strong></li>
 </ul>
 <p>The tray icon’s name also says what dictation is doing, for example
-“QUILL Transcribe - Listening”.</p>
+“QUILL Transcribe - Listening”. With a profile other than Standard it
+says that too: “QUILL Transcribe - Listening - Email profile”.</p>
 <p>If Windows has no notification area for QUILL Transcribe, its window
 stays open instead, and closing it puts it on the taskbar. QUILL
 Transcribe says so when it starts.</p>
@@ -342,8 +344,8 @@ Waiting for you to switch to a field.</li>
 Dictation while dictation is on.</li>
 <li><strong>Resume</strong>, <strong>Resume in This Field</strong> and
 <strong>Discard Held Words</strong> - for when dictation is paused.</li>
-<li><strong>Model and microphone</strong> - the model, microphone and
-key in use.</li>
+<li><strong>Model and microphone</strong> - the model, microphone,
+dictation profile (and whether it is locked) and keys in use.</li>
 <li><strong>What happens next</strong> - what starting dictation will
 do, or why it paused or could not start.</li>
 <li><strong>Choose Model</strong>, <strong>Choose Microphone</strong>
@@ -352,6 +354,84 @@ and <strong>Dictation Settings</strong>.</li>
 <p>Closing the window keeps QUILL Transcribe running in the tray. To
 quit, choose <strong>Exit</strong> in the File menu (Ctrl+Q) or
 <strong>Exit QUILL Transcribe</strong> in the tray menu.</p>
+<h2 id="practice-and-lessons">Practice and lessons</h2>
+<p>New to dictation, or to a new microphone or model? Practise in QUILL
+Transcribe’s own window first. Nothing you say there goes into another
+program.</p>
+<h3 id="practice-dictation">Practice Dictation</h3>
+<p>Open <strong>Practice Dictation</strong> from the Dictation menu
+(Ctrl+Shift+P). The window has, in Tab order:</p>
+<ul>
+<li><strong>Sentence to read aloud</strong> - a sentence for the
+recognition test.</li>
+<li><strong>Practice field</strong> - QUILL Transcribe’s own field. The
+focus starts here.</li>
+<li><strong>Result</strong> - the last recognition test’s score.</li>
+<li><strong>Start Dictation Here</strong> (Alt+H) - starts dictation in
+the practice field, or stops it. Ctrl+F11 does the same while you are in
+this window.</li>
+<li><strong>Read This Sentence</strong> (Alt+T) - the recognition test,
+below.</li>
+<li><strong>Score the Field</strong> (Alt+S) - scores everything in the
+practice field against the sentence.</li>
+<li><strong>Next Sentence</strong> (Alt+N) - shows another of eight
+sentences.</li>
+<li><strong>Close</strong> (Escape) - stops dictation in the field and
+closes the window.</li>
+</ul>
+<p>Everywhere else, starting dictation from QUILL Transcribe’s own
+window waits for you to switch to another program, because the window
+itself is never dictated into. The practice field is the one exception:
+Start Dictation Here writes into it straight away. The same checks as
+any start still apply (Safe Mode, the microphone, your model), and if
+dictation is already on in another program you are asked to stop it
+first.</p>
+<p>Everything works in the practice field as it does elsewhere:
+punctuation by voice, “QUILL scratch that”, “QUILL caps on”, snippets,
+Review Dictation, and your profile. Formatting profiles (Document,
+Email) treat the field as plain text, as they would Notepad. When
+dictation stops, by any route, it goes back to working in other programs
+as usual.</p>
+<p><strong>Example.</strong> Press Ctrl+Shift+P, then Alt+H. You hear
+“Dictation on”. Say “this is my first dictation period” and pause. You
+hear your words read back, and the practice field holds “This is my
+first dictation.”</p>
+<h3 id="the-recognition-test">The recognition test</h3>
+<p>Press <strong>Read This Sentence</strong> (Alt+T). The practice field
+is cleared, dictation starts in it if it was off, and the status bar
+shows the sentence. Read the sentence aloud at your usual pace, then
+pause. The first thing written is compared with the sentence word for
+word, and you hear the result once; it also stays in the Result field.
+For example:</p>
+<ul>
+<li>“All 9 words right. Recognition is working well.”</li>
+<li>“78 percent right: 2 differences in 9 words. Not heard as said:
+jumps, lazy. Try speaking a little slower, moving closer to the
+microphone, or a larger model in Choose Model.”</li>
+</ul>
+<p>Capitals and punctuation do not count; the test is about the words.
+Below 80 percent you are given the three suggestions above. If you said
+the sentence in two breaths, only the first part is scored; press
+<strong>Score the Field</strong> (Alt+S) to score everything in the
+field instead. The score uses the same word-error count as QUILL’s
+dictation benchmark, so it means the same thing.</p>
+<p>Limits: the sentences are in English, and the test checks your
+microphone, model and voice together. It cannot tell which of the three
+to change.</p>
+<h3 id="tutorials">Tutorials</h3>
+<p><strong>Tutorials</strong> in the Help menu (Ctrl+Alt+F1) opens five
+short lessons in the same Tutorials window as QUILL and QUILL Lite:</p>
+<ol type="1">
+<li>Your first dictation, in the Practice window.</li>
+<li>Pause and resume in another program.</li>
+<li>Commands with the command word.</li>
+<li>Snippets and clips by voice.</li>
+<li>Review before it is typed.</li>
+</ol>
+<p>Each step says what to do, why, and what you should hear. Where a
+step names a command, <strong>Try it</strong> runs it for you. The same
+lessons are in the tutorial book, <code>tutorials.html</code> beside
+this guide.</p>
 <h2 id="dictating">Dictating</h2>
 <h3 id="with-your-key">With your key</h3>
 <ol type="1">
@@ -760,6 +840,121 @@ you ask for is one request.</p>
 <p>To send everything you say to the review window first, turn on
 <strong>Send dictation to review first</strong> (Alt+V) in More
 Dictation Settings.</p>
+<h2 id="profiles-the-kind-of-writing-you-are-doing">Profiles: the kind
+of writing you are doing</h2>
+<p>A dictation profile changes dictation for one kind of writing,
+without you changing several settings each time. There are seven:</p>
+<table>
+<thead>
+<tr>
+<th>Profile</th>
+<th>Fillers</th>
+<th>Punctuation</th>
+<th>Pause</th>
+<th>Headings, bold and italic</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Standard</td>
+<td>As your settings say</td>
+<td>As your settings say</td>
+<td>As your settings say</td>
+<td>Markdown marks</td>
+</tr>
+<tr>
+<td>Email</td>
+<td>Removed</td>
+<td>Added</td>
+<td>As your settings say</td>
+<td>Formatted where the document holds formatting; elsewhere nothing,
+and you are told why</td>
+</tr>
+<tr>
+<td>Document</td>
+<td>As your settings say</td>
+<td>As your settings say</td>
+<td>As your settings say</td>
+<td>Formatted, the same way</td>
+</tr>
+<tr>
+<td>Markdown</td>
+<td>As your settings say</td>
+<td>As your settings say</td>
+<td>As your settings say</td>
+<td>Markdown marks, in any program</td>
+</tr>
+<tr>
+<td>Chat</td>
+<td>Removed</td>
+<td>As your settings say</td>
+<td>As your settings say</td>
+<td>Plain text</td>
+</tr>
+<tr>
+<td>Coding</td>
+<td>Removed</td>
+<td>Not added: you say every mark</td>
+<td>Long</td>
+<td>Markdown marks</td>
+</tr>
+<tr>
+<td>Verbatim</td>
+<td>Kept</td>
+<td>As your settings say</td>
+<td>As your settings say</td>
+<td>Plain text</td>
+</tr>
+</tbody>
+</table>
+<p>Standard is where everybody starts, and is your Dictation Settings
+exactly as they are.</p>
+<h3 id="choosing-a-profile">Choosing a profile</h3>
+<ul>
+<li><strong>Dictation Profile</strong> in the Dictation menu
+(Ctrl+Shift+F), or in the tray menu, lists the seven with a sentence
+about the one you are on, and has the <strong>Lock the profile</strong>
+check box (Alt+L). OK uses it from your next phrase.</li>
+<li><strong>By voice</strong>, after the command word: “QUILL email
+mode”, “QUILL markdown mode”, “QUILL standard mode”, and so on (“email
+profile” works too). You hear “Email profile.” and the choice is
+kept.</li>
+<li><strong>More Dictation Settings</strong> in Dictation Settings has
+the same choice (Alt+G) and lock (Alt+Y).</li>
+</ul>
+<p><strong>Lock Profile</strong> (Dictation menu, Ctrl+Shift+L) stops a
+spoken profile name from switching profiles: you hear “Lock Profile is
+on, so the profile stays Email.” You can still choose one from the menu.
+QUILL Transcribe never switches profiles on its own, for example by
+which program you are in.</p>
+<p>The profile in use shows in the window’s Model and microphone field,
+the tray’s third line, the tray icon’s name and Dictation Status.</p>
+<h3 id="headings-bold-and-italic-in-other-programs">Headings, bold and
+italic in other programs</h3>
+<p>QUILL Transcribe never reads the other program’s text, so:</p>
+<ul>
+<li>In <strong>Markdown</strong> and <strong>Coding</strong>, “heading
+two” at the start of a phrase types “## “ before your words, and “QUILL
+bold that” retypes the phrase you just dictated with two asterisks
+either side, as one step that “QUILL scratch that” takes back. “QUILL
+italic that” uses one asterisk.</li>
+<li>In <strong>Document</strong> and <strong>Email</strong>, other
+programs cannot be formatted by keystrokes QUILL Transcribe can trust,
+so “heading two” starts a new line, writes your words and says “Headings
+work in QUILL documents or the Markdown profile.” Bold and italic say
+the same about themselves.</li>
+<li>In <strong>Chat</strong> and <strong>Verbatim</strong>, “heading
+two” starts a new line with your words and nothing else, and bold and
+italic say “This profile writes plain text, so nothing was
+formatted.”</li>
+</ul>
+<p><strong>Example.</strong> In an email, choose the Email profile, then
+say “um thanks for the notes” and pause. “Thanks for the notes.” is
+typed: the filler is gone and the full stop added.</p>
+<p>The settings are stored as <code>windows_dictation_profile</code> and
+<code>windows_dictation_profile_locked</code>, under the same names as
+QUILL’s and QUILL Lite’s, in QUILL Transcribe’s own copy of the
+dictation settings.</p>
 <h2 id="models">Models</h2>
 <h3 id="choosing-a-model">Choosing a model</h3>
 <p>Open <strong>Choose Model</strong> (Ctrl+M). Every model is listed
@@ -1112,6 +1307,18 @@ other apps use them too.</li>
 <td>Ctrl+Shift+C</td>
 </tr>
 <tr>
+<td>Dictation profile</td>
+<td>Ctrl+Shift+F</td>
+</tr>
+<tr>
+<td>Lock profile</td>
+<td>Ctrl+Shift+L</td>
+</tr>
+<tr>
+<td>Practice dictation</td>
+<td>Ctrl+Shift+P</td>
+</tr>
+<tr>
 <td>Choose model</td>
 <td>Ctrl+M</td>
 </tr>
@@ -1148,6 +1355,10 @@ other apps use them too.</li>
 <td>Ctrl+F1</td>
 </tr>
 <tr>
+<td>Tutorials</td>
+<td>Ctrl+Alt+F1</td>
+</tr>
+<tr>
 <td>Set up QUILL Transcribe</td>
 <td>Ctrl+Alt+S</td>
 </tr>
@@ -1161,6 +1372,8 @@ other apps use them too.</li>
 </tr>
 </tbody>
 </table>
+<p>In the Practice Dictation window, Ctrl+F11 starts or stops dictation
+in the practice field, and Escape closes it.</p>
 <p>From any program, only these: your start and stop key
 (Alt+Shift+Backslash unless you changed it), and your Command Key, show
 and hide key, Dictation Status Key, Resume Key and Discard Held Words

@@ -165,6 +165,7 @@ class MoreDictationDialog(wx.Dialog):
         root.Add(self.review_first, 0, wx.ALL, _PAD)
 
         self._my_words = my_words
+        self._add_profile(root, value)  # D-23
         self._add_command_word(root, value)
 
         ai_box = wx.StaticBoxSizer(wx.VERTICAL, self, "Talking to the AI")
@@ -291,6 +292,45 @@ class MoreDictationDialog(wx.Dialog):
         self.hold.SetFocus()
         if load_models:
             self._load_models()
+
+    # -- the dictation profile (D-23) -------------------------------------------- #
+
+    def _add_profile(self, root: Any, value: Callable[[str, Any], Any]) -> None:
+        """The named profile, and the lock that stops voice switching."""
+        from quill.core.windows_dictation.profiles import (
+            DEFAULT_PROFILE,
+            coerce_profile,
+            profile_labels,
+        )
+
+        labels = profile_labels()
+        self._profiles = [profile_id for profile_id, _label in labels]
+        label = wx.StaticText(self, label="Dictation profile, for the kind of writin&g:")
+        self.profile = wx.Choice(self, choices=[text for _id, text in labels])
+        self.profile.SetSelection(
+            self._profiles.index(
+                coerce_profile(value("windows_dictation_profile", DEFAULT_PROFILE))
+            )
+        )
+        self.profile.SetHelpText(
+            "A profile changes the pause, the filler words and the punctuation for one kind "
+            "of writing, and how headings, bold and italic are written. Standard is your "
+            "settings as they are. Markdown writes the marks; Document and Email use QUILL's "
+            "own formatting and type nothing for a heading elsewhere; Chat and Verbatim "
+            "write plain text. You can also switch by voice: QUILL email mode."
+        )
+        self.profile_locked = wx.CheckBox(
+            self, label="Lock the profile so it cannot be switched b&y voice"
+        )
+        self.profile_locked.SetValue(bool(value("windows_dictation_profile_locked", False)))
+        self.profile_locked.SetHelpText(
+            "When this is on, saying QUILL chat mode or another profile's name does not "
+            "switch profiles, and dictation says the profile stays as it is. You can still "
+            "choose a profile here."
+        )
+        root.Add(label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
+        root.Add(self.profile, 0, wx.EXPAND | wx.ALL, _PAD)
+        root.Add(self.profile_locked, 0, wx.ALL, _PAD)
 
     # -- the command word (D-1) ------------------------------------------------- #
 
@@ -486,4 +526,6 @@ class MoreDictationDialog(wx.Dialog):
             "windows_dictation_command_prefix_required": self.command_required.GetValue(),
             "windows_dictation_command_timeout": int(self.command_timeout.GetValue()),
             "windows_dictation_review_first": self.review_first.GetValue(),
+            "windows_dictation_profile": self._profiles[max(0, self.profile.GetSelection())],
+            "windows_dictation_profile_locked": self.profile_locked.GetValue(),
         }

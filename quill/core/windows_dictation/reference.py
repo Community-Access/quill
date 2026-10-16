@@ -153,6 +153,31 @@ def _review_section(
         row(" or ".join(f'"{phrase}"' for phrase in entry.phrases), entry.description)
 
 
+def _profile_section(heading: Any, lines: list[str], md: bool, prefix: str) -> None:
+    """Profiles and formatting (D-23): what a profile changes, in sentences."""
+    from quill.core.windows_dictation.profiles import PROFILES
+
+    heading("Profiles and formatting")
+    names = ", ".join(profile.name for profile in PROFILES)
+    word = prefix or "the command word"
+    for sentence in (
+        f"A profile is the kind of writing dictation is for: {names}. Standard is "
+        "your Dictation Settings as they are, and is where everybody starts.",
+        "Choose one in More Dictation Settings in QUILL and QUILL Lite, or in QUILL "
+        "Transcribe's Dictation menu (Dictation Profile, Ctrl+Shift+F) or tray menu. "
+        f'Or say its name after the command word: "{word} email mode".',
+        "A profile sets the pause, whether filler words are removed and whether "
+        "punctuation is added, and how headings, bold and italic are written.",
+        'Markdown and Coding write "heading two" as two number signs, and "bold that" '
+        "as two asterisks either side. Document and Email use the editor's own Heading "
+        "and Bold in a document that holds formatting; anywhere else they type nothing "
+        "for them and say why. Chat and Verbatim write plain text.",
+        "Lock Profile stops a spoken profile name switching profiles; you can still "
+        "choose one by hand. Nothing ever switches profiles on its own.",
+    ):
+        lines.append(("- " + sentence) if md else sentence)
+
+
 def commands_reference(
     *,
     markdown: bool = False,
@@ -266,6 +291,7 @@ def commands_reference(
     )
     if review:
         _review_section(heading, row, table_head, lines, markdown, command_prefix)
+    _profile_section(heading, lines, markdown, command_prefix)
 
     for group, marks in _grouped(MARKS).items():
         heading(group)

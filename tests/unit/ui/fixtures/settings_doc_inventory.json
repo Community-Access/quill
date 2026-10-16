@@ -377,6 +377,8 @@
   "windows_dictation_pause": "documented",
   "windows_dictation_phrase_feedback": "documented",
   "windows_dictation_preview": "documented",
+  "windows_dictation_profile": "documented",
+  "windows_dictation_profile_locked": "documented",
   "windows_dictation_readback_marks": "documented",
   "windows_dictation_remove_fillers": "documented",
   "windows_dictation_review_consent": "documented",

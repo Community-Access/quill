@@ -6,6 +6,32 @@ file is the itemized list.
 
 ## Unreleased
 
+- **Practice Dictation** (2026-10-16), Ctrl+Shift+P in the Dictation menu: a
+  window with a field of QUILL Transcribe's own that dictation types into
+  straight away, so you can learn and test without writing into another
+  program. Start Dictation Here (Alt+H, or Ctrl+F11 in the window) starts and
+  stops it there.
+- **The recognition test** (2026-10-16). In Practice Dictation, Read This
+  Sentence (Alt+T) clears the field and scores the first thing you say against
+  the sentence shown: "All 9 words right", or how many percent were right and
+  which words were heard differently, with three suggestions below 80 percent.
+  Score the Field (Alt+S) scores everything in the field.
+- **Tutorials** (2026-10-16), Ctrl+Alt+F1 in the Help menu: five short lessons
+  (a first dictation, pausing and resuming, commands with the command word,
+  snippets by voice, and review), in the same Tutorials window as QUILL, with
+  a tutorial book beside this guide.
+- **Dictation profiles** (2026-10-16): Standard, Email, Document, Markdown,
+  Chat, Coding and Verbatim, each changing the pause, filler words,
+  punctuation and how headings, bold and italic are written. Choose one in
+  Dictation > Dictation Profile (Ctrl+Shift+F), the tray menu, More Dictation
+  Settings, or by voice ("QUILL email mode"). Lock Profile (Ctrl+Shift+L) stops
+  voice switching. The profile shows in the window, the tray and Dictation
+  Status. Standard, the default, changes nothing.
+- **Bold and italic by voice** (2026-10-16): "QUILL bold that" and "QUILL
+  italic that". In the Markdown and Coding profiles they retype the phrase you
+  just dictated with asterisks round it; in other profiles they say why they
+  cannot format another program.
+
 - **Hold the key to talk** (2026-10-15). With **Hold the dictation key to
   talk** checked in More Dictation Settings (Alt+H, off until you turn it on),
   hold your start and stop key while you speak; letting go stops dictation and

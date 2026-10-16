@@ -63,6 +63,22 @@ PURPOSES: dict[str, str] = {
         "Dictation is paused with words that were never written. Exit throws them "
         "away and closes QUILL Transcribe; Cancel keeps it running so you can resume."
     ),
+    "Practice Dictation": (
+        "A field of QUILL Transcribe's own that dictation types into, so you can learn "
+        "and test dictation without writing into another program. Start Dictation Here "
+        "starts it in the field; Read This Sentence reads a sentence aloud and says how "
+        "many words were heard as you said them."
+    ),
+    "Dictation Profile": (
+        "Choose the kind of writing dictation is for: Standard, Email, Document, "
+        "Markdown, Chat, Coding or Verbatim. A profile sets the pause, fillers and "
+        "punctuation, and how headings, bold and italic are written."
+    ),
+    "QUILL Transcribe Tutorials": (
+        "Five short lessons: a first dictation in the Practice window, pausing and "
+        "resuming, commands with the command word, snippets by voice, and review. "
+        "Try It runs a step's command for you."
+    ),
     "Use OpenAI": (
         "Before your speech goes to OpenAI, this says what is sent and where. No "
         "keeps the model you had; nothing is sent unless you agree."

@@ -43,6 +43,14 @@ Everything QUILL Lite and QUILL's Live Dictation understand, generated from the 
 | "insert it" | While reviewing: writes the text where it was going, once. |
 | "discard it" | While reviewing: throws the text away; nothing is written. |
 
+## Profiles and formatting
+
+- A profile is the kind of writing dictation is for: Standard, Email, Document, Markdown, Chat, Coding, Verbatim. Standard is your Dictation Settings as they are, and is where everybody starts.
+- Choose one in More Dictation Settings in QUILL and QUILL Lite, or in QUILL Transcribe's Dictation menu (Dictation Profile, Ctrl+Shift+F) or tray menu. Or say its name after the command word: "QUILL email mode".
+- A profile sets the pause, whether filler words are removed and whether punctuation is added, and how headings, bold and italic are written.
+- Markdown and Coding write "heading two" as two number signs, and "bold that" as two asterisks either side. Document and Email use the editor's own Heading and Bold in a document that holds formatting; anywhere else they type nothing for them and say why. Chat and Verbatim write plain text.
+- Lock Profile stops a spoken profile name switching profiles; you can still choose one by hand. Nothing ever switches profiles on its own.
+
 ## Punctuation
 
 | Say | Writes |
@@ -226,6 +234,20 @@ Everything QUILL Lite and QUILL's Live Dictation understand, generated from the 
 | "copy that" | Copies the phrase you dictated last. |
 | "show clips" or "open copy tray" or "show copy tray" | Opens the Copy Tray, where you choose a slot to paste. |
 | "show snippets" | Opens the list of snippets to choose from. |
+
+## Commands: profiles and formatting
+
+| Say, on its own | What happens |
+|---|---|
+| "bold that" | Makes the selection, or the phrase you dictated last, bold: QUILL's own Bold in a document that holds formatting, two asterisks either side in the Markdown and Coding profiles. |
+| "italic that" or "italicize that" | Makes the selection, or the phrase you dictated last, italic, the same way. |
+| "standard mode" or "standard profile" | Switches to the Standard profile, unless Lock Profile is on. |
+| "email mode" or "email profile" | Switches to the Email profile, unless Lock Profile is on. |
+| "document mode" or "document profile" | Switches to the Document profile, unless Lock Profile is on. |
+| "markdown mode" or "markdown profile" | Switches to the Markdown profile, unless Lock Profile is on. |
+| "chat mode" or "chat profile" | Switches to the Chat profile, unless Lock Profile is on. |
+| "coding mode" or "coding profile" | Switches to the Coding profile, unless Lock Profile is on. |
+| "verbatim mode" or "verbatim profile" | Switches to the Verbatim profile, unless Lock Profile is on. |
 
 ## Commands with words after them: selecting
 

@@ -275,6 +275,64 @@ COMMAND_HELP: tuple[CommandHelp, ...] = (
         "Dictate in English from now on.",
         "Dictation itself",
     ),
+    # 2026-10-16 (D-23): bold and italic by voice, and the named profiles
+    # (profiles.py). What "bold that" does depends on the profile's structure.
+    CommandHelp(
+        Command.BOLD_THAT,
+        ("bold that",),
+        "Makes the selection, or the phrase you dictated last, bold: QUILL's own "
+        "Bold in a document that holds formatting, two asterisks either side in "
+        "the Markdown and Coding profiles.",
+        "Profiles and formatting",
+    ),
+    CommandHelp(
+        Command.ITALIC_THAT,
+        ("italic that", "italicize that"),
+        "Makes the selection, or the phrase you dictated last, italic, the same way.",
+        "Profiles and formatting",
+    ),
+    CommandHelp(
+        Command.PROFILE_STANDARD,
+        ("standard mode", "standard profile"),
+        "Switches to the Standard profile, unless Lock Profile is on.",
+        "Profiles and formatting",
+    ),
+    CommandHelp(
+        Command.PROFILE_EMAIL,
+        ("email mode", "email profile"),
+        "Switches to the Email profile, unless Lock Profile is on.",
+        "Profiles and formatting",
+    ),
+    CommandHelp(
+        Command.PROFILE_DOCUMENT,
+        ("document mode", "document profile"),
+        "Switches to the Document profile, unless Lock Profile is on.",
+        "Profiles and formatting",
+    ),
+    CommandHelp(
+        Command.PROFILE_MARKDOWN,
+        ("markdown mode", "markdown profile"),
+        "Switches to the Markdown profile, unless Lock Profile is on.",
+        "Profiles and formatting",
+    ),
+    CommandHelp(
+        Command.PROFILE_CHAT,
+        ("chat mode", "chat profile"),
+        "Switches to the Chat profile, unless Lock Profile is on.",
+        "Profiles and formatting",
+    ),
+    CommandHelp(
+        Command.PROFILE_CODING,
+        ("coding mode", "coding profile"),
+        "Switches to the Coding profile, unless Lock Profile is on.",
+        "Profiles and formatting",
+    ),
+    CommandHelp(
+        Command.PROFILE_VERBATIM,
+        ("verbatim mode", "verbatim profile"),
+        "Switches to the Verbatim profile, unless Lock Profile is on.",
+        "Profiles and formatting",
+    ),
 )
 
 #: Commands said with words after them, in reference order (dict.md 3.2, 3.3,

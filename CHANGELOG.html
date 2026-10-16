@@ -245,6 +245,65 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="dictation-profiles-d-23-and-quill-transcribes-lessons-practice-field-and-recognition-test-d-25-2026-10-16">Dictation
+profiles (D-23), and QUILL Transcribe’s lessons, practice field and
+recognition test (D-25) (2026-10-16)</h3>
+<p>dict.md section 4, “Modes” and “Coach”. Design record section 29.</p>
+<ul>
+<li><strong><code>quill/core/windows_dictation/profiles.py</code></strong>
+(new, wx-free): seven <code>NamedProfile</code>s (Standard, Email,
+Document, Markdown, Chat, Coding, Verbatim), each an overlay of pause,
+fillers and punctuation plus a structure (<code>markdown</code>,
+<code>formatted</code>, <code>plain</code>);
+<code>coerce_profile</code>, <code>active_profile</code>,
+<code>active_profile_name</code>. Standard is no overlay and the
+default.</li>
+<li><strong><code>DictationPreferences</code></strong> gains
+<code>named_profile</code>, <code>structure</code> and
+<code>profile_locked</code>; <code>_writing</code> applies the overlay.
+Settings <code>windows_dictation_profile</code> and
+<code>windows_dictation_profile_locked</code> (shared by name; additive,
+accepted in <code>data_format_audit</code> for
+<code>quill.settings</code> and <code>lite.settings</code>).</li>
+<li><strong><code>profile_mixin.py</code></strong> (new) on the
+controller: headings by structure, “bold that” / “italic that” (new
+<code>Command.BOLD_THAT</code>, <code>ITALIC_THAT</code>), the seven
+profile commands with Lock Profile, and the profile in the status cell.
+Bold, italic and the profile commands also work in other programs
+(<code>anywhere.EXTERNAL_COMMANDS</code>).</li>
+<li><strong>Editors</strong>:
+<code>EditorDocument.formatting()</code>/<code>apply_style()</code>;
+QUILL runs
+<code>format.bold</code>/<code>italic</code>/<code>heading_N</code>,
+QUILL Lite its own <code>cmd_*</code>, in a rich text document (QUILL
+also in Markdown and HTML). More Dictation Settings has the profile
+(Alt+G) and the lock (Alt+Y).</li>
+<li><strong>QUILL Transcribe</strong>: Dictation &gt; Dictation Profile…
+(Ctrl+Shift+F, <code>ProfileDialog</code>), Lock Profile (Ctrl+Shift+L),
+Practice Dictation… (Ctrl+Shift+P, new
+<code>transcribe_practice.py</code>), Help &gt; Tutorials…
+(Ctrl+Alt+F1); tray read-out and row; profile in the window, tray name
+and Dictation Status. New <code>transcribe_coach.py</code>.</li>
+<li><strong>Recognition test</strong>:
+<code>quill/core/transcribe/practice.py</code>; the word-error scorer
+moved from <code>scripts/dictbench.py</code> to
+<code>quill/core/windows_dictation/word_errors.py</code>, which both
+import.</li>
+<li><strong>Lessons</strong>:
+<code>quill/core/tutorials/transcribe_lessons.py</code> (five),
+<code>quill/core/transcribe/tutorials.py</code> (catalogue and command
+table), <code>quill/ui/transcribe_tutorials.py</code>; GATE-TUTDOC
+renders <code>standalone/transcribe/docs/tutorials.md</code>.</li>
+<li><strong>Reference</strong>: the dictation commands guide gains
+“Profiles and formatting” (<code>reference._profile_section</code>),
+regenerated with <code>docs/site/dictation.html</code>.</li>
+<li>Tests: <code>test_dictation_profiles.py</code>,
+<code>test_transcribe_coach.py</code>,
+<code>test_dictation_formatting_hooks.py</code>. Snapshots regenerated:
+dialog inventory, accessible names, Transcribe help, settings
+documentation and vocabulary, F1 help reference, data formats.</li>
+</ul>
+<h3
 id="quill-radio-station-enrichment-the-signed-station-pack-fts5-search-and-station-details-2026-10-16">Quill
 Radio station enrichment: the signed station pack, FTS5 search and
 Station Details (2026-10-16)</h3>
