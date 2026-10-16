@@ -255,7 +255,31 @@ this repository carries only the wrapper, installer, icon, and docs.</p>
 <p>Testing rebuild: <strong>3.2.0 (build 4)</strong>. The packages have
 not been published yet.</p>
 <ul>
-<li><strong>Quill Radio’s own sounds play on the radio’s sound
+<li><p><strong>How many notifications are unread, without opening the
+list.</strong> The status bar has a <strong>Notifications</strong> cell
+(“3 new”, or “None new”); Enter on it opens the list. <strong>Help &gt;
+Notifications…</strong> says the count too, such as “Notifications (3
+new)…”, whenever some are unread.</p></li>
+<li><p><strong>Reminders now wait in Notifications.</strong> When a
+tune-in reminder goes off it is spoken and shown as before, and now it
+also stays in <strong>Help &gt; Notifications…</strong>
+(Ctrl+Alt+Shift+F3), so you can find it if you were away. For a station
+reminder, Enter on the row plays the station. The guide always said
+reminders were kept there; until now they were not.</p></li>
+<li><p><strong>Suggest a Station or Podcast no longer guesses what it
+is.</strong> <strong>What is it</strong> starts on <strong>Choose
+one</strong>, and nothing is sent until you choose a radio station or a
+podcast. Before, it started on A radio station, so a podcast sent
+without touching that list was filed as a station. The Address help now
+says what the window really accepts: <code>https://</code> or
+<code>http://</code>.</p></li>
+<li><p><strong>FFmpeg’s licence, checked on every build.</strong>
+FFmpeg’s licence (the GNU General Public License, version 3) and the
+note on where to get its source were already in the
+<code>tools\ffmpeg</code> folder beside FFmpeg. The build and the
+installer now stop if either is ever missing, so a release cannot ship
+FFmpeg without them.</p></li>
+<li><p><strong>Quill Radio’s own sounds play on the radio’s sound
 card.</strong> The sounds for connecting, playing, stopped, stream
 errors, recording started and stopped, and reminders now go to the same
 device as the radio, so if you send the station to a broadcast card you
@@ -271,13 +295,13 @@ back by themselves when it returns. <strong>Alt+Shift+M</strong>
 (<strong>Audio &gt; App Sounds</strong>) turns them off and back on, the
 same key in every QUILL app. Your screen reader is never moved. Reported
 on QUILLVille by Rick Lewis. User guide: “Where Quill Radio’s own sounds
-play” in Chapter 5.</li>
-<li><strong>QUILL Lineups (Playback &gt; Lineups…, Ctrl+U).</strong> A
-Lineup is a named list of anything Quill Radio and QUILL Cast can play:
-stations, saved places, podcasts and episodes, YouTube videos, playlists
-and channels, Local Media files and recordings, in an order you choose.
-Add things by hand with <strong>Add to Lineup…</strong> from Browse
-Stations, your favorites, Search Stations and Local Media
+play” in Chapter 5.</p></li>
+<li><p><strong>QUILL Lineups (Playback &gt; Lineups…, Ctrl+U).</strong>
+A Lineup is a named list of anything Quill Radio and QUILL Cast can
+play: stations, saved places, podcasts and episodes, YouTube videos,
+playlists and channels, Local Media files and recordings, in an order
+you choose. Add things by hand with <strong>Add to Lineup…</strong> from
+Browse Stations, your favorites, Search Stations and Local Media
 (Ctrl+Shift+U), or give a Lineup rules: what to look for, where, which
 ones, in what order and how many, and, for every rule, how long its
 items stay (while they match, until finished, for some days, until
@@ -295,23 +319,23 @@ one file both apps can edit at once, and Cast hands Radio anything it
 cannot play itself. Rules read only what is on your computer and run
 while the Lineups window is open. New user guide chapter (Chapter 17,
 QUILL Lineups), PRD section 23, and the tutorial <strong>Build a lineup
-that fills itself</strong>.</li>
-<li><strong>Saved places in Favorites survive a restart.</strong> A
+that fills itself</strong>.</p></li>
+<li><p><strong>Saved places in Favorites survive a restart.</strong> A
 genre, country or other browse place saved to Favorites disappeared the
 next time Quill Radio started, because a place has no stream address and
 the favorites file refused anything without one. Saved places now come
-back, and remember which source they came from.</li>
-<li><strong>Runs on Python 3.14, and older runtimes are cleaned
+back, and remember which source they came from.</p></li>
+<li><p><strong>Runs on Python 3.14, and older runtimes are cleaned
 up.</strong> The shared QuillVille runtime this build installs is Python
 3.14. The installer then removes older runtimes (Python 3.13) that no
 installed QuillVille app uses any more; one that an app or a shortcut
 still points to is left alone. Portable copies carry their own Python
-and change nothing outside their folder.</li>
-<li><strong>Record Key in Show and Hide Key.</strong> The key box has a
-<strong>Record Key…</strong> button (Alt+R): press the combination you
+and change nothing outside their folder.</p></li>
+<li><p><strong>Record Key in Show and Hide Key.</strong> The key box has
+a <strong>Record Key…</strong> button (Alt+R): press the combination you
 want and it is written into the box for you. Typing it still works, and
 is the way for a key another program has already taken, which never
-reaches the window.</li>
+reaches the window.</p></li>
 </ul>
 <p>Carried over from build 2:</p>
 <ul>

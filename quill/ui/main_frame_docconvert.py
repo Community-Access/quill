@@ -1,8 +1,9 @@
 """Free-first document conversion UI (MainFrame mixin).
 
 Wires the supported **Import / Convert Document** tool over
-:mod:`quill.io.docconvert` — the PRD's free-first routing (Tier 1 MarkItDown,
-Tier 2 local Tesseract OCR), with the accessible escalation prompt between
+:mod:`quill.io.docconvert` — the PRD's free-first routing (Tier 1 the file's
+own text: MarkItDown for Office/HTML/EPUB, QUILL's PDF reader for PDFs; Tier 2
+local Tesseract OCR), with the accessible escalation prompt between
 them. Conversion runs on the background task pool; QUILL never opens an empty
 or garbled result silently, and never runs OCR without asking.
 
@@ -226,7 +227,7 @@ class DocConvertMixin:
     # ---------------------------------------------------------------- results
 
     def _docconvert_open(self, source: Path, outcome) -> None:
-        from quill.io.docconvert import TIER_CLOUD_OCR, TIER_LOCAL_OCR
+        from quill.io.docconvert import TIER_CLOUD_OCR, TIER_LOCAL_OCR, TIER_PDF_TEXT
 
         self._docconvert_last_outcome = outcome
         # modified=True: the conversion/OCR result exists nowhere else, so the
@@ -251,6 +252,12 @@ class DocConvertMixin:
             )
             pages = f" {outcome.page_count} pages." if outcome.page_count > 1 else ""
             self._announce(f"Opened {source.name} from free on-device OCR.{pages}{confidence}")
+        elif outcome.tier == TIER_PDF_TEXT:
+            pages = f" {outcome.page_count} pages." if outcome.page_count > 1 else ""
+            self._announce(
+                f"Opened {source.name} as editable text from the PDF's own text.{pages} "
+                "Nothing was uploaded."
+            )
         else:
             self._announce(
                 f"Opened {source.name} as editable text using the free local converter. "
@@ -355,10 +362,16 @@ class DocConvertMixin:
         if outcome is None:
             self._set_status("No conversion to review yet. Run Import / Convert Document first.")
             return
-        from quill.io.docconvert import TIER_CLOUD_OCR, TIER_LOCAL_OCR, TIER_MARKITDOWN
+        from quill.io.docconvert import (
+            TIER_CLOUD_OCR,
+            TIER_LOCAL_OCR,
+            TIER_MARKITDOWN,
+            TIER_PDF_TEXT,
+        )
 
         tier_labels = {
             TIER_MARKITDOWN: "Free local converter (MarkItDown) - no OCR was needed",
+            TIER_PDF_TEXT: "The PDF's own text (QUILL's PDF reader) - no OCR was needed",
             TIER_LOCAL_OCR: "Free on-device OCR (Tesseract)",
             TIER_CLOUD_OCR: "Datalab Chandra cloud OCR (consented upload)",
         }

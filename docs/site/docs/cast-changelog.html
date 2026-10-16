@@ -251,6 +251,17 @@ changes; this file keeps the engineering record. The 1.x release notes
 were retired on 2026-10-03.</p>
 <h2 id="unreleased">Unreleased</h2>
 <ul>
+<li><p><strong>Help &gt; Notifications… says how many are
+unread</strong>, such as “Notifications (3 new)…”, read again each time
+the Help menu opens. Shared with Quill Radio
+(<code>quill/ui/support_menu.py</code>).</p></li>
+<li><p><strong>FFmpeg’s licence comes with it.</strong> The QUILL Cast
+installer that carries its own copy of FFmpeg, and the folder it
+installs from, now have FFmpeg’s licence (the GNU General Public
+License, version 3) and the note on where to get FFmpeg’s source, in
+<code>tools\ffmpeg</code> beside the program. They were missing before.
+The build now stops if either is ever missing, and so does the
+installer.</p></li>
 <li><p><strong>Where QUILL Cast’s own sounds play, and Alt+Shift+M to
 turn them off.</strong> <strong>Preferences &gt; App Sounds Play
 On…</strong> offers System default, None (no sounds), or any sound card

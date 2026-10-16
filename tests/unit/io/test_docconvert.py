@@ -10,6 +10,7 @@ from quill.io.docconvert import (
     MIN_CHARS_PER_PAGE,
     TIER_LOCAL_OCR,
     TIER_MARKITDOWN,
+    TIER_PDF_TEXT,
     ConversionOutcome,
     DocConvertCancelled,
     DocConvertError,
@@ -55,34 +56,128 @@ def test_born_digital_routes_through_markitdown() -> None:
     assert not outcome.offer_local_ocr
 
 
+def _pdf_result(text: str, engine: str = "pdfplumber", pages: int = 2, read: int | None = None):
+    from quill.io.pdf import PdfExtractionResult
+
+    read = pages if read is None else read
+    return PdfExtractionResult(
+        text=text,
+        quality_score=90 if text.strip() else 0,
+        engine=engine,
+        page_count=pages if engine in ("pdfplumber", "pypdf") else 0,
+        extracted_pages=read,
+        page_scores=[90] * read,
+    )
+
+
+def _no_markitdown(path: Path) -> str:
+    raise AssertionError("a PDF must never be sent to MarkItDown")
+
+
 def test_pdf_with_healthy_text_layer_does_not_offer_ocr() -> None:
     deps = _Deps(
-        markitdown=lambda path: "word " * 300,
-        pdf_page_count=lambda path: 2,
+        markitdown=_no_markitdown,
+        pdf_text=lambda path: _pdf_result("word " * 300),
     )
     outcome = convert_document(Path("manual.pdf"), deps=deps)
-    assert outcome.tier == TIER_MARKITDOWN
+    assert outcome.tier == TIER_PDF_TEXT
+    assert outcome.page_count == 2
     assert not outcome.offer_local_ocr
+    assert not outcome.warnings
 
 
 def test_scanned_pdf_offers_free_local_ocr() -> None:
     deps = _Deps(
-        markitdown=lambda path: "  ",
+        markitdown=_no_markitdown,
+        pdf_text=lambda path: _pdf_result("(No selectable text...)\n", engine="empty"),
         pdf_page_count=lambda path: 12,
     )
     outcome = convert_document(Path("scan.pdf"), deps=deps)
     assert outcome.offer_local_ocr
+    assert outcome.text == ""
+    assert outcome.page_count == 12
     assert outcome.warnings
 
 
-def test_markitdown_empty_error_on_pdf_becomes_escalation_not_failure() -> None:
-    def _empty(path: Path) -> str:
-        raise ValueError("MarkItDown produced empty output")
-
-    deps = _Deps(markitdown=_empty, pdf_page_count=lambda path: 4)
+def test_a_thin_text_layer_still_offers_ocr() -> None:
+    deps = _Deps(pdf_text=lambda path: _pdf_result("Cover page\n", pages=10))
     outcome = convert_document(Path("scan.pdf"), deps=deps)
     assert outcome.offer_local_ocr
-    assert outcome.text == ""
+    assert "Cover page" in outcome.text
+
+
+@pytest.mark.parametrize(
+    ("engine", "said"),
+    [
+        ("encrypted", "password-protected"),
+        ("damaged", "looks damaged"),
+        ("unavailable", "no PDF text reader"),
+    ],
+)
+def test_a_pdf_that_cannot_be_read_says_why_and_what_to_do(engine: str, said: str) -> None:
+    deps = _Deps(
+        pdf_text=lambda path: _pdf_result("(message)\n", engine=engine),
+        pdf_page_count=lambda path: 0,
+    )
+    with pytest.raises(DocConvertError) as excinfo:
+        convert_document(Path("locked.pdf"), deps=deps)
+    message = str(excinfo.value)
+    assert said in message and "locked.pdf" in message
+    assert "MarkItDown" not in message
+
+
+def test_a_capped_read_says_how_many_pages_came_through() -> None:
+    deps = _Deps(pdf_text=lambda path: _pdf_result("word " * 5000, pages=350, read=200))
+    outcome = convert_document(Path("big.pdf"), deps=deps)
+    assert any("first 200 of 350 pages" in w for w in outcome.warnings)
+
+
+def test_a_real_pdf_imports_with_markitdown_unimportable(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The shipped runtime, simulated: markitdown's chain cannot import.
+
+    The QuillVille runtime freezes markitdown in but excludes onnxruntime,
+    which magika (imported at the top of markitdown) needs, so ``import
+    markitdown`` raises. Blocking onnxruntime here reproduces that; the PDF
+    must still come through, from its own text, with no MarkItDown involved.
+    """
+    pypdf = pytest.importorskip("pypdf")
+    pytest.importorskip("pdfplumber")
+    import sys
+
+    for name in [
+        n for n in sys.modules if n == "markitdown" or n.startswith(("markitdown.", "magika"))
+    ]:
+        monkeypatch.delitem(sys.modules, name)
+    monkeypatch.setitem(sys.modules, "onnxruntime", None)
+    with pytest.raises(ImportError):
+        import markitdown  # noqa: F401
+
+    from pypdf.generic import DecodedStreamObject, DictionaryObject, NameObject
+
+    writer = pypdf.PdfWriter()
+    page = writer.add_blank_page(width=612, height=792)
+    font = DictionaryObject({
+        NameObject("/Type"): NameObject("/Font"),
+        NameObject("/Subtype"): NameObject("/Type1"),
+        NameObject("/BaseFont"): NameObject("/Helvetica"),
+    })
+    page[NameObject("/Resources")] = DictionaryObject({
+        NameObject("/Font"): DictionaryObject({NameObject("/F1"): writer._add_object(font)})
+    })
+    stream = DecodedStreamObject()
+    words = " ".join(["accessible"] * 12)
+    stream.set_data(f"BT /F1 12 Tf 72 720 Td ({words}) Tj ET".encode("ascii"))
+    page[NameObject("/Contents")] = writer._add_object(stream)
+    pdf = tmp_path / "born-digital.pdf"
+    with pdf.open("wb") as handle:
+        writer.write(handle)
+
+    outcome = convert_document(pdf)
+    assert outcome.tier == TIER_PDF_TEXT
+    assert "accessible" in outcome.text
+    assert not outcome.offer_local_ocr
 
 
 def test_markitdown_missing_is_a_friendly_error() -> None:

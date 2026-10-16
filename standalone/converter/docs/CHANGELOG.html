@@ -256,6 +256,14 @@ and <code>converter_advanced.py</code>, its windows in
 Audio Studio at the same time. The <code>standalone/converter</code>
 folder carries only the launcher, installer, icon and these
 documents.</p>
+<h2 id="unreleased">Unreleased</h2>
+<ul>
+<li><strong>FFmpeg’s licence, checked on every build.</strong> FFmpeg’s
+licence (the GNU General Public License, version 3) and the note on
+where to get its source were already in the <code>tools\ffmpeg</code>
+folder beside FFmpeg. The build and the installer now stop if either is
+ever missing, so a release cannot ship FFmpeg without them.</li>
+</ul>
 <h2 id="100--2026-09-28">1.0.0 – 2026-09-28</h2>
 <p>The first public release. The app was first built in July 2026 as an
 audio converter; that build was never published as an installer, and

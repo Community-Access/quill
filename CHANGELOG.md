@@ -2,6 +2,44 @@
 
 ## 1.0.0
 
+### Import / Convert reads PDFs without MarkItDown; FFmpeg ships with its licence everywhere (2026-10-15)
+
+Two P1 items from the todo.
+
+- **Import / Convert Document and PDFs.** The shared runtime freezes
+  markitdown in (`quill[glow]` pulls `markitdown[all]`) but the spec excludes
+  `onnxruntime`, which magika imports at the top of markitdown, so
+  `import markitdown` raises in every shipped build (reproduced by blocking
+  `onnxruntime`). `convert_born_digital` sent every PDF to it first, so every
+  PDF failed with "MarkItDown is not installed" before the scanned-file OCR
+  offer. PDFs now go through `docconvert.convert_pdf_text_layer`, which uses
+  `quill.io.pdf.extract_pdf_text` (pdfplumber, then pypdf: the File > Open
+  reader) and never MarkItDown. New tier `TIER_PDF_TEXT`; scanned and
+  thin-text PDFs still get the OCR offer; password-protected, damaged and
+  no-reader PDFs each get a message saying what to do; a capped read (over 200
+  pages) says how many pages came through. The runtime spec is unchanged (the
+  safer choice: no runtime build to verify a new payload, and spec section 5
+  recommends against bundling onnxruntime). `check_runtime_imports.py`
+  MUST_IMPORT gains `pdfplumber`, `pypdf`, `pypdfium2`, `quill.io.pdf` and
+  `quill.io.docconvert`. Office files still go through MarkItDown and still
+  fail in a shipped build: not fixed here.
+- **FFmpeg licence.** `fetch_build_deps.py` now stages
+  `quill/data/notices/ffmpeg` (GPLv3 text and source offer; the pinned build is
+  `--enable-gpl --enable-version3`) beside ffmpeg.exe, completes an older cache
+  without re-downloading, and `--verify-only` counts a missing licence as
+  missing. Quill Cast's onedir looked for a `LICENSE` that never existed and
+  shipped FFmpeg with neither file; it now copies the package notices.
+  New `scripts/check_ffmpeg_notices.py` fails any bundle holding an ffmpeg.exe
+  without byte-identical notices beside it; the Cast, Converter, Radio and
+  Studio builds run it on the portable and the runtime payload before zipping.
+  `shared-runtime.iss` and `quill-cast.iss` name both notice files one by one,
+  so ISCC refuses to compile without them. The QUILL Offline Edition removes an
+  ffmpeg that staged without its notices. `docs/legal/THIRD_PARTY_NOTICES`
+  lists FFmpeg, libmpv and Deno.
+- Tests: `test_ffmpeg_bundle_licence.py`, `test_docconvert.py` (including a real
+  PDF with markitdown unimportable), `test_main_frame_docconvert.py`,
+  `test_check_runtime_imports.py`.
+
 ### Dictation: the never-type list, and Inkwell keeps its field (2026-10-15)
 
 D-24 and D-15 from the dictation plan, rescued from an uncommitted worktree.

@@ -12141,13 +12141,14 @@ consent dialog.
 
 | Tier | Engine | Handles | Cost / privacy |
 |---|---|---|---|
-| 1 | MarkItDown (`quill/io/markitdown_bridge.py`, the optional `pdf-ocr` extra — not bundled; see &quot;Reader chain and the document-text contract&quot;) | Born-digital DOCX/DOC, PPTX/PPT, XLSX/XLS, HTML, EPUB, CSV, ODT/ODP/ODS, and PDFs with a text layer | Free, local, no upload |
+| 1 | MarkItDown (`quill/io/markitdown_bridge.py`, the optional `pdf-ocr` extra — not bundled; see &quot;Reader chain and the document-text contract&quot;) | Born-digital DOCX/DOC, PPTX/PPT, XLSX/XLS, HTML, EPUB, CSV, ODT/ODP/ODS | Free, local, no upload |
+| 1 (PDF) | QUILL&#39;s PDF reader (`quill/io/pdf.py`: pdfplumber, then pypdf; bundled) via `convert_pdf_text_layer` | PDFs with a text layer. Never MarkItDown: the shared runtime freezes it in but excludes `onnxruntime`, so it cannot import in a shipped build (2026-10-15) | Free, local, no upload |
 | 2 | Local Tesseract OCR (`quill/io/tesseract_ocr.py`) | Images (PNG/JPG/TIFF/BMP/GIF/WebP) and image-based PDFs; CPU-only, no GPU | Free, local, no upload |
 | 3 | Datalab Chandra cloud OCR (`quill/core/datalab_ocr.py`) | The accuracy escalation: complex tables, forms, handwriting, math, dense layouts, poor scans; returns Markdown/HTML/JSON | Paid (BYOK, per page on the user&#39;s Datalab account), cloud, **consent-gated per upload** |
 
 The router (`quill/io/docconvert.py`, wx-free, strict-typed) implements the
 free-first flow: born-digital types go to Tier 1; images go straight to
-Tier 2; PDFs try Tier 1 and are measured by the **chars-per-page heuristic**
+Tier 2; PDFs try their own text layer (Tier 1, PDF row) and are measured by the **chars-per-page heuristic**
 (`text_layer_looks_empty`, threshold 50 chars/page) — a PDF that comes back
 looking scanned is flagged `offer_local_ocr`, never silently opened empty.
 Tier 2 rasterizes PDF pages via `pypdfium2` (~150 dpi) and recognizes them one

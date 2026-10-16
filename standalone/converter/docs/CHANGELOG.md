@@ -12,6 +12,14 @@ engine under `quill/core/audio/` -- so a fix to the engine lands in QUILL's
 Audio Studio at the same time. The `standalone/converter` folder carries only
 the launcher, installer, icon and these documents.
 
+## Unreleased
+
+- **FFmpeg's licence, checked on every build.** FFmpeg's licence (the GNU
+  General Public License, version 3) and the note on where to get its source
+  were already in the `tools\ffmpeg` folder beside FFmpeg. The build and the
+  installer now stop if either is ever missing, so a release cannot ship FFmpeg
+  without them.
+
 ## 1.0.0 -- 2026-09-28
 
 The first public release. The app was first built in July 2026 as an audio

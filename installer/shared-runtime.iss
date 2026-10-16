@@ -79,7 +79,18 @@ Source: "{#RuntimeSourceDir}\*"; DestDir: "{code:RuntimeDir}"; Components: runti
 #pragma message "shared-runtime: packing tools\ffmpeg (this app declares ffmpeg)"
 Source: "{#RuntimeSourceDir}\tools\ffmpeg\*"; DestDir: "{code:RuntimeDir}\tools\ffmpeg"; \
   Components: runtime; \
+  Excludes: "LICENSE.GPLv3.txt,README-SOURCE.txt"; \
   Flags: ignoreversion recursesubdirs createallsubdirs uninsneveruninstall
+; FFmpeg's licence and source offer (quill\data\notices\ffmpeg, staged by
+; scripts\StageMediaTools.ps1). Named one by one, with no wildcard and no
+; skipifsourcedoesntexist, so ISCC refuses to compile an installer that would
+; ship this GPLv3 build of FFmpeg without them.
+Source: "{#RuntimeSourceDir}\tools\ffmpeg\LICENSE.GPLv3.txt"; DestDir: "{code:RuntimeDir}\tools\ffmpeg"; \
+  Components: runtime; \
+  Flags: ignoreversion uninsneveruninstall
+Source: "{#RuntimeSourceDir}\tools\ffmpeg\README-SOURCE.txt"; DestDir: "{code:RuntimeDir}\tools\ffmpeg"; \
+  Components: runtime; \
+  Flags: ignoreversion uninsneveruninstall
 #endif
 #ifdef ToolMpv
 #pragma message "shared-runtime: packing tools\mpv (this app declares mpv)"

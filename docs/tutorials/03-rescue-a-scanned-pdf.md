@@ -7,7 +7,8 @@ nothing is uploaded.
 ## Before you start
 
 **Import / Convert Document** uses free tools on your own computer. Files that
-already contain text are converted by the built-in **MarkItDown** converter.
+already contain text are read straight from that text: a PDF by the same PDF
+reader **File > Open** uses.
 Scanned pages are read by **Tesseract OCR**, which recognizes the text in a
 picture. There is no account and no cost. QUILL always asks before it runs
 OCR, and tells you if it finds nothing.
