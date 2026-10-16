@@ -48,6 +48,7 @@ from quill.core.action_feedback import resolve
 from quill.core.error_codes import CodedError
 from quill.core.windows_dictation.command_mode_mixin import CommandModeMixin
 from quill.core.windows_dictation.composer import compose, spoken_form
+from quill.core.windows_dictation.corrections import CorrectionsMixin
 from quill.core.windows_dictation.echo_guard import EchoGuard
 from quill.core.windows_dictation.editing import EditingMixin
 from quill.core.windows_dictation.history import DictatedPhrase, PhraseHistory
@@ -123,6 +124,7 @@ _LIVE = frozenset({
 
 
 class DictationController(
+    CorrectionsMixin,  # first: asked about every command before the rest (D-10, D-19)
     ResilienceMixin,
     EditingMixin,
     LiveMixin,

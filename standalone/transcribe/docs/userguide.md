@@ -348,6 +348,11 @@ These work in any program, after the command word:
   from one to twelve. They come from the same lists QUILL uses, and are typed
   as one phrase, so "scratch that" takes all of it back
 - "what can I say" for a short spoken answer
+- correcting the words dictation itself typed: "correct that" and "choose one"
+  to "choose three", "capitalize that", "all caps that", "no caps that",
+  "replace" some words "with" new ones, "change that to" and new words, "delete
+  last sentence" and "delete previous paragraph". See "Correcting in another
+  program" below
 
 Two limits on snippets and abbreviations here. A snippet's blanks are typed as
 their names in square brackets, like [title], and you are not asked to fill
@@ -355,9 +360,57 @@ them in. And where a snippet or an abbreviation would put the cursor in the
 middle, the cursor stays at the end, because QUILL Transcribe cannot move it
 inside another program's text without reading it.
 
-Commands that need to read the text, such as "select that", "correct that" or
-"copy all", only work in QUILL's own documents. In another program you hear
-"That works in QUILL's own documents" and nothing changes.
+Commands that need to read the other program's text, such as "select that",
+"go to", "correct" and a word, or "copy all", only work in QUILL's own
+documents. In another program you hear "That works in QUILL's own documents"
+and nothing changes.
+
+### Correcting in another program
+
+QUILL Transcribe never reads the other program's text. What it can do is
+remember the words it typed there itself, since the focus last moved, and
+change those: it takes them back with Backspace and types the corrected words,
+starting from the first letter that changes.
+
+- **"QUILL correct that"**, then **"QUILL choose two"**: with Moonshine,
+  Whisper or a downloaded model, the other built-in engine listens to your
+  last phrase again, and you hear both answers, for example "1: the whether is
+  nice. 2: the weather is nice. Say choose and the number." With Windows speech
+  recognition you hear its own other guesses. The phrase is retyped with the
+  one you choose.
+- **"QUILL replace Tuesday with Wednesday"** looks only in the phrase you
+  dictated last. If you said "see you on Tuesday at noon", Backspace takes back
+  "Tuesday at noon" and "Wednesday at noon" is typed. If the words are not in
+  that phrase, you hear "Not found." and nothing changes.
+- **"QUILL change that to see you Friday"** puts the new words in place of the
+  last phrase, keeping its capital and closing full stop.
+- **"QUILL all caps that"**, **"QUILL capitalize that"** and **"QUILL no caps
+  that"** change the capitals of the last phrase.
+- **"QUILL delete last sentence"** and **"QUILL delete previous paragraph"**
+  take back the end of what dictation typed, never anything before it.
+
+With strict mode off, you can say these without QUILL.
+
+To keep your own typing safe, a correction is refused, with one sentence, and
+nothing is sent, when:
+
+- **the focus has moved** since dictation typed the words: "The focus has moved
+  since dictation typed those words, so they were left alone."
+- **you have typed, clicked or moved the mouse** since then, because the cursor
+  may no longer be where dictation left it: "You have typed or clicked since
+  dictation typed those words, so they were left alone. Change them with the
+  keyboard, or say them again." Windows tells QUILL Transcribe only *when* a key
+  or the mouse was last used, never which key. Reading keys count too, so if
+  you arrow back to check a word, change it with the keyboard instead.
+- **the program is Word or Outlook**, for the commands that retype words.
+  Those programs change words as you type them (AutoCorrect), so the count of
+  letters to take back could be wrong: "Word can change words as they are
+  typed, so dictation does not retype them there. Say scratch that and say it
+  again." "Scratch that" and the two delete commands still work there, because
+  they only take words away.
+
+Whatever a correction replaced goes into **Recent Phrases** (Shift+F11),
+marked "(before correction)", so you can type it again with Insert Again.
 
 ### What can I say
 
@@ -532,6 +585,8 @@ command word, and you are told why.
   back in another program. **Copy** puts it on the clipboard and says "Copied"
   and the phrase. The list is kept in memory only, for as long as QUILL
   Transcribe runs; nothing is saved to disk, and it is empty again next time.
+  When a correction changed a phrase, the words it replaced are in the list
+  too, marked "(before correction)"; Insert Again and Copy leave the label out.
 - **My Words and Phrases** (Alt+Shift+F10, in the Dictation menu) is the same
   window as in QUILL and QUILL Lite, over the same word list as QUILL, so a
   word you teach one is known to the other. QUILL Lite shares it once you

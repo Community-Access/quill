@@ -6,6 +6,22 @@ file is the itemized list.
 
 ## Unreleased
 
+- **Correcting in another program** (2026-10-16). "Correct that" and "choose
+  one" to "choose three", "capitalize that", "all caps that", "no caps that",
+  "replace Tuesday with Wednesday", "change that to" and new words, "delete last
+  sentence" and "delete previous paragraph" now work in other programs, on the
+  words QUILL Transcribe typed there itself: it takes them back with Backspace
+  and types the corrected words. It never reads the other program. A correction
+  is refused, with one sentence and nothing sent, if the focus has moved, if you
+  have typed, clicked or moved the mouse since, or, for the commands that retype
+  words, in Word and Outlook, which change words as they are typed. See
+  "Correcting in another program" in the user guide.
+- **A second opinion for "correct that"** (2026-10-16). With Moonshine, Whisper
+  or a downloaded model, the other built-in engine listens to your last phrase
+  again, and you can choose its answer. The sound stays in memory only.
+- **Recent Phrases keeps what a correction replaced** (2026-10-16), marked
+  "(before correction)".
+
 - **Hold the key to talk** (2026-10-15). With **Hold the dictation key to
   talk** checked in More Dictation Settings (Alt+H, off until you turn it on),
   hold your start and stop key while you speak; letting go stops dictation and

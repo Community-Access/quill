@@ -245,6 +245,51 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="dictation-replace-change-that-delete-by-paragraph-a-second-opinion-kept-revisions-and-correcting-in-other-programs-d-19-d-10-2026-10-16">Dictation:
+replace, change that, delete by paragraph, a second opinion, kept
+revisions, and correcting in other programs (D-19, D-10,
+2026-10-16)</h3>
+<p>dict.md D-19 and D-10; design record section 27. Shared code, so
+QUILL, QUILL Lite, QUILL Transcribe and Inkwell’s Dictate Anywhere get
+the same commands.</p>
+<ul>
+<li><strong>New commands</strong> in the one table
+(<code>vocabulary_commands.py</code>, so “What can I say” and the
+generated <code>dictation-commands.md</code> follow): “replace X with Y”
+(<code>Command.REPLACE_WORDS</code>, nearest X before the cursor, else
+after, through <code>targets.find_target</code>), “change that to Y”
+(<code>CHANGE_THAT</code>) and “delete previous paragraph” / “delete
+last paragraph” (<code>DELETE_PARAGRAPH</code>). They work bare with
+strict mode off and always after the command word; a replace that finds
+nothing is written as text bare and writes nothing after the word.</li>
+<li><strong>A second opinion for “correct that”</strong>: a model
+engine’s phrase carries its audio (<code>RecognizedPhrase.audio</code>,
+memory only, dropped at the next phrase); with no engine alternates,
+<code>WorkerMixin.second_opinion</code> re-decodes it with the other
+built-in engine on its own thread and offers the answer as choice 2. No
+disk, no network. Not in Spanish.</li>
+<li><strong>Kept revisions</strong>: choose, replace and change that put
+the replaced text in Recent Phrases labelled “(before correction)”;
+<code>phrase_from_entry</code> strips the label for Insert Again and
+Copy.</li>
+<li><strong>Correcting in other programs (D-10)</strong>:
+correct/choose, caps that, uppercase/lowercase that, replace, change
+that, delete last sentence and delete previous paragraph join
+<code>anywhere.EXTERNAL_COMMANDS</code>, acting only on the words the
+session typed, as backspace-and-retype. <code>external_edits.py</code>
+refuses with one sentence when the focus moved, when Windows saw input
+after dictation’s own (<code>OwnWordsGuard</code>,
+<code>GetLastInputInfo</code> in the new read-only
+<code>quill/platform/windows/input_activity.py</code>), or, for retyping
+commands, in Word and Outlook (<code>AUTOCORRECTING_PROGRAMS</code>).
+The other program is never read.</li>
+<li>New modules: <code>corrections.py</code>
+(<code>CorrectionsMixin</code>, first in the controller’s bases) and
+<code>external_edits.py</code>; the controller grew by two lines. Tests:
+<code>tests/unit/core/test_dictation_corrections.py</code> (32, fakes
+only).</li>
+</ul>
+<h3
 id="quill-radio-station-enrichment-the-signed-station-pack-fts5-search-and-station-details-2026-10-16">Quill
 Radio station enrichment: the signed station pack, FTS5 search and
 Station Details (2026-10-16)</h3>

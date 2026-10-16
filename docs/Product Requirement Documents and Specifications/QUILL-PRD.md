@@ -2607,6 +2607,18 @@ providers".
 > call site; failures as one sentence naming the field. The design record's
 > section 23 has the details and what remains.
 
+> **Correcting by voice, everywhere (D-19 and D-10, 2026-10-16).** Live
+> Dictation gains "replace X with Y" (nearest X before the cursor, else after),
+> "change that to Y" (the last phrase) and "delete previous paragraph"; "correct
+> that" with a one-answer engine asks the other built-in engine to re-decode the
+> last phrase's audio, kept in memory only, and offers its answer as choice 2;
+> and whatever a correction replaced goes into Recent Phrases labelled "(before
+> correction)". In QUILL Transcribe and Dictate Anywhere the correcting commands
+> work on the session's own words as backspace-and-retype, refused when the
+> focus moved, when the person has typed since, or (for retyping) in Word and
+> Outlook. Shared code (`corrections.py`, `external_edits.py`); design record
+> section 27.
+
 ### 5.25f AI footprint, on-demand acquisition, and optimization
 
 QUILL's guiding aim is to be **as capable as possible on whatever hardware the user

@@ -248,8 +248,13 @@ def commands_reference(
         '"the heading two lines down" stays words.',
         *(
             (
-                "Nothing in the other program is read, so commands that select, find "
-                "or correct words are not listed: they work in QUILL's own documents.",
+                "Nothing in the other program is read, so commands that select or find "
+                "words are not listed: they work in QUILL's own documents.",
+                "Correcting works on the words dictation typed there itself, and only "
+                "while the focus has not moved and you have not typed or clicked since. "
+                "In Word and Outlook, which change words as they are typed, the "
+                "commands that retype words are refused; scratch that and the delete "
+                "commands still work.",
                 "A snippet's blanks are written as their names in square brackets, "
                 "like [title], and no question is asked. Where a snippet or an "
                 "abbreviation puts the cursor in the middle, the cursor stays at the "

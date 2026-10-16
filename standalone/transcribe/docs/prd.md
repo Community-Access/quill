@@ -66,6 +66,14 @@ open, and what waits for a later version.
    Status is the editors' Alt+F9. Dictation Status, Resume and Discard Held
    Words each have an optional system-wide key, empty until chosen, picked and
    checked like the others.
+13. **Correcting in other programs** (after 1.0.0, 2026-10-16, D-10). The
+   correcting commands work on the words this session typed, and only those,
+   as backspace-and-retype; the other program is never read. Each is refused
+   with one sentence when the focus moved, when Windows saw a key or the mouse
+   after dictation's own typing (when, never which key), or, for the commands
+   that retype, in Word and Outlook until the insertion harness shows they are
+   safe. "Correct that" with a one-answer engine asks the other built-in engine
+   for a second opinion (D-19), in memory only.
 
 ## Waiting for a later version
 

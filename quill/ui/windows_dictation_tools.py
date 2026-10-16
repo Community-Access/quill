@@ -183,6 +183,9 @@ def open_recent_phrases(
         dialog.Destroy()
     if answer != wx.ID_OK or chosen is None:
         return
+    from quill.core.windows_dictation.corrections import phrase_from_entry
+
+    chosen = phrase_from_entry(chosen)  # "(before correction)" is a label, not words (D-19)
     if verb == "copy":
         copy_phrase(chosen, say)
         return

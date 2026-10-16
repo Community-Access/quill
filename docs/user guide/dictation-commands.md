@@ -168,8 +168,9 @@ Everything QUILL Lite and QUILL's Live Dictation understand, generated from the 
 | "no caps that" or "lowercase that" | Puts the last phrase in small letters. |
 | "delete word" or "delete last word" | Deletes the word just before the cursor. |
 | "delete sentence" or "delete last sentence" | Deletes from the start of the sentence the cursor is in up to the cursor. |
+| "delete previous paragraph" or "delete last paragraph" | Deletes the paragraph just before the cursor, from its start up to the cursor. In another program, only words dictation typed there. |
 | "read that" or "repeat that" | Reads the last phrase aloud again. |
-| "correct that" | Reads the other things the speech engine thought you said, numbered, when it offers them (Windows speech recognition does). Then say choose and a number. |
+| "correct that" | Reads the other things the speech engine thought you said, numbered. Windows speech recognition offers its own; with Moonshine, Whisper or a downloaded model, the other built-in engine listens to the last phrase again and its answer is choice 2. Then say choose and a number. |
 | "choose one" or "choose 1" | After correct that, puts the first of the other guesses in place of the last phrase. |
 | "choose two" or "choose 2" | The same, with the second guess. |
 | "choose three" or "choose 3" | The same, with the third guess. |
@@ -240,6 +241,8 @@ Everything QUILL Lite and QUILL's Live Dictation understand, generated from the 
 
 | Say, at the start of a phrase | What happens |
 |---|---|
+| "replace ..." (words in your document, then with, then the new words) | Replaces those words with the new ones: replace Tuesday with Wednesday. QUILL looks just before the cursor first, then after it; in another program, only in the phrase you dictated last. If the words are not there, what you said is written as text, as with select; after the command word, nothing is written. |
+| "change that to ..." (the new words) | Puts the new words in place of the phrase you dictated last: change that to see you on Friday. What it said before stays in Recent Phrases, marked before correction. |
 | "spell ..." (letters) | Spells one word without going into spelling mode: spell bravo alpha delta writes bad. |
 
 ## Commands with words after them: clips, snippets and copying

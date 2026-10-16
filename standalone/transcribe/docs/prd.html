@@ -317,6 +317,15 @@ The words heard so far and the unspoken state changes go to a braille
 display only. Dictation Status is the editors’ Alt+F9. Dictation Status,
 Resume and Discard Held Words each have an optional system-wide key,
 empty until chosen, picked and checked like the others.</li>
+<li><strong>Correcting in other programs</strong> (after 1.0.0,
+2026-10-16, D-10). The correcting commands work on the words this
+session typed, and only those, as backspace-and-retype; the other
+program is never read. Each is refused with one sentence when the focus
+moved, when Windows saw a key or the mouse after dictation’s own typing
+(when, never which key), or, for the commands that retype, in Word and
+Outlook until the insertion harness shows they are safe. “Correct that”
+with a one-answer engine asks the other built-in engine for a second
+opinion (D-19), in memory only.</li>
 </ol>
 <h2 id="waiting-for-a-later-version">Waiting for a later version</h2>
 <ul>

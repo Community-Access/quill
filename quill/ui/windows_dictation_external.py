@@ -15,7 +15,11 @@ moved, and answers from that:
   read back (:func:`hush_unless_spoken`): only the last key survives it, so
   every phrase ended in "period";
 * nothing else can be read, so ``external`` tells the controller to refuse the
-  commands that need to (``anywhere.EXTERNAL_COMMANDS``).
+  commands that need to (``anywhere.EXTERNAL_COMMANDS``);
+* the correcting commands (D-10) work on what it typed, as backspaces and
+  retyping, after :meth:`ExternalDocument.edit_problem` has checked that the
+  focus has not moved, that nobody has typed since, and that the program does
+  not correct as you type (:mod:`quill.core.windows_dictation.external_edits`).
 
 It refuses, with a sentence, four places: a password field, a program running
 as administrator when Inkwell is not (Windows blocks the typing), QUILL's own
@@ -148,6 +152,21 @@ def _type(text: str, hush: bool = False) -> bool:
     return send_text_checked(text, hush_reader=hush).complete
 
 
+def _last_input() -> int | None:
+    from quill.platform.windows.input_activity import last_input_tick
+
+    return last_input_tick()
+
+
+def _program() -> str:
+    try:
+        from quill.platform.windows.foreground import foreground_window_info
+
+        return str(foreground_window_info().process_name or "")
+    except Exception:  # noqa: BLE001 - not Windows
+        return ""
+
+
 def _backspace(count: int) -> bool:
     from quill.platform.windows.text_injector import send_backspaces_checked
 
@@ -193,7 +212,10 @@ def locked_external_document(
         return foreground_problem(app=app, key=key, never_type=tuple(never_type()))
 
     inner = ExternalDocument(
-        problem=problem, hush=hush_unless_spoken(preferences) if hush else (lambda: False)
+        problem=problem,
+        hush=hush_unless_spoken(preferences) if hush else (lambda: False),
+        last_input=_last_input,
+        program=_program,
     )
     return LockedTarget(
         inner, where=focus_identity, advice=PAUSE_ADVICE, write_failure=WRITE_FAILURE
@@ -214,7 +236,14 @@ class ExternalDocument:
         type_text: Callable[..., bool] = _type,
         backspace: Callable[[int], bool] = _backspace,
         hush: Callable[[], bool] = lambda: False,
+        last_input: Callable[[], int | None] | None = None,
+        program: Callable[[], str] | None = None,
     ) -> None:
+        """*last_input* (when Windows last saw a key or the mouse) and *program*
+        (the file name of the program in front) are for the correcting
+        commands' checks (D-10); without them, those checks are skipped."""
+        from quill.core.windows_dictation.external_edits import OwnWordsGuard
+
         self._problem = problem
         self._where = where
         self._type = type_text
@@ -222,6 +251,8 @@ class ExternalDocument:
         self._hush = hush
         self._place: Any = None
         self._typed = ""
+        self._guard = OwnWordsGuard(last_input)
+        self._program = program
 
     def _follow_focus(self) -> None:
         """The focus moved: what was typed before is somebody else's text now."""
@@ -229,6 +260,7 @@ class ExternalDocument:
         if place != self._place:
             self._place = place
             self._typed = ""
+            self._guard.forget()
 
     # -- the port ---------------------------------------------------------- #
 
@@ -252,6 +284,7 @@ class ExternalDocument:
         if not (self._type(text, True) if self._hush() else self._type(text)):
             raise OSError("Windows did not accept all of the typing.")
         self._typed += text
+        self._guard.wrote()
         return start, len(self._typed)
 
     def text_between(self, start: int, end: int) -> str:
@@ -264,10 +297,29 @@ class ExternalDocument:
             raise OSError("The focus has moved, so nothing was taken back.")
         self._backspace(end - start)
         self._typed = self._typed[:start]
+        self._guard.wrote()
 
     def replace(self, start: int, end: int, text: str) -> tuple[int, int]:
         self.remove(start, end)
         return self.insert(text)
+
+    def edit_problem(self, command: Any) -> str:
+        """Why *command* must not change the words typed here, or ``""`` (D-10).
+        Asks when, and in which program -- never what the field holds."""
+        from quill.core.windows_dictation.external_edits import edit_problem
+
+        program = ""
+        if self._program is not None:
+            try:
+                program = str(self._program() or "")
+            except Exception:  # noqa: BLE001 - an unknown program is not refused
+                program = ""
+        return edit_problem(
+            moved=self._where() != self._place,
+            typed=self._guard.typed_since(),
+            program=program,
+            command=command,
+        )
 
     def line_bounds(self) -> tuple[int, int]:
         return len(self._typed), len(self._typed)

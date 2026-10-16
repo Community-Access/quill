@@ -5,6 +5,10 @@
 Testing rebuild: **1.2.0 (build 5)**, following builds 2, 3 and 4; builds 2 and 3 were
 uploaded for testing. The new packages have not been published yet.
 
+- **Replace, change that, and delete a paragraph by voice.** While dictating, say "replace Tuesday with Wednesday" and the nearest Tuesday before the cursor becomes Wednesday, with its capital and full stop kept. Say "change that to" and new words to replace the phrase you dictated last, or "delete previous paragraph" to delete the paragraph before the cursor. See "Replace and change that" in the user guide.
+- **"Correct that" with Moonshine or Whisper.** These engines give one answer, so "correct that" now asks the other built-in engine to listen to your last phrase again, and offers what it heard as choice two: say "choose two" to take it. The sound stays in memory until your next phrase; nothing is saved or sent.
+- **Nothing a correction changes is lost.** The words a correction replaced go into Recent Phrases (Shift+F11), marked "(before correction)", so Insert Again can put them back.
+
 - **Transcribe a Recording translates into English.** For a recording in Spanish, check **Translate into English** (**Alt+E**) and the transcript comes out in English. It works with the built-in Whisper or a multilingual Whisper you downloaded; with any other model the box is unavailable. The same in QUILL and QUILL Transcribe, on the same models.
 
 - **Speech providers: dictation with your own account.** Dictation Settings has **Speech Providers...** (**Alt+V**): Azure, Google, Amazon, Deepgram, AssemblyAI, Speechmatics, ElevenLabs, Gladia, Rev.ai, Groq, Mistral and IBM Watson. Fill in what the company needs, **Test Connection** (Alt+T) without sending any speech, save it with the Save button (Alt+S); keys go to Windows Credential Manager, never into settings. Then choose it as the speech engine; you are asked before anything is sent, and No is the default. The built-in engines stay the default. The same in QUILL and QUILL Transcribe.

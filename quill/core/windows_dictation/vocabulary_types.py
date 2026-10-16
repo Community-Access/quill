@@ -112,6 +112,11 @@ class Command(StrEnum):
     REVIEW_RESTORE = "review_restore"
     REVIEW_INSERT = "review_insert"
     REVIEW_DISCARD = "review_discard"
+    # 2026-10-16 (D-10, D-19): correcting by replacing, and by paragraph
+    # (corrections.py; in another program, external_edits.py).
+    REPLACE_WORDS = "replace_words"
+    CHANGE_THAT = "change_that"
+    DELETE_PARAGRAPH = "delete_paragraph"
 
 
 @dataclass(frozen=True, slots=True)

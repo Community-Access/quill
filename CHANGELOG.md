@@ -2,6 +2,38 @@
 
 ## 1.0.0
 
+### Dictation: replace, change that, delete by paragraph, a second opinion, kept revisions, and correcting in other programs (D-19, D-10, 2026-10-16)
+
+dict.md D-19 and D-10; design record section 27. Shared code, so QUILL, QUILL
+Lite, QUILL Transcribe and Inkwell's Dictate Anywhere get the same commands.
+
+- **New commands** in the one table (`vocabulary_commands.py`, so "What can I
+  say" and the generated `dictation-commands.md` follow): "replace X with Y"
+  (`Command.REPLACE_WORDS`, nearest X before the cursor, else after, through
+  `targets.find_target`), "change that to Y" (`CHANGE_THAT`) and "delete
+  previous paragraph" / "delete last paragraph" (`DELETE_PARAGRAPH`). They work
+  bare with strict mode off and always after the command word; a replace that
+  finds nothing is written as text bare and writes nothing after the word.
+- **A second opinion for "correct that"**: a model engine's phrase carries its
+  audio (`RecognizedPhrase.audio`, memory only, dropped at the next phrase);
+  with no engine alternates, `WorkerMixin.second_opinion` re-decodes it with the
+  other built-in engine on its own thread and offers the answer as choice 2.
+  No disk, no network. Not in Spanish.
+- **Kept revisions**: choose, replace and change that put the replaced text in
+  Recent Phrases labelled "(before correction)"; `phrase_from_entry` strips the
+  label for Insert Again and Copy.
+- **Correcting in other programs (D-10)**: correct/choose, caps that,
+  uppercase/lowercase that, replace, change that, delete last sentence and
+  delete previous paragraph join `anywhere.EXTERNAL_COMMANDS`, acting only on
+  the words the session typed, as backspace-and-retype. `external_edits.py`
+  refuses with one sentence when the focus moved, when Windows saw input after
+  dictation's own (`OwnWordsGuard`, `GetLastInputInfo` in the new read-only
+  `quill/platform/windows/input_activity.py`), or, for retyping commands, in
+  Word and Outlook (`AUTOCORRECTING_PROGRAMS`). The other program is never read.
+- New modules: `corrections.py` (`CorrectionsMixin`, first in the controller's
+  bases) and `external_edits.py`; the controller grew by two lines. Tests:
+  `tests/unit/core/test_dictation_corrections.py` (32, fakes only).
+
 ### Quill Radio station enrichment: the signed station pack, FTS5 search and Station Details (2026-10-16)
 
 Jeff's todo P2 #33, the Radio station data program. The data terms are not

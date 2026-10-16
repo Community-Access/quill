@@ -7056,7 +7056,8 @@ passage and transcribes it afterwards, Live Dictation writes as you go.
 The same submenu has more windows:
 
 - **Recent Phrases...** (`Shift+F11`) lists the last twenty phrases of the
-  session, with Insert Again and Copy.
+  session, with Insert Again and Copy. Words a correction replaced are there
+  too, marked "(before correction)", so nothing a correction changed is lost.
 - **My Words and Phrases...** (`Alt+Shift+F10`) is a window with Add Word, Add
   Phrase, Add Correction, Edit and Remove. It edits your `dictation.md` file for
   you. **Import...** and **Export...** move the list to another computer or
@@ -7395,7 +7396,7 @@ middle of a sentence is written as words, just as you meant it.
 - "undo that"
 - "select that"
 - "capitalize that", "all caps that", "no caps that"
-- "delete word", "delete sentence"
+- "delete word", "delete sentence", "delete previous paragraph"
 - "read that"
 - "go to beginning of line", "go to end of line", "go to top", "go to end of
   document"
@@ -7410,6 +7411,8 @@ middle of a sentence is written as words, just as you meant it.
 
 - "select" and some words, "go to", "go before" or "go after" and some words,
   "correct" and some words (see "Moving and selecting by voice")
+- "replace" some words "with" new words, and "change that to" and new words
+  (see "Replace and change that")
 - "paste clip three", "insert snippet" and a name, "insert abbreviation" and a
   trigger (see "Snippets and clips by voice")
 - "switch to Spanish" (see "Switching between English and Spanish")
@@ -7505,15 +7508,59 @@ and the number." Then say **"choose one"**, **"choose two"** or **"choose
 three"**, and that guess takes the place of what was written. You hear
 "Changed to:" and the new words.
 
-Only **Windows speech recognition** keeps other guesses. Moonshine, Whisper,
-the optional models and OpenAI give one answer each, so with them "correct
-that" tells you there is nothing to choose from. Say "scratch that" and say it
-again, or add a correction in **My Words and Phrases** so it comes out right
-next time.
+**Windows speech recognition** keeps its own other guesses. Moonshine,
+Whisper and the optional models give one answer each, so with them "correct
+that" asks for a **second opinion** instead: the other built-in engine listens
+to your last phrase again. You hear "Listening again with Whisper." (or
+Moonshine), and a moment later both answers: "1: the whether is nice. 2: the
+weather is nice. Say choose and the number." Say **"choose two"** to take the
+second. If both engines heard the same words, you are told so, and nothing
+changes. Whisper listens again after Moonshine, and Moonshine after Whisper or
+a downloaded model.
+
+The second opinion uses only the sound of your last phrase, kept in memory
+until you say the next one: nothing is saved to disk and nothing goes over the
+internet. It is not offered in Spanish, where only Whisper understands you, or
+with OpenAI or a speech company. Then "correct that" tells you there is nothing
+to choose from: say "scratch that" and say it again, or add a correction in
+**My Words and Phrases** so it comes out right next time.
+
+Whatever a correction replaced is not lost. It goes into **Recent Phrases**
+(`Shift+F11`, in the Live Dictation submenu) marked "(before correction)", just after the corrected
+words, so you can put it back with Insert Again or copy it.
 
 With any engine you can also say **"correct" and the words** that came out
 wrong, then say the right ones (see "Moving and selecting by voice"), or **"spell
 that"** to spell the last phrase out (see "Letters, numbers and symbols").
+
+##### Replace and change that: fixing words without retyping them
+
+Two commands put new words in place of old ones, so you do not have to
+select anything first. Say each one at the start of a phrase.
+
+**"replace" the words "with" the new words.** Say "replace Tuesday with
+Wednesday" and the nearest "Tuesday" before the cursor becomes "Wednesday";
+if there is none before the cursor, QUILL looks after it. The new words take
+the capital and the closing full stop of the old ones, and the cursor stays
+where it was, so you can carry on dictating. You hear "Replaced Tuesday with
+Wednesday." If the words are not there, what you said is written as ordinary
+text, as with "select" (you hear "Not found, written as text."; say "scratch
+that" to take it away). After the command word, "QUILL replace Tuesday with
+Wednesday", nothing is written when the words are not found.
+
+**"change that to" and the new words** replaces the whole phrase you dictated
+last. You said "see you Thursday." and meant Friday: say "change that to see
+you Friday", and you hear "Changed to: See you Friday." The leading space, the
+capital and the closing full stop stay as they were.
+
+**"delete previous paragraph"** (or "delete last paragraph") deletes the
+paragraph just before the cursor, from its start up to the cursor, with the
+blank line in front of it. Say it again to delete the one before. If text is
+selected, the selection is deleted instead.
+
+Replace and change that keep what they replaced in Recent Phrases, marked
+"(before correction)". "Scratch that" straight after a replace inside your last
+phrase takes away the whole corrected phrase.
 
 ##### Speech engines for Live Dictation
 
