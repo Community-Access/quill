@@ -842,6 +842,37 @@ there. Shared code (`quill/core/ai/gateway_catalogue.py`,
 `quill/ui/hosted_ai_pad_catalogue.py`), so QUILL has it in the same release
 (family rule 10).
 
+**QUILL's saved conversations, Prompt Library and word-level review
+(2026-10-15).** Brought from QUILL through shared code, never copied, with QUILL
+moved onto the extracted pieces in the same change. Requirements: every AI
+conversation is saved as it goes in QUILL's session format
+(`quill/core/ai/sessions.py`, `record_exchange`) in QUILL Lite's own
+`ai-sessions` folder, and **Saved Conversations** (Alt+V in the conversation
+window) opens one to continue or deletes one after asking; **Prompt Library**
+(Ctrl+7) is QUILL's `PromptLibraryDialog` over QUILL's library format
+(`prompts.json`, `.pqp` packs) in QUILL Lite's data folder, and Run fills the
+prompt, closes, and sends it as a general question, refusing before sending if
+it is over the input ceiling; **Review Changes** in the result window opens
+QUILL's Review AI Changes (`quill/ui/ai_diff_review_dialog.py`), offered only
+when Replace is and the answer differs, and applies only accepted changes as one
+undo step. Every control in the three windows has F1 help.
+
+**Answer delivery and the Chat Key (2026-10-15).** No spec existed, so the
+minimum: the pad's **Put the answer in** list chooses the AI Result window
+(default), the document at the caret (one undo step, read aloud), or the
+clipboard (read aloud; falls back to the window if the clipboard is busy), kept
+as `ai_answer_delivery` (QUILL's field name too) and applied to every answer.
+**Ask AI a Question** (Ctrl+6), the Chat Key, opens the pad on Ask a General
+Question with the caret in the question box.
+
+**Web search on the free AI (2026-10-15).** The service's `web_search` feature
+ships off behind a feature flag, ten searches per account per month; while on,
+the catalogue offers **Search the web** in the pad. **Web Searches Left**
+(Ctrl+9) reads `/v1/config`'s `web_search` entry and `/v1/quota`'s count and
+says how many are left, or that search is not offered; on an own key or plan it
+says search is the free service's. QUILL has the same three commands on the same
+three chords (rule 2).
+
 ### 5.6c Your own API key: a provider chosen, never inferred (1.2, qc.md X-07)
 
 **Use My Own API Key** (`Alt+F2`, formerly Use My Own OpenAI Key) sends AI help

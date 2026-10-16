@@ -87,6 +87,23 @@ SEED_DEFAULTS: dict[str, float] = {
     "monthly_cost_cap_usd": 0.10,
 }
 
+#: Web searches per account per month (2026-10-15). The server constant the
+#: feature is capped by: the fail-safe for ``feature_cap.web_search`` and the
+#: value ``flask seed-config`` and migration 009 write. An operator can move it
+#: on the Limits page like any other feature cap; it is a constant here so the
+#: number a missing row falls back to is the deliberate one. Ten, because every
+#: search is billed by the provider on top of its tokens (about a cent), so the
+#: cap is what bounds that line of the bill -- see :data:`WEB_SEARCH_CALL_COST_USD`.
+WEB_SEARCH_MONTHLY_CAP = 10
+
+#: What one web search is reckoned to cost on top of its tokens, in dollars:
+#: the provider's per-search charge, rounded up. Recorded against the global
+#: budget with every search; **not** against the person's own monthly cost
+#: ceiling, which was sized for text requests and would otherwise close every
+#: other feature after a handful of searches. The search cap above is what
+#: bounds a person's share of this cost.
+WEB_SEARCH_CALL_COST_USD = 0.03
+
 # Per-feature monthly caps are a distinct family of config keys
 # (feature_cap.<feature>) with their own fail-safes, since they're ceilings
 # *within* the overall monthly total, not standalone limits.
@@ -121,6 +138,8 @@ _FEATURE_CAP_FAIL_SAFE_DEFAULTS: dict[str, float] = {
     "continue": 60,
     "email_reply": 60,
     "translate": 60,
+    # Switched off until an operator turns it on (app/prompts.py OPT_IN_FEATURES).
+    "web_search": WEB_SEARCH_MONTHLY_CAP,
     "alt_text": 0,
 }
 
@@ -356,8 +375,14 @@ def check_feature_enabled(app, feature: str) -> None:
     own explanation for exactly this.
     """
     from app.models import FeatureFlag
+    from app.prompts import OPT_IN_FEATURES
 
     flag = db.session.get(FeatureFlag, feature)
+    if flag is None and feature in OPT_IN_FEATURES:
+        # An opt-in feature with no row has never been switched on: off, and
+        # said in its own words. The other features default to on when their
+        # row is missing; this one defaults the expensive way round.
+        raise FeatureUnavailable("feature", OPT_IN_FEATURES[feature])
     if flag is not None and not flag.enabled:
         reason = (flag.disabled_reason or "").strip()
         if reason:
@@ -956,6 +981,15 @@ def remaining_quota(app, user: User) -> RemainingQuota:
     )
 
 
+def web_searches_used(app, user: User, now: datetime | None = None) -> int:
+    """How many web searches *user* has made this month, read from the same
+    counter :func:`check_request_allowed` increments for the feature cap.
+    Display only, like everything ``/v1/quota`` returns."""
+    now = now or datetime.now(UTC)
+    value = _redis(app).get(f"ratelimit:{user.id}:web_search:month:{_month_key(now)}")
+    return int(value) if value is not None else 0
+
+
 def record_usage(
     app,
     user: User,
@@ -968,6 +1002,7 @@ def record_usage(
     status: str,
     abuse_flag: str | None = None,
     reasoning_tokens: int = 0,
+    user_cost_usd: float | None = None,
 ) -> None:
     """Write one :class:`~app.models.UsageEvent` and update the running
     monthly aggregate + the global spend counter, all in one transaction.
@@ -980,6 +1015,11 @@ def record_usage(
     ``reconcile-usage`` command) -- a crash can undercount Postgres
     aggregates temporarily, but can never let a user exceed their Redis-
     enforced ceiling.
+
+    *user_cost_usd*, when given, is what counts against the person's own
+    monthly cost ceiling instead of *estimated_cost_usd*; the usage event and
+    the global budget always get the full cost. Only a web search passes it
+    (its per-search charge is bounded by the search cap, not the ceiling).
     """
     from app.models import UsageEvent
 
@@ -1007,7 +1047,9 @@ def record_usage(
         )
         db.session.add(summary)
     summary.request_count += 1
-    summary.total_cost_usd = float(summary.total_cost_usd) + estimated_cost_usd
+    summary.total_cost_usd = float(summary.total_cost_usd) + (
+        estimated_cost_usd if user_cost_usd is None else user_cost_usd
+    )
 
     db.session.commit()
 

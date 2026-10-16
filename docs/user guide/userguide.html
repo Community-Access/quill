@@ -11207,6 +11207,21 @@ are in</td>
 <td>Ask a question about what you are writing</td>
 </tr>
 <tr>
+<td><code>Ctrl+6</code></td>
+<td>Ask AI a Question…</td>
+<td>The Chat Key: the pad, with the caret in the question box</td>
+</tr>
+<tr>
+<td><code>Ctrl+7</code></td>
+<td>Free AI Prompt Library…</td>
+<td>Run one of your saved prompts on the selection, on the free AI</td>
+</tr>
+<tr>
+<td><code>Ctrl+9</code></td>
+<td>Web Searches Left</td>
+<td>How many of this month’s web searches are left</td>
+</tr>
+<tr>
 <td><code>Ctrl+Alt+Shift+F2</code></td>
 <td>Free AI Usage…</td>
 <td>What you have used and what is left</td>
@@ -11273,7 +11288,10 @@ are the same as well. Usage and Connect differ: in QUILL,
 <code>Ctrl+Alt+Shift+F7</code> to <code>F12</code> open the other
 QuillVille apps, so QUILL uses <code>F2</code> and <code>F4</code> for
 those two, while QUILL Lite, which has no apps to open, uses
-<code>Ctrl+Alt+Shift+F9</code> and <code>F10</code>.</p>
+<code>Ctrl+Alt+Shift+F9</code> and <code>F10</code>. The Chat Key, the
+Prompt Library and Web Searches Left (<code>Ctrl+6</code>,
+<code>Ctrl+7</code> and <code>Ctrl+9</code>) are the same commands on
+the same keys in QUILL Lite.</p>
 <h4 id="what-it-works-on">What it works on</h4>
 <p>The free AI works on the selection. With nothing selected it takes
 the paragraph you are in, or else the section. It never sends the whole
@@ -11284,6 +11302,59 @@ buttons, and both go through the ordinary undo list. If you typed over
 the text while the answer was on its way, Replace is not offered, and
 QUILL tells you so instead of writing the answer somewhere it does not
 belong.</p>
+<p>Beside Replace is <strong>Review Changes…</strong>. It opens
+<strong>Review AI Changes</strong>, the same review window QUILL’s AI
+agents use: every change the answer would make to your selection, one
+per line, and for a small change the exact words that differ and the
+sentence they are in. Uncheck any change you want to keep as it was,
+then apply the rest. It goes in as one edit, so <code>Ctrl+Z</code>
+takes it all back.</p>
+<h4 id="where-the-answer-goes">Where the answer goes</h4>
+<p>The pad has a list called <strong>Put the answer in</strong>, with
+three choices:</p>
+<ul>
+<li><strong>The AI Result window</strong> (the first choice and the
+starting one). You read the answer first and then choose Replace, Review
+Changes, Insert Below, Copy, Try Again or Follow Up.</li>
+<li><strong>My document, at the cursor.</strong> The answer goes
+straight into your document where the cursor is, as one edit
+<code>Ctrl+Z</code> takes back, and QUILL reads it aloud.</li>
+<li><strong>The clipboard.</strong> The answer goes on the clipboard and
+QUILL reads it aloud. Your document does not change.</li>
+</ul>
+<p>QUILL remembers your choice (the setting
+<code>ai_answer_delivery</code>) until you change it, and it applies to
+every answer: from the pad, the Chat Key and the Prompt Library.</p>
+<h4 id="the-chat-key-ctrl6">The Chat Key (Ctrl+6)</h4>
+<p>Press <code>Ctrl+6</code> (<strong>AI &gt; Ask AI a
+Question…</strong>) to open the pad on <strong>Ask a general
+question</strong> with the caret already in <strong>Your
+question</strong>. Type your question and press <code>Enter</code>; the
+answer arrives the way you chose in <strong>Put the answer in</strong>.
+Only your question is sent, nothing from your document.</p>
+<h4 id="your-prompts-on-the-free-ai-ctrl7">Your prompts on the free AI
+(Ctrl+7)</h4>
+<p><code>Ctrl+7</code> (<strong>AI &gt; Free AI Prompt
+Library…</strong>) opens the same <strong>Prompt Library</strong> as
+<strong>AI &gt; Prompt Library</strong>: QUILL’s built-in prompts, the
+ones you wrote, and the ones your Quillins add. Choose a prompt and
+press <strong>Run with AI</strong>. The window closes, your selection is
+put where the prompt says <code>{selection}</code>, and the prompt goes
+to QUILL’s free AI as a general question, using one request. The answer
+arrives the way you chose. If the prompt with your text in it is bigger
+than the free limit allows, QUILL says so and sends nothing.</p>
+<h4 id="searching-the-web-ctrl9">Searching the web (Ctrl+9)</h4>
+<p>QUILL’s free service can search the web for you, ten times a month.
+When the service has search switched on, the pad’s list ends with
+<strong>Search the web</strong>: type a question, press
+<strong>Send</strong>, and the answer comes back with the sites it used.
+Each search also uses one ordinary request.</p>
+<p>Press <code>Ctrl+9</code> (<strong>AI &gt; Web Searches
+Left</strong>) to hear how many of this month’s searches are left and
+when they start again. If the service is not offering web search at the
+moment, <code>Ctrl+9</code> says that instead. Searching is part of the
+free service only; with your own API key or ChatGPT plan it is not
+offered.</p>
 <p>You never wait for it, either. Requests run in the background, so you
 can keep typing, save, switch documents or close the window while an
 answer is coming.</p>
@@ -11338,6 +11409,14 @@ Last Reply Below</strong> and <strong>New Conversation</strong>.</li>
 </ol>
 <p>If you started with a question about the document, each follow-up
 keeps sending the same passages, so you can keep asking about them.</p>
+<p>Every conversation is saved on this computer as it goes, in the same
+place Ask Quill keeps its sessions, so <strong>AI Session
+Branches</strong> shows them too. Press <strong>Saved
+Conversations…</strong> in the conversation window to see them, newest
+first. Press <code>Enter</code> on one to open it and carry on where it
+left off, or <strong>Delete</strong> to remove it (QUILL asks first).
+<strong>New Conversation</strong> starts a new saved conversation; the
+old one stays saved.</p>
 <p>On the free AI each message counts as one request, and conversations
 have a monthly share of 40 of your 100 requests. The conversation so far
 goes with each message only as far as the ordinary size limit allows, so

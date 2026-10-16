@@ -293,6 +293,9 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
     # Which company the own key belongs to: "openai" or "gemini". An explicit
     # choice made in Use My Own AI Key, never inferred (core/ai/own_key.py).
     ai_own_key_provider: str = "openai"
+    # Where a hosted-AI answer goes: "window", "cursor" or "clipboard" (QUILL
+    # Lite's field too; core/ai/answer_delivery.py). Chosen in the AI Assistant.
+    ai_answer_delivery: str = "window"
     markdown_clipboard_format: str = "text"  # Copy With Source: "text", "html" or "rtf"
     markdown_profile_id: str = "standard"
     citation_style: str = "footnotes"

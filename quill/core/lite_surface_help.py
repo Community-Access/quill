@@ -342,6 +342,37 @@ PURPOSES.update({
         "conversation above, so you can read it again. Nothing goes into your "
         "document until you choose to put it there."
     ),
+    # 2026-10-15: QUILL's saved conversations, Prompt Library and word-level
+    # review, reached from the free AI in both editors.
+    "Saved AI Conversations": (
+        "Your saved AI conversations, newest first. Every conversation with the AI "
+        "is saved on this computer as it goes. Press Enter on one to open it and "
+        "carry on where it left off; Delete removes one after asking."
+    ),
+    "Delete Conversation": (
+        "Asks whether to delete the saved conversation. Yes deletes it from this "
+        "computer for good; No keeps it."
+    ),
+    "Prompt Library": (
+        "Prompts you keep for the AI: QUILL's own and the ones you write. Choose "
+        "one and Run with AI to send it with your selection filled in where it "
+        "says {selection}. New, Edit, Disable and Delete manage the list; Import "
+        "and Export share prompts as a prompt pack file."
+    ),
+    "New Prompt": (
+        "Write a prompt to keep: its name, its category and the instruction itself. "
+        "Type {selection} where the text you run it on should go."
+    ),
+    "Edit Prompt": (
+        "Change a prompt's name, category or instruction. Save keeps the change; "
+        "Cancel leaves the prompt as it was."
+    ),
+    "Review AI Changes": (
+        "The AI's answer compared with the text it would replace, one change per "
+        "line, with the words that differ and the sentence they are in. Uncheck a "
+        "change to keep the original there, then apply; it goes in as one edit "
+        "Control Z takes back. Nothing changes until you apply."
+    ),
     "Use My Own AI Key": (
         "Use AI help on your own OpenAI or Google Gemini account instead of "
         "QUILL's free service. Choose the company, paste the key it gave you, "
@@ -418,6 +449,12 @@ PURPOSES.update({
 SHARED_WITH_QUILL: frozenset[str] = frozenset({
     "AI Assistant",
     "AI Conversation",
+    "Saved AI Conversations",
+    "Delete Conversation",
+    "Prompt Library",
+    "New Prompt",
+    "Edit Prompt",
+    "Review AI Changes",
     "AI Usage",
     "Ask About an Image",
     "QUILL AI Sign-In",

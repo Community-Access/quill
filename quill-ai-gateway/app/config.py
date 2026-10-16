@@ -57,6 +57,13 @@ class Config:
     OPENAI_MODEL = os.environ.get("GATEWAY_OPENAI_MODEL", "gpt-6-luna")
     OPENAI_BASE_URL = os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1")
     OPENAI_TIMEOUT_SECONDS = float(os.environ.get("GATEWAY_OPENAI_TIMEOUT", "30"))
+    # The model the ``web_search`` feature calls (2026-10-15). Web search is a
+    # feature flag that ships off (app/prompts.py::OPT_IN_FEATURES); this is
+    # only read once an operator turns it on. A search-capable model, because
+    # the ordinary one cannot search.
+    OPENAI_SEARCH_MODEL = os.environ.get(
+        "GATEWAY_OPENAI_SEARCH_MODEL", "gpt-4o-mini-search-preview"
+    )
 
     # --- Admin allowlist ---------------------------------------------------
     # Comma-separated device_ids (or, once email accounts exist, email

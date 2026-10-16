@@ -221,6 +221,7 @@ class Settings(DictationSettings):
     ai_privacy_accepted_version: int = 0
     ai_own_key_model: str = ""  # own-key AI model; key in the OS store (core/ai/own_key.py)
     ai_own_key_provider: str = "openai"  # or "gemini": the explicit choice, QUILL's field too
+    ai_answer_delivery: str = "window"  # or cursor/clipboard; QUILL's field (ai/answer_delivery)
     #: Whether reopening asks first: "always", "when_it_matters" or "never".
     #: Same field name and same three values as QUILL, because it is the same
     #: question -- see ``quill/core/session_restore.py``, which answers it for

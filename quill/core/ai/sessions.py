@@ -443,46 +443,83 @@ def format_comparison(session: WritingSession, left_turn_id: str, right_turn_id:
 # ---------------------------------------------------------------------------
 
 
-def sessions_dir() -> Path:
-    return app_data_dir() / "ai-sessions"
+#: The folder name sessions live in, under whichever app's data folder.
+SESSIONS_FOLDER = "ai-sessions"
 
 
-def _session_path(session_id: str) -> Path:
+def sessions_dir(directory: Path | None = None) -> Path:
+    """Where sessions are kept: *directory*, else QUILL's ``ai-sessions``.
+
+    *directory* lets the shared hosted-AI conversation window keep its
+    conversations under whichever app it runs in -- QUILL's own data folder
+    (the same folder Ask Quill writes, so AI Session Branches sees them too)
+    or QUILL Lite's -- with this one store and its one format.
+    """
+    return directory if directory is not None else app_data_dir() / SESSIONS_FOLDER
+
+
+def _session_path(session_id: str, directory: Path | None = None) -> Path:
     # Guard against path traversal in the identifier.
     safe = "".join(ch for ch in session_id if ch.isalnum() or ch in "-_")
     if not safe or safe != session_id:
         raise ValueError(f"Unsafe session id: {session_id!r}")
-    return sessions_dir() / f"{safe}.json"
+    return sessions_dir(directory) / f"{safe}.json"
 
 
-def save_session(session: WritingSession) -> Path:
+def save_session(session: WritingSession, *, directory: Path | None = None) -> Path:
     """Persist a session atomically and return its path."""
 
-    path = _session_path(session.session_id)
+    path = _session_path(session.session_id, directory)
     write_json_atomic(path, session.to_dict())
     return path
 
 
-def load_session(session_id: str) -> WritingSession | None:
-    path = _session_path(session_id)
+def record_exchange(
+    session: WritingSession | None,
+    user_text: str,
+    assistant_text: str,
+    *,
+    directory: Path | None = None,
+) -> WritingSession | None:
+    """Add one question and its answer to *session* and save it.
+
+    Starts a session titled after the first message when *session* is
+    ``None``. Returns the updated session, or the one it was given when there
+    is nothing to record (an empty side). Extracted from Ask Quill's panel
+    (``quill/ui/assistant_panel.py``) so the hosted-AI conversation window
+    saves the same way into the same store; both call this.
+    """
+    if not user_text.strip() or not assistant_text.strip():
+        return session
+    if session is None:
+        title = " ".join(user_text.split())[:60] or "Writing session"
+        session = new_session(title)
+    session = append_turn(session, ROLE_USER, user_text)
+    session = append_turn(session, ROLE_ASSISTANT, assistant_text)
+    save_session(session, directory=directory)
+    return session
+
+
+def load_session(session_id: str, *, directory: Path | None = None) -> WritingSession | None:
+    path = _session_path(session_id, directory)
     data = read_json(path, default=None)
     if not isinstance(data, dict):
         return None
     return WritingSession.from_dict(data)
 
 
-def delete_session(session_id: str) -> bool:
-    path = _session_path(session_id)
+def delete_session(session_id: str, *, directory: Path | None = None) -> bool:
+    path = _session_path(session_id, directory)
     if path.exists():
         path.unlink()
         return True
     return False
 
 
-def list_sessions() -> tuple[SessionSummary, ...]:
+def list_sessions(*, directory: Path | None = None) -> tuple[SessionSummary, ...]:
     """List saved sessions, most recently updated first."""
 
-    directory = sessions_dir()
+    directory = sessions_dir(directory)
     if not directory.exists():
         return ()
     summaries: list[SessionSummary] = []

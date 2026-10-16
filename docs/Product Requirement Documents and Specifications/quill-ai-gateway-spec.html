@@ -780,6 +780,42 @@ path. So a new text tool is a template and a catalogue entry in
 on the free service only, because its instructions live there. No new
 call: the catalogue rides on the existing <code>/v1/config</code>
 fetch.</p>
+<p><strong>Web search (2026-10-15), built and switched off.</strong>
+<code>web_search</code> is the one feature in
+<code>app/prompts.py::OPT_IN_FEATURES</code>: built and tested, seeded
+with its flag <strong>off</strong> (migration 009,
+<code>flask seed-config</code>), and a missing flag row refuses it with
+its own sentence rather than defaulting on. An operator turns it on from
+the Features page once the global budget has room. While on:</p>
+<ul>
+<li>It goes through <code>app/openai_client.py::search</code>, never
+<code>complete</code>, with its own body allowlist
+<code>SEARCH_BODY_KEYS</code> (the ordinary four minus
+<code>reasoning_effort</code>, plus <code>web_search_options</code>,
+sent empty). <code>ALLOWED_BODY_KEYS</code> is unchanged, so no other
+feature can carry a search. The model is
+<code>GATEWAY_OPENAI_SEARCH_MODEL</code> (default
+<code>gpt-4o-mini-search-preview</code>).</li>
+<li>Each account gets <code>WEB_SEARCH_MONTHLY_CAP</code> (10, a server
+constant in <code>app/limits.py</code>) searches a month: the fail-safe
+and seed of <code>feature_cap.web_search</code>, which the Limits page
+can move. Each search is also an ordinary counted request.</li>
+<li>The provider’s per-search charge, reckoned at
+<code>WEB_SEARCH_CALL_COST_USD</code> ($0.03), is added to the usage
+event and the global budget, but <strong>not</strong> to the person’s
+monthly cost ceiling (sized for text requests, it would close every
+other feature after three searches); the search cap bounds it. At ten
+searches the worst case per active person rises by about $0.30 a
+month.</li>
+<li><code>GET /v1/config</code> carries
+<code>web_search: {"enabled", "monthly_cap"}</code> always, and a
+<code>Search the web</code> catalogue row (input <code>prompt</code>)
+while it is on, so both editors’ pads offer it with no release.
+<code>GET /v1/quota</code> carries <code>web_search_monthly_cap</code>
+(this account’s, after any override) and <code>web_searches_used</code>.
+QUILL and QUILL Lite’s <strong>Web Searches Left</strong>
+(<code>Ctrl+9</code>) reads both.</li>
+</ul>
 <h3
 id="53-reasoning-effort-is-a-code-constant-per-feature-at-the-floor">5.3
 Reasoning effort is a code constant, per feature, at the floor</h3>

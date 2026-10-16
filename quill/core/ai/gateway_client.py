@@ -112,6 +112,11 @@ class GatewayLimits:
     #: in :mod:`quill.core.ai.gateway_catalogue`. Empty from a server that
     #: predates it, and from one that sent something unreadable.
     features: tuple[CatalogueFeature, ...] = ()
+    #: Whether the service offers web search, and how many searches a month
+    #: each account gets (``web_search`` in ``/v1/config``, 2026-10-15). Off
+    #: and zero from a server that predates it, which is the honest answer.
+    web_search_enabled: bool = False
+    web_search_monthly_cap: int = 0
 
     def feature_available(self, feature: str) -> bool:
         """Whether *feature* is on. Unknown features are treated as **off**.
@@ -127,6 +132,8 @@ class GatewayLimits:
     @classmethod
     def from_json(cls, data: dict[str, Any]) -> GatewayLimits:
         flags = data.get("feature_flags")
+        search = data.get("web_search")
+        search = search if isinstance(search, dict) else {}
         return cls(
             max_input_tokens=int(data.get("max_input_tokens", 1500)),
             max_output_tokens=int(data.get("max_output_tokens", 500)),
@@ -134,6 +141,8 @@ class GatewayLimits:
             hosted_ai_enabled=bool(data.get("hosted_ai_enabled", True)),
             feature_flags={str(k): bool(v) for k, v in (flags or {}).items()},
             features=parse_catalogue(data.get("features")),
+            web_search_enabled=bool(search.get("enabled", False)),
+            web_search_monthly_cap=max(0, _int(search.get("monthly_cap"))),
         )
 
 
@@ -158,6 +167,14 @@ class GatewayQuota:
     starter_until: str = ""
     #: The monthly allowance everybody gets once the starter one ends.
     standard_monthly_cap: int = 0
+    #: This account's web searches this month (2026-10-15); both 0 from a
+    #: server that predates web search.
+    web_search_cap: int = 0
+    web_searches_used: int = 0
+
+    @property
+    def web_searches_left(self) -> int:
+        return max(0, self.web_search_cap - self.web_searches_used)
 
     @property
     def monthly_left(self) -> int:
@@ -187,7 +204,17 @@ class GatewayQuota:
             status=str(data.get("status", "active")),
             starter_until=str(data.get("starter_until") or ""),
             standard_monthly_cap=int(data.get("standard_monthly_request_cap") or 0),
+            web_search_cap=max(0, _int(data.get("web_search_monthly_cap"))),
+            web_searches_used=max(0, _int(data.get("web_searches_used"))),
         )
+
+
+def _int(value: Any) -> int:
+    """A count from the server, or 0 when it is missing or not a number."""
+    try:
+        return int(value or 0)
+    except (TypeError, ValueError):
+        return 0
 
 
 # --------------------------------------------------------------------------- #

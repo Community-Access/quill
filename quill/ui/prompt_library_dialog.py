@@ -6,6 +6,13 @@ Buttons: Run with AI, New, Edit, Disable/Enable, Delete, Import .pqp, Export .pq
 Running a prompt sends the selected document text (passed in by the caller) to
 the configured AI provider and opens :class:`~quill.ui.ai_chat_dialog.AIResponseDialog`
 with the response.
+
+**On the free AI** (``hosted=True``, 2026-10-15) the same window is the Prompt
+Library of both editors' hosted AI (``quill/ui/hosted_ai_answers.py``). Run
+then sends nothing itself: it fills the prompt, keeps it in :attr:`chosen` and
+closes, and the caller sends it through the free service and delivers the
+answer the way every other AI answer is delivered. One library, one window,
+two ways to run -- never a second copy of either.
 """
 
 from __future__ import annotations
@@ -16,12 +23,14 @@ from typing import TYPE_CHECKING
 
 import wx
 
-from quill.core.prompt_library import CATEGORIES, Prompt, PromptLibrary
+from quill.core.prompt_fill import fill_prompt
+from quill.core.prompt_library import Prompt, PromptLibrary
 from quill.ui.dialog_contract import (
     apply_listbox_activation,
     apply_modal_ids,
     show_message_box,
 )
+from quill.ui.prompt_edit_dialog import PromptEditDialog
 
 if TYPE_CHECKING:
     from quill.core.settings import Settings
@@ -40,6 +49,7 @@ class PromptLibraryDialog:
         title: str = "",
         *,
         announce_cb: Callable[[str], None] | None = None,
+        hosted: bool = False,
     ) -> None:
         self._lib = library
         self._settings = settings
@@ -48,6 +58,10 @@ class PromptLibraryDialog:
         self._doc_title = title
         self._running = False
         self._announce = announce_cb or (lambda _: None)
+        #: Run fills the prompt and closes, for the caller to send on the free AI.
+        self._hosted = hosted
+        #: ``(prompt name, filled text)`` once Run is chosen in hosted mode.
+        self.chosen: tuple[str, str] | None = None
 
         self.dialog = wx.Dialog(
             parent,
@@ -64,10 +78,17 @@ class PromptLibraryDialog:
         left.Add(wx.StaticText(self.dialog, label="&Search:"), 0, wx.BOTTOM, 2)
         self._search = wx.TextCtrl(self.dialog)
         self._search.SetName("Search prompts")
+        self._search.SetHelpText(
+            "Type part of a prompt's name or category to narrow the list below."
+        )
         left.Add(self._search, 0, wx.EXPAND | wx.BOTTOM, 4)
         left.Add(wx.StaticText(self.dialog, label="&Prompts:"), 0, wx.BOTTOM, 2)
         self._listbox = wx.ListBox(self.dialog, style=wx.LB_SINGLE)
         self._listbox.SetName("Prompt list")
+        self._listbox.SetHelpText(
+            "Your saved prompts and the ones QUILL comes with, each after its "
+            "category. Press Enter on one to run it on the input text."
+        )
         left.Add(self._listbox, 1, wx.EXPAND)
         body.Add(left, 2, wx.EXPAND | wx.RIGHT, 8)
 
@@ -83,6 +104,9 @@ class PromptLibraryDialog:
             self.dialog, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
         )
         self._preview.SetName("Prompt text preview")
+        self._preview.SetHelpText(
+            "The instruction the chosen prompt gives the AI. Read-only; Edit changes it."
+        )
         right.Add(self._preview, 1, wx.EXPAND)
         right.Add(
             wx.StaticText(self.dialog, label="Inp&ut text (replaces {selection}):"),
@@ -92,6 +116,10 @@ class PromptLibraryDialog:
         )
         self._input = wx.TextCtrl(self.dialog, style=wx.TE_MULTILINE | wx.TE_RICH2)
         self._input.SetName("Input text for prompt")
+        self._input.SetHelpText(
+            "The text the prompt works on: what you had selected, which you can "
+            "change here. It goes where the prompt says {selection}."
+        )
         self._input.SetValue(selection)
         right.Add(self._input, 1, wx.EXPAND)
         body.Add(right, 3, wx.EXPAND)
@@ -111,7 +139,26 @@ class PromptLibraryDialog:
         self._btn_delete = wx.Button(self.dialog, wx.ID_ANY, label="&Delete")
         self._btn_import = wx.Button(self.dialog, wx.ID_ANY, label="&Import .pqp")
         self._btn_export = wx.Button(self.dialog, wx.ID_ANY, label="E&xport .pqp")
-        btn_close = wx.Button(self.dialog, wx.ID_CANCEL, label="C&lose")
+        btn_close = wx.Button(self.dialog, wx.ID_CANCEL, label="Close")
+        self._btn_run.SetHelpText(
+            "Sends the chosen prompt, with the input text filled in, to QUILL's free "
+            "AI. The answer arrives the way you chose in the AI Assistant."
+            if hosted
+            else "Sends the chosen prompt, with the input text filled in, to your AI "
+            "provider and shows the answer."
+        )
+        self._btn_new.SetHelpText("Writes a new prompt of your own.")
+        self._btn_edit.SetHelpText("Changes the chosen prompt's name, category or text.")
+        self._btn_toggle.SetHelpText(
+            "Switches the chosen prompt off or back on. A switched-off prompt stays "
+            "in the list, marked disabled."
+        )
+        self._btn_delete.SetHelpText(
+            "Deletes the chosen prompt after asking. Prompts QUILL comes with cannot be deleted."
+        )
+        self._btn_import.SetHelpText("Adds the prompts from a QUILL prompt pack file.")
+        self._btn_export.SetHelpText("Saves the prompts in this list to a prompt pack file.")
+        btn_close.SetHelpText("Closes the Prompt Library. Your prompts are already saved.")
 
         for b in (
             self._btn_run,
@@ -159,6 +206,8 @@ class PromptLibraryDialog:
             self._announce(msg)
 
     def _check_ai_configured(self) -> None:
+        if self._hosted:  # the free AI needs no model: the service chooses it
+            return
         model_id = (
             getattr(self._settings, "ai_prompt_default_model", "")
             or self._settings.ai_chat_default_model
@@ -242,6 +291,15 @@ class PromptLibraryDialog:
             )
             self._input.SetFocus()
             return
+        prompt_text = fill_prompt(
+            p.text, selection=input_text, document=self._document, title=self._doc_title
+        )
+        if self._hosted:
+            # The caller sends it on the free AI and delivers the answer; the
+            # window closing is what the reader announces.
+            self.chosen = (p.name, prompt_text)
+            self.dialog.EndModal(wx.ID_OK)
+            return
         provider_id = self._settings.ai_chat_default_provider
         model_id = self._settings.ai_prompt_default_model or self._settings.ai_chat_default_model
         if not model_id:
@@ -253,12 +311,6 @@ class PromptLibraryDialog:
                 announce=self._announce,
             )
             return
-        prompt_text = (
-            p.text
-            .replace("{selection}", input_text)
-            .replace("{document}", self._document or input_text)
-            .replace("{title}", self._doc_title)
-        )
         self._running = True
         self._update_buttons()
         self._set_status(f"Sending to {model_id}...")
@@ -302,7 +354,7 @@ class PromptLibraryDialog:
         )
 
     def _on_new(self, _event: object) -> None:
-        dlg = _PromptEditDialog(self.dialog)
+        dlg = PromptEditDialog(self.dialog)
         if dlg.show() == wx.ID_OK:
             name, text, category = dlg.get_values()
             if name and text:
@@ -315,7 +367,7 @@ class PromptLibraryDialog:
         p = self._current_prompt()
         if p is None:
             return
-        dlg = _PromptEditDialog(self.dialog, p)
+        dlg = PromptEditDialog(self.dialog, p)
         if dlg.show() == wx.ID_OK:
             name, text, category = dlg.get_values()
             if name and text:
@@ -421,94 +473,3 @@ class PromptLibraryDialog:
             self.dialog,
             announce=self._announce,
         )
-
-
-class _PromptEditDialog:
-    """Inline edit / new prompt dialog."""
-
-    def __init__(self, parent: object, prompt: Prompt | None = None) -> None:
-        self._prompt = prompt
-        is_new = prompt is None
-        self.dialog = wx.Dialog(
-            parent,
-            title="New Prompt" if is_new else f"Edit — {prompt.name}",
-            style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
-        )
-        self.dialog.SetMinSize(wx.Size(560, 420))
-
-        root = wx.BoxSizer(wx.VERTICAL)
-
-        name_row = wx.BoxSizer(wx.HORIZONTAL)
-        name_row.Add(
-            wx.StaticText(self.dialog, label="&Name:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4
-        )
-        self._name = wx.TextCtrl(self.dialog)
-        self._name.SetName("Prompt name")
-        name_row.Add(self._name, 1)
-        root.Add(name_row, 0, wx.EXPAND | wx.ALL, 8)
-
-        cat_row = wx.BoxSizer(wx.HORIZONTAL)
-        cat_row.Add(
-            wx.StaticText(self.dialog, label="&Category:"),
-            0,
-            wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
-            4,
-        )
-        self._category = wx.Choice(self.dialog, choices=list(CATEGORIES))
-        self._category.SetName("Prompt category")
-        cat_row.Add(self._category)
-        root.Add(cat_row, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
-
-        root.Add(
-            wx.StaticText(
-                self.dialog, label="Prompt &text — use {selection}, {document}, {title}:"
-            ),
-            0,
-            wx.LEFT | wx.RIGHT | wx.BOTTOM,
-            2,
-        )
-        self._text = wx.TextCtrl(self.dialog, style=wx.TE_MULTILINE | wx.TE_RICH2)
-        self._text.SetName("Prompt text")
-        root.Add(self._text, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
-
-        btn_sizer = wx.StdDialogButtonSizer()
-        ok_btn = wx.Button(self.dialog, wx.ID_OK, label="&Save")
-        cancel_btn = wx.Button(self.dialog, wx.ID_CANCEL, label="Cancel")
-        btn_sizer.AddButton(ok_btn)
-        btn_sizer.AddButton(cancel_btn)
-        btn_sizer.Realize()
-        root.Add(btn_sizer, 0, wx.EXPAND | wx.ALL, 8)
-
-        self.dialog.SetSizer(root)
-
-        apply_modal_ids(
-            self.dialog,
-            affirmative_id=wx.ID_OK,
-            affirmative_label="Save",
-            cancel_id=wx.ID_CANCEL,
-        )
-
-        if prompt:
-            self._name.SetValue(prompt.name)
-            cat_idx = (
-                list(CATEGORIES).index(prompt.category) if prompt.category in CATEGORIES else 4
-            )
-            self._category.SetSelection(cat_idx)
-            self._text.SetValue(prompt.text)
-        else:
-            self._category.SetSelection(0)
-
-        self._name.SetFocus()
-
-    def show(self) -> int:
-        return self.dialog.ShowModal()
-
-    def close(self) -> None:
-        self.dialog.Destroy()
-
-    def get_values(self) -> tuple[str, str, str]:
-        name = self._name.GetValue().strip()
-        text = self._text.GetValue().strip()
-        cat_idx = self._category.GetSelection()
-        category = CATEGORIES[cat_idx] if 0 <= cat_idx < len(CATEGORIES) else "Custom"
-        return name, text, category

@@ -19,7 +19,14 @@ from datetime import datetime
 
 from quill.core.ai.gateway_client import GatewayQuota
 
-__all__ = ["describe_quota", "starter_ends"]
+__all__ = ["WEB_SEARCH_OFF", "describe_quota", "describe_web_searches", "starter_ends"]
+
+#: Said when the service does not offer web search: switched off there (it
+#: ships off), or a server that predates it.
+WEB_SEARCH_OFF = (
+    "QUILL's free AI is not offering web search right now. Everything else in "
+    "the AI menu still works."
+)
 
 
 def starter_ends(quota: GatewayQuota, *, now: datetime | None = None) -> datetime | None:
@@ -73,4 +80,28 @@ def describe_quota(quota: GatewayQuota, *, now: datetime | None = None) -> str:
     # No cap beside today's number: it is the smaller of the two the server
     # sent, so "of 20" beside a month with 15 left would contradict itself.
     sections.append(f"Today\n{quota.daily_left} left.")
+    if quota.web_search_cap > 0:
+        sections.append(f"Web searches\n{describe_web_searches(True, quota)}")
     return "\n\n".join(sections)
+
+
+def describe_web_searches(enabled: bool, quota: GatewayQuota | None) -> str:
+    """How many web searches are left this month, as one sentence.
+
+    *enabled* is the service's answer from ``/v1/config``; *quota* is this
+    account's, from ``/v1/quota``. Both numbers are the server's: an operator
+    can change the monthly number at any time, so none is written here.
+    """
+    if not enabled or quota is None or quota.web_search_cap <= 0:
+        return WEB_SEARCH_OFF
+    left = quota.web_searches_left
+    reset = (quota.reset_at or "")[:10] or "the 1st"
+    if left <= 0:
+        return (
+            f"No web searches left this month; all {quota.web_search_cap} are used. "
+            f"They start again {reset}."
+        )
+    plural = "search" if left == 1 else "searches"
+    return (
+        f"{left} of {quota.web_search_cap} web {plural} left this month. They start again {reset}."
+    )

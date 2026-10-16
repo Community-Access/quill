@@ -27,11 +27,18 @@ punctuation -- and by default the message is sent at the pause, the reply is
 read aloud as always, and the microphone is muted while it is read, so the
 reply is not heard as the next message. Dictation Settings can make it wait
 for Enter instead.
+
+**Saved conversations** (2026-10-15): every exchange is saved on this computer
+the way QUILL's Ask Quill has always saved its own -- a writing session in the
+app's ``ai-sessions`` folder, through the one recorder both use
+(:func:`quill.core.ai.sessions.record_exchange`). **Saved Conversations** lists
+them (:mod:`quill.ui.hosted_ai_saved_chats`) and opens one here to carry on.
 """
 
 from __future__ import annotations
 
 from collections.abc import Callable
+from pathlib import Path
 from typing import Any
 
 import wx
@@ -55,6 +62,7 @@ class AiChatFrame(wx.Frame):
         on_insert: Callable[[str], None] | None = None,
         conversation: Conversation | None = None,
         first_message: str = "",
+        store: Path | None = None,
     ) -> None:
         super().__init__(parent, title="AI Conversation")
         #: Told each reply as it is read aloud: dictation mutes its microphone.
@@ -65,6 +73,10 @@ class AiChatFrame(wx.Frame):
         self._conversation = conversation or Conversation()
         self._told_set_aside = False
         self._busy = False
+        #: Where exchanges are saved (an ``ai-sessions`` folder), or None.
+        self._store = store
+        #: The saved session this conversation is being written to.
+        self._session: Any = None
 
         panel = wx.Panel(self)
         sizer = wx.BoxSizer(wx.VERTICAL)
@@ -114,6 +126,14 @@ class AiChatFrame(wx.Frame):
         copy.Bind(wx.EVT_BUTTON, lambda _e: self._copy_last())
 
         extra = [self._send_button, fresh, copy]
+        if store is not None:
+            saved = wx.Button(panel, label="Saved Con&versations...")
+            saved.SetHelpText(
+                "Lists the conversations saved on this computer, newest first, so you "
+                "can open one and carry on, or delete one."
+            )
+            saved.Bind(wx.EVT_BUTTON, lambda _e: self._open_saved())
+            extra.append(saved)
         if on_insert is not None:
             insert = wx.Button(panel, label="&Insert Last Reply Below")
             insert.SetHelpText(
@@ -157,6 +177,11 @@ class AiChatFrame(wx.Frame):
             if self._conversation.excerpts
             else " Nothing from your document is sent."
         )
+        if self._store is not None:
+            excerpts += (
+                " The conversation is saved on this computer as it goes; Saved "
+                "Conversations opens it again."
+            )
         note = getattr(self._service, "conversation_note", None)
         if callable(note):
             return str(note()) + excerpts
@@ -225,6 +250,7 @@ class AiChatFrame(wx.Frame):
             return
         self._conversation.add("user", message)
         self._conversation.add("assistant", text)
+        self._save_exchange(message, text)
         self._conversation.set_aside += max(0, int(dropped or 0))
         self._transcript.SetValue(self._conversation.transcript())
         self._transcript.SetInsertionPointEnd()
@@ -282,8 +308,65 @@ class AiChatFrame(wx.Frame):
 
     # -- the other buttons -------------------------------------------------- #
 
+    def _save_exchange(self, message: str, text: str) -> None:
+        """Save this exchange (the store Ask Quill uses). Never fails the reply."""
+        if self._store is None:
+            return
+        from quill.core.ai.sessions import record_exchange
+
+        try:
+            if self._session is None:
+                # A Follow Up starts with the question and answer it came
+                # from: they open the saved conversation too.
+                earlier = self._conversation.turns[:-2]
+                for asked, answered in zip(earlier[::2], earlier[1::2], strict=False):
+                    self._session = record_exchange(
+                        self._session, asked.text, answered.text, directory=self._store
+                    )
+            self._session = record_exchange(self._session, message, text, directory=self._store)
+        except Exception:  # noqa: BLE001 - a disk that will not write costs the copy only
+            pass
+
+    def _open_saved(self) -> None:
+        """Saved Conversations: choose one, and carry on with it here."""
+        if self._store is None or self._busy:
+            return
+        from quill.ui.hosted_ai_saved_chats import choose_saved_conversation
+
+        session = choose_saved_conversation(self, self._store, self._announce)
+        if session is not None:
+            self.load_session(session)
+
+    def load_session(self, session: Any) -> None:
+        """Show a saved conversation here; new messages are added to it.
+
+        Only the branch it was last on, which is the conversation as it was
+        last read. Said aloud, because the transcript changing is not where
+        focus is.
+        """
+        from quill.core.ai.sessions import current_path
+
+        conversation = Conversation()
+        for turn in current_path(session):
+            if turn.role in ("user", "assistant") and turn.text.strip():
+                conversation.add(turn.role, turn.text)
+        self._conversation = conversation
+        self._session = session
+        self._told_set_aside = False
+        self._transcript.SetValue(conversation.transcript())
+        self._transcript.SetInsertionPointEnd()
+        self._about.SetValue(self._about_text())
+        self._status.SetValue("Ready.")
+        self._message.SetFocus()
+        count = len(conversation.turns)
+        self._announce(
+            f"Opened {session.title}, {count} message{'' if count == 1 else 's'}. "
+            "Your next message carries it on."
+        )
+
     def _start_over(self) -> None:
         self._conversation = Conversation()
+        self._session = None
         self._told_set_aside = False
         self._transcript.SetValue("")
         self._about.SetValue(self._about_text())
@@ -345,9 +428,18 @@ def open_for(host: Any, *, first_message: str = "", seed: Conversation | None = 
         on_insert=host._insert_below,
         conversation=seed,
         first_message=first_message,
+        store=_conversation_store(host),
     )
     _talk_to_it(frame, host)
     host._after_agreement(lambda: host._show_ai_window(frame))
+
+
+def _conversation_store(host: Any) -> Path | None:
+    """The editor's ``ai-sessions`` folder: QUILL's is the one Ask Quill writes."""
+    from quill.core.ai.sessions import SESSIONS_FOLDER
+
+    data_dir = getattr(host._ai_host(), "data_dir", None)
+    return Path(data_dir) / SESSIONS_FOLDER if data_dir else None
 
 
 def _talk_to_it(frame: AiChatFrame, host: Any) -> None:

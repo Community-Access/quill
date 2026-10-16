@@ -259,6 +259,10 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # claim it) and not an Alt+F4 neighbour (rule 4).
     "tools.hosted_ai_chatgpt": "Alt+F5",  # rule 9; free in both editors
     "tools.hosted_ai_image": "Ctrl+F5",  # free in both editors
+    # 2026-10-15, QUILL Lite's chords (rule 2); core/lite/commands_ai.py says why.
+    "tools.hosted_ai_chat_key": "Ctrl+6",
+    "tools.hosted_ai_prompt_library": "Ctrl+7",
+    "tools.hosted_ai_web_searches": "Ctrl+9",  # rule 9 wanted longer; none was free
     "tools.dictation_tidy": "Ctrl+F3",  # free in both editors; QUILL Lite's chord
     # The dictionary (2026-10-02; quill/ui/word_tools_commands.py, shared).
     # Look Up is the dictionary without AI (DICT-2's window, now reachable and

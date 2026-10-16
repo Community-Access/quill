@@ -183,6 +183,12 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_ai_chatgpt": "tools.hosted_ai_chatgpt",
     "cmd_ai_image": "tools.hosted_ai_image",
     "cmd_ai_own_key": "tools.hosted_ai_own_key",
+    # 2026-10-15: the Chat Key, the Prompt Library on the free AI and Web
+    # Searches Left -- the shared mixin's (quill/ui/hosted_ai_answers.py), on
+    # the same three chords in both (commands_ai.py says why those).
+    "cmd_ai_chat_key": "tools.hosted_ai_chat_key",
+    "cmd_ai_prompt_library": "tools.hosted_ai_prompt_library",
+    "cmd_ai_web_searches": "tools.hosted_ai_web_searches",
     "cmd_dictation_tidy": "tools.dictation_tidy",
     # Inline notes, Toggle Task Done and Export as HTML (2026-10-04, from
     # PlanCake): QUILL's code, shared, on QUILL's chords (rule 2).

@@ -4592,6 +4592,42 @@ remote input in `quill/core/ai/gateway_catalogue.py` and unknown input kinds
 are skipped, so a new text tool on the server needs no QUILL release. It rides
 on the existing `/v1/config` fetch: no new egress site.
 
+**Saved conversations, the Prompt Library and word-level review on the free AI
+(2026-10-15).** The shared hosted-AI commands reach three things QUILL already
+had, through shared code rather than copies, so QUILL Lite has them in the same
+release (family rule 10):
+
+- The AI Conversation window saves every exchange as a writing session
+  (`quill/core/ai/sessions.py`, AI-20) through `record_exchange`, the recorder
+  Ask Quill now uses too, into the host's `ai-sessions` folder; QUILL's is Ask
+  Quill's, so AI Session Branches lists them. **Saved Conversations...** opens
+  one to carry on, or deletes one after asking.
+- **Free AI Prompt Library...** (`Ctrl+7`) opens the same `PromptLibraryDialog`
+  and the same library (Quillin prompts included) as Tools, AI, Prompt Library,
+  in hosted mode: Run fills the prompt (`quill/core/prompt_fill.py`) and the
+  shared command sends it as a general question on the free AI.
+- **Review Changes** in the AI Result window opens Review AI Changes
+  (`quill/ui/ai_diff_review_dialog.py`, the AI-7 window QUILL's agents use),
+  the answer against the selection, applied as one undo step.
+
+**Answer delivery and the Chat Key (2026-10-15).** No earlier document specified
+either, so the minimum is in `quill/core/ai/answer_delivery.py`. The pad's **Put
+the answer in** list chooses where every hosted-AI answer goes: the AI Result
+window (default; the only place Replace and Review are offered), the document at
+the caret (one undo step, read aloud), or the clipboard (read aloud; a clipboard
+another program holds falls back to the window). Stored as
+`ai_answer_delivery` in both editors' settings. **Ask AI a Question...**, the
+Chat Key (`Ctrl+6`), opens the pad on Ask a General Question with the caret in
+the question box.
+
+**Web search on the free AI (2026-10-15).** The gateway's `web_search` feature
+ships switched off behind its flag, with ten searches per account per month;
+while it is on, the catalogue offers **Search the web** in the pad. **Web
+Searches Left** (`Ctrl+9`) reads `/v1/config`'s `web_search` entry and
+`/v1/quota`'s count and says how many are left, or that search is not offered.
+Same three chords in QUILL Lite (free in both; the measurement is in
+`quill/core/lite/commands_ai.py`).
+
 **Conversations.**
 
 **Goal.** Let somebody say "shorter" or "and the second point?" without starting

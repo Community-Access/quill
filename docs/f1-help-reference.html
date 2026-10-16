@@ -4501,7 +4501,7 @@ playback to its start.</li>
 text, when one is available. Empty otherwise.</li>
 </ul>
 <h2 id="quill-lite">QUILL Lite</h2>
-<p>Control coverage: 168 audited sites (168 helped).</p>
+<p>Control coverage: 199 audited sites (199 helped).</p>
 <h3 id="every-window-and-what-it-is-for-9">Every window, and what it is
 for</h3>
 <p><strong>AI Assistant.</strong> Ask QUILL’s free AI to summarize,
@@ -4572,6 +4572,9 @@ one. Type in the search box to narrow the list, or choose a profile –
 Notepad, WordPad, Recommended, Everything – to set them all at once.
 Three areas start switched off and are found here rather than hidden:
 autocorrect, timestamped backups, and Go To Anything.</p>
+<p><strong>Delete Conversation.</strong> Asks whether to delete the
+saved conversation. Yes deletes it from this computer for good; No keeps
+it.</p>
 <p><strong>Dictation Commands.</strong> Every phrase dictation acts on,
 and what each one does, as text you can read line by line. The same list
 is in the user guide.</p>
@@ -4597,6 +4600,9 @@ as this window is open.</p>
 <p><strong>Edit Inline Note.</strong> Change what this note says, or
 delete it. The text the note is about is never changed. A note written
 into the file is changed in the file, so Undo takes the change back.</p>
+<p><strong>Edit Prompt.</strong> Change a prompt’s name, category or
+instruction. Save keeps the change; Cancel leaves the prompt as it
+was.</p>
 <p><strong>Email Reply.</strong> What the AI sent back. It is read-only
 on purpose: nothing goes into your document until you choose Replace My
 Selection or Insert Below, and either of those is a single edit that
@@ -4721,6 +4727,9 @@ taught: words spelled your way, phrases that write something longer, and
 corrections. Each change is saved at once. Import adds the new entries
 from a Markdown or CSV file after showing them, and Export saves the
 list to a file.</p>
+<p><strong>New Prompt.</strong> Write a prompt to keep: its name, its
+category and the instruction itself. Type {selection} where the text you
+run it on should go.</p>
 <p><strong>Next Paragraph.</strong> What the AI sent back. It is
 read-only on purpose: nothing goes into your document until you choose
 Replace My Selection or Insert Below, and either of those is a single
@@ -4734,6 +4743,11 @@ window. Two of them live only here: what Control N creates, and how
 often unsaved work is copied aside. The rest – theme, word wrap, and the
 editor font – are also on the View menu, where you will reach them
 faster.</p>
+<p><strong>Prompt Library.</strong> Prompts you keep for the AI: QUILL’s
+own and the ones you write. Choose one and Run with AI to send it with
+your selection filled in where it says {selection}. New, Edit, Disable
+and Delete manage the list; Import and Export share prompts as a prompt
+pack file.</p>
 <p><strong>Proofread.</strong> What the AI sent back. It is read-only on
 purpose: nothing goes into your document until you choose Replace My
 Selection or Insert Below, and either of those is a single edit that
@@ -4777,6 +4791,11 @@ place. Replace changes the match you are on and moves to the next;
 Replace All changes every one and tells you how many. In a rich text
 document Replace All asks first, because replaced text takes the
 formatting of the run it lands in.</p>
+<p><strong>Review AI Changes.</strong> The AI’s answer compared with the
+text it would replace, one change per line, with the words that differ
+and the sentence they are in. Uncheck a change to keep the original
+there, then apply; it goes in as one edit Control Z takes back. Nothing
+changes until you apply.</p>
 <p><strong>Review Dictation.</strong> Dictated words wait here before
 they are inserted. Read them, type or keep dictating to change them, ask
 the AI to change them if AI is on, and hear what changed. Control Enter
@@ -4788,6 +4807,10 @@ No is the default and sends nothing.</p>
 purpose: nothing goes into your document until you choose Replace My
 Selection or Insert Below, and either of those is a single edit that
 Control Z takes back.</p>
+<p><strong>Saved AI Conversations.</strong> Your saved AI conversations,
+newest first. Every conversation with the AI is saved on this computer
+as it goes. Press Enter on one to open it and carry on where it left
+off; Delete removes one after asking.</p>
 <p><strong>Shorter.</strong> What the AI sent back. It is read-only on
 purpose: nothing goes into your document until you choose Replace My
 Selection or Insert Below, and either of those is a single edit that
@@ -5157,6 +5180,8 @@ the conversation so far as fits.</li>
 <li><code>fresh</code>: Forgets this conversation and starts again.
 Nothing is sent.</li>
 <li><code>copy</code>: Puts the most recent reply on the clipboard.</li>
+<li><code>saved</code>: Lists the conversations saved on this computer,
+newest first, so you can open one and carry on, or delete one.</li>
 <li><code>insert</code>: Puts the most recent reply into your document
 underneath the current paragraph. Control Z takes it back.</li>
 </ul>
@@ -5258,11 +5283,6 @@ your account.</li>
 provider now, and puts AI help back on QUILL’s free service with its
 free allowance.</li>
 </ul>
-<h4 id="airesultframe-quilluihosted_ai_padpy">AiResultFrame
-(<code>quill/ui/hosted_ai_pad.py</code>)</h4>
-<ul>
-<li><code>copy</code>: Puts the answer on the clipboard.</li>
-</ul>
 <h4 id="aipadframe-quilluihosted_ai_padpy">AiPadFrame
 (<code>quill/ui/hosted_ai_pad.py</code>)</h4>
 <ul>
@@ -5277,12 +5297,22 @@ these languages are offered.</li>
 <li><code>self._send</code>: Sends the text above and uses one of your
 free requests. While a request is on its way this button is Stop, and
 pressing it stops the request.</li>
+<li><code>choice</code>: Which part of your document to send: what you
+selected, the paragraph you are in, or the whole section.</li>
+<li><code>self._delivery</code>: Where the answer goes when it arrives:
+the AI Result window, where you can read it and choose what to do; your
+document at the cursor, as one edit Control Z takes back; or the
+clipboard. Remembered until you change it.</li>
 </ul>
-<h4 id="airesultframe-quilluihosted_ai_padpy-1">AiResultFrame
-(<code>quill/ui/hosted_ai_pad.py</code>)</h4>
+<h4 id="airesultframe-quilluihosted_ai_resultpy">AiResultFrame
+(<code>quill/ui/hosted_ai_result.py</code>)</h4>
 <ul>
+<li><code>copy</code>: Puts the answer on the clipboard.</li>
 <li><code>replace</code>: Puts this in place of the text you had
 selected. Control Z takes it back.</li>
+<li><code>review</code>: Compares this with the text you had selected,
+change by change and word by word, so you can keep some changes and
+leave the rest. Nothing changes until you apply.</li>
 <li><code>insert</code>: Puts this into your document underneath the
 current paragraph. Control Z takes it back.</li>
 <li><code>again</code>: Sends the same text again. This uses one more of
@@ -5291,11 +5321,20 @@ your free requests.</li>
 ask for it shorter, ask about one part of it, or ask something new. Each
 message uses one request.</li>
 </ul>
-<h4 id="aipadframe-quilluihosted_ai_padpy-1">AiPadFrame
-(<code>quill/ui/hosted_ai_pad.py</code>)</h4>
+<h4
+id="savedconversationsdialog-quilluihosted_ai_saved_chatspy">SavedConversationsDialog
+(<code>quill/ui/hosted_ai_saved_chats.py</code>)</h4>
 <ul>
-<li><code>choice</code>: Which part of your document to send: what you
-selected, the paragraph you are in, or the whole section.</li>
+<li><code>self._list</code>: Your saved AI conversations, newest first:
+how each one began, how many messages it holds and when it was last
+used. Press Enter to open one.</li>
+<li><code>self._open</code>: Opens the chosen conversation in the
+conversation window, so you can read it and carry on where it left
+off.</li>
+<li><code>self._delete</code>: Deletes the chosen conversation from this
+computer, after asking. It cannot be brought back.</li>
+<li><code>close</code>: Closes this window and leaves the conversation
+you had open.</li>
 </ul>
 <h4
 id="windowsdictationdialog-quilluiwindows_dictation_dialogpy">WindowsDictationDialog
@@ -5641,6 +5680,71 @@ are usually just unplugged.</li>
 <li><code>self.status</code>: What the last button you pressed did.</li>
 <li><code>close</code>: Close this window. Changes to the list are
 kept.</li>
+</ul>
+<h4
+id="diffreviewdialog-quilluiai_diff_review_dialogpy">DiffReviewDialog
+(<code>quill/ui/ai_diff_review_dialog.py</code>)</h4>
+<ul>
+<li><code>self.hunk_list</code>: Every change the AI proposes, one per
+line. A checked change will be applied; press Space to uncheck one you
+want to keep as it was. The details below say exactly what changed, word
+by word.</li>
+<li><code>self.details</code>: The change you are on, line by line: what
+was there, what would replace it, and for a small change the words that
+differ and the sentence they are in. Read-only.</li>
+<li><code>self.apply_button</code>: Applies the change as one edit;
+Control Z takes it back.</li>
+<li><code>reject_button</code>: Closes this window and leaves your
+document unchanged.</li>
+<li><code>self.apply_button</code>: Applies only the checked changes, as
+one edit; Control Z takes it back.</li>
+<li><code>accept_all_button</code>: Applies every change, checked or
+not, as one edit; Control Z takes it back.</li>
+<li><code>reject_all_button</code>: Closes this window and leaves your
+document unchanged.</li>
+</ul>
+<h4
+id="promptlibrarydialog-quilluiprompt_library_dialogpy">PromptLibraryDialog
+(<code>quill/ui/prompt_library_dialog.py</code>)</h4>
+<ul>
+<li><code>self._search</code>: Type part of a prompt’s name or category
+to narrow the list below.</li>
+<li><code>self._listbox</code>: Your saved prompts and the ones QUILL
+comes with, each after its category. Press Enter on one to run it on the
+input text.</li>
+<li><code>self._preview</code>: The instruction the chosen prompt gives
+the AI. Read-only; Edit changes it.</li>
+<li><code>self._input</code>: The text the prompt works on: what you had
+selected, which you can change here. It goes where the prompt says
+{selection}.</li>
+<li><code>self._btn_new</code>: Writes a new prompt of your own.</li>
+<li><code>self._btn_edit</code>: Changes the chosen prompt’s name,
+category or text.</li>
+<li><code>self._btn_toggle</code>: Switches the chosen prompt off or
+back on. A switched-off prompt stays in the list, marked disabled.</li>
+<li><code>self._btn_delete</code>: Deletes the chosen prompt after
+asking. Prompts QUILL comes with cannot be deleted.</li>
+<li><code>self._btn_import</code>: Adds the prompts from a QUILL prompt
+pack file.</li>
+<li><code>self._btn_export</code>: Saves the prompts in this list to a
+prompt pack file.</li>
+<li><code>btn_close</code>: Closes the Prompt Library. Your prompts are
+already saved.</li>
+</ul>
+<h4 id="prompteditdialog-quilluiprompt_edit_dialogpy">PromptEditDialog
+(<code>quill/ui/prompt_edit_dialog.py</code>)</h4>
+<ul>
+<li><code>self._name</code>: What the prompt is called in the list. Type
+a short name you will recognise, such as Make It Friendlier.</li>
+<li><code>self._category</code>: Which group the prompt is listed under.
+The list shows the category before each prompt’s name.</li>
+<li><code>self._text</code>: The instruction the AI is given. Type
+{selection} where the text you run it on should go, {document} for the
+whole document, and {title} for the document’s title.</li>
+<li><code>ok_btn</code>: Saves the prompt in the library and closes this
+window.</li>
+<li><code>cancel_btn</code>: Closes this window without saving
+anything.</li>
 </ul>
 </main>
 </body>
