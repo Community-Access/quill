@@ -440,6 +440,122 @@ computer.</p>
 <p>If Windows does not take all of a phrase, QUILL Transcribe stops and
 says part of it may be missing. Check the field before you carry on. It
 never says a phrase went in when it is not sure.</p>
+<h2 id="programs-it-has-been-tested-with">Programs it has been tested
+with</h2>
+<p>QUILL Transcribe types into almost any program with a text field, but
+we only promise what we have tested. The table below comes from a test
+that types the same short dictation, phrase by phrase, into each program
+and then reads the program’s text back to check every phrase arrived
+exactly. It runs on a real Windows computer, not on our build servers,
+so a program that was not installed there is listed as untested, which
+does not mean it fails.</p>
+<ul>
+<li><strong>Supported</strong>: at least 95 out of every 100 phrases
+arrived exactly.</li>
+<li><strong>Best effort</strong>: at least half did. Dictation works,
+but check what was typed.</li>
+<li><strong>Unsupported</strong>: fewer than half did.</li>
+<li><strong>Untested</strong>: not tried yet on that version.</li>
+</ul>
+<p>Programs update often, so each row says when it was checked and when
+it is due to be checked again. If a program you use behaves differently
+from its row, tell us which version you have.</p>
+<!-- compatibility:start -->
+
+<table>
+<thead>
+<tr>
+<th>Program</th>
+<th>Version</th>
+<th>Result</th>
+<th>Phrases exact</th>
+<th>Checked</th>
+<th>Review by</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Notepad</td>
+<td>11.2607.14.0</td>
+<td>Untested</td>
+<td>-</td>
+<td>2026-10-15</td>
+<td>2027-01-13</td>
+<td>The test run was interrupted before it finished, so nothing was
+measured yet.</td>
+</tr>
+<tr>
+<td>WordPad</td>
+<td>-</td>
+<td>Untested</td>
+<td>-</td>
+<td>2026-10-15</td>
+<td>2027-01-13</td>
+<td>WordPad was removed from Windows 11 in version 24H2.</td>
+</tr>
+<tr>
+<td>Microsoft Word</td>
+<td>16.0.20430.20146</td>
+<td>Untested</td>
+<td>-</td>
+<td>2026-10-15</td>
+<td>2027-01-13</td>
+<td>Installed on the test computer, not run yet.</td>
+</tr>
+<tr>
+<td>Microsoft Outlook</td>
+<td>16.0.20430.20146</td>
+<td>Untested</td>
+<td>-</td>
+<td>2026-10-15</td>
+<td>2027-01-13</td>
+<td>Installed on the test computer, not run yet.</td>
+</tr>
+<tr>
+<td>Microsoft Edge</td>
+<td>155.0.4283.45</td>
+<td>Untested</td>
+<td>-</td>
+<td>2026-10-15</td>
+<td>2027-01-13</td>
+<td>Installed on the test computer, not run yet.</td>
+</tr>
+<tr>
+<td>Google Chrome</td>
+<td>155.0.8059.84</td>
+<td>Untested</td>
+<td>-</td>
+<td>2026-10-15</td>
+<td>2027-01-13</td>
+<td>Installed on the test computer, not run yet.</td>
+</tr>
+<tr>
+<td>Mozilla Firefox</td>
+<td>157.0.1.583</td>
+<td>Untested</td>
+<td>-</td>
+<td>2026-10-15</td>
+<td>2027-01-13</td>
+<td>Installed on the test computer, not run yet.</td>
+</tr>
+<tr>
+<td>Visual Studio Code</td>
+<td>1.142.0.0</td>
+<td>Untested</td>
+<td>-</td>
+<td>2026-10-15</td>
+<td>2027-01-13</td>
+<td>Installed on the test computer, not run yet.</td>
+</tr>
+</tbody>
+</table>
+<p>Each tested program was sent the same 12 phrases. A phrase counts as
+exact when the program’s text, read back afterwards, grew by exactly
+that phrase. A program’s own formatting, such as Word’s curly quotes,
+and its own line ending are not counted as changes.</p>
+<!-- compatibility:end -->
+
 <h2 id="commands-while-dictating-into-other-programs">Commands while
 dictating into other programs</h2>
 <p>These work in any program:</p>

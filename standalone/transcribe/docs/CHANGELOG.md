@@ -6,6 +6,14 @@ file is the itemized list.
 
 ## Unreleased
 
+- **Programs it has been tested with** (2026-10-15). A new section of the user
+  guide lists Notepad, WordPad, Word, Outlook, Edge, Chrome, Firefox and Visual
+  Studio Code, each marked supported, best effort, unsupported or untested,
+  with the version, the day it was checked and the day it is due to be checked
+  again. The table comes from a test that types the same phrases into each
+  program and reads them back. So far every row says untested: the first run
+  was stopped because the test computer was in use, and a program that was
+  not tried is never listed as unsupported.
 - **Programs dictation never types into** (2026-10-15). A list you keep, in
   More Dictation Settings (Alt+N), that starts with the common password
   managers and the Windows sign-in prompts. Dictation and Insert Again refuse a

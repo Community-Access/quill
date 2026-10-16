@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.12" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QA documents -- what to run, and when</title>
   <style>
@@ -387,6 +387,13 @@ all is the most serious kind of failure – report it even when nothing
 looks broken.</p>
 <h2 id="references">References</h2>
 <ul>
+<li><a href="transcribe-targets.json">transcribe-targets.json</a> – the
+results of QUILL Transcribe’s tested-programs harness
+(<code>tests/integration/test_transcribe_targets.py</code>), which
+<code>scripts/build_transcribe_compatibility.py</code> turns into the
+table in Transcribe’s user guide. The manual half is the “QUILL
+Transcribe Into Other Programs” section of
+<code>screen-reader-checks-2026-10.md</code>.</li>
 <li><a href="radio-3.0-test-plan.md">radio-3.0-test-plan.md</a> – the
 long-form Radio plan: every verified URL, the described-audio
 investigation, the three bugs that probing found.

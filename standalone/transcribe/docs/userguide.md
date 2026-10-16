@@ -193,6 +193,43 @@ If Windows does not take all of a phrase, QUILL Transcribe stops and says part
 of it may be missing. Check the field before you carry on. It never says a
 phrase went in when it is not sure.
 
+## Programs it has been tested with
+
+QUILL Transcribe types into almost any program with a text field, but we only
+promise what we have tested. The table below comes from a test that types the
+same short dictation, phrase by phrase, into each program and then reads the
+program's text back to check every phrase arrived exactly. It runs on a real
+Windows computer, not on our build servers, so a program that was not
+installed there is listed as untested, which does not mean it fails.
+
+- **Supported**: at least 95 out of every 100 phrases arrived exactly.
+- **Best effort**: at least half did. Dictation works, but check what was
+  typed.
+- **Unsupported**: fewer than half did.
+- **Untested**: not tried yet on that version.
+
+Programs update often, so each row says when it was checked and when it is
+due to be checked again. If a program you use behaves differently from its
+row, tell us which version you have.
+
+<!-- compatibility:start -->
+| Program | Version | Result | Phrases exact | Checked | Review by | Notes |
+| --- | --- | --- | --- | --- | --- | --- |
+| Notepad | 11.2607.14.0 | Untested | - | 2026-10-15 | 2027-01-13 | The test run was interrupted before it finished, so nothing was measured yet. |
+| WordPad | - | Untested | - | 2026-10-15 | 2027-01-13 | WordPad was removed from Windows 11 in version 24H2. |
+| Microsoft Word | 16.0.20430.20146 | Untested | - | 2026-10-15 | 2027-01-13 | Installed on the test computer, not run yet. |
+| Microsoft Outlook | 16.0.20430.20146 | Untested | - | 2026-10-15 | 2027-01-13 | Installed on the test computer, not run yet. |
+| Microsoft Edge | 155.0.4283.45 | Untested | - | 2026-10-15 | 2027-01-13 | Installed on the test computer, not run yet. |
+| Google Chrome | 155.0.8059.84 | Untested | - | 2026-10-15 | 2027-01-13 | Installed on the test computer, not run yet. |
+| Mozilla Firefox | 157.0.1.583 | Untested | - | 2026-10-15 | 2027-01-13 | Installed on the test computer, not run yet. |
+| Visual Studio Code | 1.142.0.0 | Untested | - | 2026-10-15 | 2027-01-13 | Installed on the test computer, not run yet. |
+
+Each tested program was sent the same 12 phrases. A phrase counts as
+exact when the program's text, read back afterwards, grew by exactly that
+phrase. A program's own formatting, such as Word's curly quotes, and its
+own line ending are not counted as changes.
+<!-- compatibility:end -->
+
 ## Commands while dictating into other programs
 
 These work in any program:
