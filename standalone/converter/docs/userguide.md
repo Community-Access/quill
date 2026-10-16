@@ -5,7 +5,8 @@ Version 1.0.0 -- September 28, 2026
 ## Introduction
 
 Quill Converter changes audio and video files from one format into another, on
-your own computer, without uploading anything to a website. Sound to sound,
+your own computer, without uploading anything to a website unless you ask it
+to (Chapter 7). Sound to sound,
 video to sound, and video to video. It can clean up the sound on the way
 through, let you hear the result before you commit, join a pile of files into
 one audiobook, and split a chaptered book back into its chapters.
@@ -26,7 +27,9 @@ By the end of this guide you will be able to:
 - keep, write, find and edit chapters, so a long recording stays easy to move
   around in;
 - join a folder of files into one audiobook, or split a book into its chapters;
-- download the sound of a video, a playlist or a channel from a link.
+- download the sound of a video, a playlist or a channel from a link;
+- send recordings to your own Auphonic account for post-production, and get
+  the results back, without opening Auphonic's website.
 
 ### How this guide is laid out
 
@@ -42,9 +45,11 @@ you learned and where to go next. You do not have to read them in order.
 5. **Working with the queue** -- adding, ordering, tags, the report, and
    Advanced Options.
 6. **Converting from a link** -- one video, a playlist, or a channel.
-7. **Out of the way, and easy to find** -- the tray, a key to show and hide
+7. **Processing online with Auphonic** -- optional post-production through
+   your own Auphonic account.
+8. **Out of the way, and easy to find** -- the tray, a key to show and hide
    Quill Converter, and finding any command by name.
-8. **When you need a hand** -- F1, troubleshooting, updates and support.
+9. **When you need a hand** -- F1, troubleshooting, updates and support.
 
 The keyboard reference at the end lists every key in one place.
 
@@ -805,10 +810,152 @@ explanation. Convert from URL is unavailable in Safe Mode.
 
 Paste a link into Convert from URL (Ctrl+U). One video downloads at once; a
 playlist or channel asks how much you want first, and pasting the same link
-later fetches only what is new. Chapter 7 is about keeping Quill Converter out
-of the way while it works.
+later fetches only what is new. Chapter 7 is about Auphonic, the one thing
+Quill Converter can send online, and only when you ask.
 
-## Chapter 7: Out of the way, and easy to find
+## Chapter 7: Processing online with Auphonic
+
+Auphonic (auphonic.com) is an online service that evens out levels, sets a
+standard loudness, filters the sound and can reduce background noise. If you
+have an Auphonic account, Quill Converter can send the files in its queue to
+it and save the results back here, so you never need Auphonic's website. This
+is the one thing in Quill Converter that uploads anything, it is entirely
+optional, and nothing leaves your computer until you have read a confirmation
+and chosen to send.
+
+### Before you start
+
+You need your own Auphonic account and its **API token**, which is on the
+account settings page on auphonic.com. Processing uses your Auphonic credits,
+exactly as it would on the website; Quill Converter does not estimate what a
+production will cost.
+
+The token is kept in **Windows Credential Manager**, never in Quill
+Converter's settings, and it is the same stored token the Audio Studio in
+QUILL uses -- enter it in either place and both find it.
+
+### Process with Auphonic
+
+Queue the sound files, then choose **Convert > Process with Auphonic...**
+(Ctrl+Shift+A). Quill Converter first checks the queue on this computer: a
+video file, a sound file holding a video picture, a folder, an empty file, or
+any format other than MP3, WAV, FLAC, Ogg, Opus, M4A, M4B, AAC or AIFF is left
+out, and you are told why. A cover image is
+fine. If nothing can be sent, it says so and stops.
+
+The **Process with Auphonic** window then asks for everything at once:
+
+- **Files to send, in queue order.** The files that will go. To change the
+  order, close the window and use Alt+Up and Alt+Down in the queue.
+- **How to send them.** **Separate productions** processes each file on its
+  own, one after another, all with the same preset. **One multitrack
+  production** mixes the files as tracks of one recording -- each person's
+  microphone in a conversation, say -- into one result. Track names are the
+  file names, in queue order, and it needs at least two files.
+- **Production title.** For a multitrack production only: its title, which
+  also names the folder its result is saved in. It starts as the first file's
+  name. Separate productions use each file's own title instead.
+- **Auphonic API token** and **Remember the token on this computer.** Filled
+  in for you when a token is already stored. Leave Remember checked to store a
+  new one when you send; clear it to use the token this once.
+- **Check Account and Load Presets** (Alt+A). Asks Auphonic who the token
+  belongs to, how many credit hours are left, and which presets you have
+  saved, and shows the answer in the **Account** box. It uploads nothing. If
+  the check fails, the reason is shown and the preset list is left alone.
+- **Preset.** Your account's default preset, or one of your saved presets.
+  The one you used last time is offered even before you check the account.
+- **Processing.** **Use the preset's settings** leaves the preset alone.
+  **Quick cleanup** uses Auphonic's filtering, leveling and loudness
+  normalization instead, at Auphonic's usual settings, and enables **Reduce
+  background noise**, which is off unless you turn it on because it can also
+  take out quiet background sounds you wanted to keep.
+- **Output format.** **Use the preset's outputs**, or one format for every
+  production: MP3, AAC (M4A), Opus, FLAC or WAV. A multitrack production saves
+  only the final mix.
+
+Press **Review**. If something is missing -- no token, too few files
+for a multitrack production, no title -- you are told what, and the window
+stays open.
+
+### The confirmation
+
+The **Send to Auphonic?** window shows, in one read-only text you can arrow
+through: that the files go to Auphonic using your account and credits; every
+file that will be sent and every one that will not, with the reason; whether
+these are separate productions or one multitrack production, with its title
+and track order; the preset; the processing, the noise choice and the format,
+saying plainly when they replace the preset's own; and where the results will
+be saved. **Upload and Process** sends them. **Cancel** (Escape) sends
+nothing at all.
+
+Each separate production carries its file's title, artist and album, and its
+chapter marks, to Auphonic. A multitrack production carries only its title:
+tags and chapters from different tracks are never mixed together.
+
+### While it works, and when it is done
+
+Sending is a job like a conversion: the progress bar, the status bar
+("Uploading talk.wav, 2 of 5: 40 percent", then "Auphonic is processing
+talk.wav, 2 of 5: Audio Processing", then "Downloading..."), and 25, 50 and 75
+percent spoken. Separate productions go one at a time, and with more than one
+file each file's outcome is spoken as it finishes. If one fails, the rest still
+go.
+
+Results are saved under the **Output folder** (or the usual Converted folder
+when it is empty): each separate production in a folder named after its file,
+and a multitrack production in a folder named after its title. Only sound
+files are downloaded; if Auphonic also made other files, such as a report or
+a waveform image, the summary says how many were left there. A file already in
+the folder is never replaced -- the new one is numbered -- and your originals
+are not touched.
+
+The summary is spoken when it finishes. **Conversion Report** (Ctrl+R) lists
+every file's outcome, with the confirmation you agreed to, and **Open Output
+Folder** (Ctrl+Shift+F) opens where the results went. With **Open Output
+Folder When Done** checked, it opens by itself.
+
+### Stopping, and work still at Auphonic
+
+**Ctrl+Enter** (or **Stop Converting**) stops at any point, and what you are
+told depends on how far it had got:
+
+- **While uploading**, the upload stops and nothing further is sent. That
+  production was never started, so it used no credits, though your Auphonic
+  account may list it, unstarted.
+- **Once Auphonic has started a production**, it carries on there whatever
+  Quill Converter does. Stop then only stops waiting, and the production is
+  remembered on this computer so you can fetch it later. The same happens if
+  the connection drops, or if Auphonic is still busy after four hours.
+
+Quill Converter never sends a production again by itself, because that could
+make a second, paid copy. If Auphonic did not confirm that a production
+started, you are told to check your Auphonic account before sending it again.
+
+**Convert > Auphonic Work Waiting...** (Ctrl+Alt+A) lists the productions
+waiting to be fetched -- the list is kept on this computer and opening it
+contacts nobody. **Resume** waits for each one and saves its results where it
+was going; **Dismiss** (Alt+D) forgets the highlighted one on this computer,
+and it stays in your Auphonic account. When Quill Converter starts with work
+waiting, it says so once, without contacting Auphonic.
+
+### Privacy
+
+Nothing is sent to Auphonic by opening Quill Converter, adding files, opening
+the Process with Auphonic window or choosing a preset. The account check sends
+only your token. Files are uploaded only after the confirmation, over a secure
+connection, and are then handled under Auphonic's own terms -- Quill Converter
+cannot promise when Auphonic deletes them. Your token, and the contents of your
+files, are never written to Quill Converter's settings, logs or reports.
+
+### What you learned, and where to go next
+
+Process with Auphonic (Ctrl+Shift+A) sends the queue's sound files to your own
+Auphonic account, as separate productions or one multitrack production, after
+one confirmation that names everything. Stop is safe at every stage, and
+Auphonic Work Waiting (Ctrl+Alt+A) fetches anything Auphonic finished later.
+Chapter 8 is about keeping Quill Converter out of the way while it works.
+
+## Chapter 8: Out of the way, and easy to find
 
 A long conversion can run in the notification area while you do something else.
 This chapter covers the tray, choosing a key to show and hide Quill Converter
@@ -850,7 +997,7 @@ closes the window without doing anything.
 
 Ctrl+W tucks Quill Converter into the tray and brings it back. If you want one
 key that works from any program, choose it in File > Show and Hide Key...
-(Ctrl+Alt+Shift+H). Ctrl+Alt+Shift+S finds any command by name. Chapter 8 is
+(Ctrl+Alt+Shift+H). Ctrl+Alt+Shift+S finds any command by name. Chapter 9 is
 for when something goes wrong.
 
 ### Where Quill Converter's own sounds play
@@ -869,7 +1016,7 @@ If the device you chose is unplugged or asleep, you still hear every sound, on t
 
 This changes Quill Converter only. Your other QUILL apps keep their own choice, unless you have checked "Share these choices with my other Quill apps", which copies a change here to the others that share. Your screen reader is never moved.
 
-## Chapter 8: When you need a hand
+## Chapter 9: When you need a hand
 
 Everybody gets stuck sometimes. This chapter covers the help that is always one
 key away, what to do when something does not work, where your settings live,
@@ -925,7 +1072,8 @@ program for the portable copy. Uninstalling never deletes the shared data
 folder; another app in the family may still be using it.
 
 Starting with the environment variable `QUILL_SAFE_MODE=1` runs Quill Converter
-in Safe Mode. Everything local still works; Convert from URL is refused.
+in Safe Mode. Everything local still works; Convert from URL, Process with
+Auphonic and Auphonic Work Waiting are refused.
 
 ### Your version and updates
 
@@ -1016,6 +1164,8 @@ every key in a read-only window you can arrow through.
 | Custom Effects... | Ctrl+E |
 | Join into One File... | Ctrl+J |
 | Split by Chapters | Ctrl+Shift+S |
+| Process with Auphonic... | Ctrl+Shift+A |
+| Auphonic Work Waiting... | Ctrl+Alt+A |
 | Conversion Report... | Ctrl+R |
 | Open Output Folder When Done | Ctrl+Shift+W |
 

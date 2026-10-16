@@ -1,6 +1,6 @@
 # Quill Converter + Auphonic Integration -- MVP Product Requirements
 
-**Status:** Proposed; not implemented  
+**Status:** MVP built 2026-10-15, unreleased; see section 13, As built  
 **Date:** October 5, 2026  
 **Scope:** Optional, multi-file audio post-production through the user's own
 Auphonic account
@@ -387,3 +387,116 @@ MVP has been evaluated.
 - [Auphonic Simple API](https://auphonic.com/help/api/simple_api.html)
 - [Auphonic JSON API production details](https://auphonic.com/help/api/details.html)
 - [Auphonic multitrack API](https://auphonic.com/help/api/multitrack.html)
+
+## 13. As built (2026-10-15)
+
+The four steps of section 11, as they landed (Jeff's todo P2 #29). Everything
+below is unreleased until a Converter build ships it.
+
+### Step 1, contract and safety: done, with one deviation
+
+- **One flow for both modes.** The simple API cannot choose an output format
+  or hold tracks, so the Converter uses the JSON API for every production:
+  `POST /api/productions.json` (settings, nothing charged), a streamed
+  multipart `POST /api/production/{uuid}/upload.json` per file (field
+  `input_file`, or the track id in a multitrack production), then
+  `POST /api/production/{uuid}/start.json`. These are new functions in the
+  shared client (`create_production`, `upload_input`, `start_created`), not a
+  fork; the Audio Studio keeps the simple API. Every request still goes
+  through `_request`, the one egress site already in `network_egress_audit`,
+  whose rationale now names the Converter.
+- **Formats.** Output: `mp3`, `aac`, `opus`, `flac`, `wav` (Auphonic's names).
+  Input: MP3, WAV, FLAC, Ogg, Opus, M4A, M4B, AAC, AIFF; everything else in
+  the queue is skipped with a reason before the confirmation.
+- **Results.** Only sound formats (`mp3`, `mp3-vbr`, `vorbis`, `opus`, `aac`,
+  `flac`, `alac`, `wav`, `wav-24bit`, or those endings) whose download URL is
+  HTTPS on `auphonic.com` or a subdomain; the rest are counted and named as
+  not downloaded. The client's tonight-added stream-to-`.part`,
+  never-overwrite and bare-file-name download is reused unchanged.
+- **Cancellation.** Auphonic documents no stop endpoint, so a started
+  production is never stopped remotely; Stop ends local waiting and says the
+  production continues. A production stopped mid-upload was created but never
+  started (no credits used); the message says it may be listed, unstarted.
+- **Deviation:** the contract was verified against Auphonic's published API
+  pages (simple API, JSON API details, multitrack), not against a live
+  account; the tests use fakes and no network. The production-status
+  strings Auphonic returns are spoken as given.
+- **Tested by** `tests/unit/core/test_auphonic_converter_core.py`: the three
+  calls' URLs, methods, JSON and multipart bodies against a fake `urlopen`;
+  the track field name; an unsafe production id refused before any request;
+  cancel mid-upload; the result filter (format, ending, host, scheme).
+
+### Step 2, account and selection: done
+
+- The token is the family's one credential-store entry, `CREDENTIAL_TARGET`
+  (`quill:publish:auphonic`), read and written exactly as the Audio Studio
+  does; a **Remember the token on this computer** checkbox (on) makes saving a
+  newly entered token an explicit choice, and it is saved only after the
+  confirmation. Never in `converter.json`, logs or reports.
+- **Check Account and Load Presets** is one background request pair
+  (`user.json`, `presets.json`) that uploads nothing; a failure is shown and
+  spoken and leaves the preset list alone (no silent default). Credits are
+  shown as Auphonic reports them, in hours; no cost estimate is offered.
+- The account default plus saved presets; the last preset choice (uuid and
+  name) is remembered in `converter.json` and offered before a check.
+- Eligibility runs off the UI thread with ffprobe: a moving-picture stream
+  makes a file ineligible, a cover image does not; folders, missing, empty
+  and unreadable files are skipped with reasons. Track order is queue order;
+  track names are file names, made unique and header-safe.
+- **Tested by** the plan tests (eligibility reasons, multitrack minimum and
+  title, track names) and `tests/unit/apps/test_converter_auphonic.py` (token
+  read and written under the shared target; an unremembered token used and not
+  stored; the account check filling presets; a failed check changing nothing;
+  a check without a token asking for one; ffprobe-based inspection).
+
+### Step 3, production lifecycle: done
+
+- One window (**Process with Auphonic**, Ctrl+Shift+A): files, mode, title,
+  token, account check, preset, Use the preset's settings or Quick cleanup
+  (`filtering`, `leveler`, `normloudness`; `denoise` off unless chosen;
+  multitrack puts filtering and denoise per track and leveler and loudness on
+  the master), and one output format or the preset's outputs. Review refuses,
+  in words, choices that cannot be sent. One read-only confirmation (**Send
+  to Auphonic?**) names everything section 5.4 lists; Cancel makes no request.
+- Separate productions run strictly in sequence; a failure is recorded and the
+  batch continues. Separate productions pass title, artist, album and chapter
+  marks from ffprobe; a multitrack production passes only its title.
+- After `start` succeeds, the minimal record (id, mode, title, input names,
+  preset label, output folder, time) is written atomically to
+  `<data>/converter/auphonic_pending.json` (schema 1, `versioned` in
+  `persistence_audit`) before waiting. It is removed when the result is
+  saved, or when Auphonic reports an error. Stop, three consecutive failed
+  polls, a four-hour timeout, a cancelled or failed download all keep it.
+  A `start` whose outcome is unknown is reported as such and never retried.
+- **Auphonic Work Waiting** (Ctrl+Alt+A) reads that file without the network;
+  Resume contacts Auphonic; Dismiss forgets one locally. At launch the
+  Converter says, once, that work is waiting, from the file alone.
+- Progress uses the Converter's own job surface: the bar, the status line and
+  tray tooltip (upload percent, Auphonic's status, download percent, "n of
+  m"), the existing 25/50/75 percent announcements, the per-file outcome
+  spoken only in a batch of more than one, one summary at the end, and the
+  whole story in the Conversion Report (Ctrl+R), including the confirmation
+  that was agreed to. Progress callbacks are throttled so a block-by-block
+  upload cannot flood the UI thread. Stop is Ctrl+Enter, as for every job.
+- Results go to a folder per source (separate) or per title (multitrack)
+  under the output folder, never overwriting; Open Output Folder When Done is
+  honoured; Ctrl+Shift+F opens the result folder.
+- **Tested by** the run tests against a fake client (sequence and order;
+  continue-on-failure; stop during upload starting nothing more; stop while
+  waiting keeping a record that a later Resume completes and clears; a
+  service failure; a result with no sound file; lost polling; the timeout; a
+  failed download; an ambiguous start; multitrack uploads into one
+  production; progress never flooded) and the app tests (Safe Mode, busy,
+  empty queue, cancel at either window sends nothing, the confirmed run, the
+  multitrack run, skipped files, resume, the launch notice, every control's
+  F1 text, the confirmation and waiting windows).
+
+### Step 4, release readiness: partly done
+
+- Done: the Converter's user guide (a new Chapter 7), changelog and PRD;
+  F1 purposes for the three new windows and inline help on every control
+  (GATE-CONVERTER-HELP now scans the new dialog module); Safe Mode refusal;
+  persistence and egress audits; the keyboard reference in the guide.
+- **Not done, needs Jeff:** manual verification with NVDA or JAWS and a real
+  Auphonic test account (no account or network was used tonight), and a
+  Converter release build. Until then the shipped Converter is unchanged.

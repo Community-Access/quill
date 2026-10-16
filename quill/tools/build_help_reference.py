@@ -106,7 +106,11 @@ APPS: tuple[AppConfig, ...] = (
         "Quill Converter",
         "quill.core.converter_surface_help",
         (),
-        ("quill/apps/converter*.py", "quill/ui/converter_dialogs.py"),
+        (
+            "quill/apps/converter*.py",
+            "quill/ui/converter_dialogs.py",
+            "quill/ui/converter_auphonic_dialog.py",
+        ),
         "converter_help_inventory.json",
     ),
     AppConfig(

@@ -64,7 +64,11 @@ def test_app_shell_and_bootstrap_present() -> None:
     src = _src()
     frame_class = (
         "class QuillConverterFrame(\n"
-        "    ConverterUrlMixin, ConverterChaptersMixin, ConverterActionsMixin, AppShellFrame\n"
+        "    ConverterAuphonicMixin,\n"
+        "    ConverterUrlMixin,\n"
+        "    ConverterChaptersMixin,\n"
+        "    ConverterActionsMixin,\n"
+        "    AppShellFrame,\n"
         "):"
     )
     assert frame_class in src

@@ -8,10 +8,11 @@ it is done, and download the results.
 
 Privacy/consent: everything requires the user's own API token (stored in the
 Windows Credential Manager under :data:`CREDENTIAL_TARGET`, never in settings)
-and runs only from the explicit publish dialog, which names the service and is
-absent in Safe Mode. All calls funnel through the two reviewed egress sites
-below (HTTPS-only, verified TLS, bounded timeouts) — see
-``quill/tools/network_egress_audit.py``. wx-free, strict-typed.
+and runs only from an explicit dialog that names the service and is absent in
+Safe Mode: the Audio Studio's publish dialog, and Quill Converter's Process
+with Auphonic (which uses the JSON API section further down). All calls
+funnel through the two reviewed egress sites below (HTTPS-only, verified
+TLS, bounded timeouts) — see ``quill/tools/network_egress_audit.py``. wx-free, strict-typed.
 """
 
 from __future__ import annotations
@@ -403,6 +404,123 @@ def download_results(
             raise
         written.append(final)
     return written
+
+
+# --------------------------------------------------------------------------- #
+# The JSON API: create, upload, start (Quill Converter, 2026-10-15)
+# --------------------------------------------------------------------------- #
+#
+# The simple API above uploads and starts in one request but cannot choose an
+# output format or hold more than one track. Quill Converter's Auphonic
+# workflow (docs/planning/QUILL-Converter-Auphonic-Integration-PRD.md) uses
+# Auphonic's JSON API instead -- the same three steps for one file or a
+# multitrack production: POST /productions.json with the settings, POST each
+# file to /production/{uuid}/upload.json (the form field is "input_file" for
+# one file and the track's id for a multitrack track), then
+# /production/{uuid}/start.json. Every call goes through _request, the one
+# reviewed egress site.
+
+#: The output formats Quill Converter offers, by Auphonic's format name. Each
+#: is in the JSON API's output-file list (help/api/details.html).
+OUTPUT_FORMATS: dict[str, str] = {
+    "mp3": "MP3",
+    "aac": "AAC (M4A)",
+    "opus": "Opus",
+    "flac": "FLAC",
+    "wav": "WAV",
+}
+#: Every sound format a production can return. Anything else -- a video, a
+#: waveform image, statistics, a chapter file, a zip of the tracks -- is not
+#: downloaded by Quill Converter, and the person is told how many were left.
+_AUDIO_RESULT_FORMATS = frozenset({
+    "mp3",
+    "mp3-vbr",
+    "vorbis",
+    "opus",
+    "aac",
+    "flac",
+    "alac",
+    "wav",
+    "wav-24bit",
+})
+_AUDIO_RESULT_ENDINGS = frozenset({"mp3", "ogg", "oga", "opus", "m4a", "aac", "flac", "wav"})
+#: The host every result is downloaded from.
+_RESULT_HOST = "auphonic.com"
+
+
+def _check_uuid(production_uuid: str) -> str:
+    if not production_uuid or not production_uuid.replace("-", "").isalnum():
+        raise AuphonicError("Auphonic returned a production that QUILL could not read.")
+    return production_uuid
+
+
+def create_production(token: str, body: dict[str, object]) -> str:
+    """Create (but do not start) a production from *body*; returns its uuid.
+
+    Nothing is uploaded and nothing is charged: a production costs credits
+    only once it is started.
+    """
+    data = _json(
+        f"{API_BASE}/productions.json",
+        token,
+        data=json.dumps(body).encode("utf-8"),
+        content_type="application/json",
+    )
+    production = data.get("data")
+    if not isinstance(production, dict) or not production.get("uuid"):
+        raise AuphonicError("Auphonic did not create the production.")
+    return _check_uuid(str(production["uuid"]))
+
+
+def upload_input(
+    token: str,
+    production_uuid: str,
+    path: Path,
+    *,
+    field_name: str = "input_file",
+    on_bytes: Callable[[int, int], None] | None = None,
+    is_cancelled: Callable[[], bool] | None = None,
+) -> None:
+    """Stream *path* into an existing production under *field_name*."""
+    with path.open("rb") as handle:
+        parts, total, content_type = _multipart_parts({}, field_name, path, handle)
+        _json(
+            f"{API_BASE}/production/{_check_uuid(production_uuid)}/upload.json",
+            token,
+            data=_ProgressReader(parts, on_bytes, is_cancelled, total=total),
+            content_type=content_type,
+        )
+
+
+def start_created(token: str, production_uuid: str) -> None:
+    """Start a production made by :func:`create_production` (credits are used now)."""
+    _json(f"{API_BASE}/production/{_check_uuid(production_uuid)}/start.json", token, data=b"")
+
+
+def is_result_url(url: str) -> bool:
+    """True for an HTTPS address on Auphonic's own host -- the only place
+    Quill Converter downloads a result from."""
+    from urllib.parse import urlsplit
+
+    parts = urlsplit(url)
+    host = (parts.hostname or "").lower()
+    return parts.scheme == "https" and (host == _RESULT_HOST or host.endswith("." + _RESULT_HOST))
+
+
+def audio_results(status: ProductionStatus) -> tuple[ProductionStatus, int]:
+    """*status* keeping only sound files on Auphonic's host, and how many were left out."""
+    kept: list[dict[str, object]] = []
+    for output in status.output_files:
+        fmt = str(output.get("format", "")).lower()
+        ending = str(output.get("ending", "")).lower().lstrip(".")
+        if not ending:
+            name = str(output.get("filename", ""))
+            ending = name.rsplit(".", 1)[-1].lower() if "." in name else ""
+        audio = fmt in _AUDIO_RESULT_FORMATS if fmt else ending in _AUDIO_RESULT_ENDINGS
+        if audio and is_result_url(str(output.get("download_url", ""))):
+            kept.append(output)
+    left_out = len(status.output_files) - len(kept)
+    return ProductionStatus(status.uuid, status.status, status.status_string, kept), left_out
 
 
 def _safe_name(name: str) -> str:

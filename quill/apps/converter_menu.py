@@ -63,7 +63,7 @@ def build_menu_bar(host: Any, wx: Any, *, title: str, version: str, repo: str) -
     add(file_menu, "&Add Files...\tCtrl+O", lambda: host._on_add_files(None))
     add(file_menu, "Add F&older...\tCtrl+Shift+O", lambda: host._on_add_folder(None))
     add(file_menu, "&Paste Files\tCtrl+V", host.paste_files)
-    add(file_menu, "Convert from &URL...\tCtrl+U", lambda: host._on_convert_url(None))
+    add(file_menu, "Convert from &URL...\tCtrl+U", host.convert_from_url)
     file_menu.AppendSeparator()
     add(file_menu, "Open Output &Folder\tCtrl+Shift+F", host.open_output_folder)
     # Ctrl+, is Preferences in every app in the family (qc.md X-01). P is
@@ -111,6 +111,11 @@ def build_menu_bar(host: Any, wx: Any, *, title: str, version: str, repo: str) -
     add(convert_menu, "Custom &Effects...\tCtrl+E", lambda: host._on_custom_effects(None))
     add(convert_menu, "&Join into One File...\tCtrl+J", host.join_into_one)
     add(convert_menu, "&Split by Chapters\tCtrl+Shift+S", host.split_by_chapters)
+    convert_menu.AppendSeparator()
+    # The one online command (docs/planning/QUILL-Converter-Auphonic-Integration-PRD.md):
+    # nothing is sent before its confirmation, and Safe Mode declines both.
+    add(convert_menu, "Process with &Auphonic...\tCtrl+Shift+A", host.process_with_auphonic)
+    add(convert_menu, "Auphonic Wor&k Waiting...\tCtrl+Alt+A", host.show_auphonic_work)
     convert_menu.AppendSeparator()
     add(convert_menu, "Conversion &Report...\tCtrl+R", host.show_report)
     open_item = wx.NewIdRef()

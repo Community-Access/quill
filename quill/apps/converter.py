@@ -33,12 +33,13 @@ from typing import Any
 import wx
 
 from quill.apps.converter_actions import ConverterActionsMixin
+from quill.apps.converter_auphonic import ConverterAuphonicMixin
 from quill.apps.converter_chapters import ConverterChaptersMixin
 from quill.apps.converter_url import ConverterUrlMixin
 from quill.core import converter_settings, http_client
 from quill.core.audio.chapter_plan import CHAPTER_SOURCES
 from quill.core.audio.convert import available_output_formats
-from quill.core.audio.effect_recipes import CUSTOM_RECIPE_ID, recipe_by_id, recipe_choices
+from quill.core.audio.effect_recipes import recipe_choices
 from quill.core.audio.formats import INPUT_EXTENSIONS, format_label, is_video_format, open_wildcard
 from quill.core.audio.presets import preset_choices
 from quill.core.net import configure_ssl_trust
@@ -72,7 +73,11 @@ class _QueueDropTarget(wx.FileDropTarget):
 
 
 class QuillConverterFrame(
-    ConverterUrlMixin, ConverterChaptersMixin, ConverterActionsMixin, AppShellFrame
+    ConverterAuphonicMixin,
+    ConverterUrlMixin,
+    ConverterChaptersMixin,
+    ConverterActionsMixin,
+    AppShellFrame,
 ):
     """The Converter window: a queue, four choices, and Convert."""
 
@@ -105,6 +110,7 @@ class QuillConverterFrame(
         # quill.apps.converter <files>`): queue each existing path.
         self.add_paths(initial_paths or [], announce=False)
         self._refresh_statusbar()
+        self._note_pending_auphonic()  # read locally; Auphonic is never contacted at launch
         self._start_ipc_poll()
 
     # -- menu bar --------------------------------------------------------------
@@ -320,7 +326,7 @@ class QuillConverterFrame(
         self._convert_btn.Bind(wx.EVT_BUTTON, lambda _e: self.convert_or_stop())
         self._preview_btn.Bind(wx.EVT_BUTTON, lambda _e: self.preview(original=False))
         self._original_btn.Bind(wx.EVT_BUTTON, lambda _e: self.preview(original=True))
-        self._url_btn.Bind(wx.EVT_BUTTON, self._on_convert_url)
+        self._url_btn.Bind(wx.EVT_BUTTON, lambda _e: self.convert_from_url())
         self._effects_btn.Bind(wx.EVT_BUTTON, self._on_custom_effects)
         self._format.Bind(wx.EVT_CHOICE, self._on_format_changed)
         # Remembered as they change, so a closed window or a crash loses nothing.
@@ -511,26 +517,7 @@ class QuillConverterFrame(
                 return
             self._dest.SetValue(picker.GetPath())
 
-    # -- other windows -----------------------------------------------------------
-
-    def _on_custom_effects(self, _event: Any) -> None:
-        from quill.ui.converter_dialogs import edit_effects
-
-        current = self._chosen_effect_id()
-        recipe = recipe_by_id(current)
-        base = recipe.dsp if recipe is not None else self._settings.custom_effects
-        edited = edit_effects(
-            self, base, start_s=self._settings.start_s, end_s=self._settings.end_s
-        )
-        if edited is None:
-            return
-        self._settings.custom_effects, self._settings.start_s, self._settings.end_s = edited
-        self._effect.SetSelection(self._effect_ids.index(CUSTOM_RECIPE_ID))
-        self._remember()
-        self._announce(f"Custom effects set: {self.describe_choices()}.")
-
-    def _on_convert_url(self, _event: Any) -> None:
-        self.convert_from_url()
+    # -- other windows (Custom Effects is in converter_actions) ------------------
 
     def set_advanced_visible(self, visible: bool) -> None:
         """View > Advanced Options (Ctrl+Alt+V): show or hide the encoder settings."""

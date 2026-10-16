@@ -165,6 +165,33 @@ In scope for 1.0.0:
   a per-link download archive, pauses on long runs. Everything joins the main
   window's queue, converted by the same Convert as everything else. Refused in
   Safe Mode.
+- **Process with Auphonic** (Convert menu, Ctrl+Shift+A; unreleased, added
+  2026-10-15). The one online exception, specified in full by
+  `docs/planning/QUILL-Converter-Auphonic-Integration-PRD.md` and built in
+  `quill/apps/converter_auphonic.py`, `quill/ui/converter_auphonic_dialog.py`
+  and the wx-free `quill/core/publish/auphonic_plan.py` and `auphonic_run.py`
+  over the shared client `quill/core/publish/auphonic.py`. The queue's files
+  are checked locally (sound formats Auphonic takes; no video, folders, empty
+  or unreadable files, or files with a moving picture); one window takes the
+  mode (separate productions, sequential, or one multitrack production with
+  queue-order tracks and an editable title), the API token (the family's one
+  credential-store entry, shared with the Audio Studio), an explicit account
+  check that loads presets and uploads nothing, the preset, Use preset
+  settings or Quick cleanup (filtering, leveling, loudness normalization;
+  noise reduction off unless chosen) and one output format or the preset's
+  outputs. One read-only confirmation names the service, every file sent and
+  skipped with its reason, the mode, the preset, the processing and the
+  destination; Cancel uploads nothing. The run is a Converter job (progress,
+  quarter announcements, Stop, the report); a failed file does not stop the
+  rest; results are sound files only, from https://auphonic.com, saved in a
+  folder per source (or per multitrack title) under the output folder and
+  never overwriting. A production Auphonic has started is recorded locally
+  (`converter\auphonic_pending.json`: id, mode, names, preset label, output
+  folder -- never the token or media) before waiting, so Stop, a lost
+  connection, a four-hour timeout or closing the app leaves it resumable from
+  **Auphonic Work Waiting** (Ctrl+Alt+A), which reads the file without the
+  network and contacts Auphonic only on Resume. No blind retry of a start
+  whose outcome is unknown. Refused in Safe Mode.
 - **Running a batch.** Off the UI thread, multi-worker for sound and one at a
   time for video. Convert becomes Stop; Stop kills the encode in progress
   (its temp file is removed), starts nothing after it, and the report lists
@@ -230,7 +257,9 @@ Out of scope, by decision:
 - Joining video files.
 - Converting copy-protected (DRM) files.
 - Transcription, translation and text-to-speech. Different products.
-- Any cloud or upload path. Conversion is local, always.
+- Any cloud or upload path other than Process with Auphonic, which is
+  explicit, confirmed per submission, and uses the user's own account.
+  Conversion itself is local, always.
 
 ## 5. Accessibility contract
 
@@ -257,21 +286,31 @@ Out of scope, by decision:
   control's own help (GATE-CONVERTER-HELP): the main window (the Chapters
   choice, the Advanced section and the progress bar included), Chapter
   Workbench, Tag Editor, Convert from URL, Custom Effects, File Properties,
-  Conversion Report and Keyboard Shortcuts.
+  Conversion Report, Keyboard Shortcuts, Process with Auphonic, Send to
+  Auphonic? and Auphonic Work Waiting.
 - A-10. Reports and descriptions are shown in a read-only multi-line text box,
   the one surface every screen reader reviews line by line without a special
   mode.
 
 ## 6. Privacy and network requirements
 
-- N-1. Conversion is entirely local. Nothing is uploaded, ever.
-- N-2. Exactly three outbound paths exist, all user-initiated: **Check for
-  Updates** (this app's own releases), **Convert from URL**, and **Get FFmpeg**
-  (repair, when the bundled copy is missing).
+- N-1. Conversion is entirely local. Media is uploaded only by Process with
+  Auphonic, after its confirmation, to the user's own Auphonic account.
+- N-2. Exactly four outbound paths exist, all user-initiated: **Check for
+  Updates** (this app's own releases), **Convert from URL**, **Get FFmpeg**
+  (repair, when the bundled copy is missing), and **Auphonic** (the account
+  check, a confirmed submission, and Resume), every Auphonic request through
+  the shared client's one reviewed egress site
+  (`core/publish/auphonic.py::_request` in `network_egress_audit`). Nothing
+  contacts Auphonic at launch, on adding files, or on opening its windows.
 - N-3. yt-dlp is bundled; Convert from URL downloads only the address the user
   pasted, sends no account or credential to the site, and reminds the user to
   download only what they have the right to use.
-- N-4. Convert from URL is refused in Safe Mode.
+- N-4. Convert from URL, Process with Auphonic and Auphonic Work Waiting are
+  refused in Safe Mode.
+- N-6. The Auphonic API token lives only in the system credential store
+  (`quill:publish:auphonic`, shared with the Audio Studio), and is never
+  written to `converter.json`, the pending-work file, logs or reports.
 - N-5. Support messages leave only through the user's own mail program, and
   only when the user sends them.
 
@@ -312,7 +351,8 @@ Out of scope, by decision:
 
 macOS and Linux standalone builds (the tray pattern this app leans on does not
 exist there in the same form), watched folders, telemetry of any kind, and any
-feature that would require uploading a user's media anywhere.
+feature that would upload a user's media anywhere other than to their own
+Auphonic account through Process with Auphonic.
 
 See `docs/CHANGELOG.md` for the versioned history and `docs/userguide.md` for
 the user-facing documentation.
