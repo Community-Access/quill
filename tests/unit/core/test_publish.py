@@ -309,3 +309,90 @@ def test_auphonic_status_flags() -> None:
     assert ProductionStatus(uuid="u", status=2, status_string="Error").failed
     running = ProductionStatus(uuid="u", status=1, status_string="Processing")
     assert not running.done and not running.failed
+
+
+# --------------------------------------------------------------------------- #
+# Auphonic streams both ways and never overwrites a file (2026-10-15)
+# --------------------------------------------------------------------------- #
+
+
+class _FakeResponse:
+    def __init__(self, payload: bytes) -> None:
+        self._payload = payload
+        self.headers = {"Content-Length": str(len(payload))}
+
+    def read(self, size: int = -1) -> bytes:
+        if size is None or size < 0:
+            size = len(self._payload)
+        chunk, self._payload = self._payload[:size], self._payload[size:]
+        return chunk
+
+    def __enter__(self) -> _FakeResponse:
+        return self
+
+    def __exit__(self, *_exc: object) -> None:
+        return None
+
+
+def test_the_streamed_upload_sends_exactly_the_multipart_body(tmp_path: Path) -> None:
+    import quill.core.publish.auphonic as auphonic
+
+    audio = tmp_path / "episode.wav"
+    audio.write_bytes(b"RIFF" + bytes(range(256)) * 50)
+    fields = {"action": "start", "title": "Episode"}
+    expected, _ = auphonic._multipart(fields, "input_file", audio)
+    with audio.open("rb") as handle:
+        parts, total, _ctype = auphonic._multipart_parts(fields, "input_file", audio, handle)
+        reader = auphonic._ProgressReader(parts, None, None, total=total)
+        streamed = b"".join(iter(lambda: reader.read(1000), b""))
+    # Boundaries differ per call; everything else must match byte for byte.
+    assert len(streamed) == total == len(expected)
+    assert streamed.endswith(b"--\r\n") and audio.read_bytes() in streamed
+
+
+def _status(*names: str) -> object:
+    import quill.core.publish.auphonic as auphonic
+
+    return auphonic.ProductionStatus(
+        uuid="u",
+        status=auphonic.DONE_STATUS,
+        status_string="Done",
+        output_files=[
+            {"download_url": f"https://auphonic.example/{n}", "filename": n} for n in names
+        ],
+    )
+
+
+def test_a_download_never_overwrites_and_streams_to_disk(tmp_path: Path, monkeypatch) -> None:
+    import quill.core.publish.auphonic as auphonic
+
+    monkeypatch.setattr(
+        auphonic.urllib.request, "urlopen", lambda *_a, **_k: _FakeResponse(b"new audio")
+    )
+    (tmp_path / "show.mp3").write_bytes(b"the person's own file")
+    written = auphonic.download_results(
+        "tok", _status("show.mp3"), tmp_path, on_bytes=lambda *_a: None
+    )
+    assert written == [tmp_path / "show (2).mp3"]
+    assert (tmp_path / "show.mp3").read_bytes() == b"the person's own file"
+    assert (tmp_path / "show (2).mp3").read_bytes() == b"new audio"
+    assert not list(tmp_path.glob("*.part"))
+
+
+def test_a_cancelled_download_leaves_no_partial_file(tmp_path: Path, monkeypatch) -> None:
+    import quill.core.publish.auphonic as auphonic
+
+    monkeypatch.setattr(
+        auphonic.urllib.request, "urlopen", lambda *_a, **_k: _FakeResponse(b"x" * 10)
+    )
+    with pytest.raises(AuphonicCancelled):
+        auphonic.download_results("tok", _status("show.mp3"), tmp_path, is_cancelled=lambda: True)
+    assert list(tmp_path.iterdir()) == []
+
+
+def test_the_servers_file_name_cannot_leave_the_folder(tmp_path: Path, monkeypatch) -> None:
+    import quill.core.publish.auphonic as auphonic
+
+    monkeypatch.setattr(auphonic.urllib.request, "urlopen", lambda *_a, **_k: _FakeResponse(b"a"))
+    written = auphonic.download_results("tok", _status("../../evil.mp3"), tmp_path / "out")
+    assert written == [tmp_path / "out" / "evil.mp3"]
