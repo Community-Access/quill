@@ -2,6 +2,29 @@
 
 ## 1.0.0
 
+### Find in Open Documents gets its own key in QUILL; main is green again (2026-10-15)
+
+PR #1660 was merged with PR CI failing, and the failures included a real one:
+Find in Open Documents was bound to Ctrl+Alt+Shift+F8 in QUILL, which is the
+QuillVille menu's Open Quill Weather, so one of the pair never fired.
+
+- **QUILL: Ctrl+Shift+F10.** Every other Ctrl+Alt+Shift F-key is taken in QUILL,
+  and the other free chords sit one modifier from Ctrl+F4 or Alt+F4 (rule 4).
+  QUILL Lite has no launchers and keeps Ctrl+Alt+Shift+F8; the divergence is a
+  `lite/parity.py` DIVERGENCES row (rule 11). Help topic, keyboard reference,
+  both user guides' notes, the tutorial, the PRDs and the release notes follow.
+- **Find in Open Documents and its Find All list** now apply the shared modal
+  contract (`apply_modal_ids`): Escape is Close, and the list's OK is Go To
+  through the contract instead of a relabelled button.
+- The dialog-hardening gate accepts a host's injected `show_modal(` -- both
+  editors pass `_show_modal_dialog` / `show_modal_dialog` -- so the shared
+  Search in Files prompt and Find in Open Documents are recognised.
+- Snapshots and tests brought up to date with #1660: App Sounds' store is a
+  `marker` in the persistence audit, the accessible-name inventory and the
+  MainFrame surface include the new controls and command, Radio's Preferences
+  test counts App Sounds Play On, and QUILL Lite's quiet-mode test checks the
+  app's own sounds instead of the family-wide switch it no longer touches.
+
 ### Find in Open Documents, in QUILL and QUILL Lite (2026-10-15)
 
 Asked for on QUILLVille by Chris Nova: NoteTab could find and replace across a
@@ -23,8 +46,8 @@ reads what is saved on disk; this searches each open document's live text.
   (QUILL's tabs; its `find_next`/`find_previous` overrides continue across
   tabs and `find_text`/`replace_text` hand F3 back) and
   `quill/apps/lite_open_documents.py` (QUILL Lite's windows, state on the app).
-- `edit.find_in_open_documents` / `cmd_find_open_docs` on Ctrl+Alt+Shift+F8,
-  the one chord free in both editors; Edit menu in QUILL, Edit > Matches in
+- `edit.find_in_open_documents` on Ctrl+Shift+F10 in QUILL and
+  `cmd_find_open_docs` on Ctrl+Alt+Shift+F8 in QUILL Lite (see "Find in Open Documents gets its own key in QUILL" above); Edit menu in QUILL, Edit > Matches in
   QUILL Lite. Help topic, keyboard reference, both user guides, both PRDs, the
   QUILL tutorial lesson "Find, replace, and search across files".
 

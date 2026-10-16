@@ -244,6 +244,37 @@
 <main id="main-content" tabindex="-1">
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
+<h3
+id="find-in-open-documents-gets-its-own-key-in-quill-main-is-green-again-2026-10-15">Find
+in Open Documents gets its own key in QUILL; main is green again
+(2026-10-15)</h3>
+<p>PR #1660 was merged with PR CI failing, and the failures included a
+real one: Find in Open Documents was bound to Ctrl+Alt+Shift+F8 in
+QUILL, which is the QuillVille menu’s Open Quill Weather, so one of the
+pair never fired.</p>
+<ul>
+<li><strong>QUILL: Ctrl+Shift+F10.</strong> Every other Ctrl+Alt+Shift
+F-key is taken in QUILL, and the other free chords sit one modifier from
+Ctrl+F4 or Alt+F4 (rule 4). QUILL Lite has no launchers and keeps
+Ctrl+Alt+Shift+F8; the divergence is a <code>lite/parity.py</code>
+DIVERGENCES row (rule 11). Help topic, keyboard reference, both user
+guides’ notes, the tutorial, the PRDs and the release notes follow.</li>
+<li><strong>Find in Open Documents and its Find All list</strong> now
+apply the shared modal contract (<code>apply_modal_ids</code>): Escape
+is Close, and the list’s OK is Go To through the contract instead of a
+relabelled button.</li>
+<li>The dialog-hardening gate accepts a host’s injected
+<code>show_modal(</code> – both editors pass
+<code>_show_modal_dialog</code> / <code>show_modal_dialog</code> – so
+the shared Search in Files prompt and Find in Open Documents are
+recognised.</li>
+<li>Snapshots and tests brought up to date with #1660: App Sounds’ store
+is a <code>marker</code> in the persistence audit, the accessible-name
+inventory and the MainFrame surface include the new controls and
+command, Radio’s Preferences test counts App Sounds Play On, and QUILL
+Lite’s quiet-mode test checks the app’s own sounds instead of the
+family-wide switch it no longer touches.</li>
+</ul>
 <h3 id="find-in-open-documents-in-quill-and-quill-lite-2026-10-15">Find
 in Open Documents, in QUILL and QUILL Lite (2026-10-15)</h3>
 <p>Asked for on QUILLVille by Chris Nova: NoteTab could find and replace
@@ -271,11 +302,12 @@ is never rewritten.</li>
 across tabs and <code>find_text</code>/<code>replace_text</code> hand F3
 back) and <code>quill/apps/lite_open_documents.py</code> (QUILL Lite’s
 windows, state on the app).</li>
-<li><code>edit.find_in_open_documents</code> /
-<code>cmd_find_open_docs</code> on Ctrl+Alt+Shift+F8, the one chord free
-in both editors; Edit menu in QUILL, Edit &gt; Matches in QUILL Lite.
-Help topic, keyboard reference, both user guides, both PRDs, the QUILL
-tutorial lesson “Find, replace, and search across files”.</li>
+<li><code>edit.find_in_open_documents</code> on Ctrl+Shift+F10 in QUILL
+and <code>cmd_find_open_docs</code> on Ctrl+Alt+Shift+F8 in QUILL Lite
+(see “Find in Open Documents gets its own key in QUILL” above); Edit
+menu in QUILL, Edit &gt; Matches in QUILL Lite. Help topic, keyboard
+reference, both user guides, both PRDs, the QUILL tutorial lesson “Find,
+replace, and search across files”.</li>
 </ul>
 <h3 id="the-clipboard-collector-in-quill-lite-2026-10-15">The clipboard
 collector in QUILL Lite (2026-10-15)</h3>

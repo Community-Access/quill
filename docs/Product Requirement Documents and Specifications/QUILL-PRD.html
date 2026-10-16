@@ -3955,18 +3955,19 @@ v1.2.</p>
 <p><strong>Find in Open Documents (2026-10-15, QUILL and QUILL
 Lite).</strong> Asked for on QUILLVille by Chris Nova, who used
 NoteTab’s find and replace across a hundred open files.
-<code>Ctrl+Alt+Shift+F8</code> (Edit &gt; Find in Open Documents…; QUILL
-Lite: Edit &gt; Matches) opens one shared window
-(<code>quill/ui/open_documents_find.py</code>) over the wx-free model in
-<code>quill/core/open_documents_search.py</code>, which matches with the
-same <code>find_model</code> both editors’ Find already use. It searches
-each open document’s live text – unsaved and never-saved documents
-included, nothing on disk touched. Find Next/Previous cross from
-document to document, announcing the document name and line only when it
-moves, and wrap back to the start position; Find All lists every match
-grouped by document and Enter jumps; Replace All plans first
-(<code>plan_replace</code>), asks with the count, writes one undo step
-per plain-text document (<code>changed_span</code> +
+<code>Ctrl+Shift+F10</code> (Edit &gt; Find in Open Documents…; QUILL
+Lite: Edit &gt; Matches, on <code>Ctrl+Alt+Shift+F8</code>, because in
+QUILL that key is the QuillVille launcher for Quill Weather) opens one
+shared window (<code>quill/ui/open_documents_find.py</code>) over the
+wx-free model in <code>quill/core/open_documents_search.py</code>, which
+matches with the same <code>find_model</code> both editors’ Find already
+use. It searches each open document’s live text – unsaved and
+never-saved documents included, nothing on disk touched. Find
+Next/Previous cross from document to document, announcing the document
+name and line only when it moves, and wrap back to the start position;
+Find All lists every match grouped by document and Enter jumps; Replace
+All plans first (<code>plan_replace</code>), asks with the count, writes
+one undo step per plain-text document (<code>changed_span</code> +
 <code>replace_as_one_undo</code>) or one per match in a formatted one so
 formatting between matches is untouched, marks the documents modified
 and saves nothing. Read-only documents are searched and skipped by

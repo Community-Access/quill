@@ -125,7 +125,7 @@ class OpenDocumentsFindMixin:
         )
 
     def find_in_open_documents(self) -> None:
-        """Ctrl+Alt+Shift+F8: find and replace across every open tab."""
+        """Ctrl+Shift+F10: find and replace across every open tab."""
         open_find_in_open_documents(QuillOpenDocuments(self))
 
     def find_next(self) -> None:

@@ -113,6 +113,15 @@ DIVERGENCES: dict[str, str] = {
         "finger shape, so the habit transfers even though the key cannot "
         "(bad.md P1.14)."
     ),
+    "cmd_find_open_docs": (
+        "Ctrl+Alt+Shift+F8 is Open Quill Weather in QUILL's QuillVille menu, "
+        "and QUILL Lite has no launchers, so it keeps that key. Every other "
+        "Ctrl+Alt+Shift F-key is taken in QUILL, so Find in Open Documents is "
+        "Ctrl+Shift+F10 there: free in QUILL, and nowhere near a key that "
+        "closes anything (rule 4). In QUILL Lite that key is Unfold "
+        "Everything, whose QUILL counterpart lives beside Ctrl+Shift+[ and ]. "
+        "Decided 2026-10-15."
+    ),
     "cmd_ai_usage": (
         "Ctrl+Alt+Shift+F9 is a QuillVille launcher in QUILL -- the siblings "
         "sit on Ctrl+Alt+Shift+F7 through F12 (app_keymaps.SIBLING_APP_ACCELERATORS) "

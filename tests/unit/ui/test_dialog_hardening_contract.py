@@ -28,6 +28,11 @@ _SHOW_TOKENS = (
     "show_modal_dialog",
     ".ShowModal(",
     ".Show()",
+    # A window shared by both editors is handed its host's modal helper
+    # (file_search_prompt.py's ``show_modal=``, open_documents_find.py's
+    # ``host.show_modal``); each host passes _show_modal_dialog or
+    # show_modal_dialog, so the call site is the accessible path.
+    "show_modal(",
 )
 
 

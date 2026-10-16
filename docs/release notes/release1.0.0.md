@@ -25,7 +25,7 @@ has the proper introductions.
 
 ## New in this build: Find in Open Documents
 
-Press **Ctrl+Alt+Shift+F8** to find and replace across every document you have open, not just the one in front of you. It searches what is in each window right now, including changes you have not saved and documents you have never saved. Find Next moves from document to document and tells you each one's name, Find All lists every match, and Replace All tells you how many it found before it changes anything, lets you undo each document on its own, and saves nothing. Afterwards, F3 keeps searching across your documents until you start an ordinary Find. QUILL and QUILL Lite work the same way. Thanks to Chris Nova for asking.
+Press **Ctrl+Shift+F10** to find and replace across every document you have open, not just the one in front of you. It searches what is in each window right now, including changes you have not saved and documents you have never saved. Find Next moves from document to document and tells you each one's name, Find All lists every match, and Replace All tells you how many it found before it changes anything, lets you undo each document on its own, and saves nothing. Afterwards, F3 keeps searching across your documents until you start an ordinary Find. QUILL Lite has it too, on Ctrl+Alt+Shift+F8. Thanks to Chris Nova for asking.
 
 ## Try this first
 

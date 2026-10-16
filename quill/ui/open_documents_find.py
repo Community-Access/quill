@@ -204,11 +204,14 @@ def _choose_match(host: OpenDocumentsHost, title: str, rows: list[tuple[int, str
     root.Add(label, 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
     root.Add(listbox, 1, wx.EXPAND | wx.ALL, 8)
     buttons = dialog.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL)
-    dialog.FindWindow(wx.ID_OK).SetLabel("Go To")
     root.Add(buttons, 0, wx.EXPAND | wx.ALL, 8)
     dialog.SetSizer(root)
     dialog.SetSize((640, 420))
-    from quill.ui.dialog_contract import apply_listbox_activation
+    from quill.ui.dialog_contract import apply_listbox_activation, apply_modal_ids
+
+    apply_modal_ids(
+        dialog, affirmative_id=wx.ID_OK, affirmative_label="&Go To", cancel_id=wx.ID_CANCEL
+    )
 
     # Enter, Space or a double-click go there (GATE-13).
     apply_listbox_activation(listbox, lambda _e: dialog.EndModal(wx.ID_OK))
@@ -382,8 +385,10 @@ def open_find_in_open_documents(host: OpenDocumentsHost) -> None:
         wx.EVT_BUTTON,
         lambda _e: run(lambda q: _replace_all(host, q, replace_box.GetValue(), confirm)),
     )
-    from quill.ui.dialog_contract import bind_close_button
+    from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
 
+    # Escape is Close; Enter is Find Next, the default button.
+    apply_modal_ids(dialog, cancel_id=wx.ID_CANCEL)
     bind_close_button(dialog, close_button, modeless=False)
     find_box.SetFocus()
     find_box.SelectAll()

@@ -225,6 +225,7 @@
   "extend_sleep_timer_command",
   "extract_regex_matches",
   "find_all_matches",
+  "find_in_open_documents",
   "find_next",
   "find_podcast_chapters",
   "find_previous",
