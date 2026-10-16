@@ -64,6 +64,20 @@ def test_models_for_engine_lists_catalog_with_a_recommendation() -> None:
     assert {m.model_id for m in cpp} != {m.model_id for m in fw}
 
 
+def test_guided_models_carry_their_tier_and_the_reason(monkeypatch) -> None:
+    """D-22: the guided picker names each model's tier and says why the
+    recommended one suits this computer."""
+    from quill.core.speech import service
+
+    monkeypatch.setattr(service, "detect_total_ram_gb", lambda: 8.0)
+    monkeypatch.setattr(service, "detect_has_gpu", lambda: False)
+    models = gs.models_for_engine("whispercpp")
+    assert all(m.tier in {"Lightweight", "Balanced", "High accuracy"} for m in models)
+    best = [m for m in models if m.recommended]
+    assert len(best) == 1 and "8.0 GB RAM" in best[0].reason
+    assert all(not m.reason for m in models if not m.recommended)
+
+
 def test_default_model_is_the_smallest_for_a_fast_start() -> None:
     # "default to tiny so they're going immediately" -- the first (smallest) model.
     assert gs.default_model_id("whispercpp") == "tiny"

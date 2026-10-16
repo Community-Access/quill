@@ -307,12 +307,18 @@ def writes_punctuation(engine_id: str) -> bool:
 def engine_choices(saved: str = "") -> list[tuple[str, str]]:
     """``(id, label)`` for the Speech engine list: the built-in engines, every
     downloaded model, OpenAI where an OpenAI key is saved, and *saved* when it
-    names one no longer here."""
+    names one no longer here. Every model row ends with its tier (D-22):
+    "Moonshine (fast, punctuates for you), Lightweight"."""
+    from quill.core.windows_dictation.model_advice import engine_tier
     from quill.core.windows_dictation.model_store import installed_models
     from quill.core.windows_dictation.openai_models import cloud_problem
 
-    rows = [(engine.id, engine.label) for engine in ENGINES]
-    rows += [(model.id, model.engine_label) for model in installed_models()]
+    def tiered(engine_id: str, label: str) -> str:
+        tier = engine_tier(engine_id)
+        return f"{label}, {tier}" if tier else label
+
+    rows = [(engine.id, tiered(engine.id, engine.label)) for engine in ENGINES]
+    rows += [(model.id, tiered(model.id, model.engine_label)) for model in installed_models()]
     problem = cloud_problem()
     if not problem:
         rows.append((OPENAI_ENGINE.id, OPENAI_ENGINE.label))

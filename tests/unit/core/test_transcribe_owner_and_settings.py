@@ -196,6 +196,9 @@ def test_the_list_marks_every_model_local_or_not_and_ready_or_not(
     for row in rows:
         assert ("not downloaded" in row.label) == (not row.ready)
         assert "on this computer" in row.label
+        # D-22: every model names its tier; Windows speech recognition is not a model.
+        assert (row.tier in row.label) and bool(row.tier) == (row.id != "windows")
+    assert rows[0].label.startswith("Moonshine (on this computer; Lightweight; ")
 
 
 def test_openai_is_listed_only_with_a_key_and_says_where_speech_goes(

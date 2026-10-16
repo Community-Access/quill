@@ -18,6 +18,14 @@ a portable copy they are saved inside the portable folder
 when the window opens, on a worker; each model's details then say whether this
 computer should keep up, and the download question repeats it.
 
+**The recommendation** (dict.md D-22, :mod:`quill.core.windows_dictation.model_advice`)
+sits above the list as read-only text: one model for this computer, the
+dictation language and What matters most, with its reasons. It is written
+from the cores and memory at once and rewritten when the timed check ends.
+Show Recommended Model moves to its row; nothing is downloaded or chosen for
+the person. Every row and details box names the model's tier (Lightweight,
+Balanced or High accuracy).
+
 The list is our suggested order: the models VS Code offers first, with
 Nemotron as the suggested download, then the rest of the Whisper family. The
 built-in Whisper tiny is listed in its VS Code place, already installed.
@@ -35,20 +43,21 @@ from typing import Any
 
 import wx
 
-from quill.core.windows_dictation import model_store, speed_check
+from quill.core.windows_dictation import model_advice, model_store, speed_check
 from quill.core.windows_dictation.model_catalog import (
     CATALOGUE,
     DownloadableModel,
     megabytes,
 )
+from quill.core.windows_dictation.model_types import TIER_MEANINGS
 from quill.ui.dialog_contract import apply_modal_ids, bind_close_button, show_message_box
 
 __all__ = ["SpeechModelsDialog", "open_speech_models"]
 
 _PAD = 8
 _TINY_ROW = (
-    "Whisper tiny: built in. Fastest and lightest, weakest accuracy; a VS Code "
-    "alternative. Already installed."
+    "Whisper tiny, Lightweight: built in. Fastest and lightest, weakest accuracy; a "
+    "VS Code alternative. Already installed."
 )
 #: Where the built-in Whisper tiny sits in the list: after the VS Code models.
 _TINY_AFTER = "whisper_base"
@@ -71,6 +80,7 @@ class SpeechModelsDialog(wx.Dialog):
         announce: Callable[[str], None] | None = None,
         *,
         run_check: Callable[[], speed_check.SpeedCheck] | None = None,
+        language: str = "en",
     ) -> None:
         super().__init__(
             parent, title="Speech Models", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
@@ -78,6 +88,8 @@ class SpeechModelsDialog(wx.Dialog):
         self._announce = announce or (lambda _text: None)
         self.chosen: str | None = None
         self._check: speed_check.SpeedCheck | None = None
+        self._language = language
+        self._recommendation: model_advice.Recommendation | None = None
         self._cancel = threading.Event()
         self._busy: DownloadableModel | None = None
         self._last_quarter = -1
@@ -99,12 +111,46 @@ class SpeechModelsDialog(wx.Dialog):
         )
         intro.Wrap(620)
         root.Add(intro, 0, wx.ALL, _PAD)
+
+        # D-22: one model suggested for this computer, with its reasons as text
+        # to read, never a switch.
+        priority_label = wx.StaticText(self, label="&What matters most:")
+        self.priority = wx.Choice(self, choices=[label for _v, label in model_advice.PRIORITIES])
+        self.priority.SetHelpText(
+            "What the recommendation below aims for: a balance of speed and accuracy, "
+            "the quickest response after you pause, or the fewest mistakes this "
+            "computer can keep up with. It only changes the advice, never your model."
+        )
+        self.priority.SetSelection(0)
+        self.priority.Bind(wx.EVT_CHOICE, self._on_priority)
+        advice_label = wx.StaticText(self, label="Re&commendation:")
+        self.advice = wx.TextCtrl(self, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2)
+        self.advice.SetHelpText(
+            "The model that suits this computer and why: whether it keeps up, about "
+            "how soon your words appear after you pause, its tier and its download "
+            "size. The figures are estimates. Nothing changes until you choose a model."
+        )
+        self.show_recommended = wx.Button(self, label="&Show Recommended Model")
+        self.show_recommended.SetHelpText(
+            "Move to the recommended model in the list below, to read its details and "
+            "download or use it. It does not download or choose anything."
+        )
+        self.show_recommended.Bind(wx.EVT_BUTTON, self._on_show_recommended)
+        priority_row = wx.BoxSizer(wx.HORIZONTAL)
+        priority_row.Add(priority_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, _PAD)
+        priority_row.Add(self.priority, 1)
+        root.Add(priority_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, _PAD)
+        root.Add(advice_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
+        root.Add(self.advice, 0, wx.EXPAND | wx.ALL, _PAD)
+        root.Add(self.show_recommended, 0, wx.LEFT | wx.RIGHT, _PAD)
+
         label = wx.StaticText(self, label="Speech &models:")
         self.models = wx.ListBox(self, choices=[self._row_text(row) for row in self._rows])
         self.models.SetHelpText(
             "The optional speech models, the ones VS Code offers first and then the rest "
-            "of the Whisper family. Each row says what the model is good for, its size "
-            "and whether it is on this computer. Details below say more."
+            "of the Whisper family. Each row says its tier (Lightweight, Balanced or High "
+            "accuracy), what the model is good for, its size and whether it is on this "
+            "computer. Details below say more."
         )
         self.models.Bind(wx.EVT_LISTBOX, lambda _e: self._show_details())
         root.Add(label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
@@ -155,7 +201,7 @@ class SpeechModelsDialog(wx.Dialog):
             buttons.Add(button, 0, wx.RIGHT, _PAD)
         root.Add(buttons, 0, wx.ALL, _PAD)
         self.SetSizer(root)
-        self.SetSize((680, 600))
+        self.SetSize((680, 720))
         apply_modal_ids(self, cancel_id=wx.ID_CANCEL, escape_id=wx.ID_CANCEL)
         bind_close_button(self, close, modeless=False)
         self.download.Bind(wx.EVT_BUTTON, self._on_download)
@@ -165,6 +211,7 @@ class SpeechModelsDialog(wx.Dialog):
         self.Bind(wx.EVT_WINDOW_DESTROY, self._on_destroy)
         self.models.SetSelection(0)
         self._show_details()
+        self._show_advice(speed_check.latest())
         self.models.SetFocus()
         self._start_check(run_check or speed_check.run)
 
@@ -173,7 +220,10 @@ class SpeechModelsDialog(wx.Dialog):
     def _row_text(self, row: DownloadableModel | None) -> str:
         if row is None:
             return _TINY_ROW
-        return f"{row.name}: {row.good_for} {megabytes(row.download_bytes)}. {_status(row)}."
+        return (
+            f"{row.name}, {row.tier}: {row.good_for} {megabytes(row.download_bytes)}. "
+            f"{_status(row)}."
+        )
 
     def selected(self) -> DownloadableModel | None:
         index = self.models.GetSelection()
@@ -191,6 +241,7 @@ class SpeechModelsDialog(wx.Dialog):
         lines = [
             model.description,
             f"Good for: {model.good_for}",
+            f"Tier: {TIER_MEANINGS[model.tier]}",
             f"Languages: {model.language_names}.",
             f"Download: {megabytes(model.download_bytes)}. On disk: {megabytes(model.disk_bytes)}.",
             f"Works best on: {model.works_best_on}",
@@ -233,6 +284,42 @@ class SpeechModelsDialog(wx.Dialog):
             return
         self._check = result
         self._show_details()
+        self._show_advice(result)
+
+    # -- the recommendation (D-22) ------------------------------------------ #
+
+    def _show_advice(self, check: speed_check.SpeedCheck) -> None:
+        """Write the recommendation for *check* and the chosen priority. Silent:
+        the text is there to read, and a check finishing is not news."""
+        priority = model_advice.PRIORITIES[max(0, self.priority.GetSelection())][0]
+        advice = model_advice.recommend(check, self._language, priority=priority)
+        self._recommendation = advice
+        self.advice.SetValue(advice.details)
+        self.show_recommended.Enable(self._recommended_row() is not None)
+
+    def _recommended_row(self) -> int | None:
+        advice = self._recommendation
+        if advice is None:
+            return None
+        for index, row in enumerate(self._rows):
+            row_id = "whisper" if row is None else row.id  # the built-in tiny row
+            if row_id == advice.model_id:
+                return index
+        return None  # Moonshine, built in, has no row here
+
+    def _on_priority(self, _event: Any) -> None:
+        self._show_advice(self._check or speed_check.latest())
+        if self._recommendation is not None:
+            # The focus stays on the choice, so the new advice is news.
+            self._announce(f"Recommended: {self._recommendation.name}.")
+
+    def _on_show_recommended(self, _event: Any) -> None:
+        index = self._recommended_row()
+        if index is None:
+            return
+        self.models.SetSelection(index)
+        self._show_details()
+        self.models.SetFocus()  # the reader says the row it lands on
 
     # -- download ----------------------------------------------------------- #
 
@@ -368,11 +455,14 @@ class SpeechModelsDialog(wx.Dialog):
         show_message_box(sentence, "Speech Models", wx.OK | icon, self)
 
 
-def open_speech_models(parent: Any, announce: Callable[[str], None] | None = None) -> str | None:
-    """Show Speech Models; return the model chosen with Use for Dictation, if any."""
+def open_speech_models(
+    parent: Any, announce: Callable[[str], None] | None = None, *, language: str = "en"
+) -> str | None:
+    """Show Speech Models; return the model chosen with Use for Dictation, if any.
+    *language* is the dictation language, which the recommendation follows."""
     from quill.ui.dialog_contract import show_modal_dialog
 
-    dialog = SpeechModelsDialog(parent, announce)
+    dialog = SpeechModelsDialog(parent, announce, language=language)
     try:
         show_modal_dialog(dialog, "Speech Models")
         return dialog.chosen

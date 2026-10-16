@@ -149,7 +149,7 @@ class FileModel:
 _BUILT_IN = (
     FileModel(
         "moonshine",
-        "Moonshine tiny (built in, fastest)",
+        "Moonshine tiny (built in, fastest; Lightweight)",
         "Built into every copy. The fastest model, good on clear speech from one "
         "person close to the microphone: a voice note, a dictated letter. English only.",
         ("en",),
@@ -157,7 +157,7 @@ _BUILT_IN = (
     ),
     FileModel(
         "whisper",
-        "Whisper tiny (built in)",
+        "Whisper tiny (built in; Lightweight)",
         "Built into every copy. A little slower than Moonshine and a little more "
         "forgiving of accents; for Spanish it is the multilingual Whisper tiny.",
         ("en", "es"),
@@ -198,7 +198,7 @@ def file_models(
             rows.append(
                 FileModel(
                     model.id,
-                    f"{model.name} (downloaded)",
+                    f"{model.name} (downloaded; {model.tier})",
                     f"{model.good_for} {model.works_best_on}",
                     model.languages,
                     model.cost_factor,

@@ -17,6 +17,7 @@ from quill.core.paths import app_data_dir
 from quill.core.speech.provider import SpeechModelInfo, SpeechToTextProvider
 from quill.core.speech.registry import SpeechProviderRegistry
 from quill.core.storage import read_json, write_json_atomic
+from quill.core.windows_dictation.model_types import legacy_tier
 
 DEFAULT_PROVIDER_ID = "whispercpp"
 
@@ -251,6 +252,26 @@ def machine_summary(total_ram_gb: float, has_gpu: bool) -> str:
     return f"Your computer: {total_ram_gb:.1f} GB RAM and {gpu}."
 
 
+def recommendation_reason(total_ram_gb: float, has_gpu: bool) -> str:
+    """Why :func:`recommend_model_id` picked what it did, in a plain sentence
+    (D-22: a recommendation always says why). Follows the same memory bands."""
+    if total_ram_gb <= 0:
+        return "This computer's memory could not be measured, so a mid-sized model is a safe start."
+    if total_ram_gb < 3:
+        why = "with under 3 GB, the lightest model leaves room for your screen reader."
+    elif total_ram_gb < 6:
+        why = "a light model fits comfortably in this much memory beside your screen reader."
+    elif total_ram_gb < 12:
+        why = "a mid-sized model fits in this much memory without slowing the computer."
+    elif total_ram_gb < 16:
+        why = "a larger, more accurate model fits in this much memory."
+    elif has_gpu:
+        why = "the largest, most accurate model is practical with a graphics card."
+    else:
+        why = "without a graphics card the largest model would be slow, so one size down."
+    return f"{machine_summary(total_ram_gb, has_gpu)} So {why}"
+
+
 def recommend_model_id(model_ids: list[str], total_ram_gb: float, has_gpu: bool) -> str:
     """Pick the best-fit model id for this machine from those the provider offers.
 
@@ -388,7 +409,12 @@ def describe_models(
         if info.approximate_size_mb >= 1500 and not has_gpu:
             gpu_note = "No GPU detected; expect slow transcription on the CPU."
         recommended = info.id == recommended_id
-        rec_note = " Recommended for your computer." if recommended else ""
+        tier = legacy_tier(info.id, info.approximate_size_mb, info.accuracy_tier)
+        rec_note = (
+            f" Recommended for your computer: {recommendation_reason(total_ram_gb, has_gpu)}"
+            if recommended
+            else ""
+        )
         license_name = info.license_name or ""
         license_note = f" {license_name} licensed." if license_name else ""
         # Capabilities, spoken plainly *before* download so the picker promises
@@ -400,7 +426,7 @@ def describe_models(
         # "Not installed" before the long descriptor (#669 follow-up): users were
         # not registering the buried mid-label state.
         label = (
-            f"{state}: {info.display_name} — {_size_text(info.approximate_size_mb)} "
+            f"{state}: {info.display_name}, {tier} — {_size_text(info.approximate_size_mb)} "
             f"download — {info.accuracy_tier} accuracy, {info.speed_tier} speed. "
             f"{info.recommended_use}{capability_note} {ram_note}"
             f"{(' ' + gpu_note) if gpu_note else ''}{rec_note}{license_note}"

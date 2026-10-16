@@ -68,13 +68,17 @@ class ModelRow:
     licence: str
     #: One line on what it is good for.
     note: str
+    #: Lightweight, Balanced or High accuracy (D-22); ``""`` for an engine that
+    #: is not a model (Windows speech recognition, OpenAI).
+    tier: str = ""
 
     @property
     def label(self) -> str:
         """The row as a list says it."""
         where = "on this computer" if self.local else "sends your speech over the internet"
+        tier = f"; {self.tier}" if self.tier else ""
         state = "" if self.ready else "; not downloaded"
-        return f"{self.name} ({where}; {self.languages}{state})"
+        return f"{self.name} ({where}{tier}; {self.languages}{state})"
 
 
 def _openai_ready() -> bool:
@@ -88,6 +92,7 @@ def _openai_ready() -> bool:
 
 def model_rows() -> list[ModelRow]:
     """Every model Transcribe can use, built in first, then downloads, then OpenAI."""
+    from quill.core.windows_dictation.model_advice import engine_tier
     from quill.core.windows_dictation.model_store import installed
 
     rows: list[ModelRow] = []
@@ -106,6 +111,7 @@ def model_rows() -> list[ModelRow]:
                 source="included with QUILL" if built_in else "Microsoft Windows",
                 licence="MIT" if built_in else "Windows",
                 note=engine.description,
+                tier=engine_tier(engine.id),
             )
         )
     for model in CATALOGUE:
@@ -120,6 +126,7 @@ def model_rows() -> list[ModelRow]:
                 source=model.source,
                 licence=model.licence,
                 note=model.good_for,
+                tier=model.tier,
             )
         )
     if _openai_ready():

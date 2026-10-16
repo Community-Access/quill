@@ -7606,6 +7606,8 @@ never taken back.
 **Test Microphone** records four seconds and tells you how loud it was and what
 the engine heard. **Better Accuracy: Speech Models...** (`Alt+B`) opens the
 optional models described in "Better accuracy: optional speech models" below.
+Below it, **Recommended for this computer** is a read-only line naming the
+model that suits this computer and why; it is only advice.
 **More Dictation Settings...** (`Alt+A`) opens the window described next.
 
 ##### More Dictation Settings, every option
@@ -7755,11 +7757,41 @@ Moonshine stays your engine until you choose another.
 5. When it says the model is downloaded, press **Use for Dictation**
    (**Alt+U**), then **OK** in Dictation Settings. Or choose the model in the
    **Speech engine** list yourself: downloaded models are listed there with
-   "(downloaded)" after the name.
+   "(downloaded)" and the model's tier after the name.
 
 Every file is checked against a fingerprint (a checksum) we recorded when we
 added the model. If a file does not match, it is deleted and you are told, so
 a damaged or changed download can never be used.
+
+**Which model should I use?** Speech Models recommends one. Near the top of
+the window, the read-only **Recommendation** box (**Alt+C**) names the model
+that suits this computer and your dictation language, and says why: whether
+it keeps up here, about how soon your words appear after you pause, whether
+your speech stays on this computer (it always does), and how big the download
+is, or that it is already installed. The lines after it say more, for
+example a model that makes fewer mistakes but would slow your screen reader
+here. **What matters most** (**Alt+W**) changes the advice: a balance of speed
+and accuracy (the usual choice), the quickest response, or the fewest
+mistakes this computer can keep up with. **Show Recommended Model**
+(**Alt+S**) moves to that model in the list, so you can read its details and
+download it. Dictation Settings shows the same advice in one line, in the
+**Recommended for this computer** box under the Better Accuracy button.
+
+The recommendation is only advice. QUILL never changes your engine by itself;
+you choose. Its figures are estimates, measured with a synthetic voice, and
+they say so. A graphics card makes no difference: every dictation model runs
+on the processor.
+
+**Tiers.** Every model is labelled with one of three tiers, wherever you
+choose one: the Speech engine list, Speech Models, Transcribe a Recording,
+and Manage Speech Models.
+
+- **Lightweight**: keeps up comfortably even on a modest computer. The
+  built-in Moonshine and Whisper, and Moonshine base.
+- **Balanced**: more work than the built-in engines; keeps up on a computer
+  with four or more cores. Parakeet and Whisper base.
+- **High accuracy**: the fewest mistakes, for the most work; needs a capable
+  computer, or patience. Nemotron, and Whisper small and larger.
 
 **Where the models go.** One folder for QUILL and QUILL Lite on the same
 computer, so a model downloaded in one is there for the other:
@@ -9010,8 +9042,12 @@ accuracy and speed, and helps you pick one that will run well on your computer.
   whether a GPU was found.
 - Each model shows roughly how much memory it needs. A model too big for your
   RAM is flagged.
+- Each model names its tier: **Lightweight**, **Balanced** or **High
+  accuracy**, the same three words dictation uses.
 - The best fit for your computer is marked **"Recommended for your
-  computer."**
+  computer"**, followed by why, in the row itself: your memory and graphics
+  card, and what that allows. The guided offline-speech setup shows the same
+  reason below the engine's description.
 - A larger model warns you when there is no GPU, because it will be slow on
   the CPU.
 

@@ -39,12 +39,12 @@ from quill.core.windows_dictation.engines import (
     engine_choices,
     language_model_problem,
 )
+from quill.core.windows_dictation.model_advice import for_this_computer
 from quill.core.windows_dictation.options import (
     PAUSE_CHOICES,
     SILENCE_CHOICES,
     coerce_pause,
     coerce_silence,
-    level_sentence,
 )
 from quill.core.windows_dictation.speech_language import (
     SPEECH_LANGUAGES,
@@ -67,6 +67,7 @@ from quill.ui.windows_dictation_devices import (
     microphone_names,
     recognizer_names,
 )
+from quill.ui.windows_dictation_mic_test import MicrophoneTestMixin
 
 __all__ = [
     "DICTATE_ANYWHERE",
@@ -91,7 +92,7 @@ DICTATE_ANYWHERE = 5805  # quill.ui.dictation_more_dialog's, passed on
 _PAD = 8
 
 
-class WindowsDictationDialog(wx.Dialog):
+class WindowsDictationDialog(MicrophoneTestMixin, wx.Dialog):
     """The dictation settings. Read with :meth:`apply` after OK."""
 
     def __init__(
@@ -304,6 +305,15 @@ class WindowsDictationDialog(wx.Dialog):
 
         columns.Add(root, 1, wx.EXPAND)
         root = wx.BoxSizer(wx.VERTICAL)  # the right column: starting and stopping
+        advice_label = wx.StaticText(self, label="Recommended for this computer:")
+        self.advice = wx.TextCtrl(self, style=wx.TE_READONLY)
+        self.advice.SetHelpText("The model that suits this computer, and why. Only advice.")
+        # At the top of the right column, not under the engine: the left column
+        # has no room for another row on a 768-pixel screen. Created here, so
+        # Tab reaches it where it is shown, and its label comes first.
+        root.Add(advice_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
+        root.Add(self.advice, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, _PAD)
+        self._show_advice()  # the speech language above is set by now
         self.cue_sounds = wx.CheckBox(
             self, label="Play &sounds when dictation starts, stops or fails"
         )
@@ -440,6 +450,12 @@ class WindowsDictationDialog(wx.Dialog):
         problem = language_model_problem(engine, language)
         if problem:
             self._show_test(problem)
+        self._show_advice()
+
+    def _show_advice(self) -> None:
+        """D-22: the recommendation for the chosen language, as text to read."""
+        language = self._speech_languages[max(0, self.speech_language.GetSelection())]
+        self.advice.SetValue(for_this_computer(language).sentence)
 
     def _on_engine(self, _event: Any) -> None:
         """Choosing OpenAI asks first whether speech may leave the computer."""
@@ -497,56 +513,13 @@ class WindowsDictationDialog(wx.Dialog):
         from quill.ui.dictation_models_dialog import open_speech_models
 
         current = self._engine_ids[max(0, self.engine.GetSelection())]
-        chosen = open_speech_models(self, self._announce) or current
+        language = self._speech_languages[max(0, self.speech_language.GetSelection())]
+        chosen = open_speech_models(self, self._announce, language=language) or current
+        self._show_advice()  # the timed check may have run there
         rows = engine_choices(chosen)
         self._engine_ids = [engine_id for engine_id, _label in rows]
         self.engine.Set([label for _id, label in rows])
         self.engine.SetSelection(self._engine_ids.index(chosen))
-
-    # -- Test Microphone -------------------------------------------------- #
-
-    def _on_test_microphone(self, _event: Any) -> None:
-        engine_row = self.engine.GetSelection()
-        engine = self._engine_ids[engine_row] if 0 <= engine_row < len(self._engine_ids) else ""
-        if engine == "voice_typing":
-            self._show_test("Windows voice typing uses its own microphone settings, in Windows.")
-            return
-        row = self.microphone.GetSelection()
-        microphone = self._microphone_names[row] if 0 <= row < len(self._microphone_names) else ""
-        from quill.core.windows_dictation.local_recognizer import record_and_hear
-        from quill.ui.update_download import thread_submit
-
-        self.test_microphone.Disable()
-        self.test_result.SetValue("Recording...")
-        # Spoken, not shown: the person has to know when to start talking.
-        self._announce("Speak now. Recording for four seconds.")
-
-        language = self._speech_languages[max(0, self.speech_language.GetSelection())]
-
-        def work(**_kwargs: Any) -> tuple[float, str]:
-            return record_and_hear(microphone, engine, language=language)
-
-        def done(_name: str, result: Any) -> None:
-            peak, heard = result
-            sentence = level_sentence(peak)
-            if heard:
-                sentence += f' It heard: "{heard}".'
-            elif engine == "windows" and peak >= 0.02:
-                sentence += " Windows speech recognition is tried by dictating."
-            wx.CallAfter(self._show_test, sentence)
-
-        def failed(_name: str, error: BaseException) -> None:
-            said = str(error.args[0]) if error.args else ""  # the sentence, not the code
-            wx.CallAfter(self._show_test, said or "The microphone test could not run.")
-
-        thread_submit("quill-dictation-mic-test", work, on_success=done, on_failure=failed)
-
-    def _show_test(self, sentence: str) -> None:
-        if not self:
-            return
-        self.test_microphone.Enable()
-        self.test_result.SetValue(sentence)
-        self._announce(sentence)
 
     def apply(self, settings: Any) -> None:
         """Write every choice into *settings*. The caller saves."""

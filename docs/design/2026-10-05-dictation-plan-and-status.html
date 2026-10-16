@@ -2088,6 +2088,125 @@ model’s replies compare with the 50 percent flag in practice; and
 whether two processes refreshing the same ChatGPT sign-in (QUILL and
 QUILL Transcribe) ever race.</p>
 <h2
+id="21-as-built-2026-10-15-a-recommended-model-with-reasons-and-tier-labels-d-22">21.
+As built 2026-10-15: a recommended model, with reasons, and tier labels
+(D-22)</h2>
+<p>Until now only Transcribe a Recording suggested a model
+(<code>file_models.py</code>, for files). Live dictation had the
+two-second check (section 1) and a verdict per model, but nothing said
+which one to pick.</p>
+<p><strong>The recommendation</strong> is
+<code>quill/core/windows_dictation/model_advice.py</code>, wx-free, and
+<code>speed_check.recommend(check, language, privacy="local")</code>
+calls it, as dict.md placed it. It returns one model and a sentence, for
+example “Moonshine base, Lightweight: keeps up on this computer’s 8 GB
+and 4 cores, about 0.3 seconds after you pause; stays on this computer;
+a 141 MB download.”, and the reasons behind it. The rule:</p>
+<ul>
+<li><strong>Candidates</strong> are the built-in Moonshine and Whisper
+and every catalogue model with a measurement in section 6, that knows
+the dictation language. An unmeasured model is never recommended,
+because a reason needs a number.</li>
+<li><strong>It must keep up.</strong> Moonshine tiny’s timed speed here
+(or the cores and memory fallback) times the model’s cost factor must be
+inside the 0.25 budget. Two threads (up to 0.5) are allowed when the
+person chooses “The fewest mistakes”, or on a computer with 16 GB and
+four cores, which matches D-26’s tier table (Nemotron the default at 16
+GB).</li>
+<li><strong>It must fit beside the screen reader</strong>: 600 MB of
+peak memory under 7 GB (section 1’s budget), 1 GB under 15 GB, 2.5 GB
+above.</li>
+<li><strong>Then the fewest word errors win.</strong> Ties go to the
+bigger model of the pair (Moonshine base over tiny), except on a modest
+computer (under four cores or 7 GB), where the built-in model wins a
+tie: a download measured no better is not worth having there. “The
+quickest response” takes the lightest.</li>
+<li><strong>When nothing keeps up</strong>, the lightest built-in model
+for the language is named, saying it may lag.</li>
+<li><strong>A graphics card changes nothing</strong>: every dictation
+model runs on the processor, and the reasons say so when one is found.
+The timed check now asks <code>service.detect_has_gpu</code>; its memory
+comes from <code>service.detect_total_ram_gb</code>, the detector Manage
+Speech Models uses.</li>
+<li><strong>Privacy</strong>: every candidate keeps the speech on this
+computer. OpenAI is never recommended; it needs the person’s own key and
+consent.</li>
+</ul>
+<p>Every answer ends “These figures are estimates from a synthetic
+voice” and “QUILL never changes your model by itself”, until B-1
+measures real voices. There is no automatic mode: the sticky-model rule
+holds.</p>
+<table>
+<thead>
+<tr>
+<th>Computer</th>
+<th>Balance</th>
+<th>Quickest</th>
+<th>Fewest mistakes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4 GB, two cores (the baseline)</td>
+<td>Moonshine (built in)</td>
+<td>Moonshine</td>
+<td>Moonshine base</td>
+</tr>
+<tr>
+<td>8 GB, four cores</td>
+<td>Moonshine base</td>
+<td>Moonshine</td>
+<td>Nemotron (two threads)</td>
+</tr>
+<tr>
+<td>16 GB, eight cores</td>
+<td>Nemotron (two threads)</td>
+<td>Moonshine</td>
+<td>Nemotron</td>
+</tr>
+<tr>
+<td>Spanish, 8 GB, four cores</td>
+<td>Whisper (built in)</td>
+<td>Whisper</td>
+<td>Nemotron</td>
+</tr>
+</tbody>
+</table>
+<p><code>tests/unit/core/test_dictation_model_advice.py</code> pins
+these and more as a table of machine profiles.</p>
+<p><strong>Tiers</strong> (<code>model_types.tier_for</code>): a cost
+factor up to 5 (inside the budget on the measuring machine) is
+<strong>Lightweight</strong>; up to 10 (two threads) is
+<strong>Balanced</strong>, unless its measured word errors are 2.5
+percent or fewer, which makes it <strong>High accuracy</strong>; above
+10 is <strong>High accuracy</strong>. So Moonshine tiny, Whisper tiny
+and Moonshine base are Lightweight; both Parakeets and Whisper base are
+Balanced; Nemotron and Whisper small and up are High accuracy.
+<code>legacy_tier</code> gives QUILL’s whisper.cpp and Faster Whisper
+catalogue the same words (200 MB or less Lightweight, “high” or
+“highest” accuracy High accuracy, the rest Balanced), and its Nemotron
+and Parakeet take the live models’ tiers, so one model never has
+two.</p>
+<p><strong>Where it shows.</strong> Speech Models (shared by QUILL,
+QUILL Lite and Transcribe’s Model Library): What matters most (Alt+W),
+the read-only Recommendation (Alt+C), Show Recommended Model (Alt+S),
+and the tier on every row and in Details. Dictation Settings, in all
+hosts: a read-only Recommended for this computer line, and the tier in
+the Speech engine list. Transcribe’s Choose Model and Set Up: the same
+line, and the tier in each row. Transcribe a Recording: the tier in each
+row. QUILL’s Manage Speech Models and guided offline-speech setup: the
+tier, and the reason after “Recommended for your computer”
+(<code>service.recommendation_reason</code>). Windows that open without
+a timed check use <code>speed_check.latest()</code>: this session’s
+timed check if Speech Models has run one, otherwise cores and memory,
+and the reasons say “not timed”. Changing What matters most is the only
+spoken outcome (“Recommended: Moonshine base.”): the focus stays on the
+choice, so the new advice is news (GATE-13); the check finishing
+rewrites the text silently.</p>
+<p>Not built here: the “Switch to the Recommended Model” button of
+dict.md section 10 (it belongs to retiring legacy models), and D-26’s
+<code>ram_tier</code> catalogue field.</p>
+<h2
 id="appendix-a-the-dictmd-section-numbers-and-where-they-live-now">Appendix
 A: the dict.md section numbers, and where they live now</h2>
 <table>

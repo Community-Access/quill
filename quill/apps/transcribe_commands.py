@@ -79,7 +79,10 @@ class TranscribeCommandsMixin:
         from quill.apps.transcribe_dialogs import ChooseModelDialog
 
         dialog = ChooseModelDialog(
-            self.frame, current=self.chosen_engine(), open_library=self._library_for_dialog
+            self.frame,
+            current=self.chosen_engine(),
+            open_library=self._library_for_dialog,
+            language=self._language(),
         )
         try:
             answer = self._show_modal_dialog(dialog, "Choose Model")  # type: ignore[attr-defined]
@@ -100,7 +103,11 @@ class TranscribeCommandsMixin:
             return None
         from quill.ui.dictation_models_dialog import open_speech_models
 
-        return open_speech_models(self.frame, self._announce)  # type: ignore[attr-defined]
+        return open_speech_models(self.frame, self._announce, language=self._language())  # type: ignore[attr-defined]
+
+    def _language(self) -> str:
+        """The dictation language, which the model recommendation follows (D-22)."""
+        return str(self._settings.dictation.get("windows_dictation_speech_language", "") or "en")
 
     def open_model_library(self) -> None:
         chosen = self._open_library()
@@ -270,6 +277,7 @@ class TranscribeCommandsMixin:
                 test_microphone=self._test_microphone,
                 show_modal=self._show_modal_dialog,  # type: ignore[attr-defined]
                 command_key=command,
+                language=self._language(),
             )
             try:
                 answer = self._show_modal_dialog(dialog, "Set Up QUILL Transcribe")  # type: ignore[attr-defined]

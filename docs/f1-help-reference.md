@@ -1376,7 +1376,7 @@ Control coverage: 3 audited sites (3 helped).
 
 ## QUILL Transcribe
 
-Control coverage: 31 audited sites (31 helped).
+Control coverage: 32 audited sites (32 helped).
 
 ### Every window, and what it is for
 
@@ -1451,6 +1451,7 @@ Control coverage: 31 audited sites (31 helped).
 - `self.test_button`: Records four seconds on the chosen microphone and says how loud it was and what it heard. The recording stays on this computer and is not kept.
 - `self.test_result`: What the last microphone test found.
 - `self.model`: The model that turns your speech into text. Only models already on this computer are listed here; more can be downloaded later from the Model Library. The one you choose is used every time until you change it.
+- `self.advice`: The model that suits this computer and why, as an estimate. It is only advice: the model you choose above is the one used.
 - `self.key`: The key that starts and stops dictation from any program: Alt+Shift+\ unless you change it. Type another, for example Ctrl+Alt+PageDown, press Record Key to press it instead, or leave the box empty to use the tray menu only.
 - `self.record_key`: Press a key combination and it is written into the start and stop key box. A key another program already uses may not arrive: type that one.
 - `self.command_key`: Optional. Press this key in the field you are dictating into and the next thing you say is a command, as if you had said QUILL first: press it, then say scratch that. Press it twice for command mode. Empty unless you choose one; saying QUILL before a command works without it.
@@ -1460,8 +1461,9 @@ Control coverage: 31 audited sites (31 helped).
 - `skip`: Close setup without changing anything. Setup is on the Help menu whenever you want it.
 #### ChooseModelDialog (`quill/apps/transcribe_dialogs.py`)
 
-- `self.list`: Every speech model QUILL knows. Each says whether it runs on this computer or sends your speech over the internet, which languages it knows, and whether it is downloaded. Enter uses the one you are on.
-- `self.details`: The model you are on: where it runs, its languages and size, who publishes it and under which licence.
+- `self.list`: Every speech model QUILL knows. Each says whether it runs on this computer or sends your speech over the internet, its tier (Lightweight, Balanced or High accuracy), which languages it knows, and whether it is downloaded. Enter uses the one you are on.
+- `self.details`: The model you are on: where it runs, its tier, its languages and size, who publishes it and under which licence.
+- `self.advice`: The model that suits this computer and why: whether it keeps up, about how soon your words appear after you pause, its tier and its size. The figures are estimates, and it is only advice: nothing changes until you choose.
 - `use`: Make this your model. It is used every time you dictate until you choose another; QUILL Transcribe never switches on its own.
 - `library`: Download, check or remove the optional models. Downloads are your choice, show their size first, and are checked before they are used.
 - `cancel`: Keep the model you have.
@@ -1837,7 +1839,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## QUILL Lite
 
-Control coverage: 164 audited sites (164 helped).
+Control coverage: 168 audited sites (168 helped).
 
 ### Every window, and what it is for
 
@@ -2183,6 +2185,7 @@ Control coverage: 164 audited sites (164 helped).
 - `self.pause`: How long you can stop talking before what you said is written. Choose Long if dictation cuts you off while you are still thinking; Short writes sooner after you stop. Longer and Longest are for speaking slowly: every phrase then waits two or three seconds before it is written.
 - `self.remove_fillers`: Leave out hesitations -- um, uh, erm, hmm -- instead of writing them. Real words are never removed.
 - `self.continuous`: For talking in one long run and pausing wherever you like. A pause then puts in no full stop, plays no sound and reads nothing back, and voice commands are written as words -- only the stop phrase still stops dictation. Punctuation you say still works.
+- `self.advice`: The model that suits this computer, and why. Only advice.
 - `self.cue_sounds`: A rising pair of tones when dictation starts listening, a falling pair when it stops, and a low double tone when something goes wrong. A failure is always spoken as well, whatever this is set to.
 - `self.announce`: Speak the words as well as, or instead of, the sounds when dictation starts and stops. With both off, the check mark on the Dictation menu item still shows whether it is on.
 - `self.wake`: Start dictation by saying the wake phrase instead of pressing a key. While this is on, the microphone stays open whenever this program is the window in front -- nothing it hears is written, kept or sent anywhere until it hears the wake phrase -- and it closes whenever another program comes to the front. Off unless you turn it on.
@@ -2226,7 +2229,10 @@ Control coverage: 164 audited sites (164 helped).
 - `self.command_timeout`: Say QUILL command mode, or press Speak a Command twice, and everything you say is a command until you say dictation mode or give no command for this many seconds. A falling tone says it has ended. From 5 to 30; 8 by default.
 #### SpeechModelsDialog (`quill/ui/dictation_models_dialog.py`)
 
-- `self.models`: The optional speech models, the ones VS Code offers first and then the rest of the Whisper family. Each row says what the model is good for, its size and whether it is on this computer. Details below say more.
+- `self.priority`: What the recommendation below aims for: a balance of speed and accuracy, the quickest response after you pause, or the fewest mistakes this computer can keep up with. It only changes the advice, never your model.
+- `self.advice`: The model that suits this computer and why: whether it keeps up, about how soon your words appear after you pause, its tier and its download size. The figures are estimates. Nothing changes until you choose a model.
+- `self.show_recommended`: Move to the recommended model in the list below, to read its details and download or use it. It does not download or choose anything.
+- `self.models`: The optional speech models, the ones VS Code offers first and then the rest of the Whisper family. Each row says its tier (Lightweight, Balanced or High accuracy), what the model is good for, its size and whether it is on this computer. Details below say more.
 - `self.details`: About the chosen model: what it is better at, its languages, download and disk size, what computer suits it and whether this one should keep up, its published accuracy, its licence and where it is saved.
 - `self.progress`: How far the current download has got, or how it ended.
 - `self.gauge`: How far the current download has got.

@@ -881,6 +881,52 @@ the same preview. Not offered in a portable copy.
 Transcribe’s rewriter; portable keeps its own).</li>
 </ul>
 <h3
+id="dictation-a-recommended-model-with-reasons-and-tier-labels-d-22-2026-10-15">Dictation:
+a recommended model with reasons, and tier labels (D-22,
+2026-10-15)</h3>
+<p>dict.md D-22. The person still chooses; there is no automatic
+mode.</p>
+<ul>
+<li><strong><code>quill/core/windows_dictation/model_advice.py</code></strong>
+(new, wx-free):
+<code>recommend(check, language, privacy="local", *, priority, has_gpu)</code>
+returns one <code>Recommendation</code> (model id, name, tier, one
+sentence, reasons, <code>may_lag</code>). Only measured models are
+candidates; a model must keep up (0.25 on one thread, or two threads for
+“fewest mistakes” and on 16 GB/4-core machines) and fit the memory share
+beside the screen reader; fewest word errors win, ties to the bigger
+model except on a modest computer, where the built-in one wins.
+<code>speed_check.recommend</code> is the spec’s entry point;
+<code>for_this_computer</code> is the instant form on
+<code>speed_check.latest()</code>. Every answer says “estimate”.</li>
+<li><strong><code>model_types.py</code></strong>:
+<code>LIGHTWEIGHT</code> / <code>BALANCED</code> /
+<code>HIGH_ACCURACY</code>, <code>TIER_MEANINGS</code>,
+<code>MEASURED</code> (the 2026-10-05 dictbench table),
+<code>tier_for(cost_factor, word_errors)</code>,
+<code>DownloadableModel.tier</code>, and <code>legacy_tier</code> for
+<code>core/speech/catalog.py</code> so one model is one tier.</li>
+<li><strong><code>speed_check.py</code></strong>: memory now through
+<code>service.detect_total_ram_gb</code>; the timed check also records
+<code>has_gpu</code> (<code>service.detect_has_gpu</code>);
+<code>latest()</code> and <code>hardware_only()</code> answer at
+once.</li>
+<li><strong>Where models are chosen</strong>: Speech Models (What
+matters most, Alt+W; the read-only Recommendation, Alt+C; Show
+Recommended Model, Alt+S; tiers on every row and in Details), Dictation
+Settings (a read-only Recommended for this computer line; tiers in the
+Speech engine list), Transcribe’s Choose Model and Set Up (the same
+line; tiers in <code>transcribe.models.ModelRow</code>), Transcribe a
+Recording’s list, and QUILL’s Manage Speech Models and guided
+offline-speech setup (<code>service.recommendation_reason</code>, built
+on <code>machine_summary</code>; <code>ModelChoice.tier</code> and
+<code>.reason</code>).</li>
+<li>Tests: <code>test_dictation_model_advice.py</code> (a table of
+machine profiles), <code>test_transcribe_model_advice.py</code>, and
+additions to the Speech Models, guided setup, service and Transcribe
+model tests.</li>
+</ul>
+<h3
 id="dictation-the-never-type-list-and-inkwell-keeps-its-field-2026-10-15">Dictation:
 the never-type list, and Inkwell keeps its field (2026-10-15)</h3>
 <p>D-24 and D-15 from the dictation plan, rescued from an uncommitted

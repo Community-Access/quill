@@ -33,6 +33,22 @@ def test_guided_speech_dialog_follows_contract_and_is_accessible() -> None:
     assert "from quill.core.speech.guided_setup import" in src
 
 
+def test_guided_model_rows_name_their_tier_and_the_reason_is_text() -> None:
+    """D-22: each row says its tier, and the details box says which model suits
+    this computer and why, so the reason is read, not only tagged."""
+    from quill.core.speech.guided_setup import ModelChoice
+    from quill.ui.guided_speech_dialog import _details, _model_label
+
+    small = ModelChoice("small", "Small", "~465 MB", "", True, "Balanced", "Fits in 8 GB.")
+    tiny = ModelChoice("tiny", "Tiny", "~75 MB", "", False, "Lightweight")
+    assert _model_label(small) == "Small, Balanced — ~465 MB  (Recommended for your computer)"
+    assert _model_label(tiny) == "Tiny, Lightweight — ~75 MB"
+    assert _details("Light and fast.", [tiny, small]) == (
+        "Light and fast.\nRecommended model: Small, Balanced. Fits in 8 GB."
+    )
+    assert _details("Light and fast.", [tiny]) == "Light and fast."
+
+
 def test_guided_speech_dialog_returns_engine_and_model_selection() -> None:
     src = _src("guided_speech_dialog.py")
     # The dialog yields (engine_id, model_id) for the caller to install.

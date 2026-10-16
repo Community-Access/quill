@@ -9053,7 +9053,9 @@ good test.” A full stop you said yourself is never taken back.</p>
 <p><strong>Test Microphone</strong> records four seconds and tells you
 how loud it was and what the engine heard. <strong>Better Accuracy:
 Speech Models…</strong> (<code>Alt+B</code>) opens the optional models
-described in “Better accuracy: optional speech models” below.
+described in “Better accuracy: optional speech models” below. Below it,
+<strong>Recommended for this computer</strong> is a read-only line
+naming the model that suits this computer and why; it is only advice.
 <strong>More Dictation Settings…</strong> (<code>Alt+A</code>) opens the
 window described next.</p>
 <h5 id="more-dictation-settings-every-option">More Dictation Settings,
@@ -9310,11 +9312,44 @@ even after you close QUILL.</li>
 Dictation</strong> (<strong>Alt+U</strong>), then <strong>OK</strong> in
 Dictation Settings. Or choose the model in the <strong>Speech
 engine</strong> list yourself: downloaded models are listed there with
-“(downloaded)” after the name.</li>
+“(downloaded)” and the model’s tier after the name.</li>
 </ol>
 <p>Every file is checked against a fingerprint (a checksum) we recorded
 when we added the model. If a file does not match, it is deleted and you
 are told, so a damaged or changed download can never be used.</p>
+<p><strong>Which model should I use?</strong> Speech Models recommends
+one. Near the top of the window, the read-only
+<strong>Recommendation</strong> box (<strong>Alt+C</strong>) names the
+model that suits this computer and your dictation language, and says
+why: whether it keeps up here, about how soon your words appear after
+you pause, whether your speech stays on this computer (it always does),
+and how big the download is, or that it is already installed. The lines
+after it say more, for example a model that makes fewer mistakes but
+would slow your screen reader here. <strong>What matters most</strong>
+(<strong>Alt+W</strong>) changes the advice: a balance of speed and
+accuracy (the usual choice), the quickest response, or the fewest
+mistakes this computer can keep up with. <strong>Show Recommended
+Model</strong> (<strong>Alt+S</strong>) moves to that model in the list,
+so you can read its details and download it. Dictation Settings shows
+the same advice in one line, in the <strong>Recommended for this
+computer</strong> box under the Better Accuracy button.</p>
+<p>The recommendation is only advice. QUILL never changes your engine by
+itself; you choose. Its figures are estimates, measured with a synthetic
+voice, and they say so. A graphics card makes no difference: every
+dictation model runs on the processor.</p>
+<p><strong>Tiers.</strong> Every model is labelled with one of three
+tiers, wherever you choose one: the Speech engine list, Speech Models,
+Transcribe a Recording, and Manage Speech Models.</p>
+<ul>
+<li><strong>Lightweight</strong>: keeps up comfortably even on a modest
+computer. The built-in Moonshine and Whisper, and Moonshine base.</li>
+<li><strong>Balanced</strong>: more work than the built-in engines;
+keeps up on a computer with four or more cores. Parakeet and Whisper
+base.</li>
+<li><strong>High accuracy</strong>: the fewest mistakes, for the most
+work; needs a capable computer, or patience. Nemotron, and Whisper small
+and larger.</li>
+</ul>
 <p><strong>Where the models go.</strong> One folder for QUILL and QUILL
 Lite on the same computer, so a model downloaded in one is there for the
 other: <code>%LOCALAPPDATA%\QuillVille\Dictation\models</code>. In a
@@ -10811,8 +10846,13 @@ will run well on your computer.</p>
 and whether a GPU was found.</li>
 <li>Each model shows roughly how much memory it needs. A model too big
 for your RAM is flagged.</li>
+<li>Each model names its tier: <strong>Lightweight</strong>,
+<strong>Balanced</strong> or <strong>High accuracy</strong>, the same
+three words dictation uses.</li>
 <li>The best fit for your computer is marked <strong>“Recommended for
-your computer.”</strong></li>
+your computer”</strong>, followed by why, in the row itself: your memory
+and graphics card, and what that allows. The guided offline-speech setup
+shows the same reason below the engine’s description.</li>
 <li>A larger model warns you when there is no GPU, because it will be
 slow on the CPU.</li>
 </ul>

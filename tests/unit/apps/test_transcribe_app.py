@@ -468,7 +468,7 @@ def test_the_model_library_choice_becomes_the_model(
 ) -> None:
     import quill.ui.dictation_models_dialog as library
 
-    monkeypatch.setattr(library, "open_speech_models", lambda *_a: "whisper")
+    monkeypatch.setattr(library, "open_speech_models", lambda *_a, **_k: "whisper")
     host.open_model_library()
     assert host.chosen_engine() == "whisper"
 
