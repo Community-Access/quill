@@ -39,6 +39,7 @@ from quill.apps.transcribe_files import TranscribeFilesMixin
 from quill.apps.transcribe_keys import TranscribeKeysMixin
 from quill.apps.transcribe_menus import build_menu_bar, build_tray_menu, start_stop_label
 from quill.apps.transcribe_recent import TranscribeRecentMixin
+from quill.apps.transcribe_review import TranscribeReviewMixin
 from quill.core.app_version import describe_version, installed_version
 from quill.core.net import configure_ssl_trust
 from quill.core.support_message import SUPPORT_EMAIL
@@ -66,6 +67,7 @@ class QuillTranscribeFrame(
     TranscribeCommandsMixin,
     TranscribeFilesMixin,
     TranscribeRecentMixin,
+    TranscribeReviewMixin,
 ):
     """The status window for a dictation service that lives in the tray."""
 
@@ -102,6 +104,10 @@ class QuillTranscribeFrame(
         self._start_ipc_poll()
         self._refresh_view()
         notices = [sentence for sentence in (brought, key_notice) if sentence]
+        if self._review_rescue_path().exists():  # a review that did not finish (D-2)
+            from quill.ui.windows_dictation_review import RESCUE_NOTICE
+
+            notices.append(RESCUE_NOTICE)
         if safe_mode:
             notices.insert(0, "Safe Mode: QUILL Transcribe does not listen or register keys.")
         if not self._tray_available:
@@ -405,6 +411,7 @@ class QuillTranscribeFrame(
         timer = getattr(self, "_ipc_timer", None)
         if timer is not None:
             timer.Stop()
+        self._close_review()  # an open review's words are kept for next time (D-2)
         self._release_dictate_anywhere()
         self._release_transcribe_keys()
         self._remove_tray_icon()

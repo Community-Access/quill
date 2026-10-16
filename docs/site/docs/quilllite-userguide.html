@@ -4642,6 +4642,11 @@ you can find it by walking the menu too.</p>
 mode)</td>
 </tr>
 <tr>
+<td><strong>Shift+F4</strong></td>
+<td>Review Dictation… (read, change and insert the last phrase
+once)</td>
+</tr>
+<tr>
 <td><strong>Ctrl+F3</strong></td>
 <td>Tidy Dictated Text… (in Tools &gt; AI)</td>
 </tr>
@@ -5136,6 +5141,99 @@ only the stop phrase works without the word. Strict mode is off in QUILL
 Lite, so the commands you know keep working. A common word, or one of
 your own words in My Words and Phrases, cannot be the command word; you
 are told why.</p>
+<h4 id="review-before-inserting">Review before inserting</h4>
+<p>When you want to check what you said before it goes into the
+document, review it first. Your words wait in the <strong>Review
+Dictation</strong> window, and nothing goes into the document until you
+insert them.</p>
+<ul>
+<li><strong>Say “QUILL review that”</strong>, or press <strong>Review
+Dictation</strong> (<strong>Shift+F4</strong>, in <strong>Tools &gt;
+Dictation</strong>), while dictating. The last phrase is taken back out
+of the document and opened in the window. Press Shift+F4 with dictation
+off and the window opens empty.</li>
+<li><strong>Read the words</strong> with the arrow keys. They are in an
+ordinary text box, so your screen reader reads them by line, word and
+character, and a braille display shows them. Type to change them, or
+keep talking: while the window is open, what you dictate is written into
+it, not into the document.</li>
+<li><strong>Ask the AI to change them.</strong> Type an instruction such
+as “make it shorter” in <strong>Ask the AI to change it</strong>
+(<strong>Alt+K</strong>) and press Enter, or say it after the command
+word: <strong>“QUILL make it shorter”</strong>, <strong>“QUILL more
+formal”</strong>, <strong>“QUILL fix the grammar only”</strong>. You
+hear “Working”, then what changed, in two sentences at most, such as
+“Changed next Thursday to Friday. Removed um, so.” QUILL Lite works that
+out by comparing the words itself, never from the AI’s own account, and
+says “Large change” when more than half the words changed. <strong>Talk
+about it</strong> (<strong>Alt+A</strong>) makes everything you say an
+instruction, without the command word.</li>
+<li><strong>Insert</strong> (<strong>Ctrl+Enter</strong>, or say
+<strong>“QUILL insert it”</strong>) puts the words where they came from,
+as one step that Ctrl+Z takes back. The words as you said them and as
+they went in both go into Recent Phrases.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+<th>Say, after the command word</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Enter</strong></td>
+<td>Insert the words</td>
+<td>“insert it”</td>
+</tr>
+<tr>
+<td><strong>Ctrl+R</strong></td>
+<td>Read all the words aloud</td>
+<td>“read it back”</td>
+</tr>
+<tr>
+<td><strong>Ctrl+D</strong></td>
+<td>Say again what the last change did</td>
+<td>“what changed”</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Z</strong></td>
+<td>Undo the AI’s last change; with none, undo your typing</td>
+<td>“undo that change”</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+Z</strong></td>
+<td>Back to the words exactly as you said them</td>
+<td>“back to what I said”</td>
+</tr>
+<tr>
+<td><strong>Escape</strong></td>
+<td>Stop a request on its way; otherwise discard the words, asking first
+if the AI changed them</td>
+<td>“discard it”</td>
+</tr>
+</tbody>
+</table>
+<p>Changing words with AI needs AI help switched on in Customize
+Features and your ChatGPT subscription or your own AI key, as Tidy
+Dictated Text does; it never uses the free service’s allowance, and each
+change you ask for is one request. The first time, QUILL Lite asks
+before anything is sent and names who receives it; No is the default and
+sends nothing. Only the words in the window and your instruction are
+sent, with My Dictation Instructions if you wrote any; this document’s
+dictation context goes too only if you check <strong>Include this
+document’s dictation context with requests</strong>
+(<strong>Alt+O</strong>). With AI off, “QUILL review that” says “AI is
+off. Your words were written as you said them.” and leaves them where
+they were, and Shift+F4 still opens the window to edit and insert by
+hand.</p>
+<p>If you close the window with Close, or QUILL Lite closes or stops
+unexpectedly, your words are kept: the next time it starts it says so,
+and Review Dictation brings them back. Discard throws them away. To send
+everything you dictate to the window first, turn on <strong>Send
+dictation to review first</strong> (<strong>Alt+V</strong>) in More
+Dictation Settings.</p>
 <h3 id="starting-and-stopping-with-your-voice">Starting and stopping
 with your voice</h3>
 <h4 id="the-wake-phrase">The wake phrase</h4>
@@ -5604,6 +5702,12 @@ always works</td>
 <td>Seconds command mode waits for a command (Alt+D)</td>
 <td>How long command mode lasts with no command, from 5 to 30</td>
 <td>8</td>
+</tr>
+<tr>
+<td>Send dictation to review first (Alt+V)</td>
+<td>What you dictate goes into Review Dictation instead, to insert once;
+see “Review before inserting”</td>
+<td>Unchecked</td>
 </tr>
 </tbody>
 </table>

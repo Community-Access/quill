@@ -4198,5 +4198,14 @@
       "F11"
     ],
     "user_guide_section": "tools"
+  },
+  {
+    "id": "tools.windows_dictation_review",
+    "title": "Review Dictation",
+    "body": "Hold dictated words in a window before they go in. Press it while dictating and the last phrase is taken back out and opened for review; with nothing to take, the window opens empty, or with the words kept from a review that did not finish. Read the words with the arrow keys, type or keep dictating to change them, and with AI help on and your ChatGPT subscription or your own AI key, ask the AI to change them: type the instruction, or say QUILL make it shorter. What changed is said in two sentences at most. Control Enter inserts the words once, as one undo step; Escape discards them. Saying QUILL review that does the same as the key.",
+    "keystrokes": [
+      "Shift+F4"
+    ],
+    "user_guide_section": "tools"
   }
 ]

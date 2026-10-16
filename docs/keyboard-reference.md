@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 497.
+Editor commands with default bindings: 498.
 
 ## The QUILL editor
 
@@ -371,6 +371,7 @@ Editor commands with default bindings: 497.
 | QUILL Key + Y | Audiobook  Batch Speech... | `tools.speech_batch_export` |
 | Shift+Escape | Cancel Dictation (discard) | `tools.dictation_cancel` |
 | Shift+F11 | Windows dictation recent | `tools.windows_dictation_recent` |
+| Shift+F4 | Windows dictation review | `tools.windows_dictation_review` |
 | Shift+F5 | Windows dictation transcribe file | `tools.windows_dictation_transcribe_file` |
 | Shift+F7 | Thesaurus... | `tools.thesaurus` |
 

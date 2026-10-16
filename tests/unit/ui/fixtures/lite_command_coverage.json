@@ -54,6 +54,7 @@
   "cmd_dictation_command": "covered",
   "cmd_dictation_context": "covered",
   "cmd_dictation_recent": "covered",
+  "cmd_dictation_review": "covered",
   "cmd_dictation_settings": "covered",
   "cmd_dictation_status": "covered",
   "cmd_dictation_tidy": "covered",

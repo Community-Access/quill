@@ -61,6 +61,9 @@ SHARED_COMMANDS: dict[str, str] = {
     # command mode. In another program the system-wide Command Key, empty until
     # chosen (transcribe_keys.py), does the same from the field itself.
     "tools.windows_dictation_command": "speak_a_command",
+    # Shift+F4: Review Dictation (D-2), the editors' window over the
+    # same shared review; Insert types into the field the session is locked to.
+    "tools.windows_dictation_review": "review_dictation",
 }
 
 #: QUILL Transcribe method -> the key it had in 1.0, still answered (rule 5).

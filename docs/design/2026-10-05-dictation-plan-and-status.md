@@ -886,7 +886,8 @@ bare today works now (scratch, undo, correct, choose, spell that, select and go
 to, delete that and delete last sentence, read that, caps and uppercase that,
 the library, spelling, stop dictation, what can I say); "delete previous
 paragraph", "pause dictation", "resume", "email mode", the AI phrases and the
-format words wait for their items and are refused as not a command until then.
+format words wait for their items and are refused as not a command until then
+(the AI phrases are D-2's, built the same day: section 19).
 A one-word command word is allowed; `command_prefix_problem` refuses common
 English words, every command and mark word, and the person's My Words
 vocabulary, and empty means no spoken word. `escape_literal_prefix` makes
@@ -1027,6 +1028,147 @@ D-13 creates `family_dictation.json` in that same folder; it should move
 retire `share_quill_dictation_words` by pointing QUILL Lite's "shared" at the
 new file. The box is first in the window's tab order but focus still opens on
 the list, so the choice is offered on every open rather than asked once.
+
+## 19. As built, 2026-10-15: review before inserting (D-2)
+
+The owner asked for accessible output before rendering: compose by talking,
+hear and read the proposal, ask what changed, insert once. Built in shared
+code for QUILL, QUILL Lite and QUILL Transcribe; Quill Inkwell has no review
+and says "Review is not available here."
+
+**What was true.** As the plan said: Tidy Dictated Text worked on inserted
+text, on a direct route, in the editors only; the AI pad and the conversation
+window existed; `diffing.py` was line-based only; there was no staging surface
+and no AI at all in QUILL Transcribe. D-1 (section 18) had left "review that",
+"make it shorter", "what changed" and "insert it" answering "Not a command".
+
+**The state** (`quill/core/windows_dictation/review_session.py`, wx-free).
+`ReviewSession` holds `original`, `revisions` as `(instruction, before,
+after)`, `current` and `target`, with `revise`, `undo_revision`,
+`restore_original` and `diff`. One refinement over the plan: "what I said" is
+the text as it stood before the first change was asked for, because with
+**Send dictation to review first** the review opens empty and the words are
+dictated into it; after the first revision `original` never changes. The
+spoken diff is `quill/core/diffing.py`'s `spoken_changes`: word-level
+`SequenceMatcher` over words compared without case or punctuation, phrased for
+listening ("Changed next Thursday to Friday. Removed um, so."), at most two
+sentences ("And 3 more changes." when there are more), "Changed punctuation or
+capitals only." when that is all, and "Large change: N percent of the words are
+different. Read it before you insert it." over 50 percent. It is always computed
+from the two texts, never from the model.
+
+**The conversation** (`review_conversation.py`). Every sentence the review says
+and every request it makes, against a port (the window and its host) and an AI
+route, so it is tested with fakes. One instruction is one request: "Working."
+once and the Status line, no repeated speech; Escape cancels and a late reply is
+dropped; a reply that arrives after the person edited the words is not used. The
+summary, and "Read it", go through the screen reader (`_announce`), never a
+second voice, and the microphone is muted for `reply_seconds` meanwhile (the
+reader gate in the controller still applies). Undo Change says "Change undone."
+and What Changed holds what it undid.
+
+**The voice half** (`review_mixin.py`, under `CommandModeMixin`; `controller.py`
+did not grow). After the command word, `REVIEW_COMMANDS` is asked before the
+command table: "review that" takes the words held while paused for the field,
+else the last phrase out of the document the way "scratch that" does (so in
+another program it is backspaced), and opens the review; with AI off it says
+"AI is off. Your words were written as you said them." and leaves it. While a
+review is open, "insert it", "what changed", "read it back", "undo that change",
+"back to what I said" and "discard it" act on it, and anything after the word
+that is not a dictation command is an instruction for the AI ("make it
+shorter"); dictation commands still work on the review's text. **Talk About It**
+(a check box in the window) makes every utterance a review command or an
+instruction, with no word. The review is the feedback port's optional
+`review()`, as the library is `library()`. While paused for the field, "review
+that" is answered rather than refused, because the held words are exactly what
+it takes.
+
+**Nothing reaches the target before Insert.** The review window's text is a
+document port (`ReviewBoxDocument`), and the host points the controller at it
+while the window is open (`review_retarget`), so dictation there is one undo
+step a phrase in a `wx.TextCtrl` and never SendInput. That is also how QUILL
+Transcribe's expected pause is done: the plan's new `TargetHold` reason
+"reviewing" was not needed, because the locked field is not asked at all while
+the review is the document, so no "Dictation paused" is said and nothing is
+held. The editors' activation handler no longer stops dictation when the review
+window, rather than another program, takes the focus. **Insert** in the editors
+is one `replace_as_one_undo` at the place the words came from (the selection
+when the review opened); in QUILL Transcribe the locked field's window is
+brought forward (`LockedTarget.locked_window`, `force_foreground_window`) and
+after 400 ms the words go through `insert_reviewed`: the same `LockedTarget`
+checks, never-type list and `send_text_checked` as a phrase, pushed to the
+session's history so "QUILL scratch that" takes them back. A refusal types
+nothing, is said with the error tone, and the words stay in Recent Phrases for
+Insert Again. In every host the words as said and as inserted both go into
+Recent Phrases.
+
+**The AI.** A direct-only `revise_dictation` template in
+`own_key.INSTRUCTIONS` (the words in `<dictated-text>` as data, the request in
+`<request>`, My Dictation Instructions in `<dictation-instructions>`), through
+the existing `AiService.ask`: a ChatGPT subscription or an own key, as Tidy
+Dictated Text, never the free gateway, whose template would need a deploy.
+QUILL Transcribe reads the family's: QUILL's ChatGPT sign-in (same data folder,
+the `quill` slug, the credential store reachable from another process of the
+same user) and the own key in the Windows credential store, with the provider
+and model read from QUILL's settings file and never written. No new call site,
+so no `network_egress_audit` entry. AI is off when the area is switched off
+(the editors), in Safe Mode, or with no direct route. The consent is
+`windows_dictation_review_consent`, a version (`CONSENT_VERSION` 1), asked once
+before the first request with No as the default; declining sends nothing.
+Context is none by default; this document's dictation context goes only while
+the window's **Include this document's dictation context with requests**
+(`windows_dictation_review_context`) is checked, editors only.
+
+**The window** (`quill/ui/dictation_review_frame.py`, title "Review Dictation").
+A modeless `wx.Frame`: the editable multiline text (Alt+T), What Changed
+(read-only), Ask the AI to change it (Alt+K) with Send to the AI (Alt+N), Talk
+About It (Alt+A), the context box (Alt+O), Status, and Insert (Ctrl+Enter),
+Read It (Ctrl+R), What Changed (Ctrl+D), Undo Change (Ctrl+Z; with no AI change,
+the text's own undo), Back to What I Said (Ctrl+Shift+Z), Discard (Escape,
+asking only when the AI changed the words; with a request on its way Escape
+cancels it instead), and Close, bound with `bind_close_button`, no access key.
+Every control has inline `SetHelpText`; F1 purposes are in the QUILL Lite and
+QUILL Transcribe catalogues and the window is in the Lite help audit's glob.
+Nothing is said on opening (GATE-13). The editors' Ctrl+F11 dictates into the
+text through `bind_field_dictation`.
+
+**Keys.** Review Dictation, `tools.windows_dictation_review`, is **Shift+F4**
+in both editors and QUILL Transcribe's window (rule 2). Every F11 chord is
+taken, Ctrl+Alt+Shift+F11 is a QuillVille launcher row (`SIBLING_APP_ACCELERATORS`),
+Ctrl+Alt+F4 was passed over before for being one missed Control from Alt+F4,
+and F4 alone is unbound in both, so a missed Shift does nothing. It takes the
+last phrase while dictating, else opens empty (or with the kept words).
+
+**Rescue.** An open review is written atomically to `dictation-review.json` in
+the editor's data folder (QUILL Transcribe: `transcribe-dictation-review.json`,
+because it shares QUILL's folder) on every change, and deleted on Insert or
+Discard; Close and the app ending keep it. The next start says once, "A
+dictation review did not finish last time. Review Dictation, in the Dictation
+menu, brings the words back.", and an empty Review Dictation opens with them.
+D-5's own Rescue buffer is still not built; this file is the review's part.
+
+**Settings.** `windows_dictation_review_first` (More Dictation Settings,
+"Send dictation to review first", Alt+V, off), `windows_dictation_review_consent`
+(0) and `windows_dictation_review_context` (off), in the shared
+`DictationSettings`.
+
+**Tests** (fakes; no microphone, no network, no real window touched):
+`tests/unit/core/test_dictation_review.py` (the diff, the session, the request,
+the rescue, the conversation with consent declined and AI off, and the
+controller: review that, AI off, the review commands, instructions after the
+word, Talk About It, held words, a host without a review, and Notepad through
+`ExternalDocument` whose injector fails the test if anything is typed before
+Insert), `tests/unit/ui/test_dictation_review_frame.py` (the real window),
+`tests/unit/apps/test_lite_dictation_review.py` (QUILL Lite's window: review,
+an instruction, a muted summary, insert as one undo step) and
+`tests/unit/apps/test_transcribe_review.py` (nothing typed while reviewing, one
+typed insert into the locked field, a refusal when the field moved).
+
+**Still to check, with a microphone, a screen reader and an AI account.** Every
+line in `docs/qa/screen-reader-checks-2026-10.md` under "Dictation: review
+before inserting"; latency on a modest connection; how the model's replies
+compare with the 50 percent flag in practice; and whether two processes
+refreshing the same ChatGPT sign-in (QUILL and QUILL Transcribe) ever race.
 
 ## Appendix A: the dict.md section numbers, and where they live now
 

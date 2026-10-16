@@ -265,6 +265,8 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_dictation_status": "tools.dictation_status",
     # 2026-10-15 (D-1): Speak a Command, F11 in both, one shared handler.
     "cmd_dictation_command": "tools.windows_dictation_command",
+    # 2026-10-15 (D-2): Review Dictation, Shift+F4 in both, one handler.
+    "cmd_dictation_review": "tools.windows_dictation_review",
     "cmd_duplicate_line": "format.duplicate_line",
     "cmd_duplicate_selection": "edit.duplicate_selection",
     "cmd_editor_font": "format.editor_font",

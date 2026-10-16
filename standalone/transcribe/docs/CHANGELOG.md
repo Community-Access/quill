@@ -6,6 +6,17 @@ file is the itemized list.
 
 ## Unreleased
 
+- **Review before it is typed** (2026-10-15). Say "QUILL review that" and the
+  last phrase is backspaced away and held in the **Review Dictation** window
+  (Shift+F4 in the Dictation menu, as in QUILL and QUILL Lite). Read it, change
+  it, keep talking into it, and with your ChatGPT subscription or your own key
+  set up in QUILL, ask the AI to change it ("QUILL make it shorter") and hear
+  what changed. "QUILL insert it" or Ctrl+Enter goes back to the field you were
+  in and types it there once, with the same checks as every phrase. Nothing is
+  typed into the other program while you review, and you are asked before
+  anything is sent to an AI. **Send dictation to review first** (Alt+V in More
+  Dictation Settings) sends everything you say there.
+
 - **Programs it has been tested with** (2026-10-15). A new section of the user
   guide lists Notepad, WordPad, Word, Outlook, Edge, Chrome, Firefox and Visual
   Studio Code, each marked supported, best effort, unsupported or untested,

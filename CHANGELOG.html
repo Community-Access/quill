@@ -311,6 +311,80 @@ portable build’s <code>office-text</code> and <code>ocr</code> groups
 <code>portable-inventory.json</code>), phase 3 (headings, tables).</li>
 </ul>
 <h3
+id="dictation-review-before-inserting-with-ai-on-request-d-2-2026-10-15">Dictation:
+review before inserting, with AI on request (D-2) (2026-10-15)</h3>
+<p>Dictated words can wait in a <strong>Review Dictation</strong> window
+before they reach the document or the other program: read, edit, keep
+dictating into it, ask the AI to change them, hear what changed, insert
+once. QUILL, QUILL Lite and QUILL Transcribe run the same code; Quill
+Inkwell says “Review is not available here.”</p>
+<ul>
+<li><strong>Core, wx-free.</strong>
+<code>quill/core/windows_dictation/review_session.py</code>
+(<code>ReviewSession</code>: <code>original</code>,
+<code>revisions</code> as <code>(instruction, before, after)</code>,
+<code>current</code>, <code>target</code>; <code>revise</code>,
+<code>undo_revision</code>, <code>restore_original</code>,
+<code>diff</code>; the request builder that marks the words as data; the
+rescue file <code>dictation-review.json</code>, written atomically while
+a review is open and deleted on Insert or Discard;
+<code>REVIEW_HELP</code>), <code>review_conversation.py</code>
+(<code>ReviewConversation</code>: every sentence, consent, one request
+per instruction, cancel, mute while the summary is read) and
+<code>review_mixin.py</code> (the controller’s voice half, under
+<code>CommandModeMixin</code>; <code>controller.py</code> did not grow).
+<code>quill/core/diffing.py</code> gains <code>spoken_changes</code> and
+<code>change_fraction</code>: a word-level <code>SequenceMatcher</code>
+summary of two sentences at most, “Large change” over 50 percent,
+computed locally and never taken from the model.</li>
+<li><strong>D-1’s AI slots are wired.</strong> After the command word:
+“review that” (the held words, else the last phrase taken back out the
+way “scratch that” does, so in another program it is backspaced), and
+while reviewing “insert it”, “what changed”, “read it back”, “undo that
+change”, “back to what I said”, “discard it”, and anything else that is
+not a dictation command is an AI instruction (“make it shorter”). Talk
+About It makes every utterance one. “review that” while paused for the
+field takes the held words. With AI off it says “AI is off. Your words
+were written as you said them.” and leaves them.</li>
+<li><strong>Nothing reaches the target before Insert.</strong> While a
+review is open the host points the controller at the review’s text
+(<code>review_retarget</code>, a document port over the
+<code>wx.TextCtrl</code>), never SendInput. Insert in the editors is one
+<code>replace_as_one_undo</code> at the place the words came from; in
+QUILL Transcribe the locked field’s window is brought back and the words
+go through <code>insert_reviewed</code> (the same
+<code>LockedTarget</code> checks and <code>send_text_checked</code> as a
+phrase; refusal said, words left in Recent Phrases). New setting
+<code>windows_dictation_review_first</code> (More Dictation Settings,
+Alt+V) sends every phrase to the review;
+<code>windows_dictation_review_consent</code> (a version, asked once, No
+default) and <code>windows_dictation_review_context</code> (off: no
+document context is sent) are the window’s.</li>
+<li><strong>AI routes.</strong> A new direct-only
+<code>revise_dictation</code> template in
+<code>own_key.INSTRUCTIONS</code>, through the existing
+<code>AiService.ask</code> (ChatGPT subscription or own key, as Tidy
+Dictated Text; never the free gateway). QUILL Transcribe reads the
+family’s ChatGPT sign-in and own key from the shared data folder and
+credential store; no new network call site, so no egress entry.</li>
+<li><strong>UI.</strong> <code>quill/ui/dictation_review_frame.py</code>
+(the window, <code>ReviewDesk</code>, the box document port),
+<code>quill/ui/windows_dictation_review.py</code> (Review Dictation,
+<code>tools.windows_dictation_review</code>, <strong>Shift+F4</strong>
+in both editors: every F11 chord is taken, Ctrl+Alt+Shift+F11 is a
+QuillVille launcher and Ctrl+Alt+F4 is one missed Control from Alt+F4),
+<code>quill/apps/transcribe_review.py</code>. F1 purposes in the Lite
+and Transcribe catalogues; the window is in the Lite help audit’s glob.
+The editors no longer stop dictation when the review window takes the
+focus. Startup says once when an unfinished review was kept.</li>
+<li><strong>Tests</strong> (fakes only):
+<code>tests/unit/core/test_dictation_review.py</code>,
+<code>tests/unit/ui/test_dictation_review_frame.py</code>,
+<code>tests/unit/apps/test_lite_dictation_review.py</code>,
+<code>tests/unit/apps/test_transcribe_review.py</code>. Design record
+section 19.</li>
+</ul>
+<h3
 id="import--convert-reads-pdfs-without-markitdown-ffmpeg-ships-with-its-licence-everywhere-2026-10-15">Import
 / Convert reads PDFs without MarkItDown; FFmpeg ships with its licence
 everywhere (2026-10-15)</h3>

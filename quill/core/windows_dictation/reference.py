@@ -128,6 +128,31 @@ def _command_word_section(
         row(" or ".join(f'"{phrase}"' for phrase in entry.phrases), entry.description)
 
 
+def _review_section(
+    heading: Any, row: Any, table_head: Any, lines: list[str], md: bool, prefix: str
+) -> None:
+    """Review before inserting (D-2): what the review is, and its phrases."""
+    from quill.core.windows_dictation.review_session import REVIEW_HELP
+
+    heading("Review before inserting")
+    word = prefix or "the command word"
+    for sentence in (
+        f'Say "{word} review that" to take the last phrase back out and hold it in '
+        "Review Dictation (Shift+F4), where you can read it, edit it, ask the "
+        "AI to change it and insert it once. Nothing is written until you insert it.",
+        "While the review is open, what you say is written into it. Say the command word "
+        "first to give an instruction instead, or turn on Talk About It in the window.",
+        "Changing words with AI needs AI help switched on and your ChatGPT subscription "
+        "or your own AI key. With AI off, the review still lets you edit and insert.",
+    ):
+        lines.append(("- " + sentence) if md else sentence)
+    if md:
+        lines.append("")
+    table_head("Say, after the command word", "What happens")
+    for entry in REVIEW_HELP:
+        row(" or ".join(f'"{phrase}"' for phrase in entry.phrases), entry.description)
+
+
 def commands_reference(
     *,
     markdown: bool = False,
@@ -139,6 +164,7 @@ def commands_reference(
     external: bool = False,
     command_prefix: str = DEFAULT_COMMAND_PREFIX,
     prefix_required: bool = False,
+    review: bool = True,
 ) -> str:
     """Every phrase dictation acts on, grouped, with what each one does.
 
@@ -154,7 +180,8 @@ def commands_reference(
     -- QUILL Transcribe and Inkwell's Dictate Anywhere: only the commands that
     work there (:data:`~quill.core.windows_dictation.anywhere.EXTERNAL_COMMANDS`),
     no wake phrase, and the two limits of inserting into another program. The
-    editors' list, the default, is unchanged.
+    editors' list, the default, is unchanged. *review* False leaves out Review
+    Dictation (D-2) for a host without it (Quill Inkwell).
     """
     from quill.core.windows_dictation.anywhere import EXTERNAL_COMMANDS
 
@@ -237,6 +264,8 @@ def commands_reference(
     _command_word_section(
         heading, row, table_head, lines, markdown, command_prefix, prefix_required
     )
+    if review:
+        _review_section(heading, row, table_head, lines, markdown, command_prefix)
 
     for group, marks in _grouped(MARKS).items():
         heading(group)

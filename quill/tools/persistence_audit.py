@@ -52,11 +52,11 @@ _CLASSIFICATIONS: dict[str, str] = {
 _REVIEWED_PERSISTENCE: dict[str, str] = {
     # --- versioned (the contract) ---
     "core/settings.py::save_settings": "versioned",
-    # 2026-10-05, dictation: each document's context (user-written descriptions,
-    # schema-stamped, additive) and the one-shot hand-off of an editor's dictation
-    # settings to Quill Inkwell (read once and deleted).
+    # Dictation: each document's context (2026-10-05, schema-stamped, additive), the
+    # one-shot hand-off to Quill Inkwell (read once, deleted), D-2's open review.
     "core/windows_dictation/contexts.py::save": "content",
     "core/windows_dictation/anywhere.py::write_handoff": "cache",
+    "core/windows_dictation/review_session.py::save_rescue": "content",
     "core/transcribe/settings.py::save_settings": "versioned",  # QUILL Transcribe
     "core/dictation_owner.py::claim": "marker",  # who owns Dictate Anywhere; lock-backed
     # qc.md X-03 and X-05 (2026-10-03): small, self-describing, "version": 1 stamped;

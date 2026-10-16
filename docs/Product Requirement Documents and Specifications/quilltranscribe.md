@@ -426,6 +426,22 @@ that would take the focus and pause dictation, and the Dictation Commands window
 lists exactly the commands that work in another program, with the person's own
 phrases (D-7).
 
+**As built, 2026-10-15: review before it is typed (D-2).** "QUILL review that"
+backspaces the last phrase (or takes the words held while paused) into the
+shared **Review Dictation** window (Shift+F4, the editors' chord). While it is
+open the controller writes into the window's text, never into the target, so
+nothing is typed until Insert, and the locked field is not asked (an expected
+pause, no "Dictation paused"). After the command word, "make it shorter" and any
+other non-command is an AI instruction, and "insert it", "what changed", "read
+it back", "undo that change", "back to what I said" and "discard it" act on the
+review. Insert brings the locked field's window forward and types the words once
+through the same `LockedTarget` and `send_text_checked` path as a phrase; a
+refusal types nothing, is said, and leaves the words in Recent Phrases. The AI
+is the family's direct route only (QUILL's ChatGPT sign-in or the own key),
+asked once for consent with No as the default; only the words in the review
+and the instruction are sent, never anything read from the target. With no
+route, or in Safe Mode, AI is off and the window edits and inserts by hand.
+
 Commands such as "select that", "correct the last word", "go to the heading",
 "replace this paragraph", or commands that inspect selection/document context
 are refused in external targets. The refusal is brief, consistent, and tells
@@ -524,6 +540,10 @@ User-directed output actions include:
   recording action and selects a destination.
 - Settings and history use validated schemas and atomic writes; credentials use
   Windows Credential Manager/DPAPI via the shared secrets facade.
+- The one exception to keeping dictated words in memory only (D-2, 2026-10-15):
+  words open in Review Dictation are written to
+  `transcribe-dictation-review.json` in the data folder while the window is
+  open, so a crash loses nothing, and the file is deleted on Insert or Discard.
 
 ### 9.3 Safe Mode and shutdown
 

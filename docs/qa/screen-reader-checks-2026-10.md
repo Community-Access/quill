@@ -1042,3 +1042,27 @@ mode on), and in a QUILL Lite document. Check on NVDA, JAWS and Narrator:
   one command (the tone), two presses command mode, a third back to dictation.
 - [ ] How often each engine hears "QUILL" as something else (Moonshine tiny,
   Whisper, Windows speech): note any that never match.
+
+### Dictation: review before inserting (D-2, 2026-10-15)
+
+With a microphone, in a QUILL document, a QUILL Lite document and Notepad
+through QUILL Transcribe, with an own key or a ChatGPT sign-in. Check on NVDA,
+JAWS and Narrator:
+
+- [ ] NVDA: "QUILL review that" opens Review Dictation; the title and the text
+  are read by the screen reader and nothing else is said; the text reads by
+  line, word and character, and a braille display shows it.
+- [ ] NVDA: "QUILL make it shorter" says "Working." once, then a summary of no
+  more than two sentences; the reader's speech is not heard as the next
+  instruction; "QUILL what changed" repeats it.
+- [ ] NVDA: Ctrl+Enter in QUILL and QUILL Lite inserts once, and one Ctrl+Z
+  takes it out; in QUILL Transcribe the words are typed into the field you
+  started in, and nothing was typed while reviewing.
+- [ ] JAWS: the same.
+- [ ] Narrator: the same.
+- [ ] The consent question appears once, with No as the default; No sends
+  nothing and says "Nothing was sent."
+- [ ] From the tray, QUILL Transcribe's review window comes to the front rather
+  than flashing on the taskbar.
+- [ ] End QUILL Transcribe from Task Manager with a review open; on the next
+  start it says the review was kept, and Review Dictation brings the words back.

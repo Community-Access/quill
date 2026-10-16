@@ -53,6 +53,7 @@ from quill.ui.windows_dictation_hold import DictationHoldMixin
 from quill.ui.windows_dictation_library import DictationLibraryMixin
 from quill.ui.windows_dictation_ports import EditorDocument as _EditorDocument
 from quill.ui.windows_dictation_ports import HostFeedback as _HostFeedback
+from quill.ui.windows_dictation_review import DictationReviewMixin, review_open
 from quill.ui.windows_dictation_tools import DictationToolsMixin
 from quill.ui.windows_dictation_transcribe import DictationTranscribeMixin
 
@@ -101,6 +102,7 @@ class WindowsDictationMixin(
     DictationTranscribeMixin,
     DictationExtrasMixin,
     DictationLibraryMixin,
+    DictationReviewMixin,
 ):
     """The dictation commands. Mixed into both editors' document windows."""
 
@@ -319,6 +321,7 @@ class WindowsDictationMixin(
         # so it runs before the control sees the key, and only consumes it when
         # there was something to cancel.
         self._dictation_parent().Bind(wx.EVT_CHAR_HOOK, self._dictation_cancel_key)
+        self._review_tell_rescue()  # a review that did not finish last time (D-2)
         try:
             wx.CallAfter(self._dictation_rearm)
         except Exception:  # noqa: BLE001 - no event loop (tests)
@@ -334,8 +337,8 @@ class WindowsDictationMixin(
         controller = _controller
         if controller is None:
             return
-        if controller.transcribing:
-            return  # a live transcript keeps writing while you work in another program
+        if controller.transcribing or review_open():
+            return  # a live transcript, or Review Dictation's window in front (D-2)
         if controller.active:
             controller.stop("Dictation off, because QUILL is no longer the window in front.")
         controller.disarm()

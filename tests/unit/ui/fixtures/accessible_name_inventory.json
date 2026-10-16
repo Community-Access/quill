@@ -351,6 +351,8 @@
   "quill/ui/dictation_more_dialog.py::MoreDictationDialog._add_command_word::wx.TextCtrl": "modal-hook",
   "quill/ui/dictation_never_type_dialog.py::NeverTypeDialog.__init__::wx.ListBox": "modal-hook",
   "quill/ui/dictation_never_type_dialog.py::NeverTypeDialog.__init__::wx.TextCtrl": "modal-hook",
+  "quill/ui/dictation_review_frame.py::DictationReviewFrame.__init__::wx.TextCtrl": "named",
+  "quill/ui/dictation_review_frame.py::DictationReviewFrame.__init__::wx.TextCtrl#2": "named",
   "quill/ui/dictation_settings_dialog.py::DictationSettingsDialog.populate::wx.SpinCtrl": "modal-hook",
   "quill/ui/dictation_transcribe_dialog.py::TranscribeFileDialog.__init__::wx.Choice": "modal-hook",
   "quill/ui/dictation_transcribe_dialog.py::TranscribeFileDialog.__init__::wx.Choice#2": "modal-hook",

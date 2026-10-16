@@ -56,8 +56,8 @@ from quill.core.windows_dictation.command_mode import (
 )
 from quill.core.windows_dictation.parser import ParsedPhrase, Piece, RecognizedPhrase, parse
 from quill.core.windows_dictation.ports import Moment
+from quill.core.windows_dictation.review_mixin import ReviewMixin
 from quill.core.windows_dictation.vocabulary import Command
-from quill.core.windows_dictation.voice_commands import VoiceCommandsMixin
 from quill.core.windows_dictation.wake import wake_words
 
 if TYPE_CHECKING:
@@ -76,7 +76,7 @@ def _as_words(parsed: ParsedPhrase, phrase: RecognizedPhrase) -> ParsedPhrase:
     return ParsedPhrase(pieces=tuple(Piece(word.display) for word in phrase.words if word.display))
 
 
-class CommandModeMixin(VoiceCommandsMixin):
+class CommandModeMixin(ReviewMixin):  # and VoiceCommandsMixin under it (review_mixin.py)
     """The command word, the Command Key and command mode, on the controller."""
 
     _clock: Callable[[], float]
@@ -157,6 +157,8 @@ class CommandModeMixin(VoiceCommandsMixin):
             if rest is not None:
                 self._command_utterance(rest, preferences)
                 return
+            if self._review_dictation(phrase, preferences):
+                return  # Talk About It: an instruction for the review (review_mixin.py)
             phrase = escape_literal_prefix(phrase, preferences.command_prefix)
         self._apply(
             self._strict(self._parse(phrase, preferences), phrase, preferences), preferences
@@ -172,6 +174,9 @@ class CommandModeMixin(VoiceCommandsMixin):
         if rest is None:
             phrase = escape_literal_prefix(phrase, preferences.command_prefix)
             return self._strict(self._parse(phrase, preferences), phrase, preferences)
+        words = wake_words(" ".join(word.lexical for word in rest.words))
+        if self._review_command(words, preferences):
+            return None  # "review that" takes the held words into the review
         parsed = parse(rest, vocabulary=preferences.vocabulary)
         if parsed.command is None:
             self._say(PAUSED_REFUSAL)
@@ -236,18 +241,27 @@ class CommandModeMixin(VoiceCommandsMixin):
             else:
                 self._say(DICTATION_MODE_SAID)
             return
+        if self._review_command(words, preferences):
+            self._command_cue_once(preferences)
+            return  # "review that", "insert it" (review_mixin.py)
         parsed = parse(rest, vocabulary=preferences.vocabulary)
+        if parsed.command is None and self._review_instruction(rest):
+            self._command_cue_once(preferences)
+            return  # while reviewing: "make it shorter" is for the AI
         if parsed.command is None:
             self._command_refused = rest
             self._fail(not_a_command(preferences.command_prefix), preferences)
             return
-        if not self._command_sticky:
-            self._command_cue(Moment.COMMAND_ON, preferences)  # the result is what is said
+        self._command_cue_once(preferences)
         self._commanding = True
         try:
             self._apply(parsed, preferences)
         finally:
             self._commanding = False
+
+    def _command_cue_once(self, preferences: DictationPreferences) -> None:
+        if not self._command_sticky:
+            self._command_cue(Moment.COMMAND_ON, preferences)  # the result is what is said
 
     def _type_refused(self, preferences: DictationPreferences) -> None:
         """ "QUILL type that": the refused words, written once, as words."""

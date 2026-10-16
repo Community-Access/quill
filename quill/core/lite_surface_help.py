@@ -391,6 +391,20 @@ PURPOSES.update({
         "leaves the computer with these models; Download asks first, and "
         "Remove frees the space again."
     ),
+    "Review Dictation": (
+        "Dictated words wait here before they are inserted. Read them, type or keep "
+        "dictating to change them, ask the AI to change them if AI is on, and hear "
+        "what changed. Control Enter inserts them where they were going; nothing is "
+        "written before that."
+    ),
+    "Review with AI": (
+        "Before the first change is asked for, this says who receives the words "
+        "being reviewed and what is sent. No is the default and sends nothing."
+    ),
+    "Discard These Words": (
+        "The AI has changed these words. Yes throws them away and writes nothing; "
+        "No keeps the review open."
+    ),
     "Transcribe a Recording": (
         "Turns a recording into text in the background: choose the file, the "
         "speech model, the language and where the text goes, then keep working. "
@@ -419,6 +433,9 @@ SHARED_WITH_QUILL: frozenset[str] = frozenset({
     "More Dictation Settings",
     "Speech Models",
     "Transcribe a Recording",
+    "Review Dictation",
+    "Review with AI",
+    "Discard These Words",
     "Recent Documents",
     "Clear Recent Documents",
     "Inline Notes",

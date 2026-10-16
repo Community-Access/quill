@@ -108,6 +108,11 @@ class DictationPreferences:
     command_prefix_required: bool = False
     #: Seconds command mode, or one armed command, waits for a command.
     command_timeout: int = 8
+    #: Send dictation to review first (D-2, review_mixin.py): the first phrase
+    #: opens the review, and everything said goes there until Insert.
+    review_first: bool = False
+    #: Send this document's dictation context with a review's AI request.
+    review_context: bool = False
     #: What this document is -- "a formal letter", "notes to a friend" -- for
     #: OpenAI's prompt (contexts.py, dict.md 3.8). Empty for none.
     context: str = field(default="", compare=False)
@@ -256,5 +261,7 @@ class DictationPreferences:
             command_timeout=coerce_timeout(
                 getattr(settings, "windows_dictation_command_timeout", DEFAULT_COMMAND_TIMEOUT)
             ),
+            review_first=bool(getattr(settings, "windows_dictation_review_first", False)),
+            review_context=bool(getattr(settings, "windows_dictation_review_context", False)),
             rewrite=rewrite,
         )

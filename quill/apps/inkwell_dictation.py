@@ -296,7 +296,9 @@ class InkwellDictationMixin(FieldHoldMixin):
         from quill.ui.dictation_lists_dialog import DictationCommandsDialog
 
         # Only what works in another program (D-7), as in QUILL Transcribe.
-        dialog = DictationCommandsDialog(self.frame, commands_reference(external=True))
+        dialog = DictationCommandsDialog(
+            self.frame, commands_reference(external=True, review=False)
+        )
         try:
             self._show_modal_dialog(dialog, "Dictation Commands")  # type: ignore[attr-defined]
         finally:
