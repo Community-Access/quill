@@ -2,6 +2,32 @@
 
 ## 1.0.0
 
+### QUILL Cast site: no more dead audio links (2026-10-15)
+
+Every one of the 54 episodes linked an MP3 on the `podcast-v1` release, which
+holds only the 36 files of the retired 36-episode series. Four names still
+matched (episodes 1 to 4), but those are recordings of scripts rewritten since.
+
+- **`docs/podcast/audio_assets.json`**: what the release really holds (name,
+  size, upload time, the date it was read) and each episode's file and status
+  (`published`, `stale` or `missing`). Written by the new read-only
+  **`docs/podcast/tools/refresh_audio_manifest.py`** (`gh release view`;
+  `--check` exits 1 on drift). Today: 0 published, 4 stale, 50 missing.
+- **`build_feed.py`** links audio and writes a feed `<item>` only for
+  `published` episodes; every other transcript page and index row says "The
+  audio for this episode is not published yet" and keeps its transcript link.
+  Unpublished episodes are omitted from the feed rather than listed without an
+  enclosure, which podcast apps drop or show as unplayable. The enclosure
+  length comes from the manifest; an unknown `itunes:duration` is left out.
+  The index's part headings were still the 36-episode ranges (episodes 37 to
+  54 sat under "More episodes"); they now follow the eight parts in the README.
+- **GATE-SITE-LINKS** (`tests/unit/docs/test_site_links.py`) now fails on any
+  podcast audio link the manifest does not mark published, on a manifest out
+  of step with `episodes.json`, and on a feed whose items differ from the
+  published set.
+- `docs/podcast/README.md`: how the manifest works, and the steps to record,
+  upload and publish the missing audio. No audio was generated or uploaded.
+
 ### Dictation: the never-type list, and Inkwell keeps its field (2026-10-15)
 
 D-24 and D-15 from the dictation plan, rescued from an uncommitted worktree.
