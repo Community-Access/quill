@@ -3774,7 +3774,27 @@ defaults to Save As; the original is never changed.
 readable text on a page, Quill offers a one-click escalation to local
 OCR via the bundled Tesseract (English shipped, additional languages
 downloadable). For longer scanned PDFs the user may instead escalate to
-tier 3 AI rendering.</li>
+tier 3 AI rendering. <strong>On File &gt; Open, too
+(2026-10-15).</strong> A PDF that opens with no text layer, or too
+little (<code>text_layer_looks_empty</code>), is followed by the
+question QUILL Lite asks in the same words
+(<code>quill/core/pdf_open.py::scanned_question</code>): read it with
+OCR on this computer, nothing uploaded, the PDF not changed. Yes runs
+<code>ocr_pdf_for_open</code> on the task manager (Tesseract if
+installed, else Windows OCR), page progress on the status bar, and puts
+the text into the PDF’s own tab with <strong>form feeds between
+pages</strong>, so Go To Page and the Page cell work on it; the tab is
+marked modified because the text exists nowhere else, and a tab edited
+during the read gets the result in a new tab instead
+(<code>quill/ui/main_frame_pdf_open.py</code>). The open path itself is
+shared with QUILL Lite: <code>quill.io.structured._format_pdf</code>
+reads through <code>pdf_open.read_pdf_for_open</code>, the password box
+is <code>quill/ui/pdf_password.py</code>, the outline import uses
+<code>outline_bookmark_offsets</code>, and <strong>Go To gains an
+Outline kind</strong> (<code>outline_places</code>: “Title, page N”,
+resolved from the form feeds at the time of the jump). Save over an
+opened PDF keeps its refusal, now worded by the shared
+<code>save_refusal</code>.</li>
 <li><strong>Selection and copy.</strong> Standard selection works in the
 extracted text. <code>Ctrl+C</code> copies as plain text. There is no
 copy-with-formatting target in v1.0 (the extracted text has none).</li>
@@ -12177,6 +12197,7 @@ consent dialog.
 | 1 | MarkItDown (`quill/io/markitdown_bridge.py`, the optional `pdf-ocr` extra — not bundled; see &quot;Reader chain and the document-text contract&quot;) | Born-digital DOCX/DOC, PPTX/PPT, XLSX/XLS, HTML, EPUB, CSV, ODT/ODP/ODS | Free, local, no upload |
 | 1 (PDF) | QUILL&#39;s PDF reader (`quill/io/pdf.py`: pdfplumber, then pypdf; bundled) via `convert_pdf_text_layer` | PDFs with a text layer. Never MarkItDown: the shared runtime freezes it in but excludes `onnxruntime`, so it cannot import in a shipped build (2026-10-15) | Free, local, no upload |
 | 2 | Local Tesseract OCR (`quill/io/tesseract_ocr.py`) | Images (PNG/JPG/TIFF/BMP/GIF/WebP) and image-based PDFs; CPU-only, no GPU | Free, local, no upload |
+| 2 (Windows) | Windows OCR (`Windows.Media.Ocr` via the frozen-in `winrt` packages; `quill/io/docconvert_windows.py`, 2026-10-15) | The same pages, when Tesseract is not installed: no download. Reports no confidence, so nothing is flagged weak. A build without `winrt` answers a sentence, never an ImportError | Free, local, no upload |
 | 3 | Datalab Chandra cloud OCR (`quill/core/datalab_ocr.py`) | The accuracy escalation: complex tables, forms, handwriting, math, dense layouts, poor scans; returns Markdown/HTML/JSON | Paid (BYOK, per page on the user&#39;s Datalab account), cloud, **consent-gated per upload** |
 
 The router (`quill/io/docconvert.py`, wx-free, strict-typed) implements the
@@ -12184,9 +12205,13 @@ free-first flow: born-digital types go to Tier 1; images go straight to
 Tier 2; PDFs try their own text layer (Tier 1, PDF row) and are measured by the **chars-per-page heuristic**
 (`text_layer_looks_empty`, threshold 50 chars/page) — a PDF that comes back
 looking scanned is flagged `offer_local_ocr`, never silently opened empty.
-Tier 2 rasterizes PDF pages via `pypdfium2` (~150 dpi) and recognizes them one
-at a time with cancel checks between pages, joining pages with the
-screen-reader-searchable `&lt;!-- Page N --&gt;` delimiter. Tesseract&#39;s TSV output
+Tier 2 rasterizes PDF pages via `pypdfium2` (~150 dpi, `quill/io/pdf_raster.py`)
+and recognizes them one at a time with cancel checks between pages, joining
+pages with the screen-reader-searchable `&lt;!-- Page N --&gt;` delimiter (and
+keeping each page&#39;s text in `ConversionOutcome.pages`, for callers that want
+form feeds). `convert_with_on_device_ocr` picks the engine: Tesseract when it
+is installed, Windows OCR otherwise, and a spoken sentence when neither can
+run. Tesseract&#39;s TSV output
 supplies per-word confidence; a mean below 60 flags the outcome `looks_weak`
 — the Tier 2 -&gt; 3 escalation point. Tier 3 (`convert_with_cloud_ocr`) adapts
 the Datalab result into the same `ConversionOutcome`, so every downstream
@@ -12195,9 +12220,10 @@ surface (open-as-tab, review, announcements) is tier-agnostic.
 #### 5.93.2 Escalation prompts (never silent, cost/upload named exactly once)
 
 Tier 1 -&gt; 2 (stays free and local): *&quot;QUILL could not find readable text in
-&lt;file&gt;. It looks scanned or image-based. Run free on-device OCR (local
-Tesseract)? This stays on your computer and does not upload anything.&quot;* —
-Yes runs OCR, No opens the empty result anyway, Cancel imports nothing.
+&lt;file&gt;. It looks scanned or image-based. Run free on-device OCR? This stays
+on your computer and does not upload anything.&quot;* — Yes runs OCR (Tesseract,
+or Windows OCR with no install offer when Tesseract is absent), No opens the
+empty result anyway, Cancel imports nothing.
 
 Tier 2 -&gt; 3 (the only prompt that mentions money or upload; shown only when
 the service is configured): *&quot;On-device OCR finished, but the result looks

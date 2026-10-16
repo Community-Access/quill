@@ -2078,6 +2078,75 @@ command, which was never the same verb; Collect Selection is now
 <code>LITE_ONLY</code> with Paste and Clear, on Alt+Shift+C (rule 2: the
 command both editors have keeps the chord). Asked for on QUILLVille by
 Dean Martineau.</p>
+<p>QUILL’s system-wide collector (#964), on QUILL’s key, from QUILL’s
+pieces: <code>quill/apps/lite_clipboard_collector.py</code> polls the OS
+clipboard change counter
+(<code>ui/main_frame_clipboard_collector._clipboard_change_counter</code>),
+appends with <code>core/clipboard_collector.append_collected</code>,
+collects each distinct payload once, never saves, keeps one collecting
+window per app, and stops when it closes. Handler
+<code>cmd_clipboard_collector</code> (Alt+Shift+S, a check row on Edit
+&gt; Clipboard), parity <code>power.toggle_clipboard_collector</code>.
+The parity table had mapped <code>cmd_collect_selection</code> to that
+command, which was never the same verb; Collect Selection is now
+<code>LITE_ONLY</code> with Paste and Clear, on Alt+Shift+C (rule 2: the
+command both editors have keeps the chord). Asked for on QUILLVille by
+Dean Martineau.</p>
+<h2 id="pdfs-opened-as-text-2026-10-15">PDFs, opened as text
+(2026-10-15)</h2>
+<p>QUILL Lite opened text files and nothing else; it now opens PDFs, as
+their text, and never writes one. Everything comes from QUILL (QUILL
+Lite may never be ahead of QUILL, and here it may not have a second
+implementation either): <code>quill/core/pdf_open.py</code> reads
+through QUILL’s <code>quill/io/pdf.py</code> reader (pdfplumber, then
+pypdf, repaired text, form feeds between pages, at most 200 pages, the
+outline); <code>quill.io.structured._format_pdf</code>, which QUILL’s
+File &gt; Open uses, reads through the same function. QUILL Lite’s half
+is <code>quill/apps/lite_window_pdf.py</code>:</p>
+<ul>
+<li><strong>Open.</strong> <code>*.pdf</code> is in the Open filter’s
+“All supported files” and has its own row.
+<code>open_prepare.prepare</code> reads a PDF into a
+<code>PreparedDocument</code> carrying the <code>PdfOpen</code> result,
+and <code>prepare_in_background</code> sends every PDF to the worker;
+<code>load</code> does too.</li>
+<li><strong>Password.</strong> A locked PDF asks in QUILL’s password box
+(<code>quill/ui/pdf_password.py</code>), then re-reads in the background
+with the password; a wrong one asks again saying so; Cancel opens
+nothing. The password travels in one <code>wx.CallAfter</code> and the
+worker closure, and is stored nowhere.</li>
+<li><strong>Damaged or no reader.</strong> A failure box with the
+reader’s own sentence; nothing opens.</li>
+<li><strong>Scanned</strong> (no text, or under 50 characters a page):
+QUILL’s question (<code>scanned_question</code>). Yes runs
+<code>ocr_pdf_for_open</code> as a background open – Tesseract if
+installed, otherwise Windows OCR from the shared runtime, which needs no
+download (<code>quill/io/docconvert_windows.py</code>) – with
+“Recognizing page N of M” on the message cell only, and opens the result
+with form feeds, marked modified. No opens the little text there is, or
+nothing. QUILL asks the same question on File &gt; Open.</li>
+<li><strong>Pages.</strong> The status bar gains a <strong>Page</strong>
+cell (“Page 3 of 12”), shown only while the document has form feeds,
+skipped by the arrow keys when hidden; Enter on it opens Go To on its
+Page kind. Go To (Ctrl+G) offers <strong>Page</strong> and
+<strong>Outline</strong> only when the document has them
+(<code>page_places</code>, <code>outline_places</code>, the same rows
+QUILL’s Go To shows); outline rows resolve their page from the text at
+the time of the jump. The numbered bookmarks are untouched: nine slots
+cannot hold an outline.</li>
+<li><strong>Save.</strong> The window keeps the PDF’s path (title,
+Recent Documents, document memory), so Save refuses with QUILL’s
+sentence (<code>save_refusal</code>, <code>EXPORT_ONLY_SUFFIXES</code>)
+and goes to Save As with <code>&lt;name&gt;.txt</code> proposed; Save As
+refuses a <code>.pdf</code> name; Reopen with Encoding is not offered; a
+reload after another program changes the PDF runs the whole open
+again.</li>
+<li><strong>No new command, no new key.</strong> Ctrl+O and Ctrl+G, as
+in QUILL. Not done yet: File &gt; Import / Convert Document (spec phase
+2’s menu row), headings and tables from the PDF (phase 3), and the
+portable build’s dependency groups (the installed build already carries
+pdfplumber, pypdf, pypdfium2 and winrt in the shared runtime).</li>
+</ul>
 </main>
 </body>
 </html>

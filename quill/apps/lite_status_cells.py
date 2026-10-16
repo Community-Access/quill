@@ -25,11 +25,13 @@ __all__ = [
     "CELLS",
     "RICH_ENCODING_CELL",
     "RICH_LINE_ENDINGS_CELL",
+    "SHOWN_ONLY_WITH_TEXT",
     "StatusCell",
     "encoding_name",
     "live_status_message",
     "native_cell_labels",
     "newline_name",
+    "page_cell_text",
 ]
 
 #: How long caret movement may leave the bar stale. QUILL's own coalescing
@@ -142,6 +144,16 @@ CELLS: tuple[StatusCell, ...] = (
         "Where the cursor is: line and column, out of how many lines. "
         "Press Enter to go to a line by number.",
     ),
+    # Only when the document has real pages -- a PDF's own page breaks
+    # (2026-10-15). A text file has none, and a cell reading "no pages" on
+    # every document would be one more stop that never says anything.
+    StatusCell(
+        "page",
+        "Page",
+        "Which page the cursor is on, out of how many. Only a document with real "
+        "pages has this cell: a PDF, whose page breaks came with it. "
+        "Press Enter to go to a page.",
+    ),
     StatusCell(
         "words",
         "Word Count",
@@ -244,6 +256,27 @@ CELLS: tuple[StatusCell, ...] = (
     ),
 )
 
+#: What Enter does on each cell. Absent means "say it again".
+_CELL_ACTIONS: dict[str, str] = {
+    "position": "cmd_goto_line",
+    "page": "go_to_a_page",
+    "typing_mode": "cmd_toggle_overwrite",
+    "tab_mode": "cmd_toggle_tab_mode",
+    "format": "cmd_switch_document_kind",
+    "heading": "cmd_list_headings",
+    # Enter on List toggles the cue rather than opening anything, because there
+    # is nothing to open: the cell has already said where you are, and the only
+    # thing left to decide about a list is whether you want to keep hearing
+    # about it.
+    "list": "cmd_toggle_list_announcements",
+    "dictation": "cmd_toggle_dictation",
+    "notifications": "open_dictation_notifications",
+    "encoding": "cmd_file_format",
+    "line_endings": "cmd_file_format",
+    "saved": "cmd_save",
+}
+
+
 #: Codec and line-ending names, read from the same table the File Format
 #: dialog offers, so the status bar and the chooser can never call the same
 #: thing two different things. The one extra entry is what the chooser does
@@ -270,6 +303,7 @@ def newline_name(newline: str) -> str:
 _SELF_NAMING = frozenset({
     _MESSAGE,
     "position",
+    "page",
     "selection",
     "words",
     "characters",
@@ -303,6 +337,23 @@ def native_cell_labels(values: Mapping[str, str]) -> list[str]:
     if message:
         ordered.append(message)
     return ordered
+
+
+#: Cells shown only while they have something to say; hidden, they leave the
+#: row and the arrow keys step over them.
+SHOWN_ONLY_WITH_TEXT = frozenset({"page"})
+
+
+def page_cell_text(text: str, position: int) -> str:
+    """``"Page 3 of 12"`` for a document with real pages, ``""`` otherwise.
+
+    The count is :func:`quill.core.navigation.page_position`, which QUILL's
+    own Page cell reads too, so the two cannot disagree about a page.
+    """
+    from quill.core.navigation import page_position
+
+    where = page_position(text, position)
+    return f"Page {where[0]:,} of {where[1]:,}" if where else ""
 
 
 #: What the Encoding and Line Endings cells say about a document that has

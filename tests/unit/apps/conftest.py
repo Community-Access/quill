@@ -868,6 +868,7 @@ def lite_window(tmp_path, lite_settings):
     from quill.apps.lite_window_marks import DocumentMarksMixin
     from quill.apps.lite_window_markup import DocumentMarkupMixin
     from quill.apps.lite_window_mode import DocumentModeMixin
+    from quill.apps.lite_window_pdf import DocumentPdfMixin
     from quill.apps.lite_window_sections import DocumentSectionCommandsMixin
     from quill.apps.lite_window_selection import DocumentSelectionMixin
     from quill.apps.lite_window_sources import DocumentSourcesMixin
@@ -924,6 +925,9 @@ def lite_window(tmp_path, lite_settings):
         DocumentViewCommandsMixin,
         DocumentSpellingMixin,
         DocumentFileMixin,
+        # A PDF opened as text, and Save's refusal to write it back, 2026-10-15:
+        # save() asks it on every write, so a stub without it fails every save.
+        DocumentPdfMixin,
         # Open from URL and the clipboard, drops, Reopen with Encoding and the
         # save-time disk check, 2026-10-04 (the PlanCake design note).
         DocumentSourcesMixin,
@@ -1345,6 +1349,11 @@ class DialogRecorder:
         # than a function: the stub records the construction and the test's
         # answer is what ``.show()`` hands back.
         "EmojiPickerDialog": ("quill.ui.main_frame_emoji_picker", "EmojiPickerDialog"),
+        # Opening a PDF, 2026-10-15: the shared password box (imported inside
+        # the method, so the defining module) and the scanned question and
+        # Save's refusal (a message box imported at lite_window_pdf's scope).
+        "ask_pdf_password": ("quill.ui.pdf_password", "ask_pdf_password"),
+        "show_message_box_pdf": ("quill.apps.lite_window_pdf", "show_message_box"),
     }
 
     #: Names whose stub must be callable *and* have a ``show()``, because the

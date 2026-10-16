@@ -139,8 +139,15 @@ def _import_windows_ocr() -> Callable[[Path, str | None], tuple[str, list[OcrLin
     dependency at module load and remains testable on any OS.
     """
     try:  # pragma: no cover - platform/runtime dependent
-        from quill.platform.windows.windows_ocr import recognize_with_windows_ocr
+        from quill.platform.windows.windows_ocr import (
+            recognize_with_windows_ocr,
+            winrt_ocr_importable,
+        )
     except ImportError:
+        return None
+    # The platform module imports without winrt (its imports are guarded), so
+    # importing it proves nothing; ask whether the OCR packages themselves came.
+    if not winrt_ocr_importable():  # pragma: no cover - platform dependent
         return None
     return recognize_with_windows_ocr  # pragma: no cover
 

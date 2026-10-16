@@ -818,6 +818,12 @@ heard again</td>
 <td>Go to a line</td>
 </tr>
 <tr>
+<td><strong>Page</strong></td>
+<td>Which page you are on, out of how many. Only a PDF has pages, so
+this part is only there when a PDF is open</td>
+<td>Go to a page</td>
+</tr>
+<tr>
 <td><strong>Word Count</strong></td>
 <td>How many words the document has</td>
 <td>repeats it</td>
@@ -888,8 +894,8 @@ transcription</td>
 </tr>
 </tbody>
 </table>
-<p>That is fifteen parts. Most of them explain themselves. A few are
-worth a closer look.</p>
+<p>That is sixteen parts, or fifteen when the document has no pages.
+Most of them explain themselves. A few are worth a closer look.</p>
 <h5 id="status-message">Status Message</h5>
 <p>Speech is gone the moment it is spoken. If QUILL Lite said something
 and you missed it, this is where you go to hear it again.</p>
@@ -1226,7 +1232,79 @@ showing text that looks indented and italic.</p>
 instead of <code>notes.txt</code>, with the name already filled in. Just
 press Enter to accept it. That way the name always matches what is
 inside.</p>
-<h3 id="saving">Saving</h3>
+<h3 id="opening-a-pdf">Opening a PDF</h3>
+<p>QUILL Lite opens PDFs. Press <strong>Ctrl+O</strong> and choose one,
+the same as any other file. You can also drag one onto the window, or
+open it from Recent Documents.</p>
+<p>A PDF opens as its <strong>text</strong>. You can read it, search it,
+select and copy from it, and change it. What you cannot do is turn it
+back into a PDF: QUILL Lite never writes to a PDF. The PDF you opened
+stays exactly as it was.</p>
+<p>When it opens, QUILL Lite tells you how many pages it has, and
+whether it has an outline.</p>
+<h4 id="what-comes-through-and-what-does-not">What comes through, and
+what does not</h4>
+<p>The words come through, in order, with the lines joined back into
+paragraphs. Each page stays a page. Headings, lists and tables come
+through as ordinary lines of text, and pictures do not come through at
+all. A page set in two columns can come out mixed together. Those are
+the limits of reading a PDF’s text, and QUILL has the same ones.</p>
+<p>QUILL Lite reads the first 200 pages of a very long PDF, and tells
+you when it stopped early.</p>
+<h4 id="pages">Pages</h4>
+<p>A PDF keeps its pages:</p>
+<ul>
+<li>The status bar gets a <strong>Page</strong> part, which says
+something like “Page 3 of 12”. Press <strong>Enter</strong> on it to go
+to a page.</li>
+<li><strong>Ctrl+G</strong> (Go To) has a <strong>Page</strong> choice.
+Arrow to it and pick a page from the list.</li>
+</ul>
+<h4 id="the-pdfs-own-outline">The PDF’s own outline</h4>
+<p>Many PDFs come with an outline: a list of chapters and sections,
+which other programs call bookmarks. When the PDF you open has one,
+<strong>Ctrl+G</strong> has an <strong>Outline</strong> choice. Each
+entry says its title and its page, for example “Chapter 2, page 14”.
+Choose one and press <strong>Enter</strong> to go there.</p>
+<h4 id="a-pdf-with-a-password">A PDF with a password</h4>
+<p>If the PDF is locked, QUILL Lite asks for its password. Type it and
+press <strong>Enter</strong>. If it is wrong, QUILL Lite says so and
+asks again. Press <strong>Escape</strong> to give up, and nothing
+opens.</p>
+<p>QUILL Lite uses the password once, to open that file, and never saves
+it.</p>
+<h4 id="a-scanned-pdf">A scanned PDF</h4>
+<p>Some PDFs are only pictures of pages: a scanned letter, or a
+photocopy saved as a PDF. There is no text in them to read. When QUILL
+Lite opens one, it says it looks scanned and asks whether to read it
+with OCR on this computer. OCR means recognizing the letters in the
+picture.</p>
+<ul>
+<li><strong>Yes</strong> reads every page. QUILL Lite says when it
+starts, and the status bar counts the pages as it goes. When it
+finishes, the text opens with its pages, and QUILL Lite counts it as
+unsaved work, because that text is not saved anywhere yet.</li>
+<li><strong>No</strong> opens whatever little text the PDF has, or
+nothing at all if it has none.</li>
+</ul>
+<p>Nothing is uploaded. The reading happens on your computer, with the
+OCR that comes with Windows. It reads the languages you have installed
+in Windows Settings. If QUILL’s own OCR engine, Tesseract, is installed,
+QUILL Lite uses that instead, because it can say how sure it is. OCR
+makes mistakes, so check the text, and spell check helps.</p>
+<p>If this computer has no OCR at all, QUILL Lite says so and opens
+nothing.</p>
+<h4 id="saving">Saving</h4>
+<p>Press <strong>Ctrl+S</strong> on a PDF and QUILL Lite tells you it
+will not write over the PDF, then opens <strong>Save As</strong> with
+the same name ending in <code>.txt</code>. Choose text, Markdown or rich
+text, and press <strong>Enter</strong>. From then on you are working on
+the new file. If you type a name ending in <code>.pdf</code>, QUILL Lite
+says it cannot save that kind of file, and asks you to choose
+another.</p>
+<p>To make a real PDF, print to <strong>Microsoft Print to PDF</strong>
+instead (see <a href="#printing">Printing</a>).</p>
+<h3 id="saving-1">Saving</h3>
 <p><strong>Ctrl+S</strong> saves. <strong>Ctrl+Shift+S</strong> saves
 under a new name.</p>
 <p>QUILL Lite makes you one promise: <strong>open a file, change
@@ -1737,7 +1815,7 @@ something:</p>
 </tr>
 <tr>
 <td><strong>Ctrl+G</strong></td>
-<td>Go To: a line, a bookmark or a heading</td>
+<td>Go To: a line, a page, a bookmark, a heading or a PDF’s outline</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+Shift+F8</strong></td>
@@ -1963,11 +2041,13 @@ works like Word’s Go To: one window, and you choose what to go to.</p>
 <ol type="1">
 <li>Press <strong>Ctrl+G</strong>.</li>
 <li>At the top, arrow to <strong>Line</strong>,
-<strong>Bookmark</strong> or <strong>Heading</strong>.</li>
+<strong>Bookmark</strong> or <strong>Heading</strong>. A PDF adds
+<strong>Page</strong>, and <strong>Outline</strong> too if the PDF has
+one.</li>
 <li>The rest of the window changes to match. For a line you get a number
-box. For a bookmark or a heading you get a list. Bookmarks start with
-their number, and headings start with their level, so you can pick one
-out by its first word.</li>
+box. For everything else you get a list. Bookmarks start with their
+number, headings with their level, and outline entries with their title,
+so you can pick one out by its first word.</li>
 <li>Press <strong>Enter</strong> to go there.</li>
 </ol>
 <p>If you already know which kind you want, there are quicker keys.

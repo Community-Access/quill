@@ -171,7 +171,6 @@ from quill.core.multi_press import MultiPressDispatcher
 from quill.core.navigation import (
     next_block_start,
     next_heading_start,
-    page_start_for_number,
     previous_block_start,
     previous_heading_start,
 )
@@ -182,6 +181,7 @@ from quill.core.onboarding import (
 )
 from quill.core.outline import OutlineEntry, extract_outline_entries
 from quill.core.paths import app_data_dir, ensure_app_directories
+from quill.core.pdf_open import outline_bookmark_offsets, save_refusal
 from quill.core.platform_nouns import credential_store_name, primary_command_chord_label
 from quill.core.publishing_linkage import (
     apply_publishing_linkage_to_source_metadata,
@@ -418,6 +418,7 @@ from quill.ui.main_frame_onboarding_flow import OnboardingFlowMixin
 from quill.ui.main_frame_open_documents import OpenDocumentsFindMixin
 from quill.ui.main_frame_open_sources import OpenSourcesMixin
 from quill.ui.main_frame_palette_labels import PaletteToggleLabelsMixin
+from quill.ui.main_frame_pdf_open import PdfOpenOcrMixin
 from quill.ui.main_frame_podcasts import PodcastsMixin
 from quill.ui.main_frame_power_tools import PowerToolsActionsMixin
 from quill.ui.main_frame_power_tools_menu import PowerToolsMenuMixin
@@ -812,6 +813,7 @@ class MainFrame(
     MediaPlayerMixin,
     GlowFileMixin,
     DocConvertMixin,
+    PdfOpenOcrMixin,
     DictationHotkeysMixin,
     # QUILL's own free AI: the shared hosted-AI commands, wired to QUILL's
     # frame and editor. Five commands, no implementation of its own.
@@ -6147,6 +6149,7 @@ class MainFrame(
             self._location_ring.record(0)
         self._announce_encoding_fallback(loaded)
         self._import_pdf_outline_bookmarks(loaded, suffix)
+        self._offer_ocr_for_scanned_pdf(loaded, selected_path, suffix)
         self._position_editor_at(line=line, column=column)
         if record_recent:
             self._record_recent(selected_path)
@@ -6197,17 +6200,12 @@ class MainFrame(
     def _ask_pdf_password(self, file_name: str, *, incorrect: bool) -> str | None:
         """Prompt for an encrypted PDF's password. Returns the entry, or ``None``
         if the user cancelled or left it blank. The password is never stored."""
-        wx = self._wx
-        prompt = (
-            f"That password did not open {file_name}. Try again, or Cancel:"
-            if incorrect
-            else f"{file_name} is password-protected. Enter its password to open it:"
+        from quill.ui.pdf_password import ask_pdf_password
+
+        # The one password box both editors use (quill/ui/pdf_password.py).
+        return ask_pdf_password(
+            self.frame, file_name, incorrect=incorrect, show_modal=self._show_modal_dialog
         )
-        with wx.PasswordEntryDialog(self.frame, prompt, "Open Password-Protected PDF") as dialog:
-            if self._show_modal_dialog(dialog, "Open Password-Protected PDF") != wx.ID_OK:
-                return None
-            password = dialog.GetValue()
-        return password or None
 
     def _prompt_and_reopen_encrypted_pdf(
         self,
@@ -6944,11 +6942,11 @@ class MainFrame(
         if path.suffix.lower() in EXPORT_ONLY_SUFFIXES:
             # e.g. an opened PDF: the buffer is extracted text. Writing it back
             # would destroy the binary original, so route to Save As instead.
+            # The sentence QUILL Lite says too (quill.core.pdf_open.save_refusal).
+            formats = "Markdown, Word, HTML, RTF, or text"
             self._show_message_box(
-                f"{self.document.name} was opened as extracted text. QUILL cannot "
-                f"write {path.suffix} files directly, so saving over the original "
-                "would destroy it. Choose a new name and format (Markdown, Word, "
-                "HTML, RTF, or text), or use File > Export.",
+                save_refusal(self.document.name, path.suffix, app_name="QUILL", formats=formats)
+                + ", or use File > Export.",
                 "Save",
                 wx.ICON_INFORMATION | wx.OK,
             )
@@ -9562,17 +9560,6 @@ class MainFrame(
             self._bookmark_anchors = anchors
         anchors[name] = capture_anchor(text, position)
 
-    def _unique_outline_bookmark_name(self, title: str, used: set[str]) -> str:
-        """A whitespace-collapsed, de-duplicated bookmark name for a PDF outline
-        entry (two entries can share a title; a bookmark name must be unique)."""
-        base = " ".join(title.split()) or "Bookmark"
-        if base not in used:
-            return base
-        suffix = 2
-        while f"{base} ({suffix})" in used:
-            suffix += 1
-        return f"{base} ({suffix})"
-
     def _import_pdf_outline_bookmarks(self, loaded: object, suffix: str) -> None:
         """Import a PDF's embedded outline (Adobe bookmarks) into the document's
         bookmark store on first open, so they show up in List Bookmarks
@@ -9580,7 +9567,8 @@ class MainFrame(
         PDF gap.
 
         Each outline entry (title + destination page) is resolved to a character
-        offset via the form-feed page markers the PDF extractor writes. Idempotent:
+        offset via the form-feed page markers the PDF extractor writes, by the
+        helper QUILL Lite's Go To shares (quill.core.pdf_open). Idempotent:
         it skips when the document already has bookmarks (a re-open, or a user who
         curated them), so it never duplicates entries or resurrects deleted ones,
         and it never blocks the open — an unresolvable entry is simply skipped."""
@@ -9599,21 +9587,8 @@ class MainFrame(
             return  # already has bookmarks — don't duplicate or fight curation
 
         text = getattr(loaded, "text", "") or ""
-        bookmarks: dict[str, int] = {}
-        anchors: dict[str, object] = {}
-        used: set[str] = set()
-        for entry in outline:
-            try:
-                title, page = entry
-            except (TypeError, ValueError):
-                continue
-            offset = page_start_for_number(text, int(page))
-            if offset is None:
-                continue
-            name = self._unique_outline_bookmark_name(str(title), used)
-            used.add(name)
-            bookmarks[name] = offset
-            anchors[name] = capture_anchor(text, offset)
+        bookmarks = outline_bookmark_offsets(text, outline)
+        anchors = {name: capture_anchor(text, offset) for name, offset in bookmarks.items()}
         if not bookmarks:
             return
         self._bookmarks = bookmarks

@@ -2,6 +2,54 @@
 
 ## 1.0.0
 
+### PDFs in QUILL Lite, one open path for both editors, and Windows OCR for scanned PDFs (2026-10-15)
+
+Jeff's todo P2 #28, phases 1 and 2 of the PDF plan. QUILL Lite may never be
+ahead of QUILL, so every piece is shared and QUILL reaches each one.
+
+- **One PDF open, shared.** New wx-free `quill/core/pdf_open.py`:
+  `read_pdf_for_open` (the `quill.io.pdf` reader, form feeds between pages,
+  the outline; the password is passed to the reader and never kept),
+  `PdfOpen` (`needs_password`, `refused`, `looks_scanned` via docconvert's
+  chars-per-page heuristic), `ocr_pdf_for_open`, `outline_places` /
+  `outline_bookmark_offsets` / `page_places`, and the sentences (password
+  prompt, scanned question, open summary, Save's refusal).
+  `quill.io.structured._format_pdf` now reads through it, so File > Open in
+  QUILL and in QUILL Lite cannot read the same PDF two ways.
+- **QUILL Lite opens PDFs** (`quill/apps/lite_window_pdf.py`): in the Open
+  filter; always on the worker (`open_prepare`); locked asks in the shared
+  password box (`quill/ui/pdf_password.py`, now also QUILL's
+  `_ask_pdf_password`) and re-reads; damaged says why; scanned asks to OCR
+  (Yes runs OCR as a background open, the result marked modified); text opens
+  with one sentence. The window keeps the PDF's path, Save refuses with the
+  shared sentence (`EXPORT_ONLY_SUFFIXES`) and goes to Save As with `.txt`,
+  Save As refuses `.pdf`, Reopen with Encoding is off for a PDF, and a reload
+  after an outside change runs the whole open again.
+- **Pages and outline.** `navigation.page_position` is the one "page N of M"
+  (QUILL's Page cell now reads it). QUILL Lite's status bar gains a **Page**
+  cell shown only while the text has form feeds (arrow keys skip it when
+  hidden; Enter opens Go To on Page). Go To in both editors gains an
+  **Outline** kind; QUILL Lite's offers **Page** only for a document with
+  real pages. `ask_go_to` takes `initial_kind`.
+- **Windows OCR tier** (`quill/io/docconvert_windows.py`):
+  `convert_with_windows_ocr` (Windows.Media.Ocr via the frozen-in `winrt`
+  packages; a build without them answers a sentence) and
+  `convert_with_on_device_ocr` (Tesseract first for its confidence, then
+  Windows OCR, then `NO_ON_DEVICE_OCR`). The page loop is shared
+  (`docconvert._ocr_pdf_pages`), `ConversionOutcome.pages` keeps each page,
+  and the rasterizer moved to `quill/io/pdf_raster.py` (GATE-11). QUILL's
+  Import / Convert uses Windows OCR with no install offer when Tesseract is
+  absent (`TIER_WINDOWS_OCR`, its own announcement and review label).
+- **Scanned PDF on QUILL's File > Open** (`quill/ui/main_frame_pdf_open.py`):
+  the same question QUILL Lite asks; Yes puts the OCR text, with form feeds,
+  into the PDF's tab (a new tab if it was edited meanwhile).
+- **Fixed on the way:** `WindowsOcrBackend.is_available` was always true,
+  because the platform module imports even without winrt; it now asks
+  `windows_ocr.winrt_ocr_importable()`.
+- Not done: QUILL Lite's File > Import / Convert Document row, the portable
+  build's `office-text` and `ocr` groups (needs a release-machine build to
+  rebaseline `portable-inventory.json`), phase 3 (headings, tables).
+
 ### Import / Convert reads PDFs without MarkItDown; FFmpeg ships with its licence everywhere (2026-10-15)
 
 Two P1 items from the todo.

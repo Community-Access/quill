@@ -18,6 +18,14 @@ UI thread, only if the result is still wanted. Four rules:
   re-runs the read; Close closes the empty window. The failure is a box, not a
   status message, for the same reason ``_report_failure`` is: it cost the user
   the thing they asked for.
+
+A PDF comes this way every time (2026-10-15), and twice more when it has to:
+once with the password the commit asked for, and once to read its pages with
+OCR on this computer when the commit found it scanned. Both are the same
+background open, so the same four rules hold -- the window says one thing, is
+read-only until the text arrives, and closing it is Cancel. The OCR read says
+"Recognizing page 3 of 12" on the status bar's message cell as it goes, and
+nothing aloud until it is done.
 """
 
 from __future__ import annotations
@@ -30,6 +38,7 @@ import wx
 from quill.core.lite.filetypes import is_rich_path
 from quill.core.lite.open_prepare import PLAIN, RICH, PreparedDocument
 from quill.core.lite.open_prepare import prepare as prepare_document
+from quill.core.pdf_open import PdfOpen, ocr_started_sentence
 
 __all__ = ["DocumentBackgroundOpenMixin", "app_task_manager"]
 
@@ -52,8 +61,14 @@ def app_task_manager(app: Any) -> Any:
 class DocumentBackgroundOpenMixin:
     """``begin_background_load`` and its two endings. On ``DocumentFrame``."""
 
-    def begin_background_load(self, path: Path) -> None:
-        """Start reading *path* off the UI thread; commit it when it arrives."""
+    def begin_background_load(
+        self, path: Path, *, password: str | None = None, ocr_of: PdfOpen | None = None
+    ) -> None:
+        """Start reading *path* off the UI thread; commit it when it arrives.
+
+        *password* unlocks a PDF for this one read. *ocr_of* is a scanned PDF's
+        first read: its pages are read with on-device OCR instead.
+        """
         from quill.stability.task_manager import UiLifetimeToken
 
         path = Path(path)
@@ -71,7 +86,9 @@ class DocumentBackgroundOpenMixin:
         self._open_lifetime = UiLifetimeToken()
         self.opening_path = path
         self._set_editable(False)
-        message = f"Opening {path.name}"
+        message = (
+            f"Opening {path.name}" if ocr_of is None else ocr_started_sentence(ocr_of.page_count)
+        )
         # The number still leads, as in every Lite title; _update_title will
         # not skip its next write, because the cached title is cleared here.
         self._last_title = None
@@ -87,8 +104,23 @@ class DocumentBackgroundOpenMixin:
             )
         )
 
-        def work(**_kwargs: object) -> PreparedDocument:
-            return prepare_document(path, mode)
+        lifetime = self._open_lifetime
+
+        def work(progress_callback: Any = None, **_kwargs: object) -> PreparedDocument:
+            if ocr_of is None:
+                return prepare_document(path, mode, password=password)
+            from quill.core.pdf_open import ocr_pdf_for_open
+
+            found = ocr_pdf_for_open(
+                path,
+                ocr_of,
+                on_progress=lambda _fraction, said: (
+                    progress_callback(said) if progress_callback is not None else None
+                ),
+                # Closing the window is Cancel: stop between pages, not after.
+                cancel_requested=lambda: not lifetime.is_alive,
+            )
+            return PreparedDocument(mode=PLAIN, text=found.text, pdf=found)
 
         app_task_manager(self.app).submit(
             "lite-open",
@@ -97,8 +129,14 @@ class DocumentBackgroundOpenMixin:
                 generation, path, prepared
             ),
             on_failure=lambda _op, exc: self._fail_background_load(generation, path, exc),
+            on_progress=lambda _op, said: self._open_progress_said(generation, str(said)),
             ui_lifetime=self._open_lifetime,
         )
+
+    def _open_progress_said(self, generation: int, message: str) -> None:
+        """A page-by-page note from OCR: the message cell, never speech."""
+        if self._still_wanted(generation):
+            self._set_status_message(message)
 
     def cancel_background_load(self) -> None:
         """Forget an open in progress. Called as the window closes; idempotent."""

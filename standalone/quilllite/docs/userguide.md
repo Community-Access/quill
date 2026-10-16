@@ -557,6 +557,7 @@ If you press F6 while the bar is hidden, QUILL Lite tells you it is hidden.
 |---|---|---|
 | **Status Message** | The last thing QUILL Lite told you, so speech you missed can be heard again | repeats it |
 | **Position** | Which line and column you are on, out of how many lines | Go to a line |
+| **Page** | Which page you are on, out of how many. Only a PDF has pages, so this part is only there when a PDF is open | Go to a page |
 | **Word Count** | How many words the document has | repeats it |
 | **Character Count** | How many characters, spaces included | repeats it |
 | **Selection** | How much is selected, or "No selection" | repeats it |
@@ -571,7 +572,8 @@ If you press F6 while the bar is hidden, QUILL Lite tells you it is hidden.
 | **Line Endings** | How this file marks the end of a line | change it |
 | **Saved State** | Whether you have unsaved changes | saves |
 
-That is fifteen parts. Most of them explain themselves. A few are worth a
+That is sixteen parts, or fifteen when the document has no pages. Most of
+them explain themselves. A few are worth a
 closer look.
 
 ##### Status Message
@@ -844,6 +846,86 @@ Your file keeps its name. But rich text cannot be saved into a `.txt` file, so
 the next time you press **Ctrl+S**, QUILL Lite offers `notes.rtf` instead of
 `notes.txt`, with the name already filled in. Just press Enter to accept it.
 That way the name always matches what is inside.
+
+### Opening a PDF
+
+QUILL Lite opens PDFs. Press **Ctrl+O** and choose one, the same as any other
+file. You can also drag one onto the window, or open it from Recent Documents.
+
+A PDF opens as its **text**. You can read it, search it, select and copy from
+it, and change it. What you cannot do is turn it back into a PDF: QUILL Lite
+never writes to a PDF. The PDF you opened stays exactly as it was.
+
+When it opens, QUILL Lite tells you how many pages it has, and whether it has
+an outline.
+
+#### What comes through, and what does not
+
+The words come through, in order, with the lines joined back into paragraphs.
+Each page stays a page. Headings, lists and tables come through as ordinary
+lines of text, and pictures do not come through at all. A page set in two
+columns can come out mixed together. Those are the limits of reading a PDF's
+text, and QUILL has the same ones.
+
+QUILL Lite reads the first 200 pages of a very long PDF, and tells you when it
+stopped early.
+
+#### Pages
+
+A PDF keeps its pages:
+
+- The status bar gets a **Page** part, which says something like
+  "Page 3 of 12". Press **Enter** on it to go to a page.
+- **Ctrl+G** (Go To) has a **Page** choice. Arrow to it and pick a page from the
+  list.
+
+#### The PDF's own outline
+
+Many PDFs come with an outline: a list of chapters and sections, which other
+programs call bookmarks. When the PDF you open has one, **Ctrl+G** has an
+**Outline** choice. Each entry says its title and its page, for example
+"Chapter 2, page 14". Choose one and press **Enter** to go there.
+
+#### A PDF with a password
+
+If the PDF is locked, QUILL Lite asks for its password. Type it and press
+**Enter**. If it is wrong, QUILL Lite says so and asks again. Press **Escape**
+to give up, and nothing opens.
+
+QUILL Lite uses the password once, to open that file, and never saves it.
+
+#### A scanned PDF
+
+Some PDFs are only pictures of pages: a scanned letter, or a photocopy saved as
+a PDF. There is no text in them to read. When QUILL Lite opens one, it says it
+looks scanned and asks whether to read it with OCR on this computer. OCR means
+recognizing the letters in the picture.
+
+- **Yes** reads every page. QUILL Lite says when it starts, and the status bar
+  counts the pages as it goes. When it finishes, the text opens with its pages,
+  and QUILL Lite counts it as unsaved work, because that text is not saved
+  anywhere yet.
+- **No** opens whatever little text the PDF has, or nothing at all if it has
+  none.
+
+Nothing is uploaded. The reading happens on your computer, with the OCR that
+comes with Windows. It reads the languages you have installed in Windows
+Settings. If QUILL's own OCR engine, Tesseract, is installed, QUILL Lite uses
+that instead, because it can say how sure it is. OCR makes mistakes, so check
+the text, and spell check helps.
+
+If this computer has no OCR at all, QUILL Lite says so and opens nothing.
+
+#### Saving
+
+Press **Ctrl+S** on a PDF and QUILL Lite tells you it will not write over the
+PDF, then opens **Save As** with the same name ending in `.txt`. Choose text,
+Markdown or rich text, and press **Enter**. From then on you are working on the
+new file. If you type a name ending in `.pdf`, QUILL Lite says it cannot save
+that kind of file, and asks you to choose another.
+
+To make a real PDF, print to **Microsoft Print to PDF** instead (see
+[Printing](#printing)).
 
 ### Saving
 
@@ -1335,7 +1417,7 @@ These are the keys you will use most when you are looking for something:
 | **Ctrl+F** | Find |
 | **F3** / **Shift+F3** | Find next / previous |
 | **Ctrl+H** | Replace |
-| **Ctrl+G** | Go To: a line, a bookmark or a heading |
+| **Ctrl+G** | Go To: a line, a page, a bookmark, a heading or a PDF's outline |
 | **Ctrl+Alt+Shift+F8** | Find in Open Documents: every open window at once |
 | **Ctrl+Alt+Shift+F** | Search in Files: a whole folder |
 | **Ctrl+Shift+R** | Replace Across Files |
@@ -1536,11 +1618,12 @@ Press **Ctrl+G** to open **Go To**. It works like Word's Go To: one window, and
 you choose what to go to.
 
 1. Press **Ctrl+G**.
-2. At the top, arrow to **Line**, **Bookmark** or **Heading**.
+2. At the top, arrow to **Line**, **Bookmark** or **Heading**. A PDF adds
+   **Page**, and **Outline** too if the PDF has one.
 3. The rest of the window changes to match. For a line you get a number box.
-   For a bookmark or a heading you get a list. Bookmarks start with their
-   number, and headings start with their level, so you can pick one out by its
-   first word.
+   For everything else you get a list. Bookmarks start with their number,
+   headings with their level, and outline entries with their title, so you
+   can pick one out by its first word.
 4. Press **Enter** to go there.
 
 If you already know which kind you want, there are quicker keys.

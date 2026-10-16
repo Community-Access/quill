@@ -217,6 +217,7 @@
   "quill.ui.open_documents_find": "reachable",
   "quill.ui.optional_components_dialog": "reachable",
   "quill.ui.palette": "reachable",
+  "quill.ui.pdf_password": "reachable",
   "quill.ui.podcasts.add_podcast_dialog": "reachable",
   "quill.ui.podcasts.ai_answer_dialog": "reachable",
   "quill.ui.podcasts.ai_review_dialog": "reachable",

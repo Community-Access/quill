@@ -1676,6 +1676,10 @@ Here is how a conversion goes:
    marker and tells you how it is going ("Recognizing page 3 of 12..."). When it
    is not confident about what it read, QUILL tells you plainly, so you know to
    check the result.
+   **No Tesseract? Windows OCR does it instead,** with no download and no
+   question: it is the OCR built into Windows 10 and 11, and it reads the
+   languages you have in Windows Settings. It cannot say how confident it is, so
+   check the text yourself. When Tesseract is installed, QUILL uses Tesseract.
 
 Other problems get their own clear message instead of the scanned-PDF question.
 A file that is really corrupt is reported as *damaged*, with a note that OCR
@@ -1686,6 +1690,23 @@ instead of claiming it is scanned. The installed apps come with a PDF reader, so
 this only happens with a pip or source install. A *password-protected* PDF is
 handled separately, as described next: Import / Convert Document tells you to
 open it with **File > Open**, which asks for the password.
+
+#### Opening a scanned PDF with File > Open
+
+You don't have to go to Import / Convert Document to read a scanned PDF. When
+you open one with **File > Open**, QUILL notices there is no text in it (or
+very little) and asks whether to read it with OCR on this computer. Nothing is
+uploaded, and the PDF is not changed.
+
+- **Yes** reads the pages, with Tesseract if it is installed and Windows OCR
+  if not. The status bar counts the pages as it goes. The text then replaces
+  the note in the PDF's tab, with its pages, and the tab counts as unsaved work
+  because that text is not saved anywhere yet. If you typed in the tab while it
+  was reading, the text opens in a new tab instead, so nothing you wrote is
+  lost.
+- **No** leaves the PDF open as it was.
+
+QUILL Lite asks the same question in the same words.
 
 #### Opening a password-protected PDF
 
@@ -1708,6 +1729,10 @@ Word and EPUB structure. Each bookmark takes you exactly where **Go To Page**
 for that page would. This happens once, the first time you open the PDF. If you
 later rename or delete some of those bookmarks, opening the file again will not
 bring them back or make duplicates. A PDF with no outline opens as usual.
+
+The outline is also in **Go To** (`Ctrl+G`), as its own **Outline** choice.
+Each entry says its title and its page, such as "Chapter 2, page 14", and it
+always takes you to that page, even after you have edited the text above it.
 
 #### The text from a PDF is repaired before you read it
 
@@ -4558,7 +4583,8 @@ want them.
 #### Go To (Ctrl+G)
 
 **Go To...** (`Ctrl+G`) is one window for four kinds of place: a **line**
-number, a **page**, a **bookmark** or a **heading**.
+number, a **page**, a **bookmark** or a **heading**. A PDF with an outline adds
+a fifth, **Outline**.
 
 1. Press `Ctrl+G`.
 2. Choose the kind of place from the radio buttons at the top.
@@ -4568,9 +4594,9 @@ The number field and the list follow your choice. The one that does not apply
 is dimmed but stays where it is, so the window never changes shape under you.
 Pages are exact in a PDF and marked `~4 (estimated)` everywhere else.
 
-QUILL Lite opens the same window on the same key, without the Page row. The
-old **Go To Line** and **Go To Page** commands both land here now, so a key you
-gave them still works.
+QUILL Lite opens the same window on the same key. It offers the Page row only
+for a PDF, because only a PDF has real pages there. The old **Go To Line** and
+**Go To Page** commands both land here now, so a key you gave them still works.
 
 **Go to Percent...** moves you a part of the way through the document, for
 example halfway.

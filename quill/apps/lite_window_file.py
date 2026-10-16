@@ -40,6 +40,7 @@ from quill.core.lite.textfile import (
     unencodable_warning,
     write_bytes_atomic,
 )
+from quill.core.pdf_open import is_pdf_path
 from quill.core.sound_events import SoundEvent
 from quill.ui.dialog_contract import show_message_box
 from quill.ui.richedit_editing import PLAIN, RICH
@@ -97,6 +98,11 @@ class DocumentFileMixin:
         same two halves with the slow one on a worker.
         """
         path = Path(path)
+        if is_pdf_path(path):
+            # Always on the worker, whatever its size: extraction is slow, and
+            # the commit is where a password or OCR gets asked (lite_window_pdf).
+            self.begin_background_load(path)
+            return True
         mode = RICH if is_rich_path(path.name) else PLAIN
         try:
             self._check_mode_available(mode)
@@ -116,6 +122,8 @@ class DocumentFileMixin:
 
         UI thread only: this is the half that touches the Rich Edit control.
         """
+        if prepared.pdf is not None and not self.pdf_ready_to_commit(path, prepared.pdf):
+            return False
         self._loading = True
         try:
             if prepared.mode == RICH:
@@ -175,6 +183,7 @@ class DocumentFileMixin:
 
         if is_read_only(path):
             self._announce(READ_ONLY_NOTICE)
+        self.note_pdf_source(prepared.pdf)
         return True
 
     def _commit_rich(self, prepared: PreparedDocument) -> None:
@@ -264,6 +273,11 @@ class DocumentFileMixin:
         destination = target if target is not None else self.path
         if destination is None:
             return self.cmd_save_as()
+        if target is None and self.refuse_save_over_source():
+            # An opened PDF: the buffer is text read out of it (lite_window_pdf).
+            return self.cmd_save_as()
+        if target is not None and self.refuse_save_as_target(Path(target)):
+            return False
         if target is None and self._pending_suffix:
             # A mode switch has made this name wrong for what the buffer holds
             # -- rich runs under a .txt, or Markdown under a .rtf. Save proposes

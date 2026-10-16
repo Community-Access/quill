@@ -3,7 +3,8 @@
 Wires the supported **Import / Convert Document** tool over
 :mod:`quill.io.docconvert` — the PRD's free-first routing (Tier 1 the file's
 own text: MarkItDown for Office/HTML/EPUB, QUILL's PDF reader for PDFs; Tier 2
-local Tesseract OCR), with the accessible escalation prompt between
+local Tesseract OCR, or Windows OCR when Tesseract is not installed), with the
+accessible escalation prompt between
 them. Conversion runs on the background task pool; QUILL never opens an empty
 or garbled result silently, and never runs OCR without asking.
 
@@ -82,6 +83,16 @@ never uploads anything.
 - **Honesty note:** on-device OCR is very good on clean scans and weaker on
   complex tables, handwriting, and poor photocopies. QUILL tells you when a
   result's confidence is low so you know to review it.
+
+## Windows OCR — already on your computer
+
+- **What it does:** the same job as Tesseract, by the OCR engine built into
+  Windows 10 and 11. QUILL uses it when Tesseract is not installed, so a
+  scanned PDF can be read with no download at all.
+- **Local or cloud?** Local. Nothing is uploaded.
+- **Cost:** free. It reads the languages you have in Windows Settings.
+- **Honesty note:** Windows OCR does not report how confident it is, so QUILL
+  cannot flag weak lines. Check the text yourself.
 
 ## Datalab Chandra OCR Service — cloud, optional, consent-gated
 
@@ -163,8 +174,8 @@ class DocConvertMixin:
                 (
                     f"QUILL could not find readable text in {source.name}. "
                     "It looks scanned or image-based.\n\n"
-                    "Run free on-device OCR (local Tesseract)? This stays on "
-                    "your computer and does not upload anything.\n\n"
+                    "Run free on-device OCR? This stays on your computer "
+                    "and does not upload anything.\n\n"
                     "Yes: run local OCR now.  No: open the empty result anyway.  "
                     "Cancel: stop."
                 ),
@@ -180,9 +191,16 @@ class DocConvertMixin:
         self._docconvert_open(source, outcome)
 
     def _docconvert_run_local_ocr(self, source: Path) -> None:
+        from quill.io.docconvert_windows import windows_ocr_available
         from quill.io.tesseract_ocr import tesseract_available
 
         if not tesseract_available(self._docconvert_tesseract_override()):
+            if windows_ocr_available():
+                # Windows OCR is already on this computer: no download, no
+                # question. Tesseract stays the first choice when installed,
+                # because it reports a confidence per line (2026-10-15).
+                self._docconvert_run_windows_ocr(source)
+                return
             wx = self._wx
             wants_install = self._show_message_box(
                 (
@@ -227,7 +245,12 @@ class DocConvertMixin:
     # ---------------------------------------------------------------- results
 
     def _docconvert_open(self, source: Path, outcome) -> None:
-        from quill.io.docconvert import TIER_CLOUD_OCR, TIER_LOCAL_OCR, TIER_PDF_TEXT
+        from quill.io.docconvert import (
+            TIER_CLOUD_OCR,
+            TIER_LOCAL_OCR,
+            TIER_PDF_TEXT,
+            TIER_WINDOWS_OCR,
+        )
 
         self._docconvert_last_outcome = outcome
         # modified=True: the conversion/OCR result exists nowhere else, so the
@@ -252,6 +275,12 @@ class DocConvertMixin:
             )
             pages = f" {outcome.page_count} pages." if outcome.page_count > 1 else ""
             self._announce(f"Opened {source.name} from free on-device OCR.{pages}{confidence}")
+        elif outcome.tier == TIER_WINDOWS_OCR:
+            pages = f" {outcome.page_count} pages." if outcome.page_count > 1 else ""
+            self._announce(
+                f"Opened {source.name} from Windows OCR on this computer.{pages} "
+                "Nothing was uploaded. Check the text; OCR makes mistakes."
+            )
         elif outcome.tier == TIER_PDF_TEXT:
             pages = f" {outcome.page_count} pages." if outcome.page_count > 1 else ""
             self._announce(
@@ -367,12 +396,14 @@ class DocConvertMixin:
             TIER_LOCAL_OCR,
             TIER_MARKITDOWN,
             TIER_PDF_TEXT,
+            TIER_WINDOWS_OCR,
         )
 
         tier_labels = {
             TIER_MARKITDOWN: "Free local converter (MarkItDown) - no OCR was needed",
             TIER_PDF_TEXT: "The PDF's own text (QUILL's PDF reader) - no OCR was needed",
             TIER_LOCAL_OCR: "Free on-device OCR (Tesseract)",
+            TIER_WINDOWS_OCR: "Free on-device OCR (Windows OCR) - no confidence is reported",
             TIER_CLOUD_OCR: "Datalab Chandra cloud OCR (consented upload)",
         }
         lines = [

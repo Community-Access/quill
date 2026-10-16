@@ -18,6 +18,13 @@ file and scan work does not have to be. :func:`prepare_in_background` is the
 policy for *when* the split is worth its cost: a small local file opens
 synchronously, because the window then never shows an empty document first.
 
+**A PDF always goes to the worker** (2026-10-15). It is read through the reader
+QUILL's File > Open uses (:func:`quill.core.pdf_open.read_pdf_for_open`), and a
+two-hundred-page extraction is seconds, not milliseconds, whatever the file's
+size on disk. The prepared document carries what the reader found
+(:attr:`PreparedDocument.pdf`) so the UI half can ask for a password, offer
+OCR, or say why nothing opened -- the questions a worker thread may not ask.
+
 wx-free, strict-typed.
 """
 
@@ -27,6 +34,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from quill.core.lite.textfile import decode_text
+from quill.core.pdf_open import PdfOpen, is_pdf_path, read_pdf_for_open
 from quill.io.rtf_safety import scan_rtf_safety
 
 __all__ = [
@@ -62,14 +70,23 @@ class PreparedDocument:
     #: Rich text: the sanitised RTF, and what the safety scan removed.
     rtf: bytes = b""
     blocked: tuple[str, ...] = ()
+    #: A PDF: what the shared reader found. ``text`` is its text (form feeds
+    #: between pages); the rest -- locked, scanned, outline -- is for the UI.
+    pdf: PdfOpen | None = None
 
 
-def prepare(path: Path, mode: str) -> PreparedDocument:
+def prepare(path: Path, mode: str, *, password: str | None = None) -> PreparedDocument:
     """Read and decode *path* for *mode*. Raises ``OSError`` if it cannot be read.
 
     No window, no wx, no announcement: this is the part that may run on a
     worker, and anything it said would be said from the wrong thread.
+    *password* unlocks a PDF for this read only; it is not kept anywhere.
     """
+    if is_pdf_path(path):
+        if not Path(path).is_file():
+            raise FileNotFoundError(f"{Path(path).name} is no longer there.")
+        found = read_pdf_for_open(Path(path), password=password)
+        return PreparedDocument(mode=PLAIN, text=found.text, pdf=found)
     if mode == RICH:
         # Latin-1 both ways, because it maps every byte to one character and
         # back: an RTF file is 7-bit by the spec, and the 8-bit bytes some
@@ -91,13 +108,14 @@ def prepare(path: Path, mode: str) -> PreparedDocument:
 def prepare_in_background(path: Path) -> bool:
     """Whether opening *path* should read it off the UI thread.
 
-    Yes for a large file, and for a network path (``\\\\server\\share``), where
-    even a small read can stall on the network or a scanner; no for everything
-    else. A size that cannot be read means "do not guess": the synchronous path
-    reports the failure exactly as it always has.
+    Yes for a large file, for a network path (``\\\\server\\share``), where
+    even a small read can stall on the network or a scanner, and for every PDF,
+    whose text extraction is slow at any size; no for everything else. A size
+    that cannot be read means "do not guess": the synchronous path reports the
+    failure exactly as it always has.
     """
     text = str(path)
-    if text.startswith("\\\\") or text.startswith("//"):
+    if text.startswith("\\\\") or text.startswith("//") or is_pdf_path(path):
         return True
     try:
         return Path(path).stat().st_size >= BACKGROUND_THRESHOLD_BYTES

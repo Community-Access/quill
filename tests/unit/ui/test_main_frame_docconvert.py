@@ -16,10 +16,12 @@ from quill.io.docconvert import (
     TIER_LOCAL_OCR,
     TIER_MARKITDOWN,
     TIER_PDF_TEXT,
+    TIER_WINDOWS_OCR,
     ConversionOutcome,
     DocConvertCancelled,
 )
 from quill.ui.main_frame_docconvert import DocConvertMixin, _import_wildcard
+from quill.ui.main_frame_pdf_open import PdfOpenOcrMixin
 
 
 class _FakeWx(SimpleNamespace):
@@ -61,7 +63,7 @@ class _SyncTaskManager:
         return SimpleNamespace(operation_id="op")
 
 
-class _Host(DocConvertMixin):
+class _Host(DocConvertMixin, PdfOpenOcrMixin):
     def __init__(self, answers: list[int] | None = None) -> None:
         self._wx = _FakeWx()
         self.frame = object()
@@ -203,9 +205,11 @@ def test_escalation_cancel_imports_nothing(monkeypatch) -> None:
 
 def test_missing_engine_offers_verified_install(monkeypatch) -> None:
     host = _Host(answers=[_FakeWx.YES, _FakeWx.NO])  # yes to install offer, no at consent
+    import quill.io.docconvert_windows as docconvert_windows
     import quill.io.tesseract_ocr as tesseract_ocr
 
     monkeypatch.setattr(tesseract_ocr, "tesseract_available", lambda override=None: False)
+    monkeypatch.setattr(docconvert_windows, "windows_ocr_available", lambda: False)
     host._docconvert_run_local_ocr(Path("scan.pdf"))
     assert any("not installed yet" in box for box in host.message_boxes)
     # Install consent was shown next (and declined) — never a silent download.
@@ -334,3 +338,30 @@ def test_services_overview_names_engine_status(monkeypatch) -> None:
     assert "OCR and Document Conversion Services" in title
     assert "Free first, local first" in markdown
     assert "not installed" in markdown
+
+
+def test_without_tesseract_windows_ocr_reads_the_scan_with_no_download(monkeypatch) -> None:
+    """2026-10-15: the engine Windows already has, before any install offer."""
+    host = _Host()
+    import quill.io.docconvert_windows as docconvert_windows
+    import quill.io.tesseract_ocr as tesseract_ocr
+
+    monkeypatch.setattr(tesseract_ocr, "tesseract_available", lambda override=None: False)
+    monkeypatch.setattr(docconvert_windows, "windows_ocr_available", lambda: True)
+    monkeypatch.setattr(
+        docconvert_windows,
+        "convert_with_windows_ocr",
+        lambda path, **kw: _outcome(
+            text="Read by Windows.\n", tier=TIER_WINDOWS_OCR, source=path, page_count=2
+        ),
+    )
+    host._docconvert_run_local_ocr(Path("scan.pdf"))
+    assert host.message_boxes == []  # no install offer, no question
+    assert host._task_manager.submitted == ["docconvert-windows-ocr"]
+    assert host.docs == ["Read by Windows.\n"]
+    assert host.announcements == [
+        "Opened scan.pdf from Windows OCR on this computer. 2 pages. Nothing was uploaded. "
+        "Check the text; OCR makes mistakes."
+    ]
+    host.review_last_ocr_result()
+    assert "Windows OCR" in host.tabs[-1][1]

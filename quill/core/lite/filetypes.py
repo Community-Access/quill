@@ -58,7 +58,9 @@ __all__ = [
 RICH_SUFFIXES = frozenset({".rtf"})
 
 #: The extensions the "all supported files" filter offers, as one wx pattern.
-_TEXT_LIKE = "*.txt;*.rtf;*.md;*.log;*.csv;*.json;*.py;*.html;*.htm"
+#: ``.pdf`` joined on 2026-10-15: a PDF opens as its text, read by QUILL's
+#: reader, and is never written back (quill/apps/lite_window_pdf.py).
+_TEXT_LIKE = "*.txt;*.rtf;*.md;*.log;*.csv;*.json;*.py;*.html;*.htm;*.pdf"
 
 OPEN_WILDCARD = (
     f"All supported files ({_TEXT_LIKE})|{_TEXT_LIKE}|"
@@ -66,6 +68,7 @@ OPEN_WILDCARD = (
     "Rich Text (*.rtf)|*.rtf|"
     "Markdown (*.md;*.markdown)|*.md;*.markdown|"
     "HTML (*.html;*.htm)|*.html;*.htm|"
+    "PDF documents, opened as text (*.pdf)|*.pdf|"
     "All files (*.*)|*.*"
 )
 
