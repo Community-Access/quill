@@ -245,6 +245,50 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="dictation-benchmark-and-test-infrastructure-b-1-to-b-8-2026-10-16">Dictation
+benchmark and test infrastructure, B-1 to B-8 (2026-10-16)</h3>
+<p>dict.md section 8; design record section 26. Dev-only tools in
+<code>scripts/</code> and tests in <code>tests/</code>: nothing ships,
+nothing a person using QUILL sees changes.</p>
+<ul>
+<li><strong>Datasets on demand (B-1b).</strong>
+<code>scripts/bench_datasets.json</code> (every dataset’s licence,
+attribution, size, source, access, contamination and archive URLs;
+SHA-256 slots, unpinned until a first <code>--pin</code>) and
+<code>scripts/fetch_bench_audio.py</code> (downloads only when a person
+says yes, never with <code>CI</code> set, from two named hosts; verifies
+SHA-256; unpacks with the <code>data</code> filter; caches outside the
+repository; licensed sets only by <code>--local</code>). Seeded subsets
+in <code>scripts/bench_subsets.json</code>.</li>
+<li><strong>dictbench.</strong> <code>--dataset</code>,
+<code>--subset</code>, <code>--group-by</code>, <code>--parse</code>,
+<code>--latency</code>, and JSON with the contamination flag, the
+normalizer, the date and every group. Punctuation F1 and capitals from
+<code>scripts/bench_scoring.py</code>.</li>
+<li><strong>LibriVox held out (B-1a)</strong>
+<code>scripts/bench_librivox.py</code>; <strong>command script
+(B-1c)</strong> <code>scripts/bench_commands.py</code>; <strong>live
+pace and latency (B-4)</strong> <code>scripts/bench_live.py</code>;
+<strong>machine run (B-8)</strong>
+<code>scripts/bench_machine_run.py</code>.</li>
+<li><strong>Soak (B-3)</strong>
+<code>tests/stability/test_dictation_soak.py</code>, a new
+<code>slow</code> marker, opt-in with
+<code>QUILL_DICTATION_SOAK=1</code>, skipped in CI, typing only into a
+fake. <strong>Correction efficiency (B-5)</strong> in the soak.
+<strong>Report agreement (B-2)</strong> in the tested-programs harness.
+<strong>Privacy (B-7)</strong>
+<code>tests/unit/core/test_dictation_privacy_paths.py</code>.
+<strong>Screen-reader rows (B-6)</strong> in
+<code>docs/qa/screen-reader-checks-2026-10.md</code>.</li>
+<li><strong>One engine hook.</strong>
+<code>LocalDictationRecognizer._reader_gate()</code> is a method, so the
+benchmark’s recorded-audio recogniser never starts the screen-reader
+capture.</li>
+<li><strong>First run</strong> with Moonshine tiny on synthetic audio:
+<code>docs/qa/dictbench-moonshine-tiny-2026-10-16.json</code>.</li>
+</ul>
+<h3
 id="quill-radio-extras-marked-delete-resume-earcon-a-second-device-per-favourite-keys-whats-new-notes-in-reminders-2026-10-16">Quill
 Radio extras: marked delete, resume earcon, a second device,
 per-favourite keys, What’s New, notes in reminders (2026-10-16)</h3>

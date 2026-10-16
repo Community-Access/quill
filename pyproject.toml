@@ -594,6 +594,7 @@ markers = [
     "smoke: fast, high-signal core checks; run the quick subset with -m smoke",
     "uia: Windows UI-automation regression tests (launch the real app via UIA); opt-in with QUILL_UIA_TESTS=1 and -m uia on a Windows desktop session",
     "machine_global: touches a resource the machine owns rather than the process (the Windows clipboard, the system-wide RegisterHotKey table, the screen-reader COM bridges). Serialized onto one worker under -n --dist loadgroup; see tests/conftest.py.",
+    "slow: runs for many minutes and only when asked by its own environment variable (the dictation soak, tests/stability/test_dictation_soak.py); never in CI",
 ]
 
 [tool.ruff]

@@ -2207,6 +2207,208 @@ rewrites the text silently.</p>
 dict.md section 10 (it belongs to retiring legacy models), and D-26’s
 <code>ram_tier</code> catalogue field.</p>
 <h2
+id="26-as-built-2026-10-16-the-benchmark-and-test-infrastructure-b-1-to-b-8">26.
+As built, 2026-10-16: the benchmark and test infrastructure (B-1 to
+B-8)</h2>
+<p>dict.md section 8 asked for the measurements every model decision
+waits on, above all the retirements in its section 10. This builds the
+tools. It runs no benchmark that needs a download, and it changes
+nothing a person using QUILL sees. Everything is dev-only: in
+<code>scripts/</code> and <code>tests/</code>, never shipped, never run
+by the app. Section 6’s table still stands, and still flatters every
+engine.</p>
+<h3 id="b-1-the-benchmark-set">B-1: the benchmark set</h3>
+<p><strong>B-1b, public datasets on demand.</strong>
+<code>scripts/bench_datasets.json</code> names every dataset in
+dict.md’s table with its licence (and whether the licence was verified),
+attribution, source, size, access, contamination and archive URLs.
+<code>scripts/fetch_bench_audio.py</code> downloads only when a person
+runs it and answers yes, never with <code>CI</code> set, and only from
+the hosts in its docstring (a test holds the two to each other). Every
+archive is checked against a pinned SHA-256 before it is unpacked, with
+tarfile’s <code>data</code> filter so nothing lands outside its folder.
+No hash is pinned yet: the first person to fetch a set runs
+<code>--pin</code>, which records the hash for review and commit. Sets
+behind an account or an agreement (Common Voice, CHiME, TORGO, the
+Speech Accessibility Project and others) are never fetched: the script
+says where to ask, and <code>--local PATH</code> registers a copy you
+have. UASpeech is marked not usable.</p>
+<p>The cache is <strong>outside the repository</strong>
+(<code>QUILL_BENCH_AUDIO</code>, otherwise
+<code>%LOCALAPPDATA%\QUILL-bench\bench-audio</code>), not dict.md’s
+<code>build/bench-audio/</code>: a path inside the repository is
+refused, so no audio can be committed by accident. Fixed subsets live in
+<code>scripts/bench_subsets.json</code> (a seed, a count, and a
+per-speaker cap); <code>--pin-subset</code> stores the chosen names once
+the data is here.</p>
+<p><strong>dictbench</strong> (<code>scripts/dictbench.py</code>) gained
+<code>--dataset</code>, <code>--subset</code>, <code>--group-by</code>
+(speaker, accent, gender, language, group, or <code>heldout</code>),
+<code>--parse</code>, <code>--latency</code> and fuller JSON: the
+contamination flag (<code>may_be_in_training_data</code>) for that model
+and set, the normalizer used, the date, the limits sentence, and every
+group. The scoring is <code>scripts/bench_scoring.py</code>: punctuation
+is aligned against the reference’s own marks, with precision, recall and
+F1 for the full stop, comma, question mark and new paragraph, and the
+share of sentences starting with a capital. Quote marks are not scored,
+and mostly-quoted segments are reported apart.</p>
+<p><strong>B-1a, LibriVox held out.</strong>
+<code>scripts/bench_librivox.py</code> reads the catalogue, makes a
+seeded selection balanced across readers from books whose text is on
+Project Gutenberg, downloads the chosen audio and texts (by a person),
+strips the Gutenberg header, footer and every mention, finds LibriVox’s
+spoken preamble and closing by their words, and cuts each chapter into 5
+to 20 second utterances whose reference is the book’s own text. It uses
+dict.md’s fallback aligner: an engine not under evaluation transcribes
+each voice-detected stretch, and difflib matches its words to the book.
+Utterances under 0.9 word match are dropped (words the book does not
+have count against them too), and the kept share is reported per book
+and per reader. The aligner is recorded in <code>aligner.txt</code>, and
+dictbench refuses to score that engine on the set. The held-out dates
+are in <code>bench_datasets.json</code>: Whisper 2024-10-01 (an
+assumption) and Moonshine 2024-10-21 (the paper); Parakeet, Nemotron,
+Vosk and Canary have none yet, so nothing counts as held out for them
+until someone fills in the dates dict.md names.</p>
+<p><strong>B-1c, the command script.</strong>
+<code>scripts/bench_commands.py</code> writes a script from the command
+table (every whole-phrase command, the layout words, the D-8 inserts,
+commands after the command word, sentences with spoken punctuation, and
+Spanish), reads it to files with Windows’ voice, Kokoro or Piper
+(nothing is played), and mixes it with MUSAN noise or recorded
+screen-reader speech at chosen levels. <code>dictbench --parse</code>
+then reports how many commands parsed and how many would have been
+typed. Its word errors are never accuracy.</p>
+<p><strong>B-1d, volunteers.</strong> Not recorded: it needs people,
+consent and payment. <code>bench_datasets.json</code> has its row, and a
+recorded folder plugs in with <code>--local</code> and a
+<code>speakers.tsv</code> whose <code>group</code> column carries the
+speech difference, so <code>--group-by group</code> keeps each group
+apart.</p>
+<h3 id="b-2-to-b-8">B-2 to B-8</h3>
+<ul>
+<li><strong>B-2.</strong> The tested-programs harness (section 17) now
+reads every phrase back even when QUILL said Windows did not take all of
+it, and counts whether QUILL’s report agreed with what arrived: agreed,
+a false alarm, or a silent miss. A unit test drives that scoring against
+a fake field.</li>
+<li><strong>B-3.</strong>
+<code>tests/stability/test_dictation_soak.py</code>, marked
+<code>slow</code>: recorded audio at live pace through the real
+recogniser and controller into the shared <code>ExternalDocument</code>,
+whose typing is a fake that never sends a key. It runs only with
+<code>QUILL_DICTATION_SOAK=1</code> and a folder of recordings, and is
+skipped whenever <code>CI</code> is set. It checks no lost or doubled
+phrase, no command typed, flat memory and a closed microphone. Its
+machinery (<code>scripts/bench_live.py</code>) has fast unit tests with
+a fake engine.</li>
+<li><strong>B-4.</strong> <code>dictbench --latency</code> plays the
+recordings at live pace through the same recogniser and reports, per
+file and at p95, the time from the first speech to the state change and
+from the last speech to the text (the pause included), against the
+Transcribe targets of 0.5 and 2 seconds.</li>
+<li><strong>B-5.</strong> <code>bench_live.correction_efficiency</code>:
+utterances spent per error corrected. A soak folder with a
+<code>corrections.json</code> reports it; run the same session once per
+correction method to compare before and after D-1, D-10 and D-19.</li>
+<li><strong>B-6.</strong> Six moments for QUILL Transcribe (start, stop,
+pause, refusal, command mode, review) on NVDA, JAWS and Narrator, in
+<code>docs/qa/screen-reader-checks-2026-10.md</code>.</li>
+<li><strong>B-7.</strong>
+<code>tests/unit/core/test_dictation_privacy_paths.py</code>: a whole
+session with AI off makes no connection; held words are never on disk as
+plain text, and nothing is left in <code>recovery/live-dictation</code>
+once delivered (ready for D-5’s Rescue); dictated words are not logged;
+and only the two download scripts of the benchmark import anything that
+could reach the network.</li>
+<li><strong>B-8.</strong> <code>scripts/bench_machine_run.py</code> runs
+every model on this computer, each in its own process, on the chosen
+sets, and writes one JSON and one table with proposed cost factors and
+RAM tiers. It never edits the catalogue, and screen-reader lag stays a
+person’s note.</li>
+</ul>
+<p><strong>One hook in engine code.</strong>
+<code>LocalDictationRecognizer._reader_gate()</code> is now a method.
+The first live run here opened the process’s real reader gate, which
+captures the running screen reader’s audio, and a phrase spoken while
+JAWS was talking was silenced, exactly as the gate is meant to do. The
+benchmark’s recogniser now overrides the method with a gate that
+captures nothing, and a test makes sure it never opens the real one.</p>
+<h3 id="first-run-2026-10-16">First run, 2026-10-16</h3>
+<p>Moonshine tiny, CPU only, on ten sentences and on the 54-line B-1c
+script, read to files by Windows’ default voice. Synthetic speech: these
+numbers check the tools, not the engine
+(<code>docs/qa/dictbench-moonshine-tiny-2026-10-16.json</code>).</p>
+<table>
+<thead>
+<tr>
+<th>Run</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ten sentences, from files</td>
+<td>0% word errors, full stop, comma and question mark F1 1.0, 0.017
+seconds of computing per second of speech, 208 MB, 1.2 s to load</td>
+</tr>
+<tr>
+<td>The same at live pace</td>
+<td>state change p95 0.27 s, text p95 0.92 s (the 0.8 s pause included),
+all ten phrases heard</td>
+</tr>
+<tr>
+<td>B-1c command script</td>
+<td>44 of 49 commands parsed; “undo that” heard as “I’ll do that.” and
+“show clips” as “Shoe clips.” would have been typed; “paste clip three”
+came back as “paste clip 3” and “insert abbreviation addr” as
+“address”</td>
+</tr>
+</tbody>
+</table>
+<p>The “paste clip 3” result is worth a look: the engine writes the
+number as a digit, so a clip spoken by number may need the parser to
+accept digits.</p>
+<h3 id="what-section-10-can-now-measure-and-what-has-to-be-run">What
+section 10 can now measure, and what has to be run</h3>
+<p>Each retirement in dict.md section 10 is gated on B-1a, the relevant
+B-1b sets, B-1c and B-8. The tools for all four exist now; the data does
+not. What each one needs:</p>
+<ul>
+<li><strong>Vosk out of dictation</strong> (merged in #1663, before
+these tools existed): its condition, Moonshine tiny measured on B-1a
+English (a held-out set built with Whisper as the aligner), B-1c and the
+B-8 run with a screen reader, is all measurable now, so it can be
+confirmed after the fact.</li>
+<li><strong>Duplicate Parakeet and Nemotron providers:</strong> not a
+benchmark question (the same model files); measurable as before.</li>
+<li><strong>whisper.cpp as the default:</strong> B-1 parity for
+sherpa-onnx Whisper or Parakeet. dictbench measures sherpa-onnx models
+only; whisper.cpp needs its own run through QUILL’s Locked Dictation, so
+this one stays partly manual.</li>
+<li><strong>English-only Whisper and Distil-Whisper sizes:</strong>
+measurable on B-1a (Whisper’s date is set), LibriSpeech and FLEURS
+(flagged as contaminated where they are), B-1c and B-8, once each model
+is downloaded.</li>
+<li><strong>Vosk as the chapter engine:</strong> not measured by these
+tools; it needs the reference chapter lists, as before.</li>
+<li><strong>Parakeet and Nemotron</strong> have no training cutoff in
+the table, so nothing is held out for them until the dates are filled
+in.</li>
+</ul>
+<p>To decide them, someone with the models downloaded runs, in order:
+<code>fetch_bench_audio.py librispeech-test-clean --pin</code> and
+<code>fleurs-en --pin</code> (then commits the hashes);
+<code>bench_librivox.py catalogue</code>, <code>select</code>,
+<code>fetch</code> and <code>build</code> for English and Spanish;
+<code>bench_commands.py script</code>, <code>render</code> and
+<code>mix</code>; and <code>bench_machine_run.py</code> on the 8 GB
+computer with NVDA or JAWS running, then writes the results here.</p>
+<p><strong>Still to do:</strong> vendor Whisper’s English normalizer
+under <code>scripts/</code> with its licence (the scoring uses it when
+the <code>whisper_normalizer</code> package is present, and QUILL’s
+basic one otherwise); pin the first hashes; build and publish the B-1a
+subset on assets-v1; record the volunteers (B-1d).</p>
+<h2
 id="appendix-a-the-dictmd-section-numbers-and-where-they-live-now">Appendix
 A: the dict.md section numbers, and where they live now</h2>
 <table>

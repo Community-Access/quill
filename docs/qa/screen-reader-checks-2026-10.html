@@ -246,7 +246,7 @@
 Try With Your Screen Reader, October 2026</h1>
 <p>These are the hands-on checks for everything built in late September
 and early October 2026 across QUILL Cast, Quill Radio, QUILL Lite and
-QUILL. There are 254 of them. Each one says where to go, what to press
+QUILL. There are 272 of them. Each one says where to go, what to press
 and what you should hear. Check a box only after you have tried it
 yourself with a screen reader; passing automated tests do not count.</p>
 <p>Try them with NVDA, JAWS and Narrator where you can. When something
@@ -1575,6 +1575,46 @@ taskbar.</label></li>
 <li><label><input type="checkbox" />End QUILL Transcribe from Task
 Manager with a review open; on the next start it says the review was
 kept, and Review Dictation brings the words back.</label></li>
+</ul>
+<h3
+id="quill-transcribe-the-six-moments-on-every-reader-b-6-2026-10-16">QUILL
+Transcribe: the six moments, on every reader (B-6, 2026-10-16)</h3>
+<p>The dictation benchmark (the design record’s section 26) measures the
+words and how fast they arrive. It cannot hear your screen reader, so
+these are the checks it leaves to you. Use a microphone, QUILL
+Transcribe’s defaults, and a new, empty Notepad document. Each moment
+must be announced once, in plain words, and the reader must not repeat
+what QUILL Transcribe already said.</p>
+<ol type="1">
+<li><strong>Start.</strong> Press Alt+Shift+Backslash: the start tone
+plays and you hear “Dictation on.” once. The reader says no stray
+letter.</li>
+<li><strong>Stop.</strong> Press Alt+Shift+Backslash again while you are
+still speaking: the phrase you were saying is still typed, then you hear
+“Dictation off.” once.</li>
+<li><strong>Pause.</strong> While dictating, press Alt+Tab to another
+program and say a phrase: you hear “Dictation paused.” and the reason,
+once; nothing is typed in the other program; Resume in the tray menu
+types the held words in Notepad and says how many phrases it wrote.</li>
+<li><strong>Refusal.</strong> Start dictation in a password field (a
+browser sign-in page you do not submit), then in QUILL Lite: you hear
+“That is a password field, so nothing is typed there.” and “This is a
+QUILL window: press Ctrl+F11 to dictate here.” Each is said once, and
+nothing is typed.</li>
+<li><strong>Command mode.</strong> Say “QUILL command mode”: you hear
+“Command mode” once; the next phrase is a command, not typed; after
+eight seconds of quiet a falling tone plays and nothing is said.</li>
+<li><strong>Review surface.</strong> Say “QUILL review that” (with an AI
+engine set up): the Review Dictation window opens; the reader says its
+title and the text, and QUILL Transcribe says nothing over it; closing
+it puts you back in Notepad.</li>
+</ol>
+<p>Check a box once all six held, and write the reader’s version beside
+it:</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />All six with NVDA.</label></li>
+<li><label><input type="checkbox" />All six with JAWS.</label></li>
+<li><label><input type="checkbox" />All six with Narrator.</label></li>
 </ul>
 </main>
 </body>

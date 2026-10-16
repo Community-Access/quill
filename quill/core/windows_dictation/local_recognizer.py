@@ -447,7 +447,7 @@ class LocalDictationRecognizer(WorkerMixin):
         self._microphone = microphone
         try:
             self._running.set()
-            self._gate = reader_gate()  # reader_gate.py: not while the reader talks
+            self._gate = self._reader_gate()  # reader_gate.py: not while the reader talks
             self._stream = self._open_stream()
             self._worker = threading.Thread(
                 target=self._work, args=(vad,), name="dictation-recognizer", daemon=True
@@ -463,6 +463,12 @@ class LocalDictationRecognizer(WorkerMixin):
                 "that Windows Settings, Privacy and security, Microphone lets desktop "
                 "apps use it."
             ) from error
+
+    def _reader_gate(self) -> Any:
+        """The process's reader gate, its capture started on first use. A method
+        so the recorded-audio benchmark (scripts/bench_live.py) can use one that
+        captures nothing."""
+        return reader_gate()
 
     def stop(self) -> None:
         """Close the microphone and let the worker finish. Never raises."""
