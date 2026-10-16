@@ -9,6 +9,11 @@ semantic versioning once it reaches a stable release.
 QUILL Social became a feed reader as well as a social client, and grew an
 installer of its own.
 
+- **Feeds check certificates the way Windows does** (2026-10-15). Feed
+  downloads now use the same certificate check as every other QUILL app, so a
+  feed served behind a school's or company's own certificate loads, and a
+  certificate that really is bad gets the same plain sentence everywhere.
+
 - **Two downloads, nothing else** (2026-10-11). QUILL Social now comes as the
   installer and the portable zip. The small Lite installer and the Companion
   zip are gone. If you used the Lite installer, take the installer; if you

@@ -58,9 +58,22 @@ _OFF_NEEDLES = (
 )
 
 
+#: Standalone packages outside quill/ that ship the quill package and so must use
+#: its one check too. Quill Social built its own context here until 2026-10-15,
+#: because this gate read only quill/. Quill Radio for Mac is not listed: it is a
+#: separate macOS app that does not ship the quill package or truststore.
+_STANDALONE_EXEMPT = ("radio-mac",)
+
+
 @cache
 def _sources() -> tuple[Path, ...]:
-    return tuple(sorted(_QUILL.rglob("*.py")))
+    standalone = [
+        path
+        for pkg in sorted((_REPO / "standalone").glob("*/quill_*"))
+        if pkg.is_dir() and pkg.parent.name not in _STANDALONE_EXEMPT
+        for path in pkg.rglob("*.py")
+    ]
+    return tuple(sorted([*_QUILL.rglob("*.py"), *standalone]))
 
 
 @cache

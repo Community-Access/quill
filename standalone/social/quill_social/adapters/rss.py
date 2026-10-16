@@ -24,7 +24,6 @@ Design choices that fit product B:
 from __future__ import annotations
 
 import json
-import ssl
 import urllib.error
 import urllib.request
 import zlib
@@ -569,7 +568,11 @@ def default_conditional_fetch(url: str, *, etag: str = "", last_modified: str = 
     if last_modified:
         headers["If-Modified-Since"] = last_modified
     req = urllib.request.Request(url, headers=headers)
-    ctx = ssl.create_default_context()
+    # The family's one certificate check: the Windows store (organisation
+    # roots, fetched intermediates), always verifying (quill.core.net).
+    from quill.core.net import verified_ssl_context
+
+    ctx = verified_ssl_context()
     try:
         with urllib.request.urlopen(req, timeout=_TIMEOUT_S, context=ctx) as resp:
             raw = resp.read(_MAX_BYTES + 1)
@@ -590,6 +593,11 @@ def default_conditional_fetch(url: str, *, etag: str = "", last_modified: str = 
             )
         raise _rss_error(exc) from exc
     except (urllib.error.URLError, TimeoutError, OSError, ValueError) as exc:
+        from quill.core.net import certificate_problem
+
+        sentence = certificate_problem(exc)
+        if sentence:
+            raise AdapterError(sentence, kind="transient") from exc
         raise AdapterError(f"could not fetch feed: {exc}", kind="transient") from exc
 
 

@@ -23,6 +23,11 @@ __title__ = "QUILL Social"
 
 def main() -> int:
     """Entry point used by the gui-script and the PyInstaller launcher."""
+    # The family's one certificate check, before anything can open a
+    # connection (quill/core/net.py; every app's entry point does this first).
+    from quill.core.net import configure_ssl_trust
+
+    configure_ssl_trust()
     from quill_social.ui.app import run
 
     return run()
