@@ -14945,10 +14945,26 @@ parity request, it is now system-wide: while toggled on, a 750 ms timer polls
 the OS clipboard **change counter** (``GetClipboardSequenceNumber`` on
 Windows, ``NSPasteboard.changeCount`` on macOS — one cheap call, no clipboard
 open unless it changed) and appends each *distinct* new clipboard text to the
-open document, autosaving as before. The in-app bind stays for instant
+open document. The in-app bind stays for instant
 response; a last-collected guard deduplicates the two paths and QUILL's own
 writes. See ``_clipboard_change_counter`` /
-``_start_collector_watch`` in ``quill/ui/main_frame_power_tools.py``.
+``_start_collector_watch`` in ``quill/ui/main_frame_clipboard_collector.py``.
+
+**Saving as it collects (2026-10-15).** The collector's old autosave called
+``save_file()`` per clip, which spoke twice per copy and could open Save As, so
+bad.md C4 removed it. It is back as the shared setting
+``clipboard_collector_saves`` (on by default; Settings > Editing, and QUILL Lite's
+Preferences): after each collected clip a document **with a file name** is saved
+quietly through Save's own write step (``_write_named_document``) and the one
+announcement is "Collected and saved". An untitled document is never saved and
+no window ever opens: no Save As, no disk-conflict question, no pre-save
+proofread, no error box. A document Save would route to Save As (an export-only
+file, a pending format change), a read-only remote copy, or an SSH-bound file
+collects as if the setting were off. A file another program changed is not
+overwritten, and a failed write is spoken ("Collected, but not saved." and
+the reason, which as a failure is always spoken); the collector stays on. No
+per-clip backup copy is made. The rule and the words are
+``quill/core/clipboard_collector.py``, shared with QUILL Lite.
 
 ---
 

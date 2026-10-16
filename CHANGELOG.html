@@ -245,6 +245,47 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="the-clipboard-collector-saves-as-it-collects-in-quill-and-quill-lite-2026-10-15">The
+clipboard collector saves as it collects, in QUILL and QUILL Lite
+(2026-10-15)</h3>
+<p>From Jeff’s list, 2026-10-15: the EdSharp habit, back as a
+setting.</p>
+<ul>
+<li>New shared setting
+<strong><code>clipboard_collector_saves</code></strong> (bool, on by
+default) in both <code>Settings</code> classes;
+<code>settings_vocabulary</code> <code>shared</code>,
+<code>data_format_audit</code> recorded additive for
+<code>quill.settings</code> and <code>lite.settings</code>.</li>
+<li><strong><code>quill/core/clipboard_collector.py</code></strong>
+holds the rule and the words for both editors:
+<code>saves_after_collect</code> (only a named document),
+<code>COLLECTED_AND_SAVED</code> (“Collected and saved”, one sentence
+instead of collect-then-“Saved <name>”, the double announcement bad.md
+C4 removed), <code>collected_but_not_saved</code> plus
+<code>disk_changed_reason</code> / <code>encoding_reason</code>.</li>
+<li>QUILL: <code>ClipboardCollectorMixin._collector_save</code> saves
+through <code>WriteSafetyMixin._write_named_document</code>, Save’s own
+write-and-settle step, extracted from <code>MainFrame.save_file</code>
+so the two cannot drift (<code>main_frame.py</code> shrank 16012 -&gt;
+15998). Never Save As, never a box: an export-only file, a pending
+format change, a read-only remote copy or an SSH-bound file just
+collects; a file changed on disk is not overwritten; a failed write
+speaks <code>_save_failure_sentence</code> (extracted from
+<code>_report_save_failure</code>). No backup copy per clip.</li>
+<li>QUILL Lite: <code>DocumentFileMixin.save_quietly</code> (shares
+<code>_write_to</code> and <code>_settle_saved</code> with
+<code>save</code>), called from
+<code>lite_clipboard_collector</code>.</li>
+<li>Settings &gt; Editing row (SettingSpec, description is the F1 help);
+QUILL Lite Preferences check box “Save after ever&amp;y clip the
+clipboard collector adds” in the new
+<code>quill/apps/lite_preferences_collector.py</code> (GATE-11).</li>
+<li>Tests: <code>tests/unit/ui/test_clipboard_collector_saves.py</code>,
+new cases in
+<code>tests/unit/apps/test_lite_clipboard_collector.py</code>.</li>
+</ul>
+<h3
 id="dictation-the-never-type-list-and-inkwell-keeps-its-field-2026-10-15">Dictation:
 the never-type list, and Inkwell keeps its field (2026-10-15)</h3>
 <p>D-24 and D-15 from the dictation plan, rescued from an uncommitted

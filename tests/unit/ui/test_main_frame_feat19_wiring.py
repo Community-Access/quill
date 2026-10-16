@@ -10,10 +10,20 @@ from pathlib import Path
 
 
 def _source() -> str:
-    """The frame plus the watcher mixin -- one surface, two files."""
-    return Path("quill/ui/main_frame.py").read_text(encoding="utf-8") + Path(
-        "quill/ui/main_frame_external_change.py"
-    ).read_text(encoding="utf-8")
+    """The frame, the watcher mixin and the shared save step -- one surface.
+
+    Save's write-and-settle step (which primes the watcher) moved to
+    ``main_frame_write_safety.py`` on 2026-10-15, so the clipboard collector's
+    quiet save shares it.
+    """
+    return "".join(
+        Path(name).read_text(encoding="utf-8")
+        for name in (
+            "quill/ui/main_frame.py",
+            "quill/ui/main_frame_external_change.py",
+            "quill/ui/main_frame_write_safety.py",
+        )
+    )
 
 
 def test_feat19_imports_are_present() -> None:

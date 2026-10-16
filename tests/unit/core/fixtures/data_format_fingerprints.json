@@ -423,6 +423,7 @@
             "share_quill_dictionary": "bool",
             "dictionary_online_lookups": "bool",
             "clip_library_autocapture": "bool",
+            "clipboard_collector_saves": "bool",
             "announcement_throttle_ms": "int",
             "print_paper_id": "int",
             "print_landscape": "bool",
@@ -524,6 +525,7 @@
             "content_handoff_format": "str",
             "auto_outline_style": "str",
             "clip_library_autocapture": "bool",
+            "clipboard_collector_saves": "bool",
             "indent_with_tabs": "bool",
             "indent_size": "int",
             "auto_check_updates": "bool",
@@ -912,6 +914,7 @@
           "content_handoff_format": "editing",
           "auto_outline_style": "editing",
           "clip_library_autocapture": "editing",
+          "clipboard_collector_saves": "editing",
           "indent_with_tabs": "editing",
           "indent_size": "editing",
           "auto_check_updates": "admin",
@@ -1252,7 +1255,7 @@
         "constant:quill.core.settings_migration:SETTINGS_SCHEMA_VERSION": "2"
       },
       "classification": "additive, compatible",
-      "note": "optional fields older builds ignore: windows_dictation_working_tick (the working tick, 2026-10-13, defaults off), vosk_retirement_notice (the once-only notice that Vosk left dictation, 2026-10-13) and windows_dictation_never_type (D-24, 2026-10-15)"
+      "note": ""
     },
     "radio.favorites": {
       "current": 1,

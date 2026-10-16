@@ -1369,8 +1369,10 @@ copy — **in any program** — is appended here automatically. A research
 scratchpad.
 
 **Before you start**
-- A saved document open (so appended text is auto-saved). Have another app (a
-  browser, Notepad) ready to copy from.
+- A saved document open (so appended text is saved as it is collected, with
+  **Settings > Editing > Save the document after every clip the clipboard
+  collector adds** on, the default). Have another app (a browser, Notepad) ready
+  to copy from.
 
 **Do this**
 1. **Tools menu ▸ Advanced ▸ Toggle Clipboard Collector**.
@@ -1379,8 +1381,11 @@ scratchpad.
 **You should see and hear**
 - Turning on announces **"Clipboard collector on; anything you copy, in any
   program, appends to this document"**. Each distinct copy is appended to the end
-  (once per payload, not duplicated) and the status reads **"Collected clipboard
-  text"**. Turning off announces **"Clipboard collector off"**.
+  (once per payload, not duplicated), the file is saved, and you hear one
+  sentence, **"Collected and saved"**. In an untitled document, or with the
+  setting off, nothing is saved, no Save As window opens, and you hear
+  **"Collected clipboard text"**. Turning off announces **"Clipboard collector
+  off"**.
 
 **Sign off** — `[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A`
 `[ ] Works` `[ ] Surface-exact` `[ ] Accessible`  · Notes: ____________________

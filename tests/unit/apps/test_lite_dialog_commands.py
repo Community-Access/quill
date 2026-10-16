@@ -191,6 +191,25 @@ def test_default_document_folder_preference_updates_the_settings(wx_app, tmp_pat
         dialog.Destroy()
 
 
+def test_the_collector_saves_preference_is_on_by_default_and_turns_off(wx_app):
+    from quill.apps.lite_preferences_collector import CollectorSavePrefs
+    from quill.core.lite.settings import Settings
+
+    dialog = wx.Dialog(None, title="Preferences")
+    try:
+        settings = Settings()
+        prefs = CollectorSavePrefs(dialog, wx.BoxSizer(wx.VERTICAL), settings)
+
+        assert prefs.check.GetValue() is True
+        assert "&y" in prefs.check.GetLabel()
+        assert prefs.apply() is False  # nothing changed
+        prefs.check.SetValue(False)
+        assert prefs.apply() is True
+        assert settings.clipboard_collector_saves is False
+    finally:
+        dialog.Destroy()
+
+
 def test_a_changed_feature_profile_rebuilds_every_menu_and_says_so(lite_window, lite_dialogs):
     from quill.apps.lite_preferences import PreferencesResult
 

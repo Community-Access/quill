@@ -10,9 +10,15 @@ and this is QUILL's collector, on QUILL's key (Alt+Shift+S, rule 2).
 The same rules as QUILL's (ui/main_frame_clipboard_collector), and its pieces:
 the OS clipboard change counter, so a tick that finds nothing new never opens
 the clipboard; ``append_collected`` with QUILL's divider; each distinct copy
-once; and it **never saves** -- a collector is a buffer, and the unsaved marker
-is how you know it has not reached the disk. One window collects at a time,
-across the app, and the collector stops when that window closes.
+once. One window collects at a time, across the app, and the collector stops
+when that window closes.
+
+And QUILL's setting, ``clipboard_collector_saves`` (2026-10-15, on by default):
+a window with a file name is saved quietly after each clip and says one
+sentence, "Collected and saved"; an untitled window just collects, and no Save
+As window ever opens. A save that cannot happen is spoken and collecting
+carries on. The decision and every word are QUILL's, from
+``quill.core.clipboard_collector``.
 """
 
 from __future__ import annotations
@@ -118,7 +124,7 @@ class DocumentClipboardCollectorMixin:
         self._collect_clipboard()
 
     def _collect_clipboard(self) -> bool:
-        """Append what is on the clipboard to the end of this window. Saves nothing."""
+        """Append what is on the clipboard to the end of this window, then maybe save it."""
         from quill.core.clipboard_collector import append_collected
         from quill.ui.atomic_edit import replace_as_one_undo
 
@@ -138,5 +144,27 @@ class DocumentClipboardCollectorMixin:
         set_modified = getattr(self, "_set_modified", None)
         if callable(set_modified):
             set_modified(True)
-        self._announce("Collected clipboard text")
+        self._announce(self._collector_save())
         return True
+
+    def _collector_save(self) -> str:
+        """Save this window quietly when the setting asks; the one sentence to say.
+
+        Never opens a window: an untitled document, or one waiting to be
+        renamed, collects as if the setting were off. A reason the save could
+        not happen is spoken, with the clip still in the document.
+        """
+        from quill.core.clipboard_collector import (
+            COLLECTED,
+            COLLECTED_AND_SAVED,
+            collected_but_not_saved,
+            saves_after_collect,
+        )
+
+        settings = getattr(self.app, "settings", None)
+        setting = getattr(settings, "clipboard_collector_saves", True)
+        named = getattr(self, "path", None) is not None
+        if not saves_after_collect(setting, named) or getattr(self, "_pending_suffix", ""):
+            return COLLECTED
+        reason = self.save_quietly()  # type: ignore[attr-defined]
+        return COLLECTED_AND_SAVED if reason is None else collected_but_not_saved(reason)

@@ -109,6 +109,7 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
     content_handoff_format: str = "text"
     auto_outline_style: str = "numeric"
     clip_library_autocapture: bool = False
+    clipboard_collector_saves: bool = True  # shared; quill/core/clipboard_collector.py
     indent_with_tabs: bool = False
     indent_size: int = 4
     # On by default so signed safety advisories (the remote feature kill
@@ -923,6 +924,7 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
         if auto_outline_style not in {"numeric", "legal"}:
             auto_outline_style = "numeric"
         clip_library_autocapture = bool(data.get("clip_library_autocapture", False))
+        clipboard_collector_saves = bool(data.get("clipboard_collector_saves", True))
         indent_with_tabs = bool(data.get("indent_with_tabs", False))
         try:
             indent_size = int(data.get("indent_size", 4))
@@ -1678,6 +1680,7 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
             content_handoff_format=content_handoff_format,
             auto_outline_style=auto_outline_style,
             clip_library_autocapture=clip_library_autocapture,
+            clipboard_collector_saves=clipboard_collector_saves,
             indent_with_tabs=indent_with_tabs,
             indent_size=indent_size,
             auto_check_updates=auto_check_updates,
