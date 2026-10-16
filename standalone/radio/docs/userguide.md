@@ -3275,11 +3275,11 @@ Preferences. Ctrl+Up and Ctrl+Down work either way.
 
 ### If the internet hiccups during a recording
 
-Short gaps are smoothed over by themselves, using the reconnect settings in
-Recording Settings. If the connection really does drop, Quill Radio waits and
-carries on in a numbered part file, telling you about each try. When the
-recording finishes, **it joins the parts back into one file**, and tells you:
-"Joined 3 parts into one recording", or "Kept 3 separate parts" and the reason.
+If the connection drops, Quill Radio waits and carries on in a numbered part
+file, using the reconnect settings in Recording Settings and telling you about
+each try. When the recording finishes, **it joins the parts back into one
+file**, and tells you: "Joined 3 parts into one recording", or "Kept 3 separate
+parts" and the reason.
 
 - Joining is a straight copy, so nothing is lost and it takes seconds. The
   joined file is checked before the parts are removed. If anything goes wrong,
@@ -3292,6 +3292,32 @@ recording finishes, **it joins the parts back into one file**, and tells you:
 - File names are never overwritten. A name used twice gets " (2)", " (3)" and
   so on.
 - If Quill Radio is closed or crashes, the recording stops with it.
+
+### Station adverts at the start of a recording
+
+Many stations play an advert, or a short "you are listening to" message, to
+every new listener before the programme. A recording is a new listener, so it
+can begin with that advert instead of the programme you are hearing. And if
+the connection drops, the next part is a new listener too, so a second advert
+could land in the middle of your show.
+
+Quill Radio takes these out by itself. There is nothing to set.
+
+- When a recording starts, Quill Radio listens to the station once more, about
+  20 seconds later, for just over a minute. Nothing from that is saved.
+- When the recording finishes, it compares how each part begins with that
+  second listen, and with the other parts. Audio that starts two separate
+  connections cannot be the live programme, so that stretch is cut from the
+  start of every part before the parts are joined.
+- You hear what was removed, for example: "Removed about 15 seconds that the
+  station plays to every new connection, usually an advert, from the start of
+  the recording."
+- If the station plays a different advert each time, or none, nothing is
+  cut and the recording stays exactly as it was captured. Quill Radio only
+  removes audio it has heard open two different connections.
+- It does not apply to YouTube broadcasts or to HLS streams (addresses ending
+  in `.m3u8`), where two connections can genuinely start with the same
+  programme audio.
 
 ### If a recording was in progress when Quill Radio quit
 

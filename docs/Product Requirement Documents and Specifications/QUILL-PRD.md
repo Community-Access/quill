@@ -5664,9 +5664,33 @@ none vendored into QUILL-AS):
   the OS kills the child instead of stranding a bare ffmpeg in the temp dir.
   `stop()` sends `q` synchronously (a pipe write) and spawns a daemon
   `_await_stop` thread for the wait/terminate fallback (`_STOP_GRACE_SECONDS`
-  then `terminate()`), so the UI/close path never blocks. `_monitor` closes
-  the job handle after `process.wait()` returns (child already dead) so a
-  long session leaks no handles.
+  then `terminate()`; both now in `recording_liveness`), so the UI/close path
+  never blocks. `_monitor` closes the job handle after `process.wait()`
+  returns (child already dead) so a long session leaks no handles.
+
+**Pre-roll guard (xradio2 section 6.1, 2026-10-15).** Many stations play an
+advert to every new connection, and a recording is a new connection, so it can
+capture the advert instead of the programme; a reconnect is another one, and
+ffmpeg's `-reconnect_streamed` used to make it silently mid-file. Requirements
+as built:
+
+- A recording never re-requests a live stream inside one file: no
+  `-reconnect_streamed`. A drop ends the part (ffmpeg exits 0, so a stall or a
+  demux error in its last stderr lines counts as a drop) and the recorder's
+  continuation starts the next part at a known boundary.
+- On a recording's first connection to a live http(s) stream (not HLS, not
+  YouTube) a single reference connection is opened 20 seconds later and its
+  first 75 seconds decoded to a loudness outline in memory.
+- At finalize, every part's opening is compared with the reference and with
+  the other parts. What two connections share from their first moment (at
+  least 4 seconds, audible and varying, at most 70 seconds) is cut from the
+  front of each part by stream copy before the join; a continuation part that
+  was only the insert is removed. The listener hears how much was removed.
+- When unsure, nothing is cut: a station whose advert rotates, or that plays
+  none, keeps the recording exactly as captured. No setting.
+- Not built: recording from the player's own connection (FreeRadio's
+  approach). Scheduled recordings and reconnects have no live connection to
+  reuse, so the comparison serves every path the same way.
 
 **Winamp classic-skin playback keys in the Recordings player (#1344,
 shipped).** The Recordings Manager plays through the same controller as live

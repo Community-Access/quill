@@ -497,4 +497,19 @@ RADIO_EGRESS: dict[str, str] = {
 }
 
 
+# ---------------------------------------------------------------------------
+# ffmpeg subprocess egress (radio recording's pre-roll reference) — manually documented
+# ---------------------------------------------------------------------------
+# quill/core/radio/recording_preroll_guard.py::decode_opening
+#   When a recording of a live http(s) station starts, the pre-roll guard
+#   (xradio2 section 6.1) opens ONE further connection to the same station
+#   twenty seconds later and decodes its first 75 seconds to a loudness
+#   outline held in memory (nothing is written to disk or sent anywhere). It
+#   compares that with the recording's own opening to find the advert the
+#   station plays to every new connection and cut it from the file. Same
+#   station, same user action (Record, Record Station, a schedule the user
+#   set, a resume the user accepted) and same ffmpeg as the recording itself;
+#   never for HLS or YouTube, and never when the recording is not of an
+#   http(s) stream. Also used, with no network at all, on the recorded files.
+
 __all__ = ["RADIO_EGRESS"]

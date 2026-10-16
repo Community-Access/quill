@@ -122,7 +122,9 @@ On the next launch, QUILL first tidies the temp folder: any finished orphan file
 
 ### How recordings survive a dropped connection
 
-A live stream can drop mid-recording. QUILL rides out short gaps itself (FFmpeg's own reconnect handling), and if the process still dies it waits and starts a **continuation file**, up to the number of attempts in Recording Settings. Two things keep that tidy:
+A live stream can drop mid-recording. When it does, QUILL waits and starts a **continuation file**, up to the number of attempts in Recording Settings. FFmpeg is deliberately not allowed to reconnect a live stream inside one file, because every new connection can begin with the station's pre-roll advert, and that would splice an advert into the middle of the recording with nothing to show where. Three things keep that tidy:
+
+- **Station adverts are cut.** Many stations play an advert or a welcome message to every new connection. When a recording starts, QUILL listens to the station once more about 20 seconds later (decoded in memory, never saved), and when the recording ends it compares how each part begins with that and with the other parts. Audio that opens two separate connections cannot be the live programme, so it is cut from the start of every part before they are joined, and you hear how much was removed. A station whose advert differs every time, or that plays none, is left exactly as recorded. YouTube broadcasts and HLS streams are not checked.
 
 - A continuation records only the **remaining** time to the original scheduled end, not a fresh full duration — a 60-minute show that drops at minute 50 records a ~10 minute continuation, not another 60.
 - A drop is classified before any reconnect attempt is spent. A **fatal** failure (your disk is full, or the server took the stream down with an HTTP 4xx such as 404 or 410) stops trying — the stream is gone, and reconnecting would only spam continuation files. A **transient** drop (a network hiccup or a 5xx) is retried.
