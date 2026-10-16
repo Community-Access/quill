@@ -8125,8 +8125,9 @@ is already going; it is never sent anywhere new.
 
 Not sure whether dictation is listening, or in which language? Press
 **Dictation Status** (`Alt+F9`). You hear what dictation is doing right now,
-including the engine and the language, and during a live transcript, how long
-it has run and how many words it has written.
+including the engine and the language, whether you are in command mode, and
+during a live transcript, how long it has run and how many words it has
+written.
 
 `Alt+F9` is also Locked Dictation's status key. When Locked Dictation is
 recording or paused, it tells you about that; the rest of the time it answers

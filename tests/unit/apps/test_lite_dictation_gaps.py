@@ -295,7 +295,13 @@ def test_dictation_status_says_what_dictation_is_doing(lite_window, recognizers,
     win = _window(lite_window, focused)
     win.cmd_dictation_status()
     assert win.announcements[-1].startswith("Dictation is off.")
-    _start(win, recognizers).hear("caps on")
+    recognizer = _start(win, recognizers)
+    recognizer.hear("caps on")
     win.cmd_dictation_status()
     assert "Caps on." in win.announcements[-1]
     assert win.announcements[-1].startswith("Dictation on,")
+    # Command mode (D-1) is said here too: otherwise only the status bar has
+    # it, and a braille display shows the editor, not the status bar.
+    recognizer.hear("QUILL command mode")
+    win.cmd_dictation_status()
+    assert win.announcements[-1].endswith("Command mode.")

@@ -199,3 +199,32 @@ def test_the_command_word_strict_mode_and_timeout_are_here(wx_app, monkeypatch) 
         assert dialog.command_required.GetValue() is True
     finally:
         dialog.Destroy()
+
+
+def test_the_buttons_that_close_the_window_check_the_command_word_too(wx_app, monkeypatch) -> None:
+    """Add or Change OpenAI Key, My Dictation Instructions and Dictate in Other
+    Programs close this window and its values are saved, so a refused word was
+    saved through them until 2026-10-15 -- and then every phrase that started
+    with it typed nothing. They pass the same check as OK now."""
+    import quill.ui.dialog_contract as contract
+    from quill.ui.dictation_more_dialog import (
+        DICTATE_ANYWHERE,
+        EDIT_INSTRUCTIONS,
+        EDIT_OPENAI_KEY,
+    )
+
+    dialog, _said = _dialog()
+    shown: list[str] = []
+    ended: list[int] = []
+    monkeypatch.setattr(contract, "show_message_box", lambda text, *_a, **_k: shown.append(text))
+    monkeypatch.setattr(dialog, "EndModal", ended.append)
+    try:
+        dialog.command_prefix.SetValue("the")
+        for code in (EDIT_OPENAI_KEY, EDIT_INSTRUCTIONS, DICTATE_ANYWHERE):
+            dialog._end_if_ready(code)
+        assert ended == [] and len(shown) == 3
+        dialog.command_prefix.SetValue("QUILL")
+        dialog._end_if_ready(DICTATE_ANYWHERE)
+        assert ended == [DICTATE_ANYWHERE]
+    finally:
+        dialog.Destroy()

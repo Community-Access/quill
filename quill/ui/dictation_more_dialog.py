@@ -236,7 +236,7 @@ class MoreDictationDialog(wx.Dialog):
             "secure store, never in a file. Once it is there, OpenAI appears in the "
             "speech engine list and its models load here."
         )
-        add_key.Bind(wx.EVT_BUTTON, lambda _e: self.EndModal(EDIT_OPENAI_KEY))
+        add_key.Bind(wx.EVT_BUTTON, lambda _e: self._end_if_ready(EDIT_OPENAI_KEY))
         cloud_box.Add(add_key, 0, wx.ALL, _PAD)
         root.Add(cloud_box, 0, wx.EXPAND | wx.ALL, _PAD)
 
@@ -246,7 +246,7 @@ class MoreDictationDialog(wx.Dialog):
             "dictation tidied: write numbers as digits, British spelling, names "
             "always spelled your way. Saves these settings first."
         )
-        instructions.Bind(wx.EVT_BUTTON, lambda _e: self.EndModal(EDIT_INSTRUCTIONS))
+        instructions.Bind(wx.EVT_BUTTON, lambda _e: self._end_if_ready(EDIT_INSTRUCTIONS))
         anywhere = wx.Button(self, label="Dictate in &Other Programs...")
         anywhere.SetHelpText(
             "Saves these settings, then starts Quill Inkwell with them, so you can "
@@ -254,7 +254,7 @@ class MoreDictationDialog(wx.Dialog):
             "choose in Inkwell's File menu. Punctuation, spelling and scratch that work "
             "there; selecting and correcting words work only in QUILL's own documents."
         )
-        anywhere.Bind(wx.EVT_BUTTON, lambda _e: self.EndModal(DICTATE_ANYWHERE))
+        anywhere.Bind(wx.EVT_BUTTON, lambda _e: self._end_if_ready(DICTATE_ANYWHERE))
         row = wx.BoxSizer(wx.HORIZONTAL)
         row.Add(instructions, 0, wx.RIGHT, _PAD)
         row.Add(anywhere, 0)
@@ -361,15 +361,27 @@ class MoreDictationDialog(wx.Dialog):
 
     def _on_ok(self, event: Any) -> None:
         """OK: refused, with the reason, while the command word would not do."""
+        if self._command_word_ready():
+            event.Skip()
+
+    def _end_if_ready(self, code: int) -> None:
+        """The three buttons that close this window save its values too, so
+        they pass the same check as OK: a refused word was saved through them
+        until 2026-10-15, and every phrase starting with it typed nothing."""
+        if self._command_word_ready():
+            self.EndModal(code)
+
+    def _command_word_ready(self) -> bool:
+        """True when the command word will do; otherwise say why and go to it."""
         problem = self.command_word_problem()
         if not problem:
-            event.Skip()
-            return
+            return True
         from quill.ui.dialog_contract import show_message_box
 
         show_message_box(problem, "More Dictation Settings", wx.OK | wx.ICON_WARNING, self)
         self.command_prefix.SetFocus()
         self.command_prefix.SelectAll()
+        return False
 
     # -- OpenAI's list --------------------------------------------------------- #
 

@@ -275,8 +275,12 @@ class DictationExtrasMixin:
             return f"Waiting for the wake phrase, {preferences.wake_phrase}."
         modes = controller.mode_text
         spelling = " Spelling." if controller.spelling else ""
+        # Command mode (D-1) is otherwise only in the status bar, which a
+        # braille display does not show while the editor has the focus.
+        command = str(getattr(controller, "command_mode_text", "") or "")
         return (
             f"Dictation on, {engine}, in {language}."
             + (f" {modes[:1].upper()}{modes[1:]} on." if modes else "")
             + spelling
+            + (f" {command}." if command else "")
         )

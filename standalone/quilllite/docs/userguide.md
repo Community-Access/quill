@@ -4539,7 +4539,8 @@ dictation is doing. Nothing changes; it only answers. For example:
   you will get when you press Ctrl+F11.
 - "Dictation on, Whisper, in Spanish." while you are dictating. If capitals
   or no-space are switched on, or you are spelling, that is added, so you
-  always know why your words are coming out the way they are.
+  always know why your words are coming out the way they are. In command
+  mode, it ends "Command mode.", so a braille display can show it too.
 - "Waiting for the wake phrase, Quill dictate." when the wake phrase is
   listening.
 - "Live transcript: 12 minutes, 1,840 words." while a live transcript is
