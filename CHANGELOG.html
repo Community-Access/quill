@@ -245,6 +245,168 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="find-in-open-documents-gets-its-own-key-in-quill-main-is-green-again-2026-10-15">Find
+in Open Documents gets its own key in QUILL; main is green again
+(2026-10-15)</h3>
+<p>PR #1660 was merged with PR CI failing, and the failures included a
+real one: Find in Open Documents was bound to Ctrl+Alt+Shift+F8 in
+QUILL, which is the QuillVille menu’s Open Quill Weather, so one of the
+pair never fired.</p>
+<ul>
+<li><strong>QUILL: Ctrl+Shift+F10.</strong> Every other Ctrl+Alt+Shift
+F-key is taken in QUILL, and the other free chords sit one modifier from
+Ctrl+F4 or Alt+F4 (rule 4). QUILL Lite has no launchers and keeps
+Ctrl+Alt+Shift+F8; the divergence is a <code>lite/parity.py</code>
+DIVERGENCES row (rule 11). Help topic, keyboard reference, both user
+guides’ notes, the tutorial, the PRDs and the release notes follow.</li>
+<li><strong>Find in Open Documents and its Find All list</strong> now
+apply the shared modal contract (<code>apply_modal_ids</code>): Escape
+is Close, and the list’s OK is Go To through the contract instead of a
+relabelled button.</li>
+<li>The dialog-hardening gate accepts a host’s injected
+<code>show_modal(</code> – both editors pass
+<code>_show_modal_dialog</code> / <code>show_modal_dialog</code> – so
+the shared Search in Files prompt and Find in Open Documents are
+recognised.</li>
+<li>Snapshots and tests brought up to date with #1660: App Sounds’ store
+is a <code>marker</code> in the persistence audit, the accessible-name
+inventory and the MainFrame surface include the new controls and
+command, Radio’s Preferences test counts App Sounds Play On, and QUILL
+Lite’s quiet-mode test checks the app’s own sounds instead of the
+family-wide switch it no longer touches.</li>
+</ul>
+<h3 id="find-in-open-documents-in-quill-and-quill-lite-2026-10-15">Find
+in Open Documents, in QUILL and QUILL Lite (2026-10-15)</h3>
+<p>Asked for on QUILLVille by Chris Nova: NoteTab could find and replace
+across a hundred open files, and neither editor could. QUILL had Search
+in Files, which reads what is saved on disk; this searches each open
+document’s live text.</p>
+<ul>
+<li><strong><code>quill/core/open_documents_search.py</code></strong>
+(wx-free): <code>find_across</code> (next or previous match across
+documents, with the document it moved to and whether it wrapped),
+<code>find_all_across</code>, <code>plan_replace</code> (every
+replacement worked out before anything changes; read-only documents
+counted and skipped), over the same <code>find_model</code> both
+editors’ Find use.</li>
+<li><strong><code>quill/ui/open_documents_find.py</code></strong>: the
+one window (Find what, Replace with, Search mode, Match case, Whole word
+only, Wrap around; Find Next, Find Previous, Find All, Replace All,
+Close), the Find All list, <code>find_again</code> for F3 afterwards,
+and <code>replace_text_in</code> – one undo step per plain-text
+document, one per match in a formatted one so formatting between matches
+is never rewritten.</li>
+<li><strong>Adapters only, per editor:</strong>
+<code>quill/ui/main_frame_open_documents.py</code> (QUILL’s tabs; its
+<code>find_next</code>/<code>find_previous</code> overrides continue
+across tabs and <code>find_text</code>/<code>replace_text</code> hand F3
+back) and <code>quill/apps/lite_open_documents.py</code> (QUILL Lite’s
+windows, state on the app).</li>
+<li><code>edit.find_in_open_documents</code> on Ctrl+Shift+F10 in QUILL
+and <code>cmd_find_open_docs</code> on Ctrl+Alt+Shift+F8 in QUILL Lite
+(see “Find in Open Documents gets its own key in QUILL” above); Edit
+menu in QUILL, Edit &gt; Matches in QUILL Lite. Help topic, keyboard
+reference, both user guides, both PRDs, the QUILL tutorial lesson “Find,
+replace, and search across files”.</li>
+</ul>
+<h3 id="the-clipboard-collector-in-quill-lite-2026-10-15">The clipboard
+collector in QUILL Lite (2026-10-15)</h3>
+<p>Asked for on QUILLVille by Dean Martineau, who had it in EdSharp and
+in QUILL (#964) and not in QUILL Lite.
+<code>quill/apps/lite_clipboard_collector.py</code> is QUILL’s collector
+on QUILL’s key: the clipboard change-counter poll,
+<code>append_collected</code>, each distinct copy once, never saving,
+one collecting window per app, stopping when that window closes.
+<code>cmd_clipboard_collector</code> (Alt+Shift+S, Edit &gt; Clipboard,
+a check row) maps to <code>power.toggle_clipboard_collector</code>; the
+parity table had wrongly mapped <code>cmd_collect_selection</code>
+there, which is now <code>LITE_ONLY</code> and moves to Alt+Shift+C
+(rule 2). QUILL’s guide no longer claims the collector autosaves, which
+it has not done since bad.md C4.</p>
+<h3
+id="search-in-files-and-replace-across-files-in-quill-lite-2026-10-15">Search
+in Files and Replace Across Files in QUILL Lite (2026-10-15)</h3>
+<p>QUILL Lite had reserved Ctrl+Alt+Shift+F for Search in Files and
+never filled it. The window moved into
+<code>quill/ui/file_search_prompt.py</code>, shared by both editors
+(QUILL’s <code>FileSearchPromptMixin</code> now passes only its folder,
+parent and modal helpers, and every control gained inline F1 help), and
+QUILL Lite’s <code>quill/apps/lite_file_search.py</code> runs QUILL’s
+<code>core/file_search</code> on the app task manager, with each report
+in a new untitled window. <code>cmd_search_in_files</code>
+(Ctrl+Alt+Shift+F) and <code>cmd_replace_in_files</code> (Ctrl+Shift+R)
+on Edit &gt; Matches, parity to <code>tools.search_in_files</code> /
+<code>tools.replace_in_files</code>. Replace previews and asks before
+writing, as in QUILL.</p>
+<h3
+id="app-sounds-in-every-quill-app-choose-the-sound-card-or-none-and-altshiftm-2026-10-14">App
+Sounds in every QUILL app: choose the sound card, or None, and
+Alt+Shift+M (2026-10-14)</h3>
+<p>Reported on QUILLVille against Quill Radio 3.2.0 (Rick Lewis): with
+the radio sent to an alternate card, every confirmation sound still
+played on the default device, so Quill Radio could not be used to check
+broadcast status by ear. Earcons had no device at all –
+<code>winsound</code>, the backend almost every install runs on, can
+only play on the system default. Fixed family-wide the same day, with a
+None choice and one key to turn an app’s sounds off.</p>
+<ul>
+<li><strong><code>quill/platform/windows/wave_out.py</code></strong>
+plays a WAV on any output device through waveOut (ctypes, nothing
+installed). The device is found by its endpoint GUID – waveOut’s
+<code>DRV_QUERYFUNCTIONINSTANCEID</code> returns
+<code>{0.0.0.00000000}.{guid}</code>, the same GUID inside libmpv’s
+<code>wasapi/{guid}</code> – so a saved choice survives Windows
+reordering devices. Each sound opens its own handle, so they mix, and
+volume works (it never did on winsound).</li>
+<li><strong><code>quill/platform/sound_routing.py</code></strong>:
+<code>RoutedBackend</code> sits in front of the detected backend – on
+the card when it is there, on the default device when it is not (never
+silent), re-checked every 3 seconds so a replugged card is found again,
+with <code>on_route</code> hearing state changes rather than every sound
+– and <code>SilentRoute</code> is None, separate from mute so the
+family-wide switch and Quiet Mode cannot wake an app that chose silence.
+<code>SoundPlayer</code> / <code>sound_manager.set_output_device</code>
+expose both; a sound manager re-init keeps the route.</li>
+<li><strong>One model, one store, one UI.</strong>
+<code>quill/core/app_sound_route.py</code> (what a choice means, the
+chooser’s rows, the on/off logic that remembers where the sounds were),
+<code>quill/core/app_sounds_store.py</code>
+(<code>app_sounds.json</code>, one entry per app id, copied to other
+apps that share choices through <code>core/family_preferences</code>),
+and <code>quill/ui/app_sounds.py</code> (<code>apply</code>,
+<code>toggle</code>, <code>choose</code>,
+<code>own_device_changed</code>, the menu item and the Preferences
+button). <code>ui/media/output_device_apps.own_audio_device</code>
+answers by app id which apps have audio of their own (Radio, Cast, the
+Media Player), so their sounds follow it by default and QUILL, which
+hosts the same radio and podcast mixins, never does.</li>
+<li><strong>Every app.</strong> AppShellFrame applies the choice at
+launch for Radio, Cast, the Media Player, Audio Studio, Weather,
+Inkwell, Converter and Transcribe; QUILL, QUILL Lite and Beacon wire it
+themselves. Each has an <strong>App Sounds</strong> check item on
+<strong>Alt+Shift+M</strong> (the <code>tools.sound_toggle</code>
+command, so a rebind follows) and an <strong>App Sounds Play
+On…</strong> chooser: a Preferences button, the Sound Scheme window in
+QUILL and QUILL Lite, or a menu item on Ctrl+Shift+S in Weather and
+Transcribe and Ctrl+Alt+S in Beacon. Moving an app’s own audio
+(Preferences, Ctrl+Shift+D, the output-device guard) moves following
+sounds and says “App sounds go with it.” In QUILL and QUILL Lite,
+Alt+Shift+M now silences only that editor; Settings’ Sound notifications
+is still the switch for every app.
+<code>tests/unit/ui/test_app_sounds_menus.py</code> builds every
+companion app’s real menu bar to hold the item, the key and its access
+letter.</li>
+<li><strong>GATE-11:</strong> Radio Preferences row builders moved to
+<code>quill/apps/radio_preferences_rows.py</code>; the Sound Scheme
+window’s scheme buttons to
+<code>quill/ui/sound_scheme_buttons.py</code>.</li>
+<li><strong>Builds:</strong> every app’s build number rises by one for
+the joint rebuild (Radio 3.2.0 build 4, Cast 2.0.0 build 5, QUILL Lite
+1.2.0 build 5, QUILL 1.0.0 build 2, the rest build 2).</li>
+<li>Docs: every app’s user guide, the Radio tutorial step, acceptance
+RADIO-17, the Radio PRD, release notes and changelogs.</li>
+</ul>
+<h3
 id="quill-lineups-in-quill-radio-and-quill-cast-and-saved-places-that-survive-a-restart-2026-10-13">QUILL
 Lineups in Quill Radio and QUILL Cast, and saved places that survive a
 restart (2026-10-13)</h3>

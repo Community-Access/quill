@@ -1465,7 +1465,7 @@ oversight:
 
 ## Find in Open Documents (2026-10-15)
 
-QUILL's command, on QUILL's key, from the same shared code (QUILL Lite may never be ahead of QUILL, and here it is not behind either): **Edit > Matches > Find in Open Documents...** (**Ctrl+Alt+Shift+F8**) finds and replaces across every open window's live text. The window and the model are QUILL's (`quill/ui/open_documents_find.py`, `quill/core/open_documents_search.py`); QUILL Lite supplies `quill/apps/lite_open_documents.py`, which lists `app.frames`, brings one to the front with `focus_frame`, and keeps the search state on the app so F3 in any window carries on the same search. Find and Replace end it (`cmd_find`, `cmd_replace`). Handler `cmd_find_open_docs`, parity `edit.find_in_open_documents`. Asked for on QUILLVille by Chris Nova.
+QUILL's command from the same shared code (QUILL has it on Ctrl+Shift+F10, because its Ctrl+Alt+Shift+F8 is a QuillVille launcher; `parity.DIVERGENCES`) (QUILL Lite may never be ahead of QUILL, and here it is not behind either): **Edit > Matches > Find in Open Documents...** (**Ctrl+Alt+Shift+F8**) finds and replaces across every open window's live text. The window and the model are QUILL's (`quill/ui/open_documents_find.py`, `quill/core/open_documents_search.py`); QUILL Lite supplies `quill/apps/lite_open_documents.py`, which lists `app.frames`, brings one to the front with `focus_frame`, and keeps the search state on the app so F3 in any window carries on the same search. Find and Replace end it (`cmd_find`, `cmd_replace`). Handler `cmd_find_open_docs`, parity `edit.find_in_open_documents`. Asked for on QUILLVille by Chris Nova.
 
 ## Search in Files and Replace Across Files (2026-10-15)
 

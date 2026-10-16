@@ -428,3 +428,32 @@ def test_readable_min_size_grows_with_the_font() -> None:
     large = readable_min_size(_WindowWithFont(16, 28))
     assert large[0] > small[0]
     assert large[1] > small[1]
+
+
+def test_labels_land_on_this_dialogs_buttons_not_another_windows() -> None:
+    """``FindWindowById`` with no parent searches every window in the app, so
+    a frame's OK button created first was the one relabelled (2026-10-15)."""
+    import pytest
+
+    wx = pytest.importorskip("wx")
+    app = wx.App.Get() or wx.App()
+    frame = wx.Frame(None)
+    frame_ok = wx.Button(frame, wx.ID_OK, "frame ok")
+    dialog = wx.Dialog(frame)
+    sizer = dialog.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL)
+    dialog.SetSizer(sizer)
+    try:
+        apply_modal_ids(
+            dialog,
+            affirmative_id=wx.ID_OK,
+            affirmative_label="&Go To",
+            cancel_id=wx.ID_CANCEL,
+            cancel_label="Close",
+        )
+        assert dialog.FindWindow(wx.ID_OK).GetLabel() == "&Go To"
+        assert dialog.FindWindow(wx.ID_CANCEL).GetLabel() == "Close"
+        assert frame_ok.GetLabel() == "frame ok"
+    finally:
+        dialog.Destroy()
+        frame.Destroy()
+        del app

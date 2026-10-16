@@ -271,7 +271,7 @@ The four levels: find here, find every match, replace with care, and search or r
    - You should hear: Each replacement, or the count at the end.
 
 5. **Search every open document.** Find in Open Documents searches every tab you have open, saved or not. Find Next moves from tab to tab and says each one's name, Find All lists every match, and Replace All tells you how many first and saves nothing. Afterwards F3 keeps searching across tabs until you start an ordinary Find.
-   - Keys: Ctrl+Alt+Shift+F8
+   - Keys: Ctrl+Shift+F10
    - You should hear: The Find in Open Documents window, then each match with its document's name.
 
 6. **Search a whole folder.** Search in Files answers where did I write that when you cannot remember which document it was in. Replace in Files is its counterpart, and it is worth doing on a copy the first time you use it.
