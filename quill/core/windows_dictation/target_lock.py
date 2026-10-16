@@ -4,7 +4,9 @@ QUILL Transcribe's spec (section 7.7): the words go into the field that had the
 focus when dictation started, and nowhere else. The shared external document
 (:class:`quill.ui.windows_dictation_external.ExternalDocument`) follows the
 focus -- if you move to another field it carries on typing there -- which is
-what Quill Inkwell has always done. This wrapper is the stricter rule:
+what Quill Inkwell did until 2026-10-13. This wrapper is the stricter rule, and
+both QUILL Transcribe and Inkwell's Dictate Anywhere now dictate through it
+(D-15; :func:`quill.ui.windows_dictation_external.locked_external_document`):
 
 * **Locked at the start.** When a session starts, the field in front is
   remembered (its window, its process and, where UI Automation can say, the
@@ -75,12 +77,16 @@ class LockedTarget:
         *,
         where: Callable[[], Any],
         advice: str = "",
+        write_failure: str = "",
     ) -> None:
         self._inner = inner
         self._where = where
         self._locked: Any = None
         #: What to do next, added to the sentence said when a session pauses.
         self.pause_advice = advice
+        #: Said when a phrase was typed only in part (target_hold.py); empty
+        #: for the controller's own sentence.
+        self.write_failure = write_failure
 
     # -- the lock --------------------------------------------------------- #
 

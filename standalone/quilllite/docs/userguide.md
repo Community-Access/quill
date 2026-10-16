@@ -4106,6 +4106,7 @@ you change here is saved when you press OK in Dictation Settings.
 | Add or Change OpenAI Key (button, Alt+K) | Saves your settings and opens Use My Own AI Key | (a button) |
 | My Dictation Instructions (button, Alt+I) | Opens the file Tidy Dictated Text follows | (a button) |
 | Dictate in Other Programs (button, Alt+O) | Saves your settings, hands them to Quill Inkwell and starts it; see "Dictating into other programs" | (a button) |
+| Programs Dictation Never Types Into (button, Alt+N) | The programs dictation never types into from Quill Inkwell or QUILL Transcribe, such as your password manager; see "Programs dictation never types into" | The common password managers and the Windows sign-in prompts |
 
 #### Dictating in Spanish
 
@@ -4746,6 +4747,44 @@ will not type into a program running as administrator when Inkwell is not,
 into QUILL Lite's or QUILL's own windows (use **Ctrl+F11** there, which does
 much more), or into Inkwell's own window. Each time, you hear a sentence
 saying why.
+
+#### It stays in the field you started in
+
+Dictate Anywhere writes only into the field where you started. If the focus
+moves to another field or another program while you are dictating, Inkwell
+pauses and holds what you said, rather than typing it in the wrong place. You
+then have three choices, in Inkwell's **Dictation** menu and, while dictation
+is paused, in Inkwell's tray menu:
+
+- **Resume** goes back to the field you started in.
+- **Resume in This Field** writes the held words where you are now.
+- **Discard Held Words** throws the held words away.
+
+If you choose Resume in This Field from Inkwell's own window or tray menu,
+Inkwell waits for you to switch to another program and resumes there. Choose
+it again to cancel.
+
+#### Programs dictation never types into
+
+Some programs should never receive dictation at all, such as your password
+manager. Press **Programs Dictation Never Types Into...** (**Alt+N**) in More
+Dictation Settings to see and change that list. It starts with the common
+password managers and the Windows sign-in, lock and administrator prompts. If
+you dictate into one of them, you hear something like "Dictation does not
+type into KeePass. Move to another program." and nothing is typed. Programs
+are matched by their file name, like keepass.exe, never by the title of a
+window.
+
+- To remove a program, choose it in the list and press **Delete**, or press
+  **Remove**.
+- To add the program you were just using, go to it, come back to QUILL Lite,
+  open the settings again, and press **Add Front Program**. The button says
+  which program it will add.
+- To add a program by name, type its file name in **Program file name** and
+  press **Enter**, or **Add by Name**. You can leave off .exe: "KeePass" adds
+  keepass.exe. A name you typed but did not add is kept when you press OK.
+
+The list is saved when you press OK in Dictation Settings.
 
 #### What you hear
 

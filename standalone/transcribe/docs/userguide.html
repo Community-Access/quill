@@ -404,7 +404,8 @@ carries on.</li>
 <li><strong>Resume in This Field</strong> (Ctrl+Shift+R) - make the
 field you are in now the one dictation writes into. It gets the same
 safety checks as a fresh start. If you choose it from the tray or the
-window, it waits for you to switch to the field, as starting does.</li>
+window, it waits for you to switch to the field, as starting does.
+Choose it again to cancel the wait; your words stay held.</li>
 <li><strong>Discard Held Words</strong> (Ctrl+Shift+D) - throw away what
 was held. Dictation stays paused until you resume or stop.</li>
 </ul>
@@ -423,8 +424,19 @@ because Windows does not allow it;</li>
 <li>the focus is in QUILL Transcribe itself, or in a QUILL or QUILL Lite
 window. You hear “This is a QUILL window: press Ctrl+F11 to dictate
 here.” Both editors dictate into their own documents with Ctrl+F11;</li>
+<li>the program is on your list of programs dictation never types into.
+You hear, for example, “Dictation does not type into KeePass. Move to
+another program.” The list starts with the common password managers and
+the Windows sign-in, lock and administrator prompts. Change it in
+<strong>More Dictation Settings</strong>, with <strong>Programs
+Dictation Never Types Into…</strong> (Alt+N). Programs are matched by
+file name, like keepass.exe, never by a window title, and words already
+held stay held;</li>
 <li>the chosen model or microphone is not available.</li>
 </ul>
+<p>While you use the OpenAI engine, the state line ends “Speech goes to
+OpenAI.”, because that is the one engine that sends your voice off this
+computer.</p>
 <p>If Windows does not take all of a phrase, QUILL Transcribe stops and
 says part of it may be missing. Check the field before you carry on. It
 never says a phrase went in when it is not sure.</p>

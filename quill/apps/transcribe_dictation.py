@@ -6,10 +6,16 @@ punctuation and commands as both editors and Quill Inkwell. What this mixin
 adds is QUILL Transcribe's promise:
 
 * **The field you started in.** The document port is the shared
-  :class:`~quill.ui.windows_dictation_external.ExternalDocument` wrapped in a
-  :class:`~quill.core.windows_dictation.target_lock.LockedTarget`. If the focus
-  moves, dictation pauses and holds the words until you resume
-  (:mod:`~quill.core.windows_dictation.target_hold`).
+  :func:`~quill.ui.windows_dictation_external.locked_external_document`, the
+  same one Quill Inkwell's Dictate Anywhere uses. If the focus moves, dictation
+  pauses and holds the words until you resume
+  (:mod:`~quill.core.windows_dictation.target_hold`); Resume, Resume in This
+  Field and Discard Held Words are :mod:`quill.ui.dictation_field_hold`'s.
+* **Never into a listed program.** The never-type list
+  (``windows_dictation_never_type``, :mod:`quill.core.windows_dictation.never_type`)
+  is checked at every start, as the password field is.
+* **Where the speech goes.** With a cloud engine, the state line and the tray
+  name end "Speech goes to OpenAI." (:func:`~quill.core.windows_dictation.engines.cloud_line`).
 * **The model you chose.** :func:`quill.core.transcribe.models.start_problem`
   is asked before the microphone opens, and a downloaded model that will not
   load stops the start instead of quietly giving way to another
@@ -25,15 +31,16 @@ Refused in Safe Mode, which exists to touch nothing.
 
 from __future__ import annotations
 
-import os
 from dataclasses import replace
 from typing import Any
 
 import wx
 
 from quill.core.sound_events import SoundEvent
+from quill.ui.dictation_field_hold import FieldHoldMixin
+from quill.ui.windows_dictation_external import PAUSE_ADVICE, WRITE_FAILURE
 
-__all__ = ["TranscribeDictationMixin"]
+__all__ = ["PAUSE_ADVICE", "WRITE_FAILURE", "TranscribeDictationMixin"]
 
 _CUES = {
     "on": SoundEvent.WINDOWS_DICTATION_ON,
@@ -43,18 +50,6 @@ _CUES = {
     "working": SoundEvent.WINDOWS_DICTATION_WORKING,
 }
 _READ_BACK_DELAY_MS = 250
-_ARM_POLL_MS = 250
-
-#: What the person is told to do when dictation pauses.
-PAUSE_ADVICE = (
-    "Go back and choose Resume, choose Resume in This Field to write here, or "
-    "Discard Held Words. Both are in the tray menu and the Dictation menu."
-)
-#: Said when typing failed part-way: never "done".
-WRITE_FAILURE = (
-    "Dictation stopped: Windows did not take all of that phrase, so part of it "
-    "may be missing. Check the field before you carry on."
-)
 
 
 class _Feedback:
@@ -143,7 +138,7 @@ class _ChosenModelOnly:
         return getattr(self._inner, name)
 
 
-class TranscribeDictationMixin:
+class TranscribeDictationMixin(FieldHoldMixin):
     """On ``QuillTranscribeFrame``: start, stop, pause and resume."""
 
     _settings: Any
@@ -193,25 +188,14 @@ class TranscribeDictationMixin:
         controller = getattr(self, "_dictation", None)
         if controller is None:
             from quill.core.windows_dictation.controller import DictationController
-            from quill.core.windows_dictation.target_lock import LockedTarget
-            from quill.ui.windows_dictation_external import (
-                ExternalDocument,
-                focus_identity,
-                foreground_problem,
-                hush_unless_spoken,
-            )
+            from quill.ui.windows_dictation_external import locked_external_document
 
-            def problem() -> str:
-                return foreground_problem(app="QUILL Transcribe", key="start and stop key")
-
-            document = LockedTarget(
-                ExternalDocument(
-                    problem=problem, hush=hush_unless_spoken(self._dictation_preferences)
-                ),
-                where=focus_identity,
-                advice=PAUSE_ADVICE,
+            document = locked_external_document(
+                preferences=self._dictation_preferences,
+                never_type=self.never_type_list,
+                app="QUILL Transcribe",
+                key="start and stop key",
             )
-            document.write_failure = WRITE_FAILURE  # type: ignore[attr-defined]
             controller = DictationController(
                 recognizer=self._make_chosen_recognizer,
                 document=document,
@@ -228,13 +212,29 @@ class TranscribeDictationMixin:
 
         return _ChosenModelOnly(_make_recognizer(controller, preferences), preferences.engine)
 
+    def never_type_list(self) -> list[str]:
+        """The programs dictation never types into (D-24), as saved."""
+        return list(self._dictation_settings_object().windows_dictation_never_type)
+
     def dictation_active(self) -> bool:
         controller = getattr(self, "_dictation", None)
         return bool(controller is not None and controller.active)
 
-    def dictation_paused(self) -> bool:
-        controller = getattr(self, "_dictation", None)
-        return bool(controller is not None and controller.paused_for_target)
+    # -- FieldHoldMixin's hooks (quill/ui/dictation_field_hold.py) ------------- #
+
+    def _held_controller(self) -> Any:
+        return getattr(self, "_dictation", None)
+
+    def _hold_refresh(self) -> None:
+        self._dictation_state_changed()
+
+    def _armed(self, what: str, text: str) -> None:
+        if what == "insert":
+            self._type_recent_phrase(text)  # type: ignore[attr-defined]
+        elif what == "start":
+            self.start_dictation()
+        else:
+            super()._armed(what, text)
 
     # -- the commands ----------------------------------------------------------- #
 
@@ -297,27 +297,6 @@ class TranscribeDictationMixin:
             return
         self._arm_start()
 
-    def resume_dictation(self) -> None:
-        if not self.dictation_paused():
-            self._announce("Dictation is not paused.")  # type: ignore[attr-defined]
-            return
-        self._controller().resume_held()
-
-    def resume_in_this_field(self) -> None:
-        if not self.dictation_paused():
-            self._announce("Dictation is not paused.")  # type: ignore[attr-defined]
-            return
-        if self._front_is_own_window():
-            self._arm(here=True)
-            return
-        self._controller().resume_held(here=True)
-
-    def discard_held_words(self) -> None:
-        if not self.dictation_paused():
-            self._announce("Dictation is not paused, so nothing is held.")  # type: ignore[attr-defined]
-            return
-        self._controller().discard_held()
-
     def use_built_in_model_once(self) -> None:
         """Start this one session on the built-in model, on purpose."""
         from quill.core.transcribe.models import FALLBACK_ENGINE, model_name
@@ -343,98 +322,11 @@ class TranscribeDictationMixin:
 
     # -- arming: the tray and the window ---------------------------------------- #
 
-    def _front_is_own_window(self) -> bool:
-        try:
-            from quill.platform.windows.foreground import foreground_window_info
-
-            return int(foreground_window_info().process_id) == os.getpid()
-        except Exception:  # noqa: BLE001 - not Windows: treat as our own
-            return True
-
     def _arm_start(self) -> None:
         if not self._front_is_own_window():
             self.start_dictation()
             return
         self._arm(here=False)
-
-    def _arm(self, *, here: bool, insert: str = "") -> None:
-        """Wait for another program to come forward, then start, resume, or
-        (*insert*, Recent Phrases' Insert Again) type one phrase there."""
-        from quill.core.transcribe.arming import ARM_SECONDS
-
-        self._armed_for = "insert" if insert else ("resume" if here else "start")
-        self._armed_text = insert
-        self._armed_ticks = int(ARM_SECONDS * 1000 / _ARM_POLL_MS)
-        timer = getattr(self, "_arm_timer", None)
-        if timer is None:
-            timer = wx.Timer(self.frame)
-            self.frame.Bind(wx.EVT_TIMER, self._on_arm_tick, timer)
-            self._arm_timer = timer
-        timer.Start(_ARM_POLL_MS)
-        verb = "resumes" if here else "starts"
-        self._announce(  # type: ignore[attr-defined]
-            "Switch to the field you want. The phrase is typed there."
-            if insert
-            else f"Switch to the field you want. Dictation {verb} there. Choose the same "
-            "command again to cancel."
-        )
-        self._dictation_state_changed()
-
-    def _cancel_arming(self, *, say: bool = True, refresh: bool = True) -> bool:
-        if not getattr(self, "_armed_for", ""):
-            return False
-        inserting, self._armed_for = self._armed_for == "insert", ""
-        timer = getattr(self, "_arm_timer", None)
-        if timer is not None:
-            timer.Stop()
-        if say:
-            self._announce(  # type: ignore[attr-defined]
-                "Cancelled; nothing was typed."
-                if inserting
-                else "Cancelled; dictation did not start."
-            )
-        if refresh:
-            self._dictation_state_changed()
-        return True
-
-    def dictation_armed(self) -> bool:
-        """Waiting to start or resume dictation (not to type a recent phrase)."""
-        return getattr(self, "_armed_for", "") in ("start", "resume")
-
-    def _on_arm_tick(self, _event: Any) -> None:
-        from quill.core.transcribe.arming import ready_to_start
-
-        self._armed_ticks -= 1
-        try:
-            from quill.platform.windows.foreground import foreground_window_info
-
-            window = foreground_window_info()
-            ready = ready_to_start(
-                hwnd=window.hwnd,
-                process_id=window.process_id,
-                window_class=window.window_class,
-                own_process=os.getpid(),
-            )
-        except Exception:  # noqa: BLE001 - not Windows: nothing will come forward
-            ready = False
-        if ready:
-            what, text = self._armed_for, getattr(self, "_armed_text", "")
-            self._cancel_arming(say=False, refresh=False)  # the start refreshes
-            if what == "insert":
-                self._type_recent_phrase(text)  # type: ignore[attr-defined]
-            elif what == "resume":
-                self._controller().resume_held(here=True)
-            else:
-                self.start_dictation()
-            return
-        if self._armed_ticks <= 0:
-            what = self._armed_for
-            self._cancel_arming(say=False)
-            self._announce(  # type: ignore[attr-defined]
-                "No other program came forward, so nothing was typed."
-                if what == "insert"
-                else "No other program came forward, so dictation did not start."
-            )
 
     # -- one owner ---------------------------------------------------------- #
 
@@ -517,7 +409,19 @@ class TranscribeDictationMixin:
     # -- what the window shows ------------------------------------------------- #
 
     def dictation_state_word(self) -> str:
-        """Ready, Listening, Paused, Waiting for a field, Off (Safe Mode)."""
+        """Ready, Listening, Paused, Waiting for a field, Off (Safe Mode); and
+        while a cloud engine has the speech, "Speech goes to OpenAI." after it."""
+        state = self._dictation_state_only()
+        controller = getattr(self, "_dictation", None)
+        if controller is not None and controller.active:
+            from quill.core.windows_dictation.engines import cloud_line
+
+            line = cloud_line(self.engine_in_use())
+            if line:
+                return f"{state}. {line}"
+        return state
+
+    def _dictation_state_only(self) -> str:
         from quill.core.windows_dictation.ports import DictationState
 
         if self._safe_mode:

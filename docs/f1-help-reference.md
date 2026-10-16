@@ -2184,6 +2184,7 @@ Control coverage: 156 audited sites (156 helped).
 - `add_key`: Saves these settings, then opens Use My Own AI Key, where you paste an OpenAI key or change the one you saved. The key is kept in Windows' secure store, never in a file. Once it is there, OpenAI appears in the speech engine list and its models load here.
 - `instructions`: Opens the file where you tell Tidy Dictated Text how you like your dictation tidied: write numbers as digits, British spelling, names always spelled your way. Saves these settings first.
 - `anywhere`: Saves these settings, then starts Quill Inkwell with them, so you can dictate into your browser, your email or any other program on a key you choose in Inkwell's File menu. Punctuation, spelling and scratch that work there; selecting and correcting words work only in QUILL's own documents.
+- `never_type`: The programs dictation never types into from QUILL Transcribe or Quill Inkwell, such as your password manager: add the program you were just in, add one by its file name, or remove one. Matched by file name, never by a window title.
 #### SpeechModelsDialog (`quill/ui/dictation_models_dialog.py`)
 
 - `self.models`: The optional speech models, the ones VS Code offers first and then the rest of the Whisper family. Each row says what the model is good for, its size and whether it is on this computer. Details below say more.

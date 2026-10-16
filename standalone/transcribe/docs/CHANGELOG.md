@@ -6,6 +6,15 @@ file is the itemized list.
 
 ## Unreleased
 
+- **Programs dictation never types into** (2026-10-15). A list you keep, in
+  More Dictation Settings (Alt+N), that starts with the common password
+  managers and the Windows sign-in prompts. Dictation and Insert Again refuse a
+  listed program by name and type nothing; held words stay held.
+- **"Speech goes to OpenAI."** ends the state line while the OpenAI engine has
+  your speech.
+- **Resume in This Field** from the window or tray: choosing it again now
+  cancels the wait, and says your words are still held.
+
 - **Where QUILL Transcribe's own sounds play, and Alt+Shift+M to turn them off.** **Options > App Sounds Play On...** (Ctrl+Shift+S) offers System default, None (no sounds), or any sound card or headset by name. After a change one sound plays on the new card, so you hear where it went. If that card is unplugged the sounds play on the system default until it is back, and QUILL Transcribe says so once. **Alt+Shift+M** turns QUILL Transcribe's sounds off and back on where they were, and **Options > App Sounds** shows a check mark while they are on. Each QUILL app keeps its own choice; "Share these choices with my other Quill apps" keeps them in step. Your screen reader is never moved. Asked for on QUILLVille by Rick Lewis.
 
 ### Dictating into other programs

@@ -218,6 +218,7 @@
   "quill/ui/dictation_lists_dialog.py::RecentPhrasesDialog::subclass:wx.Dialog": "hardened_custom",
   "quill/ui/dictation_models_dialog.py::SpeechModelsDialog::subclass:wx.Dialog": "hardened_custom",
   "quill/ui/dictation_more_dialog.py::MoreDictationDialog::subclass:wx.Dialog": "hardened_custom",
+  "quill/ui/dictation_never_type_dialog.py::NeverTypeDialog::subclass:wx.Dialog": "hardened_custom",
   "quill/ui/dictation_transcribe_dialog.py::TranscribeFileDialog._on_browse::wx.FileDialog": "native",
   "quill/ui/dictation_transcribe_dialog.py::TranscribeFileDialog::subclass:wx.Dialog": "hardened_custom",
   "quill/ui/dictation_words_dialog.py::DictationWordsDialog::subclass:wx.Dialog": "hardened_custom",

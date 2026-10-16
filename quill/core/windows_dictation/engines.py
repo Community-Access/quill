@@ -68,6 +68,8 @@ __all__ = [
     "WHISPER_MULTILINGUAL",
     "EngineInfo",
     "ModelFile",
+    "cloud_line",
+    "cloud_provider",
     "coerce_engine",
     "engine_choices",
     "engine_info",
@@ -112,6 +114,11 @@ class EngineInfo:
     files: tuple[ModelFile, ...] = ()
     #: Upstream archive the files come from (sherpa-onnx's model releases).
     archive: str = ""
+    #: Who receives the speech, for an engine that sends it off this computer
+    #: ("OpenAI"); empty for every engine that recognises speech here. Read by
+    #: :func:`cloud_line`, so a new cloud engine says so by setting this, never
+    #: by being named in a check.
+    cloud_provider: str = ""
 
 
 _SHERPA_MODELS = "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/"
@@ -247,6 +254,7 @@ OPENAI_ENGINE = EngineInfo(
     "the OpenAI key saved in Use My Own AI Key, billed to your OpenAI account, "
     "and writes what comes back. Very accurate, punctuates, and needs an "
     "internet connection. Choose the model in More Dictation Settings.",
+    cloud_provider="OpenAI",
 )
 
 _BY_ID = {engine.id: engine for engine in (*ENGINES, OPENAI_ENGINE)}
@@ -264,6 +272,18 @@ def engine_info(engine_id: str) -> EngineInfo:
         folder=model.folder,
         files=tuple(ModelFile(item.name, item.sha256) for item in model.files),
     )
+
+
+def cloud_provider(engine_id: str) -> str:
+    """Who *engine_id* sends speech to, or ``""`` for an engine on this computer."""
+    return engine_info(engine_id).cloud_provider
+
+
+def cloud_line(engine_id: str) -> str:
+    """The plain sentence said while a cloud engine has the speech (D-24):
+    "Speech goes to OpenAI." -- and ``""`` for every local engine."""
+    provider = cloud_provider(engine_id)
+    return f"Speech goes to {provider}." if provider else ""
 
 
 def coerce_engine(value: object) -> str:

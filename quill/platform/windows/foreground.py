@@ -96,3 +96,74 @@ def _process_name(pid: int) -> str:
     finally:
         _kernel32.CloseHandle(handle)
     return ""
+
+
+_GW_HWNDNEXT = 2
+_GWL_EXSTYLE = -20
+_WS_EX_TOOLWINDOW = 0x00000080
+_DWMWA_CLOAKED = 14
+#: Enough to pass every window on a busy desktop, few enough to bound the walk.
+_MAX_WINDOWS = 4000
+
+
+def _cloaked(hwnd: int) -> bool:
+    """Whether *hwnd* is hidden by the window manager (a suspended Store app)."""
+    try:
+        value = ctypes.c_int(0)
+        result = ctypes.windll.dwmapi.DwmGetWindowAttribute(
+            ctypes.wintypes.HWND(hwnd),
+            ctypes.wintypes.DWORD(_DWMWA_CLOAKED),
+            ctypes.byref(value),
+            ctypes.sizeof(value),
+        )
+        return result == 0 and bool(value.value)
+    except Exception:  # noqa: BLE001 - no window manager answer: not cloaked
+        return False
+
+
+def program_behind(own_process_id: int) -> ForegroundWindow:
+    """The program window that was in front before this program's own windows.
+
+    Windows keeps top-level windows in z-order, most recently active first, so
+    the first one down from the top that is visible, has a title, is not a tool
+    window or a hidden Store app, belongs to another process and is not part
+    of the Windows shell (``quill.core.transcribe.arming.SHELL_CLASSES``) is the
+    program the person came here from. Used by the never-type list's "Add the
+    Program in Front" (D-24), where the person's own program is behind the
+    settings window. An empty answer when there is none. Never raises.
+    """
+    from quill.core.transcribe.arming import ready_to_start
+
+    try:
+        hwnd = int(_user32.GetTopWindow(None) or 0)
+        for _ in range(_MAX_WINDOWS):
+            if not hwnd:
+                break
+            if (
+                _user32.IsWindowVisible(hwnd)
+                and _user32.GetWindowTextLengthW(hwnd) > 0
+                and not (_user32.GetWindowLongW(hwnd, _GWL_EXSTYLE) & _WS_EX_TOOLWINDOW)
+            ):
+                pid = ctypes.wintypes.DWORD()
+                _user32.GetWindowThreadProcessId(hwnd, ctypes.byref(pid))
+                class_buf = ctypes.create_unicode_buffer(256)
+                _user32.GetClassNameW(hwnd, class_buf, 256)
+                if ready_to_start(
+                    hwnd=hwnd,
+                    process_id=int(pid.value),
+                    window_class=class_buf.value,
+                    own_process=own_process_id,
+                ) and not _cloaked(hwnd):
+                    title_buf = ctypes.create_unicode_buffer(512)
+                    _user32.GetWindowTextW(hwnd, title_buf, 512)
+                    return ForegroundWindow(
+                        hwnd=hwnd,
+                        process_name=_process_name(int(pid.value)),
+                        title=title_buf.value,
+                        window_class=class_buf.value,
+                        process_id=int(pid.value),
+                    )
+            hwnd = int(_user32.GetWindow(hwnd, _GW_HWNDNEXT) or 0)
+    except Exception:  # noqa: BLE001
+        pass
+    return ForegroundWindow()

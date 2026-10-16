@@ -70,6 +70,7 @@
   "quill.ui.dictation_lists_dialog": "reachable",
   "quill.ui.dictation_models_dialog": "reachable",
   "quill.ui.dictation_more_dialog": "reachable",
+  "quill.ui.dictation_never_type_dialog": "reachable",
   "quill.ui.dictation_settings_dialog": "reachable",
   "quill.ui.dictation_transcribe_dialog": "reachable",
   "quill.ui.dictation_words_dialog": "reachable",

@@ -365,6 +365,7 @@
   "windows_dictation_hold_to_talk": "documented",
   "windows_dictation_language": "documented",
   "windows_dictation_microphone": "documented",
+  "windows_dictation_never_type": "documented",
   "windows_dictation_openai_consent": "documented",
   "windows_dictation_openai_model": "documented",
   "windows_dictation_pause": "documented",
