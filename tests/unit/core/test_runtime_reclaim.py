@@ -197,3 +197,66 @@ def test_an_old_install_without_an_ini_keeps_stable_slots(tmp_path: Path) -> Non
     data.mkdir()
     results = {r.slot: r.action for r in reclaim(data, root, "3.14", scan, [], remove=_Remover())}
     assert results == {"3.13": "kept", "3.13-dev": "removed"}
+
+
+# -- release channels: a Beta or Dev slot its last app has left (2026-10-15) --
+
+
+def test_this_pythons_beta_and_dev_slots_are_candidates(tmp_path: Path) -> None:
+    from quill.core.runtime_reclaim import abandoned_channel_slots
+
+    _slots(tmp_path, "3.13-beta", "3.14", "3.14-beta", "3.14-dev", "3.15-beta", "junk")
+    assert abandoned_channel_slots(tmp_path, "3.14") == ["3.14-beta", "3.14-dev"]
+    assert abandoned_channel_slots(tmp_path, "3.14-beta") == ["3.14-dev"]
+    assert abandoned_channel_slots(tmp_path, "3.14-dev") == ["3.14-beta"]
+    assert abandoned_channel_slots(tmp_path, "nonsense") == []
+    assert abandoned_channel_slots(tmp_path / "missing", "3.14") == []
+
+
+def test_the_last_app_back_on_stable_frees_the_beta_slot(tmp_path: Path) -> None:
+    """Quill Radio goes back to Stable: its reference moves to 3.14 (register runs
+    first), its ini says slot=3.14, and the Beta slot's 335 MB comes back."""
+    root, data = tmp_path / "Runtime", tmp_path / "data"
+    _slots(root, "3.14", "3.14-beta")
+    data.mkdir()
+    runtime_refs.register(data, "radio", "3.14-beta")
+    runtime_refs.register(data, "radio", "3.14")  # the Stable reinstall
+    app = _app(tmp_path / "apps", "radio", "[runtime]\nslot=3.14\n")
+    remover = _Remover()
+    results = reclaim(data, root, "3.14", InstallScan([app], False), [], remove=remover)
+    assert remover.removed == ["3.14-beta"]
+    assert [(r.slot, r.action) for r in results] == [("3.14-beta", "removed")]
+
+
+def test_a_beta_slot_another_app_still_runs_on_is_kept(tmp_path: Path) -> None:
+    root, data = tmp_path / "Runtime", tmp_path / "data"
+    _slots(root, "3.14", "3.14-beta")
+    data.mkdir()
+    runtime_refs.register(data, "radio", "3.14")
+    runtime_refs.register(data, "cast", "3.14-beta")
+    radio = _app(tmp_path / "apps", "radio", "[runtime]\nslot=3.14\n")
+    cast = _app(tmp_path / "apps", "cast", "[runtime]\nslot=3.14-beta\n")
+    remover = _Remover()
+    results = reclaim(data, root, "3.14", InstallScan([radio, cast], False), [], remove=remover)
+    assert remover.removed == []
+    assert results[0].reason == "an app is registered on it"
+
+
+def test_a_beta_slot_an_ini_still_names_is_kept_even_unregistered(tmp_path: Path) -> None:
+    root, data = tmp_path / "Runtime", tmp_path / "data"
+    _slots(root, "3.14", "3.14-beta")
+    data.mkdir()
+    cast = _app(tmp_path / "apps", "cast", "[runtime]\nslot=3.14-beta\n")
+    remover = _Remover()
+    reclaim(data, root, "3.14", InstallScan([cast], False), [], remove=remover)
+    assert remover.removed == []
+
+
+def test_the_slot_being_installed_into_and_stable_are_never_candidates(tmp_path: Path) -> None:
+    root, data = tmp_path / "Runtime", tmp_path / "data"
+    _slots(root, "3.14", "3.14-beta")
+    data.mkdir()
+    remover = _Remover()
+    results = reclaim(data, root, "3.14-beta", InstallScan([], False), [], remove=remover)
+    assert remover.removed == []
+    assert results == []

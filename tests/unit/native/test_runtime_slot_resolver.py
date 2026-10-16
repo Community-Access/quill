@@ -5,10 +5,10 @@
 ``Runtime\\<slot>``; with no ``slot=`` it uses ``Runtime\\3.14`` exactly as
 before, and with a slot it never falls back to Stable's folder. A missing
 runtime repairs from the tag named for its slot (``runtime-3.14``,
-``runtime-3.14-beta``); a Dev one does not repair itself. The C
-is not compiled here (no binaries are built in this repository's tests), so
-the contract is pinned twice: a Python mirror of the parser, exercised, and the
-C source checked for the same rules.
+``runtime-3.14-beta``); a Dev one does not repair itself. Here the contract
+is pinned twice without a compiler: a Python mirror of the parser, exercised,
+and the C source checked for the same rules. ``test_launcher_compiled.py``
+compiles and runs the C itself wherever MSVC and CMake are installed.
 """
 
 from __future__ import annotations

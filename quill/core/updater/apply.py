@@ -16,7 +16,10 @@ first window is on screen. If it never appears, the helper undoes the update:
 
 Either way the helper writes ``<updates>/apply-result.json`` with
 ``"rolled_back": true``, and on its next start the app says once, plainly,
-what happened, and Update History records the undo.
+what happened, and Update History records the undo. When the installer itself
+does not finish (it exits with an error, or permission is refused), nothing
+was changed: the helper starts the old version again without waiting, and
+writes ``"install_failed": true`` instead, which the app reports the same way.
 
 **What is kept, and for how long** (owner decisions, 2026-10-03 and
 2026-10-04). The installer of the version you are running is kept in
@@ -61,6 +64,7 @@ __all__ = [
     "record_pending",
     "result_path",
     "rollback_setup_for",
+    "running_version",
     "started_marker",
 ]
 
@@ -142,6 +146,23 @@ def installed_version(updates: Path) -> str:
     return str(installed.get("version") or "") if isinstance(installed, dict) else ""
 
 
+def running_version(install_dir: Path, app_key: str) -> str:
+    """The version installed in *install_dir*, for a first update the books do
+    not know yet: its ``quill-app-version.ini`` (installers and portable zips
+    write one), else QUILL's own build. "" when neither says."""
+    from quill.core.app_version import read_marker
+
+    marker = read_marker(install_dir)
+    if marker or app_key != "quill":
+        return marker
+    try:
+        from quill import build_info
+
+        return build_info.feed_version()
+    except Exception:  # noqa: BLE001 - unknown: the undo still runs, unnamed
+        return ""
+
+
 def rollback_setup_for(updates: Path, version: str) -> Path | None:
     """The kept installer for *version* (the running one), if there is one."""
     state = _read(updates / "rollback" / _STATE)
@@ -193,6 +214,8 @@ class StartReport:
     installed: str = ""
     #: An update failed and was undone: the version that did not start.
     rolled_back_from: str = ""
+    #: The installer of this version did not finish; the old one is unchanged.
+    install_failed: str = ""
     #: The sentence to say once (empty when there is nothing to say).
     notice: str = ""
 
@@ -265,6 +288,26 @@ def _confirm(
             notice=(
                 f"The update to {_shown(failed)} didn't start, so {app_name} went back to "
                 f"{_shown(version)}. Nothing of yours was changed. Details are in Help, "
+                "Update History."
+            ),
+        )
+        _clear(updates)
+    elif result.get("install_failed") and _same(result.get("version"), version):
+        failed = str(result.get("failed_version") or pending.get("to") or "")
+        history.record(
+            app_key,
+            "failed",
+            from_version=version,
+            to_version=failed,
+            detail=f"The installer for {failed} did not finish, so nothing was changed.",
+            path=history_path,
+            now=moment,
+        )
+        report = StartReport(
+            install_failed=failed,
+            notice=(
+                f"The update to {_shown(failed)} could not be installed, so {app_name} is "
+                f"still {_shown(version)}. Nothing of yours was changed. Details are in Help, "
                 "Update History."
             ),
         )

@@ -16906,16 +16906,24 @@ documents and preferences are kept.</p>
 <h4 id="updating-a-portable-copy">Updating a portable copy</h4>
 <p>If you run the <strong>portable</strong> copy of QUILL, Check for
 Updates notices and offers the portable <code>.zip</code> for the new
-version instead of the installer. It downloads to your updates folder,
-and QUILL offers an <strong>Extract now</strong> button that unzips it
-into a ready-to-run folder next to your current one.</p>
-<p>Putting a portable update in place is always a job you do yourself.
-QUILL never replaces its own files while it is running, because they may
-be locked while it is open. After extracting, copy your
-<code>data</code> folder into the new version’s folder and start QUILL
-from there.</p>
-<p>Installed copies keep getting the installer, which does put itself in
-place when you run it.</p>
+version instead of the installer. It downloads to your updates
+folder.</p>
+<p>On Windows, choose <strong>Install and restart now</strong> and QUILL
+closes, puts the new version in place of the old folder, moves your
+<code>data</code> folder across, and opens again. The old version is
+kept beside it, as a folder ending in <code>.previous</code>, until the
+new one has started three times or for a week, so that a failed update
+can put it back. If a file in the folder is still open and the folders
+can’t be swapped, QUILL copies the new version over the old one instead,
+and your <code>data</code> folder is left alone either way.</p>
+<p>If you would rather do it yourself, choose <strong>Extract
+now</strong>: QUILL unzips the update into a ready-to-run folder next to
+your current one. Copy your <code>data</code> folder into it and start
+QUILL from there.</p>
+<p>Installed copies keep getting the installer, which puts itself in
+place quietly. It doesn’t ask for administrator permission, because
+QUILL is installed for you alone; if you installed it for everyone on
+the computer, Windows may ask for permission.</p>
 <h4 id="staying-on-a-release-channel">Staying on a release channel</h4>
 <p>By default, QUILL follows the Stable channel and only offers you
 finished versions. To try new features early, see <a
@@ -16983,8 +16991,15 @@ notifications list and Update History tell you why it waited.</p>
 <h4 id="if-an-update-doesnt-start">If an update doesn’t start</h4>
 <p>After an update, QUILL checks that the new version really opens. If
 it doesn’t open within two minutes, the update undoes itself and puts
-back the version you had. The next time QUILL starts, it tells you so.
-Nothing of yours is changed, and Update History has the details.</p>
+back the version you had: if the new version is still running but stuck,
+it’s closed first. The next time QUILL starts, it tells you so. Nothing
+of yours is changed, and Update History has the details. A portable copy
+goes back by swapping its old folder back in; an installed copy goes
+back by reinstalling the version you had.</p>
+<p>If the installer itself doesn’t finish, nothing is changed: QUILL
+opens again straight away as the version you had, and tells you the
+update could not be installed. Update History has the details, and you
+can try again from Check for Updates.</p>
 <p>To make this possible, QUILL keeps a copy of the installer for the
 version you have: on Beta and Dev for as long as you have that version,
 and on Stable for a week or three starts after each update. That copy

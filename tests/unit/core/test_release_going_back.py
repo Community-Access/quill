@@ -294,6 +294,47 @@ def test_a_failed_update_is_reported_once_and_recorded(tmp_path: Path) -> None:
     assert again.notice == ""
 
 
+def test_an_install_that_did_not_finish_is_reported_once_and_recorded(tmp_path: Path) -> None:
+    """The installer exited with an error: nothing changed, the old version was
+    started again at once, and it says so -- not "went back", which it never left."""
+    updates = tmp_path / "updates"
+    log = tmp_path / "history.jsonl"
+    apply.record_pending(
+        updates, app_key="radio", from_version="3.2.0", to_version="3.3.0", setup=None
+    )
+    apply.result_path(updates).write_text(
+        '{"version": "3.2.0", "install_failed": true, "failed_version": "3.3.0"}', "utf-8"
+    )
+    report = apply.confirm_started(
+        updates, app_key="radio", app_name="Quill Radio", version="3.2.0", now=NOW, history_path=log
+    )
+    assert report.install_failed == "3.3.0"
+    assert report.rolled_back_from == ""
+    assert report.notice.startswith(
+        "The update to 3.3.0 could not be installed, so Quill Radio is still 3.2.0."
+    )
+    assert history.read_events(path=log)[0].kind == "failed"
+    assert not apply.result_path(updates).exists()
+    assert not apply.pending_path(updates).exists()
+    again = apply.confirm_started(
+        updates, app_key="radio", app_name="Quill Radio", version="3.2.0", now=NOW, history_path=log
+    )
+    assert again.notice == ""
+
+
+def test_the_version_being_replaced_comes_from_the_marker_on_a_first_update(
+    tmp_path: Path,
+) -> None:
+    """Before any update has gone through, the books know no version; without
+    one the undo happened but the app never recognised it as its own."""
+    (tmp_path / "quill-app-version.ini").write_text(
+        "[app]\nversion=3.2.0\nversion_build=3.2.0+4\n", encoding="utf-8"
+    )
+    assert apply.running_version(tmp_path, "radio") == "3.2.0+4"
+    assert apply.running_version(tmp_path / "nothing", "radio") == ""
+    assert apply.running_version(tmp_path / "nothing", "quill")  # QUILL's own build
+
+
 def test_spellings_of_one_version_agree() -> None:
     assert apply.started_marker(Path("u"), "1.1.0 Beta 1") == apply.started_marker(
         Path("u"), "1.1.0-beta.1"
@@ -346,7 +387,7 @@ def test_an_installed_copy_with_nothing_kept_cannot_undo() -> None:
         install_dir=Path("app"),
     )
     assert "Start-Process" not in "\n".join(lines)
-    assert "nothing to go back to" in "\n".join(lines)
+    assert "could not go back" in "\n".join(lines)
 
 
 def test_an_apostrophe_in_the_installer_path_is_escaped_for_powershell() -> None:

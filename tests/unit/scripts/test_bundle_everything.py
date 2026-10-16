@@ -81,6 +81,7 @@ def test_build_launcher_puts_the_url_on_the_configure_line(monkeypatch, tmp_path
     calls: list[list[str]] = []
     monkeypatch.setattr(bnl, "find_cmake", lambda: "cmake")
     monkeypatch.setattr(bnl, "find_msvc", lambda: tmp_path)
+    monkeypatch.setattr(bnl, "msvc_generator", lambda: bnl.DEFAULT_GENERATOR)
     monkeypatch.setattr(bnl.subprocess, "run", lambda cmd, **_k: calls.append(list(cmd)))
     with pytest.raises(RuntimeError, match="is not in"):
         bnl.build_launcher(bnl.PRODUCTS["radio"], tmp_path, build_root=tmp_path, runtime_url="")

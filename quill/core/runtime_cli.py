@@ -13,8 +13,9 @@ that JSON bookkeeping in Pascal, the installer runs this CLI:
     # the installer may delete the shared runtime folder"
     <runtime>\\python.exe -m quill.core.runtime_cli unregister radio 3.13.1
 
-    # after registering: remove an older Python's slot no installed app still
-    # needs (Runtime\\3.13 once every app is on 3.14). Always exits 0.
+    # after registering: remove a slot no installed app still needs -- an older
+    # Python's (Runtime\\3.13 once every app is on 3.14), or a Beta or Dev slot
+    # of this Python its last app has left. Always exits 0.
     <runtime>\\python.exe -m quill.core.runtime_cli reclaim-old-slots 3.14
 
     # optional: print the shared data dir (where components/runtime state lives)
@@ -95,7 +96,9 @@ def _heal_launch_entries(launcher_dir: str) -> int:
 
 
 def _reclaim_old_slots(current_slot: str) -> int:
-    """Remove older-Python runtime slots nothing needs. Always exits 0.
+    """Remove runtime slots nothing needs (an older Python's, an abandoned Beta or Dev one).
+
+    Always exits 0.
 
     Never fails the install: a slot that cannot be removed costs disk space,
     and :mod:`quill.core.runtime_reclaim` keeps every slot it has any doubt about.
@@ -112,7 +115,7 @@ def _reclaim_old_slots(current_slot: str) -> int:
     for result in results:
         print(f"reclaim-old-slots: {result.slot} {result.action} ({result.reason})")
     if not results:
-        print("reclaim-old-slots: no older runtime slots")
+        print("reclaim-old-slots: no runtime slots to reclaim")
     return 0
 
 

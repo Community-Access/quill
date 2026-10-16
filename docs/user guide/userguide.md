@@ -14511,16 +14511,24 @@ preferences are kept.
 
 If you run the **portable** copy of QUILL, Check for Updates notices and
 offers the portable `.zip` for the new version instead of the installer. It
-downloads to your updates folder, and QUILL offers an **Extract now** button
-that unzips it into a ready-to-run folder next to your current one.
+downloads to your updates folder.
 
-Putting a portable update in place is always a job you do yourself. QUILL
-never replaces its own files while it is running, because they may be locked
-while it is open. After extracting, copy your `data` folder into the new
-version's folder and start QUILL from there.
+On Windows, choose **Install and restart now** and QUILL closes, puts the new
+version in place of the old folder, moves your `data` folder across, and opens
+again. The old version is kept beside it, as a folder ending in `.previous`,
+until the new one has started three times or for a week, so that a failed
+update can put it back. If a file in the folder is still open and the folders
+can't be swapped, QUILL copies the new version over the old one instead, and
+your `data` folder is left alone either way.
 
-Installed copies keep getting the installer, which does put itself in place
-when you run it.
+If you would rather do it yourself, choose **Extract now**: QUILL unzips the
+update into a ready-to-run folder next to your current one. Copy your `data`
+folder into it and start QUILL from there.
+
+Installed copies keep getting the installer, which puts itself in place
+quietly. It doesn't ask for administrator permission, because QUILL is
+installed for you alone; if you installed it for everyone on the computer,
+Windows may ask for permission.
 
 #### Staying on a release channel
 
@@ -14566,8 +14574,16 @@ On Beta and Dev, it waits instead of downloading on a metered connection, during
 
 After an update, QUILL checks that the new version really opens. If it doesn't
 open within two minutes, the update undoes itself and puts back the version you
-had. The next time QUILL starts, it tells you so. Nothing of yours is changed,
-and Update History has the details.
+had: if the new version is still running but stuck, it's closed first. The
+next time QUILL starts, it tells you so. Nothing of yours is changed, and
+Update History has the details. A portable copy goes back by swapping its old
+folder back in; an installed copy goes back by reinstalling the version you
+had.
+
+If the installer itself doesn't finish, nothing is changed: QUILL opens again
+straight away as the version you had, and tells you the update could not be
+installed. Update History has the details, and you can try again from Check
+for Updates.
 
 To make this possible, QUILL keeps a copy of the installer for the version you
 have: on Beta and Dev for as long as you have that version, and on Stable for a

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.12" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QuillVille native launcher (C source)</title>
   <style>
@@ -478,7 +478,8 @@ Beacon.</p>
 class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>pytest tests<span class="op">/</span>unit<span class="op">/</span>native<span class="op">/</span>test_runtime_resolver<span class="op">.</span><span class="fu">py</span> <span class="op">-</span>v</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>pytest tests<span class="op">/</span>unit<span class="op">/</span>native<span class="op">/</span>test_launch_failure<span class="op">.</span><span class="fu">py</span> <span class="op">-</span>v</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>pytest tests<span class="op">/</span>unit<span class="op">/</span>native<span class="op">/</span>test_launcher_cmdline<span class="op">.</span><span class="fu">py</span> <span class="op">-</span>v</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>pytest tests<span class="op">/</span>unit<span class="op">/</span>scripts<span class="op">/</span>test_build_native_launcher<span class="op">.</span><span class="fu">py</span> <span class="op">-</span>v</span></code></pre></div>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>pytest tests<span class="op">/</span>unit<span class="op">/</span>scripts<span class="op">/</span>test_build_native_launcher<span class="op">.</span><span class="fu">py</span> <span class="op">-</span>v</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>pytest tests<span class="op">/</span>unit<span class="op">/</span>native<span class="op">/</span>test_launcher_compiled<span class="op">.</span><span class="fu">py</span> <span class="op">-</span>v</span></code></pre></div>
 <p>The first is a Python mirror of the C runtime resolver and exercises
 the algorithm in isolation. The second mirrors
 <code>launch_report.c</code> the same way and pins every constant and
@@ -487,7 +488,16 @@ quoting and, where MSVC and CMake are installed, compiles the real
 <code>cmdline.c</code> into a small harness and checks that shell32’s
 <code>CommandLineToArgvW</code> reads every command line it builds back
 to the exact arguments. The fourth is the per-product identity contract
-and the cross-product storage-mode allowlist check.</p>
+and the cross-product storage-mode allowlist check. The fifth compiles
+the real thing (2026-10-15): <code>runtime_resolve.c</code> behind a
+small probe that answers every release-channel slot question, and the
+whole launcher, built by <code>build_native_launcher.py</code> as a
+release builds it, started beside an ini that names a Beta slot with a
+stand-in runtime in both the Stable and the Beta folder (only the Beta
+one may start). Like the third, it skips where MSVC and CMake are not
+installed. The wrapper picks CMake’s generator for whichever Visual
+Studio <code>vswhere</code> finds (2022 or 2026), so a machine or CI
+image on the newer one still builds.</p>
 <h2 id="what-this-is-not">What this is NOT</h2>
 <ul>
 <li><strong>Not a Python C-API host.</strong> The launcher does not link
