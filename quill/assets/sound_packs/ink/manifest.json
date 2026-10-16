@@ -107,6 +107,7 @@
     "radio_recording_started": "radio_recording_started.wav",
     "radio_recording_stopped": "radio_recording_stopped.wav",
     "radio_reminder": "radio_reminder.wav",
+    "radio_resumed": "radio_resumed.wav",
     "radio_stopped": "radio_stopped.wav",
     "radio_stream_error": "radio_stream_error.wav",
     "redo_performed": "redo_performed.wav",

@@ -2,6 +2,58 @@
 
 ## 1.0.0
 
+### Quill Radio extras: marked delete, resume earcon, a second device, per-favourite keys, What's New, notes in reminders (2026-10-16)
+
+Jeff's todo P3 "Radio extras", from the FreeRadio study (xradio2 sections 4.5,
+4.6, 4.7, 4.9 and 4.10). All of it is in the shared package; the wx-free rules
+are new strict-typed modules in `quill/core/radio/`.
+
+- **Mark many, delete once (4.10).** `core/radio/row_marks.py` (`RowMarks`,
+  `delete_question`, `deleted_sentence`, `landing_after`) and
+  `ui/radio/favorites_marks.py`, shared by the main window's favorites tree
+  (`apps/radio_favorites_tree.py`) and Manage Favorites
+  (`favorites_manager_dialog.py` +5, rebaselined; `favorites_menu.py`). `.`
+  toggles a mark and says the count, the row text gains "(marked)", Delete with
+  marks asks one No-default question with the count, Ctrl+Shift+Delete clears.
+  The cursor lands on the next survivor. Folders are not markable. The
+  Recordings Manager, Browse and the schedule list still delete one row.
+- **Resume earcon (4.5).** New `SoundEvent.RADIO_RESUMED`, `radio_resumed.wav`
+  in the Ink pack (`scripts/gen_ink_sounds.py --radio-resumed`), a label in
+  `sound_event_labels.py`. `RadioPlayerController.toggle_play_pause` posts it
+  for PAUSED to PLAYING through `post_cue` (so the per-event disable list and
+  App Sounds apply) in place of the "playing" cue.
+- **Second device (4.6 background station, 4.7 mirror).**
+  `core/radio/second_output.py` decides what the second player does when the
+  main one changes (background: volume scales with the main volume, pause
+  follows, stop and station changes do not; mirror: follows everything).
+  `ui/radio/second_output_ui.py` owns a second `MpvRadioEngine`, the two Audio
+  menu rows (`radio.background_station` Alt+Shift+B, `radio.mirror_output`
+  Alt+Shift+D) and the device question; `main_frame_radio.py` calls `follow` from
+  `_on_radio_state_changed` (+3, under budget). Off by default, not persisted,
+  needs mpv. Drift between the two players is stated in the guide.
+- **Per-favourite system-wide keys (4.9).** `core/radio/favorite_hotkeys.py`
+  keeps `{favourite key: chord}` in its own `radio_favorite_hotkeys.json` (not in
+  the favourites file, so an import never brings a key that collides here);
+  conflicts are `family_chords.show_hide_key_problem` with the other
+  favourites' keys and Radio's show/hide key as `own`, plus
+  `hotkey_conflict.claimed_by_another_application`.
+  `ui/radio/favorite_hotkeys_ui.py` registers ids from 0x7C00 at launch
+  (`radio_launch_tasks`) and releases them at shutdown (`radio_shutdown`); a new
+  `RegisterHotKey` site in `test_global_hotkeys._REGISTER_HOTKEY_SITES`. Empty by
+  default. **System-Wide Key...** on both trees' station menus (standalone only).
+- **What's New (todo item 8).** `core/radio/whats_new.py` sorts Quill Radio's
+  unread notification-centre entries into episodes, videos, reminders and other,
+  and says one sentence; `ui/radio/whats_new_wiring.py` registers `radio.whats_new`
+  (Alt+Shift+N, Community menu beside What Is On Now) and marks what it said as
+  read. No spec existed; this is the sensible minimum.
+- **Reminders read the station's note (todo item 9).**
+  `reminders.announcement(..., station_note=)` and `reminders.station_note()`
+  (keyed by stream URL through `item_notes`), called by `ReminderMonitor`.
+- Not built: song-boundary recording (4.8) and pitch shift / crossfade (4.11,
+  4.12, which xradio2 defers).
+- Gates: `bulk_count_inventory.json` (+2 `no-announce`), keyboard reference,
+  family menu chords, dialog inventory regenerated.
+
 ### PDFs in QUILL Lite, one open path for both editors, and Windows OCR for scanned PDFs (2026-10-15)
 
 Jeff's todo P2 #28, phases 1 and 2 of the PDF plan. QUILL Lite may never be

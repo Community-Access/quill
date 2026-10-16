@@ -150,6 +150,10 @@ class SoundEvent(StrEnum):
     #: and it has to be tellable from a download finishing or a feed check
     #: ticking without waiting for the words that follow it.
     RADIO_REMINDER = "radio_reminder"
+    #: Playback carrying on after a pause (xradio2 4.5): a tape spooling back
+    #: up to speed, so "carrying on where you were" is tellable from "tuned in
+    #: to something new" (RADIO_PLAYING) before the audio says which.
+    RADIO_RESUMED = "radio_resumed"
     CAST_EPISODE_FINISHED = "cast_episode_finished"
     #: The four outcomes of a one-key action in QUILL Cast (qc.md 18.7), under
     #: Cast's own action_feedback choice; failures use ERROR.

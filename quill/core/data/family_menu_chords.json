@@ -666,6 +666,8 @@
   ["Quill Radio", "ui/radio/browse_tree_dialog.py Close", "Ctrl+W"],
   ["Quill Radio", "ui/radio/download_queue_dialog.py Close", "Ctrl+W"],
   ["Quill Radio", "ui/radio/favorites_manager_dialog.py Close", "Ctrl+W"],
+  ["Quill Radio", "ui/radio/favorites_marks.py  Marked...", "Delete"],
+  ["Quill Radio", "ui/radio/favorites_marks.py Clear Marks", "Ctrl+Shift+Delete"],
   ["Quill Radio", "ui/radio/favorites_menu.py Remove...", "Delete"],
   ["Quill Radio", "ui/radio/favorites_menu.py Rename Folder...", "F2"],
   ["Quill Radio", "ui/radio/favorites_menu.py Rename Station...", "F2"],

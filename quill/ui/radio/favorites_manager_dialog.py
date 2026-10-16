@@ -25,7 +25,7 @@ from quill.ui.dialog_contract import (
     bind_close_button,
     show_modal_dialog,
 )
-from quill.ui.radio import favorites_details
+from quill.ui.radio import favorites_details, favorites_marks
 
 _TOP_LEVEL_CHOICE = "(Top level -- no folder)"
 _NEW_FOLDER_CHOICE = "(New folder...)"
@@ -353,6 +353,7 @@ class FavoritesManagerDialog:
         tree.DeleteAllItems()
         root = tree.AddRoot("Favorites")
         select_item = None
+        marks = favorites_marks.dialog_marks(self)  # "(marked)" rows: xradio2 4.10
 
         if query:
             # A filter flattens the view: every match in one list, its folder
@@ -362,7 +363,8 @@ class FavoritesManagerDialog:
 
             matches = self._store.search(query)
             for favorite in matches:
-                item = tree.AppendItem(root, favorite_label(favorite, query))
+                label = favorite_label(favorite, query)
+                item = tree.AppendItem(root, favorites_marks.label_for(marks, favorite.key, label))
                 tree.SetItemData(item, ("station", favorite.key))
                 if favorite.key == keep_key:
                     select_item = item
@@ -387,7 +389,8 @@ class FavoritesManagerDialog:
                 folder_item(path)
             for favorite in self._store.favorites_in_display_order(self._sort, self._folder_sorts):
                 parent = folder_item(favorite.folder)
-                item = tree.AppendItem(parent, favorite.display_label)
+                label = favorites_marks.label_for(marks, favorite.key, favorite.display_label)
+                item = tree.AppendItem(parent, label)
                 tree.SetItemData(item, ("station", favorite.key))
                 if favorite.key == keep_key:
                     select_item = item
@@ -626,6 +629,8 @@ class FavoritesManagerDialog:
     def _on_tree_key(self, event: Any) -> None:
         wx = self._wx
         code = event.GetKeyCode()
+        if favorites_marks.handle_dialog_key(self, event):
+            return
         if code in (wx.WXK_DELETE, wx.WXK_NUMPAD_DELETE):
             selected = self._selected()
             if selected is not None and selected[0] == "station":

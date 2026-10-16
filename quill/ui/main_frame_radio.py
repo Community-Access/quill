@@ -783,6 +783,9 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         self._radio_track_history_and_volume(state)
         # Time only counts while audio is actually coming out (stats_session).
         stats_session.on_state_changed(self, state)
+        from quill.ui.radio.second_output_ui import follow  # a second device, if in use
+
+        follow(self, state)
         self._radio_track_titles_follow_playback(state)
         self._radio_maybe_try_fallback_url(state)
         # The one transition that is spoken rather than cued: a reconnect.

@@ -106,7 +106,12 @@ class ReminderMonitor:
             # has already turned their attention by the time the sentence
             # starts.
             self._cue()
-            said = reminders.announcement(reminder, now)
+            # A station reminder also says the listener's own note on that
+            # station, so "only the first hour is worth it" arrives at the
+            # moment it is useful rather than waiting in the details pane.
+            said = reminders.announcement(
+                reminder, now, station_note=reminders.station_note(data_dir, reminder)
+            )
             self._announce(said)
             self._toast(reminder, said)
             self._notice(reminder, said)

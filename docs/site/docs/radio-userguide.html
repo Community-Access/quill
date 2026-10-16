@@ -1448,6 +1448,10 @@ item, off to begin with.</li>
 <li><strong>Sound Enhancements…</strong> (Ctrl+E): tone controls,
 evening out the volume, which ear the sound goes to, night mode and
 broadcast polish.</li>
+<li><strong>Background Station on Another Device…</strong> (Alt+Shift+B)
+and <strong>Mirror to Another Device…</strong> (Alt+Shift+D): a second
+sound card or headset at the same time. See “A second device” in Chapter
+5.</li>
 </ul>
 <p>The walkthroughs are in Chapter 5, What’s playing, and how it
 sounds.</p>
@@ -1489,6 +1493,8 @@ knows what is playing, on the ChatGPT plan you pay for.</li>
 <li><strong>ACB Media Schedule…</strong> (Ctrl+Shift+N), <strong>What Is
 On Now</strong> (Ctrl+Alt+H), <strong>Upcoming…</strong>
 (Ctrl+Alt+Shift+F) and <strong>Refresh the Schedule</strong> (F5).</li>
+<li><strong>What’s New</strong> (Alt+Shift+N): what arrived since you
+last looked, in one sentence.</li>
 <li><strong>ACB Media Podcasts…</strong> (Ctrl+Alt+I).</li>
 <li><strong>Community Picks…</strong> (Ctrl+Alt+0) and <strong>Suggest a
 Station or Podcast…</strong> (Ctrl+Alt+9).</li>
@@ -1827,6 +1833,11 @@ recording, a downloaded or local file, or a finished video.
 <li>Press <strong>Ctrl+Space</strong> again. You should hear
 “Resumed.”</li>
 </ol>
+<p>Resuming has a sound of its own: a short tape-spooling sound,
+different from the “playing” sound you hear when a station starts. So
+you can tell carrying on from starting something new before the audio
+comes back. It is one of Quill Radio’s own sounds, so
+<strong>Alt+Shift+M</strong> turns it off with the others.</p>
 <p><strong>Live radio cannot be paused.</strong> It is going out now, so
 there is nothing to hold. On a live station, Pause is dimmed and tells
 you that. Stop ends it. To catch something you just missed, rewind
@@ -2368,6 +2379,38 @@ device, and Windows remembers it from then on. A copy without the mpv
 engine opens that same page as soon as you press Ctrl+Shift+D. And if a
 device is saved in your settings while the classic player is in use,
 Quill Radio hands the setting back and tells you the same thing.</p>
+<h3 id="a-second-device-a-background-station-or-a-mirror">A second
+device: a background station, or a mirror</h3>
+<p>Quill Radio can play on a second sound card or headset at the same
+time as the main one, in one of two ways. Both are on the
+<strong>Audio</strong> menu, and both are off until you turn them on.
+Neither is remembered when you close Quill Radio. Both need the mpv
+playback engine, because it is the one that can choose a device; without
+it, Quill Radio tells you so.</p>
+<p><strong>Background Station on Another Device…</strong> (Alt+Shift+B)
+plays one of your favorites quietly on another device, underneath
+whatever the main player is doing. Rain sounds in the headphones while
+the news plays on the speakers, for example.</p>
+<ol type="1">
+<li>Press <strong>Alt+Shift+B</strong>. Choose the favorite, then the
+device, then how loud it should be compared with the main player, such
+as “40 percent of the main volume”.</li>
+<li>You should hear the station’s name and the device. The background
+station follows two rules. When you <strong>pause</strong> the main
+player, it pauses too, and it comes back when you resume. When you turn
+the main volume up or down, it goes up or down with it.
+<strong>Stop</strong>, or changing station, leaves it playing.</li>
+<li>To turn it off, press <strong>Alt+Shift+B</strong> again and answer
+<strong>Yes</strong>.</li>
+</ol>
+<p><strong>Mirror to Another Device…</strong> (Alt+Shift+D) plays
+whatever the main player plays on a second device as well: a guest on
+headphones, or a room speaker as well as the built-in one. It follows
+the main player in everything: the station, pause, stop and volume.
+Press <strong>Alt+Shift+D</strong> again to turn it off.</p>
+<p>The device the main player uses is not offered, and only one of the
+two can run at a time. Two players never stay exactly together: expect
+the two devices to be a fraction of a second apart.</p>
 <h3 id="where-quill-radios-own-sounds-play">Where Quill Radio’s own
 sounds play</h3>
 <p>Quill Radio makes short sounds of its own when a station connects,
@@ -3598,6 +3641,24 @@ whatever you had on last, with no looking.</li>
 stations, newest first. Inside that menu, <strong>Alt+Shift+1</strong>
 plays the newest.</li>
 </ul>
+<h4 id="a-key-that-plays-a-favorite-from-anywhere">A key that plays a
+favorite from anywhere</h4>
+<p>You can give any favorite its own system-wide key. It plays that
+station even when another program is in front, and Quill Radio stays
+where it is. No favorite has one until you choose it.</p>
+<ol type="1">
+<li>In the favorites tree, or in Manage Favorites, arrow to the station
+and press <strong>Shift+F10</strong>.</li>
+<li>Choose <strong>System-Wide Key…</strong>. Type the key, such as
+<code>Ctrl+Alt+PageUp</code>, and press <strong>Enter</strong>. Leave
+the box empty to take a key away.</li>
+<li>You should hear the key and the station’s name. If the key cannot be
+used, Quill Radio says why and nothing changes: it needs Ctrl or Alt, it
+must not be a key another QUILL app or another favorite already uses,
+and it must not be held by another program on this computer.</li>
+</ol>
+<p>The keys work while Quill Radio is running, including from the
+tray.</p>
 <h3 id="the-favorites-manager">The Favorites Manager</h3>
 <p><strong>Station &gt; Manage Favorites…</strong> (Ctrl+Shift+M) opens
 <strong>Manage Favorite Stations</strong>, a full organizer. The main
@@ -3635,6 +3696,27 @@ Folder…</strong> and <strong>Remove All…</strong>. Press
 </ol>
 <p>Some buttons in this window share an Alt letter, so Tab to the
 buttons rather than using Alt keys.</p>
+<h4 id="removing-several-favorites-at-once">Removing several favorites
+at once</h4>
+<p>In the main window’s favorites tree, or in the Manager’s tree:</p>
+<ol type="1">
+<li>Arrow to a station and press <strong>.</strong> (period, or the
+decimal point on the number pad). You hear “Marked” and how many are
+marked. The row now ends with “(marked)”, so you hear it again as you
+arrow past.</li>
+<li>Mark as many as you like. Press <strong>.</strong> again on a marked
+row to unmark it.</li>
+<li>Press <strong>Delete</strong>. One question asks, for example,
+“Delete 5 stations?”, with <strong>No</strong> already chosen. Choose
+<strong>Yes</strong>, and you hear how many were deleted. Your cursor
+lands on the next station that is left.</li>
+</ol>
+<p>While anything is marked, Delete removes the marked stations, not the
+one under your cursor. <strong>Ctrl+Shift+Delete</strong> clears every
+mark. <strong>Shift+F10</strong> on a station has the same three:
+<strong>Mark for Deleting</strong>, <strong>Remove N Marked…</strong>
+and <strong>Clear Marks</strong>. Folders cannot be marked: deleting a
+folder keeps its stations, which is a different question.</p>
 <h4 id="folders">Folders</h4>
 <ul>
 <li><strong>New Folder…</strong> (Ctrl+Shift+E) asks where the folder
@@ -6399,6 +6481,11 @@ button. If a reminder came due while Quill Radio was closed, you still
 hear it when you next open it, as long as that is within a couple of
 hours. Quiet hours can hold a reminder back; you hear it when the quiet
 time ends.</p>
+<p>A station reminder also reads the note you keep on that station
+(<strong>Note to Self…</strong> on its menu), after the reminder’s own
+note: for example, “Reminder: Morning Show is starting now. Your note:
+Only the first hour is worth it.” A note that says the same as the
+reminder’s own is not read twice.</p>
 <p>In Preferences, <strong>New reminders start at</strong> sets how much
 warning you usually want, and <strong>Play a sound when a reminder comes
 due</strong> turns the sound off. You still hear the reminder spoken
@@ -6450,6 +6537,16 @@ record of being told, never the episodes or stations themselves.</li>
 </ol>
 <p>QUILL Cast shares the same list, so whichever app you have open can
 show you what the other one found.</p>
+<h4 id="whats-new-in-one-key">What’s New, in one key</h4>
+<p><strong>Community &gt; What’s New</strong> (Alt+Shift+N) tells you,
+in one sentence, what arrived since you last looked, without opening
+anything: for example, “Since you last looked: 4 new episodes in The
+Tech Show, Main Menu. 1 new video from Blind Abilities. 1 reminder went
+off.” If nothing has arrived, you hear “Nothing new since you last
+looked.”</p>
+<p>What it read out counts as read, so pressing it again says “Nothing
+new”. The entries stay in Notifications for the detail. It only reads
+out what Quill Radio found, not other apps’ notifications.</p>
 <h3 id="what-you-learned-and-where-to-go-next-11">What you learned, and
 where to go next</h3>
 <p>You can now browse the ACB Media schedule, tune in, record a
@@ -9156,6 +9253,14 @@ minutes)</td>
 <td>Sound Enhancements</td>
 <td>Ctrl+E</td>
 </tr>
+<tr>
+<td>Background Station on Another Device</td>
+<td>Alt+Shift+B</td>
+</tr>
+<tr>
+<td>Mirror to Another Device</td>
+<td>Alt+Shift+D</td>
+</tr>
 </tbody>
 </table>
 <h3 id="video">Video</h3>
@@ -9346,6 +9451,18 @@ Comments, Live Chat, YouTube Video, About This Channel</td>
 <td>Delete</td>
 </tr>
 <tr>
+<td>Mark or unmark a station for deleting (in a favorites tree)</td>
+<td>. (period)</td>
+</tr>
+<tr>
+<td>Remove every marked station (one question)</td>
+<td>Delete</td>
+</tr>
+<tr>
+<td>Clear every mark</td>
+<td>Ctrl+Shift+Delete</td>
+</tr>
+<tr>
 <td>Move the selected favorite up or down</td>
 <td>Alt+Shift+Up / Alt+Shift+Down</td>
 </tr>
@@ -9442,6 +9559,10 @@ Comments, Live Chat, YouTube Video, About This Channel</td>
 <tr>
 <td>What Is On Now</td>
 <td>Ctrl+Alt+H</td>
+</tr>
+<tr>
+<td>What’s New</td>
+<td>Alt+Shift+N</td>
 </tr>
 <tr>
 <td>Upcoming</td>

@@ -332,12 +332,18 @@ def lead_label(seconds: object) -> str:
     return f"{wanted // 60} minutes before"
 
 
-def announcement(reminder: Reminder, now: datetime) -> str:
+def announcement(reminder: Reminder, now: datetime, *, station_note: str = "") -> str:
     """What to say when one fires.
 
     Says *when the thing is*, not when the reminder was set for: "starts in ten
     minutes" is what somebody needs, and "your 6:50 reminder" is a fact about
     the reminder rather than about the programme.
+
+    ``station_note`` is the note the listener keeps on the station itself
+    (Favorites > Edit Note, :mod:`quill.core.radio.item_notes`), read when a
+    station reminder fires: "Only the first hour is worth it" is exactly what
+    somebody wants to hear at the moment they are about to tune in. It is said
+    after the reminder's own note, and not at all when it repeats it.
     """
     ahead = (reminder.due - now).total_seconds()
     if ahead > 30:
@@ -346,8 +352,31 @@ def announcement(reminder: Reminder, now: datetime) -> str:
         when = "is starting now"
     else:
         when = f"started {_spoken(-ahead)} ago"
-    note = f" {reminder.note.strip()}" if reminder.note.strip() else ""
+    own = reminder.note.strip()
+    note = f" {own}" if own else ""
+    kept = station_note.strip()
+    if kept and kept.casefold() != own.casefold():
+        note += f" Your note: {kept}"
     return f"Reminder: {reminder.title} {when}.{note}"
+
+
+def station_note(data_dir: Path, reminder: Reminder) -> str:
+    """The listener's own note on the station a reminder is for, or ``""``.
+
+    Only a station reminder with a stream has one: notes are keyed by stream
+    URL, the same key the Favorites details pane reads. Never raises -- a
+    reminder must go off even when the notes file cannot be read.
+    """
+    if reminder.kind != KIND_STATION or not reminder.target.strip():
+        return ""
+    from types import SimpleNamespace
+
+    from quill.core.radio.item_notes import note_for
+
+    try:
+        return note_for(data_dir, SimpleNamespace(stream_url=reminder.target.strip()))
+    except Exception:  # noqa: BLE001 - the reminder itself still speaks
+        return ""
 
 
 def row_label(reminder: Reminder, now: datetime) -> str:
@@ -436,6 +465,7 @@ __all__ = [
     "save_reminders",
     "snooze",
     "spoken_when",
+    "station_note",
     "store_path",
     "upcoming",
 ]

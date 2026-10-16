@@ -192,6 +192,15 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         "radio.acb_calendar": "Ctrl+Shift+N",
         "radio.on_now": "Ctrl+Alt+H",
         "radio.upcoming": "Ctrl+Alt+Shift+F",
+        # What's New (todo P3 Radio extras 8): what arrived while you were
+        # away, the companion of What Is On Now (Ctrl+Alt+H). Alt+Shift+N for
+        # New, the same shape as Alt+Shift+F for Play Favorite: the Ctrl+Alt
+        # and Ctrl+Alt+Shift rows have no letter left on this bar.
+        "radio.whats_new": "Alt+Shift+N",
+        # A second output device (xradio2 4.6, 4.7): B for Background, D for
+        # Device. The Alt+Shift row is where this bar still has letters.
+        "radio.background_station": "Alt+Shift+B",
+        "radio.mirror_output": "Alt+Shift+D",
         # Community > ACB Media Podcasts... (2026-08-25). NOT in the
         # Ctrl+Alt+Shift family the other Community items use, because that
         # space is now completely exhausted -- no letter and no digit is free.

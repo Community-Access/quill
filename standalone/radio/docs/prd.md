@@ -3320,3 +3320,83 @@ fix, and Identify This Song follows the same rule.
 - **Open:** the project needs a registered AcoustID application key if one is
   ever to be bundled the way the Podcast Index key is; until then each
   listener registers their own.
+
+## 25. Radio extras from the FreeRadio study (unreleased, 2026-10-16)
+
+Jeff's todo P3 "Radio extras". Where xradio2 (the 2026-09-24 FreeRadio study)
+specifies an item, it is followed; where it does not, the sensible minimum is
+built and said to be one.
+
+### 25.1 Mark many, delete once (xradio2 4.10)
+
+- In both favourites trees (main window and Manage Favorites), `.` (or the
+  keypad decimal point) marks or unmarks the selected station and says "Marked.
+  3 marked." The row text ends "(marked)", so arrowing past it says so with
+  nothing announced.
+- **Delete** with any marks removes every marked station after **one**
+  confirmation that says how many ("Delete 5 stations?", No by default), then
+  says "Deleted 5 stations." (GATE-BULK-COUNT). With no marks, Delete is the
+  single-row remove it always was. **Ctrl+Shift+Delete** clears the marks.
+  Context menu: **Mark for Deleting** (.), **Remove N Marked...** (Delete,
+  replacing the single-row Remove... while marks exist, so Delete has one
+  claimant) and **Clear Marks** (Ctrl+Shift+Delete).
+- Folders cannot be marked (deleting a folder keeps its stations). Marks are per
+  window and never saved. The cursor lands on the next surviving station.
+- The spec says `.`; the todo suggested Space. Space stays the tree's own key
+  (and pauses the playing row), so `.` it is.
+- Not yet in the Recordings Manager, Browse Stations or the schedule list, which
+  still delete one row at a time.
+
+### 25.2 Resume earcon (xradio2 4.5)
+
+- Paused to playing posts `radio_resumed` (a short tape-spool sweep) instead of
+  `radio_playing`, through `post_cue`, so App Sounds (Alt+Shift+M) and the
+  per-event disable list apply. Pausing still has no earcon.
+
+### 25.3 A second device: background station and mirror (xradio2 4.6, 4.7)
+
+- **Audio > Background Station on Another Device...** (`radio.background_station`,
+  Alt+Shift+B): a favourite, a device other than the main one, and a level (20
+  to 100 percent of the main volume). Rules, copied from FreeRadio: its volume
+  is its level times the main volume (muted with it); it pauses when the main
+  player pauses and resumes with it; Stop, errors and station changes on the
+  main player leave it playing.
+- **Audio > Mirror to Another Device...** (`radio.mirror_output`, Alt+Shift+D):
+  the main player's station on a second device, following station changes,
+  pause, stop and volume.
+- One second player at a time; choosing either while one runs offers to turn it
+  off. Off by default and never remembered across a restart. Needs the mpv
+  engine; without it the command says so. Drift between the two players is
+  stated in the guide rather than engineered away.
+
+### 25.4 A system-wide key per favourite (xradio2 4.9)
+
+- **System-Wide Key...** on a station's context menu in either tree (standalone
+  Quill Radio only). Empty by default. The key must have Ctrl or Alt, must not be
+  a key any family app uses (menus and system-wide keys, through
+  `family_chords.show_hide_key_problem`), another favourite's key or Radio's
+  show/hide key, and must not be held by another program
+  (`hotkey_conflict.claimed_by_another_application`). A refused key is said with
+  its reason and nothing changes.
+- Pressing it plays the station and says "Playing X."; the window is not raised.
+- Stored in `radio_favorite_hotkeys.json`, apart from the favourites file, so a
+  backup or import never carries a key into a keyboard where it collides.
+
+### 25.5 What's New in one key (no spec; the minimum)
+
+- **Community > What's New** (`radio.whats_new`, Alt+Shift+N) says one
+  sentence built from Quill Radio's unread notification-centre entries: new
+  episodes (with show names), new videos (with channel names), reminders that
+  went off, and other notices, each with its number; "Nothing new since you
+  last looked." otherwise. What it said is marked read; the entries stay.
+
+### 25.6 Reminders read the station's note (no spec; the minimum)
+
+- A station reminder's announcement (and so its toast and notification-centre
+  entry) ends with "Your note: ..." when the listener keeps a Note to Self on
+  that station's stream. Not repeated when it matches the reminder's own note.
+
+### 25.7 Not built
+
+- Song-boundary recording (xradio2 4.8) and pitch shift / station crossfade
+  (4.11 and 4.12, which xradio2 defers and places in Player or Studio first).
