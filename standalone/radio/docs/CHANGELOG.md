@@ -10,6 +10,12 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 Testing rebuild: **3.2.0 (build 4)**. The packages have not been published yet.
 
+- **Suggest a Station or Podcast no longer guesses what it is.** **What is it**
+  starts on **Choose one**, and nothing is sent until you choose a radio station
+  or a podcast. Before, it started on A radio station, so a podcast sent without
+  touching that list was filed as a station. The Address help now says what the
+  window really accepts: `https://` or `http://`.
+
 - **Quill Radio's own sounds play on the radio's sound card.** The sounds for
   connecting, playing, stopped, stream errors, recording started and stopped,
   and reminders now go to the same device as the radio, so if you send the

@@ -53,9 +53,13 @@ class _Field:
 class _Kind:
     def __init__(self, index: int) -> None:
         self._index = index
+        self.focused = False
 
     def GetSelection(self) -> int:
         return self._index
+
+    def SetFocus(self) -> None:
+        self.focused = True
 
 
 class _FakeWx:
@@ -66,7 +70,8 @@ class _FakeWx:
 
 def _dialog(host: _Host, **fields: str) -> suggest_pick_dialog._SuggestDialog:
     dialog = suggest_pick_dialog._SuggestDialog(host, _FakeWx())
-    dialog._kind = _Kind(1 if fields.get("kind") == "podcast" else 0)
+    # Row 0 is "Choose one"; then a radio station, then a podcast.
+    dialog._kind = _Kind({"none": 0, "station": 1, "podcast": 2}[fields.get("kind", "station")])
     dialog._title_ctrl = _Field(fields.get("title", "Radio Nowhere"))
     dialog._url = _Field(fields.get("url", "https://stream.example.org/nowhere"))
     dialog._description = _Field(fields.get("description", "Talk and folk."))
@@ -188,3 +193,14 @@ def test_support_message_names_a_podcast_as_a_podcast() -> None:
     assert message.summary == "Suggestion: Blind Abilities"
     assert "suggest a podcast" in message.message
     assert message.category == "Station or podcast suggestion"
+
+
+def test_an_untouched_kind_sends_nothing_and_says_so(no_network: None) -> None:
+    """Station was pre-selected, so a form nobody touched filed a podcast as a
+    station (2026-10-15). Nothing is chosen now until the person chooses."""
+    host = _Host()
+    dialog = _dialog(host, kind="none")
+    dialog._submit()
+    assert host.spoken == [suggest_pick_dialog.KIND_MISSING]
+    assert dialog._kind.focused
+    assert dialog.ended == []

@@ -35,6 +35,10 @@ from quill.ui.support_dialog import send_by_mail
 TITLE = "Suggest a Station or Podcast"
 
 _KINDS = (("A radio station", "stream"), ("A podcast", "podcast"))
+#: The first row of What is it. Nothing is chosen for the person: a form sent
+#: untouched used to file every suggestion as a station, podcasts included.
+CHOOSE_KIND = "Choose one"
+KIND_MISSING = "Choose what it is first: a radio station or a podcast."
 
 #: Said when the mail program opens. Plain about what happened and what is
 #: left to do, because the suggestion has not been sent yet.
@@ -80,15 +84,15 @@ class _SuggestDialog:
         self._kind = self._choice(
             grid,
             "&What is it:",
-            [label for label, _ in _KINDS],
-            "Whether this is a live radio station or a podcast feed.",
+            [CHOOSE_KIND, *(label for label, _ in _KINDS)],
+            "Whether this is a live radio station or a podcast feed. Choose one before sending.",
         )
         self._title_ctrl = self._field(grid, "&Name:", "What it should be called in the list.")
         self._url = self._field(
             grid,
             "&Address:",
             "The stream address for a station, or the feed address for a podcast. "
-            "It must start with https.",
+            "It starts with https:// or http://.",
         )
         self._description = self._field(
             grid,
@@ -152,8 +156,12 @@ class _SuggestDialog:
         grid.Add(control, 1, wx.EXPAND)
         return control
 
+    def _kind_index(self) -> int:
+        """The chosen row of :data:`_KINDS`, or -1 while nothing is chosen."""
+        return self._kind.GetSelection() - 1
+
     def _suggestion(self) -> Suggestion:
-        index = max(0, self._kind.GetSelection())
+        index = max(0, self._kind_index())
         return Suggestion(
             type=_KINDS[index][1],
             title=self._title_ctrl.GetValue().strip(),
@@ -166,6 +174,10 @@ class _SuggestDialog:
     # -- sending ----------------------------------------------------------------
 
     def _submit(self) -> None:
+        if self._kind_index() < 0:
+            self._host._announce(KIND_MISSING)
+            self._kind.SetFocus()
+            return
         suggestion = self._suggestion()
         from quill.core.community_picks import load_bundled
 

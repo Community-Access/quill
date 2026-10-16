@@ -5366,8 +5366,9 @@ You do not need an account of any kind, and nothing is posted on a website.
    Suggest a Station or Podcast window opens. At the top, it tells you where
    the suggestion goes, and that nothing is sent until you press Send in your
    email program.
-2. **What is it** (Alt+W) is a list with two choices, **A radio station** or
-   **A podcast**. Use the Up and Down Arrow keys. It starts on A radio station.
+2. **What is it** (Alt+W): choose **A radio station** or **A podcast** with
+   the Up and Down Arrow keys. It starts on **Choose one**, and nothing is sent
+   until you have chosen, so a podcast is never filed as a station by mistake.
 3. **Name** (Alt+N): what it should be called in the list, such as "Radio
    Nowhere". You must fill this in, and it can be up to 120 characters.
 4. **Address** (Alt+A): the stream address for a station, or the feed address
