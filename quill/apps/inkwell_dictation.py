@@ -52,6 +52,8 @@ _CUES = {
     "off": SoundEvent.WINDOWS_DICTATION_OFF,
     "error": SoundEvent.WINDOWS_DICTATION_ERROR,
     "working": SoundEvent.WINDOWS_DICTATION_WORKING,
+    "command_on": SoundEvent.WINDOWS_DICTATION_COMMAND_ON,
+    "command_off": SoundEvent.WINDOWS_DICTATION_COMMAND_OFF,
 }
 _READ_BACK_DELAY_MS = 250
 

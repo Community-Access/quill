@@ -183,6 +183,8 @@ class TranscribeCommandsMixin:
             stop_phrase=preferences.stop_phrase,
             own_phrases=own,
             language=preferences.speech_language,
+            command_prefix=preferences.command_prefix,
+            prefix_required=preferences.command_prefix_required,
         )
 
     def spoken_commands_summary(self) -> str:
@@ -196,8 +198,12 @@ class TranscribeCommandsMixin:
         if item is not None:
             key = str(item.GetItemLabel()).partition(chr(9))[2].strip()  # after the tab
         where = f", {key}" if key else ""
+        preferences = self._dictation_preferences()  # type: ignore[attr-defined]
+        # Strict mode (D-1, on here by default): the commands need the word.
+        prefix = preferences.command_prefix if preferences.command_prefix_required else ""
         return spoken_summary(
-            f"For the full list, open Dictation Commands from the Dictation menu{where}."
+            f"For the full list, open Dictation Commands from the Dictation menu{where}.",
+            prefix=prefix,
         )
 
     def show_dictation_commands(self) -> None:
@@ -252,6 +258,7 @@ class TranscribeCommandsMixin:
 
         microphone = str(self._settings.dictation.get("windows_dictation_microphone", "") or "")
         engine, key = self.chosen_engine(), self._settings.dictation_hotkey
+        command = self._settings.command_hotkey
         at_login = self.launch_at_startup_enabled()
         while True:
             dialog = SetupDialog(
@@ -262,11 +269,13 @@ class TranscribeCommandsMixin:
                 at_login=at_login,
                 test_microphone=self._test_microphone,
                 show_modal=self._show_modal_dialog,  # type: ignore[attr-defined]
+                command_key=command,
             )
             try:
                 answer = self._show_modal_dialog(dialog, "Set Up QUILL Transcribe")  # type: ignore[attr-defined]
                 microphone, engine = dialog.chosen_microphone(), dialog.chosen_engine()
                 key, at_login = dialog.chosen_key(), bool(dialog.at_login.GetValue())
+                command = dialog.chosen_command_key()
             finally:
                 dialog.Destroy()
             if answer != wx.ID_OK:
@@ -288,6 +297,8 @@ class TranscribeCommandsMixin:
                         "does not say which one. Choose another key, or leave the box empty."
                     )
             if not problem:
+                problem = self._setup_command_key_problem(command, key)
+            if not problem:
                 break
             self._show_message_box(problem, "Set Up QUILL Transcribe", wx.OK | wx.ICON_WARNING)  # type: ignore[attr-defined]
         self._settings.dictation = {
@@ -295,6 +306,7 @@ class TranscribeCommandsMixin:
             "windows_dictation_microphone": microphone,
         }
         self._settings.dictation_hotkey = key
+        self._settings.command_hotkey = command
         self._settings.setup_done = True
         if engine and engine != self.chosen_engine():
             self._use_model(engine)
@@ -305,9 +317,31 @@ class TranscribeCommandsMixin:
         from quill.core.transcribe.models import model_name
 
         how = f"press {key} in the field you want" if key else "use the tray menu"
+        commands = f" For a command, press {command} first." if command else ""
         self._announce(  # type: ignore[attr-defined]
-            f"Ready. Model: {model_name(self.chosen_engine())}. To dictate, {how}."
+            f"Ready. Model: {model_name(self.chosen_engine())}. To dictate, {how}.{commands}"
         )
+
+    def _setup_command_key_problem(self, command: str, key: str) -> str:
+        """Why the Command Key typed in setup cannot be used, or ``""`` once it is
+        registered (D-1). It may not be the start and stop key."""
+        from quill.core.family_chords import show_hide_key_problem
+        from quill.ui.show_hide_key_picker import _family_choices
+
+        if command and command.lower() == key.lower():
+            return "The Command Key and the start and stop key must be different keys."
+        own = {**self._own_keys("command"), "start and stop key": key}  # type: ignore[attr-defined]
+        problem = show_hide_key_problem(
+            command, app_id="transcribe", taken=_family_choices(), own=own
+        )
+        if problem or command == self._settings.command_hotkey or self._safe_mode:
+            return str(problem or "")
+        if not self._register_command_key(command):  # type: ignore[attr-defined]
+            return (
+                f"Windows says another program is already using {command}. Windows does "
+                "not say which one. Choose another Command Key, or leave the box empty."
+            )
+        return ""
 
     # -- options --------------------------------------------------------------------- #
 

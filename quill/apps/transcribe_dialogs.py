@@ -8,7 +8,8 @@ of them.
 
 **Set Up QUILL Transcribe** is one page, not a wizard: what the app does, the
 microphone (with a four-second test that never leaves this computer), the
-model, the start and stop key, and starting with Windows. Finish keeps the
+model, the start and stop key, the Command Key (D-1, empty unless chosen), and
+starting with Windows. Finish keeps the
 choices; Skip keeps none of them and opens nothing. Neither installs a model
 or leaves the microphone open.
 """
@@ -80,6 +81,7 @@ class SetupDialog(wx.Dialog):
         at_login: bool,
         test_microphone: Callable[[str, str, Callable[[str], None]], None],
         show_modal: Callable[[Any, str], int],
+        command_key: str = "",
     ) -> None:
         super().__init__(
             parent,
@@ -162,6 +164,27 @@ class SetupDialog(wx.Dialog):
         root.Add(key_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
         root.Add(key_row, 0, wx.EXPAND | wx.ALL, _PAD)
 
+        command_label = wx.StaticText(self, label="C&ommand key (leave empty for none):")
+        self.command_key = wx.TextCtrl(self, value=command_key)
+        self.command_key.SetHelpText(
+            "Optional. Press this key in the field you are dictating into and the next "
+            "thing you say is a command, as if you had said QUILL first: press it, then "
+            "say scratch that. Press it twice for command mode. Empty unless you choose "
+            "one; saying QUILL before a command works without it."
+        )
+        self.record_command = wx.Button(self, label="Record Comma&nd Key...")
+        self.record_command.SetHelpText(
+            "Press a key combination and it is written into the command key box."
+        )
+        self.record_command.Bind(
+            wx.EVT_BUTTON, lambda _e: self._record_into(self.command_key, self.record_command)
+        )
+        command_row = wx.BoxSizer(wx.HORIZONTAL)
+        command_row.Add(self.command_key, 1, wx.EXPAND | wx.RIGHT, _PAD)
+        command_row.Add(self.record_command, 0)
+        root.Add(command_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
+        root.Add(command_row, 0, wx.EXPAND | wx.ALL, _PAD)
+
         self.at_login = wx.CheckBox(self, label="Start QUILL Transcribe when I sign in to &Windows")
         self.at_login.SetHelpText(
             "Opens QUILL Transcribe in the tray when you sign in, so your key works "
@@ -181,7 +204,7 @@ class SetupDialog(wx.Dialog):
         buttons.Add(skip, 0)
         root.Add(buttons, 0, wx.ALL, _PAD)
         self.SetSizer(root)
-        self.SetSize((620, 640))
+        self.SetSize((620, 700))
         apply_modal_ids(self, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
         bind_close_button(self, skip, modeless=False)
         self.intro.SetFocus()
@@ -199,15 +222,19 @@ class SetupDialog(wx.Dialog):
 
     def _on_record_key(self, _event: Any) -> None:
         """Record Key: the combination pressed goes into the key box."""
+        self._record_into(self.key, self.record_key)
+
+    def _record_into(self, box: Any, button: Any) -> None:
+        """The combination pressed goes into *box*; cancelled, back to *button*."""
         from quill.ui.key_record import record_key
 
         chord = record_key(self, wx, self._show_modal)
         if not chord:
-            self.record_key.SetFocus()  # cancelled: back where the listener was
+            button.SetFocus()  # cancelled: back where the listener was
             return
-        self.key.SetValue(chord)
-        self.key.SetFocus()  # the reader says the box and what is now in it
-        self.key.SetInsertionPointEnd()
+        box.SetValue(chord)
+        box.SetFocus()  # the reader says the box and what is now in it
+        box.SetInsertionPointEnd()
 
     def chosen_microphone(self) -> str:
         row = self.microphone.GetSelection()
@@ -219,6 +246,9 @@ class SetupDialog(wx.Dialog):
 
     def chosen_key(self) -> str:
         return str(self.key.GetValue()).strip()
+
+    def chosen_command_key(self) -> str:
+        return str(self.command_key.GetValue()).strip()
 
 
 class ChooseModelDialog(wx.Dialog):

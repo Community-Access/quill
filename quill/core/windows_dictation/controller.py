@@ -46,6 +46,7 @@ from collections.abc import Callable
 
 from quill.core.action_feedback import resolve
 from quill.core.error_codes import CodedError
+from quill.core.windows_dictation.command_mode_mixin import CommandModeMixin
 from quill.core.windows_dictation.composer import compose, spoken_form
 from quill.core.windows_dictation.echo_guard import EchoGuard
 from quill.core.windows_dictation.editing import EditingMixin
@@ -76,7 +77,6 @@ from quill.core.windows_dictation.resilience import ResilienceMixin, engine_fail
 from quill.core.windows_dictation.target_hold import TargetHoldMixin
 from quill.core.windows_dictation.transcript import TranscriptMixin
 from quill.core.windows_dictation.vocabulary import Command
-from quill.core.windows_dictation.voice_commands import VoiceCommandsMixin
 from quill.core.windows_dictation.wake import is_stop_phrase, match_wake, wake_words
 from quill.core.windows_dictation.working_tick import WorkingTickMixin
 
@@ -126,7 +126,7 @@ class DictationController(
     ResilienceMixin,
     EditingMixin,
     LiveMixin,
-    VoiceCommandsMixin,
+    CommandModeMixin,  # and VoiceCommandsMixin under it (command_mode_mixin.py)
     TranscriptMixin,
     TargetHoldMixin,
     MicrophoneOwnerMixin,
@@ -236,6 +236,7 @@ class DictationController(
         self.spelling = False
         self._restarted = False
         self._working_new_session()  # working_tick.py: the sentence is said once a session
+        self._command_reset()  # command_mode_mixin.py: no command armed from before
         self._set_state(DictationState.LISTENING)
         self._announce_edge(Moment.ON, message, preferences)
 
@@ -370,7 +371,9 @@ class DictationController(
         self._revise_mark()
         self._set_state(DictationState.PROCESSING)
         try:
-            self._apply(self._parse(phrase, preferences), preferences)
+            # A command or dictation, decided before anything is composed: a
+            # command is never typed (command_mode_mixin.py).
+            self._dictate(phrase, preferences)
         except Exception:  # noqa: BLE001 - a failed edit ends the session, never the app
             self._abandon(self._write_failure())
             return

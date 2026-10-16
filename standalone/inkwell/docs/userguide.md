@@ -490,6 +490,17 @@ and "go to", "correct", "copy all" and "show clips". Inkwell cannot see that tex
 tells you: "That works in QUILL's own documents. In another program, say the
 words again, or scratch that."
 
+**The command word.** Say QUILL before a command, "QUILL scratch that", and it
+is always taken as a command; whatever follows QUILL is never typed. If it is
+not a command, you hear "Not a command", and "QUILL type that" types it after
+all. "literal QUILL" types the word itself. "QUILL command mode" takes commands
+without the word until you say "dictation mode", or for eight seconds with no
+command, when a falling tone says it has ended. In **More Dictation Settings**
+(from Dictation Settings) you can change the word (Alt+C), make commands work
+only after it (strict mode, Alt+E; off unless you turn it on), and choose how
+long command mode waits (Alt+D). It is the same in QUILL, QUILL Lite and QUILL
+Transcribe.
+
 **Where it will not type.** Inkwell refuses, and tells you why, in:
 
 - A password field: "That is a password field, so nothing is typed there."

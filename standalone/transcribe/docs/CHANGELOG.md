@@ -14,6 +14,22 @@ file is the itemized list.
   program and reads them back. So far every row says untested: the first run
   was stopped because the test computer was in use, and a program that was
   not tried is never listed as unsupported.
+
+- **The command word: "QUILL scratch that"** (2026-10-15). A command now
+  starts with QUILL, and whatever follows QUILL is never typed into the other
+  program. Said on its own, "scratch that" is typed as words (strict mode, on
+  in QUILL Transcribe; "stop dictation" always works). If what follows QUILL
+  is not a command you hear "Not a command", and "QUILL type that" types it.
+  "QUILL command mode" takes commands without the word until "dictation mode"
+  or eight seconds with none, ending with a falling tone; the State field and
+  the tray say Command mode. Choices in More Dictation Settings: the command
+  word (Alt+C), strict mode (Alt+E) and the seconds (Alt+D).
+- **Command Key** (2026-10-15). An optional system-wide key, empty until you
+  choose it in setup or in **File > Command Key...** (Ctrl+Alt+Shift+K): press
+  it in the field and the next thing you say is a command; twice, command
+  mode. **Dictation > Speak a Command** (F11, as in QUILL and QUILL Lite) does
+  the same from the window. Two new sounds play when QUILL hears the command
+  word and when command mode ends.
 - **Programs dictation never types into** (2026-10-15). A list you keep, in
   More Dictation Settings (Alt+N), that starts with the common password
   managers and the Windows sign-in prompts. Dictation and Insert Again refuse a

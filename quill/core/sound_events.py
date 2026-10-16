@@ -98,6 +98,12 @@ class SoundEvent(StrEnum):
     WINDOWS_DICTATION_OFF = "windows_dictation_off"
     WINDOWS_DICTATION_ERROR = "windows_dictation_error"
     WINDOWS_DICTATION_WORKING = "windows_dictation_working"
+    # The command word (D-1, 2026-10-15): a short rising pair when "QUILL" (or
+    # the Command Key) is heard and when command mode starts, the same pair
+    # falling when command mode ends. Higher and shorter than the on and off
+    # pair, so the two kinds of edge are never confused.
+    WINDOWS_DICTATION_COMMAND_ON = "windows_dictation_command_on"
+    WINDOWS_DICTATION_COMMAND_OFF = "windows_dictation_command_off"
 
     # Voice conversation mode (Hey QUILL Phase 2). Warm, consonant bell cues
     # that make every state of a hands-free exchange audible: on/off, the mic

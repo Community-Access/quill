@@ -35,6 +35,10 @@ fails on any difference.
   Word or Windows meaning, and are not AltGr characters on any layout, which
   rules out Ctrl+Alt with a digit or punctuation.
 * **Alt+F9**, Dictation Status: QUILL's key for the same question (rule 2).
+* **F11**, Speak a Command (2026-10-15, D-1): the next thing said is a command,
+  as if the command word came first; pressed twice, command mode. Free in both
+  editors and in the F11 family with the dictation keys; Word's F11 is Next
+  Field, which neither editor has (``quill/ui/windows_dictation_command_key.py``).
 """
 
 from __future__ import annotations
@@ -73,4 +77,5 @@ DICTATION_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
         "",
     ),
     ("&Tools|&Dictation", "Dictation St&atus", "Alt+F9", "cmd_dictation_status", ""),
+    ("&Tools|&Dictation", "Speak a Co&mmand", "F11", "cmd_dictation_command", ""),
 )

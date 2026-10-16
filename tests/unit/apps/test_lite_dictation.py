@@ -165,9 +165,10 @@ def test_a_phrase_heard_after_focus_left_is_not_written(lite_window, recognizers
 class _FakeSettingsDialog:
     answer = wx.ID_CANCEL
 
-    def __init__(self, parent: Any, settings: Any, announce: Any = None) -> None:
+    def __init__(self, parent: Any, settings: Any, announce: Any = None, **kwargs: Any) -> None:
         self.settings = settings
         self.destroyed = False
+        self.my_words = kwargs.get("my_words")  # the command word may not be one (D-1)
 
     def apply(self, settings: Any) -> None:
         settings.windows_dictation_microphone = "chosen"
@@ -578,3 +579,44 @@ def test_the_working_tick_plays_in_quill_lite_when_switched_on(
     assert SoundEvent.WINDOWS_DICTATION_WORKING in win.cues
     made[0].hear("there it is")
     assert win.control.GetValue() == "There it is"
+
+
+# -- the command word and Speak a Command (D-1, 2026-10-15) ------------------------- #
+
+
+def test_speak_a_command_starts_dictation_and_takes_one_command(
+    lite_window, recognizers, focused, monkeypatch
+) -> None:
+    """F11 in QUILL Lite, through the shared handler QUILL runs too: off, it
+    starts dictation here with one command armed; the next phrase is a command
+    and is never written; twice, command mode, shown in the status cell."""
+    from quill.apps.lite_window_dictation import dictation_cell
+    from quill.ui.windows_dictation_ports import HostFeedback
+
+    monkeypatch.setattr(HostFeedback, "call_later", lambda _s, _sec, _cb: None)
+    made, _ = recognizers
+    win = _window(lite_window, focused, "Kept.")
+    win.cmd_dictation_command()
+    assert win.dictation_active()
+    assert SoundEvent.WINDOWS_DICTATION_COMMAND_ON in win.cues
+    assert dictation_cell(win) == "Waiting for a command"
+    made[0].hear("pancakes")  # not a command: nothing written
+    assert win.control.GetValue() == "Kept."
+    assert any(line.startswith("Not a command.") for line in win.announcements)
+    win.cmd_dictation_command()
+    win.cmd_dictation_command()
+    assert dictation_cell(win) == "Command mode"
+    win.cmd_dictation_command()
+    assert SoundEvent.WINDOWS_DICTATION_COMMAND_OFF in win.cues
+    assert dictation_cell(win) == "Listening"
+
+
+def test_the_command_word_works_in_quill_lite(lite_window, recognizers, focused) -> None:
+    made, _ = recognizers
+    win = _window(lite_window, focused, "Kept.")
+    win.cmd_toggle_dictation()
+    made[0].hear("first try")
+    made[0].hear("quill scratch that")
+    assert win.control.GetValue() == "Kept."
+    made[0].hear("literal quill is open")
+    assert "QUILL is open" in win.control.GetValue()

@@ -4,6 +4,13 @@
 
 - **Every release build checks its version against what is published** (2026-10-15). The shared QuillVille runtime carries every app's version number, so a build of one app could make another report a version nobody can download yet, and Check for Updates would then never offer the real one. Quill Inkwell's release builds now run the same check Quill Radio, QUILL Lite, QUILL Cast and Quill Weather already did, and a build of every app at once checks them all again instead of stopping at an app it did not know.
 
+- **The command word in Dictate Anywhere** (2026-10-15). Say QUILL before a
+  command, "QUILL scratch that", and whatever follows QUILL is never typed; if
+  it is not a command you hear "Not a command", and "QUILL type that" types
+  it. "QUILL command mode" takes commands without the word until "dictation
+  mode" or eight seconds with none. The word, strict mode and the seconds are
+  in More Dictation Settings (Alt+C, Alt+E, Alt+D). Two new sounds play when
+  QUILL hears the command word and when command mode ends.
 - **Dictate Anywhere stays in the field you started in** (2026-10-15). If the
   focus moves while you dictate, Inkwell pauses and holds your words instead of
   typing them somewhere else, as QUILL Transcribe does. **Dictation > Resume**

@@ -1365,7 +1365,7 @@ Control coverage: 3 audited sites (3 helped).
 
 ## QUILL Transcribe
 
-Control coverage: 29 audited sites (29 helped).
+Control coverage: 31 audited sites (31 helped).
 
 ### Every window, and what it is for
 
@@ -1432,6 +1432,8 @@ Control coverage: 29 audited sites (29 helped).
 - `self.model`: The model that turns your speech into text. Only models already on this computer are listed here; more can be downloaded later from the Model Library. The one you choose is used every time until you change it.
 - `self.key`: The key that starts and stops dictation from any program: Alt+Shift+\ unless you change it. Type another, for example Ctrl+Alt+PageDown, press Record Key to press it instead, or leave the box empty to use the tray menu only.
 - `self.record_key`: Press a key combination and it is written into the start and stop key box. A key another program already uses may not arrive: type that one.
+- `self.command_key`: Optional. Press this key in the field you are dictating into and the next thing you say is a command, as if you had said QUILL first: press it, then say scratch that. Press it twice for command mode. Empty unless you choose one; saying QUILL before a command works without it.
+- `self.record_command`: Press a key combination and it is written into the command key box.
 - `self.at_login`: Opens QUILL Transcribe in the tray when you sign in, so your key works straight away. It does not start listening until you start dictation.
 - `finish`: Keep these choices and close setup.
 - `skip`: Close setup without changing anything. Setup is on the Help menu whenever you want it.
@@ -1814,7 +1816,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## QUILL Lite
 
-Control coverage: 157 audited sites (157 helped).
+Control coverage: 159 audited sites (159 helped).
 
 ### Every window, and what it is for
 
@@ -2185,6 +2187,9 @@ Control coverage: 157 audited sites (157 helped).
 - `instructions`: Opens the file where you tell Tidy Dictated Text how you like your dictation tidied: write numbers as digits, British spelling, names always spelled your way. Saves these settings first.
 - `anywhere`: Saves these settings, then starts Quill Inkwell with them, so you can dictate into your browser, your email or any other program on a key you choose in Inkwell's File menu. Punctuation, spelling and scratch that work there; selecting and correcting words work only in QUILL's own documents.
 - `never_type`: The programs dictation never types into from QUILL Transcribe or Quill Inkwell, such as your password manager: add the program you were just in, add one by its file name, or remove one. Matched by file name, never by a window title.
+- `self.command_prefix`: Say this word first to give a command instead of dictating: QUILL scratch that, QUILL select the cat. It counts only as the first word after a pause, so I told Quill about it is written as words. If what follows is not a command, nothing is typed, and QUILL type that writes it. Say literal QUILL to write the word itself. Leave it empty to give commands with the Speak a Command key only. A common word, or one of your own words in My Words and Phrases, is refused.
+- `self.command_required`: When this is on, a command said on its own, like scratch that, is written as words, and only QUILL scratch that is a command. The stop phrase always works. On by default in QUILL Transcribe, where a command typed into an email by mistake is hard to take back; off in QUILL and QUILL Lite.
+- `self.command_timeout`: Say QUILL command mode, or press Speak a Command twice, and everything you say is a command until you say dictation mode or give no command for this many seconds. A falling tone says it has ended. From 5 to 30; 8 by default.
 #### SpeechModelsDialog (`quill/ui/dictation_models_dialog.py`)
 
 - `self.models`: The optional speech models, the ones VS Code offers first and then the rest of the Whisper family. Each row says what the model is good for, its size and whether it is on this computer. Details below say more.

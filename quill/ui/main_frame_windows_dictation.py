@@ -40,6 +40,7 @@ _TRANSCRIBE = "tools.windows_dictation_transcribe_file"
 _LANGUAGE = "tools.windows_dictation_switch_language"
 _LIVE_TRANSCRIPT = "tools.windows_dictation_live_transcript"
 _CONTEXT = "tools.windows_dictation_context"
+_COMMAND = "tools.windows_dictation_command"
 
 #: ``(command id, menu label, palette title, handler)``, in menu order. The
 #: first is a check item. The labels are QUILL Lite's (commands_dictation.py).
@@ -77,6 +78,8 @@ _ROWS: tuple[tuple[str, str, str, str], ...] = (
         "Dictation Context for This Document",
         "cmd_dictation_context",
     ),
+    # D-1 (2026-10-15): the command word's key, F11 in both editors.
+    (_COMMAND, "Speak a Co&mmand", "Live Dictation: Speak a Command", "cmd_dictation_command"),
 )
 
 

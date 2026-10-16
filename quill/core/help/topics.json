@@ -4189,5 +4189,14 @@
       "Ctrl+Alt+Shift+PageUp"
     ],
     "user_guide_section": "tools"
+  },
+  {
+    "id": "tools.windows_dictation_command",
+    "title": "Speak a Command",
+    "body": "The keyboard way to give dictation a command. Press it, and the next thing you say is a command, as if you had said the command word, QUILL, first: press F11, then say scratch that. Press it twice and you are in command mode, where everything you say is a command until you say dictation mode, press it again, or give no command for eight seconds; a falling tone says it has ended. If dictation is off, it starts dictation here first. Anything that is not a command is never typed: you hear Not a command, and saying QUILL type that writes it after all. The command word, strict mode and how long command mode lasts are in More Dictation Settings.",
+    "keystrokes": [
+      "F11"
+    ],
+    "user_guide_section": "tools"
   }
 ]

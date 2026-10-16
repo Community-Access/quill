@@ -132,6 +132,7 @@ def test_settings_never_hold_transcript_text_or_keys(tmp_path: Path) -> None:
         "schema_version",
         "setup_done",
         "dictation_hotkey",
+        "command_hotkey",  # D-1: the key's name, empty until chosen
         "start_in_tray",
         "close_to_tray",
         "inkwell_checked",

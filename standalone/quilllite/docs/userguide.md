@@ -565,7 +565,7 @@ If you press F6 while the bar is hidden, QUILL Lite tells you it is hidden.
 | **Format** | Which of the four kinds this document is: plain text, Markdown, HTML or rich text | rings on to the next kind |
 | **Heading** | Which heading you are inside | lists every heading |
 | **List** | Which list you are inside, how many items, which one you are on | stops or resumes announcing lists |
-| **Dictation** | What dictation is doing: off, listening, hearing you, writing, spelling, or waiting for the wake phrase | starts or stops dictation |
+| **Dictation** | What dictation is doing: off, listening, hearing you, writing, spelling, command mode, waiting for a command, or waiting for the wake phrase | starts or stops dictation |
 | **Notifications** | Progress and results from background work, including audio transcription | reads a notification or opens its result |
 | **Encoding** | How this file stores its letters and accents | change it |
 | **Line Endings** | How this file marks the end of a line | change it |
@@ -3565,6 +3565,7 @@ walking the menu too.
 | **Ctrl+Alt+Shift+PageDown** | Start or Stop Live Transcript |
 | **Ctrl+Alt+Shift+PageUp** | Dictation Context for This Document... |
 | **Alt+F9** | Dictation Status |
+| **F11** | Speak a Command (the next thing you say is a command; twice, command mode) |
 | **Ctrl+F3** | Tidy Dictated Text... (in Tools > AI) |
 
 ### Saying things
@@ -3861,6 +3862,39 @@ understands. It has every way of saying each thing, the Spanish punctuation
 words, and the spelling alphabet in one place, and it is a good page to keep
 open beside you for the first week or two.
 
+#### The command word: "QUILL scratch that"
+
+Commands work when you say them on their own, after a pause. To be sure a
+command is taken as a command and never written, say the command word first:
+**"QUILL scratch that"**, **"QUILL select the cat"**, **"QUILL caps on"**.
+Every command in the list works this way.
+
+- QUILL counts only as the first word after a pause, so "I told Quill about
+  it" is written as words.
+- If what follows is not a command, nothing is written. You hear the error
+  sound and "Not a command. Say it again, or say QUILL type that to write it."
+  **"QUILL type that"** writes those words after all, once.
+- To write the word itself, say **"literal QUILL"**.
+- Say **"QUILL"** on its own and pause, and the next thing you say is a
+  command. A short rising tone tells you it was heard.
+- **"QUILL command mode"** takes commands without the word: you hear the tone
+  and "Command mode", and the Dictation cell in the status bar says Command
+  mode. Say **"dictation mode"** to go back. If you give no command for eight
+  seconds, it ends by itself with a falling tone, and what you say next is
+  written.
+- **Speak a Command** (**F11**) does the same from the keyboard: press it, then
+  say the command. Press it twice for command mode, and once more to leave.
+  If dictation is off, it starts dictation first.
+
+More Dictation Settings has three choices for it: the **Command word**
+(**Alt+C**; leave it empty to give commands with F11 only), **Commands only
+after the command word (strict mode)** (**Alt+E**), and **Seconds command mode
+waits for a command** (**Alt+D**, 5 to 30). With strict mode on, "scratch that"
+on its own is written as words, and only the stop phrase works without the
+word. Strict mode is off in QUILL Lite, so the commands you know keep working.
+A common word, or one of your own words in My Words and Phrases, cannot be the
+command word; you are told why.
+
 ### Starting and stopping with your voice
 
 #### The wake phrase
@@ -4115,6 +4149,9 @@ you change here is saved when you press OK in Dictation Settings.
 | My Dictation Instructions (button, Alt+I) | Opens the file Tidy Dictated Text follows | (a button) |
 | Dictate in Other Programs (button, Alt+O) | Saves your settings, hands them to Quill Inkwell and starts it; see "Dictating into other programs" | (a button) |
 | Programs Dictation Never Types Into (button, Alt+N) | The programs dictation never types into from Quill Inkwell or QUILL Transcribe, such as your password manager; see "Programs dictation never types into" | The common password managers and the Windows sign-in prompts |
+| Command word (Alt+C) | The word you say before a command, like QUILL scratch that; empty for none; see "The command word" | QUILL |
+| Commands only after the command word (strict mode) (Alt+E) | A command said on its own is written as words; the stop phrase always works | Unchecked (checked in QUILL Transcribe) |
+| Seconds command mode waits for a command (Alt+D) | How long command mode lasts with no command, from 5 to 30 | 8 |
 
 #### Dictating in Spanish
 

@@ -98,6 +98,10 @@ class Command(StrEnum):
     CORRECT_WORDS = "correct_words"
     SPELL_WORDS = "spell_words"
     USE_CONTEXT = "use_context"
+    # 2026-10-15 (D-1): said only after the command word (command_mode.py).
+    TYPE_THAT = "type_that"
+    COMMAND_MODE = "command_mode"
+    DICTATION_MODE = "dictation_mode"
 
 
 @dataclass(frozen=True, slots=True)

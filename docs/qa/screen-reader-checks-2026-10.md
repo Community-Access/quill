@@ -1021,3 +1021,24 @@ Then check a box for each program and reader once all six held:
   typed by dictation must not be doubled by the editor's automatic closing.
 - [ ] Visual Studio Code with JAWS.
 - [ ] Visual Studio Code with Narrator.
+
+### Dictation: the command word and command mode (2026-10-15)
+
+With a microphone, in Notepad, Word and Edge through QUILL Transcribe (strict
+mode on), and in a QUILL Lite document. Check on NVDA, JAWS and Narrator:
+
+- [ ] NVDA: "QUILL scratch that" takes the last phrase back, with the short
+  rising tone and nothing typed; bare "scratch that" is typed as words in
+  QUILL Transcribe and works as a command in QUILL Lite.
+- [ ] NVDA: "QUILL pancakes" types nothing; you hear the error sound and "Not a
+  command", once; "QUILL type that" then types "pancakes".
+- [ ] NVDA: "QUILL command mode" says "Command mode" once; the State field (or
+  the Dictation cell) shows Command mode and is not read again on its own;
+  eight seconds later a falling tone plays, nothing is said, and the next
+  phrase is typed.
+- [ ] JAWS: the same.
+- [ ] Narrator: the same.
+- [ ] F11 in QUILL Lite and the Command Key in QUILL Transcribe: one press arms
+  one command (the tone), two presses command mode, a third back to dictation.
+- [ ] How often each engine hears "QUILL" as something else (Moonshine tiny,
+  Whisper, Windows speech): note any that never match.

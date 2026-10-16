@@ -94,10 +94,20 @@ SPOKEN_SUMMARY_COMMANDS: tuple[str, ...] = (
 )
 
 
-def spoken_summary(full_list: str) -> str:
+#: Of those, the ones that are commands and so need the command word in strict
+#: mode (D-1). "new line" is punctuation and "stop dictation" always works.
+_NEEDS_THE_WORD = frozenset({"scratch that", "start spelling", "insert snippet and its name"})
+
+
+def spoken_summary(full_list: str, *, prefix: str = "") -> str:
     """The short answer to "what can I say" in another program. *full_list*
-    says where the whole list is, as the host can open it now."""
-    first, last = SPOKEN_SUMMARY_COMMANDS[:-1], SPOKEN_SUMMARY_COMMANDS[-1]
+    says where the whole list is, as the host can open it now. *prefix* is the
+    command word when strict mode needs it before every command (D-1)."""
+    said_as = [
+        f"{prefix} {phrase}" if prefix and phrase in _NEEDS_THE_WORD else phrase
+        for phrase in SPOKEN_SUMMARY_COMMANDS
+    ]
+    first, last = said_as[:-1], said_as[-1]
     said = f"In another program, you can say {', '.join(first)}, or {last}."
     return f"{said} {full_list}".strip()
 

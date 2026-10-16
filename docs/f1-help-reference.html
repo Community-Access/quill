@@ -3398,7 +3398,7 @@ set to expand only manually. Also on Ctrl+K here, and from any program
 on the key you choose with File, Quick Insert Key.</li>
 </ul>
 <h2 id="quill-transcribe">QUILL Transcribe</h2>
-<p>Control coverage: 29 audited sites (29 helped).</p>
+<p>Control coverage: 31 audited sites (31 helped).</p>
 <h3 id="every-window-and-what-it-is-for-5">Every window, and what it is
 for</h3>
 <p><strong>Choose Microphone.</strong> The microphone QUILL Transcribe
@@ -3526,6 +3526,13 @@ box empty to use the tray menu only.</li>
 <li><code>self.record_key</code>: Press a key combination and it is
 written into the start and stop key box. A key another program already
 uses may not arrive: type that one.</li>
+<li><code>self.command_key</code>: Optional. Press this key in the field
+you are dictating into and the next thing you say is a command, as if
+you had said QUILL first: press it, then say scratch that. Press it
+twice for command mode. Empty unless you choose one; saying QUILL before
+a command works without it.</li>
+<li><code>self.record_command</code>: Press a key combination and it is
+written into the command key box.</li>
 <li><code>self.at_login</code>: Opens QUILL Transcribe in the tray when
 you sign in, so your key works straight away. It does not start
 listening until you start dictation.</li>
@@ -4443,7 +4450,7 @@ playback to its start.</li>
 text, when one is available. Empty otherwise.</li>
 </ul>
 <h2 id="quill-lite">QUILL Lite</h2>
-<p>Control coverage: 157 audited sites (157 helped).</p>
+<p>Control coverage: 159 audited sites (159 helped).</p>
 <h3 id="every-window-and-what-it-is-for-9">Every window, and what it is
 for</h3>
 <p><strong>AI Assistant.</strong> Ask QUILL’s free AI to summarize,
@@ -5402,6 +5409,23 @@ correcting words work only in QUILL’s own documents.</li>
 from QUILL Transcribe or Quill Inkwell, such as your password manager:
 add the program you were just in, add one by its file name, or remove
 one. Matched by file name, never by a window title.</li>
+<li><code>self.command_prefix</code>: Say this word first to give a
+command instead of dictating: QUILL scratch that, QUILL select the cat.
+It counts only as the first word after a pause, so I told Quill about it
+is written as words. If what follows is not a command, nothing is typed,
+and QUILL type that writes it. Say literal QUILL to write the word
+itself. Leave it empty to give commands with the Speak a Command key
+only. A common word, or one of your own words in My Words and Phrases,
+is refused.</li>
+<li><code>self.command_required</code>: When this is on, a command said
+on its own, like scratch that, is written as words, and only QUILL
+scratch that is a command. The stop phrase always works. On by default
+in QUILL Transcribe, where a command typed into an email by mistake is
+hard to take back; off in QUILL and QUILL Lite.</li>
+<li><code>self.command_timeout</code>: Say QUILL command mode, or press
+Speak a Command twice, and everything you say is a command until you say
+dictation mode or give no command for this many seconds. A falling tone
+says it has ended. From 5 to 30; 8 by default.</li>
 </ul>
 <h4
 id="speechmodelsdialog-quilluidictation_models_dialogpy">SpeechModelsDialog

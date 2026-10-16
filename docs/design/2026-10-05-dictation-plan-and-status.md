@@ -732,8 +732,10 @@ dictating, "what can I say" no longer opens anything: QUILL Transcribe says
 "In another program, you can say scratch that, new line, start spelling, insert
 snippet and its name, or stop dictation. For the full list, open Dictation
 Commands from the Dictation menu, Ctrl+Shift+C." The key is read from the menu
-item as it is now (`spoken_commands_summary`). No command word (D-1) is listed:
-it is not built.
+item as it is now (`spoken_commands_summary`). No command word (D-1) was listed
+then: it was not built. It is now (section 18), and with strict mode on the
+spoken answer puts QUILL before each command and the window has a "The command
+word" section.
 
 Tests: `tests/unit/core/test_dictation_external_list.py` (every listed phrase
 parses to a command allowed in another program; no refused command is listed;
@@ -852,6 +854,120 @@ harness now closes its own tab (Ctrl+W, Don't save) before the window and
 records `tab_kept_by_notepad` when it could not.
 
 D-3 still waits: it needs a clean run on an idle computer.
+
+## 18. As built, 2026-10-15: the command word (D-1)
+
+(Section 17 is D-4's, built the same day in a separate change.)
+
+The owner's question was whether to add a keyword that puts dictation into
+command and control. It was built as the plan designed it, in shared code, so
+QUILL, QUILL Lite, QUILL Transcribe and Inkwell have the same thing.
+
+**What was true.** Commands counted only as a whole phrase, "literal" escaped a
+command word, and the wake phrase matcher was forgiving at the start of an
+utterance. There was no command prefix, command mode, timeout or earcon, as the
+plan said.
+
+**The grammar** (`quill/core/windows_dictation/command_mode.py`, wx-free).
+`split_prefix(lexical_words, prefix)` and `split_phrase` reuse
+`wake.match_wake` (the same word, the same Soundex, or one edit) on the first
+word of the utterance only; the utterance is the voice detector's phrase, so
+"first word after a pause" needs nothing new. "Kill" and "will" are two edits
+from "quill" and do not match; "quil", "Quill," and "quills" do. What follows is
+parsed against the one command table, so every existing command, with its
+argument forms (select X, go to X, insert snippet X, paste clip N), works after
+the word, and the published reference and "What can I say" stay generated from
+one source. Three commands count only after the word (`COMMAND_MODE_HELP`):
+"type that" (or "write that"), "command mode" and "dictation mode".
+`COMMAND_MODE_PREFIX_HELP` is the empty slot where D-10's "replace X with Y"
+goes; D-19, D-2 and D-23 add their phrases to either table and work after the
+word with no change to the matcher. Of the plan's grammar table, what exists
+bare today works now (scratch, undo, correct, choose, spell that, select and go
+to, delete that and delete last sentence, read that, caps and uppercase that,
+the library, spelling, stop dictation, what can I say); "delete previous
+paragraph", "pause dictation", "resume", "email mode", the AI phrases and the
+format words wait for their items and are refused as not a command until then.
+A one-word command word is allowed; `command_prefix_problem` refuses common
+English words, every command and mark word, and the person's My Words
+vocabulary, and empty means no spoken word. `escape_literal_prefix` makes
+"literal QUILL" write the word as it is set; it is done on the recognised
+phrase before parsing, which extends the parser's `literal` without giving the
+parser a setting to read.
+
+**Never typed** (`command_mode_mixin.py`). `CommandModeMixin` sits over
+`VoiceCommandsMixin` in the controller, and the controller calls its `_dictate`
+where it used to call `_apply(_parse(...))`, after the echo guard and the stop
+phrase and before `compose`. A command utterance goes to `_command_utterance`
+and nowhere else: not a command is the error cue and "Not a command. Say it
+again, or say QUILL type that to write it."; a command that finds nothing
+("select the elephant") says "Not found." instead of writing the words, which is
+what it does without the word. While paused for its field
+(`target_hold._paused_parse`), a command utterance is answered ("Dictation is
+paused. Resume it first.", or the paused commands it already had) and is never
+held, so it cannot be typed on Resume. The controller grew by two lines.
+
+**Strict mode** (`windows_dictation_command_prefix_required`): a bare command is
+written as words, except STOP (the stop phrase and "stop dictation") and "stop
+spelling" while spelling, which is the only way out of spelling mode. Off in
+both editors, on in QUILL Transcribe through `TRANSCRIBE_DICTATION_DEFAULTS`.
+Transcribe's spoken "what can I say" puts the word before each command while it
+is on. Continuous mode ("just write what I say") still writes bare commands as
+words; the command word works there, because saying it is explicit. Live
+transcripts take no commands, with or without the word.
+
+**One command, command mode, the timeout.** The word alone, or the Command Key,
+arms one command: the next utterance is a command with or without the word. A
+second press before it, or "QUILL command mode", is command mode; a press in
+command mode, or "dictation mode", leaves at once. The timeout
+(`windows_dictation_command_timeout`, 8 seconds, 5 to 30) runs on the feedback
+port's `call_later`, restarted by each utterance in command mode, and the clock
+is also checked when the next phrase arrives, so a host with no timer still
+leaves on time. Sounds: `windows_dictation_command_on` (880 then 1175 Hz, 142
+ms) when the word or the key is taken and on entering command mode, with no
+words except "Command mode." once on entry; `windows_dictation_command_off`
+(the same pair falling) when command mode ends, with no words on a timeout. With
+the tones off or missing from the pack, the words "Say a command." and
+"Dictation mode." stand in, unless the person turned both tones and words off.
+`command_mode_text` ("Command mode", "Waiting for a command") is the editors'
+status cell (QUILL Lite's Dictation cell, QUILL's status bar) and QUILL
+Transcribe's state line and tray name; it is shown, not spoken again.
+
+**Keys.** Speak a Command, `tools.windows_dictation_command`, is **F11** in both
+editors (rule 2: free in both, beside Ctrl+F11, Shift+F11 and Ctrl+Shift+F11;
+Word's F11 is Next Field, which neither editor has), one handler in
+`quill/ui/windows_dictation_command_key.py`, a `COMMAND_EQUIVALENTS` row, and
+the same chord in QUILL Transcribe's window (`transcribe/parity.py`
+`SHARED_COMMANDS`). Off, it starts dictation in that document and arms one
+command. QUILL Transcribe's system-wide **Command Key** (`command_hotkey`,
+hotkey id 0x51B2) is empty by default, offered in setup beside Record Key
+(Alt+O, Record Command Key Alt+N), and chosen in File > Command Key...
+(Ctrl+Alt+Shift+K) through the family picker; pressed with dictation off, it
+starts dictation in the field in front and arms one command.
+
+**Settings UI.** More Dictation Settings has a Commands group in all four hosts:
+the command word (Alt+C), strict mode (Alt+E) and the seconds (Alt+D), each with
+F1 help. OK is refused, with the sentence `command_prefix_problem` gives, while
+the word would not do.
+
+**Tests** (with fakes; no microphone): `tests/unit/core/test_dictation_command_mode.py`
+drives the shared controller with an editor-like document and with
+`ExternalDocument` whose injector fails the test if a command is typed (eleven
+command utterances, command mode in Notepad, "QUILL scratch that" sending only
+backspaces), and covers strict mode, type that, literal, the name mid-phrase,
+the timeout with and without a timer, the keys, and the paused session.
+`test_transcribe_app.py` (setup, the key at launch and through the picker, the
+key starting dictation, F11 from the window), `test_lite_dictation.py` (F11 and
+the word through QUILL Lite's real window), `test_dictation_parity.py` (one
+handler, one chord in all three, the same settings) and
+`test_dictation_more_dialog.py`.
+
+**Still to check, with a microphone and the real programs.** "QUILL scratch
+that" in Notepad, Word and Edge with strict mode on; how often each engine
+hears "QUILL" as something else (the plan's risk: "quil" and "kill"; Moonshine
+and Whisper were not measured, and no engine-specific vocabulary entry was
+added); the B-3 30-minute soak; and the NVDA and JAWS check that the tone and
+"Command mode" are heard once and the state line is not re-read. They join
+`docs/qa/screen-reader-checks-2026-10.md`.
 
 ## Appendix A: the dict.md section numbers, and where they live now
 

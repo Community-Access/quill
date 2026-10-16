@@ -590,6 +590,8 @@ def test_setup_skip_changes_nothing_but_is_remembered(
     import wx
 
     class Dialog:
+        command = ""
+
         def __init__(self, *_a: Any, **_k: Any) -> None:
             self.at_login = type("C", (), {"GetValue": lambda _s: True})()
 
@@ -601,6 +603,9 @@ def test_setup_skip_changes_nothing_but_is_remembered(
 
         def chosen_key(self) -> str:
             return "Ctrl+Alt+PageDown"
+
+        def chosen_command_key(self) -> str:
+            return self.command
 
         def Destroy(self) -> None:  # noqa: N802
             pass
@@ -618,6 +623,8 @@ def test_setup_finish_keeps_every_choice(host: Host, monkeypatch: pytest.MonkeyP
     import wx
 
     class Dialog:
+        command = ""
+
         def __init__(self, *_a: Any, **_k: Any) -> None:
             self.at_login = type("C", (), {"GetValue": lambda _s: True})()
 
@@ -629,6 +636,9 @@ def test_setup_finish_keeps_every_choice(host: Host, monkeypatch: pytest.MonkeyP
 
         def chosen_key(self) -> str:
             return "Ctrl+Alt+PageDown"
+
+        def chosen_command_key(self) -> str:
+            return self.command
 
         def Destroy(self) -> None:  # noqa: N802
             pass
@@ -648,6 +658,110 @@ def test_setup_finish_keeps_every_choice(host: Host, monkeypatch: pytest.MonkeyP
         host.said[-1]
         == "Ready. Model: Whisper. To dictate, press Ctrl+Alt+PageDown in the field you want."
     )
+
+
+def test_setup_offers_the_command_key_beside_the_start_key(
+    host: Host, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """D-1: empty by default, offered in setup with Record Key, registered on Finish."""
+    import wx
+
+    class Dialog:
+        command = "Ctrl+Alt+PageUp"
+
+        def __init__(self, *_a: Any, **kwargs: Any) -> None:
+            assert kwargs["command_key"] == ""  # empty until chosen
+            self.at_login = type("C", (), {"GetValue": lambda _s: False})()
+
+        def chosen_microphone(self) -> str:
+            return ""
+
+        def chosen_engine(self) -> str:
+            return "windows"
+
+        def chosen_key(self) -> str:
+            return "Ctrl+Alt+PageDown"
+
+        def chosen_command_key(self) -> str:
+            return self.command
+
+        def Destroy(self) -> None:  # noqa: N802
+            pass
+
+    assert TranscribeSettings().command_hotkey == ""
+    monkeypatch.setattr(transcribe_dialogs, "SetupDialog", Dialog)
+    monkeypatch.setattr(host, "launch_at_startup_enabled", lambda: False)
+    host.modal = lambda _d, _l: wx.ID_OK
+    host.open_setup()
+    assert load_settings(host._data_dir).command_hotkey == "Ctrl+Alt+PageUp"
+    assert host.command_key() == "Ctrl+Alt+PageUp"
+    assert len(host.frame.hotkeys) == 2
+    assert host.said[-1].endswith("For a command, press Ctrl+Alt+PageUp first.")
+
+
+def test_the_command_key_is_registered_at_launch_and_released(host: Host) -> None:
+    host._settings.dictation_hotkey = ""
+    host._settings.command_hotkey = "Ctrl+Alt+PageUp"
+    assert host._start_transcribe_keys() == ""
+    assert host.command_key() == "Ctrl+Alt+PageUp"
+    host._release_transcribe_keys()
+    assert host.frame.hotkeys == {}
+
+
+def test_a_command_key_windows_refuses_is_explained(host: Host) -> None:
+    host._settings.dictation_hotkey = ""
+    host._settings.command_hotkey = "Ctrl+Alt+PageUp"
+    host.frame.refused = True
+    assert "Your Command Key, Ctrl+Alt+PageUp, is not working" in host._start_transcribe_keys()
+
+
+def test_choosing_the_command_key_goes_through_the_family_picker(
+    host: Host, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import quill.ui.show_hide_key_picker as picker
+
+    seen: dict[str, Any] = {}
+
+    def fake(_host: Any, _wx: Any, **kwargs: Any) -> None:
+        seen.update(kwargs)
+        assert kwargs["replace"]("Ctrl+Alt+PageUp")
+        kwargs["save"]("Ctrl+Alt+PageUp")
+
+    monkeypatch.setattr(picker, "run_system_key_command", fake)
+    host.choose_command_key()
+    assert seen["caption"] == "Command Key"
+    assert "start and stop key" in seen["own"]
+    assert load_settings(host._data_dir).command_hotkey == "Ctrl+Alt+PageUp"
+
+
+def test_the_command_key_starts_dictation_with_one_command_armed(host: Host) -> None:
+    host.command_key_pressed()
+    controller = host._dictation
+    assert controller.active and controller.command_mode_text == "Waiting for a command"
+    assert host.dictation_state_word() == "Waiting for a command"
+    host.hear("all caps on")
+    assert host.world.typed == []  # a command: nothing typed
+    host.command_key_pressed()
+    host.command_key_pressed()
+    assert host.dictation_state_word() == "Command mode"
+    host.hear("pancakes")
+    assert host.world.typed == []  # not a command, and in command mode: never typed
+    host.command_key_pressed()  # back to dictation
+    host.hear("pancakes")
+    assert host.world.typed == ["edit-1:PANCAKES"]  # all caps on, from the first command
+
+
+def test_speak_a_command_from_the_window_is_the_editors_f11(host: Host) -> None:
+    from quill.core.keymap import DEFAULT_KEYMAP
+    from quill.core.transcribe.parity import SHARED_COMMANDS
+
+    assert SHARED_COMMANDS["tools.windows_dictation_command"] == "speak_a_command"
+    assert DEFAULT_KEYMAP["tools.windows_dictation_command"] == "F11"
+    host.speak_a_command()
+    assert host._dictation.command_mode_text == "Waiting for a command"
+    host.toggle_dictation()  # stop
+    host.toggle_dictation()  # a plain start arms nothing
+    assert host._dictation.command_mode_text == ""
 
 
 def test_set_option_saves(host: Host) -> None:
@@ -1087,7 +1201,11 @@ def test_what_can_i_say_while_dictating_is_spoken_and_takes_no_focus(host: Host)
     host.show_dictation_commands = lambda: opened.append("window")  # type: ignore[method-assign]
     RealFeedback(host).show_commands()
     assert opened == []
-    assert host.said[-1].startswith("In another program, you can say scratch that, new line,")
+    # Strict mode is on here by default (D-1), so the commands carry the word.
+    assert host.said[-1].startswith(
+        "In another program, you can say QUILL scratch that, new line, QUILL start spelling,"
+    )
+    assert "or stop dictation." in host.said[-1]
     assert host.said[-1].endswith(
         "For the full list, open Dictation Commands from the Dictation menu."
     )

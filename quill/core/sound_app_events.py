@@ -69,6 +69,8 @@ QUILLLITE_EVENTS: frozenset[str] = frozenset({
     SoundEvent.WINDOWS_DICTATION_OFF,
     SoundEvent.WINDOWS_DICTATION_ERROR,
     SoundEvent.WINDOWS_DICTATION_WORKING,
+    SoundEvent.WINDOWS_DICTATION_COMMAND_ON,
+    SoundEvent.WINDOWS_DICTATION_COMMAND_OFF,
 })
 
 # Not here, and each absence is a decision rather than an oversight: QUILL Lite

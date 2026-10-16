@@ -1,4 +1,4 @@
-"""Generate the five Windows Dictation earcons in the Ink sound pack.
+"""Generate the seven Windows Dictation earcons in the Ink sound pack.
 
 Standard library only, and deterministic: the WAV files are output, never
 hand-edited, so every tone can be read, changed and regenerated from the
@@ -105,7 +105,7 @@ def concat(*parts: list[int]) -> list[int]:
 
 
 def sounds() -> dict[str, list[int]]:
-    """File name -> samples, for all five earcons."""
+    """File name -> samples, for all seven earcons."""
     return {
         # Two short ascending tones: listening.
         "windows_dictation_on.wav": concat(tone(520, 80, 0.20), silence(18), tone(760, 95, 0.20)),
@@ -127,6 +127,17 @@ def sounds() -> dict[str, list[int]]:
         # listen to the microphone while QUILL itself is making a sound.
         "windows_dictation_working.wav": soft_tone(
             520, WORKING_MS, 0.06, WORKING_ATTACK_MS, WORKING_RELEASE_MS
+        ),
+        # The command word (2026-10-15, D-1): a quick, higher rising pair when
+        # "QUILL" or the Command Key is heard, and the same pair falling when
+        # command mode ends. Shorter, higher and a little softer than the on
+        # and off pair, so a command is never mistaken for dictation stopping,
+        # and longer than the phrase cue, which is heard far more often.
+        "windows_dictation_command_on.wav": concat(
+            tone(880, 55, 0.16), silence(12), tone(1175, 75, 0.16)
+        ),
+        "windows_dictation_command_off.wav": concat(
+            tone(1175, 55, 0.16), silence(12), tone(880, 75, 0.16)
         ),
     }
 
