@@ -28,6 +28,7 @@ from quill.core.windows_dictation.engines import coerce_engine
 from quill.core.windows_dictation.never_type import DEFAULT_NEVER_TYPE, coerce_never_type
 from quill.core.windows_dictation.options import coerce_pause, coerce_silence
 from quill.core.windows_dictation.preview import coerce_preview
+from quill.core.windows_dictation.rescue import coerce_history_days
 from quill.core.windows_dictation.speech_language import coerce_speech_language
 from quill.core.windows_dictation.vocabulary import DASH_STYLES
 from quill.core.windows_dictation.wake import DEFAULT_STOP_PHRASE, DEFAULT_WAKE_PHRASE
@@ -94,6 +95,9 @@ class DictationSettings:
     windows_dictation_review_first: bool = False
     windows_dictation_review_consent: int = 0
     windows_dictation_review_context: bool = False
+    # 2026-10-16 (D-5): days of dictation history kept, text only, sealed;
+    # 0 (off) by default, and turning it off deletes it (rescue.py).
+    windows_dictation_history_days: int = 0
 
 
 def load_fields(data: Mapping[str, Any]) -> dict[str, Any]:
@@ -173,6 +177,9 @@ def load_fields(data: Mapping[str, Any]) -> dict[str, Any]:
         ),
         "windows_dictation_review_context": bool(
             data.get("windows_dictation_review_context", False)
+        ),
+        "windows_dictation_history_days": coerce_history_days(
+            data.get("windows_dictation_history_days", 0)
         ),
     }
 

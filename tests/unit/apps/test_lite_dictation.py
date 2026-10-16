@@ -391,7 +391,9 @@ class _RecentWindow:
     answer: tuple[str | None, str] = (None, "insert")
     shown: list[list[str]] = []
 
-    def __init__(self, _parent: Any, phrases: list[str]) -> None:
+    chosen_row = None
+
+    def __init__(self, _parent: Any, phrases: list[str], **_kept: Any) -> None:
         _RecentWindow.shown.append(list(phrases))
         self.chosen, self.verb = _RecentWindow.answer
 

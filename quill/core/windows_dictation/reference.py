@@ -246,14 +246,16 @@ def commands_reference(
         'The Markdown line marks -- "bullet", "numbered item", "block quote" and '
         '"heading one" to "heading six" -- count only at the start of a phrase, so '
         '"the heading two lines down" stays words.',
+        "A snippet with blanks asks for each one by name: say the answer, or for a "
+        "choice say one of the options or choose and its number. Say skip to leave "
+        "one empty, scratch that to go back one, or cancel to type nothing. Then the "
+        "whole snippet goes in as one phrase, and scratch that takes all of it back.",
         *(
             (
                 "Nothing in the other program is read, so commands that select, find "
                 "or correct words are not listed: they work in QUILL's own documents.",
-                "A snippet's blanks are written as their names in square brackets, "
-                "like [title], and no question is asked. Where a snippet or an "
-                "abbreviation puts the cursor in the middle, the cursor stays at the "
-                "end instead.",
+                "Where a snippet or an abbreviation puts the cursor in the middle, the "
+                "cursor stays at the end instead.",
             )
             if external
             else ()

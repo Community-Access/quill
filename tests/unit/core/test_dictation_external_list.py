@@ -94,7 +94,7 @@ def test_the_insert_commands_are_listed_there() -> None:
     reference = commands_reference(external=True)
     for opening in ('"insert snippet ..."', '"paste clip ..."', '"insert abbreviation ..."'):
         assert opening in reference, opening
-    assert "[title]" in reference and "cursor stays at the end" in reference
+    assert "asks for each one by name" in reference and "cursor stays at the end" in reference
 
 
 def test_your_own_phrases_are_listed() -> None:

@@ -73,6 +73,7 @@ from quill.core.windows_dictation.preferences import (
     DictationPreferences,
 )
 from quill.core.windows_dictation.readback import spoken_marks
+from quill.core.windows_dictation.rescue_mixin import RecentPhrases
 from quill.core.windows_dictation.resilience import ResilienceMixin, engine_failure_message
 from quill.core.windows_dictation.target_hold import TargetHoldMixin
 from quill.core.windows_dictation.transcript import TranscriptMixin
@@ -154,8 +155,9 @@ class DictationController(
         self._state = DictationState.OFF
         self.spelling = False
         self.history = PhraseHistory()
-        #: What was dictated this app session, newest first, for Recent Phrases.
-        self.recent: deque[str] = deque(maxlen=20)
+        #: What was dictated this app session, newest first, for Recent Phrases,
+        #: and for the opt-in history (rescue_mixin.py, D-5).
+        self.recent: deque[str] = RecentPhrases(20, self._remember)
         self._ignore_until_speech = False  # Escape threw the phrase being heard away
         self._restarted = False  # the one silent engine restart, spent
         self._last_spoken = ""

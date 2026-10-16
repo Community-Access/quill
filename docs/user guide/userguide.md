@@ -7056,7 +7056,8 @@ passage and transcribes it afterwards, Live Dictation writes as you go.
 The same submenu has more windows:
 
 - **Recent Phrases...** (`Shift+F11`) lists the last twenty phrases of the
-  session, with Insert Again and Copy.
+  session, with Insert Again and Copy, and after them any words kept from
+  before. See "Words that were not written, and dictation history".
 - **My Words and Phrases...** (`Alt+Shift+F10`) is a window with Add Word, Add
   Phrase, Add Correction, Edit and Remove. It edits your `dictation.md` file for
   you. **Import...** and **Export...** move the list to another computer or
@@ -7228,6 +7229,38 @@ To send everything you dictate to the window first, turn on **Send dictation
 to review first** (`Alt+V`) in More Dictation Settings. The first thing you say
 opens the window, and nothing reaches the document until you insert it.
 
+##### Words that were not written, and dictation history
+
+Dictation never throws away words it could not write. If dictation pauses
+because its field moved, or Windows stops typing a phrase part-way through, the
+words are kept on this computer until you deal with them, even if QUILL is
+closed, crashes or the computer sleeps. Stopping dictation while words are held
+says so: "1 phrase held while paused was not written. They are kept in Recent
+Phrases." The next time QUILL starts, it says once how many are waiting.
+
+They are in **Recent Phrases** (`Shift+F11`), after this session's phrases,
+labelled "Not written" with the time. So is a review that did not finish,
+labelled "Review not finished". Choose one and:
+
+- **Insert Again** (`Alt+I`, or `Enter`) writes it at the cursor, and then it
+  is deleted from this computer;
+- **Copy** (`Alt+C`) puts it on the clipboard and keeps it;
+- **Discard** (`Alt+D`) deletes it without writing it.
+
+Only words that were never written are kept, and they are sealed for your
+Windows account, so another account on the same computer cannot read them.
+Nothing you dictate is kept as sound.
+
+**Dictation history** is off unless you turn it on. In More Dictation
+Settings, **Keep a dictation history** (`Alt+Y`) can be Off, One day, Seven
+days or Thirty days. While it is on, the text of each phrase you dictate is
+kept for that long, sealed the same way, and Recent Phrases lists the earlier
+ones after the words not written, newest first, labelled "Earlier" with the
+time. **Clear History** (`Alt+H`) in Recent Phrases deletes all of it, after a
+question whose answer is No unless you choose Yes. Turning the history off
+deletes it too. Neither the kept words nor the history ever go into QUILL's
+log or a diagnostic report.
+
 ##### Holding Ctrl+F11 to talk
 
 Press `Ctrl+F11` to start dictating and press it again to stop. That is
@@ -7396,7 +7429,8 @@ middle of a sentence is written as words, just as you meant it.
 - "select that"
 - "capitalize that", "all caps that", "no caps that"
 - "delete word", "delete sentence"
-- "read that"
+- "read that" reads all of what last went in, a whole snippet included
+- "read last sentence", "read last paragraph", "read selection"
 - "go to beginning of line", "go to end of line", "go to top", "go to end of
   document"
 - "select sentence", "select line", "select paragraph"
@@ -7487,13 +7521,20 @@ With words after them, at the start of a phrase:
 - **"insert abbreviation"** (or "expand abbreviation") **and its trigger**
   writes what that abbreviation stands for.
 
-A snippet with blanks to fill in is written with each blank as its name in
-square brackets, like `[name]`. Say "select name" and then the real name, and
-the blank is filled.
+A snippet with blanks to fill in asks for each blank by voice before anything
+is written. With the starter Bug Report Template, "insert snippet bug report"
+says "Snippet Bug Report Template, 3 blanks. Say cancel to stop. Summary?". What
+you say next is the answer, with spoken punctuation obeyed. For a choice, such
+as `${choice:NVDA|JAWS|Narrator}`, you hear "Choose NVDA, JAWS or Narrator.":
+say one of them, or "choose two". Say **skip** to leave a blank empty,
+**scratch that** to answer the one before again, or **cancel** to write
+nothing. `${date}` and `${time}` come from this computer's clock, and
+`${cursor}` puts the cursor where the snippet says.
 
 Whatever goes in, it goes in as one phrase: one `Ctrl+Z` takes it out, and so
 does "scratch that". The read-back keeps it short, "Snippet sign off" or
-"Pasted slot 3", rather than reading the whole thing to you. These commands do
+"Pasted slot 3", rather than reading the whole thing to you; say "read that"
+to hear all of it. These commands do
 not work while **Just write what I say** is on, because commands are off then.
 
 ##### Correct that: choosing another guess
@@ -7635,6 +7676,7 @@ you change here is saved when you press OK in Dictation Settings.
 | Commands only after the command word (strict mode) (`Alt+E`) | A command said on its own is written as words; the stop phrase always works | Off (on in QUILL Transcribe) |
 | Seconds command mode waits for a command (`Alt+D`) | How long command mode lasts with no command, from 5 to 30 | 8 |
 | Send dictation to review first (`Alt+V`) | What you dictate goes into Review Dictation instead, to insert once; see "Review before inserting" | Off |
+| Keep a dictation history (`Alt+Y`) | Off, One day, Seven days or Thirty days of the text you dictate, never the sound, listed in Recent Phrases; turning it off deletes it; see "Words that were not written, and dictation history" | Off |
 
 In settings files these are `windows_dictation_hold_to_talk`,
 `windows_dictation_preview`, `windows_dictation_ai_send`,
@@ -7644,7 +7686,8 @@ In settings files these are `windows_dictation_hold_to_talk`,
 `windows_dictation_working_tick`, `windows_dictation_transcript_timestamps`,
 `windows_dictation_never_type`, `windows_dictation_command_prefix`,
 `windows_dictation_command_prefix_required`,
-`windows_dictation_command_timeout` and `windows_dictation_review_first`. The
+`windows_dictation_command_timeout`, `windows_dictation_review_first` and
+`windows_dictation_history_days` (0 for off, or 1, 7 or 30). The
 review window also keeps `windows_dictation_review_context` (its context check
 box) and `windows_dictation_review_consent` (your answer to its question).
 
@@ -8173,8 +8216,11 @@ Backspace for you, so it only works while the same window still has the focus.
 Your snippets, abbreviations and clips work there too, because they only
 insert: "insert snippet" and its name, "insert abbreviation" and its name, and
 "paste clip" and a number. Each is typed as one phrase, so "scratch that" takes
-all of it back. A snippet's blanks are typed as their names in square
-brackets, like [title], with no questions, and the cursor stays at the end.
+all of it back. A snippet's blanks are asked for by voice first, as in a
+document (see "Snippets and clips by voice"), and the cursor stays at the end.
+"read that" reads what dictation typed there; "read last sentence" and the
+other commands that read the text cannot, because nothing in the other program
+is read.
 
 Anything that needs to read what is already in the other program cannot work
 there: "select", "go to", "correct", "copy all" and "show clips". If you say
@@ -8387,7 +8433,9 @@ quick loop:
 4. **"spell that"** is for a name or a word the engine has never heard. Spell
    it with the phonetic alphabet in your next phrase.
 5. **Recent Phrases** (`Shift+F11`) shows what was written for your last twenty
-   phrases, so you can see what went wrong.
+   phrases, so you can see what went wrong, and any words that were never
+   written. Say "read last sentence" to hear a sentence back with its
+   punctuation.
 6. When you are done, **Tidy Dictated Text** (`Ctrl+F3`) can fix sound-alike
    words, names and punctuation in a paragraph or a selection with AI, if you
    have a ChatGPT subscription or your own OpenAI key (see "Tidy Dictated

@@ -7,7 +7,9 @@ has these too, on the same chords.
 
 * **Recent Phrases** (Shift+F11): the last twenty phrases dictated this
   session, newest first, with Insert Again and Copy -- the rescue for a
-  "scratch that" that went one too far. Memory only; gone when the app closes.
+  "scratch that" that went one too far. This session's phrases are memory only;
+  after them come the words kept on disk (D-5, :mod:quill.ui.dictation_kept):
+  not written last time, a review that did not finish, and the opt-in history.
 * **My Words and Phrases** (Alt+Shift+F10): the window that edits
   ``dictation.md`` -- words to spell your way, phrases that expand, and
   corrections for what the engine keeps hearing wrong -- so nobody edits a
@@ -69,6 +71,7 @@ class DictationToolsMixin:
             run_modal=self._dictation_run_modal,  # type: ignore[attr-defined]
             say=self._dictation_say,  # type: ignore[attr-defined]
             insert_again=self._dictation_insert_again,
+            kept=self._dictation_kept(),
         )
 
     def cmd_dictation_words(self) -> None:
@@ -136,7 +139,7 @@ class DictationToolsMixin:
         """The control dictation writes into for this host: a field, or the document."""
         return getattr(self, "_dictation_targeted_control", None) or self._dictation_control()  # type: ignore[attr-defined]
 
-    def _dictation_insert_again(self, text: str) -> None:
+    def _dictation_insert_again(self, text: str) -> bool:
         control = self._dictation_targeted()
         try:
             start, end = control.GetSelection()
@@ -144,9 +147,28 @@ class DictationToolsMixin:
             control.SetFocus()
         except Exception as error:  # noqa: BLE001 - reported, never raised
             self._dictation_say(f"That could not be inserted. {error}")  # type: ignore[attr-defined]
-            return
+            return False
         self._dictation_after_edit()  # type: ignore[attr-defined]
         self._dictation_say(f"Inserted: {text}")  # type: ignore[attr-defined]
+        return True
+
+    # -- words kept on disk (D-5, quill/core/windows_dictation/rescue.py) ------ #
+
+    def _dictation_keep(self) -> Any:
+        """This editor's store of words not written, and of the opt-in history."""
+        from pathlib import Path
+
+        from quill.core.windows_dictation.rescue import keep_for
+
+        folder = Path(self._dictation_profile_path()).parent  # type: ignore[attr-defined]
+        return keep_for(folder, self._dictation_app_name())  # type: ignore[attr-defined]
+
+    def _dictation_kept(self) -> Any:
+        from quill.ui.dictation_kept import KeptWords
+
+        days = getattr(self._dictation_settings(), "windows_dictation_history_days", 0)  # type: ignore[attr-defined]
+        rescue = getattr(self, "_review_rescue_path", None)
+        return KeptWords(self._dictation_keep(), rescue() if callable(rescue) else None, days)
 
     def _dictation_copy(self, text: str) -> None:
         copy_phrase(text, self._dictation_say)  # type: ignore[attr-defined]
@@ -163,22 +185,33 @@ def open_recent_phrases(
     run_modal: Any,
     say: Any,
     insert_again: Any,
+    kept: Any = None,
 ) -> None:
     """Recent Phrases, for every host: both editors and QUILL Transcribe.
 
     The one implementation of the command; each host passes where Insert Again
     writes (the editor's document, or the program QUILL Transcribe types into).
-    Memory only: the host's controller keeps the last twenty, newest first.
+    The host's controller keeps this session's last twenty, newest first, in
+    memory; *kept* (:class:`quill.ui.dictation_kept.KeptWords`) adds the words
+    kept on disk (D-5). A kept entry is deleted once *insert_again* says it was
+    written (it returns ``True``).
     """
     from quill.ui.windows_dictation_dialog import RecentPhrasesDialog
 
-    if not phrases:
+    saved = kept.rows() if kept is not None else []
+    if not phrases and not saved:
         say(NOTHING_RECENT)
         return
-    dialog = RecentPhrasesDialog(parent, phrases)
+    dialog = RecentPhrasesDialog(
+        parent,
+        phrases,
+        saved=saved,
+        say=say,
+        clear_history=kept.clear_history() if kept is not None else None,
+    )
     try:
         answer = run_modal(dialog, "Recent Phrases")
-        chosen, verb = dialog.chosen, dialog.verb
+        chosen, verb, row = dialog.chosen, dialog.verb, dialog.chosen_row
     finally:
         dialog.Destroy()
     if answer != wx.ID_OK or chosen is None:
@@ -186,7 +219,8 @@ def open_recent_phrases(
     if verb == "copy":
         copy_phrase(chosen, say)
         return
-    insert_again(chosen)
+    if insert_again(chosen) is True and row is not None:
+        row.delivered()  # written: nothing left to bring back
 
 
 def copy_phrase(text: str, say: Any) -> None:

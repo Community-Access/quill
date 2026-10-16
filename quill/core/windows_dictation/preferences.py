@@ -24,6 +24,7 @@ from quill.core.windows_dictation.command_mode import (
 from quill.core.windows_dictation.engines import coerce_engine, writes_punctuation
 from quill.core.windows_dictation.options import PAUSE_SECONDS, coerce_pause, coerce_silence
 from quill.core.windows_dictation.preview import coerce_preview
+from quill.core.windows_dictation.rescue import coerce_history_days
 from quill.core.windows_dictation.speech_language import (
     STOP_PHRASES,
     WAKE_PHRASES,
@@ -113,6 +114,8 @@ class DictationPreferences:
     review_first: bool = False
     #: Send this document's dictation context with a review's AI request.
     review_context: bool = False
+    #: Days of dictation history to keep, text only (D-5, rescue.py); 0 is off.
+    history_days: int = 0
     #: What this document is -- "a formal letter", "notes to a friend" -- for
     #: OpenAI's prompt (contexts.py, dict.md 3.8). Empty for none.
     context: str = field(default="", compare=False)
@@ -263,5 +266,8 @@ class DictationPreferences:
             ),
             review_first=bool(getattr(settings, "windows_dictation_review_first", False)),
             review_context=bool(getattr(settings, "windows_dictation_review_context", False)),
+            history_days=coerce_history_days(
+                getattr(settings, "windows_dictation_history_days", 0)
+            ),
             rewrite=rewrite,
         )

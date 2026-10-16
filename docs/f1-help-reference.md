@@ -1376,7 +1376,7 @@ Control coverage: 3 audited sites (3 helped).
 
 ## QUILL Transcribe
 
-Control coverage: 32 audited sites (32 helped).
+Control coverage: 34 audited sites (34 helped).
 
 ### Every window, and what it is for
 
@@ -1406,7 +1406,7 @@ Control coverage: 32 audited sites (32 helped).
 
 **Review Dictation.** Dictated words wait here before they are inserted. Read them, type or keep dictating to change them, ask the AI to change them if AI is on, and hear what changed. Control Enter inserts them where they were going; nothing is written before that.
 
-**Review Transcript.** A finished transcript of a recording, read-only. Copy it, save it as a text file, or open it in QUILL; nothing is copied or typed anywhere unless you choose it.
+**Review Transcript.** A finished transcript of a recording, read-only. Type it, or the part you selected, into a field in another program; copy it, save it as a text file, or open it in QUILL. Nothing is copied or typed anywhere unless you choose it.
 
 **Review with AI.** Before the first change is asked for, this says who receives the words being reviewed and what is sent. No is the default and sends nothing.
 
@@ -1470,6 +1470,7 @@ Control coverage: 32 audited sites (32 helped).
 #### TranscriptReviewDialog (`quill/apps/transcribe_files.py`)
 
 - `self.text`: The transcript, read-only. Read it with the arrow keys; select part of it and press Ctrl+C to copy just that part.
+- `type_in`: Type the transcript, or only the part you selected, into another program. Switch to the field you want and it is typed there, with the same checks as dictation: never into a password field or a program on your never-type list.
 - `copy`: Put the whole transcript on the clipboard.
 - `save`: Save the transcript as a text file where you choose.
 - `quill`: Open the transcript in QUILL to edit it.
@@ -1869,7 +1870,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## QUILL Lite
 
-Control coverage: 199 audited sites (199 helped).
+Control coverage: 202 audited sites (202 helped).
 
 ### Every window, and what it is for
 
@@ -1997,7 +1998,7 @@ Control coverage: 199 audited sites (199 helped).
 
 **Recent Documents.** Every document you opened recently, pinned ones first. Enter opens the one you are on; pin the ones you come back to and they stay at the top. Removing a row or clearing the list never touches the files themselves.
 
-**Recent Phrases.** What you have dictated since the app started, newest first. Insert Again writes the phrase you are on at the cursor, and Copy puts it on the clipboard. The list is forgotten when you close the app.
+**Recent Phrases.** What you have dictated since the app started, newest first, then words kept from before: phrases that were not written, a review that did not finish, and with a dictation history on, earlier phrases. Insert Again writes the phrase you are on at the cursor, Copy puts it on the clipboard, and Discard deletes kept words without writing them. This session's phrases are forgotten when you close the app.
 
 **Release Channel: QUILL Lite.** Choose which versions this app offers you: Stable, the one we recommend; Beta, new features a few weeks early; or Dev, work in progress for testers. Arrowing through the choices only explains them -- nothing changes until you choose Switch.
 
@@ -2248,10 +2249,12 @@ Control coverage: 199 audited sites (199 helped).
 - `close`: Close this list.
 #### RecentPhrasesDialog (`quill/ui/dictation_lists_dialog.py`)
 
-- `self.list`: What you dictated this session, newest first. Enter inserts the one you are on at the cursor again; Copy puts it on the clipboard.
-- `insert`: Write this phrase at the cursor again, as one undo step.
+- `self.list`: What you dictated this session, newest first, then words kept from before: phrases that were not written, a review that did not finish, and with dictation history on, earlier phrases. Enter inserts the one you are on at the cursor again; Copy puts it on the clipboard.
+- `insert`: Write this phrase at the cursor again, as one undo step. Words kept from before are deleted from this computer once they are written.
 - `copy`: Put this phrase on the clipboard without writing it.
+- `discard`: Delete these kept words from this computer without writing them. This session's own phrases are not kept, so there is nothing to discard for them.
 - `close`: Close the list without inserting anything.
+- `clear`: Delete the whole dictation history from this computer, after a question whose answer is No unless you choose Yes. Words not written last time are not part of the history and stay until you discard them.
 #### MoreDictationDialog (`quill/ui/dictation_more_dialog.py`)
 
 - `self.hold`: Left off, Ctrl+F11 starts dictating with one press and stops with the next. Turned on, you can also hold Ctrl+F11 while you talk, and dictation stops when you let go, keeping your last phrase. A quick press still turns it on and off.
@@ -2271,6 +2274,7 @@ Control coverage: 199 audited sites (199 helped).
 - `instructions`: Opens the file where you tell Tidy Dictated Text how you like your dictation tidied: write numbers as digits, British spelling, names always spelled your way. Saves these settings first.
 - `anywhere`: Saves these settings, then starts Quill Inkwell with them, so you can dictate into your browser, your email or any other program on a key you choose in Inkwell's File menu. Punctuation, spelling and scratch that work there; selecting and correcting words work only in QUILL's own documents.
 - `never_type`: The programs dictation never types into from QUILL Transcribe or Quill Inkwell, such as your password manager: add the program you were just in, add one by its file name, or remove one. Matched by file name, never by a window title.
+- `self.history`: Off by default. Choose one, seven or thirty days to keep the text of what you dictate on this computer, never the sound, so Recent Phrases can bring back earlier phrases after the program closes. It is kept for this Windows account only, and Clear History in Recent Phrases deletes it. Turning it off deletes it too. Words that were never written are kept until you insert or discard them, whatever this says.
 - `self.command_prefix`: Say this word first to give a command instead of dictating: QUILL scratch that, QUILL select the cat. It counts only as the first word after a pause, so I told Quill about it is written as words. If what follows is not a command, nothing is typed, and QUILL type that writes it. Say literal QUILL to write the word itself. Leave it empty to give commands with the Speak a Command key only. A common word, or one of your own words in My Words and Phrases, is refused.
 - `self.command_required`: When this is on, a command said on its own, like scratch that, is written as words, and only QUILL scratch that is a command. The stop phrase always works. On by default in QUILL Transcribe, where a command typed into an email by mistake is hard to take back; off in QUILL and QUILL Lite.
 - `self.command_timeout`: Say QUILL command mode, or press Speak a Command twice, and everything you say is a command until you say dictation mode or give no command for this many seconds. A falling tone says it has ended. From 5 to 30; 8 by default.

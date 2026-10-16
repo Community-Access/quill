@@ -483,8 +483,11 @@ are still in the same window, so it can never erase anything you typed yourself.
 Your snippets, abbreviations and clips work too, because they only insert:
 "insert snippet" and its name, "insert abbreviation" and its name, and "paste
 clip" and a number, each typed as one phrase that "scratch that" takes back
-whole. A snippet's blanks are typed as [name], with no questions, and the
-cursor stays at the end. "What can I say" lists only what works here.
+whole. A snippet's blanks are asked for first: you hear each blank's name,
+like "Title?", and say the answer; for a choice, say one of the options or
+"choose two"; say skip, scratch that to go back one, or cancel to type
+nothing. The cursor stays at the end, and "read that" reads back all of what
+was typed. "What can I say" lists only what works here.
 
 **What does not.** Anything that needs to read the other program's text: "select"
 and "go to", "correct", "copy all" and "show clips". Inkwell cannot see that text, so it

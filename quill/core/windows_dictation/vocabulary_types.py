@@ -112,6 +112,10 @@ class Command(StrEnum):
     REVIEW_RESTORE = "review_restore"
     REVIEW_INSERT = "review_insert"
     REVIEW_DISCARD = "review_discard"
+    # 2026-10-16 (D-18): reading back more than the last phrase, in the editors.
+    READ_SENTENCE = "read_sentence"
+    READ_PARAGRAPH = "read_paragraph"
+    READ_SELECTION = "read_selection"
 
 
 @dataclass(frozen=True, slots=True)

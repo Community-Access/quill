@@ -172,8 +172,12 @@ While paused, "scratch that" takes back the last held phrase, and "stop
 dictation" stops. If you stop or exit while words are held, you are told how
 many were not written, and exiting asks before throwing them away.
 
-Up to 50 phrases are held. Held words are kept only in memory and only until
-you resume, discard, stop or exit.
+Up to 50 phrases are held. Held words are also kept on this computer, sealed
+for your Windows account, so a crash, a sleep or exiting loses nothing. Resume
+and Discard Held Words delete them. If you stop or exit while words are held,
+they stay for next time: stopping says "They are kept in Recent Phrases", and
+the next start says how many are waiting. A phrase Windows stopped typing
+part-way through is kept the same way.
 
 ## Where it will not type
 
@@ -289,11 +293,22 @@ These work in any program, after the command word:
   as one phrase, so "scratch that" takes all of it back
 - "what can I say" for a short spoken answer
 
-Two limits on snippets and abbreviations here. A snippet's blanks are typed as
-their names in square brackets, like [title], and you are not asked to fill
-them in. And where a snippet or an abbreviation would put the cursor in the
+A snippet with blanks asks for each one before anything is typed. Say "QUILL
+insert snippet bug report" and you hear the snippet's name, how many blanks it
+has, and the first blank's name, like "Summary?". Say the answer; spoken
+punctuation works in it. For a choice you hear the options, "Choose NVDA, JAWS
+or Narrator.": say one, or "choose two". Say "skip" to leave a blank empty,
+"scratch that" to answer the one before again, or "cancel" to type nothing.
+The command word is allowed before an answer but not needed. When the last
+blank is answered, the whole snippet is typed as one phrase, so "QUILL scratch
+that" takes all of it back. A date or time in a snippet comes from this
+computer's clock.
+
+One limit: where a snippet or an abbreviation would put the cursor in the
 middle, the cursor stays at the end, because QUILL Transcribe cannot move it
-inside another program's text without reading it.
+inside another program's text without reading it. For the same reason, "QUILL
+read that" reads back what dictation typed, all of it, but "read last
+sentence" and the other commands that read a document work only in QUILL.
 
 Commands that need to read the text, such as "select that", "correct that" or
 "copy all", only work in QUILL's own documents. In another program you hear
@@ -456,8 +471,16 @@ command word, and you are told why.
   QUILL Transcribe says "Switch to the field you want. The phrase is typed
   there.", and types it, with the same checks as dictation, as soon as you are
   back in another program. **Copy** puts it on the clipboard and says "Copied"
-  and the phrase. The list is kept in memory only, for as long as QUILL
-  Transcribe runs; nothing is saved to disk, and it is empty again next time.
+  and the phrase. This run's phrases are kept in memory only. After them come
+  the words kept from before: "Not written" (held while paused, or typing that
+  stopped), "Review not finished", and, with **Keep a dictation history** on,
+  "Earlier" phrases. Insert Again types one and then deletes it from the
+  computer; **Discard** (Alt+D) deletes it unwritten; **Clear History**
+  (Alt+H) deletes the history after asking, with No as the answer unless you
+  choose Yes.
+- **Keep a dictation history** (Alt+Y in More Dictation Settings) is Off unless
+  you choose One day, Seven days or Thirty days. Only the text is kept, never
+  the sound, sealed for your Windows account. Turning it off deletes it.
 - **My Words and Phrases** (Alt+Shift+F10, in the Dictation menu) is the same
   window as in QUILL and QUILL Lite, over the same word list as QUILL, so a
   word you teach one is known to the other. QUILL Lite shares it once you
@@ -526,11 +549,15 @@ When it finishes, you hear how long the recording was and how many words came
 out. Open **Notifications** (Ctrl+Shift+N) and press Enter on the transcript to
 review it. The **Review Transcript** window shows it read-only, with:
 
+- **Type into a Field** - types the transcript, or only the part you
+  selected, into another program. QUILL Transcribe says "Switch to the field
+  you want. The phrase is typed there.", and types it once you are there, with
+  the same checks as dictation;
 - **Copy All** - puts the whole transcript on the clipboard;
 - **Save As** - saves it as a text file where you choose;
 - **Open in QUILL** - opens it in QUILL to edit.
 
-Nothing is copied or saved unless you choose it.
+Nothing is typed, copied or saved unless you choose it.
 
 ## Quill Inkwell and QUILL Transcribe
 
@@ -591,8 +618,13 @@ so you can look at your settings.
 ## Privacy
 
 - Nothing is recorded before you start dictation.
-- Recordings and transcripts of your dictation are not kept. Held words live in
-  memory only until you resume, discard, stop or exit.
+- Recordings of your dictation are never kept. Words that were not written
+  (held while paused, or typing that stopped part-way) are kept on this
+  computer, sealed for your Windows account, until you write or discard them
+  in Recent Phrases.
+- The text of what you dictate is kept only if you turn on **Keep a dictation
+  history**, for one, seven or thirty days; Clear History deletes it, and
+  turning it off deletes it too. It is off unless you choose it.
 - Words waiting in Review Dictation are kept in a file in QUILL's data folder
   while the window is open, so a crash does not lose them, and the file is
   deleted when you insert or discard them. Close keeps them for next time.

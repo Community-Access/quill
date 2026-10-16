@@ -71,7 +71,28 @@ COMMAND_HELP: tuple[CommandHelp, ...] = (
     CommandHelp(
         Command.READ_BACK,
         ("read that", "repeat that"),
-        "Reads the last phrase aloud again.",
+        "Reads aloud again everything the last phrase, snippet, clip or review put in. "
+        "In another program, only what dictation itself typed can be read.",
+        "Correcting",
+    ),
+    # 2026-10-16 (D-18): the editors' own text, read back. In another program
+    # they are refused, because nothing there can be read.
+    CommandHelp(
+        Command.READ_SENTENCE,
+        ("read last sentence", "read the last sentence"),
+        "Reads the sentence just before the cursor, with its punctuation said.",
+        "Correcting",
+    ),
+    CommandHelp(
+        Command.READ_PARAGRAPH,
+        ("read last paragraph", "read the last paragraph", "read this paragraph"),
+        "Reads the paragraph the cursor is in.",
+        "Correcting",
+    ),
+    CommandHelp(
+        Command.READ_SELECTION,
+        ("read selection", "read the selection"),
+        "Reads what is selected.",
         "Correcting",
     ),
     CommandHelp(

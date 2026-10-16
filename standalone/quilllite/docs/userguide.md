@@ -3699,7 +3699,10 @@ sentence, it is just written as words.
 | "no caps that" | Puts the last phrase in small letters. |
 | "delete word" | Deletes the word before the cursor. |
 | "delete sentence" | Deletes the sentence the cursor is at the end of. |
-| "read that" or "repeat that" | Reads the last phrase aloud again. |
+| "read that" or "repeat that" | Reads aloud again all of what last went in: a phrase, a whole snippet or clip, or reviewed words. |
+| "read last sentence" | Reads the sentence just before the cursor, with its punctuation said. |
+| "read last paragraph" or "read this paragraph" | Reads the paragraph the cursor is in. |
+| "read selection" | Reads what is selected. |
 | "spell that" | Selects the last phrase, and the next thing you say is spelled out letter by letter to replace it. |
 | "copy that" | Copies the last phrase to the clipboard. |
 
@@ -4320,6 +4323,7 @@ you change here is saved when you press OK in Dictation Settings.
 | Commands only after the command word (strict mode) (Alt+E) | A command said on its own is written as words; the stop phrase always works | Unchecked (checked in QUILL Transcribe) |
 | Seconds command mode waits for a command (Alt+D) | How long command mode lasts with no command, from 5 to 30 | 8 |
 | Send dictation to review first (Alt+V) | What you dictate goes into Review Dictation instead, to insert once; see "Review before inserting" | Unchecked |
+| Keep a dictation history (Alt+Y) | Off, One day, Seven days or Thirty days of the text you dictate, never the sound, listed in Recent Phrases; turning it off deletes it; see "Recent phrases" | Off |
 
 #### Dictating in Spanish
 
@@ -4822,7 +4826,23 @@ Press **Shift+F11** (**Tools > Dictation > Recent Phrases...**) to see the last
 twenty phrases you dictated, newest first. Arrow to one and press **Enter**
 (Insert Again) to write it at the cursor as one undo step, or press **Copy** to
 put it on the clipboard. This is your rescue if "scratch that" took away one
-phrase too many. The list lasts only until you close QUILL Lite.
+phrase too many. This session's phrases last only until you close QUILL Lite.
+
+After them come words kept from before, so nothing you said is lost:
+
+- **Not written**: a phrase that could not be written, or words held while
+  dictation was paused. They stay on this computer, even through a crash,
+  until you write or discard them, and QUILL Lite says once at start how many
+  are waiting.
+- **Review not finished**: the words of a review you closed without inserting.
+- **Earlier**: with **Keep a dictation history** on in More Dictation Settings,
+  the phrases from earlier days, newest first.
+
+**Insert Again** writes one at the cursor and deletes it from the computer;
+**Discard** (**Alt+D**) deletes it without writing it; **Clear History**
+(**Alt+H**) deletes the whole history after asking, with No as the answer
+unless you choose Yes. Kept words and the history are sealed for your Windows
+account, never kept as sound, and never written to the log.
 
 ### Talking to the AI
 
@@ -4977,8 +4997,10 @@ the same way they do in QUILL Lite:
   (QUILL's snippets, the shared abbreviation library, and QUILL's clips):
   "insert snippet" and its name, "insert abbreviation" and its name, and
   "paste clip" and a number. They are typed as one phrase, so "scratch that" takes all of it back. A snippet's
-  blanks are typed as [name], with no questions, and the cursor stays at the
-  end.
+  blanks are asked for by voice first: you hear each blank's name, like
+  "Title?", and say the answer; for a choice, say an option or "choose two".
+  Say skip, scratch that to go back one, or cancel to type nothing. The
+  cursor stays at the end.
 
 Some commands need to read the text of the document, and Inkwell cannot read
 another program's text. So "select", "go to", "correct", "select sentence",

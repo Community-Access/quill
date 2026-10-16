@@ -390,9 +390,12 @@ PURPOSES.update({
         "can read line by line. The same list is in the user guide."
     ),
     "Recent Phrases": (
-        "What you have dictated since the app started, newest first. Insert "
-        "Again writes the phrase you are on at the cursor, and Copy puts it on "
-        "the clipboard. The list is forgotten when you close the app."
+        "What you have dictated since the app started, newest first, then words "
+        "kept from before: phrases that were not written, a review that did not "
+        "finish, and with a dictation history on, earlier phrases. Insert Again "
+        "writes the phrase you are on at the cursor, Copy puts it on the clipboard, "
+        "and Discard deletes kept words without writing them. This session's "
+        "phrases are forgotten when you close the app."
     ),
     "My Words and Phrases": (
         "Everything dictation has been taught: words spelled your way, phrases "

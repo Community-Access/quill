@@ -52,13 +52,21 @@ open, and what waits for a later version.
    abbreviation" and "paste clip" work, because they only insert. "What can I
    say" is a spoken sentence while dictating, and Dictation Commands lists
    exactly what works in other programs, with the person's own phrases.
+11. **Never lose what was said** (after 1.0.0, D-5). Words held while paused,
+   and a phrase whose typing stopped part-way, are kept on disk, sealed with
+   Windows DPAPI, until they are typed or discarded; Recent Phrases lists them
+   after this run's phrases, with Discard. A finished recording's transcript
+   can be typed into a field (Review Transcript's Type into a Field). The text
+   history is opt-in (Keep a dictation history: off, 1, 7 or 30 days), text
+   only, clearable, and deleted when turned off.
+12. **Snippet blanks by voice** (after 1.0.0, D-8). "QUILL insert snippet"
+   asks for each blank and choice, then types the filled snippet as one
+   phrase. "read that" reads the whole of the last insertion (D-18).
 
 ## Waiting for a later version
 
-- Typing a reviewed transcript into another program's field.
-- Recent Phrases kept on disk between runs (the rest of D-5).
-- Snippet blanks filled in by voice, with spoken prompts (the rest of D-8).
-- Optional transcript history.
+- Keeping audio for replay, which stays a separate opt-in that text history
+  never implies.
 - Named dictation profiles for email, notes and forms.
 - A multi-page setup with Back on each step.
 - Inkwell and the editors using QUILL Transcribe as a service rather than

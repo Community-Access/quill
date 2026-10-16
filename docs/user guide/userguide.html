@@ -8349,7 +8349,9 @@ afterwards, Live Dictation writes as you go.</p>
 <p>The same submenu has more windows:</p>
 <ul>
 <li><strong>Recent Phrases…</strong> (<code>Shift+F11</code>) lists the
-last twenty phrases of the session, with Insert Again and Copy.</li>
+last twenty phrases of the session, with Insert Again and Copy, and
+after them any words kept from before. See “Words that were not written,
+and dictation history”.</li>
 <li><strong>My Words and Phrases…</strong> (<code>Alt+Shift+F10</code>)
 is a window with Add Word, Add Phrase, Add Correction, Edit and Remove.
 It edits your <code>dictation.md</code> file for you.
@@ -8616,6 +8618,42 @@ away.</li>
 <strong>Send dictation to review first</strong> (<code>Alt+V</code>) in
 More Dictation Settings. The first thing you say opens the window, and
 nothing reaches the document until you insert it.</p>
+<h5 id="words-that-were-not-written-and-dictation-history">Words that
+were not written, and dictation history</h5>
+<p>Dictation never throws away words it could not write. If dictation
+pauses because its field moved, or Windows stops typing a phrase
+part-way through, the words are kept on this computer until you deal
+with them, even if QUILL is closed, crashes or the computer sleeps.
+Stopping dictation while words are held says so: “1 phrase held while
+paused was not written. They are kept in Recent Phrases.” The next time
+QUILL starts, it says once how many are waiting.</p>
+<p>They are in <strong>Recent Phrases</strong> (<code>Shift+F11</code>),
+after this session’s phrases, labelled “Not written” with the time. So
+is a review that did not finish, labelled “Review not finished”. Choose
+one and:</p>
+<ul>
+<li><strong>Insert Again</strong> (<code>Alt+I</code>, or
+<code>Enter</code>) writes it at the cursor, and then it is deleted from
+this computer;</li>
+<li><strong>Copy</strong> (<code>Alt+C</code>) puts it on the clipboard
+and keeps it;</li>
+<li><strong>Discard</strong> (<code>Alt+D</code>) deletes it without
+writing it.</li>
+</ul>
+<p>Only words that were never written are kept, and they are sealed for
+your Windows account, so another account on the same computer cannot
+read them. Nothing you dictate is kept as sound.</p>
+<p><strong>Dictation history</strong> is off unless you turn it on. In
+More Dictation Settings, <strong>Keep a dictation history</strong>
+(<code>Alt+Y</code>) can be Off, One day, Seven days or Thirty days.
+While it is on, the text of each phrase you dictate is kept for that
+long, sealed the same way, and Recent Phrases lists the earlier ones
+after the words not written, newest first, labelled “Earlier” with the
+time. <strong>Clear History</strong> (<code>Alt+H</code>) in Recent
+Phrases deletes all of it, after a question whose answer is No unless
+you choose Yes. Turning the history off deletes it too. Neither the kept
+words nor the history ever go into QUILL’s log or a diagnostic
+report.</p>
 <h5 id="holding-ctrlf11-to-talk">Holding Ctrl+F11 to talk</h5>
 <p>Press <code>Ctrl+F11</code> to start dictating and press it again to
 stop. That is all most people ever need, and it is how dictation starts
@@ -8827,7 +8865,9 @@ the middle of a sentence is written as words, just as you meant it.</p>
 <li>“select that”</li>
 <li>“capitalize that”, “all caps that”, “no caps that”</li>
 <li>“delete word”, “delete sentence”</li>
-<li>“read that”</li>
+<li>“read that” reads all of what last went in, a whole snippet
+included</li>
+<li>“read last sentence”, “read last paragraph”, “read selection”</li>
 <li>“go to beginning of line”, “go to end of line”, “go to top”, “go to
 end of document”</li>
 <li>“select sentence”, “select line”, “select paragraph”</li>
@@ -8924,14 +8964,24 @@ nothing is written.</li>
 <strong>and its trigger</strong> writes what that abbreviation stands
 for.</li>
 </ul>
-<p>A snippet with blanks to fill in is written with each blank as its
-name in square brackets, like <code>[name]</code>. Say “select name” and
-then the real name, and the blank is filled.</p>
+<p>A snippet with blanks to fill in asks for each blank by voice before
+anything is written. With the starter Bug Report Template, “insert
+snippet bug report” says “Snippet Bug Report Template, 3 blanks. Say
+cancel to stop. Summary?”. What you say next is the answer, with spoken
+punctuation obeyed. For a choice, such as
+<code>${choice:NVDA|JAWS|Narrator}</code>, you hear “Choose NVDA, JAWS
+or Narrator.”: say one of them, or “choose two”. Say
+<strong>skip</strong> to leave a blank empty, <strong>scratch
+that</strong> to answer the one before again, or <strong>cancel</strong>
+to write nothing. <code>${date}</code> and <code>${time}</code> come
+from this computer’s clock, and <code>${cursor}</code> puts the cursor
+where the snippet says.</p>
 <p>Whatever goes in, it goes in as one phrase: one <code>Ctrl+Z</code>
 takes it out, and so does “scratch that”. The read-back keeps it short,
 “Snippet sign off” or “Pasted slot 3”, rather than reading the whole
-thing to you. These commands do not work while <strong>Just write what I
-say</strong> is on, because commands are off then.</p>
+thing to you; say “read that” to hear all of it. These commands do not
+work while <strong>Just write what I say</strong> is on, because
+commands are off then.</p>
 <h5 id="correct-that-choosing-another-guess">Correct that: choosing
 another guess</h5>
 <p>Sometimes the engine was not sure what you said, and had a second
@@ -9175,6 +9225,13 @@ always works</td>
 see “Review before inserting”</td>
 <td>Off</td>
 </tr>
+<tr>
+<td>Keep a dictation history (<code>Alt+Y</code>)</td>
+<td>Off, One day, Seven days or Thirty days of the text you dictate,
+never the sound, listed in Recent Phrases; turning it off deletes it;
+see “Words that were not written, and dictation history”</td>
+<td>Off</td>
+</tr>
 </tbody>
 </table>
 <p>In settings files these are
@@ -9192,11 +9249,13 @@ see “Review before inserting”</td>
 <code>windows_dictation_never_type</code>,
 <code>windows_dictation_command_prefix</code>,
 <code>windows_dictation_command_prefix_required</code>,
-<code>windows_dictation_command_timeout</code> and
-<code>windows_dictation_review_first</code>. The review window also
-keeps <code>windows_dictation_review_context</code> (its context check
-box) and <code>windows_dictation_review_consent</code> (your answer to
-its question).</p>
+<code>windows_dictation_command_timeout</code>,
+<code>windows_dictation_review_first</code> and
+<code>windows_dictation_history_days</code> (0 for off, or 1, 7 or 30).
+The review window also keeps
+<code>windows_dictation_review_context</code> (its context check box)
+and <code>windows_dictation_review_consent</code> (your answer to its
+question).</p>
 <p>A failure is always spoken, whatever these settings say. If the
 read-back plays through speakers, the microphone can hear it, so use
 headphones or choose a sound only.</p>
@@ -9915,9 +9974,11 @@ window still has the focus.</p>
 <p>Your snippets, abbreviations and clips work there too, because they
 only insert: “insert snippet” and its name, “insert abbreviation” and
 its name, and “paste clip” and a number. Each is typed as one phrase, so
-“scratch that” takes all of it back. A snippet’s blanks are typed as
-their names in square brackets, like [title], with no questions, and the
-cursor stays at the end.</p>
+“scratch that” takes all of it back. A snippet’s blanks are asked for by
+voice first, as in a document (see “Snippets and clips by voice”), and
+the cursor stays at the end. “read that” reads what dictation typed
+there; “read last sentence” and the other commands that read the text
+cannot, because nothing in the other program is read.</p>
 <p>Anything that needs to read what is already in the other program
 cannot work there: “select”, “go to”, “correct”, “copy all” and “show
 clips”. If you say one of those, you are told “That works in QUILL’s own
@@ -10135,7 +10196,8 @@ never heard. Spell it with the phonetic alphabet in your next
 phrase.</li>
 <li><strong>Recent Phrases</strong> (<code>Shift+F11</code>) shows what
 was written for your last twenty phrases, so you can see what went
-wrong.</li>
+wrong, and any words that were never written. Say “read last sentence”
+to hear a sentence back with its punctuation.</li>
 <li>When you are done, <strong>Tidy Dictated Text</strong>
 (<code>Ctrl+F3</code>) can fix sound-alike words, names and punctuation
 in a paragraph or a selection with AI, if you have a ChatGPT
