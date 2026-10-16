@@ -340,7 +340,8 @@ loader. Version 1.0 should expose, at minimum:
 - Pause sensitivity and phrase preview mode.
 - Automatic punctuation, capitalization, and spoken punctuation.
 - Filler removal.
-- My Words and Phrases / rewrite corrections.
+- My Words and Phrases / rewrite corrections, with Import and Export (Markdown
+  or CSV, merge only, preview first; dict.md D-12).
 - Number, date, and dash formatting where supported.
 - Phrase feedback: speech, sound, both, or silent, following shared
   `action_feedback` guarantees.

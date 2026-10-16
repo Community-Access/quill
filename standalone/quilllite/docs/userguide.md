@@ -3932,6 +3932,34 @@ takes it out. Each change is saved straight away and read back to you. If you
 like working in a file, **Open the File...** opens the same list as a plain
 text file called `dictation.md`.
 
+#### Moving and sharing your word list
+
+**Export...** in My Words and Phrases saves your whole list to a file you name.
+Choose **Word list in Markdown** for the same kind of file as `dictation.md`, or
+**Spreadsheet, say and write columns** for a CSV file with three columns: `say`,
+`write` and `kind` (word, phrase or correction). You hear how many were saved,
+such as "Exported 15 entries to my-dictation-words.md."
+
+**Import...** reads a Markdown word list or a CSV file and adds what is new. A
+CSV file needs a `say` column; `write` and `kind` are optional. Before anything
+changes, a window shows how many entries will be added and how many are already
+in your list, with the new ones listed. Press **Add Them** to add them, or
+**Cancel** to change nothing. Then you hear, for example, "Imported 12 words, 3
+already there." Import never replaces anything: where the file has a word or
+phrase you already have, written differently, yours is kept. Your list as it was
+is saved first, as `dictation-before-import.md` beside `dictation.md`. To undo
+an import, copy that file over `dictation.md`.
+
+**Use the shared word list** is the check box at the top of the window. QUILL,
+QUILL Transcribe and Quill Inkwell share one list on this computer. QUILL Lite
+keeps its own until you check this box. When you check it, a window first shows
+which of your words will be added to the shared list; press **Use the Shared
+List** to go ahead. From then on, a word you add here is used by all of them
+from their next phrase. Uncheck the box to go back to QUILL Lite's own list,
+which is just as you left it. The box is not shown in a portable copy, which
+always keeps its own list. Your dictation instructions and dictation contexts
+are kept beside the list, so they come with whichever list you use.
+
 Your own phrases show up in the "what can I say" list along with everything
 else.
 
@@ -4799,7 +4827,8 @@ same window you know from QUILL Lite. Or set things up in QUILL Lite and press
 
 Inkwell uses the **My Words and Phrases** list that the full QUILL editor
 keeps, so if you also use QUILL, a name you taught it there comes out right in
-your email too. Dictate Anywhere is off in Safe Mode.
+your email too. Check **Use the shared word list** in My Words and Phrases, and
+the words you teach QUILL Lite are used there as well. Dictate Anywhere is off in Safe Mode.
 
 #### One microphone at a time
 

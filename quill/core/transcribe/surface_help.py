@@ -90,6 +90,15 @@ PURPOSES: dict[str, str] = {
         "Choose a recording and a model; it is transcribed in the background and "
         "the transcript waits in Notifications for you to review."
     ),
+    "My Words and Phrases": (
+        "The words, phrases and corrections dictation uses, the same list as QUILL. "
+        "Import adds the new entries from a Markdown or CSV file after showing them; "
+        "Export saves the list to one."
+    ),
+    "Import Words": (
+        "What the file would add to your list, with the counts. Add Them adds them; "
+        "nothing you already have is replaced."
+    ),
     "Notifications": (
         "Finished, failed and cancelled transcriptions. Open one to review its transcript."
     ),

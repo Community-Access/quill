@@ -809,6 +809,65 @@ Still to check: the wake word's false-start rate on Moonshine tiny against the
 old Vosk numbers was not measured, because Vosk's never were; the NVDA and
 JAWS check of the new sentence joins `docs/qa/screen-reader-checks-2026-10.md`.
 
+## 20. As built, 2026-10-15: one word list for the family, with Import and Export (D-12)
+
+**Import and Export.** My Words and Phrases has **Import...** (Alt+I) and
+**Export...** (Alt+X) in every host that opens it: QUILL, QUILL Lite and QUILL
+Transcribe. Quill Inkwell has no My Words window; it reads QUILL's list, so an
+import done anywhere reaches it. Two formats, chosen by extension: the same
+Markdown `dictation.md` is, and CSV with `say,write,kind` columns (`kind` is
+optional on import; without it an empty `write` is a word and anything else a
+phrase). The model is `quill/core/windows_dictation/words_exchange.py`; the
+flows and the preview are `quill/ui/dictation_words_exchange.py`.
+
+**Merge rules.** Import never replaces. Each entry is new (added at the end of
+its list), already there (same kind, same text), or different from yours (the
+same word or spoken phrase, other spelling or other text), and yours is kept.
+A file that repeats itself counts the repeat once. Words compare without case
+for the key but with case for "same", so `nvda` against `NVDA` is a
+difference, reported, not a silent second spelling. A `## Commands` section is
+adopted only when the list has none.
+
+**Nothing changes before a yes.** A preview window lists the new entries, with
+the counts as the list's label so the reader says them as the list takes focus
+(GATE-13: no announcement). **Add Them** first copies the list to
+`dictation-before-import.md` beside it, the undo for one import, and then
+says the outcome: "Imported 12 words, 3 already there." A file with nothing
+new opens no preview and says so. A file that is not a word list is refused in
+a sentence (`WordsImportError`, `QUILL-DICTATION-WORDS-IMPORT`).
+
+**Round trip.** Export then import into an empty list writes the same bytes, in
+both formats (CSV carries the three lists, not Commands). That is the D-12
+acceptance test, `test_export_then_import_round_trips_the_file_exactly`.
+
+**One list for the family, as far as this goes.** QUILL, QUILL Transcribe and
+Quill Inkwell already read one file, QUILL's `app_data_dir()/dictation.md`
+(`default_profile_path`). QUILL Lite was the odd one out. It now has "Use the
+shared word list" (Alt+U) at the top of its My Words and Phrases, stored as
+`share_quill_dictation_words` (off, beside `share_quill_dictionary`, for the
+same reason: a machine without QUILL should not grow a Quill folder unasked).
+Checking it shows the same preview of which of QUILL Lite's words will be added
+to the shared list, merges them, and from then on
+`DocumentDictationMixin._dictation_profile_path` returns the shared file, so a
+word added in QUILL Lite is used by Transcribe on its next phrase (its
+`rewriter(default_profile_path())` re-reads the file when its time changes).
+Unchecking goes back to QUILL Lite's own file, untouched. A portable QUILL Lite
+is never offered the box. The instructions and contexts files live beside the
+list and follow it.
+
+**Not done, and where D-13 picks up.** dict.md D-12 places the family list in
+the shared family folder (`%LOCALAPPDATA%\QuillVille\Dictation`, the model
+store's), with a read-through on each app's old path until it migrates. That
+move was not made: QUILL's Locked Dictation, the instructions file and the
+contexts file all key off `default_profile_path()`, and moving them is a
+migration of three files across installed, custom-folder and portable copies.
+D-13 creates `family_dictation.json` in that same folder; it should move
+`dictation.md` (and its two neighbours) there in the same change, with
+`default_profile_path()` reading the old path until the first write, and
+retire `share_quill_dictation_words` by pointing QUILL Lite's "shared" at the
+new file. The box is first in the window's tab order but focus still opens on
+the list, so the choice is offered on every open rather than asked once.
+
 ## Appendix A: the dict.md section numbers, and where they live now
 
 | dict.md | What it was | Here |

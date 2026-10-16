@@ -421,6 +421,7 @@
             "recovery_keep_days": "int",
             "share_quill_abbreviations": "bool",
             "share_quill_dictionary": "bool",
+            "share_quill_dictation_words": "bool",
             "dictionary_online_lookups": "bool",
             "clip_library_autocapture": "bool",
             "announcement_throttle_ms": "int",

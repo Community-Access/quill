@@ -1381,7 +1381,11 @@ Control coverage: 29 audited sites (29 helped).
 
 **Find a Setting or Command.** Every menu command in this app, searchable by name. Type part of a name; Down moves into the matches; Enter does the highlighted one.
 
+**Import Words.** What the file would add to your list, with the counts. Add Them adds them; nothing you already have is replaced.
+
 **More Dictation Settings.** The rest of dictation's settings: pauses, fillers, dashes, wake phrase and the OpenAI model. Some only matter inside QUILL's own documents.
+
+**My Words and Phrases.** The words, phrases and corrections dictation uses, the same list as QUILL. Import adds the new entries from a Markdown or CSV file after showing them; Export saves the list to one.
 
 **Notifications.** Finished, failed and cancelled transcriptions. Open one to review its transcript.
 
@@ -1882,6 +1886,8 @@ Control coverage: 157 audited sites (157 helped).
 
 **Image Description.** What the model saw in the picture, read-only. Insert Below puts it under the paragraph you are in, Copy puts it on the clipboard, and Control Z takes an insert back.
 
+**Import Words.** What the file would add to your word list, with the counts as the list's name. Add Them adds them and keeps a copy of your list as it was; nothing you already have is replaced. Cancel changes nothing.
+
 **Inline Notes.** Every note in this document: what it says, the line it is on, the text it is about, and whether it is private or written into the file. A note whose text was deleted is listed last, so you can still read or remove it. Enter goes to a note, Delete deletes one, F2 edits one; Remove All, Copy All and Export are buttons.
 
 **Insert HTML Tag.** Forty HTML tags, searchable by what they do as well as by what they are called -- dropdown finds select, checkbox finds input, collapsible finds details. Choose the tag, then give it attributes if it needs any, or press Enter on the empty box to skip that. Anything selected in your document is wrapped by the tag.
@@ -1911,6 +1917,8 @@ Control coverage: 157 audited sites (157 helped).
 **Move QUILL Lite to Beta?.** Says plainly what could go wrong on Beta or Dev, how your settings are protected, and how to come back. Nothing changes unless you check the box and choose Move.
 
 **Move QUILL Lite to Dev?.** Says plainly what could go wrong on Beta or Dev, how your settings are protected, and how to come back. Nothing changes unless you check the box and choose Move.
+
+**My Words and Phrases.** Everything dictation has been taught: words spelled your way, phrases that write something longer, and corrections. Each change is saved at once. Import adds the new entries from a Markdown or CSV file after showing them, and Export saves the list to a file.
 
 **Next Paragraph.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
 
@@ -1961,6 +1969,8 @@ Control coverage: 157 audited sites (157 helped).
 **Use My ChatGPT Subscription.** Use the ChatGPT plan you already pay for instead of QUILL's free AI or an API key. Continue with ChatGPT opens your browser to sign in and allow it; once signed in, choose the model from your plan's own list and whether web search is allowed. Sign Out and Forget on This Computer appear only while you are signed in.
 
 **Use My Own AI Key.** Use AI help on your own OpenAI or Google Gemini account instead of QUILL's free service. Choose the company, paste the key it gave you, and test it; with a saved key there is no daily limit. Remove the Saved Key puts you straight back on the free service.
+
+**Use the Shared Word List.** Which of your words will be added to the list QUILL, QUILL Transcribe and Quill Inkwell share, before QUILL Lite starts using it. Use the Shared List goes ahead; Cancel keeps QUILL Lite's own list.
 
 **Windows titled "Help:...".** This is the help window itself: the purpose of the window you were in, then the control you were on. Escape returns you to it.
 

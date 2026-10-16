@@ -363,6 +363,22 @@ PURPOSES.update({
         "Again writes the phrase you are on at the cursor, and Copy puts it on "
         "the clipboard. The list is forgotten when you close the app."
     ),
+    "My Words and Phrases": (
+        "Everything dictation has been taught: words spelled your way, phrases "
+        "that write something longer, and corrections. Each change is saved at "
+        "once. Import adds the new entries from a Markdown or CSV file after "
+        "showing them, and Export saves the list to a file."
+    ),
+    "Import Words": (
+        "What the file would add to your word list, with the counts as the "
+        "list's name. Add Them adds them and keeps a copy of your list as it "
+        "was; nothing you already have is replaced. Cancel changes nothing."
+    ),
+    "Use the Shared Word List": (
+        "Which of your words will be added to the list QUILL, QUILL Transcribe "
+        "and Quill Inkwell share, before QUILL Lite starts using it. Use the "
+        "Shared List goes ahead; Cancel keeps QUILL Lite's own list."
+    ),
     "More Dictation Settings": (
         "The finer dictation choices: holding the key to talk, the quiet "
         "preview of what is being heard, profiles for writing and for talking "
@@ -398,6 +414,8 @@ SHARED_WITH_QUILL: frozenset[str] = frozenset({
     "Dictation Settings",
     "Dictation Commands",
     "Recent Phrases",
+    "My Words and Phrases",
+    "Import Words",
     "More Dictation Settings",
     "Speech Models",
     "Transcribe a Recording",

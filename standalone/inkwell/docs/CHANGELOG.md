@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- **QUILL Lite's words in Dictate Anywhere** (2026-10-15). Dictate Anywhere
+  uses QUILL's My Words and Phrases list, as before. QUILL Lite can now share
+  that list (Use the shared word list, in its My Words and Phrases), so the
+  names you teach QUILL Lite come out right here too. QUILL, QUILL Lite and
+  QUILL Transcribe can also import and export the list.
 - **Dictate Anywhere stays in the field you started in** (2026-10-15). If the
   focus moves while you dictate, Inkwell pauses and holds your words instead of
   typing them somewhere else, as QUILL Transcribe does. **Dictation > Resume**

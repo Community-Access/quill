@@ -2,6 +2,31 @@
 
 ## 1.0.0
 
+### My Words and Phrases: Import, Export, and QUILL Lite on the shared list (D-12, 2026-10-15)
+
+dict.md D-12, design record section 20.
+
+- **`quill/core/windows_dictation/words_exchange.py`** (wx-free): export as the
+  same Markdown `dictation.md` is, or CSV `say,write,kind` (UTF-8 with BOM);
+  import `.md` or `.csv` (a `say` column at least; no header means by position;
+  cp1252 fallback). `plan_merge` sorts every entry into new, already there, or
+  different from yours (kept); `apply_merge` only adds; `back_up` copies the
+  list to `dictation-before-import.md` first. `WordsImportError`
+  (`QUILL-DICTATION-WORDS-IMPORT`). Export then import into an empty list is
+  byte-identical.
+- **`quill/ui/dictation_words_exchange.py`**: Import... (Alt+I) and Export...
+  (Alt+X) in My Words and Phrases, so in QUILL, QUILL Lite and QUILL
+  Transcribe; a preview (`ImportPreviewDialog`, counts as the list's label)
+  before anything is written; spoken counts ("Imported 12 words, 3 already
+  there.").
+- **QUILL Lite**: `share_quill_dictation_words` (off), set by "Use the shared
+  word list" (Alt+U) at the top of its My Words and Phrases; turning it on
+  merges QUILL Lite's words into QUILL's `dictation.md` after the same preview.
+  Not offered in a portable copy. `lite_window_dictation.py` owns the path.
+- Tests: `test_dictation_words_exchange.py` (core),
+  `test_dictation_words_exchange_ui.py`, and two in `test_lite_dictation.py`
+  (a word added in QUILL Lite reaches Transcribe's rewriter; portable keeps its own).
+
 ### Dictation: the never-type list, and Inkwell keeps its field (2026-10-15)
 
 D-24 and D-15 from the dictation plan, rescued from an uncommitted worktree.

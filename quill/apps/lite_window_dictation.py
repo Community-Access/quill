@@ -2,15 +2,20 @@
 
 Every command, sentence and rule is the shared module's
 (:mod:`quill.ui.windows_dictation_commands`), which QUILL runs too. What is here
-is the one thing that cannot be shared: the sound audit credits an app only
-with the cues its *own* files post, so QUILL Lite names the five it plays --
-and the Sound Scheme window lists exactly those, so each can be changed or
-switched off.
+is what cannot be shared: the sound audit credits an app only with the cues
+its *own* files post, so QUILL Lite names the five it plays -- and the Sound
+Scheme window lists exactly those, so each can be changed or switched off.
+And which word list it uses (dict.md D-12): its own ``dictation.md``, or, when
+the person checks "Use the shared word list" in My Words and Phrases, the one
+QUILL, QUILL Transcribe and Quill Inkwell read. A portable copy keeps its own.
 """
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from quill.core.sound_events import SoundEvent
+from quill.core.windows_dictation.words_exchange import SharedWords
 from quill.ui.windows_dictation_commands import WindowsDictationMixin
 
 __all__ = ["DocumentDictationMixin", "dictation_cell"]
@@ -31,6 +36,33 @@ class DocumentDictationMixin(WindowsDictationMixin):
     def _dictation_cue(self, event: str) -> None:
         if event in _LITE_DICTATION_CUES:
             self._cue(event)
+
+    def _dictation_shared_words(self) -> SharedWords | None:
+        """The own-or-shared choice, or ``None`` in a portable copy."""
+        from quill.core.lite.paths import _portable_root
+        from quill.core.speech.dictation_profile import default_profile_path
+
+        if _portable_root() is not None:
+            return None
+        app = self.app  # type: ignore[attr-defined]
+
+        def set_on(on: bool) -> None:
+            app.settings.share_quill_dictation_words = on
+            app.save_settings()
+
+        return SharedWords(
+            own_path=Path(app.data_dir) / "dictation.md",
+            shared_path=default_profile_path(),
+            is_on=lambda: bool(getattr(app.settings, "share_quill_dictation_words", False)),
+            set_on=set_on,
+        )
+
+    def _dictation_profile_path(self) -> Path:
+        """QUILL Lite's own ``dictation.md``, or the shared one when chosen."""
+        shared = self._dictation_shared_words()
+        if shared is None:
+            return Path(self.app.data_dir) / "dictation.md"  # type: ignore[attr-defined]
+        return shared.current_path()
 
 
 def dictation_cell(frame: object) -> str:

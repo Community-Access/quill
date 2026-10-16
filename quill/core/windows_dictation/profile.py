@@ -8,8 +8,10 @@ own spoken phrases: "my signature => Jeff Bishop\\nTucson" writes two lines
 whenever they say *my signature*.
 
 QUILL keeps the file in its data folder and its Locked Dictation reads it too,
-so one set of words serves both kinds of dictation. QUILL Lite keeps its own,
-in its own data folder, because it keeps everything of its own there.
+so one set of words serves both kinds of dictation; QUILL Transcribe and Quill
+Inkwell read it too. QUILL Lite keeps its own, in its own data folder, unless
+the person checks "Use the shared word list" in My Words and Phrases (dict.md
+D-12, :mod:`quill.core.windows_dictation.words_exchange`).
 
 Read when it changes, not on every phrase: a dictation session hears a phrase
 every few seconds, and re-reading a file that has not changed that often is
