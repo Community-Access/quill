@@ -40,7 +40,10 @@ def test_portable_script_waits_for_pid_then_copies_excluding_data_then_relaunche
     assert "apply-update.log" in script
 
 
-def test_installer_script_runs_setup_elevated_and_silent_then_relaunches() -> None:
+def test_installer_script_runs_setup_silent_not_elevated_then_relaunches() -> None:
+    """Every QuillVille installer is per-user, so the helper never asks for an
+    administrator (2026-10-15): -Verb RunAs cost a UAC prompt for nothing, and a
+    standard user's update went into the administrator's profile."""
     script = build_apply_update_script(
         pid=99,
         mode="installer",
@@ -50,7 +53,9 @@ def test_installer_script_runs_setup_elevated_and_silent_then_relaunches() -> No
         setup_exe=Path(r"C:\Users\me\AppData\Roaming\Quill\updates\Setup-2.0.3.exe"),
     )
     assert "Start-Process" in script
-    assert "RunAs" in script
+    assert "RunAs" not in script
+    assert "exit $p.ExitCode" in script
+    assert 'if not "%INSTALLRC%"=="0" goto :installfailed' in script
     assert "/VERYSILENT" in script
     assert "Setup-2.0.3.exe" in script
     assert r'"C:\Program Files\Quill Radio\QuillRadio.exe"' in script
@@ -266,6 +271,11 @@ def test_portable_helper_batch_copies_and_preserves_data(tmp_path: Path) -> None
     (source / "QuillRadio.exe").write_text("NEW", encoding="utf-8")
     (source / "docs").mkdir()
     (source / "docs" / "readme.txt").write_text("hello", encoding="utf-8")
+    # Every portable zip ships a data folder (it marks the copy portable). With
+    # only the installed data folder excluded, robocopy walked into this one and
+    # /MIR purged the user's files as "extra" (2026-10-15).
+    (source / "data").mkdir()
+    (source / "data" / "README.txt").write_text("shipped", encoding="utf-8")
 
     log = tmp_path / "apply.log"
     # Relaunch target: a .cmd that exits immediately, so running the real script

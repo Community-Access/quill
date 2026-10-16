@@ -4343,7 +4343,14 @@ you about a new version and downloads it only when you ask.
 **If an update doesn't start.** After an update, Cast checks that the new
 version really opens. If it doesn't open within two minutes, the update undoes
 itself and puts back the version you had, and the next time Cast starts it
-tells you so. Nothing of yours is changed, and Update History has the details.
+tells you so. If the new version is still running but stuck, it is closed
+first. Nothing of yours is changed, and Update History has the details. If the
+installer itself doesn't finish, nothing is changed at all: Cast opens again
+straight away as the version you had and tells you the update could not be
+installed. A portable copy is updated by putting the new version in the old
+folder's place, with your `data` folder moved across untouched. The installer
+updates quietly and doesn't ask for administrator permission, because Cast is
+installed for you alone.
 To make this possible, Cast keeps a copy of the installer for the version you
 have: on Beta and Dev for as long as you have that version, and on Stable for a
 week or three starts after each update. That copy takes about 200 MB of disk

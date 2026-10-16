@@ -255,7 +255,26 @@ this repository carries only the wrapper, installer, icon, and docs.</p>
 <p>Testing rebuild: <strong>3.2.0 (build 4)</strong>. The packages have
 not been published yet.</p>
 <ul>
-<li><strong>Quill Radio’s own sounds play on the radio’s sound
+<li><p><strong>Updating keeps your favorites where Quill Radio looks for
+them.</strong> A portable copy now updates by putting the new version in
+the old folder’s place and moving your <code>data</code> folder across.
+Run for the first time before release, the new way would have put your
+data one folder too deep, and the old in-place copy would have deleted
+it, because every portable zip carries its own small <code>data</code>
+folder. Both are fixed.</p></li>
+<li><p><strong>A failed update undoes itself properly.</strong> If the
+new version is stuck, it is closed before the old one is put back; an
+undo that can’t finish leaves things as they were instead of saying it
+went back; and the first update after you install says so too when it
+has to go back.</p></li>
+<li><p><strong>No administrator prompt for an update.</strong> The
+installer runs quietly as you, since Quill Radio is installed for you
+alone. If it doesn’t finish, Quill Radio opens again as the version you
+had and tells you the update could not be installed.</p></li>
+<li><p><strong>The Beta engine’s 335 MB come back.</strong> When the
+last app on Beta returns to Stable, its separate copy of the shared
+engine is removed, as the Release Channel window promised.</p></li>
+<li><p><strong>Quill Radio’s own sounds play on the radio’s sound
 card.</strong> The sounds for connecting, playing, stopped, stream
 errors, recording started and stopped, and reminders now go to the same
 device as the radio, so if you send the station to a broadcast card you
@@ -271,13 +290,13 @@ back by themselves when it returns. <strong>Alt+Shift+M</strong>
 (<strong>Audio &gt; App Sounds</strong>) turns them off and back on, the
 same key in every QUILL app. Your screen reader is never moved. Reported
 on QUILLVille by Rick Lewis. User guide: “Where Quill Radio’s own sounds
-play” in Chapter 5.</li>
-<li><strong>QUILL Lineups (Playback &gt; Lineups…, Ctrl+U).</strong> A
-Lineup is a named list of anything Quill Radio and QUILL Cast can play:
-stations, saved places, podcasts and episodes, YouTube videos, playlists
-and channels, Local Media files and recordings, in an order you choose.
-Add things by hand with <strong>Add to Lineup…</strong> from Browse
-Stations, your favorites, Search Stations and Local Media
+play” in Chapter 5.</p></li>
+<li><p><strong>QUILL Lineups (Playback &gt; Lineups…, Ctrl+U).</strong>
+A Lineup is a named list of anything Quill Radio and QUILL Cast can
+play: stations, saved places, podcasts and episodes, YouTube videos,
+playlists and channels, Local Media files and recordings, in an order
+you choose. Add things by hand with <strong>Add to Lineup…</strong> from
+Browse Stations, your favorites, Search Stations and Local Media
 (Ctrl+Shift+U), or give a Lineup rules: what to look for, where, which
 ones, in what order and how many, and, for every rule, how long its
 items stay (while they match, until finished, for some days, until
@@ -295,23 +314,23 @@ one file both apps can edit at once, and Cast hands Radio anything it
 cannot play itself. Rules read only what is on your computer and run
 while the Lineups window is open. New user guide chapter (Chapter 17,
 QUILL Lineups), PRD section 23, and the tutorial <strong>Build a lineup
-that fills itself</strong>.</li>
-<li><strong>Saved places in Favorites survive a restart.</strong> A
+that fills itself</strong>.</p></li>
+<li><p><strong>Saved places in Favorites survive a restart.</strong> A
 genre, country or other browse place saved to Favorites disappeared the
 next time Quill Radio started, because a place has no stream address and
 the favorites file refused anything without one. Saved places now come
-back, and remember which source they came from.</li>
-<li><strong>Runs on Python 3.14, and older runtimes are cleaned
+back, and remember which source they came from.</p></li>
+<li><p><strong>Runs on Python 3.14, and older runtimes are cleaned
 up.</strong> The shared QuillVille runtime this build installs is Python
 3.14. The installer then removes older runtimes (Python 3.13) that no
 installed QuillVille app uses any more; one that an app or a shortcut
 still points to is left alone. Portable copies carry their own Python
-and change nothing outside their folder.</li>
-<li><strong>Record Key in Show and Hide Key.</strong> The key box has a
-<strong>Record Key…</strong> button (Alt+R): press the combination you
+and change nothing outside their folder.</p></li>
+<li><p><strong>Record Key in Show and Hide Key.</strong> The key box has
+a <strong>Record Key…</strong> button (Alt+R): press the combination you
 want and it is written into the box for you. Typing it still works, and
 is the way for a key another program has already taken, which never
-reaches the window.</li>
+reaches the window.</p></li>
 </ul>
 <p>Carried over from build 2:</p>
 <ul>

@@ -132,6 +132,7 @@ pytest tests/unit/native/test_runtime_resolver.py -v
 pytest tests/unit/native/test_launch_failure.py -v
 pytest tests/unit/native/test_launcher_cmdline.py -v
 pytest tests/unit/scripts/test_build_native_launcher.py -v
+pytest tests/unit/native/test_launcher_compiled.py -v
 ```
 
 The first is a Python mirror of the C runtime resolver and exercises
@@ -141,7 +142,15 @@ way and pins every constant and phrase to the C source. The third mirrors
 real `cmdline.c` into a small harness and checks that shell32's
 `CommandLineToArgvW` reads every command line it builds back to the exact
 arguments. The fourth is the per-product identity contract and the
-cross-product storage-mode allowlist check.
+cross-product storage-mode allowlist check. The fifth compiles the real thing
+(2026-10-15): `runtime_resolve.c` behind a small probe that answers every
+release-channel slot question, and the whole launcher, built by
+`build_native_launcher.py` as a release builds it, started beside an ini that
+names a Beta slot with a stand-in runtime in both the Stable and the Beta
+folder (only the Beta one may start). Like the third, it skips where MSVC and
+CMake are not installed. The wrapper picks CMake's generator for whichever
+Visual Studio `vswhere` finds (2022 or 2026), so a machine or CI image on the
+newer one still builds.
 
 ## What this is NOT
 

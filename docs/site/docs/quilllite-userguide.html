@@ -5415,6 +5415,13 @@ turn into text</td>
 “Dictating into other programs”</td>
 <td>(a button)</td>
 </tr>
+<tr>
+<td>Programs Dictation Never Types Into (button, Alt+N)</td>
+<td>The programs dictation never types into from Quill Inkwell or QUILL
+Transcribe, such as your password manager; see “Programs dictation never
+types into”</td>
+<td>The common password managers and the Windows sign-in prompts</td>
+</tr>
 </tbody>
 </table>
 <h4 id="dictating-in-spanish">Dictating in Spanish</h4>
@@ -6248,6 +6255,46 @@ It also will not type into a program running as administrator when
 Inkwell is not, into QUILL Lite’s or QUILL’s own windows (use
 <strong>Ctrl+F11</strong> there, which does much more), or into
 Inkwell’s own window. Each time, you hear a sentence saying why.</p>
+<h4 id="it-stays-in-the-field-you-started-in">It stays in the field you
+started in</h4>
+<p>Dictate Anywhere writes only into the field where you started. If the
+focus moves to another field or another program while you are dictating,
+Inkwell pauses and holds what you said, rather than typing it in the
+wrong place. You then have three choices, in Inkwell’s
+<strong>Dictation</strong> menu and, while dictation is paused, in
+Inkwell’s tray menu:</p>
+<ul>
+<li><strong>Resume</strong> goes back to the field you started in.</li>
+<li><strong>Resume in This Field</strong> writes the held words where
+you are now.</li>
+<li><strong>Discard Held Words</strong> throws the held words away.</li>
+</ul>
+<p>If you choose Resume in This Field from Inkwell’s own window or tray
+menu, Inkwell waits for you to switch to another program and resumes
+there. Choose it again to cancel.</p>
+<h4 id="programs-dictation-never-types-into">Programs dictation never
+types into</h4>
+<p>Some programs should never receive dictation at all, such as your
+password manager. Press <strong>Programs Dictation Never Types
+Into…</strong> (<strong>Alt+N</strong>) in More Dictation Settings to
+see and change that list. It starts with the common password managers
+and the Windows sign-in, lock and administrator prompts. If you dictate
+into one of them, you hear something like “Dictation does not type into
+KeePass. Move to another program.” and nothing is typed. Programs are
+matched by their file name, like keepass.exe, never by the title of a
+window.</p>
+<ul>
+<li>To remove a program, choose it in the list and press
+<strong>Delete</strong>, or press <strong>Remove</strong>.</li>
+<li>To add the program you were just using, go to it, come back to QUILL
+Lite, open the settings again, and press <strong>Add Front
+Program</strong>. The button says which program it will add.</li>
+<li>To add a program by name, type its file name in <strong>Program file
+name</strong> and press <strong>Enter</strong>, or <strong>Add by
+Name</strong>. You can leave off .exe: “KeePass” adds keepass.exe. A
+name you typed but did not add is kept when you press OK.</li>
+</ul>
+<p>The list is saved when you press OK in Dictation Settings.</p>
 <h4 id="what-you-hear-1">What you hear</h4>
 <p>In other programs, your screen reader already says each character as
 it is typed, so Inkwell starts with a <strong>tone only</strong> after
@@ -8480,9 +8527,12 @@ installs the update and opens QUILL Lite again.</li>
 The update goes in the next time you close QUILL Lite, and the next time
 you open it, you have the new version.</li>
 </ul>
-<p>A portable copy updates itself where it is. The new files replace the
-old ones in its folder, and its <code>data</code> folder is never
-touched.</p></li>
+<p>A portable copy updates itself where it is. The new version takes the
+old folder’s place and your <code>data</code> folder moves across
+untouched; the old version is kept beside it, in a folder ending in
+<code>.previous</code>, until the new one has started three times or for
+a week. The installer updates quietly and doesn’t ask for administrator
+permission, because QUILL Lite is installed for you alone.</p></li>
 <li><p><strong>Close</strong> leaves everything as it is. Nothing is
 downloaded until you press Update.</p></li>
 </ul>
@@ -8559,8 +8609,12 @@ it waited. On Stable nothing changes.</p>
 <h4 id="if-an-update-doesnt-start">If an update doesn’t start</h4>
 <p>After an update, QUILL Lite checks that the new version really opens.
 If it doesn’t open within two minutes, the update undoes itself and puts
-back the version you had. The next time QUILL Lite starts, it tells you
-so. Nothing of yours is changed, and Update History has the details.</p>
+back the version you had. If the new version is still running but stuck,
+it is closed first. The next time QUILL Lite starts, it tells you so.
+Nothing of yours is changed, and Update History has the details.</p>
+<p>If the installer itself doesn’t finish, nothing is changed at all:
+QUILL Lite opens again straight away as the version you had, and tells
+you the update could not be installed.</p>
 <p>To make this possible, QUILL Lite keeps a copy of the installer for
 the version you have: on Beta and Dev for as long as you have that
 version, and on Stable for a week or three starts after each update.

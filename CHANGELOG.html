@@ -245,6 +245,82 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="release-channels-run-for-real-the-launcher-channel-the-update-helper-and-the-workflows-2026-10-15">Release
+channels run for real: the launcher, /CHANNEL=, the update helper and
+the workflows (2026-10-15)</h3>
+<p>Everything below had been written and read as text, never run. Now it
+runs, and running it found seven faults. Runbook:
+<code>docs/release/RELEASE.md</code>, “What has been run for real” and
+“One-time setup (owner)”.</p>
+<ul>
+<li><strong>Compiled tests.</strong>
+<code>tests/unit/native/test_launcher_compiled.py</code> compiles
+<code>runtime_resolve.c</code> behind a probe and builds the real
+launcher with <code>build_native_launcher.py</code>, then starts it
+against stand-in runtimes in the Stable and Beta slots
+(<code>tests/unit/native/compiled_harness.py</code>, including a
+windowless <code>fakeproc.exe</code>).
+<code>tests/unit/structure/test_shared_runtime_channel_compiled.py</code>
+compiles <code>installer/shared-runtime.iss</code> with Inno Setup 7 and
+checks
+<code>InstallChannel</code>/<code>RuntimeSlot</code>/<code>RuntimeDir</code>
+against <code>runtime_slots.py</code> for every channel and version.
+<code>tests/unit/core/test_update_helper_runs.py</code> runs the update
+helper batch against temp folders with stand-in apps and installers. All
+skip without the tools.</li>
+<li><strong><code>build_native_launcher.py</code></strong> picks CMake’s
+generator from the installed Visual Studio (<code>msvc_generator</code>;
+2022 or 2026) and discards a CMake cache made by another generator; the
+cmdline harness test uses it too.</li>
+<li><strong>Portable swap</strong>
+(<code>apply_script.swap_lines</code>): the user’s <code>data</code>
+folder replaces the new copy’s shipped one instead of landing in
+<code>data\data</code>, the move is checked, and any failed step is
+undone before the in-place fallback.</li>
+<li><strong>In-place copy</strong> (<code>self_update</code>):
+<code>/XD</code> names both <code>data</code> folders. With only the
+installed one excluded, robocopy walked into the zip’s <code>data</code>
+and <code>/MIR</code> purged the user’s files. <strong>A released
+portable copy whose helper runs still uses the old copy</strong> (the
+helper is written by the version being updated); see the open decision
+in <code>docs/release/RELEASE.md</code>.</li>
+<li><strong>Health check and undo</strong>
+(<code>apply_script.health_lines</code>, <code>stop_lines</code>):
+processes still running from the app’s folder are stopped first; every
+move is checked and a half-done undo is put back, never reported as
+done; the <code>.failed</code> folder is removed.</li>
+<li><strong>Installer</strong>
+(<code>apply_script.installer_lines</code>): no longer
+<code>-Verb RunAs</code> (every installer is per-user; Inno elevates
+itself for an all-users copy), its exit code is kept, and a failed
+install relaunches the old version at once with
+<code>apply-result.json</code> <code>install_failed</code>
+(<code>install_failed_lines</code>), which
+<code>apply.confirm_started</code> reports and records as
+<code>failed</code>. <code>/LOG=</code> is built with
+<code>[char]34</code>, because the doubled quote lost its closing
+quote.</li>
+<li><strong>First update’s undo is reported</strong>:
+<code>apply.running_version</code> reads the version being replaced from
+the install’s ini (or QUILL’s build) when the rollback books are empty;
+<code>begin_self_update</code> gains <code>current_version</code>.</li>
+<li><strong>Runtime slots</strong>:
+<code>runtime_reclaim.abandoned_channel_slots</code> lets the
+installer’s <code>reclaim-old-slots</code> remove a Beta or Dev slot of
+this Python that no app needs any more.
+<code>runtime_slots.default_channel</code> treats an unknown
+<code>/CHANNEL=</code> as absent, as the installer does. Three
+<code>Runtime\3.13</code> paths in the fragment’s comments had become
+<code>\x03</code> characters.</li>
+<li><strong>Workflows</strong>: <code>dev-builds.yml</code> and
+<code>promote-release.yml</code> pass every input through
+<code>env:</code>, run only in <code>Community-Access/quill</code>; Dev
+builds stop at once without <code>DEV_BUILDS_TOKEN</code>, build and
+label one commit, and pass <code>-SkipCatalog</code> to Radio only.
+<code>tests/unit/structure/test_release_workflows.py</code> pins the
+secrets, the Environment and the rest.</li>
+</ul>
+<h3
 id="dictation-the-never-type-list-and-inkwell-keeps-its-field-2026-10-15">Dictation:
 the never-type list, and Inkwell keeps its field (2026-10-15)</h3>
 <p>D-24 and D-15 from the dictation plan, rescued from an uncommitted

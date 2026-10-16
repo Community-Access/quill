@@ -6722,8 +6722,12 @@ arrow through like a document. Press **Tab** to reach two buttons:
     the next time you close QUILL Lite, and the next time you open it, you have
     the new version.
 
-  A portable copy updates itself where it is. The new files replace the old
-  ones in its folder, and its `data` folder is never touched.
+  A portable copy updates itself where it is. The new version takes the old
+  folder's place and your `data` folder moves across untouched; the old
+  version is kept beside it, in a folder ending in `.previous`, until the new
+  one has started three times or for a week. The installer updates quietly and
+  doesn't ask for administrator permission, because QUILL Lite is installed
+  for you alone.
 - **Close** leaves everything as it is. Nothing is downloaded until you press
   Update.
 
@@ -6806,8 +6810,13 @@ changes.
 
 After an update, QUILL Lite checks that the new version really opens. If it doesn't
 open within two minutes, the update undoes itself and puts back the version you
-had. The next time QUILL Lite starts, it tells you so. Nothing of yours is changed,
-and Update History has the details.
+had. If the new version is still running but stuck, it is closed first. The next
+time QUILL Lite starts, it tells you so. Nothing of yours is changed, and Update
+History has the details.
+
+If the installer itself doesn't finish, nothing is changed at all: QUILL Lite
+opens again straight away as the version you had, and tells you the update could
+not be installed.
 
 To make this possible, QUILL Lite keeps a copy of the installer for the version you
 have: on Beta and Dev for as long as you have that version, and on Stable for a

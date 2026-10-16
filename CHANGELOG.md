@@ -2,6 +2,57 @@
 
 ## 1.0.0
 
+### Release channels run for real: the launcher, /CHANNEL=, the update helper and the workflows (2026-10-15)
+
+Everything below had been written and read as text, never run. Now it runs,
+and running it found seven faults. Runbook: `docs/release/RELEASE.md`, "What
+has been run for real" and "One-time setup (owner)".
+
+- **Compiled tests.** `tests/unit/native/test_launcher_compiled.py` compiles
+  `runtime_resolve.c` behind a probe and builds the real launcher with
+  `build_native_launcher.py`, then starts it against stand-in runtimes in the
+  Stable and Beta slots (`tests/unit/native/compiled_harness.py`, including a
+  windowless `fakeproc.exe`). `tests/unit/structure/test_shared_runtime_channel_compiled.py`
+  compiles `installer/shared-runtime.iss` with Inno Setup 7 and checks
+  `InstallChannel`/`RuntimeSlot`/`RuntimeDir` against `runtime_slots.py` for
+  every channel and version. `tests/unit/core/test_update_helper_runs.py` runs
+  the update helper batch against temp folders with stand-in apps and
+  installers. All skip without the tools.
+- **`build_native_launcher.py`** picks CMake's generator from the installed
+  Visual Studio (`msvc_generator`; 2022 or 2026) and discards a CMake cache made
+  by another generator; the cmdline harness test uses it too.
+- **Portable swap** (`apply_script.swap_lines`): the user's `data` folder
+  replaces the new copy's shipped one instead of landing in `data\data`, the
+  move is checked, and any failed step is undone before the in-place fallback.
+- **In-place copy** (`self_update`): `/XD` names both `data` folders. With only
+  the installed one excluded, robocopy walked into the zip's `data` and `/MIR`
+  purged the user's files. **A released portable copy whose helper runs still
+  uses the old copy** (the helper is written by the version being updated);
+  see the open decision in `docs/release/RELEASE.md`.
+- **Health check and undo** (`apply_script.health_lines`, `stop_lines`):
+  processes still running from the app's folder are stopped first; every move
+  is checked and a half-done undo is put back, never reported as done; the
+  `.failed` folder is removed.
+- **Installer** (`apply_script.installer_lines`): no longer `-Verb RunAs`
+  (every installer is per-user; Inno elevates itself for an all-users copy),
+  its exit code is kept, and a failed install relaunches the old version at
+  once with `apply-result.json` `install_failed` (`install_failed_lines`),
+  which `apply.confirm_started` reports and records as `failed`. `/LOG=` is
+  built with `[char]34`, because the doubled quote lost its closing quote.
+- **First update's undo is reported**: `apply.running_version` reads the
+  version being replaced from the install's ini (or QUILL's build) when the
+  rollback books are empty; `begin_self_update` gains `current_version`.
+- **Runtime slots**: `runtime_reclaim.abandoned_channel_slots` lets the
+  installer's `reclaim-old-slots` remove a Beta or Dev slot of this Python that
+  no app needs any more. `runtime_slots.default_channel` treats an unknown
+  `/CHANNEL=` as absent, as the installer does. Three `Runtime\3.13` paths in
+  the fragment's comments had become `\x03` characters.
+- **Workflows**: `dev-builds.yml` and `promote-release.yml` pass every input
+  through `env:`, run only in `Community-Access/quill`; Dev builds stop at once
+  without `DEV_BUILDS_TOKEN`, build and label one commit, and pass
+  `-SkipCatalog` to Radio only. `tests/unit/structure/test_release_workflows.py`
+  pins the secrets, the Environment and the rest.
+
 ### Dictation: the never-type list, and Inkwell keeps its field (2026-10-15)
 
 D-24 and D-15 from the dictation plan, rescued from an uncommitted worktree.

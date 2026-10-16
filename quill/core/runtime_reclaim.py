@@ -7,9 +7,17 @@ nothing removes ``Runtime\\3.13`` (about 335 MB) once every app has moved on.
 Every app installer runs :func:`reclaim` (``runtime_cli reclaim-old-slots``)
 right after registering, so the last app to move is the one that frees it.
 
-**Only an older Python's slot, and only when nothing can still need it.** A
-slot for the current or a newer minor is never touched. An older one is kept
-while any of these hold:
+**Release channels leave slots behind too** (2026-10-15). An app that moves
+from Beta back to Stable is reinstalled into ``Runtime\\3.14`` and its reference
+moves with it, but nothing removed ``Runtime\\3.14-beta`` -- the uninstaller
+only runs on uninstall -- so the "about 335 MB comes back" the risk window
+promises never came back. So a **Beta or Dev slot of the current Python** is a
+candidate too (:func:`abandoned_channel_slots`), under exactly the same tests.
+The slot being installed into, the current Python's Stable slot, and any slot
+of a newer Python are never candidates.
+
+**Only when nothing can still need it.** A candidate is kept while any of
+these hold:
 
 * :func:`quill.core.runtime_refs.slot_referenced` -- an app is registered
   against it (apps register at every launch, not only at install);
@@ -52,6 +60,7 @@ from quill.core.updater.runtime_slots import channel_of_slot, is_valid_slot
 
 __all__ = [
     "InstallScan",
+    "abandoned_channel_slots",
     "ReclaimResult",
     "launch_references",
     "older_slots",
@@ -106,6 +115,27 @@ def older_slots(root: Path, current_slot: str) -> list[str]:
     except OSError:
         return []
     return sorted(name for name in names if (m := _minor(name)) is not None and m < current)
+
+
+def abandoned_channel_slots(root: Path, current_slot: str) -> list[str]:
+    """Beta and Dev slot folders for *current_slot*'s Python, other than *current_slot*.
+
+    Installing Quill Radio back onto Stable (``3.14``) makes ``3.14-beta`` a
+    candidate; installing it onto Beta makes ``3.14-dev`` one. Whether a
+    candidate is really unused is :func:`reclaim`'s question.
+    """
+    current = _minor(current_slot)
+    if current is None:
+        return []
+    try:
+        names = [entry.name for entry in root.iterdir() if entry.is_dir()]
+    except OSError:
+        return []
+    return sorted(
+        name
+        for name in names
+        if name != current_slot and _minor(name) == current and channel_of_slot(name) != STABLE
+    )
 
 
 def _has_private_runtime(app_dir: Path) -> bool:
@@ -312,10 +342,11 @@ def reclaim(
     *,
     remove: Callable[[Path, str], bool] = _remove_slot,
 ) -> list[ReclaimResult]:
-    """Remove every older-Python slot nothing can still need; say what happened."""
+    """Remove every older-Python slot, and every Beta or Dev slot this Python's
+    apps have left, that nothing can still need; say what happened."""
     named, unknown = slots_named_by_installs(installs.app_dirs)
     unknown = unknown or installs.unknown_install
-    candidates = older_slots(root, current_slot)
+    candidates = older_slots(root, current_slot) + abandoned_channel_slots(root, current_slot)
     launched = slots_launched_by(root, candidates, launch_blobs)
     results: list[ReclaimResult] = []
     for slot in candidates:

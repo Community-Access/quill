@@ -9,12 +9,23 @@ name: promote-release
 # promote_release.py --no-sign: they flip the GitHub release, write the feed
 # change WITHOUT a signature, and open a pull request. GATE-FEED fails that
 # pull request until the owner signs it on their own computer:
-#   git fetch origin && git switch promote/<app>-<version>
+#   git fetch origin && git switch promote/<app>-<version>-<channel>
 #   python scripts/feed_tool.py sign --app <app>
 #   git commit -am "sign feed" && git push
+# (A pull request opened with the workflow's own token starts no checks; the
+# owner's signing push is what runs CI on it.)
 #
 # The same script runs locally, signing as it goes:
 #   python scripts/promote_release.py --app radio --version 3.3.0 --to stable
+#
+# Needs, in the repository settings: the Environment "stable-promotion" with
+# the owner as required reviewer, and "Allow GitHub Actions to create and
+# approve pull requests" (Settings > Actions > General) so the job can open
+# the pull request. No secret: GITHUB_TOKEN is enough, because nothing here
+# signs. docs/release/RELEASE.md, "Promotion".
+#
+# Every input reaches a script through env:, never pasted into it, so a
+# version or a soak reason can never become shell.
 
 on:
   workflow_dispatch:
@@ -43,14 +54,32 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  # One promotion of one app at a time: two would race on the same feed file.
+  group: promote-${{ inputs.app }}
+  cancel-in-progress: false
+
+env:
+  APP: ${{ inputs.app }}
+  VERSION: ${{ inputs.version }}
+  TO: ${{ inputs.to }}
+  SKIP_SOAK: ${{ inputs.skip_soak }}
+
 jobs:
   checks:
+    if: github.repository == 'Community-Access/quill'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
           python-version: "3.14"
+      - name: Check the version is one
+        run: |
+          if ! printf '%s' "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+([-+][0-9A-Za-z.+-]+)?$'; then
+            echo "::error::'$VERSION' is not a version (3.3.0, 3.3.0-beta.2, 3.3.0+2)."
+            exit 1
+          fi
       - name: Install
         run: python -m pip install -e . pynacl
       - name: Run every promotion check (dry run)
@@ -58,8 +87,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           python scripts/promote_release.py \
-            --app "${{ inputs.app }}" --version "${{ inputs.version }}" --to "${{ inputs.to }}" \
-            --skip-soak "${{ inputs.skip_soak }}" --dry-run --report promotion-report.txt
+            --app "$APP" --version "$VERSION" --to "$TO" \
+            --skip-soak "$SKIP_SOAK" --dry-run --report promotion-report.txt
       - uses: actions/upload-artifact@v7
         if: always()
         with:
@@ -83,21 +112,21 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          python scripts/promote_release.py --app "${{ inputs.app }}" --version "${{ inputs.version }}" \
-            --to beta --skip-soak "${{ inputs.skip_soak }}" --no-sign
+          python scripts/promote_release.py --app "$APP" --version "$VERSION" \
+            --to beta --skip-soak "$SKIP_SOAK" --no-sign
       - name: Open the pull request to sign
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          BRANCH="promote/${{ inputs.app }}-${{ inputs.version }}-beta"
+          BRANCH="promote/$APP-$VERSION-beta"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git switch -c "$BRANCH"
           git add docs/site/updates/v2 docs/release/promotions.log
-          git commit -m "release: ${{ inputs.app }} ${{ inputs.version }} to Beta (feed unsigned)"
+          git commit -m "release: $APP $VERSION to Beta (feed unsigned)"
           git push origin "$BRANCH"
-          gh pr create --head "$BRANCH" --title "Promote ${{ inputs.app }} ${{ inputs.version }} to Beta" \
-            --body "Sign the feed before merging: python scripts/feed_tool.py sign --app ${{ inputs.app }}"
+          gh pr create --head "$BRANCH" --title "Promote $APP $VERSION to Beta" \
+            --body "Sign the feed before merging: python scripts/feed_tool.py sign --app $APP"
 
   promote-stable:
     needs: checks
@@ -117,18 +146,18 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          python scripts/promote_release.py --app "${{ inputs.app }}" --version "${{ inputs.version }}" \
-            --to stable --skip-soak "${{ inputs.skip_soak }}" --no-sign
+          python scripts/promote_release.py --app "$APP" --version "$VERSION" \
+            --to stable --skip-soak "$SKIP_SOAK" --no-sign
       - name: Open the pull request to sign
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          BRANCH="promote/${{ inputs.app }}-${{ inputs.version }}-stable"
+          BRANCH="promote/$APP-$VERSION-stable"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git switch -c "$BRANCH"
           git add docs/site/updates/v2 docs/release/promotions.log
-          git commit -m "release: ${{ inputs.app }} ${{ inputs.version }} to Stable (feed unsigned)"
+          git commit -m "release: $APP $VERSION to Stable (feed unsigned)"
           git push origin "$BRANCH"
-          gh pr create --head "$BRANCH" --title "Promote ${{ inputs.app }} ${{ inputs.version }} to Stable" \
-            --body "Sign the feed before merging: python scripts/feed_tool.py sign --app ${{ inputs.app }}"
+          gh pr create --head "$BRANCH" --title "Promote $APP $VERSION to Stable" \
+            --body "Sign the feed before merging: python scripts/feed_tool.py sign --app $APP"

@@ -10,6 +10,24 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 Testing rebuild: **3.2.0 (build 4)**. The packages have not been published yet.
 
+- **Updating keeps your favorites where Quill Radio looks for them.** A
+  portable copy now updates by putting the new version in the old folder's
+  place and moving your `data` folder across. Run for the first time before
+  release, the new way would have put your data one folder too deep, and the
+  old in-place copy would have deleted it, because every portable zip carries
+  its own small `data` folder. Both are fixed.
+- **A failed update undoes itself properly.** If the new version is stuck, it
+  is closed before the old one is put back; an undo that can't finish leaves
+  things as they were instead of saying it went back; and the first update
+  after you install says so too when it has to go back.
+- **No administrator prompt for an update.** The installer runs quietly as
+  you, since Quill Radio is installed for you alone. If it doesn't finish,
+  Quill Radio opens again as the version you had and tells you the update
+  could not be installed.
+- **The Beta engine's 335 MB come back.** When the last app on Beta returns
+  to Stable, its separate copy of the shared engine is removed, as the
+  Release Channel window promised.
+
 - **Quill Radio's own sounds play on the radio's sound card.** The sounds for
   connecting, playing, stopped, stream errors, recording started and stopped,
   and reminders now go to the same device as the radio, so if you send the

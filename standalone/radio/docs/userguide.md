@@ -6141,9 +6141,12 @@ without a new version number, it is a newer build, and Check for Updates offers 
 
 Quill Radio offers the download that matches your copy: the portable zip for a
 portable copy, and the installer for everyone else. **A portable copy updates
-itself where it is**: the new files replace the old ones in its folder, and
-the `data` folder, with your favorites, settings, history and recordings, is
-never touched.
+itself where it is**: the new version takes the old folder's place, and the
+`data` folder, with your favorites, settings, history and recordings, moves
+across untouched. The old version is kept beside it, in a folder ending in
+`.previous`, until the new one has started three times or for a week, so a
+failed update can put it back. The installer updates quietly and doesn't ask
+for administrator permission, because Quill Radio is installed for you alone.
 
 Quill Radio also checks quietly once a day when it opens. It only speaks when
 it finds something. Turn it off with **Check for updates automatically on
@@ -6167,7 +6170,9 @@ installs itself.
   automatically" and left the zip in `data\updates`. Update them once by hand:
   close Quill Radio, unzip `Quill-Radio-Portable-3.2.0.zip`, and copy
   everything in its `QuillRadio` folder over your copy's folder, replacing
-  files when asked. Your `data` folder is not in the zip, so it is left alone.
+  files when asked. The zip's own `data` folder holds only a short README and
+  the note that marks the copy portable, so copying it over yours replaces
+  those two files and leaves everything of yours alone.
 - **If Check for Updates keeps offering an update you already installed.** Up
   to 3.0.4, on a computer with several QuillVille apps, Quill Radio could read
   the wrong version number, and then compared the wrong number. From 3.2.0 it
@@ -6228,7 +6233,11 @@ you about a new version and downloads it only when you ask.
 **If an update doesn't start.** After an update, Quill Radio checks that the new
 version really opens. If it doesn't open within two minutes, the update undoes
 itself and puts back the version you had, and the next time Quill Radio starts it
-tells you so. Nothing of yours is changed, and Update History has the details.
+tells you so. If the new version is still running but stuck, it is closed
+first. Nothing of yours is changed, and Update History has the details. If the
+installer itself doesn't finish, nothing is changed at all: Quill Radio opens
+again straight away as the version you had and tells you the update could not
+be installed.
 To make this possible, Quill Radio keeps a copy of the installer for the version you
 have: on Beta and Dev for as long as you have that version, and on Stable for a
 week or three starts after each update. That copy takes about 200 MB of disk

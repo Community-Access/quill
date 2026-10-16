@@ -7355,9 +7355,14 @@ or <strong>Close</strong> (Escape) to leave it.</li>
 </ol>
 <p>Quill Radio offers the download that matches your copy: the portable
 zip for a portable copy, and the installer for everyone else. <strong>A
-portable copy updates itself where it is</strong>: the new files replace
-the old ones in its folder, and the <code>data</code> folder, with your
-favorites, settings, history and recordings, is never touched.</p>
+portable copy updates itself where it is</strong>: the new version takes
+the old folder’s place, and the <code>data</code> folder, with your
+favorites, settings, history and recordings, moves across untouched. The
+old version is kept beside it, in a folder ending in
+<code>.previous</code>, until the new one has started three times or for
+a week, so a failed update can put it back. The installer updates
+quietly and doesn’t ask for administrator permission, because Quill
+Radio is installed for you alone.</p>
 <p>Quill Radio also checks quietly once a day when it opens. It only
 speaks when it finds something. Turn it off with <strong>Check for
 updates automatically on launch</strong> in Preferences.</p>
@@ -7382,8 +7387,10 @@ install the update automatically” and left the zip in
 <code>data\updates</code>. Update them once by hand: close Quill Radio,
 unzip <code>Quill-Radio-Portable-3.2.0.zip</code>, and copy everything
 in its <code>QuillRadio</code> folder over your copy’s folder, replacing
-files when asked. Your <code>data</code> folder is not in the zip, so it
-is left alone.</li>
+files when asked. The zip’s own <code>data</code> folder holds only a
+short README and the note that marks the copy portable, so copying it
+over yours replaces those two files and leaves everything of yours
+alone.</li>
 <li><strong>If Check for Updates keeps offering an update you already
 installed.</strong> Up to 3.0.4, on a computer with several QuillVille
 apps, Quill Radio could read the wrong version number, and then compared
@@ -7450,15 +7457,18 @@ tells you about a new version and downloads it only when you ask.</p>
 <p><strong>If an update doesn’t start.</strong> After an update, Quill
 Radio checks that the new version really opens. If it doesn’t open
 within two minutes, the update undoes itself and puts back the version
-you had, and the next time Quill Radio starts it tells you so. Nothing
-of yours is changed, and Update History has the details. To make this
-possible, Quill Radio keeps a copy of the installer for the version you
-have: on Beta and Dev for as long as you have that version, and on
-Stable for a week or three starts after each update. That copy takes
-about 200 MB of disk space, which Stable gives back once the week or the
-three starts are up. After an update, the previous installer is kept
-until the new version has started three times, or for a week, and then
-it is deleted.</p>
+you had, and the next time Quill Radio starts it tells you so. If the
+new version is still running but stuck, it is closed first. Nothing of
+yours is changed, and Update History has the details. If the installer
+itself doesn’t finish, nothing is changed at all: Quill Radio opens
+again straight away as the version you had and tells you the update
+could not be installed. To make this possible, Quill Radio keeps a copy
+of the installer for the version you have: on Beta and Dev for as long
+as you have that version, and on Stable for a week or three starts after
+each update. That copy takes about 200 MB of disk space, which Stable
+gives back once the week or the three starts are up. After an update,
+the previous installer is kept until the new version has started three
+times, or for a week, and then it is deleted.</p>
 <p><strong>Coming back to Stable.</strong> Open Release Channel again
 and choose <strong>Stable</strong>.</p>
 <ul>

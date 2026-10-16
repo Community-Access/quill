@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.12" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Release Channels for the QUILL Family: Stable, Beta and
 Dev</title>
@@ -465,6 +465,34 @@ promote runner), and verifying with <code>signtool</code> where it is
 installed. QUILL’s own <code>v1.0.0</code> candidate is built and signed
 on the owner’s computer, because <code>windows-release.yml</code> has no
 Azure credential (<code>docs/code-signing.md</code>).</p>
+<p><strong>Run for real, 2026-10-15.</strong> The pieces above that had
+only been read as text now run: the native launcher is compiled (MSVC,
+<code>/W4</code> clean) and started against stand-in runtimes in each
+slot (<code>tests/unit/native/test_launcher_compiled.py</code>);
+<code>shared-runtime.iss</code> is compiled by Inno Setup 7 and its
+<code>/CHANNEL=</code> answers checked against
+<code>runtime_slots.py</code>
+(<code>tests/unit/structure/test_shared_runtime_channel_compiled.py</code>);
+and the update helper’s swap, health check and undo run against temp
+folders with stand-in apps and installers
+(<code>tests/unit/core/test_update_helper_runs.py</code>). That found
+and fixed: the user’s <code>data</code> folder landing in
+<code>data\data</code> after a portable swap; the in-place copy deleting
+what was in <code>data</code> whenever the new zip has a
+<code>data</code> folder (every current zip does, and a released
+portable copy whose helper runs still uses that copy – an open decision,
+<code>docs/release/RELEASE.md</code>); <code>/LOG=</code> losing its
+closing quote; a first update’s undo never being reported; a failed
+install being “health-checked” and then undone; an installer started
+elevated though every QuillVille installer is per-user; a hung new
+version blocking its own undo (the helper now stops what runs from the
+app’s folder); and an abandoned Beta or Dev runtime slot never being
+removed (<code>runtime_reclaim.abandoned_channel_slots</code>). Both
+workflows now pass every input through <code>env:</code>, run only in
+<code>Community-Access/quill</code>, and <code>dev-builds.yml</code>
+stops at once without its token and builds and labels one commit. What
+the owner still has to do is in <code>docs/release/RELEASE.md</code>,
+“One-time setup (owner)”.</p>
 </blockquote>
 <hr />
 <h2 id="0-the-short-version">0. The short version</h2>

@@ -92,8 +92,14 @@ def is_valid_slot(slot: str) -> bool:
 
 def default_channel(version: str, requested: str = "") -> Channel:
     """The installer's rule: ``/CHANNEL=`` when given; else Stable for a final
-    version and Beta for any pre-release (a hand install from the website)."""
-    if requested.strip():
+    version and Beta for any pre-release (a hand install from the website).
+
+    A ``/CHANNEL=`` that names no channel counts as not given, exactly as
+    ``InstallChannel`` in ``installer/shared-runtime.iss`` treats it -- checked
+    against the compiled installer by
+    ``tests/unit/structure/test_shared_runtime_channel_compiled.py``.
+    """
+    if requested.strip().lower() in (STABLE, BETA, DEV):
         return normalize_channel(requested)
     parsed = ReleaseVersion.try_parse(version)
     if parsed is None or not parsed.is_prerelease:

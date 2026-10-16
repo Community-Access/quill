@@ -10,8 +10,8 @@
 ;   3. remove the shared runtime on uninstall only when it becomes unreferenced.
 ;
 ; RELEASE CHANNEL SLOTS (release-channels plan 6.5, 2026-10). Each channel has
-; its own runtime folder: Runtime.13 (Stable, the folder that always existed),
-; Runtime.13-beta and Runtime.13-dev. Within a slot the newest build wins,
+; its own runtime folder: Runtime\3.14 (Stable, the folder that always existed),
+; Runtime\3.14-beta and Runtime\3.14-dev. Within a slot the newest build wins,
 ; as before; across slots nothing is shared, so a Beta Quill Radio can never put
 ; Beta code under a Stable QUILL Lite. The slot comes from /CHANNEL=stable|beta|dev
 ; on the command line -- the updater always passes it -- or, for a hand install,
@@ -126,13 +126,16 @@ Filename: "{app}\quill-app-version.ini"; Section: "app"; Key: "channel"; String:
 ; the shared runtime's own Python so the tested refcount logic does the work.
 Filename: "{code:RuntimeExe}"; Parameters: "-m quill.core.runtime_cli register {#AppRefId} {code:RuntimeSlot}"; \
   StatusMsg: "Registering the shared runtime..."; Flags: runhidden waituntilterminated
-; Then free an older Python's slot (Runtime\3.13, about 335 MB) once no
-; installed app can still need it -- the last app to move to the new Python is
-; the one that reclaims it. quill.core.runtime_reclaim keeps any slot an app is
-; registered on, any slot an installed app's ini names, and every older Stable
-; slot while any installed app's ini predates slot=. Always exits 0.
+; Then free a slot no installed app can still need (about 335 MB each): an
+; older Python's (Runtime\3.13) -- the last app to move to the new Python is the
+; one that reclaims it -- and, since 2026-10-15, a Beta or Dev slot of this
+; Python that its last app has left (Runtime\3.14-beta once every Beta app is
+; back on Stable). quill.core.runtime_reclaim keeps any slot an app is
+; registered on, any slot an installed app's ini names, any slot a shortcut
+; runs from, and every older Stable slot while any installed app's ini predates
+; slot=. Never the slot being installed into. Always exits 0.
 Filename: "{code:RuntimeExe}"; Parameters: "-m quill.core.runtime_cli reclaim-old-slots {code:RuntimeSlot}"; \
-  StatusMsg: "Removing the runtime for an older Python..."; Flags: runhidden waituntilterminated
+  StatusMsg: "Removing runtimes no app uses any more..."; Flags: runhidden waituntilterminated
 ; Repair a "start with Windows" entry an older build wrote as the bare runtime
 ; exe. The app repairs its own entry at launch, but that needs a launch -- and
 ; this is the entry that PREVENTS one: before 3.0.2 the bare runtime met the
