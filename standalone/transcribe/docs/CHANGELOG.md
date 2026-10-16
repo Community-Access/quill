@@ -6,6 +6,33 @@ file is the itemized list.
 
 ## Unreleased
 
+- **Hold the key to talk** (2026-10-15). With **Hold the dictation key to
+  talk** checked in More Dictation Settings (Alt+H, off until you turn it on),
+  hold your start and stop key while you speak; letting go stops dictation and
+  keeps your last phrase. What you say while the key is down is typed when you
+  let go, so nothing reaches the other program while Alt or Ctrl is held. A
+  quick press still turns dictation on and off. It is the same setting as
+  QUILL's and QUILL Lite's.
+- **The wake phrase** (2026-10-15). With **Listen for the wake phrase while
+  dictation is off** checked in Dictation Settings (off until you turn it on),
+  say "Quill dictate" in the field you want and dictation starts there. While
+  it waits, the State field and the tray say Listening for your wake phrase,
+  and nothing it hears is written, kept or sent until it hears the phrase. It
+  does not listen while QUILL Transcribe, QUILL or QUILL Lite, or a program on
+  your never-type list, is in front. Stopping goes back to listening for it.
+- **Dictation on your braille display** (2026-10-15). While you work in the
+  other program, the words heard so far ("Hearing: ...") and the changes that
+  are shown but not said (Command mode, Waiting for a command, Listening for
+  your wake phrase) appear on a braille display, without being spoken.
+- **Dictation Status** (2026-10-15), Alt+F9 in the Dictation menu, as in QUILL
+  and QUILL Lite: one sentence with what dictation is doing, the program it is
+  writing into, the model, and how many phrases are held.
+- **Three more keys you can choose** (2026-10-15), each empty until you choose
+  it in the File menu: the **Dictation Status Key** (Ctrl+Alt+Shift+A), the
+  **Resume Key** (Ctrl+Alt+Shift+U) and the **Discard Held Words Key**
+  (Ctrl+Alt+Shift+Y), so you can ask, resume or discard from the program you
+  are working in.
+
 - **Review before it is typed** (2026-10-15). Say "QUILL review that" and the
   last phrase is backspaced away and held in the **Review Dictation** window
   (Shift+F4 in the Dictation menu, as in QUILL and QUILL Lite). Read it, change

@@ -157,8 +157,9 @@ class QuillTranscribeFrame(
         self._state_text.SetName("Dictation state")
         self._state_text.SetHelpText(
             "What dictation is doing now: Ready, Listening, Hearing you, Paused with "
-            "words held, or Waiting for you to switch to a field. The tray icon's "
-            "name says the same."
+            "words held, Waiting for you to switch to a field, or Listening for your "
+            "wake phrase. The tray icon's name says the same, and Alt+F9 says it with "
+            "the program, the model and what is held."
         )
         font = self._state_text.GetFont()
         font.SetPointSize(font.GetPointSize() + 4)
@@ -269,7 +270,14 @@ class QuillTranscribeFrame(
         commands = (
             f"Command Key: {command}." if command else "Command Key: none chosen; say QUILL first."
         )
-        return "\n".join((model, microphone, keys, commands))
+        from quill.apps.transcribe_keys import OPTIONAL_KEYS
+
+        chosen_keys = [  # Dictation Status, Resume, Discard (D-6): said only once chosen
+            f"{row[1]}: {self.optional_key(field)}."
+            for field, row in OPTIONAL_KEYS.items()
+            if self.optional_key(field)
+        ]
+        return "\n".join((model, microphone, keys, commands, *chosen_keys))
 
     def _next_sentence(self) -> str:
         controller = getattr(self, "_dictation", None)
@@ -364,6 +372,8 @@ class QuillTranscribeFrame(
         controller = getattr(self, "_dictation", None)
         if controller is not None:
             controller.finish_overdue()
+        if not self._safe_mode:
+            self._keep_wake_standby()  # the wake phrase, as the program in front allows (D-9)
 
     # -- closing -------------------------------------------------------------------- #
 

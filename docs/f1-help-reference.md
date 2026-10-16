@@ -1442,7 +1442,7 @@ Control coverage: 33 audited sites (33 helped).
 
 #### QuillTranscribeFrame (`quill/apps/transcribe.py`)
 
-- `self._state_text`: What dictation is doing now: Ready, Listening, Hearing you, Paused with words held, or Waiting for you to switch to a field. The tray icon's name says the same.
+- `self._state_text`: What dictation is doing now: Ready, Listening, Hearing you, Paused with words held, Waiting for you to switch to a field, or Listening for your wake phrase. The tray icon's name says the same, and Alt+F9 says it with the program, the model and what is held.
 - `self._start_button`: Starts dictation in the next field you switch to, or stops it. From another program, your start and stop key does the same without coming here.
 - `self._resume_button`: When dictation is paused: writes the held words into the field you started in, once you are back there, and carries on.
 - `self._here_button`: When dictation is paused: makes the field you switch to next the one dictation writes into, after the same safety checks as a new start.

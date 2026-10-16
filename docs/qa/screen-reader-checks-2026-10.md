@@ -1066,3 +1066,28 @@ JAWS and Narrator:
   than flashing on the taskbar.
 - [ ] End QUILL Transcribe from Task Manager with a review open; on the next
   start it says the review was kept, and Review Dictation brings the words back.
+
+### QUILL Transcribe: holding the key, the wake phrase and braille (D-9, D-6, 2026-10-15)
+
+With a microphone, in Notepad, Word and Outlook through QUILL Transcribe, and a
+braille display where one is available. Check on NVDA, JAWS and Narrator:
+
+- [ ] NVDA: with Hold the dictation key to talk on, hold Alt+Shift+Backslash,
+  say two phrases, let go: both are typed after you let go, none arrives as an
+  Alt shortcut, and dictation stops. A quick press still turns it on and off.
+- [ ] NVDA: with the wake phrase on, the tray says Listening for your wake
+  phrase while Notepad is in front; ordinary speech types nothing; "Quill
+  dictate dear Sam" starts dictation and types "Dear Sam". With QUILL Lite in
+  front, Ctrl+F11 in QUILL Lite starts its own dictation rather than being
+  refused.
+- [ ] NVDA with a braille display: "Hearing: ..." appears while you speak in
+  Outlook, is not spoken, and does not fight the reader's own messages; Command
+  mode appears on the display when the Command Key is pressed twice.
+- [ ] NVDA: Alt+F9 in the window, and a Dictation Status Key chosen in the File
+  menu pressed in Outlook, say one sentence with the state, the program, the
+  model and the held count.
+- [ ] NVDA: with dictation paused, a Resume Key pressed back in the first field
+  types the held words; a Discard Held Words Key throws them away.
+- [ ] JAWS: the same.
+- [ ] Narrator: the same (Narrator brailles what is spoken, so the braille-only
+  lines may not appear).

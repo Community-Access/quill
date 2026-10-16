@@ -84,6 +84,42 @@ sections below.
   modal contract; `apply_modal_ids` relabels only its own dialog's buttons
   (#1661, already on main).
 
+### QUILL Transcribe: the wake phrase, holding the key, braille and Dictation Status (D-9, D-6, 2026-10-15)
+
+D-9 and D-6 from the dictation plan; design record section 24.
+
+- **`transcribe/parity.py` `PREFERENCES_OFF` is empty.** The wake phrase and
+  hold to talk are the editors' shared settings in QUILL Transcribe too, both
+  off by default; `test_transcribe_dictation_parity.py` asserts they are
+  honoured and default off in all three products. `tools.dictation_status`
+  moved from `DIVERGENCES` to `SHARED_COMMANDS` on the editors' Alt+F9.
+- **`quill/apps/transcribe_talk.py`** (new mixin under
+  `TranscribeDictationMixin`) and **`quill/core/transcribe/talk.py`**
+  (wx-free): hold to talk follows the start and stop key with the editors'
+  `HoldToTalk`, polling `GetAsyncKeyState` on that one key
+  (`quill/platform/windows/key_state.py`, `tray_hotkey.virtual_key`) only while
+  a press is followed; no keyboard hook. `KeyHeldGate` sits between the
+  recogniser and the controller and holds finished phrases while the key (with
+  its Ctrl or Alt) is down, typing them on release. The wake phrase uses the
+  controller's STANDBY, kept by the window timer only while another program
+  that is not a QUILL window or on the never-type list is in front.
+- **Braille** for the preview and the unspoken state changes, through the
+  announcement engine's braille-only call; `say_quietly` for the "speak"
+  preview. `status_sentence` for Dictation Status, naming the locked program by
+  file (`foreground.window_process_name`).
+- **Three optional system-wide keys** in `transcribe_keys.py`
+  (`OPTIONAL_KEYS`: `status_hotkey`, `resume_hotkey`, `discard_hotkey`, ids
+  0x51B3 to 0x51B5), empty by default, chosen through `run_system_key_command`
+  in File (Ctrl+Alt+Shift+A, U, Y). New `TranscribeSettings` fields.
+- **Shared dialogs:** `WindowsDictationDialog` and `MoreDictationDialog` take
+  `help_for`, so a host can word the wake and hold check boxes' F1 help; the
+  editors pass nothing and are unchanged.
+- Regenerated: `family_menu_chords.json`, `f1-help-reference.md`,
+  `transcribe_help_inventory.json` (which also picks up a setup dialog field
+  that was already in the tree). Tests: `test_transcribe_talk.py`,
+  `test_transcribe_talk_core.py`, and additions to the parity and settings
+  tests.
+
 ### Quill Radio extras: marked delete, resume earcon, a second device, per-favourite keys, What's New, notes in reminders (2026-10-16)
 
 Jeff's todo P3 "Radio extras", from the FreeRadio study (xradio2 sections 4.5,

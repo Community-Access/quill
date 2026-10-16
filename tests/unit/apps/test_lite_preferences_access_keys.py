@@ -5,7 +5,10 @@ and helpers in its sibling modules, which is the shape ``check_access_keys``
 cannot see: it scopes a dialog *class* as one window and anything else per
 method. So U, D, H and F were each claimed twice until 2026-10-15, and one of
 each pair could not be reached by its letter. This reads every label in the
-modules that build the window, the way a person meets them: all in one window.
+modules that build the window. It cannot see keys passed in at run time (the
+shared text-editor group's), so the whole-window check that reads the real
+controls is in ``tests/unit/ui/test_text_editor_prefs.py``; this one is the
+quick source-level check.
 """
 
 from __future__ import annotations

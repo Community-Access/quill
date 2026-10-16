@@ -25,21 +25,13 @@ from __future__ import annotations
 __all__ = ["ALIASES", "DIVERGENCES", "PREFERENCES_OFF", "SHARED_COMMANDS", "chord"]
 
 #: The shared dictation settings QUILL Transcribe always runs with switched
-#: off, and why. Every other setting is the editors', under the editors' name
-#: and cleaned by the same loader.
-PREFERENCES_OFF: dict[str, str] = {
-    "wake_enabled": (
-        "The wake phrase listens while an editor is the window in front, and "
-        "starts dictation in that window. QUILL Transcribe types into whichever "
-        "program is in front, and a program that starts typing because it heard "
-        "a phrase could type into anything."
-    ),
-    "hold_to_talk": (
-        "Holding the key to talk follows the editors' Ctrl+F11 as it is held. "
-        "QUILL Transcribe's start and stop key is registered with Windows, which "
-        "reports the press and never the release."
-    ),
-}
+#: off, and why. Empty since D-9 (2026-10-15): every setting is the editors',
+#: under the editors' name and cleaned by the same loader. The wake phrase and
+#: holding the key to talk were here until then; QUILL Transcribe now listens
+#: for the wake phrase while another program is in front, and follows its start
+#: and stop key while it is held (quill/apps/transcribe_talk.py). A setting put
+#: back here needs its reason in words, and the parity test holds the rest equal.
+PREFERENCES_OFF: dict[str, str] = {}
 
 #: The editor's command id -> the QUILL Transcribe method its chord runs.
 SHARED_COMMANDS: dict[str, str] = {
@@ -64,6 +56,10 @@ SHARED_COMMANDS: dict[str, str] = {
     # Shift+F4: Review Dictation (D-2), the editors' window over the
     # same shared review; Insert types into the field the session is locked to.
     "tools.windows_dictation_review": "review_dictation",
+    # Alt+F9: Dictation Status (D-6), one sentence -- the state, the program,
+    # the model and what is held. From another program, the system-wide
+    # Dictation Status key, empty until chosen (transcribe_keys.py), says it.
+    "tools.dictation_status": "speak_dictation_status",
 }
 
 #: QUILL Transcribe method -> the key it had in 1.0, still answered (rule 5).
@@ -83,11 +79,6 @@ DIVERGENCES: dict[str, str] = {
     "tools.windows_dictation_context": (
         "Dictation Context belongs to a document, and QUILL Transcribe types into "
         "other programs' fields, whose text it never reads."
-    ),
-    "tools.dictation_status": (
-        "QUILL Transcribe's window is its status: the State field, which has the "
-        "focus when the window opens, and the tray icon's name say what dictation "
-        "is doing. A key to say it again would repeat the window."
     ),
     "tools.dictation_tidy": (
         "Tidy Dictated Text rewrites text already in the document. QUILL "

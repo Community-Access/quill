@@ -106,3 +106,42 @@ def parse_hotkey(wx: Any, chord: str | None) -> tuple[int, int] | None:
     if named is not None:
         return flags, getattr(wx, named)
     return None
+
+
+#: Windows virtual-key codes for the named keys :func:`parse_hotkey` accepts.
+#: ``parse_hotkey`` answers in wx key codes, which ``RegisterHotKey`` converts;
+#: ``GetAsyncKeyState`` wants the Windows code itself.
+_NAMED_VIRTUAL_KEYS = {
+    "ENTER": 0x0D,
+    "TAB": 0x09,
+    "SPACE": 0x20,
+    "ESC": 0x1B,
+    "ESCAPE": 0x1B,
+    "DELETE": 0x2E,
+    "HOME": 0x24,
+    "END": 0x23,
+    "LEFT": 0x25,
+    "RIGHT": 0x27,
+    "UP": 0x26,
+    "DOWN": 0x28,
+    "PAGEUP": 0x21,
+    "PAGEDOWN": 0x22,
+    "INSERT": 0x2D,
+}
+
+
+def virtual_key(chord: str | None) -> int | None:
+    """The Windows virtual-key code of *chord*'s main key ("Alt+Shift+\\" ->
+    0xDC on a US layout), or ``None`` when the chord is empty or unparseable.
+    For asking whether the key is still held (QUILL Transcribe's hold-to-talk)."""
+    parts = [part.strip() for part in str(chord or "").split("+") if part.strip()]
+    if not parts:
+        return None
+    token = parts[-1].upper()
+    if len(token) == 1:
+        if token.isascii() and token.isalnum():
+            return ord(token)
+        return _punctuation_vk(parts[-1])
+    if token.startswith("F") and token[1:].isdigit() and 1 <= int(token[1:]) <= 12:
+        return 0x70 + int(token[1:]) - 1  # VK_F1 is 0x70
+    return _NAMED_VIRTUAL_KEYS.get(token)

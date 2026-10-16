@@ -3540,8 +3540,10 @@ help sentence</h3>
 (<code>quill/apps/transcribe.py</code>)</h4>
 <ul>
 <li><code>self._state_text</code>: What dictation is doing now: Ready,
-Listening, Hearing you, Paused with words held, or Waiting for you to
-switch to a field. The tray icon’s name says the same.</li>
+Listening, Hearing you, Paused with words held, Waiting for you to
+switch to a field, or Listening for your wake phrase. The tray icon’s
+name says the same, and Alt+F9 says it with the program, the model and
+what is held.</li>
 <li><code>self._start_button</code>: Starts dictation in the next field
 you switch to, or stops it. From another program, your start and stop
 key does the same without coming here.</li>

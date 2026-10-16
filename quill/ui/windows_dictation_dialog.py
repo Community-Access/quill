@@ -102,10 +102,14 @@ class WindowsDictationDialog(MicrophoneTestMixin, wx.Dialog):
         announce: Callable[[str], None] | None = None,
         *,
         my_words: list[str] | None = None,
+        help_for: dict[str, str] | None = None,
     ) -> None:
         super().__init__(parent, title="Dictation Settings")
         self._announce = announce or (lambda _text: None)
         self._settings = settings
+        #: F1 help a host words its own way: QUILL Transcribe's wake phrase and
+        #: held key ("wake", "hold") behave as the editors' do, in other programs.
+        self._help_for = dict(help_for or {})
         #: My Words, which the command word may not be (More Dictation Settings).
         self._my_words = my_words
         #: More Dictation Settings' choices, applied with this window's OK.
@@ -343,6 +347,8 @@ class WindowsDictationDialog(MicrophoneTestMixin, wx.Dialog):
             "anywhere until it hears the wake phrase -- and it closes whenever "
             "another program comes to the front. Off unless you turn it on."
         )
+        if self._help_for.get("wake"):
+            self.wake.SetHelpText(self._help_for["wake"])
         root.Add(self.wake, 0, wx.ALL, _PAD)
 
         wake_label = wx.StaticText(self, label="&Wake phrase:")
@@ -491,7 +497,12 @@ class WindowsDictationDialog(MicrophoneTestMixin, wx.Dialog):
         from quill.ui.dictation_more_dialog import MoreDictationDialog
 
         dialog = MoreDictationDialog(
-            self, self._settings, self._announce, pending=self._more, my_words=self._my_words
+            self,
+            self._settings,
+            self._announce,
+            pending=self._more,
+            my_words=self._my_words,
+            help_for=self._help_for,
         )
         if focus_model:
             dialog.focus_model()

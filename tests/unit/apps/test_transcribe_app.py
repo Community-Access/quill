@@ -487,9 +487,14 @@ def test_dictation_settings_are_the_shared_window_over_our_copy(
 
     import quill.ui.windows_dictation_dialog as shared
 
+    seen: dict[str, Any] = {}
+
     class Dialog:
-        def __init__(self, _parent: Any, settings: Any, _announce: Any) -> None:
+        def __init__(
+            self, _parent: Any, settings: Any, _announce: Any, *, help_for: Any = None
+        ) -> None:
             self.settings = settings
+            seen["help_for"] = help_for
 
         def apply(self, settings: Any) -> None:
             settings.windows_dictation_remove_fillers = True
@@ -502,6 +507,9 @@ def test_dictation_settings_are_the_shared_window_over_our_copy(
     host.edit_dictation_settings()
     assert host._settings.dictation["windows_dictation_remove_fillers"] is True
     assert host.status[-1] == "Dictation settings saved."
+    # The wake phrase and the held key, worded for other programs (D-9).
+    assert "another program is in front" in seen["help_for"]["wake"]
+    assert "start and stop key" in seen["help_for"]["hold"]
 
 
 # -- keys ---------------------------------------------------------------------------- #
