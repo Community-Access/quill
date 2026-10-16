@@ -585,6 +585,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+0 | Community Picks... | `radio.community_picks` |
 | Ctrl+Alt+9 | Suggest a Station or Podcast... | `radio.suggest_pick` |
 | Ctrl+Alt+A | Bookmark This Moment | `app.bookmark_moment` |
+| Ctrl+Alt+B | Internet Radio: Lyrics... | `radio.lyrics` |
 | Ctrl+Alt+F1 | Internet Radio: Tutorials... | `radio.tutorials` |
 | Ctrl+Alt+H | What Is On Now | `radio.on_now` |
 | Ctrl+Alt+I | ACB Media Podcasts... | `radio.acb_podcasts` |

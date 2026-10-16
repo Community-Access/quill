@@ -128,6 +128,14 @@ PREFIX_PURPOSES: tuple[tuple[str, str], ...] = (
         "This is the help window itself: the purpose of the window you were "
         "in, then the control you were on. Escape returns you to it.",
     ),
+    (
+        "Lyrics:",
+        "The words of the song that is playing, from LRCLIB (lrclib.net), as "
+        "text to arrow through and copy. When the words are timed, Current "
+        "line shows the line being sung and Follow playback keeps the cursor "
+        "on it; nothing is spoken unless you press Say Current Line. Escape "
+        "closes it.",
+    ),
 )
 
 #: The honest fallback for a surface the catalogue does not know. The gate

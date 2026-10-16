@@ -647,6 +647,8 @@
   "quill/ui/media/list_columns_dialog.py::ListColumnsDialog.__init__::wx.ListBox": "named",
   "quill/ui/media/list_columns_dialog.py::ListColumnsDialog.__init__::wx.ListBox#2": "named",
   "quill/ui/media/list_columns_dialog.py::ListColumnsDialog.__init__::wx.TextCtrl": "named",
+  "quill/ui/media/lyrics_window.py::LyricsWindow.__init__::wx.TextCtrl": "named",
+  "quill/ui/media/lyrics_window.py::LyricsWindow.__init__::wx.TextCtrl#2": "modal-hook",
   "quill/ui/media/player_info_dialog.py::PlayerInfoDialog.__init__::wx.TextCtrl": "named",
   "quill/ui/media/quick_actions_dialog.py::QuickActionsDialog.__init__::wx.Choice": "named",
   "quill/ui/media/quick_actions_dialog.py::QuickActionsDialog.__init__::wx.ListBox": "named",

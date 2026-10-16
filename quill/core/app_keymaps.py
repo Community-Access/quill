@@ -115,6 +115,10 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         "radio.jump_to_live": "Ctrl+Shift+L",
         "radio.whats_playing_details": "Ctrl+T",
         "radio.song_history": "Ctrl+Shift+H",
+        # Lyrics of the song on the air (LRCLIB, on request only). The plan
+        # asked for Ctrl+Alt+L, which this window already gives to Resume Last
+        # Station on Launch; B is the one Ctrl+Alt letter Radio has left.
+        "radio.lyrics": "Ctrl+Alt+B",
         "radio.statistics": "Ctrl+Shift+Q",
         "radio.sound_enhancements": "Ctrl+E",
         # A QUILL leader chord Radio cannot dispatch; the Radio entry above is

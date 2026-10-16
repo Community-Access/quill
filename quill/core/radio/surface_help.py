@@ -467,6 +467,13 @@ PREFIX_PURPOSES: tuple[tuple[str, str], ...] = (
         "Chapters",
         "The chapter list of what is playing. Enter jumps straight to the highlighted chapter.",
     ),
+    (
+        "Lyrics:",
+        "The words of a song the station played, from LRCLIB (lrclib.net), "
+        "as plain text to arrow through and copy. A radio stream does not say "
+        "where in the song it is, so the words do not follow along. Escape "
+        "closes it.",
+    ),
 )
 PREFIX_PURPOSES = (*PREFIX_PURPOSES, *LINEUP_PREFIX_PURPOSES)
 

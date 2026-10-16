@@ -266,7 +266,7 @@ separately in <a href="CONTROL_REFERENCE.md">CONTROL_REFERENCE.md</a>,
 generated from <code>topics.json</code> by
 <code>quill/tools/build_docs.py</code>.</p>
 <h2 id="quill-radio">Quill Radio</h2>
-<p>Control coverage: 330 audited sites (216 helped, 114 named-help).</p>
+<p>Control coverage: 331 audited sites (217 helped, 114 named-help).</p>
 <h3 id="every-window-and-what-it-is-for">Every window, and what it is
 for</h3>
 <p><strong>ACB Media Podcasts.</strong> Everything ACB Media publishes,
@@ -650,6 +650,10 @@ exactly as the search results show them.</p>
 <p><strong>Windows titled “Help:…”.</strong> This is the help window
 itself: the purpose of the window you were in, then the control you were
 on. Escape returns you to it.</p>
+<p><strong>Windows titled “Lyrics:…”.</strong> The words of a song the
+station played, from LRCLIB (lrclib.net), as plain text to arrow through
+and copy. A radio stream does not say where in the song it is, so the
+words do not follow along. Escape closes it.</p>
 <p><strong>Windows titled “Now Playing…”.</strong> Everything known
 about what is playing, as reviewable, copyable text: the station’s own
 details, the current track, and the live playback status. It is a
@@ -978,6 +982,9 @@ for background on the song. The answer is model-written and says so – it
 is not the station’s own information.</li>
 <li><code>self._facts_btn</code>: Looks the song up on MusicBrainz –
 which release, what year, how long. Keyless and off in Safe Mode.</li>
+<li><code>self._lyrics_btn</code>: Looks the highlighted song’s words up
+on LRCLIB and opens them in the Lyrics window. Only when you press it;
+off in Safe Mode.</li>
 <li><code>self._clear_btn</code>: Erases the logged songs – for this
 station or for every station; a confirmation asks which.</li>
 <li><code>close_btn</code>: Closes Song History; logging continues while
@@ -2512,7 +2519,7 @@ from here; Alt+Enter says why an item is here; Alt+Shift+Up and Down
 move it.</li>
 </ul>
 <h2 id="quill-media-player">QUILL Media Player</h2>
-<p>Control coverage: 36 audited sites (23 helped, 13 named-help).</p>
+<p>Control coverage: 39 audited sites (26 helped, 13 named-help).</p>
 <h3 id="every-window-and-what-it-is-for-2">Every window, and what it is
 for</h3>
 <p><strong>Add Bookmark.</strong> A note to keep with the bookmark being
@@ -2577,6 +2584,11 @@ without a microphone.</p>
 <p><strong>Windows titled “Help:…”.</strong> This is the help window
 itself: the purpose of the window you were in, then the control you were
 on. Escape returns you to it.</p>
+<p><strong>Windows titled “Lyrics:…”.</strong> The words of the song
+that is playing, from LRCLIB (lrclib.net), as text to arrow through and
+copy. When the words are timed, Current line shows the line being sung
+and Follow playback keeps the cursor on it; nothing is spoken unless you
+press Say Current Line. Escape closes it.</p>
 <h3 id="every-authored-control-help-sentence-2">Every authored control
 help sentence</h3>
 <h4 id="audiodsppanel-quilluimediaaudio_dsp_panelpy">AudioDspPanel
@@ -2610,6 +2622,21 @@ id="listcolumnsdialog-quilluimedialist_columns_dialogpy">ListColumnsDialog
 here. They are saved and apply to those lists from now on.</li>
 <li><code>cancel_btn</code>: Close without keeping anything. Every
 list’s columns stay as they were before this dialog opened.</li>
+</ul>
+<h4 id="lyricswindow-quilluimedialyrics_windowpy">LyricsWindow
+(<code>quill/ui/media/lyrics_window.py</code>)</h4>
+<ul>
+<li><code>self._text</code>: The words of the song, one line per line,
+from LRCLIB (lrclib.net). Arrow through them, or copy them with Ctrl+C.
+Nothing here is spoken by itself. Escape closes the window.</li>
+<li><code>self._current</code>: The line being sung now, kept up to date
+as the song plays. It is never read out by itself: come here to review
+it, or press Say Current Line to hear it.</li>
+<li><code>self._follow</code>: On, the cursor in the lyrics moves to the
+line being sung. Off, the lyrics hold still so you can read back without
+the song moving you; turning it on again catches up. Unavailable when
+the song has words but no timings.</li>
+<li><code>say</code>: Speaks the line being sung now, once.</li>
 </ul>
 <h4
 id="playerinfodialog-quilluimediaplayer_info_dialogpy">PlayerInfoDialog

@@ -972,6 +972,8 @@ rather than something to learn.
 - **Go to Player** (Ctrl+Shift+G): open the Player, or bring it to the front.
 - **What's Playing?** (Ctrl+T): the Now Playing window.
 - **Song History...** (Ctrl+Shift+H): what each station played earlier.
+- **Lyrics...** (Ctrl+Alt+B): the words of the song on the air, in a
+  window of their own.
 - **Sleep Timer...** (Ctrl+Shift+Z) and **Wake-Up Timer...** (Ctrl+Alt+Z).
 - **Bookmark This Moment** (Ctrl+Alt+A).
 - **Lineups...** (Ctrl+U): QUILL Lineups, lists of anything you can play,
@@ -1570,6 +1572,9 @@ songs for each station, kept only on your computer.
      cursor moves there. Not available in Safe Mode.
    - **Song Details** looks the song up on MusicBrainz: which release, what
      year, how long. If nothing more is known, it says so.
+   - **Lyrics** (Alt+Y) opens the words of the selected song in the Lyrics
+     window, the same as Lyrics on the Playback menu does for the song on
+     the air now.
    - **Clear...** asks whether to clear **This station** or **All stations**.
      **Cancel** is already chosen, so Enter on its own clears nothing.
 5. Press **Escape**, **Ctrl+W** or **Ctrl+F4** to close. Song History is a
@@ -1583,6 +1588,44 @@ leave nothing to note.
 If a song is still playing when Quill Radio checks again, its play count goes
 up rather than it being listed twice. Station names, "Live" and advert markers
 are left out.
+
+### Lyrics, step by step
+
+Lyrics shows the words of the song the station is playing, as text you
+can arrow through and copy. The words come from LRCLIB (lrclib.net), a
+free community catalogue of song lyrics.
+
+1. While a song is playing, press **Ctrl+Alt+B** (**Playback >
+   Lyrics...**). You hear "Looking up lyrics for" and the song.
+2. The Lyrics window opens, titled "Lyrics:" and the song, with your
+   cursor at the top of the words. Arrow down through them a line at a
+   time. **Ctrl+C** copies what you select.
+3. Press **Escape**, **Ctrl+W** or **Ctrl+F4** to close.
+
+To see the words of a song that played earlier, open Song History
+(Ctrl+Shift+H), select the song and choose **Lyrics** (Alt+Y).
+
+What you might hear instead of a window:
+
+- **"No lyrics found for"** and the song: LRCLIB does not have its words,
+  or could not be reached.
+- **That the song is an instrumental**: LRCLIB knows it has no words.
+- **That the station's title does not name an artist**: the station only
+  sent a song name, and looking that up alone finds other people's songs
+  as often as the right one, so Quill Radio does not guess.
+- **"Nothing is playing"**, or that the station has not said what song
+  is playing.
+
+Good to know:
+
+- The words do not follow along. A radio stream does not say where in the
+  song it is, so a line marked as "now" would often be the wrong one.
+  Quill Media Player, which knows exactly where it is in a file, does
+  follow along.
+- Lyrics are looked up only when you ask, never in the background, and
+  only the artist and title are sent. Nothing is written to your
+  computer: the words are kept in memory until you close Quill Radio, so
+  asking again is instant. Not available in Safe Mode.
 
 ### Listening statistics
 
@@ -2602,7 +2645,7 @@ the text just above the buttons. It is not spoken by itself, so use your
 screen reader's command to read the whole window (Insert+B in NVDA and JAWS)
 to hear it.
 
-Three kinds of link get extra help:
+Four kinds of link get extra help:
 
 - **A YouTube link becomes a station.** Chapter 11, YouTube, says how a
   YouTube link plays, records and is kept.
@@ -2614,6 +2657,24 @@ Three kinds of link get extra help:
   typed it, because its stream has to be read from the page. Either use Find
   Streams from a Website with the link, or just save it and play it, and the
   repair described next finds the stream.
+
+- **A station's web page, or the address of its "Listen Live" player.**
+  A home page such as `https://www.altitudesportsradio.com/`, a page
+  ending in `.html`, or a player link such as
+  `player.listenlive.co/20551` is a web page, not a stream, and the audio
+  player cannot play it. When you choose Test or OK, Quill Radio looks
+  behind the page for the station's stream, the same way Find Streams
+  from a Website does, and puts that stream in **Stream URL**. You hear
+  "Looking for the stream behind that web page..." and then "Found the
+  station's stream behind that web page.", and Test or OK carries on.
+  If the page has more than one station on it, you hear how many, and
+  for Triton players their call letters, such as KKSEFM and KKSEAM; use
+  Find Streams from a Website to choose, or paste that station's own
+  player link. If no stream is found, or the page cannot be reached, you
+  hear that, and pressing the button again uses the address as you typed
+  it. A stream saved this way from a Triton player is its lasting
+  address, which keeps working when the provider moves servers. Not in
+  Safe Mode.
 
 Any other address is saved exactly as you typed it.
 
@@ -2656,7 +2717,9 @@ This works for many stations whose Listen Live button is a web player. For
 Triton Digital and StreamTheWorld players, including the whole
 `player.listenlive.co` network, Quill Radio reads the station's call letters
 and looks up the real stream through the provider's own public service. When
-a station has both an MP3 and an AAC stream, you are offered both. It also
+a station has both an MP3 and an AAC stream, you are offered both. The
+player's own help article, which used to appear in the list, no longer
+does. It also
 recognises **iHeart** and **TuneIn** station pages and **SecureNet** players,
 and offers their real stream first. A web page is never offered to you as
 something to play.
@@ -7324,6 +7387,7 @@ In every other window, Alt+S is the Station menu and Alt+W is the Window menu. S
 | Go to Player | Ctrl+Shift+G |
 | What's Playing? | Ctrl+T |
 | Song History | Ctrl+Shift+H |
+| Lyrics | Ctrl+Alt+B |
 | Bookmark This Moment | Ctrl+Alt+A |
 | Sleep Timer | Ctrl+Shift+Z |
 | Wake-Up Timer | Ctrl+Alt+Z |

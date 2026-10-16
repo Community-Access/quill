@@ -333,6 +333,56 @@ has been run for real" and "One-time setup (owner)".
   `-SkipCatalog` to Radio only. `tests/unit/structure/test_release_workflows.py`
   pins the secrets, the Environment and the rest.
 
+### Lyrics from LRCLIB in Quill Radio and Quill Media Player; Add Custom Station looks behind a web page (2026-10-15)
+
+P2 #31 and P2 #36 from Jeff's list.
+
+- **`quill/core/lyrics/lrclib.py`** (new package, wx-free, mypy scope): the
+  shared LRCLIB client. `search()` (Radio: artist + title) and `get_exact()`
+  (Player: artist, title, album, length; falls back to the ranked search,
+  preferring timed words); pure `parse_lrc()` / `line_at()` /
+  `parse_response()`. One egress site `_fetch` (new `network_egress_entries`
+  entry with the consent story: only on request, never in the background),
+  verified TLS, `http_client.user_agent()`, a 250 ms global throttle, one
+  honoured `Retry-After` on 429, 404 is empty. `LyricsError(CodedError)`,
+  `QUILL-LYRICS-LRCLIB-LOOKUP`, only for Safe Mode and an unreachable network.
+  **`CACHE_ON_DISK = False`**: a session-memory cache, the conservative default
+  awaiting Jeff (xradio1 section 9); True would cache through
+  `directory_cache` like MusicBrainz.
+- **`quill/ui/media/lyrics_window.py`**: one Lyrics window for both apps,
+  Captions-window style. Radio: plain words only. Player: **Current line**
+  (read-only, updated by a 250 ms tick, never announced), **Follow playback**
+  (caret rides `line_at()`; off holds still; on catches up; disabled with no
+  timings) and **Say Current Line**. Title `Lyrics: <song>`, F1 by prefix in
+  both `surface_help` catalogues.
+- Radio: `quill/ui/radio/lyrics_commands.py`; **Playback > Lyrics...**
+  (`radio.lyrics`, **Ctrl+Alt+B** -- Ctrl+Alt+L is Resume Last Station on
+  Launch) via `radio_playback_extras.append_song_items` (radio_menu_bar.py
+  645 -> 640, budget lowered); the palette row "Internet Radio: Lyrics...",
+  which is also how full QUILL reaches it; Song History's **L&yrics** button.
+  The key is the parsed now-playing title; no artist, no lookup.
+- Player: `quill/apps/player_lyrics.py` (player.py is at its ceiling),
+  **Playback > Lyrics...** (**Ctrl+Alt+L**) in `player_menus.py`; tags via
+  `core/podcasts/local_tags.read_tags`, else an "Artist - Title" file name.
+- **#36, Altitude Sports Radio "stream isn't supported".** The site plays two
+  Triton players, `player.listenlive.co/20551` (92.5 FM, `KKSEFM`) and `/48751`
+  (950 AM, `KKSEAM`): plain StreamTheWorld MP3/HE-AAC, no token, no DRM.
+  `triton.callsign_from_page` now also reads `"mount"`/`"callsign"` from the
+  player's inline config (the FM player has no logo); new
+  `triton.is_player_page_url`; new `core/radio/address_kind.py` (extracted from
+  `link_finder`: portal/player/help-page predicates, `is_web_page_address`,
+  `same_page`) so the scan drops Triton's `force.com` help article and does
+  not re-fetch a player page's self link; new `core/radio/stream_pick.py`
+  (`pick_stream` groups MP3/AAC mounts as one station, prefers MP3;
+  `durable_url` gives the `livestream-redirect` address), which
+  `recovery._confident_candidate` now uses. `AddStationDialog` takes a
+  `resolve_page_cb` (`add_custom_station.page_resolver`, the scan on the task
+  manager; None in Safe Mode): a pasted web page is resolved on Test/OK.
+- Tests (recorded fixtures, no network): `test_lrclib.py`,
+  `test_radio_lyrics.py`, `test_player_lyrics.py`, `test_radio_lyrics_wiring.py`,
+  `core/radio/test_altitude_stream.py` (+ `fixtures/altitude/`),
+  `test_radio_add_station_page.py`.
+
 ### Dictation: the never-type list, and Inkwell keeps its field (2026-10-15)
 
 D-24 and D-15 from the dictation plan, rescued from an uncommitted worktree.

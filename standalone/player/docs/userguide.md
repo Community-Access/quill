@@ -391,6 +391,37 @@ Playing controls instead).
 
 ---
 
+## 13a. Lyrics
+
+**Playback > Lyrics...** (Ctrl+Alt+L) shows the words of the song you are
+playing, from LRCLIB (lrclib.net), a free community catalogue of song
+lyrics. The song is found from the file's own tags (artist, title, album
+and length), or from a file name shaped like "Artist - Title".
+
+1. While a song is open, press **Ctrl+Alt+L**. You hear "Looking up lyrics
+   for" and the song.
+2. The Lyrics window opens, titled "Lyrics:" and the song, with your
+   cursor in the words (**Lyrics**, Alt+L). Arrow through them; **Ctrl+C**
+   copies what you select.
+3. When the words are timed, **Current line** (Alt+U) shows the line being
+   sung now, and **Follow playback** (Alt+F, on to start with) keeps the
+   cursor in the words on that line. Turn Follow playback off to read back
+   without being moved; turn it on again and it catches up.
+4. Nothing is read out as the lines change. **Say Current Line** (Alt+S)
+   speaks the line being sung, once, when you want to hear it.
+5. Press **Escape**, **Ctrl+W** or **Ctrl+F4** to close.
+
+When a song has words but no timings, the words still appear, Follow
+playback is unavailable, and Current line says so. When there are no
+words you hear why instead of a window: no lyrics found, the song is an
+instrumental, or the file does not say its artist and title.
+
+Lyrics are looked up only when you ask, never in the background and never
+in Safe Mode, and they are kept in memory only: nothing is written to your
+computer.
+
+---
+
 ## 14. Settings
 
 Today you control the player from its menus: the **Audio** page for the equalizer,
@@ -409,6 +440,9 @@ settings.
 
 - The player makes **no network calls** except to the sources you choose; there is
   no telemetry.
+- **Lyrics** are fetched from LRCLIB only when you open the Lyrics window,
+  sending the song's artist, title, album and length, and are kept in memory
+  only.
 - **Safe Mode** disables all network sources — local playback still works.
 - Protected BARD content is handled only through the sanctioned mechanism; a
   decrypted copy is never written to disk.

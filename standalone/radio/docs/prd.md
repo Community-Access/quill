@@ -3148,3 +3148,86 @@ Regression: `tests/unit/core/radio/test_saved_places_survive_restart.py`.
 `tests/unit/core/radio/test_saved_places_survive_restart.py`. The Radio
 tutorial **Build a lineup that fills itself** (`core/radio/tutorials/lineups.py`)
 and Chapter 17 of the user guide teach it.
+
+## 24. Lyrics, and a web page in Add Custom Station (unreleased, 2026-10-15)
+
+### 24.1 Lyrics: the words of the song on the air, on request
+
+**Why.** Song History has shaped its clipboard text for "someone pasting into
+a lyrics or store search" since it shipped: the app imagined the listener
+leaving to look the words up. This removes the trip. The plan, with its
+reasoning, is the 2026-09-22 LRCLIB plan (xradio1).
+
+**The contract.**
+
+- **Playback > Lyrics...** (`radio.lyrics`, **Ctrl+Alt+B**) and a **Lyrics**
+  button in Song History (Alt+Y). The plan asked for Ctrl+Alt+L; in Quill
+  Radio that is Resume Last Station on Launch, and B was the one Ctrl+Alt
+  letter left. Quill Media Player, where Ctrl+Alt+L is free, uses it.
+- The lookup key is the station's own now-playing title, parsed into artist
+  and title by `core/radio/now_playing.py`. A title with no artist is not
+  looked up: a search by song name alone answers with somebody else's song too
+  often.
+- The words come from LRCLIB through the shared, wx-free client
+  `quill/core/lyrics/lrclib.py` (`search()`), which Quill Media Player also
+  uses. One reviewed egress site; HTTPS through the verified TLS context; a
+  descriptive User-Agent; requests at least 250 ms apart; one honoured
+  `Retry-After` on 429; a 404 is "no lyrics", never an error.
+- **Consent is the command.** Nothing is fetched until the listener asks: no
+  lookup as titles change, none in the background, none in Safe Mode.
+- **Memory only.** Looked-up lyrics are cached for the session and never
+  written to disk (`lrclib.CACHE_ON_DISK = False`), so nothing about what
+  somebody listened to is stored. This is a default awaiting Jeff's decision
+  (plan section 9); the constant is the one place to change it.
+- **The window** (`quill/ui/media/lyrics_window.py`, shared with the Player)
+  is titled "Lyrics: <song> by <artist>" and holds the words in one read-only
+  text control with focus; Escape, Ctrl+W and Ctrl+F4 close it. Radio shows
+  plain words and never follows along: a stream gives no position within the
+  song, and a confidently wrong "now" line is worse than none.
+- **What is spoken** (GATE-13): "Looking up lyrics for <song>..." at the
+  press; then either nothing (the window opens and the reader reads it), "No
+  lyrics found for <title>." (also for a network failure; never the error
+  text), "<title> is an instrumental; it has no lyrics.", or the reason there
+  was nothing to look up.
+
+**Tests.** `tests/unit/core/test_lrclib.py`, `tests/unit/apps/test_radio_lyrics.py`,
+`tests/unit/apps/test_player_lyrics.py`, `tests/unit/ui/test_radio_lyrics_wiring.py`.
+
+### 24.2 Add Custom Station accepts a station's web page (#36)
+
+**Why.** John Gassman added `https://www.altitudesportsradio.com/` (Altitude
+Sports Radio, Denver, home of the Nuggets) and heard "source not supported":
+the engine had been handed a web page. What the site really plays, found
+2026-10-15 from its own pages: two Triton Digital web players,
+`player.listenlive.co/20551` (92.5 FM, mount `KKSEFM`) and `/48751` (950 AM,
+`KKSEAM`), each an ordinary StreamTheWorld MP3 and HE-AAC stream with no
+token, no DRM and no sign-in. Three faults stood between the listener and it:
+
+1. `triton.callsign_from_page` read the callsign only from the station-logo
+   asset name, and the 92.5 FM player has no logo. It now also reads the
+   mount from the player's inline configuration (`"mount":"KKSEFM"`).
+2. The player links Triton's own help article, whose address contains
+   `/stream`; the scan offered it first. Help-centre hosts are now dropped,
+   and a `player.listenlive.co/<id>` page is a player page: followed, never
+   offered, and not re-fetched when it links to itself.
+3. A Triton station's MP3 and AAC mounts counted as two choices, so neither
+   recovery nor anything else could call a Triton player unambiguous.
+   `core/radio/stream_pick.py` groups candidates by station first and prefers
+   MP3.
+
+**The contract.** When the Stream URL is plainly a web page
+(`core/radio/address_kind.is_web_page_address`: a player page, a site's home
+page on the standard port, or a `.html`-style page; never an address with an
+explicit port, which is how Shoutcast streams from a root), Test and OK first
+run the Find Streams scan on the host's task manager. One station: its stream
+goes into the field (a StreamTheWorld MP3 mount as its lasting
+`livestream-redirect` address), the homepage and name are filled when empty,
+and the button carries on. Several stations: they are named and nothing is
+saved. None, or unreachable: one sentence says so, and pressing again uses the
+address as typed. Every outcome is spoken, because the status line is not
+focused. Not in Safe Mode (no resolver is offered).
+
+**Tests.** Recorded pages and provisioning answers in
+`tests/unit/core/radio/fixtures/altitude/` drive
+`tests/unit/core/radio/test_altitude_stream.py`; the dialog is
+`tests/unit/ui/test_radio_add_station_page.py`. Nothing touches the network.

@@ -17,7 +17,7 @@ from __future__ import annotations
 
 from typing import Any
 
-__all__ = ["build_playback_extras"]
+__all__ = ["append_song_items", "build_playback_extras"]
 
 
 def build_playback_extras(
@@ -63,3 +63,31 @@ def build_playback_extras(
 
     app.frame.Bind(wx.EVT_MENU, _open, id=stats_id)
     return (*ids, stats_id)
+
+
+def append_song_items(app: Any, menu: Any, wx: Any) -> tuple[Any, ...]:
+    """Append Song History and Lyrics to the Playback menu. Returns the ids to pin.
+
+    Together because they are the two questions about the song itself -- what
+    was that, and what are the words -- and because ``radio_menu_bar`` is at its
+    GATE-11 ceiling, so the second one could not join the first there.
+    """
+    # Ctrl+Shift+H is free in the standalone app; inside full QUILL the same
+    # command ships unbound because there Ctrl+Shift+H is Replace All.
+    song_history_id = wx.NewIdRef()
+    menu.Append(song_history_id, app._menu_label("&Song History...", "radio.song_history"))
+    app.frame.Bind(wx.EVT_MENU, lambda _e: app.radio_song_history(), id=song_history_id)
+    # The words of the song on the air, from LRCLIB, only when asked
+    # (quill.ui.radio.lyrics_commands). Ctrl+Alt+B, not the Ctrl+Alt+L the plan
+    # named: Ctrl+Alt+L is Resume Last Station on Launch on the Station menu,
+    # and B is the one Ctrl+Alt letter this window has left (app_keymaps.py).
+    lyrics_id = wx.NewIdRef()
+    menu.Append(lyrics_id, app._menu_label("L&yrics...", "radio.lyrics"))
+
+    def _lyrics(_event: Any) -> None:
+        from quill.ui.radio import lyrics_commands
+
+        lyrics_commands.lyrics_for_playing(app)
+
+    app.frame.Bind(wx.EVT_MENU, _lyrics, id=lyrics_id)
+    return (song_history_id, lyrics_id)

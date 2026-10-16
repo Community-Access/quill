@@ -139,7 +139,7 @@ def request_background(
 
 def open_song_history(host: Any) -> None:
     """Open the Song History window for the playing (or last) station."""
-    from quill.ui.radio import song_facts
+    from quill.ui.radio import lyrics_commands, song_facts
     from quill.ui.radio.song_history_dialog import SongHistoryDialog
 
     history = song_history(host)
@@ -168,6 +168,8 @@ def open_song_history(host: Any) -> None:
         # Which release, what year, how long: MusicBrainz, keyless, opt-in,
         # off the UI thread. See quill/ui/radio/song_facts.py.
         request_facts=lambda song, show: song_facts.request(host, song, show),
+        # The words of a song heard earlier: LRCLIB, on request only.
+        request_lyrics=lambda song: lyrics_commands.lyrics_for_song(host, song),
         on_changed=lambda: save(host),
         transport_host=host,
         windows=windows,

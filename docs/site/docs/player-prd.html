@@ -1734,6 +1734,19 @@ Preferences dialog (Section 10) is on the roadmap; the shipped controls
 live on the Audio page and the Playback / View menus, with the full
 <code>media_*</code> catalogue defaulted in
 <code>quill/core/media/config.py</code>.</li>
+<li><strong>Timed lyrics (2026-10-15).</strong> <strong>Playback &gt;
+Lyrics…</strong> (Ctrl+Alt+L) looks the playing file up on LRCLIB
+through the shared client (<code>quill/core/lyrics/lrclib.py</code>, the
+same one Quill Radio uses): the exact lookup by the file’s artist,
+title, album and length first, then the ranked search, preferring timed
+words. The Lyrics window (<code>quill/ui/media/lyrics_window.py</code>)
+shows the words in one read-only text control; with timed words,
+<strong>Current line</strong> shows the line <code>line_at()</code>
+reports for the playhead and <strong>Follow playback</strong> puts the
+caret on it, Captions-window style. Nothing is announced per line;
+<strong>Say Current Line</strong> speaks it on request. Lookups happen
+only on request, are refused in Safe Mode, and are cached in memory only
+(<code>lrclib.CACHE_ON_DISK</code>, a default awaiting a decision).</li>
 </ul>
 </main>
 </body>

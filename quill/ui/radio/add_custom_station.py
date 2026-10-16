@@ -11,11 +11,40 @@ list has no other way to catch.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from typing import Any
 
 from quill.core.radio.models import RadioStation
 from quill.core.sound_events import SoundEvent
 from quill.ui.radio.add_station_dialog import AddStationDialog
+
+
+def page_resolver(host: Any) -> Callable[[str, Callable[[Any, Any], None]], None] | None:
+    """The dialog's way to look behind a pasted web page (#36), or None.
+
+    The Find Streams scan, run on the host's task manager, answering on the UI
+    thread. None in Safe Mode (every network service is off) and for a host
+    without a task manager, which leaves the dialog network-free as before.
+    """
+    task_manager = getattr(host, "_task_manager", None)
+    if getattr(host, "_safe_mode", False) or task_manager is None:
+        return None
+
+    def resolve(url: str, done: Callable[[Any, Any], None]) -> None:
+        from quill.core.radio.link_finder import scan_page_for_streams
+
+        def work(**_kwargs: Any) -> Any:
+            return scan_page_for_streams(url)
+
+        # The task manager delivers both callbacks on the UI thread already.
+        task_manager.submit(
+            "radio-add-station-resolve",
+            work,
+            on_success=lambda _op, result: done(result, None),
+            on_failure=lambda _op, error: done(None, error),
+        )
+
+    return resolve
 
 
 def open_add_custom(host: Any, prefill: RadioStation | None) -> None:
@@ -25,6 +54,7 @@ def open_add_custom(host: Any, prefill: RadioStation | None) -> None:
         prefill=prefill,
         announce_cb=host._announce,
         youtube_consent_cb=host._radio_youtube_consent,
+        resolve_page_cb=page_resolver(host),
     )
     station = dlg.show()
     if station is None:
