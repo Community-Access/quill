@@ -550,6 +550,7 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "tools.windows_dictation_switch_language": "Ctrl+Shift+F11",
     "tools.windows_dictation_live_transcript": "Ctrl+Alt+Shift+PageDown",
     "tools.windows_dictation_context": "Ctrl+Alt+Shift+PageUp",
+    "tools.windows_dictation_command": "F11",  # free in both editors (rule 2)
     "tools.describe_image": "Ctrl+Shift+Grave, I",
     # To the leader (bad.md 3.7): read once when a file arrives, not an
     # editing-loop verb -- and Ctrl+Shift+I is where Insert Image goes, so

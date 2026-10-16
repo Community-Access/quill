@@ -95,11 +95,18 @@ class WindowsDictationDialog(wx.Dialog):
     """The dictation settings. Read with :meth:`apply` after OK."""
 
     def __init__(
-        self, parent: Any, settings: Any, announce: Callable[[str], None] | None = None
+        self,
+        parent: Any,
+        settings: Any,
+        announce: Callable[[str], None] | None = None,
+        *,
+        my_words: list[str] | None = None,
     ) -> None:
         super().__init__(parent, title="Dictation Settings")
         self._announce = announce or (lambda _text: None)
         self._settings = settings
+        #: My Words, which the command word may not be (More Dictation Settings).
+        self._my_words = my_words
         #: More Dictation Settings' choices, applied with this window's OK.
         self._more: dict[str, object] = {}
         # Two columns, so the window fits a 768-pixel-high screen. Tab order is
@@ -467,7 +474,9 @@ class WindowsDictationDialog(wx.Dialog):
         from quill.ui.dictation_more_dialog import EDIT_OPENAI_KEY as MORE_KEY
         from quill.ui.dictation_more_dialog import MoreDictationDialog
 
-        dialog = MoreDictationDialog(self, self._settings, self._announce, pending=self._more)
+        dialog = MoreDictationDialog(
+            self, self._settings, self._announce, pending=self._more, my_words=self._my_words
+        )
         if focus_model:
             dialog.focus_model()
         try:

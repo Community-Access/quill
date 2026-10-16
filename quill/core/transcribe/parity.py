@@ -57,6 +57,10 @@ SHARED_COMMANDS: dict[str, str] = {
     "tools.windows_dictation_switch_language": "switch_dictation_language",
     # Shift+F5: a recording into text, with dictation's models.
     "tools.windows_dictation_transcribe_file": "transcribe_a_recording",
+    # F11: Speak a Command (D-1). The next thing said is a command; twice,
+    # command mode. In another program the system-wide Command Key, empty until
+    # chosen (transcribe_keys.py), does the same from the field itself.
+    "tools.windows_dictation_command": "speak_a_command",
 }
 
 #: QUILL Transcribe method -> the key it had in 1.0, still answered (rule 5).

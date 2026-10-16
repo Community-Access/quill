@@ -47,7 +47,12 @@ It has one page:
    refused with the name of the app that uses it. If a key does something else
    when you press it in Record Key, another program already uses it: type it, or
    choose another.
-5. **Start QUILL Transcribe when I sign in to Windows** - off unless you check
+5. **Command key** - optional, and empty unless you choose one. Press it in
+   the field you are dictating into and the next thing you say is a command,
+   as if you had said QUILL first (see "The command word"). Type a key, or
+   press **Record Command Key** (Alt+N) and press it. It must not be the start
+   and stop key.
+6. **Start QUILL Transcribe when I sign in to Windows** - off unless you check
    it. When it is on, QUILL Transcribe opens in the tray. It still does not
    listen until you start dictation.
 
@@ -195,9 +200,43 @@ phrase went in when it is not sure.
 
 ## Commands while dictating into other programs
 
-These work in any program:
+### The command word
 
-- "stop dictation"
+In QUILL Transcribe a command starts with the command word, **QUILL**:
+"QUILL scratch that", "QUILL caps on", "QUILL start spelling". Said on its own,
+"scratch that" is typed as words, because a command typed into an email by
+mistake is much harder to take back than one in a document. Only the stop
+phrase, "stop dictation", works without the word, and "stop spelling" while
+you are spelling. This is called strict mode,
+and it is on in QUILL Transcribe; QUILL and QUILL Lite leave it off.
+
+- QUILL counts only as the first word after a pause. "I told Quill about it"
+  is typed as words.
+- Whatever follows "QUILL" is never typed. If it is not a command, you hear
+  the error sound and "Not a command. Say it again, or say QUILL type that to
+  write it." Saying **"QUILL type that"** types those words after all, once.
+- To type the word itself, say **"literal QUILL"**.
+- Say **"QUILL"** on its own and pause, and the next thing you say is a
+  command. A short rising tone tells you it was heard.
+- **"QUILL command mode"** takes several commands in a row without the word.
+  You hear the tone and "Command mode", and the State field and the tray icon's
+  name say Command mode. Say **"dictation mode"** to go back. With no command
+  for eight seconds it ends by itself with a falling tone, and what you say
+  next is typed.
+- The **Command Key**, if you chose one, does the same from the field you are
+  in: press it, then say the command. Press it twice for command mode, and
+  once more to go back. If dictation is off, it starts dictation in that field
+  first. In the QUILL Transcribe window, **Speak a Command** (F11, the key QUILL
+  and QUILL Lite use) does the same.
+
+The command word, strict mode, and how long command mode waits are in
+**More Dictation Settings** (see "Dictation Settings").
+
+### What works in another program
+
+These work in any program, after the command word:
+
+- "stop dictation" (with or without the word)
 - "scratch that" - removes the last phrase, but only while you are still in the
   same field
 - spelling: "start spelling" and "stop spelling"
@@ -224,9 +263,10 @@ Commands that need to read the text, such as "select that", "correct that" or
 
 Saying "what can I say" while you dictate does not open a window, because a
 window would take the focus and pause dictation. Instead you hear: "In another
-program, you can say scratch that, new line, start spelling, insert snippet
-and its name, or stop dictation. For the full list, open Dictation Commands
-from the Dictation menu, Ctrl+Shift+C."
+program, you can say QUILL scratch that, new line, QUILL start spelling, QUILL
+insert snippet and its name, or stop dictation. For the full list, open
+Dictation Commands from the Dictation menu, Ctrl+Shift+C." With strict mode
+off, the commands are said without QUILL.
 
 **Dictation Commands** (Ctrl+Shift+C, in the Dictation menu) lists exactly
 what works in other programs, and nothing that does not, followed by your own
@@ -292,7 +332,13 @@ whatever program is in front, and holding the key to talk, because Windows
 reports when a system-wide key is pressed but not when it is let go.
 
 **More Dictation Settings** in that window has **Tick while a phrase is being
-worked on**, on by default in QUILL Transcribe (see What you hear).
+worked on**, on by default in QUILL Transcribe (see What you hear). Its
+**Commands** group has the **Command word** (Alt+C; QUILL unless you change it,
+and empty for none, so only the Command Key gives commands), **Commands only
+after the command word (strict mode)** (Alt+E; on in QUILL Transcribe), and
+**Seconds command mode waits for a command** (Alt+D; 8, from 5 to 30). A
+common word, or one of your own words in My Words and Phrases, cannot be the
+command word, and you are told why.
 
 ### Your words, the language, and your last phrases
 
@@ -317,7 +363,8 @@ worked on**, on by default in QUILL Transcribe (see What you hear).
 Where QUILL Transcribe has the same dictation command as the editors, it has the
 same key: Ctrl+F11 starts and stops, Alt+Shift+F6 opens Dictation Settings,
 Alt+Shift+F10 opens My Words and Phrases, Ctrl+Shift+F11 switches the language,
-Shift+F11 opens Recent Phrases, and Shift+F5 transcribes a recording. The keys
+Shift+F11 opens Recent Phrases, F11 is Speak a Command, and Shift+F5
+transcribes a recording. The keys
 from version 1.0 (Ctrl+D, Ctrl+, and Ctrl+O) still work. These work in the
 QUILL Transcribe window; from other programs, use your start and stop key.
 
@@ -333,12 +380,14 @@ Transcribe.
 
 ### Keys
 
-There are two keys you can choose, both in the File menu, and neither is set
-until you choose it:
+There are three keys you can choose, all in the File menu. Only the start and
+stop key has one to begin with; the others are not set until you choose them:
 
 - **Start and Stop Key** (Ctrl+Alt+Shift+D) - chooses the key that starts and
   stops dictation from any program: Alt+Shift+Backslash unless you change it.
   Type the key, or press **Record Key** and press it.
+- **Command Key** (Ctrl+Alt+Shift+K) - chooses the key that makes the next
+  thing you say a command, from any program (see "The command word").
 - **Show and Hide Key** (Ctrl+Alt+Shift+H) - shows and hides the QUILL
   Transcribe window from any program.
 
@@ -449,6 +498,7 @@ In the QUILL Transcribe window:
 | Resume in this field | Ctrl+Shift+R |
 | Discard held words | Ctrl+Shift+D |
 | Use the built-in model this time | Ctrl+B |
+| Speak a command | F11 |
 | Recent phrases | Shift+F11 |
 | Switch dictation language | Ctrl+Shift+F11 |
 | My words and phrases | Alt+Shift+F10 |
@@ -467,7 +517,8 @@ In the QUILL Transcribe window:
 | About QUILL Transcribe | Ctrl+Alt+I |
 
 From any program, only these: your start and stop key (Alt+Shift+Backslash
-unless you changed it), and your show and hide key if you chose one.
+unless you changed it), and your Command Key and show and hide key if you chose
+them.
 
 F1 anywhere in QUILL Transcribe says what the window is for and what the
 control you are on does.

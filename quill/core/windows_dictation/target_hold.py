@@ -80,6 +80,12 @@ class TargetHoldMixin:
     def _abandon(self, message: str) -> None:
         raise NotImplementedError
 
+    def _paused_parse(
+        self, phrase: RecognizedPhrase, preferences: DictationPreferences
+    ) -> ParsedPhrase | None:
+        """The command word's answer first (command_mode_mixin.py overrides this)."""
+        return self._parse(phrase, preferences)
+
     def stop(self, message: str = "Dictation off.") -> None:
         raise NotImplementedError
 
@@ -130,7 +136,9 @@ class TargetHoldMixin:
 
         if not self._hold_reason or self._state is not DictationState.PAUSED:
             return False
-        parsed = self._parse(phrase, preferences)
+        parsed = self._paused_parse(phrase, preferences)
+        if parsed is None:
+            return True  # meant for QUILL, answered, never held (command_mode_mixin.py)
         command = parsed.command
         if command is Command.STOP:
             self.stop()

@@ -861,7 +861,8 @@ or rich text</td>
 <tr>
 <td><strong>Dictation</strong></td>
 <td>What dictation is doing: off, listening, hearing you, writing,
-spelling, or waiting for the wake phrase</td>
+spelling, command mode, waiting for a command, or waiting for the wake
+phrase</td>
 <td>starts or stops dictation</td>
 </tr>
 <tr>
@@ -4546,6 +4547,11 @@ you can find it by walking the menu too.</p>
 <td>Dictation Status</td>
 </tr>
 <tr>
+<td><strong>F11</strong></td>
+<td>Speak a Command (the next thing you say is a command; twice, command
+mode)</td>
+</tr>
+<tr>
 <td><strong>Ctrl+F3</strong></td>
 <td>Tidy Dictated Text… (in Tools &gt; AI)</td>
 </tr>
@@ -5002,6 +5008,44 @@ is made from the very table dictation reads, so it always matches what
 QUILL Lite understands. It has every way of saying each thing, the
 Spanish punctuation words, and the spelling alphabet in one place, and
 it is a good page to keep open beside you for the first week or two.</p>
+<h4 id="the-command-word-quill-scratch-that">The command word: “QUILL
+scratch that”</h4>
+<p>Commands work when you say them on their own, after a pause. To be
+sure a command is taken as a command and never written, say the command
+word first: <strong>“QUILL scratch that”</strong>, <strong>“QUILL select
+the cat”</strong>, <strong>“QUILL caps on”</strong>. Every command in
+the list works this way.</p>
+<ul>
+<li>QUILL counts only as the first word after a pause, so “I told Quill
+about it” is written as words.</li>
+<li>If what follows is not a command, nothing is written. You hear the
+error sound and “Not a command. Say it again, or say QUILL type that to
+write it.” <strong>“QUILL type that”</strong> writes those words after
+all, once.</li>
+<li>To write the word itself, say <strong>“literal QUILL”</strong>.</li>
+<li>Say <strong>“QUILL”</strong> on its own and pause, and the next
+thing you say is a command. A short rising tone tells you it was
+heard.</li>
+<li><strong>“QUILL command mode”</strong> takes commands without the
+word: you hear the tone and “Command mode”, and the Dictation cell in
+the status bar says Command mode. Say <strong>“dictation mode”</strong>
+to go back. If you give no command for eight seconds, it ends by itself
+with a falling tone, and what you say next is written.</li>
+<li><strong>Speak a Command</strong> (<strong>F11</strong>) does the
+same from the keyboard: press it, then say the command. Press it twice
+for command mode, and once more to leave. If dictation is off, it starts
+dictation first.</li>
+</ul>
+<p>More Dictation Settings has three choices for it: the <strong>Command
+word</strong> (<strong>Alt+C</strong>; leave it empty to give commands
+with F11 only), <strong>Commands only after the command word (strict
+mode)</strong> (<strong>Alt+E</strong>), and <strong>Seconds command
+mode waits for a command</strong> (<strong>Alt+D</strong>, 5 to 30).
+With strict mode on, “scratch that” on its own is written as words, and
+only the stop phrase works without the word. Strict mode is off in QUILL
+Lite, so the commands you know keep working. A common word, or one of
+your own words in My Words and Phrases, cannot be the command word; you
+are told why.</p>
 <h3 id="starting-and-stopping-with-your-voice">Starting and stopping
 with your voice</h3>
 <h4 id="the-wake-phrase">The wake phrase</h4>
@@ -5421,6 +5465,23 @@ turn into text</td>
 Transcribe, such as your password manager; see “Programs dictation never
 types into”</td>
 <td>The common password managers and the Windows sign-in prompts</td>
+</tr>
+<tr>
+<td>Command word (Alt+C)</td>
+<td>The word you say before a command, like QUILL scratch that; empty
+for none; see “The command word”</td>
+<td>QUILL</td>
+</tr>
+<tr>
+<td>Commands only after the command word (strict mode) (Alt+E)</td>
+<td>A command said on its own is written as words; the stop phrase
+always works</td>
+<td>Unchecked (checked in QUILL Transcribe)</td>
+</tr>
+<tr>
+<td>Seconds command mode waits for a command (Alt+D)</td>
+<td>How long command mode lasts with no command, from 5 to 30</td>
+<td>8</td>
 </tr>
 </tbody>
 </table>

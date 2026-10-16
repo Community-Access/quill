@@ -12,6 +12,20 @@ Everything QUILL Lite and QUILL's Live Dictation understand, generated from the 
 - Some commands take words after them: select the cat, paste clip three, insert snippet sign off. They work only at the start of a phrase.
 - The Markdown line marks -- "bullet", "numbered item", "block quote" and "heading one" to "heading six" -- count only at the start of a phrase, so "the heading two lines down" stays words.
 
+## The command word
+
+- Say "QUILL" first to give a command instead of dictating: "QUILL scratch that". It counts only as the first word after a pause, so "I told QUILL about it" is written as words.
+- Every command in this list works after the command word. If what follows it is not a command, nothing is typed: you hear "Not a command", and "QUILL type that" writes it after all.
+- Say "literal QUILL" to write the word itself.
+- With "Commands only after the command word" switched on in More Dictation Settings (it is on in QUILL Transcribe), a command said on its own is written as words, except the stop phrase.
+- Speak a Command (F11 in QUILL and QUILL Lite, and in QUILL Transcribe the Command Key you choose) does the same without the word: the next thing you say is a command. Press it twice for command mode.
+
+| Say, after the command word | What happens |
+|---|---|
+| "type that" or "write that" | Writes the words that were just refused as not a command, once. |
+| "command mode" | Everything you say is a command, with no command word, until you say dictation mode or stop giving commands for a few seconds. You hear a falling tone when it ends. |
+| "dictation mode" | Leaves command mode at once: what you say is written again. |
+
 ## Punctuation
 
 | Say | Writes |

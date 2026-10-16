@@ -229,6 +229,23 @@ sentence at four seconds, once per wait. The setting off is silence. The
 sentence is only said while its wait is open, and the read-back that follows a
 phrase interrupts it.
 
+**As built, 2026-10-15: the command word (dictation plan D-1).** A command in
+another program starts with the command word, **QUILL** by default
+(`windows_dictation_command_prefix`), matched forgivingly as the first word
+after a pause. An utterance classified as a command never reaches the
+insertion step (step 7): if what follows the word is not a command, nothing is
+typed, the error cue plays, and "QUILL type that" types the refused words once.
+**Strict mode** (`windows_dictation_command_prefix_required`) is on by default
+in QUILL Transcribe and off in the editors: a bare command is typed as words,
+except the stop phrase. **Command mode** ("QUILL command mode", or the Command
+Key pressed twice) takes commands without the word until "dictation mode" or
+`windows_dictation_command_timeout` seconds (8, from 5 to 30) with no command,
+which ends with a falling tone and no speech; the State field and the tray
+name say "Command mode". The **Command Key** (`command_hotkey`) is a second
+system-wide key, empty until chosen, offered in setup beside Record Key and in
+File > Command Key... (Ctrl+Alt+Shift+K); the window's Dictation menu has the
+editors' Speak a Command on F11.
+
 ### 7.3 Tray-first operation
 
 The Windows notification-area icon is required for version 1.0. Its accessible

@@ -47,6 +47,7 @@ from quill.core.windows_dictation.controller import (
     DictationState,
     Moment,
 )
+from quill.ui.windows_dictation_command_key import DictationCommandKeyMixin
 from quill.ui.windows_dictation_extras import DictationExtrasMixin
 from quill.ui.windows_dictation_hold import DictationHoldMixin
 from quill.ui.windows_dictation_library import DictationLibraryMixin
@@ -70,6 +71,8 @@ DICTATION_CUES: dict[Moment, str] = {
     Moment.OFF: SoundEvent.WINDOWS_DICTATION_OFF,
     Moment.ERROR: SoundEvent.WINDOWS_DICTATION_ERROR,
     Moment.WORKING: SoundEvent.WINDOWS_DICTATION_WORKING,
+    Moment.COMMAND_ON: SoundEvent.WINDOWS_DICTATION_COMMAND_ON,
+    Moment.COMMAND_OFF: SoundEvent.WINDOWS_DICTATION_COMMAND_OFF,
 }
 
 #: The one controller, the host window it writes into, and the top-level
@@ -92,6 +95,7 @@ def dictation_standing_by() -> bool:
 
 
 class WindowsDictationMixin(
+    DictationCommandKeyMixin,
     DictationToolsMixin,
     DictationHoldMixin,
     DictationTranscribeMixin,
@@ -225,7 +229,12 @@ class WindowsDictationMixin(
         )
 
         settings = self._dictation_settings()
-        dialog = WindowsDictationDialog(self._dictation_parent(), settings, self._dictation_say)
+        dialog = WindowsDictationDialog(
+            self._dictation_parent(),
+            settings,
+            self._dictation_say,
+            my_words=self._dictation_my_words(),  # windows_dictation_command_key.py
+        )
         saving = (wx.ID_OK, EDIT_WORDS, EDIT_INSTRUCTIONS, EDIT_OPENAI_KEY, DICTATE_ANYWHERE)
         try:
             answer = self._dictation_run_modal(dialog, "Dictation Settings")
@@ -280,6 +289,9 @@ class WindowsDictationMixin(
             return _controller.transcript_status()
         if not _controller.active or _host is not self:
             return ""
+        if _controller.command_mode_text and state is not DictationState.PAUSED:
+            # D-1: shown, never spoken again (GATE-13); a braille display has it.
+            return f"Dictation: {_controller.command_mode_text.lower()}"
         if _controller.spelling:
             return "Dictation: spelling"
         if _controller.mode_text and _controller.state is DictationState.LISTENING:
@@ -478,6 +490,8 @@ class WindowsDictationMixin(
             stop_phrase=preferences.stop_phrase,
             own_phrases=profile.replacements,
             language=preferences.speech_language,
+            command_prefix=preferences.command_prefix,
+            prefix_required=preferences.command_prefix_required,
         )
         dialog = DictationCommandsDialog(self._dictation_parent(), body)
         try:

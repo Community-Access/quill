@@ -68,6 +68,8 @@
   "quill/ui/dictation_more_dialog.py::MoreDictationDialog.__init__::wx.Choice#3": "helped",
   "quill/ui/dictation_more_dialog.py::MoreDictationDialog.__init__::wx.Choice#4": "helped",
   "quill/ui/dictation_more_dialog.py::MoreDictationDialog.__init__::wx.TextCtrl": "helped",
+  "quill/ui/dictation_more_dialog.py::MoreDictationDialog._add_command_word::wx.SpinCtrl": "helped",
+  "quill/ui/dictation_more_dialog.py::MoreDictationDialog._add_command_word::wx.TextCtrl": "helped",
   "quill/ui/dictation_transcribe_dialog.py::TranscribeFileDialog.__init__::wx.Button": "helped",
   "quill/ui/dictation_transcribe_dialog.py::TranscribeFileDialog.__init__::wx.Button#2": "helped",
   "quill/ui/dictation_transcribe_dialog.py::TranscribeFileDialog.__init__::wx.Choice": "helped",

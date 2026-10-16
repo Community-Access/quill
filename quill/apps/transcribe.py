@@ -259,7 +259,11 @@ class QuillTranscribeFrame(
             else "Start and stop key: none chosen. Use the tray menu, or choose one "
             "in the File menu."
         )
-        return "\n".join((model, microphone, keys))
+        command = self.command_key() or self._settings.command_hotkey
+        commands = (
+            f"Command Key: {command}." if command else "Command Key: none chosen; say QUILL first."
+        )
+        return "\n".join((model, microphone, keys, commands))
 
     def _next_sentence(self) -> str:
         controller = getattr(self, "_dictation", None)

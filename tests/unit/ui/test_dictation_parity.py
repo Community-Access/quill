@@ -148,3 +148,29 @@ def test_the_ai_conversation_window_dictates_in_both() -> None:
     import quill.ui.hosted_ai_chat as chat
 
     assert "_talk_to_it(frame, host)" in inspect.getsource(chat.open_for)
+
+
+def test_the_command_word_and_its_key_are_one_thing_in_all_three() -> None:
+    """D-1 (2026-10-15): Speak a Command is F11 in QUILL, QUILL Lite and QUILL
+    Transcribe's window, from one handler in the editors; the command word's
+    three settings are shared fields; the phrases come from one table."""
+    from quill.apps.lite_window_dictation import DocumentDictationMixin
+    from quill.core.lite.settings import Settings as LiteSettings
+    from quill.core.settings import Settings as QuillSettings
+    from quill.core.transcribe.parity import SHARED_COMMANDS
+    from quill.ui.main_frame_windows_dictation import WindowsDictationCommandsMixin
+    from quill.ui.windows_dictation_command_key import DictationCommandKeyMixin
+
+    assert _lite_dictation_rows()["cmd_dictation_command"] == "F11"
+    assert COMMAND_EQUIVALENTS["cmd_dictation_command"] == "tools.windows_dictation_command"
+    assert DEFAULT_KEYMAP["tools.windows_dictation_command"] == "F11"
+    assert SHARED_COMMANDS["tools.windows_dictation_command"] == "speak_a_command"
+    for adapter in (DocumentDictationMixin, WindowsDictationCommandsMixin):
+        assert adapter.cmd_dictation_command is DictationCommandKeyMixin.cmd_dictation_command
+    names = (
+        "windows_dictation_command_prefix",
+        "windows_dictation_command_prefix_required",
+        "windows_dictation_command_timeout",
+    )
+    for name in names:
+        assert getattr(QuillSettings(), name) == getattr(LiteSettings(), name), name

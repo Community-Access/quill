@@ -263,6 +263,8 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_live_transcript": "tools.windows_dictation_live_transcript",
     "cmd_dictation_context": "tools.windows_dictation_context",
     "cmd_dictation_status": "tools.dictation_status",
+    # 2026-10-15 (D-1): Speak a Command, F11 in both, one shared handler.
+    "cmd_dictation_command": "tools.windows_dictation_command",
     "cmd_duplicate_line": "format.duplicate_line",
     "cmd_duplicate_selection": "edit.duplicate_selection",
     "cmd_editor_font": "format.editor_font",

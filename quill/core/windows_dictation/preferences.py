@@ -15,6 +15,12 @@ from dataclasses import dataclass, field
 
 from quill.core.action_feedback import ActionFeedback
 from quill.core.action_feedback import coerce as coerce_feedback
+from quill.core.windows_dictation.command_mode import (
+    DEFAULT_COMMAND_PREFIX,
+    DEFAULT_COMMAND_TIMEOUT,
+    coerce_prefix,
+    coerce_timeout,
+)
 from quill.core.windows_dictation.engines import coerce_engine, writes_punctuation
 from quill.core.windows_dictation.options import PAUSE_SECONDS, coerce_pause, coerce_silence
 from quill.core.windows_dictation.preview import coerce_preview
@@ -96,6 +102,12 @@ class DictationPreferences:
     #: A soft tick while a heard phrase takes more than a second to recognise
     #: (working_tick.py). Off in the editors, on in QUILL Transcribe.
     working_tick: bool = False
+    #: The command word (D-1, command_mode.py): "QUILL scratch that". Empty is none.
+    command_prefix: str = "QUILL"
+    #: Strict mode: a bare command is written as words. On in QUILL Transcribe.
+    command_prefix_required: bool = False
+    #: Seconds command mode, or one armed command, waits for a command.
+    command_timeout: int = 8
     #: What this document is -- "a formal letter", "notes to a friend" -- for
     #: OpenAI's prompt (contexts.py, dict.md 3.8). Empty for none.
     context: str = field(default="", compare=False)
@@ -235,5 +247,14 @@ class DictationPreferences:
                 getattr(settings, "windows_dictation_transcript_timestamps", False)
             ),
             working_tick=bool(getattr(settings, "windows_dictation_working_tick", False)),
+            command_prefix=coerce_prefix(
+                getattr(settings, "windows_dictation_command_prefix", DEFAULT_COMMAND_PREFIX)
+            ),
+            command_prefix_required=bool(
+                getattr(settings, "windows_dictation_command_prefix_required", False)
+            ),
+            command_timeout=coerce_timeout(
+                getattr(settings, "windows_dictation_command_timeout", DEFAULT_COMMAND_TIMEOUT)
+            ),
             rewrite=rewrite,
         )

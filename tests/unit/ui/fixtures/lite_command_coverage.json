@@ -51,6 +51,7 @@
   "cmd_describe_character": "covered",
   "cmd_describe_character_detail": "covered",
   "cmd_describe_indent": "covered",
+  "cmd_dictation_command": "covered",
   "cmd_dictation_context": "covered",
   "cmd_dictation_recent": "covered",
   "cmd_dictation_settings": "covered",

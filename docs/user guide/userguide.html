@@ -8332,6 +8332,9 @@ new document of its own. See “Live transcripts”.</li>
 <li><strong>Dictation Context for This Document…</strong>
 (<code>Ctrl+Alt+Shift+PageUp</code>) tells QUILL what this document is,
 in a sentence. See “Dictation Context for This Document”.</li>
+<li><strong>Speak a Command</strong> (<code>F11</code>) makes the next
+thing you say a command, as if you had said QUILL first. Press it twice
+for command mode. See “The command word”.</li>
 </ul>
 <p>Here are the dictation keys in one place:</p>
 <table>
@@ -8378,6 +8381,10 @@ in a sentence. See “Dictation Context for This Document”.</li>
 <td>Tidy Dictated Text</td>
 <td><code>Ctrl+F3</code></td>
 </tr>
+<tr>
+<td>Speak a Command</td>
+<td><code>F11</code></td>
+</tr>
 </tbody>
 </table>
 <p>A few things that are good to know while you talk:</p>
@@ -8399,6 +8406,45 @@ page, <strong><a href="dictation-commands.html">Dictation
 commands</a></strong>, built from the same table QUILL itself reads.
 While dictating, say <strong>“what can I say”</strong> to open that list
 in a window.</p>
+<h5 id="the-command-word">The command word</h5>
+<p>Commands such as “scratch that” work when you say them on their own,
+after a pause. To be sure a command is taken as a command and never
+written, say the command word first: <strong>“QUILL scratch
+that”</strong>, <strong>“QUILL select the cat”</strong>, <strong>“QUILL
+caps on”</strong>. Every command in the list works this way.</p>
+<ul>
+<li><strong>QUILL counts only as the first word after a pause.</strong>
+“I told Quill about it” is written as words.</li>
+<li><strong>If what follows is not a command, nothing is
+written.</strong> You hear the error sound and “Not a command. Say it
+again, or say QUILL type that to write it.” Say <strong>“QUILL type
+that”</strong> and the words are written after all, once.</li>
+<li><strong>To write the word itself</strong>, say <strong>“literal
+QUILL”</strong>.</li>
+<li><strong>Say “QUILL” on its own</strong>, then pause, and the next
+thing you say is a command. A short rising tone tells you QUILL heard
+it.</li>
+<li><strong>Command mode</strong>: say <strong>“QUILL command
+mode”</strong>. You hear the tone and “Command mode”, and everything you
+say is a command, without the word, until you say <strong>“dictation
+mode”</strong>. If you give no command for eight seconds, command mode
+ends by itself with a falling tone, and what you say next is written
+again. The status bar says “Command mode” while it lasts.</li>
+<li><strong>Speak a Command</strong> (<code>F11</code>) does the same
+from the keyboard. Press it and the next thing you say is a command.
+Press it twice for command mode, and once more to go back to dictation.
+If dictation is off, it starts dictation first.</li>
+</ul>
+<p>Three choices in <strong>More Dictation Settings</strong> go with it:
+the command word itself (<code>Alt+C</code>; empty means no spoken
+command word, so only <code>F11</code> gives commands), <strong>Commands
+only after the command word (strict mode)</strong> (<code>Alt+E</code>),
+and how many seconds command mode waits (<code>Alt+D</code>, 5 to 30).
+With strict mode on, “scratch that” on its own is written as words; the
+stop phrase always works. Strict mode is off in QUILL and QUILL Lite, so
+the commands you know keep working, and on in QUILL Transcribe. A common
+word, or a word from your own My Words and Phrases, is refused as the
+command word, with the reason.</p>
 <h5 id="holding-ctrlf11-to-talk">Holding Ctrl+F11 to talk</h5>
 <p>Press <code>Ctrl+F11</code> to start dictating and press it again to
 stop. That is all most people ever need, and it is how dictation starts
@@ -8932,6 +8978,24 @@ Quill Inkwell, such as your password manager; see “Programs dictation
 never types into”</td>
 <td>The common password managers and the Windows sign-in prompts</td>
 </tr>
+<tr>
+<td>Command word (<code>Alt+C</code>)</td>
+<td>The word you say before a command, like QUILL scratch that; empty
+for none; see “The command word”</td>
+<td>QUILL</td>
+</tr>
+<tr>
+<td>Commands only after the command word (strict mode)
+(<code>Alt+E</code>)</td>
+<td>A command said on its own is written as words; the stop phrase
+always works</td>
+<td>Off (on in QUILL Transcribe)</td>
+</tr>
+<tr>
+<td>Seconds command mode waits for a command (<code>Alt+D</code>)</td>
+<td>How long command mode lasts with no command, from 5 to 30</td>
+<td>8</td>
+</tr>
 </tbody>
 </table>
 <p>In settings files these are
@@ -8945,8 +9009,11 @@ never types into”</td>
 <code>windows_dictation_openai_model</code>,
 <code>windows_dictation_readback_marks</code>,
 <code>windows_dictation_working_tick</code>,
-<code>windows_dictation_transcript_timestamps</code> and
-<code>windows_dictation_never_type</code>.</p>
+<code>windows_dictation_transcript_timestamps</code>,
+<code>windows_dictation_never_type</code>,
+<code>windows_dictation_command_prefix</code>,
+<code>windows_dictation_command_prefix_required</code> and
+<code>windows_dictation_command_timeout</code>.</p>
 <p>A failure is always spoken, whatever these settings say. If the
 read-back plays through speakers, the microphone can hear it, so use
 headphones or choose a sound only.</p>
@@ -9640,6 +9707,10 @@ cannot work there: “select”, “go to”, “correct”, “copy all” and 
 clips”. If you say one of those, you are told “That works in QUILL’s own
 documents” and nothing happens. “What can I say” there lists only what
 works in another program.</p>
+<p>The command word works there too, and it matters more there:
+<strong>“QUILL scratch that”</strong> is always a command, and whatever
+follows “QUILL” is never typed into the other program, even when it is
+not a command (see “The command word”).</p>
 <p>Out of respect for your privacy and your other programs, Dictate
 Anywhere will not type into a password box, into a program running as
 administrator (unless Inkwell is too), into Inkwell’s own window, or

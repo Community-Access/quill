@@ -52,6 +52,10 @@ TRANSCRIBE_DICTATION_DEFAULTS: dict[str, Any] = {
     # and where nothing on screen shows the wait, so it ticks by default; the
     # editors' status bar already says "hearing you".
     "windows_dictation_working_tick": True,
+    # Strict mode (D-1): a bare "scratch that" is typed as words, and only
+    # "QUILL scratch that" is a command. A command typed by mistake is cheap to
+    # undo in an editor and expensive in somebody's email.
+    "windows_dictation_command_prefix_required": True,
 }
 
 
@@ -63,6 +67,10 @@ class TranscribeSettings:
     #: The key that starts and stops dictation from any program. Empty only
     #: when the listener emptied it.
     dictation_hotkey: str = DEFAULT_DICTATION_HOTKEY
+    #: The Command Key (D-1): the next thing said is a command; pressed twice,
+    #: command mode. Empty until the listener chooses one (dict.md section 5:
+    #: every global key but the start and stop key starts empty).
+    command_hotkey: str = ""
     #: Open hidden in the tray rather than with the window showing.
     start_in_tray: bool = False
     #: The close button hides to the tray rather than exiting.
@@ -91,6 +99,7 @@ def load_settings(data_dir: Path) -> TranscribeSettings:
     settings.dictation_hotkey = str(
         raw.get("dictation_hotkey", DEFAULT_DICTATION_HOTKEY) or ""
     ).strip()
+    settings.command_hotkey = str(raw.get("command_hotkey", "") or "").strip()
     settings.start_in_tray = bool(raw.get("start_in_tray", False))
     settings.close_to_tray = bool(raw.get("close_to_tray", True))
     settings.inkwell_checked = bool(raw.get("inkwell_checked", False))
@@ -122,6 +131,7 @@ def save_settings(data_dir: Path, settings: TranscribeSettings) -> None:
             "schema_version": SCHEMA_VERSION,
             "setup_done": settings.setup_done,
             "dictation_hotkey": settings.dictation_hotkey,
+            "command_hotkey": settings.command_hotkey,
             "start_in_tray": settings.start_in_tray,
             "close_to_tray": settings.close_to_tray,
             "inkwell_checked": settings.inkwell_checked,

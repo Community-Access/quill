@@ -23,6 +23,10 @@ the choices nobody needs on the first day:
 * **My Dictation Instructions...**: the file Tidy Dictated Text follows.
 * **Programs Dictation Never Types Into...** (D-24): the never-type list
   (:mod:`quill.ui.dictation_never_type_dialog`), kept until this window's OK.
+* **Commands** (D-1): the command word ("QUILL"), strict mode and how long
+  command mode waits (:mod:`quill.core.windows_dictation.command_mode`). OK is
+  refused, with the reason, while the command word is a common word or one of
+  the person's own words.
 
 Nothing is applied until OK (:meth:`MoreDictationDialog.values`); Dictation
 Settings applies it with its own OK, so Cancel there cancels this too.
@@ -30,7 +34,7 @@ Settings applies it with its own OK, so Cancel there cancels this too.
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from typing import Any
 
 import wx
@@ -79,6 +83,7 @@ class MoreDictationDialog(wx.Dialog):
         *,
         pending: dict[str, Any] | None = None,
         load_models: bool = True,
+        my_words: Iterable[str] | None = None,
     ) -> None:
         super().__init__(parent, title="More Dictation Settings")
         self._announce = announce or (lambda _text: None)
@@ -145,6 +150,9 @@ class MoreDictationDialog(wx.Dialog):
             "when the speaker pauses for four seconds or more. Off by default."
         )
         root.Add(self.timestamps, 0, wx.ALL, _PAD)
+
+        self._my_words = my_words
+        self._add_command_word(root, value)
 
         ai_box = wx.StaticBoxSizer(wx.VERTICAL, self, "Talking to the AI")
         ai = ai_box.GetStaticBox()
@@ -266,9 +274,102 @@ class MoreDictationDialog(wx.Dialog):
         root.Add(buttons, 0, wx.EXPAND | wx.ALL, _PAD)
         self.SetSizerAndFit(root)
         apply_modal_ids(self, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
+        self.Bind(wx.EVT_BUTTON, self._on_ok, id=wx.ID_OK)
         self.hold.SetFocus()
         if load_models:
             self._load_models()
+
+    # -- the command word (D-1) ------------------------------------------------- #
+
+    def _add_command_word(self, root: Any, value: Callable[[str, Any], Any]) -> None:
+        """The command word, strict mode and how long command mode lasts."""
+        from quill.core.windows_dictation.command_mode import (
+            DEFAULT_COMMAND_PREFIX,
+            DEFAULT_COMMAND_TIMEOUT,
+            MAX_COMMAND_TIMEOUT,
+            MIN_COMMAND_TIMEOUT,
+            coerce_prefix,
+            coerce_timeout,
+        )
+
+        box_sizer = wx.StaticBoxSizer(wx.VERTICAL, self, "Commands")
+        box = box_sizer.GetStaticBox()
+        prefix_label = wx.StaticText(box, label="&Command word (empty for none):")
+        self.command_prefix = wx.TextCtrl(
+            box,
+            value=coerce_prefix(value("windows_dictation_command_prefix", DEFAULT_COMMAND_PREFIX)),
+        )
+        self.command_prefix.SetHelpText(
+            "Say this word first to give a command instead of dictating: QUILL scratch "
+            "that, QUILL select the cat. It counts only as the first word after a pause, "
+            "so I told Quill about it is written as words. If what follows is not a "
+            "command, nothing is typed, and QUILL type that writes it. Say literal QUILL "
+            "to write the word itself. Leave it empty to give commands with the Speak a "
+            "Command key only. A common word, or one of your own words in My Words and "
+            "Phrases, is refused."
+        )
+        self.command_required = wx.CheckBox(
+            box, label="Commands only after the command word (strict mod&e)"
+        )
+        self.command_required.SetValue(
+            bool(value("windows_dictation_command_prefix_required", False))
+        )
+        self.command_required.SetHelpText(
+            "When this is on, a command said on its own, like scratch that, is written as "
+            "words, and only QUILL scratch that is a command. The stop phrase always "
+            "works. On by default in QUILL Transcribe, where a command typed into an email "
+            "by mistake is hard to take back; off in QUILL and QUILL Lite."
+        )
+        timeout_label = wx.StaticText(box, label="Seconds command mo&de waits for a command:")
+        self.command_timeout = wx.SpinCtrl(
+            box,
+            min=MIN_COMMAND_TIMEOUT,
+            max=MAX_COMMAND_TIMEOUT,
+            initial=coerce_timeout(
+                value("windows_dictation_command_timeout", DEFAULT_COMMAND_TIMEOUT)
+            ),
+        )
+        self.command_timeout.SetHelpText(
+            "Say QUILL command mode, or press Speak a Command twice, and everything you "
+            "say is a command until you say dictation mode or give no command for this "
+            "many seconds. A falling tone says it has ended. From 5 to 30; 8 by default."
+        )
+        box_sizer.Add(prefix_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
+        box_sizer.Add(self.command_prefix, 0, wx.EXPAND | wx.ALL, _PAD)
+        box_sizer.Add(self.command_required, 0, wx.ALL, _PAD)
+        box_sizer.Add(timeout_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
+        box_sizer.Add(self.command_timeout, 0, wx.ALL, _PAD)
+        root.Add(box_sizer, 0, wx.EXPAND | wx.ALL, _PAD)
+
+    def command_word_problem(self) -> str:
+        """Why the command word typed here would not do, or ``""``."""
+        from quill.core.windows_dictation.command_mode import command_prefix_problem
+
+        return command_prefix_problem(self.command_prefix.GetValue(), self._words())
+
+    def _words(self) -> list[str]:
+        """The person's My Words vocabulary, which the command word may not be."""
+        if self._my_words is not None:
+            return list(self._my_words)
+        try:
+            from quill.core.speech.dictation_profile import default_profile_path
+            from quill.core.windows_dictation.profile import load
+
+            return list(load(default_profile_path()).vocabulary)
+        except Exception:  # noqa: BLE001 - no words is a fine answer
+            return []
+
+    def _on_ok(self, event: Any) -> None:
+        """OK: refused, with the reason, while the command word would not do."""
+        problem = self.command_word_problem()
+        if not problem:
+            event.Skip()
+            return
+        from quill.ui.dialog_contract import show_message_box
+
+        show_message_box(problem, "More Dictation Settings", wx.OK | wx.ICON_WARNING, self)
+        self.command_prefix.SetFocus()
+        self.command_prefix.SelectAll()
 
     # -- OpenAI's list --------------------------------------------------------- #
 
@@ -356,4 +457,7 @@ class MoreDictationDialog(wx.Dialog):
             "windows_dictation_transcript_timestamps": self.timestamps.GetValue(),
             "windows_dictation_working_tick": self.working_tick.GetValue(),
             "windows_dictation_never_type": list(self._never_type),
+            "windows_dictation_command_prefix": " ".join(self.command_prefix.GetValue().split()),
+            "windows_dictation_command_prefix_required": self.command_required.GetValue(),
+            "windows_dictation_command_timeout": int(self.command_timeout.GetValue()),
         }

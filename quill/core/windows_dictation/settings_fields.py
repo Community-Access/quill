@@ -18,6 +18,12 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from quill.core.action_feedback import coerce as coerce_feedback
+from quill.core.windows_dictation.command_mode import (
+    DEFAULT_COMMAND_PREFIX,
+    DEFAULT_COMMAND_TIMEOUT,
+    coerce_prefix,
+    coerce_timeout,
+)
 from quill.core.windows_dictation.engines import coerce_engine
 from quill.core.windows_dictation.never_type import DEFAULT_NEVER_TYPE, coerce_never_type
 from quill.core.windows_dictation.options import coerce_pause, coerce_silence
@@ -75,6 +81,12 @@ class DictationSettings:
     windows_dictation_never_type: list[str] = field(
         default_factory=lambda: list(DEFAULT_NEVER_TYPE)
     )
+    # 2026-10-15 (D-1): the command word, strict mode and command mode's
+    # timeout (command_mode.py). Strict mode is off in both editors; QUILL
+    # Transcribe turns it on (TRANSCRIBE_DICTATION_DEFAULTS).
+    windows_dictation_command_prefix: str = DEFAULT_COMMAND_PREFIX
+    windows_dictation_command_prefix_required: bool = False
+    windows_dictation_command_timeout: int = DEFAULT_COMMAND_TIMEOUT
 
 
 def load_fields(data: Mapping[str, Any]) -> dict[str, Any]:
@@ -139,4 +151,13 @@ def load_fields(data: Mapping[str, Any]) -> dict[str, Any]:
         ),
         "windows_dictation_working_tick": bool(data.get("windows_dictation_working_tick", False)),
         "windows_dictation_never_type": coerce_never_type(data.get("windows_dictation_never_type")),
+        "windows_dictation_command_prefix": coerce_prefix(
+            data.get("windows_dictation_command_prefix", DEFAULT_COMMAND_PREFIX)
+        ),
+        "windows_dictation_command_prefix_required": bool(
+            data.get("windows_dictation_command_prefix_required", False)
+        ),
+        "windows_dictation_command_timeout": coerce_timeout(
+            data.get("windows_dictation_command_timeout", DEFAULT_COMMAND_TIMEOUT)
+        ),
     }

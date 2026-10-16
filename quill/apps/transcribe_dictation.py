@@ -48,6 +48,8 @@ _CUES = {
     "off": SoundEvent.WINDOWS_DICTATION_OFF,
     "error": SoundEvent.WINDOWS_DICTATION_ERROR,
     "working": SoundEvent.WINDOWS_DICTATION_WORKING,
+    "command_on": SoundEvent.WINDOWS_DICTATION_COMMAND_ON,
+    "command_off": SoundEvent.WINDOWS_DICTATION_COMMAND_OFF,
 }
 _READ_BACK_DELAY_MS = 250
 
@@ -260,6 +262,7 @@ class TranscribeDictationMixin(FieldHoldMixin):
 
     def toggle_dictation(self) -> None:
         """The start and stop key, pressed in the field to dictate into."""
+        self._command_after_start = False  # a plain start: no command armed
         if self._cancel_arming():
             return
         controller = self._controller()
@@ -271,9 +274,45 @@ class TranscribeDictationMixin(FieldHoldMixin):
     def start_dictation(self) -> None:
         refusal = self._refusal()
         if refusal:
+            self._command_after_start = False
             self._dictation_refused(refusal)
             return
-        self._controller().start()
+        controller = self._controller()
+        controller.start()
+        if getattr(self, "_command_after_start", False) and controller.active:
+            controller.command_key()  # Speak a Command started it: one command armed
+        self._command_after_start = False
+
+    # -- the Command Key and Speak a Command (D-1) ---------------------------- #
+
+    def command_key_pressed(self) -> None:
+        """The system-wide Command Key, pressed in the field to dictate into:
+        the next thing said is a command (starting dictation if it is off);
+        pressed again, command mode; in command mode, back to dictation."""
+        if self._cancel_arming():
+            return
+        controller = self._controller()
+        if controller.active:
+            controller.command_key()
+            return
+        self._command_after_start = True
+        self.start_dictation()
+
+    def speak_a_command(self) -> None:
+        """F11, the editors' Speak a Command, from QUILL Transcribe's window:
+        while dictating, the same as the Command Key; otherwise dictation waits
+        for the field you switch to, with one command armed."""
+        if self.dictation_active():
+            self._controller().command_key()
+            return
+        if self._cancel_arming():
+            return
+        refusal = self._refusal()
+        if refusal:
+            self._dictation_refused(refusal)
+            return
+        self._command_after_start = True
+        self._arm_start()
 
     def stop_dictation(self) -> None:
         if self._cancel_arming():
@@ -286,6 +325,7 @@ class TranscribeDictationMixin(FieldHoldMixin):
 
     def start_or_stop_from_here(self) -> None:
         """The tray menu and the window's button: stop, or arm a start."""
+        self._command_after_start = False  # a plain start: no command armed
         if self._cancel_arming():
             return
         if self.dictation_active():
@@ -439,6 +479,8 @@ class TranscribeDictationMixin(FieldHoldMixin):
             return "Paused, waiting for the microphone"
         if state is DictationState.STARTING:
             return "Starting"
+        if controller.active and controller.command_mode_text:
+            return str(controller.command_mode_text)  # "Command mode" (D-1), shown not said
         if state is DictationState.RECOGNIZING:
             return "Hearing you"
         if state in (DictationState.LISTENING, DictationState.PROCESSING):

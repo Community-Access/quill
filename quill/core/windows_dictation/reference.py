@@ -17,6 +17,7 @@ from __future__ import annotations
 from collections.abc import Iterable
 from typing import Any
 
+from quill.core.windows_dictation.command_mode import DEFAULT_COMMAND_PREFIX
 from quill.core.windows_dictation.vocabulary import (
     COMMAND_HELP,
     DASH_STYLES,
@@ -79,6 +80,54 @@ def _spanish_sections(heading: Any, row: Any, table_head: Any, lines: list[str],
             row(" or ".join(f'"{phrase}"' for phrase in entry.phrases), entry.description)
 
 
+def _command_word_section(
+    heading: Any,
+    row: Any,
+    table_head: Any,
+    lines: list[str],
+    md: bool,
+    prefix: str,
+    required: bool,
+) -> None:
+    """The command word (D-1): how it works, strict mode, and its own commands."""
+    from quill.core.windows_dictation.command_mode import COMMAND_MODE_HELP
+
+    heading("The command word")
+    word = prefix or "the command word"
+    said = f'"{prefix}"' if prefix else "the command word"
+    strict = (
+        "Strict mode is on, so a command said on its own is written as words: say the "
+        "command word first. The stop phrase always works on its own."
+        if required
+        else 'With "Commands only after the command word" switched on in More Dictation '
+        "Settings (it is on in QUILL Transcribe), a command said on its own is written as "
+        "words, except the stop phrase."
+    )
+    for sentence in (
+        (
+            f"Say {said} first to give a command instead of dictating: "
+            f'"{word} scratch that". It counts only as the first word after a pause, '
+            f'so "I told {word} about it" is written as words.'
+            if prefix
+            else "No command word is set, so give commands with the Speak a Command key."
+        ),
+        "Every command in this list works after the command word. If what follows it is "
+        f'not a command, nothing is typed: you hear "Not a command", and "{word} type '
+        'that" writes it after all.',
+        f'Say "literal {word}" to write the word itself.',
+        strict,
+        "Speak a Command (F11 in QUILL and QUILL Lite, and in QUILL Transcribe the "
+        "Command Key you choose) does the same without the word: the next thing you say "
+        "is a command. Press it twice for command mode.",
+    ):
+        lines.append(("- " + sentence) if md else sentence)
+    if md:
+        lines.append("")
+    table_head("Say, after the command word", "What happens")
+    for entry in COMMAND_MODE_HELP:
+        row(" or ".join(f'"{phrase}"' for phrase in entry.phrases), entry.description)
+
+
 def commands_reference(
     *,
     markdown: bool = False,
@@ -88,6 +137,8 @@ def commands_reference(
     own_phrases: Iterable[tuple[str, str]] = (),
     language: str = "en",
     external: bool = False,
+    command_prefix: str = DEFAULT_COMMAND_PREFIX,
+    prefix_required: bool = False,
 ) -> str:
     """Every phrase dictation acts on, grouped, with what each one does.
 
@@ -182,6 +233,10 @@ def commands_reference(
         ),
     ):
         lines.append(("- " + sentence) if markdown else sentence)
+
+    _command_word_section(
+        heading, row, table_head, lines, markdown, command_prefix, prefix_required
+    )
 
     for group, marks in _grouped(MARKS).items():
         heading(group)
